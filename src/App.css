@@ -1,5 +1,4 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -37,6 +36,39 @@
   padding: 2em;
 }
 
+.inline-flex {
+  display: inline-flex;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.align-center {
+  align-items: center;
+}
+
+button {
+  height: fit-content;
+  width: fit-content;
+}
+
 .read-the-docs {
   color: #888;
+}
+
+#nav-bar {
+  display: inline-flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  gap: 2em;
+}
+
+#nav-bar button {
+  transition: none;
+  border: unset;
+}
+#nav-bar button:hover {
+  filter: drop-shadow(0 0 0.8em rgba(100, 164, 253, 0.667));
 }
