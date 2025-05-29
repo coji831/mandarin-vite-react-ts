@@ -1,0 +1,1170 @@
+[
+  {
+    "character": "吃",
+    "pinyin": "chī",
+    "meaning": "eat",
+    "sentence": "我吃米饭",
+    "sentencePinyin": "wǒ chī mǐfàn",
+    "sentenceMeaning": "I eat rice"
+  },
+  {
+    "character": "喝",
+    "pinyin": "hē",
+    "meaning": "drink",
+    "sentence": "我喝水",
+    "sentencePinyin": "wǒ hē shuǐ",
+    "sentenceMeaning": "I drink water"
+  },
+  {
+    "character": "爱",
+    "pinyin": "ài",
+    "meaning": "love",
+    "sentence": "我爱你",
+    "sentencePinyin": "wǒ ài nǐ",
+    "sentenceMeaning": "I love you"
+  },
+  {
+    "character": "是",
+    "pinyin": "shì",
+    "meaning": "be (is, am, are)",
+    "sentence": "他是一个学生",
+    "sentencePinyin": "tā shì yī gè xuéshēng",
+    "sentenceMeaning": "He is a student"
+  },
+  {
+    "character": "好",
+    "pinyin": "hǎo",
+    "meaning": "good",
+    "sentence": "你好",
+    "sentencePinyin": "nǐ hǎo",
+    "sentenceMeaning": "Hello (you good)"
+  },
+  {
+    "character": "不",
+    "pinyin": "bù",
+    "meaning": "no, not",
+    "sentence": "我不是学生",
+    "sentencePinyin": "wǒ bù shì xuéshēng",
+    "sentenceMeaning": "I am not a student"
+  },
+  {
+    "character": "会",
+    "pinyin": "huì",
+    "meaning": "can, be able to",
+    "sentence": "我会说汉语",
+    "sentencePinyin": "wǒ huì shuō hànyǔ",
+    "sentenceMeaning": "I can speak Chinese"
+  },
+  {
+    "character": "想",
+    "pinyin": "xiǎng",
+    "meaning": "want, think",
+    "sentence": "我想去中国",
+    "sentencePinyin": "wǒ xiǎng qù zhōngguó",
+    "sentenceMeaning": "I want to go to China"
+  },
+  {
+    "character": "有",
+    "pinyin": "yǒu",
+    "meaning": "have, there is/are",
+    "sentence": "我有一个苹果",
+    "sentencePinyin": "wǒ yǒu yī gè píngguǒ",
+    "sentenceMeaning": "I have an apple"
+  },
+  {
+    "character": "看",
+    "pinyin": "kàn",
+    "meaning": "look, see",
+    "sentence": "你看什么？",
+    "sentencePinyin": "nǐ kàn shénme?",
+    "sentenceMeaning": "What are you looking at?"
+  },
+  {
+    "character": "听",
+    "pinyin": "tīng",
+    "meaning": "listen",
+    "sentence": "我听音乐",
+    "sentencePinyin": "wǒ tīng yīnyuè",
+    "sentenceMeaning": "I listen to music"
+  },
+  {
+    "character": "说",
+    "pinyin": "shuō",
+    "meaning": "speak, say",
+    "sentence": "请再说一遍",
+    "sentencePinyin": "qǐng zài shuō yī biàn",
+    "sentenceMeaning": "Please say it again"
+  },
+  {
+    "character": "写",
+    "pinyin": "xiě",
+    "meaning": "write",
+    "sentence": "我会写汉字",
+    "sentencePinyin": "wǒ huì xiě hànzì",
+    "sentenceMeaning": "I can write Chinese characters"
+  },
+  {
+    "character": "读",
+    "pinyin": "dú",
+    "meaning": "read",
+    "sentence": "我喜欢读书",
+    "sentencePinyin": "wǒ xǐhuān dú shū",
+    "sentenceMeaning": "I like reading books"
+  },
+  {
+    "character": "去",
+    "pinyin": "qù",
+    "meaning": "go",
+    "sentence": "你去哪里？",
+    "sentencePinyin": "nǐ qù nǎlǐ?",
+    "sentenceMeaning": "Where are you going?"
+  },
+  {
+    "character": "来",
+    "pinyin": "lái",
+    "meaning": "come",
+    "sentence": "你来我家吧",
+    "sentencePinyin": "nǐ lái wǒ jiā ba",
+    "sentenceMeaning": "Come to my house"
+  },
+  {
+    "character": "买",
+    "pinyin": "mǎi",
+    "meaning": "buy",
+    "sentence": "我想买衣服",
+    "sentencePinyin": "wǒ xiǎng mǎi yīfu",
+    "sentenceMeaning": "I want to buy clothes"
+  },
+  {
+    "character": "卖",
+    "pinyin": "mài",
+    "meaning": "sell",
+    "sentence": "这个多少钱？",
+    "sentencePinyin": "zhège duōshao qián?",
+    "sentenceMeaning": "How much is this? (literally: this how much money?)"
+  },
+  {
+    "character": "穿",
+    "pinyin": "chuān",
+    "meaning": "wear (clothes)",
+    "sentence": "她穿裙子",
+    "sentencePinyin": "tā chuān qúnzi",
+    "sentenceMeaning": "She wears a skirt"
+  },
+  {
+    "character": "住",
+    "pinyin": "zhù",
+    "meaning": "live, stay",
+    "sentence": "你住在哪儿？",
+    "sentencePinyin": "nǐ zhù zài nǎr?",
+    "sentenceMeaning": "Where do you live?"
+  },
+  {
+    "character": "学",
+    "pinyin": "xué",
+    "meaning": "study, learn",
+    "sentence": "我学中文",
+    "sentencePinyin": "wǒ xué zhōngwén",
+    "sentenceMeaning": "I study Chinese"
+  },
+  {
+    "character": "懂",
+    "pinyin": "dǒng",
+    "meaning": "understand",
+    "sentence": "你懂了吗？",
+    "sentencePinyin": "nǐ dǒng le ma?",
+    "sentenceMeaning": "Do you understand?"
+  },
+  {
+    "character": "问",
+    "pinyin": "wèn",
+    "meaning": "ask",
+    "sentence": "我有一个问题",
+    "sentencePinyin": "wǒ yǒu yī gè wèntí",
+    "sentenceMeaning": "I have a question"
+  },
+  {
+    "character": "答",
+    "pinyin": "dá",
+    "meaning": "answer",
+    "sentence": "请回答我的问题",
+    "sentencePinyin": "qǐng huídá wǒ de wèntí",
+    "sentenceMeaning": "Please answer my question"
+  },
+  {
+    "character": "叫",
+    "pinyin": "jiào",
+    "meaning": "call, be called",
+    "sentence": "我叫玛丽",
+    "sentencePinyin": "wǒ jiào mǎlì",
+    "sentenceMeaning": "My name is Mary"
+  },
+  {
+    "character": "看",
+    "pinyin": "kàn",
+    "meaning": "watch, look at",
+    "sentence": "我喜欢看电影",
+    "sentencePinyin": "wǒ xǐhuān kàn diànyǐng",
+    "sentenceMeaning": "I like watching movies"
+  },
+  {
+    "character": "打",
+    "pinyin": "dǎ",
+    "meaning": "hit, play (ball games)",
+    "sentence": "他喜欢打篮球",
+    "sentencePinyin": "tā xǐhuān dǎ lánqiú",
+    "sentenceMeaning": "He likes playing basketball"
+  },
+  {
+    "character": "做",
+    "pinyin": "zuò",
+    "meaning": "do, make",
+    "sentence": "你在做什么？",
+    "sentencePinyin": "nǐ zài zuò shénme?",
+    "sentenceMeaning": "What are you doing?"
+  },
+  {
+    "character": "走",
+    "pinyin": "zǒu",
+    "meaning": "walk",
+    "sentence": "我们一起走吧",
+    "sentencePinyin": "wǒmen yīqǐ zǒu ba",
+    "sentenceMeaning": "Let's walk together"
+  },
+  {
+    "character": "跑",
+    "pinyin": "pǎo",
+    "meaning": "run",
+    "sentence": "他跑得很快",
+    "sentencePinyin": "tā pǎo de hěn kuài",
+    "sentenceMeaning": "He runs very fast"
+  },
+  {
+    "character": "坐",
+    "pinyin": "zuò",
+    "meaning": "sit",
+    "sentence": "请坐",
+    "sentencePinyin": "qǐng zuò",
+    "sentenceMeaning": "Please sit down"
+  },
+  {
+    "character": "开",
+    "pinyin": "kāi",
+    "meaning": "open, drive",
+    "sentence": "请开门",
+    "sentencePinyin": "qǐng kāi mén",
+    "sentenceMeaning": "Please open the door"
+  },
+  {
+    "character": "关",
+    "pinyin": "guān",
+    "meaning": "close",
+    "sentence": "请关窗",
+    "sentencePinyin": "qǐng guān chuāng",
+    "sentenceMeaning": "Please close the window"
+  },
+  {
+    "character": "给",
+    "pinyin": "gěi",
+    "meaning": "give",
+    "sentence": "请给我水",
+    "sentencePinyin": "qǐng gěi wǒ shuǐ",
+    "sentenceMeaning": "Please give me water"
+  },
+  {
+    "character": "用",
+    "pinyin": "yòng",
+    "meaning": "use",
+    "sentence": "我用筷子",
+    "sentencePinyin": "wǒ yòng kuàizi",
+    "sentenceMeaning": "I use chopsticks"
+  },
+  {
+    "character": "知",
+    "pinyin": "zhī",
+    "meaning": "know (factual)",
+    "sentence": "我知道了",
+    "sentencePinyin": "wǒ zhīdào le",
+    "sentenceMeaning": "I know (now)"
+  },
+  {
+    "character": "觉",
+    "pinyin": "jué/jiào",
+    "meaning": "feel/sleep",
+    "sentence": "我觉得很高兴",
+    "sentencePinyin": "wǒ juéde hěn gāoxìng",
+    "sentenceMeaning": "I feel very happy"
+  },
+  {
+    "character": "告",
+    "pinyin": "gào",
+    "meaning": "tell",
+    "sentence": "请告诉我",
+    "sentencePinyin": "qǐng gàosu wǒ",
+    "sentenceMeaning": "Please tell me"
+  },
+  {
+    "character": "认",
+    "pinyin": "rèn",
+    "meaning": "recognize",
+    "sentence": "我不认识他",
+    "sentencePinyin": "wǒ bù rènshi tā",
+    "sentenceMeaning": "I don't know him (don't recognize)"
+  },
+  {
+    "character": "带",
+    "pinyin": "dài",
+    "meaning": "bring, take",
+    "sentence": "我带你去",
+    "sentencePinyin": "wǒ dài nǐ qù",
+    "sentenceMeaning": "I'll take you there"
+  },
+  {
+    "character": "帮",
+    "pinyin": "bāng",
+    "meaning": "help",
+    "sentence": "请帮助我",
+    "sentencePinyin": "qǐng bāngzhù wǒ",
+    "sentenceMeaning": "Please help me"
+  },
+  {
+    "character": "教",
+    "pinyin": "jiāo",
+    "meaning": "teach",
+    "sentence": "他教我中文",
+    "sentencePinyin": "tā jiāo wǒ zhōngwén",
+    "sentenceMeaning": "He teaches me Chinese"
+  },
+  {
+    "character": "送",
+    "pinyin": "sòng",
+    "meaning": "give (as a gift), send off",
+    "sentence": "我送你回家",
+    "sentencePinyin": "wǒ sòng nǐ huí jiā",
+    "sentenceMeaning": "I'll see you home"
+  },
+  {
+    "character": "等",
+    "pinyin": "děng",
+    "meaning": "wait",
+    "sentence": "请等一下",
+    "sentencePinyin": "qǐng děng yīxià",
+    "sentenceMeaning": "Please wait a moment"
+  },
+  {
+    "character": "找",
+    "pinyin": "zhǎo",
+    "meaning": "find, look for",
+    "sentence": "我在找我的钥匙",
+    "sentencePinyin": "wǒ zài zhǎo wǒ de yàoshi",
+    "sentenceMeaning": "I'm looking for my keys"
+  },
+  {
+    "character": "到",
+    "pinyin": "dào",
+    "meaning": "arrive, to (a place)",
+    "sentence": "我到家了",
+    "sentencePinyin": "wǒ dào jiā le",
+    "sentenceMeaning": "I've arrived home"
+  },
+  {
+    "character": "出",
+    "pinyin": "chū",
+    "meaning": "go out, exit",
+    "sentence": "请出门",
+    "sentencePinyin": "qǐng chū mén",
+    "sentenceMeaning": "Please go out (the door)"
+  },
+  {
+    "character": "进",
+    "pinyin": "jìn",
+    "meaning": "enter",
+    "sentence": "请进",
+    "sentencePinyin": "qǐng jìn",
+    "sentenceMeaning": "Please come in"
+  },
+  {
+    "character": "回",
+    "pinyin": "huí",
+    "meaning": "return",
+    "sentence": "我回家了",
+    "sentencePinyin": "wǒ huí jiā le",
+    "sentenceMeaning": "I went home"
+  },
+  {
+    "character": "拿",
+    "pinyin": "ná",
+    "meaning": "take, hold",
+    "sentence": "请拿这个",
+    "sentencePinyin": "qǐng ná zhège",
+    "sentenceMeaning": "Please take this"
+  },
+  {
+    "character": "放",
+    "pinyin": "fàng",
+    "meaning": "put, release",
+    "sentence": "把书放在桌子上",
+    "sentencePinyin": "bǎ shū fàng zài zhuōzi shàng",
+    "sentenceMeaning": "Put the book on the table"
+  },
+  {
+    "character": "穿",
+    "pinyin": "chuān",
+    "meaning": "wear (clothes)",
+    "sentence": "她穿得很漂亮",
+    "sentencePinyin": "tā chuān de hěn piàoliang",
+    "sentenceMeaning": "She dresses beautifully"
+  },
+  {
+    "character": "戴",
+    "pinyin": "dài",
+    "meaning": "wear (accessories)",
+    "sentence": "他戴眼镜",
+    "sentencePinyin": "tā dài yǎnjìng",
+    "sentenceMeaning": "He wears glasses"
+  },
+  {
+    "character": "洗",
+    "pinyin": "xǐ",
+    "meaning": "wash",
+    "sentence": "我洗手",
+    "sentencePinyin": "wǒ xǐ shǒu",
+    "sentenceMeaning": "I wash my hands"
+  },
+  {
+    "character": "睡",
+    "pinyin": "shuì",
+    "meaning": "sleep",
+    "sentence": "我睡觉了",
+    "sentencePinyin": "wǒ shuì jiào le",
+    "sentenceMeaning": "I went to sleep"
+  },
+  {
+    "character": "起",
+    "pinyin": "qǐ",
+    "meaning": "rise, get up",
+    "sentence": "我起床了",
+    "sentencePinyin": "wǒ qǐ chuáng le",
+    "sentenceMeaning": "I got up"
+  },
+  {
+    "character": "病",
+    "pinyin": "bìng",
+    "meaning": "illness, sick",
+    "sentence": "我生病了",
+    "sentencePinyin": "wǒ shēng bìng le",
+    "sentenceMeaning": "I got sick"
+  },
+  {
+    "character": "看",
+    "pinyin": "kàn",
+    "meaning": "see (a doctor)",
+    "sentence": "我去看医生",
+    "sentencePinyin": "wǒ qù kàn yīshēng",
+    "sentenceMeaning": "I'm going to see a doctor"
+  },
+  {
+    "character": "给",
+    "pinyin": "gěi",
+    "meaning": "give (something to someone)",
+    "sentence": "他给了我一本书",
+    "sentencePinyin": "tā gěi le wǒ yī běn shū",
+    "sentenceMeaning": "He gave me a book"
+  },
+  {
+    "character": "借",
+    "pinyin": "jiè",
+    "meaning": "borrow, lend",
+    "sentence": "我向他借了一本书",
+    "sentencePinyin": "wǒ xiàng tā jiè le yī běn shū",
+    "sentenceMeaning": "I borrowed a book from him"
+  },
+  {
+    "character": "还",
+    "pinyin": "huán",
+    "meaning": "return (something)",
+    "sentence": "我还书了",
+    "sentencePinyin": "wǒ huán shū le",
+    "sentenceMeaning": "I returned the book"
+  },
+  {
+    "character": "懂",
+    "pinyin": "dǒng",
+    "meaning": "understand",
+    "sentence": "我懂你的意思",
+    "sentencePinyin": "wǒ dǒng nǐ de yìsi",
+    "sentenceMeaning": "I understand what you mean"
+  },
+  {
+    "character": "记",
+    "pinyin": "jì",
+    "meaning": "remember, record",
+    "sentence": "我记住了",
+    "sentencePinyin": "wǒ jìzhù le",
+    "sentenceMeaning": "I remembered it"
+  },
+  {
+    "character": "忘",
+    "pinyin": "wàng",
+    "meaning": "forget",
+    "sentence": "我忘了",
+    "sentencePinyin": "wǒ wàng le",
+    "sentenceMeaning": "I forgot"
+  },
+  {
+    "character": "找",
+    "pinyin": "zhǎo",
+    "meaning": "look for",
+    "sentence": "你在找什么？",
+    "sentencePinyin": "nǐ zài zhǎo shénme?",
+    "sentenceMeaning": "What are you looking for?"
+  },
+  {
+    "character": "到",
+    "pinyin": "dào",
+    "meaning": "reach, arrive",
+    "sentence": "我到公司了",
+    "sentencePinyin": "wǒ dào gōngsī le",
+    "sentenceMeaning": "I arrived at the company"
+  },
+  {
+    "character": "走",
+    "pinyin": "zǒu",
+    "meaning": "walk, leave",
+    "sentence": "他走了",
+    "sentencePinyin": "tā zǒu le",
+    "sentenceMeaning": "He left"
+  },
+  {
+    "character": "进",
+    "pinyin": "jìn",
+    "meaning": "enter",
+    "sentence": "请进屋",
+    "sentencePinyin": "qǐng jìn wū",
+    "sentenceMeaning": "Please come into the house"
+  },
+  {
+    "character": "出",
+    "pinyin": "chū",
+    "meaning": "go out",
+    "sentence": "我出门了",
+    "sentencePinyin": "wǒ chū mén le",
+    "sentenceMeaning": "I went out"
+  },
+  {
+    "character": "拿",
+    "pinyin": "ná",
+    "meaning": "take, fetch",
+    "sentence": "我帮你拿包",
+    "sentencePinyin": "wǒ bāng nǐ ná bāo",
+    "sentenceMeaning": "I'll help you carry your bag"
+  },
+  {
+    "character": "放",
+    "pinyin": "fàng",
+    "meaning": "put, place",
+    "sentence": "请把手机放在桌子上",
+    "sentencePinyin": "qǐng bǎ shǒujī fàng zài zhuōzi shàng",
+    "sentenceMeaning": "Please put your phone on the table"
+  },
+  {
+    "character": "送",
+    "pinyin": "sòng",
+    "meaning": "give (as a gift), send",
+    "sentence": "我送你一个礼物",
+    "sentencePinyin": "wǒ sòng nǐ yī gè lǐwù",
+    "sentenceMeaning": "I'll give you a gift"
+  },
+  {
+    "character": "收",
+    "pinyin": "shōu",
+    "meaning": "receive, collect",
+    "sentence": "我收到你的信了",
+    "sentencePinyin": "wǒ shōudào nǐ de xìn le",
+    "sentenceMeaning": "I received your letter"
+  },
+  {
+    "character": "付",
+    "pinyin": "fù",
+    "meaning": "pay",
+    "sentence": "请付款",
+    "sentencePinyin": "qǐng fùkuǎn",
+    "sentenceMeaning": "Please pay"
+  },
+  {
+    "character": "花",
+    "pinyin": "huā",
+    "meaning": "spend (money, time), flower",
+    "sentence": "我花了很多钱",
+    "sentencePinyin": "wǒ huā le hěn duō qián",
+    "sentenceMeaning": "I spent a lot of money"
+  },
+  {
+    "character": "省",
+    "pinyin": "shěng",
+    "meaning": "save, economize",
+    "sentence": "我想省钱",
+    "sentencePinyin": "wǒ xiǎng shěng qián",
+    "sentenceMeaning": "I want to save money"
+  },
+  {
+    "character": "换",
+    "pinyin": "huàn",
+    "meaning": "change, exchange",
+    "sentence": "我想换钱",
+    "sentencePinyin": "wǒ xiǎng huàn qián",
+    "sentenceMeaning": "I want to exchange money"
+  },
+  {
+    "character": "找",
+    "pinyin": "zhǎo",
+    "meaning": "give change",
+    "sentence": "请找我钱",
+    "sentencePinyin": "qǐng zhǎo wǒ qián",
+    "sentenceMeaning": "Please give me my change"
+  },
+  {
+    "character": "接",
+    "pinyin": "jiē",
+    "meaning": "receive, pick up",
+    "sentence": "我去机场接你",
+    "sentencePinyin": "wǒ qù jīchǎng jiē nǐ",
+    "sentenceMeaning": "I'll pick you up at the airport"
+  },
+  {
+    "character": "送",
+    "pinyin": "sòng",
+    "meaning": "see off, drop off",
+    "sentence": "我送你去机场",
+    "sentencePinyin": "wǒ sòng nǐ qù jīchǎng",
+    "sentenceMeaning": "I'll drop you off at the airport"
+  },
+  {
+    "character": "住",
+    "pinyin": "zhù",
+    "meaning": "live",
+    "sentence": "他住在中国",
+    "sentencePinyin": "tā zhù zài zhōngguó",
+    "sentenceMeaning": "He lives in China"
+  },
+  {
+    "character": "留",
+    "pinyin": "liú",
+    "meaning": "stay, remain",
+    "sentence": "请留下来",
+    "sentencePinyin": "qǐng liú xiàlai",
+    "sentenceMeaning": "Please stay"
+  },
+  {
+    "character": "走",
+    "pinyin": "zǒu",
+    "meaning": "walk, leave",
+    "sentence": "我们走路去",
+    "sentencePinyin": "wǒmen zǒulù qù",
+    "sentenceMeaning": "We'll walk there"
+  },
+  {
+    "character": "跑",
+    "pinyin": "pǎo",
+    "meaning": "run",
+    "sentence": "我喜欢跑步",
+    "sentencePinyin": "wǒ xǐhuān pǎobù",
+    "sentenceMeaning": "I like running"
+  },
+  {
+    "character": "坐",
+    "pinyin": "zuò",
+    "meaning": "sit, take (a vehicle)",
+    "sentence": "我坐飞机",
+    "sentencePinyin": "wǒ zuò fēijī",
+    "sentenceMeaning": "I take a plane"
+  },
+  {
+    "character": "骑",
+    "pinyin": "qí",
+    "meaning": "ride",
+    "sentence": "我骑自行车",
+    "sentencePinyin": "wǒ qí zìxíngchē",
+    "sentenceMeaning": "I ride a bicycle"
+  },
+  {
+    "character": "开",
+    "pinyin": "kāi",
+    "meaning": "drive, open",
+    "sentence": "他会开车",
+    "sentencePinyin": "tā huì kāichē",
+    "sentenceMeaning": "He can drive a car"
+  },
+  {
+    "character": "停",
+    "pinyin": "tíng",
+    "meaning": "stop",
+    "sentence": "请停车",
+    "sentencePinyin": "qǐng tíng chē",
+    "sentenceMeaning": "Please stop the car"
+  },
+  {
+    "character": "等",
+    "pinyin": "děng",
+    "meaning": "wait",
+    "sentence": "等我一下",
+    "sentencePinyin": "děng wǒ yīxià",
+    "sentenceMeaning": "Wait for me a moment"
+  },
+  {
+    "character": "听",
+    "pinyin": "tīng",
+    "meaning": "listen, hear",
+    "sentence": "你听到了吗？",
+    "sentencePinyin": "nǐ tīngdào le ma?",
+    "sentenceMeaning": "Did you hear that?"
+  },
+  {
+    "character": "说",
+    "pinyin": "shuō",
+    "meaning": "speak, talk",
+    "sentence": "我们说中文",
+    "sentencePinyin": "wǒmen shuō zhōngwén",
+    "sentenceMeaning": "We speak Chinese"
+  },
+  {
+    "character": "问",
+    "pinyin": "wèn",
+    "meaning": "ask",
+    "sentence": "我问你一个问题",
+    "sentencePinyin": "wǒ wèn nǐ yī gè wèntí",
+    "sentenceMeaning": "I'll ask you a question"
+  },
+  {
+    "character": "答",
+    "pinyin": "dá",
+    "meaning": "answer",
+    "sentence": "请回答",
+    "sentencePinyin": "qǐng huídá",
+    "sentenceMeaning": "Please answer"
+  },
+  {
+    "character": "写",
+    "pinyin": "xiě",
+    "meaning": "write",
+    "sentence": "我写信",
+    "sentencePinyin": "wǒ xiě xìn",
+    "sentenceMeaning": "I write a letter"
+  },
+  {
+    "character": "读",
+    "pinyin": "dú",
+    "meaning": "read",
+    "sentence": "我在读书",
+    "sentencePinyin": "wǒ zài dú shū",
+    "sentenceMeaning": "I am reading a book"
+  },
+  {
+    "character": "学",
+    "pinyin": "xué",
+    "meaning": "learn, study",
+    "sentence": "我学英语",
+    "sentencePinyin": "wǒ xué yīngyǔ",
+    "sentenceMeaning": "I learn English"
+  },
+  {
+    "character": "教",
+    "pinyin": "jiāo",
+    "meaning": "teach",
+    "sentence": "老师教我们数学",
+    "sentencePinyin": "lǎoshī jiāo wǒmen shùxué",
+    "sentenceMeaning": "The teacher teaches us math"
+  },
+  {
+    "character": "懂",
+    "pinyin": "dǒng",
+    "meaning": "understand",
+    "sentence": "我听不懂",
+    "sentencePinyin": "wǒ tīng bù dǒng",
+    "sentenceMeaning": "I don't understand (by listening)"
+  },
+  {
+    "character": "明",
+    "pinyin": "míng",
+    "meaning": "bright, clear, understand",
+    "sentence": "你明白了吗？",
+    "sentencePinyin": "nǐ míngbái le ma?",
+    "sentenceMeaning": "Do you understand?"
+  },
+  {
+    "character": "用",
+    "pinyin": "yòng",
+    "meaning": "use",
+    "sentence": "我会用电脑",
+    "sentencePinyin": "wǒ huì yòng diànnǎo",
+    "sentenceMeaning": "I can use a computer"
+  },
+  {
+    "character": "做",
+    "pinyin": "zuò",
+    "meaning": "do, make",
+    "sentence": "他会做饭",
+    "sentencePinyin": "tā huì zuòfàn",
+    "sentenceMeaning": "He can cook"
+  },
+  {
+    "character": "想",
+    "pinyin": "xiǎng",
+    "meaning": "think, want, miss",
+    "sentence": "我想你",
+    "sentencePinyin": "wǒ xiǎng nǐ",
+    "sentenceMeaning": "I miss you"
+  },
+  {
+    "character": "觉",
+    "pinyin": "jué/jiào",
+    "meaning": "feel, sleep",
+    "sentence": "我觉得累了",
+    "sentencePinyin": "wǒ juéde lèi le",
+    "sentenceMeaning": "I feel tired"
+  },
+  {
+    "character": "要",
+    "pinyin": "yào",
+    "meaning": "want, need, will",
+    "sentence": "我要水",
+    "sentencePinyin": "wǒ yào shuǐ",
+    "sentenceMeaning": "I want water"
+  },
+  {
+    "character": "能",
+    "pinyin": "néng",
+    "meaning": "can, be able to (ability)",
+    "sentence": "我能帮你",
+    "sentencePinyin": "wǒ néng bāng nǐ",
+    "sentenceMeaning": "I can help you"
+  },
+  {
+    "character": "可",
+    "pinyin": "kě",
+    "meaning": "can, may (permission/possibility)",
+    "sentence": "我可以进去吗？",
+    "sentencePinyin": "wǒ kěyǐ jìnqù ma?",
+    "sentenceMeaning": "May I come in?"
+  },
+  {
+    "character": "应",
+    "pinyin": "yīng",
+    "meaning": "should",
+    "sentence": "你应该睡觉了",
+    "sentencePinyin": "nǐ yīnggāi shuì jiào le",
+    "sentenceMeaning": "You should go to bed"
+  },
+  {
+    "character": "该",
+    "pinyin": "gāi",
+    "meaning": "should, ought to",
+    "sentence": "我该走了",
+    "sentencePinyin": "wǒ gāi zǒu le",
+    "sentenceMeaning": "I should leave"
+  },
+  {
+    "character": "得",
+    "pinyin": "dé/de/děi",
+    "meaning": "get/particle/must",
+    "sentence": "你跑得真快",
+    "sentencePinyin": "nǐ pǎo de zhēn kuài",
+    "sentenceMeaning": "You run really fast"
+  },
+  {
+    "character": "告",
+    "pinyin": "gào",
+    "meaning": "tell",
+    "sentence": "他告诉我一个秘密",
+    "sentencePinyin": "tā gàosu wǒ yī gè mìmì",
+    "sentenceMeaning": "He told me a secret"
+  },
+  {
+    "character": "诉",
+    "pinyin": "sù",
+    "meaning": "tell, inform",
+    "sentence": "请告诉我",
+    "sentencePinyin": "qǐng gàosu wǒ",
+    "sentenceMeaning": "Please tell me"
+  },
+  {
+    "character": "知",
+    "pinyin": "zhī",
+    "meaning": "know",
+    "sentence": "你知道吗？",
+    "sentencePinyin": "nǐ zhīdào ma?",
+    "sentenceMeaning": "Do you know?"
+  },
+  {
+    "character": "道",
+    "pinyin": "dào",
+    "meaning": "way, path, know",
+    "sentence": "我知道了",
+    "sentencePinyin": "wǒ zhīdào le",
+    "sentenceMeaning": "I know"
+  },
+  {
+    "character": "认",
+    "pinyin": "rèn",
+    "meaning": "recognize, admit",
+    "sentence": "我认识他",
+    "sentencePinyin": "wǒ rènshi tā",
+    "sentenceMeaning": "I know him (familiar with)"
+  },
+  {
+    "character": "为",
+    "pinyin": "wèi/wéi",
+    "meaning": "for/as",
+    "sentence": "我认为他是对的",
+    "sentencePinyin": "wǒ rènwéi tā shì duì de",
+    "sentenceMeaning": "I think he is right"
+  },
+  {
+    "character": "得",
+    "pinyin": "dé/de/děi",
+    "meaning": "get/particle/must",
+    "sentence": "我得走了",
+    "sentencePinyin": "wǒ děi zǒu le",
+    "sentenceMeaning": "I must leave"
+  },
+  {
+    "character": "让",
+    "pinyin": "ràng",
+    "meaning": "let, allow",
+    "sentence": "让我帮你",
+    "sentencePinyin": "ràng wǒ bāng nǐ",
+    "sentenceMeaning": "Let me help you"
+  },
+  {
+    "character": "使",
+    "pinyin": "shǐ",
+    "meaning": "make, cause, use",
+    "sentence": "这让我很高兴",
+    "sentencePinyin": "zhè ràng wǒ hěn gāoxìng",
+    "sentenceMeaning": "This makes me very happy"
+  },
+  {
+    "character": "叫",
+    "pinyin": "jiào",
+    "meaning": "call, shout, order",
+    "sentence": "他叫什么名字？",
+    "sentencePinyin": "tā jiào shénme míngzi?",
+    "sentenceMeaning": "What's his name?"
+  },
+  {
+    "character": "跟",
+    "pinyin": "gēn",
+    "meaning": "follow, with, and",
+    "sentence": "我跟你一起去",
+    "sentencePinyin": "wǒ gēn nǐ yīqǐ qù",
+    "sentenceMeaning": "I'll go with you"
+  },
+  {
+    "character": "比",
+    "pinyin": "bǐ",
+    "meaning": "compare, than",
+    "sentence": "他比我高",
+    "sentencePinyin": "tā bǐ wǒ gāo",
+    "sentenceMeaning": "He is taller than me"
+  },
+  {
+    "character": "和",
+    "pinyin": "hé",
+    "meaning": "and, with",
+    "sentence": "我和你",
+    "sentencePinyin": "wǒ hé nǐ",
+    "sentenceMeaning": "Me and you"
+  },
+  {
+    "character": "同",
+    "pinyin": "tóng",
+    "meaning": "same, together",
+    "sentence": "我们是同学",
+    "sentencePinyin": "wǒmen shì tóngxué",
+    "sentenceMeaning": "We are classmates"
+  },
+  {
+    "character": "像",
+    "pinyin": "xiàng",
+    "meaning": "be like, resemble",
+    "sentence": "她像她妈妈",
+    "sentencePinyin": "tā xiàng tā māma",
+    "sentenceMeaning": "She resembles her mother"
+  },
+  {
+    "character": "像",
+    "pinyin": "xiàng",
+    "meaning": "seem, appear",
+    "sentence": "她看起来很开心",
+    "sentencePinyin": "tā kàn qǐlái hěn kāixīn",
+    "sentenceMeaning": "She seems very happy"
+  },
+  {
+    "character": "成",
+    "pinyin": "chéng",
+    "meaning": "become, complete",
+    "sentence": "我成功了",
+    "sentencePinyin": "wǒ chénggōng le",
+    "sentenceMeaning": "I succeeded"
+  },
+  {
+    "character": "变",
+    "pinyin": "biàn",
+    "meaning": "change, become",
+    "sentence": "天气变冷了",
+    "sentencePinyin": "tiānqì biàn lěng le",
+    "sentenceMeaning": "The weather has become cold"
+  },
+  {
+    "character": "开",
+    "pinyin": "kāi",
+    "meaning": "start, begin",
+    "sentence": "会议开始了",
+    "sentencePinyin": "huìyì kāishǐ le",
+    "sentenceMeaning": "The meeting has started"
+  },
+  {
+    "character": "始",
+    "pinyin": "shǐ",
+    "meaning": "start, begin",
+    "sentence": "我们开始学习吧",
+    "sentencePinyin": "wǒmen kāishǐ xuéxí ba",
+    "sentenceMeaning": "Let's start studying"
+  },
+  {
+    "character": "结",
+    "pinyin": "jié",
+    "meaning": "tie, knot, conclude",
+    "sentence": "结束了",
+    "sentencePinyin": "jiéshù le",
+    "sentenceMeaning": "It's over"
+  },
+  {
+    "character": "束",
+    "pinyin": "shù",
+    "meaning": "bundle, conclude",
+    "sentence": "课程结束了",
+    "sentencePinyin": "kèchéng jiéshù le",
+    "sentenceMeaning": "The class has ended"
+  },
+  {
+    "character": "完",
+    "pinyin": "wán",
+    "meaning": "finish, complete",
+    "sentence": "我做完了作业",
+    "sentencePinyin": "wǒ zuò wán le zuòyè",
+    "sentenceMeaning": "I finished my homework"
+  },
+  {
+    "character": "到",
+    "pinyin": "dào",
+    "meaning": "arrive, to",
+    "sentence": "我到家了",
+    "sentencePinyin": "wǒ dào jiā le",
+    "sentenceMeaning": "I've arrived home"
+  },
+  {
+    "character": "离",
+    "pinyin": "lí",
+    "meaning": "leave, away from",
+    "sentence": "我家离学校很近",
+    "sentencePinyin": "wǒ jiā lí xuéxiào hěn jìn",
+    "sentenceMeaning": "My home is close to the school"
+  },
+  {
+    "character": "近",
+    "pinyin": "jìn",
+    "meaning": "near",
+    "sentence": "离这里很近",
+    "sentencePinyin": "lí zhèlǐ hěn jìn",
+    "sentenceMeaning": "It's very close from here"
+  },
+  {
+    "character": "远",
+    "pinyin": "yuǎn",
+    "meaning": "far",
+    "sentence": "离这里很远",
+    "sentencePinyin": "lí zhèlǐ hěn yuǎn",
+    "sentenceMeaning": "It's very far from here"
+  },
+  {
+    "character": "长",
+    "pinyin": "cháng/zhǎng",
+    "meaning": "long/grow",
+    "sentence": "这条路很长",
+    "sentencePinyin": "zhè tiáo lù hěn cháng",
+    "sentenceMeaning": "This road is very long"
+  },
+  {
+    "character": "短",
+    "pinyin": "duǎn",
+    "meaning": "short",
+    "sentence": "这条裙子很短",
+    "sentencePinyin": "zhè tiáo qúnzi hěn duǎn",
+    "sentenceMeaning": "This skirt is very short"
+  },
+  {
+    "character": "大",
+    "pinyin": "dà",
+    "meaning": "big",
+    "sentence": "这个房间很大",
+    "sentencePinyin": "zhège fángjiān hěn dà",
+    "sentenceMeaning": "This room is very big"
+  },
+  {
+    "character": "小",
+    "pinyin": "xiǎo",
+    "meaning": "small",
+    "sentence": "这个苹果很小",
+    "sentencePinyin": "zhège píngguǒ hěn xiǎo",
+    "sentenceMeaning": "This apple is very small"
+  },
+  {
+    "character": "多",
+    "pinyin": "duō",
+    "meaning": "many, much",
+    "sentence": "很多人",
+    "sentencePinyin": "hěn duō rén",
+    "sentenceMeaning": "Many people"
+  },
+  {
+    "character": "少",
+    "pinyin": "shǎo",
+    "meaning": "few, little",
+    "sentence": "很少人",
+    "sentencePinyin": "hěn shǎo rén",
+    "sentenceMeaning": "Few people"
+  },
+  {
+    "character": "新",
+    "pinyin": "xīn",
+    "meaning": "new",
+    "sentence": "我的手机是新的",
+    "sentencePinyin": "wǒ de shǒujī shì xīn de",
+    "sentenceMeaning": "My phone is new"
+  },
+  {
+    "character": "旧",
+    "pinyin": "jiù",
+    "meaning": "old (for objects)",
+    "sentence": "我的衣服很旧",
+    "sentencePinyin": "wǒ de yīfu hěn jiù",
+    "sentenceMeaning": "My clothes are old"
+  },
+  {
+    "character": "好",
+    "pinyin": "hǎo",
+    "meaning": "good, well",
+    "sentence": "他做得很好",
+    "sentencePinyin": "tā zuò de hěn hǎo",
+    "sentenceMeaning": "He did very well"
+  },
+  {
+    "character": "坏",
+    "pinyin": "huài",
+    "meaning": "bad",
+    "sentence": "这个苹果坏了",
+    "sentencePinyin": "zhège píngguǒ huài le",
+    "sentenceMeaning": "This apple is bad"
+  }
+]

@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import { todo_page, root } from "../constants/paths";
+import { todo_page, root, mandarin_page } from "../constants/paths";
 
 function Root() {
   return (
@@ -8,6 +8,11 @@ function Root() {
         <div className="nav-bar-item">
           <Link to={root}>
             <button>Home</button>
+          </Link>
+        </div>
+        <div className="nav-bar-item">
+          <Link to={mandarin_page}>
+            <button>Mandarin</button>
           </Link>
         </div>
         <div className="nav-bar-item">
