@@ -1,5 +1,6 @@
 const root = "/";
 
+const mandarin_page = root + "mandarin";
 const todo_page = root + "todo";
 
-export { root, todo_page };
+export { root, mandarin_page, todo_page };
