@@ -1,1 +1,1 @@
-export * from "./FlashCard";
+export * from "./Mandarin";

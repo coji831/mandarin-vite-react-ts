@@ -77,18 +77,9 @@ function Sidebar({
           );
           return (
             <button
-              key={index}
+              key={`${card.pinyin}-${index}`}
               style={{
-                padding: "10px",
-                cursor: "pointer",
-                background: "transparent",
-                borderBottom: "1px solid #ddd",
                 width: "100%",
-                borderLeft:
-                  originalIndex === currentCardIndex
-                    ? "3px solid #007bff"
-                    : "3px solid transparent",
-                transition: "border-left-color 0.2s",
               }}
               onClick={() => setCurrentCardIndex(originalIndex)}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#0056b3")}

@@ -72,3 +72,32 @@ button {
 #nav-bar button:hover {
   filter: drop-shadow(0 0 0.8em rgba(100, 164, 253, 0.667));
 }
+
+
+button.primary {
+  background-color: #646cff;
+  color: white;
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+}
+button.primary:hover {
+  background-color: #646cffaa;
+}
+button.secondary {
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+}
+button.secondary:hover {
+  background-color: #f0f0f0aa;
+}
+
+
+div.container {
+  border: 1px red solid;
+  box-sizing: border-box;
+}
+
+
+ 
