@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import vocabData from "../../data/mandarin.json"; // Assuming vocabData is in JSON format
-import { NavBar } from "./NabBar";
-import { Card, FlashCard } from "./pages";
-import { Basic } from "./pages/Basic";
+
+import vocabData from "../../../data/mandarin.json"; // Assuming vocabData is in JSON format
+import { Basic, Card, FlashCard, NavBar } from "../components";
+
 export { Mandarin };
 
 function Mandarin() {
@@ -36,25 +36,28 @@ function Mandarin() {
   }
   return (
     <div
+      className="container none"
       style={{
         width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        gap: "10px",
       }}
     >
-      <NavBar setCurrentPage={setCurrentPage} />
-      {currentPage === "flashcards" && (
-        <FlashCard
-          addCard={addCard}
-          cards={cards}
-          setCurrentCardIndex={setCurrentCardIndex}
-          currentCardIndex={currentCardIndex}
-          isSidePanelOpen={isSidePanelOpen}
-          toggleSidePanel={toggleSidePanel}
-        />
-      )}
-      {currentPage === "basic" && <Basic />}
+      <div className="container" style={{ height: "20%" }}>
+        <NavBar setCurrentPage={setCurrentPage} />
+      </div>
+      <div className="container" style={{ height: "80%" }}>
+        {currentPage === "flashcards" && (
+          <FlashCard
+            addCard={addCard}
+            cards={cards}
+            setCurrentCardIndex={setCurrentCardIndex}
+            currentCardIndex={currentCardIndex}
+            isSidePanelOpen={isSidePanelOpen}
+            toggleSidePanel={toggleSidePanel}
+          />
+        )}
+        {currentPage === "basic" && <Basic />}
+      </div>
     </div>
   );
 }

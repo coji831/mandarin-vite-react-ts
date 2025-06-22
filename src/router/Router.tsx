@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router";
 import { mandarin_page, root, todo_page } from "../constants/paths";
 import Root from "../layouts/Root";
 import Home from "../pages/Home";
-import { Mandarin } from "../features/mandarin/Mandarin";
+import { Mandarin } from "../features/mandarin/pages/Mandarin";
 import Todo from "../pages/Todo";
 
 function MainRoutes() {
