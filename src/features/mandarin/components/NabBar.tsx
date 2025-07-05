@@ -1,9 +1,8 @@
 export { NavBar };
 
-function NavBar({ setCurrentPage }: { setCurrentPage: any }) {
+function NavBar({ setCurrentPage }: Readonly<{ setCurrentPage: any }>) {
   return (
     <div
-      className="container"
       style={{
         padding: "10px",
         textAlign: "center",

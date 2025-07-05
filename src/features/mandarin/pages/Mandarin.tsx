@@ -36,28 +36,26 @@ function Mandarin() {
   }
   return (
     <div
-      className="container none"
       style={{
         width: "100%",
-        gap: "10px",
+        height: "750px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div className="container" style={{ height: "20%" }}>
-        <NavBar setCurrentPage={setCurrentPage} />
-      </div>
-      <div className="container" style={{ height: "80%" }}>
-        {currentPage === "flashcards" && (
-          <FlashCard
-            addCard={addCard}
-            cards={cards}
-            setCurrentCardIndex={setCurrentCardIndex}
-            currentCardIndex={currentCardIndex}
-            isSidePanelOpen={isSidePanelOpen}
-            toggleSidePanel={toggleSidePanel}
-          />
-        )}
-        {currentPage === "basic" && <Basic />}
-      </div>
+      <NavBar setCurrentPage={setCurrentPage} />
+
+      {currentPage === "flashcards" && (
+        <FlashCard
+          addCard={addCard}
+          cards={cards}
+          setCurrentCardIndex={setCurrentCardIndex}
+          currentCardIndex={currentCardIndex}
+          isSidePanelOpen={isSidePanelOpen}
+          toggleSidePanel={toggleSidePanel}
+        />
+      )}
+      {currentPage === "basic" && <Basic />}
     </div>
   );
 }
