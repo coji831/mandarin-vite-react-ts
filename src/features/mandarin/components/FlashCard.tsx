@@ -1,6 +1,8 @@
-import { useState, useRef } from "react";
-import { Sidebar } from "./Sidebar";
+import { useRef, useState } from "react";
+
 import { AddForm } from "./AddForm";
+import { PlayButton } from "./PlayButton";
+import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
 export { FlashcardPage as FlashCard, type Card };
@@ -45,6 +47,7 @@ const FlashcardPage = ({
     if (text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "zh-CN";
+      utterance.volume = 1;
       speechSynthesis.speak(utterance);
     }
   };
@@ -55,7 +58,8 @@ const FlashcardPage = ({
   };
 
   const handleNext = () => {
-    setCurrentCardIndex((currentCardIndex + 1) % cards.length);
+    // make it random
+    setCurrentCardIndex(Math.floor(Math.random() * cards.length));
     setShowMeaning(false);
   };
 
@@ -130,10 +134,9 @@ const FlashcardPage = ({
   return (
     <div
       id="flashcard"
-      className="container"
-      style={{ display: "flex", width: "100%" }}
+      style={{ display: "flex", width: "100%", minHeight: "100%" }}
     >
-      <div className="container" style={{ width: "30%" }}>
+      <div style={{ width: "30%", overflowY: "auto", overflowX: "hidden" }}>
         {isSidePanelOpen && (
           <Sidebar
             cards={cards}
@@ -143,7 +146,6 @@ const FlashcardPage = ({
         )}
       </div>
       <div
-        className="container"
         style={{
           width: "40%",
           gap: "10px",
@@ -153,7 +155,6 @@ const FlashcardPage = ({
       >
         {/* button group */}
         <div
-          className="container"
           style={{
             width: "100%",
             display: "flex",
@@ -177,17 +178,27 @@ const FlashcardPage = ({
           />
         </div>
 
-        {/* Add Form or Flashcard Content */}
+        {/*Flashcard Content */}
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: "52px", marginBottom: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ fontSize: "100px", marginBottom: "20px" }}>
             {currentCard.character}
           </div>
 
           <div style={rowStyle}>
-            <button onClick={() => playAudio(currentCard.character)}>
+            <PlayButton mandarinText={currentCard.character} />
+
+            {/* <button onClick={() => playAudio(currentCard.character)}>
               {`Play Character`}
-            </button>
+            </button> */}
+
             <button onClick={() => playAudio(currentCard.sentence)}>
               {`Play Sentence`}
             </button>
@@ -198,7 +209,7 @@ const FlashcardPage = ({
           </div>
 
           <div style={rowStyle}>
-            <button onClick={handlePrevious}>Previous</button>
+            {/* <button onClick={handlePrevious}>Previous</button> */}
             <button onClick={handleNext}>Next</button>
           </div>
 
@@ -206,7 +217,7 @@ const FlashcardPage = ({
         </div>
       </div>
 
-      <div className="container" style={{ width: "30%" }}>
+      <div style={{ width: "30%" }}>
         {showAddForm && (
           <AddForm addCard={addCard} onCancel={() => setShowAddForm(false)} />
         )}
