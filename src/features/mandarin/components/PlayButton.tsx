@@ -6,7 +6,7 @@ type Props = {
   mandarinText: string; // The Mandarin text to be converted to speech
 };
 
-function PlayButton({ mandarinText }: Props) {
+function PlayButton({ mandarinText }: Readonly<Props>) {
   const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
@@ -44,11 +44,7 @@ function PlayButton({ mandarinText }: Props) {
 
     // If audioUrl is already defined for the current text, just play it.
     // The useEffect above ensures audioUrl is undefined if mandarinText has changed.
-    if (
-      audioUrl &&
-      audioRef.current &&
-      audioRef.current.dataset.lastText === mandarinText
-    ) {
+    if (audioUrl && audioRef.current?.dataset.lastText === mandarinText) {
       console.log("Replaying cached audio for:", mandarinText);
       try {
         await audioRef.current.play();
@@ -82,15 +78,18 @@ function PlayButton({ mandarinText }: Props) {
         );
       }
 
-      // Get the audio data as a Blob (binary data type suitable for media)
-      const audioBlob = await response.blob();
-      // Create a temporary URL for the audio Blob. This URL can be used by the <audio> element.
-      const url = URL.createObjectURL(audioBlob);
-      setAudioUrl(url); // Store the URL in state
+      // --- IMPORTANT CHANGE HERE ---
+      // Expected response is now JSON with an audioUrl
+      const data = await response.json();
+      if (!data.audioUrl) {
+        throw new Error("Backend did not return an audio URL.");
+      }
+      const url = data.audioUrl;
+      setAudioUrl(url); // Store the public GCS URL
 
       // Play the audio automatically once the URL is set
       if (audioRef.current) {
-        audioRef.current.src = url; // Set the audio element's source
+        audioRef.current.src = url; // Set the audio element's source to the GCS URL
         audioRef.current.dataset.lastText = mandarinText; // Store the text that generated this URL
         audioRef.current.load(); // Reload the audio source to apply changes
         await audioRef.current.play(); // Use await here to catch play errors
@@ -98,7 +97,6 @@ function PlayButton({ mandarinText }: Props) {
     } catch (err) {
       console.error("Error during TTS request or playback:", err);
       if (err instanceof Error) {
-        // Check if it's an Error object
         setError(err.message);
       } else if (typeof err === "string") {
         setError(err);
@@ -111,23 +109,16 @@ function PlayButton({ mandarinText }: Props) {
   }, [mandarinText, audioUrl]); // Depend on mandarinText and audioUrl
 
   return (
-    <>
+    <div>
       <button onClick={synthesizeAndPlay} disabled={isLoading}>
         {isLoading ? "Generating..." : "Speak Mandarin"}
       </button>
-
-      {/* Error text adjusted to be under the button */}
-      {error && (
-        <p style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-          Error: {error}
-        </p>
-      )}
 
       {/* Audio element is always present but hidden.
           Removed 'controls' attribute as per requirement.
           The 'track' element is already hidden. */}
       <audio ref={audioRef} hidden autoPlay>
-        <source src={audioUrl ?? ""} type="audio/mpeg" />
+        <source src={audioUrl} type="audio/mpeg" />
         <track
           hidden
           kind="captions"
@@ -137,6 +128,23 @@ function PlayButton({ mandarinText }: Props) {
         />
         Your browser does not support the audio element.
       </audio>
-    </>
+
+      {/* Error text adjusted to be under the button */}
+      {error && (
+        <p style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
+          Error: {error}
+        </p>
+      )}
+      {/* Optional: Add a subtle indicator that audio is from cache/GCS if desired */}
+      {audioUrl &&
+        !isLoading &&
+        !error &&
+        audioRef.current &&
+        audioRef.current.dataset.lastText === mandarinText && (
+          <p style={{ fontSize: "0.8em", color: "#888", marginTop: "5px" }}>
+            Audio loaded from cache.
+          </p>
+        )}
+    </div>
   );
 }

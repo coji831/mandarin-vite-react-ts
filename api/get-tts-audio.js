@@ -1,22 +1,26 @@
-// api/get-tts-audio.js (Updated for ES Module Syntax on Vercel)
+// api/get-tts-audio.js (Updated for Stage 2: GCS Caching on Vercel)
 
 // Use ES Module import syntax
+import { Storage } from "@google-cloud/storage"; // Import Storage
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
+import md5 from "md5"; // Import md5
 
 // Initialize the Text-to-Speech client.
 // This code explicitly reads the GOOGLE_TTS_CREDENTIALS_RAW environment variable,
 // which you must set in your Vercel project's Environment Variables.
-let textToSpeechClient; // Declare client outside to potentially reuse across warm invocations
+let textToSpeechClient;
+let storageClient;
+let GCS_BUCKET_NAME; // Declare to be accessible
 
 // Use ES Module export syntax for the Vercel Serverless Function handler
 export default async function handler(req, res) {
   // Renamed to 'handler' for clarity, but 'default' is key
   console.log("[Vercel Function Start] Request received.");
 
-  // Initialize client only once per function instance (cold start)
-  if (!textToSpeechClient) {
+  // Initialize clients only once per function instance (cold start)
+  if (!textToSpeechClient || !storageClient) {
     try {
-      console.log("[Vercel Function Init] Initializing TextToSpeechClient...");
+      console.log("[Vercel Function Init] Initializing clients...");
       // *** IMPORTANT CHANGE HERE ***
       // Explicitly parse the credential JSON from the environment variable
       const credentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
@@ -28,13 +32,23 @@ export default async function handler(req, res) {
       }
       const credentials = JSON.parse(credentialsJson);
       textToSpeechClient = new TextToSpeechClient({ credentials });
-      console.log("[Vercel Function Init] TextToSpeechClient initialized.");
+
+      GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME;
+      if (!GCS_BUCKET_NAME) {
+        throw new Error(
+          "GCS_BUCKET_NAME environment variable is not set on Vercel. Caching will not work.",
+        );
+      }
+      storageClient = new Storage({ credentials }); // Initialize Storage client with credentials
+
+      console.log(
+        `[Vercel Function Init] Clients initialized. GCS Bucket: ${GCS_BUCKET_NAME}`,
+      );
     } catch (initError) {
       console.error(
-        "[Vercel Function Init Error] Failed to initialize TextToSpeechClient:",
+        "[Vercel Function Init Error] Failed to initialize clients:",
         initError,
       );
-      // Send a 500 Internal Server Error response to the client
       return res
         .status(500)
         .send(
@@ -67,13 +81,29 @@ export default async function handler(req, res) {
     return res.status(400).send("Please enter between 1 and 15 words.");
   }
 
+  // --- Caching Logic (New in Stage 2) ---
+  const textHash = md5(text);
+  const filename = `${textHash}.mp3`;
+  const gcsFile = storageClient.bucket(GCS_BUCKET_NAME).file(filename);
+
   try {
-    console.log(`[Vercel Function] Preparing TTS request for: "${text}"`);
-    // Configure the speech synthesis request
+    // 1. Check if file exists in GCS (cache hit)
+    const [exists] = await gcsFile.exists();
+    if (exists) {
+      const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
+      console.log(
+        `[Vercel Function] GCS Cache Hit: ${filename}. Serving from ${audioUrl}`,
+      );
+      return res.status(200).json({ audioUrl }); // Return JSON with URL
+    }
+
+    // 2. Cache Miss: Generate new audio
+    console.log(
+      `[Vercel Function] Cache Miss. Generating audio for: "${text}"`,
+    );
+
     const request = {
-      input: { text }, // The text to be converted
-      // Select the language code for Mandarin Chinese (cmn-CN for Mainland China)
-      // Use a high-quality WaveNet voice for best results and natural intonation
+      input: { text },
       voice: {
         languageCode: "cmn-CN",
         name: "cmn-CN-Wavenet-B",
@@ -82,30 +112,37 @@ export default async function handler(req, res) {
       audioConfig: { audioEncoding: "MP3" },
     };
 
-    console.log("[Vercel Function] Calling synthesizeSpeech API...");
     const [response] = await textToSpeechClient.synthesizeSpeech(request);
     const audioContent = response.audioContent;
+
+    // 3. Upload to GCS
+    await gcsFile.save(audioContent, {
+      metadata: { contentType: "audio/mpeg" },
+      public: true, // Make the object publicly readable
+    });
+    const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
     console.log(
-      "[Vercel Function] synthesizeSpeech API call successful. Audio content received.",
+      `[Vercel Function] Uploaded to GCS: ${filename}. Serving from ${audioUrl}`,
     );
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.status(200).send(audioContent);
-    console.log("[Vercel Function End] Audio sent successfully.");
+    // Return JSON with the public URL of the audio file
+    res.status(200).json({ audioUrl });
   } catch (error) {
     console.error(
-      "[Vercel Function Error] Error during speech synthesis or response sending:",
+      "[Vercel Function Error] Error during speech synthesis or GCS operation:",
       error,
     );
     // Check for specific Google Cloud errors if possible
     if (error.code === 7 || error.details?.includes("API key not valid")) {
       // Example: UNAUTHENTICATED (7)
       console.error(
-        "[Vercel Function Error] Authentication issue with Google Cloud TTS API. Check GOOGLE_TTS_CREDENTIALS_RAW in Vercel settings.",
+        "[Vercel Function Error] Authentication issue with Google Cloud TTS/GCS API. Check GOOGLE_TTS_CREDENTIALS_RAW in Vercel settings.",
       );
       res
         .status(500)
-        .send("Authentication error with TTS API. Please check Vercel logs.");
+        .send(
+          "Authentication error with TTS/GCS API. Please check Vercel logs.",
+        );
     } else if (
       error.code === 3 &&
       error.details?.includes("Billing account not enabled")
@@ -116,8 +153,17 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send("Google Cloud Billing not enabled. Please check Vercel logs.");
+    } else if (error.code === 403 && error.details?.includes("Forbidden")) {
+      console.error(
+        "[Vercel Function Error] GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles.",
+      );
+      res
+        .status(500)
+        .send(
+          "GCS permission denied. Please check Vercel logs and service account permissions.",
+        );
     } else {
-      res.status(500).send("Error generating audio.");
+      res.status(500).send("Error generating or caching audio.");
     }
   }
 }
