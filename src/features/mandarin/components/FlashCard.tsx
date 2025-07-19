@@ -1,11 +1,13 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import { AddForm } from "./AddForm";
+import { ToggleSwitch } from "../../../components";
+import cards from "../../../data/mandarin.json";
+import { Setting } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
-export { FlashcardPage as FlashCard, type Card };
+export { FlashCard, type Card };
 
 type Card = {
   character: string;
@@ -16,32 +18,13 @@ type Card = {
   sentenceMeaning: string;
 };
 
-const FlashcardPage = ({
-  cards,
-  setCurrentCardIndex,
-  currentCardIndex,
-  isSidePanelOpen,
-  toggleSidePanel,
-  addCard,
-}: {
-  cards: Card[];
-  setCurrentCardIndex: (index: number) => void;
-  currentCardIndex: number;
-  isSidePanelOpen: boolean;
-  toggleSidePanel: () => void;
-  addCard: (card: Card | Card[]) => void;
-}) => {
-  const [showMeaning, setShowMeaning] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newCard, setNewCard] = useState({
-    character: "",
-    pinyin: "",
-    meaning: "",
-    sentence: "",
-    sentencePinyin: "",
-    sentenceMeaning: "",
+function FlashCard() {
+  const [showExample, setShowExample] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [settings, setSettings] = useState<Setting>({
+    showPinyin: false,
+    showMeaning: true,
   });
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const playAudio = (text: string | undefined) => {
     if (text) {
@@ -54,79 +37,12 @@ const FlashcardPage = ({
 
   const handlePrevious = () => {
     setCurrentCardIndex((currentCardIndex - 1 + cards.length) % cards.length);
-    setShowMeaning(false);
+    //setShowMeaning(false);
   };
 
   const handleNext = () => {
-    // make it random
-    setCurrentCardIndex(Math.floor(Math.random() * cards.length));
-    setShowMeaning(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewCard((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Validate all fields are non-empty
-    if (
-      newCard.character &&
-      newCard.pinyin &&
-      newCard.meaning &&
-      newCard.sentence &&
-      newCard.sentencePinyin &&
-      newCard.sentenceMeaning
-    ) {
-      addCard(newCard);
-      setNewCard({
-        character: "",
-        pinyin: "",
-        meaning: "",
-        sentence: "",
-        sentencePinyin: "",
-        sentenceMeaning: "",
-      });
-      setShowAddForm(false);
-    } else {
-      alert("Please fill in all fields.");
-    }
-  };
-
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const json = JSON.parse(event.target?.result as string);
-          if (Array.isArray(json)) {
-            const validCards = json.filter(
-              (card) =>
-                card.character &&
-                card.pinyin &&
-                card.meaning &&
-                card.sentence &&
-                card.sentencePinyin &&
-                card.sentenceMeaning,
-            );
-            if (validCards.length > 0) {
-              addCard(validCards);
-            } else {
-              alert("No valid cards found in JSON.");
-            }
-          } else {
-            alert("Invalid JSON format. Expected an array of cards.");
-          }
-        } catch (error) {
-          alert("Error parsing JSON file.");
-        }
-        // Reset file input
-        e.target.value = "";
-      };
-      reader.readAsText(file);
-    }
+    setCurrentCardIndex((currentCardIndex + 1) % cards.length);
+    //setShowMeaning(false);
   };
 
   const currentCard = cards[currentCardIndex];
@@ -134,101 +50,102 @@ const FlashcardPage = ({
   return (
     <div
       id="flashcard"
-      style={{ display: "flex", width: "100%", minHeight: "100%" }}
+      className="flex flex-col"
+      style={{ width: "100%", minHeight: "100%" }}
     >
-      <div style={{ width: "30%", overflowY: "auto", overflowX: "hidden" }}>
-        {isSidePanelOpen && (
+      <div
+        className="flex gap-10"
+        style={{ maxHeight: "100%", justifyContent: "flex-end" }}
+      >
+        <ToggleSwitch
+          label="Show Pinyin"
+          checked={settings.showPinyin}
+          onChange={(checked) =>
+            setSettings((s) => ({ ...s, showPinyin: checked }))
+          }
+        />
+
+        <ToggleSwitch
+          label="Show Meaning"
+          checked={settings.showMeaning}
+          onChange={(checked) =>
+            setSettings((s) => ({ ...s, showMeaning: checked }))
+          }
+        />
+      </div>
+      <div className="flex" style={{ maxHeight: "100%" }}>
+        <div style={{ width: "30%", overflowY: "auto", overflowX: "hidden" }}>
           <Sidebar
+            showPinyin={settings.showPinyin}
+            showMeaning={settings.showMeaning}
             cards={cards}
             setCurrentCardIndex={setCurrentCardIndex}
             currentCardIndex={currentCardIndex}
           />
-        )}
-      </div>
-      <div
-        style={{
-          width: "40%",
-          gap: "10px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* button group */}
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-          }}
-        >
-          <button onClick={toggleSidePanel}>
-            {isSidePanelOpen ? "Hide Panel" : "Show Panel"}
-          </button>
-          <button onClick={() => setShowAddForm(true)}>Add Word</button>
-          <button onClick={() => fileInputRef.current?.click()}>
-            Import JSON
-          </button>
-          <input
-            type="file"
-            accept=".json"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleImport}
-          />
+        </div>
+        <div style={{ width: "40%" }}>
+          {/*Flashcard Content */}
+
+          <div
+            className="flex flex-col"
+            style={{ height: "100%", justifyContent: "center" }}
+          >
+            <div
+              className="flex flex-col flex-center"
+              style={{ height: "100%" }}
+            >
+              <div
+                style={{ color: "rgba(255, 255, 255, 1)", fontSize: "100px" }}
+              >
+                {currentCard.character}
+              </div>
+              {settings.showPinyin && (
+                <div
+                  style={{ fontSize: "24px", color: "rgba(255, 255, 255, .8)" }}
+                >
+                  {currentCard.pinyin}
+                </div>
+              )}
+
+              {settings.showMeaning && (
+                <div
+                  style={{ fontSize: "24px", color: "rgba(255, 255, 255, .6)" }}
+                >
+                  {currentCard.meaning}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-10 padding-10" style={rowStyle}>
+              <button onClick={handlePrevious}>Previous</button>
+
+              <PlayButton mandarinText={currentCard.character} />
+
+              <button onClick={handleNext}>Next</button>
+            </div>
+            <div className="flex gap-10 padding-10" style={rowStyle}>
+              <button onClick={() => playAudio(currentCard.sentence)}>
+                {`Play Sentence`}
+              </button>
+
+              <button onClick={() => setShowExample(!showExample)}>
+                {`${showExample ? "Hide" : "Show"} Example`}
+              </button>
+            </div>
+
+            {showExample && <WordDetails {...currentCard} />}
+          </div>
         </div>
 
-        {/*Flashcard Content */}
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{ fontSize: "100px", marginBottom: "20px" }}>
-            {currentCard.character}
-          </div>
-
-          <div style={rowStyle}>
-            <PlayButton mandarinText={currentCard.character} />
-
-            {/* <button onClick={() => playAudio(currentCard.character)}>
-              {`Play Character`}
-            </button> */}
-
-            <button onClick={() => playAudio(currentCard.sentence)}>
-              {`Play Sentence`}
-            </button>
-
-            <button onClick={() => setShowMeaning(!showMeaning)}>
-              {showMeaning ? "Hide" : "Show"} Details
-            </button>
-          </div>
-
-          <div style={rowStyle}>
-            {/* <button onClick={handlePrevious}>Previous</button> */}
-            <button onClick={handleNext}>Next</button>
-          </div>
-
-          {showMeaning && <WordDetails {...currentCard} />}
+        <div style={{ width: "30%" }}>
+          {/* {showAddForm && (
+            <AddForm addCard={addCard} onCancel={() => setShowAddForm(false)} />
+          )} */}
         </div>
-      </div>
-
-      <div style={{ width: "30%" }}>
-        {showAddForm && (
-          <AddForm addCard={addCard} onCancel={() => setShowAddForm(false)} />
-        )}
       </div>
     </div>
   );
-};
+}
 
 const rowStyle: React.CSSProperties = {
-  display: "flex",
   justifyContent: "space-between",
-  padding: "10px",
-  gap: "10px",
 };

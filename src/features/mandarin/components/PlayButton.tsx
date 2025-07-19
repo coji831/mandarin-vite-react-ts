@@ -74,7 +74,9 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
       if (!response.ok) {
         const errorText = await response.text(); // Get error message from backend
         throw new Error(
-          `Failed to get audio: ${response.status} - ${errorText}`,
+          `Failed to get audio: ${response.status} - ${
+            errorText || response.statusText
+          }`,
         );
       }
 
@@ -111,7 +113,7 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
   return (
     <div>
       <button onClick={synthesizeAndPlay} disabled={isLoading}>
-        {isLoading ? "Generating..." : "Speak Mandarin"}
+        {isLoading ? "Generating..." : "Speak"}
       </button>
 
       {/* Audio element is always present but hidden.
