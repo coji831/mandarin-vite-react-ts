@@ -99,5 +99,17 @@ div.container {
   box-sizing: border-box;
 }
 
-
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
  
+.padding-10 {
+  padding: 10px;
+}
