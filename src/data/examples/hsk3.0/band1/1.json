@@ -1,0 +1,302 @@
+[
+  {
+    "wordId": 1,
+    "sentence": "我爱你。",
+    "sentencePinyin": "Wǒ ài nǐ.",
+    "sentenceMeaning": "I love you."
+  },
+  {
+    "wordId": 2,
+    "sentence": "我的爱好是看书。",
+    "sentencePinyin": "Wǒ de àihào shì kànshū.",
+    "sentenceMeaning": "My hobby is reading books."
+  },
+  {
+    "wordId": 3,
+    "sentence": "我有八本书。",
+    "sentencePinyin": "Wǒ yǒu bā běn shū.",
+    "sentenceMeaning": "I have eight books."
+  },
+  {
+    "wordId": 4,
+    "sentence": "我爸爸很好。",
+    "sentencePinyin": "Wǒ bàba hěn hǎo.",
+    "sentenceMeaning": "My dad is very good."
+  },
+  {
+    "wordId": 5,
+    "sentence": "我们走吧。",
+    "sentencePinyin": "Wǒmen zǒu ba.",
+    "sentenceMeaning": "Let's go."
+  },
+  {
+    "wordId": 6,
+    "sentence": "这张纸是白的。",
+    "sentencePinyin": "Zhè zhāng zhǐ shì bái de.",
+    "sentenceMeaning": "This paper is white."
+  },
+  {
+    "wordId": 7,
+    "sentence": "白天很热。",
+    "sentencePinyin": "Báitiān hěn rè.",
+    "sentenceMeaning": "It's very hot during the day."
+  },
+  {
+    "wordId": 8,
+    "sentence": "一百。",
+    "sentencePinyin": "Yībǎi.",
+    "sentenceMeaning": "One hundred."
+  },
+  {
+    "wordId": 9,
+    "sentence": "我们班有二十个人。",
+    "sentencePinyin": "Wǒmen bān yǒu èrshí ge rén.",
+    "sentenceMeaning": "Our class has twenty people."
+  },
+  {
+    "wordId": 10,
+    "sentence": "一半。",
+    "sentencePinyin": "Yībàn.",
+    "sentenceMeaning": "Half."
+  },
+  {
+    "wordId": 11,
+    "sentence": "半年以后。",
+    "sentencePinyin": "Bànnián yǐhòu.",
+    "sentenceMeaning": "Half a year later."
+  },
+  {
+    "wordId": 12,
+    "sentence": "等了半天。",
+    "sentencePinyin": "Děng le bàntiān.",
+    "sentenceMeaning": "Waited for a long time (half a day)."
+  },
+  {
+    "wordId": 13,
+    "sentence": "我可以帮你吗？",
+    "sentencePinyin": "Wǒ kěyǐ bāng nǐ ma?",
+    "sentenceMeaning": "Can I help you?"
+  },
+  {
+    "wordId": 14,
+    "sentence": "他帮了我一个忙。",
+    "sentencePinyin": "Tā bāng le wǒ yī ge máng.",
+    "sentenceMeaning": "He helped me (did me a favor)."
+  },
+  {
+    "wordId": 15,
+    "sentence": "一个包。",
+    "sentencePinyin": "Yī ge bāo.",
+    "sentenceMeaning": "One package (or bag)."
+  },
+  {
+    "wordId": 16,
+    "sentence": "我喜欢吃包子。",
+    "sentencePinyin": "Wǒ xǐhuān chī bāozi.",
+    "sentenceMeaning": "I like to eat buns."
+  },
+  {
+    "wordId": 17,
+    "sentence": "一杯水。",
+    "sentencePinyin": "Yī bēi shuǐ.",
+    "sentenceMeaning": "A cup of water."
+  },
+  {
+    "wordId": 18,
+    "sentence": "这个杯子很漂亮。",
+    "sentencePinyin": "Zhège bēizi hěn piàoliang.",
+    "sentenceMeaning": "This cup is very beautiful."
+  },
+  {
+    "wordId": 19,
+    "sentence": "北边。",
+    "sentencePinyin": "Běi biān.",
+    "sentenceMeaning": "North side."
+  },
+  {
+    "wordId": 20,
+    "sentence": "我家在北边。",
+    "sentencePinyin": "Wǒ jiā zài běibiān.",
+    "sentenceMeaning": "My home is on the north side."
+  },
+  {
+    "wordId": 21,
+    "sentence": "我去北京。",
+    "sentencePinyin": "Wǒ qù Běijīng.",
+    "sentenceMeaning": "I go to Beijing."
+  },
+  {
+    "wordId": 22,
+    "sentence": "一本书。",
+    "sentencePinyin": "Yī běn shū.",
+    "sentenceMeaning": "One book."
+  },
+  {
+    "wordId": 23,
+    "sentence": "这是我的本子。",
+    "sentencePinyin": "Zhè shì wǒ de běnzi.",
+    "sentenceMeaning": "This is my notebook."
+  },
+  {
+    "wordId": 24,
+    "sentence": "他比我高。",
+    "sentencePinyin": "Tā bǐ wǒ gāo.",
+    "sentenceMeaning": "He is taller than me."
+  },
+  {
+    "wordId": 25,
+    "sentence": "别说话。",
+    "sentencePinyin": "Bié shuōhuà.",
+    "sentenceMeaning": "Don't talk."
+  },
+  {
+    "wordId": 26,
+    "sentence": "还有别的吗？",
+    "sentencePinyin": "Hái yǒu biéde ma?",
+    "sentenceMeaning": "Is there anything else?"
+  },
+  {
+    "wordId": 27,
+    "sentence": "不要管别人。",
+    "sentencePinyin": "Búyào guǎn bié·rén.",
+    "sentenceMeaning": "Don't mind other people."
+  },
+  {
+    "wordId": 28,
+    "sentence": "他有病。",
+    "sentencePinyin": "Tā yǒu bìng.",
+    "sentenceMeaning": "He is sick (has a disease)."
+  },
+  {
+    "wordId": 29,
+    "sentence": "他是病人。",
+    "sentencePinyin": "Tā shì bìngrén.",
+    "sentenceMeaning": "He is a patient."
+  },
+  {
+    "wordId": 30,
+    "sentence": "不大。",
+    "sentencePinyin": "Bú dà.",
+    "sentenceMeaning": "Not big."
+  },
+  {
+    "wordId": 31,
+    "sentence": "不对。",
+    "sentencePinyin": "Bú duì.",
+    "sentenceMeaning": "Wrong."
+  },
+  {
+    "wordId": 32,
+    "sentence": "不客气。",
+    "sentencePinyin": "Bú kèqì.",
+    "sentenceMeaning": "You're welcome."
+  },
+  {
+    "wordId": 33,
+    "sentence": "不用谢。",
+    "sentencePinyin": "Búyòng xiè.",
+    "sentenceMeaning": "No need to thank."
+  },
+  {
+    "wordId": 34,
+    "sentence": "我不去。",
+    "sentencePinyin": "Wǒ bù qù.",
+    "sentenceMeaning": "I'm not going."
+  },
+  {
+    "wordId": 35,
+    "sentence": "这道菜很好吃。",
+    "sentencePinyin": "Zhè dào cài hěn hǎochī.",
+    "sentenceMeaning": "This dish is very delicious."
+  },
+  {
+    "wordId": 36,
+    "sentence": "喝茶。",
+    "sentencePinyin": "Hē chá.",
+    "sentenceMeaning": "Drink tea."
+  },
+  {
+    "wordId": 37,
+    "sentence": "差一点。",
+    "sentencePinyin": "Chà yī diǎn.",
+    "sentenceMeaning": "Almost (short by a little)."
+  },
+  {
+    "wordId": 38,
+    "sentence": "他常来。",
+    "sentencePinyin": "Tā cháng lái.",
+    "sentenceMeaning": "He often comes."
+  },
+  {
+    "wordId": 39,
+    "sentence": "我常常看电影。",
+    "sentencePinyin": "Wǒ chángcháng kàn diànyǐng.",
+    "sentenceMeaning": "I often watch movies."
+  },
+  {
+    "wordId": 40,
+    "sentence": "唱首歌。",
+    "sentencePinyin": "Chàng shǒu gē.",
+    "sentenceMeaning": "Sing a song."
+  },
+  {
+    "wordId": 41,
+    "sentence": "我喜欢唱歌。",
+    "sentencePinyin": "Wǒ xǐhuān chànggē.",
+    "sentenceMeaning": "I like to sing."
+  },
+  {
+    "wordId": 42,
+    "sentence": "一辆车。",
+    "sentencePinyin": "Yī liàng chē.",
+    "sentenceMeaning": "A car."
+  },
+  {
+    "wordId": 43,
+    "sentence": "买车票。",
+    "sentencePinyin": "Mǎi chēpiào.",
+    "sentenceMeaning": "Buy a ticket."
+  },
+  {
+    "wordId": 44,
+    "sentence": "他在车上。",
+    "sentencePinyin": "Tā zài chē shàng.",
+    "sentenceMeaning": "He is in the car."
+  },
+  {
+    "wordId": 45,
+    "sentence": "火车站。",
+    "sentencePinyin": "Huǒchēzhàn.",
+    "sentenceMeaning": "Train station."
+  },
+  {
+    "wordId": 46,
+    "sentence": "吃面包。",
+    "sentencePinyin": "Chī miànbāo.",
+    "sentenceMeaning": "Eat bread."
+  },
+  {
+    "wordId": 47,
+    "sentence": "吃饭了。",
+    "sentencePinyin": "Chī fàn le.",
+    "sentenceMeaning": "Time to eat (had a meal)."
+  },
+  {
+    "wordId": 48,
+    "sentence": "出去。",
+    "sentencePinyin": "Chū qù.",
+    "sentenceMeaning": "Go out."
+  },
+  {
+    "wordId": 49,
+    "sentence": "他出来了。",
+    "sentencePinyin": "Tā chūlái le.",
+    "sentenceMeaning": "He came out."
+  },
+  {
+    "wordId": 50,
+    "sentence": "我们出去吧。",
+    "sentencePinyin": "Wǒmen chūqù ba.",
+    "sentenceMeaning": "Let's go out."
+  }
+]
