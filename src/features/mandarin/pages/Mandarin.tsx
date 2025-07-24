@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Basic, DailyCommitment, FlashCard, NavBar, ReviewFlow, VocabularyListSelector } from "../components";
+import {
+  Basic,
+  DailyCommitment,
+  FlashCard,
+  NavBar,
+  ReviewFlow,
+  VocabularyListSelector,
+} from "../components";
 
 export { Mandarin };
 
@@ -44,30 +51,35 @@ function Mandarin() {
   }, [selectedList]);
 
   const handleCommitmentSave = () => {
-    if (selectedList) {
-      setLoading(true);
-      try {
-        localStorage.setItem(
-          `tracking_${selectedList}`,
-          JSON.stringify({
-            listName: selectedList,
-            sections: [],
-            dailyWordCount: Number(inputValue),
-            learnedWordIds: [],
-            history: {},
-          })
-        );
-        setDailyWordCount(Number(inputValue));
-        setLearnedWordIds([]);
-        setHistory({});
-        setReviewIndex(0);
-        setCurrentPage("review");
-        setError("");
-      } catch (err) {
-        setError("Failed to save commitment. Please try again.");
-      }
-      setLoading(false);
+    if (!selectedList) return;
+    const num = Number(inputValue);
+    const maxAllowed = Math.min(50, selectedWords.length || 50);
+    if (!Number.isInteger(num) || num < 1 || num > maxAllowed) {
+      setError(`Please enter a number between 1 and ${maxAllowed}`);
+      return;
     }
+    setLoading(true);
+    try {
+      localStorage.setItem(
+        `tracking_${selectedList}`,
+        JSON.stringify({
+          listName: selectedList,
+          sections: [],
+          dailyWordCount: num,
+          learnedWordIds: [],
+          history: {},
+        }),
+      );
+      setDailyWordCount(num);
+      setLearnedWordIds([]);
+      setHistory({});
+      setReviewIndex(0);
+      setCurrentPage("review");
+      setError("");
+    } catch (err) {
+      setError("Failed to save commitment. Please try again.");
+    }
+    setLoading(false);
   };
 
   const handleMarkLearned = (wordId: number) => {
