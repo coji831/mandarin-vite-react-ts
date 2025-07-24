@@ -6,6 +6,7 @@ import {
   NavBar,
   ReviewFlow,
   VocabularyListSelector,
+  SectionConfirm,
 } from "../components";
 
 export { Mandarin };
@@ -26,6 +27,7 @@ function Mandarin() {
   const [history, setHistory] = useState<Record<string, number[]>>({});
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [sections, setSections] = useState<any[]>([]);
 
   useEffect(() => {
     if (selectedList) {
@@ -50,6 +52,33 @@ function Mandarin() {
     }
   }, [selectedList]);
 
+  // Helper to divide words into sections
+  function divideIntoSections(words: any[], count: number) {
+    const sections = [];
+    let sectionIdx = 1;
+    for (let i = 0; i < words.length; i += count) {
+      const chunk = words.slice(i, i + count);
+      const sectionId = `section_${sectionIdx}`;
+      sectionIdx++;
+      // progress object for each word
+      const progress: Record<string, any> = {};
+      chunk.forEach((w: any) => {
+        progress[w.wordId] = {
+          mastered: false,
+          lastReviewed: null,
+          reviewCount: 0,
+          nextReview: null,
+        };
+      });
+      sections.push({
+        sectionId,
+        wordIds: chunk.map((w: any) => w.wordId),
+        progress,
+      });
+    }
+    return sections;
+  }
+
   const handleCommitmentSave = () => {
     if (!selectedList) return;
     const num = Number(inputValue);
@@ -60,11 +89,12 @@ function Mandarin() {
     }
     setLoading(true);
     try {
+      const newSections = divideIntoSections(selectedWords, num);
       localStorage.setItem(
         `tracking_${selectedList}`,
         JSON.stringify({
           listName: selectedList,
-          sections: [],
+          sections: newSections,
           dailyWordCount: num,
           learnedWordIds: [],
           history: {},
@@ -74,7 +104,8 @@ function Mandarin() {
       setLearnedWordIds([]);
       setHistory({});
       setReviewIndex(0);
-      setCurrentPage("review");
+      setSections(newSections);
+      setCurrentPage("sectionconfirm");
       setError("");
     } catch (err) {
       setError("Failed to save commitment. Please try again.");
@@ -146,6 +177,13 @@ function Mandarin() {
           handleCommitmentSave={handleCommitmentSave}
           loading={loading}
           error={error}
+        />
+      )}
+      {currentPage === "sectionconfirm" && (
+        <SectionConfirm
+          sections={sections}
+          wordsPerSection={dailyWordCount || 0}
+          onProceed={() => setCurrentPage("review")}
         />
       )}
       {currentPage === "review" && (
