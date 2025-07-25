@@ -1,3 +1,17 @@
+/**
+ * AddForm component contract:
+ *
+ * - Allows user to input and add a new Card (word) or multiple cards.
+ * - Calls addCard with the new card(s) and onCancel when done.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
+/**
+ * AddForm component contract:
+ *
+ * - Allows user to input and add a new Card (word) or multiple cards.
+ * - Calls addCard with the new card(s) and onCancel when done.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 import { useState, useRef } from "react";
 import { Card } from "./FlashCard";
 
@@ -11,6 +25,7 @@ type Props = {
 function AddForm({ addCard, onCancel }: Props) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCard, setNewCard] = useState({
+    wordId: "",
     character: "",
     pinyin: "",
     meaning: "",
@@ -37,6 +52,7 @@ function AddForm({ addCard, onCancel }: Props) {
     ) {
       addCard(newCard);
       setNewCard({
+        wordId: "",
         character: "",
         pinyin: "",
         meaning: "",

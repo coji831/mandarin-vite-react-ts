@@ -1,3 +1,17 @@
+/**
+ * VocabularyListSelector component contract:
+ *
+ * - Allows user to select a vocabulary list and loads sample words for preview.
+ * - Calls onSelect with the list name and words when a list is chosen.
+ * - Handles localStorage tracking for new lists.
+ */
+/**
+ * VocabularyListSelector component contract:
+ *
+ * - Allows user to select a vocabulary list and loads sample words for preview.
+ * - Calls onSelect with the list name and words when a list is chosen.
+ * - Handles localStorage tracking for new lists.
+ */
 import React, { useState, useEffect } from "react";
 import type { Word, VocabularyList } from "../types";
 
@@ -34,7 +48,10 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
           const res = await fetch(`/src/data/${list.file}`);
           if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
           const data: Word[] = await res.json();
-          setSamples((prev) => ({ ...prev, [list.name]: getSampleWords(data, 3) }));
+          setSamples((prev) => ({
+            ...prev,
+            [list.name]: getSampleWords(data, 3),
+          }));
         } catch (error) {
           console.warn(error);
         }
@@ -49,14 +66,20 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
       if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
       const words: Word[] = await res.json();
       // Ensure wordId is unique
-      const uniqueWords: Word[] = Array.from(new Map(words.map((w) => [w.wordId, w])).values());
+      const uniqueWords: Word[] = Array.from(
+        new Map(words.map((w) => [w.wordId, w])).values(),
+      );
       // LocalStorage tracking
       const trackingKey = `tracking_${list.name}`;
       const tracking = localStorage.getItem(trackingKey);
       if (!tracking) {
         localStorage.setItem(
           trackingKey,
-          JSON.stringify({ listName: list.name, sections: [], dailyWordCount: null })
+          JSON.stringify({
+            listName: list.name,
+            sections: [],
+            dailyWordCount: null,
+          }),
         );
       }
       onSelect(list.name, uniqueWords);
@@ -69,7 +92,10 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
     <div>
       <h2>Select a Vocabulary List</h2>
       {lists.map((list) => (
-        <div key={list.name} style={{ border: "1px solid #ccc", margin: "1em 0", padding: "1em" }}>
+        <div
+          key={list.name}
+          style={{ border: "1px solid #ccc", margin: "1em 0", padding: "1em" }}
+        >
           <h3>{list.name}</h3>
           <p>{list.description}</p>
           <div>
@@ -77,12 +103,41 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
             <ul>
               {samples[list.name]?.map((word) => (
                 <li key={word.wordId}>
-                  {word.character && <span><strong>Character:</strong> {word.character}<br /></span>}
-                  {word.pinyin && <span><strong>Pinyin:</strong> {word.pinyin}<br /></span>}
-                  {word.meaning && <span><strong>Meaning:</strong> {word.meaning}<br /></span>}
-                  {word.sentence && <span><em>{word.sentence}</em><br /></span>}
-                  {word.sentencePinyin && <span>({word.sentencePinyin})<br /></span>}
-                  {word.sentenceMeaning && <span>{word.sentenceMeaning}<br /></span>}
+                  {word.character && (
+                    <span>
+                      <strong>Character:</strong> {word.character}
+                      <br />
+                    </span>
+                  )}
+                  {word.pinyin && (
+                    <span>
+                      <strong>Pinyin:</strong> {word.pinyin}
+                      <br />
+                    </span>
+                  )}
+                  {word.meaning && (
+                    <span>
+                      <strong>Meaning:</strong> {word.meaning}
+                      <br />
+                    </span>
+                  )}
+                  {word.sentence && (
+                    <span>
+                      <em>{word.sentence}</em>
+                      <br />
+                    </span>
+                  )}
+                  {word.sentencePinyin && (
+                    <span>
+                      ({word.sentencePinyin})<br />
+                    </span>
+                  )}
+                  {word.sentenceMeaning && (
+                    <span>
+                      {word.sentenceMeaning}
+                      <br />
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

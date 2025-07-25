@@ -1,11 +1,32 @@
+/**
+ * ReviewFlow component contract:
+ *
+ * - Manages the review flow for a set of words, including navigation and marking as learned.
+ * - Receives all state and handlers as props from parent.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
+/**
+ * ReviewFlow component contract:
+ *
+ * - Manages the review flow for a set of words, including navigation and marking as learned.
+ * - Receives all state and handlers as props from parent.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 import { ReviewHistory } from "./ReviewHistory";
-
 
 type ReviewFlowProps = {
   loading: boolean;
   error: string;
   learnedWordIds: string[];
-  selectedWords: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string }[];
+  selectedWords: {
+    wordId: string;
+    character?: string;
+    pinyin?: string;
+    meaning?: string;
+    sentence?: string;
+    sentencePinyin?: string;
+    sentenceMeaning?: string;
+  }[];
   selectedList: string | null;
   setCurrentPage: (page: string) => void;
   setDailyWordCount: (n: number | null) => void;
@@ -15,8 +36,24 @@ type ReviewFlowProps = {
   setReviewIndex: (n: number) => void;
   reviewIndex: number;
   handleMarkLearned: (wordId: string) => void;
-  todaysWords: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string }[];
-  currentReviewWord: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string } | null;
+  todaysWords: {
+    wordId: string;
+    character?: string;
+    pinyin?: string;
+    meaning?: string;
+    sentence?: string;
+    sentencePinyin?: string;
+    sentenceMeaning?: string;
+  }[];
+  currentReviewWord: {
+    wordId: string;
+    character?: string;
+    pinyin?: string;
+    meaning?: string;
+    sentence?: string;
+    sentencePinyin?: string;
+    sentenceMeaning?: string;
+  } | null;
   history: Record<string, string[]>;
   onBack?: () => void;
 };
@@ -41,8 +78,8 @@ function ReviewFlow(props: ReviewFlowProps) {
     history,
     onBack,
   } = props;
-  console.log( todaysWords, currentReviewWord);
-  
+  console.log(todaysWords, currentReviewWord);
+
   return (
     <div>
       {loading && <p>Loading...</p>}
@@ -147,7 +184,7 @@ function ReviewFlow(props: ReviewFlowProps) {
           <button
             type="button"
             onClick={() => {
-              handleMarkLearned(currentReviewWord.wordId); 
+              handleMarkLearned(currentReviewWord.wordId);
             }}
             disabled={loading}
           >
@@ -180,7 +217,7 @@ function ReviewFlow(props: ReviewFlowProps) {
                 <ul style={{ display: "inline", marginLeft: 8 }}>
                   {ids.map((id: string) => {
                     const word = selectedWords.find(
-                      (w) => String(w.wordId) === id
+                      (w) => String(w.wordId) === id,
                     );
                     return word ? (
                       <li
@@ -197,7 +234,7 @@ function ReviewFlow(props: ReviewFlowProps) {
           </div>
         </div>
       ) : null}
-      <ReviewHistory history={history} /> 
+      <ReviewHistory history={history} />
     </div>
   );
 }

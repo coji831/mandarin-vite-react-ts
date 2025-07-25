@@ -1,3 +1,9 @@
+/**
+ * ReviewHistory component contract:
+ *
+ * - Receives a history object and displays a summary of review history.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 // ...existing code...
 type ReviewHistoryProps = {
   history: any;
