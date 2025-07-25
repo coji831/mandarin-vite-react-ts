@@ -1,24 +1,11 @@
 /**
- * FlashCard component contract:
+ * FlashCard component
  *
- * - The parent component is responsible for:
- *   - Loading the correct `sectionWords` array based on the selected section (each word must include character, pinyin, etc.).
- *   - Implementing `onMarkMastered(wordId)` to update localStorage for the word's progress (including `mastered`, `lastReviewed`, `reviewCount`, and `nextReview` for spaced repetition).
- *   - Passing `masteredWordIds` as a Set of mastered wordIds (from localStorage or other persistent storage).
- *   - Handling the `onBackToSection` callback for the "Return to Section Selection" button.
- *
- * This component only manages UI state (current card, search, show details) and delegates all persistence and data loading to the parent.
- */
-/**
- * FlashCard component contract:
- *
- * - The parent component is responsible for:
- *   - Loading the correct `sectionWords` array based on the selected section (each word must include character, pinyin, etc.).
- *   - Implementing `onMarkMastered(wordId)` to update localStorage for the word's progress (including `mastered`, `lastReviewed`, `reviewCount`, and `nextReview` for spaced repetition).
- *   - Passing `masteredWordIds` as a Set of mastered wordIds (from localStorage or other persistent storage).
- *   - Handling the `onBackToSection` callback for the "Return to Section Selection" button.
- *
- * This component only manages UI state (current card, search, show details) and delegates all persistence and data loading to the parent.
+ * - Displays flashcards for a section of words.
+ * - UI only: manages current card, search, and details view.
+ * - Parent is responsible for loading data, persistence, and progress updates.
+ * - Calls onMarkMastered(wordId) to mark a word as mastered.
+ * - Receives masteredWordIds and sectionProgress as props.
  */
 import { useState, useMemo } from "react";
 import { PlayButton } from "./PlayButton";

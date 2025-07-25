@@ -1,8 +1,9 @@
 /**
- * Basic component contract:
+ * Basic component
  *
- * - LearningPage for tones, pronouns, and pinyin tone marks.
+ * - Learning page for tones, pronouns, and pinyin tone marks.
  * - Pure presentational; does not manage persistence or parent state.
+ * - Provides audio playback for sample text.
  */
 export { Basic };
 

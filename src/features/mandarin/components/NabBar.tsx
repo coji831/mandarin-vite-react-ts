@@ -1,5 +1,5 @@
 /**
- * NavBar component contract:
+ * NavBar component
  *
  * - Displays navigation buttons for switching between Flashcards and Basic pages.
  * - Receives setCurrentPage handler as prop.

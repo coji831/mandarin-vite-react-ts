@@ -1,7 +1,13 @@
 /**
- * Mandarin page contract:
+ * Mandarin page
  *
  * - Main page for Mandarin learning flow.
+ * - Initializes and manages user progress in localStorage under 'user_progress'.
+ * - Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
+ * - Merges tracking data with word data via wordId, never mutating word data itself.
+ * - Validates wordId uniqueness and skips/logs invalid entries.
+ * - Updates localStorage after user actions (mastering word, completing section, etc).
+ * - Loads and merges progress on page load.
  * - Manages state for selected list, sections, daily word count, review, and history.
  * - Handles all persistence, data loading, and navigation between subpages/components.
  */
@@ -25,6 +31,64 @@ function getTodayKey() {
 }
 
 function Mandarin() {
+  // --- User Progress Tracking ---
+  // Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
+  type UserProgress = {
+    lists: Array<{
+      listName: string;
+      sections: any[];
+      dailyWordCount: number | null;
+      completedSections: string[];
+    }>;
+  };
+
+  function getUserProgress(): UserProgress {
+    const raw = localStorage.getItem("user_progress");
+    if (!raw) return { lists: [] };
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return { lists: [] };
+    }
+  }
+
+  function saveUserProgress(progress: UserProgress) {
+    localStorage.setItem("user_progress", JSON.stringify(progress));
+  }
+
+  // Validate wordId uniqueness in a list of words
+  function validateWordIds(words: any[]): any[] {
+    const seen = new Set<string>();
+    const valid: any[] = [];
+    for (const w of words) {
+      if (!w.wordId) {
+        console.warn("Missing wordId, skipping:", w);
+        continue;
+      }
+      if (seen.has(w.wordId)) {
+        console.warn("Duplicate wordId, skipping:", w.wordId);
+        continue;
+      }
+      seen.add(w.wordId);
+      valid.push(w);
+    }
+    return valid;
+  }
+
+  // Merge progress fields into word data by wordId
+  function mergeProgress(
+    words: any[],
+    sectionProgress: Record<string, any>,
+  ): any[] {
+    const map: Record<string, any> = {};
+    for (const w of words) map[w.wordId] = { ...w };
+    for (const [wordId, prog] of Object.entries(sectionProgress || {})) {
+      if (map[wordId]) {
+        map[wordId] = { ...map[wordId], ...prog };
+      }
+    }
+    return Object.values(map);
+  }
   const [currentPage, setCurrentPage] = useState("vocablist");
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [selectedWords, setSelectedWords] = useState<any[]>([]);
@@ -43,40 +107,79 @@ function Mandarin() {
     Record<string, number>
   >({});
 
+  // --- Load and initialize user progress on page load or list change ---
   useEffect(() => {
-    if (selectedList) {
-      setLoading(true);
-      try {
-        const tracking = localStorage.getItem(`tracking_${selectedList}`);
-        if (tracking) {
-          const obj = JSON.parse(tracking);
-          setDailyWordCount(obj.dailyWordCount || null);
-          setLearnedWordIds(obj.learnedWordIds || []);
-          setHistory(obj.history || {});
-          setSections(obj.sections || []);
-          // Calculate section progress
-          const progress: Record<string, number> = {};
-          (obj.sections || []).forEach((section: any) => {
-            const mastered = section.wordIds.filter((id: string) =>
-              (obj.learnedWordIds || []).includes(id),
-            ).length;
-            progress[section.sectionId] = mastered;
-          });
-          setSectionProgress(progress);
-        } else {
-          setLearnedWordIds([]);
-          setHistory({});
-          setSections([]);
-          setSectionProgress({});
-        }
-        setReviewIndex(0);
-        setError("");
-      } catch (err) {
-        setError("Failed to load progress. Please refresh or reset.");
+    if (!selectedList) return;
+    setLoading(true);
+    try {
+      // 1. Load all words for this list and validate wordIds
+      const validWords = validateWordIds(selectedWords);
+      // 2. Load user_progress from localStorage
+      let userProgress = getUserProgress();
+      // 3. Find or create entry for this list
+      let listEntry = userProgress.lists.find(
+        (l: any) => l.listName === selectedList,
+      );
+      if (!listEntry) {
+        listEntry = {
+          listName: selectedList,
+          sections: [],
+          dailyWordCount: null,
+          completedSections: [],
+        };
+        userProgress.lists.push(listEntry);
+        saveUserProgress(userProgress);
       }
-      setLoading(false);
+      // 4. If no sections, initialize sections
+      if (!listEntry.sections || listEntry.sections.length === 0) {
+        // Default: one section with all words
+        listEntry.sections = [
+          {
+            sectionId: "section_1",
+            wordIds: validWords.map((w) => w.wordId),
+            progress: {},
+          },
+        ];
+        saveUserProgress(userProgress);
+      }
+      // 5. Set state from progress
+      setDailyWordCount(listEntry.dailyWordCount || null);
+      setSections(listEntry.sections);
+      // Merge progress into word data for learnedWordIds, history, etc.
+      let learned: string[] = [];
+      let hist: Record<string, string[]> = {};
+      const sectionProgress: Record<string, number> = {};
+      for (const section of listEntry.sections) {
+        // Merge progress fields into word data
+        const merged = mergeProgress(
+          validWords.filter((w) => section.wordIds.includes(w.wordId)),
+          section.progress,
+        );
+        // Count mastered
+        const mastered = merged.filter((w: any) => w.mastered).length;
+        sectionProgress[section.sectionId] = mastered;
+        // Collect learnedWordIds
+        learned.push(
+          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
+        );
+        // Collect review history if present
+        if (section.history) {
+          for (const [date, ids] of Object.entries(section.history)) {
+            if (!hist[date]) hist[date] = [];
+            hist[date].push(...(ids as string[]));
+          }
+        }
+      }
+      setLearnedWordIds(Array.from(new Set(learned)));
+      setHistory(hist);
+      setSectionProgress(sectionProgress);
+      setReviewIndex(0);
+      setError("");
+    } catch (err) {
+      setError("Failed to load progress. Please refresh or reset.");
     }
-  }, [selectedList]);
+    setLoading(false);
+  }, [selectedList, selectedWords]);
 
   // Helper to divide words into sections
   function divideIntoSections(words: any[], count: number) {
@@ -105,6 +208,7 @@ function Mandarin() {
     return sections;
   }
 
+  // Save daily commitment and initialize sections in user_progress
   const handleCommitmentSave = () => {
     if (!selectedList) return;
     const num = Number(inputValue);
@@ -115,23 +219,32 @@ function Mandarin() {
     }
     setLoading(true);
     try {
-      const newSections = divideIntoSections(selectedWords, num);
-      localStorage.setItem(
-        `tracking_${selectedList}`,
-        JSON.stringify({
-          listName: selectedList,
-          sections: newSections,
-          dailyWordCount: num,
-          learnedWordIds: [],
-          history: {},
-        }),
+      // Validate wordIds
+      const validWords = validateWordIds(selectedWords);
+      // Divide into sections
+      const newSections = divideIntoSections(validWords, num);
+      // Update user_progress
+      let userProgress = getUserProgress();
+      let listEntry = userProgress.lists.find(
+        (l: any) => l.listName === selectedList,
       );
+      if (!listEntry) {
+        listEntry = {
+          listName: selectedList,
+          sections: [],
+          dailyWordCount: null,
+          completedSections: [],
+        };
+        userProgress.lists.push(listEntry);
+      }
+      listEntry.sections = newSections;
+      listEntry.dailyWordCount = num;
+      saveUserProgress(userProgress);
       setDailyWordCount(num);
       setLearnedWordIds([]);
       setHistory({});
       setReviewIndex(0);
       setSections(newSections);
-      // Reset section progress
       setSectionProgress({});
       setCurrentPage("sectionconfirm");
       setError("");
@@ -141,43 +254,87 @@ function Mandarin() {
     setLoading(false);
   };
 
+  // Mark a word as learned and update user_progress
   const handleMarkLearned = (wordId: string) => {
-    if (selectedList) {
-      setLoading(true);
-      try {
-        const todayKey = getTodayKey();
-        const updatedIds = [...learnedWordIds, wordId];
-        setLearnedWordIds(updatedIds);
-        const updatedHistory = { ...history };
-        if (!updatedHistory[todayKey]) updatedHistory[todayKey] = [];
-        updatedHistory[todayKey] = [
-          ...(updatedHistory[todayKey] || []),
-          wordId,
-        ];
-        setHistory(updatedHistory);
-        const tracking = localStorage.getItem(`tracking_${selectedList}`);
-        if (tracking) {
-          const obj = JSON.parse(tracking);
-          obj.learnedWordIds = updatedIds;
-          obj.history = updatedHistory;
-          localStorage.setItem(`tracking_${selectedList}`, JSON.stringify(obj));
-          // Update section progress
-          const progress: Record<string, number> = {};
-          (obj.sections || []).forEach((section: any) => {
-            const mastered = section.wordIds.filter((id: string) =>
-              updatedIds.includes(id),
-            ).length;
-            progress[section.sectionId] = mastered;
-          });
-          setSectionProgress(progress);
-        }
-        // setReviewIndex((prev) => prev + 1); // Handled in ReviewFlow after marking as learned
-        setError("");
-      } catch (err) {
-        setError("Failed to update progress. Please try again.");
+    if (!selectedList) return;
+    setLoading(true);
+    try {
+      let userProgress = getUserProgress();
+      let listEntry = userProgress.lists.find(
+        (l: any) => l.listName === selectedList,
+      );
+      if (!listEntry) return;
+      // Find section containing wordId
+      let section = listEntry.sections.find((s: any) =>
+        s.wordIds.includes(wordId),
+      );
+      if (!section) return;
+      // Update progress for wordId
+      if (!section.progress[wordId]) section.progress[wordId] = {};
+      const now = new Date();
+      section.progress[wordId].mastered = true;
+      section.progress[wordId].lastReviewed = now.toISOString();
+      section.progress[wordId].reviewCount =
+        (section.progress[wordId].reviewCount || 0) + 1;
+      // Spaced repetition: nextReview = 3 days after lastReviewed
+      const nextReview = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      section.progress[wordId].nextReview = nextReview.toISOString();
+
+      // --- Section-specific history ---
+      if (!section.history) section.history = {};
+      const todayKey = getTodayKey();
+      if (!section.history[todayKey]) section.history[todayKey] = [];
+      if (!section.history[todayKey].includes(wordId)) {
+        section.history[todayKey].push(wordId);
       }
-      setLoading(false);
+
+      // Mark section as completed if all mastered
+      if (
+        section.wordIds.every((id: string) => section.progress[id]?.mastered)
+      ) {
+        if (!listEntry.completedSections) listEntry.completedSections = [];
+        if (!listEntry.completedSections.includes(section.sectionId))
+          listEntry.completedSections.push(section.sectionId);
+      }
+      saveUserProgress(userProgress);
+      // Update state
+      // Re-merge progress for UI
+      const validWords = validateWordIds(selectedWords);
+      let learned: string[] = [];
+      let hist: Record<string, string[]> = {};
+      const sectionProgress: Record<string, number> = {};
+      for (const section of listEntry.sections) {
+        const merged = mergeProgress(
+          validWords.filter((w) => section.wordIds.includes(w.wordId)),
+          section.progress,
+        );
+        const mastered = merged.filter((w: any) => w.mastered).length;
+        sectionProgress[section.sectionId] = mastered;
+        learned.push(
+          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
+        );
+      }
+      // Only use global history for the list, not for sections
+      setLearnedWordIds(Array.from(new Set(learned)));
+      // Show only current section's history if a section is selected
+      if (selectedSectionId) {
+        const currentSection = listEntry.sections.find(
+          (s: any) => s.sectionId === selectedSectionId,
+        );
+        setHistory(
+          currentSection && currentSection.history
+            ? currentSection.history
+            : {},
+        );
+      } else {
+        setHistory({});
+      }
+      setSectionProgress(sectionProgress);
+      setError("");
+    } catch (err) {
+      setError("Failed to update progress. Please try again.");
     }
+    setLoading(false);
   };
 
   // Get words for the selected section only
@@ -232,58 +389,7 @@ function Mandarin() {
             ).length,
             total: sectionWords.length,
           }}
-          onMarkMastered={(wordId: string) => {
-            // Mark as mastered in localStorage and update state
-            if (!selectedList) return;
-            const tracking = localStorage.getItem(`tracking_${selectedList}`);
-            if (!tracking) return;
-            const obj = JSON.parse(tracking);
-            // Find section
-            const sectionIdx = (obj.sections || []).findIndex(
-              (s: any) => s.sectionId === selectedSectionId,
-            );
-            if (sectionIdx === -1) return;
-            const section = obj.sections[sectionIdx];
-            // Update progress for wordId
-            if (!section.progress[wordId]) return;
-            const now = new Date();
-            section.progress[wordId].mastered = true;
-            section.progress[wordId].lastReviewed = now.toISOString();
-            section.progress[wordId].reviewCount =
-              (section.progress[wordId].reviewCount || 0) + 1;
-            // Spaced repetition: nextReview = 3 days after lastReviewed
-            const nextReview = new Date(
-              now.getTime() + 3 * 24 * 60 * 60 * 1000,
-            );
-            section.progress[wordId].nextReview = nextReview.toISOString();
-            // Add to learnedWordIds if not present
-            if (!obj.learnedWordIds) obj.learnedWordIds = [];
-            if (!obj.learnedWordIds.includes(wordId))
-              obj.learnedWordIds.push(wordId);
-            // Update history
-            const todayKey = getTodayKey();
-            if (!obj.history) obj.history = {};
-            if (!obj.history[todayKey]) obj.history[todayKey] = [];
-            if (!obj.history[todayKey].includes(wordId))
-              obj.history[todayKey].push(wordId);
-            // Save
-            localStorage.setItem(
-              `tracking_${selectedList}`,
-              JSON.stringify(obj),
-            );
-            // Update state
-            setLearnedWordIds([...obj.learnedWordIds]);
-            setHistory({ ...obj.history });
-            // Update section progress
-            const progress: Record<string, number> = {};
-            (obj.sections || []).forEach((section: any) => {
-              const mastered = section.wordIds.filter((id: string) =>
-                obj.learnedWordIds.includes(id),
-              ).length;
-              progress[section.sectionId] = mastered;
-            });
-            setSectionProgress(progress);
-          }}
+          onMarkMastered={handleMarkLearned}
           masteredWordIds={new Set(learnedWordIds)}
           onBackToSection={() => setCurrentPage("sectionselect")}
         />
