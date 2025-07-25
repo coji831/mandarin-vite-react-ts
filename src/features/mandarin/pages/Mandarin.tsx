@@ -1,3 +1,10 @@
+/**
+ * Mandarin page contract:
+ *
+ * - Main page for Mandarin learning flow.
+ * - Manages state for selected list, sections, daily word count, review, and history.
+ * - Handles all persistence, data loading, and navigation between subpages/components.
+ */
 import { useEffect, useState } from "react";
 import {
   Basic,
@@ -216,7 +223,71 @@ function Mandarin() {
           }}
         />
       )}
-      {currentPage === "flashcards" && <FlashCard />}
+      {currentPage === "flashcards" && selectedSectionId && (
+        <FlashCard
+          sectionWords={sectionWords}
+          sectionProgress={{
+            mastered: sectionWords.filter((w: any) =>
+              learnedWordIds.includes(String(w.wordId)),
+            ).length,
+            total: sectionWords.length,
+          }}
+          onMarkMastered={(wordId: string) => {
+            // Mark as mastered in localStorage and update state
+            if (!selectedList) return;
+            const tracking = localStorage.getItem(`tracking_${selectedList}`);
+            if (!tracking) return;
+            const obj = JSON.parse(tracking);
+            // Find section
+            const sectionIdx = (obj.sections || []).findIndex(
+              (s: any) => s.sectionId === selectedSectionId,
+            );
+            if (sectionIdx === -1) return;
+            const section = obj.sections[sectionIdx];
+            // Update progress for wordId
+            if (!section.progress[wordId]) return;
+            const now = new Date();
+            section.progress[wordId].mastered = true;
+            section.progress[wordId].lastReviewed = now.toISOString();
+            section.progress[wordId].reviewCount =
+              (section.progress[wordId].reviewCount || 0) + 1;
+            // Spaced repetition: nextReview = 3 days after lastReviewed
+            const nextReview = new Date(
+              now.getTime() + 3 * 24 * 60 * 60 * 1000,
+            );
+            section.progress[wordId].nextReview = nextReview.toISOString();
+            // Add to learnedWordIds if not present
+            if (!obj.learnedWordIds) obj.learnedWordIds = [];
+            if (!obj.learnedWordIds.includes(wordId))
+              obj.learnedWordIds.push(wordId);
+            // Update history
+            const todayKey = getTodayKey();
+            if (!obj.history) obj.history = {};
+            if (!obj.history[todayKey]) obj.history[todayKey] = [];
+            if (!obj.history[todayKey].includes(wordId))
+              obj.history[todayKey].push(wordId);
+            // Save
+            localStorage.setItem(
+              `tracking_${selectedList}`,
+              JSON.stringify(obj),
+            );
+            // Update state
+            setLearnedWordIds([...obj.learnedWordIds]);
+            setHistory({ ...obj.history });
+            // Update section progress
+            const progress: Record<string, number> = {};
+            (obj.sections || []).forEach((section: any) => {
+              const mastered = section.wordIds.filter((id: string) =>
+                obj.learnedWordIds.includes(id),
+              ).length;
+              progress[section.sectionId] = mastered;
+            });
+            setSectionProgress(progress);
+          }}
+          masteredWordIds={new Set(learnedWordIds)}
+          onBackToSection={() => setCurrentPage("sectionselect")}
+        />
+      )}
       {currentPage === "basic" && <Basic />}
       {currentPage === "dailycommitment" && (
         <DailyCommitment
@@ -242,7 +313,7 @@ function Mandarin() {
           sections={sections}
           selectedSectionId={selectedSectionId}
           setSelectedSectionId={setSelectedSectionId}
-          onProceed={() => setCurrentPage("review")}
+          onProceed={() => setCurrentPage("flashcards")}
           sectionProgress={sectionProgress}
           learnedWordIds={learnedWordIds}
           totalWords={selectedWords.length}

@@ -1,3 +1,10 @@
+/**
+ * NavBar component contract:
+ *
+ * - Displays navigation buttons for switching between Flashcards and Basic pages.
+ * - Receives setCurrentPage handler as prop.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 export { NavBar };
 
 function NavBar({ setCurrentPage }: Readonly<{ setCurrentPage: any }>) {

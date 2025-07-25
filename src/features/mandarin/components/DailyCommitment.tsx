@@ -1,3 +1,17 @@
+/**
+ * DailyCommitment component contract:
+ *
+ * - Allows user to set and save a daily word study goal for the selected list.
+ * - Receives selectedList, selectedWords, inputValue, and handlers as props.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
+/**
+ * DailyCommitment component contract:
+ *
+ * - Allows user to set and save a daily word study goal for the selected list.
+ * - Receives selectedList, selectedWords, inputValue, and handlers as props.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 type Props = {
   selectedList: string | null;
   selectedWords: any[];
