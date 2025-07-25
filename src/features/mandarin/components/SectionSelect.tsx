@@ -1,8 +1,9 @@
 /**
- * SectionSelect component contract:
+ * SectionSelect component
  *
  * - Receives a list of sections and selection state as props.
- * - Displays selectable sections and progress.
+ * - Displays selectable sections and progress for each section.
+ * - Allows filtering to show only uncompleted sections.
  * - Pure presentational; does not manage persistence or parent state.
  */
 import React from "react";

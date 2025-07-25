@@ -1,8 +1,9 @@
 /**
- * ReviewHistory component contract:
+ * ReviewHistory component
  *
  * - Receives a history object and displays a summary of review history.
  * - Pure presentational; does not manage persistence or parent state.
+ * - Shows number of words learned per date.
  */
 // ...existing code...
 type ReviewHistoryProps = {

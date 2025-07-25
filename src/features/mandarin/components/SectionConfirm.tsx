@@ -1,16 +1,10 @@
 /**
- * SectionConfirm component contract:
+ * SectionConfirm component
  *
  * - Receives a list of sections and wordsPerSection as props.
  * - Displays a summary of created sections and a proceed button.
  * - Pure presentational; does not manage persistence or parent state.
- */
-/**
- * SectionConfirm component contract:
- *
- * - Receives a list of sections and wordsPerSection as props.
- * - Displays a summary of created sections and a proceed button.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Shows if last section has fewer words than others.
  */
 import React from "react";
 

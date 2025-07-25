@@ -1,16 +1,10 @@
 /**
- * AddForm component contract:
+ * AddForm component
  *
  * - Allows user to input and add a new Card (word) or multiple cards.
  * - Calls addCard with the new card(s) and onCancel when done.
  * - Pure presentational; does not manage persistence or parent state.
- */
-/**
- * AddForm component contract:
- *
- * - Allows user to input and add a new Card (word) or multiple cards.
- * - Calls addCard with the new card(s) and onCancel when done.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Validates all fields are filled before adding.
  */
 import { useState, useRef } from "react";
 import { Card } from "./FlashCard";
