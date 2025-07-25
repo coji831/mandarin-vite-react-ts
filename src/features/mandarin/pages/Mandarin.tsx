@@ -7,6 +7,7 @@ import {
   ReviewFlow,
   VocabularyListSelector,
   SectionConfirm,
+  SectionSelect,
 } from "../components";
 
 export { Mandarin };
@@ -22,12 +23,18 @@ function Mandarin() {
   const [selectedWords, setSelectedWords] = useState<any[]>([]);
   const [dailyWordCount, setDailyWordCount] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
-  const [learnedWordIds, setLearnedWordIds] = useState<number[]>([]);
+  const [learnedWordIds, setLearnedWordIds] = useState<string[]>([]);
   const [reviewIndex, setReviewIndex] = useState(0);
-  const [history, setHistory] = useState<Record<string, number[]>>({});
+  const [history, setHistory] = useState<Record<string, string[]>>({});
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<any[]>([]);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    null,
+  );
+  const [sectionProgress, setSectionProgress] = useState<
+    Record<string, number>
+  >({});
 
   useEffect(() => {
     if (selectedList) {
@@ -39,9 +46,21 @@ function Mandarin() {
           setDailyWordCount(obj.dailyWordCount || null);
           setLearnedWordIds(obj.learnedWordIds || []);
           setHistory(obj.history || {});
+          setSections(obj.sections || []);
+          // Calculate section progress
+          const progress: Record<string, number> = {};
+          (obj.sections || []).forEach((section: any) => {
+            const mastered = section.wordIds.filter((id: string) =>
+              (obj.learnedWordIds || []).includes(id),
+            ).length;
+            progress[section.sectionId] = mastered;
+          });
+          setSectionProgress(progress);
         } else {
           setLearnedWordIds([]);
           setHistory({});
+          setSections([]);
+          setSectionProgress({});
         }
         setReviewIndex(0);
         setError("");
@@ -72,7 +91,7 @@ function Mandarin() {
       });
       sections.push({
         sectionId,
-        wordIds: chunk.map((w: any) => w.wordId),
+        wordIds: chunk.map((w: any) => String(w.wordId)),
         progress,
       });
     }
@@ -105,6 +124,8 @@ function Mandarin() {
       setHistory({});
       setReviewIndex(0);
       setSections(newSections);
+      // Reset section progress
+      setSectionProgress({});
       setCurrentPage("sectionconfirm");
       setError("");
     } catch (err) {
@@ -113,7 +134,7 @@ function Mandarin() {
     setLoading(false);
   };
 
-  const handleMarkLearned = (wordId: number) => {
+  const handleMarkLearned = (wordId: string) => {
     if (selectedList) {
       setLoading(true);
       try {
@@ -122,7 +143,10 @@ function Mandarin() {
         setLearnedWordIds(updatedIds);
         const updatedHistory = { ...history };
         if (!updatedHistory[todayKey]) updatedHistory[todayKey] = [];
-        updatedHistory[todayKey] = [...updatedHistory[todayKey], wordId];
+        updatedHistory[todayKey] = [
+          ...(updatedHistory[todayKey] || []),
+          wordId,
+        ];
         setHistory(updatedHistory);
         const tracking = localStorage.getItem(`tracking_${selectedList}`);
         if (tracking) {
@@ -130,8 +154,17 @@ function Mandarin() {
           obj.learnedWordIds = updatedIds;
           obj.history = updatedHistory;
           localStorage.setItem(`tracking_${selectedList}`, JSON.stringify(obj));
+          // Update section progress
+          const progress: Record<string, number> = {};
+          (obj.sections || []).forEach((section: any) => {
+            const mastered = section.wordIds.filter((id: string) =>
+              updatedIds.includes(id),
+            ).length;
+            progress[section.sectionId] = mastered;
+          });
+          setSectionProgress(progress);
         }
-        setReviewIndex((prev) => prev + 1);
+        // setReviewIndex((prev) => prev + 1); // Handled in ReviewFlow after marking as learned
         setError("");
       } catch (err) {
         setError("Failed to update progress. Please try again.");
@@ -140,10 +173,25 @@ function Mandarin() {
     }
   };
 
-  const todaysWords = selectedWords
-    .filter((w: any) => !learnedWordIds.includes(w.wordId))
-    .slice(0, dailyWordCount ?? selectedWords.length);
-
+  // Get words for the selected section only
+  const selectedSection = sections.find(
+    (s: any) => s.sectionId === selectedSectionId,
+  );
+  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
+  const sectionWords = selectedWords.filter((w: any) =>
+    sectionWordIds.includes(String(w.wordId)),
+  );
+  const sectionLearned = sectionWords.filter((w: any) =>
+    learnedWordIds.includes(String(w.wordId)),
+  );
+  const sectionUnlearned = sectionWords.filter(
+    (w: any) => !learnedWordIds.includes(String(w.wordId)),
+  );
+  const todaysWords = selectedSectionId
+    ? sectionUnlearned.slice(0, dailyWordCount ?? sectionWords.length)
+    : selectedWords
+        .filter((w: any) => !learnedWordIds.includes(String(w.wordId)))
+        .slice(0, dailyWordCount ?? selectedWords.length);
   const currentReviewWord = todaysWords[reviewIndex];
 
   return (
@@ -162,6 +210,9 @@ function Mandarin() {
             setSelectedList(listName);
             setSelectedWords(words);
             setCurrentPage("dailycommitment");
+            setSections([]);
+            setSectionProgress({});
+            setSelectedSectionId(null);
           }}
         />
       )}
@@ -183,7 +234,19 @@ function Mandarin() {
         <SectionConfirm
           sections={sections}
           wordsPerSection={dailyWordCount || 0}
+          onProceed={() => setCurrentPage("sectionselect")}
+        />
+      )}
+      {currentPage === "sectionselect" && (
+        <SectionSelect
+          sections={sections}
+          selectedSectionId={selectedSectionId}
+          setSelectedSectionId={setSelectedSectionId}
           onProceed={() => setCurrentPage("review")}
+          sectionProgress={sectionProgress}
+          learnedWordIds={learnedWordIds}
+          totalWords={selectedWords.length}
+          onBack={() => setCurrentPage("dailycommitment")}
         />
       )}
       {currentPage === "review" && (
@@ -204,6 +267,7 @@ function Mandarin() {
           todaysWords={todaysWords}
           currentReviewWord={currentReviewWord}
           history={history}
+          onBack={() => setCurrentPage("sectionselect")}
         />
       )}
     </div>

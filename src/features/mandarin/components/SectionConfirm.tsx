@@ -2,7 +2,7 @@ import React from "react";
 
 type Section = {
   sectionId: string;
-  wordIds: (string | number)[];
+  wordIds: string[];
 };
 
 type Props = {

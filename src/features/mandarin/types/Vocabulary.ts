@@ -1,5 +1,5 @@
 export type Word = {
-  wordId: number;
+  wordId: string;
   character?: string;
   pinyin?: string;
   meaning?: string;

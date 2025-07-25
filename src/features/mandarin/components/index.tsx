@@ -9,3 +9,4 @@ export * from "./SectionConfirm";
 export * from "./Sidebar";
 export * from "./VocabularyListSelector";
 export * from "./WordDetails";
+export * from "./SectionSelect";
