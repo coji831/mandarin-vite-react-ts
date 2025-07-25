@@ -1,3 +1,17 @@
+/**
+ * Sidebar component contract:
+ *
+ * - Receives a list of cards (words) and displays them in a searchable, clickable list.
+ * - Highlights the current card and shows mastery status if available.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
+/**
+ * Sidebar component contract:
+ *
+ * - Receives a list of cards (words) and displays them in a searchable, clickable list.
+ * - Highlights the current card and shows mastery status if available.
+ * - Pure presentational; does not manage persistence or parent state.
+ */
 import { CSSProperties, useState } from "react";
 
 export { Sidebar };
