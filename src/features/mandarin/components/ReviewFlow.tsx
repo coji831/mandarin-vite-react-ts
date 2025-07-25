@@ -1,22 +1,24 @@
- import {ReviewHistory} from "./ReviewHistory";
+import { ReviewHistory } from "./ReviewHistory";
+
 
 type ReviewFlowProps = {
   loading: boolean;
   error: string;
-  learnedWordIds: any[];
-  selectedWords: any[];
+  learnedWordIds: string[];
+  selectedWords: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string }[];
   selectedList: string | null;
-  setCurrentPage: any;
-  setDailyWordCount: any;
-  setLearnedWordIds: any;
-  setHistory: any;
-  setInputValue: any;
-  setReviewIndex: any;
+  setCurrentPage: (page: string) => void;
+  setDailyWordCount: (n: number | null) => void;
+  setLearnedWordIds: (ids: string[]) => void;
+  setHistory: (h: Record<string, string[]>) => void;
+  setInputValue: (v: string) => void;
+  setReviewIndex: (n: number) => void;
   reviewIndex: number;
-  handleMarkLearned: any;
-  todaysWords: any[];
-  currentReviewWord: any;
-  history: any;
+  handleMarkLearned: (wordId: string) => void;
+  todaysWords: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string }[];
+  currentReviewWord: { wordId: string; character?: string; pinyin?: string; meaning?: string; sentence?: string; sentencePinyin?: string; sentenceMeaning?: string } | null;
+  history: Record<string, string[]>;
+  onBack?: () => void;
 };
 
 function ReviewFlow(props: ReviewFlowProps) {
@@ -37,7 +39,10 @@ function ReviewFlow(props: ReviewFlowProps) {
     todaysWords,
     currentReviewWord,
     history,
+    onBack,
   } = props;
+  console.log( todaysWords, currentReviewWord);
+  
   return (
     <div>
       {loading && <p>Loading...</p>}
@@ -46,6 +51,16 @@ function ReviewFlow(props: ReviewFlowProps) {
       <p>
         Progress: {learnedWordIds.length} / {selectedWords.length} words learned
       </p>
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          style={{ marginBottom: "1em", marginRight: "1em" }}
+          disabled={loading}
+        >
+          Back to Section Select
+        </button>
+      )}
       <button
         type="button"
         onClick={() => setCurrentPage("vocablist")}
@@ -66,7 +81,7 @@ function ReviewFlow(props: ReviewFlowProps) {
                 dailyWordCount: null,
                 learnedWordIds: [],
                 history: {},
-              })
+              }),
             );
             setDailyWordCount(null);
             setLearnedWordIds([]);
@@ -82,7 +97,11 @@ function ReviewFlow(props: ReviewFlowProps) {
         Reset Daily Commitment & Progress
       </button>
       {todaysWords.length === 0 ? (
-        <p>All today's words learned! 🎉</p>
+        learnedWordIds.length === selectedWords.length ? (
+          <p>All words in this section learned! 🎉</p>
+        ) : (
+          <p>All today's words learned! 🎉</p>
+        )
       ) : currentReviewWord ? (
         <div>
           <ul>
@@ -127,14 +146,16 @@ function ReviewFlow(props: ReviewFlowProps) {
           </ul>
           <button
             type="button"
-            onClick={() => handleMarkLearned(currentReviewWord.wordId)}
+            onClick={() => {
+              handleMarkLearned(currentReviewWord.wordId); 
+            }}
             disabled={loading}
           >
             Mark as Learned
           </button>
           <button
             type="button"
-            onClick={() => setReviewIndex((prev: any) => Math.max(prev - 1, 0))}
+            onClick={() => setReviewIndex(Math.max(reviewIndex - 1, 0))}
             disabled={reviewIndex === 0 || loading}
             style={{ marginLeft: "1em" }}
           >
@@ -143,16 +164,40 @@ function ReviewFlow(props: ReviewFlowProps) {
           <button
             type="button"
             onClick={() =>
-              setReviewIndex((prev: any) => Math.min(prev + 1, todaysWords.length - 1))
+              setReviewIndex(Math.min(reviewIndex + 1, todaysWords.length - 1))
             }
             disabled={reviewIndex >= todaysWords.length - 1 || loading}
             style={{ marginLeft: "1em" }}
           >
             Next
           </button>
+          {/* Show history as list of learned characters */}
+          <div style={{ marginTop: 16 }}>
+            <h4>History</h4>
+            {Object.entries(history).map(([date, ids]) => (
+              <div key={date}>
+                <strong>{date}:</strong>
+                <ul style={{ display: "inline", marginLeft: 8 }}>
+                  {ids.map((id: string) => {
+                    const word = selectedWords.find(
+                      (w) => String(w.wordId) === id
+                    );
+                    return word ? (
+                      <li
+                        key={id}
+                        style={{ display: "inline", marginRight: 8 }}
+                      >
+                        {word.character}
+                      </li>
+                    ) : null;
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
-      <ReviewHistory history={history} />
+      <ReviewHistory history={history} /> 
     </div>
   );
 }
