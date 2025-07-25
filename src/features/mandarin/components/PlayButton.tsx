@@ -1,14 +1,7 @@
 /**
- * PlayButton component contract:
+ * PlayButton component
  *
- * - Receives a mandarinText string as props.
- * - Handles TTS audio playback for the given text, including API call, caching, and error handling.
- * - Purely presentational except for internal audio state; does not persist data or manage parent state.
- */
-/**
- * PlayButton component contract:
- *
- * - Receives a mandarinText string as props.
+ * - Receives a mandarinText string as prop.
  * - Handles TTS audio playback for the given text, including API call, caching, and error handling.
  * - Purely presentational except for internal audio state; does not persist data or manage parent state.
  */

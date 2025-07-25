@@ -1,16 +1,10 @@
 /**
- * Import component contract:
+ * Import component
  *
  * - (Planned) Allows user to import cards from a JSON file.
  * - Handles file reading, validation, and calls addCard with valid cards.
  * - Pure presentational; does not manage persistence or parent state.
- */
-/**
- * Import component contract:
- *
- * - (Planned) Allows user to import cards from a JSON file.
- * - Handles file reading, validation, and calls addCard with valid cards.
- * - Pure presentational; does not manage persistence or parent state.
+ * - UI and logic for import are currently commented out.
  */
 function Import() {
   // const [newCard, setNewCard] = useState({

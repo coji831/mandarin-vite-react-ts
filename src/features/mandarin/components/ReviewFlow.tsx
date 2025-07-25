@@ -1,16 +1,10 @@
 /**
- * ReviewFlow component contract:
+ * ReviewFlow component
  *
  * - Manages the review flow for a set of words, including navigation and marking as learned.
  * - Receives all state and handlers as props from parent.
  * - Pure presentational; does not manage persistence or parent state.
- */
-/**
- * ReviewFlow component contract:
- *
- * - Manages the review flow for a set of words, including navigation and marking as learned.
- * - Receives all state and handlers as props from parent.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Displays progress, today's words, and review history.
  */
 import { ReviewHistory } from "./ReviewHistory";
 
