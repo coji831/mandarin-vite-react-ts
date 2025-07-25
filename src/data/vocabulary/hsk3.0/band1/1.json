@@ -1,162 +1,267 @@
 [
-  { "wordId": 1, "character": "爱", "pinyin": "ài", "meaning": "love" },
-  { "wordId": 2, "character": "爱好", "pinyin": "ài hào", "meaning": "hobby" },
-  { "wordId": 3, "character": "八", "pinyin": "bā", "meaning": "eight" },
+  { "wordId": "HSK_001", "character": "爱", "pinyin": "ài", "meaning": "love" },
   {
-    "wordId": 4,
+    "wordId": "HSK_002",
+    "character": "爱好",
+    "pinyin": "ài hào",
+    "meaning": "hobby"
+  },
+  {
+    "wordId": "HSK_003",
+    "character": "八",
+    "pinyin": "bā",
+    "meaning": "eight"
+  },
+  {
+    "wordId": "HSK_004",
     "character": "爸爸 | 爸",
     "pinyin": "bàba | bà",
     "meaning": "dad"
   },
   {
-    "wordId": 5,
+    "wordId": "HSK_005",
     "character": "吧",
     "pinyin": "ba",
     "meaning": "(interjection particle)"
   },
-  { "wordId": 6, "character": "白（形）", "pinyin": "bái", "meaning": "white" },
-  { "wordId": 7, "character": "白天", "pinyin": "bái tiān", "meaning": "day" },
-  { "wordId": 8, "character": "百", "pinyin": "bǎi", "meaning": "hundred" },
-  { "wordId": 9, "character": "班", "pinyin": "bān", "meaning": "class" },
-  { "wordId": 10, "character": "半", "pinyin": "bàn", "meaning": "half" },
   {
-    "wordId": 11,
+    "wordId": "HSK_006",
+    "character": "白（形）",
+    "pinyin": "bái",
+    "meaning": "white"
+  },
+  {
+    "wordId": "HSK_007",
+    "character": "白天",
+    "pinyin": "bái tiān",
+    "meaning": "day"
+  },
+  {
+    "wordId": "HSK_008",
+    "character": "百",
+    "pinyin": "bǎi",
+    "meaning": "hundred"
+  },
+  {
+    "wordId": "HSK_009",
+    "character": "班",
+    "pinyin": "bān",
+    "meaning": "class"
+  },
+  {
+    "wordId": "HSK_010",
+    "character": "半",
+    "pinyin": "bàn",
+    "meaning": "half"
+  },
+  {
+    "wordId": "HSK_011",
     "character": "半年",
     "pinyin": "bàn nián",
     "meaning": "half a year"
   },
   {
-    "wordId": 12,
+    "wordId": "HSK_012",
     "character": "半天",
     "pinyin": "bàn tiān",
     "meaning": "half day"
   },
-  { "wordId": 13, "character": "帮", "pinyin": "bāng", "meaning": "help" },
   {
-    "wordId": 14,
+    "wordId": "HSK_013",
+    "character": "帮",
+    "pinyin": "bāng",
+    "meaning": "help"
+  },
+  {
+    "wordId": "HSK_014",
     "character": "帮忙",
     "pinyin": "bāng máng",
     "meaning": "help"
   },
-  { "wordId": 15, "character": "包", "pinyin": "bāo", "meaning": "package" },
-  { "wordId": 16, "character": "包子", "pinyin": "bāo zi", "meaning": "bun" },
-  { "wordId": 17, "character": "杯", "pinyin": "bēi", "meaning": "cup" },
-  { "wordId": 18, "character": "杯子", "pinyin": "bēi zi", "meaning": "cup" },
-  { "wordId": 19, "character": "北", "pinyin": "běi", "meaning": "north" },
   {
-    "wordId": 20,
+    "wordId": "HSK_015",
+    "character": "包",
+    "pinyin": "bāo",
+    "meaning": "package"
+  },
+  {
+    "wordId": "HSK_016",
+    "character": "包子",
+    "pinyin": "bāo zi",
+    "meaning": "bun"
+  },
+  { "wordId": "HSK_017", "character": "杯", "pinyin": "bēi", "meaning": "cup" },
+  {
+    "wordId": "HSK_018",
+    "character": "杯子",
+    "pinyin": "bēi zi",
+    "meaning": "cup"
+  },
+  {
+    "wordId": "HSK_019",
+    "character": "北",
+    "pinyin": "běi",
+    "meaning": "north"
+  },
+  {
+    "wordId": "HSK_020",
     "character": "北边",
     "pinyin": "běi biān",
     "meaning": "North side"
   },
   {
-    "wordId": 21,
+    "wordId": "HSK_021",
     "character": "北京",
     "pinyin": "běi jīng",
     "meaning": "Beijing"
   },
   {
-    "wordId": 22,
+    "wordId": "HSK_022",
     "character": "本（量）",
     "pinyin": "běn",
     "meaning": "(measure word for books or volumes)"
   },
-  { "wordId": 23, "character": "本子", "pinyin": "běn zi", "meaning": "book" },
   {
-    "wordId": 24,
+    "wordId": "HSK_023",
+    "character": "本子",
+    "pinyin": "běn zi",
+    "meaning": "book"
+  },
+  {
+    "wordId": "HSK_024",
     "character": "比",
     "pinyin": "bǐ",
     "meaning": "particle used for comparison"
   },
   {
-    "wordId": 25,
+    "wordId": "HSK_025",
     "character": "别（副）",
     "pinyin": "bié",
     "meaning": "Don’t"
   },
-  { "wordId": 26, "character": "别的", "pinyin": "biéde", "meaning": "other" },
   {
-    "wordId": 27,
+    "wordId": "HSK_026",
+    "character": "别的",
+    "pinyin": "biéde",
+    "meaning": "other"
+  },
+  {
+    "wordId": "HSK_027",
     "character": "别人",
     "pinyin": "bié·rén",
     "meaning": "other people"
   },
-  { "wordId": 28, "character": "病", "pinyin": "bìng", "meaning": "disease" },
   {
-    "wordId": 29,
+    "wordId": "HSK_028",
+    "character": "病",
+    "pinyin": "bìng",
+    "meaning": "disease"
+  },
+  {
+    "wordId": "HSK_029",
     "character": "病人",
     "pinyin": "bìng rén",
     "meaning": "patient"
   },
   {
-    "wordId": 30,
+    "wordId": "HSK_030",
     "character": "不大",
     "pinyin": "bú dà",
     "meaning": "not big"
   },
-  { "wordId": 31, "character": "不对", "pinyin": "bú duì", "meaning": "wrong" },
   {
-    "wordId": 32,
+    "wordId": "HSK_031",
+    "character": "不对",
+    "pinyin": "bú duì",
+    "meaning": "wrong"
+  },
+  {
+    "wordId": "HSK_032",
     "character": "不客气",
     "pinyin": "bú kè qì",
     "meaning": "You’re welcome"
   },
   {
-    "wordId": 33,
+    "wordId": "HSK_033",
     "character": "不用",
     "pinyin": "bú yòng",
     "meaning": "No need to"
   },
-  { "wordId": 34, "character": "不", "pinyin": "bù", "meaning": "No" },
-  { "wordId": 35, "character": "菜", "pinyin": "cài", "meaning": "dish" },
-  { "wordId": 36, "character": "茶", "pinyin": "chá", "meaning": "tea" },
+  { "wordId": "HSK_034", "character": "不", "pinyin": "bù", "meaning": "No" },
   {
-    "wordId": 37,
+    "wordId": "HSK_035",
+    "character": "菜",
+    "pinyin": "cài",
+    "meaning": "dish"
+  },
+  { "wordId": "HSK_036", "character": "茶", "pinyin": "chá", "meaning": "tea" },
+  {
+    "wordId": "HSK_037",
     "character": "差",
     "pinyin": "chà",
     "meaning": "differ from; bad; short of"
   },
-  { "wordId": 38, "character": "常", "pinyin": "cháng", "meaning": "often" },
   {
-    "wordId": 39,
+    "wordId": "HSK_038",
+    "character": "常",
+    "pinyin": "cháng",
+    "meaning": "often"
+  },
+  {
+    "wordId": "HSK_039",
     "character": "常常",
     "pinyin": "cháng cháng",
     "meaning": "often"
   },
-  { "wordId": 40, "character": "唱", "pinyin": "chàng", "meaning": "sing" },
   {
-    "wordId": 41,
+    "wordId": "HSK_040",
+    "character": "唱",
+    "pinyin": "chàng",
+    "meaning": "sing"
+  },
+  {
+    "wordId": "HSK_041",
     "character": "唱歌",
     "pinyin": "chàng gē",
     "meaning": "sing"
   },
-  { "wordId": 42, "character": "车", "pinyin": "chē", "meaning": "car" },
+  { "wordId": "HSK_042", "character": "车", "pinyin": "chē", "meaning": "car" },
   {
-    "wordId": 43,
+    "wordId": "HSK_043",
     "character": "车票",
     "pinyin": "chē piào",
     "meaning": "ticket"
   },
   {
-    "wordId": 44,
+    "wordId": "HSK_044",
     "character": "车上",
     "pinyin": "chē shàng",
     "meaning": "in the car"
   },
   {
-    "wordId": 45,
+    "wordId": "HSK_045",
     "character": "车站",
     "pinyin": "chē zhàn",
     "meaning": "station"
   },
-  { "wordId": 46, "character": "吃", "pinyin": "chī", "meaning": "eat" },
+  { "wordId": "HSK_046", "character": "吃", "pinyin": "chī", "meaning": "eat" },
   {
-    "wordId": 47,
+    "wordId": "HSK_047",
     "character": "吃饭",
     "pinyin": "chī fàn",
     "meaning": "have meal"
   },
-  { "wordId": 48, "character": "出", "pinyin": "chū", "meaning": "out" },
-  { "wordId": 49, "character": "出来", "pinyin": "chū lái", "meaning": "come" },
-  { "wordId": 50, "character": "出去", "pinyin": "chū qù", "meaning": "go out" }
+  { "wordId": "HSK_048", "character": "出", "pinyin": "chū", "meaning": "out" },
+  {
+    "wordId": "HSK_049",
+    "character": "出来",
+    "pinyin": "chū lái",
+    "meaning": "come"
+  },
+  {
+    "wordId": "HSK_050",
+    "character": "出去",
+    "pinyin": "chū qù",
+    "meaning": "go out"
+  }
 ]
