@@ -6,7 +6,7 @@
  * - Allows filtering to show only uncompleted sections.
  * - Pure presentational; does not manage persistence or parent state.
  */
-import React from "react";
+import React, { useRef, useState } from "react";
 
 type Section = {
   sectionId: string;
@@ -36,6 +36,7 @@ export function SectionSelect({
   onBack,
 }: Props) {
   const [showUncompletedOnly, setShowUncompletedOnly] = React.useState(false);
+  // ...existing code...
   // Calculate section progress
   const completedSections = sections.filter(
     (section) =>

@@ -6,6 +6,8 @@
  * - Pure presentational; does not manage persistence or parent state.
  * - Validates input and displays estimated days to complete.
  */
+import React, { useRef, useState } from "react";
+
 type Props = {
   selectedList: string | null;
   selectedWords: any[];
@@ -17,19 +19,17 @@ type Props = {
   error: string;
 };
 
-export { DailyCommitment };
-
-function DailyCommitment(props: Props) {
-  const {
-    selectedList,
-    selectedWords,
-    inputValue,
-    setInputValue,
-    dailyWordCount,
-    handleCommitmentSave,
-    loading,
-    error,
-  } = props;
+export function DailyCommitment({
+  selectedList,
+  selectedWords,
+  inputValue,
+  setInputValue,
+  dailyWordCount,
+  handleCommitmentSave,
+  loading,
+  error,
+}: Props) {
+  // ...existing code...
 
   // Recommended range
   const recommendedMin = 5;
