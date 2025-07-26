@@ -2,10 +2,10 @@
  * FlashCard component
  *
  * - Displays flashcards for a section of words.
- * - UI only: manages current card, search, and details view.
- * - Parent is responsible for loading data, persistence, and progress updates.
- * - Calls onMarkMastered(wordId) to mark a word as mastered.
- * - Receives masteredWordIds and sectionProgress as props.
+ * - Handles navigation, marking words as mastered, and progress display.
+ * - Receives all state and handlers as props from parent.
+ * - Pure presentational; does not manage persistence or parent state.
+ * - Includes search/filter, progress bar, and details panel.
  */
 import React, { useState, useMemo } from "react";
 import { PlayButton } from "./PlayButton";

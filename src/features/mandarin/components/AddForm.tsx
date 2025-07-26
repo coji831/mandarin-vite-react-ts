@@ -1,10 +1,10 @@
 /**
  * AddForm component
  *
- * - Allows user to input and add a new Card (word) or multiple cards.
- * - Calls addCard with the new card(s) and onCancel when done.
+ * - Presents a form for adding a new vocabulary card.
+ * - Handles input state, validation, and calls addCard with the new card data.
  * - Pure presentational; does not manage persistence or parent state.
- * - Validates all fields are filled before adding.
+ * - All fields are required; alerts if any are missing.
  */
 import { useState, useRef } from "react";
 import { Card } from "./FlashCard";

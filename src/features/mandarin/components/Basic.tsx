@@ -1,9 +1,10 @@
 /**
  * Basic component
  *
- * - Learning page for tones, pronouns, and pinyin tone marks.
- * - Pure presentational; does not manage persistence or parent state.
- * - Provides audio playback for sample text.
+ * - Displays Mandarin tones, pronouns, and pinyin tone marks with examples.
+ * - Provides audio playback for characters and sentences.
+ * - Pure presentational; does not manage state or persistence.
+ * - Used as a reference/learning resource page.
  */
 export { Basic };
 

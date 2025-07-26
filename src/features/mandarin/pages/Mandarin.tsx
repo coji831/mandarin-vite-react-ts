@@ -6,6 +6,7 @@
  * - Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
  * - Merges tracking data with word data via wordId, never mutating word data itself.
  * - Validates wordId uniqueness and skips/logs invalid entries.
+ * - Handles import/export of progress and vocabulary lists.
  * - Updates localStorage after user actions (mastering word, completing section, etc).
  * - Loads and merges progress on page load.
  * - Manages state for selected list, sections, daily word count, review, and history.
@@ -395,7 +396,7 @@ function Mandarin() {
           setSelectedList(firstList.listName);
           let vocabListMeta = null;
           try {
-            const res = await fetch("/src/data/vocabularyLists.json");
+            const res = await fetch("/data/vocabularyLists.json");
             if (res.ok) {
               const vocabLists = await res.json();
               vocabListMeta = vocabLists.find(
@@ -406,7 +407,7 @@ function Mandarin() {
           let words = [];
           if (vocabListMeta) {
             try {
-              const res = await fetch(`/src/data/${vocabListMeta.file}`);
+              const res = await fetch(`/data/${vocabListMeta.file}`);
               if (res.ok) {
                 words = await res.json();
               }

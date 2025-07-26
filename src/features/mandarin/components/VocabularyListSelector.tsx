@@ -25,7 +25,7 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const res = await fetch("/src/data/vocabularyLists.json");
+        const res = await fetch("/data/vocabularyLists.json");
         if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
         const data: VocabularyList[] = await res.json();
         setLists(data);
@@ -40,7 +40,7 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
     const fetchSamples = async () => {
       for (const list of lists) {
         try {
-          const res = await fetch(`/src/data/${list.file}`);
+          const res = await fetch(`/data/${list.file}`);
           if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
           const data: Word[] = await res.json();
           setSamples((prev) => ({
@@ -57,7 +57,7 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
 
   const handleSelect = async (list: VocabularyList) => {
     try {
-      const res = await fetch(`/src/data/${list.file}`);
+      const res = await fetch(`/data/${list.file}`);
       if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
       const words: Word[] = await res.json();
       // Ensure wordId is unique

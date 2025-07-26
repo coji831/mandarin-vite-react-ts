@@ -1,9 +1,10 @@
 /**
  * Sidebar component
  *
- * - Receives a list of cards (words) and displays them in a searchable, clickable list.
- * - Highlights the current card and shows mastery status if available.
+ * - Displays a list of vocabulary cards for navigation.
+ * - Allows selecting a card, and optionally shows pinyin/meaning.
  * - Pure presentational; does not manage persistence or parent state.
+ * - Supports filtering and highlights the current card.
  */
 import { CSSProperties, useState } from "react";
 
