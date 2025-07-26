@@ -7,7 +7,7 @@
  * - Calls onMarkMastered(wordId) to mark a word as mastered.
  * - Receives masteredWordIds and sectionProgress as props.
  */
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { PlayButton } from "./PlayButton";
 import { WordDetails } from "./WordDetails";
 
@@ -48,7 +48,7 @@ export function FlashCard({
   const filteredWords = useMemo(() => {
     if (!search.trim()) return sectionWords;
     return sectionWords.filter(
-      (w) =>
+      (w: Card) =>
         w.character.includes(search.trim()) ||
         w.pinyin.toLowerCase().includes(search.trim().toLowerCase()),
     );
@@ -81,19 +81,11 @@ export function FlashCard({
   const sectionComplete = sectionProgress.mastered === sectionProgress.total;
 
   return (
-    <div
-      id="flashcard"
-      className="flex  "
-      style={{ width: "100%", minHeight: "100%" }}
-    >
+    <div>
       <div
-        className="  bg-dark flex  align-center"
-        style={{
-          width: "100%",
-          minHeight: 600,
-          position: "relative",
-          justifyContent: "space-evenly",
-        }}
+        id="flashcard"
+        className="flex"
+        style={{ width: "100%", minHeight: "100%" }}
       >
         {/* Sidebar - 30% */}
         <div
@@ -152,7 +144,7 @@ export function FlashCard({
             </span>
           </div>
           <div style={{ maxHeight: 400, overflowY: "auto", flex: 1 }}>
-            {filteredWords.map((w, idx) => (
+            {filteredWords.map((w: Card, idx: number) => (
               <div
                 key={w.wordId}
                 onClick={() => handleSidebarClick(idx)}
@@ -210,14 +202,15 @@ export function FlashCard({
 
         {/* Flashcard Area - 40% */}
         <div
-          className="flashcard-center flex flex-col flex-center"
+          className="flashcard-center flex flex-col  "
           style={{
             width: "40%",
           }}
         >
           <div
-            className="flashcard-card flex-col flex-center bg-card"
+            className="flashcard-card flex flex-col flex-center bg-card"
             style={{
+              height: "100%",
               width: 420,
               minHeight: 420,
               borderRadius: 16,
@@ -226,6 +219,7 @@ export function FlashCard({
               position: "relative",
               margin: 0,
               transition: "box-shadow 0.2s",
+              justifyContent: "space-around",
             }}
           >
             {currentCard ? (
@@ -314,38 +308,14 @@ export function FlashCard({
                 </div>
                 {/* Navigation Buttons at bottom corners */}
                 <div
-                  style={{
-                    position: "absolute",
-                    left: 18,
-                    bottom: 18,
-                  }}
+                  className=" flex "
+                  style={{ width: "100%", justifyContent: "space-between" }}
                 >
-                  <button
-                    onClick={handlePrevious}
-                    style={{
-                      ...navBtnStyle,
-                      fontSize: 16,
-                      padding: "8px 18px",
-                    }}
-                  >
+                  <button type="button" onClick={handlePrevious}>
                     ◀ Previous
                   </button>
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    right: 18,
-                    bottom: 18,
-                  }}
-                >
-                  <button
-                    onClick={handleNext}
-                    style={{
-                      ...navBtnStyle,
-                      fontSize: 16,
-                      padding: "8px 18px",
-                    }}
-                  >
+
+                  <button type="button" onClick={handleNext}>
                     Next ▶
                   </button>
                 </div>

@@ -11,7 +11,7 @@
  * - Manages state for selected list, sections, daily word count, review, and history.
  * - Handles all persistence, data loading, and navigation between subpages/components.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Basic,
   DailyCommitment,
@@ -31,64 +31,8 @@ function getTodayKey() {
 }
 
 function Mandarin() {
-  // --- User Progress Tracking ---
-  // Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
-  type UserProgress = {
-    lists: Array<{
-      listName: string;
-      sections: any[];
-      dailyWordCount: number | null;
-      completedSections: string[];
-    }>;
-  };
-
-  function getUserProgress(): UserProgress {
-    const raw = localStorage.getItem("user_progress");
-    if (!raw) return { lists: [] };
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return { lists: [] };
-    }
-  }
-
-  function saveUserProgress(progress: UserProgress) {
-    localStorage.setItem("user_progress", JSON.stringify(progress));
-  }
-
-  // Validate wordId uniqueness in a list of words
-  function validateWordIds(words: any[]): any[] {
-    const seen = new Set<string>();
-    const valid: any[] = [];
-    for (const w of words) {
-      if (!w.wordId) {
-        console.warn("Missing wordId, skipping:", w);
-        continue;
-      }
-      if (seen.has(w.wordId)) {
-        console.warn("Duplicate wordId, skipping:", w.wordId);
-        continue;
-      }
-      seen.add(w.wordId);
-      valid.push(w);
-    }
-    return valid;
-  }
-
-  // Merge progress fields into word data by wordId
-  function mergeProgress(
-    words: any[],
-    sectionProgress: Record<string, any>,
-  ): any[] {
-    const map: Record<string, any> = {};
-    for (const w of words) map[w.wordId] = { ...w };
-    for (const [wordId, prog] of Object.entries(sectionProgress || {})) {
-      if (map[wordId]) {
-        map[wordId] = { ...map[wordId], ...prog };
-      }
-    }
-    return Object.values(map);
-  }
+  const importInputRef = useRef<HTMLInputElement>(null);
+  // --- State and hooks ---
   const [currentPage, setCurrentPage] = useState("vocablist");
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [selectedWords, setSelectedWords] = useState<any[]>([]);
@@ -180,6 +124,58 @@ function Mandarin() {
     }
     setLoading(false);
   }, [selectedList, selectedWords]);
+
+  // --- User Progress Tracking ---
+  // Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
+  type UserProgress = {
+    lists: Array<{
+      listName: string;
+      sections: any[];
+      dailyWordCount: number | null;
+      completedSections: string[];
+    }>;
+  };
+
+  function getUserProgress(): UserProgress {
+    const raw = localStorage.getItem("user_progress");
+    if (!raw) return { lists: [] };
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return { lists: [] };
+    }
+  }
+
+  function saveUserProgress(progress: UserProgress) {
+    localStorage.setItem("user_progress", JSON.stringify(progress));
+  }
+
+  // Validate wordId uniqueness in a list of words
+  function validateWordIds(words: any[]): any[] {
+    const seen = new Set<string>();
+    const valid: any[] = [];
+    for (const w of words) {
+      if (!w.wordId) {
+        console.warn("Missing wordId, skipping:", w);
+        continue;
+      }
+      if (seen.has(w.wordId)) {
+        console.warn("Duplicate wordId, skipping:", w.wordId);
+        continue;
+      }
+      seen.add(w.wordId);
+      valid.push(w);
+    }
+    return valid;
+  }
+
+  // Merge progress data into word objects
+  function mergeProgress(words: any[], progress: Record<string, any>) {
+    return words.map((w) => ({
+      ...w,
+      ...(progress && progress[w.wordId] ? progress[w.wordId] : {}),
+    }));
+  }
 
   // Helper to divide words into sections
   function divideIntoSections(words: any[], count: number) {
@@ -358,6 +354,132 @@ function Mandarin() {
         .slice(0, dailyWordCount ?? selectedWords.length);
   const currentReviewWord = todaysWords[reviewIndex];
 
+  // --- Export/Import Progress ---
+  // Export user_progress as JSON file
+  const handleExportProgress = () => {
+    const userProgress = getUserProgress();
+    const blob = new Blob([JSON.stringify(userProgress, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "user_progress.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  };
+
+  // Import user_progress from JSON file
+  const handleImportProgress = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const imported = JSON.parse(event.target?.result as string);
+        if (
+          !imported ||
+          typeof imported !== "object" ||
+          !Array.isArray(imported.lists)
+        ) {
+          setError("Invalid progress file format.");
+          return;
+        }
+        saveUserProgress(imported);
+        const firstList = imported.lists[0];
+        if (firstList) {
+          setSelectedList(firstList.listName);
+          let vocabListMeta = null;
+          try {
+            const res = await fetch("/src/data/vocabularyLists.json");
+            if (res.ok) {
+              const vocabLists = await res.json();
+              vocabListMeta = vocabLists.find(
+                (l: any) => l.name === firstList.listName,
+              );
+            }
+          } catch {}
+          let words = [];
+          if (vocabListMeta) {
+            try {
+              const res = await fetch(`/src/data/${vocabListMeta.file}`);
+              if (res.ok) {
+                words = await res.json();
+              }
+            } catch {}
+          }
+          if (!words.length) {
+            setError(
+              "Vocabulary data for the imported list could not be found. Import aborted.",
+            );
+            return;
+          }
+          const vocabWordIds = new Set(words.map((w: any) => String(w.wordId)));
+          let invalidWordIds: string[] = [];
+          const cleanedSections = firstList.sections.map((section: any) => {
+            const validWordIds = section.wordIds.filter((id: string) => {
+              if (!vocabWordIds.has(String(id))) {
+                invalidWordIds.push(String(id));
+                return false;
+              }
+              return true;
+            });
+            const cleanedProgress: Record<string, any> = {};
+            for (const id of validWordIds) {
+              if (section.progress && section.progress[id]) {
+                cleanedProgress[id] = section.progress[id];
+              }
+            }
+            return {
+              ...section,
+              wordIds: validWordIds,
+              progress: cleanedProgress,
+            };
+          });
+          const validWords = validateWordIds(words);
+          let learned: string[] = [];
+          const sectionProgress: Record<string, number> = {};
+          for (const section of cleanedSections) {
+            const merged = mergeProgress(
+              validWords.filter((w) => section.wordIds.includes(w.wordId)),
+              section.progress,
+            );
+            const mastered = merged.filter((w: any) => w.mastered).length;
+            sectionProgress[section.sectionId] = mastered;
+            learned.push(
+              ...merged
+                .filter((w: any) => w.mastered)
+                .map((w: any) => w.wordId),
+            );
+          }
+          setSelectedWords(words);
+          setSections(cleanedSections);
+          setDailyWordCount(firstList.dailyWordCount || null);
+          setSectionProgress(sectionProgress);
+          setLearnedWordIds(Array.from(new Set(learned)));
+          setSelectedSectionId(null);
+          setCurrentPage("sectionselect");
+          setError(
+            invalidWordIds.length
+              ? `Some wordIds in imported data do not exist in the vocabulary and were skipped: ${invalidWordIds.join(
+                  ", ",
+                )}`
+              : "",
+          );
+        }
+      } catch (err) {
+        setError("Failed to import progress: " + (err as any)?.message);
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input
+    e.target.value = "";
+  };
+
   return (
     <div
       style={{
@@ -367,6 +489,33 @@ function Mandarin() {
         flexDirection: "column",
       }}
     >
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          alignItems: "center",
+          margin: "8px 0 0 8px",
+        }}
+      >
+        <button onClick={handleExportProgress}>Export Progress</button>
+        <input
+          type="file"
+          accept="application/json,.json"
+          style={{ display: "none" }}
+          ref={importInputRef}
+          onChange={handleImportProgress}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            importInputRef.current && importInputRef.current.click()
+          }
+        >
+          Import Progress
+        </button>
+        {error && <span style={{ color: "red", marginLeft: 8 }}>{error}</span>}
+      </div>
+
       <NavBar setCurrentPage={setCurrentPage} />
       {currentPage === "vocablist" && (
         <VocabularyListSelector

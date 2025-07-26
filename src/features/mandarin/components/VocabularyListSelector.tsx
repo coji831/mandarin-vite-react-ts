@@ -6,7 +6,7 @@
  * - Handles localStorage tracking for new lists.
  * - Ensures wordId uniqueness in loaded words.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { Word, VocabularyList } from "../types";
 
 function getSampleWords(words: Word[], count: number = 3): Word[] {
@@ -20,6 +20,7 @@ type VocabularyListSelectorProps = {
 function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [samples, setSamples] = useState<Record<string, Word[]>>({});
+  // ...existing code...
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -82,9 +83,10 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
     }
   };
 
+  // ...existing code...
+
   return (
     <div>
-      <h2>Select a Vocabulary List</h2>
       {lists.map((list) => (
         <div
           key={list.name}
