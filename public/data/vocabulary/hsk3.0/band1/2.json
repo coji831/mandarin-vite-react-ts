@@ -1,0 +1,98 @@
+[
+  {
+    "wordId": 51,
+    "character": "多",
+    "pinyin": "duō",
+    "meaning": "many; much; more"
+  },
+  {
+    "wordId": 52,
+    "character": "多少",
+    "pinyin": "duōshao",
+    "meaning": "how many; how much"
+  },
+  {
+    "wordId": 53,
+    "character": "饿",
+    "pinyin": "è",
+    "meaning": "hungry"
+  },
+  {
+    "wordId": "HSK_054",
+    "character": "儿子",
+    "pinyin": "érzi",
+    "meaning": "son"
+  },
+  {
+    "wordId": 55,
+    "character": "二",
+    "pinyin": "èr",
+    "meaning": "two"
+  },
+  {
+    "wordId": 56,
+    "character": "饭店",
+    "pinyin": "fàndiàn",
+    "meaning": "restaurant; hotel"
+  },
+  {
+    "wordId": 57,
+    "character": "方便",
+    "pinyin": "fāngbiàn",
+    "meaning": "convenient"
+  },
+  {
+    "wordId": 58,
+    "character": "房间",
+    "pinyin": "fángjiān",
+    "meaning": "room"
+  },
+  {
+    "wordId": 59,
+    "character": "放",
+    "pinyin": "fàng",
+    "meaning": "put; place"
+  },
+  {
+    "wordId": 60,
+    "character": "飞机",
+    "pinyin": "fēijī",
+    "meaning": "airplane"
+  },
+  {
+    "wordId": 61,
+    "character": "非常",
+    "pinyin": "fēicháng",
+    "meaning": "very; extremely"
+  },
+  {
+    "wordId": 62,
+    "character": "分",
+    "pinyin": "fēn",
+    "meaning": "minute; cent; divide"
+  },
+  {
+    "wordId": 63,
+    "character": "分钟",
+    "pinyin": "fēnzhōng",
+    "meaning": "minute (duration)"
+  },
+  {
+    "wordId": 64,
+    "character": "服务员",
+    "pinyin": "fúwùyuán",
+    "meaning": "waiter; attendant"
+  },
+  {
+    "wordId": 65,
+    "character": "高",
+    "pinyin": "gāo",
+    "meaning": "tall; high"
+  },
+  {
+    "wordId": 66,
+    "character": "高兴",
+    "pinyin": "gāoxìng",
+    "meaning": "happy; glad"
+  }
+]

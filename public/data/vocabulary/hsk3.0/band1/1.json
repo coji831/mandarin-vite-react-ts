@@ -1,0 +1,100 @@
+[
+  { "wordId": "HSK_001", "character": "爱", "pinyin": "ài", "meaning": "love" },
+  {
+    "wordId": "HSK_002",
+    "character": "爱好",
+    "pinyin": "ài hào",
+    "meaning": "hobby"
+  },
+  {
+    "wordId": "HSK_003",
+    "character": "八",
+    "pinyin": "bā",
+    "meaning": "eight"
+  },
+  {
+    "wordId": "HSK_004",
+    "character": "爸爸 | 爸",
+    "pinyin": "bàba | bà",
+    "meaning": "dad"
+  },
+  {
+    "wordId": "HSK_005",
+    "character": "吧",
+    "pinyin": "ba",
+    "meaning": "(interjection particle)"
+  },
+  {
+    "wordId": "HSK_006",
+    "character": "白（形）",
+    "pinyin": "bái",
+    "meaning": "white"
+  },
+  {
+    "wordId": "HSK_007",
+    "character": "白天",
+    "pinyin": "bái tiān",
+    "meaning": "day"
+  },
+  {
+    "wordId": "HSK_008",
+    "character": "百",
+    "pinyin": "bǎi",
+    "meaning": "hundred"
+  },
+  {
+    "wordId": "HSK_009",
+    "character": "班",
+    "pinyin": "bān",
+    "meaning": "class"
+  },
+  {
+    "wordId": "HSK_010",
+    "character": "半",
+    "pinyin": "bàn",
+    "meaning": "half"
+  },
+  {
+    "wordId": "HSK_011",
+    "character": "半年",
+    "pinyin": "bàn nián",
+    "meaning": "half a year"
+  },
+  {
+    "wordId": "HSK_012",
+    "character": "半天",
+    "pinyin": "bàn tiān",
+    "meaning": "half day"
+  },
+  {
+    "wordId": "HSK_013",
+    "character": "帮",
+    "pinyin": "bāng",
+    "meaning": "help"
+  },
+  {
+    "wordId": "HSK_014",
+    "character": "帮忙",
+    "pinyin": "bāng máng",
+    "meaning": "help"
+  },
+  {
+    "wordId": "HSK_015",
+    "character": "包",
+    "pinyin": "bāo",
+    "meaning": "package"
+  },
+  {
+    "wordId": "HSK_016",
+    "character": "包子",
+    "pinyin": "bāo zi",
+    "meaning": "bun"
+  },
+  { "wordId": "HSK_017", "character": "杯", "pinyin": "bēi", "meaning": "cup" },
+  {
+    "wordId": "HSK_018",
+    "character": "杯子",
+    "pinyin": "bēi zi",
+    "meaning": "cup"
+  }
+]

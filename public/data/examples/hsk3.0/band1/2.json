@@ -1,0 +1,98 @@
+[
+  {
+    "wordId": 51,
+    "sentence": "你多大？",
+    "sentencePinyin": "Nǐ duō dà?",
+    "sentenceMeaning": "How old are you?"
+  },
+  {
+    "wordId": 52,
+    "sentence": "多少钱？",
+    "sentencePinyin": "Duōshao qián?",
+    "sentenceMeaning": "How much money?"
+  },
+  {
+    "wordId": 53,
+    "sentence": "我饿了。",
+    "sentencePinyin": "Wǒ è le.",
+    "sentenceMeaning": "I'm hungry."
+  },
+  {
+    "wordId": 54,
+    "sentence": "我有一个儿子。",
+    "sentencePinyin": "Wǒ yǒu yī gè érzi.",
+    "sentenceMeaning": "I have one son."
+  },
+  {
+    "wordId": 55,
+    "sentence": "我有两本书。",
+    "sentencePinyin": "Wǒ yǒu liǎng běn shū.",
+    "sentenceMeaning": "I have two books."
+  },
+  {
+    "wordId": 56,
+    "sentence": "我去饭店。",
+    "sentencePinyin": "Wǒ qù fàndiàn.",
+    "sentenceMeaning": "I go to the restaurant."
+  },
+  {
+    "wordId": 57,
+    "sentence": "这很方便。",
+    "sentencePinyin": "Zhè hěn fāngbiàn.",
+    "sentenceMeaning": "This is very convenient."
+  },
+  {
+    "wordId": 58,
+    "sentence": "我的房间很大。",
+    "sentencePinyin": "Wǒ de fángjiān hěn dà.",
+    "sentenceMeaning": "My room is big."
+  },
+  {
+    "wordId": 59,
+    "sentence": "请把书放在桌子上。",
+    "sentencePinyin": "Qǐng bǎ shū fàng zài zhuōzi shàng.",
+    "sentenceMeaning": "Please put the book on the table."
+  },
+  {
+    "wordId": 60,
+    "sentence": "我坐飞机。",
+    "sentencePinyin": "Wǒ zuò fēijī.",
+    "sentenceMeaning": "I take an airplane."
+  },
+  {
+    "wordId": 61,
+    "sentence": "我非常高兴。",
+    "sentencePinyin": "Wǒ fēicháng gāoxìng.",
+    "sentenceMeaning": "I am very happy."
+  },
+  {
+    "wordId": 62,
+    "sentence": "五分钱。",
+    "sentencePinyin": "Wǔ fēn qián.",
+    "sentenceMeaning": "Five cents."
+  },
+  {
+    "wordId": 63,
+    "sentence": "等我五分钟。",
+    "sentencePinyin": "Děng wǒ wǔ fēnzhōng.",
+    "sentenceMeaning": "Wait for me five minutes."
+  },
+  {
+    "wordId": 64,
+    "sentence": "服务员，请点菜。",
+    "sentencePinyin": "Fúwùyuán, qǐng diǎncài.",
+    "sentenceMeaning": "Waiter, please order."
+  },
+  {
+    "wordId": 65,
+    "sentence": "他很高。",
+    "sentencePinyin": "Tā hěn gāo.",
+    "sentenceMeaning": "He is very tall."
+  },
+  {
+    "wordId": 66,
+    "sentence": "我很高兴。",
+    "sentencePinyin": "Wǒ hěn gāoxìng.",
+    "sentenceMeaning": "I am very happy."
+  }
+]

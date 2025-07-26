@@ -1,0 +1,104 @@
+[
+  {
+    "wordId": 1,
+    "sentence": "我爱你。",
+    "sentencePinyin": "Wǒ ài nǐ.",
+    "sentenceMeaning": "I love you."
+  },
+  {
+    "wordId": 2,
+    "sentence": "我的爱好是看书。",
+    "sentencePinyin": "Wǒ de àihào shì kànshū.",
+    "sentenceMeaning": "My hobby is reading books."
+  },
+  {
+    "wordId": 3,
+    "sentence": "我有八本书。",
+    "sentencePinyin": "Wǒ yǒu bā běn shū.",
+    "sentenceMeaning": "I have eight books."
+  },
+  {
+    "wordId": 4,
+    "sentence": "我爸爸很好。",
+    "sentencePinyin": "Wǒ bàba hěn hǎo.",
+    "sentenceMeaning": "My dad is very good."
+  },
+  {
+    "wordId": 5,
+    "sentence": "我们走吧。",
+    "sentencePinyin": "Wǒmen zǒu ba.",
+    "sentenceMeaning": "Let's go."
+  },
+  {
+    "wordId": 6,
+    "sentence": "这张纸是白的。",
+    "sentencePinyin": "Zhè zhāng zhǐ shì bái de.",
+    "sentenceMeaning": "This paper is white."
+  },
+  {
+    "wordId": 7,
+    "sentence": "白天很热。",
+    "sentencePinyin": "Báitiān hěn rè.",
+    "sentenceMeaning": "It's very hot during the day."
+  },
+  {
+    "wordId": 8,
+    "sentence": "一百。",
+    "sentencePinyin": "Yībǎi.",
+    "sentenceMeaning": "One hundred."
+  },
+  {
+    "wordId": 9,
+    "sentence": "我们班有二十个人。",
+    "sentencePinyin": "Wǒmen bān yǒu èrshí ge rén.",
+    "sentenceMeaning": "Our class has twenty people."
+  },
+  {
+    "wordId": 10,
+    "sentence": "一半。",
+    "sentencePinyin": "Yībàn.",
+    "sentenceMeaning": "Half."
+  },
+  {
+    "wordId": 11,
+    "sentence": "半年以后。",
+    "sentencePinyin": "Bànnián yǐhòu.",
+    "sentenceMeaning": "Half a year later."
+  },
+  {
+    "wordId": 12,
+    "sentence": "等了半天。",
+    "sentencePinyin": "Děng le bàntiān.",
+    "sentenceMeaning": "Waited for a long time (half a day)."
+  },
+  {
+    "wordId": 13,
+    "sentence": "我可以帮你吗？",
+    "sentencePinyin": "Wǒ kěyǐ bāng nǐ ma?",
+    "sentenceMeaning": "Can I help you?"
+  },
+  {
+    "wordId": 14,
+    "sentence": "他帮了我一个忙。",
+    "sentencePinyin": "Tā bāng le wǒ yī ge máng.",
+    "sentenceMeaning": "He helped me (did me a favor)."
+  },
+  {
+    "wordId": 15,
+    "sentence": "一个包。",
+    "sentencePinyin": "Yī ge bāo.",
+    "sentenceMeaning": "One package (or bag)."
+  },
+  {
+    "wordId": 16,
+    "sentence": "我喜欢吃包子。",
+    "sentencePinyin": "Wǒ xǐhuān chī bāozi.",
+    "sentenceMeaning": "I like to eat buns."
+  },
+  {
+    "wordId": 17,
+    "sentence": "一杯水。",
+    "sentencePinyin": "Yī bēi shuǐ.",
+    "sentenceMeaning": "A cup of water."
+  }
+]
