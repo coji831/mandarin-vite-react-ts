@@ -25,7 +25,7 @@ export function SectionConfirm({
   onProceed,
 }: Props) {
   return (
-    <div style={{ textAlign: "center", marginTop: 32 }}>
+    <div style={{ textAlign: "center" }}>
       <h2>Sections Created</h2>
       <p>
         {sections.length} sections created, {wordsPerSection} words per section
@@ -36,9 +36,7 @@ export function SectionConfirm({
             } words)`
           : ""}
       </p>
-      <button onClick={onProceed} style={{ marginTop: 16 }}>
-        Proceed
-      </button>
+      <button onClick={onProceed}>Proceed</button>
     </div>
   );
 }

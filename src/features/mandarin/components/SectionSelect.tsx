@@ -36,7 +36,6 @@ export function SectionSelect({
   onBack,
 }: Props) {
   const [showUncompletedOnly, setShowUncompletedOnly] = React.useState(false);
-  // ...existing code...
   // Calculate section progress
   const completedSections = sections.filter(
     (section) =>
@@ -54,12 +53,12 @@ export function SectionSelect({
     <div style={{ textAlign: "center", marginTop: 32 }}>
       <h2>Select a Section to Study</h2>
       <div style={{ marginBottom: 8 }}>
-        <strong>Sections Completed:</strong> {completedSections.length} /{" "}
-        {totalSections}
+        <strong>Sections Completed: </strong>
+        {completedSections.length} / {totalSections}
       </div>
       <div style={{ marginBottom: 16 }}>
-        <strong>Overall Progress:</strong> {learnedWordIds.length} /{" "}
-        {totalWords} words learned
+        <strong>Overall Progress: </strong>
+        {learnedWordIds.length} / {totalWords} words learned
       </div>
       <div style={{ marginBottom: 20 }}>
         <label style={{ fontSize: 15 }}>
@@ -72,57 +71,32 @@ export function SectionSelect({
           Show uncompleted sections only
         </label>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: 16,
-        }}
-      >
+      <div className="flex gap-10 flex-center" style={{ flexWrap: "wrap" }}>
         {filteredSections.map((section) => {
+          const isSelected = selectedSectionId === section.sectionId;
           const isCompleted =
             (sectionProgress[section.sectionId] || 0) >= section.wordIds.length;
           return (
             <div
+              className="flex flex-col flex-center padding-10"
               key={section.sectionId}
               style={{
-                margin: 8,
-                padding: 0,
-                border:
-                  selectedSectionId === section.sectionId
-                    ? "2px solid #8faaff"
-                    : "1px solid #222a3a",
-                background:
-                  selectedSectionId === section.sectionId
-                    ? "#222a3a"
-                    : "#38405a",
+                border: isSelected ? "2px solid #8faaff" : "1px solid #222a3a",
+                background: isSelected ? "#222a3a" : "#38405a",
                 borderRadius: 10,
-                minWidth: 120,
-                minHeight: 80,
                 boxShadow: "0 2px 8px 0 rgba(30,40,80,0.10)",
-                cursor: isCompleted ? "not-allowed" : "pointer",
                 transition: "all 0.18s cubic-bezier(.4,0,.2,1)",
-                color:
-                  selectedSectionId === section.sectionId ? "#fff" : "#e0e7ff",
-                outline: "none",
+                color: isSelected ? "#fff" : "#e0e7ff",
                 opacity: isCompleted ? 0.6 : 1,
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
               }}
-              onClick={() =>
-                !isCompleted && setSelectedSectionId(section.sectionId)
-              }
+              onClick={() => setSelectedSectionId(section.sectionId)}
               onMouseOver={(e) => {
                 (e.currentTarget as unknown as HTMLDivElement).style.boxShadow =
                   "0 6px 20px 0 rgba(100,108,255,0.13)";
               }}
               onMouseOut={(e) => {
                 (e.currentTarget as unknown as HTMLDivElement).style.boxShadow =
-                  selectedSectionId === section.sectionId
+                  isSelected
                     ? "0 4px 16px 0 rgba(100,108,255,0.10)"
                     : "0 2px 8px 0 rgba(60,60,60,0.06)";
               }}
@@ -131,11 +105,7 @@ export function SectionSelect({
                 style={{
                   fontWeight: 700,
                   fontSize: 18,
-                  marginBottom: 6,
-                  color:
-                    selectedSectionId === section.sectionId
-                      ? "#fff"
-                      : "#e0e7ff",
+                  color: isSelected ? "#fff" : "#e0e7ff",
                 }}
               >
                 Section {section.sectionId.replace("section_", "")}: Words{" "}
@@ -145,14 +115,12 @@ export function SectionSelect({
                     }`
                   : "-"}
               </div>
+
               <div
                 style={{
                   fontSize: 15,
                   marginBottom: 4,
-                  color:
-                    selectedSectionId === section.sectionId
-                      ? "#fff"
-                      : "#e0e7ff",
+                  color: isSelected ? "#fff" : "#e0e7ff",
                 }}
               >
                 {section.wordIds.length} words
@@ -160,56 +128,38 @@ export function SectionSelect({
               <div
                 style={{
                   fontSize: 14,
-                  color:
-                    selectedSectionId === section.sectionId
-                      ? "#ffe066"
-                      : "#b3c7ff",
-                  marginTop: 4,
+                  color: isSelected ? "#ffe066" : "#b3c7ff",
                   fontWeight: 500,
                 }}
               >
-                Progress: {sectionProgress[section.sectionId] || 0} /{" "}
-                {section.wordIds.length}
+                {isCompleted
+                  ? "✓ Completed"
+                  : `Progress: ${sectionProgress[section.sectionId] || 0} / ${
+                      section.wordIds.length
+                    }`}
               </div>
-              {isCompleted && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 12,
-                    color: "#ffe066",
-                    fontWeight: 700,
-                    fontSize: 13,
-                  }}
-                >
-                  ✓ Completed
-                </div>
-              )}
+
               <button
                 style={{
                   marginTop: 12,
                   padding: "8px 20px",
-                  background: isCompleted ? "#aaa" : "#646cff",
+                  background: "#646cff",
                   color: isCompleted ? "#eee" : "#fff",
                   border: "none",
                   borderRadius: 6,
                   fontWeight: 600,
                   fontSize: 15,
-                  cursor: isCompleted ? "not-allowed" : "pointer",
-                  opacity: isCompleted ? 0.7 : 1,
+                  //opacity: isCompleted ? 0.7 : 1,
                   transition: "background 0.18s cubic-bezier(.4,0,.2,1)",
                 }}
-                disabled={isCompleted}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!isCompleted) {
-                    setSelectedSectionId(section.sectionId);
-                    onProceed();
-                  }
+                  setSelectedSectionId(section.sectionId);
+                  onProceed();
                 }}
               >
-                {sectionProgress[section.sectionId] > 0 && !isCompleted
-                  ? "Continue Flashcards"
+                {sectionProgress[section.sectionId] > 0 && isCompleted
+                  ? "Review"
                   : "Start Learning"}
               </button>
             </div>

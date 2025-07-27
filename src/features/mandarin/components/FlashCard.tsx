@@ -7,9 +7,11 @@
  * - Pure presentational; does not manage persistence or parent state.
  * - Includes search/filter, progress bar, and details panel.
  */
-import React, { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PlayButton } from "./PlayButton";
 import { WordDetails } from "./WordDetails";
+import { NavBar } from "./NabBar";
+import { Sidebar } from "./Sidebar";
 
 export type Card = {
   wordId: string;
@@ -40,6 +42,8 @@ export function FlashCard({
   masteredWordIds,
   onBackToSection,
 }: FlashCardProps) {
+  const { mastered, total } = sectionProgress;
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [search, setSearch] = useState("");
@@ -88,138 +92,29 @@ export function FlashCard({
         style={{ width: "100%", minHeight: "100%" }}
       >
         {/* Sidebar - 30% */}
-        <div
-          className="flashcard-sidebar bg-dark flex-col"
-          style={{
-            width: "30%",
-            color: "#fff",
-            padding: 16,
-            borderRight: "1px solid #333",
-            boxShadow: "2px 0 8px 0 rgba(30,40,80,0.10)",
-          }}
-        >
-          <div style={{ marginBottom: 12 }}>
-            <input
-              type="text"
-              placeholder="Search character or pinyin"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: "100%",
-                padding: 8,
-                borderRadius: 4,
-                border: "1px solid #888",
-                fontSize: 15,
-                background: "#232a3a",
-                color: "#fff",
-              }}
-            />
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            <strong>Section Progress:</strong>
-            <div
-              style={{
-                marginTop: 4,
-                marginBottom: 4,
-                height: 12,
-                background: "#38405a",
-                borderRadius: 6,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: `${
-                    (sectionProgress.mastered / sectionProgress.total) * 100
-                  }%`,
-                  height: "100%",
-                  background: "#4caf50",
-                  transition: "width 0.3s cubic-bezier(.4,2,.6,1)",
-                }}
-              />
-            </div>
-            <span>
-              {sectionProgress.mastered} / {sectionProgress.total} words
-              mastered
-            </span>
-          </div>
-          <div style={{ maxHeight: 400, overflowY: "auto", flex: 1 }}>
-            {filteredWords.map((w: Card, idx: number) => (
-              <div
-                key={w.wordId}
-                onClick={() => handleSidebarClick(idx)}
-                style={{
-                  padding: "8px 6px",
-                  marginBottom: 2,
-                  borderRadius: 4,
-                  background: idx === currentCardIndex ? "#38405a" : undefined,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  border: masteredWordIds.has(w.wordId)
-                    ? "1.5px solid #4caf50"
-                    : "1px solid #444",
-                }}
-              >
-                <span style={{ fontSize: 22 }}>{w.character}</span>
-                <span style={{ fontSize: 14, color: "#b3c7ff" }}>
-                  {w.pinyin}
-                </span>
-                {masteredWordIds.has(w.wordId) && (
-                  <span
-                    title="Mastered"
-                    style={{
-                      color: "#4caf50",
-                      fontSize: 18,
-                      marginLeft: "auto",
-                    }}
-                  >
-                    ✔
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-          <button
-            style={{
-              marginTop: 18,
-              width: "100%",
-              padding: "10px 0",
-              background: "#646cff",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              fontWeight: 600,
-              fontSize: 16,
-              cursor: "pointer",
-            }}
-            onClick={onBackToSection}
-          >
-            Return to Section Selection
-          </button>
-        </div>
 
+        <Sidebar
+          currentCardIndex={currentCardIndex}
+          mastered={mastered}
+          total={total}
+          filteredWords={filteredWords}
+          masteredWordIds={masteredWordIds}
+          search={search}
+          setSearch={setSearch}
+          handleSidebarClick={handleSidebarClick}
+          onBackToSection={onBackToSection}
+        />
         {/* Flashcard Area - 40% */}
         <div
           className="flashcard-center flex flex-col  "
-          style={{
-            width: "40%",
-          }}
+          style={{ width: "40%" }}
         >
           <div
-            className="flashcard-card flex flex-col flex-center bg-card"
+            className="flashcard-card flex flex-col padding-10"
             style={{
               height: "100%",
-              width: 420,
-              minHeight: 420,
-              borderRadius: 16,
-              boxShadow: "0 2px 16px 0 rgba(30,40,80,0.13)",
-              padding: "48px 36px 36px 36px",
-              position: "relative",
-              margin: 0,
-              transition: "box-shadow 0.2s",
               justifyContent: "space-around",
+              alignItems: "center",
             }}
           >
             {currentCard ? (
@@ -227,8 +122,7 @@ export function FlashCard({
                 <div
                   style={{
                     fontSize: 100,
-                    color: "#fff",
-                    marginBottom: 18,
+                    color: "#ffffff",
                     letterSpacing: 2,
                   }}
                 >
@@ -236,29 +130,17 @@ export function FlashCard({
                 </div>
                 {/* Speak and Show Details Row */}
                 <div
+                  className="flex"
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 18,
-                    marginBottom: 28,
-                    marginTop: 8,
                     width: "100%",
-                    justifyContent: "center",
+                    alignItems: "center",
+                    justifyContent: "space-evenly",
                   }}
                 >
                   <PlayButton mandarinText={currentCard.character} />
                   <button
                     onClick={() => setShowDetails((v) => !v)}
                     style={{
-                      padding: "10px 24px",
-                      borderRadius: 8,
-                      border: "none",
-                      background: showDetails ? "#232a3a" : "#007bff",
-                      color: "#fff",
-                      fontWeight: 700,
-                      fontSize: 17,
-                      cursor: "pointer",
                       boxShadow: showDetails ? "0 0 0 2px #007bff" : undefined,
                       transition: "background 0.2s, box-shadow 0.2s",
                     }}
@@ -267,37 +149,16 @@ export function FlashCard({
                   </button>
                 </div>
                 {/* Mastered Button Row */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 18,
-                    marginBottom: 24,
-                    width: "100%",
-                    justifyContent: "center",
-                  }}
-                >
+                <div className="flex flex-center" style={{ width: "100%" }}>
                   <button
                     onClick={() => onMarkMastered(currentCard.wordId)}
                     disabled={masteredWordIds.has(currentCard.wordId)}
                     style={{
-                      padding: "10px 24px",
-                      borderRadius: 8,
-                      border: "none",
                       background: masteredWordIds.has(currentCard.wordId)
-                        ? "#aaa"
-                        : "#4caf50",
-                      color: "#fff",
-                      fontWeight: 700,
-                      fontSize: 17,
-                      cursor: masteredWordIds.has(currentCard.wordId)
-                        ? "not-allowed"
-                        : "pointer",
+                        ? "#aaaaaa"
+                        : "#38405aff",
+                      color: "#ffffff",
                       minWidth: 140,
-                      boxShadow: masteredWordIds.has(currentCard.wordId)
-                        ? undefined
-                        : "0 0 0 2px #4caf50",
                       transition: "background 0.2s, box-shadow 0.2s",
                     }}
                   >
@@ -309,7 +170,7 @@ export function FlashCard({
                 {/* Navigation Buttons at bottom corners */}
                 <div
                   className=" flex "
-                  style={{ width: "100%", justifyContent: "space-between" }}
+                  style={{ width: "100%", justifyContent: "space-around" }}
                 >
                   <button type="button" onClick={handlePrevious}>
                     ◀ Previous
@@ -328,21 +189,16 @@ export function FlashCard({
 
         {/* Details/Meaning Panel - 30% */}
         <div
-          className="flashcard-details flex-col"
+          className="flashcard-details flex flex-col"
           style={{
             width: "30%",
             background: showDetails && currentCard ? "#2a3145" : "transparent",
             borderRadius: showDetails && currentCard ? 16 : 0,
-            boxShadow:
-              showDetails && currentCard
-                ? "0 2px 16px 0 rgba(30,40,80,0.10)"
-                : undefined,
-            padding: "36px 28px",
-            marginLeft: 0,
-            color: "#fff",
+
+            padding: "36px",
+            color: "#ffffff",
             fontSize: 17,
-            position: "relative",
-            minHeight: 420,
+            minHeight: "100%",
           }}
         >
           {showDetails && currentCard ? (
@@ -366,13 +222,3 @@ export function FlashCard({
     </div>
   );
 }
-
-const navBtnStyle: React.CSSProperties = {
-  padding: "6px 16px",
-  borderRadius: 4,
-  border: "none",
-  background: "#646cff",
-  color: "#fff",
-  fontWeight: 500,
-  cursor: "pointer",
-};

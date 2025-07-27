@@ -6,7 +6,6 @@
  * - Pure presentational; does not manage persistence or parent state.
  * - Validates input and displays estimated days to complete.
  */
-import React, { useRef, useState } from "react";
 
 type Props = {
   selectedList: string | null;
