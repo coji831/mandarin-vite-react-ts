@@ -17,7 +17,6 @@ import {
   DailyCommitment,
   FlashCard,
   NavBar,
-  ReviewFlow,
   VocabularyListSelector,
   SectionConfirm,
   SectionSelect,
@@ -573,27 +572,6 @@ function Mandarin() {
           learnedWordIds={learnedWordIds}
           totalWords={selectedWords.length}
           onBack={() => setCurrentPage("dailycommitment")}
-        />
-      )}
-      {currentPage === "review" && (
-        <ReviewFlow
-          loading={loading}
-          error={error}
-          learnedWordIds={learnedWordIds}
-          selectedWords={selectedWords}
-          selectedList={selectedList}
-          setCurrentPage={setCurrentPage}
-          setDailyWordCount={setDailyWordCount}
-          setLearnedWordIds={setLearnedWordIds}
-          setHistory={setHistory}
-          setInputValue={setInputValue}
-          setReviewIndex={setReviewIndex}
-          reviewIndex={reviewIndex}
-          handleMarkLearned={handleMarkLearned}
-          todaysWords={todaysWords}
-          currentReviewWord={currentReviewWord}
-          history={history}
-          onBack={() => setCurrentPage("sectionselect")}
         />
       )}
     </div>

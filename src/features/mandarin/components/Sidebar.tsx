@@ -6,113 +6,125 @@
  * - Pure presentational; does not manage persistence or parent state.
  */
 import { CSSProperties, useState } from "react";
+import { Card } from "./FlashCard";
 
 export { Sidebar };
 
-type SidebarCard = {
-  character: string;
-  pinyin: string;
-  meaning: string;
-};
-
 type Props = {
-  cards: SidebarCard[];
-  setCurrentCardIndex: (index: number) => void;
   currentCardIndex: number;
-  showPinyin?: boolean;
-  showMeaning?: boolean;
+  mastered: number;
+  total: number;
+  search: string;
+  setSearch: (value: string) => void;
+  filteredWords: Card[];
+  handleSidebarClick: any;
+  masteredWordIds: any;
+  onBackToSection: any;
 };
 function Sidebar({
-  cards,
-  setCurrentCardIndex,
   currentCardIndex,
-  showPinyin,
-  showMeaning,
+  mastered,
+  total,
+  search,
+  setSearch,
+  filteredWords,
+  handleSidebarClick,
+  masteredWordIds,
+  onBackToSection,
 }: Readonly<Props>) {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredCards = cards.filter((card) =>
-    [card.character, card.pinyin, card.meaning].some((field) =>
-      field.toLowerCase().includes(searchQuery.toLowerCase().trim()),
-    ),
-  );
-
   return (
-    <div>
-      <h2>Word List</h2>
-
-      <div className="flex gap-10" style={{ flexWrap: "wrap" }}>
+    <div
+      className="flashcard-sidebar flex flex-col padding-10 gap-10"
+      style={{ width: "30%" }}
+    >
+      <div>
         <input
           type="text"
-          placeholder="Search vocab..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={inputStyle}
-          onFocus={(e) => (e.target.style.borderColor = "#007bff")}
-          onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+          placeholder="Search character or pinyin"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            boxSizing: "border-box",
+            width: "100%",
+            padding: 8,
+            border: "2px solid #888888",
+            borderRadius: 6,
+            fontSize: 15,
+            background: "#232a3a",
+          }}
         />
-        {filteredCards.length === 0 && <NoResults />}
-        {filteredCards.map((card, index) => {
-          const originalIndex = cards.findIndex(
-            (c) => c.character === card.character,
-          );
-          const isCurrentCard = currentCardIndex === originalIndex;
-          return (
-            <button
-              key={`${card.pinyin}-${index}`}
-              style={{
-                width: "100%",
-                height: "120px",
-                minHeight: "fit-content",
-                backgroundColor: isCurrentCard
-                  ? "rgba(100, 108, 255, 0.77)"
-                  : undefined,
-                padding: 0,
-              }}
-              onClick={() => setCurrentCardIndex(originalIndex)}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#0056b3")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#333")}
-            >
-              <div
+      </div>
+      <div
+        className="flex flex-col gap-10"
+        style={{ border: "2px solid #888888", borderRadius: 6 }}
+      >
+        <strong>Section Progress:</strong>
+        <div
+          style={{
+            height: 12,
+            background: "#38405a",
+            borderRadius: 6,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${(mastered / total) * 100}%`,
+              height: "100%",
+              background: "#4caf50",
+              transition: "width 0.3s cubic-bezier(.4,2,.6,1)",
+            }}
+          />
+        </div>
+        <span>
+          {mastered} / {total} words mastered
+        </span>
+      </div>
+      <div
+        style={{
+          maxHeight: 400,
+          overflowY: "auto",
+          flex: 1,
+          border: "2px solid #888888",
+          borderRadius: 6,
+        }}
+      >
+        {filteredWords.map((w: Card, idx: number) => (
+          <div
+            className="flex padding-10 gap-10"
+            key={w.wordId}
+            onClick={() => handleSidebarClick(idx)}
+            style={{
+              borderRadius: 4,
+              background: idx === currentCardIndex ? "#38405a" : undefined,
+              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "space-between",
+              border: masteredWordIds.has(w.wordId)
+                ? "1.5px solid #4caf50"
+                : "1px solid #444",
+            }}
+          >
+            <span style={{ fontSize: 22 }}>{w.character}</span>
+            <span style={{ fontSize: 14, color: "#b3c7ff" }}>{w.pinyin}</span>
+            {masteredWordIds.has(w.wordId) && (
+              <span
+                title="Mastered"
                 style={{
-                  ...characterStyle,
-                  color: isCurrentCard
-                    ? "rgba(0, 0, 0, 1)"
-                    : "rgba(255, 255, 255, 1)",
+                  color: "#4caf50",
+                  fontSize: 18,
+                  marginLeft: "auto",
                 }}
               >
-                {card.character}
-              </div>
-              {showPinyin && (
-                <div
-                  style={{
-                    fontSize: "14px",
-                    transition: "color 0.2s",
-                    color: isCurrentCard
-                      ? "rgba(0, 0, 0, .8)"
-                      : "rgba(255, 255, 255, .8)",
-                  }}
-                >
-                  {card.pinyin}
-                </div>
-              )}
-              {showMeaning && (
-                <div
-                  style={{
-                    fontSize: "14px",
-                    transition: "color 0.2s",
-                    color: isCurrentCard
-                      ? "rgba(0, 0, 0, .6)"
-                      : "rgba(255, 255, 255, .6)",
-                  }}
-                >
-                  {card.meaning}
-                </div>
-              )}
-            </button>
-          );
-        })}
+                ✔
+              </span>
+            )}
+          </div>
+        ))}
       </div>
+      <button style={{ width: "100%" }} onClick={onBackToSection}>
+        Return to Section Selection
+      </button>
     </div>
   );
 }
