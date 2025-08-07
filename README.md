@@ -1,8 +1,20 @@
-# React + TypeScript + Vite
+# Mandarin Learning App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a Vite + React + TypeScript application for Mandarin vocabulary learning.
 
-While this project uses React, Vite supports many popular JS frameworks. [See all the supported frameworks](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
+## Project Structure
+
+- `src/features/mandarin/`: Main Mandarin learning feature
+- `src/data/`: Static vocabulary and example data
+- `api/`: Serverless functions for TTS
+- `local-backend/`: Local development server
+- `docs/`: Project documentation
+
+## Documentation
+
+- See `docs/architecture.md` for system overview
+- See `docs/conventions.md` for coding standards
+- See `docs/issues/` for design decisions
 
 ## Deploy Your Own
 
