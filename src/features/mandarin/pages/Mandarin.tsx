@@ -389,8 +389,81 @@ function Mandarin() {
           setError("Invalid progress file format.");
           return;
         }
-        saveUserProgress(imported);
-        const firstList = imported.lists[0];
+
+        // Get existing progress from localStorage
+        let existingProgress: UserProgress = getUserProgress();
+        let mergedProgress: UserProgress = { lists: [] };
+
+        // Merge each list by listName
+        for (const importedList of imported.lists) {
+          const existingList = existingProgress.lists.find(
+            (l: any) => l.listName === importedList.listName,
+          );
+          if (!existingList) {
+            // No existing, just add imported
+            mergedProgress.lists.push(importedList);
+          } else {
+            // Merge sections by sectionId
+            const mergedSections = importedList.sections.map(
+              (importedSection: any) => {
+                const existingSection = existingList.sections.find(
+                  (s: any) => s.sectionId === importedSection.sectionId,
+                );
+                if (!existingSection) {
+                  return importedSection;
+                } else {
+                  // Merge progress by wordId
+                  const mergedProgressObj: Record<string, any> = {
+                    ...existingSection.progress,
+                  };
+                  for (const wordId of Object.keys(
+                    importedSection.progress || {},
+                  )) {
+                    mergedProgressObj[wordId] =
+                      importedSection.progress[wordId];
+                  }
+                  return {
+                    ...importedSection,
+                    progress: mergedProgressObj,
+                  };
+                }
+              },
+            );
+            // Preserve any unmatched sections from existing
+            const unmatchedSections = existingList.sections.filter(
+              (s: any) =>
+                !importedList.sections.some(
+                  (is: any) => is.sectionId === s.sectionId,
+                ),
+            );
+            mergedProgress.lists.push({
+              ...importedList,
+              sections: [...mergedSections, ...unmatchedSections],
+              // Merge completedSections and dailyWordCount (prefer imported)
+              completedSections:
+                importedList.completedSections ||
+                existingList.completedSections ||
+                [],
+              dailyWordCount:
+                importedList.dailyWordCount ??
+                existingList.dailyWordCount ??
+                null,
+            });
+          }
+        }
+        // Add any lists in existingProgress not present in imported
+        for (const existingList of existingProgress.lists) {
+          if (
+            !mergedProgress.lists.some(
+              (l: any) => l.listName === existingList.listName,
+            )
+          ) {
+            mergedProgress.lists.push(existingList);
+          }
+        }
+
+        saveUserProgress(mergedProgress);
+        const firstList = mergedProgress.lists[0];
         if (firstList) {
           setSelectedList(firstList.listName);
           let vocabListMeta = null;
