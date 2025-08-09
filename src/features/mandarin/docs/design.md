@@ -4,7 +4,7 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## Data
 
-- Vocabulary and example sentences are loaded from JSON files in `src/data/vocabulary/` and `src/data/examples/`.
+- Vocabulary and example sentences are loaded from JSON files in [src/data/vocabulary/](../../../../src/data/vocabulary/) and [src/data/examples/](../../../../src/data/examples/).
 - Each word includes: character, pinyin, meaning, example sentence, and translations.
 
 ## Main Components
@@ -26,11 +26,11 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## Pages
 
-- Main page: `src/features/mandarin/pages/Mandarin.tsx` (handles state, routing, and logic for the feature).
+- Main page: [src/features/mandarin/pages/Mandarin.tsx](../../pages/Mandarin.tsx) (handles state, routing, and logic for the feature).
 
 ## Routing
 
-- Route: `/mandarin` (see `src/constants/paths.ts` and `src/router/Router.tsx`).
+- Route: `/mandarin` (see [src/constants/paths.ts](../../../../src/constants/paths.ts) and [src/router/Router.tsx](../../../../src/router/Router.tsx)).
 
 ## Design Notes
 

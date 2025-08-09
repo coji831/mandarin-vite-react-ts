@@ -13,7 +13,7 @@ Provides a local Express server for TTS (Text-to-Speech) requests, with Google C
 
 ## Flow
 
-1. Receives POST `/api/get-tts-audio` with `{ text }`.
+1. Receives POST [/api/get-tts-audio](../../api/get-tts-audio.js) with `{ text }`.
 2. Checks GCS for cached audio (by hash).
 3. If found, returns URL. If not, generates audio, uploads to GCS, then returns URL.
 
