@@ -4,8 +4,13 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 
 ## Main Modules
 
-- **api**: Contains backend/serverless functions (e.g., Google Cloud TTS integration in `api/get-tts-audio.js`).
-- **local-backend**: Contains local development server for TTS/GCS functionality during development.
+- **api**: Contains backend/serverless functions:
+  - Google Cloud Text-to-Speech integration in `api/get-tts-audio.js`
+  - Uses Google Cloud Storage for caching generated audio files
+- **local-backend**: Contains local Express development server:
+  - Provides TTS/GCS functionality during development
+  - Mirrors the serverless functions in the api/ directory
+  - Includes detailed logging and error handling for development
 - **features**: Contains all main features of the app, each in its own folder. Example: `mandarin` for Mandarin learning.
 
 ## Module Interaction
