@@ -1,4 +1,4 @@
-# User Story 4: Select Section for Learning
+# Story 2-4: Select Section for Learning
 
 Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
 

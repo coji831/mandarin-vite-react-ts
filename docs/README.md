@@ -1,6 +1,34 @@
 # Project Documentation
 
-See [workflow.md](workflow.md) for the full documentation and development workflow.
-See [architecture.md](architecture.md) for system overview.
-See [conventions.md](conventions.md) for coding standards and structure.
-See [src/features/<feature>/docs/](src/features/<feature>/docs/) for feature-specific design and API details.
+## Overview Documentation
+
+- [workflow.md](workflow.md) - Development workflow and processes
+- [architecture.md](architecture.md) - System architecture overview
+- [conventions.md](conventions.md) - Coding standards and structure
+- [documentation-relationship-guide.md](documentation-relationship-guide.md) - How business and technical documentation work together
+
+## Project Management Documentation
+
+- [business-requirements/README.md](business-requirements/) - Business requirements and planning documents
+- [issue-implementation/](issue-implementation/) - Technical implementation details for completed epics and stories
+
+## Feature-Specific Documentation
+
+- [src/features/<feature>/docs/](../src/features/) - Feature-specific design and API details
+
+## Epic Structure
+
+Epics are organized in their own directories within both business requirements and implementation folders:
+
+```
+business-requirements/
+└── epic-<number>-<epic-name>/
+
+issue-implementation/
+└── epic-<number>-<epic-name>/
+```
+
+Each epic directory contains:
+
+- README.md - Epic overview document
+- Individual story documents named according to the pattern: `story-<epic-number>-<story-number>-<story-name>.md`

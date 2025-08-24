@@ -4,22 +4,53 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 
 ## Main Modules
 
-- **api**: Contains backend/serverless functions:
+- **api**: Contains backend/serverless functions for Text-to-Speech services
+- **local-backend**: Express server for local development
+- **src/features**: Feature-based organization of React components and logic
+- **src/components**: Reusable UI components
+- **src/router**: React Router configuration
+- **src/constants**: Application-wide constants and configuration
+- **docs**: Documentation structure for architecture, implementation, and templates
 
 ## Module Interaction
 
-- The frontend (React) interacts with backend APIs (e.g., TTS) via HTTP requests.
+- The frontend (React) interacts with backend APIs (e.g., TTS) via HTTP requests
+- Features are organized in self-contained modules with their own components and logic
+- Common UI elements are shared via the components directory
+- Routing handles navigation between different features and pages
 
-## How to Use This Document
+## State Management
 
-- For high-level design and system overview, see this file.
-  - Google Cloud Text-to-Speech integration in [api/get-tts-audio.js](../api/get-tts-audio.js)
-  - Uses Google Cloud Storage for caching generated audio files
-    **local-backend**: Contains local Express development server:
-  - Provides TTS/GCS functionality during development
-  - Mirrors the serverless functions in the [api/](../api/) directory
+- **Context API**: The application uses React Context API for state management
+- **Custom Hooks**: Feature-specific logic is encapsulated in custom hooks (e.g., `useMandarinProgress`)
+- **Local Storage**: User progress and settings are persisted in browser's localStorage
+
+- **Google Cloud Text-to-Speech**: Integration in [../api/get-tts-audio.js](../api/get-tts-audio.js)
+- **Google Cloud Storage**: Used for caching generated audio files
+
+- **Local Backend**: Express server providing TTS/GCS functionality during development
+
+  - Mirrors the serverless functions in the [../api/](../api/) directory
   - Includes detailed logging and error handling for development
-    **features**: Contains all main features of the app, each in its own folder. Example: [mandarin](../src/features/mandarin) for Mandarin learning.
-  - The `mandarin` feature loads vocabulary and example data from local JSON files in [src/data/](../src/data/).
-  - Navigation is handled by React Router, with routes defined in [src/router/Router.tsx](../src/router/Router.tsx) and constants in [src/constants/paths.ts](../src/constants/paths.ts).
-  - For detailed design of a specific feature, see that feature's [docs/design.md](../src/features/mandarin/docs/design.md).
+
+- **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
+
+  - Loads vocabulary and example data from local JSON files in [../public/data/](../public/data/)
+  - Uses context-based state management (see Epic 3 implementation)
+  - Will use nested routing structure (see Epic 4 implementation)
+
+- Navigation is handled by React Router
+- Routes defined in [../src/router/Router.tsx](../src/router/Router.tsx)
+- Path constants in [../src/constants/paths.ts](../src/constants/paths.ts)
+
+- **Architecture**: This file for system-level design
+- **Implementation**: Detailed implementation notes in [./issue-implementation/](./issue-implementation/)
+- **Business Requirements**: Planning and requirements in [./business-requirements/](./business-requirements/)
+- **Feature-Specific**: For detailed design of specific features, see each feature's docs folder (e.g., [../src/features/mandarin/docs/](../src/features/mandarin/docs/))
+
+## Future Architecture (Placeholders)
+
+- **Authentication System**: [Not implemented yet]
+- **Database Integration**: [Not implemented yet]
+- **Server-Side Rendering**: [Not implemented yet]
+- **Testing Strategy**: [Not implemented yet]

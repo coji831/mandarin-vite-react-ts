@@ -1,4 +1,4 @@
-# User Story 3: Divide List into Sections
+# Story 2-3: Divide List into Sections
 
 Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
 

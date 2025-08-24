@@ -9,20 +9,18 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## Main Components
 
-- **AddForm**: Allows adding new vocabulary items.
-- **Basic**: Basic component for displaying vocabulary.
-- **DailyCommitment**: Lets users set and track daily word learning goals.
-- **FlashCard**: Displays a word and its details, allows audio playback.
-- **Import**: Component for importing vocabulary.
-- **NabBar**: Navigation bar for the Mandarin feature.
-- **PlayButton**: Integrates with TTS API for audio.
-- **ReviewFlow**: Guides the user through daily review sessions.
-- **ReviewHistory**: Shows history of reviewed words.
-- **SectionConfirm**: Confirms section selection.
-- **SectionSelector**: Organizes words into sections for easier study.
-- **Sidebar**: Lists all words, supports search and selection.
-- **VocabularyListSelector**: Allows selecting vocabulary lists.
-- **WordDetails**: Displays detailed information about a word.
+**AddForm**: Allows adding new vocabulary items.
+**Basic**: Basic component for displaying vocabulary.
+**DailyCommitment**: Lets users set and track daily word learning goals.
+**FlashCard**: Displays a word and its details, allows audio playback.
+**Import**: Component for importing vocabulary.
+**NabBar**: Navigation bar for the Mandarin feature.
+**PlayButton**: Integrates with TTS API for audio.
+**SectionConfirm**: Confirms section selection.
+**SectionSelect**: Organizes words into sections for easier study.
+**Sidebar**: Lists all words, supports search and selection.
+**VocabularyListSelector**: Allows selecting vocabulary lists.
+**WordDetails**: Displays detailed information about a word.
 
 ## Pages
 

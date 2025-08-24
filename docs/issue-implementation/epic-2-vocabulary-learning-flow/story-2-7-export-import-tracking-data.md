@@ -1,4 +1,4 @@
-# User Story 7: Export and Import Tracking Data
+# Story 2-7: Export and Import Tracking Data
 
 Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
 

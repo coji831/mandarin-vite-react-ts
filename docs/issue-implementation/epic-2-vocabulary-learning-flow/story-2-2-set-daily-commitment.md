@@ -1,4 +1,4 @@
-# User Story 2: Set Daily Word Commitment
+# Story 2-2: Set Daily Word Commitment
 
 Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
 
