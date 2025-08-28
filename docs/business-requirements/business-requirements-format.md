@@ -156,6 +156,9 @@ business-requirements/
 
 ## GitHub Issue Integration
 
+> **Note:** When creating GitHub issues via CLI or automation, the issue body may be cut off if it exceeds platform or buffer limits. Always notify the user if content has been truncated, and recommend including a link to the full documentation or attaching additional details as needed. **The issue description must always include the Acceptance Criteria section, even if other content is truncated.**
+> If the issue body is truncated, add a line at the end of the issue to notify the user that the content was cut off due to platform limits.
+
 ### GitHub Issue Template
 
 ```markdown
