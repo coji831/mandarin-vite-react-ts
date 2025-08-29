@@ -2,9 +2,12 @@
 
 ## Technical Overview
 
-**Implementation Goal:** Refactor the Mandarin feature's state management to decoupl- **Reduced Component Complexity**: `Mandarin.tsx` is now 60% smaller and focuses only on page navigation
+**Implementation Goal:** Refactor the Mandarin feature's state management to decouple UI and data logic, centralize progress type definitions, and improve persistence handling.
 
+- **Reduced Component Complexity**: `Mandarin.tsx` is now 60% smaller and focuses only on page navigation
 - **Improved Code Organization**: Clear separation between data management and UI concerns
+- **Centralized Progress Types**: All progress-related types are now in `Progress.ts` and imported via the barrel file
+- **Centralized LocalStorage Logic**: All localStorage operations are handled in the custom hook (`useMandarinProgress`)
 - **Eliminated Prop Drilling**: Components access only the state they need directly from context
 - **Better Testability**: Hook logic can be tested independently of components
 - **Easier Maintenance**: Changes to data management don't require updates to UI components

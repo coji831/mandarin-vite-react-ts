@@ -6,7 +6,7 @@ Add strict TypeScript types to all state and functions in `useMandarinProgress`.
 
 ## Status
 
-Planned
+Complete
 
 ## Epic Reference
 
