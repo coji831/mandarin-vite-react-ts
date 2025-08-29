@@ -24,11 +24,13 @@ Epic 3: State Management Refactor
 
 ---
 
-# Implementation Plan
+# Implementation Plan & Notes
 
-1. Create a custom hook for consuming Mandarin context
-2. Add/verify TypeScript types for all context values
-3. Update components to use the consumer hook
+1. Created `useMandarinContext.ts` in `src/features/mandarin/context/`
+2. Implemented the hook to consume Mandarin context using `useProgressContext`
+3. Next: Refactor one component (e.g., `VocabularyListSelector`) to use the new hook
+4. Update types as needed for context values
+5. Document usage in feature docs
 
 ---
 

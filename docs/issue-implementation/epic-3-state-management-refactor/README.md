@@ -151,7 +151,7 @@ This epic consists of the following implementation stories:
 1. [Move Progress Tracking Logic to Custom Hook](./story-3-1-move-progress-logic-to-hook.md) - Move all progress tracking logic from the main component into a custom hook for maintainability.
 2. [Add TypeScript Types and LocalStorage Handling to Hook](./story-3-2-add-types-and-localstorage-to-hook.md) - The hook uses strict TypeScript types and handles all localStorage operations internally.
 3. [Create Context and Provider](./story-3-3-create-context-and-provider.md) - Create a context and provider to share Mandarin state and actions across components.
-4. [Create Consumer Hook and Add Types](./story-3-4-create-consumer-hook-and-types.md) - Create a custom hook for consuming context and strict typing for all context values.
+4. [Create Consumer Hook and Add Types](./story-3-4-create-consumer-hook-and-types.md) - Custom consumer hook implemented and strictly typed.
 5. [Refactor VocabularyListSelector to Use Context](./story-3-5-refactor-vocabularylistselector.md) - VocabularyListSelector consumes context directly and removes progress-related props.
 6. [Refactor DailyCommitment to Use Context](./story-3-6-refactor-dailycommitment.md) - DailyCommitment consumes context directly and removes progress-related props.
 7. [Refactor SectionConfirm to Use Context](./story-3-7-refactor-sectionconfirm.md) - SectionConfirm consumes context directly and removes progress-related props.
