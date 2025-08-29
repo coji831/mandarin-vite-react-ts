@@ -41,6 +41,26 @@
 - Reference issues or stories in PRs
 - Keep PRs focused and small when possible
 
+### Commit Message Convention
+
+All commits must follow the Conventional Commits format for clarity and automation:
+
+```
+<type>(<scope>): <description>
+```
+
+- **type**: e.g., feat, fix, docs, refactor, chore
+- **scope**: optional, e.g., file, feature, story, or module
+- **description**: concise summary of the change
+
+**Examples:**
+
+- `feat(story-3-2): centralize progress types and localStorage logic in hook`
+- `docs(workflow): add commit message convention section`
+- `fix(flashcard): correct review count calculation`
+
+Refer to [conventionalcommits.org](https://www.conventionalcommits.org/) for details.
+
 ## Linting & Formatting
 
 - Use ESLint for code linting

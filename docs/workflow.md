@@ -75,3 +75,8 @@ docs/business-requirements/
 ---
 
 For more details, see the referenced documentation files above.
+
+## Commit Message Convention
+
+All commits must follow the Conventional Commits format as described in [conventions.md](./conventions.md#commit--pr-guidelines).
+When asked to "use the #file:workflow.md as guideline," always follow this commit message convention for all code and documentation changes.
