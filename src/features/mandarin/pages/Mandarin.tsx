@@ -12,16 +12,17 @@
  * - Manages state for selected list, sections, daily word count, review, and history.
  * - Handles all persistence, data loading, and navigation between subpages/components.
  */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Basic,
   DailyCommitment,
   FlashCard,
   NavBar,
-  VocabularyListSelector,
   SectionConfirm,
   SectionSelect,
+  VocabularyListSelector,
 } from "../components";
+import { useMandarinProgress } from "../hooks/useMandarinProgress";
 
 export { Mandarin };
 
@@ -34,22 +35,36 @@ function Mandarin() {
   const importInputRef = useRef<HTMLInputElement>(null);
   // --- State and hooks ---
   const [currentPage, setCurrentPage] = useState("vocablist");
-  const [selectedList, setSelectedList] = useState<string | null>(null);
-  const [selectedWords, setSelectedWords] = useState<any[]>([]);
-  const [dailyWordCount, setDailyWordCount] = useState<number | null>(null);
-  const [inputValue, setInputValue] = useState<string>("");
-  const [learnedWordIds, setLearnedWordIds] = useState<string[]>([]);
-  const [reviewIndex, setReviewIndex] = useState(0);
-  const [history, setHistory] = useState<Record<string, string[]>>({});
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [sections, setSections] = useState<any[]>([]);
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    null,
-  );
-  const [sectionProgress, setSectionProgress] = useState<
-    Record<string, number>
-  >({});
+  const {
+    selectedList,
+    setSelectedList,
+    selectedWords,
+    setSelectedWords,
+    sections,
+    setSections,
+    learnedWordIds,
+    setLearnedWordIds,
+    dailyWordCount,
+    setDailyWordCount,
+    inputValue,
+    setInputValue,
+    reviewIndex,
+    setReviewIndex,
+    history,
+    setHistory,
+    error,
+    setError,
+    loading,
+    setLoading,
+    selectedSectionId,
+    setSelectedSectionId,
+    sectionProgress,
+    setSectionProgress,
+    markWordLearned,
+    saveCommitment,
+    // ...other state and functions from useMandarinProgress
+  } = useMandarinProgress();
+  // Keep UI-only state here (e.g., currentPage)
 
   // --- Load and initialize user progress on page load or list change ---
   useEffect(() => {
