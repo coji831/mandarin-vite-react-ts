@@ -24,11 +24,13 @@ Epic 3: State Management Refactor
 
 ---
 
-# Implementation Plan
+# Implementation Plan & Notes
 
-1. Add TypeScript types to all state and functions in `useMandarinProgress`
-2. Move all localStorage logic from `Mandarin.tsx` to the hook
-3. Update usage in `Mandarin.tsx` if needed
+1. Added and refactored TypeScript types for progress state to `Progress.ts`.
+2. Updated all imports to use the barrel file for types.
+3. Centralized all localStorage logic in `useMandarinProgress` hook.
+4. Updated `Mandarin.tsx` to use the hook and helpers for all progress management.
+5. No localStorage logic remains in `Mandarin.tsx`.
 
 ---
 
