@@ -25,8 +25,8 @@ import {
 import {
   getUserProgress,
   saveUserProgress,
-  useMandarinProgress,
 } from "../hooks/useMandarinProgress";
+import { useProgressContext } from "../context/ProgressContext";
 import { UserProgress } from "../types";
 
 export { Mandarin };
@@ -68,7 +68,7 @@ function Mandarin() {
     markWordLearned,
     saveCommitment,
     // ...other state and functions from useMandarinProgress
-  } = useMandarinProgress();
+  } = useProgressContext();
   // Keep UI-only state here (e.g., currentPage)
 
   // --- Load and initialize user progress on page load or list change ---

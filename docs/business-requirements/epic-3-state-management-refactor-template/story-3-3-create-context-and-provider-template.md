@@ -24,8 +24,10 @@ Using context allows components to access state and actions without prop drillin
 
 ## Acceptance Criteria
 
-- A context is created for Mandarin state
+- A context is created for Mandarin state (`ProgressContext.tsx`)
 - A provider component wraps the hook and provides state/actions to children
+- Provider is used at the router level to wrap the Mandarin route
+- Main component consumes context via `useProgressContext`
 - No prop drilling for progress state/actions
 
 ## Dependencies
