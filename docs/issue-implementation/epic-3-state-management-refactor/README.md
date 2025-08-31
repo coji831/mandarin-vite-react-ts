@@ -8,6 +8,8 @@
 - **Improved Code Organization**: Clear separation between data management and UI concerns
 - **Centralized Progress Types**: All progress-related types are now in `Progress.ts` and imported via the barrel file
 - **Centralized LocalStorage Logic**: All localStorage operations are handled in the custom hook (`useMandarinProgress`)
+- **Context-Based State Management**: Progress state and actions are provided via `ProgressContext.tsx` and `ProgressProvider` at the router level
+- **Main Component Consumes Context**: `Mandarin.tsx` uses `useProgressContext` for progress state/actions
 - **Eliminated Prop Drilling**: Components access only the state they need directly from context
 - **Better Testability**: Hook logic can be tested independently of components
 - **Easier Maintenance**: Changes to data management don't require updates to UI components

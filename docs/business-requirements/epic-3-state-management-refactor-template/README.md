@@ -18,8 +18,9 @@ The current implementation in `Mandarin.tsx` has two significant architectural i
 This refactoring will address these issues by:
 
 - Extracting progress tracking logic to a custom hook
-- Implementing a context provider for state management
-- Refactoring components to consume context directly
+- Implementing a context provider for state management (`ProgressContext.tsx`)
+- Wrapping the Mandarin route in the provider at the router level
+- Refactoring main component to consume context directly
 - Preserving all existing functionality
 
 ## Business Value
