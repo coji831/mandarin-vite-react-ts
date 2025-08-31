@@ -23,7 +23,7 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 - **AddForm**: Add new vocabulary items
 - **Basic**: Display vocabulary
 - **DailyCommitment**: Set and track daily word learning goals
-- **FlashCard**: Show word details, audio playback
+- **FlashCard**: Show word details, audio playback (now uses context for all state/actions, no progress-related props)
 - **Import**: Import vocabulary
 - **NavBar**: Navigation bar for Mandarin feature
 - **PlayButton**: Integrate with TTS API for audio

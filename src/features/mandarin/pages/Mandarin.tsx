@@ -171,89 +171,6 @@ function Mandarin() {
     }));
   }
 
-  // Mark a word as learned and update user_progress
-  const handleMarkLearned = (wordId: string) => {
-    if (!selectedList) return;
-    setLoading(true);
-    try {
-      let userProgress = getUserProgress();
-      let listEntry = userProgress.lists.find(
-        (l: any) => l.listName === selectedList,
-      );
-      if (!listEntry) return;
-      // Find section containing wordId
-      let section = listEntry.sections.find((s: any) =>
-        s.wordIds.includes(wordId),
-      );
-      if (!section) return;
-      // Update progress for wordId
-      if (!section.progress[wordId]) section.progress[wordId] = {};
-      const now = new Date();
-      section.progress[wordId].mastered = true;
-      section.progress[wordId].lastReviewed = now.toISOString();
-      section.progress[wordId].reviewCount =
-        (section.progress[wordId].reviewCount || 0) + 1;
-      // Spaced repetition: nextReview = 3 days after lastReviewed
-      const nextReview = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      section.progress[wordId].nextReview = nextReview.toISOString();
-
-      // --- Section-specific history ---
-      if (!section.history) section.history = {};
-      const todayKey = getTodayKey();
-      if (!section.history[todayKey]) section.history[todayKey] = [];
-      if (!section.history[todayKey].includes(wordId)) {
-        section.history[todayKey].push(wordId);
-      }
-
-      // Mark section as completed if all mastered
-      if (
-        section.wordIds.every((id: string) => section.progress[id]?.mastered)
-      ) {
-        if (!listEntry.completedSections) listEntry.completedSections = [];
-        if (!listEntry.completedSections.includes(section.sectionId))
-          listEntry.completedSections.push(section.sectionId);
-      }
-      saveUserProgress(userProgress);
-      // Update state
-      // Re-merge progress for UI
-      const validWords = validateWordIds(selectedWords);
-      let learned: string[] = [];
-      let hist: Record<string, string[]> = {};
-      const sectionProgress: Record<string, number> = {};
-      for (const section of listEntry.sections) {
-        const merged = mergeProgress(
-          validWords.filter((w) => section.wordIds.includes(w.wordId)),
-          section.progress,
-        );
-        const mastered = merged.filter((w: any) => w.mastered).length;
-        sectionProgress[section.sectionId] = mastered;
-        learned.push(
-          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
-        );
-      }
-      // Only use global history for the list, not for sections
-      setLearnedWordIds(Array.from(new Set(learned)));
-      // Show only current section's history if a section is selected
-      if (selectedSectionId) {
-        const currentSection = listEntry.sections.find(
-          (s: any) => s.sectionId === selectedSectionId,
-        );
-        setHistory(
-          currentSection && currentSection.history
-            ? currentSection.history
-            : {},
-        );
-      } else {
-        setHistory({});
-      }
-      setSectionProgress(sectionProgress);
-      setError("");
-    } catch (err) {
-      setError("Failed to update progress. Please try again.");
-    }
-    setLoading(false);
-  };
-
   // Get words for the selected section only
   const selectedSection = sections.find(
     (s: Section) => s.sectionId === selectedSectionId,
@@ -517,18 +434,7 @@ function Mandarin() {
         />
       )}
       {currentPage === "flashcards" && selectedSectionId && (
-        <FlashCard
-          sectionWords={sectionWords}
-          sectionProgress={{
-            mastered: sectionWords.filter((w: any) =>
-              learnedWordIds.includes(String(w.wordId)),
-            ).length,
-            total: sectionWords.length,
-          }}
-          onMarkMastered={handleMarkLearned}
-          masteredWordIds={new Set(learnedWordIds)}
-          onBackToSection={() => setCurrentPage("sectionselect")}
-        />
+        <FlashCard onBackToSection={() => setCurrentPage("sectionselect")} />
       )}
       {currentPage === "basic" && <Basic />}
       {currentPage === "dailycommitment" && (

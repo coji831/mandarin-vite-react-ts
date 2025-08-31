@@ -88,8 +88,86 @@ export function useMandarinProgress() {
 
   // Example progress tracking functions
   const markWordLearned = (wordId: string) => {
-    // Implementation for marking a word as learned
-    // ...
+    if (!selectedList) return;
+    setLoading(true);
+    try {
+      let userProgress = getUserProgress();
+      let listEntry = userProgress.lists.find(
+        (l: any) => l.listName === selectedList,
+      );
+      if (!listEntry) return;
+      // Find section containing wordId
+      let section = listEntry.sections.find((s: any) =>
+        s.wordIds.includes(wordId),
+      );
+      if (!section) return;
+      // Update progress for wordId
+      if (!section.progress[wordId]) section.progress[wordId] = {};
+      const now = new Date();
+      section.progress[wordId].mastered = true;
+      section.progress[wordId].lastReviewed = now.toISOString();
+      section.progress[wordId].reviewCount =
+        (section.progress[wordId].reviewCount || 0) + 1;
+      // Spaced repetition: nextReview = 3 days after lastReviewed
+      const nextReview = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      section.progress[wordId].nextReview = nextReview.toISOString();
+
+      // --- Section-specific history ---
+      if (!section.history) section.history = {};
+      const todayKey = new Date().toISOString().slice(0, 10);
+      if (!section.history[todayKey]) section.history[todayKey] = [];
+      if (!section.history[todayKey].includes(wordId)) {
+        section.history[todayKey].push(wordId);
+      }
+
+      // Mark section as completed if all mastered
+      if (
+        section.wordIds.every((id: string) => section.progress[id]?.mastered)
+      ) {
+        if (!listEntry.completedSections) listEntry.completedSections = [];
+        if (!listEntry.completedSections.includes(section.sectionId))
+          listEntry.completedSections.push(section.sectionId);
+      }
+      saveUserProgress(userProgress);
+      // Update state
+      // Re-merge progress for UI
+      const validWords = selectedWords;
+      let learned: string[] = [];
+      let hist: Record<string, string[]> = {};
+      const sectionProgressObj: Record<string, number> = {};
+      for (const section of listEntry.sections) {
+        const merged = section.wordIds
+          .map((wordId: string) => {
+            const word = validWords.find((w: any) => w.wordId === wordId);
+            return {
+              ...word,
+              ...(section.progress && section.progress[wordId]
+                ? section.progress[wordId]
+                : {}),
+            };
+          })
+          .filter(Boolean);
+        const mastered = merged.filter((w: any) => w.mastered).length;
+        sectionProgressObj[section.sectionId] = mastered;
+        learned.push(
+          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
+        );
+        // Collect review history if present
+        if (section.history) {
+          for (const [date, ids] of Object.entries(section.history)) {
+            if (!hist[date]) hist[date] = [];
+            hist[date].push(...(ids as string[]));
+          }
+        }
+      }
+      setLearnedWordIds(Array.from(new Set(learned)));
+      setHistory(hist);
+      setSectionProgress(sectionProgressObj);
+      setError("");
+    } catch (err) {
+      setError("Failed to update progress. Please try again.");
+    }
+    setLoading(false);
   };
 
   const saveCommitment = (count: number) => {
