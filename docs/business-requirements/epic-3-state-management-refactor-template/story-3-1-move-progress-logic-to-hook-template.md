@@ -6,7 +6,7 @@ Move all progress tracking state and functions from `Mandarin.tsx` into a new cu
 
 ## Status
 
-Planned
+Complete
 
 ## Epic Reference
 
@@ -27,6 +27,10 @@ Currently, progress tracking logic is tightly coupled with UI logic in `Mandarin
 - Progress tracking logic is moved to a custom hook
 - Main component only uses the hook
 - No progress logic remains in the main component
+
+## Completion Note
+
+All progress tracking logic has been moved to the custom hook and verified in the main component. Story 3-1 is complete and ready for review/merge.
 
 ## Dependencies
 

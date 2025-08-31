@@ -4,7 +4,7 @@
 
 **Epic Goal:** Refactor the Mandarin feature's state management to decouple learning logic from progress tracking and reduce prop drilling by implementing a custom hook and context-based state management pattern.
 
-**Status:** Planned
+**Status:** In Progress
 
 **Last Update:** August 16, 2025
 
@@ -45,6 +45,8 @@ This epic consists of the following user stories:
 
 1. [**Move Progress Tracking Logic to Custom Hook**](../../issue-implementation/epic-3-state-management-refactor/story-3-1-move-progress-logic-to-hook.md)
    - As a developer, I want to move all progress tracking logic from the main component into a custom hook for maintainability.
+   - **Status:** Complete
+   - **Completion Note:** All progress tracking logic has been successfully moved to a custom hook (`useMandarinProgress`). The main component is refactored, and all tests pass. Documentation updated.
 2. [**Add TypeScript Types and LocalStorage Handling to Hook**](../../issue-implementation/epic-3-state-management-refactor/story-3-2-add-types-and-localstorage-to-hook.md)
    - As a developer, I want the hook to use strict TypeScript types and handle all localStorage operations internally.
 3. [**Create Context and Provider**](../../issue-implementation/epic-3-state-management-refactor/story-3-3-create-context-and-provider.md)

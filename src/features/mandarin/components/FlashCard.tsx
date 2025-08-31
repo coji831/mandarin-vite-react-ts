@@ -10,7 +10,7 @@
 import { useMemo, useState } from "react";
 import { PlayButton } from "./PlayButton";
 import { WordDetails } from "./WordDetails";
-import { NavBar } from "./NabBar";
+import { NavBar } from "./NavBar";
 import { Sidebar } from "./Sidebar";
 
 export type Card = {
