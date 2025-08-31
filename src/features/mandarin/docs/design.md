@@ -38,8 +38,8 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 ## 3. State Management & Architecture
 
 - Uses React Context API (`ProgressContext`, `useMandarinContext`) and custom hooks (`useMandarinProgress`) for shared state and progress tracking
-- Components (e.g., `VocabularyListSelector`) consume context directly, eliminating prop drilling
-- Navigation between sections/components via callback props for parent-driven control
+- Components (e.g., `VocabularyListSelector`, `DailyCommitment`) consume context directly, eliminating prop drilling
+- Navigation between sections/components (e.g., after confirming daily commitment) is handled via callback props for parent-driven control
 - Atomic story-driven workflow: each story implements a focused change
 - Documentation separation: high-level in epic docs, detailed in story docs
 

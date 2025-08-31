@@ -6,7 +6,7 @@ Refactor the `DailyCommitment` component to consume Mandarin context directly, r
 
 ## Status
 
-Planned
+Completed
 
 ## Epic Reference
 
