@@ -2,7 +2,7 @@
  * DailyCommitment component
  *
  * - Allows user to set and save a daily word study goal for the selected list.
- * - Uses Mandarin context for all state and actions (no props required).
+ * - Uses MandarinContext for all state and actions.
  * - Manages persistence and progress via context and hooks.
  * - Validates input and displays estimated days to complete.
  */

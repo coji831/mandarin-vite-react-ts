@@ -2,7 +2,7 @@
  * VocabularyListSelector component
  *
  * - Allows user to select a vocabulary list and loads sample words for preview.
- * - Calls onSelect with the list name and words when a list is chosen.
+ * - Uses MandarinContext for list selection.
  * - Handles localStorage tracking for new lists.
  * - Ensures wordId uniqueness in loaded words.
  */

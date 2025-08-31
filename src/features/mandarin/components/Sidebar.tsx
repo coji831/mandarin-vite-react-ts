@@ -2,37 +2,46 @@
  * Sidebar component
  *
  * - Displays a list of vocabulary cards for navigation.
- * - Allows selecting a card, and optionally shows pinyin/meaning.
- * - Pure presentational; does not manage persistence or parent state.
- * - Supports filtering and highlights the current card.
+ * - Uses ProgressContext for section/word state and progress.
+ * - Highlights mastered words and shows section progress.
+ * - Filtering and selection handled via props.
  */
-import { CSSProperties, useState } from "react";
-import { Card } from "./FlashCard";
+import { CSSProperties } from "react";
+import { useProgressContext } from "../context/ProgressContext";
+import { Card, Word } from "../types";
 
 export { Sidebar };
 
 type Props = {
   currentCardIndex: number;
-  mastered: number;
-  total: number;
   search: string;
   setSearch: (value: string) => void;
   filteredWords: Card[];
-  handleSidebarClick: any;
-  masteredWordIds: any;
-  onBackToSection: any;
+  handleSidebarClick: (idx: number) => void;
+  onBackToSection: () => void;
+  masteredWordIds: Set<string>;
 };
 function Sidebar({
   currentCardIndex,
-  mastered,
-  total,
   search,
   setSearch,
   filteredWords,
   handleSidebarClick,
-  masteredWordIds,
   onBackToSection,
+
+  masteredWordIds,
 }: Readonly<Props>) {
+  const { selectedSectionId, sections, selectedWords, sectionProgress } =
+    useProgressContext();
+  const selectedSection = sections.find(
+    (s) => s.sectionId === selectedSectionId,
+  );
+  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
+  const sectionWords = selectedWords.filter((w: Word) =>
+    sectionWordIds.includes(String(w.wordId)),
+  );
+  const mastered = sectionProgress[selectedSectionId || ""] || 0;
+  const total = sectionWords.length;
   return (
     <div
       className="flashcard-sidebar flex flex-col padding-10 gap-10"

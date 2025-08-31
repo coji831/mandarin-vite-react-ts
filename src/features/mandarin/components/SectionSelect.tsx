@@ -2,7 +2,7 @@
  * SectionSelect component
  *
  * - Organizes and displays selectable sections for Mandarin learning flow.
- * - Uses context for all state/actions (sections, selectedSectionId, sectionProgress, learnedWordIds, totalWords).
+ * - Uses ProgressContext for sections, selection, and progress.
  * - Allows filtering to show only uncompleted sections.
  * - Navigation handled via callback props.
  */

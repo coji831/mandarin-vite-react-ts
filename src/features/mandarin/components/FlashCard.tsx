@@ -2,30 +2,16 @@
  * FlashCard component
  *
  * - Displays flashcards for a section of words.
- * - Uses context for all state/actions (sectionWords, sectionProgress, markWordLearned, masteredWordIds, navigation).
+ * - Uses ProgressContext for section/word state, progress, and actions.
  * - No progress-related props; navigation handled via callback prop.
- * - Pure presentational; does not manage persistence or parent state.
  * - Includes search/filter, progress bar, and details panel.
  */
 import { useMemo, useState } from "react";
-import { PlayButton } from "./PlayButton";
-import { WordDetails } from "./WordDetails";
-import { Sidebar } from "./Sidebar";
 import { useProgressContext } from "../context/ProgressContext";
-
-export type Card = {
-  wordId: string;
-  character: string;
-  pinyin: string;
-  meaning: string;
-  sentence: string;
-  sentencePinyin: string;
-  sentenceMeaning: string;
-  mastered?: boolean;
-  lastReviewed?: string;
-  reviewCount?: number;
-  nextReview?: string;
-};
+import { Card } from "../types";
+import { PlayButton } from "./PlayButton";
+import { Sidebar } from "./Sidebar";
+import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
   onBackToSection: () => void;
@@ -40,7 +26,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
     sectionProgress,
     markWordLearned,
   } = useProgressContext();
-  // Get current section and words
+  // Get current section and words from context
   const selectedSection = sections.find(
     (s) => s.sectionId === selectedSectionId,
   );
@@ -52,6 +38,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
   const mastered = sectionProgress[selectedSectionId || ""] || 0;
   const total = sectionWords.length;
 
+  // Navigation state (local)
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [search, setSearch] = useState("");
@@ -74,6 +61,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
 
   const currentCard = filteredWords[currentCardIndex];
 
+  // Navigation handlers
   const handlePrevious = () => {
     setCurrentCardIndex(
       (prev) => (prev - 1 + filteredWords.length) % filteredWords.length,
@@ -100,8 +88,6 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
 
         <Sidebar
           currentCardIndex={currentCardIndex}
-          mastered={mastered}
-          total={total}
           filteredWords={filteredWords}
           masteredWordIds={masteredWordIds}
           search={search}

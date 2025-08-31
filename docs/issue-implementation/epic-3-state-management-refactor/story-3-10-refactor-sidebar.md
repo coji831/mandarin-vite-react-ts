@@ -1,37 +1,54 @@
-# Story 3-10: Refactor Sidebar to Use Context
+# Implementation 3-10: Sidebar Context Refactor
 
-## Story Summary
+## Technical Scope 🔵
 
-Refactor the `Sidebar` component to consume Mandarin context directly, removing all progress-related props.
+Refactor the `Sidebar` component to consume Mandarin progress context directly, removing all progress-related props. Sidebar now interacts with centralized state via the consumer hook, improving maintainability and reducing interface complexity.
 
-## Background
+## Implementation Details 🔵
 
-Direct context consumption eliminates prop drilling and simplifies the component interface.
+```tsx
+// Sidebar.tsx (excerpt)
+import { useProgressContext } from "../features/mandarin/ProgressContext";
 
-## Acceptance Criteria
+const Sidebar = () => {
+  const { progress, setProgress } = useProgressContext();
+  // ...existing code...
+};
+```
 
-- `Sidebar` uses the consumer hook for all state/actions
-- All progress-related props are removed
-- Component functionality remains unchanged
+- All progress-related props have been removed from Sidebar.
+- Sidebar now accesses progress state and actions via context.
+- Type definitions for progress are imported from the shared barrel file.
 
-## Dependencies
+## Architecture Integration 🔵
 
-Story 3-4: Create Consumer Hook and Add Types
+```
+[Sidebar] → uses → [ProgressContext]
+         ↓ provides
+[Mandarin Feature Components]
+```
 
-## Related Issues
+- Sidebar is now decoupled from parent components and directly consumes context.
+- Integrates with the broader state management refactor (Epic 3).
 
-Epic 3: State Management Refactor
+## Technical Challenges & Solutions 🔵
 
----
+**Problem:** Prop drilling made Sidebar interface complex and tightly coupled to parent components.
 
-# Implementation Plan
+**Solution:** Refactored Sidebar to use the consumer hook (`useProgressContext`), eliminating prop drilling and simplifying the interface. Ensured type safety by importing shared types.
 
-1. Update `Sidebar` to use the consumer hook
-2. Remove all progress-related props
-3. Verify component works as expected
+**Problem:** Test setup required manual prop mocks.
 
----
+**Solution:** Updated tests to use context provider wrapper for Sidebar.
 
-# Technical Implementation Reference
+## Testing Implementation 🟡
 
-See [Epic 3 Technical Doc](./README.md)
+- Verified Sidebar functionality remains unchanged after refactor.
+- Updated unit tests to wrap Sidebar in ProgressContext provider.
+- Checked edge cases for context updates and re-renders.
+
+## References
+
+- Depends on: Story 3-4 (Consumer Hook and Types)
+- Related to: Epic 3 (State Management Refactor)
+- See [Epic 3 Technical Doc](./README.md)
