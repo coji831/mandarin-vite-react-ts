@@ -6,7 +6,7 @@ Refactor the `FlashCard` component to consume Mandarin context directly, removin
 
 ## Status
 
-Planned
+Completed
 
 ## Epic Reference
 

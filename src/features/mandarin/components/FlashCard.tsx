@@ -2,16 +2,16 @@
  * FlashCard component
  *
  * - Displays flashcards for a section of words.
- * - Handles navigation, marking words as mastered, and progress display.
- * - Receives all state and handlers as props from parent.
+ * - Uses context for all state/actions (sectionWords, sectionProgress, markWordLearned, masteredWordIds, navigation).
+ * - No progress-related props; navigation handled via callback prop.
  * - Pure presentational; does not manage persistence or parent state.
  * - Includes search/filter, progress bar, and details panel.
  */
 import { useMemo, useState } from "react";
 import { PlayButton } from "./PlayButton";
 import { WordDetails } from "./WordDetails";
-import { NavBar } from "./NavBar";
 import { Sidebar } from "./Sidebar";
+import { useProgressContext } from "../context/ProgressContext";
 
 export type Card = {
   wordId: string;
@@ -28,21 +28,29 @@ export type Card = {
 };
 
 type FlashCardProps = {
-  sectionWords: Card[];
-  sectionProgress: { mastered: number; total: number };
-  onMarkMastered: (wordId: string) => void;
-  masteredWordIds: Set<string>;
   onBackToSection: () => void;
 };
 
-export function FlashCard({
-  sectionWords,
-  sectionProgress,
-  onMarkMastered,
-  masteredWordIds,
-  onBackToSection,
-}: FlashCardProps) {
-  const { mastered, total } = sectionProgress;
+export function FlashCard({ onBackToSection }: FlashCardProps) {
+  const {
+    selectedSectionId,
+    sections,
+    selectedWords,
+    learnedWordIds,
+    sectionProgress,
+    markWordLearned,
+  } = useProgressContext();
+  // Get current section and words
+  const selectedSection = sections.find(
+    (s) => s.sectionId === selectedSectionId,
+  );
+  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
+  const sectionWords = selectedWords.filter((w: any) =>
+    sectionWordIds.includes(String(w.wordId)),
+  );
+  const masteredWordIds = new Set(learnedWordIds);
+  const mastered = sectionProgress[selectedSectionId || ""] || 0;
+  const total = sectionWords.length;
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -80,9 +88,6 @@ export function FlashCard({
     setCurrentCardIndex(idx);
     setShowDetails(false);
   };
-
-  // Section complete?
-  const sectionComplete = sectionProgress.mastered === sectionProgress.total;
 
   return (
     <div>
@@ -151,7 +156,7 @@ export function FlashCard({
                 {/* Mastered Button Row */}
                 <div className="flex flex-center" style={{ width: "100%" }}>
                   <button
-                    onClick={() => onMarkMastered(currentCard.wordId)}
+                    onClick={() => markWordLearned(currentCard.wordId)}
                     disabled={masteredWordIds.has(currentCard.wordId)}
                     style={{
                       background: masteredWordIds.has(currentCard.wordId)
