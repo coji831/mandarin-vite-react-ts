@@ -47,7 +47,8 @@ docs/business-requirements/
 
 **7. Update Documentation**
 
-- Ensure all docs reflect the latest changes.
+- Epic docs should remain high-level, focusing on goals, architecture, and story breakdown.
+- Story docs should contain detailed implementation notes, code changes, and completion details.
 - Refer to: All related docs (architecture, feature, implementation, templates).
 - Update: Documentation checklists in PR, README files, cross-links.
 
@@ -78,5 +79,12 @@ For more details, see the referenced documentation files above.
 
 ## Commit Message Convention
 
-All commits must follow the Conventional Commits format as described in [conventions.md](./conventions.md#commit--pr-guidelines).
+All commits must strictly follow the Conventional Commits format as described in [conventions.md](./conventions.md#commit--pr-guidelines).
+
+**Strict Enforcement:**
+
+- Every commit message must use the Conventional Commits format, without exception.
+- Automated checks and code reviews should reject any commit that does not comply.
+- Always reference this requirement in documentation, PR templates, and when requesting commits from AI or contributors.
+
 When asked to "use the #file:workflow.md as guideline," always follow this commit message convention for all code and documentation changes.

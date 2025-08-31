@@ -6,7 +6,7 @@ Refactor the `VocabularyListSelector` component to consume Mandarin context dire
 
 ## Status
 
-Planned
+Completed
 
 ## Epic Reference
 

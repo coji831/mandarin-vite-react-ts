@@ -591,14 +591,7 @@ function Mandarin() {
       <NavBar setCurrentPage={setCurrentPage} />
       {currentPage === "vocablist" && (
         <VocabularyListSelector
-          onSelect={(listName, words) => {
-            setSelectedList(listName);
-            setSelectedWords(words);
-            setCurrentPage("dailycommitment");
-            setSections([]);
-            setSectionProgress({});
-            setSelectedSectionId(null);
-          }}
+          onListSelected={() => setCurrentPage("dailycommitment")}
         />
       )}
       {currentPage === "flashcards" && selectedSectionId && (
