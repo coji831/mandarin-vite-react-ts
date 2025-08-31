@@ -26,7 +26,7 @@ import {
   saveUserProgress,
 } from "../hooks/useMandarinProgress";
 import { useProgressContext } from "../context/ProgressContext";
-import { UserProgress } from "../types";
+import { UserProgress, Section } from "../types";
 
 export { Mandarin };
 
@@ -144,10 +144,6 @@ function Mandarin() {
     setLoading(false);
   }, [selectedList, selectedWords]);
 
-  // --- User Progress Tracking ---
-
-  // getUserProgress and saveUserProgress now provided by useMandarinProgress
-
   // Validate wordId uniqueness in a list of words
   function validateWordIds(words: any[]): any[] {
     const seen = new Set<string>();
@@ -173,33 +169,6 @@ function Mandarin() {
       ...w,
       ...(progress && progress[w.wordId] ? progress[w.wordId] : {}),
     }));
-  }
-
-  // Helper to divide words into sections
-  function divideIntoSections(words: any[], count: number) {
-    const sections = [];
-    let sectionIdx = 1;
-    for (let i = 0; i < words.length; i += count) {
-      const chunk = words.slice(i, i + count);
-      const sectionId = `section_${sectionIdx}`;
-      sectionIdx++;
-      // progress object for each word
-      const progress: Record<string, any> = {};
-      chunk.forEach((w: any) => {
-        progress[w.wordId] = {
-          mastered: false,
-          lastReviewed: null,
-          reviewCount: 0,
-          nextReview: null,
-        };
-      });
-      sections.push({
-        sectionId,
-        wordIds: chunk.map((w: any) => String(w.wordId)),
-        progress,
-      });
-    }
-    return sections;
   }
 
   // Mark a word as learned and update user_progress
@@ -287,7 +256,7 @@ function Mandarin() {
 
   // Get words for the selected section only
   const selectedSection = sections.find(
-    (s: any) => s.sectionId === selectedSectionId,
+    (s: Section) => s.sectionId === selectedSectionId,
   );
   const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
   const sectionWords = selectedWords.filter((w: any) =>
@@ -570,13 +539,7 @@ function Mandarin() {
       )}
       {currentPage === "sectionselect" && (
         <SectionSelect
-          sections={sections}
-          selectedSectionId={selectedSectionId}
-          setSelectedSectionId={setSelectedSectionId}
           onProceed={() => setCurrentPage("flashcards")}
-          sectionProgress={sectionProgress}
-          learnedWordIds={learnedWordIds}
-          totalWords={selectedWords.length}
           onBack={() => setCurrentPage("dailycommitment")}
         />
       )}

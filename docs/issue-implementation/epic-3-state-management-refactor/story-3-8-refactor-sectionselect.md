@@ -1,37 +1,30 @@
 # Story 3-8: Refactor SectionSelect to Use Context
 
-## Story Summary
+## Technical Scope
 
-Refactor the `SectionSelect` component to consume Mandarin context directly, removing all progress-related props.
+Refactor the `SectionSelect` component to consume Mandarin context directly, removing all progress-related props and handling navigation via callback props.
 
-## Background
+## Implementation Details
 
-Direct context consumption eliminates prop drilling and simplifies the component interface.
+- Removed all progress-related props from `SectionSelect` except for the optional navigation callbacks (`onProceed`, `onBack`).
+- All state and actions (sections, selectedSectionId, setSelectedSectionId, sectionProgress, learnedWordIds, selectedWords) are now accessed via `useProgressContext`.
+- Persistence and progress logic are managed by the context/hook, not the component.
+- Navigation to the next page is triggered by the callback props, passed from the parent (`Mandarin.tsx`).
+- Updated file-level comments to reflect the new architecture.
 
-## Acceptance Criteria
+## Architecture Integration
 
-- `SectionSelect` uses the consumer hook for all state/actions
-- All progress-related props are removed
-- Component functionality remains unchanged
+- `SectionSelect` is now fully decoupled from parent state and props, integrating with the broader system via context and hooks.
+- The refactor aligns with the Epic 3 goal of eliminating prop drilling and centralizing state management.
+- All progress and persistence logic is handled in `useMandarinProgress` and `ProgressContext`.
 
-## Dependencies
+## Technical Challenges & Solutions
 
-Story 3-4: Create Consumer Hook and Add Types
+- **Challenge:** Ensuring navigation after section selection without direct parent state access.
+  **Solution:** Kept navigation callback props (`onProceed`, `onBack`) for parent-driven control.
+- **Challenge:** Maintaining identical functionality after removing props.
+  **Solution:** Verified that all state/actions are available via context and updated tests/manual checks.
 
-## Related Issues
+## References
 
-Epic 3: State Management Refactor
-
----
-
-# Implementation Plan
-
-1. Update `SectionSelect` to use the consumer hook
-2. Remove all progress-related props
-3. Verify component works as expected
-
----
-
-# Technical Implementation Reference
-
-See [Epic 3 Technical Doc](./README.md)
+- See [Epic 3 Technical Doc](./README.md)
