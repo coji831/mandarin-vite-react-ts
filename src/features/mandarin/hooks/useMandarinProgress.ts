@@ -32,6 +32,37 @@ export function saveUserProgress(progress: UserProgress) {
 }
 
 /**
+ * Divides vocabulary words into sections for progress tracking.
+ * @param words - Array of vocabulary word objects
+ * @param perSection - Number of words per section
+ * @returns Array of section objects
+ */
+function divideIntoSections(words: any[], perSection: number) {
+  const sections = [];
+  let sectionIdx = 1;
+  for (let i = 0; i < words.length; i += perSection) {
+    const chunk = words.slice(i, i + perSection);
+    const sectionId = `section_${sectionIdx}`;
+    sectionIdx++;
+    const progress: Record<string, any> = {};
+    chunk.forEach((w: any) => {
+      progress[w.wordId] = {
+        mastered: false,
+        lastReviewed: null,
+        reviewCount: 0,
+        nextReview: null,
+      };
+    });
+    sections.push({
+      sectionId,
+      wordIds: chunk.map((w: any) => String(w.wordId)),
+      progress,
+    });
+  }
+  return sections;
+}
+
+/**
  * Custom React hook for Mandarin vocabulary progress tracking.
  * - Manages state for selected list, sections, learned words, daily commitment, review, and history.
  * - Intended for use in Mandarin learning feature components.
@@ -62,8 +93,42 @@ export function useMandarinProgress() {
   };
 
   const saveCommitment = (count: number) => {
-    // Implementation for saving daily commitment
-    // ...
+    if (!selectedList) return;
+    const maxAllowed = Math.min(50, selectedWords.length || 50);
+    if (!Number.isInteger(count) || count < 1 || count > maxAllowed) {
+      setError(`Please enter a number between 1 and ${maxAllowed}`);
+      return;
+    }
+    setLoading(true);
+    try {
+      const newSections = divideIntoSections(selectedWords, count);
+      let userProgress = getUserProgress();
+      let listEntry = userProgress.lists.find(
+        (l: any) => l.listName === selectedList,
+      );
+      if (!listEntry) {
+        listEntry = {
+          listName: selectedList,
+          sections: [],
+          dailyWordCount: null,
+          completedSections: [],
+        };
+        userProgress.lists.push(listEntry);
+      }
+      listEntry.sections = newSections;
+      listEntry.dailyWordCount = count;
+      saveUserProgress(userProgress);
+      setDailyWordCount(count);
+      setLearnedWordIds([]);
+      setHistory({});
+      setReviewIndex(0);
+      setSections(newSections);
+      setSectionProgress({});
+      setError("");
+    } catch (err) {
+      setError("Failed to save commitment. Please try again.");
+    }
+    setLoading(false);
   };
 
   // Add selectVocabularyList function for VocabularyListSelector

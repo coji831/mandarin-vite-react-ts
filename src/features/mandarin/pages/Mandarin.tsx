@@ -2,15 +2,14 @@
  * Mandarin page
  *
  * - Main page for Mandarin learning flow.
- * - Initializes and manages user progress in localStorage under 'user_progress'.
+ * - Uses context/hooks to manage user progress and persistence in localStorage ('user_progress').
  * - Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
  * - Merges tracking data with word data via wordId, never mutating word data itself.
  * - Validates wordId uniqueness and skips/logs invalid entries.
  * - Handles import/export of progress and vocabulary lists.
- * - Updates localStorage after user actions (mastering word, completing section, etc).
  * - Loads and merges progress on page load.
- * - Manages state for selected list, sections, daily word count, review, and history.
- * - Handles all persistence, data loading, and navigation between subpages/components.
+ * - Manages state for selected list, sections, daily word count, review, and history via context.
+ * - Handles navigation between subpages/components.
  */
 import { useEffect, useRef, useState } from "react";
 import {
@@ -202,52 +201,6 @@ function Mandarin() {
     }
     return sections;
   }
-
-  // Save daily commitment and initialize sections in user_progress
-  const handleCommitmentSave = () => {
-    if (!selectedList) return;
-    const num = Number(inputValue);
-    const maxAllowed = Math.min(50, selectedWords.length || 50);
-    if (!Number.isInteger(num) || num < 1 || num > maxAllowed) {
-      setError(`Please enter a number between 1 and ${maxAllowed}`);
-      return;
-    }
-    setLoading(true);
-    try {
-      // Validate wordIds
-      const validWords = validateWordIds(selectedWords);
-      // Divide into sections
-      const newSections = divideIntoSections(validWords, num);
-      // Update user_progress
-      let userProgress = getUserProgress();
-      let listEntry = userProgress.lists.find(
-        (l: any) => l.listName === selectedList,
-      );
-      if (!listEntry) {
-        listEntry = {
-          listName: selectedList,
-          sections: [],
-          dailyWordCount: null,
-          completedSections: [],
-        };
-        userProgress.lists.push(listEntry);
-      }
-      listEntry.sections = newSections;
-      listEntry.dailyWordCount = num;
-      saveUserProgress(userProgress);
-      setDailyWordCount(num);
-      setLearnedWordIds([]);
-      setHistory({});
-      setReviewIndex(0);
-      setSections(newSections);
-      setSectionProgress({});
-      setCurrentPage("sectionconfirm");
-      setError("");
-    } catch (err) {
-      setError("Failed to save commitment. Please try again.");
-    }
-    setLoading(false);
-  };
 
   // Mark a word as learned and update user_progress
   const handleMarkLearned = (wordId: string) => {
@@ -610,16 +563,7 @@ function Mandarin() {
       )}
       {currentPage === "basic" && <Basic />}
       {currentPage === "dailycommitment" && (
-        <DailyCommitment
-          selectedList={selectedList}
-          selectedWords={selectedWords}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          dailyWordCount={dailyWordCount}
-          handleCommitmentSave={handleCommitmentSave}
-          loading={loading}
-          error={error}
-        />
+        <DailyCommitment onConfirm={() => setCurrentPage("sectionconfirm")} />
       )}
       {currentPage === "sectionconfirm" && (
         <SectionConfirm
