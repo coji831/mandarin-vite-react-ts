@@ -27,7 +27,7 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 - **Import**: Import vocabulary
 - **NavBar**: Navigation bar for Mandarin feature
 - **PlayButton**: Integrate with TTS API for audio
-- **SectionConfirm**: Confirm section selection
+- **SectionConfirm**: Confirm section selection (now uses context for all state/actions, no progress-related props)
 - **SectionSelect**: Organize words into sections
 - **Sidebar**: List/search/select words
 - **VocabularyListSelector**: Select vocabulary lists (now uses context)

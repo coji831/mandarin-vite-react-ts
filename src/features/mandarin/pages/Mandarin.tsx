@@ -566,11 +566,7 @@ function Mandarin() {
         <DailyCommitment onConfirm={() => setCurrentPage("sectionconfirm")} />
       )}
       {currentPage === "sectionconfirm" && (
-        <SectionConfirm
-          sections={sections}
-          wordsPerSection={dailyWordCount || 0}
-          onProceed={() => setCurrentPage("sectionselect")}
-        />
+        <SectionConfirm onProceed={() => setCurrentPage("sectionselect")} />
       )}
       {currentPage === "sectionselect" && (
         <SectionSelect

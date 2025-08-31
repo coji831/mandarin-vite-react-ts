@@ -1,29 +1,21 @@
 /**
  * SectionConfirm component
  *
- * - Receives a list of sections and wordsPerSection as props.
+ * - Confirms section creation for Mandarin learning flow.
+ * - Uses context for all state (sections, dailyWordCount).
  * - Displays a summary of created sections and a proceed button.
- * - Pure presentational; does not manage persistence or parent state.
- * - Shows if last section has fewer words than others.
+ * - Navigation handled via callback prop.
  */
 import React from "react";
+import { useProgressContext } from "../context/ProgressContext";
 
-type Section = {
-  sectionId: string;
-  wordIds: string[];
-};
-
-type Props = {
-  sections: Section[];
-  wordsPerSection: number;
+type SectionConfirmProps = {
   onProceed: () => void;
 };
 
-export function SectionConfirm({
-  sections,
-  wordsPerSection,
-  onProceed,
-}: Props) {
+export function SectionConfirm({ onProceed }: SectionConfirmProps) {
+  const { sections, dailyWordCount } = useProgressContext();
+  const wordsPerSection = dailyWordCount || 0;
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Sections Created</h2>
