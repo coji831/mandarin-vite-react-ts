@@ -6,8 +6,8 @@
  * - Provides localStorage helpers for persistent user progress.
  * - Exports hook and helpers for use in Mandarin feature components.
  */
-import { useState, useEffect } from "react";
-import { UserProgress } from "../types";
+import { useEffect, useState } from "react";
+import { Section, UserProgress } from "../types";
 
 /**
  * Loads user progress from localStorage.
@@ -71,7 +71,7 @@ export function useMandarinProgress() {
   // Progress tracking state
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [selectedWords, setSelectedWords] = useState<any[]>([]);
-  const [sections, setSections] = useState<any[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const [learnedWordIds, setLearnedWordIds] = useState<string[]>([]);
   const [dailyWordCount, setDailyWordCount] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
