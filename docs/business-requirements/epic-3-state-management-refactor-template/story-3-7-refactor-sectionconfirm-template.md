@@ -6,7 +6,7 @@ Refactor the `SectionConfirm` component to consume Mandarin context directly, re
 
 ## Status
 
-Planned
+Completed
 
 ## Epic Reference
 
