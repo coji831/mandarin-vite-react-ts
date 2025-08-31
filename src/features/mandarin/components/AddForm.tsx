@@ -7,7 +7,7 @@
  * - All fields are required; alerts if any are missing.
  */
 import { useState, useRef } from "react";
-import { Card } from "./FlashCard";
+import { Card } from "../types";
 
 export { AddForm };
 
