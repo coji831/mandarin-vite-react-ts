@@ -22,7 +22,12 @@ import {
   SectionSelect,
   VocabularyListSelector,
 } from "../components";
-import { useMandarinProgress } from "../hooks/useMandarinProgress";
+import {
+  getUserProgress,
+  saveUserProgress,
+  useMandarinProgress,
+} from "../hooks/useMandarinProgress";
+import { UserProgress } from "../types";
 
 export { Mandarin };
 
@@ -141,29 +146,8 @@ function Mandarin() {
   }, [selectedList, selectedWords]);
 
   // --- User Progress Tracking ---
-  // Structure: { lists: [{ listName, sections, dailyWordCount, completedSections }] }
-  type UserProgress = {
-    lists: Array<{
-      listName: string;
-      sections: any[];
-      dailyWordCount: number | null;
-      completedSections: string[];
-    }>;
-  };
 
-  function getUserProgress(): UserProgress {
-    const raw = localStorage.getItem("user_progress");
-    if (!raw) return { lists: [] };
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return { lists: [] };
-    }
-  }
-
-  function saveUserProgress(progress: UserProgress) {
-    localStorage.setItem("user_progress", JSON.stringify(progress));
-  }
+  // getUserProgress and saveUserProgress now provided by useMandarinProgress
 
   // Validate wordId uniqueness in a list of words
   function validateWordIds(words: any[]): any[] {

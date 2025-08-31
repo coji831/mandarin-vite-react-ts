@@ -1,8 +1,40 @@
+/**
+ * useMandarinProgress.ts
+ *
+ * Custom React hook and helpers for tracking Mandarin vocabulary learning progress.
+ * - Centralizes progress state management for vocabulary lists, sections, and learned words.
+ * - Provides localStorage helpers for persistent user progress.
+ * - Exports hook and helpers for use in Mandarin feature components.
+ */
 import { useState, useEffect } from "react";
+import { UserProgress } from "../types";
 
 /**
- * Custom hook for Mandarin progress tracking logic
- * Story 3-1: Move Progress Tracking Logic to Custom Hook
+ * Loads user progress from localStorage.
+ * Returns a UserProgress object, or an empty structure if not found or invalid.
+ */
+export function getUserProgress(): UserProgress {
+  const raw = localStorage.getItem("user_progress");
+  if (!raw) return { lists: [] };
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return { lists: [] };
+  }
+}
+
+/**
+ * Saves user progress to localStorage.
+ * @param progress - The UserProgress object to persist
+ */
+export function saveUserProgress(progress: UserProgress) {
+  localStorage.setItem("user_progress", JSON.stringify(progress));
+}
+
+/**
+ * Custom React hook for Mandarin vocabulary progress tracking.
+ * - Manages state for selected list, sections, learned words, daily commitment, review, and history.
+ * - Intended for use in Mandarin learning feature components.
  */
 export function useMandarinProgress() {
   // Progress tracking state
