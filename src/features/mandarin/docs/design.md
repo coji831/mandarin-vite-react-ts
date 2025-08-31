@@ -2,36 +2,64 @@
 
 The Mandarin feature provides vocabulary learning, flashcards, review, and daily commitment tracking.
 
-## Data
+---
 
-- Vocabulary and example sentences are loaded from JSON files in [src/data/vocabulary/](../../../../src/data/vocabulary/) and [src/data/examples/](../../../../src/data/examples/).
-- Each word includes: character, pinyin, meaning, example sentence, and translations.
+## 1. Data Model
 
-## Main Components
+- Vocabulary and example sentences are loaded from JSON files:
+  - [src/data/vocabulary/](../../../../src/data/vocabulary/)
+  - [src/data/examples/](../../../../src/data/examples/)
+- Each word includes:
+  - Character
+  - Pinyin
+  - Meaning
+  - Example sentence
+  - Translations
 
-**AddForm**: Allows adding new vocabulary items.
-**Basic**: Basic component for displaying vocabulary.
-**DailyCommitment**: Lets users set and track daily word learning goals.
-**FlashCard**: Displays a word and its details, allows audio playback.
-**Import**: Component for importing vocabulary.
-**NabBar**: Navigation bar for the Mandarin feature.
-**PlayButton**: Integrates with TTS API for audio.
-**SectionConfirm**: Confirms section selection.
-**SectionSelect**: Organizes words into sections for easier study.
-**Sidebar**: Lists all words, supports search and selection.
-**VocabularyListSelector**: Allows selecting vocabulary lists.
-**WordDetails**: Displays detailed information about a word.
+---
 
-## Pages
+## 2. Main Components
 
-- Main page: [src/features/mandarin/pages/Mandarin.tsx](../../pages/Mandarin.tsx) (handles state, routing, and logic for the feature).
+- **AddForm**: Add new vocabulary items
+- **Basic**: Display vocabulary
+- **DailyCommitment**: Set and track daily word learning goals
+- **FlashCard**: Show word details, audio playback
+- **Import**: Import vocabulary
+- **NavBar**: Navigation bar for Mandarin feature
+- **PlayButton**: Integrate with TTS API for audio
+- **SectionConfirm**: Confirm section selection
+- **SectionSelect**: Organize words into sections
+- **Sidebar**: List/search/select words
+- **VocabularyListSelector**: Select vocabulary lists (now uses context)
+- **WordDetails**: Show detailed word info
 
-## Routing
+---
 
-- Route: `/mandarin` (see [src/constants/paths.ts](../../../../src/constants/paths.ts) and [src/router/Router.tsx](../../../../src/router/Router.tsx)).
+## 3. State Management & Architecture
 
-## Design Notes
+- Uses React Context API (`ProgressContext`, `useMandarinContext`) and custom hooks (`useMandarinProgress`) for shared state and progress tracking
+- Components (e.g., `VocabularyListSelector`) consume context directly, eliminating prop drilling
+- Navigation between sections/components via callback props for parent-driven control
+- Atomic story-driven workflow: each story implements a focused change
+- Documentation separation: high-level in epic docs, detailed in story docs
 
-- Uses React functional components and hooks.
-- Data is kept in local state and loaded from static files.
-- Audio is fetched from the backend TTS API.
+---
+
+## 4. Pages
+
+- **Main page**: [`Mandarin.tsx`](../../pages/Mandarin.tsx) — handles state, routing, and logic for the feature
+
+---
+
+## 5. Routing
+
+- Route: `/mandarin`
+  - See [`paths.ts`](../../../../src/constants/paths.ts) and [`Router.tsx`](../../../../src/router/Router.tsx)
+
+---
+
+## 6. Design Notes
+
+- React functional components and hooks
+- Data loaded from static files
+- Audio fetched from backend TTS API

@@ -66,6 +66,16 @@ export function useMandarinProgress() {
     // ...
   };
 
+  // Add selectVocabularyList function for VocabularyListSelector
+  const selectVocabularyList = (listName: string, words: any[]) => {
+    setSelectedList(listName);
+    setSelectedWords(words);
+    setSections([]);
+    setSectionProgress({});
+    setSelectedSectionId(null);
+    // Optionally, set other state as needed
+  };
+
   // ...add other progress-related functions as needed
 
   // Example effect for loading initial progress
@@ -101,6 +111,7 @@ export function useMandarinProgress() {
     setSectionProgress,
     markWordLearned,
     saveCommitment,
+    selectVocabularyList,
     // ...return other state and functions as needed
   };
 }

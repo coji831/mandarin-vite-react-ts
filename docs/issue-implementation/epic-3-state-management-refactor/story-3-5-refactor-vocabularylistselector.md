@@ -26,9 +26,10 @@ Epic 3: State Management Refactor
 
 # Implementation Plan
 
-1. Update `VocabularyListSelector` to use the consumer hook
-2. Remove all progress-related props
-3. Verify component works as expected
+1. Updated `VocabularyListSelector` to use the consumer hook (`useMandarinContext`).
+2. Removed all progress-related props and localStorage logic.
+3. Added navigation callback prop for parent-driven navigation.
+4. Verified component works as expected.
 
 ---
 
