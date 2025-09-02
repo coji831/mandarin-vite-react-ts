@@ -1,20 +1,20 @@
 # Project Conventions
 
-## Coding Standards
+## Code Style & Patterns
 
 - Use TypeScript for all React code
 - Use functional components and React hooks
 - Keep each feature in its own folder under [../src/features/](../src/features/)
 - Put route constants in [../src/constants/paths.ts](../src/constants/paths.ts)
 
-## Naming Conventions
+## Naming Rules
 
 - Components: PascalCase (e.g., `MyComponent.tsx`)
 - Variables/functions: camelCase (e.g., `myFunction`)
 - Folders/files: kebab-case or lower-case (e.g., `my-feature`)
 - Tests: match the file/component name with `.test.ts(x)` suffix
 
-## File/Folder Structure
+## Project Structure
 
 - [../src/features/](../src/features/): Main features (e.g., mandarin)
 - [../public/data/](../public/data/): Static JSON data (vocabulary, examples)
@@ -22,50 +22,19 @@
 - [../api/](../api/): Serverless functions (e.g., TTS)
 - [../local-backend/](../local-backend/): Local development server
 
-## Testing
+## Testing Practices
 
 - Put tests next to the code they test
 - Use Jest and React Testing Library (if available)
 - Name test files as `ComponentName.test.tsx` or `file.test.ts`
 
-## Documentation
+## Documentation Organization
 
 - High-level docs in [./](./)
 - Feature docs in `../src/features/<feature>/docs/`
 - Use [../docs/business-requirements/](../business-requirements/) for business requirements and planning
 - Use [../docs/issue-implementation/](../issue-implementation/) for technical implementation docs
 
-## Commit & PR Guidelines
+## Commit Message & Pull Request Standards
 
 - Use clear, descriptive commit messages
-- Reference issues or stories in PRs
-- Keep PRs focused and small when possible
-
-### Commit Message Convention
-
-All commits must follow the Conventional Commits format for clarity and automation:
-
-```
-<type>(<scope>): <description>
-```
-
-- **type**: e.g., feat, fix, docs, refactor, chore
-- **scope**: optional, e.g., file, feature, story, or module
-- **description**: concise summary of the change
-
-**Examples:**
-
-- `feat(story-3-2): centralize progress types and localStorage logic in hook`
-- `docs(workflow): add commit message convention section`
-- `fix(flashcard): correct review count calculation`
-
-Refer to [conventionalcommits.org](https://www.conventionalcommits.org/) for details.
-
-## Linting & Formatting
-
-- Use ESLint for code linting
-- Use Prettier for code formatting
-
-## Future Conventions (Placeholder)
-
-- Add more as the project grows

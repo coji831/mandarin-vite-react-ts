@@ -1,6 +1,8 @@
+# Implementation Small Epic Template
+
 # Epic <number>: <Epic Name>
 
-## [Required] Technical Overview 🔵
+## [Required] Technical Overview
 
 **Implementation Goal:** <Technical objectives>
 
@@ -8,12 +10,12 @@
 
 **Last Updated:** <Date>
 
-## [Required] Architecture Decisions 🔵
+## [Required] Architecture Decisions
 
 1. <Key technical decision>
 2. <Key technical decision>
 
-## [Required] Technical Implementation 🔵
+## [Required] Technical Implementation
 
 ```typescript
 // Example code pattern
@@ -24,18 +26,16 @@ function implementationPattern() {
 
 <Explanation of implementation approach>
 
-## [Required] Design Decisions & Tradeoffs 🔵
+## [Required] Design Decisions & Tradeoffs
 
 <Explain technical reasoning and alternatives considered>
 
-## [Required] Known Issues & Limitations 🔵
+## [Required] Known Issues & Limitations
 
 <List specific technical issues, limitations, code smells, or areas for improvement>
 
-## [Optional] Testing Information 🟡
+## [Optional] Testing Information
 
 <How this was tested>
 
-## [Optional] References 🟡
-
-<Link to related technical docs, API references, libraries used>
+## [Optional] References

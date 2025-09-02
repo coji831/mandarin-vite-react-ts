@@ -1,7 +1,22 @@
 # Issue Implementation
 
-**Purpose:** This folder contains implementation details, completed epics, and user stories. For business requirements and planning documents, see [docs/business-requirements](../business-requirements/).
+This folder contains implementation details, completed epics, and user stories for the project.
 
-## Reference
+## Guides
 
-- [Issue Implementation Format](./issue-implementation-format.md) - Standard format and examples for all implementation documents
+- [Onboarding Guide](../guides/onboarding.md)
+- [Contribution Guide](../guides/contribution-guide.md)
+- [Workflow Checklist](../guides/workflow.md)
+- [Project Conventions Guide](../guides/conventions.md)
+- [Implementation Format Guide](../guides/implementation-format.md)
+
+## Templates
+
+- [Implementation Large Epic Template](../templates/implementation-large-epic-template.md)
+- [Implementation Small Epic Template](../templates/implementation-small-epic-template.md)
+- [Implementation Story Template](../templates/implementation-story-template.md)
+
+## Usage
+
+- Always use the templates in [../templates](../templates/) for new implementation docs and stories.
+- For business requirements and planning, see [../business-requirements](../business-requirements/).

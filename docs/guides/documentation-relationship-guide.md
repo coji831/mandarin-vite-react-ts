@@ -37,7 +37,7 @@ The Business Requirements and Technical Implementation documents work together a
 
 ### Business Requirements Format
 
-The [Business Requirements Format](./business-requirements/business-requirements-format.md) should contain:
+The [Business Requirements Format](./templates/business-requirements-format.md) is the single source of truth for all business requirements documents. Always use the template in `docs/templates/`.
 
 #### Required Sections
 

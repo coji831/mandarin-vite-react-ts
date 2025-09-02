@@ -1,3 +1,5 @@
+# Business Requirements Small Epic Template
+
 # Epic [NUMBER]: [Epic Title]
 
 ## Epic Summary

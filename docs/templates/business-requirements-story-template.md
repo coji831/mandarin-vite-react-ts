@@ -38,11 +38,8 @@
 
 ## User Journey [Optional]
 
-1. [First step in user journey]
-2. [Second step in user journey]
-3. [Third step in user journey]
-4. [Fourth step in user journey]
+## Business Rules
 
-## Technical Context [Optional]
-
-[Brief explanation of technical considerations relevant to business decisions. Keep technical details minimal and focus on business impact.]
+1. [Business rule 1]
+2. [Business rule 2]
+3. [Business rule 3]
