@@ -2,20 +2,70 @@
 
 ## Coding Standards
 
-- Use TypeScript for all React components and logic.
-- Use functional components and React hooks.
-- Organize features in [src/features/](../src/features/) with each feature in its own folder.
-- Use [src/constants/paths.ts](../src/constants/paths.ts) for route constants.
+- Use TypeScript for all React code
+- Use functional components and React hooks
+- Keep each feature in its own folder under [../src/features/](../src/features/)
+- Put route constants in [../src/constants/paths.ts](../src/constants/paths.ts)
+
+## Naming Conventions
+
+- Components: PascalCase (e.g., `MyComponent.tsx`)
+- Variables/functions: camelCase (e.g., `myFunction`)
+- Folders/files: kebab-case or lower-case (e.g., `my-feature`)
+- Tests: match the file/component name with `.test.ts(x)` suffix
 
 ## File/Folder Structure
 
-- [src/features/](../src/features/) for main features (e.g., mandarin).
-- [src/data/](../src/data/) for static JSON data (vocabulary, examples).
-- [src/components/](../src/components/) for reusable UI components.
-- [api/](../api/) for serverless functions (e.g., TTS).
-- [local-backend/](../local-backend/) for local development server.
+- [../src/features/](../src/features/): Main features (e.g., mandarin)
+- [../public/data/](../public/data/): Static JSON data (vocabulary, examples)
+- [../src/components/](../src/components/): Reusable UI components
+- [../api/](../api/): Serverless functions (e.g., TTS)
+- [../local-backend/](../local-backend/): Local development server
+
+## Testing
+
+- Put tests next to the code they test
+- Use Jest and React Testing Library (if available)
+- Name test files as `ComponentName.test.tsx` or `file.test.ts`
 
 ## Documentation
 
-- High-level docs in [docs/](./).
-- Feature-specific docs in `src/features/<feature>/docs/`.
+- High-level docs in [./](./)
+- Feature docs in `../src/features/<feature>/docs/`
+- Use [../docs/business-requirements/](../business-requirements/) for business requirements and planning
+- Use [../docs/issue-implementation/](../issue-implementation/) for technical implementation docs
+
+## Commit & PR Guidelines
+
+- Use clear, descriptive commit messages
+- Reference issues or stories in PRs
+- Keep PRs focused and small when possible
+
+### Commit Message Convention
+
+All commits must follow the Conventional Commits format for clarity and automation:
+
+```
+<type>(<scope>): <description>
+```
+
+- **type**: e.g., feat, fix, docs, refactor, chore
+- **scope**: optional, e.g., file, feature, story, or module
+- **description**: concise summary of the change
+
+**Examples:**
+
+- `feat(story-3-2): centralize progress types and localStorage logic in hook`
+- `docs(workflow): add commit message convention section`
+- `fix(flashcard): correct review count calculation`
+
+Refer to [conventionalcommits.org](https://www.conventionalcommits.org/) for details.
+
+## Linting & Formatting
+
+- Use ESLint for code linting
+- Use Prettier for code formatting
+
+## Future Conventions (Placeholder)
+
+- Add more as the project grows

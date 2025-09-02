@@ -2,7 +2,7 @@ export * from "./AddForm";
 export * from "./Basic";
 export * from "./DailyCommitment";
 export * from "./FlashCard";
-export * from "./NabBar";
+export * from "./NavBar";
 export * from "./SectionConfirm";
 export * from "./Sidebar";
 export * from "./VocabularyListSelector";

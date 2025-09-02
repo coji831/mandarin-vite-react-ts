@@ -16,28 +16,24 @@ flowchart TD
 **1. Design Epic/Story**
 
 - Define the feature, epic, or story requirements.
-- Refer to: [architecture.md](architecture.md), `src/features/<feature>/docs/design.md`
+- Refer to: [architecture.md](./architecture.md), `../src/features/<feature>/docs/design.md`
 - Update: `architecture.md` (if system-level), feature design docs.
 
-**2. Plan (Templates)**
+**2. Plan (Business Requirements)**
 
-- Create or update planning docs using templates.
-- Refer to: [/docs/issue-templates/README.md](../docs/issue-templates/README.md), [/docs/issue-templates/](../docs/issue-templates/)
-- Update: Issue, epic, and story templates as needed.
+- Create or update business requirements docs using templates.
+- Refer to: [./business-requirements/README.md](./business-requirements/README.md), [./business-requirements/](./business-requirements/)
+- Update: Business requirements, epics, and story documents as needed.
 
 **3. Implement (Code & Docs)**
 
-- Write code and implementation documentation.
-- Refer to: [/docs/issue-implementation/README.md](../docs/issue-implementation/README.md), [/docs/issue-implementation/epic-2-stories/](../docs/issue-implementation/epic-2-stories/), feature docs.
-- Update: Implementation files, feature docs, codebase.
-
-**4. Open Pull Request**
+Refer to: [./issue-implementation/README.md](./issue-implementation/README.md), [./issue-implementation/](./issue-implementation/), feature docs.
+Update: Implementation files, feature docs, codebase.
+docs/issue-implementation/
+docs/business-requirements/
 
 - Create a PR using the template.
-- Refer to: [/docs/issue-templates/README.md](../docs/issue-templates/README.md) (PR template)
-- Update: PR description, link related issues/stories.
-
-**5. Review & Merge**
+  **5. Review & Merge**
 
 - Review code and documentation for completeness.
 - Refer to: PR template, implementation docs, acceptance criteria in story/epic docs.
@@ -51,7 +47,8 @@ flowchart TD
 
 **7. Update Documentation**
 
-- Ensure all docs reflect the latest changes.
+- Epic docs should remain high-level, focusing on goals, architecture, and story breakdown.
+- Story docs should contain detailed implementation notes, code changes, and completion details.
 - Refer to: All related docs (architecture, feature, implementation, templates).
 - Update: Documentation checklists in PR, README files, cross-links.
 
@@ -65,17 +62,29 @@ flowchart TD
 
 ## Files to Refer, Update, and Use for Review
 
-| Step             | Refer Files                                     | Update Files                                  | Review Files                                    |
-| ---------------- | ----------------------------------------------- | --------------------------------------------- | ----------------------------------------------- |
-| Design           | architecture.md, feature design.md              | architecture.md, feature design.md            | architecture.md, feature design.md              |
-| Plan             | issue-templates/README.md, story templates      | issue-templates, story templates              | issue-templates/README.md, story templates      |
-| Implement        | issue-implementation/README.md, story impl docs | issue-implementation, feature docs, code      | issue-implementation/README.md, story impl docs |
-| Open PR          | issue-templates/README.md (PR template)         | PR description, related issues/stories        | PR template, PR description                     |
-| Review & Merge   | PR template, implementation docs, acceptance    | PR comments, implementation docs              | PR template, implementation docs, acceptance    |
-| Close Issue/Epic | implementation docs, status fields              | status fields, cross-links                    | implementation docs, status fields              |
-| Update Docs      | all related docs, README files                  | documentation checklists, README, cross-links | all related docs, README files                  |
-| Release/Deploy   | release docs, deployment guides                 | release notes, deployment docs                | release docs, deployment guides                 |
+| Step             | Refer Files                                      | Update Files                                  | Review Files                                     |
+| ---------------- | ------------------------------------------------ | --------------------------------------------- | ------------------------------------------------ |
+| Design           | architecture.md, feature design.md               | architecture.md, feature design.md            | architecture.md, feature design.md               |
+| Plan             | business-requirements/README.md, story templates | business-requirements, story templates        | business-requirements/README.md, story templates |
+| Implement        | issue-implementation/README.md, story impl docs  | issue-implementation, feature docs, code      | issue-implementation/README.md, story impl docs  |
+| Open PR          | business-requirements/README.md (PR template)    | PR description, related issues/stories        | PR template, PR description                      |
+| Review & Merge   | PR template, implementation docs, acceptance     | PR comments, implementation docs              | PR template, implementation docs, acceptance     |
+| Close Issue/Epic | implementation docs, status fields               | status fields, cross-links                    | implementation docs, status fields               |
+| Update Docs      | all related docs, README files                   | documentation checklists, README, cross-links | all related docs, README files                   |
+| Release/Deploy   | release docs, deployment guides                  | release notes, deployment docs                | release docs, deployment guides                  |
 
 ---
 
 For more details, see the referenced documentation files above.
+
+## Commit Message Convention
+
+All commits must strictly follow the Conventional Commits format as described in [conventions.md](./conventions.md#commit--pr-guidelines).
+
+**Strict Enforcement:**
+
+- Every commit message must use the Conventional Commits format, without exception.
+- Automated checks and code reviews should reject any commit that does not comply.
+- Always reference this requirement in documentation, PR templates, and when requesting commits from AI or contributors.
+
+When asked to "use the #file:workflow.md as guideline," always follow this commit message convention for all code and documentation changes.

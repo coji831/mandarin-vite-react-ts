@@ -2,33 +2,28 @@
  * DailyCommitment component
  *
  * - Allows user to set and save a daily word study goal for the selected list.
- * - Receives selectedList, selectedWords, inputValue, and handlers as props.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Uses MandarinContext for all state and actions.
+ * - Manages persistence and progress via context and hooks.
  * - Validates input and displays estimated days to complete.
  */
 
-type Props = {
-  selectedList: string | null;
-  selectedWords: any[];
-  inputValue: string;
-  setInputValue: any;
-  dailyWordCount: number | null;
-  handleCommitmentSave: any;
-  loading: boolean;
-  error: string;
+import { useMandarinContext } from "../context/useMandarinContext";
+
+type DailyCommitmentProps = {
+  onConfirm?: () => void;
 };
 
-export function DailyCommitment({
-  selectedList,
-  selectedWords,
-  inputValue,
-  setInputValue,
-  dailyWordCount,
-  handleCommitmentSave,
-  loading,
-  error,
-}: Props) {
-  // ...existing code...
+export function DailyCommitment({ onConfirm }: DailyCommitmentProps) {
+  const {
+    selectedList,
+    selectedWords,
+    inputValue,
+    setInputValue,
+    dailyWordCount,
+    saveCommitment,
+    loading,
+    error,
+  } = useMandarinContext();
 
   // Recommended range
   const recommendedMin = 5;
@@ -66,7 +61,14 @@ export function DailyCommitment({
       />
       <button
         type="button"
-        onClick={handleCommitmentSave}
+        onClick={() => {
+          if (isInputValid) {
+            saveCommitment(inputNum);
+            if (onConfirm) {
+              onConfirm();
+            }
+          }
+        }}
         disabled={!isInputValid || loading}
         style={{ marginLeft: 8 }}
       >

@@ -2,22 +2,26 @@
  * VocabularyListSelector component
  *
  * - Allows user to select a vocabulary list and loads sample words for preview.
- * - Calls onSelect with the list name and words when a list is chosen.
+ * - Uses MandarinContext for list selection.
  * - Handles localStorage tracking for new lists.
  * - Ensures wordId uniqueness in loaded words.
  */
-import React, { useState, useEffect, useRef } from "react";
-import type { Word, VocabularyList } from "../types";
+import { useEffect, useState } from "react";
+import { useMandarinContext } from "../context/useMandarinContext";
+import type { VocabularyList, Word } from "../types";
 
 function getSampleWords(words: Word[], count: number = 3): Word[] {
   return words.slice(0, count);
 }
 
 type VocabularyListSelectorProps = {
-  onSelect: (listName: string, words: Word[]) => void;
+  onListSelected?: () => void;
 };
 
-function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
+function VocabularyListSelector({
+  onListSelected,
+}: VocabularyListSelectorProps) {
+  const { selectVocabularyList } = useMandarinContext();
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [samples, setSamples] = useState<Record<string, Word[]>>({});
   // ...existing code...
@@ -60,24 +64,11 @@ function VocabularyListSelector({ onSelect }: VocabularyListSelectorProps) {
       const res = await fetch(`/data/${list.file}`);
       if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
       const words: Word[] = await res.json();
-      // Ensure wordId is unique
       const uniqueWords: Word[] = Array.from(
         new Map(words.map((w) => [w.wordId, w])).values(),
       );
-      // LocalStorage tracking
-      const trackingKey = `tracking_${list.name}`;
-      const tracking = localStorage.getItem(trackingKey);
-      if (!tracking) {
-        localStorage.setItem(
-          trackingKey,
-          JSON.stringify({
-            listName: list.name,
-            sections: [],
-            dailyWordCount: null,
-          }),
-        );
-      }
-      onSelect(list.name, uniqueWords);
+      selectVocabularyList(list.name, uniqueWords);
+      if (onListSelected) onListSelected();
     } catch (error) {
       console.warn(error);
     }

@@ -61,8 +61,8 @@ This project is more than just a Mandarin learning tool; it's designed with scal
 - [Coding Standards](docs/conventions.md)
 - [Design Decisions](docs/issues/)
 - [Development & Documentation Workflow](docs/workflow.md)
-- [Planning Templates (Epics, Stories, PRs)](docs/issue-templates/README.md)
-- [Completed Work & Implementation Details](docs/issue-implementation/README.md)
+- [Business Requirements (Epics, Stories, PRs)](docs/business-requirements/README.md)
+- [Technical Implementation Details](docs/issue-implementation/README.md)
 - Feature Design
   - [Mandarin](src/features/mandarin/docs/design.md)
 

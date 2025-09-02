@@ -1,50 +1,40 @@
 /**
  * SectionSelect component
  *
- * - Receives a list of sections and selection state as props.
- * - Displays selectable sections and progress for each section.
+ * - Organizes and displays selectable sections for Mandarin learning flow.
+ * - Uses ProgressContext for sections, selection, and progress.
  * - Allows filtering to show only uncompleted sections.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Navigation handled via callback props.
  */
-import React, { useRef, useState } from "react";
+import React from "react";
+import { useProgressContext } from "../context/ProgressContext";
+import { Section } from "../types";
 
-type Section = {
-  sectionId: string;
-  wordIds: string[];
-  progress: Record<string | number, any>;
-};
-
-type Props = {
-  sections: Section[];
-  selectedSectionId: string | null;
-  setSelectedSectionId: (id: string) => void;
+type SectionSelectProps = {
   onProceed: () => void;
-  sectionProgress?: Record<string, number>;
-  learnedWordIds?: string[];
-  totalWords?: number;
   onBack?: () => void;
 };
 
-export function SectionSelect({
-  sections,
-  selectedSectionId,
-  setSelectedSectionId,
-  onProceed,
-  sectionProgress = {},
-  learnedWordIds = [],
-  totalWords = 0,
-  onBack,
-}: Props) {
+export function SectionSelect({ onProceed, onBack }: SectionSelectProps) {
+  const {
+    sections,
+    selectedSectionId,
+    setSelectedSectionId,
+    sectionProgress = {},
+    learnedWordIds = [],
+    selectedWords = [],
+  } = useProgressContext();
+  const totalWords = selectedWords.length;
   const [showUncompletedOnly, setShowUncompletedOnly] = React.useState(false);
   // Calculate section progress
   const completedSections = sections.filter(
-    (section) =>
+    (section: Section) =>
       (sectionProgress[section.sectionId] || 0) >= section.wordIds.length,
   );
   const totalSections = sections.length;
   const filteredSections = showUncompletedOnly
     ? sections.filter(
-        (section) =>
+        (section: Section) =>
           (sectionProgress[section.sectionId] || 0) < section.wordIds.length,
       )
     : sections;
@@ -72,7 +62,7 @@ export function SectionSelect({
         </label>
       </div>
       <div className="flex gap-10 flex-center" style={{ flexWrap: "wrap" }}>
-        {filteredSections.map((section) => {
+        {filteredSections.map((section: Section) => {
           const isSelected = selectedSectionId === section.sectionId;
           const isCompleted =
             (sectionProgress[section.sectionId] || 0) >= section.wordIds.length;

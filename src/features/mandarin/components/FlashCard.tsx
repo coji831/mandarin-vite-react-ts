@@ -2,48 +2,43 @@
  * FlashCard component
  *
  * - Displays flashcards for a section of words.
- * - Handles navigation, marking words as mastered, and progress display.
- * - Receives all state and handlers as props from parent.
- * - Pure presentational; does not manage persistence or parent state.
+ * - Uses ProgressContext for section/word state, progress, and actions.
+ * - No progress-related props; navigation handled via callback prop.
  * - Includes search/filter, progress bar, and details panel.
  */
 import { useMemo, useState } from "react";
+import { useProgressContext } from "../context/ProgressContext";
+import { Card } from "../types";
 import { PlayButton } from "./PlayButton";
-import { WordDetails } from "./WordDetails";
-import { NavBar } from "./NabBar";
 import { Sidebar } from "./Sidebar";
-
-export type Card = {
-  wordId: string;
-  character: string;
-  pinyin: string;
-  meaning: string;
-  sentence: string;
-  sentencePinyin: string;
-  sentenceMeaning: string;
-  mastered?: boolean;
-  lastReviewed?: string;
-  reviewCount?: number;
-  nextReview?: string;
-};
+import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
-  sectionWords: Card[];
-  sectionProgress: { mastered: number; total: number };
-  onMarkMastered: (wordId: string) => void;
-  masteredWordIds: Set<string>;
   onBackToSection: () => void;
 };
 
-export function FlashCard({
-  sectionWords,
-  sectionProgress,
-  onMarkMastered,
-  masteredWordIds,
-  onBackToSection,
-}: FlashCardProps) {
-  const { mastered, total } = sectionProgress;
+export function FlashCard({ onBackToSection }: FlashCardProps) {
+  const {
+    selectedSectionId,
+    sections,
+    selectedWords,
+    learnedWordIds,
+    sectionProgress,
+    markWordLearned,
+  } = useProgressContext();
+  // Get current section and words from context
+  const selectedSection = sections.find(
+    (s) => s.sectionId === selectedSectionId,
+  );
+  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
+  const sectionWords = selectedWords.filter((w: any) =>
+    sectionWordIds.includes(String(w.wordId)),
+  );
+  const masteredWordIds = new Set(learnedWordIds);
+  const mastered = sectionProgress[selectedSectionId || ""] || 0;
+  const total = sectionWords.length;
 
+  // Navigation state (local)
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [search, setSearch] = useState("");
@@ -66,6 +61,7 @@ export function FlashCard({
 
   const currentCard = filteredWords[currentCardIndex];
 
+  // Navigation handlers
   const handlePrevious = () => {
     setCurrentCardIndex(
       (prev) => (prev - 1 + filteredWords.length) % filteredWords.length,
@@ -81,9 +77,6 @@ export function FlashCard({
     setShowDetails(false);
   };
 
-  // Section complete?
-  const sectionComplete = sectionProgress.mastered === sectionProgress.total;
-
   return (
     <div>
       <div
@@ -95,8 +88,6 @@ export function FlashCard({
 
         <Sidebar
           currentCardIndex={currentCardIndex}
-          mastered={mastered}
-          total={total}
           filteredWords={filteredWords}
           masteredWordIds={masteredWordIds}
           search={search}
@@ -151,7 +142,7 @@ export function FlashCard({
                 {/* Mastered Button Row */}
                 <div className="flex flex-center" style={{ width: "100%" }}>
                   <button
-                    onClick={() => onMarkMastered(currentCard.wordId)}
+                    onClick={() => markWordLearned(currentCard.wordId)}
                     disabled={masteredWordIds.has(currentCard.wordId)}
                     style={{
                       background: masteredWordIds.has(currentCard.wordId)
