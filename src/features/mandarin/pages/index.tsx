@@ -7,8 +7,8 @@
 export * from "./Mandarin";
 
 // Stubs for new route components
-export const VocabularyListPage = () => <div>Vocabulary List Page</div>;
-export const DailyCommitmentPage = () => <div>Daily Commitment Page</div>;
+export { VocabularyListPage } from "./VocabularyListPage";
+export { DailyCommitmentPage } from "./DailyCommitmentPage";
 export const SectionConfirmPage = () => <div>Section Confirm Page</div>;
 export const SectionSelectPage = () => <div>Section Select Page</div>;
 export const FlashCardPage = () => <div>FlashCard Page</div>;

@@ -1,10 +1,6 @@
 /**
- * DailyCommitment component
- *
- * - Allows user to set and save a daily word study goal for the selected list.
- * - Uses MandarinContext for all state and actions.
- * - Manages persistence and progress via context and hooks.
- * - Validates input and displays estimated days to complete.
+ * @deprecated DailyCommitment component has been replaced by DailyCommitmentPage route subpage.
+ * See src/features/mandarin/pages/DailyCommitmentPage.tsx for the updated implementation.
  */
 
 import { useMandarinContext } from "../context/useMandarinContext";
@@ -31,8 +27,7 @@ export function DailyCommitment({ onConfirm }: DailyCommitmentProps) {
   const maxAllowed = Math.min(50, selectedWords.length || 50);
   const wordCount = selectedWords.length || 0;
   const inputNum = Number(inputValue);
-  const isInputValid =
-    Number.isInteger(inputNum) && inputNum >= 1 && inputNum <= maxAllowed;
+  const isInputValid = Number.isInteger(inputNum) && inputNum >= 1 && inputNum <= maxAllowed;
   const estimatedDays = inputNum > 0 ? Math.ceil(wordCount / inputNum) : 0;
 
   return (
@@ -81,16 +76,10 @@ export function DailyCommitment({ onConfirm }: DailyCommitmentProps) {
           </span>
         )}
         {!isInputValid && inputValue && (
-          <span style={{ color: "red" }}>
-            Please enter a number between 1 and {maxAllowed}
-          </span>
+          <span style={{ color: "red" }}>Please enter a number between 1 and {maxAllowed}</span>
         )}
       </div>
-      {dailyWordCount && (
-        <p style={{ marginTop: 8 }}>
-          Daily goal set: {dailyWordCount} words/day
-        </p>
-      )}
+      {dailyWordCount && <p style={{ marginTop: 8 }}>Daily goal set: {dailyWordCount} words/day</p>}
     </div>
   );
 }

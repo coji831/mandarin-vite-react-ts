@@ -1,8 +1,11 @@
 /**
- * @deprecated VocabularyListSelector component has been replaced by VocabularyListPage route subpage.
- * See src/features/mandarin/pages/VocabularyListPage.tsx for the updated implementation.
+ * VocabularyListPage
+ * Dedicated subpage for selecting a vocabulary list and previewing sample words.
+ * Uses MandarinContext for state and navigation.
+ * Updated for story 4-3: Implements new routing, context usage, and navigation logic.
  */
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMandarinContext } from "../context/useMandarinContext";
 import type { VocabularyList, Word } from "../types";
 
@@ -10,15 +13,11 @@ function getSampleWords(words: Word[], count: number = 3): Word[] {
   return words.slice(0, count);
 }
 
-type VocabularyListSelectorProps = {
-  onListSelected?: () => void;
-};
-
-function VocabularyListSelector({ onListSelected }: VocabularyListSelectorProps) {
+export function VocabularyListPage() {
   const { selectVocabularyList } = useMandarinContext();
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [samples, setSamples] = useState<Record<string, Word[]>>({});
-  // ...existing code...
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -60,13 +59,11 @@ function VocabularyListSelector({ onListSelected }: VocabularyListSelectorProps)
       const words: Word[] = await res.json();
       const uniqueWords: Word[] = Array.from(new Map(words.map((w) => [w.wordId, w])).values());
       selectVocabularyList(list.name, uniqueWords);
-      if (onListSelected) onListSelected();
+      navigate("/mandarin/daily-commitment");
     } catch (error) {
       console.warn(error);
     }
   };
-
-  // ...existing code...
 
   return (
     <div>
@@ -126,5 +123,3 @@ function VocabularyListSelector({ onListSelected }: VocabularyListSelectorProps)
     </div>
   );
 }
-
-export { VocabularyListSelector };
