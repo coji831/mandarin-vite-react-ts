@@ -4,7 +4,7 @@
 
 **Story Goal:** Create a nested routing structure for the Mandarin feature to replace the current state-based navigation approach.
 
-**Status:** Planned
+**Status:** Completed
 
 **Epic:** Epic 4: Routing Improvements
 
