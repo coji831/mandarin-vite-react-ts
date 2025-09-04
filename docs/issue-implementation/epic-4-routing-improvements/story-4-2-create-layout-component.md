@@ -4,7 +4,7 @@
 
 **Story Goal:** Create a layout component with an outlet for the Mandarin feature to maintain consistent UI elements across all subpages.
 
-**Status:** Planned
+**Status:** Completed
 
 **Epic:** Epic 4: Routing Improvements
 

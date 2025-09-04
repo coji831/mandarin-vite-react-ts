@@ -1,18 +1,20 @@
+/**
+ * File: MandarinLayout.tsx
+ * Story: 4-2 Create Layout Component with Outlet
+ * Description: Layout component for Mandarin feature routes. Wraps content with ProgressProvider (context access),
+ * renders shared UI elements (e.g., Navbar), and uses React Router's Outlet for nested routes.
+ * See docs/conventions.md for comment guidelines.
+ */
+
 import { Outlet } from "react-router-dom";
 import { ProgressProvider } from "../context/ProgressContext";
 // import { Navbar } from "../components/Navbar"; // Uncomment if Navbar exists
 
-/**
- * MandarinLayout - Layout component for Mandarin feature routes
- * Wraps content with MandarinProvider and renders shared UI elements.
- */
 export function MandarinLayout() {
   return (
     <ProgressProvider>
-      /** * File: MandarinLayout.tsx * Story: 4-1 Create Nested Route Structure * Description:
-      Layout component for Mandarin feature routes, wraps content with ProgressProvider. * See
-      docs/conventions.md for comment guidelines. */
       <div className="mandarin-container">
+        {/* Shared UI element: Uncomment and implement <Navbar /> if needed */}
         {/* <Navbar /> */}
         <div className="mandarin-content">
           <Outlet />
