@@ -2,7 +2,7 @@
 
 ## Technical Scope
 
-Convert the flashcard subpage to a dedicated route component that uses route parameters for dynamic data. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+Convert the flashcard subpage to a dedicated route component (`FlashCardPage.tsx`) that uses route parameters for dynamic data. The new page is implemented in `/pages` and integrated into the `/mandarin` routes. The FlashCardPage uses the `useParams` hook to extract the `sectionId` parameter and the `useMandarin` (ProgressContext) for state. Navigation is now route-based, not state-based. JSDoc comments are included. The barrel file exports the new page using `export * from './FlashCardPage'` for consistency.
 
 ## Implementation Details
 
@@ -10,7 +10,7 @@ Convert the flashcard subpage to a dedicated route component that uses route par
 - The component uses the `useParams` hook to extract the `sectionId` parameter and the `useMandarin` hook for state access.
 - All navigation is now route-based, not state-based.
 - JSDoc comments are added for documentation.
-- Unit test files should be created or updated to match the new implementation.
+- The barrel file exports the new page using `export * from './FlashCardPage'`.
 
 ## Architecture Integration
 
@@ -40,6 +40,13 @@ MandarinRoutes
 - Manual verification of navigation and functionality.
 - Ensured identical behavior after refactoring.
 - Unit tests should be added or updated to match the new implementation.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number]
+- **Merge Date**: [Add date]
+- **Key Commit**: [Add commit hash] (FlashCardPage route refactor)
 
 ## References
 

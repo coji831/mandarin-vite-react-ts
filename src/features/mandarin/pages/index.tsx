@@ -11,4 +11,4 @@ export * from "./DailyCommitmentPage";
 export * from "./SectionConfirmPage";
 export * from "./SectionSelectPage";
 // Stubs for new route components
-export const FlashCardPage = () => <div>FlashCard Page</div>;
+export * from "./FlashCardPage";
