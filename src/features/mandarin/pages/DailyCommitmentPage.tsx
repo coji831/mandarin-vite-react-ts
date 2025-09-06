@@ -4,7 +4,6 @@
  * Uses the useMandarinContext hook for state access.
  * Updated for story 4-3: Implements new routing, context usage, and navigation logic.
  */
-import React from "react";
 import { useMandarinContext } from "../context/useMandarinContext";
 import { useNavigate } from "react-router-dom";
 

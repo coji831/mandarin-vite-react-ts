@@ -1,16 +1,14 @@
 # Story 4.4: Convert Section Management Pages
 
-## Story Summary
+## Description
 
-**Story Goal:** Convert the section confirmation and section selection subpages from state-based components to dedicated route components.
+**As a** developer,
+**I want to** convert the section confirmation and section selection subpages from state-based components to dedicated route components,
+**So that** code organization is improved and direct navigation is enabled for more complex section management flows.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation renders section management pages conditionally based on a state variable. These pages handle section confirmation and section selection, which are more complex interactions with state. Converting them to dedicated route components will improve code organization and enable direct navigation.
+Improves maintainability and enables direct URL access to section management subpages.
 
 ## Acceptance Criteria
 
@@ -23,40 +21,25 @@ The current implementation renders section management pages conditionally based 
 - [ ] Create unit tests for both page components
 - [ ] Verify functionality works identically after refactoring
 
-## Implementation Notes
+## Business Rules
 
-The page components should follow this pattern:
-
-```tsx
-// Example: src/features/mandarin/pages/SectionSelectPage.tsx
-import { useNavigate } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
-import { SectionSelect } from "../components/SectionSelect";
-
-export function SectionSelectPage() {
-  const navigate = useNavigate();
-  const { sections, setSelectedSectionId } = useMandarin();
-
-  // Component logic here
-
-  return <SectionSelect />;
-}
-```
-
-## Estimated Time
-
-- Development: 2.5 hours
-- Testing: 1.5 hours
-- Documentation: 30 minutes
-- Total: 4.5 hours
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Story #4.2: Create Layout Component with Outlet
-- Story #4.3: Convert Basic Pages
-- Epic #3: State Management Refactor (for context)
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. Each section management page must be a dedicated route component.
 
 ## Related Issues
 
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.3 / [**Convert Basic Pages**](./story-4-3-convert-basic-pages.md) (Dependency)
 - Epic #4: Routing Improvements
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number]
+- **Merge Date**: [Add date]
+- **Key Commit**: [Add commit hash] (Section management pages refactor)
+
+## User Journey [Optional]
+
+As a user, I can visit `/mandarin/section-confirm` and `/mandarin/section-select` directly and see the correct subpage rendered.

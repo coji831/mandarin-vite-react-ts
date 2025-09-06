@@ -1,16 +1,14 @@
 # Story 4.3: Convert Basic Pages
 
-## Story Summary
+## Description
 
-**Story Goal:** Convert the vocabulary list and daily commitment subpages from state-based components to dedicated route components.
+**As a** developer,
+**I want to** convert the vocabulary list and daily commitment subpages from state-based components to dedicated route components,
+**So that** code organization is improved and direct navigation is enabled.
 
-**Status:** Completed
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation renders vocabulary list selection and daily commitment pages conditionally based on a state variable. We need to convert these simpler subpages to dedicated components that render on specific routes. This will improve code organization and enable direct navigation.
+Improves maintainability and enables direct URL access to basic Mandarin subpages.
 
 ## Acceptance Criteria
 
@@ -23,23 +21,24 @@ The current implementation renders vocabulary list selection and daily commitmen
 - [ ] Create unit tests for both page components
 - [x] Verify functionality works identically after refactoring
 
-## Implementation Notes
+## Business Rules
 
-The page components are implemented as dedicated route components using React Router and context hooks. Logic for fetching lists, handling selection, and navigation is handled within each component. UI and state management follow the patterns established in previous stories. See codebase for details.
-
-## Estimated Time
-
-- Development: 2 hours
-- Testing: 1 hour
-- Documentation: 30 minutes
-- Total: 3.5 hours
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Story #4.2: Create Layout Component with Outlet
-- Epic #3: State Management Refactor (for context)
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. Each basic page must be a dedicated route component.
 
 ## Related Issues
 
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
 - Epic #4: Routing Improvements
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Basic pages refactor)
+
+## User Journey [Optional]
+
+As a user, I can visit `/mandarin/vocabulary-list` and `/mandarin/daily-commitment` directly and see the correct subpage rendered.

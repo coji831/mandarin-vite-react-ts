@@ -1,83 +1,41 @@
-# Story 4.2: Create Layout Component with Outlet
+# Implementation 4-2: Create Layout Component with Outlet
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Create a layout component with an outlet for the Mandarin feature to maintain consistent UI elements across all subpages.
+Create a layout component with an outlet for the Mandarin feature to maintain consistent UI elements across all subpages. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Completed
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- `MandarinLayout.tsx` is implemented in `src/features/mandarin/layouts/`.
+- The layout includes the `MandarinProvider` and common UI elements (e.g., `Navbar`).
+- Uses React Router's `Outlet` component to render nested routes.
+- The router configuration is updated to use this layout for all Mandarin subpages.
+- JSDoc comments are added for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-With the implementation of nested routing, we need a layout component that contains common UI elements (like navigation) while allowing different subpages to be rendered in a designated area. This improves consistency and reduces code duplication.
+- The layout wraps all Mandarin subpages and provides shared UI elements.
+- Integrated into the router configuration as the parent for all Mandarin routes.
 
-## Implementation Plan
+## Technical Challenges & Solutions
 
-1. Create a new layout file `MandarinLayout.tsx` in `src/features/mandarin/layouts/`
-2. Implement a layout component that includes the `MandarinProvider` and common UI elements
-3. Use React Router's `Outlet` component to render nested routes
-4. Update the router configuration to use this layout
+**Challenge:** Ensuring all shared UI and context logic is centralized in the layout and that all subpages render correctly as nested routes.
 
-## Technical Details
+**Solution:**
 
-### Layout Component Structure
+- Used React Router's `Outlet` for nested routing.
+- Centralized context and UI logic in the layout.
 
-```tsx
-import { Outlet } from "react-router-dom";
-import { MandarinProvider } from "../context/MandarinContext";
-import { Navbar } from "../components/Navbar";
+## Testing Implementation
 
-export function MandarinLayout() {
-  return (
-    <MandarinProvider>
-      <div className="mandarin-container">
-        <Navbar />
-        <div className="mandarin-content">
-          <Outlet />
-        </div>
-      </div>
-    </MandarinProvider>
-  );
-}
-```
+- Manual verification of layout and navigation.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
 
-### Router Configuration Update
+## References
 
-```tsx
-import { Route, Routes } from "react-router-dom";
-import { MandarinLayout } from "../layouts/MandarinLayout";
-import /* page components */ "../pages";
-
-export function MandarinRoutes() {
-  return (
-    <Routes>
-      <Route element={<MandarinLayout />}>
-        <Route index element={<Navigate to="vocabulary-list" replace />} />
-        <Route path="vocabulary-list" element={<VocabularyListPage />} />
-        {/* other routes */}
-      </Route>
-    </Routes>
-  );
-}
-```
-
-## Acceptance Criteria
-
-- [ ] `MandarinLayout` component is created with common UI elements
-- [ ] The layout uses React Router's `Outlet` component for nested routes
-- [ ] The layout wraps all content with `MandarinProvider` for context access
-- [ ] The router configuration is updated to use the layout
-- [ ] UI elements are consistent across all subpages
-- [ ] The layout is documented with JSDoc comments
-- [ ] Unit tests are created for the layout
-- [ ] All functionality works identically after refactoring
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Epic #3: State Management Refactor (for `MandarinProvider`)
-
-## Related Issues
-
-- Epic #4: Routing Improvements
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-2: Create Layout Component with Outlet (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-2-create-layout-component.md)

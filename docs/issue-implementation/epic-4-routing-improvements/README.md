@@ -15,7 +15,9 @@ This epic refactors the Mandarin feature to use proper nested routing instead of
 
 The current Mandarin feature uses a state variable (`currentPage`) to control which subpage is displayed. This limits direct navigation, browser history, and component organization. Refactoring to route-based navigation addresses these limitations and aligns with modern React best practices.
 
-## Implementation Strategy
+## Implementation Solution
+
+All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure as defined in this epic.
 
 - Create a dedicated router configuration for the Mandarin feature.
 - Set up nested routes for each subpage.

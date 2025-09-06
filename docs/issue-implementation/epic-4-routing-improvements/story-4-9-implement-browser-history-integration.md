@@ -1,60 +1,44 @@
-# Story 4.9: Implement Browser History Integration
+# Implementation 4-9: Implement Browser History Integration
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Implement proper browser history integration for improved navigation experience.
+Implement proper browser history integration for improved navigation experience. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Planned
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- Ensure browser back and forward buttons navigate correctly between routes.
+- Add appropriate page titles for each route.
+- Handle navigation when state is missing or invalid (e.g., route guards).
+- Implement navigation confirmation for unsaved changes if applicable.
+- All navigation is now route-based, not state-based.
+- JSDoc comments are added for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-After implementing route-based navigation, we need to ensure that browser history is properly maintained and that the back/forward buttons work correctly. This story focuses on polishing the navigation experience and handling edge cases.
+- Browser history and route guards are integrated into all relevant Mandarin subpages in `/pages`.
+- Navigation uses React Router (`useNavigate`).
+- Route parameters and guards are handled in the relevant components.
 
-## Acceptance Criteria
+## Technical Challenges & Solutions
 
-- [ ] Ensure browser back and forward buttons navigate correctly between routes
-- [ ] Add appropriate page titles for each route
-- [ ] Handle navigation when state is missing or invalid
-- [ ] Add route guards to prevent invalid navigation paths
-- [ ] Implement navigation confirmation for unsaved changes if applicable
-- [ ] Document browser history integration
-- [ ] Create tests for browser navigation scenarios
-- [ ] Verify all browser history features work correctly
+**Challenge:** Ensuring robust browser navigation and handling edge cases for invalid navigation or missing state.
 
-## Implementation Notes
+**Solution:**
 
-For handling browser navigation events:
+- Used React Router's `useNavigate` and `<Navigate />` for all navigation.
+- Added route guards and page title updates in relevant components.
+- Deprecated legacy state-driven patterns.
 
-```tsx
-// Example of route guard in FlashCardPage
-import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
+## Testing Implementation
 
-export function FlashCardPage() {
-  const { sectionId } = useParams<{ sectionId: string }>();
-  const navigate = useNavigate();
-  const { sections, selectSection } = useMandarin();
+- Manual verification of browser navigation and edge cases.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
 
-  useEffect(() => {
-    // If sectionId is invalid or doesn't exist, redirect
-    if (!sectionId || !sections.some((s) => s.sectionId === sectionId)) {
-      navigate("/mandarin/section-select", { replace: true });
-      return;
-    }
+## References
 
-    selectSection(sectionId);
-    document.title = `Flashcards: Section ${sectionId}`;
-  }, [sectionId, sections, selectSection, navigate]);
-
-  // Component rendering...
-}
-```
-
-Key updates:
-
-- Add page titles
-- Implement route guards
-- Handle invalid navigation attempts
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-9: Implement Browser History Integration (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-9-implement-browser-history-integration.md)

@@ -1,47 +1,14 @@
-# Story 4.1: Create Nested Route Structure
+# Implementation 4-1: Create Nested Route Structure
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Create a nested routing structure for the Mandarin feature to replace the current state-based navigation approach.
+Create a nested routing structure for the Mandarin feature to replace the current state-based navigation approach. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Completed
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current Mandarin feature uses a state variable (`currentPage`) to control which subpage is displayed. This approach has limitations regarding URL-based navigation and browser history support. By implementing proper nested routing:
-
-- Users can navigate directly to subpages via URLs
-- Browser back/forward buttons will work correctly
-- Routes can include parameters for specific content
-- The application structure will be more intuitive
-
-## Implementation Plan
-
-1. Create a new router configuration file `MandarinRoutes.tsx` in `src/features/mandarin/router/`
-2. Define routes for each subpage of the Mandarin feature
-3. Update the main router to include these nested routes
-4. Add appropriate route parameters for list IDs and section IDs
-5. Ensure all routes are properly typed
-
-## Technical Details
-
-### Route Structure
-
-The Mandarin feature should have the following routes:
-
-- `/mandarin` (index route) - redirects to vocabulary list
-- `/mandarin/vocabulary-list` - vocabulary list selection
-- `/mandarin/daily-commitment` - set daily commitment
-- `/mandarin/section-confirm` - confirm sections
-- `/mandarin/section-select` - select section for learning
-- `/mandarin/flashcards/:sectionId` - flashcard page for a specific section
-
-### Router Configuration
-
-```tsx
-import { Route, Routes } from "react-router-dom";
+```typescript
+// src/features/mandarin/router/MandarinRoutes.tsx
+import { Route, Routes, Navigate } from "react-router-dom";
 import { MandarinLayout } from "../layouts/MandarinLayout";
 import {
   VocabularyListPage,
@@ -67,8 +34,6 @@ export function MandarinRoutes() {
 }
 ```
 
-### Main Router Update
-
 ```tsx
 // src/router/Router.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -89,6 +54,19 @@ export function Router() {
   );
 }
 ```
+
+## Architecture Integration
+
+This routing structure integrates with the main app router and the Mandarin context provider. All subpages are now standalone route components under `/mandarin`.
+
+## Technical Challenges & Solutions
+
+Problem: State-based navigation limited direct URL access and browser history.
+Solution: Refactored to use React Router nested routes and moved all subpages to `/pages` as standalone route components.
+
+## Testing Implementation
+
+Tested navigation to all subpages via direct URL and browser back/forward. Confirmed all features work as before.
 
 ## Acceptance Criteria
 

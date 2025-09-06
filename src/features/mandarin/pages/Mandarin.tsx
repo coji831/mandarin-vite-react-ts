@@ -322,7 +322,6 @@ function Mandarin() {
           setSectionProgress(sectionProgress);
           setLearnedWordIds(Array.from(new Set(learned)));
           setSelectedSectionId(null);
-          setCurrentPage("sectionselect");
           setError(
             invalidWordIds.length
               ? `Some wordIds in imported data do not exist in the vocabulary and were skipped: ${invalidWordIds.join(

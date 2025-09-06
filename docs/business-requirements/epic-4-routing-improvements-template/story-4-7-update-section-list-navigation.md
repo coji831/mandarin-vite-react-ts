@@ -1,16 +1,14 @@
 # Story 4.7: Update Section/List Selection Navigation
 
-## Story Summary
+## Description
 
-**Story Goal:** Update navigation logic for vocabulary list and section selection to use React Router.
+**As a** developer,
+**I want to** update navigation logic for vocabulary list and section selection to use React Router,
+**So that** state and history are maintained correctly and navigation is more robust.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation uses state changes (`setCurrentPage`) for navigation after selecting vocabulary lists and sections. This story focuses specifically on updating these key interaction points to use router navigation, which will maintain state and history correctly.
+Ensures that selection-based navigation is reliable, maintainable, and supports browser history.
 
 ## Acceptance Criteria
 
@@ -23,43 +21,28 @@ The current implementation uses state changes (`setCurrentPage`) for navigation 
 - [ ] Create unit tests for updated navigation logic
 - [ ] Verify all selection-based navigation works identically after refactoring
 
-## Implementation Notes
+## Business Rules
 
-Navigation should be updated like this:
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. All navigation must use React Router, not state variables.
 
-```tsx
-// Before
-function VocabularyListSelector({ onNext }) {
-  const handleSelectList = (listName) => {
-    setSelectedList(listName);
-    onNext(); // This calls setCurrentPage("dailycommitment")
-  };
-}
+## Related Issues
 
-// After
-function VocabularyListSelector() {
-  const navigate = useNavigate();
-  const { setSelectedList } = useMandarin();
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.3 / [**Convert Basic Pages**](./story-4-3-convert-basic-pages.md) (Dependency)
+- Epic #4: Routing Improvements
 
-  const handleSelectList = (listName) => {
-    setSelectedList(listName);
-    navigate("/mandarin/daily-commitment");
-  };
-}
-```
+## Implementation Status
 
-Key updates:
+- **Status**: Planned
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Section/list navigation refactor)
 
-- Replace callback props with direct navigation
-- Ensure state updates happen before navigation
-- Remove unnecessary prop drilling
+## User Journey [Optional]
 
-## Estimated Time
-
-- Development: 2 hours
-- Testing: 1.5 hours
-- Documentation: 30 minutes
-- Total: 4 hours
+As a user, I can select a vocabulary list or section and be navigated to the correct subpage, with browser navigation working as expected.
 
 ## Dependencies
 
@@ -69,7 +52,3 @@ Key updates:
 - Story #4.4: Convert Section Management Pages
 - Story #4.6: Update Basic Navigation Logic
 - Epic #3: State Management Refactor (for context)
-
-## Related Issues
-
-- Epic #4: Routing Improvements

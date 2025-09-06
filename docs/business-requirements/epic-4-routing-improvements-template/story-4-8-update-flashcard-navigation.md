@@ -1,16 +1,14 @@
 # Story 4.8: Update Flashcard Navigation with Parameters
 
-## Story Summary
+## Description
 
-**Story Goal:** Update navigation to flashcard pages to use route parameters for dynamic data.
+**As a** developer,
+**I want to** update navigation to flashcard pages to use route parameters for dynamic data,
+**So that** users can access specific flashcard sections directly via URL and navigation is more robust.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation uses state variables to determine which flashcards to display. This story focuses on updating flashcard navigation to use route parameters, enabling direct URL access to specific flashcard sections.
+Enables direct URL access to specific flashcard sections and improves maintainability.
 
 ## Acceptance Criteria
 
@@ -23,45 +21,31 @@ The current implementation uses state variables to determine which flashcards to
 - [ ] Test direct URL access to different flashcard sections
 - [ ] Verify flashcard navigation works identically after refactoring
 
-## Implementation Notes
+## Business Rules
 
-Navigation should be updated like this:
-
-```tsx
-// Before
-function handleSectionSelect(sectionId) {
-  setSelectedSectionId(sectionId);
-  setCurrentPage("flashcards");
-}
-
-// After
-function handleSectionSelect(sectionId) {
-  navigate(`/mandarin/flashcards/${sectionId}`);
-}
-```
-
-Key updates:
-
-- Use route parameters for section IDs
-- Extract parameters in the flashcard component
-- Enable direct URL access to specific sections
-
-## Estimated Time
-
-- Development: 2 hours
-- Testing: 1.5 hours
-- Documentation: 30 minutes
-- Total: 4 hours
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Story #4.2: Create Layout Component with Outlet
-- Story #4.5: Convert Flashcard Page with Parameters
-- Story #4.6: Update Basic Navigation Logic
-- Story #4.7: Update Section/List Selection Navigation
-- Epic #3: State Management Refactor (for context)
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. Flashcard navigation must use route parameters for section selection.
 
 ## Related Issues
 
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.5 / [**Convert Flashcard Page with Parameters**](./story-4-5-convert-flashcard-page.md) (Dependency)
 - Epic #4: Routing Improvements
+
+## Implementation Status
+
+- **Status**: Planned
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Flashcard navigation refactor)
+
+## User Journey [Optional]
+
+As a user, I can navigate to `/mandarin/flashcards/:sectionId` and see the correct flashcard section rendered, with browser navigation working as expected.
+
+## Dependencies
+
+- Story #4.6: Update Basic Navigation Logic
+- Story #4.7: Update Section/List Selection Navigation
+- Epic #3: State Management Refactor (for context)

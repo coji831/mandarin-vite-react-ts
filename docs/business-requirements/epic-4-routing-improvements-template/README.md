@@ -1,17 +1,12 @@
 # Epic 4: Mandarin Feature Routing Improvements
 
-> **Format:** `#4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md)`
->
-> - For **GitHub Issues**: Copy only the issue number (e.g., `#4.1`)
-> - For **Repository**: The entire line maintains working links for documentation
-
 ## Epic Summary
 
 **Epic Goal:** Refactor the Mandarin feature to use proper nested routing instead of a single-page state-driven approach, improving navigation, browser history support, and component organization.
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** August 16, 2025
+**Last Update:** September 5, 2025
 
 ## Background
 
@@ -26,11 +21,21 @@ This epic will refactor the routing structure to use proper nested routes while 
 
 ## Architecture Decisions
 
-1. **Nested Routes**: Implement proper nested routing for each subpage
-2. **URL-based Navigation**: Replace `setCurrentPage` calls with router navigation
-3. **Route Parameters**: Use route parameters for selected lists and sections
-4. **Browser Navigation Support**: Enable proper back/forward button behavior
-5. **Layout Component**: Create a layout component for shared UI elements across routes
+1. **Nested Routes**: Implement proper nested routing for each subpage.
+2. **URL-based Navigation**: Replace `setCurrentPage` calls with router navigation.
+3. **Route Parameters**: Use route parameters for selected lists and sections.
+4. **Browser Navigation Support**: Enable proper back/forward button behavior.
+5. **Layout Component**: Create a layout component for shared UI elements across routes.
+
+## Story Breakdown Logic
+
+This epic is divided into stories based on the following approach:
+
+- Stories 4.1–4.2 focus on establishing the nested route structure and shared layout (In Progress)
+- Stories 4.3–4.5 focus on converting individual subpages to standalone route components (In Progress)
+- Stories 4.6–4.9 focus on updating navigation logic and browser history integration (Planned)
+
+All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure as defined in this epic.
 
 ## Implementation Details
 
@@ -45,7 +50,7 @@ This epic will refactor the routing structure to use proper nested routes while 
 
 1. **MandarinRoutes**: New router configuration for the Mandarin feature
 2. **MandarinLayout**: New layout component for shared UI elements
-3. **Individual Subpages**: Convert each subpage from a component to a route
+3. **Individual Subpages**: Convert each subpage from a component to a route in `/pages`
 4. **Navigation Logic**: Update all navigation to use router instead of state
 
 ## User Stories

@@ -1,69 +1,21 @@
 # Story 4.2: Create Layout Component with Outlet
 
-## Story Summary
+## Description
 
-**Story Goal:** Create a layout component with an outlet for the Mandarin feature to maintain consistent UI elements across all subpages.
+**As a** developer,
+**I want to** create a layout component with an outlet for the Mandarin feature to maintain consistent UI elements across all subpages,
+**So that** the UI is consistent and code duplication is reduced.
 
-**Status:** Completed
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-With the implementation of nested routing, we need a layout component that contains common UI elements (like navigation) while allowing different subpages to be rendered in a designated area. This improves consistency and reduces code duplication.
-
-## Implementation Plan
-
-1. Create a new layout file `MandarinLayout.tsx` in `src/features/mandarin/layouts/`
-2. Implement a layout component that includes the `MandarinProvider` and common UI elements
-3. Use React Router's `Outlet` component to render nested routes
-4. Update the router configuration to use this layout
-
-## Technical Details
-
-### Layout Component Structure
-
-```tsx
-import { Outlet } from "react-router-dom";
-import { MandarinProvider } from "../context/MandarinContext";
-import { Navbar } from "../components/Navbar";
-
-export function MandarinLayout() {
-  return (
-    <MandarinProvider>
-      <div className="mandarin-container">
-        <Navbar />
-        <div className="mandarin-content">
-          <Outlet />
-        </div>
-      </div>
-    </MandarinProvider>
-  );
-}
-```
-
-### Router Configuration Update
-
-```tsx
-import { Route, Routes } from "react-router-dom";
-import { MandarinLayout } from "../layouts/MandarinLayout";
-import /* page components */ "../pages";
-
-export function MandarinRoutes() {
-  return (
-    <Routes>
-      <Route element={<MandarinLayout />}>
-        <Route index element={<Navigate to="vocabulary-list" replace />} />
-        <Route path="vocabulary-list" element={<VocabularyListPage />} />
-        {/* other routes */}
-      </Route>
-    </Routes>
-  );
-}
-```
+Provides a single place for shared UI elements, improving maintainability and user experience.
 
 ## Acceptance Criteria
 
+- [x] Create a new layout file `MandarinLayout.tsx` in `src/features/mandarin/layouts/`
+- [x] Implement a layout component that includes the `MandarinProvider` and common UI elements
+- [x] Use React Router's `Outlet` component to render nested routes
+- [x] Update the router configuration to use this layout
 - [ ] `MandarinLayout` component is created with common UI elements
 - [ ] The layout uses React Router's `Outlet` component for nested routes
 - [ ] The layout wraps all content with `MandarinProvider` for context access
@@ -73,11 +25,34 @@ export function MandarinRoutes() {
 - [ ] Unit tests are created for the layout
 - [ ] All functionality works identically after refactoring
 
+## Business Rules
+
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. The layout must wrap all Mandarin subpages and provide shared UI elements.
+
+## Related Issues
+
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- Epic #4: Routing Improvements
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Initial layout component implementation)
+
+## User Journey [Optional]
+
+As a user, I see a consistent navigation bar and layout across all Mandarin subpages, regardless of which route I visit.
+
 ## Dependencies
 
 - Story #4.1: Create Nested Route Structure
 - Epic #3: State Management Refactor (for `MandarinProvider`)
 
-## Related Issues
-
 - Epic #4: Routing Improvements
+
+```
+
+```

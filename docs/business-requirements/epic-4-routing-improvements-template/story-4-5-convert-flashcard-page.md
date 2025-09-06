@@ -1,16 +1,14 @@
 # Story 4.5: Convert Flashcard Page with Parameters
 
-## Story Summary
+## Description
 
-**Story Goal:** Convert the flashcard subpage to a dedicated route component that uses route parameters for dynamic data.
+**As a** developer,
+**I want to** convert the flashcard subpage to a dedicated route component that uses route parameters for dynamic data,
+**So that** users can access specific flashcard sections directly via URL.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation renders the flashcard page conditionally based on a state variable. This page requires dynamic data (section ID) that should be passed via route parameters rather than state. Converting it to use route parameters will enable direct navigation to specific sections via URL.
+Enables direct URL access to specific flashcard sections and improves maintainability.
 
 ## Acceptance Criteria
 
@@ -25,36 +23,28 @@ The current implementation renders the flashcard page conditionally based on a s
 - [ ] Verify functionality works identically after refactoring
 - [ ] Test direct URL access with different section IDs
 
-## Implementation Notes
+## Business Rules
 
-The flashcard page component should follow this pattern:
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. The flashcard page must use route parameters for section selection.
 
-```tsx
-// src/features/mandarin/pages/FlashCardPage.tsx
-import { useParams } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
-import { FlashCard } from "../components/FlashCard";
+## Related Issues
 
-export function FlashCardPage() {
-  const { sectionId } = useParams<{ sectionId: string }>();
-  const { sections, selectSection } = useMandarin();
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.5 / [**Convert Flashcard Page with Parameters**](./story-4-5-convert-flashcard-page.md)
+- Epic #4: Routing Improvements
 
-  useEffect(() => {
-    if (sectionId) {
-      selectSection(sectionId);
-    }
-  }, [sectionId, selectSection]);
+## Implementation Status
 
-  return <FlashCard />;
-}
-```
+- **Status**: Planned
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Flashcard page refactor)
 
-## Estimated Time
+## User Journey [Optional]
 
-- Development: 3 hours
-- Testing: 2 hours
-- Documentation: 30 minutes
-- Total: 5.5 hours
+As a user, I can visit `/mandarin/flashcards/:sectionId` directly and see the correct flashcard section rendered.
 
 ## Dependencies
 
@@ -63,7 +53,3 @@ export function FlashCardPage() {
 - Story #4.3: Convert Basic Pages
 - Story #4.4: Convert Section Management Pages
 - Epic #3: State Management Refactor (for context)
-
-## Related Issues
-
-- Epic #4: Routing Improvements

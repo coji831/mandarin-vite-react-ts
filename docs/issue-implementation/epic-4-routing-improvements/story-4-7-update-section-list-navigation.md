@@ -1,60 +1,41 @@
-# Story 4.7: Update Section/List Selection Navigation
+# Implementation 4-7: Update Section/List Selection Navigation
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Update navigation logic for vocabulary list and section selection to use React Router.
+Update navigation logic for vocabulary list and section selection to use React Router. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Planned
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- Navigation in `VocabularyListSelector`, `SectionSelect`, and `SectionConfirm` components is updated to use React Router's `useNavigate` instead of state changes.
+- Callback props for navigation are replaced with direct navigation calls.
+- All navigation is now route-based, not state-based.
+- JSDoc comments are added for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-The current implementation uses state changes (`setCurrentPage`) for navigation after selecting vocabulary lists and sections. This story focuses specifically on updating these key interaction points to use router navigation, which will maintain state and history correctly.
+- Navigation logic is integrated into all relevant Mandarin subpages in `/pages`.
+- Navigation uses React Router (`useNavigate`).
 
-## Acceptance Criteria
+## Technical Challenges & Solutions
 
-- [ ] Update navigation in `VocabularyListSelector` component
-- [ ] Update navigation in `SectionSelect` component
-- [ ] Update navigation in `SectionConfirm` component
-- [ ] Replace all relevant `setCurrentPage` calls with `navigate` calls
-- [ ] Ensure state updates (like `setSelectedList`) still occur before navigation
-- [ ] Document all navigation changes
-- [ ] Create unit tests for updated navigation logic
-- [ ] Verify all selection-based navigation works identically after refactoring
+**Challenge:** Migrating from state-based navigation to route-based navigation required refactoring component logic and updating references throughout the codebase.
 
-## Implementation Notes
+**Solution:**
 
-Navigation should be updated like this:
+- Used React Router's `useNavigate` and `<Navigate />` for all navigation.
+- Updated imports/exports to reflect new page locations.
+- Deprecated legacy state-driven patterns.
 
-```tsx
-// Before
-function VocabularyListSelector({ onNext }) {
-  const handleSelectList = (listName) => {
-    setSelectedList(listName);
-    onNext(); // This calls setCurrentPage("dailycommitment")
-  };
-}
+## Testing Implementation
 
-// After
-function VocabularyListSelector() {
-  const navigate = useNavigate();
-  const { setSelectedList } = useMandarin();
+- Manual verification of navigation and functionality.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
 
-  const handleSelectList = (listName) => {
-    setSelectedList(listName);
-    navigate("/mandarin/daily-commitment");
-  };
-}
-```
+## References
 
-Key updates:
-
-- Replace callback props with direct navigation
-- Ensure state updates happen before navigation
-- Remove unnecessary prop drilling
-
-## Estimated Time
-
-- Development: 2 hours
-- Testing: 1.5 hours
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-7: Update Section/List Selection Navigation (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-7-update-section-list-navigation.md)

@@ -1,59 +1,49 @@
-# Story 4.5: Convert Flashcard Page with Parameters
+# Implementation 4-5: Convert Flashcard Page with Parameters
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Convert the flashcard subpage to a dedicated route component that uses route parameters for dynamic data.
+Convert the flashcard subpage to a dedicated route component that uses route parameters for dynamic data. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Planned
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- `FlashCardPage.tsx` is implemented as a standalone route component in `/pages`.
+- The component uses the `useParams` hook to extract the `sectionId` parameter and the `useMandarin` hook for state access.
+- All navigation is now route-based, not state-based.
+- JSDoc comments are added for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-The current implementation renders the flashcard page conditionally based on a state variable. This page requires dynamic data (section ID) that should be passed via route parameters rather than state. Converting it to use route parameters will enable direct navigation to specific sections via URL.
+- The page uses the `useMandarin` hook for state access.
+- Integrated into the router configuration as a dedicated route.
+- Navigation uses React Router (`useNavigate`).
+- Page is documented with JSDoc comments.
 
-## Acceptance Criteria
-
-- [ ] Create `FlashCardPage.tsx` component
-- [ ] Implement route parameter handling for `sectionId`
-- [ ] Move rendering logic from conditional statements in `Mandarin.tsx` to this component
-- [ ] Ensure the component uses the `useMandarin` hook for state access
-- [ ] Use `useParams` hook to extract and validate the `sectionId` parameter
-- [ ] Connect component to its route in the router configuration
-- [ ] Document component with JSDoc comments
-- [ ] Create unit tests for the page component
-- [ ] Verify functionality works identically after refactoring
-- [ ] Test direct URL access with different section IDs
-
-## Implementation Notes
-
-The flashcard page component should follow this pattern:
-
-```tsx
-// src/features/mandarin/pages/FlashCardPage.tsx
-import { useParams } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
-import { FlashCard } from "../components/FlashCard";
-
-export function FlashCardPage() {
-  const { sectionId } = useParams<{ sectionId: string }>();
-  const { sections, selectSection } = useMandarin();
-
-  useEffect(() => {
-    if (sectionId) {
-      selectSection(sectionId);
-    }
-  }, [sectionId, selectSection]);
-
-  return <FlashCard />;
-}
+```
+MandarinRoutes
+  └─ MandarinLayout
+      └─ FlashCardPage
 ```
 
-## Estimated Time
+## Technical Challenges & Solutions
 
-- Development: 3 hours
-- Testing: 2 hours
-- Documentation: 30 minutes
-- Total: 5.5 hours
+**Challenge:** Migrating from state-based navigation to route-based navigation required refactoring component logic and updating references throughout the codebase.
 
-## Dependencies
+**Solution:**
+
+- Used React Router's `useNavigate` and `<Navigate />` for all navigation.
+- Updated imports/exports to reflect new page locations.
+- Deprecated legacy state-driven patterns.
+
+## Testing Implementation
+
+- Manual verification of navigation and functionality.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
+
+## References
+
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-5: Convert Flashcard Page (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-5-convert-flashcard-page.md)

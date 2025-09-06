@@ -14,17 +14,6 @@ import {
   FlashCardPage,
 } from "../pages";
 
-/**
- * MandarinRoutes - Nested routing configuration for Mandarin feature
- *
- * Routes:
- *   /mandarin (index) - redirects to vocabulary list
- *   /mandarin/vocabulary-list
- *   /mandarin/daily-commitment
- *   /mandarin/section-confirm
- *   /mandarin/section-select
- *   /mandarin/flashcards/:sectionId
- */
 export function MandarinRoutes() {
   return (
     <Routes>

@@ -1,16 +1,14 @@
 # Story 4.6: Update Basic Navigation Logic
 
-## Story Summary
+## Description
 
-**Story Goal:** Update basic navigation logic to use React Router's navigation instead of state changes.
+**As a** developer,
+**I want to** update basic navigation logic to use React Router's navigation instead of state changes,
+**So that** browser history is supported and direct URL access is enabled.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-The current implementation uses state changes (`setCurrentPage`) for navigation between subpages. This story focuses on updating basic navigation patterns (next/previous buttons, simple redirects) to use the router, which will enable proper browser history support and direct URL access.
+Enables proper browser navigation and improves maintainability by using standard routing patterns.
 
 ## Acceptance Criteria
 
@@ -21,42 +19,29 @@ The current implementation uses state changes (`setCurrentPage`) for navigation 
 - [ ] Create unit tests for updated navigation logic
 - [ ] Verify all basic navigation works identically after refactoring
 
-## Implementation Notes
+## Business Rules
 
-Navigation should be updated like this:
-
-```tsx
-// Before
-function handleNextClick() {
-  setCurrentPage("dailycommitment");
-}
-
-// After
-function handleNextClick() {
-  navigate("/mandarin/daily-commitment");
-}
-```
-
-Key updates:
-
-- Import and use `useNavigate` hook
-- Replace callback props with direct navigation
-- Update any components that trigger navigation
-
-## Estimated Time
-
-- Development: 1.5 hours
-- Testing: 1 hour
-- Documentation: 30 minutes
-- Total: 3 hours
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Story #4.2: Create Layout Component with Outlet
-- Story #4.3: Convert Basic Pages
-- Epic #3: State Management Refactor (for context)
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. All navigation must use React Router, not state variables.
 
 ## Related Issues
+
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.3 / [**Convert Basic Pages**](./story-4-3-convert-basic-pages.md) (Dependency)
+- Epic #4: Routing Improvements
+
+## Implementation Status
+
+- **Status**: Planned
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Navigation logic refactor)
+
+## User Journey [Optional]
+
+As a user, I can use next/previous navigation and browser back/forward buttons, and the app always shows the correct Mandarin subpage.
+
+## Dependencies
 
 - Epic #4: Routing Improvements

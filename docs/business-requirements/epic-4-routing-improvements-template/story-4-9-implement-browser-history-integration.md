@@ -1,16 +1,14 @@
 # Story 4.9: Implement Browser History Integration
 
-## Story Summary
+## Description
 
-**Story Goal:** Implement proper browser history integration for improved navigation experience.
+**As a** developer,
+**I want to** implement proper browser history integration for improved navigation experience,
+**So that** users can use the browser back/forward buttons and always see the correct Mandarin subpage.
 
-**Status:** Planned
+## Business Value
 
-**Epic:** Epic 4: Routing Improvements
-
-## Background
-
-After implementing route-based navigation, we need to ensure that browser history is properly maintained and that the back/forward buttons work correctly. This story focuses on polishing the navigation experience and handling edge cases.
+Ensures a robust navigation experience and prevents user confusion by handling browser history and invalid navigation cases.
 
 ## Acceptance Criteria
 
@@ -23,49 +21,28 @@ After implementing route-based navigation, we need to ensure that browser histor
 - [ ] Create tests for browser navigation scenarios
 - [ ] Verify all browser history features work correctly
 
-## Implementation Notes
+## Business Rules
 
-For handling browser navigation events:
+1. All old Mandarin feature components must be moved into the `/pages` directory and converted into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+2. Route guards and browser history handling must be implemented for all Mandarin subpages.
 
-```tsx
-// Example of route guard in FlashCardPage
-import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
+## Related Issues
 
-export function FlashCardPage() {
-  const { sectionId } = useParams<{ sectionId: string }>();
-  const navigate = useNavigate();
-  const { sections, selectSection } = useMandarin();
+- #4.1 / [**Create Nested Route Structure**](./story-4-1-create-nested-route-structure.md) (Dependency)
+- #4.2 / [**Create Layout Component with Outlet**](./story-4-2-create-layout-component.md) (Dependency)
+- #4.5 / [**Convert Flashcard Page with Parameters**](./story-4-5-convert-flashcard-page.md) (Dependency)
+- Epic #4: Routing Improvements
 
-  useEffect(() => {
-    // If sectionId is invalid or doesn't exist, redirect
-    if (!sectionId || !sections.some((s) => s.sectionId === sectionId)) {
-      navigate("/mandarin/section-select", { replace: true });
-      return;
-    }
+## Implementation Status
 
-    selectSection(sectionId);
-    document.title = `Flashcards: Section ${sectionId}`;
-  }, [sectionId, sections, selectSection, navigate]);
+- **Status**: Planned
+- **PR**: [Add PR number if available]
+- **Merge Date**: [Add date if available]
+- **Key Commit**: [Add commit hash if available] (Browser history integration)
 
-  // Component rendering...
-}
-```
+## User Journey [Optional]
 
-Key updates:
-
-- Add page titles
-- Implement route guards
-- Handle invalid navigation attempts
-- Ensure state consistency during navigation
-
-## Estimated Time
-
-- Development: 2.5 hours
-- Testing: 2 hours
-- Documentation: 30 minutes
-- Total: 5 hours
+As a user, I can use the browser back and forward buttons to navigate between Mandarin subpages, and the app always shows the correct page and title.
 
 ## Dependencies
 

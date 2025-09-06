@@ -1,60 +1,42 @@
-# Story 4.8: Update Flashcard Navigation with Parameters
+# Implementation 4-8: Update Flashcard Navigation with Parameters
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Update navigation to flashcard pages to use route parameters for dynamic data.
+Update navigation to flashcard pages to use route parameters for dynamic data. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Planned
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- Navigation to the flashcard page is updated to include the section ID as a route parameter.
+- All navigation is now route-based, not state-based.
+- Components that navigate to or from the flashcard page use React Router's `useNavigate` and `useParams`.
+- JSDoc comments are added for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-The current implementation uses state variables to determine which flashcards to display. This story focuses on updating flashcard navigation to use route parameters, enabling direct URL access to specific flashcard sections.
+- Navigation logic is integrated into all relevant Mandarin subpages in `/pages`.
+- Navigation uses React Router (`useNavigate`).
+- Route parameters are extracted in the flashcard component.
 
-## Acceptance Criteria
+## Technical Challenges & Solutions
 
-- [ ] Update navigation to flashcard page to include section ID parameter
-- [ ] Replace `setCurrentPage` calls with parameterized `navigate` calls
-- [ ] Ensure sections are correctly loaded based on route parameters
-- [ ] Update any components that navigate to or from the flashcard page
-- [ ] Document all navigation changes
-- [ ] Create unit tests for updated navigation logic
-- [ ] Test direct URL access to different flashcard sections
-- [ ] Verify flashcard navigation works identically after refactoring
+**Challenge:** Migrating from state-based navigation to route-based navigation required refactoring component logic and updating references throughout the codebase.
 
-## Implementation Notes
+**Solution:**
 
-Navigation should be updated like this:
+- Used React Router's `useNavigate` and `<Navigate />` for all navigation.
+- Updated imports/exports to reflect new page locations.
+- Deprecated legacy state-driven patterns.
 
-```tsx
-// Before
-function handleSectionSelect(sectionId) {
-  setSelectedSectionId(sectionId);
-  setCurrentPage("flashcards");
-}
+## Testing Implementation
 
-// After
-function handleSectionSelect(sectionId) {
-  navigate(`/mandarin/flashcards/${sectionId}`);
-}
-```
+- Manual verification of navigation and functionality.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
 
-Key updates:
+## References
 
-- Use route parameters for section IDs
-- Extract parameters in the flashcard component
-- Enable direct URL access to specific sections
-
-## Estimated Time
-
-- Development: 2 hours
-- Testing: 1.5 hours
-- Documentation: 30 minutes
-- Total: 4 hours
-
-## Dependencies
-
-- Story #4.1: Create Nested Route Structure
-- Story #4.2: Create Layout Component with Outlet
-- Story #4.5: Convert Flashcard Page with Parameters
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-8: Update Flashcard Navigation with Parameters (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-8-update-flashcard-navigation.md)

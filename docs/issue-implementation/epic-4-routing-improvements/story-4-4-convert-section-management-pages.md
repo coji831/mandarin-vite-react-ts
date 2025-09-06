@@ -1,44 +1,57 @@
-# Story 4.4: Convert Section Management Pages
+# Implementation 4-4: Convert Section Management Pages
 
-## Story Summary
+## Technical Scope
 
-**Story Goal:** Convert the section confirmation and section selection subpages from state-based components to dedicated route components.
+Convert the section confirmation and section selection subpages from state-based components to dedicated route components. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
 
-**Status:** Planned
+## Implementation Details
 
-**Epic:** Epic 4: Routing Improvements
+- `SectionConfirmPage.tsx` and `SectionSelectPage.tsx` are implemented as standalone route components in `/pages`.
+- Logic for section confirmation, selection, and navigation is handled within each component using the `useMandarin` hook and React Router's `useNavigate`.
+- All navigation is now route-based, not state-based.
+- JSDoc comments are added to each page for documentation.
+- Unit test files should be created or updated to match the new implementation.
 
-## Background
+## Architecture Integration
 
-The current implementation renders section management pages conditionally based on a state variable. These pages handle section confirmation and section selection, which are more complex interactions with state. Converting them to dedicated route components will improve code organization and enable direct navigation.
+- Both pages use the `useMandarin` hook for state access.
+- Integrated into the router configuration as dedicated routes.
+- Navigation uses React Router (`useNavigate`).
+- Pages are documented with JSDoc comments.
 
-## Acceptance Criteria
-
-- [ ] Create `SectionConfirmPage.tsx` component
-- [ ] Create `SectionSelectPage.tsx` component
-- [ ] Move rendering logic from conditional statements in `Mandarin.tsx` to these components
-- [ ] Ensure both components use the `useMandarin` hook for state access
-- [ ] Connect components to their respective routes in the router configuration
-- [ ] Document components with JSDoc comments
-- [ ] Create unit tests for both page components
-- [ ] Verify functionality works identically after refactoring
-
-## Implementation Notes
-
-The page components should follow this pattern:
-
-```tsx
-// Example: src/features/mandarin/pages/SectionSelectPage.tsx
-import { useNavigate } from "react-router-dom";
-import { useMandarin } from "../context/MandarinContext";
-import { SectionSelect } from "../components/SectionSelect";
-
-export function SectionSelectPage() {
-  const navigate = useNavigate();
-  const { sections, setSelectedSectionId } = useMandarin();
-
-  // Component logic here
-}
+```
+MandarinRoutes
+	└─ MandarinLayout
+			├─ SectionConfirmPage
+			└─ SectionSelectPage
 ```
 
-// SectionConfirmPage.tsx should follow a similar pattern.
+## Technical Challenges & Solutions
+
+**Challenge:** Migrating from state-based navigation to route-based navigation required refactoring component logic and updating references throughout the codebase.
+
+**Solution:**
+
+- Used React Router's `useNavigate` and `<Navigate />` for all navigation.
+- Updated imports/exports to reflect new page locations.
+- Deprecated legacy state-driven patterns.
+
+## Testing Implementation
+
+- Manual verification of navigation and functionality.
+- Ensured identical behavior after refactoring.
+- Unit tests should be added or updated to match the new implementation.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number]
+- **Merge Date**: [Add date]
+- **Key Commit**: [Add commit hash] (Section management pages refactor)
+
+## References
+
+- [Epic 4: Mandarin Feature Routing Improvements](../epic-4-routing-improvements)
+- [Mandarin Feature Architecture](../../architecture.md)
+- [React Router Documentation](https://reactrouter.com/)
+- [Story 4-4: Convert Section Management Pages (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/story-4-4-convert-section-management-pages.md)
