@@ -9,9 +9,9 @@
  * - Handles import/export of progress and vocabulary lists.
  * - Loads and merges progress on page load.
  * - Manages state for selected list, sections, daily word count, review, and history via context.
- * - Handles navigation between subpages/components.
+ * - Story 4-8: Navigation now handled by React Router instead of state
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useProgressContext } from "../context/ProgressContext";
 import { getUserProgress, saveUserProgress } from "../hooks/useMandarinProgress";
 import { Section, UserProgress } from "../types";
@@ -26,7 +26,6 @@ function getTodayKey() {
 function Mandarin() {
   const importInputRef = useRef<HTMLInputElement>(null);
   // --- State and hooks ---
-  const [currentPage, setCurrentPage] = useState("vocablist");
   const {
     selectedList,
     setSelectedList,

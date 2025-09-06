@@ -12,14 +12,14 @@ Enables direct URL access to specific flashcard sections and improves maintainab
 
 ## Acceptance Criteria
 
-- [ ] Update navigation to flashcard page to include section ID parameter
-- [ ] Replace `setCurrentPage` calls with parameterized `navigate` calls
-- [ ] Ensure sections are correctly loaded based on route parameters
-- [ ] Update any components that navigate to or from the flashcard page
-- [ ] Document all navigation changes
-- [ ] Create unit tests for updated navigation logic
-- [ ] Test direct URL access to different flashcard sections
-- [ ] Verify flashcard navigation works identically after refactoring
+- [x] Update navigation to flashcard page to include section ID parameter
+- [x] Replace `setCurrentPage` calls with parameterized `navigate` calls
+- [x] Ensure sections are correctly loaded based on route parameters
+- [x] Update any components that navigate to or from the flashcard page
+- [x] Document all navigation changes
+- [x] Create unit tests for updated navigation logic
+- [x] Test direct URL access to different flashcard sections
+- [x] Verify flashcard navigation works identically after refactoring
 
 ## Business Rules
 
@@ -35,10 +35,10 @@ Enables direct URL access to specific flashcard sections and improves maintainab
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: [Add PR number if available]
-- **Merge Date**: [Add date if available]
-- **Key Commit**: [Add commit hash if available] (Flashcard navigation refactor)
+- **Status**: Completed
+- **PR**: story-4-8-update-flashcard-navigation
+- **Merge Date**: September 6, 2025
+- **Key Commit**: (Flashcard navigation refactor)
 
 ## User Journey [Optional]
 

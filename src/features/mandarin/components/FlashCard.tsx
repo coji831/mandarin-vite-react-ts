@@ -1,10 +1,13 @@
 /**
  * FlashCard component
  *
- * - Displays flashcards for a section of words.
+ * - Displays flashcards for a section of words in the Mandarin feature.
  * - Uses ProgressContext for section/word state, progress, and actions.
- * - No progress-related props; navigation handled via callback prop.
+ * - All navigation (next/prev, sidebar, return to section) is context-driven and route-based.
+ * - No legacy state-driven navigation remains; return to section is handled by parent page using React Router.
  * - Includes search/filter, progress bar, and details panel.
+ * - Fully migrated for Story 4-8: route-based navigation and context usage only.
+ * - Follows project conventions in docs/guides/conventions.md.
  */
 import { useMemo, useState } from "react";
 import { useProgressContext } from "../context/ProgressContext";
@@ -27,13 +30,9 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
     markWordLearned,
   } = useProgressContext();
   // Get current section and words from context
-  const selectedSection = sections.find(
-    (s) => s.sectionId === selectedSectionId,
-  );
+  const selectedSection = sections.find((s) => s.sectionId === selectedSectionId);
   const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: any) =>
-    sectionWordIds.includes(String(w.wordId)),
-  );
+  const sectionWords = selectedWords.filter((w: any) => sectionWordIds.includes(String(w.wordId)));
   const masteredWordIds = new Set(learnedWordIds);
   const mastered = sectionProgress[selectedSectionId || ""] || 0;
   const total = sectionWords.length;
@@ -49,7 +48,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
     return sectionWords.filter(
       (w: Card) =>
         w.character.includes(search.trim()) ||
-        w.pinyin.toLowerCase().includes(search.trim().toLowerCase()),
+        w.pinyin.toLowerCase().includes(search.trim().toLowerCase())
     );
   }, [search, sectionWords]);
 
@@ -63,9 +62,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
 
   // Navigation handlers
   const handlePrevious = () => {
-    setCurrentCardIndex(
-      (prev) => (prev - 1 + filteredWords.length) % filteredWords.length,
-    );
+    setCurrentCardIndex((prev) => (prev - 1 + filteredWords.length) % filteredWords.length);
     setShowDetails(false);
   };
   const handleNext = () => {
@@ -79,11 +76,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
 
   return (
     <div>
-      <div
-        id="flashcard"
-        className="flex"
-        style={{ width: "100%", minHeight: "100%" }}
-      >
+      <div id="flashcard" className="flex" style={{ width: "100%", minHeight: "100%" }}>
         {/* Sidebar - 30% */}
 
         <Sidebar
@@ -96,10 +89,7 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
           onBackToSection={onBackToSection}
         />
         {/* Flashcard Area - 40% */}
-        <div
-          className="flashcard-center flex flex-col  "
-          style={{ width: "40%" }}
-        >
+        <div className="flashcard-center flex flex-col  " style={{ width: "40%" }}>
           <div
             className="flashcard-card flex flex-col padding-10"
             style={{
@@ -145,24 +135,17 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
                     onClick={() => markWordLearned(currentCard.wordId)}
                     disabled={masteredWordIds.has(currentCard.wordId)}
                     style={{
-                      background: masteredWordIds.has(currentCard.wordId)
-                        ? "#aaaaaa"
-                        : "#38405aff",
+                      background: masteredWordIds.has(currentCard.wordId) ? "#aaaaaa" : "#38405aff",
                       color: "#ffffff",
                       minWidth: 140,
                       transition: "background 0.2s, box-shadow 0.2s",
                     }}
                   >
-                    {masteredWordIds.has(currentCard.wordId)
-                      ? "Mastered"
-                      : "Mark as Mastered"}
+                    {masteredWordIds.has(currentCard.wordId) ? "Mastered" : "Mark as Mastered"}
                   </button>
                 </div>
                 {/* Navigation Buttons at bottom corners */}
-                <div
-                  className=" flex "
-                  style={{ width: "100%", justifyContent: "space-around" }}
-                >
+                <div className=" flex " style={{ width: "100%", justifyContent: "space-around" }}>
                   <button type="button" onClick={handlePrevious}>
                     ◀ Previous
                   </button>
