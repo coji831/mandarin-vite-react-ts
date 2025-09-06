@@ -2,7 +2,7 @@
 
 ## Technical Scope
 
-Update basic navigation logic to use React Router's navigation instead of state changes. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+Update basic navigation logic to use React Router's navigation instead of state changes. All navigation logic in `/pages` now uses `useNavigate` or `<Navigate />`. No remaining usages of `setCurrentPage` for navigation. All navigation is route-based and compliant with the new routing structure.
 
 ## Implementation Details
 
@@ -52,8 +52,8 @@ Update basic navigation logic to use React Router's navigation instead of state 
 - All navigation logic (next/previous buttons, redirects) is updated to use React Router's `useNavigate` instead of state changes.
 - Callback props for navigation are replaced with direct navigation calls.
 - All navigation is now route-based, not state-based.
+- No remaining usages of `setCurrentPage` for navigation.
 - JSDoc comments are added for documentation.
-- Unit test files should be created or updated to match the new implementation.
 
 ## Architecture Integration
 
@@ -69,6 +69,13 @@ Update basic navigation logic to use React Router's navigation instead of state 
 - Used React Router's `useNavigate` and `<Navigate />` for all navigation.
 - Updated imports/exports to reflect new page locations.
 - Deprecated legacy state-driven patterns.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number]
+- **Merge Date**: [Add date]
+- **Key Commit**: [Add commit hash] (Navigation logic refactor)
 
 ## Testing Implementation
 
