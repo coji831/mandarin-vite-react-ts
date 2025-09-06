@@ -2,15 +2,15 @@
 
 ## Technical Scope
 
-Update navigation logic for vocabulary list and section selection to use React Router. Move all old Mandarin feature components into the `/pages` directory and convert them into standalone subpages of the `/mandarin` routes, following the new nested routing structure.
+Update navigation logic for vocabulary list and section selection to use React Router. All navigation in `VocabularyListPage`, `SectionSelectPage`, and `SectionConfirmPage` is now route-based using `useNavigate`. No remaining usages of state-based navigation for section/list selection. All navigation is compliant with the new routing structure.
 
 ## Implementation Details
 
-- Navigation in `VocabularyListSelector`, `SectionSelect`, and `SectionConfirm` components is updated to use React Router's `useNavigate` instead of state changes.
+- Navigation in `VocabularyListPage`, `SectionSelectPage`, and `SectionConfirmPage` is updated to use React Router's `useNavigate` instead of state changes.
 - Callback props for navigation are replaced with direct navigation calls.
 - All navigation is now route-based, not state-based.
+- No remaining usages of state-based navigation for section/list selection.
 - JSDoc comments are added for documentation.
-- Unit test files should be created or updated to match the new implementation.
 
 ## Architecture Integration
 
@@ -26,6 +26,13 @@ Update navigation logic for vocabulary list and section selection to use React R
 - Used React Router's `useNavigate` and `<Navigate />` for all navigation.
 - Updated imports/exports to reflect new page locations.
 - Deprecated legacy state-driven patterns.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: [Add PR number]
+- **Merge Date**: [Add date]
+- **Key Commit**: [Add commit hash] (Section/list navigation refactor)
 
 ## Testing Implementation
 
