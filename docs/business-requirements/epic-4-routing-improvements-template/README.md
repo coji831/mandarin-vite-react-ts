@@ -4,7 +4,7 @@
 
 **Epic Goal:** Refactor the Mandarin feature to use proper nested routing instead of a single-page state-driven approach, improving navigation, browser history support, and component organization.
 
-**Status:** In Progress
+**Status:** Completed
 
 **Last Update:** September 5, 2025
 

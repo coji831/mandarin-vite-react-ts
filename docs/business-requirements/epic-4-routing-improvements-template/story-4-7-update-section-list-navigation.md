@@ -12,14 +12,14 @@ Ensures that selection-based navigation is reliable, maintainable, and supports 
 
 ## Acceptance Criteria
 
-- [ ] Update navigation in `VocabularyListSelector` component
-- [ ] Update navigation in `SectionSelect` component
-- [ ] Update navigation in `SectionConfirm` component
-- [ ] Replace all relevant `setCurrentPage` calls with `navigate` calls
-- [ ] Ensure state updates (like `setSelectedList`) still occur before navigation
-- [ ] Document all navigation changes
-- [ ] Create unit tests for updated navigation logic
-- [ ] Verify all selection-based navigation works identically after refactoring
+- [x] Update navigation in `VocabularyListSelector` component
+- [x] Update navigation in `SectionSelect` component
+- [x] Update navigation in `SectionConfirm` component
+- [x] Replace all relevant `setCurrentPage` calls with `navigate` calls
+- [x] Ensure state updates (like `setSelectedList`) still occur before navigation
+- [x] Document all navigation changes
+- [x] Create unit tests for updated navigation logic
+- [x] Verify all selection-based navigation works identically after refactoring
 
 ## Business Rules
 
@@ -35,7 +35,7 @@ Ensures that selection-based navigation is reliable, maintainable, and supports 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: [Add PR number if available]
 - **Merge Date**: [Add date if available]
 - **Key Commit**: [Add commit hash if available] (Section/list navigation refactor)

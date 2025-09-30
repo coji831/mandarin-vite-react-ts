@@ -8,7 +8,7 @@ This epic refactors the Mandarin feature to use proper nested routing instead of
 
 **Epic Goal:** Refactor the Mandarin feature to use nested routing, enabling direct URL navigation, browser history integration, and improved code organization.
 
-**Status:** In Progress  
+**Status:** Completed  
 **Last Update:** September 4, 2025
 
 ## Background

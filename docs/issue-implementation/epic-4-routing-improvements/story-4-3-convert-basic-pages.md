@@ -1,3 +1,7 @@
+# Status
+
+**Status:** Completed
+
 # Implementation 4-3: Convert Basic Pages
 
 ## Technical Scope
