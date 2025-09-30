@@ -8,6 +8,12 @@
  * - Handles return to section selection using React Router.
  * - Fully migrated for Story 4-8: all navigation is context- and router-based, no legacy state-driven navigation remains.
  * - Follows project conventions in docs/guides/conventions.md.
+ * Story: 4-5 Convert Flashcard Page with Parameters
+ * Story: 4-8 Update Flashcard Navigation with Parameters
+ * - Standalone page for flashcards, uses route param for sectionId
+ * - Uses useMandarin (ProgressContext) for state
+ * - Updates context selectedSectionId based on route parameter
+ * - Renders FlashCard component for the selected section
  */
 import { useParams, useNavigate } from "react-router-dom";
 import { useProgressContext } from "../context/ProgressContext";
