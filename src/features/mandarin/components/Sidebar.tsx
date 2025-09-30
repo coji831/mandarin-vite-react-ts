@@ -5,6 +5,7 @@
  * - Uses ProgressContext for section/word state and progress.
  * - Highlights mastered words and shows section progress.
  * - Filtering and selection handled via props.
+ * - Story 4-8: Updated for route-based navigation.
  */
 import { CSSProperties } from "react";
 import { useProgressContext } from "../context/ProgressContext";
@@ -31,22 +32,14 @@ function Sidebar({
 
   masteredWordIds,
 }: Readonly<Props>) {
-  const { selectedSectionId, sections, selectedWords, sectionProgress } =
-    useProgressContext();
-  const selectedSection = sections.find(
-    (s) => s.sectionId === selectedSectionId,
-  );
+  const { selectedSectionId, sections, selectedWords, sectionProgress } = useProgressContext();
+  const selectedSection = sections.find((s) => s.sectionId === selectedSectionId);
   const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: Word) =>
-    sectionWordIds.includes(String(w.wordId)),
-  );
+  const sectionWords = selectedWords.filter((w: Word) => sectionWordIds.includes(String(w.wordId)));
   const mastered = sectionProgress[selectedSectionId || ""] || 0;
   const total = sectionWords.length;
   return (
-    <div
-      className="flashcard-sidebar flex flex-col padding-10 gap-10"
-      style={{ width: "30%" }}
-    >
+    <div className="flashcard-sidebar flex flex-col padding-10 gap-10" style={{ width: "30%" }}>
       <div>
         <input
           type="text"
@@ -110,9 +103,7 @@ function Sidebar({
               cursor: "pointer",
               alignItems: "center",
               justifyContent: "space-between",
-              border: masteredWordIds.has(w.wordId)
-                ? "1.5px solid #4caf50"
-                : "1px solid #444",
+              border: masteredWordIds.has(w.wordId) ? "1.5px solid #4caf50" : "1px solid #444",
             }}
           >
             <span style={{ fontSize: 22 }}>{w.character}</span>
@@ -140,9 +131,7 @@ function Sidebar({
 }
 
 const NoResults = () => (
-  <div style={{ fontSize: "14px", color: "#666", textAlign: "center" }}>
-    No results found
-  </div>
+  <div style={{ fontSize: "14px", color: "#666", textAlign: "center" }}>No results found</div>
 );
 
 const characterStyle: CSSProperties = {

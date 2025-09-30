@@ -9,24 +9,12 @@
  * - Handles import/export of progress and vocabulary lists.
  * - Loads and merges progress on page load.
  * - Manages state for selected list, sections, daily word count, review, and history via context.
- * - Handles navigation between subpages/components.
+ * - Story 4-8: Navigation now handled by React Router instead of state
  */
-import { useEffect, useRef, useState } from "react";
-import {
-  Basic,
-  DailyCommitment,
-  FlashCard,
-  NavBar,
-  SectionConfirm,
-  SectionSelect,
-  VocabularyListSelector,
-} from "../components";
-import {
-  getUserProgress,
-  saveUserProgress,
-} from "../hooks/useMandarinProgress";
+import { useEffect, useRef } from "react";
 import { useProgressContext } from "../context/ProgressContext";
-import { UserProgress, Section } from "../types";
+import { getUserProgress, saveUserProgress } from "../hooks/useMandarinProgress";
+import { Section, UserProgress } from "../types";
 
 export { Mandarin };
 
@@ -38,7 +26,6 @@ function getTodayKey() {
 function Mandarin() {
   const importInputRef = useRef<HTMLInputElement>(null);
   // --- State and hooks ---
-  const [currentPage, setCurrentPage] = useState("vocablist");
   const {
     selectedList,
     setSelectedList,
@@ -80,9 +67,7 @@ function Mandarin() {
       // 2. Load user_progress from localStorage
       let userProgress = getUserProgress();
       // 3. Find or create entry for this list
-      let listEntry = userProgress.lists.find(
-        (l: any) => l.listName === selectedList,
-      );
+      let listEntry = userProgress.lists.find((l: any) => l.listName === selectedList);
       if (!listEntry) {
         listEntry = {
           listName: selectedList,
@@ -116,15 +101,13 @@ function Mandarin() {
         // Merge progress fields into word data
         const merged = mergeProgress(
           validWords.filter((w) => section.wordIds.includes(w.wordId)),
-          section.progress,
+          section.progress
         );
         // Count mastered
         const mastered = merged.filter((w: any) => w.mastered).length;
         sectionProgress[section.sectionId] = mastered;
         // Collect learnedWordIds
-        learned.push(
-          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
-        );
+        learned.push(...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId));
         // Collect review history if present
         if (section.history) {
           for (const [date, ids] of Object.entries(section.history)) {
@@ -172,18 +155,12 @@ function Mandarin() {
   }
 
   // Get words for the selected section only
-  const selectedSection = sections.find(
-    (s: Section) => s.sectionId === selectedSectionId,
-  );
+  const selectedSection = sections.find((s: Section) => s.sectionId === selectedSectionId);
   const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: any) =>
-    sectionWordIds.includes(String(w.wordId)),
-  );
-  const sectionLearned = sectionWords.filter((w: any) =>
-    learnedWordIds.includes(String(w.wordId)),
-  );
+  const sectionWords = selectedWords.filter((w: any) => sectionWordIds.includes(String(w.wordId)));
+  const sectionLearned = sectionWords.filter((w: any) => learnedWordIds.includes(String(w.wordId)));
   const sectionUnlearned = sectionWords.filter(
-    (w: any) => !learnedWordIds.includes(String(w.wordId)),
+    (w: any) => !learnedWordIds.includes(String(w.wordId))
   );
   const todaysWords = selectedSectionId
     ? sectionUnlearned.slice(0, dailyWordCount ?? sectionWords.length)
@@ -219,11 +196,7 @@ function Mandarin() {
     reader.onload = async (event) => {
       try {
         const imported = JSON.parse(event.target?.result as string);
-        if (
-          !imported ||
-          typeof imported !== "object" ||
-          !Array.isArray(imported.lists)
-        ) {
+        if (!imported || typeof imported !== "object" || !Array.isArray(imported.lists)) {
           setError("Invalid progress file format.");
           return;
         }
@@ -235,67 +208,50 @@ function Mandarin() {
         // Merge each list by listName
         for (const importedList of imported.lists) {
           const existingList = existingProgress.lists.find(
-            (l: any) => l.listName === importedList.listName,
+            (l: any) => l.listName === importedList.listName
           );
           if (!existingList) {
             // No existing, just add imported
             mergedProgress.lists.push(importedList);
           } else {
             // Merge sections by sectionId
-            const mergedSections = importedList.sections.map(
-              (importedSection: any) => {
-                const existingSection = existingList.sections.find(
-                  (s: any) => s.sectionId === importedSection.sectionId,
-                );
-                if (!existingSection) {
-                  return importedSection;
-                } else {
-                  // Merge progress by wordId
-                  const mergedProgressObj: Record<string, any> = {
-                    ...existingSection.progress,
-                  };
-                  for (const wordId of Object.keys(
-                    importedSection.progress || {},
-                  )) {
-                    mergedProgressObj[wordId] =
-                      importedSection.progress[wordId];
-                  }
-                  return {
-                    ...importedSection,
-                    progress: mergedProgressObj,
-                  };
+            const mergedSections = importedList.sections.map((importedSection: any) => {
+              const existingSection = existingList.sections.find(
+                (s: any) => s.sectionId === importedSection.sectionId
+              );
+              if (!existingSection) {
+                return importedSection;
+              } else {
+                // Merge progress by wordId
+                const mergedProgressObj: Record<string, any> = {
+                  ...existingSection.progress,
+                };
+                for (const wordId of Object.keys(importedSection.progress || {})) {
+                  mergedProgressObj[wordId] = importedSection.progress[wordId];
                 }
-              },
-            );
+                return {
+                  ...importedSection,
+                  progress: mergedProgressObj,
+                };
+              }
+            });
             // Preserve any unmatched sections from existing
             const unmatchedSections = existingList.sections.filter(
-              (s: any) =>
-                !importedList.sections.some(
-                  (is: any) => is.sectionId === s.sectionId,
-                ),
+              (s: any) => !importedList.sections.some((is: any) => is.sectionId === s.sectionId)
             );
             mergedProgress.lists.push({
               ...importedList,
               sections: [...mergedSections, ...unmatchedSections],
               // Merge completedSections and dailyWordCount (prefer imported)
               completedSections:
-                importedList.completedSections ||
-                existingList.completedSections ||
-                [],
-              dailyWordCount:
-                importedList.dailyWordCount ??
-                existingList.dailyWordCount ??
-                null,
+                importedList.completedSections || existingList.completedSections || [],
+              dailyWordCount: importedList.dailyWordCount ?? existingList.dailyWordCount ?? null,
             });
           }
         }
         // Add any lists in existingProgress not present in imported
         for (const existingList of existingProgress.lists) {
-          if (
-            !mergedProgress.lists.some(
-              (l: any) => l.listName === existingList.listName,
-            )
-          ) {
+          if (!mergedProgress.lists.some((l: any) => l.listName === existingList.listName)) {
             mergedProgress.lists.push(existingList);
           }
         }
@@ -309,9 +265,7 @@ function Mandarin() {
             const res = await fetch("/data/vocabularyLists.json");
             if (res.ok) {
               const vocabLists = await res.json();
-              vocabListMeta = vocabLists.find(
-                (l: any) => l.name === firstList.listName,
-              );
+              vocabListMeta = vocabLists.find((l: any) => l.name === firstList.listName);
             }
           } catch {}
           let words = [];
@@ -324,9 +278,7 @@ function Mandarin() {
             } catch {}
           }
           if (!words.length) {
-            setError(
-              "Vocabulary data for the imported list could not be found. Import aborted.",
-            );
+            setError("Vocabulary data for the imported list could not be found. Import aborted.");
             return;
           }
           const vocabWordIds = new Set(words.map((w: any) => String(w.wordId)));
@@ -357,15 +309,11 @@ function Mandarin() {
           for (const section of cleanedSections) {
             const merged = mergeProgress(
               validWords.filter((w) => section.wordIds.includes(w.wordId)),
-              section.progress,
+              section.progress
             );
             const mastered = merged.filter((w: any) => w.mastered).length;
             sectionProgress[section.sectionId] = mastered;
-            learned.push(
-              ...merged
-                .filter((w: any) => w.mastered)
-                .map((w: any) => w.wordId),
-            );
+            learned.push(...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId));
           }
           setSelectedWords(words);
           setSections(cleanedSections);
@@ -373,13 +321,12 @@ function Mandarin() {
           setSectionProgress(sectionProgress);
           setLearnedWordIds(Array.from(new Set(learned)));
           setSelectedSectionId(null);
-          setCurrentPage("sectionselect");
           setError(
             invalidWordIds.length
               ? `Some wordIds in imported data do not exist in the vocabulary and were skipped: ${invalidWordIds.join(
-                  ", ",
+                  ", "
                 )}`
-              : "",
+              : ""
           );
         }
       } catch (err) {
@@ -418,37 +365,15 @@ function Mandarin() {
         />
         <button
           type="button"
-          onClick={() =>
-            importInputRef.current && importInputRef.current.click()
-          }
+          onClick={() => importInputRef.current && importInputRef.current.click()}
         >
           Import Progress
         </button>
         {error && <span style={{ color: "red", marginLeft: 8 }}>{error}</span>}
       </div>
 
-      <NavBar setCurrentPage={setCurrentPage} />
-      {currentPage === "vocablist" && (
-        <VocabularyListSelector
-          onListSelected={() => setCurrentPage("dailycommitment")}
-        />
-      )}
-      {currentPage === "flashcards" && selectedSectionId && (
-        <FlashCard onBackToSection={() => setCurrentPage("sectionselect")} />
-      )}
-      {currentPage === "basic" && <Basic />}
-      {currentPage === "dailycommitment" && (
-        <DailyCommitment onConfirm={() => setCurrentPage("sectionconfirm")} />
-      )}
-      {currentPage === "sectionconfirm" && (
-        <SectionConfirm onProceed={() => setCurrentPage("sectionselect")} />
-      )}
-      {currentPage === "sectionselect" && (
-        <SectionSelect
-          onProceed={() => setCurrentPage("flashcards")}
-          onBack={() => setCurrentPage("dailycommitment")}
-        />
-      )}
+      {/* Route-based navigation replaces state-based navigation */}
+      {/* Example: Use <Outlet /> for nested routes, or <Navigate /> for redirects */}
     </div>
   );
 }
