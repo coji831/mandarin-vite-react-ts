@@ -36,8 +36,9 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 - **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
 
   - Loads vocabulary and example data from local JSON files in [../public/data/](../public/data/)
-  - Uses context-based state management (see Epic 3 implementation)
-  - Will use nested routing structure (see Epic 4 implementation)
+  - Uses context-based state management (implemented in Epic 3)
+  - Uses nested routing structure (implemented in Epic 4)
+  - Organized as separate page components for each step in the learning workflow
 
 - Navigation is handled by React Router
 - Routes defined in [../src/router/Router.tsx](../src/router/Router.tsx)

@@ -8,7 +8,10 @@ This folder contains implementation details, completed epics, and user stories f
 - [Contribution Guide](../guides/contribution-guide.md)
 - [Workflow Checklist](../guides/workflow.md)
 - [Project Conventions Guide](../guides/conventions.md)
+- [SOLID Principles for React](../guides/solid-principles.md)
 - [Implementation Format Guide](../guides/implementation-format.md)
+- [Document Streamlining Guide](../guides/document-streamlining.md)
+- [Branch Strategy Guide](../guides/branch-strategy.md)
 
 ## Templates
 

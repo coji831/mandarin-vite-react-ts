@@ -15,8 +15,9 @@ PinyinPal is an interactive web application designed to help new learners master
 
 - **Frontend:** **React** with **TypeScript**
 - **Build Tool:** **Vite**
-- **State Management:** (Your choice here, e.g., Zustand, Redux, or React Context)
-- **Styling:** (Your choice here, e.g., Tailwind CSS, Styled-components, or pure CSS)
+- **Routing:** **React Router** with nested routes
+- **State Management:** **React Context API** with custom hooks
+- **Styling:** CSS with modular organization
 
 ## 🚀 Installation & Getting Started
 

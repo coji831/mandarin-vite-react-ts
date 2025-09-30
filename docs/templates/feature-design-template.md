@@ -18,6 +18,14 @@
 
 - High-level architecture diagram or description
 - Key components and data flow
+- State management approach
+
+## Routing Structure
+
+- Base route for the feature
+- Nested routes and their purposes
+- Route parameters and their usage
+- Route-related components (layouts, outlets)
 
 ## API/Integration
 

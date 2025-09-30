@@ -16,9 +16,11 @@
 
 ## Commit & PR Guidelines
 
-- Use Conventional Commits format
+- Use Conventional Commits format as specified in [branch-strategy.md](branch-strategy.md)
+- Follow the epic-based branch approach from [branch-strategy.md](branch-strategy.md)
 - Keep PRs focused and small
 - Reference issues or stories in PRs
+- Consider using feature flags for complex implementations
 
 ## Resources
 

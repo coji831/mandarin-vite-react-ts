@@ -9,6 +9,14 @@ Welcome to the Mandarin Vite React TypeScript project!
 - Read [guides/conventions.md](conventions.md) for coding and documentation standards
 - Review [guides/workflow.md](workflow.md) for the development process
 - Use templates from [../templates/README.md](../templates/README.md) for all documentation
+- Check the [status dashboard](../status-dashboard.md) for project progress
+
+## Documentation & Development Guidelines
+
+- Follow [SOLID principles](solid-principles.md) for React/TypeScript code
+- Use the [document streamlining guide](document-streamlining.md) for concise documentation
+- Follow the [branch strategy](branch-strategy.md) for Git workflow
+- Use [structured AI prompts](structured-ai-prompts.md) for AI assistance
 
 ## Contribution Steps
 

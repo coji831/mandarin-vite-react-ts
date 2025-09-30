@@ -2,6 +2,8 @@
 
 This guide explains how different documentation formats in this project work together to provide complete coverage of both business and technical aspects.
 
+> **Note**: For guidelines on creating concise, visual documentation, refer to the [Document Streamlining Guide](./document-streamlining.md).
+
 ## Document Relationship Map
 
 The Business Requirements and Technical Implementation documents work together as complementary resources:

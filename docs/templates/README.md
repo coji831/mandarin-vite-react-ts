@@ -29,13 +29,17 @@ This folder contains the single source of truth for all documentation templates 
 - [Business Requirements Format Guide](../guides/business-requirements-format.md)
 - [Implementation Format Guide](../guides/implementation-format.md)
 - [Project Conventions Guide](../guides/conventions.md)
+- [SOLID Principles for React Guide](../guides/solid-principles.md)
 - [Onboarding Guide](../guides/onboarding.md)
 - [Contribution Guide](../guides/contribution-guide.md)
 - [Workflow Checklist](../guides/workflow.md)
+- [Branch Strategy Guide](../guides/branch-strategy.md)
+- [Document Streamlining Guide](../guides/document-streamlining.md)
 
 ## AI & Workflow Resources
 
 - [AI File Operations Guide](../guides/ai-file-operations.md)
+- [Structured AI Prompts Guide](../guides/structured-ai-prompts.md)
 
 - Main README files for navigation:
   - Project root: `README.md`

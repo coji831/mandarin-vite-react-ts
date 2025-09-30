@@ -2,6 +2,20 @@
 
 # Epic <number>: <Epic Name>
 
+## 📌 Executive Summary
+
+**Goal:** <One-sentence technical goal statement>
+
+**Key Points:**
+
+- <Technical point 1 - most critical insight>
+- <Technical point 2 - second most important point>
+- <Technical point 3 - third most important point>
+- <Technical point 4 - fourth most important point>
+- <Technical point 5 - fifth most important point>
+
+**Status:** <Planned/In Progress/Completed>
+
 ## [Required] Technical Overview
 
 **Implementation Goal:** <Describe the technical objectives and scope of the implementation>

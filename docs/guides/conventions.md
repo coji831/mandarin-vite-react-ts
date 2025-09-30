@@ -6,6 +6,16 @@
 - Use functional components and React hooks
 - Keep each feature in its own folder under [../src/features/](../src/features/)
 - Put route constants in [../src/constants/paths.ts](../src/constants/paths.ts)
+- Use React Router for navigation and routing
+
+## Routing Conventions
+
+- Place page components in `pages` subdirectory of feature
+- Use nested routes for complex features
+- Define routes in feature's `router` directory
+- Use path constants from `src/constants/paths.ts`
+- Route parameters should be type-safe using generics
+- Support browser history navigation
 
 ## Naming Rules
 

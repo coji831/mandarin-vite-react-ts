@@ -2,6 +2,20 @@
 
 # Epic [NUMBER]: [Epic Title]
 
+## 📌 Executive Summary
+
+**Goal:** [One-sentence goal statement]
+
+**Key Points:**
+
+- [Point 1 - most critical insight]
+- [Point 2 - second most important point]
+- [Point 3 - third most important point]
+- [Point 4 - fourth most important point]
+- [Point 5 - fifth most important point]
+
+**Status:** [Planned/In Progress/Completed]
+
 ## Epic Summary
 
 **Epic Goal:** [Brief description of the epic's primary goal and objectives]

@@ -20,40 +20,50 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## 2. Main Components
 
-- **AddForm**: Add new vocabulary items
-- **Basic**: Display vocabulary
-- **DailyCommitment**: Set and track daily word learning goals
-- **FlashCard**: Show word details, audio playback (now uses context for all state/actions, no progress-related props)
-- **Import**: Import vocabulary
-- **NavBar**: Navigation bar for Mandarin feature
 - **PlayButton**: Integrate with TTS API for audio
-- **SectionConfirm**: Confirm section selection (now uses context for all state/actions, no progress-related props)
-- **SectionSelect**: Organize words into sections (now uses context for all state/actions, no progress-related props)
-- **Sidebar**: List/search/select words
-- **VocabularyListSelector**: Select vocabulary lists (now uses context)
+- **FlashCard**: Show word details, audio playback (uses context for all state/actions)
 - **WordDetails**: Show detailed word info
+
+### Pages
+
+- **ListSelectionPage**: Page for choosing vocabulary lists to study
+- **CommitmentPage**: Page for setting daily learning goals
+- **SectionDividerPage**: Page for dividing vocabulary into manageable sections
+- **SectionSelectorPage**: Page for selecting which section to study
+- **FlashcardPage**: Page for displaying individual vocabulary items for study
 
 ---
 
 ## 3. State Management & Architecture
 
 - Uses React Context API (`ProgressContext`, `useMandarinContext`) and custom hooks (`useMandarinProgress`) for shared state and progress tracking
-- Components (e.g., `VocabularyListSelector`, `DailyCommitment`) consume context directly, eliminating prop drilling
-- Navigation between sections/components (e.g., after confirming daily commitment) is handled via callback props for parent-driven control
+- Page components and UI components consume context directly, eliminating prop drilling
+- Navigation is handled through React Router with nested routes
 - Atomic story-driven workflow: each story implements a focused change
 - Documentation separation: high-level in epic docs, detailed in story docs
 
 ---
 
-## 4. Pages
+## 4. Page Structure
 
-- **Main page**: [`Mandarin.tsx`](../../pages/Mandarin.tsx) — handles state, routing, and logic for the feature
+- **Root**: [`MandarinRoot.tsx`](../../pages/mandarin/MandarinRoot.tsx) — handles layout and nested routes
+- **List Selection**: [`ListSelectionPage.tsx`](../../pages/mandarin/ListSelectionPage.tsx) — select vocabulary list
+- **Commitment**: [`CommitmentPage.tsx`](../../pages/mandarin/CommitmentPage.tsx) — set daily learning goals
+- **Section Divider**: [`SectionDividerPage.tsx`](../../pages/mandarin/SectionDividerPage.tsx) — divide vocabulary
+- **Section Selector**: [`SectionSelectorPage.tsx`](../../pages/mandarin/SectionSelectorPage.tsx) — select section
+- **Flashcard**: [`FlashcardPage.tsx`](../../pages/mandarin/FlashcardPage.tsx) — study vocabulary
 
 ---
 
 ## 5. Routing
 
-- Route: `/mandarin`
+- Base route: `/mandarin`
+  - `/` - Root page (redirects to list selection)
+  - `/list-selection` - List selection page
+  - `/commitment` - Commitment page
+  - `/section-divider` - Section divider page
+  - `/section-selector` - Section selector page
+  - `/flashcard` - Flashcard page
   - See [`paths.ts`](../../../../src/constants/paths.ts) and [`Router.tsx`](../../../../src/router/Router.tsx)
 
 ---

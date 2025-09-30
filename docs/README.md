@@ -2,20 +2,42 @@
 
 ## Navigation & Overview
 
-- [guides/workflow.md](guides/workflow.md) – Human-friendly workflow checklist
-- [guides/ai-file-operations.md](guides/ai-file-operations.md) – AI file operation guide
-- [guides/conventions.md](guides/conventions.md) – Coding, naming, and documentation conventions
-- [guides/documentation-relationship-guide.md](guides/documentation-relationship-guide.md) – How business and technical documentation work together
+### Main Reference Docs
+
 - [architecture.md](architecture.md) – System architecture overview
 - [templates/README.md](templates/README.md) – **Source of truth for all templates and formats**
-  [Business Requirements Format Guide](guides/business-requirements-format.md)
-  - [Business Requirements Large Epic Template](templates/business-requirements-large-epic-template.md)
-  - [Business Requirements Small Epic Template](templates/business-requirements-small-epic-template.md)
-  - [Business Requirements Story Template](templates/business-requirements-story-template.md)
-    [Implementation Format Guide](guides/implementation-format.md)
-  - [Implementation Large Epic Template](templates/implementation-large-epic-template.md)
-  - [Implementation Small Epic Template](templates/implementation-small-epic-template.md)
-  - [Implementation Story Template](templates/implementation-story-template.md)
+
+### Workflow & Process Guides
+
+- [guides/workflow.md](guides/workflow.md) – Human-friendly workflow checklist
+- [guides/branch-strategy.md](guides/branch-strategy.md) – Git branch strategy and conventions
+- [guides/contribution-guide.md](guides/contribution-guide.md) – How to contribute to the project
+
+### Documentation Guides
+
+- [guides/documentation-relationship-guide.md](guides/documentation-relationship-guide.md) – How business and technical docs work together
+- [guides/business-requirements-format.md](guides/business-requirements-format.md) – Business requirements format guide
+- [guides/implementation-format.md](guides/implementation-format.md) – Implementation docs format guide
+- [guides/document-streamlining.md](guides/document-streamlining.md) – Making documentation concise and effective
+
+### Code & Development Guides
+
+- [guides/conventions.md](guides/conventions.md) – Coding, naming, and documentation conventions
+- [guides/solid-principles.md](guides/solid-principles.md) – Applying SOLID principles to React/TypeScript
+
+### AI Assistance Guides
+
+- [guides/ai-file-operations.md](guides/ai-file-operations.md) – AI file operation guide
+- [guides/structured-ai-prompts.md](guides/structured-ai-prompts.md) – Creating effective AI prompts
+
+### Templates
+
+- [Business Requirements Large Epic Template](templates/business-requirements-large-epic-template.md)
+- [Business Requirements Small Epic Template](templates/business-requirements-small-epic-template.md)
+- [Business Requirements Story Template](templates/business-requirements-story-template.md)
+- [Implementation Large Epic Template](templates/implementation-large-epic-template.md)
+- [Implementation Small Epic Template](templates/implementation-small-epic-template.md)
+- [Implementation Story Template](templates/implementation-story-template.md)
 
 ## Project Management Documentation
 

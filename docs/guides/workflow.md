@@ -1,4 +1,4 @@
-# � Human-Friendly Epic/Story Workflow Checklist
+# Human-Friendly Epic/Story Workflow Checklist
 
 ## 1. Design Epic/Story
 
@@ -17,6 +17,8 @@
 - [ ] Write or update implementation docs for epic/story
 - [ ] Implement code changes in feature/components
 - [ ] Update file-level comments to match code logic and context usage
+- [ ] Update routing configuration for new pages/features
+- [ ] Test route navigation and browser history support
 - [ ] Review code and docs for technical accuracy and convention compliance
 
 ## 4. Open Pull Request
@@ -41,6 +43,8 @@
 - [ ] Ensure epic docs are high-level (goals, architecture, story breakdown)
 - [ ] Ensure story docs have detailed implementation notes and completion details
 - [ ] Update documentation checklists, README files, and cross-links
+- [ ] Update feature design docs to reflect current routing structure
+- [ ] Verify route paths in documentation match actual implementation
 
 ## 8. Release/Deploy
 

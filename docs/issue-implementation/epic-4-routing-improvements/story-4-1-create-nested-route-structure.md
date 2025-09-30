@@ -74,14 +74,14 @@ Tested navigation to all subpages via direct URL and browser back/forward. Confi
 
 ## Acceptance Criteria
 
-- [ ] Nested route structure is created for the Mandarin feature
-- [ ] Routes are defined for all subpages
-- [ ] Route parameters are used where appropriate
-- [ ] Main router is updated to include the Mandarin routes
-- [ ] Routes are properly typed
-- [ ] Documentation is updated to reflect the new route structure
-- [ ] Unit tests are created for the router
-- [ ] All routes are accessible directly via URLs
+- [x] Nested route structure is created for the Mandarin feature
+- [x] Routes are defined for all subpages
+- [x] Route parameters are used where appropriate
+- [x] Main router is updated to include the Mandarin routes
+- [x] Routes are properly typed
+- [x] Documentation is updated to reflect the new route structure
+- [x] Unit tests are created for the router
+- [x] All routes are accessible directly via URLs
 
 ## Dependencies
 

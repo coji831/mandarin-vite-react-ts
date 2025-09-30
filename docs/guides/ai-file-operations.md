@@ -1,15 +1,35 @@
 # Step-by-Step Development Workflow with AI Prompts
 
+> **⚠️ IMPORTANT**: This workflow guide remains valid, but all prompt examples should now follow the structured format from the [Structured AI Prompts Guide](./structured-ai-prompts.md).
+>
+> **Integration Notice**: While this document provides the overall workflow steps, use the structured prompt format for all AI interactions:
+>
+> ```
+> [TASK]: <specific task description>
+> [CONTEXT]: <file path or epic/story reference>
+> [PARAMETERS]: <specific parameters needed>
+> [OUTPUT]: <expected output format>
+> [CONSTRAINTS]: <any limitations or requirements>
+> ```
+
 ## 1. Design Epic/Story
 
 ### Step-by-Step Guidance
 
 - Draft or update architecture and feature design docs.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Read `docs/architecture.md` and `src/features/<feature>/docs/design.md`. Compare all section headers to those in `docs/templates/feature-design-template.md`. List any missing, misnamed, or extra sections."
-- "Update design docs if any section is missing, misnamed, or outdated. Use `docs/templates/feature-design-template.md` for exact section names and order."
+```
+[TASK]: Review design document for template compliance
+[CONTEXT]: docs/architecture.md and src/features/<feature>/docs/design.md
+[PARAMETERS]:
+  - Template: docs/templates/feature-design-template.md
+  - Check section headers
+  - Verify required sections
+[OUTPUT]: List of missing or incorrect sections
+[CONSTRAINTS]: Follow template exactly
+```
 
 **Check:**
 
@@ -30,10 +50,19 @@ create/design/feature --file "src/features/<new-feature>/docs/design.md" --templ
 
 - Create or update business requirements for epic and stories.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Read `docs/business-requirements/epic-X-name/README.md` and story files. Compare all section headers to those in `docs/templates/epic-business-requirements-template.md` and `docs/templates/story-business-requirements-template.md`. List any missing, misnamed, or extra sections."
-- "Update or create docs if any section is missing, misnamed, or out of order. Ensure all required links to related stories/epics are present and correct."
+```
+[TASK]: Review business requirements for template compliance
+[CONTEXT]: docs/business-requirements/epic-X-name/
+[PARAMETERS]:
+  - Epic template: docs/templates/business-requirements-large-epic-template.md
+  - Story template: docs/templates/business-requirements-story-template.md
+  - Check section headers
+  - Verify related links
+[OUTPUT]: List of missing or incorrect sections with suggestions
+[CONSTRAINTS]: Follow templates exactly
+```
 
 **Check:**
 
@@ -54,11 +83,28 @@ create/plan/story --file "docs/business-requirements/epic-X-name/story-X-Y-name.
 
 - Implement code and technical documentation for epic/story.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Read `docs/issue-implementation/epic-X-name/README.md` and `story-X-Y-name.md`. Compare all section headers to those in `docs/issue-implementation/issue-implementation-format.md`. List any missing, misnamed, or extra sections. Check that rationale and technical details are present and complete."
-- "Update code in `src/features/<feature>/components/ComponentName.tsx` to match the implementation plan. Ensure logic, structure, and naming follow conventions."
-- "Update file-level comments to reflect new logic, context usage, and any changes. Use `docs/conventions.md` for required comment style and information."
+```
+[TASK]: Review implementation docs for template compliance
+[CONTEXT]: docs/issue-implementation/epic-X-name/
+[PARAMETERS]:
+  - Epic template: docs/templates/implementation-large-epic-template.md
+  - Story template: docs/templates/implementation-story-template.md
+  - Check rationale and technical details sections
+[OUTPUT]: List of missing or incomplete sections with suggestions
+[CONSTRAINTS]: Follow templates exactly
+```
+
+```
+[TASK]: Update component to implement feature
+[CONTEXT]: src/features/<feature>/components/ComponentName.tsx
+[PARAMETERS]:
+  - Implementation plan: docs/issue-implementation/epic-X-name/story-X-Y-name.md
+  - Coding conventions: docs/guides/conventions.md
+[OUTPUT]: Updated component code with proper formatting and comments
+[CONSTRAINTS]: Follow SOLID principles and React best practices
+```
 
 **Check:**
 
@@ -84,11 +130,28 @@ create/implement/component --file "src/features/<feature>/components/NewComponen
 
 - Prepare and open a pull request.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Read `.github/PULL_REQUEST_TEMPLATE.md`. Compare the PR description to the template. List any missing, incomplete, or misnamed fields."
-- "Check that the PR references the correct story/epic and branch. Ensure the summary of changes is clear and complete."
-- "Create PR description using workflow guidelines and ensure all required fields are filled and accurate."
+```
+[TASK]: Verify PR template compliance
+[CONTEXT]: .github/PULL_REQUEST_TEMPLATE.md
+[PARAMETERS]:
+  - Current PR description
+  - Required fields from template
+[OUTPUT]: List of missing or incomplete fields with suggested content
+[CONSTRAINTS]: All template fields must be present and complete
+```
+
+```
+[TASK]: Generate PR description
+[CONTEXT]: docs/workflow.md
+[PARAMETERS]:
+  - Template: .github/PULL_REQUEST_TEMPLATE.md
+  - Epic/Story: docs/business-requirements/epic-X-name/story-X-Y-name.md
+  - Branch: feature/epic-X-name
+[OUTPUT]: Complete PR description following template format
+[CONSTRAINTS]: Must reference correct issue numbers and include summary of changes
+```
 
 **Check:**
 
@@ -107,10 +170,28 @@ create/pr/description --guideline "docs/workflow.md" --template ".github/PULL_RE
 
 - Review code and documentation before merging.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Read implementation and code files. Compare them to the review checklist in `docs/guides/review-checklist.md`. List any checklist items not met, guideline violations, or unresolved feedback."
-- "Update docs or code to resolve all review feedback and ensure full checklist and guideline compliance before merging."
+```
+[TASK]: Perform code review using checklist
+[CONTEXT]: src/features/<feature>/components/ComponentName.tsx
+[PARAMETERS]:
+  - Checklist: docs/guides/review-checklist.md
+  - Conventions: docs/guides/conventions.md
+  - Implementation doc: docs/issue-implementation/epic-X-name/story-X-Y-name.md
+[OUTPUT]: List of issues found with reference to checklist items and specific code locations
+[CONSTRAINTS]: Focus on code quality, documentation completeness, and adherence to project standards
+```
+
+```
+[TASK]: Verify review feedback resolution
+[CONTEXT]: PR comments and requested changes
+[PARAMETERS]:
+  - Original feedback items
+  - Updated code/docs
+[OUTPUT]: Confirmation of resolved items or list of remaining issues
+[CONSTRAINTS]: All feedback must be addressed before approval
+```
 
 **Check:**
 
@@ -131,11 +212,29 @@ update/review/code --file "src/features/<feature>/components/ComponentName.tsx" 
 
 - Mark issues/stories as complete and update status in BOTH business requirements and implementation docs.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Update the status section in BOTH `docs/business-requirements/epic-X-name/README.md` AND `docs/issue-implementation/epic-X-name/README.md` and all related story files. Check for missing, outdated, or incorrectly formatted status sections in BOTH documents."
-- "Finalize all documentation, ensuring all changes and clarifications are included."
-- "Update file-level comments in code files if any changes were made during closure. List any files with outdated or missing comments."
+```
+[TASK]: Update completion status in all docs
+[CONTEXT]: docs/business-requirements/epic-X-name/ and docs/issue-implementation/epic-X-name/
+[PARAMETERS]:
+  - Epic files: README.md in both folders
+  - Story files: story-X-Y-name.md in both folders
+  - Status fields to update: "Status: Completed" with completion date
+[OUTPUT]: List of all files updated with their new status values
+[CONSTRAINTS]: All relevant documents must be updated with consistent status information
+```
+
+```
+[TASK]: Verify documentation completeness
+[CONTEXT]: All affected project files
+[PARAMETERS]:
+  - Code files: src/features/<feature>/
+  - Documentation files: docs/business-requirements/ and docs/issue-implementation/
+  - Comment standards: docs/guides/conventions.md
+[OUTPUT]: Report of any outdated or missing documentation with suggestions
+[CONSTRAINTS]: All file-level comments must be updated to match final implementation
+```
 
 **Check:**
 
@@ -157,10 +256,29 @@ update/docs/file-comments --file "src/features/<feature>/components/ComponentNam
 
 - Create a commit and update release notes.
 
-**AI Prompts:**
+**Structured AI Prompts:**
 
-- "Create commit message using Conventional Commits format (type: scope: message). Ensure the scope references the correct story/epic and the message is clear and descriptive. List any commit messages that do not meet these standards."
-- "Update `CHANGELOG.md` with a summary of all relevant changes for the release. Check for missing, incomplete, or unclear release notes."
+```
+[TASK]: Generate commit message
+[CONTEXT]: Current changes and story/epic information
+[PARAMETERS]:
+  - Type: feat|fix|docs|style|refactor|test|chore
+  - Scope: story-X-Y or epic-X
+  - Convention: docs/templates/commit-message-template.md
+[OUTPUT]: Properly formatted commit message following project standards
+[CONSTRAINTS]: Must follow Conventional Commits format and reference correct scope
+```
+
+```
+[TASK]: Update changelog
+[CONTEXT]: CHANGELOG.md
+[PARAMETERS]:
+  - Version: current release version
+  - Changes: list of completed stories and fixes
+  - Format: docs/guides/conventions.md section on changelogs
+[OUTPUT]: Updated changelog entry with all relevant changes organized by type
+[CONSTRAINTS]: Must be comprehensive and follow project format
+```
 
 **Check:**
 
@@ -171,4 +289,39 @@ update/docs/file-comments --file "src/features/<feature>/components/ComponentNam
 ```
 create/commit/message --type "feat|fix|docs|style|refactor|test|chore" --scope "story-X-Y" --guideline "docs/workflow.md"
 update/release/notes --file "CHANGELOG.md" --guideline "docs/conventions.md"
+```
+
+## Using This Guide Effectively
+
+### Combining Workflow Steps with Structured Prompts
+
+For maximum effectiveness, use this workflow guide in conjunction with the structured prompts format:
+
+1. **Follow the Workflow Sequence** - Use the steps in this document as your overall project roadmap
+2. **Use Structured Prompts** - Apply the structured format from [Structured AI Prompts Guide](./structured-ai-prompts.md) for all AI interactions
+3. **Adapt Examples** - Customize the provided structured prompt examples to your specific task needs
+4. **Reference Legacy Commands** - While using the new prompt structure, you can still reference the command patterns in the Command Reference sections
+
+### Automating Prompt Generation
+
+To streamline your workflow, consider creating scripts that generate structured prompts based on:
+
+1. Current git branch (for epic/story context)
+2. Modified files (for context)
+3. Project template references (for parameters)
+
+This automation will help maintain consistency and reduce the manual effort of creating structured prompts.
+
+### Recommended Workflow Integration
+
+1. Use a split-screen approach with this guide open alongside your code editor
+2. Reference the appropriate workflow step based on your current phase
+3. Copy and adapt the structured prompt example for your specific task
+4. Execute the prompt with the AI assistant
+5. Validate the results against the "Check" items in each section
+
+By following this integrated approach, you'll maintain the structured consistency that enhances AI assistance while benefiting from the established workflow patterns in this guide.
+
+```
+
 ```
