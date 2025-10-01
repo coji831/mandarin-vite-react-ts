@@ -7,6 +7,7 @@
 - Follow coding and documentation conventions in [conventions.md](conventions.md)
 - Reference the correct epic/story in all commits and PRs
 - Use the workflow checklist in [workflow.md](workflow.md) for each change
+- Follow CSV format standards when updating vocabulary data in `public/data/vocabulary/`
 
 ## Review Process
 

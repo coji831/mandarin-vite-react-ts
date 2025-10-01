@@ -19,6 +19,8 @@
 - [ ] Update file-level comments to match code logic and context usage
 - [ ] Update routing configuration for new pages/features
 - [ ] Test route navigation and browser history support
+- [ ] Update CSV vocabulary data if vocabulary content is affected
+- [ ] Test CSV data loading functionality if changes affect vocabulary system
 - [ ] Review code and docs for technical accuracy and convention compliance
 
 ## 4. Open Pull Request
@@ -44,6 +46,8 @@
 - [ ] Ensure story docs have detailed implementation notes and completion details
 - [ ] Update documentation checklists, README files, and cross-links
 - [ ] Update feature design docs to reflect current routing structure
+- [ ] Update any vocabulary documentation to reflect CSV data changes
+- [ ] Ensure CSV data structure is documented if changes were made
 - [ ] Verify route paths in documentation match actual implementation
 
 ## 8. Release/Deploy
@@ -79,3 +83,26 @@
 ## AI File Operations
 
 For standardized AI workflow commands and file operations, see [ai-file-operations.md](./ai-file-operations.md).
+
+---
+
+## CSV Vocabulary Management
+
+This project uses a CSV-based system for managing vocabulary data. Follow these steps when working with vocabulary:
+
+1. **Structure**: CSV files are stored in `public/data/vocabulary/` with standard headers: `No,Chinese,Pinyin,English`
+
+2. **Adding/Updating Vocabulary**:
+
+   - Update the appropriate CSV file in `public/data/vocabulary/hsk3.0/band1/`
+   - Ensure proper format with the required columns
+   - Use the `csvLoader.ts` utility for processing in code
+
+3. **Testing**:
+
+   - Test loading using `csvLoader.ts` utility
+   - Verify proper display in the vocabulary list component
+
+4. **Documentation**:
+   - Update vocabulary documentation when changing CSV structure
+   - Reference the vocabulary format in implementation docs

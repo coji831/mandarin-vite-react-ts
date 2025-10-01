@@ -6,15 +6,19 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## 1. Data Model
 
-- Vocabulary and example sentences are loaded from JSON files:
-  - [src/data/vocabulary/](../../../../src/data/vocabulary/)
-  - [src/data/examples/](../../../../src/data/examples/)
+- Vocabulary data is loaded from CSV files:
+  - [public/data/vocabulary/](../../../../public/data/vocabulary/)
+  - Structure follows standard format: `No,Chinese,Pinyin,English`
+  - CSV files are organized by HSK level and band (e.g., `hsk3.0/band1/`)
+  - Loaded using `csvLoader.ts` utility in [src/utils/](../../../../src/utils/)
+- Example sentences are loaded from JSON files:
+  - [public/data/examples/](../../../../public/data/examples/)
 - Each word includes:
-  - Character
+  - Character (Chinese)
   - Pinyin
-  - Meaning
-  - Example sentence
-  - Translations
+  - Meaning (English)
+  - Example sentence (optional)
+  - Translations (optional)
 
 ---
 
@@ -71,5 +75,7 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 ## 6. Design Notes
 
 - React functional components and hooks
-- Data loaded from static files
+- Data loaded from CSV files using csvLoader.ts utility
+- CSV system enables easy vocabulary updates and maintenance
+- Standard data format (No,Chinese,Pinyin,English) ensures consistency
 - Audio fetched from backend TTS API

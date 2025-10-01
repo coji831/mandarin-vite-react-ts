@@ -11,6 +11,15 @@ Welcome to the Mandarin Vite React TypeScript project!
 - Use templates from [../templates/README.md](../templates/README.md) for all documentation
 - Check the [status dashboard](../status-dashboard.md) for project progress
 
+## Quick Start: Working with Vocabulary
+
+This project uses a CSV-based system for vocabulary management:
+
+1. CSV files are located in `public/data/vocabulary/hsk3.0/band1/`
+2. Use `src/utils/csvLoader.ts` for loading vocabulary data
+3. Follow the workflow in [workflow.md](workflow.md#csv-vocabulary-management)
+4. Test changes in the vocabulary list components
+
 ## Documentation & Development Guidelines
 
 - Follow [SOLID principles](solid-principles.md) for React/TypeScript code

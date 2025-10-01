@@ -50,6 +50,7 @@ The [Business Requirements Format](./templates/business-requirements-format.md) 
 - Story Breakdown Logic (for large epics only) - How and why stories were divided
 - Acceptance Criteria - Specific, testable conditions
 - Implementation Plan - High-level approach and strategy
+- Vocabulary Requirements (if applicable) - CSV vocabulary content and structure needs
 
 #### Optional Sections
 

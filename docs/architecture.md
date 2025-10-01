@@ -6,8 +6,10 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 
 - **api**: Contains backend/serverless functions for Text-to-Speech services
 - **local-backend**: Express server for local development
+- **public/data/vocabulary**: CSV-based vocabulary data organized by HSK level
 - **src/features**: Feature-based organization of React components and logic
 - **src/components**: Reusable UI components
+- **src/utils**: Utilities including csvLoader.ts for processing vocabulary data
 - **src/router**: React Router configuration
 - **src/constants**: Application-wide constants and configuration
 - **docs**: Documentation structure for architecture, implementation, and templates
@@ -35,7 +37,9 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 
 - **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
 
-  - Loads vocabulary and example data from local JSON files in [../public/data/](../public/data/)
+  - Loads vocabulary data from CSV files in [../public/data/vocabulary/](../public/data/vocabulary/)
+  - CSV data structure follows standard format: `No,Chinese,Pinyin,English`
+  - Processes CSV data using [../src/utils/csvLoader.ts](../src/utils/csvLoader.ts) utility
   - Uses context-based state management (implemented in Epic 3)
   - Uses nested routing structure (implemented in Epic 4)
   - Organized as separate page components for each step in the learning workflow

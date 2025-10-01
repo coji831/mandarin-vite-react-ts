@@ -106,6 +106,16 @@ create/plan/story --file "docs/business-requirements/epic-X-name/story-X-Y-name.
 [CONSTRAINTS]: Follow SOLID principles and React best practices
 ```
 
+```
+[TASK]: Update vocabulary CSV data
+[CONTEXT]: public/data/vocabulary/hsk3.0/band1/*.csv
+[PARAMETERS]:
+  - CSV format: No,Chinese,Pinyin,English
+  - Implementation doc: docs/issue-implementation/epic-X-name/story-X-Y-name.md
+[OUTPUT]: Updated CSV content following required format
+[CONSTRAINTS]: Maintain consistent formatting across all vocabulary files
+```
+
 **Check:**
 
 - "Does the implementation doc match the template for section names, order, and required content (rationale, technical details)? Does the code match the implementation plan and conventions? Are file comments present, accurate, and compliant with guidelines?"

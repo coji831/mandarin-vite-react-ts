@@ -2,6 +2,8 @@
 
 This guide explains how to apply SOLID principles to React and TypeScript code in our project, with practical examples and patterns.
 
+> **Project Example**: See how our `csvLoader.ts` utility implements SOLID principles in [csvLoader-solid-example.md](./csvLoader-solid-example.md)
+
 ## Overview of SOLID Principles
 
 SOLID is an acronym for five design principles that make software more maintainable, flexible, and understandable:

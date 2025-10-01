@@ -13,6 +13,7 @@
 - [ ] Code follows conventions in `conventions.md`
 - [ ] Linting and formatting pass
 - [ ] Tests are present and passing
+- [ ] CSV vocabulary data changes are properly formatted and tested
 - [ ] PR description references correct epic/story
 - [ ] Small, focused PRs
 

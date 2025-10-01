@@ -5,6 +5,8 @@
  * - Centralizes progress state management for vocabulary lists, sections, and learned words.
  * - Provides localStorage helpers for persistent user progress.
  * - Exports hook and helpers for use in Mandarin feature components.
+ * - Works with the CSV-based vocabulary system using data from csvLoader.ts.
+ * - Manages conversion between CSV VocabWord format and internal Word structure.
  */
 import { useEffect, useState } from "react";
 import { Section, UserProgress } from "../types";
@@ -79,12 +81,8 @@ export function useMandarinProgress() {
   const [history, setHistory] = useState<Record<string, string[]>>({});
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    null,
-  );
-  const [sectionProgress, setSectionProgress] = useState<
-    Record<string, number>
-  >({});
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [sectionProgress, setSectionProgress] = useState<Record<string, number>>({});
 
   // Example progress tracking functions
   const markWordLearned = (wordId: string) => {
@@ -92,22 +90,17 @@ export function useMandarinProgress() {
     setLoading(true);
     try {
       let userProgress = getUserProgress();
-      let listEntry = userProgress.lists.find(
-        (l: any) => l.listName === selectedList,
-      );
+      let listEntry = userProgress.lists.find((l: any) => l.listName === selectedList);
       if (!listEntry) return;
       // Find section containing wordId
-      let section = listEntry.sections.find((s: any) =>
-        s.wordIds.includes(wordId),
-      );
+      let section = listEntry.sections.find((s: any) => s.wordIds.includes(wordId));
       if (!section) return;
       // Update progress for wordId
       if (!section.progress[wordId]) section.progress[wordId] = {};
       const now = new Date();
       section.progress[wordId].mastered = true;
       section.progress[wordId].lastReviewed = now.toISOString();
-      section.progress[wordId].reviewCount =
-        (section.progress[wordId].reviewCount || 0) + 1;
+      section.progress[wordId].reviewCount = (section.progress[wordId].reviewCount || 0) + 1;
       // Spaced repetition: nextReview = 3 days after lastReviewed
       const nextReview = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
       section.progress[wordId].nextReview = nextReview.toISOString();
@@ -121,9 +114,7 @@ export function useMandarinProgress() {
       }
 
       // Mark section as completed if all mastered
-      if (
-        section.wordIds.every((id: string) => section.progress[id]?.mastered)
-      ) {
+      if (section.wordIds.every((id: string) => section.progress[id]?.mastered)) {
         if (!listEntry.completedSections) listEntry.completedSections = [];
         if (!listEntry.completedSections.includes(section.sectionId))
           listEntry.completedSections.push(section.sectionId);
@@ -141,17 +132,13 @@ export function useMandarinProgress() {
             const word = validWords.find((w: any) => w.wordId === wordId);
             return {
               ...word,
-              ...(section.progress && section.progress[wordId]
-                ? section.progress[wordId]
-                : {}),
+              ...(section.progress && section.progress[wordId] ? section.progress[wordId] : {}),
             };
           })
           .filter(Boolean);
         const mastered = merged.filter((w: any) => w.mastered).length;
         sectionProgressObj[section.sectionId] = mastered;
-        learned.push(
-          ...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId),
-        );
+        learned.push(...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId));
         // Collect review history if present
         if (section.history) {
           for (const [date, ids] of Object.entries(section.history)) {
@@ -181,9 +168,7 @@ export function useMandarinProgress() {
     try {
       const newSections = divideIntoSections(selectedWords, count);
       let userProgress = getUserProgress();
-      let listEntry = userProgress.lists.find(
-        (l: any) => l.listName === selectedList,
-      );
+      let listEntry = userProgress.lists.find((l: any) => l.listName === selectedList);
       if (!listEntry) {
         listEntry = {
           listName: selectedList,

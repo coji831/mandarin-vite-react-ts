@@ -3,26 +3,30 @@
  * Dedicated subpage for selecting a vocabulary list and previewing sample words.
  * Uses MandarinContext for state and navigation.
  * Updated for story 4-3: Implements new routing, context usage, and navigation logic.
+ *
+ * Uses the CSV-based vocabulary system with csvLoader.ts utility for loading vocabulary data.
+ * Converts between VocabWord format from CSV files and internal Word format for context state.
+ * Loads and displays sample words from each available vocabulary list.
  */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMandarinContext } from "../context/useMandarinContext";
 import type { VocabularyList, Word } from "../types";
+import { loadCsvVocab, VocabWord } from "../../../utils/csvLoader";
 
-function getSampleWords(words: Word[], count: number = 3): Word[] {
+function getSampleWords<T>(words: T[], count: number = 3): T[] {
   return words.slice(0, count);
 }
-
 export function VocabularyListPage() {
   const { selectVocabularyList } = useMandarinContext();
   const [lists, setLists] = useState<VocabularyList[]>([]);
-  const [samples, setSamples] = useState<Record<string, Word[]>>({});
+  const [samples, setSamples] = useState<Record<string, VocabWord[]>>({});
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const res = await fetch("/data/vocabularyLists.json");
+        const res = await fetch("/data/vocabulary/vocabularyLists.json");
         if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
         const data: VocabularyList[] = await res.json();
         setLists(data);
@@ -37,9 +41,7 @@ export function VocabularyListPage() {
     const fetchSamples = async () => {
       for (const list of lists) {
         try {
-          const res = await fetch(`/data/${list.file}`);
-          if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
-          const data: Word[] = await res.json();
+          const data: VocabWord[] = await loadCsvVocab(`/data/vocabulary/${list.file}`);
           setSamples((prev) => ({
             ...prev,
             [list.name]: getSampleWords(data, 3),
@@ -54,11 +56,16 @@ export function VocabularyListPage() {
 
   const handleSelect = async (list: VocabularyList) => {
     try {
-      const res = await fetch(`/data/${list.file}`);
-      if (!res.ok) throw new Error(`Failed to fetch ${list.file}`);
-      const words: Word[] = await res.json();
-      const uniqueWords: Word[] = Array.from(new Map(words.map((w) => [w.wordId, w])).values());
-      selectVocabularyList(list.name, uniqueWords);
+      const words: VocabWord[] = await loadCsvVocab(`/data/vocabulary/${list.file}`);
+      // Convert VocabWord to Word type for selectVocabularyList
+      const converted: Word[] = words.map((w, idx) => ({
+        wordId: w.No || String(idx + 1),
+        character: w.Chinese,
+        pinyin: w.Pinyin,
+        meaning: w.English,
+      }));
+
+      selectVocabularyList(list.name, converted);
       navigate("/mandarin/daily-commitment");
     } catch (error) {
       console.warn(error);
@@ -74,43 +81,20 @@ export function VocabularyListPage() {
           <div>
             <strong>Sample Words:</strong>
             <ul>
-              {samples[list.name]?.map((word) => (
-                <li key={word.wordId}>
-                  {word.character && (
-                    <span>
-                      <strong>Character:</strong> {word.character}
-                      <br />
-                    </span>
-                  )}
-                  {word.pinyin && (
-                    <span>
-                      <strong>Pinyin:</strong> {word.pinyin}
-                      <br />
-                    </span>
-                  )}
-                  {word.meaning && (
-                    <span>
-                      <strong>Meaning:</strong> {word.meaning}
-                      <br />
-                    </span>
-                  )}
-                  {word.sentence && (
-                    <span>
-                      <em>{word.sentence}</em>
-                      <br />
-                    </span>
-                  )}
-                  {word.sentencePinyin && (
-                    <span>
-                      ({word.sentencePinyin})<br />
-                    </span>
-                  )}
-                  {word.sentenceMeaning && (
-                    <span>
-                      {word.sentenceMeaning}
-                      <br />
-                    </span>
-                  )}
+              {samples[list.name]?.map((word, idx) => (
+                <li key={word.No || idx}>
+                  <span>
+                    <strong>Character:</strong> {word.Chinese}
+                    <br />
+                  </span>
+                  <span>
+                    <strong>Pinyin:</strong> {word.Pinyin}
+                    <br />
+                  </span>
+                  <span>
+                    <strong>Meaning:</strong> {word.English}
+                    <br />
+                  </span>
                 </li>
               ))}
             </ul>

@@ -2,6 +2,8 @@
 
 This guide provides strategies and templates for creating more concise, visual, and effective documentation.
 
+> **CSV Data Documentation**: When documenting vocabulary data, centralize format descriptions in one location and reference it from other documents rather than duplicating structure information.
+
 ## Executive Summary Template
 
 Start each significant document with an executive summary:
@@ -59,7 +61,6 @@ graph TD
     MOutlet --> DailyCommitment[DailyCommitmentPage.tsx]
     MOutlet --> FlashCards[FlashCardPage.tsx]
 ```
-
 ````
 
 ### 2. Data Flow Diagram
@@ -71,7 +72,7 @@ graph LR
     Context --> State[State]
     State --> Components[Components]
     Components --> User
-````
+```
 
 ### 3. State Transition Diagram
 

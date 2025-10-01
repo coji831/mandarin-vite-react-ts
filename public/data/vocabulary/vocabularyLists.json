@@ -1,0 +1,32 @@
+[
+  {
+    "id": "hsk3.0-band1-001-100",
+    "name": "HSK 3.0 Band 1 (1-100)",
+    "description": "HSK 3.0 Band 1, words 1-100",
+    "file": "hsk3.0/band1/hsk3.0-band1-001-100.csv"
+  },
+  {
+    "id": "hsk3.0-band1-101-200",
+    "name": "HSK 3.0 Band 1 (101-200)",
+    "description": "HSK 3.0 Band 1, words 101-200",
+    "file": "hsk3.0/band1/hsk3.0-band1-101-200.csv"
+  },
+  {
+    "id": "hsk3.0-band1-201-300",
+    "name": "HSK 3.0 Band 1 (201-300)",
+    "description": "HSK 3.0 Band 1, words 201-300",
+    "file": "hsk3.0/band1/hsk3.0-band1-201-300.csv"
+  },
+  {
+    "id": "hsk3.0-band1-301-400",
+    "name": "HSK 3.0 Band 1 (301-400)",
+    "description": "HSK 3.0 Band 1, words 301-400",
+    "file": "hsk3.0/band1/hsk3.0-band1-301-400.csv"
+  },
+  {
+    "id": "hsk3.0-band1-401-500",
+    "name": "HSK 3.0 Band 1 (401-500)",
+    "description": "HSK 3.0 Band 1, words 401-500",
+    "file": "hsk3.0/band1/hsk3.0-band1-401-500.csv"
+  }
+]

@@ -7,6 +7,7 @@
 - Keep each feature in its own folder under [../src/features/](../src/features/)
 - Put route constants in [../src/constants/paths.ts](../src/constants/paths.ts)
 - Use React Router for navigation and routing
+- Use the CSV-based vocabulary system with `csvLoader.ts`
 
 ## Routing Conventions
 
@@ -27,7 +28,10 @@
 ## Project Structure
 
 - [../src/features/](../src/features/): Main features (e.g., mandarin)
-- [../public/data/](../public/data/): Static JSON data (vocabulary, examples)
+- [../public/data/](../public/data/): Static data files
+  - [../public/data/vocabulary/](../public/data/vocabulary/): CSV vocabulary files (HSK3.0)
+  - [../public/data/examples/](../public/data/examples/): Example sentences and usage
+- [../src/utils/](../src/utils/): Utility functions (includes `csvLoader.ts`)
 - [../src/components/](../src/components/): Reusable UI components
 - [../api/](../api/): Serverless functions (e.g., TTS)
 - [../local-backend/](../local-backend/): Local development server
@@ -44,6 +48,13 @@
 - Feature docs in `../src/features/<feature>/docs/`
 - Use [../docs/business-requirements/](../business-requirements/) for business requirements and planning
 - Use [../docs/issue-implementation/](../issue-implementation/) for technical implementation docs
+
+## CSV Vocabulary Format
+
+- Store CSV vocabulary files in `../public/data/vocabulary/hsk3.0/band1/`
+- Follow the standard format: `No,Chinese,Pinyin,English`
+- Process with `csvLoader.ts` utility in `../src/utils/`
+- Document any structure changes in implementation docs
 
 ## Commit Message & Pull Request Standards
 
