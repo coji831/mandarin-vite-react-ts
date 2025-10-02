@@ -2,7 +2,7 @@
 
 # Epic [NUMBER]: [Epic Title]
 
-## 📌 Executive Summary
+## Epic Summary
 
 **Goal:** [One-sentence goal statement]
 

@@ -2,7 +2,7 @@
 
 # Epic <number>: <Epic Name>
 
-## 📌 Executive Summary
+## Epic Summary
 
 **Goal:** <One-sentence technical goal statement>
 
