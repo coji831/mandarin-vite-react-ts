@@ -8,7 +8,7 @@ export type Word = {
   sentenceMeaning?: string;
 };
 
-export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
 
 export type VocabularyList = {
   id: string;

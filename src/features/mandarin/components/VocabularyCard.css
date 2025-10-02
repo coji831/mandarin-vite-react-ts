@@ -107,3 +107,65 @@
 .select-button:focus {
   background: #005fa3;
 }
+
+/* Search and Filter Bar */
+.search-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+.search-box {
+  flex: 1 1 220px;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  border: 1px solid #38405a;
+  background: #232a3a;
+  color: #fff;
+  font-size: 1em;
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.filter-label {
+  font-size: 0.9em;
+  color: #b3c7ff;
+  margin-right: 0.25em;
+}
+.filter-chip {
+  background: rgba(0, 120, 212, 0.15);
+  color: #b3c7ff;
+  border: 1px solid #38405a;
+  border-radius: 16px;
+  padding: 0.25em 0.9em;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-right: 0.2em;
+}
+.filter-chip.selected {
+  background: #0078d4;
+  color: #fff;
+  border-color: #0078d4;
+}
+.clear-all {
+  background: none;
+  color: #ffb300;
+  border: none;
+  font-size: 0.95em;
+  cursor: pointer;
+  margin-left: 1em;
+  text-decoration: underline;
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  color: #b3c7ff;
+  padding: 2em 0;
+  font-size: 1.1em;
+}

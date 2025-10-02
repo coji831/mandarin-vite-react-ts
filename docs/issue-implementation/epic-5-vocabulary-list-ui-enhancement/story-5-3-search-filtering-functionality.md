@@ -32,4 +32,4 @@ Add real-time search and filtering for vocabulary lists by name, difficulty, and
 
 ## Status
 
-Planned
+Completed

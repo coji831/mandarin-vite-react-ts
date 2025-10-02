@@ -26,7 +26,7 @@ export function VocabularyCard({ list, onSelect }: VocabularyCardProps) {
       <div className="card-header">
         <h3>{list.name}</h3>
         {list.difficulty && (
-          <div 
+          <div
             className="difficulty-badge"
             style={{ backgroundColor: getDifficultyColor(list.difficulty) }}
             title={`Difficulty level: ${list.difficulty}`}
@@ -36,7 +36,7 @@ export function VocabularyCard({ list, onSelect }: VocabularyCardProps) {
         )}
       </div>
       <p className="description">{list.description}</p>
-      
+
       <div className="metadata">
         {list.wordCount !== undefined && (
           <div className="word-count" title="Number of vocabulary words in this list">
@@ -44,16 +44,18 @@ export function VocabularyCard({ list, onSelect }: VocabularyCardProps) {
             <span className="count-label">words</span>
           </div>
         )}
-        
+
         {list.tags && list.tags.length > 0 && (
           <div className="tags-container" title="Categories and topics">
             {list.tags.slice(0, 5).map((tag, index) => (
-              <span key={index} className="tag">{tag}</span>
+              <span key={index} className="tag">
+                {tag}
+              </span>
             ))}
           </div>
         )}
       </div>
-      
+
       <div className="card-footer">
         <button className="select-button" type="button" onClick={() => onSelect(list)}>
           Select
