@@ -12,14 +12,14 @@ Empowers users to make informed choices by surfacing relevant metadata, reducing
 
 ## Acceptance Criteria
 
-- [ ] Each vocabulary card displays the total word count
-- [ ] Each vocabulary card shows the difficulty level (beginner, intermediate, advanced)
-- [ ] Tags are displayed on each card to indicate content categories (e.g., HSK level, topics)
-- [ ] Metadata is visually distinct from list name and description
-- [ ] Difficulty level is indicated with both text and visual cues (e.g., color coding)
-- [ ] Metadata displays consistently across different card sizes
-- [ ] Word count accurately reflects the actual number of terms in each list
-- [ ] Tooltips or explanations are available for metadata fields
+- [x] Each vocabulary card displays the total word count
+- [x] Each vocabulary card shows the difficulty level (beginner, intermediate, advanced)
+- [x] Tags are displayed on each card to indicate content categories (e.g., HSK level, topics)
+- [x] Metadata is visually distinct from list name and description
+- [x] Difficulty level is indicated with both text and visual cues (e.g., color coding)
+- [x] Metadata displays consistently across different card sizes
+- [x] Word count accurately reflects the actual number of terms in each list
+- [x] Tooltips or explanations are available for metadata fields
 
 ## Business Rules
 
@@ -38,7 +38,7 @@ Empowers users to make informed choices by surfacing relevant metadata, reducing
 
 ## Implementation Status
 
-Status: Planned
+Status: Completed
 
 - Metadata will need to be added to the vocabularyLists.json schema
 - The VocabularyList type will need to be extended with optional fields for backward compatibility

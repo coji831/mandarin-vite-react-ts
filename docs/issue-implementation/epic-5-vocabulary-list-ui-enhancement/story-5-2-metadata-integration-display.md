@@ -31,4 +31,4 @@ Display key metadata (word count, difficulty, tags) on each vocabulary card. Ens
 
 ## Status
 
-Planned
+Completed
