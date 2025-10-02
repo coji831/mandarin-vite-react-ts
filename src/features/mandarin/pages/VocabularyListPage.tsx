@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { useMandarinContext } from "../context/useMandarinContext";
 import type { VocabularyList, Word } from "../types";
 import { loadCsvVocab, VocabWord } from "../../../utils/csvLoader";
+import { VocabularyCard } from "../components/VocabularyCard";
+import "../components/VocabularyCard.css";
 
 function getSampleWords<T>(words: T[], count: number = 3): T[] {
   return words.slice(0, count);
@@ -20,7 +22,7 @@ function getSampleWords<T>(words: T[], count: number = 3): T[] {
 export function VocabularyListPage() {
   const { selectVocabularyList } = useMandarinContext();
   const [lists, setLists] = useState<VocabularyList[]>([]);
-  const [samples, setSamples] = useState<Record<string, VocabWord[]>>({});
+  // No longer need samples for card-based layout
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,22 +39,7 @@ export function VocabularyListPage() {
     void fetchLists();
   }, []);
 
-  useEffect(() => {
-    const fetchSamples = async () => {
-      for (const list of lists) {
-        try {
-          const data: VocabWord[] = await loadCsvVocab(`/data/vocabulary/${list.file}`);
-          setSamples((prev) => ({
-            ...prev,
-            [list.name]: getSampleWords(data, 3),
-          }));
-        } catch (error) {
-          console.warn(error);
-        }
-      }
-    };
-    if (lists.length > 0) void fetchSamples();
-  }, [lists]);
+  // Remove sample words fetching for card-based layout
 
   const handleSelect = async (list: VocabularyList) => {
     try {
@@ -73,36 +60,15 @@ export function VocabularyListPage() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: "1.5em",
+      }}
+    >
       {lists.map((list) => (
-        <div key={list.name} style={{ border: "1px solid #ccc", margin: "1em 0", padding: "1em" }}>
-          <h3>{list.name}</h3>
-          <p>{list.description}</p>
-          <div>
-            <strong>Sample Words:</strong>
-            <ul>
-              {samples[list.name]?.map((word, idx) => (
-                <li key={word.No || idx}>
-                  <span>
-                    <strong>Character:</strong> {word.Chinese}
-                    <br />
-                  </span>
-                  <span>
-                    <strong>Pinyin:</strong> {word.Pinyin}
-                    <br />
-                  </span>
-                  <span>
-                    <strong>Meaning:</strong> {word.English}
-                    <br />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button type="button" onClick={() => void handleSelect(list)}>
-            Select
-          </button>
-        </div>
+        <VocabularyCard key={list.name} list={list} onSelect={handleSelect} />
       ))}
     </div>
   );

@@ -32,4 +32,4 @@ Implement a grid-based, card-style UI for vocabulary lists, replacing the old ve
 
 ## Status
 
-Planned
+Completed

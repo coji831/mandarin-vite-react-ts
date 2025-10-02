@@ -18,22 +18,22 @@ Replace the current verbose vocabulary list display with a compact, card-based l
 - Add basic hover and focus states for interactivity
 - Ensure responsive behavior across device sizes
 
-**Status:** Planned
+**Status:** Completed
 
 ## Implementation Status
 
-Status: Planned
+Status: Completed
 
 ## Acceptance Criteria
 
-- [ ] Vocabulary lists are displayed in a card-based grid layout
-- [ ] Cards have consistent sizing and styling
-- [ ] Sample words are no longer displayed in the main list view
-- [ ] Cards have hover and focus states for better interaction
-- [ ] Layout is responsive and adapts to different screen sizes
-- [ ] Cards display list name and description clearly
-- [ ] Select button is prominently placed on each card
-- [ ] Grid layout allows for optimal use of screen space
+- [x] Vocabulary lists are displayed in a card-based grid layout
+- [x] Cards have consistent sizing and styling
+- [x] Sample words are no longer displayed in the main list view
+- [x] Cards have hover and focus states for better interaction
+- [x] Layout is responsive and adapts to different screen sizes
+- [x] Cards display list name and description clearly
+- [x] Select button is prominently placed on each card
+- [x] Grid layout allows for optimal use of screen space
 
 ## Implementation Details
 
