@@ -10,12 +10,30 @@
   min-width: 220px;
   max-width: 320px;
   margin: 0.5em;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+  will-change: box-shadow, border-color, transform;
+  outline: none;
 }
 .vocabulary-card:hover,
 .vocabulary-card:focus-within {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   border-color: #0078d4;
+}
+.vocabulary-card:focus-visible {
+  border-color: #ffb300;
+  box-shadow: 0 0 0 3px #ffb30055;
+  outline: none;
+  transform: scale(1.01);
+}
+.vocabulary-card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .vocabulary-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    border-color: #0078d4;
+    transform: translateY(-2px) scale(1.01);
+  }
 }
 .card-header {
   display: flex;
@@ -102,6 +120,8 @@
   cursor: pointer;
   font-size: 1em;
   transition: background 0.2s;
+  min-width: 44px;
+  min-height: 44px;
 }
 .select-button:hover,
 .select-button:focus {
@@ -168,4 +188,68 @@
   color: #b3c7ff;
   padding: 2em 0;
   font-size: 1.1em;
+}
+
+/* Progress Bar */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0.5em 0 0.5em 0;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #1a2233;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 0.5em;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #ff9800, #f44336);
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.4, 2, 0.6, 1);
+}
+.progress-label {
+  font-size: 0.85em;
+  color: #b3c7ff;
+  min-width: 2.5em;
+  text-align: right;
+}
+
+/* Touch target improvements */
+.select-button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Responsive grid improvements */
+@media (max-width: 600px) {
+  .vocabulary-card {
+    min-width: 90vw;
+    max-width: 98vw;
+    margin: 0.5em auto;
+    padding: 0.7em;
+  }
+  .search-filter-bar {
+    flex-direction: column;
+    gap: 0.7em;
+  }
+}
+
+/* Dark mode support (already present, but ensure all elements use variables) */
+:root {
+  --card-bg: #232a3a;
+  --card-border: #38405a;
+  --card-text: #b3c7ff;
+  --card-accent: #0078d4;
+  --card-warning: #ffb300;
+}
+@media (prefers-color-scheme: dark) {
+  .vocabulary-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    color: var(--card-text);
+  }
 }

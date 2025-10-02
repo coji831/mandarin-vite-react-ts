@@ -32,4 +32,4 @@ Ensure the vocabulary selection UI is visually appealing, responsive, and access
 
 ## Status
 
-Planned
+Completed
