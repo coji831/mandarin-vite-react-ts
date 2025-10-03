@@ -8,11 +8,13 @@
 
 ## Acceptance Criteria
 
-- [ ] All progress CRUD in `useMandarinProgress.ts` and related files uses the new per-user ProgressStore API
-- [ ] The current user/device ID is always used for progress operations
-- [ ] Old single-user localStorage keys are fully removed from the main app logic
-- [ ] Progress persists correctly per user/device across reloads and logins
-- [ ] Code is reviewed and documented per project guides
+- [x] All progress CRUD in `useMandarinProgress.ts` and related files uses the new per-user ProgressStore API
+- [x] The current user/device ID (from `useUserIdentity`) is always used for progress operations
+- [x] Old single-user localStorage keys are fully removed from the main app logic
+- [x] Progress persists correctly per user/device across reloads, logins, and user switches
+- [x] No user progress is lost during migration
+- [x] Code and documentation are reviewed and updated per project guides
+- [x] Manual and unit tests verify correct per-user persistence and isolation
 
 ## Business Rules
 
@@ -21,7 +23,19 @@
 
 ## Implementation Status
 
-Status: Planned
+Status: Completed (2025-10-03)
+
+---
+
+## Implementation Summary
+
+- All progress CRUD in `useMandarinProgress.ts` and related files now uses the per-user ProgressStore API.
+- The current user/device ID (from `useUserIdentity`) is always used for progress operations.
+- Old single-user localStorage keys have been fully removed from the main app logic.
+- Progress persists correctly per user/device across reloads and logins.
+- Code and documentation have been reviewed and updated per project guides.
+
+See [Implementation Details](../../issue-implementation/epic-6-multi-user-progress-architecture/story-6-6-migrate-progress-hook-to-per-user-store.md) for technical notes and testing.
 
 ---
 
