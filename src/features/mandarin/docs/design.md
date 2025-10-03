@@ -79,3 +79,17 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 - CSV system enables easy vocabulary updates and maintenance
 - Standard data format (No,Chinese,Pinyin,English) ensures consistency
 - Audio fetched from backend TTS API
+
+---
+
+## 5. Vocabulary List UI (Epic 5)
+
+- **Card-Based Layout**: Vocabulary lists are shown as cards with name, description, metadata (word count, difficulty, tags), and progress indicator.
+- **Search & Filtering**: Users can search by name/description and filter by difficulty or tags. Filters use OR/AND logic and update results in real time.
+- **Progress Indicator**: Each card shows user progress (as a percentage bar) for started lists.
+- **Responsive & Accessible**: Layout adapts to all screen sizes. Cards and controls have accessible focus, touch targets, and dark mode support.
+- **Components**:
+  - `VocabularyListPage.tsx`: Handles search/filter UI, card grid, and state
+  - `VocabularyCard.tsx`: Renders each card with metadata and progress
+  - `VocabularyCard.css`: Styles for all UI, feedback, and responsive features
+- **Implemented in Epic 5 (Stories 5.1–5.4)**

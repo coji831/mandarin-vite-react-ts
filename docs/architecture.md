@@ -44,6 +44,18 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
   - Uses nested routing structure (implemented in Epic 4)
   - Organized as separate page components for each step in the learning workflow
 
+- **Mandarin Feature: Vocabulary List UI (Epic 5)**
+
+  - **Card-Based UI**: Vocabulary lists are displayed as interactive cards with metadata (word count, difficulty, tags) and progress indicators.
+  - **Search & Filter**: Users can search by name/description and filter by difficulty or tags, with real-time updates and combined logic.
+  - **Responsive Design**: Layout adapts to mobile, tablet, and desktop using CSS Grid/Flexbox. Touch targets and accessibility are ensured.
+  - **Visual Feedback**: Cards provide hover, focus, and active states, with subtle animations and dark mode support.
+  - **Components**:
+    - `VocabularyListPage.tsx`: Main selection page with search/filter UI and card grid
+    - `VocabularyCard.tsx`: Card component for each vocabulary list, showing metadata and progress
+    - `VocabularyCard.css`: Styles for card layout, feedback, and responsiveness
+  - **Implemented in Epic 5 (Stories 5.1–5.4)**
+
 - Navigation is handled by React Router
 - Routes defined in [../src/router/Router.tsx](../src/router/Router.tsx)
 - Path constants in [../src/constants/paths.ts](../src/constants/paths.ts)

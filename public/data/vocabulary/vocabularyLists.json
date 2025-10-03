@@ -1,32 +1,65 @@
-[
+﻿[
   {
-    "id": "hsk3.0-band1-001-100",
-    "name": "HSK 3.0 Band 1 (1-100)",
-    "description": "HSK 3.0 Band 1, words 1-100",
-    "file": "hsk3.0/band1/hsk3.0-band1-001-100.csv"
+    "id": "hsk3.0-band1-daily-communication",
+    "name": "HSK 3.0 Band 1 - Daily Communication & Numbers",
+    "description": "Essential words for basic conversations, asking questions, and counting. Perfect for your first interactions in Chinese!",
+    "file": "hsk3.0/band1/thematic/daily-communication.csv",
+    "wordCount": 74,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Communication", "Numbers"]
   },
   {
-    "id": "hsk3.0-band1-101-200",
-    "name": "HSK 3.0 Band 1 (101-200)",
-    "description": "HSK 3.0 Band 1, words 101-200",
-    "file": "hsk3.0/band1/hsk3.0-band1-101-200.csv"
+    "id": "hsk3.0-band1-people-relationships",
+    "name": "HSK 3.0 Band 1 - People & Relationships",
+    "description": "Words for family members, friends, and describing people. Learn how to talk about yourself and others!",
+    "file": "hsk3.0/band1/thematic/people-relationships.csv",
+    "wordCount": 60,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "People", "Family"]
   },
   {
-    "id": "hsk3.0-band1-201-300",
-    "name": "HSK 3.0 Band 1 (201-300)",
-    "description": "HSK 3.0 Band 1, words 201-300",
-    "file": "hsk3.0/band1/hsk3.0-band1-201-300.csv"
+    "id": "hsk3.0-band1-food-dining",
+    "name": "HSK 3.0 Band 1 - Food & Dining",
+    "description": "All about food, restaurants, and eating. Master ordering meals and expressing your preferences!",
+    "file": "hsk3.0/band1/thematic/food-dining.csv",
+    "wordCount": 34,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Food", "Restaurants"]
   },
   {
-    "id": "hsk3.0-band1-301-400",
-    "name": "HSK 3.0 Band 1 (301-400)",
-    "description": "HSK 3.0 Band 1, words 301-400",
-    "file": "hsk3.0/band1/hsk3.0-band1-301-400.csv"
+    "id": "hsk3.0-band1-places-transportation",
+    "name": "HSK 3.0 Band 1 - Places & Transportation",
+    "description": "Navigate cities and talk about locations. Perfect for finding your way around and asking for directions!",
+    "file": "hsk3.0/band1/thematic/places-transportation.csv",
+    "wordCount": 157,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Places", "Transportation"]
   },
   {
-    "id": "hsk3.0-band1-401-500",
-    "name": "HSK 3.0 Band 1 (401-500)",
-    "description": "HSK 3.0 Band 1, words 401-500",
-    "file": "hsk3.0/band1/hsk3.0-band1-401-500.csv"
+    "id": "hsk3.0-band1-daily-activities",
+    "name": "HSK 3.0 Band 1 - Daily Activities",
+    "description": "Verbs and actions for your everyday routines. Talk about what you're doing, plan activities, and share your experiences!",
+    "file": "hsk3.0/band1/thematic/daily-activities.csv",
+    "wordCount": 132,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Activities", "Verbs"]
+  },
+  {
+    "id": "hsk3.0-band1-descriptions-qualities",
+    "name": "HSK 3.0 Band 1 - Descriptions & Qualities",
+    "description": "Adjectives and describing words to express qualities and feelings. Make your Chinese more colorful and expressive!",
+    "file": "hsk3.0/band1/thematic/descriptions-qualities.csv",
+    "wordCount": 79,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Adjectives", "Descriptions"]
+  },
+  {
+    "id": "hsk3.0-band1-school-learning",
+    "name": "HSK 3.0 Band 1 - School & Learning",
+    "description": "Vocabulary for the classroom, studying, and education. Essential for students and anyone talking about learning!",
+    "file": "hsk3.0/band1/thematic/school-learning.csv",
+    "wordCount": 88,
+    "difficulty": "beginner",
+    "tags": ["HSK 3.0", "Band 1", "Education", "Learning"]
   }
 ]

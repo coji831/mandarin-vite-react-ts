@@ -4,12 +4,7 @@ This guide provides strategies and templates for creating more concise, visual, 
 
 > **CSV Data Documentation**: When documenting vocabulary data, centralize format descriptions in one location and reference it from other documents rather than duplicating structure information.
 
-## Executive Summary Template
-
-Start each significant document with an executive summary:
-
-```markdown
-## 📌 Executive Summary
+## Epic Summary
 
 **Goal:** [One-sentence goal statement]
 
@@ -21,13 +16,12 @@ Start each significant document with an executive summary:
 - [Point 4 - fourth most important point]
 - [Point 5 - fifth most important point]
 
-**Status:** [Completed | In Progress | Planning]
-```
+**Status:** [Planned/In Progress/Completed]
 
 Example:
 
 ```markdown
-## 📌 Executive Summary
+## Epic Summary
 
 **Goal:** Refactor the Mandarin feature to use proper nested routing instead of state-driven navigation.
 
@@ -135,7 +129,7 @@ Our approach focuses on clean separation of concerns.
 
 Organize content with clear hierarchies:
 
-1. **Executive Summary** - 5 key points
+1. **Epic Summary** - 5 key points
 2. **Core Information** - Essential details every reader needs
 3. **Technical Details** - Relevant for implementers (in collapsible sections)
 4. **Reference Information** - Links to related docs and resources
@@ -147,19 +141,19 @@ For epic documentation:
 ```markdown
 # Epic X: Title
 
-## 📌 Executive Summary
+## 📌 Epic Summary
 
 [As described above]
 
-## 🎯 Objectives
+## Objectives
 
 - Clear bullet points describing goals
 
-## 🏗️ Architecture
+## Architecture
 
 [Visual diagram of components/structure]
 
-## 📝 Key Implementation Details
+## Key Implementation Details
 
 - Focus on the most important technical aspects
 - Keep this section brief and visual
@@ -169,15 +163,15 @@ For epic documentation:
   [In-depth technical details]
 </details>
 
-## 🔄 Data Flow
+## Data Flow
 
 [Visual diagram of data flow]
 
-## 📊 Results & Benefits
+## Results & Benefits
 
 - Brief bullet points of outcomes
 
-## 📚 Resources
+## Resources
 
 - Links to related documents
 - References to key components
