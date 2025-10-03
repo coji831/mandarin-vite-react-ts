@@ -1,8 +1,11 @@
 import { useProgressContext } from "./ProgressContext";
+import { useVocabularyContext } from "./VocabularyContext";
 
 /**
- * Custom hook to consume Mandarin progress context with strict typing.
+ * Custom hook to consume both Mandarin progress and vocabulary context.
  */
 export function useMandarinContext() {
-  return useProgressContext();
+  const progress = useProgressContext();
+  const vocabulary = useVocabularyContext();
+  return { ...progress, vocabulary };
 }
