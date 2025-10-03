@@ -11,7 +11,7 @@
  */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useProgressContext } from "../context/ProgressContext";
+import { useMandarinContext } from "../context/useMandarinContext";
 import { Section } from "../types";
 
 export function SectionSelectPage() {
@@ -23,7 +23,7 @@ export function SectionSelectPage() {
     sectionProgress = {},
     learnedWordIds = [],
     selectedWords = [],
-  } = useProgressContext();
+  } = useMandarinContext();
   const totalWords = selectedWords.length;
   const [showUncompletedOnly, setShowUncompletedOnly] = React.useState(false);
   const completedSections = sections.filter(

@@ -12,7 +12,7 @@
  * - Story 4-8: Navigation now handled by React Router instead of state
  */
 import { useEffect, useRef } from "react";
-import { useProgressContext } from "../context/ProgressContext";
+import { useMandarinContext } from "../context/useMandarinContext";
 import { getUserProgress, saveUserProgress } from "../hooks/useMandarinProgress";
 import { Section, UserProgress } from "../types";
 
@@ -54,7 +54,7 @@ function Mandarin() {
     markWordLearned,
     saveCommitment,
     // ...other state and functions from useMandarinProgress
-  } = useProgressContext();
+  } = useMandarinContext();
   // Keep UI-only state here (e.g., currentPage)
 
   // --- Load and initialize user progress on page load or list change ---
