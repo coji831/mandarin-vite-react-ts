@@ -1,8 +1,8 @@
 # Epic 5: Vocabulary List UI Enhancement
 
 **Epic Goal:** Revamp the vocabulary list selection interface to be more compact, user-friendly, and visually appealing.
-**Status:** In Progress
-**Last Update:** October 1, 2025
+**Status:** Completed
+**Last Update:** October 3, 2025
 
 ## Background
 

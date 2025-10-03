@@ -1,9 +1,11 @@
 /**
  * VocabularyListPage
- * Dedicated subpage for selecting a vocabulary list and previewing sample words.
- * Uses MandarinContext for state and navigation.
- * Updated for story 4-3: Implements new routing, context usage, and navigation logic.
+ * Purpose: Interactive, filterable, and responsive vocabulary list selection page.
+ * Features: Card-based layout, metadata display, search/filter UI, progress indicator, accessibility, responsive design.
+ * Related: Epic 5 (Vocabulary List UI Enhancement), Stories 5.1–5.4
+ * Last updated: 2025-10-03
  *
+ * Uses MandarinContext for state and navigation.
  * Uses the CSV-based vocabulary system with csvLoader.ts utility for loading vocabulary data.
  * Converts between VocabWord format from CSV files and internal Word format for context state.
  * Loads and displays sample words from each available vocabulary list.

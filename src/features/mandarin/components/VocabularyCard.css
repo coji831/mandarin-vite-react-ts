@@ -1,3 +1,11 @@
+/*
+ * VocabularyCard.css
+ * Purpose: Styles for card-based vocabulary list UI, including metadata, progress, search/filter, and responsive layout.
+ * Features: Responsive grid, dark mode, accessibility, visual feedback (hover, focus, active), progress bar, touch targets.
+ * Related: Epic 5 (Vocabulary List UI Enhancement), Stories 5.1–5.4
+ * Last updated: 2025-10-03
+ */
+
 .vocabulary-card {
   border: 2px solid #38405a;
   border-radius: 8px;
