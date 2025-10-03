@@ -6,10 +6,11 @@ Implement user/device identification for associating progress, with UI for switc
 
 ## Technical Tasks
 
-- Implement unique user/device ID generation and storage
-- Update progress CRUD utilities to use user/device ID
-- Add UI for user/device identification and switching
-- Test association and retrieval logic
+- [x] Implement unique user/device ID generation and storage (ProgressStore)
+- [x] Update progress CRUD utilities to use user/device ID (ProgressStore)
+- [x] Add UserIdentityProvider context and integrate at app root
+- [ ] Add UI for user/device identification and switching (not yet implemented)
+- [ ] Test association and retrieval logic (pending)
 
 ## Data Model/Types
 
@@ -31,4 +32,6 @@ Implement user/device identification for associating progress, with UI for switc
 
 ## Status
 
-Planned
+In Progress
+
+User/device identification and context provider integration are complete. UI for switching and tests are pending.
