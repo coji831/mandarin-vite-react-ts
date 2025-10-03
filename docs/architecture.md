@@ -26,6 +26,7 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 - **Context API**: The application uses React Context API for state management
 - **Custom Hooks**: Feature-specific logic is encapsulated in custom hooks (e.g., `useMandarinProgress`).
 - **Multi-User Progress**: As of Epic 6, all user progress is tracked per user. The `useMandarinProgress` hook and related helpers require a `userId` (from `useUserIdentity`) to load and save progress, enabling support for multiple users on the same device or in future backend integrations.
+- **User/Device Switching UI (Planned)**: A user-facing UI for selecting and switching users/devices will be added (see story 6-4). This will allow users to manage their identity and progress directly from the app interface.
 - **Progress Helpers**: Progress calculation, section building, and data loading logic are extracted to `progressHelpers.ts` for maintainability and clarity.
 - **Local Storage**: User progress and settings are persisted in browser's localStorage, namespaced by user ID.
 

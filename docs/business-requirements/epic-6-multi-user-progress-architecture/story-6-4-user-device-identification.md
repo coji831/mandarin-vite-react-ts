@@ -11,9 +11,7 @@ So that** my learning history is preserved.
 - [x] User/device identification is implemented for progress association (see ProgressStore, useUserIdentity, UserIdentityProvider)
 - [x] Progress data is stored and retrieved per user/device (see ProgressStore CRUD)
 - [x] Context provider supplies user/device identity throughout the app (UserIdentityProvider integrated at root)
-- [ ] Switching users/devices loads the correct progress (UI for switching not yet implemented)
-- [ ] UI provides a way to identify or switch users/devices (not yet implemented)
-- [ ] Tests verify correct association and retrieval (pending)
+- [ ] Tests (unit and manual) verify correct association and retrieval for the current user/device
 
 ## Business Rules
 
@@ -31,4 +29,4 @@ User/device identification infrastructure is implemented in code:
 - UserIdentityProvider context supplies identity to the app
 - App is wrapped in UserIdentityProvider
 
-UI for switching users/devices and tests are not yet implemented.
+UI for switching users/devices and tests are not yet implemented. The next step is to design and implement a user-facing component for user/device selection and switching, and to add tests for this functionality.
