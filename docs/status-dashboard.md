@@ -70,13 +70,14 @@ This dashboard provides a centralized view of all epics and stories in the proje
 - [Business Requirements](./business-requirements/epic-6-multi-user-progress-architecture/README.md)
 - [Implementation](./issue-implementation/epic-6-multi-user-progress-architecture/README.md)
 
-| Story | Title                                     | Status      | Merge Date   | Key Commit |
-| ----- | ----------------------------------------- | ----------- | ------------ | ---------- |
-| 6.1   | Progress Store Design and Implementation  | Completed   | Sep 20, 2025 | `a1b2c3d`  |
-| 6.2   | Provider Separation and Context Refactor  | Completed   | Sep 22, 2025 | `b2c3d4e`  |
-| 6.3   | Component Adaptation to New Architecture  | Completed   | Sep 25, 2025 | `c3d4e5f`  |
-| 6.4   | User/Device Identification Infrastructure | In Progress | -            | -          |
-| 6.5   | Progress Synchronization Foundation       | Not Started | -            | -          |
+| Story | Title                                            | Status      | Merge Date   | Key Commit |
+| ----- | ------------------------------------------------ | ----------- | ------------ | ---------- |
+| 6.1   | Progress Store Design and Implementation         | Completed   | Sep 20, 2025 | `a1b2c3d`  |
+| 6.2   | Provider Separation and Context Refactor         | Completed   | Sep 22, 2025 | `b2c3d4e`  |
+| 6.3   | Component Adaptation to New Architecture         | Completed   | Sep 25, 2025 | `c3d4e5f`  |
+| 6.4   | User/Device Identification Infrastructure        | In Progress | -            | -          |
+| 6.5   | Progress Synchronization Foundation              | Not Started | -            | -          |
+| 6.6   | Migrate Progress Logic to Per-User ProgressStore | Not Started | -            | -          |
 
 **Status:** Completed  
 **Last Updated:** September 5, 2025  

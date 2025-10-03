@@ -10,6 +10,7 @@
 - Separate state management into VocabularyProvider and ProgressProvider
 - Implement user/device identification system for progress association
 - Refactor components to work with the new architecture
+- Migrate all progress logic to use the new per-user ProgressStore
 - Design for future synchronization capabilities
 
 **Status:** Planned
@@ -33,6 +34,21 @@
 4. **Local-First Data Strategy**: Implement a local-first approach where progress is stored locally and prepared for future synchronization, prioritizing offline functionality while enabling future online features.
 
 5. **User/Device Identification**: Implement a simple but extensible identification system that starts with device-based identity but can expand to account-based identity.
+
+## Story 6-6: Migrate Progress Logic to Per-User ProgressStore
+
+**Goal:** Refactor all progress CRUD in `useMandarinProgress.ts` and related files to use the new per-user ProgressStore API, ensuring progress is reliably associated with the correct user/device and persists as designed.
+
+**Scope:**
+
+- Update all progress operations to use the current user/device ID
+- Remove old single-user localStorage keys from app logic
+- Test persistence and correct association for multiple users/devices
+- Review and document changes per project guides
+
+**Status:** Planned
+
+---
 
 ## Technical Implementation
 

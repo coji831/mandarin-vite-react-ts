@@ -34,6 +34,10 @@ This epic consists of the following user stories:
 
    - As a user, I want the capability for my progress to synchronize across devices, so that I can continue learning seamlessly on any device.
 
+6. #TBD / **Migrate Progress Logic to Per-User ProgressStore**
+
+   - As a developer, I want to refactor the main progress hook and related logic to use the new per-user ProgressStore, so that all progress is reliably associated with the correct user/device and persists as designed.
+
 ## Story Breakdown Logic
 
 This epic is divided into stories based on the following approach:
@@ -41,6 +45,7 @@ This epic is divided into stories based on the following approach:
 - Stories 6.1-6.2 focus on core architectural changes to data and state management (Planned)
 - Stories 6.3-6.4 focus on component adaptation and user identification (Planned)
 - Story 6.5 focuses on synchronization capabilities for future expansion (Planned)
+- Story 6.6 covers the migration of all progress logic to the new per-user ProgressStore (Planned)
 
 The breakdown follows a logical progression from foundational architectural changes to user-facing features. The first two stories establish the core data architecture, the next two adapt the application to use this architecture, and the final story creates the foundation for future synchronization features.
 
