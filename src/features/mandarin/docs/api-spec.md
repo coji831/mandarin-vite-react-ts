@@ -16,3 +16,11 @@
 
 - Vocabulary and example sentences are loaded from static JSON files in [src/data/](../../../../src/data/).
 - No external API for vocabulary; all data is local.
+
+## Local Progress API (Epic 6)
+
+- All progress is now tracked per user/device using a dedicated ProgressStore utility.
+- Progress is stored in localStorage, namespaced by user/device ID (from `useUserIdentity`).
+- The API for progress operations (CRUD) is internal to the frontend and not exposed as a backend endpoint.
+- The architecture supports multiple users on the same device and prepares for future cross-device sync.
+- See Epic 6 documentation and `mandarin/docs/design.md` for details on the multi-user progress architecture and migration process.

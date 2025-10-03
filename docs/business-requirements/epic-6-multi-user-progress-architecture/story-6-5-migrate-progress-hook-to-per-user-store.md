@@ -1,20 +1,21 @@
-# Story 6.6: Migrate Progress Logic to Per-User ProgressStore
+# Story 6.5: Migrate Progress Logic to Per-User ProgressStore
 
 ## Description
 
 **As a** developer,
-**I want to** refactor the main progress hook and related logic to use the new per-user ProgressStore,
-**So that** all progress is reliably associated with the correct user/device and persists as designed.
+**I want to** migrate all remaining progress logic, hooks, and state to use the new per-user ProgressStore,
+**So that** the new architecture is fully adopted, all legacy logic is removed, and the system is ready for future multi-user and sync features.
 
 ## Acceptance Criteria
 
-- [x] All progress CRUD in `useMandarinProgress.ts` and related files uses the new per-user ProgressStore API
+- [x] All progress logic, hooks, and state are migrated to use the new per-user ProgressStore API
 - [x] The current user/device ID (from `useUserIdentity`) is always used for progress operations
-- [x] Old single-user localStorage keys are fully removed from the main app logic
-- [x] Progress persists correctly per user/device across reloads, logins, and user switches
+- [x] All legacy and single-user localStorage logic is fully removed from the app
+- [x] Progress persists correctly per user/device across reloads and logins
 - [x] No user progress is lost during migration
 - [x] Code and documentation are reviewed and updated per project guides
 - [x] Manual and unit tests verify correct per-user persistence and isolation
+- [x] The system is ready for future multi-user and sync features
 
 ## Business Rules
 

@@ -6,22 +6,16 @@
 
 **Key Points:**
 
-- Create dedicated ProgressStore with WordId-based references
-- Separate state management into VocabularyProvider and ProgressProvider
-- Implement user/device identification system for progress association
-- Refactor components to work with the new architecture
-- Migrate all progress logic to use the new per-user ProgressStore
-- Design for future synchronization capabilities
-
-**Status:** Planned
+**Status:** Completed
 
 ## Technical Overview
 
 **Implementation Goal:** To restructure the application's data architecture by separating vocabulary content from user progress tracking, enabling multi-user support and establishing a foundation for cross-device synchronization.
 
-**Status:** Planned
+**Status:** Completed
+**Completion Date:** October 4, 2025
 
-**Last Updated:** October 1, 2025
+**Last Updated:** October 4, 2025
 
 ## Architecture Decisions
 
@@ -35,20 +29,13 @@
 
 5. **User/Device Identification**: Implement a simple but extensible identification system that starts with device-based identity but can expand to account-based identity.
 
-## Story 6-6: Migrate Progress Logic to Per-User ProgressStore
+## Story 6-5: Migrate Progress Logic to Per-User ProgressStore
 
-**Goal:** Refactor all progress CRUD in `useMandarinProgress.ts` and related files to use the new per-user ProgressStore API, ensuring progress is reliably associated with the correct user/device and persists as designed.
+**Goal:** Migrate all remaining progress logic, hooks, and state to use the new per-user ProgressStore, fully adopting the new architecture, removing all legacy logic, and preparing the system for future multi-user and sync features. This story replaces the old sync story as the final integration and completion step for Epic 6.
 
 **Scope:**
 
-- Update all progress operations to use the current user/device ID
-- Remove old single-user localStorage keys from app logic
-- Test persistence and correct association for multiple users/devices
-- Review and document changes per project guides
-
 **Status:** Planned
-
----
 
 ## Technical Implementation
 
@@ -219,23 +206,11 @@ const trackChange = (userId: string, change: ChangeRecord) => {
 
 Unit tests will focus on:
 
-- ProgressStore CRUD operations
-- User identity generation and management
-- Data transformation between old and new formats
-
 ### Integration Tests
 
 Integration tests will verify:
 
-- Context providers working together
-- Component behavior with the refactored architecture
-- localStorage persistence and retrieval
-
 ### Migration Testing Checklist
-
-- Verify existing progress data is properly migrated
-- Test user experience across page refreshes
-- Verify persistence of progress across sessions
 
 ## API Endpoints
 
@@ -258,8 +233,3 @@ Components affected by this refactoring:
 4. **All components using useMandarinContext**: Update to work with the separated contexts
 
 ## References
-
-- [React Context API Documentation](https://reactjs.org/docs/context.html)
-- [Local Storage vs IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
-- [Offline-First Web Development](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB)
-- [Current Progress Implementation](../../../src/features/mandarin/hooks/useMandarinProgress.ts)

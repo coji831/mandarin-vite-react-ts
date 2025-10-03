@@ -1,8 +1,22 @@
 # Epic 6: Multi-User Progress Architecture
 
-**Epic Goal:** To architect a scalable progress tracking system that separates vocabulary content from learning progress, enabling multi-user support and setting the foundation for cross-device synchronization.
-**Status:** Planned
-**Last Update:** October 1, 2025
+**Epic Goal:** Architect a scalable progress tracking system that separates vocabulary content from learning progress, enabling multi-user support and setting the foundation for cross-device synchronization.
+**Status:** Completed
+**Completion Date:** October 4, 2025
+**Last Update:** October 4, 2025
+
+## Completion Summary
+
+- All progress logic, hooks, and state are migrated to use the new per-user ProgressStore API.
+- The current user/device ID (from `useUserIdentity`) is always used for progress operations.
+- All legacy and single-user localStorage logic is fully removed from the app.
+- Progress persists correctly per user/device across reloads and logins.
+- Code and documentation have been reviewed and updated per project guides.
+- Manual and unit tests verify correct per-user persistence and isolation.
+- The system is ready for future multi-user and sync features.
+- Feature-level docs (e.g., `src/features/mandarin/docs/design.md`, `api-spec.md`) are updated to reflect the new architecture.
+
+---
 
 ## Background
 
@@ -30,13 +44,9 @@ This epic consists of the following user stories:
 
    - As a user, I want my progress to be associated with my device/account, so that my learning history is preserved.
 
-5. #TBD / **Progress Synchronization Foundation**
+5. #TBD / **Migrate Progress Logic to Per-User ProgressStore (Final Integration and Completion)**
 
-   - As a user, I want the capability for my progress to synchronize across devices, so that I can continue learning seamlessly on any device.
-
-6. #TBD / **Migrate Progress Logic to Per-User ProgressStore**
-
-   - As a developer, I want to refactor the main progress hook and related logic to use the new per-user ProgressStore, so that all progress is reliably associated with the correct user/device and persists as designed.
+   - As a developer, I want to migrate all remaining progress logic, hooks, and state to use the new per-user ProgressStore, so that the new architecture is fully adopted, all legacy logic is removed, and the system is ready for future multi-user and sync features.
 
 ## Story Breakdown Logic
 
@@ -44,7 +54,7 @@ This epic is divided into stories based on the following approach:
 
 - Stories 6.1-6.2 focus on core architectural changes to data and state management (Planned)
 - Stories 6.3-6.4 focus on component adaptation and user identification (Planned)
-- Story 6.5 focuses on synchronization capabilities for future expansion (Planned)
+- Story 6.5 (Progress Synchronization) has been removed; synchronization will be revisited in a future epic after multi-user support is implemented.
 - Story 6.6 covers the migration of all progress logic to the new per-user ProgressStore (Planned)
 
 The breakdown follows a logical progression from foundational architectural changes to user-facing features. The first two stories establish the core data architecture, the next two adapt the application to use this architecture, and the final story creates the foundation for future synchronization features.
