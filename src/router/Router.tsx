@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import { mandarin_page, root, todo_page } from "../constants/paths";
 import { ProgressProvider } from "../features/mandarin/context/ProgressContext";
 import { MandarinRoutes } from "../features/mandarin/router/MandarinRoutes";
-import { Mandarin } from "../features/mandarin/pages/Mandarin";
 import Root from "../layouts/Root";
 import Home from "../pages/Home";
 import Todo from "../pages/Todo";

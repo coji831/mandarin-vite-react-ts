@@ -5,11 +5,11 @@
  */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useProgressContext } from "../context/ProgressContext";
+import { useMandarinContext } from "../context/useMandarinContext";
 
 export function SectionConfirmPage() {
   const navigate = useNavigate();
-  const { sections, dailyWordCount } = useProgressContext();
+  const { sections, dailyWordCount } = useMandarinContext();
   const wordsPerSection = dailyWordCount || 0;
   return (
     <div style={{ textAlign: "center" }}>

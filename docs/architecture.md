@@ -24,8 +24,11 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 ## State Management
 
 - **Context API**: The application uses React Context API for state management
-- **Custom Hooks**: Feature-specific logic is encapsulated in custom hooks (e.g., `useMandarinProgress`)
-- **Local Storage**: User progress and settings are persisted in browser's localStorage
+- **Custom Hooks**: Feature-specific logic is encapsulated in custom hooks (e.g., `useMandarinProgress`).
+- **Multi-User Progress**: As of Epic 6, all user progress is tracked per user. The `useMandarinProgress` hook and related helpers require a `userId` (from `useUserIdentity`) to load and save progress, enabling support for multiple users on the same device or in future backend integrations.
+- **User/Device Switching UI (Planned)**: A user-facing UI for selecting and switching users/devices will be added (see story 6-4). This will allow users to manage their identity and progress directly from the app interface.
+- **Progress Helpers**: Progress calculation, section building, and data loading logic are extracted to `progressHelpers.ts` for maintainability and clarity.
+- **Local Storage**: User progress and settings are persisted in browser's localStorage, namespaced by user ID.
 
 - **Google Cloud Text-to-Speech**: Integration in [../api/get-tts-audio.js](../api/get-tts-audio.js)
 - **Google Cloud Storage**: Used for caching generated audio files
@@ -43,6 +46,8 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
   - Uses context-based state management (implemented in Epic 3)
   - Uses nested routing structure (implemented in Epic 4)
   - Organized as separate page components for each step in the learning workflow
+  - **Multi-User Progress (Epic 6)**: Progress is now tracked per user. All progress state, persistence, and logic are user-specific. The system is ready for future backend or authentication integration.
+  - **Progress Logic Extraction**: All progress calculation and section logic is handled by helpers in `progressHelpers.ts`.
 
 - **Mandarin Feature: Vocabulary List UI (Epic 5)**
 

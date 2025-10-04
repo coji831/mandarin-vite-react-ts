@@ -40,11 +40,28 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ## 3. State Management & Architecture
 
-- Uses React Context API (`ProgressContext`, `useMandarinContext`) and custom hooks (`useMandarinProgress`) for shared state and progress tracking
-- Page components and UI components consume context directly, eliminating prop drilling
-- Navigation is handled through React Router with nested routes
-- Atomic story-driven workflow: each story implements a focused change
-- Documentation separation: high-level in epic docs, detailed in story docs
+- **Per-User Progress Tracking:**
+  - All progress is now tracked per user/device using a dedicated `ProgressStore` utility.
+  - Each user's progress is stored in localStorage, namespaced by a unique user/device ID (from `useUserIdentity`).
+  - The architecture supports multiple users on the same device and prepares for future cross-device sync.
+  - Migration utilities ensure legacy single-user progress is moved to the new per-user format without data loss.
+- **React Context API:**
+  - Uses `ProgressContext` and `useMandarinContext` for shared state and progress tracking.
+  - Page and UI components consume context directly, eliminating prop drilling.
+- **Custom Hooks:**
+  - `useMandarinProgress` manages all progress logic, delegating CRUD to `ProgressStore` and always scoping to the current user.
+  - `useUserIdentity` provides the current user/device ID and manages identity persistence.
+- **Navigation:**
+  - Handled through React Router with nested routes.
+- **Workflow & Documentation:**
+  - Atomic story-driven workflow: each story implements a focused change.
+  - Documentation separation: high-level in epic docs, detailed in story docs.
+
+### Multi-User Architecture
+
+- The system is architected for multi-user support, with all progress operations scoped to the current user/device.
+- The design is ready for future features such as user switching and cloud sync.
+- See Epic 6 documentation for further details on the multi-user progress architecture and migration process.
 
 ---
 

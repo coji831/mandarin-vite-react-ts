@@ -1,75 +1,29 @@
-/**
- * useMandarinProgress.ts
- *
- * Custom React hook and helpers for tracking Mandarin vocabulary learning progress.
- * - Centralizes progress state management for vocabulary lists, sections, and learned words.
- * - Provides localStorage helpers for persistent user progress.
- * - Exports hook and helpers for use in Mandarin feature components.
- * - Works with the CSV-based vocabulary system using data from csvLoader.ts.
- * - Manages conversion between CSV VocabWord format and internal Word structure.
- */
+// useMandarinProgress.ts
+// Custom React hook for tracking Mandarin vocabulary learning progress.
+// Uses extracted helpers for state management, progress calculation, and data loading.
 import { useEffect, useState } from "react";
-import { Section, UserProgress } from "../types";
+import { Section } from "../types";
+import {
+  buildSectionProgress,
+  buildSectionsFromWords,
+  loadUserProgressAndVocabulary,
+  markSectionCompleted,
+  updateSectionHistory,
+  updateWordProgressInSection,
+} from "../utils/progressHelpers";
+import { getUserProgress, saveUserProgress } from "../utils/ProgressStore";
+import { useUserIdentity } from "./useUserIdentity";
+// Re-export progress helpers for compatibility with legacy code and pages
+export { getUserProgress, saveUserProgress };
 
-/**
- * Loads user progress from localStorage.
- * Returns a UserProgress object, or an empty structure if not found or invalid.
- */
-export function getUserProgress(): UserProgress {
-  const raw = localStorage.getItem("user_progress");
-  if (!raw) return { lists: [] };
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return { lists: [] };
-  }
-}
+// All progress calculation, section building, and data loading logic is now handled by helpers in progressHelpers.ts.
+// This hook manages state and delegates logic to helpers for maintainability and clarity.
 
-/**
- * Saves user progress to localStorage.
- * @param progress - The UserProgress object to persist
- */
-export function saveUserProgress(progress: UserProgress) {
-  localStorage.setItem("user_progress", JSON.stringify(progress));
-}
-
-/**
- * Divides vocabulary words into sections for progress tracking.
- * @param words - Array of vocabulary word objects
- * @param perSection - Number of words per section
- * @returns Array of section objects
- */
-function divideIntoSections(words: any[], perSection: number) {
-  const sections = [];
-  let sectionIdx = 1;
-  for (let i = 0; i < words.length; i += perSection) {
-    const chunk = words.slice(i, i + perSection);
-    const sectionId = `section_${sectionIdx}`;
-    sectionIdx++;
-    const progress: Record<string, any> = {};
-    chunk.forEach((w: any) => {
-      progress[w.wordId] = {
-        mastered: false,
-        lastReviewed: null,
-        reviewCount: 0,
-        nextReview: null,
-      };
-    });
-    sections.push({
-      sectionId,
-      wordIds: chunk.map((w: any) => String(w.wordId)),
-      progress,
-    });
-  }
-  return sections;
-}
-
-/**
- * Custom React hook for Mandarin vocabulary progress tracking.
- * - Manages state for selected list, sections, learned words, daily commitment, review, and history.
- * - Intended for use in Mandarin learning feature components.
- */
 export function useMandarinProgress() {
+  // User identity
+  const [identity] = useUserIdentity();
+  const userId = identity.userId;
+
   // Progress tracking state
   const [selectedList, setSelectedList] = useState<string | null>(null);
   const [selectedWords, setSelectedWords] = useState<any[]>([]);
@@ -86,79 +40,49 @@ export function useMandarinProgress() {
 
   // Example progress tracking functions
   const markWordLearned = (wordId: string) => {
-    if (!selectedList) return;
+    if (!selectedList) {
+      resetAndRedirectToVocabList();
+      return;
+    }
     setLoading(true);
     try {
-      let userProgress = getUserProgress();
+      let userProgress = getUserProgress(userId);
       let listEntry = userProgress.lists.find((l: any) => l.listName === selectedList);
-      if (!listEntry) return;
+      if (!listEntry) {
+        resetAndRedirectToVocabList();
+        return;
+      }
       // Find section containing wordId
       let section = listEntry.sections.find((s: any) => s.wordIds.includes(wordId));
-      if (!section) return;
-      // Update progress for wordId
-      if (!section.progress[wordId]) section.progress[wordId] = {};
-      const now = new Date();
-      section.progress[wordId].mastered = true;
-      section.progress[wordId].lastReviewed = now.toISOString();
-      section.progress[wordId].reviewCount = (section.progress[wordId].reviewCount || 0) + 1;
-      // Spaced repetition: nextReview = 3 days after lastReviewed
-      const nextReview = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      section.progress[wordId].nextReview = nextReview.toISOString();
-
-      // --- Section-specific history ---
-      if (!section.history) section.history = {};
-      const todayKey = new Date().toISOString().slice(0, 10);
-      if (!section.history[todayKey]) section.history[todayKey] = [];
-      if (!section.history[todayKey].includes(wordId)) {
-        section.history[todayKey].push(wordId);
+      if (!section) {
+        resetAndRedirectToVocabList();
+        return;
       }
-
-      // Mark section as completed if all mastered
-      if (section.wordIds.every((id: string) => section.progress[id]?.mastered)) {
-        if (!listEntry.completedSections) listEntry.completedSections = [];
-        if (!listEntry.completedSections.includes(section.sectionId))
-          listEntry.completedSections.push(section.sectionId);
-      }
-      saveUserProgress(userProgress);
+      updateWordProgressInSection(section, wordId);
+      updateSectionHistory(section, wordId);
+      markSectionCompleted(listEntry, section);
+      saveUserProgress(userId, userProgress);
       // Update state
-      // Re-merge progress for UI
-      const validWords = selectedWords;
-      let learned: string[] = [];
-      let hist: Record<string, string[]> = {};
-      const sectionProgressObj: Record<string, number> = {};
-      for (const section of listEntry.sections) {
-        const merged = section.wordIds
-          .map((wordId: string) => {
-            const word = validWords.find((w: any) => w.wordId === wordId);
-            return {
-              ...word,
-              ...(section.progress && section.progress[wordId] ? section.progress[wordId] : {}),
-            };
-          })
-          .filter(Boolean);
-        const mastered = merged.filter((w: any) => w.mastered).length;
-        sectionProgressObj[section.sectionId] = mastered;
-        learned.push(...merged.filter((w: any) => w.mastered).map((w: any) => w.wordId));
-        // Collect review history if present
-        if (section.history) {
-          for (const [date, ids] of Object.entries(section.history)) {
-            if (!hist[date]) hist[date] = [];
-            hist[date].push(...(ids as string[]));
-          }
-        }
-      }
-      setLearnedWordIds(Array.from(new Set(learned)));
-      setHistory(hist);
-      setSectionProgress(sectionProgressObj);
+      const { learnedWordIds, history, sectionProgress } = buildSectionProgress(
+        listEntry,
+        selectedWords
+      );
+      setLearnedWordIds(learnedWordIds);
+      setHistory(history);
+      setSectionProgress(sectionProgress);
       setError("");
     } catch (err) {
       setError("Failed to update progress. Please try again.");
+      resetAndRedirectToVocabList();
     }
     setLoading(false);
   };
 
   const saveCommitment = (count: number) => {
-    if (!selectedList) return;
+    if (!selectedList) {
+      resetAndRedirectToVocabList();
+      return;
+    }
     const maxAllowed = Math.min(50, selectedWords.length || 50);
     if (!Number.isInteger(count) || count < 1 || count > maxAllowed) {
       setError(`Please enter a number between 1 and ${maxAllowed}`);
@@ -166,8 +90,8 @@ export function useMandarinProgress() {
     }
     setLoading(true);
     try {
-      const newSections = divideIntoSections(selectedWords, count);
-      let userProgress = getUserProgress();
+      const newSections = buildSectionsFromWords(selectedWords, count);
+      let userProgress = getUserProgress(userId);
       let listEntry = userProgress.lists.find((l: any) => l.listName === selectedList);
       if (!listEntry) {
         listEntry = {
@@ -180,7 +104,7 @@ export function useMandarinProgress() {
       }
       listEntry.sections = newSections;
       listEntry.dailyWordCount = count;
-      saveUserProgress(userProgress);
+      saveUserProgress(userId, userProgress);
       setDailyWordCount(count);
       setLearnedWordIds([]);
       setHistory({});
@@ -190,6 +114,7 @@ export function useMandarinProgress() {
       setError("");
     } catch (err) {
       setError("Failed to save commitment. Please try again.");
+      resetAndRedirectToVocabList();
     }
     setLoading(false);
   };
@@ -204,13 +129,47 @@ export function useMandarinProgress() {
     // Optionally, set other state as needed
   };
 
-  // ...add other progress-related functions as needed
+  // Add reset and redirect function for error handling
+  const resetAndRedirectToVocabList = () => {
+    try {
+      // Clear all state
+      setSelectedList(null);
+      setSelectedWords([]);
+      setSections([]);
+      setLearnedWordIds([]);
+      setDailyWordCount(null);
+      setInputValue("");
+      setReviewIndex(0);
+      setHistory({});
+      setError("");
+      setLoading(false);
+      setSelectedSectionId(null);
+      setSectionProgress({});
 
-  // Example effect for loading initial progress
+      // Redirect to vocab list page
+      if (typeof window !== "undefined" && window.location) {
+        window.location.href = "/mandarin/vocab-list";
+      }
+    } catch (err) {
+      console.error("Failed to reset state:", err);
+      setError("System error. Please refresh the page.");
+    }
+  };
+
+  // Initialize progress on mount - load user progress for current userId
   useEffect(() => {
-    // Load progress from localStorage or API if needed
-    // ...
-  }, []);
+    loadUserProgressAndVocabulary({
+      userId,
+      setSelectedList,
+      setSections,
+      setDailyWordCount,
+      setSelectedWords,
+      setLearnedWordIds,
+      setHistory,
+      setSectionProgress,
+      setError,
+    });
+  }, [userId]);
 
   return {
     selectedList,
@@ -240,6 +199,7 @@ export function useMandarinProgress() {
     markWordLearned,
     saveCommitment,
     selectVocabularyList,
+    resetAndRedirectToVocabList,
     // ...return other state and functions as needed
   };
 }
