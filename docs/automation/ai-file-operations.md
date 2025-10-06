@@ -335,3 +335,102 @@ By following this integrated approach, you'll maintain the structured consistenc
 ```
 
 ```
+
+## AI-driven Epic creation, implementation, git tasks, and workflow starter
+
+These additional structured prompts describe four high-level AI responsibilities we want to support directly from the `automation` folder:
+
+1. Create epic/story documents from templates
+2. Implement code based on those docs (and conventions)
+3. Perform git-related tasks (branch, commit, PR) using project conventions
+4. Start the full workflow and proceed step-by-step, updating docs and code
+
+Rules for all of the below:
+
+- Always prefer the template files in `docs/templates/` when creating docs.
+- Follow the template structure exactly: same headings, same order; do not add, remove, or reorder sections unless explicitly asked.
+- When implementing code, consult `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md` and ensure resulting code follows those guides.
+- For git operations, consult `docs/guides/git-convention.md` and use Conventional Commits and PR naming conventions described there.
+- When asked to "start the workflow" follow `docs/guides/workflow.md` step-by-step and update the corresponding docs and status fields as tasks complete.
+
+### 1) Create epic/story document (prompt template)
+
+Use this prompt when you want the AI to create a new epic or story doc from the project's templates.
+
+```
+[TASK]: Create document from template
+[CONTEXT]: <target path e.g. docs/business-requirements/epic-8-new-feature/>
+[PARAMETERS]:
+  - Template source: choose the correct template from docs/templates/ based on epic size and doc type
+  - Business template file: docs/templates/business-requirements-large-epic-template.md or business-requirements-small-epic-template.md
+  - Implementation template file (optional): docs/templates/implementation-large-epic-template.md or implementation-small-epic-template.md
+  - Fill fields: provide values for Goal, Key Points, Status, User Stories, Acceptance Criteria, Implementation Plan, and any vocabulary requirements
+  - Links: include cross-links to related epics/stories and PR/issue placeholders
+[OUTPUT]: New Markdown file(s) created exactly matching the chosen template structure and headings
+[CONSTRAINTS]: Preserve template heading order and required sections verbatim; include example content for any placeholder fields
+```
+
+Check: "Does the created document match the template structure (headings and order)? Are required sections present and non-empty? Are cross-links inserted as placeholders where applicable?"
+
+### 2) Implement code from docs (prompt template)
+
+Use this prompt to request code changes that implement the story/epic described in the docs.
+
+```
+[TASK]: Implement code from documentation
+[CONTEXT]: Implementation doc: docs/issue-implementation/epic-x-new-feature/story-x-x-name.md
+[PARAMETERS]:
+  - Target files: list of source files to create/update (e.g. src/features/<feature>/pages/NewPage.tsx)
+  - Conventions: docs/guides/code-conventions.md
+  - SOLID patterns: docs/guides/solid-principles.md
+  - Tests: minimal unit tests to validate happy path and one edge case
+  - CSV changes (if any): public/data/vocabulary/... and validation via csvLoader.ts
+[OUTPUT]: Patch or full file contents for each updated/created file, with code comments referencing the implementation doc sections
+[CONSTRAINTS]: Follow TypeScript, React hooks, naming, and routing conventions; include tests and update docs/comments
+```
+
+Check: "Does the produced code follow the implementation plan? Are conventions and SOLID principles applied? Are tests included and passing locally (if run)?"
+
+### 3) Git-related tasks (prompt template)
+
+Use this prompt to direct the AI to create branches, commit messages, and PR descriptions using project git conventions.
+
+```
+[TASK]: Create branch and prepare commit/PR
+[CONTEXT]: Epic/story: docs/business-requirements/epic-x-new-feature/ and implementation docs
+[PARAMETERS]:
+  - Branch name: follow docs/guides/git-convention.md (e.g. epic-x-new-feature)
+  - Commit message: follow Conventional Commits (use docs/templates/commit-message-template.md)
+  - PR title and description: use PR naming and PR template guidance from docs/guides/git-convention.md and .github/PULL_REQUEST_TEMPLATE.md
+[OUTPUT]: Branch name, commit message, and PR description text
+[CONSTRAINTS]: Use exact commit/PR formats in git-convention.md; include issue references where available
+```
+
+Check: "Does the branch name, commit message, and PR description follow the git-convention guidance? Are correct scopes used in the commit message?"
+
+### 4) Start the workflow (execute step-by-step)
+
+When you say "start the workflow", the AI should:
+
+1. Read `docs/guides/workflow.md` to determine the current step for the epic/story.
+2. If the business doc is missing, create it using template (see step 1).
+3. Ensure the implementation doc exists and is structured (create if missing).
+4. Implement code changes required for the current step (see step 2), run checks, and update implementation docs.
+5. Open a branch and prepare commit/PR drafts (see step 3).
+6. Iterate through review, merge, close, and update docs, updating status fields in both business and implementation docs.
+
+Prompt template to start workflow:
+
+```
+[TASK]: Start workflow for epic
+[CONTEXT]: docs/business-requirements/epic-x-new-feature/
+[PARAMETERS]:
+  - Follow steps in docs/guides/workflow.md sequentially
+  - Create or validate business and implementation docs from templates
+  - Implement code and tests for the next open story
+  - Prepare branch, commits, and PR drafts per git-convention.md
+[OUTPUT]: Step-by-step plan of actions taken and files created/updated; provide diffs or file contents for code changes
+[CONSTRAINTS]: At each step, update status fields and cross-links; stop and report if any ambiguity requires human input
+```
+
+Check: "Does the AI report each completed step, updated files, and any decisions or blockers? Are status fields updated in both docs?"

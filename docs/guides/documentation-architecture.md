@@ -1,8 +1,14 @@
-# Documentation Relationship Guide
+<!-- Renamed from documentation-relationship-guide.md -->
+
+Purpose: Which document holds which information (business vs technical) and how to cross-reference them.
+
+If you only read one: For diagram and formatting examples (Mermaid, collapsible sections), see `doc-authoring-patterns.md`.
+
+# Documentation Relationship Guide (architecture)
 
 This guide explains how different documentation formats in this project work together to provide complete coverage of both business and technical aspects.
 
-> **Note**: For guidelines on creating concise, visual documentation, refer to the [Document Streamlining Guide](./document-streamlining.md).
+> **Note**: For guidelines on creating concise, visual documentation, refer to the [Document Streamlining Guide](./doc-authoring-patterns.md).
 
 ## Document Relationship Map
 

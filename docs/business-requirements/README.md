@@ -9,7 +9,7 @@ This folder contains business requirements, epics, user stories, and project pla
 - [Workflow Checklist](../guides/workflow.md)
 - [Project Conventions Guide](../guides/conventions.md)
 - [Business Requirements Format Guide](../guides/business-requirements-format.md)
-- [Document Streamlining Guide](../guides/document-streamlining.md)
+- [Document Streamlining Guide](../guides/doc-authoring-patterns.md)
 - [Branch Strategy Guide](../guides/branch-strategy.md)
 
 ## Templates

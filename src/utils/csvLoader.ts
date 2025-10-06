@@ -1,3 +1,9 @@
+/* High-level design: load CSV vocab into VocabWord[]
+   - Detect comma/tab separators and handle quoted fields
+   - Lightweight validation; on error log and return []
+   - Keep design notes concise and colocated with implementation
+*/
+
 export type VocabWord = {
   No: string;
   Chinese: string;

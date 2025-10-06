@@ -8,7 +8,7 @@
 
 **Status:** <Status>
 
-**Last Updated:** <Date>
+**Last Update:** <Date>
 
 ## [Required] Architecture Decisions
 

@@ -34,5 +34,3 @@ The Business Requirements documents should:
 3. **Cross-references** - Link related stories and maintain relationship documentation
 4. **Delegated details** - Keep epic concise, put specifics in story documents
 5. **Consistent terminology** - Use same terms and concepts across all documents
-
-## Template Structures

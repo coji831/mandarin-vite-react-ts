@@ -169,3 +169,66 @@ Use the project's automation tools to generate structured prompts:
 ```
 
 This structured approach ensures consistent, high-quality results from AI assistance throughout the project lifecycle.
+
+## Prompts for full epic workflow (create docs, implement, git, run)
+
+Below are ready-to-use structured prompts aligned with the `automation` workflow you requested. Each prompt references the canonical guides and templates in this repository.
+
+1. Create epic/story documents from templates
+
+```
+[TASK]: Create epic and story documents from templates
+[CONTEXT]: docs/business-requirements/epic-8-example-new-feature/
+[PARAMETERS]:
+  - Epic size: large
+  - Business template: docs/templates/business-requirements-large-epic-template.md
+  - Story template: docs/templates/business-requirements-story-template.md
+  - Fill: Goal, Key Points (3-5), Status: Planned, User Stories, Acceptance Criteria, Implementation Plan
+  - Cross-links: placeholder issue/PR references
+[OUTPUT]: Created files: README.md (epic) and story markdown files exactly matching template headings and order
+[CONSTRAINTS]: Do not modify template headings; include example content for placeholders
+```
+
+2. Implement code from those docs (use conventions + SOLID)
+
+```
+[TASK]: Implement code and tests from implementation docs
+[CONTEXT]: docs/issue-implementation/epic-8-example-new-feature/
+[PARAMETERS]:
+  - Implementation template: docs/templates/implementation-large-epic-template.md
+  - Coding conventions: docs/guides/code-conventions.md
+  - SOLID guidance: docs/guides/solid-principles.md
+  - Target files: e.g., src/features/<feature>/pages/NewPage.tsx, src/features/<feature>/components/*
+  - Tests: Jest + React Testing Library, include smoke test and one behavior test
+[OUTPUT]: File patches (or full files) for code, tests, and updated docs; include comments referencing doc sections
+[CONSTRAINTS]: Follow TypeScript, hooks, naming, routing, and SOLID principles; include minimal tests
+```
+
+3. Git tasks: branch, commit, PR per project conventions
+
+```
+[TASK]: Prepare branch, commit message, and PR draft
+[CONTEXT]: Epic: docs/business-requirements/epic-8-example-new-feature/
+[PARAMETERS]:
+  - Branch name: epic-8-example-new-feature (follow docs/guides/git-convention.md)
+  - Commit message template: docs/templates/commit-message-template.md
+  - PR title format: [EPIC-8] Story 8.1: Brief description
+  - PR description: follow .github/PULL_REQUEST_TEMPLATE.md and include links to docs
+[OUTPUT]: Suggested git commands, commit message, and PR description text
+[CONSTRAINTS]: Use Conventional Commits format and PR naming conventions
+```
+
+4. Start and run the workflow (step-by-step)
+
+```
+[TASK]: Start workflow for epic and proceed step-by-step
+[CONTEXT]: docs/business-requirements/epic-8-example-new-feature/
+[PARAMETERS]:
+  - Follow docs/guides/workflow.md sequentially
+  - At each step: create/validate docs, implement code, run tests, prepare PR drafts
+  - Stop and report if a required artifact or decision is missing
+[OUTPUT]: Action log of steps taken, files created/updated, diffs for code changes, and any blockers or decisions
+[CONSTRAINTS]: Update status fields in both business and implementation docs after each step
+```
+
+Use these prompts as starting points; adapt the context paths and parameters for your specific epic/story.
