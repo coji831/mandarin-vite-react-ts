@@ -40,11 +40,11 @@ export async function loadUserProgressAndVocabulary({
               const csvUrl = `/data/vocabulary/${listMeta.file}`;
               const vocabWords: VocabWord[] = await loadCsvVocab(csvUrl);
               const words = vocabWords.map((word: VocabWord) => ({
-                wordId: String(word.No),
+                wordId: String(word.wordId),
                 character: word.Chinese,
                 pinyin: word.Pinyin,
                 meaning: word.English,
-                No: word.No,
+                No: word.wordId,
                 Chinese: word.Chinese,
                 Pinyin: word.Pinyin,
                 English: word.English,

@@ -24,14 +24,9 @@ export function FlashCardPage() {
   // Story 7-2: Accept listId param from route
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
-  const { sections, setSelectedSectionId } = useProgressContext(); // TODO: refactor to use lists if needed
+  const { sections } = useProgressContext(); // Story 7-5: setSelectedSectionId deprecated
 
-  // Sync route parameter with context (Story 7-2: use listId)
-  useEffect(() => {
-    if (listId) {
-      setSelectedSectionId(listId); // TODO: refactor context to use listId if needed
-    }
-  }, [listId, setSelectedSectionId]);
+  // Story 7-5: No need to sync listId to context, context is now list-focused
 
   // Loading state: if sections are not loaded yet
   if (!sections || sections.length === 0) {

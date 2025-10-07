@@ -15,7 +15,8 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true
+    "strict": true,
+    "esModuleInterop": true
   },
   "include": ["api", "local-backend", "src"]
 }

@@ -125,7 +125,7 @@ export function useMandarinProgress() {
     setSelectedWords(words);
     setSections([]);
     setSectionProgress({});
-    setSelectedSectionId(null);
+    // Deprecated: setSelectedSectionId(null); // Story 7-5
     // Optionally, set other state as needed
   };
 
@@ -143,7 +143,7 @@ export function useMandarinProgress() {
       setHistory({});
       setError("");
       setLoading(false);
-      setSelectedSectionId(null);
+      // Deprecated: setSelectedSectionId(null); // Story 7-5
       setSectionProgress({});
 
       // Redirect to vocab list page
@@ -192,8 +192,8 @@ export function useMandarinProgress() {
     setError,
     loading,
     setLoading,
-    selectedSectionId,
-    setSelectedSectionId,
+    // selectedSectionId, // Deprecated for Story 7-5
+    // setSelectedSectionId, // Deprecated for Story 7-5
     sectionProgress,
     setSectionProgress,
     markWordLearned,
