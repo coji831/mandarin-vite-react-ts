@@ -26,7 +26,7 @@ Correct ordering and reliable progress updates improve learning effectiveness an
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**:
-- **Merge Date**:
-- **Key Commit**:
+**Status**: Completed
+**PR**: See implementation doc
+**Merge Date**: 2025-10-08
+**Key Commit**: [Story 7-6 completed]

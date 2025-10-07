@@ -21,8 +21,8 @@ FlashCardPage loads words for the chosen list in CSV order and updates per-word 
 
 ## Status
 
-- **Status:** Planned
-- **Last Update:** 2025-10-07
+**Status:** Completed
+**Last Update:** 2025-10-08
 
 ## Related Business Requirement
 

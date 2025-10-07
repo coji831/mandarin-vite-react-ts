@@ -29,15 +29,11 @@ function Sidebar({
   filteredWords,
   handleSidebarClick,
   onBackToSection,
-
   masteredWordIds,
 }: Readonly<Props>) {
-  const { selectedSectionId, sections, selectedWords, sectionProgress } = useProgressContext();
-  const selectedSection = sections.find((s) => s.sectionId === selectedSectionId);
-  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: Word) => sectionWordIds.includes(String(w.wordId)));
-  const mastered = sectionProgress[selectedSectionId || ""] || 0;
-  const total = sectionWords.length;
+  // List-based progress: count mastered words in filteredWords
+  const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
+  const total = filteredWords.length;
   return (
     <div className="flashcard-sidebar flex flex-col padding-10 gap-10" style={{ width: "30%" }}>
       <div>

@@ -17,26 +17,18 @@ import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
+  words: any[];
+  sectionProgress: number;
+  markWordLearned: (wordId: string) => void;
   onBackToSection: () => void;
 };
 
-export function FlashCard({ onBackToSection }: FlashCardProps) {
-  const {
-    selectedSectionId,
-    sections,
-    selectedWords,
-    learnedWordIds,
-    sectionProgress,
-    markWordLearned,
-  } = useProgressContext();
-  // Get current section and words from context
-  const selectedSection = sections.find((s) => s.sectionId === selectedSectionId);
-  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: any) => sectionWordIds.includes(String(w.wordId)));
-  const masteredWordIds = new Set(learnedWordIds);
-  const mastered = sectionProgress[selectedSectionId || ""] || 0;
-  const total = sectionWords.length;
-
+export function FlashCard({
+  words,
+  sectionProgress,
+  markWordLearned,
+  onBackToSection,
+}: FlashCardProps) {
   // Navigation state (local)
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -44,19 +36,26 @@ export function FlashCard({ onBackToSection }: FlashCardProps) {
 
   // Filtered word list for sidebar
   const filteredWords = useMemo(() => {
-    if (!search.trim()) return sectionWords;
-    return sectionWords.filter(
+    if (!search.trim()) return words;
+    return words.filter(
       (w: Card) =>
         w.character.includes(search.trim()) ||
         w.pinyin.toLowerCase().includes(search.trim().toLowerCase())
     );
-  }, [search, sectionWords]);
+  }, [search, words]);
 
   // If currentCardIndex is out of bounds after filtering, reset to 0
   if (currentCardIndex >= filteredWords.length && filteredWords.length > 0) {
     setCurrentCardIndex(0);
     return null;
   }
+
+  // Mastery logic
+  const masteredWordIds = new Set(
+    filteredWords.filter((w: any) => w.mastered).map((w: any) => w.wordId)
+  );
+  const mastered = sectionProgress;
+  const total = words.length;
 
   const currentCard = filteredWords[currentCardIndex];
 

@@ -15,21 +15,28 @@
  * - Updates context selectedSectionId based on route parameter
  * - Renders FlashCard component for the selected section
  */
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useProgressContext } from "../context/ProgressContext";
 import { FlashCard } from "../components/FlashCard";
 import { useEffect } from "react";
 
 export function FlashCardPage() {
-  // Story 7-2: Accept listId param from route
+  // Story 7-6: Accept listId param from route and load list
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
-  const { sections } = useProgressContext(); // Story 7-5: setSelectedSectionId deprecated
+  const {
+    selectedList,
+    selectedWords,
+    sections,
+    markWordLearned,
+    sectionProgress,
+    loading,
+    setSelectedList,
+  } = useProgressContext();
 
-  // Story 7-5: No need to sync listId to context, context is now list-focused
-
-  // Loading state: if sections are not loaded yet
-  if (!sections || sections.length === 0) {
+  // If loading, show spinner
+  if (loading || !selectedWords) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
         <h2>Loading vocabulary list...</h2>
@@ -37,12 +44,19 @@ export function FlashCardPage() {
       </div>
     );
   }
-  // Validate listId (Story 7-2)
-  const validList = sections.find((s) => s.sectionId === listId); // TODO: refactor to use lists if needed
-  if (!validList) {
+
+  // If listId is not selected, select it
+  useEffect(() => {
+    if (listId && selectedList !== listId) {
+      setSelectedList(listId);
+    }
+  }, [listId, selectedList, setSelectedList]);
+
+  // Validate selectedWords
+  if (!selectedWords || selectedWords.length === 0) {
     return (
       <div>
-        <h2>List Not Found</h2>
+        <h2>List Not Found or Empty</h2>
         <button onClick={() => navigate("/mandarin/vocabulary-list")}>
           Back to Vocabulary List
         </button>
@@ -50,5 +64,13 @@ export function FlashCardPage() {
     );
   }
 
-  return <FlashCard onBackToSection={() => navigate("/mandarin/vocabulary-list")} />;
+  // Render FlashCard deck in CSV order
+  return (
+    <FlashCard
+      words={selectedWords}
+      sectionProgress={sectionProgress[listId || ""] || 0}
+      markWordLearned={markWordLearned}
+      onBackToSection={() => navigate("/mandarin/vocabulary-list")}
+    />
+  );
 }
