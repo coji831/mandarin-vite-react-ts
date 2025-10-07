@@ -23,7 +23,7 @@ export function MandarinRoutes() {
         <Route path="daily-commitment" element={<DailyCommitmentPage />} />
         <Route path="section-confirm" element={<SectionConfirmPage />} />
         <Route path="section-select" element={<SectionSelectPage />} />
-        <Route path="flashcards/:sectionId" element={<FlashCardPage />} />
+        <Route path="flashcards/:listId" element={<FlashCardPage />} />
       </Route>
     </Routes>
   );

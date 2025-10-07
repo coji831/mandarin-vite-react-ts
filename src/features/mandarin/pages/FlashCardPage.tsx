@@ -21,27 +21,30 @@ import { FlashCard } from "../components/FlashCard";
 import { useEffect } from "react";
 
 export function FlashCardPage() {
-  const { sectionId } = useParams<{ sectionId: string }>();
+  // Story 7-2: Accept listId param from route
+  const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
-  const { sections, setSelectedSectionId } = useProgressContext();
+  const { sections, setSelectedSectionId } = useProgressContext(); // TODO: refactor to use lists if needed
 
-  // Sync route parameter with context
+  // Sync route parameter with context (Story 7-2: use listId)
   useEffect(() => {
-    if (sectionId) {
-      setSelectedSectionId(sectionId);
+    if (listId) {
+      setSelectedSectionId(listId); // TODO: refactor context to use listId if needed
     }
-  }, [sectionId, setSelectedSectionId]);
+  }, [listId, setSelectedSectionId]);
 
-  // Validate sectionId
-  const validSection = sections.find((s) => s.sectionId === sectionId);
-  if (!validSection) {
+  // Validate listId (Story 7-2)
+  const validList = sections.find((s) => s.sectionId === listId); // TODO: refactor to use lists if needed
+  if (!validList) {
     return (
       <div>
-        <h2>Section Not Found</h2>
-        <button onClick={() => navigate("/mandarin/section-select")}>Back to Section Select</button>
+        <h2>List Not Found</h2>
+        <button onClick={() => navigate("/mandarin/vocabulary-list")}>
+          Back to Vocabulary List
+        </button>
       </div>
     );
   }
 
-  return <FlashCard onBackToSection={() => navigate("/mandarin/section-select")} />;
+  return <FlashCard onBackToSection={() => navigate("/mandarin/vocabulary-list")} />;
 }
