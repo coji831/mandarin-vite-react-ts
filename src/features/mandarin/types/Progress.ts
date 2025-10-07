@@ -10,5 +10,6 @@ export type UserProgress = {
     sections: Section[];
     dailyWordCount: number | null;
     completedSections: string[];
+    progress?: Record<string, boolean>;
   }>;
 };

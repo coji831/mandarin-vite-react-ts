@@ -52,24 +52,17 @@ export function useMandarinProgress() {
         resetAndRedirectToVocabList();
         return;
       }
-      // Find section containing wordId
-      let section = listEntry.sections.find((s: any) => s.wordIds.includes(wordId));
-      if (!section) {
-        resetAndRedirectToVocabList();
-        return;
+      // Directly update progress for the word in the list
+      if (!listEntry.progress || typeof listEntry.progress !== "object") {
+        listEntry.progress = {};
       }
-      updateWordProgressInSection(section, wordId);
-      updateSectionHistory(section, wordId);
-      markSectionCompleted(listEntry, section);
+      listEntry.progress[wordId] = true;
       saveUserProgress(userId, userProgress);
       // Update state
-      const { learnedWordIds, history, sectionProgress } = buildSectionProgress(
-        listEntry,
-        selectedWords
+      const learnedWordIds = Object.keys(listEntry.progress).filter(
+        (id) => listEntry.progress && listEntry.progress[id]
       );
       setLearnedWordIds(learnedWordIds);
-      setHistory(history);
-      setSectionProgress(sectionProgress);
       setError("");
     } catch (err) {
       setError("Failed to update progress. Please try again.");
