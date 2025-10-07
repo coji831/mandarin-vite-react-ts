@@ -20,8 +20,8 @@ Sidebar and index UI show full vocabulary list and mastery states for selected l
 
 ## Status
 
-- **Status:** Planned
-- **Last Update:** 2025-10-07
+**Status:** Completed
+**Last Update:** 2025-10-08
 
 ## Related Business Requirement
 
