@@ -5,7 +5,7 @@
 */
 
 export type VocabWord = {
-  No: string;
+  wordId: string; // normalized, always string
   Chinese: string;
   Pinyin: string;
   English: string;
@@ -38,6 +38,7 @@ export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
     const [header, ...rows] = lines;
     console.log(`Header: ${header}`);
 
+    const seenWordIds = new Set<string>();
     return rows.map((row, idx) => {
       // Handle quoted cells with commas/semicolons/tabs
       const cells = [];
@@ -66,8 +67,17 @@ export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
         }
       }
 
-      const [No, Chinese, Pinyin, English] = cells;
-      return { No, Chinese, Pinyin, English };
+      let [No, Chinese, Pinyin, English] = cells;
+      // Normalize wordId to string
+      const wordId = (No ?? "").toString();
+      // Duplicate/missing detection
+      if (!wordId) {
+        console.warn(`Row ${idx + 1} is missing wordId (No): ${cells.join("|")}`);
+      } else if (seenWordIds.has(wordId)) {
+        console.warn(`Duplicate wordId detected at row ${idx + 1}: ${wordId}`);
+      }
+      seenWordIds.add(wordId);
+      return { wordId, Chinese, Pinyin, English };
     });
   } catch (error) {
     console.error("Error loading CSV:", error);
