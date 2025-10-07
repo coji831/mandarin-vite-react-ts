@@ -20,7 +20,7 @@ Update router to add `/mandarin/flashcards/:listId` and remove legacy commitment
 
 ## Status
 
-- **Status:** Planned
+- **Status:** Completed
 - **Last Update:** 2025-10-07
 
 ## Related Business Requirement

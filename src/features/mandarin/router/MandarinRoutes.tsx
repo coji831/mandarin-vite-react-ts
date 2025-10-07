@@ -20,9 +20,7 @@ export function MandarinRoutes() {
       <Route element={<MandarinLayout />}>
         <Route index element={<Navigate to="vocabulary-list" replace />} />
         <Route path="vocabulary-list" element={<VocabularyListPage />} />
-        <Route path="daily-commitment" element={<DailyCommitmentPage />} />
-        <Route path="section-confirm" element={<SectionConfirmPage />} />
-        <Route path="section-select" element={<SectionSelectPage />} />
+        {/* Old routes removed for Story 7-4. Archive if needed. */}
         <Route path="flashcards/:listId" element={<FlashCardPage />} />
       </Route>
     </Routes>
