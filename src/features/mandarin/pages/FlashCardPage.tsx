@@ -33,6 +33,15 @@ export function FlashCardPage() {
     }
   }, [listId, setSelectedSectionId]);
 
+  // Loading state: if sections are not loaded yet
+  if (!sections || sections.length === 0) {
+    return (
+      <div style={{ padding: 40, textAlign: "center" }}>
+        <h2>Loading vocabulary list...</h2>
+        <div className="spinner" style={{ margin: "24px auto" }} />
+      </div>
+    );
+  }
   // Validate listId (Story 7-2)
   const validList = sections.find((s) => s.sectionId === listId); // TODO: refactor to use lists if needed
   if (!validList) {

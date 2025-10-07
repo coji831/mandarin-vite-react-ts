@@ -18,9 +18,6 @@ import { loadCsvVocab, VocabWord } from "../../../utils/csvLoader";
 import { VocabularyCard } from "../components/VocabularyCard";
 import "../components/VocabularyCard.css";
 
-function getSampleWords<T>(words: T[], count: number = 3): T[] {
-  return words.slice(0, count);
-}
 export function VocabularyListPage() {
   const { selectVocabularyList } = useMandarinContext();
   const [lists, setLists] = useState<VocabularyList[]>([]);
@@ -87,15 +84,16 @@ export function VocabularyListPage() {
     try {
       const words: VocabWord[] = await loadCsvVocab(`/data/vocabulary/${list.file}`);
       // Convert VocabWord to Word type for selectVocabularyList
-      const converted: Word[] = words.map((w, idx) => ({
-        wordId: w.No || String(idx + 1),
+      const converted: Word[] = words.map((w) => ({
+        wordId: w.wordId,
         character: w.Chinese,
         pinyin: w.Pinyin,
         meaning: w.English,
       }));
 
       selectVocabularyList(list.name, converted);
-      navigate("/mandarin/daily-commitment");
+      // Story 7-3: Navigate directly to flashcards route
+      navigate(`/mandarin/flashcards/${list.name}`);
     } catch (error) {
       console.warn(error);
     }
