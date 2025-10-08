@@ -16,26 +16,65 @@
  * - Renders FlashCard component for the selected section
  */
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+// Type for vocabulary list object from vocabularyLists.json
+type VocabularyListMeta = {
+  id: string;
+  name: string;
+  description: string;
+  file: string;
+  wordCount: number;
+  difficulty: string;
+  tags: string[];
+};
+import { loadCsvVocab } from "../../../utils/csvLoader";
 import { useProgressContext } from "../context/ProgressContext";
 import { FlashCard } from "../components/FlashCard";
 import { useEffect } from "react";
 
 export function FlashCardPage() {
-  // Story 7-6: Accept listId param from route and load list
+  // Story 7-6: Accept listId param and file from route
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
   const {
     selectedList,
     selectedWords,
-    sections,
+    masteredProgress,
     markWordLearned,
-    sectionProgress,
     loading,
     setSelectedList,
+    setSelectedWords,
   } = useProgressContext();
 
-  // If loading, show spinner
+  // On mount: fetch vocabularyLists.json, find file for listId, load CSV, set selectedWords
+  useEffect(() => {
+    async function fetchAndLoadWords() {
+      if (!listId) return;
+      setSelectedList(listId);
+      try {
+        const res = await fetch("/data/vocabulary/vocabularyLists.json");
+        if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
+        const lists = await res.json();
+        console.log(lists);
+        const found = (lists as VocabularyListMeta[]).find((l) => l.id === listId);
+        if (!found || !found.file) throw new Error("List not found or missing file");
+        const words = await loadCsvVocab(`/data/vocabulary/${found.file}`);
+        console.log(words);
+        // Defensive: check if words is an array and has expected fields
+        if (Array.isArray(words) && words.length > 0 && words[0].wordId) {
+          setSelectedWords(words);
+        } else {
+          console.error("Loaded words are empty or invalid:", words);
+          setSelectedWords([]);
+        }
+      } catch (err) {
+        console.error("Error loading vocabulary words:", err);
+        setSelectedWords([]);
+      }
+    }
+    fetchAndLoadWords();
+  }, [listId, setSelectedList, setSelectedWords]);
+
   if (loading || !selectedWords) {
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
@@ -44,13 +83,6 @@ export function FlashCardPage() {
       </div>
     );
   }
-
-  // If listId is not selected, select it
-  useEffect(() => {
-    if (listId && selectedList !== listId) {
-      setSelectedList(listId);
-    }
-  }, [listId, selectedList, setSelectedList]);
 
   // Validate selectedWords
   if (!selectedWords || selectedWords.length === 0) {
@@ -68,7 +100,7 @@ export function FlashCardPage() {
   return (
     <FlashCard
       words={selectedWords}
-      sectionProgress={sectionProgress[listId || ""] || 0}
+      masteredWords={masteredProgress[listId || ""] || new Set()}
       markWordLearned={markWordLearned}
       onBackToSection={() => navigate("/mandarin/vocabulary-list")}
     />

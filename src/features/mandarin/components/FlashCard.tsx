@@ -13,23 +13,37 @@
 import { useMemo, useState } from "react";
 import { useProgressContext } from "../context/ProgressContext";
 import { Card } from "../types";
+import type { VocabWord } from "../../../utils/csvLoader";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
-  words: any[];
-  sectionProgress: number;
+  words: VocabWord[];
+  masteredWords: Set<string>;
   markWordLearned: (wordId: string) => void;
   onBackToSection: () => void;
 };
 
 export function FlashCard({
   words,
-  sectionProgress,
+  masteredWords,
   markWordLearned,
   onBackToSection,
 }: FlashCardProps) {
+  // Map VocabWord[] to Card[] for UI compatibility
+  const mapToCard = (w: VocabWord): Card => ({
+    wordId: w.wordId,
+    character: w.Chinese,
+    pinyin: w.Pinyin,
+    meaning: w.English,
+    sentence: "", // No sentence in VocabWord, set empty or add logic if available
+    sentencePinyin: "",
+    sentenceMeaning: "",
+  });
+
+  const cards: Card[] = words.map(mapToCard);
+
   // Navigation handlers
   const handleSidebarClick = (index: number) => setCurrentCardIndex(index);
   const handlePrevious = () => setCurrentCardIndex((i) => (i > 0 ? i - 1 : i));
@@ -37,15 +51,14 @@ export function FlashCard({
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [search, setSearch] = useState("");
-  const { learnedWordIds } = useProgressContext();
   const filteredWords = useMemo(() => {
-    if (!search.trim()) return words;
-    return words.filter(
-      (w: Card) =>
-        w.character.includes(search.trim()) ||
-        w.pinyin.toLowerCase().includes(search.trim().toLowerCase())
+    if (!search.trim()) return cards;
+    return cards.filter(
+      (w) =>
+        (w.character && w.character.includes(search.trim())) ||
+        (w.pinyin && w.pinyin.toLowerCase().includes(search.trim().toLowerCase()))
     );
-  }, [search, words]);
+  }, [search, cards]);
 
   // If currentCardIndex is out of bounds after filtering, reset to 0
   if (currentCardIndex >= filteredWords.length && filteredWords.length > 0) {
@@ -53,9 +66,8 @@ export function FlashCard({
     return null;
   }
 
-  // Mastery logic: build from learnedWordIds in context
-  const masteredWordIds = new Set(learnedWordIds);
-  const mastered = sectionProgress;
+  // Mastery logic: use masteredWords prop
+  const mastered = masteredWords.size;
   const total = words.length;
 
   const currentCard = filteredWords[currentCardIndex];
@@ -67,7 +79,6 @@ export function FlashCard({
     <div className="flashcard-layout flex" style={{ width: "100%", height: "100%" }}>
       <Sidebar
         filteredWords={filteredWords}
-        masteredWordIds={masteredWordIds}
         currentCardIndex={currentCardIndex}
         search={search}
         setSearch={setSearch}
@@ -119,15 +130,15 @@ export function FlashCard({
               <div className="flex flex-center" style={{ width: "100%" }}>
                 <button
                   onClick={() => markWordLearned(currentCard.wordId)}
-                  disabled={masteredWordIds.has(currentCard.wordId)}
+                  disabled={masteredWords.has(currentCard.wordId)}
                   style={{
-                    background: masteredWordIds.has(currentCard.wordId) ? "#aaaaaa" : "#38405aff",
+                    background: masteredWords.has(currentCard.wordId) ? "#aaaaaa" : "#38405aff",
                     color: "#ffffff",
                     minWidth: 140,
                     transition: "background 0.2s, box-shadow 0.2s",
                   }}
                 >
-                  {masteredWordIds.has(currentCard.wordId) ? "Mastered" : "Mark as Mastered"}
+                  {masteredWords.has(currentCard.wordId) ? "Mastered" : "Mark as Mastered"}
                 </button>
               </div>
               {/* Navigation Buttons at bottom corners */}

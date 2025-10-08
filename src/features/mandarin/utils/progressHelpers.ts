@@ -27,7 +27,7 @@ export async function loadUserProgressAndVocabulary({
     if (userProgress && userProgress.lists && userProgress.lists.length > 0) {
       const firstList = userProgress.lists[0];
       if (firstList && firstList.sections && firstList.sections.length > 0) {
-        setSelectedList(firstList.listName);
+        setSelectedList(firstList.id);
         setSections(firstList.sections);
         setDailyWordCount(firstList.dailyWordCount || null);
         try {

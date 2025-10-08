@@ -19,7 +19,22 @@ import { VocabularyCard } from "../components/VocabularyCard";
 import "../components/VocabularyCard.css";
 
 export function VocabularyListPage() {
-  const { selectVocabularyList } = useMandarinContext();
+  const { vocabulary, masteredProgress } = useMandarinContext();
+  const { selectVocabularyList } = vocabulary;
+
+  // Helper: get mastered count for a list
+  function getListProgress(
+    listId: string,
+    wordCount: number
+  ): { mastered: number; percent: number } {
+    // Use masteredProgress from context only
+    let mastered = 0;
+    if (masteredProgress && masteredProgress[listId]) {
+      mastered = masteredProgress[listId].size;
+    }
+    const percent = wordCount ? Math.round((mastered / wordCount) * 100) : 0;
+    return { mastered, percent };
+  }
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [search, setSearch] = useState("");
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
@@ -81,22 +96,13 @@ export function VocabularyListPage() {
   }, [lists, search, selectedDifficulties, selectedTags]);
 
   const handleSelect = async (list: VocabularyList) => {
-    try {
-      const words: VocabWord[] = await loadCsvVocab(`/data/vocabulary/${list.file}`);
-      // Convert VocabWord to Word type for selectVocabularyList
-      const converted: Word[] = words.map((w) => ({
-        wordId: w.wordId,
-        character: w.Chinese,
-        pinyin: w.Pinyin,
-        meaning: w.English,
-      }));
-
-      selectVocabularyList(list.name, converted);
-      // Story 7-3: Navigate directly to flashcards route
-      navigate(`/mandarin/flashcards/${list.name}`);
-    } catch (error) {
-      console.warn(error);
+    // Defensive: ensure list.id is present
+    if (!list.id) {
+      console.warn("Vocabulary list missing id:", list);
+      return;
     }
+    // Only navigate with list ID; data loading will happen in FlashCardPage
+    navigate(`/mandarin/flashcards/${list.id}`);
   };
 
   // UI for filter chips
@@ -185,9 +191,19 @@ export function VocabularyListPage() {
             <p>No lists found. Try adjusting your search or filters.</p>
           </div>
         ) : (
-          filteredLists.map((list) => (
-            <VocabularyCard key={list.name} list={list} onSelect={handleSelect} />
-          ))
+          filteredLists.map((list) => {
+            // Calculate progress for this list using context state
+            const { mastered, percent } = getListProgress(list.id, list.wordCount ?? 0);
+            return (
+              <VocabularyCard
+                key={list.name}
+                list={list}
+                onSelect={handleSelect}
+                progress={percent}
+                masteredCount={mastered}
+              />
+            );
+          })
         )}
       </div>
     </div>

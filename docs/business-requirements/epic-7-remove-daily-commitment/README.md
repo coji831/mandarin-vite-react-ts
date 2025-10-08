@@ -13,7 +13,7 @@
 - Provide a migration path from `sections` → `progress` with a local backup and `migratedAt` metadata.
 - Keep audio/TTS idempotent and on-demand (cache-check before generation); reuse existing TTS/caching patterns.
 
-**Status:** Planned
+**Status:** Completed
 
 **Last Update:** 2025-10-07
 

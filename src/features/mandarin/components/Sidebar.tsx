@@ -20,7 +20,6 @@ type Props = {
   filteredWords: Card[];
   handleSidebarClick: (idx: number) => void;
   onBackToSection: () => void;
-  masteredWordIds: Set<string>;
 };
 function Sidebar({
   currentCardIndex,
@@ -29,9 +28,11 @@ function Sidebar({
   filteredWords,
   handleSidebarClick,
   onBackToSection,
-  masteredWordIds,
 }: Readonly<Props>) {
-  // List-based progress: count mastered words in filteredWords
+  // Use context for mastered progress
+  const { masteredProgress, selectedList } = useProgressContext();
+  const masteredWordIds =
+    selectedList && masteredProgress[selectedList] ? masteredProgress[selectedList] : new Set();
   const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
   const total = filteredWords.length;
   return (

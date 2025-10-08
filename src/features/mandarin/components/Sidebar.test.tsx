@@ -45,7 +45,7 @@ describe("Sidebar", () => {
         filteredWords={words}
         handleSidebarClick={() => {}}
         onBackToSection={() => {}}
-        masteredWordIds={masteredWordIds}
+        // masteredWordIds prop removed; Sidebar now uses context
       />
     );
     expect(screen.getByText("你")).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("Sidebar", () => {
         filteredWords={words}
         handleSidebarClick={handleSidebarClick}
         onBackToSection={() => {}}
-        masteredWordIds={masteredWordIds}
+        // masteredWordIds prop removed; Sidebar now uses context
       />
     );
     fireEvent.click(screen.getByText("好"));

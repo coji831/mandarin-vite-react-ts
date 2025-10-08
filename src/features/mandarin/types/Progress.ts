@@ -6,10 +6,12 @@ export type Section = {
 };
 export type UserProgress = {
   lists: Array<{
+    id: string;
     listName: string;
     sections: Section[];
     dailyWordCount: number | null;
     completedSections: string[];
     progress?: Record<string, boolean>;
+    words?: any[];
   }>;
 };

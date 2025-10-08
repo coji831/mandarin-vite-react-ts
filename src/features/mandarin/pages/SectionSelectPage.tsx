@@ -9,23 +9,20 @@
  * - Fully migrated for Story 4-7: all navigation is context- and router-based, no legacy state-driven navigation remains.
  * - Follows project conventions in docs/guides/conventions.md.
  */
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useMandarinContext } from "../context/useMandarinContext";
+import { useProgressContext } from "../context/ProgressContext";
 import { Section } from "../types";
 
 export function SectionSelectPage() {
   const navigate = useNavigate();
-  const {
-    sections,
-    selectedSectionId,
-    setSelectedSectionId,
-    sectionProgress = {},
-    learnedWordIds = [],
-    selectedWords = [],
-  } = useMandarinContext();
-  const totalWords = selectedWords.length;
+  const { sections, sectionProgress, selectedWords, masteredProgress, selectedList } =
+    useProgressContext();
   const [showUncompletedOnly, setShowUncompletedOnly] = React.useState(false);
+  const [selectedSectionId, setSelectedSectionId] = React.useState<string | null>(null);
+  const totalWords = selectedWords.length;
+  // learnedWordIds is deprecated, use masteredProgress if needed
   const completedSections = sections.filter(
     (section: Section) => (sectionProgress[section.sectionId] || 0) >= section.wordIds.length
   );
@@ -45,7 +42,7 @@ export function SectionSelectPage() {
       </div>
       <div style={{ marginBottom: 16 }}>
         <strong>Overall Progress: </strong>
-        {learnedWordIds.length} / {totalWords} words learned
+        {(selectedList && masteredProgress[selectedList]?.size) || 0} / {totalWords} words mastered
       </div>
       <div style={{ marginBottom: 20 }}>
         <label style={{ fontSize: 15 }}>
