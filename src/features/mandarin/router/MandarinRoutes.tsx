@@ -6,13 +6,7 @@
  */
 import { Routes, Route, Navigate } from "react-router-dom";
 import { MandarinLayout } from "../layouts/MandarinLayout";
-import {
-  VocabularyListPage,
-  DailyCommitmentPage,
-  SectionConfirmPage,
-  SectionSelectPage,
-  FlashCardPage,
-} from "../pages";
+import { VocabularyListPage, FlashCardPage } from "../pages";
 
 export function MandarinRoutes() {
   return (

@@ -1,4 +1,5 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { useEffect } from "react";
 import { useUserIdentity } from "./useUserIdentity";
 import { getUserProgress, saveUserProgress } from "../utils/ProgressStore";
@@ -9,22 +10,13 @@ export interface ProgressContextType {
   setSelectedList: Dispatch<SetStateAction<string | null>>;
   selectedWords: any[];
   setSelectedWords: Dispatch<SetStateAction<any[]>>;
-  masteredProgress: { [listId: string]: Set<string> };
-  setMasteredProgress: Dispatch<SetStateAction<{ [listId: string]: Set<string> }>>;
-  dailyWordCount: number | null;
-  setDailyWordCount: Dispatch<SetStateAction<number | null>>;
-  inputValue: string;
-  setInputValue: Dispatch<SetStateAction<string>>;
-  reviewIndex: number;
-  setReviewIndex: Dispatch<SetStateAction<number>>;
-  history: Record<string, string[]>;
-  setHistory: Dispatch<SetStateAction<Record<string, string[]>>>;
+  masteredProgress: { [key: string]: Set<string> };
+  setMasteredProgress: Dispatch<SetStateAction<{ [key: string]: Set<string> }>>;
   error: string;
   setError: Dispatch<SetStateAction<string>>;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   markWordLearned: (wordId: string) => void;
-  saveCommitment: (count: number) => void;
   selectVocabularyList: (listId: string, words: any[]) => void;
   resetAndRedirectToVocabList: () => void;
 }
@@ -75,9 +67,6 @@ export function useMandarinProgress(): ProgressContextType {
         listEntry = {
           id: selectedList,
           listName: selectedList,
-          sections: [],
-          dailyWordCount: null,
-          completedSections: [],
           progress: {},
           words: [],
         };
@@ -97,10 +86,7 @@ export function useMandarinProgress(): ProgressContextType {
       saveUserProgress(userId, userProgress);
     }
   }, [selectedList, masteredProgress, selectedWords, userId]);
-  const [dailyWordCount, setDailyWordCount] = useState<number | null>(null);
-  const [inputValue, setInputValue] = useState<string>("");
-  const [reviewIndex, setReviewIndex] = useState(0);
-  const [history, setHistory] = useState<Record<string, string[]>>({});
+  // ...existing code...
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -125,11 +111,7 @@ export function useMandarinProgress(): ProgressContextType {
       setSelectedWords(words);
       const userProgress = getUserProgress(userId);
       const listEntry = userProgress.lists.find((l: any) => l.id === listId);
-      if (!listEntry || !listEntry.progress || typeof listEntry.progress !== "object") {
-        setDailyWordCount(null);
-      } else {
-        setDailyWordCount(listEntry.dailyWordCount || null);
-      }
+      // No dailyWordCount logic needed
     } catch (err) {
       setError("Failed to load progress for list.");
     }
@@ -158,48 +140,6 @@ export function useMandarinProgress(): ProgressContextType {
     setLoading(false);
   };
 
-  // Save daily commitment
-  const saveCommitment = (count: number) => {
-    if (!selectedList) {
-      resetAndRedirectToVocabList();
-      return;
-    }
-    const maxAllowed = Math.min(50, selectedWords.length || 50);
-    if (!Number.isInteger(count) || count < 1 || count > maxAllowed) {
-      setError(`Please enter a number between 1 and ${maxAllowed}`);
-      return;
-    }
-    setLoading(true);
-    try {
-      let userProgress = getUserProgress(userId);
-      let listEntry = userProgress.lists.find((l: any) => l.id === selectedList);
-      if (!listEntry) {
-        listEntry = {
-          id: selectedList,
-          listName: selectedList,
-          sections: [],
-          dailyWordCount: null,
-          completedSections: [],
-          progress: {},
-        };
-        userProgress.lists.push(listEntry);
-      }
-      if (listEntry) {
-        listEntry.dailyWordCount = count;
-        saveUserProgress(userId, userProgress);
-      }
-      setDailyWordCount(count);
-      setMasteredProgress((prev) => ({ ...prev, [selectedList!]: new Set() }));
-      setHistory({});
-      setReviewIndex(0);
-      setError("");
-    } catch (err) {
-      setError("Failed to save commitment. Please try again.");
-      resetAndRedirectToVocabList();
-    }
-    setLoading(false);
-  };
-
   // Select vocabulary list
   const selectVocabularyList = (listId: string, words: any[]) => {
     setSelectedList(listId);
@@ -211,10 +151,7 @@ export function useMandarinProgress(): ProgressContextType {
     try {
       setSelectedList(null);
       setSelectedWords([]);
-      setDailyWordCount(null);
-      setInputValue("");
-      setReviewIndex(0);
-      setHistory({});
+      // ...existing code...
       setError("");
       setLoading(false);
       setMasteredProgress({});
@@ -235,20 +172,11 @@ export function useMandarinProgress(): ProgressContextType {
     setSelectedWords,
     masteredProgress,
     setMasteredProgress,
-    dailyWordCount,
-    setDailyWordCount,
-    inputValue,
-    setInputValue,
-    reviewIndex,
-    setReviewIndex,
-    history,
-    setHistory,
     error,
     setError,
     loading,
     setLoading,
     markWordLearned,
-    saveCommitment,
     selectVocabularyList,
     resetAndRedirectToVocabList,
   };
