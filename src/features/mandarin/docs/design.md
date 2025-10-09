@@ -1,6 +1,6 @@
 # Mandarin Feature Design
 
-The Mandarin feature provides vocabulary learning, flashcards, review, and daily commitment tracking.
+The Mandarin feature provides vocabulary learning, flashcards, and review.
 
 ---
 
@@ -30,49 +30,52 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 
 ### Pages
 
-- **ListSelectionPage**: Page for choosing vocabulary lists to study
-- **CommitmentPage**: Page for setting daily learning goals
-- **SectionDividerPage**: Page for dividing vocabulary into manageable sections
-- **SectionSelectorPage**: Page for selecting which section to study
-- **FlashcardPage**: Page for displaying individual vocabulary items for study
+**ListSelectionPage**: Page for choosing vocabulary lists to study
+**FlashcardPage**: Page for displaying individual vocabulary items for study
 
 ---
 
 ## 3. State Management & Architecture
 
-- **Per-User Progress Tracking:**
-  - All progress is now tracked per user/device using a dedicated `ProgressStore` utility.
-  - Each user's progress is stored in localStorage, namespaced by a unique user/device ID (from `useUserIdentity`).
-  - The architecture supports multiple users on the same device and prepares for future cross-device sync.
-  - Migration utilities ensure legacy single-user progress is moved to the new per-user format without data loss.
+### State Management & Architecture (Update)
+
+- **Progress Tracking:**  
+  All vocabulary progress is tracked per user/device using the `ProgressStore` utility.  
+  Progress is stored in localStorage, namespaced by user/device ID from `useUserIdentity`.  
+  All progress operations (marking words, loading lists, persisting state) are centralized in the `useProgressData` hook.
+
 - **React Context API:**
-  - Uses `ProgressContext` and `useMandarinContext` for shared state and progress tracking.
-  - Page and UI components consume context directly, eliminating prop drilling.
+
+  - `ProgressContext` provides mastered words, selected list, and selected words for the current user.
+  - `useMandarinContext` combines progress and vocabulary context for unified access in components.
+  - All UI components consume context directly—no prop drilling.
+
 - **Custom Hooks:**
-  - `useMandarinProgress` manages all progress logic, delegating CRUD to `ProgressStore` and always scoping to the current user.
-  - `useUserIdentity` provides the current user/device ID and manages identity persistence.
-- **Navigation:**
-  - Handled through React Router with nested routes.
-- **Workflow & Documentation:**
-  - Atomic story-driven workflow: each story implements a focused change.
-  - Documentation separation: high-level in epic docs, detailed in story docs.
 
-### Multi-User Architecture
+  - `useProgressData`: Manages all progress logic, including loading words, updating mastered state, and persisting to localStorage.
+  - `useUserIdentity`: Manages user/device identity and persistence.
 
-- The system is architected for multi-user support, with all progress operations scoped to the current user/device.
-- The design is ready for future features such as user switching and cloud sync.
-- See Epic 6 documentation for further details on the multi-user progress architecture and migration process.
+- **Vocabulary List UI:**
+
+  - Card-based layout with progress bar, search/filter, and responsive design.
+  - Progress indicator uses context state for per-list mastered percentage.
+
+- **No Daily Commitment Logic:**
+
+  - All legacy daily commitment and section logic has been removed.
+  - Progress is now list-focused and user-centric.
+
+- **Multi-User Ready:**
+  - Architecture supports multiple users and prepares for future cloud sync.
+  - All progress is scoped to the current user/device.
 
 ---
 
 ## 4. Page Structure
 
-- **Root**: [`MandarinRoot.tsx`](../../pages/mandarin/MandarinRoot.tsx) — handles layout and nested routes
-- **List Selection**: [`ListSelectionPage.tsx`](../../pages/mandarin/ListSelectionPage.tsx) — select vocabulary list
-- **Commitment**: [`CommitmentPage.tsx`](../../pages/mandarin/CommitmentPage.tsx) — set daily learning goals
-- **Section Divider**: [`SectionDividerPage.tsx`](../../pages/mandarin/SectionDividerPage.tsx) — divide vocabulary
-- **Section Selector**: [`SectionSelectorPage.tsx`](../../pages/mandarin/SectionSelectorPage.tsx) — select section
-- **Flashcard**: [`FlashcardPage.tsx`](../../pages/mandarin/FlashcardPage.tsx) — study vocabulary
+**Root**: [`MandarinRoot.tsx`](../../pages/mandarin/MandarinRoot.tsx) — handles layout and nested routes
+**List Selection**: [`ListSelectionPage.tsx`](../../pages/mandarin/ListSelectionPage.tsx) — select vocabulary list
+**Flashcard**: [`FlashcardPage.tsx`](../../pages/mandarin/FlashcardPage.tsx) — study vocabulary
 
 ---
 
@@ -81,9 +84,7 @@ The Mandarin feature provides vocabulary learning, flashcards, review, and daily
 - Base route: `/mandarin`
   - `/` - Root page (redirects to list selection)
   - `/list-selection` - List selection page
-  - `/commitment` - Commitment page
-  - `/section-divider` - Section divider page
-  - `/section-selector` - Section selector page
+    // ...existing code...
   - `/flashcard` - Flashcard page
   - See [`paths.ts`](../../../../src/constants/paths.ts) and [`Router.tsx`](../../../../src/router/Router.tsx)
 

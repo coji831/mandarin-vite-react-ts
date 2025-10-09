@@ -1,13 +1,22 @@
 import React, { createContext, useContext, ReactNode } from "react";
 
+import { useProgressContext } from "./ProgressContext";
+
 // Placeholder for vocabulary data and logic
-type VocabularyContextType = Record<string, unknown>;
+type VocabularyContextType = {
+  //selectVocabularyList: (listId: string, words: any[]) => void;
+  //selectedWords: any[];
+};
 const VocabularyContext = createContext<VocabularyContextType | undefined>(undefined);
 
 type VocabularyProviderProps = { children: ReactNode };
 export function VocabularyProvider({ children }: VocabularyProviderProps) {
-  // TODO: implement vocabulary loading and state here
-  const value: VocabularyContextType = {};
+  // Provide  selectedWords from progress context
+  // This assumes ProgressProvider is a parent of VocabularyProvider
+  const { selectedWords } = useProgressContext();
+  const value: VocabularyContextType = {
+    selectedWords,
+  };
   return <VocabularyContext.Provider value={value}>{children}</VocabularyContext.Provider>;
 }
 

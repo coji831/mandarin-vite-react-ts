@@ -15,10 +15,10 @@
 
 ### Documentation Guides
 
-- [guides/documentation-relationship-guide.md](guides/documentation-relationship-guide.md) – How business and technical docs work together
+- [guides/documentation-architecture.md](guides/documentation-architecture.md) – How business and technical docs work together
 - [guides/business-requirements-format.md](guides/business-requirements-format.md) – Business requirements format guide
 - [guides/implementation-format.md](guides/implementation-format.md) – Implementation docs format guide
-- [guides/document-streamlining.md](guides/document-streamlining.md) – Making documentation concise and effective
+- [guides/doc-authoring-patterns.md](guides/doc-authoring-patterns.md) – Making documentation concise and effective
 
 ### Code & Development Guides
 

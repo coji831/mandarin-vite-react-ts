@@ -8,13 +8,13 @@ import { UserIdentityProvider } from "./features/mandarin/context/UserIdentityCo
 function App() {
   return (
     <UserIdentityProvider>
-      <VocabularyProvider>
-        <ProgressProvider>
+      <ProgressProvider>
+        <VocabularyProvider>
           <BrowserRouter>
             <MainRoutes />
           </BrowserRouter>
-        </ProgressProvider>
-      </VocabularyProvider>
+        </VocabularyProvider>
+      </ProgressProvider>
     </UserIdentityProvider>
   );
 }

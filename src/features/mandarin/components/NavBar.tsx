@@ -13,16 +13,14 @@ export { NavBar };
 
 function NavBar() {
   const navigate = useNavigate();
-  const { selectedSectionId } = useProgressContext();
+  const { selectedList } = useProgressContext();
 
   return (
     <div className="flex flex-center gap-10 padding-10">
-      {selectedSectionId ? (
-        <button onClick={() => navigate(`/mandarin/flashcards/${selectedSectionId}`)}>
-          Flashcards
-        </button>
+      {selectedList ? (
+        <button onClick={() => navigate(`/mandarin/flashcards/${selectedList}`)}>Flashcards</button>
       ) : (
-        <button onClick={() => navigate("/mandarin/section-select")}>Flashcards</button>
+        <button onClick={() => navigate("/mandarin")}>Flashcards</button>
       )}
       <button onClick={() => navigate("/mandarin/basic")}>Basic</button>
     </div>

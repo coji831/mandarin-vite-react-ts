@@ -2,8 +2,8 @@
  * Sidebar component
  *
  * - Displays a list of vocabulary cards for navigation.
- * - Uses ProgressContext for section/word state and progress.
- * - Highlights mastered words and shows section progress.
+ * - Uses ProgressContext for word state and progress.
+ * - Highlights mastered words and shows list progress.
  * - Filtering and selection handled via props.
  * - Story 4-8: Updated for route-based navigation.
  */
@@ -19,8 +19,7 @@ type Props = {
   setSearch: (value: string) => void;
   filteredWords: Card[];
   handleSidebarClick: (idx: number) => void;
-  onBackToSection: () => void;
-  masteredWordIds: Set<string>;
+  onBackToList: () => void;
 };
 function Sidebar({
   currentCardIndex,
@@ -28,16 +27,14 @@ function Sidebar({
   setSearch,
   filteredWords,
   handleSidebarClick,
-  onBackToSection,
-
-  masteredWordIds,
+  onBackToList,
 }: Readonly<Props>) {
-  const { selectedSectionId, sections, selectedWords, sectionProgress } = useProgressContext();
-  const selectedSection = sections.find((s) => s.sectionId === selectedSectionId);
-  const sectionWordIds = selectedSection ? selectedSection.wordIds : [];
-  const sectionWords = selectedWords.filter((w: Word) => sectionWordIds.includes(String(w.wordId)));
-  const mastered = sectionProgress[selectedSectionId || ""] || 0;
-  const total = sectionWords.length;
+  // Use context for mastered progress
+  const { masteredProgress, selectedList: selectedList } = useProgressContext();
+  const masteredWordIds =
+    selectedList && masteredProgress[selectedList] ? masteredProgress[selectedList] : new Set();
+  const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
+  const total = filteredWords.length;
   return (
     <div className="flashcard-sidebar flex flex-col padding-10 gap-10" style={{ width: "30%" }}>
       <div>
@@ -61,7 +58,7 @@ function Sidebar({
         className="flex flex-col gap-10"
         style={{ border: "2px solid #888888", borderRadius: 6 }}
       >
-        <strong>Section Progress:</strong>
+        <strong>List Progress:</strong>
         <div
           style={{
             height: 12,
@@ -123,8 +120,8 @@ function Sidebar({
           </div>
         ))}
       </div>
-      <button style={{ width: "100%" }} onClick={onBackToSection}>
-        Return to Section Selection
+      <button style={{ width: "100%" }} onClick={onBackToList}>
+        Return to Vocabulary List
       </button>
     </div>
   );

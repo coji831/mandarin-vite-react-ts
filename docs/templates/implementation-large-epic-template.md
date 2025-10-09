@@ -22,7 +22,7 @@
 
 **Status:** <e.g., In Progress, Completed>
 
-**Last Updated:** <Date>
+**Last Update:** <Date>
 
 ## [Required] Architecture Decisions
 

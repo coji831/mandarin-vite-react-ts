@@ -1,3 +1,12 @@
+export type VocabularyListMeta = {
+  id: string;
+  name: string;
+  description: string;
+  file: string;
+  wordCount: number;
+  difficulty: string;
+  tags: string[];
+};
 export type Word = {
   wordId: string;
   character?: string;

@@ -34,7 +34,7 @@ This folder contains the single source of truth for all documentation templates 
 - [Contribution Guide](../guides/contribution-guide.md)
 - [Workflow Checklist](../guides/workflow.md)
 - [Branch Strategy Guide](../guides/branch-strategy.md)
-- [Document Streamlining Guide](../guides/document-streamlining.md)
+- [Document Streamlining Guide](../guides/doc-authoring-patterns.md)
 
 ## AI & Workflow Resources
 

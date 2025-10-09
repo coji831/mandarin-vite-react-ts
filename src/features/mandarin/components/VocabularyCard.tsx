@@ -6,6 +6,7 @@ interface VocabularyCardProps {
   list: VocabularyList;
   onSelect: (list: VocabularyList) => void;
   progress?: number; // 0-100, optional
+  masteredCount?: number;
 }
 
 const getDifficultyColor = (difficulty: DifficultyLevel): string => {
@@ -21,9 +22,11 @@ const getDifficultyColor = (difficulty: DifficultyLevel): string => {
   }
 };
 
-export function VocabularyCard({ list, onSelect, progress }: VocabularyCardProps) {
+export function VocabularyCard({ list, onSelect, progress, masteredCount }: VocabularyCardProps) {
   // For demo, use a random progress if not provided
-  const progressValue = typeof progress === "number" ? progress : Math.floor(Math.random() * 100);
+  const progressValue = typeof progress === "number" ? progress : 0;
+  const mastered = typeof masteredCount === "number" ? masteredCount : 0;
+  const notStarted = progressValue === 0 && mastered === 0;
   return (
     <div className="vocabulary-card" tabIndex={0} aria-label={`Vocabulary list: ${list.name}`}>
       <div className="card-header">
@@ -56,12 +59,16 @@ export function VocabularyCard({ list, onSelect, progress }: VocabularyCardProps
           </div>
         )}
       </div>
-      {/* Progress bar */}
+      {/* Progress bar and numeric indicator */}
       <div className="progress-container" aria-label="Progress" title="Your progress in this list">
         <div className="progress-bar-bg">
           <div className="progress-bar-fill" style={{ width: `${progressValue}%` }} />
         </div>
-        <span className="progress-label">{progressValue}%</span>
+        <span className="progress-label">
+          {notStarted
+            ? "Not started"
+            : `${mastered} / ${list.wordCount} mastered (${progressValue}%)`}
+        </span>
       </div>
       <div className="card-footer">
         <button className="select-button" type="button" onClick={() => onSelect(list)} tabIndex={0}>
