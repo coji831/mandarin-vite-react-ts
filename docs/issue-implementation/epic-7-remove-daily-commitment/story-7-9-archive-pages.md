@@ -20,9 +20,9 @@ Archive or remove legacy commitment/section pages and related code.
 
 ## Status
 
-- **Status:** Planned
-- **Last Update:** 2025-10-07
+**Status:** Completed
+**Last Update:** 2025-10-09
 
 ## Related Business Requirement
 
-- [Story 7.13 BR](../../business-requirements/epic-7-remove-daily-commitment/story-7-9-archive-pages.md)
+- [Story 7.9 BR](../../business-requirements/epic-7-remove-daily-commitment/story-7-9-archive-pages.md)
