@@ -15,6 +15,10 @@ export default {
       },
     ],
   },
+  moduleNameMapper: {
+    "^utils(.*)$": "<rootDir>/src/utils$1",
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+  },
   testMatch: ["**/?(*.)+(test).[tj]s?(x)"],
   collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts"],
 };

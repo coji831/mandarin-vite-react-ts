@@ -1,12 +1,12 @@
 import { render, act, waitFor } from "@testing-library/react";
 import React, { useRef } from "react";
-import { useMandarinProgress } from "./useMandarinProgress";
+import { useProgressData } from "./useProgressContext";
 
 // Mock fetch for vocabulary data
 global.fetch = jest.fn();
 
 function TestHook({ callback }: { callback: (hook: any) => void }) {
-  const hook = useMandarinProgress();
+  const hook = useProgressData();
   const called = useRef(false);
   if (!called.current) {
     callback(hook);
@@ -66,7 +66,7 @@ describe("useMandarinProgress (list-focused API)", () => {
     );
     expect(typeof hookState.selectVocabularyList).toBe("function");
     expect(typeof hookState.markWordLearned).toBe("function");
-    // Deprecated section-based APIs should not exist
+    // Deprecated section-based APIs should not exist (list-based APIs only)
     expect(hookState.selectedSectionId).toBeUndefined();
     expect(hookState.setSelectedSectionId).toBeUndefined();
   });

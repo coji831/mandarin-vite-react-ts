@@ -27,13 +27,11 @@ const Basic = () => {
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
       }}
     >
-      <h1
-        style={{ fontSize: "24px", textAlign: "center", marginBottom: "20px" }}
-      >
+      <h1 style={{ fontSize: "24px", textAlign: "center", marginBottom: "20px" }}>
         Tones, Pronouns, and Pinyin
       </h1>
 
-      {/* Tones Section */}
+      {/* Tones */}
       <div style={{ marginBottom: "30px" }}>
         <h2
           style={{
@@ -45,8 +43,8 @@ const Basic = () => {
           Mandarin Tones
         </h2>
         <p style={{ marginBottom: "10px" }}>
-          Mandarin has four main tones and a neutral tone. Listen to examples to
-          practice pronunciation.
+          Mandarin has four main tones and a neutral tone. Listen to examples to practice
+          pronunciation.
         </p>
         {tonesData.map((item, index) => (
           <div
@@ -80,7 +78,7 @@ const Basic = () => {
         ))}
       </div>
 
-      {/* Pronouns Section */}
+      {/* Pronouns */}
       <div style={{ marginBottom: "30px" }}>
         <h2
           style={{
@@ -91,9 +89,7 @@ const Basic = () => {
         >
           Pronouns
         </h2>
-        <p style={{ marginBottom: "10px" }}>
-          Common pronouns with example sentences.
-        </p>
+        <p style={{ marginBottom: "10px" }}>Common pronouns with example sentences.</p>
         {pronounsData.map((item, index) => (
           <div
             key={index}
@@ -111,9 +107,7 @@ const Basic = () => {
             <div style={{ fontSize: "14px" }}>
               Sentence: {item.sentence} ({item.sentencePinyin})
             </div>
-            <div style={{ fontSize: "14px" }}>
-              Translation: {item.sentenceMeaning}
-            </div>
+            <div style={{ fontSize: "14px" }}>Translation: {item.sentenceMeaning}</div>
             <button
               style={{
                 background: "#007bff",
@@ -147,7 +141,7 @@ const Basic = () => {
         ))}
       </div>
 
-      {/* Pinyin Tone Marks Section */}
+      {/* Pinyin Tone Marks */}
       <div>
         <h2
           style={{

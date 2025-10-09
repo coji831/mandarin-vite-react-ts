@@ -1,40 +1,35 @@
 /**
- * VocabularyListPage
+ * VocabularyListPage.tsx
  * Purpose: Interactive, filterable, and responsive vocabulary list selection page.
- * Features: Card-based layout, metadata display, search/filter UI, progress indicator, accessibility, responsive design.
+ * Features:
+ *   - Card-based layout for vocabulary lists
+ *   - Metadata display, search/filter UI, progress indicator, accessibility, responsive design
+ *   - Uses helper functions from utils/vocabListUtils for filtering and tag/difficulty extraction
+ *   - Progress calculation via context API (calculateListProgress)
+ *   - Navigation via React Router
  * Related: Epic 5 (Vocabulary List UI Enhancement), Stories 5.1–5.4
- * Last updated: 2025-10-03
+ * Last updated: 2025-10-09
  *
  * Uses MandarinContext for state and navigation.
- * Uses the CSV-based vocabulary system with csvLoader.ts utility for loading vocabulary data.
+ * Loads vocabulary list metadata from /data/vocabulary/vocabularyLists.json
  * Converts between VocabWord format from CSV files and internal Word format for context state.
  * Loads and displays sample words from each available vocabulary list.
  */
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMandarinContext } from "../context/useMandarinContext";
-import type { VocabularyList, Word } from "../types";
-import { loadCsvVocab, VocabWord } from "../../../utils/csvLoader";
-import { VocabularyCard } from "../components/VocabularyCard";
-import "../components/VocabularyCard.css";
+
+import { FilterChip, VocabularyCard } from "../components";
+import { useMandarinContext } from "../hooks";
+import type { VocabularyList } from "../types";
+import {
+  extractDistinctDifficulties,
+  extractDistinctTags,
+  getFilteredVocabularyLists,
+} from "../utils";
 
 export function VocabularyListPage() {
-  const { vocabulary, masteredProgress } = useMandarinContext();
-  const { selectVocabularyList } = vocabulary;
+  const { calculateListProgress } = useMandarinContext();
 
-  // Helper: get mastered count for a list
-  function getListProgress(
-    listId: string,
-    wordCount: number
-  ): { mastered: number; percent: number } {
-    // Use masteredProgress from context only
-    let mastered = 0;
-    if (masteredProgress && masteredProgress[listId]) {
-      mastered = masteredProgress[listId].size;
-    }
-    const percent = wordCount ? Math.round((mastered / wordCount) * 100) : 0;
-    return { mastered, percent };
-  }
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [search, setSearch] = useState("");
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
@@ -56,74 +51,25 @@ export function VocabularyListPage() {
   }, []);
 
   // Collect all unique tags and difficulties for filter UI
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    lists.forEach((l) => l.tags?.forEach((t) => tagSet.add(t)));
-    return Array.from(tagSet).sort();
-  }, [lists]);
-  const allDifficulties = useMemo(() => {
-    const diffSet = new Set<string>();
-    lists.forEach((l) => l.difficulty && diffSet.add(l.difficulty));
-    return Array.from(diffSet).sort();
-  }, [lists]);
+  const allTags = useMemo(extractDistinctTags(lists), [lists]);
+  const allDifficulties = useMemo(extractDistinctDifficulties(lists), [lists]);
 
   // Filtering logic
-  const filteredLists = useMemo(() => {
-    let filtered = lists;
-    // Search (case-insensitive, accent-insensitive, partial match)
-    if (search.trim()) {
-      const norm = (s: string) =>
-        s
-          .normalize("NFD")
-          .replace(/\p{Diacritic}/gu, "")
-          .toLowerCase();
-      const s = norm(search);
-      filtered = filtered.filter(
-        (l) => norm(l.name).includes(s) || norm(l.description || "").includes(s)
-      );
-    }
-    // Difficulty filter (OR logic)
-    if (selectedDifficulties.length > 0) {
-      filtered = filtered.filter(
-        (l) => l.difficulty && selectedDifficulties.includes(l.difficulty)
-      );
-    }
-    // Tag filter (OR logic)
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter((l) => l.tags && l.tags.some((t) => selectedTags.includes(t)));
-    }
-    return filtered;
-  }, [lists, search, selectedDifficulties, selectedTags]);
-
-  const handleSelect = async (list: VocabularyList) => {
-    // Defensive: ensure list.id is present
-    if (!list.id) {
-      console.warn("Vocabulary list missing id:", list);
-      return;
-    }
-    // Only navigate with list ID; data loading will happen in FlashCardPage
-    navigate(`/mandarin/flashcards/${list.id}`);
-  };
-
-  // UI for filter chips
-  const FilterChip = ({
-    label,
-    selected,
-    onClick,
-  }: {
-    label: string;
-    selected: boolean;
-    onClick: () => void;
-  }) => (
-    <button
-      type="button"
-      className={"filter-chip" + (selected ? " selected" : "")}
-      onClick={onClick}
-      aria-pressed={selected}
-    >
-      {label}
-    </button>
+  const filteredLists = useMemo(
+    getFilteredVocabularyLists(lists, search, selectedDifficulties, selectedTags),
+    [lists, search, selectedDifficulties, selectedTags]
   );
+
+  // Handlers for filter chip selection
+  const updateDifficultySelection = (difficulty: string) => {
+    setSelectedDifficulties((prev) =>
+      prev.includes(difficulty) ? prev.filter((x) => x !== difficulty) : [...prev, difficulty]
+    );
+  };
+  const updateTagSelection = (tag: string) =>
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]
+    );
 
   // Clear all filters
   const clearAll = () => {
@@ -150,11 +96,7 @@ export function VocabularyListPage() {
               key={d}
               label={d}
               selected={selectedDifficulties.includes(d)}
-              onClick={() =>
-                setSelectedDifficulties((prev) =>
-                  prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]
-                )
-              }
+              onClick={() => updateDifficultySelection(d)}
             />
           ))}
         </div>
@@ -165,11 +107,7 @@ export function VocabularyListPage() {
               key={t}
               label={t}
               selected={selectedTags.includes(t)}
-              onClick={() =>
-                setSelectedTags((prev) =>
-                  prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-                )
-              }
+              onClick={() => updateTagSelection(t)}
             />
           ))}
         </div>
@@ -193,12 +131,12 @@ export function VocabularyListPage() {
         ) : (
           filteredLists.map((list) => {
             // Calculate progress for this list using context state
-            const { mastered, percent } = getListProgress(list.id, list.wordCount ?? 0);
+            const { mastered, percent } = calculateListProgress(list.id, list.wordCount ?? 0);
             return (
               <VocabularyCard
                 key={list.name}
                 list={list}
-                onSelect={handleSelect}
+                onSelect={() => navigate(`/mandarin/flashcards/${list.id}`)}
                 progress={percent}
                 masteredCount={mastered}
               />

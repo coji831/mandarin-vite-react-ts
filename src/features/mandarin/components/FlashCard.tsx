@@ -1,10 +1,10 @@
 /**
  * FlashCard component
  *
- * - Displays flashcards for a section of words in the Mandarin feature.
- * - Uses ProgressContext for section/word state, progress, and actions.
- * - All navigation (next/prev, sidebar, return to section) is context-driven and route-based.
- * - No legacy state-driven navigation remains; return to section is handled by parent page using React Router.
+ * - Displays flashcards for a vocabulary list in the Mandarin feature.
+ * - Uses ProgressContext for word state, progress, and actions.
+ * - All navigation (next/prev, sidebar, return to vocabulary list) is context-driven and route-based.
+ * - No legacy state-driven navigation remains; return to vocabulary list is handled by parent page using React Router.
  * - Includes search/filter, progress bar, and details panel.
  * - Fully migrated for Story 4-8: route-based navigation and context usage only.
  * - Follows project conventions in docs/guides/conventions.md.
@@ -12,35 +12,19 @@
 
 import { useMemo, useState } from "react";
 import { useProgressContext } from "../context/ProgressContext";
-import { Card } from "../types";
-import type { VocabWord } from "../../../utils/csvLoader";
+import { Card, Word } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
-  words: VocabWord[];
-  masteredWords: Set<string>;
-  markWordLearned: (wordId: string) => void;
-  onBackToSection: () => void;
+  words: Word[];
+  listId: string;
+  onBackToList: () => void;
 };
 
-export function FlashCard({
-  words,
-  masteredWords,
-  markWordLearned,
-  onBackToSection,
-}: FlashCardProps) {
-  // Map VocabWord[] to Card[] for UI compatibility
-  const mapToCard = (w: VocabWord): Card => ({
-    wordId: w.wordId,
-    character: w.Chinese,
-    pinyin: w.Pinyin,
-    meaning: w.English,
-    sentence: "", // No sentence in VocabWord, set empty or add logic if available
-    sentencePinyin: "",
-    sentenceMeaning: "",
-  });
+export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
+  const { calculateListProgress, masteredProgress, markWordLearned } = useProgressContext();
 
   const cards: Card[] = words.map(mapToCard);
 
@@ -66,9 +50,9 @@ export function FlashCard({
     return null;
   }
 
-  // Mastery logic: use masteredWords prop
-  const mastered = masteredWords.size;
-  const total = words.length;
+  // Mastery logic: use context API
+  const { mastered, percent } = calculateListProgress(listId, words.length);
+  const masteredWords = masteredProgress[listId] || new Set();
 
   const currentCard = filteredWords[currentCardIndex];
 
@@ -83,7 +67,7 @@ export function FlashCard({
         search={search}
         setSearch={setSearch}
         handleSidebarClick={handleSidebarClick}
-        onBackToSection={onBackToSection}
+        onBackToList={onBackToList}
       />
       {/* Flashcard Area - 40% */}
       <div className="flashcard-center flex flex-col" style={{ width: "40%" }}>
@@ -189,3 +173,14 @@ export function FlashCard({
     </div>
   );
 }
+
+// Map VocabWord[] to Card[] for UI compatibility
+const mapToCard = (w: Word): Card => ({
+  wordId: w.wordId,
+  character: w.character || "",
+  pinyin: w.pinyin || "",
+  meaning: w.meaning || "",
+  sentence: "", // No sentence in VocabWord, set empty or add logic if available
+  sentencePinyin: "",
+  sentenceMeaning: "",
+});

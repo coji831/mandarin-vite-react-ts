@@ -20,9 +20,13 @@ Update documentation and references to remove legacy daily-commitment flow.
 
 ## Status
 
-- **Status:** Planned
-- **Last Update:** 2025-10-07
+**Status:** Completed
+**Last Update:** 2025-10-09
+
+## Update Summary
+
+All documentation and code comments referencing daily commitment and section-based flows have been updated or removed. The Mandarin feature now uses a list-first flow, and all guides, READMEs, and design docs reflect this change. Technical writer review requested.
 
 ## Related Business Requirement
 
-- [Story 7.14 BR](../../business-requirements/epic-7-remove-daily-commitment/story-7-10-update-docs.md)
+- [Story 7.10 BR](../../business-requirements/epic-7-remove-daily-commitment/story-7-10-update-docs.md)

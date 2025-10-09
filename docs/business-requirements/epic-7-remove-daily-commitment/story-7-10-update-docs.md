@@ -25,4 +25,5 @@ Accurate docs reduce onboarding friction and prevent mistaken reliance on remove
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
+- **Last Update**: 2025-10-09

@@ -1,15 +1,16 @@
-import { useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
-import { useEffect } from "react";
-import { useUserIdentity } from "./useUserIdentity";
-import { getUserProgress, saveUserProgress } from "../utils/ProgressStore";
+import { useEffect, useState } from "react";
 
-export interface ProgressContextType {
+import type { Dispatch, SetStateAction } from "react";
+import type { Word } from "../types/Vocabulary";
+import { getUserProgress, saveUserProgress } from "../utils/progressHelpers";
+import { useUserIdentity } from "./useUserIdentity";
+
+export interface ProgressDataContext {
   loadProgressForList: (listId: string, file: string) => Promise<void>;
   selectedList: string | null;
   setSelectedList: Dispatch<SetStateAction<string | null>>;
-  selectedWords: any[];
-  setSelectedWords: Dispatch<SetStateAction<any[]>>;
+  selectedWords: Word[];
+  setSelectedWords: Dispatch<SetStateAction<Word[]>>;
   masteredProgress: { [key: string]: Set<string> };
   setMasteredProgress: Dispatch<SetStateAction<{ [key: string]: Set<string> }>>;
   error: string;
@@ -17,11 +18,12 @@ export interface ProgressContextType {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   markWordLearned: (wordId: string) => void;
-  selectVocabularyList: (listId: string, words: any[]) => void;
+  selectVocabularyList: (listId: string, words: Word[]) => void;
   resetAndRedirectToVocabList: () => void;
+  getListProgress: (listId: string, wordCount: number) => { mastered: number; percent: number };
 }
 
-export function useMandarinProgress(): ProgressContextType {
+export function useProgressData(): ProgressDataContext {
   const [identity] = useUserIdentity();
   const userId = identity.userId;
   // On initial mount, restore masteredProgress for all lists from localStorage
@@ -35,7 +37,7 @@ export function useMandarinProgress(): ProgressContextType {
     setMasteredProgress(allMastered);
   }, [userId]);
   const [selectedList, setSelectedList] = useState<string | null>(null);
-  const [selectedWords, setSelectedWords] = useState<any[]>([]);
+  const [selectedWords, setSelectedWords] = useState<Word[]>([]);
   const [masteredProgress, setMasteredProgress] = useState<{ [listId: string]: Set<string> }>({});
 
   // Restore masteredProgress and selectedWords from localStorage on mount
@@ -52,7 +54,7 @@ export function useMandarinProgress(): ProgressContextType {
         }));
         // Restore selectedWords
         if (listEntry.words) {
-          setSelectedWords(listEntry.words);
+          setSelectedWords(listEntry.words as Word[]);
         }
       }
     }
@@ -94,7 +96,7 @@ export function useMandarinProgress(): ProgressContextType {
   const loadProgressForList = async (listId: string, file: string) => {
     setLoading(true);
     try {
-      let words: any[] = [];
+      let words: Word[] = [];
       if (file) {
         const res = await fetch(`/data/vocabulary/${file}`);
         if (res.ok) {
@@ -141,7 +143,7 @@ export function useMandarinProgress(): ProgressContextType {
   };
 
   // Select vocabulary list
-  const selectVocabularyList = (listId: string, words: any[]) => {
+  const selectVocabularyList = (listId: string, words: Word[]) => {
     setSelectedList(listId);
     // Do not set words here; handled on flashcard navigation
   };
@@ -164,6 +166,19 @@ export function useMandarinProgress(): ProgressContextType {
     }
   };
 
+  // Helper: get mastered count and percent for a list
+  function getListProgress(
+    listId: string,
+    wordCount: number
+  ): { mastered: number; percent: number } {
+    let mastered = 0;
+    if (masteredProgress && masteredProgress[listId]) {
+      mastered = masteredProgress[listId].size;
+    }
+    const percent = wordCount ? Math.round((mastered / wordCount) * 100) : 0;
+    return { mastered, percent };
+  }
+
   return {
     loadProgressForList,
     selectedList,
@@ -179,5 +194,6 @@ export function useMandarinProgress(): ProgressContextType {
     markWordLearned,
     selectVocabularyList,
     resetAndRedirectToVocabList,
+    getListProgress,
   };
 }

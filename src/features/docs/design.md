@@ -4,7 +4,7 @@ This directory contains the main features of the application. Each feature is or
 
 ## Current Features
 
-- **mandarin**: Mandarin vocabulary learning, flashcards, review, and daily commitment.
+- **mandarin**: Mandarin vocabulary learning, flashcards, and review.
 
 See each feature's [docs/design.md](../mandarin/docs/design.md) for details.
 
