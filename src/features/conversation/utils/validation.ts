@@ -1,5 +1,5 @@
 // Validation utilities for Conversation schema
-import { Conversation, ConversationTurn } from "../types/conversation.types";
+import { Conversation, ConversationTurn } from "../types/conversation";
 
 export function isValidConversation(data: unknown): data is Conversation {
   const conv = data as Conversation;

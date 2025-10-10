@@ -1,6 +1,6 @@
-const express = require("express");
-const path = require("path");
-const fs = require("fs").promises;
+import express from "express";
+import path from "path";
+import { promises as fs } from "fs";
 const router = express.Router();
 
 // Environment gate - only active when explicitly enabled
@@ -8,7 +8,6 @@ const CONVERSATION_ENABLED = process.env.USE_CONVERSATION === "true";
 
 if (!CONVERSATION_ENABLED) {
   console.log("Conversation scaffolder disabled. Set USE_CONVERSATION=true to enable.");
-  module.exports = router;
 }
 
 // Fixture loading with caching
@@ -151,4 +150,4 @@ router.get("/scaffold/health", (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

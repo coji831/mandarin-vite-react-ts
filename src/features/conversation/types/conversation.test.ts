@@ -1,6 +1,6 @@
 // Unit tests for Conversation type guards and validation
 import { isValidConversation, isValidTurn } from "../utils/validation";
-import { Conversation, ConversationTurn } from "./conversation.types";
+import { Conversation, ConversationTurn } from "./conversation";
 
 describe("Conversation type guards", () => {
   it("validates a correct Conversation object", () => {

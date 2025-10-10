@@ -1,5 +1,5 @@
 // Environment-aware schema loader
-import { Conversation } from "../types/conversation.types";
+import { Conversation } from "../types/conversation";
 
 export async function loadConversationSchema(): Promise<Conversation[]> {
   if (process.env.NODE_ENV === "development") {

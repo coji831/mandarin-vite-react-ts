@@ -1,6 +1,6 @@
 // src/features/conversation/services/conversationApi.ts
 
-import { Conversation } from "../types/conversation.types";
+import { Conversation } from "../types/conversation";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
 

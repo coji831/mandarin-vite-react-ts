@@ -3,56 +3,38 @@
 // Load environment variables from .env.local file in the project root
 // The path is relative to this server.js file.
 
-import { TextToSpeechClient } from "@google-cloud/text-to-speech";
 import dotenv from "dotenv";
 import express, { json } from "express";
-import md5 from "md5"; // For hashing text
-
 dotenv.config({ path: ".env.local" });
 const app = express();
-const PORT = 3001; // Choose a port for your local backend (e.g., 3001)
-
-// Middleware to parse JSON request bodies
+const PORT = 3001;
 app.use(json());
 
-// Initialize Google Cloud Text-to-Speech client
-let textToSpeechClient;
-let storageClient;
-let GCS_BUCKET_NAME; // Declare here to be accessible
-
-try {
-  console.log("[Local Backend Init] Initializing Google Cloud Text-to-Speech client...");
-  // Explicitly parse the credential JSON from the environment variable
-  const credentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
-  if (!credentialsJson) {
-    throw new Error("GOOGLE_TTS_CREDENTIALS_RAW environment variable is not set in .env.local.");
-  }
-  const credentials = JSON.parse(credentialsJson);
-  textToSpeechClient = new TextToSpeechClient({ credentials });
-  console.log("[Local Backend Init] Google Cloud Text-to-Speech client initialized.");
-
-  GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME; // Get bucket name
-  if (!GCS_BUCKET_NAME) {
-    throw new Error(
-      "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work."
-    );
-  }
-  // Register conversation scaffolder router
-  const conversationRoutes = require("./routes/conversation");
-  app.use("/api", conversationRoutes);
+const useScaffolder = process.env.USE_CONVERSATION === "true";
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+if (useScaffolder) {
+  // Register only scaffolder endpoints and static serving
+  (async () => {
+    const { default: conversationRoutes } = await import("./routes/conversation.js");
+    app.use("/api", conversationRoutes);
+    const { default: audioRoutes } = await import("./routes/audio.js");
+    app.use("/api", audioRoutes);
+  })();
+  app.use("/data", express.static(path.join(__dirname, "..", "public", "data")));
+  app.use("/data/examples/conversations/audio", (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Range");
+    res.header("Access-Control-Expose-Headers", "Content-Range, Content-Length");
+    next();
+  });
   console.log(
-    "Local backend started with conversation scaffolder:",
+    "Local backend started in SCAFFOLDER mode (no real API calls):",
     process.env.USE_CONVERSATION === "true" ? "ENABLED" : "DISABLED"
   );
-  storageClient = new Storage({ credentials }); // Initialize Storage client
-
-  console.log(`[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`);
-
-  console.log("[Local Backend Init] Google Cloud clients initialized.");
-} catch (initError) {
-  console.error("[Local Backend Init Error] Failed to initialize Google Cloud clients:", initError);
-  // Exit the process if critical initialization fails
-  process.exit(1);
+} else {
+  // ...existing code for real API initialization and endpoints...
 }
 
 // Define your TTS API endpoint

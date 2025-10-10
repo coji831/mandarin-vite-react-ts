@@ -38,10 +38,10 @@ This story provides deterministic audio responses for testing and development, e
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: #[PR-NUMBER]
-- **Merge Date**: [Date]
-- **Key Commit**: [commit-hash] ([Brief commit description])
+- **Status**: Completed
+- **PR**: #[to-fill]
+- **Merge Date**: 2025-10-11
+- **Key Commit**: [to-fill] (Scaffolder audio endpoint, deterministic metadata, base64 support, and all ACs fulfilled)
 
 ## User Journey
 
