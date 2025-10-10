@@ -3,7 +3,6 @@
 // Load environment variables from .env.local file in the project root
 // The path is relative to this server.js file.
 
-import { Storage } from "@google-cloud/storage"; // For Google Cloud Storage interaction
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
 import dotenv from "dotenv";
 import express, { json } from "express";
@@ -38,6 +37,13 @@ try {
       "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work."
     );
   }
+  // Register conversation scaffolder router
+  const conversationRoutes = require("./routes/conversation");
+  app.use("/api", conversationRoutes);
+  console.log(
+    "Local backend started with conversation scaffolder:",
+    process.env.USE_CONVERSATION === "true" ? "ENABLED" : "DISABLED"
+  );
   storageClient = new Storage({ credentials }); // Initialize Storage client
 
   console.log(`[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`);

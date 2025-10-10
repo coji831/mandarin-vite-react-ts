@@ -37,10 +37,10 @@ This story enables rapid UI development and testing without waiting for the full
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: #[PR-NUMBER]
-- **Merge Date**: [Date]
-- **Key Commit**: [commit-hash] ([Brief commit description])
+- **Status**: Completed
+- **PR**: #[to-fill]
+- **Merge Date**: 2025-10-11
+- **Key Commit**: [to-fill] (Scaffolder endpoint, business rules, and API contract fulfilled)
 
 ## User Journey
 
