@@ -1,0 +1,27 @@
+{
+  "id": "hello-v1-abc123",
+  "wordId": "hello",
+  "word": "你好",
+  "meaning": "hello",
+  "context": "greeting",
+  "turns": [
+    {
+      "speaker": "A",
+      "text": "你好！",
+      "translation": "Hello!"
+    },
+    {
+      "speaker": "B",
+      "text": "你好！很高兴见到你。",
+      "translation": "Hello! Nice to meet you."
+    },
+    {
+      "speaker": "A",
+      "text": "我也很高兴见到你。",
+      "translation": "Nice to meet you too."
+    }
+  ],
+  "generatedAt": "2025-10-10T12:00:00Z",
+  "generatorVersion": "v1",
+  "promptHash": "abc123def456"
+}

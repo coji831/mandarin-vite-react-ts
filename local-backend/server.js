@@ -22,46 +22,61 @@ let storageClient;
 let GCS_BUCKET_NAME; // Declare here to be accessible
 
 try {
-  console.log(
-    "[Local Backend Init] Initializing Google Cloud Text-to-Speech client...",
-  );
+  console.log("[Local Backend Init] Initializing Google Cloud Text-to-Speech client...");
   // Explicitly parse the credential JSON from the environment variable
   const credentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
   if (!credentialsJson) {
-    throw new Error(
-      "GOOGLE_TTS_CREDENTIALS_RAW environment variable is not set in .env.local.",
-    );
+    throw new Error("GOOGLE_TTS_CREDENTIALS_RAW environment variable is not set in .env.local.");
   }
   const credentials = JSON.parse(credentialsJson);
   textToSpeechClient = new TextToSpeechClient({ credentials });
-  console.log(
-    "[Local Backend Init] Google Cloud Text-to-Speech client initialized.",
-  );
+  console.log("[Local Backend Init] Google Cloud Text-to-Speech client initialized.");
 
   GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME; // Get bucket name
   if (!GCS_BUCKET_NAME) {
     throw new Error(
-      "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work.",
+      "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work."
     );
   }
   storageClient = new Storage({ credentials }); // Initialize Storage client
 
-  console.log(
-    `[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`,
-  );
+  console.log(`[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`);
 
   console.log("[Local Backend Init] Google Cloud clients initialized.");
 } catch (initError) {
-  console.error(
-    "[Local Backend Init Error] Failed to initialize Google Cloud clients:",
-    initError,
-  );
+  console.error("[Local Backend Init Error] Failed to initialize Google Cloud clients:", initError);
   // Exit the process if critical initialization fails
   process.exit(1);
 }
 
 // Define your TTS API endpoint
 app.post("/api/get-tts-audio", async (req, res) => {
+  // Conversation scaffolder endpoint (Epic 8)
+  if (process.env.USE_CONVERSATION === "true") {
+    const fs = require("fs");
+    const path = require("path");
+    app.get("/conversation", (req, res) => {
+      const { wordId } = req.query;
+      if (!wordId) {
+        return res.status(400).json({ error: "wordId is required" });
+      }
+      // Find matching fixture file
+      const fixturesDir = path.resolve(__dirname, "../public/data/examples/conversations/fixtures");
+      const files = fs.readdirSync(fixturesDir);
+      const match = files.find((f) => f.startsWith(wordId));
+      if (!match) {
+        return res.status(404).json({ error: "No fixture found for wordId" });
+      }
+      const fixturePath = path.join(fixturesDir, match);
+      try {
+        const data = fs.readFileSync(fixturePath, "utf-8");
+        res.setHeader("Content-Type", "application/json");
+        res.send(data);
+      } catch (err) {
+        res.status(500).json({ error: "Error reading fixture" });
+      }
+    });
+  }
   console.log("[Local Backend] Request received at /api/get-tts-audio");
 
   const { text } = req.body;
@@ -87,9 +102,7 @@ app.post("/api/get-tts-audio", async (req, res) => {
     const [exists] = await gcsFile.exists();
     if (exists) {
       const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
-      console.log(
-        `[Local Backend] GCS Cache Hit: ${filename}. Serving from ${audioUrl}`,
-      );
+      console.log(`[Local Backend] GCS Cache Hit: ${filename}. Serving from ${audioUrl}`);
       return res.status(200).json({ audioUrl }); // Return JSON with URL
     }
 
@@ -117,36 +130,22 @@ app.post("/api/get-tts-audio", async (req, res) => {
       public: true, // Make the object publicly readable
     });
     const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
-    console.log(
-      `[Local Backend] Uploaded to GCS: ${filename}. Serving from ${audioUrl}`,
-    );
+    console.log(`[Local Backend] Uploaded to GCS: ${filename}. Serving from ${audioUrl}`);
 
     // Return JSON with the public URL of the audio file
     res.status(200).json({ audioUrl });
   } catch (error) {
-    console.error(
-      "[Local Backend Error] Error during speech synthesis or GCS operation:",
-      error,
-    );
+    console.error("[Local Backend Error] Error during speech synthesis or GCS operation:", error);
     if (error.code === 7 || error.details?.includes("API key not valid")) {
-      res
-        .status(500)
-        .send(
-          "Authentication error with TTS/GCS API. Check local backend logs.",
-        );
-    } else if (
-      error.code === 3 &&
-      error.details?.includes("Billing account not enabled")
-    ) {
-      res
-        .status(500)
-        .send("Google Cloud Billing not enabled. Check local backend logs.");
+      res.status(500).send("Authentication error with TTS/GCS API. Check local backend logs.");
+    } else if (error.code === 3 && error.details?.includes("Billing account not enabled")) {
+      res.status(500).send("Google Cloud Billing not enabled. Check local backend logs.");
     } else if (error.code === 403 && error.details?.includes("Forbidden")) {
       // Specific GCS permission error
       res
         .status(500)
         .send(
-          "GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles.",
+          "GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles."
         );
     } else {
       res.status(500).send("Error generating or caching audio.");

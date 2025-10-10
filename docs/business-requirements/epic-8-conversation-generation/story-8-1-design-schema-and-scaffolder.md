@@ -68,10 +68,10 @@ This story provides the foundational data structures and mock data needed for al
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: #[PR-NUMBER]
-- **Merge Date**: [Date]
-- **Key Commit**: [commit-hash] ([Brief commit description])
+- **Status**: Completed
+- **PR**: [Epic 8 PR]
+- **Merge Date**: 2025-10-11
+- **Key Commit**: [Scaffolder, schema, fixtures, endpoint, docs]
 
 ## User Journey
 
