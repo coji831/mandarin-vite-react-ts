@@ -1,15 +1,15 @@
 // Conversation schema and types for Epic 8
 
 export type Conversation = {
-  id: string; // Format: ${wordId}-${generatorVersion}-${shortHash}
+  id: string; // Format: ${wordId}-${hash}
   wordId: string;
   word: string;
   meaning?: string;
   context?: string;
   turns: ConversationTurn[];
   generatedAt: string; // ISO 8601 timestamp
-  generatorVersion: string; // e.g., "v1", "v2" for cache invalidation
-  promptHash?: string; // Hash of generation prompt for cache keys
+  generatorVersion?: string; // Optional metadata; cache keys no longer include it
+  hash?: string; // Hash of generation prompt for cache keys
 };
 
 export type ConversationTurn = {

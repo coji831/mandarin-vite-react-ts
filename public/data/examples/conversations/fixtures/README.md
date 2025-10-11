@@ -4,17 +4,16 @@ This folder contains deterministic JSON fixtures for conversation and audio data
 
 ## Naming Convention
 
-- Each fixture is named as `<wordId>-<generatorVersion>-<shortHash>.json` for conversation data.
-- Audio fixtures use `audio-<wordId>-<generatorVersion>-<shortHash>.json`.
-
-## Turn Constraint
+Each fixture is named as `<wordId>-<shortHash>.json` for conversation data.
+Audio fixtures use `audio-<wordId>-<shortHash>.json`.
+`generatorVersion` is optional metadata; `hash` is used for cache validation.
 
 - Each conversation fixture must have 3–5 turns.
 - Each turn should be 1–2 short sentences suitable for language learning.
 
 ## Required Fields
 
-- `generatorVersion` and `promptHash` are required for cache validation.
+- `generatorVersion` and `hash` are required for cache validation.
 - Audio fixtures must include `timeline` metadata for UI highlighting.
 
 ## Usage

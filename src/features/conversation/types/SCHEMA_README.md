@@ -14,7 +14,7 @@ Defines canonical TypeScript schemas for `Conversation` and `ConversationAudio` 
 - `turns`: Array of 3–5 `ConversationTurn` objects
 - `generatedAt`: ISO 8601 timestamp
 - `generatorVersion`: Version for cache invalidation
-- `promptHash`: Hash of generation prompt
+- `hash`: Hash of generation prompt
 
 ### ConversationTurn
 
@@ -39,7 +39,7 @@ Defines canonical TypeScript schemas for `Conversation` and `ConversationAudio` 
 
 ## Versioning
 
-- Use `generatorVersion` and `promptHash` for cache and test data management
+- Use `generatorVersion` and `hash` for cache and test data management
 
 ## Validation
 

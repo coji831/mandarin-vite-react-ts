@@ -1,100 +1,39 @@
+// Unified conversation endpoint following code conventions
+// Switches between scaffold and real mode based on CONVERSATION_MODE env var
 import express from "express";
-import path from "path";
-import { promises as fs } from "fs";
+import { ROUTE_PATTERNS } from "../../shared/constants/apiPaths.js";
+import { computeHash } from "../utils/hashUtils.js";
+import { handleGetRealText, handleGetRealAudio } from "../utils/conversationProcessor.js";
+import { handleGetScaffoldText, getScaffoldAudioMetadata } from "../utils/scaffoldUtils.js";
+import { createConversationResponse } from "../utils/conversationUtils.js";
+
 const router = express.Router();
 
-// Environment gate - only active when explicitly enabled
-const CONVERSATION_ENABLED = process.env.USE_CONVERSATION === "true";
+// Environment configuration
+const CONVERSATION_MODE = process.env.CONVERSATION_MODE;
 
-if (!CONVERSATION_ENABLED) {
-  console.log("Conversation scaffolder disabled. Set USE_CONVERSATION=true to enable.");
-}
-
-// Fixture loading with caching
-const fixtureCache = new Map();
-const FIXTURES_PATH = path.join(process.cwd(), "public/data/examples/conversations/fixtures");
-
-function shortHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(36).slice(0, 6);
-}
-
-function enforceTurns(turns) {
-  if (!Array.isArray(turns)) return [];
-  if (turns.length < 3) {
-    // Repeat last turn to reach 3
-    const last = turns[turns.length - 1] || {};
-    while (turns.length < 3) turns.push({ ...last });
-  }
-  if (turns.length > 5) {
-    return turns.slice(0, 5);
-  }
-  return turns;
-}
-
-async function loadFixture(wordId, generatorVersion = "v1") {
-  if (fixtureCache.has(wordId)) {
-    return fixtureCache.get(wordId);
-  }
-
+// New POST endpoints for conversation text generation
+// POST /conversation/text/generate - primary generation endpoint
+router.post(ROUTE_PATTERNS.conversationTextGenerate, async (req, res) => {
   try {
-    // Try specific fixture first, fall back to default
-    const fixtureFile = `${wordId}-basic.json`;
-    const fixturePath = path.join(FIXTURES_PATH, fixtureFile);
-
-    let data;
-    try {
-      data = await fs.readFile(fixturePath, "utf8");
-    } catch (err) {
-      // Fallback to generic hello fixture
-      const fallbackPath = path.join(FIXTURES_PATH, "hello-basic.json");
-      data = await fs.readFile(fallbackPath, "utf8");
-    }
-
-    const fixture = JSON.parse(data);
-    const turns = enforceTurns(fixture.turns);
-    const id = `${wordId}-${generatorVersion}-${shortHash(wordId + generatorVersion)}`;
-
-    const customized = {
-      ...fixture,
-      id,
-      wordId,
-      word: wordId, // In real implementation, would lookup actual word
-      turns,
-      generatedAt: new Date().toISOString(),
-      generatorVersion,
-    };
-
-    fixtureCache.set(wordId, customized);
-    return customized;
-  } catch (error) {
-    throw new Error(`Failed to load fixture for wordId: ${wordId}`);
-  }
-}
-
-// GET endpoint for simple requests
-router.get("/conversation", async (req, res) => {
-  try {
-    const { wordId, generatorVersion = "v1" } = req.query;
+    // Only accept wordId in the request body
+    const { wordId, word } = req.body || {};
 
     if (!wordId) {
-      return res.status(400).json({
-        error: "wordId parameter is required",
-      });
+      return res.status(400).json({ error: "wordId is required in request body" });
     }
 
-    const conversation = await loadFixture(wordId, generatorVersion);
+    let conversation;
 
-    // Simulate network delay for realistic testing
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    if (CONVERSATION_MODE === "scaffold") {
+      conversation = await handleGetScaffoldText(wordId);
+    } else {
+      conversation = await handleGetRealText(wordId, word);
+    }
 
-    res.json(conversation);
+    res.json(createConversationResponse(conversation, CONVERSATION_MODE));
   } catch (error) {
-    console.error("Scaffolder error:", error);
+    console.error("[Conversation] Error:", error);
     res.status(500).json({
       error: "Failed to generate conversation",
       message: error.message,
@@ -102,52 +41,28 @@ router.get("/conversation", async (req, res) => {
   }
 });
 
-// POST endpoint matching production API
-router.post("/conversation", async (req, res) => {
+router.post(ROUTE_PATTERNS.conversationAudioGenerate, async (req, res) => {
   try {
-    const { wordId, word, generatorVersion = "v1" } = req.body;
+    // Only accept wordId in the body. Hash is computed internally.
+    let { wordId, voice = "cmn-CN-Standard-A", bitrate = 128, format = "url" } = req.body || {};
 
     if (!wordId) {
-      return res.status(400).json({
-        error: "wordId is required in request body",
-      });
+      return res.status(400).json({ error: "wordId is required in request body" });
     }
 
-    const conversation = await loadFixture(wordId, generatorVersion);
-
-    // Override with request parameters
-    const response = {
-      ...conversation,
-      wordId,
-      word: word || wordId,
-      generatorVersion,
-      generatedAt: new Date().toISOString(),
-    };
-
-    // Ensure turns is 3-5
-    response.turns = enforceTurns(response.turns);
-
-    // Ensure id pattern
-    response.id = `${wordId}-${generatorVersion}-${shortHash(wordId + generatorVersion)}`;
-
-    res.json(response);
+    // Branch logic: scaffold mode returns fixture data directly;
+    // real mode checks cache then generates
+    if (CONVERSATION_MODE === "scaffold") {
+      const audioMetadata = await getScaffoldAudioMetadata(wordId, format);
+      return res.json({ ...audioMetadata, voice, bitrate, cached: Math.random() > 0.3 });
+    } else {
+      const audioMetadata = await handleGetRealAudio({ wordId, voice, bitrate });
+      return res.json(audioMetadata);
+    }
   } catch (error) {
-    console.error("Scaffolder error:", error);
-    res.status(500).json({
-      error: "Failed to generate conversation",
-      message: error.message,
-    });
+    console.error("[Audio] Error:", error);
+    res.status(500).json({ error: "Failed to generate audio", message: error.message });
   }
-});
-
-// Health check endpoint
-router.get("/conversation/health", (req, res) => {
-  res.json({
-    status: "ok",
-    service: "conversation-scaffolder",
-    enabled: CONVERSATION_ENABLED,
-    timestamp: new Date().toISOString(),
-  });
 });
 
 export default router;

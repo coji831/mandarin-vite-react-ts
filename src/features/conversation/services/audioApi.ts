@@ -1,17 +1,18 @@
 // src/features/conversation/services/audioApi.ts
 
+import { API_ROUTES } from "../../../../shared/constants/apiPaths";
 import { ConversationAudio } from "../types";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
 
 export async function requestAudio(params: {
-  conversationId: string;
+  wordId: string;
   voice?: string;
   bitrate?: number;
 }): Promise<ConversationAudio> {
-  const endpoint = process.env.NODE_ENV === "development" ? "/audio/request" : "/audio/request";
+  const endpoint = API_ROUTES.conversationAudioGenerate;
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -24,13 +25,5 @@ export async function requestAudio(params: {
   }
 
   const audioData = await response.json();
-  await validateAudioUrl(audioData.audioUrl);
   return audioData;
-}
-
-async function validateAudioUrl(url: string): Promise<void> {
-  const response = await fetch(url, { method: "HEAD" });
-  if (!response.ok) {
-    throw new Error(`Audio file not accessible: ${url}`);
-  }
 }

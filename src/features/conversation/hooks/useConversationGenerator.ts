@@ -12,7 +12,6 @@ export function useConversationGenerator() {
       wordId: string;
       word: string;
       generatorVersion?: string;
-      useScaffolder?: boolean;
     }): Promise<Conversation> => {
       setIsLoading(true);
       setError(null);

@@ -5,7 +5,7 @@ import { Conversation, ConversationTurn } from "./conversation";
 describe("Conversation type guards", () => {
   it("validates a correct Conversation object", () => {
     const valid: Conversation = {
-      id: "hello-v1-abc123",
+      id: "hello-abc123",
       wordId: "hello",
       word: "你好",
       meaning: "hello",
@@ -16,15 +16,16 @@ describe("Conversation type guards", () => {
         { speaker: "A", text: "我也很高兴见到你。", translation: "Nice to meet you too." },
       ],
       generatedAt: "2025-10-10T12:00:00Z",
+      // generatorVersion is optional now
       generatorVersion: "v1",
-      promptHash: "abc123def456",
+      hash: "abc123def456",
     };
     expect(isValidConversation(valid)).toBe(true);
   });
 
   it("rejects a Conversation with too few turns", () => {
     const invalid: Conversation = {
-      id: "bad-v1-xyz",
+      id: "bad-xyz",
       wordId: "bad",
       word: "坏",
       turns: [],

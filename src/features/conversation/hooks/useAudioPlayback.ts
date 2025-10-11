@@ -11,7 +11,7 @@ export function useAudioPlayback() {
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  async function playAudio(params: { conversationId: string; voice?: string; bitrate?: number }) {
+  async function playAudio(params: { wordId: string; voice?: string; bitrate?: number }) {
     setIsLoading(true);
     setError(null);
     try {
@@ -36,9 +36,14 @@ export function useAudioPlayback() {
           audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
-        audioRef.current = new window.Audio(audioUrl);
-        audioRef.current.play();
-        // Optionally, handle timeline updates here
+
+        // Create new audio element and set source (same as PlayButton)
+        audioRef.current = new window.Audio();
+        audioRef.current.src = audioUrl;
+        audioRef.current.load(); // Reload the audio source to apply changes
+        await audioRef.current.play(); // Use await to catch play errors
+
+        // Handle audio end event
         audioRef.current.onended = () => {
           setIsPlaying(false);
         };

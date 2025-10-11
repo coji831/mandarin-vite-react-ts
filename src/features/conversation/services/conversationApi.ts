@@ -1,21 +1,16 @@
 // src/features/conversation/services/conversationApi.ts
 
+import { API_ROUTES } from "../../../../shared/constants/apiPaths";
 import { Conversation } from "../types";
-
-const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
-
 export async function generateConversation(params: {
   wordId: string;
-  word?: string;
+  word: string;
   generatorVersion?: string;
-  useScaffolder?: boolean;
 }): Promise<Conversation> {
-  const endpoint =
-    params.useScaffolder || process.env.NODE_ENV === "development"
-      ? "/conversation"
-      : "/generator/conversation";
+  // Always use unified /conversation endpoint from shared constants
+  const endpoint = API_ROUTES.conversationTextGenerate;
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

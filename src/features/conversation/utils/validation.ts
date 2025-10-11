@@ -12,7 +12,8 @@ export function isValidConversation(data: unknown): data is Conversation {
     conv.turns.length <= 5 &&
     conv.turns.every(isValidTurn) &&
     typeof conv?.generatedAt === "string" &&
-    typeof conv?.generatorVersion === "string"
+    // generatorVersion is optional metadata
+    (typeof conv?.generatorVersion === "string" || typeof conv?.generatorVersion === "undefined")
   );
 }
 

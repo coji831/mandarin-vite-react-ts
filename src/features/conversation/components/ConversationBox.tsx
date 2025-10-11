@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { ConversationTurns, PlaybackControls } from ".";
 import { useAudioPlayback, useConversationGenerator } from "../hooks";
 import { Conversation } from "../types";
 import "./ConversationBox.css";
+import { log } from "console";
 
 export { ConversationBox };
 
@@ -12,16 +13,9 @@ type ConversationBoxProps = {
   word: string;
   onClose?: () => void;
   className?: string;
-  useScaffolder?: boolean; // feature flag
 };
 
-function ConversationBox({
-  wordId,
-  word,
-  onClose,
-  className = "",
-  useScaffolder = true,
-}: ConversationBoxProps) {
+function ConversationBox({ wordId, word, onClose, className = "" }: ConversationBoxProps) {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -47,29 +41,32 @@ function ConversationBox({
 
   useEffect(() => {
     handleGenerateConversation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordId, word]);
 
   const handleGenerateConversation = useCallback(async () => {
+    console.log("Generating conversation for:", wordId, word);
     try {
       clearError();
       const newConversation = await generateConversation({
         wordId,
         word,
         generatorVersion: "v1",
-        useScaffolder,
       });
       setConversation(newConversation);
+      console.log(newConversation);
+
       setIsVisible(true);
     } catch (error) {
       console.error("Failed to generate conversation:", error);
     }
-  }, [wordId, word, generateConversation, clearError, useScaffolder]);
+  }, [wordId, word, generateConversation, clearError]);
 
   const handlePlayAudio = useCallback(async () => {
     if (!conversation) return;
     try {
       await playAudio({
-        conversationId: conversation.id,
+        wordId,
         voice: "cmn-CN-Standard-A",
         bitrate: 128,
       });
