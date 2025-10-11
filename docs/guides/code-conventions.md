@@ -4,6 +4,11 @@
 
 - Use TypeScript for all React code
 - Use functional components and React hooks
+- Prefer named function declarations for components (e.g., `function MyComponent() {}`) over `const MyComponent: React.FC = () => {}`
+- Use `type` for type definitions instead of `interface` unless extending external types
+- Use ES module import/export syntax (`import ... from ...`, `export ...`) for all code
+- Always use explicit type annotations for function parameters, return values, and variables where type inference is not obvious
+- Avoid using `any` type; prefer strict, specific types and leverage TypeScript's type system for safety
 - Keep each feature in its own folder under [../src/features/](../src/features/)
 - Put route constants in [../src/constants/paths.ts](../src/constants/paths.ts)
 - Use React Router for navigation and routing
@@ -23,6 +28,7 @@
 - Components: PascalCase (e.g., `MyComponent.tsx`)
 - Variables/functions: camelCase (e.g., `myFunction`)
 - Folders/files: kebab-case or lower-case (e.g., `my-feature`)
+- Files that export a PascalCase component, type, hook, context, or similar should use PascalCase for the filename (e.g., `MyComponent.tsx`, `MyType.ts`, `MyHook.ts`, `MyContext.tsx`).
 - Tests: match the file/component name with `.test.ts(x)` suffix
 
 ## Project Structure
