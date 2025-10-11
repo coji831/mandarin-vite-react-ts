@@ -12,7 +12,7 @@ export async function generateConversation(params: {
 }): Promise<Conversation> {
   const endpoint =
     params.useScaffolder || process.env.NODE_ENV === "development"
-      ? "/scaffold/conversation"
+      ? "/conversation"
       : "/generator/conversation";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {

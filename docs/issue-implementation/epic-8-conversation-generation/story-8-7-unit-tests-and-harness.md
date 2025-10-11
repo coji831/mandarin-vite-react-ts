@@ -76,7 +76,7 @@ class ConversationHarness {
   async testTextScaffolder() {
     console.log("🧪 Testing text scaffolder endpoint...");
 
-    const response = await fetch(`${this.baseUrl}/api/scaffold/conversation`, {
+    const response = await fetch(`${this.baseUrl}/api/conversation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -106,7 +106,7 @@ class ConversationHarness {
   async testAudioScaffolder() {
     console.log("🎵 Testing audio scaffolder endpoint...");
 
-    const response = await fetch(`${this.baseUrl}/api/scaffold/audio/test-conversation`, {
+    const response = await fetch(`${this.baseUrl}/api/audio/test-conversation`, {
       method: "GET",
     });
 
@@ -168,7 +168,7 @@ class ConversationHarness {
 
     const start = Date.now();
 
-    const response = await fetch(`${this.baseUrl}/api/scaffold/conversation`, {
+    const response = await fetch(`${this.baseUrl}/api/conversation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

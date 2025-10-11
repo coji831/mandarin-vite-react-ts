@@ -45,7 +45,7 @@ This story enables rapid UI development and testing without waiting for the full
 ## User Journey
 
 1. Developer enables conversation scaffolder with `USE_CONVERSATION=true`
-2. Frontend makes request to `/scaffold/conversation?wordId=hello123`
+2. Frontend makes request to `/conversation?wordId=hello123`
 3. Scaffolder returns deterministic conversation JSON immediately
 4. UI renders conversation with consistent test data
 5. Developer can iterate on UI design without external dependencies

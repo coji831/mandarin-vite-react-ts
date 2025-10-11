@@ -1,4 +1,5 @@
 {
+  "conversationId": "hello-v1-abc123",
   "id": "hello-v1-abc123",
   "wordId": "hello",
   "word": "你好",

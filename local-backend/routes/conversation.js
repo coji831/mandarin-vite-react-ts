@@ -77,7 +77,7 @@ async function loadFixture(wordId, generatorVersion = "v1") {
 }
 
 // GET endpoint for simple requests
-router.get("/scaffold/conversation", async (req, res) => {
+router.get("/conversation", async (req, res) => {
   try {
     const { wordId, generatorVersion = "v1" } = req.query;
 
@@ -103,7 +103,7 @@ router.get("/scaffold/conversation", async (req, res) => {
 });
 
 // POST endpoint matching production API
-router.post("/scaffold/conversation", async (req, res) => {
+router.post("/conversation", async (req, res) => {
   try {
     const { wordId, word, generatorVersion = "v1" } = req.body;
 
@@ -141,7 +141,7 @@ router.post("/scaffold/conversation", async (req, res) => {
 });
 
 // Health check endpoint
-router.get("/scaffold/health", (req, res) => {
+router.get("/conversation/health", (req, res) => {
   res.json({
     status: "ok",
     service: "conversation-scaffolder",

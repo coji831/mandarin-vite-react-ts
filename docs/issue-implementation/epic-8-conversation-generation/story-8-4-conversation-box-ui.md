@@ -359,7 +359,7 @@ function useFeatureFlags() {
 
   useEffect(() => {
     // Check if conversation endpoints are available
-    fetch("/api/scaffold/health")
+    fetch("/api/conversation/health")
       .then((res) => res.json())
       .then((data) => setConversationEnabled(data.enabled))
       .catch(() => setConversationEnabled(false));

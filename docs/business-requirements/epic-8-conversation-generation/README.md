@@ -81,7 +81,7 @@ Implementation strategy follows three clear phases to keep work small, reviewabl
 ## Acceptance Criteria
 
 - [ ] Story 8.1 — Conversation schema and `ConversationAudio` schema are designed, documented, and agreed upon. Verification: sample fixture JSON exists and schema validation passes for fixture; fixture conforms to 3–5 turns constraint.
-- [ ] Story 8.2 — Text scaffolder endpoint (local & staging) returns deterministic `Conversation` objects for test words. Verification: GET/POST to `/scaffold/conversation?wordId=` returns JSON matching schema and `turns.length` in [3,5].
+- [ ] Story 8.2 — Text scaffolder endpoint (local & staging) returns deterministic `Conversation` objects for test words. Verification: GET/POST to `/conversation?wordId=` returns JSON matching schema and `turns.length` in [3,5].
 - [ ] Story 8.3 — Scaffolder audio endpoint returns deterministic audio artifacts (URL or base64) usable in harness/headless runs. Verification: endpoint returns HTTP 200 and a playable audio URL that a harness can fetch.
 - [ ] Story 8.4 — Conversation Box UI is implemented and consumes scaffolded data, shows loading/error states, and supports scaffold vs generator mode via feature flag. Verification: Component renders with scaffold fixture and can call play/highlight handlers.
 - [ ] Story 8.5 — Generator endpoint integrates with cache and returns text conversations with `generatedAt` and `generatorVersion` metadata. Verification: calling generator twice with same input yields cached response on second call and identical `id`.

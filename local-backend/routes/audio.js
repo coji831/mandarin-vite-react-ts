@@ -88,7 +88,7 @@ async function getAudioMetadata(conversationId, format = "url") {
   return metadata;
 }
 
-router.get("/scaffold/audio/:conversationId", async (req, res) => {
+router.get("/audio/:conversationId", async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { voice = "cmn-CN-Standard-A", bitrate = 128, format = "url" } = req.query;
@@ -107,7 +107,7 @@ router.get("/scaffold/audio/:conversationId", async (req, res) => {
   }
 });
 
-router.post("/scaffold/audio/request", async (req, res) => {
+router.post("/audio/request", async (req, res) => {
   try {
     const { conversationId, voice = "cmn-CN-Standard-A", bitrate = 128, format = "url" } = req.body;
     if (!conversationId) {
@@ -128,7 +128,7 @@ router.post("/scaffold/audio/request", async (req, res) => {
   }
 });
 
-router.get("/scaffold/audio/validate/:filename", async (req, res) => {
+router.get("/audio/validate/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
     const audioPath = path.join(AUDIO_FIXTURES_PATH, filename);

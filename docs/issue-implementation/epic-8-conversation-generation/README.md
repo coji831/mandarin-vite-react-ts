@@ -64,7 +64,7 @@
 
 ```
 POST /api/generator/conversation
-GET /scaffold/conversation?wordId={id}  // Development only
+GET /conversation?wordId={id}  // Development only
 ```
 
 **Parameters:**
@@ -96,7 +96,7 @@ GET /scaffold/conversation?wordId={id}  // Development only
 
 ```
 POST /api/audio/request
-GET /scaffold/audio/{conversationId}  // Development only
+GET /audio/{conversationId}  // Development only
 ```
 
 **Parameters:**

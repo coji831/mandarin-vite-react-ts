@@ -9,8 +9,7 @@ export async function requestAudio(params: {
   voice?: string;
   bitrate?: number;
 }): Promise<ConversationAudio> {
-  const endpoint =
-    process.env.NODE_ENV === "development" ? "/scaffold/audio/request" : "/audio/request";
+  const endpoint = process.env.NODE_ENV === "development" ? "/audio/request" : "/audio/request";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",

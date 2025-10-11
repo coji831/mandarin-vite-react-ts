@@ -88,7 +88,7 @@ async function getAudioMetadata(conversationId) {
 }
 
 // GET endpoint for simple audio requests
-router.get("/scaffold/audio/:conversationId", async (req, res) => {
+router.get("/audio/:conversationId", async (req, res) => {
   try {
     const { conversationId } = req.params;
     const { voice = "cmn-CN-Standard-A", bitrate = 128 } = req.query;
@@ -122,7 +122,7 @@ router.get("/scaffold/audio/:conversationId", async (req, res) => {
 });
 
 // POST endpoint matching production TTS API
-router.post("/scaffold/audio/request", async (req, res) => {
+router.post("/audio/request", async (req, res) => {
   try {
     const { conversationId, voice = "cmn-CN-Standard-A", bitrate = 128 } = req.body;
 
@@ -154,7 +154,7 @@ router.post("/scaffold/audio/request", async (req, res) => {
 });
 
 // Endpoint to validate audio file accessibility
-router.get("/scaffold/audio/validate/:filename", async (req, res) => {
+router.get("/audio/validate/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
     const audioPath = path.join(AUDIO_FIXTURES_PATH, filename);
@@ -207,8 +207,7 @@ export async function requestAudio(params: {
   voice?: string;
   bitrate?: number;
 }): Promise<ConversationAudio> {
-  const endpoint =
-    process.env.NODE_ENV === "development" ? "/scaffold/audio/request" : "/audio/request";
+  const endpoint = process.env.NODE_ENV === "development" ? "/audio/request" : "/audio/request";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",
