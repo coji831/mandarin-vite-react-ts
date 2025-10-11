@@ -1,6 +1,6 @@
 // src/features/conversation/services/conversationApi.ts
 
-import { Conversation } from "../types/conversation";
+import { Conversation } from "../types";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
 
@@ -8,9 +8,12 @@ export async function generateConversation(params: {
   wordId: string;
   word?: string;
   generatorVersion?: string;
+  useScaffolder?: boolean;
 }): Promise<Conversation> {
   const endpoint =
-    process.env.NODE_ENV === "development" ? "/scaffold/conversation" : "/generator/conversation";
+    params.useScaffolder || process.env.NODE_ENV === "development"
+      ? "/scaffold/conversation"
+      : "/generator/conversation";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",

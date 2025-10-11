@@ -35,9 +35,12 @@ async function getAudioMetadata(conversationId, format = "url") {
     return audioMetadataCache.get(conversationId);
   }
 
-  const wordId = conversationId.split("-")[0];
-  const audioFileName = `${wordId}-basic.mp3`;
-  const timelineKey = `${wordId}-basic`;
+  // Force always use hello-basic.mp3 and timeline
+  // const wordId = conversationId.split("-")[0];
+  // const audioFileName = `${wordId}-basic.mp3`;
+  // const timelineKey = `${wordId}-basic`;
+  const audioFileName = `hello-basic.mp3`;
+  const timelineKey = `hello-basic`;
 
   const audioPath = path.join(AUDIO_FIXTURES_PATH, audioFileName);
   let audioUrl, durationSeconds, timeline, base64Audio;

@@ -1,6 +1,6 @@
 // src/features/conversation/services/audioApi.ts
 
-import { ConversationAudio } from "../types/conversation";
+import { ConversationAudio } from "../types";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
 

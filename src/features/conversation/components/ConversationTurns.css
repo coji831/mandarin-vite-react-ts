@@ -1,0 +1,61 @@
+.conversation-turns {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.conversation-turn {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  transition: background 0.2s, border 0.2s;
+}
+
+.conversation-turn.current {
+  border-left: 4px solid #646cff;
+  background: rgba(100, 108, 255, 0.08);
+}
+
+.conversation-turn.played {
+  background: rgba(100, 108, 255, 0.04);
+}
+
+.conversation-turn__speaker {
+  display: inline-block;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #32335a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 6px;
+}
+
+.conversation-turn__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.conversation-turn__text {
+  font-size: 18px;
+  color: #e2e3f7;
+  font-weight: 500;
+  margin: 0;
+}
+
+.conversation-turn__translation {
+  font-size: 15px;
+  color: #b3b6d4;
+  font-style: italic;
+  margin: 0;
+}

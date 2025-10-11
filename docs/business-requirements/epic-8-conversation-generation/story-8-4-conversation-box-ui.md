@@ -38,10 +38,10 @@ This story delivers the core user-facing feature that provides contextual conver
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: #[PR-NUMBER]
-- **Merge Date**: [Date]
-- **Key Commit**: [commit-hash] ([Brief commit description])
+- **Status**: Completed
+- **PR**: [See repo history]
+- **Merge Date**: 2025-10-11
+- **Key Commit**: [All AC fulfilled, UI/UX finalized]
 
 ## User Journey
 

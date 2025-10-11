@@ -1,0 +1,73 @@
+.conversation-box {
+  background: #23243a;
+  border-radius: 12px;
+}
+
+.conversation-box__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.conversation-box__close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+.conversation-box__content {
+  padding: 12px;
+  color: #e2e3f7;
+}
+
+.conversation-box__error button,
+.conversation-box__loading button {
+  background: #646cff;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  padding: 6px 16px;
+  margin-top: 8px;
+}
+
+.conversation-box__tts-fallback {
+  color: #646cff;
+  margin-top: 10px;
+}
+
+.conversation-box__controls {
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .conversation-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: white;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .conversation-box__header {
+    border-radius: 0;
+  }
+  .conversation-turns {
+    padding: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .playback-controls {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid #eee;
+    padding: 1rem;
+  }
+}

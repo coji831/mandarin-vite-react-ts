@@ -6,9 +6,24 @@
 import dotenv from "dotenv";
 import express, { json } from "express";
 dotenv.config({ path: ".env.local" });
+
 const app = express();
 const PORT = 3001;
 app.use(json());
+
+// CORS middleware for all API routes
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 const useScaffolder = process.env.USE_CONVERSATION === "true";
 import path from "path";
