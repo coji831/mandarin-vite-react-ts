@@ -12,14 +12,14 @@ This story replaces the scaffolder with real AI-generated conversations, providi
 
 ## Acceptance Criteria
 
-- [ ] Generator endpoint computes `promptHash` for cache key generation
-- [ ] Cache lookup checks GCS for existing conversations using `generatorVersion` and `promptHash`
-- [ ] New conversations are generated when cache miss occurs
-- [ ] Generated conversations are stored in GCS under `convo/{wordId}/{generatorVersion}/{promptHash}.json`
-- [ ] Response includes `generatedAt` timestamp and unique `id` field
-- [ ] Calling generator twice with same input returns cached response with identical `id`
-- [ ] Generator supports single-word prompts and produces 3-5 turn conversations
-- [ ] Error handling covers AI service failures and cache write failures
+- [x] Generator endpoint computes `promptHash` for cache key generation
+- [x] Cache lookup checks GCS for existing conversations using `generatorVersion` and `promptHash`
+- [x] New conversations are generated when cache miss occurs
+- [x] Generated conversations are stored in GCS under `convo/{wordId}/{generatorVersion}/{promptHash}.json`
+- [x] Response includes `generatedAt` timestamp and unique `id` field
+- [x] Calling generator twice with same input returns cached response with identical `id`
+- [x] Generator supports single-word prompts and produces 3-5 turn conversations
+- [x] Error handling covers AI service failures and cache write failures
 
 ## Business Rules
 
@@ -38,10 +38,10 @@ This story replaces the scaffolder with real AI-generated conversations, providi
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
-- **Key Commit**: [commit-hash] ([Brief commit description])
+- **Key Commit**: [pending-commit] (Story 8.5 backend: generator endpoint, GCS cache integration, and error handling)
 
 ## User Journey
 
