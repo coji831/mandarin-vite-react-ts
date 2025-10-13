@@ -122,7 +122,9 @@ router.get("/audio/:conversationId", async (req, res) => {
 });
 
 // POST endpoint matching production TTS API
-router.post("/audio/request", async (req, res) => {
+// Current implementation exposes the audio generate endpoint at:
+// POST /api/conversation/audio/generate (router path: /conversation/audio/generate)
+router.post("/conversation/audio/generate", async (req, res) => {
   try {
     const { conversationId, voice = "cmn-CN-Standard-A", bitrate = 128 } = req.body;
 
@@ -207,7 +209,8 @@ export async function requestAudio(params: {
   voice?: string;
   bitrate?: number;
 }): Promise<ConversationAudio> {
-  const endpoint = process.env.NODE_ENV === "development" ? "/audio/request" : "/audio/request";
+  // Frontend uses /api/conversation/audio/generate for both dev and prod in the current codebase
+  const endpoint = "/conversation/audio/generate";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",

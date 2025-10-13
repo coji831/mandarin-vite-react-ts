@@ -63,7 +63,7 @@
 **Text Generation:**
 
 ```
-POST /api/generator/conversation
+POST /api/conversation/text/generate
 GET /conversation?wordId={id}  // Development only
 ```
 
@@ -88,14 +88,17 @@ GET /conversation?wordId={id}  // Development only
   }>;
   generatedAt: string;  // ISO timestamp
   generatorVersion: string;
+  ### API Endpoints (current implementation)
+
+  **Text Generation:**
+
+  ```
+  POST /api/conversation/text/generate
+  ```
   promptHash?: string;
 }
 ```
-
-**Audio Generation:**
-
-```
-POST /api/audio/request
+POST /api/conversation/audio/generate
 GET /audio/{conversationId}  // Development only
 ```
 
@@ -112,8 +115,8 @@ GET /audio/{conversationId}  // Development only
   audioUrl: string;
   conversationId: string;
   timeline?: Array<{
-    mark: string;
-    timeSeconds: number;
+   `generatorVersion`: string (optional) - (Note: current implementation does not include generatorVersion in cache key by default)
+   `prompt`: string (optional) - Custom generation prompt
   }>;
   durationSeconds?: number;
   generatedAt: string;
@@ -121,14 +124,27 @@ GET /audio/{conversationId}  // Development only
 }
 ```
 
+  **Audio Generation:**
+
+  ```
+  POST /api/conversation/audio/generate
+  GET /audio/{conversationId}  // Development only (proxy served by local-backend)
+  ```
 ### Component Relationships
 
-```
-ConversationBox
-├── useConversationGenerator() // Custom hook for text generation
-├── useAudioPlayback()         // Custom hook for audio control
+  ### File Structure (actual)
+
+  local-backend/utils/
+  ├── conversationGenerator.js
+  ├── conversationProcessor.js
+  ├── conversationCache.js
+  └── scaffoldUtils.js
+
+  local-backend/routes/
+  └── conversation.js           // Unified conversation routes (text + audio)
 └── ConversationTurns          // Turn-by-turn display component
     ├── SpeakerLabel
+  **AI Services:** Google Gemini (Generative Language API) for conversation generation (current implementation). The code authenticates using a service account JWT.
     ├── DialogueText
     └── PlaybackHighlight      // Synchronized highlighting during audio
 ```
@@ -137,32 +153,20 @@ ConversationBox
 
 1. **Text Generation Flow:**
 
+  1. **Text Generation Flow:**
+
+     ```
+     User Request → Cache Check (GCS: convo/${wordId}/${hash}.json) → [Cache Hit: Return] → [Cache Miss: Generate via Gemini] → Store → Return
+     ```
    ```
    User Request → Cache Check → [Cache Hit: Return] → [Cache Miss: Generate] → Store → Return
    ```
-
-2. **Audio Generation Flow:**
-
-   ```
-   Audio Request → Cache Check → [Cache Hit: Return URL] → [Cache Miss: TTS Generate] → Atomic Write → Return URL
-   ```
-
-3. **Development Flow (Scaffolded):**
    ```
    Request → Fixture Lookup → Return Deterministic Data
    ```
-
-### File Structure
-
-```
-src/features/conversation/
 ├── components/
 │   ├── ConversationBox.tsx
 │   ├── ConversationTurns.tsx
-│   ├── SpeakerLabel.tsx
-│   └── PlaybackControls.tsx
-├── hooks/
-│   ├── useConversationGenerator.ts
 │   ├── useAudioPlayback.ts
 │   └── useConversationCache.ts
 ├── services/
@@ -196,7 +200,7 @@ scripts/
 
 - **Frontend:** React, TypeScript, custom hooks for state management
 - **Backend:** Express.js for local development, Node.js for production
-- **AI Services:** OpenAI/Claude API for conversation generation
+- **AI Services:** Google Gemini (Generative Language API) for conversation generation (current implementation)
 - **TTS:** Google Cloud Text-to-Speech API
 - **Caching:** Google Cloud Storage with lifecycle policies
 - **Infrastructure:** Terraform for IaC, Google Cloud Platform

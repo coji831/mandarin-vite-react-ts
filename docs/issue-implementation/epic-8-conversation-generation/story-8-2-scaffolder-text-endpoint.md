@@ -164,8 +164,8 @@ export async function generateConversation(params: {
   word?: string;
   generatorVersion?: string;
 }): Promise<Conversation> {
-  const endpoint =
-    process.env.NODE_ENV === "development" ? "/conversation" : "/generator/conversation";
+  // Current frontend uses /api/conversation/text/generate for both development and production
+  const endpoint = "/conversation/text/generate";
 
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",

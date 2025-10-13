@@ -15,6 +15,7 @@ Defines canonical TypeScript schemas for `Conversation` and `ConversationAudio` 
 - `generatedAt`: ISO 8601 timestamp
 - `generatorVersion`: Version for cache invalidation
 - `hash`: Hash of generation prompt
+Note: Current implementation uses a deterministic id format `${wordId}-${hash}` where `hash` is a SHA256 of the `wordId`. `generatorVersion` is optional metadata and is not included in the cache key by default. If you change prompts or want version-aware invalidation, update the cache key strategy to include `generatorVersion` and a prompt fingerprint.
 
 ### ConversationTurn
 

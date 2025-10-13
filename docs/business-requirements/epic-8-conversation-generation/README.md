@@ -172,11 +172,30 @@ type ConversationAudio = {
 ### API examples
 
 Generator (text):
-POST /api/generator/conversation
-Request: `{ "wordId": "w123", "word": "你好", "prompt": "generate a 3-line conversation using the word", "generatorVersion": "v1" }`
-Response: `{ "id": "w123-v1-abc123", "wordId": "w123", "word": "你好", "turns": [...], "generatedAt": "2025-10-09T12:00:00Z", "generatorVersion": "v1", "promptHash": "..." }`
+POST /api/conversation/text/generate
+Request: `{ "wordId": "w123", "word": "你好" }`
+Response: `{ "id": "w123-<hash>", "wordId": "w123", "word": "你好", "turns": [...], "generatedAt": "2025-10-09T12:00:00Z" }`
 
 Audio (on-demand):
-POST /api/audio/request  
-Request: `{ "conversationId": "w123-v1-abc123", "voice": "cmn-CN-Standard-A", "bitrate": 128 }`
-Response: `{ "audioUrl": "https://.../audio/w123-v1-abc123/cmn-CN-Standard-A/128.mp3", "conversationId": "w123-v1-abc123", "timeline": [...] }`
+POST /api/conversation/audio/generate
+Request: `{ "wordId": "w123", "voice": "cmn-CN-Standard-A", "bitrate": 128 }`
+Response: `{ "audioUrl": "https://storage.googleapis.com/<bucket>/convo/w123/<hash>.mp3", "conversationId": "w123-<hash>", "timeline": [...] }`
+
+Notes:
+
+- Current generator implementation uses Google Gemini (Generative Language API) for text generation (JWT-based service account authentication).
+- Current cache key strategy in the code uses a deterministic SHA256 hash of the `wordId` and stores text under `convo/${wordId}/${hash}.json`. If you want version-aware invalidation (generatorVersion+promptHash), see the implementation plan in the issue docs and update `local-backend/utils/hashUtils.js`.
+- File locations in the repository:
+  - Text generation: `local-backend/utils/conversationGenerator.js`
+  - Conversation processing and audio orchestration: `local-backend/utils/conversationProcessor.js`
+  - Cache utilities: `local-backend/utils/conversationCache.js`
+  - Express routes: `local-backend/routes/conversation.js`
+
+Environment variables used by current implementation:
+
+- `CONVERSATION_MODE` - `scaffold` or `real` (controls local-backend behavior)
+- `GCS_BUCKET_NAME` - Google Cloud Storage bucket used for cache
+- `GEMINI_API_CREDENTIALS_RAW` - service account JSON used for Gemini (and GCS) operations
+- `GOOGLE_TTS_CREDENTIALS_RAW` - service account JSON used for Google Text-to-Speech client (used by `conversationProcessor`)
+
+If you prefer the original docs' version-aware cache keys (generatorVersion + promptHash), we can update code to compute a prompt fingerprint and include generatorVersion in the cache key (recommended for controlled invalidation).

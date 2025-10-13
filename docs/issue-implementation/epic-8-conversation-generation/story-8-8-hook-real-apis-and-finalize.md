@@ -103,8 +103,8 @@ services:
       - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
       - CONVERSATION_CACHE_BUCKET=${CONVERSATION_CACHE_BUCKET}
       - AUDIO_CACHE_BUCKET=${AUDIO_CACHE_BUCKET}
-      - AI_PROVIDER=openai
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+  - GEMINI_API_CREDENTIALS_RAW=<base64-encoded-service-account-json>
+  - GOOGLE_TTS_CREDENTIALS_RAW=<base64-encoded-service-account-json>
     volumes:
       - /var/secrets/gcp-key.json:/app/credentials/gcp-key.json:ro
     healthcheck:
@@ -220,7 +220,7 @@ metadata:
   name: conversation-secrets
 type: Opaque
 data:
-  openai-api-key: <base64-encoded-key>
+  gemini-credentials: <base64-encoded-service-account-json>
   gcp-service-account: <base64-encoded-json>
 ````
 

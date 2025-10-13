@@ -5,7 +5,7 @@
 - Real AI-powered conversation generation replacing scaffolder
 - GCS-based caching system with deterministic cache keys
 - Prompt hash computation for cache invalidation
-- Integration with OpenAI/Claude API for conversation generation
+- Integration with Google Gemini (Generative Language API) for conversation generation (current implementation)
 - Cache hit/miss logic with atomic write operations
 
 ## Implementation Details
@@ -27,7 +27,7 @@ interface GenerationParams {
 export class ConversationGenerator {
   private storage: Storage;
   private bucketName: string;
-  private aiClient: any; // OpenAI or Claude client
+  private aiClient: any; // Gemini JWT-based client in current implementation
 
   constructor() {
     this.storage = new Storage({
@@ -39,14 +39,9 @@ export class ConversationGenerator {
   }
 
   private initializeAIClient() {
-    // Initialize OpenAI or Claude client based on configuration
-    if (process.env.AI_PROVIDER === "openai") {
-      return new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-      });
-    }
-    // Add other providers as needed
-    throw new Error("No AI provider configured");
+    // Current implementation uses Gemini via service account JWT (see local-backend/utils/conversationGenerator.js)
+    // Example: initialize google-auth-library JWT and call the Generative Language endpoint
+    // Additional providers may be supported in future, but docs reflect the current Gemini-based implementation.
   }
 
   public async generateConversation(params: GenerationParams): Promise<Conversation> {
@@ -250,7 +245,8 @@ const router = express.Router();
 
 const generator = new ConversationGenerator();
 
-router.post("/generator/conversation", async (req, res) => {
+// Route used in current codebase (see shared constants and local-backend routes)
+router.post("/conversation/text/generate", async (req, res) => {
   try {
     const { wordId, word, meaning, generatorVersion = "v1", customPrompt } = req.body;
 
