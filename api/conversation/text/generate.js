@@ -74,10 +74,13 @@ async function cacheConversationText(wordId, hash, convo) {
 
   try {
     await file.save(JSON.stringify(convo), { contentType: "application/json" });
-    console.log(`[TextGenerate] Stored conversation in cache: ${wordId}/${hash}`);
+    console.log(`[TextGenerate] Successfully stored conversation in cache: ${wordId}/${hash}`);
     return true;
   } catch (err) {
     console.error("[TextGenerate] GCS cache store error:", err.message);
+    if (err.code === 403) {
+      console.error("[TextGenerate] Permission denied - check Storage Object Creator role");
+    }
     return false;
   }
 }
@@ -240,10 +243,8 @@ export default async function handler(req, res) {
     conversation.id = `${wordId}-${hash}`;
     conversation.word = word || wordId;
 
-    // Cache the result (fire and forget)
-    cacheConversationText(wordId, hash, conversation).catch((err) => {
-      console.error("[TextGenerate] Cache store failed:", err.message);
-    });
+    // Cache the result
+    await cacheConversationText(wordId, hash, conversation);
 
     return res.json({
       ...conversation,

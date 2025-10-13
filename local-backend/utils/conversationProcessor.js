@@ -53,7 +53,7 @@ export async function handleGetRealText(wordId, word) {
   conversation = await generateConversationText(wordId, conversationPrompt, "v1");
   conversation.generatedAt = new Date().toISOString();
   conversation.id = `${wordId}-${hash}`;
-  conversation.word = wordId;
+  conversation.word = word || wordId;
 
   await cacheConversationText(wordId, hash, conversation);
   return conversation;

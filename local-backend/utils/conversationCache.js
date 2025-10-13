@@ -64,7 +64,7 @@ export async function cacheConversationText(wordId, hash, convo) {
   try {
     await file.save(conversation, { contentType: "application/json" });
 
-    console.log(`[TextCache] Stored conversation in cache: ${wordId}/${hash}`);
+    console.log(`[TextCache] Successfully stored conversation in cache: ${wordId}/${hash}`);
     return true;
   } catch (err) {
     console.error("[TextCache] GCS cache store error:", err.message);
