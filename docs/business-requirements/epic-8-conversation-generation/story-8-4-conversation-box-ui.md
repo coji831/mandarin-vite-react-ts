@@ -52,3 +52,10 @@ This story delivers the core user-facing feature that provides contextual conver
 5. Learner optionally clicks play button to hear conversation audio
 6. Audio plays with turn-by-turn highlighting for better comprehension
 7. Learner gains contextual understanding of vocabulary word usage
+
+## Notes / Current-Code Mapping
+
+- Generator hook: `useConversationGenerator` calls `POST ${"/api/conversation/text/generate"}` via `API_ROUTES.conversationTextGenerate`. It accepts `{ wordId, word?, generatorVersion? }` and returns a `Conversation` object.
+- Audio hook: `useAudioPlayback` calls `POST ${"/api/conversation/audio/generate"}` via `requestAudio` (service `audioApi.ts`). In the current implementation the audio request uses `{ wordId, voice?, bitrate? }` and the scaffolder returns `audioUrl` and `timeline` metadata; the hook will construct a dev URL for `localhost:3001` when needed.
+- Component wiring: `ConversationBox` calls `generateConversation` on mount or word change and uses `playAudio({ wordId, voice, bitrate })`. If audio generation fails the component falls back to browser SpeechSynthesis with `zh-CN` locale.
+- Feature flag health check: the frontend detects scaffold mode by calling `GET /api/conversation/health` and examining `data.mode === 'scaffold'` in the response.

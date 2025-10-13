@@ -4,9 +4,9 @@
 
 Provides a local Express server for TTS (Text-to-Speech) requests, with Google Cloud Storage caching.
 
-## Key Features
+- ## Key Features
 
-- Loads credentials and config from `.env.local`
+- Loads credentials and config from `.env` (or use `GOOGLE_APPLICATION_CREDENTIALS` path). Prefer `GOOGLE_TTS_CREDENTIALS_RAW` (stringified service account JSON) for parity with Vercel.
 - Uses Google Cloud Text-to-Speech and Storage
 - Caches generated audio in GCS using MD5 hash of text
 - Returns public URL for cached or newly generated audio

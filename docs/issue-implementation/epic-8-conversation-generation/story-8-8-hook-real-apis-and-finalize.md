@@ -99,16 +99,15 @@ services:
     build: .
     environment:
       - NODE_ENV=production
-      - USE_CONVERSATION=true
+      - CONVERSATION_MODE=real
       - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
-      - CONVERSATION_CACHE_BUCKET=${CONVERSATION_CACHE_BUCKET}
-      - AUDIO_CACHE_BUCKET=${AUDIO_CACHE_BUCKET}
-  - GEMINI_API_CREDENTIALS_RAW=<base64-encoded-service-account-json>
-  - GOOGLE_TTS_CREDENTIALS_RAW=<base64-encoded-service-account-json>
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+      - GEMINI_API_CREDENTIALS_RAW=${GEMINI_API_CREDENTIALS_RAW}
+      - GOOGLE_TTS_CREDENTIALS_RAW=${GOOGLE_TTS_CREDENTIALS_RAW}
     volumes:
       - /var/secrets/gcp-key.json:/app/credentials/gcp-key.json:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/conversation/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -265,3 +264,8 @@ kubectl patch service conversation-service -p '{"spec":{"selector":{"version":"v
 - Cost monitoring simulation and alerting tests
 - Security configuration validation
 - Disaster recovery procedure testing
+
+## Deployment notes
+
+- Terraform in this doc provisions two GCS buckets: one for conversation cache and one for audio cache (`google_storage_bucket.conversation_cache` and `google_storage_bucket.audio_cache`). The running application expects the environment variable `GCS_BUCKET_NAME` to point to the bucket used for conversation cache (text artifacts). If you prefer to use separate buckets for audio, either set and consume an additional `AUDIO_CACHE_BUCKET` env var in your deployment or consolidate audio under the same bucket and use the `convo/${wordId}/${hash}.mp3` path.
+- See `docs/issue-implementation/epic-8-conversation-generation/runtime-notes.md` for canonical id formats, cache paths, and canonical endpoints used by the codebase.

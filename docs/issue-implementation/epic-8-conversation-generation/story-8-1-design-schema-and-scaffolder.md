@@ -13,7 +13,7 @@
 ```typescript
 // src/features/conversation/types/conversation.types.ts
 export interface Conversation {
-  id: string; // Format: ${wordId}-${generatorVersion}-${shortHash}
+  id: string; // Note: runtime sets this to `${wordId}-${hash}` (short deterministic hash derived from wordId)
   wordId: string;
   word: string;
   meaning?: string;
@@ -105,6 +105,8 @@ export function isValidTurn(turn: unknown): turn is ConversationTurn {
 }
 ```
 
+> Note (runtime): the running local-backend and Vercel handlers set `conversation.id` to a short runtime id in the form `${wordId}-${hash}` where `hash` is a deterministic short hash currently derived from `wordId`. The cache paths used by the code are `convo/${wordId}/${hash}.json` for text and `convo/${wordId}/${hash}.mp3` for audio when `GCS_BUCKET_NAME` is configured.
+
 ## Architecture Integration
 
 ```
@@ -147,7 +149,9 @@ export function generateConversationId(
   generatorVersion: string,
   promptHash: string
 ): string {
-  return `${wordId}-${generatorVersion}-${promptHash.substring(0, 8)}`;
+  // Runtime currently uses a short hash derived from wordId for deterministic scaffold fixtures.
+  // If migrating to version-aware keys, you could use: `${wordId}-${generatorVersion}-${promptHash.substring(0, 8)}`
+  return `${wordId}-${shortHash(wordId)}`;
 }
 
 export function generatePromptHash(prompt: string, word: string): string {

@@ -17,9 +17,10 @@ const path = require("path");
 const fs = require("fs").promises;
 const router = express.Router();
 
-const CONVERSATION_ENABLED = process.env.USE_CONVERSATION === "true";
+// Scaffold mode is controlled by CONVERSATION_MODE set to "scaffold"
+const CONVERSATION_MODE = process.env.CONVERSATION_MODE || "real";
 
-if (!CONVERSATION_ENABLED) {
+if (CONVERSATION_MODE !== "scaffold") {
   module.exports = router;
   return;
 }

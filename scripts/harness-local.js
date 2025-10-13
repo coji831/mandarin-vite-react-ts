@@ -19,9 +19,9 @@ function assert(condition, message) {
 }
 
 async function startBackend() {
-  // Start local-backend with USE_CONVERSATION=true
+  // Start local-backend with CONVERSATION_MODE=scaffold
   return spawn("node", ["local-backend/server.js"], {
-    env: { ...process.env, USE_CONVERSATION: "true" },
+    env: { ...process.env, CONVERSATION_MODE: "scaffold" },
     stdio: "inherit",
   });
 }
@@ -32,7 +32,8 @@ async function waitForBackend() {
       const res = await fetch(`${BASE_URL}/conversation/health`);
       if (res.ok) {
         const data = await res.json();
-        if (data.enabled) return;
+        // healthcheck returns the configured mode; accept 'scaffold' as enabled
+        if (data.mode === "scaffold" || data.mode === "scaffold") return;
       }
     } catch {}
     await new Promise((r) => setTimeout(r, 1000));
@@ -51,13 +52,17 @@ async function validateFixtures() {
         data.turns.length >= 3 && data.turns.length <= 5,
         `Fixture ${file} has invalid turn count`
       );
-      assert(typeof data.conversationId === "string", `Fixture ${file} missing conversationId`);
+      // Fixture may use `id` or `conversationId` depending on source
+      assert(
+        typeof data.id === "string" || typeof data.conversationId === "string",
+        `Fixture ${file} missing id or conversationId`
+      );
       assert(typeof data.generatedAt === "string", `Fixture ${file} missing generatedAt`);
     } else if (Array.isArray(data.timeline)) {
       // Audio fixture
       assert(
-        typeof data.conversationId === "string",
-        `Audio fixture ${file} missing conversationId`
+        typeof data.conversationId === "string" || typeof data.id === "string",
+        `Audio fixture ${file} missing conversationId or id`
       );
       assert(typeof data.audioUrl === "string", `Audio fixture ${file} missing audioUrl`);
       assert(typeof data.generatedAt === "string", `Audio fixture ${file} missing generatedAt`);
@@ -74,7 +79,12 @@ async function validateFixtures() {
 }
 
 async function testConversationEndpoint() {
-  const res = await fetch(`${BASE_URL}/conversation?wordId=test`);
+  // Use POST /conversation/text/generate to match runtime router mounted under /api
+  const res = await fetch(`${BASE_URL}/conversation/text/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ wordId: "test", word: "测试", generatorVersion: "v1" }),
+  });
   assert(res.ok, "Conversation endpoint failed");
   const data = await res.json();
   assert(Array.isArray(data.turns), "Conversation response missing turns");
@@ -86,17 +96,25 @@ async function testConversationEndpoint() {
 }
 
 async function testAudioEndpoint() {
-  const res = await fetch(`${BASE_URL}/get-tts-audio`, {
+  // Request audio generation via POST /conversation/audio/generate
+  const res = await fetch(`${BASE_URL}/conversation/audio/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: "你好" }),
+    body: JSON.stringify({ wordId: "test", voice: "cmn-CN-Standard-A", bitrate: 128 }),
   });
   assert(res.ok, "Audio endpoint failed");
   const data = await res.json();
   assert(
-    typeof data.audioUrl === "string" && data.audioUrl.startsWith("http"),
+    typeof data.audioUrl === "string" &&
+      (data.audioUrl.startsWith("http") || data.audioUrl.startsWith("/")),
     "Audio endpoint returned invalid URL"
   );
+  // If audioUrl is relative, convert to absolute for validation
+  const audioUrl = data.audioUrl.startsWith("/")
+    ? `http://localhost:${BACKEND_PORT}${data.audioUrl}`
+    : data.audioUrl;
+  const audioResponse = await fetch(audioUrl);
+  assert(audioResponse.ok, `Audio file not accessible: ${audioUrl}`);
   console.log("Audio endpoint passed");
 }
 

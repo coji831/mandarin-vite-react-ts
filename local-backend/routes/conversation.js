@@ -12,6 +12,15 @@ const router = express.Router();
 // Environment configuration
 const CONVERSATION_MODE = process.env.CONVERSATION_MODE;
 
+// Health endpoint for harness / CI checks
+router.get("/conversation/health", (req, res) => {
+  res.json({
+    mode: CONVERSATION_MODE || "scaffold",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 // New POST endpoints for conversation text generation
 // POST /conversation/text/generate - primary generation endpoint
 router.post(ROUTE_PATTERNS.conversationTextGenerate, async (req, res) => {

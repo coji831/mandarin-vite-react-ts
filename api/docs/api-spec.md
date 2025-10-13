@@ -15,3 +15,10 @@ Serverless function for converting text to speech.
 
 - `GOOGLE_TTS_CREDENTIALS_RAW`: Google service account JSON (required)
 - `GCS_BUCKET_NAME`: Google Cloud Storage bucket for caching (required)
+
+Recommended environment variables:
+
+- `GOOGLE_TTS_CREDENTIALS_RAW` (recommended): stringified Google service account JSON used by serverless functions
+- `GCS_BUCKET_NAME` (required for caching): Google Cloud Storage bucket name for audio caching
+
+Optional local fallback: `GOOGLE_APPLICATION_CREDENTIALS` pointing to a service account JSON file path

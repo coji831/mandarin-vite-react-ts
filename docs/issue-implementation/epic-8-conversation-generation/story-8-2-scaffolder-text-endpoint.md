@@ -17,11 +17,11 @@ const path = require("path");
 const fs = require("fs").promises;
 const router = express.Router();
 
-// Environment gate - only active when explicitly enabled
-const CONVERSATION_ENABLED = process.env.USE_CONVERSATION === "true";
+// Environment gate - scaffold mode controlled by CONVERSATION_MODE
+const CONVERSATION_MODE = process.env.CONVERSATION_MODE || "real";
 
-if (!CONVERSATION_ENABLED) {
-  console.log("Conversation scaffolder disabled. Set USE_CONVERSATION=true to enable.");
+if (CONVERSATION_MODE !== "scaffold") {
+  console.log('Conversation scaffolder disabled. Set CONVERSATION_MODE="scaffold" to enable.');
   module.exports = router;
   return;
 }
@@ -54,7 +54,8 @@ async function loadFixture(wordId) {
     // Customize fixture for requested word
     const customized = {
       ...fixture,
-      id: `${wordId}-v1-scaffold`,
+      // Runtime scaffolder generates ids in the form `${wordId}-${shortHash(wordId)}`
+      id: `${wordId}-${shortHash(wordId)}`,
       wordId: wordId,
       word: wordId, // In real implementation, would lookup actual word
       generatedAt: new Date().toISOString(),
@@ -67,7 +68,8 @@ async function loadFixture(wordId) {
   }
 }
 
-// GET endpoint for simple requests
+// GET endpoint for simple requests (development only)
+// Note: the runtime router is mounted under `/api` and production uses `POST /api/conversation/text/generate`.
 router.get("/conversation", async (req, res) => {
   try {
     const { wordId } = req.query;
@@ -93,8 +95,11 @@ router.get("/conversation", async (req, res) => {
   }
 });
 
-// POST endpoint matching production API
-router.post("/conversation", async (req, res) => {
+// POST endpoint matching production API (mounted under `/api` at runtime)
+// In the real code this uses the shared route constant: `router.post(ROUTE_PATTERNS.conversationTextGenerate, ...)`
+// which is mounted under `/api` so the runtime path is `POST /api/conversation/text/generate`.
+// Note: some local dev setups also expose a convenience GET `/conversation?wordId=`; prefer POST in docs and code examples.
+router.post("/conversation/text/generate", async (req, res) => {
   try {
     const { wordId, word, generatorVersion = "v1" } = req.body;
 
@@ -127,10 +132,11 @@ router.post("/conversation", async (req, res) => {
 
 // Health check endpoint
 router.get("/conversation/health", (req, res) => {
+  // The actual healthcheck implementation returns the configured mode
   res.json({
     status: "ok",
     service: "conversation-scaffolder",
-    enabled: CONVERSATION_ENABLED,
+    mode: process.env.CONVERSATION_MODE || "real",
     timestamp: new Date().toISOString(),
   });
 });
@@ -148,8 +154,8 @@ const conversationRoutes = require("./routes/conversation");
 app.use("/api", conversationRoutes);
 
 console.log(
-  "Local backend started with conversation scaffolder:",
-  process.env.USE_CONVERSATION === "true" ? "ENABLED" : "DISABLED"
+  "Local backend started with conversation mode:",
+  process.env.CONVERSATION_MODE || "real"
 );
 ```
 

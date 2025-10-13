@@ -81,10 +81,11 @@ Implementation strategy follows three clear phases to keep work small, reviewabl
 ## Acceptance Criteria
 
 - [ ] Story 8.1 — Conversation schema and `ConversationAudio` schema are designed, documented, and agreed upon. Verification: sample fixture JSON exists and schema validation passes for fixture; fixture conforms to 3–5 turns constraint.
-- [ ] Story 8.2 — Text scaffolder endpoint (local & staging) returns deterministic `Conversation` objects for test words. Verification: GET/POST to `/conversation?wordId=` returns JSON matching schema and `turns.length` in [3,5].
+- [ ] Story 8.2 — Text scaffolder endpoint (local & staging) returns deterministic `Conversation` objects for test words. Verification: POST to `/api/conversation/text/generate` returns JSON matching schema and `turns.length` in [3,5].]
 - [ ] Story 8.3 — Scaffolder audio endpoint returns deterministic audio artifacts (URL or base64) usable in harness/headless runs. Verification: endpoint returns HTTP 200 and a playable audio URL that a harness can fetch.
 - [ ] Story 8.4 — Conversation Box UI is implemented and consumes scaffolded data, shows loading/error states, and supports scaffold vs generator mode via feature flag. Verification: Component renders with scaffold fixture and can call play/highlight handlers.
 - [ ] Story 8.5 — Generator endpoint integrates with cache and returns text conversations with `generatedAt` and `generatorVersion` metadata. Verification: calling generator twice with same input yields cached response on second call and identical `id`.
+- [ ] Story 8.5 — Generator endpoint integrates with cache and returns text conversations with `generatedAt` and optional `generatorVersion` metadata. Verification: calling generator twice with same input yields cached response on second call and identical `id` (runtime uses `${wordId}-${hash}` by default).
 - [ ] Story 8.6 — Playback API checks for cached audio and returns cached URL or generates audio on-demand, persists it, and returns audio URL with timeline metadata (marks or per-turn timestamps). Verification: call audio endpoint -> if no audio exists it returns a working audio URL and timeline metadata; subsequent calls return cached URL.
 - [ ] Story 8.7 — Provide a small local harness and deterministic fixtures to validate scaffold → generator → cache → UI logic in headless or CI-friendly runs. Verification: harness runs without external TTS calls.
 - [ ] Story 8.8 — System can be wired to local and hosted backends with IaC for GCS lifecycle and IAM; schemas and API examples are finalized and documented. Verification: Terraform plan / IaC PR references and staging smoke test instructions present.
@@ -97,10 +98,10 @@ Implementation strategy follows three clear phases to keep work small, reviewabl
   - Alternatives considered: integrate generator immediately (higher fidelity but costlier and slower feedback loop).
   - Implications: scaffolder must be kept in sync with final schema; include versioning.
 
-- Decision: Use generatorVersion + promptHash for cache keys (choice: deterministic keys)
+- Decision: Use wordId-derived hash for runtime cache keys (current) with an optional migration to generatorVersion + promptHash
 
-  - Rationale: avoids collisions and enables safe cache invalidation when prompts or logic change.
-  - Alternatives considered: time-based TTL only (less deterministic, harder to invalidate by version).
+  - Rationale (current): a short deterministic hash derived from `wordId` simplifies scaffold determinism and fixtures for local development and testing.
+  - Migration option: moving to `generatorVersion + promptHash` enables version-aware invalidation when prompts or generation logic change; this requires coordinated code updates and migration of existing GCS objects.
 
 - Decision: Audio generation on-demand only (choice: explicit user request)
 
@@ -150,7 +151,7 @@ Implementation strategy follows three clear phases to keep work small, reviewabl
 
 ```ts
 type Conversation = {
-  id: string; // conversationId: `${wordId}-${generatorVersion}-${shortHash}`
+  id: string; // conversationId: `${wordId}-${hash}` (runtime - hash is a short deterministic hash derived from `wordId`)
   wordId: string;
   word: string;
   meaning?: string;

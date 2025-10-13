@@ -19,7 +19,8 @@ const fs = require("fs").promises;
 class ConversationHarness {
   constructor() {
     this.serverProcess = null;
-    this.baseUrl = "http://localhost:3001";
+    // Backend is mounted under /api in local-backend
+    this.baseUrl = "http://localhost:3001/api";
     this.testResults = [];
   }
 
@@ -41,7 +42,7 @@ class ConversationHarness {
     this.serverProcess = spawn("node", ["local-backend/server.js"], {
       env: {
         ...process.env,
-        USE_CONVERSATION: "true",
+        CONVERSATION_MODE: "scaffold",
         NODE_ENV: "test",
       },
     });
@@ -76,7 +77,7 @@ class ConversationHarness {
   async testTextScaffolder() {
     console.log("🧪 Testing text scaffolder endpoint...");
 
-    const response = await fetch(`${this.baseUrl}/api/conversation`, {
+    const response = await fetch(`${this.baseUrl}/conversation/text/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -106,8 +107,11 @@ class ConversationHarness {
   async testAudioScaffolder() {
     console.log("🎵 Testing audio scaffolder endpoint...");
 
-    const response = await fetch(`${this.baseUrl}/api/audio/test-conversation`, {
-      method: "GET",
+    // Request audio generation via POST /conversation/audio/generate
+    const response = await fetch(`${this.baseUrl}/conversation/audio/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wordId: "test-word", voice: "cmn-CN-Standard-A", bitrate: 128 }),
     });
 
     if (!response.ok) {
@@ -116,8 +120,11 @@ class ConversationHarness {
 
     const audioData = await response.json();
 
-    // Validate audio URL is accessible
-    const audioResponse = await fetch(audioData.audioUrl);
+    // Validate audio URL is accessible (audioUrl may be absolute or relative)
+    const audioUrl = audioData.audioUrl.startsWith("/")
+      ? `${this.baseUrl.replace(/\/api$/, "")}${audioData.audioUrl}`
+      : audioData.audioUrl;
+    const audioResponse = await fetch(audioUrl);
     if (!audioResponse.ok) {
       throw new Error(`Audio file not accessible: ${audioData.audioUrl}`);
     }
@@ -130,7 +137,12 @@ class ConversationHarness {
   }
 
   validateConversationSchema(conversation) {
-    const required = ["id", "wordId", "word", "turns", "generatedAt", "generatorVersion"];
+    // Accept either `id` or legacy `conversationId` fields from fixtures
+    const required = ["wordId", "word", "turns", "generatedAt", "generatorVersion"];
+
+    if (!conversation.id && !conversation.conversationId) {
+      throw new Error("Missing required identifier: id or conversationId");
+    }
 
     for (const field of required) {
       if (!conversation[field]) {
@@ -168,7 +180,7 @@ class ConversationHarness {
 
     const start = Date.now();
 
-    const response = await fetch(`${this.baseUrl}/api/conversation`, {
+    const response = await fetch(`${this.baseUrl}/conversation/text/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -256,7 +268,7 @@ async waitForServer(timeout = 30000) {
   const start = Date.now();
   while (Date.now() - start < timeout) {
     try {
-      await fetch(`${this.baseUrl}/health`);
+      await fetch(`${this.baseUrl}/conversation/health`);
       return;
     } catch (error) {
       await new Promise(resolve => setTimeout(resolve, 500));

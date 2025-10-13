@@ -52,3 +52,15 @@ This story replaces the scaffolder with real AI-generated conversations, providi
 5. If cache miss: generates new conversation using AI service
 6. New conversation is stored in cache for future requests
 7. Learner receives contextual conversation showcasing their vocabulary word
+
+## Notes / Current-Code Mapping
+
+- Current runtime behavior: the code computes a deterministic SHA256 of the `wordId` using `computeHash(wordId)` (see `local-backend/utils/hashUtils.js`) and uses that value as the cache identifier.
+- Cache storage paths used by the running code are `convo/${wordId}/${hash}.json` for text and `convo/${wordId}/${hash}.mp3` for audio. The Vercel handler and local-backend set `conversation.id` to `${wordId}-${hash}` when returning generated conversations.
+- The docs and some design notes mention `generatorVersion + promptHash` as a version-aware cache key. The current codebase, however, uses the simpler `wordId`-based hash for deterministic lookups. That approach makes scaffolding and deterministic fixtures simpler but reduces automatic invalidation when prompts or generator logic change.
+- Recommended options:
+
+  - Option A (Docs-only): Keep current code as-is and update all docs to reflect `computeHash(wordId)` caching (already done). Manual cache invalidation or bucket cleanup can be used when prompts change.
+  - Option B (Code migration): Move to `generatorVersion + promptHash` keys. This requires changes in `local-backend/utils/hashUtils.js`, generator prompt fingerprinting, cache key construction, and a migration/invalidations plan for existing GCS objects. I can prepare an implementation PR for this migration if you choose this path.
+
+  See shared runtime notes: `docs/issue-implementation/epic-8-conversation-generation/runtime-notes.md` for the canonical id format, cache paths, and endpoints used by the running code.

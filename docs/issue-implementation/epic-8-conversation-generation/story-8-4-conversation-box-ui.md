@@ -76,8 +76,9 @@ export const ConversationBox: React.FC<ConversationBoxProps> = ({
     if (!conversation) return;
 
     try {
+      // Current implementation requests audio by `wordId` (scaffolder and audio API expect `wordId`)
       await playAudio({
-        conversationId: conversation.id,
+        wordId: wordId,
         voice: "cmn-CN-Standard-A",
         bitrate: 128,
       });
@@ -358,10 +359,10 @@ function useFeatureFlags() {
   const [conversationEnabled, setConversationEnabled] = useState(false);
 
   useEffect(() => {
-    // Check if conversation endpoints are available
+    // Check if conversation endpoints are available (scaffold detection)
     fetch("/api/conversation/health")
       .then((res) => res.json())
-      .then((data) => setConversationEnabled(data.enabled))
+      .then((data) => setConversationEnabled(data.mode === "scaffold"))
       .catch(() => setConversationEnabled(false));
   }, []);
 

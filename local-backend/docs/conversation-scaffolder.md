@@ -10,24 +10,22 @@ Returns a deterministic `Conversation` object for the given `wordId` using local
 
 ## Environment Toggle
 
-Set `USE_CONVERSATION=true` in your environment to enable the endpoint.
+Set `CONVERSATION_MODE="scaffold"` in your environment to enable scaffold mode and serve deterministic fixtures.
 
 ## Implementation Example (Express)
 
 ```js
 // local-backend/server.js
-if (process.env.USE_CONVERSATION === "true") {
-  app.get("/conversation", (req, res) => {
-    const { wordId } = req.query;
-    // Load fixture from public/data/examples/conversations/fixtures
-    // Example: hello-basic.json
-    // Return matching Conversation object
-  });
+// The local-backend mounts the conversation router under /api.
+// In scaffold mode the primary endpoint used by the frontend is:
+// POST /api/conversation/text/generate
+if (process.env.CONVERSATION_MODE === "scaffold") {
+  app.use("/api", conversationRouter);
 }
 ```
 
 ## Usage
 
-- Enable with `USE_CONVERSATION=true`
+- Enable by setting `CONVERSATION_MODE="scaffold"`
 - Call endpoint with desired `wordId`
 - Returns deterministic fixture for development/testing

@@ -21,6 +21,20 @@ This story provides the audio capability that transforms text conversations into
 - [ ] Fallback behavior handles TTS service failures gracefully
 - [ ] Cost guards prevent excessive TTS usage through rate limiting
 
+### Notes / Current-Code Mapping
+
+- Endpoint: `POST /api/conversation/audio/generate` (request shape: `{ wordId, voice?, bitrate?, format? }`). The router is mounted under `/api` in development.
+- TTS provider: Google Cloud Text-to-Speech via `@google-cloud/text-to-speech`. The service account credentials are provided via the `GOOGLE_TTS_CREDENTIALS_RAW` environment variable (JSON string) in local-backend and Vercel functions.
+- Cache keys and paths: the runtime computes `hash = computeHash(wordId)` and stores audio at `convo/${wordId}/${hash}.mp3` in the configured GCS bucket. The API returns `conversationId: ${wordId}-${hash}` and `audioUrl` pointing to the public GCS URL.
+- Timeline metadata: current code extracts plain Chinese text from conversation turns and synthesizes audio from that text (no SSML <mark> annotations are currently used in the production TTS calls). The scaffolder and some implementation sketches show SSML-based marking; migrating to SSML marks would enable accurate timing extraction but requires adding SSML construction and mark parsing in the TTS call path.
+- Atomic writes: code saves audio via `file.save(audioBuffer, { metadata, public: true })`. It logs success/failure; using GCS preconditions (`ifGenerationMatch: 0`) for stricter atomicity is recommended as an improvement.
+- Error handling: on TTS failure the runtime returns a response with `audioUrl: null` and `error` message; the frontend falls back to browser SpeechSynthesis when playback fails.
+
+Recommended follow-ups:
+
+- Add optional SSML mark insertion in `handleGetRealAudio` to produce `timeline` from TTS marks for precise highlighting.
+- Consider GCS precondition options when writing audio for stricter atomic guarantees.
+
 ## Business Rules
 
 1. Audio generation must only occur on explicit user request (never automatic)

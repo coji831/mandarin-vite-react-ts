@@ -26,13 +26,16 @@ This story provides the foundational data structures and mock data needed for al
 
 - [ ] JSON fixtures are created under `public/data/examples/conversations/` with sample data.
 
-- [ ] A local/staging scaffolder endpoint (e.g. `GET /conversation?wordId=`) is implemented or documented and returns deterministic `Conversation` objects for a given `wordId`.
+- [ ] A local/staging scaffolder endpoint is implemented and documented. Current code exposes POST endpoints under the local-backend router and the server mounts the router under `/api` in development. The primary scaffolder/generation endpoints are:
+
+  - `POST /api/conversation/text/generate` — accepts `{ wordId, word?, generatorVersion? }` and returns a deterministic `Conversation` object when `CONVERSATION_MODE` is set to `scaffold`.
+  - `POST /api/conversation/audio/generate` — accepts `{ wordId, voice?, bitrate?, format? }` and returns deterministic audio metadata in scaffold mode (supports `format: "url"` or `format: "base64"`).
 
 - [ ] Schema documentation is added explaining field purposes and constraints.
 
-- [ ] Scaffolder behavior can be toggled via environment variable (example: `USE_CONVERSATION=true`).
+- [ ] Scaffolder behavior can be toggled via environment variable `CONVERSATION_MODE` (set to `scaffold` for fixture mode, or `real` for Gemini/TTS/GCS mode).
 
-- [ ] Fixtures include `generatorVersion` and `promptHash` fields for cache validation
+- [ ] Fixtures include `generatorVersion` and a `hash` field (the runtime cache code uses a deterministic short hash derived from the `wordId` and stores JSON/MP3 artifacts under `convo/${wordId}/${hash}` in GCS).
 
 - [ ] Conversation fixtures conform to 3-5 turns constraint with realistic dialogue
 
@@ -48,7 +51,7 @@ This story provides the foundational data structures and mock data needed for al
 
 3. Schema must support both English and Mandarin text with optional translations
 
-- Implement a small express route in `local-backend/server.js` or reuse an existing dev endpoint (guarded by `USE_CONVERSATION=true`) to serve fixtures from `public/data/examples/conversations/`.
+- Implement a small express route in `local-backend/server.js` or reuse an existing dev endpoint (guarded by `CONVERSATION_MODE="scaffold"`) to serve fixtures from `public/data/examples/conversations/fixtures/`.
 
 4. All fixtures must be deterministic and suitable for automated testing
 

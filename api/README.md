@@ -11,16 +11,18 @@ This directory contains backend/serverless functions for the application, primar
 
 ## API Endpoints
 
-- `GET /api/get-tts-audio`: Generates or retrieves audio for Mandarin text
-  - Query parameters: `text` (required), `voice` (optional)
-  - Returns: JSON with audio URL or base64-encoded audio data
+- `POST /api/get-tts-audio`: Generates or retrieves audio for Mandarin text
+  - Request body (JSON): `{ "text": string }` (required), optional `voice` can be included in the body
+  - Returns: JSON with `audioUrl` pointing to the cached or newly-generated audio in GCS
 
 ## Configuration
 
-Requires environment variables:
+Recommended environment variables (set these in Vercel or in your local `.env`):
 
-- `GOOGLE_APPLICATION_CREDENTIALS`: Path to service account key
-- `GCS_BUCKET_NAME`: Name of the GCS bucket for audio caching
+- `GOOGLE_TTS_CREDENTIALS_RAW` (recommended): stringified Google service account JSON used by serverless functions. Example: `{"type":"service_account",...}`
+- `GCS_BUCKET_NAME` (required for caching): Google Cloud Storage bucket name for audio caching
+
+Fallback: For local setups you may use `GOOGLE_APPLICATION_CREDENTIALS` pointing to a service account JSON file path, but `GOOGLE_TTS_CREDENTIALS_RAW` is preferred for parity with Vercel.
 
 For detailed implementation information, see:
 

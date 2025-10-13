@@ -51,3 +51,13 @@ This story provides deterministic audio responses for testing and development, e
 4. UI can test playback functionality with reliable audio source
 5. Timeline metadata enables testing of turn-by-turn highlighting
 6. Headless tests can validate audio endpoint without external dependencies
+
+## Notes / Current-Code Mapping
+
+- Env var: `CONVERSATION_MODE` — set to `scaffold` to enable audio scaffolder behavior in the local-backend.
+- Primary runtime endpoints (router is mounted under `/api` in development):
+  - `POST /api/conversation/audio/generate` — accepts `{ conversationId, voice?, bitrate?, format? }` and returns audio metadata. In scaffold mode the router path is `/conversation/audio/generate` on the conversation router.
+  - `GET /api/data/examples/conversations/audio/:filename` — static audio file serving for scaffolded audio assets (served from `public/data/examples/conversations/audio/`).
+- Fixture/audio path: `public/data/examples/conversations/audio/` (sample files like `hello-basic.mp3`).
+- Response fields: `audioUrl`, `conversationId`, `timeline` (array of {mark, timeSeconds}), `durationSeconds`, `generatedAt`, `voice`, `bitrate`, and optionally `base64Audio` when `format: "base64"` is requested.
+- Scaffolder behavior: deterministic metadata returned (cached per conversationId) and small, repository-friendly audio files used for headless tests.

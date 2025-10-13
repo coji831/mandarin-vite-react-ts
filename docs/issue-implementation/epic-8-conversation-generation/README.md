@@ -64,7 +64,7 @@
 
 ```
 POST /api/conversation/text/generate
-GET /conversation?wordId={id}  // Development only
+POST /api/conversation/text/generate  // Production / canonical endpoint (GET /conversation?wordId is a development convenience in some local setups)
 ```
 
 **Parameters:**
@@ -78,7 +78,7 @@ GET /conversation?wordId={id}  // Development only
 
 ```typescript
 {
-  id: string;           // ${wordId}-${generatorVersion}-${promptHash}
+  id: string;           // runtime: `${wordId}-${hash}` (hash derived from `wordId`). Optionally migrate to `${wordId}-${generatorVersion}-${promptHash}` for version-aware invalidation.
   wordId: string;
   word: string;
   turns: Array<{
@@ -92,15 +92,19 @@ GET /conversation?wordId={id}  // Development only
 
   **Text Generation:**
 
-  ```
-  POST /api/conversation/text/generate
-  ```
-  promptHash?: string;
+```
+
+POST /api/conversation/text/generate
+
+```
+promptHash?: string;
 }
 ```
+
 POST /api/conversation/audio/generate
-GET /audio/{conversationId}  // Development only
-```
+GET /audio/{conversationId} // Development only
+
+````
 
 **Parameters:**
 
@@ -122,32 +126,34 @@ GET /audio/{conversationId}  // Development only
   generatedAt: string;
   voice?: string;
 }
+````
+
+**Audio Generation:**
+
+```
+POST /api/conversation/audio/generate
+GET /audio/{conversationId}  // Development only (proxy served by local-backend)
 ```
 
-  **Audio Generation:**
-
-  ```
-  POST /api/conversation/audio/generate
-  GET /audio/{conversationId}  // Development only (proxy served by local-backend)
-  ```
 ### Component Relationships
 
-  ### File Structure (actual)
+### File Structure (actual)
 
-  local-backend/utils/
-  ├── conversationGenerator.js
-  ├── conversationProcessor.js
-  ├── conversationCache.js
-  └── scaffoldUtils.js
+local-backend/utils/
+├── conversationGenerator.js
+├── conversationProcessor.js
+├── conversationCache.js
+└── scaffoldUtils.js
 
-  local-backend/routes/
-  └── conversation.js           // Unified conversation routes (text + audio)
-└── ConversationTurns          // Turn-by-turn display component
-    ├── SpeakerLabel
-  **AI Services:** Google Gemini (Generative Language API) for conversation generation (current implementation). The code authenticates using a service account JWT.
-    ├── DialogueText
-    └── PlaybackHighlight      // Synchronized highlighting during audio
-```
+local-backend/routes/
+└── conversation.js // Unified conversation routes (text + audio)
+└── ConversationTurns // Turn-by-turn display component
+├── SpeakerLabel
+**AI Services:** Google Gemini (Generative Language API) for conversation generation (current implementation). The code authenticates using a service account JWT.
+├── DialogueText
+└── PlaybackHighlight // Synchronized highlighting during audio
+
+````
 
 ### Data Flow
 
@@ -156,14 +162,21 @@ GET /audio/{conversationId}  // Development only
   1. **Text Generation Flow:**
 
      ```
-     User Request → Cache Check (GCS: convo/${wordId}/${hash}.json) → [Cache Hit: Return] → [Cache Miss: Generate via Gemini] → Store → Return
+    User Request → Cache Check (GCS: convo/${wordId}/${hash}.json) → [Cache Hit: Return] → [Cache Miss: Generate via Gemini] → Store → Return
+
+  Note: Runtime behavior currently sets `conversation.id` to `${wordId}-${hash}` where `hash` is a short deterministic hash derived from `wordId`. The documentation frequently references the generatorVersion+promptHash design as a recommended migration for version-aware cache invalidation — this is optional and requires coordinated code changes (see story-8-5 implementation notes).
      ```
-   ```
-   User Request → Cache Check → [Cache Hit: Return] → [Cache Miss: Generate] → Store → Return
-   ```
-   ```
-   Request → Fixture Lookup → Return Deterministic Data
-   ```
+````
+
+User Request → Cache Check → [Cache Hit: Return] → [Cache Miss: Generate] → Store → Return
+
+```
+
+```
+
+Request → Fixture Lookup → Return Deterministic Data
+
+```
 ├── components/
 │   ├── ConversationBox.tsx
 │   ├── ConversationTurns.tsx
@@ -176,8 +189,8 @@ GET /audio/{conversationId}  // Development only
 ├── types/
 │   └── conversation.types.ts
 └── utils/
-    ├── promptHashing.ts
-    └── audioTimeline.ts
+ ├── promptHashing.ts
+ └── audioTimeline.ts
 
 local-backend/routes/
 ├── conversation.js           // Scaffolder text endpoint
@@ -189,8 +202,8 @@ public/data/examples/conversations/
 │   ├── conversation-hello.json
 │   └── conversation-goodbye.json
 └── audio/
-    ├── hello-audio.mp3
-    └── goodbye-audio.mp3
+ ├── hello-audio.mp3
+ └── goodbye-audio.mp3
 
 scripts/
 └── harness-local.js         // CI testing harness

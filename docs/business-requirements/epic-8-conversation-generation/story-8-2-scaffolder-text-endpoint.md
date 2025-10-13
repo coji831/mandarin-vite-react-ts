@@ -13,7 +13,7 @@ This story enables rapid UI development and testing without waiting for the full
 ## Acceptance Criteria
 
 - [ ] Express dev route implemented in `local-backend/` returning fixture data
-- [ ] Endpoint gated behind `USE_CONVERSATION=true` environment variable
+- [ ] Endpoint gated behind `CONVERSATION_MODE="scaffold"` environment variable
 - [ ] API shape matches final generator specification exactly
 - [ ] Returns deterministic `Conversation` objects for given `wordId` parameter
 - [ ] Response includes all required fields: `id`, `wordId`, `word`, `turns`, `generatedAt`, `generatorVersion`
@@ -26,8 +26,10 @@ This story enables rapid UI development and testing without waiting for the full
 1. Scaffolder must return identical responses for same `wordId` input
 2. Response format must match production API specification exactly
 3. Endpoint must only be active when explicitly enabled via environment variable
-4. Generated conversation IDs must follow pattern: `${wordId}-${generatorVersion}-${shortHash}`
+4. Generated conversation IDs must follow pattern: `${wordId}-${shortHash(wordId)}` (the scaffolder assigns `id` as `${wordId}-${shortHash(wordId)}`)
 5. All returned conversations must conform to 3-5 turns constraint
+
+Note: The runtime scaffolder assigns deterministic ids in the format `${wordId}-${shortHash(wordId)}` and the canonical endpoint for production/dev examples is `POST /api/conversation/text/generate`. Some local development routes provide a convenience GET `/conversation?wordId=`.
 
 ## Related Issues
 
@@ -44,9 +46,8 @@ This story enables rapid UI development and testing without waiting for the full
 
 ## User Journey
 
-1. Developer enables conversation scaffolder with `USE_CONVERSATION=true`
-2. Frontend makes request to `/conversation?wordId=hello123`
-3. Scaffolder returns deterministic conversation JSON immediately
-4. UI renders conversation with consistent test data
-5. Developer can iterate on UI design without external dependencies
-6. Automated tests receive predictable responses for validation
+1. Developer enables conversation scaffolder with `CONVERSATION_MODE="scaffold"` and posts `{ wordId }` to `POST /api/conversation/text/generate`.
+2. Frontend receives deterministic conversation JSON and renders the conversation UI.
+3. UI renders conversation with consistent test data.
+4. Developer iterates on UI design without external dependencies.
+5. Automated tests receive predictable responses for validation.

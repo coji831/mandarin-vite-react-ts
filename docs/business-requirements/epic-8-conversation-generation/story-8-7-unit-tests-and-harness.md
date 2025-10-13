@@ -12,9 +12,13 @@ This story ensures the reliability and maintainability of the conversation syste
 
 ## Acceptance Criteria
 
-- [x] Local harness script `scripts/harness-local.js` starts `local-backend` with conversation enabled
-- [x] Harness runs scripted checks against text and audio endpoints automatically
-- [x] Validation includes fixture shape verification and conversation turn length constraints
+- [x] Local harness script `scripts/harness-local.js` starts `local-backend` with conversations enabled via CONVERSATION_MODE
+- [x] Set CONVERSATION_MODE="scaffold" when starting the backend for harness/scaffold runs
+- [x] Harness health-check polls `/api/conversation/health` and expects the JSON response to include { mode: "scaffold" }
+- [x] Harness runs scripted checks against text and audio endpoints automatically using POST /api/conversation/text/generate and POST /api/conversation/audio/generate
+- [x] Validation includes fixture shape verification and conversation turn length constraints (3-5 turns)
+- [x] Fixtures may include either an `id` or `conversationId` field; the harness accepts both shapes
+- [x] Audio endpoints must return valid URLs (absolute or relative) that the harness can fetch successfully
 - [x] Harness tears down cleanly after test completion
 - [x] Tests run without requiring external TTS calls or production credentials
 - [x] CI integration validates conversation features on every pull request (harness is CI-ready)

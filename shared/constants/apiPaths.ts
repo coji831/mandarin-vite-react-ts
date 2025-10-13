@@ -3,12 +3,9 @@
 
 export const API_ROUTES = {
   // New structured conversation routes
-  conversationText: "/api/conversation/text",
   conversationTextGenerate: "/api/conversation/text/generate",
-  conversationTextGeneratorDirect: "/api/conversation/text/generate/direct",
 
   // Audio routes under conversation namespace
-  conversationAudio: "/api/conversation/audio",
   conversationAudioGenerate: "/api/conversation/audio/generate",
   ttsAudio: "/api/get-tts-audio",
 };
@@ -16,11 +13,7 @@ export const API_ROUTES = {
 // Route patterns for Express.js (without /api prefix)
 export const ROUTE_PATTERNS = {
   // New patterns
-  conversationText: "/conversation/text",
   conversationTextGenerate: "/conversation/text/generate",
-  conversationTextGeneratorDirect: "/conversation/text/generate/direct",
-
-  conversationAudio: "/conversation/audio",
   conversationAudioGenerate: "/conversation/audio/generate",
   ttsAudio: "/get-tts-audio",
 };

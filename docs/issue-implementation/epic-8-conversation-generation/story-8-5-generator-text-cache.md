@@ -34,7 +34,7 @@ export class ConversationGenerator {
       projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
       keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE,
     });
-    this.bucketName = process.env.CONVERSATION_CACHE_BUCKET || "mandarin-conversations";
+    this.bucketName = process.env.GCS_BUCKET_NAME || "mandarin-conversations";
     this.aiClient = this.initializeAIClient();
   }
 
@@ -298,6 +298,17 @@ API Request → Generator Service → Cache Check → [Hit: Return] → Response
 ```
 
 The generator service acts as an intelligent cache-first system that minimizes AI API calls while ensuring fresh, contextual conversations for vocabulary learning.
+
+## Notes / Current-Code Mapping
+
+- Runtime behavior: the active code computes a deterministic hash from the `wordId` only (see `local-backend/utils/hashUtils.js` → `computeHash(wordId)`) and uses that as the cache identifier.
+- Actual cache path used by the running code: `convo/${wordId}/${hash}.json` (text) and `convo/${wordId}/${hash}.mp3` (audio). The Vercel text handler sets `conversation.id = `${wordId}-${hash}` before caching/returning results.
+- Design trade-off: using `generatorVersion + promptHash` provides automatic invalidation when prompts or generation logic mutate; using `wordId`-only hash simplifies scaffold determinism and fixture alignment but requires manual invalidation for prompt changes.
+- Migration options:
+  - Option A (keep current): update docs to reflect `computeHash(wordId)` behavior and rely on manual cache invalidation for prompt/behavior changes.
+  - Option B (migrate): implement version-aware cache keys (`generatorVersion + promptHash`) across `hashUtils`, generator, and cache utilities, and provide a migration/cleanup plan for existing GCS objects.
+
+Refer to `docs/issue-implementation/epic-8-conversation-generation/runtime-notes.md` for the canonical runtime id and cache path mapping used by the codebase.
 
 ## Technical Challenges & Solutions
 

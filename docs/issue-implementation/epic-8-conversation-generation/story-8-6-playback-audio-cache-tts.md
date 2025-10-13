@@ -23,7 +23,7 @@ export class AudioGenerator {
   constructor() {
     this.ttsClient = new TextToSpeechClient();
     this.storage = new Storage();
-    this.bucketName = process.env.AUDIO_CACHE_BUCKET || "mandarin-audio";
+    this.bucketName = process.env.GCS_BUCKET_NAME || "mandarin-audio";
   }
 
   async generateAudio(params: {
@@ -128,3 +128,19 @@ private extractTimeline(ssml: string): AudioTimeline[] {
 - Audio cache consistency tests
 - Timeline accuracy validation
 - Cost monitoring simulation tests
+
+## Notes / Current-Code Mapping
+
+- Runtime endpoint: `POST /api/conversation/audio/generate` accepts `{ wordId, voice?, bitrate?, format? }` and returns `{ conversationId, audioUrl, voice, bitrate, isCached, generatedAt }`.
+  -- TTS usage in code: Google Cloud Text-to-Speech via `TextToSpeechClient.synthesizeSpeech` is called with plain text input (`input: { text: ... }`) in the current Vercel and local-backend implementations.
+  - Recommended environment variables:
+    - `GCS_BUCKET_NAME` (required for caching): Google Cloud Storage bucket used for cache
+    - `GOOGLE_TTS_CREDENTIALS_RAW` (recommended): stringified service account JSON used by the TTS client
+  - Optional local fallback: `GOOGLE_APPLICATION_CREDENTIALS` may point to a service account JSON file path for local setups, but using the `*_RAW` env vars keeps parity with Vercel.
+- Cache paths: audio files are stored under `convo/${wordId}/${hash}.mp3` where `hash = computeHash(wordId)`. The runtime checks this path before generating new audio.
+- Timeline behavior: current production code extracts plain text from the conversation and generates audio from that text. The SSML mark-based approach in this doc is an implementation sketch; switching production code to insert SSML `<mark>` annotations and parse timing would enable accurate per-turn timing for highlighting.
+
+Recommendations:
+
+- Consider migrating the production TTS synthesis to SSML marks when precise timeline synchronization is required by the UI.
+- Use GCS preconditions on audio writes if you need stricter atomic guarantees during concurrent writes.
