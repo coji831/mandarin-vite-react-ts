@@ -12,3 +12,12 @@
 
 - `GOOGLE_TTS_CREDENTIALS_RAW`: Google service account JSON
 - `GCS_BUCKET_NAME`: GCS bucket for caching
+
+Recommended environment variables:
+
+- `GOOGLE_TTS_CREDENTIALS_RAW` (recommended): stringified Google service account JSON used by local and serverless functions
+- `GCS_BUCKET_NAME` (required for caching): Google Cloud Storage bucket name for audio caching
+
+Optional fallback:
+
+- `GOOGLE_APPLICATION_CREDENTIALS`: local path to service-account JSON (useful for local-only setups)

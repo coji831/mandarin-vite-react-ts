@@ -1,0 +1,66 @@
+# Story 8.5: Generator — Text generation & cache (backend)
+
+## Description
+
+**As a** learner,
+**I want to** have on-demand conversation generation with intelligent caching,
+**So that** I get fast responses for repeated requests while accessing fresh, contextual conversations for my vocabulary words.
+
+## Business Value
+
+This story replaces the scaffolder with real AI-generated conversations, providing learners with truly contextual and varied dialogue examples. The caching system ensures cost efficiency by avoiding redundant API calls while maintaining fast response times. This delivers the core value proposition of dynamic, personalized conversation examples that adapt to the learner's vocabulary.
+
+## Acceptance Criteria
+
+- [x] Generator endpoint computes `promptHash` for cache key generation
+- [x] Cache lookup checks GCS for existing conversations using `generatorVersion` and `promptHash`
+- [x] New conversations are generated when cache miss occurs
+- [x] Generated conversations are stored in GCS under `convo/{wordId}/{generatorVersion}/{promptHash}.json`
+- [x] Response includes `generatedAt` timestamp and unique `id` field
+- [x] Calling generator twice with same input returns cached response with identical `id`
+- [x] Generator supports single-word prompts and produces 3-5 turn conversations
+- [x] Error handling covers AI service failures and cache write failures
+
+## Business Rules
+
+1. Cache keys must be deterministic based on input parameters and generator version
+2. Generated conversations must strictly adhere to 3-5 turns constraint
+3. Each turn must be appropriate for language learning context
+4. Generator must handle single vocabulary words and produce relevant dialogue
+5. Cache entries must include metadata for validation and debugging
+
+## Related Issues
+
+- #8-1 / [**Design Conversation Schema & Scaffolder**](./story-8-1-design-schema-and-scaffolder.md) (Uses schemas from this story)
+- #8-2 / [**Scaffolder — Text endpoint**](./story-8-2-scaffolder-text-endpoint.md) (Replaces this scaffolder)
+- #8-4 / [**Conversation Box UI: wire to scaffolder**](./story-8-4-conversation-box-ui.md) (Integrates with this generator)
+- #8-6 / [**Playback Integration — audio cache & on-demand TTS**](./story-8-6-playback-audio-cache-tts.md) (Consumes conversations from this generator)
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: #[PR-NUMBER]
+- **Merge Date**: [Date]
+- **Key Commit**: [pending-commit] (Story 8.5 backend: generator endpoint, GCS cache integration, and error handling)
+
+## User Journey
+
+1. Learner requests conversation example for specific vocabulary word
+2. Generator computes cache key from word and current prompt version
+3. System checks GCS cache for existing conversation
+4. If cache hit: returns existing conversation immediately
+5. If cache miss: generates new conversation using AI service
+6. New conversation is stored in cache for future requests
+7. Learner receives contextual conversation showcasing their vocabulary word
+
+## Notes / Current-Code Mapping
+
+- Current runtime behavior: the code computes a deterministic SHA256 of the `wordId` using `computeHash(wordId)` (see `local-backend/utils/hashUtils.js`) and uses that value as the cache identifier.
+- Cache storage paths used by the running code are `convo/${wordId}/${hash}.json` for text and `convo/${wordId}/${hash}.mp3` for audio. The Vercel handler and local-backend set `conversation.id` to `${wordId}-${hash}` when returning generated conversations.
+- The docs and some design notes mention `generatorVersion + promptHash` as a version-aware cache key. The current codebase, however, uses the simpler `wordId`-based hash for deterministic lookups. That approach makes scaffolding and deterministic fixtures simpler but reduces automatic invalidation when prompts or generator logic change.
+- Recommended options:
+
+  - Option A (Docs-only): Keep current code as-is and update all docs to reflect `computeHash(wordId)` caching (already done). Manual cache invalidation or bucket cleanup can be used when prompts change.
+  - Option B (Code migration): Move to `generatorVersion + promptHash` keys. This requires changes in `local-backend/utils/hashUtils.js`, generator prompt fingerprinting, cache key construction, and a migration/invalidations plan for existing GCS objects. I can prepare an implementation PR for this migration if you choose this path.
+
+  See shared runtime notes: `docs/issue-implementation/epic-8-conversation-generation/runtime-notes.md` for the canonical id format, cache paths, and endpoints used by the running code.

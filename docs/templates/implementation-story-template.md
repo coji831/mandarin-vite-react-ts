@@ -1,5 +1,7 @@
 # Implementation <epic-number>-<story-number>: <Feature Name>
 
+> Template note: headings include markers like `[Required]` and `[Optional]` to indicate guidance. When creating published/read docs, remove those bracketed tokens from the headings.
+
 ## [Required] Technical Scope
 
 <Specific technical components, files, and functionality implemented>

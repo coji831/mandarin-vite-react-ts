@@ -67,34 +67,25 @@
 2. **Cache Check**: Backend verifies if audio file exists in Google Cloud Storage using MD5 hash
 3. **Conditional Generation**: If cache miss, system calls Google Cloud TTS to generate new audio
 4. **Persistence**: Generated audio stored in GCS with content-based hash filename
-5. **Response**: Backend returns audio URL (or base64 data) to frontend
+5. **Response**: Backend returns a JSON object containing `audioUrl` that points to the cached or newly-generated audio in GCS
 6. **Playback**: Frontend plays audio using standard HTML5 Audio API
 
 ### API Endpoints
 
 ```
-GET /api/get-tts-audio
+POST /api/get-tts-audio
 ```
 
-**Parameters:**
+**Request Body (JSON):**
 
-- `text` (string, required): The Mandarin text to convert to speech
-  - Format: UTF-8 encoded Chinese characters
-  - Constraints: Maximum 200 characters
-- `voice` (string, optional): Voice identifier
-  - Format: String matching Google Cloud voice name pattern
-  - Default: "cmn-CN-Standard-A" (female Mandarin voice)
-- `format` (string, optional): Audio format
-  - Allowed values: "mp3", "wav", "ogg"
-  - Default: "mp3"
+- `text` (string, required): The Mandarin text to convert to speech (1-15 words recommended)
+- `voice` (string, optional): Voice identifier (e.g., "cmn-CN-Wavenet-B")
 
 **Response:**
 
 ```json
 {
-  "success": true,
-  "audioUrl": "https://storage.googleapis.com/bucket-name/md5hash.mp3",
-  "isCached": true
+  "audioUrl": "https://storage.googleapis.com/bucket-name/md5hash.mp3"
 }
 ```
 
@@ -102,7 +93,6 @@ GET /api/get-tts-audio
 
 ```json
 {
-  "success": false,
   "error": "Error generating TTS audio: [detailed error]"
 }
 ```

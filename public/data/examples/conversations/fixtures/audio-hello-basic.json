@@ -1,0 +1,13 @@
+{
+  "conversationId": "hello-v1-abc123",
+  "audioUrl": "https://example.com/audio/hello-v1-abc123.mp3",
+  "durationSeconds": 8.5,
+  "timeline": [
+    { "mark": "turn-1", "timeSeconds": 0 },
+    { "mark": "turn-2", "timeSeconds": 2.5 },
+    { "mark": "turn-3", "timeSeconds": 5.5 }
+  ],
+  "generatedAt": "2025-10-10T12:00:00Z",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "bitrate": 128
+}

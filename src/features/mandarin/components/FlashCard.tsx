@@ -157,7 +157,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
           <>
             <WordDetails {...currentCard} />
             {/* Speak Example Sentence Button, styled and separated */}
-            <div
+            {/* <div
               style={{
                 width: "100%",
                 marginTop: 28,
@@ -166,7 +166,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
               }}
             >
               <PlayButton mandarinText={currentCard.sentence} />
-            </div>
+            </div> */}
           </>
         ) : null}
       </div>

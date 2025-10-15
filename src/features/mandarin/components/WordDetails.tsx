@@ -5,17 +5,23 @@
  * - Pure presentational; does not manage state or persistence.
  */
 
+import { useState } from "react";
 import { Card } from "../types";
+import { ConversationBox } from "../../conversation/components";
 
 export { WordDetails };
 
 function WordDetails({
+  wordId,
+  character,
   pinyin,
   meaning,
   sentence,
   sentenceMeaning,
   sentencePinyin,
 }: Readonly<Card>) {
+  const [showExample, setShowExample] = useState(false);
+
   return (
     <div style={{ marginTop: "20px", textAlign: "left" }}>
       <p>
@@ -24,15 +30,33 @@ function WordDetails({
       <p>
         <strong>Meaning:</strong> {meaning}
       </p>
-      <p>
-        <strong>Sentence:</strong> {sentence}
-      </p>
-      <p>
-        <strong>Sentence Pinyin:</strong> {sentencePinyin}
-      </p>
-      <p>
-        <strong>Sentence Meaning:</strong> {sentenceMeaning}
-      </p>
+
+      {/* Explicit Example Generation Button */}
+      {wordId && character && (
+        <div>
+          <button
+            style={{
+              background: "#646cff",
+              color: "#fff",
+              borderRadius: 6,
+              border: "none",
+              padding: "6px 16px",
+              marginBottom: 10,
+              cursor: "pointer",
+            }}
+            onClick={() => setShowExample((show) => !show)}
+          >
+            {showExample ? "Hide Example" : "View Example"}
+          </button>
+          {showExample && (
+            <ConversationBox
+              wordId={wordId}
+              word={character}
+              onClose={() => setShowExample(false)}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

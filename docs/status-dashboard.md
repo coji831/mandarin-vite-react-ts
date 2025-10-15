@@ -11,6 +11,7 @@ This dashboard provides a centralized view of all epics and stories in the proje
 | 3    | State Management Refactor        | Completed   | 3/3               | August 15, 2025   |
 | 4    | Routing Improvements             | Completed   | 9/9               | September 5, 2025 |
 | 6    | Multi-User Progress Architecture | In Progress | 4/5               | October 2, 2025   |
+| 8    | Conversation Generation          | Completed   | 1/1               | October 12, 2025  |
 
 ## Epic Details
 
@@ -79,6 +80,19 @@ This dashboard provides a centralized view of all epics and stories in the proje
 | 6.5   | Progress Synchronization Foundation              | Not Started | -            | -          |
 | 6.6   | Migrate Progress Logic to Per-User ProgressStore | Not Started | -            | -          |
 
+### Epic 8: Conversation Generation and Caching System
+
+**Status:** Completed  
+**Last Updated:** October 12, 2025  
+**Key Documents:**
+
+- [Business Requirements](./business-requirements/epic-8-conversation-generation/README.md)
+- [Implementation](./issue-implementation/epic-8-conversation-generation/README.md)
+
+| Story | Title                                                  | Status    | Merge Date       | Key Commit       |
+| ----- | ------------------------------------------------------ | --------- | ---------------- | ---------------- |
+| 8.1   | AI-Powered Conversation Generation with Caching System | Completed | October 12, 2025 | `epic8-complete` |
+
 **Status:** Completed  
 **Last Updated:** September 5, 2025  
 **Key Documents:**
@@ -118,4 +132,4 @@ This dashboard provides a centralized view of all epics and stories in the proje
 
 ## Last Updated
 
-This dashboard was last updated on: October 2, 2025
+This dashboard was last updated on: October 12, 2025

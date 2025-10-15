@@ -4,157 +4,158 @@
 // The path is relative to this server.js file.
 
 import { Storage } from "@google-cloud/storage"; // For Google Cloud Storage interaction
-import { TextToSpeechClient } from "@google-cloud/text-to-speech";
 import dotenv from "dotenv";
 import express, { json } from "express";
-import md5 from "md5"; // For hashing text
+import path from "path";
 
-dotenv.config({ path: ".env.local" });
+import { fileURLToPath } from "url";
+import conversationRoutes from "./routes/conversation.js";
+import { API_ROUTES } from "../shared/constants/apiPaths.js";
+import { initializeStorage } from "./utils/conversationCache.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load environment variables from project root
+const envPath = path.resolve(__dirname, "..", ".env.local");
+console.log(`[Server] Loading env from: ${envPath}`);
+dotenv.config({ path: envPath });
+
 const app = express();
 const PORT = 3001; // Choose a port for your local backend (e.g., 3001)
 
 // Middleware to parse JSON request bodies
 app.use(json());
 
-// Initialize Google Cloud Text-to-Speech client
-let textToSpeechClient;
+const conversationMode = process.env.CONVERSATION_MODE;
+
+console.log(
+  `[Local Backend Init] Starting in ${
+    conversationMode ? conversationMode.toUpperCase() : "UNDEFINED"
+  } mode...`
+);
+
+// Initialize Google Cloud clients only in real mode
 let storageClient;
-let GCS_BUCKET_NAME; // Declare here to be accessible
+let GCS_BUCKET_NAME;
 
-try {
-  console.log(
-    "[Local Backend Init] Initializing Google Cloud Text-to-Speech client...",
-  );
-  // Explicitly parse the credential JSON from the environment variable
-  const credentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
-  if (!credentialsJson) {
-    throw new Error(
-      "GOOGLE_TTS_CREDENTIALS_RAW environment variable is not set in .env.local.",
+if (conversationMode === "real") {
+  try {
+    console.log("[Local Backend Init] Real mode: Initializing Google Cloud clients...");
+
+    // Parse credentials for GCS (use Gemini credentials for GCS operations)
+    const gcsCredentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
+    if (!gcsCredentialsJson) {
+      throw new Error("GEMINI_API_CREDENTIALS_RAW environment variable is not set in .env.local.");
+    }
+    const gcsCredentials = JSON.parse(gcsCredentialsJson);
+
+    GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME;
+    if (!GCS_BUCKET_NAME) {
+      throw new Error(
+        "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work."
+      );
+    }
+
+    storageClient = new Storage({
+      credentials: gcsCredentials,
+      projectId: gcsCredentials.project_id,
+    });
+
+    // Initialize conversation generator with storage client
+    initializeStorage(storageClient, GCS_BUCKET_NAME);
+
+    console.log(`[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`);
+    console.log("[Local Backend Init] Google Cloud clients initialized.");
+  } catch (initError) {
+    console.error(
+      "[Local Backend Init Error] Failed to initialize Google Cloud clients:",
+      initError
     );
+    process.exit(1);
   }
-  const credentials = JSON.parse(credentialsJson);
-  textToSpeechClient = new TextToSpeechClient({ credentials });
-  console.log(
-    "[Local Backend Init] Google Cloud Text-to-Speech client initialized.",
-  );
-
-  GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME; // Get bucket name
-  if (!GCS_BUCKET_NAME) {
-    throw new Error(
-      "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work.",
-    );
-  }
-  storageClient = new Storage({ credentials }); // Initialize Storage client
-
-  console.log(
-    `[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`,
-  );
-
-  console.log("[Local Backend Init] Google Cloud clients initialized.");
-} catch (initError) {
-  console.error(
-    "[Local Backend Init Error] Failed to initialize Google Cloud clients:",
-    initError,
-  );
-  // Exit the process if critical initialization fails
-  process.exit(1);
+} else {
+  console.log("[Local Backend Init] Scaffold mode: Skipping Google Cloud client initialization.");
 }
 
-// Define your TTS API endpoint
-app.post("/api/get-tts-audio", async (req, res) => {
-  console.log("[Local Backend] Request received at /api/get-tts-audio");
-
-  const { text } = req.body;
-
-  if (!text || text.trim() === "") {
-    console.log("[Local Backend] Text is empty or whitespace.");
-    return res.status(400).send("Text is required.");
-  }
-
-  const words = text.split(/\s+/).filter(Boolean);
-  if (words.length === 0 || words.length > 15) {
-    console.log(`[Local Backend] Word count out of range: ${words.length}`);
-    return res.status(400).send("Please enter between 1 and 15 words.");
-  }
-
-  // --- Caching Logic (New in Stage 2) ---
-  const textHash = md5(text); // Create a unique hash for the text
-  const filename = `${textHash}.mp3`;
-  const gcsFile = storageClient.bucket(GCS_BUCKET_NAME).file(filename);
-
-  try {
-    // 1. Check if file exists in GCS (cache hit)
-    const [exists] = await gcsFile.exists();
-    if (exists) {
-      const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
-      console.log(
-        `[Local Backend] GCS Cache Hit: ${filename}. Serving from ${audioUrl}`,
-      );
-      return res.status(200).json({ audioUrl }); // Return JSON with URL
-    }
-
-    // 2. Cache Miss: Generate new audio
-    console.log(`[Local Backend] Cache Miss. Generating audio for: "${text}"`);
-
-    const request = {
-      input: { text: text },
-      voice: {
-        languageCode: "cmn-CN",
-        name: "cmn-CN-Wavenet-B",
-        ssmlGender: "FEMALE",
-      },
-      audioConfig: { audioEncoding: "MP3" },
-    };
-
-    console.log("[Local Backend] Calling synthesizeSpeech API...");
-    const [response] = await textToSpeechClient.synthesizeSpeech(request);
-    // This is a Node.js Buffer
-    const audioContent = response.audioContent;
-
-    // 3. Upload to GCS
-    await gcsFile.save(audioContent, {
-      metadata: { contentType: "audio/mpeg" },
-      public: true, // Make the object publicly readable
-    });
-    const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
-    console.log(
-      `[Local Backend] Uploaded to GCS: ${filename}. Serving from ${audioUrl}`,
-    );
-
-    // Return JSON with the public URL of the audio file
-    res.status(200).json({ audioUrl });
-  } catch (error) {
-    console.error(
-      "[Local Backend Error] Error during speech synthesis or GCS operation:",
-      error,
-    );
-    if (error.code === 7 || error.details?.includes("API key not valid")) {
-      res
-        .status(500)
-        .send(
-          "Authentication error with TTS/GCS API. Check local backend logs.",
-        );
-    } else if (
-      error.code === 3 &&
-      error.details?.includes("Billing account not enabled")
-    ) {
-      res
-        .status(500)
-        .send("Google Cloud Billing not enabled. Check local backend logs.");
-    } else if (error.code === 403 && error.details?.includes("Forbidden")) {
-      // Specific GCS permission error
-      res
-        .status(500)
-        .send(
-          "GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles.",
-        );
-    } else {
-      res.status(500).send("Error generating or caching audio.");
-    }
-  }
+// CORS middleware for all API routes
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+  next();
 });
+
+// Register API routes
+app.use("/api", conversationRoutes);
+
+// Scaffolder/static serving (only in scaffold mode)
+if (conversationMode === "scaffold") {
+  app.use("/data", express.static(path.join(__dirname, "..", "public", "data")));
+  app.use("/data/examples/conversations/audio", (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Range");
+    res.header("Access-Control-Expose-Headers", "Content-Range, Content-Length");
+    next();
+  });
+  console.log("Local backend started in SCAFFOLD mode:", "ENABLED");
+} else {
+  // Real mode: Add audio proxy endpoint to handle CORS for GCS audio files
+  app.get("/audio/:filename", async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
+
+      console.log(`[Audio Proxy] Proxying audio file: ${filename}`);
+
+      const fetch = (await import("node-fetch")).default;
+      const response = await fetch(audioUrl);
+
+      if (!response.ok) {
+        return res.status(404).json({ error: "Audio file not found" });
+      }
+
+      // Set proper headers for audio streaming with CORS
+      res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Range",
+        "Access-Control-Expose-Headers": "Content-Range, Content-Length",
+        "Content-Type": response.headers.get("content-type") || "audio/mpeg",
+        "Content-Length": response.headers.get("content-length"),
+        "Accept-Ranges": "bytes",
+      });
+
+      // Handle range requests for audio seeking
+      const range = req.headers.range;
+      if (range) {
+        res.set("Content-Range", response.headers.get("content-range"));
+        res.status(206);
+      }
+
+      // Get the audio buffer and send it
+      const audioBuffer = await response.buffer();
+      res.send(audioBuffer);
+    } catch (error) {
+      console.error("[Audio Proxy] Error:", error);
+      res.status(500).json({ error: "Failed to proxy audio file" });
+    }
+  });
+
+  console.log("Local backend started in REAL mode:", "ENABLED");
+}
 
 // Start the Express server
 app.listen(PORT, () => {
   console.log(`[Local Backend] Server listening on http://localhost:${PORT}`);
 });
+
+/*
+Required environment variables:
+- CONVERSATION_MODE: "scaffold" for fixture mode, "real" for Gemini/TTS/GCS mode
+- GCS_BUCKET_NAME: Google Cloud Storage bucket for audio/conversation cache
+- GEMINI_API_CREDENTIALS_RAW: Service account JSON for Gemini API and GCS
+- GOOGLE_TTS_CREDENTIALS_RAW: Service account JSON for GCP TTS (used in conversationProcessor)
+*/
