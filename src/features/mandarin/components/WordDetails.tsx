@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Card } from "../types";
-import { ConversationBox } from "../../conversation/components";
+import { ConversationBox } from "./ConversationBox";
 
 export { WordDetails };
 

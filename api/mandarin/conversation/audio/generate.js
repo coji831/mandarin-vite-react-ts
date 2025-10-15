@@ -1,9 +1,9 @@
-// api/conversation/audio/generate.js - Vercel Serverless Function for Conversation Audio Generation
-// Based on local-backend/utils/conversationProcessor.js
+// api/mandarin/conversation/audio/generate.js - Vercel Serverless Function for Conversation Audio Generation
+// This file was moved from api/conversation/audio/generate.js to better organize mandarin features.
 
 import { Storage } from "@google-cloud/storage";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
-import { computeHash } from "../../../local-backend/utils/hashUtils.js";
+import { computeHash } from "../../../../local-backend/utils/hashUtils.js";
 
 // Storage client and TTS client will be initialized per request
 let storage = null;

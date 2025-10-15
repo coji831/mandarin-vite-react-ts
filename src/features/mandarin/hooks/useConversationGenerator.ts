@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { generateConversation as apiGenerateConversation } from "../services";
-import type { Conversation } from "../types";
+import { Conversation } from "../types";
 
 export function useConversationGenerator() {
   const [isLoading, setIsLoading] = useState(false);

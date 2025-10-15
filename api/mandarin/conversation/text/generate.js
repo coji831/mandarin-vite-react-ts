@@ -1,8 +1,8 @@
-// api/conversation/text/generate.js - Vercel Serverless Function for Conversation Text Generation
-// Based on local-backend/utils/conversationProcessor.js and conversationGenerator.js
+// api/mandarin/conversation/text/generate.js - Vercel Serverless Function for Conversation Text Generation
+// This file was moved from api/conversation/text/generate.js to better organize mandarin features.
 
 import { Storage } from "@google-cloud/storage";
-import { computeHash } from "../../../local-backend/utils/hashUtils.js";
+import { computeHash } from "../../../../local-backend/utils/hashUtils.js";
 
 // Storage client will be initialized per request
 let storage = null;

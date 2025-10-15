@@ -4,7 +4,6 @@ import { ConversationTurns, PlaybackControls } from ".";
 import { useAudioPlayback, useConversationGenerator } from "../hooks";
 import { Conversation } from "../types";
 import "./ConversationBox.css";
-import { log } from "console";
 
 export { ConversationBox };
 

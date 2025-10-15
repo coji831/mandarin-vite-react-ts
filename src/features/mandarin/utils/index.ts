@@ -1,3 +1,5 @@
 export * from "./progressHelpers";
-export * from "./vocabListHelpers";
+export * from "./schemaLoader";
 export * from "./transformVocabWord";
+export * from "./validation";
+export * from "./vocabListHelpers";
