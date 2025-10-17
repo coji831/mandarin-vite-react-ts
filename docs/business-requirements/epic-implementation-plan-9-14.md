@@ -41,18 +41,18 @@ Implementation steps
 1. Implement the two contexts and provider (see code snippet in repo docs). Keep `useProgressData()` as the source of truth inside provider.
 2. Memoize `state` and `actions` using `useMemo`, keeping lists of dependencies explicit.
 3. Add `useProgressState(selector)` and `useProgressActions()` helpers.
-4. Keep `useProgressContextCompat()` export that returns `{...state, ...actions}` for compatibility.
-5. Update `src/features/mandarin/hooks/useMandarinContext.ts` to optionally compose from the new hooks.
+4. Provide `useProgressState(selector)` and `useProgressActions()` as the new public API and update any consumer helpers accordingly.
+5. Update `src/features/mandarin/hooks/useMandarinContext.ts` to compose from the new hooks if needed.
 
 Testing & validation
 
 - Unit test to assert `useProgressActions()` returns stable function references across unrelated state changes.
 - Use React Profiler on the vocabulary page to measure render counts before/after migrating a single heavy component.
 
-Migration notes
+Migration notes (direct migration)
 
-- Convert high-frequency render components first (e.g., `VocabularyCard.tsx`, `ConversationTurns.tsx`) to use selectors.
-- Keep compatibility wrapper until all components updated.
+- Convert high-frequency render components first (e.g., `VocabularyCard.tsx`, `ConversationTurns.tsx`) to use selectors and `useProgressState`/`useProgressActions`.
+- Convert consumers incrementally and run React Profiler traces per change.
 
 Estimated time: 1–2 days
 
@@ -188,21 +188,21 @@ Estimated time: 0.5 day
 
 ---
 
-## Migration strategy & rollout plan
+## Strategy & rollout plan
 
-1. Implement Epic 9 fully with compatibility wrappers. Deploy to staging.
-2. Convert 2–4 heaviest components to selectors, measure performance improvements, and fix any regressions.
-3. Implement Epic 10 (normalize) using reducers while keeping selectors to provide array shapes.
+1. Implement Epic 9 in small PRs (types → provider → hooks). Deploy to staging and validate.
+2. Convert the 2–4 heaviest components to the new selector/hooks API and measure with React Profiler.
+3. Implement Epic 10 (normalize) using reducers. Note: provider initialization will clear any legacy persisted progress (system reset) rather than attempt to transform legacy persisted data.
 4. Implement Epic 11 (split reducers) after Epic 10 is stable.
-5. Implement Epic 12–14 (cache, testing, error boundary) — these are lower risk and can be landed incrementally.
+5. Implement Epic 12–14 (cache, testing, error boundary) incrementally.
 
-Feature-flagging
+Feature-flagging and rollout
 
-- Use `window.__MANDARIN_STATE_MIGRATION__ = true` (or env var) to gate the new provider during initial staging rollout if desired.
+- Use staged rollouts (feature branch / staging verification) to validate changes. If regressions are detected in a staged release, rollback the release and fix the cause in a follow-up PR.
 
 Backout plan
 
-- If a change introduces regressions, revert the provider to the compatibility shim (`useProgressContextCompat`) and disable migration flag.
+- Rollback the staged release if a regression is detected and apply a fix in a follow-up PR. Avoid runtime shims that maintain parallel code paths in production.
 
 ---
 

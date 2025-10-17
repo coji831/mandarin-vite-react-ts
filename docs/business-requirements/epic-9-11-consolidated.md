@@ -34,7 +34,7 @@ Files to add / update
 - `src/features/mandarin/reducers/progressReducer.ts` — normalized reducer implementation (actions: MARK_WORD_LEARNED, SET_SELECTED_LIST, RESTORE_PROGRESS, RESET_PROGRESS).
 - `src/features/mandarin/reducers/rootReducer.ts` — `combineReducers` helper and root composition.
 - `src/features/mandarin/reducers/listsReducer.ts`, `userReducer.ts`, `uiReducer.ts` — sub-reducers.
-- `src/features/mandarin/context/ProgressContext.tsx` — refactor to provide `ProgressStateContext` and `ProgressDispatchContext` and a compatibility shim `useProgressContextCompat()`.
+- `src/features/mandarin/context/ProgressContext.tsx` — refactor to provide `ProgressStateContext` and `ProgressDispatchContext` and implement `useProgressState(selector)` and `useProgressActions()`.
 - `src/features/mandarin/hooks/useProgressContext.ts` — migrate internals to `useReducer` or expose new hooks `useProgressState(selector)` and `useProgressActions()`.
 - `src/features/mandarin/utils/progressHelpers.ts` — migration helpers and selectors such as `getWordsForList(listId)`.
 - Consumers (selective edits): `src/features/mandarin/components/*` and `src/features/mandarin/pages/*` that call `useProgressContext()` (e.g., `FlashCard.tsx`, `VocabularyCard.tsx`, `NavBar.tsx`, `Sidebar.tsx`).
@@ -42,10 +42,10 @@ Files to add / update
 Implementation steps (recommended PR sequence)
 
 1. PR 9.1 — Types & reducer skeletons: add `types/Progress.ts`, create `reducers/` folder with skeletons and unit test placeholders. (no consumer changes)
-2. PR 9.2 — Provider -> useReducer: wire `ProgressContext` provider internals to `useReducer(progressReducer, initialState)` but keep compatibility shim returning old API; add reducer unit tests.
+2. PR 9.2 — Provider -> useReducer: wire `ProgressContext` provider internals to `useReducer(progressReducer, initialState)` and add reducer unit tests.
 3. PR 9.3 — Split contexts & new hooks: add `ProgressStateContext`/`ProgressDispatchContext`, implement `useProgressState(selector)` and `useProgressActions()`. Convert 2–3 heavy components to new hooks and measure with React Profiler.
 4. PR 9.4 — Sub-reducer decomposition: implement `rootReducer` and sub-reducers (`listsReducer`, `userReducer`, `uiReducer`), add tests and finalize types.
-5. PR 9.5 — Remove deprecated compatibility selectors from migrated consumers.
+5. PR 9.5 — Final cleanup: remove any deprecated compatibility selectors and finalize docs/tests.
 
 Testing & validation
 
@@ -54,10 +54,9 @@ Testing & validation
 - Hook test asserting `useProgressActions()` returns stable function references across unrelated state changes.
 - React Profiler before/after traces for migrated components (target: 30%+ render reduction for heavy consumers).
 
-Migration notes
+Initialization notes
 
-- Keep `getWordsForList(listId)` (selector that returns arrays) until all consumers are migrated.
-- Use a migration helper to convert old persisted shape on boot.
+- Clear any existing persisted progress on upgrade and initialize a clean normalized state during provider initialization; update `getWordsForList(listId)` usages to the selector-based API as part of consumer updates.
 
 Risks & mitigations
 

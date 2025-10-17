@@ -86,7 +86,7 @@ Rationale: implement the cache first (low-risk, measurable ROI) then add ErrorBo
 - Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`.
 - Operational notes: expose cache stats via dev-only logs for monitoring during rollout.
 - Links: See `docs/templates/implementation-large-epic-template.md` for PR body and `docs/templates/feature-design-template.md` for design details.
-
----
-
-Generated on: 2025-10-16
+- Update date object name to match with the real feature (to be defined later).
+- Concrete default values for TTL and maxEntries (e.g., TTL = 5m, maxEntries = 50) so implementers have a starting config. (to be defined later).
+- A short canonical list of loader entry points to update (e.g., exact paths that call `schemaLoader` or CSV parsing) to speed integration PRs. (to be defined later).
+- Example test names/snippets (`cache.hit.spec.ts`, `cache.eviction.spec.ts`, `ErrorBoundary.reset.spec.ts`) to accelerate writing tests. (to be defined later).

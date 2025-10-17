@@ -1,4 +1,3 @@
-````markdown
 # Epic 11: Testing & Dependency Injection
 
 ## Epic Summary
@@ -25,46 +24,73 @@ Many tests in the codebase rely on heavy `jest.mock()` usage and ad-hoc provider
 
 1. #XXXX / **Add test-utils provider wrappers**
 
--
-- - As a test author, I want a `Providers` wrapper and `customRender` so I can render components with minimal boilerplate and consistent context providers.
-- +2. #XXXX / **DI-enabled hooks**
--
-- - As a developer, I want hooks to accept optional DI overrides (e.g., `useProgressData({ storage, fetcher } = {})`) so tests can inject fake storage/fetchers instead of mocking modules.
-- +3. #XXXX / **Example tests & docs**
--
-- - As a team member, I want example tests and migration docs that show how to convert existing tests to use the new helpers.
-- +<!-- Add issue numbers when available -->
-- +## Story Breakdown Logic
-- +- Stories 11.1: Add `test-utils.tsx` with `Providers` and `customRender`.
-  +- Stories 11.2: Update one or two hooks to accept DI and update their tests as examples.
-  +- Stories 11.3: Gradually convert other tests and document patterns.
-- +Rationale: start with the tooling (Providers), then change a couple of high-value hooks to accept DI and show examples before converting the rest.
-- +## Acceptance Criteria
-- +- [ ] `src/test-utils.tsx` (or `src/features/mandarin/test-utils.tsx`) exports `Providers`, `customRender`, and `renderHookWithProviders`.
-  +- [ ] At least two hook tests updated to use DI overrides instead of `jest.mock()`.
-  +- [ ] Example documentation and migration guide present in `docs/business-requirements/epic-11-testing-dependency-injection/implementation/`.
-  +- [ ] CI tests run with the new helpers without regressing existing coverage.
-- +## Architecture Decisions
-- +- Decision: Provide DI via optional function arguments to hooks
--
-- - Rationale: Minimal API changes and easy to use in tests; keeps production calls unchanged.
-- - Alternatives considered: Large-scale refactor to an IoC container (too heavy).
-- +- Decision: Centralize providers in `src/test-utils.tsx`
--
-- - Rationale: Single place to update provider list and wrappers for future tests.
-- +## Implementation Plan
-- +1. PR 11.1 — Add `test-utils.tsx` with `Providers` and `customRender`, and document usage in a short README snippet.
-  +2. PR 11.2 — Update one or two hooks to accept DI overrides and update their tests to demonstrate the pattern.
-  +3. PR 11.3 — Gradually convert other tests to use `customRender` and remove unnecessary `jest.mock` calls.
-- +## Risks & mitigations
-- +- Risk: Large number of tests to convert — Severity: Low/Medium
--
-- - Mitigation: Convert high-value tests first and leave the rest for follow-up sprints.
-- +## Implementation notes
-- +- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`.
-  +- Operational notes: Keep DI optional in hooks to avoid changing existing production code paths.
-  +- Links: Use `docs/templates/feature-design-template.md` and `docs/templates/implementation-large-epic-template.md` for design and PR templates.
-- +---
-- +Generated on: 2025-10-16
-  +```
-````
+- As a test author, I want a `Providers` wrapper and `customRender` so I can render components with minimal boilerplate and consistent context providers.
+
+2. #XXXX / **DI-enabled hooks**
+
+- As a developer, I want hooks to accept optional DI overrides (e.g., `useProgressData({ storage, fetcher } = {})`) so tests can inject fake storage/fetchers instead of mocking modules.
+
+3. #XXXX / **Example tests & docs**
+
+- As a team member, I want example tests and migration docs that show how to convert existing tests to use the new helpers.
+<!-- Add issue numbers when available -->
+
+## Story Breakdown Logic
+
+- Stories 11.1: Add `test-utils.tsx` with `Providers` and `customRender`.
+- Stories 11.2: Update one or two hooks to accept DI and update their tests as examples.
+- Stories 11.3: Gradually convert other tests and document patterns.
+  Rationale: start with the tooling (Providers), then change a couple of high-value hooks to accept DI and show examples before converting the rest.
+
+## Acceptance Criteria
+
+- [ ] `src/test-utils.tsx` (or `src/features/mandarin/test-utils.tsx`) exports `Providers`, `customRender`, and `renderHookWithProviders`.
+- [ ] At least two hook tests updated to use DI overrides instead of `jest.mock()`.
+- [ ] Example documentation and migration guide present in `docs/business-requirements/epic-11-testing-dependency-injection/implementation/`.
+- [ ] CI tests run with the new helpers without regressing existing coverage.
+
+## Architecture Decisions
+
+- Rationale: Minimal API changes and easy to use in tests; keeps production calls unchanged.
+- Alternatives considered: Large-scale refactor to an IoC container (too heavy).
+- Decision: Centralize providers in `src/test-utils.tsx`
+
+Rationale: Single place to update provider list and wrappers for future tests.
+
+## Implementation Plan
+
+1. PR 11.1 — Add `test-utils.tsx` with `Providers` and `customRender`, and document usage in a short README snippet.
+2. PR 11.2 — Update one or two hooks to accept DI overrides and update their tests to demonstrate the pattern.
+3. PR 11.3 — Gradually convert other tests to use `customRender` and remove unnecessary `jest.mock` calls.
+
+## Risks & mitigations
+
+- Risk: Large number of tests to convert — Severity: Low/Medium
+
+Mitigation: Convert high-value tests first and leave the rest for follow-up sprints.
+
+## Implementation notes
+
+- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`.
+- Operational notes: Keep DI optional in hooks to avoid changing existing production code paths.
+- Links: Use `docs/templates/feature-design-template.md` and `docs/templates/implementation-large-epic-template.md` for design and PR templates.
+- Update object name to match with the real feature (to be defined later).
+- Add a canonical first 1–2 hooks list to convert (e.g., `useProgressContext` and `useProgressImport`) to speed initial PRs (to be defined later).
+- Provide 2–3 concrete example test filenames in the README (e.g., `useProgressData.di.spec.ts`, `customRender.integration.spec.ts`, `providers.customRender.spec.ts`) as ready-to-copy templates (to be defined later).
+- Add one short example code snippet that shows the DI pattern (hook signature plus a minimal test) to accelerate implementation (to be defined later). Example placeholder:
+
+```ts
+// Hook signature with optional DI
+export function useProgressData(deps?: { storage?: StorageLike; fetcher?: Fetcher }) {
+  const storage = deps?.storage ?? defaultStorage;
+  const fetcher = deps?.fetcher ?? defaultFetcher;
+  // ...hook logic
+}
+
+// Minimal test using DI
+test("useProgressData can be injected", () => {
+  const fakeStorage = { getItem: () => null, setItem: () => {} };
+  const { result } = renderHook(() => useProgressData({ storage: fakeStorage }));
+  expect(result.current).toBeDefined();
+});
+```
