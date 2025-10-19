@@ -20,19 +20,27 @@
 
 The Mandarin feature currently uses a context/provider that exposes combined state and actions. This causes many consumers to re-render on unrelated updates and makes the state shape harder to test and reason about. Normalizing the data and splitting state vs dispatch contexts will enable O(1) updates for common operations (e.g., mark word learned), allow memoized selectors, and improve testability.
 
-## User Stories
+## Stories
 
-1. #XXXX / **Provider split & new hooks**
+1. [Story 9.1 — Types & Reducer Skeletons](./story-9-1-types-reducer-skeletons.md)
 
-   - As a developer, I want the progress provider split into state and dispatch contexts, so that components can subscribe only to the state they need and avoid unnecessary re-renders.
+Add canonical normalized types and reducer skeletons for the Mandarin progress domain so downstream work can rely on a stable type surface and unit tests can exercise reducer behavior.
 
-2. #XXXX / **Normalize progress data**
+2. [Story 9.2 — Provider -> useReducer](./story-9-2-provider-useReducer.md)
 
-   - As a developer, I want progress data in a normalized shape (byId + ids), so that updates like marking a word learned operate in O(1).
+Convert the existing `Progress` provider internals to `useReducer`, ensure initialization clears legacy persisted progress, and export `initialState` for tests.
 
-3. #XXXX / **Selectors & stable actions**
+3. [Story 9.3 — Split Contexts & Hooks](./story-9-3-split-contexts-hooks.md)
 
-   - As a developer, I want `useProgressState(selector)` and `useProgressActions()` that return memoized values, so components receive stable references and re-render less frequently.
+Introduce `ProgressStateContext` and `ProgressDispatchContext`, implement `useProgressState(selector)` and `useProgressActions()`, and convert 2–3 heavy consumers to the new hooks.
+
+4. [Story 9.4 — Sub-Reducer Decomposition](./story-9-4-sub-reducer-decomposition.md)
+
+Refactor the large progress reducer into sub-reducers (`listsReducer`, `userReducer`, `uiReducer`) and compose them into a `rootReducer` for improved testability.
+
+5. [Story 9.5 — Cleanup & Finalization (no migration)](./story-9-5-cleanup-finalization.md)
+
+Finalize cleanup: deprecate or remove legacy types/APIs and complete documentation and tests. Persisted progress will be reset on upgrade (no migration shim).
 
 <!-- Add story issue numbers when available -->
 
@@ -51,7 +59,7 @@ Rationale: Group low-risk infra changes first (types, reducer) to make subsequen
 - [ ] Action functions returned from `useProgressActions()` are stable across unrelated state changes (testable via hook tests).
 - [ ] Two high-frequency components (e.g., `VocabularyCard`, `ConversationTurns`) show measurable reduced render counts in React Profiler after conversion.
 - [ ] Reducer and selector unit tests cover edge cases (restore/restore-from-legacy, reset, empty lists).
-- [ ] Implementation PRs for steps 9.1–9.4 include or reference the required files listed in `docs/business-requirements/epic-9-state-performance-core/implementation/missing-scope.md` and tick the verification checklist in the PR description.
+- [ ] Implementation PRs for steps 9.1–9.4 include or reference the required files listed in the implementation doc (`docs/issue-implementation/epic-9-state-performance-core/README.md` → "Missing scope (source scan)") and tick the verification checklist in the PR description.
 
 ## Architecture Decisions
 
@@ -68,11 +76,11 @@ Rationale: Group low-risk infra changes first (types, reducer) to make subsequen
 
 ## Implementation Plan
 
-1. PR 9.1 — Types & reducer skeletons: add `types/Progress.ts` and reducer skeletons with tests.
-2. PR 9.2 — Provider -> `useReducer`: wire provider to `useReducer` and ensure persisted legacy progress is cleared during initialization.
-3. PR 9.3 — Split contexts & hooks: add `ProgressStateContext`/`ProgressDispatchContext`, `useProgressState(selector)` and `useProgressActions()`; convert 2–3 heavy components.
-4. PR 9.4 — Sub-reducer decomposition: implement `rootReducer` and sub-reducers (`listsReducer`, `userReducer`, `uiReducer`) and tests.
-5. PR 9.5 — Cleanup: remove compatibility shim and finalize docs/tests.
+- Types & reducer skeletons: add `types/Progress.ts` and reducer skeletons with tests.
+- Provider -> `useReducer`: wire provider to `useReducer` and ensure persisted legacy progress is cleared during initialization.
+- Split contexts & hooks: add `ProgressStateContext`/`ProgressDispatchContext`, `useProgressState(selector)` and `useProgressActions()`; convert 2–3 heavy components.
+- Sub-reducer decomposition: implement `rootReducer` and sub-reducers (`listsReducer`, `userReducer`, `uiReducer`) and tests.
+- Cleanup: finalize docs/tests.
 
 ## Risks & mitigations
 
@@ -89,46 +97,4 @@ Rationale: Group low-risk infra changes first (types, reducer) to make subsequen
 - Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`.
 - Operational notes: Prefer staged rollouts and feature-branch deployments for verification in staging; convert consumers incrementally to the new hooks.
 - Links: Use templates in `docs/templates/` for PR and design files. Reference the consolidated epic docs in `docs/business-requirements/`.
-- Verification note: The detailed missing-scope list currently lives in the "Missing scope (source scan)" section below in this README; reviewers should confirm PRs include the relevant files from that list. Developers may optionally extract that list into `docs/business-requirements/epic-9-state-performance-core/implementation/missing-scope.md` as part of their implementation PR, but creating that file is not required by this epic.
-
-### Missing scope (source scan)
-
-Short summary: the codebase already includes a legacy `Progress` provider, CSV/schema loaders, and helpers. The conversion to a normalized, reducer-driven design requires creating a small set of infra files, updating provider and consumer code, and adding targeted tests. Note: persisted progress will be cleared during upgrade (system reset) rather than transformed to the new shape. Add the following items to PRs 9.1–9.4 so implementation work is complete and reviewable.
-
-- Files to create (minimal purpose)
-
-  - `src/features/mandarin/types/ProgressNormalized.ts` — canonical normalized types (byId / ids) and action types.
-  - `src/features/mandarin/reducers/progressReducer.ts` — reducer implementing normalized updates (with unit tests).
-  - `src/features/mandarin/reducers/index.ts` or `rootReducer.ts` — combine sub-reducers and export initial state.
-  - `src/features/mandarin/reducers/{lists,user,ui}Reducer.ts` — sub-reducers planned for PR 9.4.
-  - `src/features/mandarin/services/cache.ts` — small in-memory TTL cache (maxEntries + eviction) for high-frequency services.
-  - `src/test-utils.tsx` — `Providers` test wrapper and `customRender` helper for hook/component tests.
-  - `src/components/ErrorBoundary.tsx` and `src/utils/logger.ts` — capture and collect runtime errors during testing.
-  - `src/features/mandarin/hooks/{useProgressState,useProgressActions}.ts` — selector hook + stable action hooks (public API after conversion).
-  - `src/features/mandarin/hooks/useProgressContext.ts` — update internals to expose `useProgressState` and `useProgressActions`, and provide transitional selectors (e.g., `getWordsForList`) if needed.
-
-- Files to update (key areas)
-
-  - `src/features/mandarin/context/ProgressContext.tsx` — convert provider internals to `useReducer`, split state/dispatch contexts, and initialize a clean normalized state by clearing any legacy persisted progress on boot.
-  - `src/router/Router.tsx` — ensure provider wiring (state + dispatch) is mounted consistently at the app root.
-  - Heavy consumer components (update incrementally):
-    - `src/features/mandarin/components/vocabularycard.tsx`
-    - `src/features/mandarin/components/conversationturns.tsx`
-    - `src/features/mandarin/components/flashcard.tsx`
-    - `src/features/mandarin/pages/FlashCardPage.tsx`
-    - `src/features/mandarin/pages/VocabularyListPage.tsx`
-    - `src/features/mandarin/components/navbar.tsx`, `sidebar.tsx`
-  - `src/features/mandarin/hooks/useProgressContext.ts` — either adapt implementation to the new internals or deprecate in favor of the new selector/action hooks; update tests to use `test-utils`.
-  - CSV/schema loader sites: update `src/features/mandarin/utils/schemaloader.ts` and importers to transform public CSV data into normalized types on load.
-
-- Post-conversion deprecations (remove later)
-
-- Legacy flattened `types/Progress.ts` (move to `types/legacy/` or remove once no consumers use it).
-- Legacy single-export `ProgressContext` API (remove after consumers use the new hooks).
-
-- Tests to add or update
-  - Reducer unit tests: `src/features/mandarin/reducers/__tests__/*` (init, mark-word-learned, reset, empty-state/clear-state edge cases).
-  - Hook tests: `useProgressActions` identity stability; `useProgressState(selector)` correctness.
-  - Integration tests with `test-utils` to assert render-count improvements for heavy consumers (profiler snapshots or render counters).
-
-Phasing: include these items across PRs 9.1–9.4 (9.1: types + reducer skeletons + tests; 9.2: provider -> useReducer; 9.3: split contexts + hooks + convert heavy consumers; 9.4: sub-reducers + cleanup plan).
+- Implementation details and the verified missing-scope checklist live in the implementation README: `docs/issue-implementation/epic-9-state-performance-core/README.md` (see the "Missing scope (source scan)" section there). Reviewers should confirm PRs include the relevant files listed in that section; implementers may optionally extract the list into a separate implementation file in their PR if desired, but it is not required by this epic.
