@@ -12,9 +12,9 @@ Improves maintainability and test granularity; enables targeted unit tests and c
 
 ## Acceptance Criteria
 
-- [ ] Implement `listsReducer`, `userReducer`, and `uiReducer` and export them for targeted unit tests.
-- [ ] Create `rootReducer` that composes sub-reducers and is used by the `Progress` provider.
-- [ ] Add unit tests covering sub-reducer behaviors and interactions.
+- [x] Implement `listsReducer`, `userReducer`, and `uiReducer` and export them for targeted unit tests.
+- [x] Create `rootReducer` that composes sub-reducers and is used by the `Progress` provider.
+- [x] Add unit tests covering sub-reducer behaviors and interactions.
 
 ## Business Rules
 
@@ -27,10 +27,10 @@ Improves maintainability and test granularity; enables targeted unit tests and c
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: #[PR-NUMBER]
-- **Merge Date**: [Date]
-- **Key Commit**: [commit-hash]
+- **Status**: Completed
+- **PR**: # (implementation committed on branch `epic-9-state-performance-core`)
+- **Merge Date**: N/A (pending PR merge)
+- **Key Commit**: see recent commits on branch `epic-9-state-performance-core`
 
 ## User Journey [Optional]
 
