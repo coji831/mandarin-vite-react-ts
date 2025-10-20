@@ -14,8 +14,7 @@ Reduces render churn in heavy components and improves UI responsiveness for user
 
 - [ ] Add `ProgressStateContext` and `ProgressDispatchContext` and update provider exports.
 - [ ] Implement `useProgressState(selector)` and `useProgressActions()` with memoized outputs.
-- [ ] Convert at least two high-frequency components (e.g., `VocabularyCard`, `ConversationTurns`) to use the new hooks and validate reduced re-renders in React Profiler.
-- [ ] Hook tests demonstrate action stability and selector correctness.
+- [ ] Convert at least two high-frequency components (e.g., `VocabularyCard`, `ConversationTurns`) to use the new hooks.
 
 ## Business Rules
 

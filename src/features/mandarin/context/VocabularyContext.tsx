@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from "react";
 
-import { useProgressContext } from "./ProgressContext";
+import { useProgressState } from "../hooks/useProgressState";
 
 // Placeholder for vocabulary data and logic
 type VocabularyContextType = {
@@ -11,12 +11,10 @@ const VocabularyContext = createContext<VocabularyContextType | undefined>(undef
 
 type VocabularyProviderProps = { children: ReactNode };
 export function VocabularyProvider({ children }: VocabularyProviderProps) {
-  // Provide  selectedWords from progress context
+  // Provide selectedWords from the progress state via selector hook
   // This assumes ProgressProvider is a parent of VocabularyProvider
-  const { selectedWords } = useProgressContext();
-  const value: VocabularyContextType = {
-    selectedWords,
-  };
+  const selectedWords = useProgressState((s: any) => s.selectedWords ?? []);
+  const value: VocabularyContextType = { selectedWords };
   return <VocabularyContext.Provider value={value}>{children}</VocabularyContext.Provider>;
 }
 

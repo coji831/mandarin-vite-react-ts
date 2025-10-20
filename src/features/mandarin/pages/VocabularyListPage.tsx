@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FilterChip, VocabularyCard } from "../components";
-import { useMandarinContext } from "../hooks";
+import { useProgressState } from "../hooks/useProgressState";
 import type { VocabularyList } from "../types";
 import {
   extractDistinctDifficulties,
@@ -28,7 +28,11 @@ import {
 } from "../utils";
 
 export function VocabularyListPage() {
-  const { calculateListProgress } = useMandarinContext();
+  // Use a selector to only read the progress calculation function from the progress state
+  const calculateListProgress = useProgressState(
+    (s: any) =>
+      s.calculateListProgress ?? ((listId: string, len: number) => ({ mastered: 0, percent: 0 }))
+  );
 
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [search, setSearch] = useState("");

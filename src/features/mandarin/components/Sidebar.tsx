@@ -8,7 +8,7 @@
  * - Story 4-8: Updated for route-based navigation.
  */
 import { CSSProperties } from "react";
-import { useProgressContext } from "../context/ProgressContext";
+import { useProgressState } from "../hooks/useProgressState";
 import { Card, Word } from "../types";
 
 export { Sidebar };
@@ -29,10 +29,13 @@ function Sidebar({
   handleSidebarClick,
   onBackToList,
 }: Readonly<Props>) {
-  // Use context for mastered progress
-  const { masteredProgress, selectedList: selectedList } = useProgressContext();
+  // Use selector hook to read only the needed slices
+  const masteredProgress = useProgressState((s: any) => s.masteredProgress ?? {});
+  const selectedList = useProgressState((s: any) => s.selectedList ?? null);
   const masteredWordIds =
-    selectedList && masteredProgress[selectedList] ? masteredProgress[selectedList] : new Set();
+    selectedList && masteredProgress[selectedList]
+      ? masteredProgress[selectedList]
+      : new Set<string>();
   const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
   const total = filteredWords.length;
   return (

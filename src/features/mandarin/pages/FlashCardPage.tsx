@@ -19,14 +19,17 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { loadCsvVocab } from "utils";
 import { FlashCard } from "../components";
-import { useProgressContext } from "../context";
+import { useProgressState } from "../hooks/useProgressState";
+import { useProgressActions } from "../hooks/useProgressActions";
 import { VocabularyListMeta, Word } from "../types";
 import { transformVocabWord } from "../utils";
 
 export function FlashCardPage() {
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
-  const { selectedWords, loading, setSelectedList, setSelectedWords } = useProgressContext();
+  const selectedWords = useProgressState((s: any) => s.selectedWords ?? []);
+  const loading = useProgressState((s: any) => s.loading ?? false);
+  const { setSelectedList, setSelectedWords } = useProgressActions() as any;
 
   // On mount: fetch vocabularyLists.json, find file for listId, load CSV, set selectedWords
   useEffect(() => {

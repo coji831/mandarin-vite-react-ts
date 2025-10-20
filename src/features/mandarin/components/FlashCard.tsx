@@ -11,7 +11,8 @@
  */
 
 import { useMemo, useState } from "react";
-import { useProgressContext } from "../context/ProgressContext";
+import { useProgressState } from "../hooks/useProgressState";
+import { useProgressActions } from "../hooks/useProgressActions";
 import { Card, Word } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
@@ -24,7 +25,13 @@ type FlashCardProps = {
 };
 
 export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
-  const { calculateListProgress, masteredProgress, markWordLearned } = useProgressContext();
+  // Select only the parts of progress state this component needs to avoid re-renders
+  const calculateListProgress = useProgressState(
+    (s: any) =>
+      s.calculateListProgress ?? ((listId: string, len: number) => ({ mastered: 0, percent: 0 }))
+  );
+  const masteredProgress = useProgressState((s: any) => s.masteredProgress ?? {});
+  const { markWordLearned } = useProgressActions();
 
   const cards: Card[] = words.map(mapToCard);
 
@@ -52,7 +59,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
 
   // Mastery logic: use context API
   const { mastered, percent } = calculateListProgress(listId, words.length);
-  const masteredWords = masteredProgress[listId] || new Set();
+  const masteredWords = masteredProgress[listId] || new Set<string>();
 
   const currentCard = filteredWords[currentCardIndex];
 
