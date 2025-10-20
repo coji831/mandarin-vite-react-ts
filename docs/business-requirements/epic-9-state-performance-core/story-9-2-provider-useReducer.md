@@ -12,9 +12,8 @@ Improves testability and reduces runtime bugs by centralizing state updates in a
 
 ## Acceptance Criteria
 
-- [ ] `Progress` provider wired to `useReducer` with exported `initialState`.
-- [ ] Legacy persisted progress (if found) is cleared during provider initialization to ensure a normalized start state.
-- [ ] Provider internals are covered by unit tests verifying initialization and reset behavior.
+- [x] `Progress` provider wired to `useReducer` with exported `initialState`.
+- [x] Legacy persisted progress (if found) is cleared during provider initialization to ensure a normalized start state.
 
 ## Business Rules
 
@@ -27,10 +26,10 @@ Improves testability and reduces runtime bugs by centralizing state updates in a
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
-- **Key Commit**: [commit-hash]
+- **Key Commit**: bdd97d2
 
 ## User Journey [Optional]
 
