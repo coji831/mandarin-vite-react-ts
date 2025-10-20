@@ -1,8 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { Sidebar } from "./Sidebar";
-import { ProgressContextType } from "../types";
-import { ProgressContext } from "../context/ProgressContext";
+import { ProgressStateContext } from "../context/ProgressContext";
 import { Card } from "../types/Card";
 
 describe("Sidebar", () => {
@@ -41,23 +40,15 @@ describe("Sidebar", () => {
   const masteredWordIds = new Set(["1", "3"]);
   const mockListId = "test-list";
   it("shows full list and highlights mastered words", () => {
-    // Mock context with mastered words for test list
-    const mockContext: ProgressContextType = {
+    // Provide a minimal state shape expected by selectors used in Sidebar
+    const mockState = {
       selectedList: mockListId,
-      setSelectedList: () => {},
-      selectedWords: [],
-      setSelectedWords: () => {},
       masteredProgress: { [mockListId]: masteredWordIds },
-      setMasteredProgress: () => {},
-      error: "",
-      setError: () => {},
+      selectedWords: [],
       loading: false,
-      setLoading: () => {},
-      markWordLearned: () => {},
-      calculateListProgress: () => ({ mastered: 2, percent: 66 }),
-    };
+    } as any;
     render(
-      <ProgressContext.Provider value={mockContext}>
+      <ProgressStateContext.Provider value={mockState}>
         <Sidebar
           currentCardIndex={0}
           search=""
@@ -66,7 +57,7 @@ describe("Sidebar", () => {
           handleSidebarClick={() => {}}
           onBackToList={() => {}}
         />
-      </ProgressContext.Provider>
+      </ProgressStateContext.Provider>
     );
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
@@ -76,23 +67,14 @@ describe("Sidebar", () => {
 
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = jest.fn();
+    const mockState2 = {
+      selectedList: mockListId,
+      masteredProgress: { [mockListId]: masteredWordIds },
+      selectedWords: [],
+      loading: false,
+    } as any;
     render(
-      <ProgressContext.Provider
-        value={{
-          selectedList: mockListId,
-          setSelectedList: () => {},
-          selectedWords: [],
-          setSelectedWords: () => {},
-          masteredProgress: { [mockListId]: masteredWordIds },
-          setMasteredProgress: () => {},
-          error: "",
-          setError: () => {},
-          loading: false,
-          setLoading: () => {},
-          markWordLearned: () => {},
-          calculateListProgress: () => ({ mastered: 2, percent: 66 }),
-        }}
-      >
+      <ProgressStateContext.Provider value={mockState2}>
         <Sidebar
           currentCardIndex={0}
           search=""
@@ -101,7 +83,7 @@ describe("Sidebar", () => {
           handleSidebarClick={handleSidebarClick}
           onBackToList={() => {}}
         />
-      </ProgressContext.Provider>
+      </ProgressStateContext.Provider>
     );
     fireEvent.click(screen.getByText("好"));
     expect(handleSidebarClick).toHaveBeenCalled();

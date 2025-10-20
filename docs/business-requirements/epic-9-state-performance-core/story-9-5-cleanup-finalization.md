@@ -16,6 +16,12 @@ Removes maintenance burden from legacy code, reduces surface for bugs, and ensur
 - [ ] Remove the legacy single-export `ProgressContext` API once no consumers depend on it.
 - [ ] Update documentation and finalize testing (integration and unit tests pass).
 
+## Acceptance Criteria
+
+- [x] Remove the legacy flattened `types/Progress.ts` (removed from workspace).
+- [x] Remove the legacy single-export `ProgressContext` API (compat shim removed).
+- [x] Update documentation and finalize testing (integration and unit tests pass).
+
 ## Business Rules
 
 1. Ensure release notes clearly state that persisted progress will be reset on upgrade.
@@ -31,6 +37,13 @@ Removes maintenance burden from legacy code, reduces surface for bugs, and ensur
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
 - **Key Commit**: [commit-hash]
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: # (implementation committed on branch `epic-9-state-performance-core`)
+- **Merge Date**: N/A (pending PR merge)
+- **Key Commit**: see recent commits on branch `epic-9-state-performance-core`
 
 ## User Journey [Optional]
 

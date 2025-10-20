@@ -69,12 +69,5 @@ export function useProgressDispatch() {
 // Returns an object similar to the previous `ProgressContextType` while mapping
 // into the new state/dispatch contexts. Consumers can migrate to useProgressState
 // and useProgressDispatch over time.
-export function useProgressContext() {
-  const state = useProgressState();
-  const dispatch = useProgressDispatch();
-
-  return {
-    state,
-    dispatch,
-  };
-}
+// NOTE: legacy `useProgressContext` shim removed as part of cleanup (Story 9.5).
+// Consumers should use `useProgressState` and `useProgressDispatch` directly.

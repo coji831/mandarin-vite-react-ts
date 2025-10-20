@@ -1,18 +1,27 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { ProgressProvider } from "../context/ProgressContext";
 import { FlashCardPage } from "./FlashCardPage";
+import { ProgressStateContext } from "../context/ProgressContext";
+
+// Mock the useProgressActions hook to provide setSelectedList and setSelectedWords
+jest.mock("../hooks/useProgressActions", () => ({
+  useProgressActions: () => ({
+    setSelectedList: (_: string) => {},
+    setSelectedWords: (_: any[]) => {},
+  }),
+}));
 
 describe("FlashCardPage", () => {
   it("shows not found state when words are not loaded", () => {
+    const mockState = { selectedWords: [], loading: false } as any;
     render(
-      <ProgressProvider>
+      <ProgressStateContext.Provider value={mockState}>
         <MemoryRouter initialEntries={["/mandarin/flashcards/list-1"]}>
           <Routes>
             <Route path="/mandarin/flashcards/:listId" element={<FlashCardPage />} />
           </Routes>
         </MemoryRouter>
-      </ProgressProvider>
+      </ProgressStateContext.Provider>
     );
     expect(screen.getByText(/List Not Found or Empty/i)).not.toBeNull();
   });

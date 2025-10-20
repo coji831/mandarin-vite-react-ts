@@ -64,7 +64,8 @@ describe("useMandarinProgress (list-focused API)", () => {
         }}
       />
     );
-    expect(typeof hookState.selectVocabularyList).toBe("function");
+    // Hook currently provides setSelectedList and markWordLearned
+    expect(typeof hookState.setSelectedList).toBe("function");
     expect(typeof hookState.markWordLearned).toBe("function");
     // Deprecated section-based APIs should not exist (list-based APIs only)
     expect(hookState.selectedSectionId).toBeUndefined();

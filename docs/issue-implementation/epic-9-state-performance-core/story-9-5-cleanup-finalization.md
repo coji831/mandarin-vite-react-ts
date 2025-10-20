@@ -6,23 +6,29 @@ Finalize cleanup after all consumer migrations. Deprecate/remove legacy types an
 
 Deliverables:
 
-- Remove or move legacy `src/features/mandarin/types/Progress.ts` to `types/legacy/` with deprecation notes
-- Remove legacy `ProgressContext` API
+Deliverables:
+
+- Remove legacy `src/features/mandarin/types/Progress.ts` (deleted from workspace)
+- Remove legacy `ProgressContext` API (compat shim removed from `ProgressContext.tsx`)
 - Update docs and changelog with reset/migration notes
 
 ## Implementation Details
 
-Steps:
+2. Remove legacy types directly (deleted `src/features/mandarin/types/Progress.ts`).
+3. Remove compatibility shims and update imports across the repo (removed `useProgressContext` shim).
+4. Confirm no consumers rely on legacy API (use code search and PR reviews).
+5. Move legacy types to `types/legacy/` with comments and deprecation guidance.
 
-1. Confirm no consumers rely on legacy API (use code search and PR reviews).
-2. Move legacy types to `types/legacy/` with comments and deprecation guidance.
-3. Remove compatibility shims and update imports across the repo.
-4. Verify converted consumers across main flows and document any remaining gaps before final removal of legacy code.
+- Removed legacy `src/features/mandarin/types/Progress.ts` (deleted in workspace).
+- Removed legacy `ProgressContext` export (compat shim deleted; consumers should use `useProgressState` and `useProgressDispatch`).
 
 ### Files to update / deprecate
 
-- Move legacy `src/features/mandarin/types/Progress.ts` -> `src/features/mandarin/types/legacy/Progress.ts` with deprecation notes.
-- Remove legacy `ProgressContext` export after consumers have migrated.
+PR verification (copy into PR description):
+
+- [x] Legacy types removed from `src/features/mandarin/types/Progress.ts` (deleted)
+- [x] Legacy `ProgressContext` shim removed and replacements documented
+- [ ] Release notes include reset/migration impact and rollback instructions
 - Update `src/router/Router.tsx` wiring if necessary and finalize release notes documenting reset behavior.
 - Add a short PR checklist confirming consumer smoke checks and rollback plan.
 
