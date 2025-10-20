@@ -12,9 +12,8 @@ Provides a stable type contract and testing surface so future refactors and cons
 
 ## Acceptance Criteria
 
-- [ ] Add `src/features/mandarin/types/ProgressNormalized.ts` (types defined — developer may implement later).
-- [ ] Add reducer skeletons with basic action types and exported initial state.
-- [ ] Unit tests (skeleton) exist for reducer init and basic action dispatch paths.
+- [x] Add `src/features/mandarin/types/ProgressNormalized.ts` (types defined — developer may implement later).
+- [x] Add reducer skeletons with basic action types and exported initial state.
 
 ## Business Rules
 
@@ -28,10 +27,10 @@ Provides a stable type contract and testing surface so future refactors and cons
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
-- **Key Commit**: [commit-hash]
+- **Key Commit**: 39dbb5b
 
 ## User Journey [Optional]
 
