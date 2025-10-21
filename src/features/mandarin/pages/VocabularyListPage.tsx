@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FilterChip, VocabularyCard } from "../components";
-import { useProgressState } from "../hooks/useProgressState";
+import { useProgressState } from "../hooks";
 import type { VocabularyList } from "../types";
 import {
   extractDistinctDifficulties,
@@ -28,11 +28,8 @@ import {
 } from "../utils";
 
 export function VocabularyListPage() {
-  // Use a selector to only read the progress calculation function from the progress state
-  const calculateListProgress = useProgressState(
-    (s: any) =>
-      s.calculateListProgress ?? ((listId: string, len: number) => ({ mastered: 0, percent: 0 }))
-  );
+  // Read mastered progress map from the provider via selector hook
+  const masteredMap = useProgressState((s) => (s.ui && s.ui.masteredProgress) || {});
 
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [search, setSearch] = useState("");
@@ -55,12 +52,12 @@ export function VocabularyListPage() {
   }, []);
 
   // Collect all unique tags and difficulties for filter UI
-  const allTags = useMemo(extractDistinctTags(lists), [lists]);
-  const allDifficulties = useMemo(extractDistinctDifficulties(lists), [lists]);
+  const allTags: string[] = useMemo(() => extractDistinctTags(lists)(), [lists]);
+  const allDifficulties: string[] = useMemo(() => extractDistinctDifficulties(lists)(), [lists]);
 
   // Filtering logic
-  const filteredLists = useMemo(
-    getFilteredVocabularyLists(lists, search, selectedDifficulties, selectedTags),
+  const filteredLists: VocabularyList[] = useMemo(
+    () => getFilteredVocabularyLists(lists, search, selectedDifficulties, selectedTags)(),
     [lists, search, selectedDifficulties, selectedTags]
   );
 
@@ -134,8 +131,13 @@ export function VocabularyListPage() {
           </div>
         ) : (
           filteredLists.map((list) => {
-            // Calculate progress for this list using context state
-            const { mastered, percent } = calculateListProgress(list.id, list.wordCount ?? 0);
+            // Calculate progress for this list using provider state
+            const masteredSet: Set<string> =
+              (masteredMap && masteredMap[list.id]) || new Set<string>();
+            const mastered = masteredSet.size;
+            const percent = list.wordCount
+              ? Math.round((mastered / (list.wordCount ?? 0)) * 100)
+              : 0;
             return (
               <VocabularyCard
                 key={list.name}

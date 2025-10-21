@@ -12,7 +12,7 @@
  */
 import { useEffect, useState } from "react";
 
-import { getUserIdentity, updateUserActivity, UserIdentity } from "../utils/progressHelpers";
+import { getUserIdentity, updateUserActivity, UserIdentity } from "../utils";
 
 export function useUserIdentity(): [UserIdentity, () => void] {
   const [identity, setIdentity] = useState<UserIdentity>(() => getUserIdentity());

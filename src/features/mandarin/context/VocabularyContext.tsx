@@ -1,11 +1,11 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import { createContext, ReactNode, useContext } from "react";
 
-import { useProgressState } from "../hooks/useProgressState";
+import { useProgressState } from "../hooks";
+import { ExposedProgressState, Word } from "../types";
 
-// Placeholder for vocabulary data and logic
+// Vocabulary context provides a small view over progress-selected words
 type VocabularyContextType = {
-  //selectVocabularyList: (listId: string, words: any[]) => void;
-  //selectedWords: any[];
+  selectedWords: Word[];
 };
 const VocabularyContext = createContext<VocabularyContextType | undefined>(undefined);
 
@@ -13,7 +13,7 @@ type VocabularyProviderProps = { children: ReactNode };
 export function VocabularyProvider({ children }: VocabularyProviderProps) {
   // Provide selectedWords from the progress state via selector hook
   // This assumes ProgressProvider is a parent of VocabularyProvider
-  const selectedWords = useProgressState((s: any) => s.selectedWords ?? []);
+  const selectedWords = useProgressState((s: ExposedProgressState) => s.selectedWords ?? []);
   const value: VocabularyContextType = { selectedWords };
   return <VocabularyContext.Provider value={value}>{children}</VocabularyContext.Provider>;
 }

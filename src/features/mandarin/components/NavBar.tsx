@@ -7,13 +7,15 @@
  * - Story 4-8: Updated for route-based navigation.
  */
 import { useNavigate } from "react-router-dom";
-import { useProgressState } from "../hooks/useProgressState";
+
+import { useProgressState } from "../hooks";
+import type { ExposedProgressState } from "../types";
 
 export { NavBar };
 
 function NavBar() {
   const navigate = useNavigate();
-  const selectedList = useProgressState((s: any) => s.selectedList ?? null);
+  const selectedList = useProgressState((s: ExposedProgressState) => s.selectedList ?? null);
 
   return (
     <div className="flex flex-center gap-10 padding-10">

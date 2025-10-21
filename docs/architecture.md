@@ -1,5 +1,7 @@
 # System Architecture
 
+> Note: Several older docs reference legacy progress hooks (e.g., `useMandarinProgress` / `useProgressData`). The progress API has been migrated to a reducer + provider model — see `src/features/mandarin/docs/design.md` for the current contract and migration notes.
+
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
 ## Main Modules

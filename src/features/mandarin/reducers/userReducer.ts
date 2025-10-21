@@ -4,16 +4,16 @@
  * Contains user-related state (identity, preferences) used by the progress domain.
  * Automation: see docs/automation/ai-file-operations.md
  */
-export interface UserState {
+export type UserState = {
   userId?: string | null;
-  preferences?: Record<string, any>;
-}
+  preferences?: Record<string, unknown>;
+};
 
 export const userInitialState: UserState = { userId: null, preferences: {} };
 
 export type UserAction =
   | { type: "USER/SET_ID"; payload: { userId: string } }
-  | { type: "USER/SET_PREF"; payload: { key: string; value: any } };
+  | { type: "USER/SET_PREF"; payload: { key: string; value: unknown } };
 
 export function userReducer(state: UserState = userInitialState, action: UserAction): UserState {
   switch (action.type) {

@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
+
+import { ProgressStateContext } from "../context";
+import type { UserState as AppUserState } from "../reducers";
+import { Card, ExposedProgressState, ProgressState as ListsProgressState } from "../types";
 import { Sidebar } from "./Sidebar";
-import { ProgressStateContext } from "../context/ProgressContext";
-import { Card } from "../types/Card";
 
 describe("Sidebar", () => {
   const words: Card[] = [
@@ -41,12 +43,23 @@ describe("Sidebar", () => {
   const mockListId = "test-list";
   it("shows full list and highlights mastered words", () => {
     // Provide a minimal state shape expected by selectors used in Sidebar
-    const mockState = {
+    const mockState: ExposedProgressState = {
+      lists: {} as ListsProgressState,
+      user: {} as AppUserState,
+      ui: {
+        selectedList: mockListId,
+        selectedWords: [],
+        masteredProgress: { [mockListId]: masteredWordIds },
+        isLoading: false,
+        error: "",
+      },
+      // legacy aliases
       selectedList: mockListId,
-      masteredProgress: { [mockListId]: masteredWordIds },
       selectedWords: [],
+      masteredProgress: { [mockListId]: masteredWordIds },
       loading: false,
-    } as any;
+      error: "",
+    };
     render(
       <ProgressStateContext.Provider value={mockState}>
         <Sidebar
@@ -67,12 +80,23 @@ describe("Sidebar", () => {
 
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = jest.fn();
-    const mockState2 = {
+    const mockState2: ExposedProgressState = {
+      lists: {} as ListsProgressState,
+      user: {} as AppUserState,
+      ui: {
+        selectedList: mockListId,
+        selectedWords: [],
+        masteredProgress: { [mockListId]: masteredWordIds },
+        isLoading: false,
+        error: "",
+      },
+      // legacy aliases
       selectedList: mockListId,
-      masteredProgress: { [mockListId]: masteredWordIds },
       selectedWords: [],
+      masteredProgress: { [mockListId]: masteredWordIds },
       loading: false,
-    } as any;
+      error: "",
+    };
     render(
       <ProgressStateContext.Provider value={mockState2}>
         <Sidebar

@@ -11,9 +11,9 @@
  */
 
 import { useMemo, useState } from "react";
-import { useProgressState } from "../hooks/useProgressState";
-import { useProgressActions } from "../hooks/useProgressActions";
-import { Card, Word } from "../types";
+
+import { useProgressActions, useProgressState } from "../hooks";
+import { Card, ExposedProgressState, Word } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
@@ -26,11 +26,10 @@ type FlashCardProps = {
 
 export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
   // Select only the parts of progress state this component needs to avoid re-renders
-  const calculateListProgress = useProgressState(
-    (s: any) =>
-      s.calculateListProgress ?? ((listId: string, len: number) => ({ mastered: 0, percent: 0 }))
+  // use masteredProgress from ui and compute simple progress locally
+  const masteredProgress = useProgressState(
+    (s: ExposedProgressState) => s.ui.masteredProgress ?? {}
   );
-  const masteredProgress = useProgressState((s: any) => s.masteredProgress ?? {});
   const { markWordLearned } = useProgressActions();
 
   const cards: Card[] = words.map(mapToCard);
@@ -57,9 +56,10 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
     return null;
   }
 
-  // Mastery logic: use context API
-  const { mastered, percent } = calculateListProgress(listId, words.length);
+  // Mastery logic: compute from masteredProgress
   const masteredWords = masteredProgress[listId] || new Set<string>();
+  const mastered = masteredWords.size;
+  const percent = words.length === 0 ? 0 : Math.round((mastered / words.length) * 100);
 
   const currentCard = filteredWords[currentCardIndex];
 
@@ -97,6 +97,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
               >
                 {currentCard.character}
               </div>
+              <div style={{ color: "#b3c7ff", marginTop: 8 }}>{percent}% mastered</div>
               {/* Speak and Show Details Row */}
               <div
                 className="flex"

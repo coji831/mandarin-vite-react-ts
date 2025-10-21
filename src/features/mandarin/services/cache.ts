@@ -7,7 +7,7 @@
  */
 
 type CacheEntry<T> = { value: T; expiresAt: number };
-const store = new Map<string, CacheEntry<any>>();
+const store = new Map<string, CacheEntry<unknown>>();
 
 export function setCache<T>(key: string, value: T, ttlMs = 60_000) {
   store.set(key, { value, expiresAt: Date.now() + ttlMs });

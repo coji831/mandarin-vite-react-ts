@@ -3,8 +3,6 @@
 import { API_ROUTES } from "../../../../shared/constants/apiPaths";
 import { ConversationAudio } from "../types";
 
-const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:3001/api" : "/api";
-
 export async function requestAudio(params: {
   wordId: string;
   voice?: string;

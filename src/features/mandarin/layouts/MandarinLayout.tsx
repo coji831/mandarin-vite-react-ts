@@ -14,17 +14,21 @@
 import { Outlet } from "react-router-dom";
 
 import { NavBar } from "../components";
-import { ProgressProvider } from "../context";
+import { ProgressProvider, UserIdentityProvider, VocabularyProvider } from "../context";
 
 export function MandarinLayout() {
   return (
-    <ProgressProvider>
-      <div className="mandarin-container">
-        <NavBar />
-        <div className="mandarin-content">
-          <Outlet />
-        </div>
-      </div>
-    </ProgressProvider>
+    <UserIdentityProvider>
+      <ProgressProvider>
+        <VocabularyProvider>
+          <div className="mandarin-container">
+            <NavBar />
+            <div className="mandarin-content">
+              <Outlet />
+            </div>
+          </div>
+        </VocabularyProvider>
+      </ProgressProvider>
+    </UserIdentityProvider>
   );
 }

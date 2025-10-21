@@ -11,15 +11,7 @@ import { ConversationBox } from "./ConversationBox";
 
 export { WordDetails };
 
-function WordDetails({
-  wordId,
-  character,
-  pinyin,
-  meaning,
-  sentence,
-  sentenceMeaning,
-  sentencePinyin,
-}: Readonly<Card>) {
+function WordDetails({ wordId, character, pinyin, meaning }: Readonly<Card>) {
   const [showExample, setShowExample] = useState(false);
 
   return (

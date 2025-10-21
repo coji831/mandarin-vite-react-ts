@@ -8,7 +8,7 @@
  * This file is a focused replacement for the previous monolithic `progressReducer`.
  * Automation: see docs/automation/ai-file-operations.md and docs/automation/automation-protocol.md
  */
-import type { ProgressState, WordEntity } from "../types/ProgressNormalized";
+import { ProgressState, WordEntity } from "../types";
 
 export const listsInitialState: ProgressState = { wordsById: {}, wordIds: [] };
 

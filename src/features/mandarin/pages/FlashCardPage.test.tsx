@@ -1,19 +1,37 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+
+import { ProgressStateContext } from "../context";
+import { UserState as AppUserState } from "../reducers";
+import { ExposedProgressState, ProgressState as ListsProgressState } from "../types";
 import { FlashCardPage } from "./FlashCardPage";
-import { ProgressStateContext } from "../context/ProgressContext";
 
 // Mock the useProgressActions hook to provide setSelectedList and setSelectedWords
 jest.mock("../hooks/useProgressActions", () => ({
   useProgressActions: () => ({
-    setSelectedList: (_: string) => {},
-    setSelectedWords: (_: any[]) => {},
+    setSelectedList: () => {},
+    setSelectedWords: () => {},
   }),
 }));
 
 describe("FlashCardPage", () => {
   it("shows not found state when words are not loaded", () => {
-    const mockState = { selectedWords: [], loading: false } as any;
+    const mockState: ExposedProgressState = {
+      lists: {} as unknown as ListsProgressState,
+      user: {} as unknown as AppUserState,
+      ui: {
+        selectedList: null,
+        selectedWords: [],
+        masteredProgress: {},
+        isLoading: false,
+        error: "",
+      },
+      selectedList: null,
+      selectedWords: [],
+      masteredProgress: {},
+      loading: false,
+      error: "",
+    };
     render(
       <ProgressStateContext.Provider value={mockState}>
         <MemoryRouter initialEntries={["/mandarin/flashcards/list-1"]}>

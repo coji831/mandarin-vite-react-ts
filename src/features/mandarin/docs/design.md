@@ -39,35 +39,43 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 
 ### State Management & Architecture (Update)
 
-- **Progress Tracking:**  
-  All vocabulary progress is tracked per user/device using the `ProgressStore` utility.  
-  Progress is stored in localStorage, namespaced by user/device ID from `useUserIdentity`.  
-  All progress operations (marking words, loading lists, persisting state) are centralized in the `useProgressData` hook.
+**Progress Tracking:**
 
-- **React Context API:**
+- All vocabulary progress is tracked per user/device using a reducer-driven context/provider architecture.
+- Progress is stored in localStorage, namespaced by user/device ID from `useUserIdentity`.
+- All progress operations (marking words, loading lists, persisting state) are centralized in the `ProgressProvider` and accessed via hooks:
+  - Use `useProgressState` for selectors (read-only): `const selectedWords = useProgressState(s => s.ui?.selectedWords ?? [])`.
+  - Use `useProgressActions` for imperative updates (markWordLearned, setSelectedWords, etc.): `const { markWordLearned } = useProgressActions()`.
+- Context objects (`ProgressStateContext`, `ProgressDispatchContext`) are defined in a separate file for Fast Refresh compatibility; the provider file only exports the component.
+- Legacy hooks and helpers (`useProgressData`, `useMandarinProgress`, legacy localStorage keys) have been removed. See `scripts/cleanup-report.json` for audit history.
 
-  - `ProgressContext` provides mastered words, selected list, and selected words for the current user.
-  - `useMandarinContext` combines progress and vocabulary context for unified access in components.
-  - All UI components consume context directly—no prop drilling.
+**React Context API:**
 
-- **Custom Hooks:**
+- `ProgressStateContext` and `ProgressDispatchContext` provide mastered words, selected list, and selected words for the current user.
+- `ProgressProvider` wraps the app and exposes state/actions via hooks.
+- `useMandarinContext` combines progress and vocabulary context for unified access in components.
+- All UI components consume context directly—no prop drilling.
 
-  - `useProgressData`: Manages all progress logic, including loading words, updating mastered state, and persisting to localStorage.
-  - `useUserIdentity`: Manages user/device identity and persistence.
+**Custom Hooks:**
+
+- `useProgressState`: Selector hook for reading progress state from context.
+- `useProgressActions`: Returns memoized action creators for updating progress state.
+- `useUserIdentity`: Manages user/device identity and persistence.
 
 - **Vocabulary List UI:**
 
   - Card-based layout with progress bar, search/filter, and responsive design.
   - Progress indicator uses context state for per-list mastered percentage.
 
-- **No Daily Commitment Logic:**
+**No Daily Commitment Logic:**
 
-  - All legacy daily commitment and section logic has been removed.
-  - Progress is now list-focused and user-centric.
+- All legacy daily commitment and section logic has been removed.
+- Progress is now list-focused and user-centric.
 
-- **Multi-User Ready:**
-  - Architecture supports multiple users and prepares for future cloud sync.
-  - All progress is scoped to the current user/device.
+**Multi-User Ready:**
+
+- Architecture supports multiple users and prepares for future cloud sync.
+- All progress is scoped to the current user/device.
 
 ---
 

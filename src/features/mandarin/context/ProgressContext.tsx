@@ -6,68 +6,101 @@
  * deterministic initialization sequence that clears legacy persisted progress before
  * mounting consumers.
  */
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
-import { progressReducer, initialState } from "../reducers";
-import { readLegacyProgress, clearLegacyProgress } from "../utils/legacyProgress";
+import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useState } from "react";
 
-export const ProgressStateContext = createContext<typeof initialState | null>(null);
-export const ProgressDispatchContext = createContext<React.Dispatch<any> | null>(null);
+import { initialState, ProgressAction, progressReducer, uiInitialState } from "../reducers";
+import { ExposedProgressState } from "../types";
+import {
+  getUserIdentity,
+  getUserProgress,
+  persistMasteredProgress,
+  restoreMasteredProgress,
+  saveUserProgress,
+} from "../utils";
+
+export const ProgressStateContext = createContext<ExposedProgressState | null>(
+  null
+) as React.Context<ExposedProgressState | null>;
+export const ProgressDispatchContext = createContext<React.Dispatch<ProgressAction> | null>(
+  null
+) as React.Context<React.Dispatch<ProgressAction> | null>;
 
 type Props = { children: ReactNode };
 
-export const ProgressProvider: React.FC<Props> = ({ children }) => {
+export function ProgressProvider({ children }: Props) {
   const [state, dispatch] = useReducer(progressReducer, initialState);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const legacy = readLegacyProgress();
-      if (legacy) {
-        clearLegacyProgress();
-        dispatch({ type: "INIT" });
+    async function init() {
+      try {
+        // determine current user identity and load persisted progress
+        const identity = getUserIdentity();
+        const userProgress = getUserProgress(identity.userId);
+
+        // restore mastered progress into compatibility UI slice
+        const mastered = restoreMasteredProgress(userProgress);
+        // convert mastered (Set map) into serialized shape expected by reducer
+        const serialized: Record<string, Record<string, boolean>> = {};
+        Object.keys(mastered).forEach((listId) => {
+          const set = mastered[listId] || new Set<string>();
+          const obj: Record<string, boolean> = {};
+          set.forEach((id) => (obj[id] = true));
+          serialized[listId] = obj;
+        });
+
+        if (Object.keys(serialized).length > 0) {
+          dispatch({ type: "UI/SET_MASTERED_PROGRESS", payload: { mastered: serialized } });
+        }
+      } finally {
+        setReady(true);
       }
-    } finally {
-      setReady(true);
     }
+
+    void init();
   }, []);
+
+  // Persist compatibility UI mastered progress when it changes (selectedList, selectedWords)
+  useEffect(() => {
+    // we only persist when a user identity exists
+    try {
+      const identity = getUserIdentity();
+      const userId = identity.userId;
+      const masteredMap = (state.ui && state.ui.masteredProgress) || {};
+      const userProgress = persistMasteredProgress(masteredMap, getUserProgress(userId));
+      saveUserProgress(userId, userProgress);
+    } catch (e) {
+      // best-effort persistence — don't block UI
+      console.warn("Progress persistence failed:", e);
+    }
+  }, [state.ui, state.ui.masteredProgress, state.ui.selectedList, state.ui.selectedWords]);
+
+  // For backwards compatibility with legacy selectors that read top-level
+  // fields (e.g. s.selectedWords), expose a merged view that includes the
+  // ui slice fields at the root. New consumers should prefer selectors that
+  // target s.ui to avoid ambiguity.
+  const exposedState = useMemo(() => {
+    // ensure `ui` is a fully-typed UiState to avoid the `|| {}` widening the type to `{}`
+    const ui = state?.ui ?? uiInitialState;
+    return {
+      ...state,
+      // legacy top-level aliases
+      selectedList: ui.selectedList ?? null,
+      selectedWords: ui.selectedWords ?? [],
+      masteredProgress: ui.masteredProgress ?? {},
+      loading: ui.isLoading ?? false,
+      error: ui.error ?? "",
+      ui,
+    };
+  }, [state]);
 
   if (!ready) return null;
 
   return (
-    <ProgressStateContext.Provider value={state}>
+    <ProgressStateContext.Provider value={exposedState}>
       <ProgressDispatchContext.Provider value={dispatch}>
         {children}
       </ProgressDispatchContext.Provider>
     </ProgressStateContext.Provider>
   );
-};
-
-export function useProgressState<T>(selector?: (s: typeof initialState) => T) {
-  const ctx = useContext(ProgressStateContext);
-  if (ctx === null) throw new Error("useProgressState must be used within a ProgressProvider");
-  // If no selector provided, return full state
-  // Consumer code should prefer selectors to avoid re-renders.
-  // Note: keep implementation minimal here; memoization can be added later.
-  // @ts-ignore
-  return selector ? selector(ctx) : ctx;
 }
-
-export function useProgressDispatch() {
-  const ctx = useContext(ProgressDispatchContext);
-  if (ctx === null) throw new Error("useProgressDispatch must be used within a ProgressProvider");
-  return ctx;
-}
-
-// Compatibility adapter for existing consumers that expect `useProgressContext()`
-// Returns an object similar to the previous `ProgressContextType` while mapping
-// into the new state/dispatch contexts. Consumers can migrate to useProgressState
-// and useProgressDispatch over time.
-// NOTE: legacy `useProgressContext` shim removed as part of cleanup (Story 9.5).
-// Consumers should use `useProgressState` and `useProgressDispatch` directly.

@@ -67,7 +67,7 @@ export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
         }
       }
 
-      let [No, Chinese, Pinyin, English] = cells;
+      const [No, Chinese, Pinyin, English] = cells;
       // Normalize wordId to string
       const wordId = (No ?? "").toString();
       // Duplicate/missing detection
