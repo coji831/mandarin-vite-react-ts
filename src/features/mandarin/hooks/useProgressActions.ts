@@ -9,14 +9,15 @@
  */
 import { useMemo } from "react";
 
-import { ExposedProgressState, Word } from "../types";
+import { RootState } from "../reducers";
+import { Word } from "../types";
 import { useProgressDispatch } from "./useProgressDispatch";
 import { useProgressState } from "./useProgressState";
 
 export function useProgressActions() {
   const dispatch = useProgressDispatch();
 
-  const selectedList = useProgressState((s: ExposedProgressState) => s.ui?.selectedList ?? null);
+  const selectedList = useProgressState((s: RootState) => s.ui?.selectedList ?? null);
 
   return useMemo(
     () => ({

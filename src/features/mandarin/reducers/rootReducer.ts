@@ -1,15 +1,15 @@
 import { ProgressState } from "../types";
 import { ListsAction, listsInitialState, listsReducer } from "./listsReducer";
-import { UiAction, uiInitialState, uiReducer } from "./uiReducer";
-import { UserAction, userInitialState, userReducer } from "./userReducer";
+import { UiAction, uiInitialState, uiReducer, UiState } from "./uiReducer";
+import { UserAction, userInitialState, userReducer, UserState } from "./userReducer";
 
 export type ProgressAction = ListsAction | UserAction | UiAction;
 
 // New RootState composes the lists (progress) slice with the user and ui slices.
 export interface RootState {
   lists: ProgressState;
-  user: typeof userInitialState;
-  ui: typeof uiInitialState;
+  user: UserState;
+  ui: UiState;
 }
 
 export const initialState: RootState = {

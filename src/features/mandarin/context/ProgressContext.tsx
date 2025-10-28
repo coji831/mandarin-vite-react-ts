@@ -6,10 +6,9 @@
  * deterministic initialization sequence that clears legacy persisted progress before
  * mounting consumers.
  */
-import React, { createContext, ReactNode, useEffect, useMemo, useReducer, useState } from "react";
+import React, { createContext, ReactNode, useEffect, useReducer, useState } from "react";
 
-import { initialState, ProgressAction, progressReducer, uiInitialState } from "../reducers";
-import { ExposedProgressState } from "../types";
+import { initialState, ProgressAction, progressReducer, RootState } from "../reducers";
 import {
   getUserIdentity,
   getUserProgress,
@@ -18,9 +17,9 @@ import {
   saveUserProgress,
 } from "../utils";
 
-export const ProgressStateContext = createContext<ExposedProgressState | null>(
+export const ProgressStateContext = createContext<RootState | null>(
   null
-) as React.Context<ExposedProgressState | null>;
+) as React.Context<RootState | null>;
 export const ProgressDispatchContext = createContext<React.Dispatch<ProgressAction> | null>(
   null
 ) as React.Context<React.Dispatch<ProgressAction> | null>;
@@ -75,29 +74,10 @@ export function ProgressProvider({ children }: Props) {
     }
   }, [state.ui, state.ui.masteredProgress, state.ui.selectedList, state.ui.selectedWords]);
 
-  // For backwards compatibility with legacy selectors that read top-level
-  // fields (e.g. s.selectedWords), expose a merged view that includes the
-  // ui slice fields at the root. New consumers should prefer selectors that
-  // target s.ui to avoid ambiguity.
-  const exposedState = useMemo(() => {
-    // ensure `ui` is a fully-typed UiState to avoid the `|| {}` widening the type to `{}`
-    const ui = state?.ui ?? uiInitialState;
-    return {
-      ...state,
-      // legacy top-level aliases
-      selectedList: ui.selectedList ?? null,
-      selectedWords: ui.selectedWords ?? [],
-      masteredProgress: ui.masteredProgress ?? {},
-      loading: ui.isLoading ?? false,
-      error: ui.error ?? "",
-      ui,
-    };
-  }, [state]);
-
   if (!ready) return null;
 
   return (
-    <ProgressStateContext.Provider value={exposedState}>
+    <ProgressStateContext.Provider value={state}>
       <ProgressDispatchContext.Provider value={dispatch}>
         {children}
       </ProgressDispatchContext.Provider>

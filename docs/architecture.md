@@ -25,12 +25,113 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
 
 ## State Management
 
-- **Context API**: The application uses React Context API for state management
-- **Custom Hooks**: Feature-specific logic is encapsulated in custom hooks (e.g., `useMandarinProgress`).
-- **Multi-User Progress**: As of Epic 6, all user progress is tracked per user. The `useMandarinProgress` hook and related helpers require a `userId` (from `useUserIdentity`) to load and save progress, enabling support for multiple users on the same device or in future backend integrations.
-- **User/Device Switching UI (Planned)**: A user-facing UI for selecting and switching users/devices will be added (see story 6-4). This will allow users to manage their identity and progress directly from the app interface.
-- **Progress Helpers**: Progress calculation and data loading logic are extracted to `progressHelpers.ts` for maintainability and clarity.
-- **Local Storage**: User progress and settings are persisted in browser's localStorage, namespaced by user ID.
+The application uses a **reducer-based architecture with React Context API** for centralized state management.
+
+### Architecture Pattern
+
+**Mandarin Feature State:**
+
+- **Provider:** `ProgressProvider` wraps the Mandarin feature (in `MandarinLayout`)
+- **State:** Managed via `useReducer` with composed sub-reducers
+- **Persistence:** Automatic localStorage sync on state changes
+
+### Reducer Composition
+
+The root reducer combines three domain-specific sub-reducers:
+
+1. **`listsReducer`**: Manages normalized vocabulary data
+
+   - State: `{ wordsById: Record<WordId, WordEntity>, wordIds: WordId[] }`
+   - Handles: Word mastery status, vocabulary data normalization
+   - Actions: `INIT`, `RESET`, `MARK_WORD_LEARNED`
+
+2. **`userReducer`**: Manages user identity and preferences
+
+   - State: `{ userId: string, preferences: Record<string, unknown> }`
+   - Handles: User settings, device identity
+   - Actions: `USER/SET_ID`, `USER/SET_PREF`
+
+3. **`uiReducer`**: Manages UI state and legacy compatibility
+   - State: `{ isLoading, lastUpdated, selectedList, selectedWords, masteredProgress, error }`
+   - Handles: Loading states, current selection, mastered word tracking
+   - Actions: `UI/SET_LOADING`, `UI/SET_SELECTED_LIST`, `UI/SET_SELECTED_WORDS`, `UI/ADD_MASTERED_WORD`, etc.
+
+### Split Context Pattern
+
+For performance optimization, state and dispatch are provided via separate contexts:
+
+- **`ProgressStateContext`**: Read-only state access (type: `RootState`)
+- **`ProgressDispatchContext`**: Action dispatch function
+
+This prevents unnecessary re-renders when components only need to dispatch actions.
+
+### Custom Hooks
+
+**Reading State:**
+
+```typescript
+useProgressState(selector: (s: RootState) => T): T
+```
+
+- Memoized selector hook for granular subscriptions
+- Always access via slice pattern: `s.ui.*`, `s.lists.*`, `s.user.*`
+- Examples:
+  - `useProgressState(s => s.ui?.selectedWords ?? [])`
+  - `useProgressState(s => s.ui?.isLoading ?? false)`
+  - `useProgressState(s => s.lists?.wordsById)`
+
+**Updating State:**
+
+```typescript
+useProgressActions(): ActionCreators
+```
+
+- Returns stable, memoized action creator functions
+- Available actions: `setSelectedList()`, `setSelectedWords()`, `markWordLearned()`, `setLoading()`, `setError()`, `setMasteredProgress()`, `resetProgress()`, `init()`
+- Example: `const { markWordLearned } = useProgressActions()`
+
+**User Identity:**
+
+```typescript
+useUserIdentity(): [UserIdentity, () => void]
+```
+
+- Manages user/device identity and persistence
+- Returns: `[identity, refresh]` tuple
+
+### Data Flow
+
+```
+Component
+  ↓ (reads via selector)
+useProgressState(s => s.ui.selectedWords)
+  ↓
+ProgressStateContext (RootState)
+  ↑ (updates via reducer)
+rootReducer(state, action)
+  ↑ (dispatches action)
+useProgressActions().markWordLearned(id)
+  ↑ (calls action creator)
+Component
+```
+
+### Multi-User Support
+
+- **User Identity**: Tracked per device via `getUserIdentity()` helper
+- **Progress Isolation**: All progress namespaced by `userId` in localStorage
+- **Storage Keys**:
+  - `user_identity`: User/device identity
+  - `progress_{userId}`: Per-user progress data
+- **Architecture**: Ready for future cloud sync or authentication integration
+
+### Persistence Strategy
+
+- **Auto-save**: Progress automatically persisted to localStorage on state changes
+- **Initialization**: Progress loaded from localStorage on `ProgressProvider` mount
+- **Format**: Serialized to JSON for storage, deserialized to Sets/Objects for runtime
+- **Helpers**: `progressHelpers.ts` provides `getUserProgress()`, `saveUserProgress()`, `persistMasteredProgress()`, `restoreMasteredProgress()`
+
+For detailed state management documentation, see [`src/features/mandarin/docs/design.md`](../src/features/mandarin/docs/design.md) and [`src/features/mandarin/docs/api-spec.md`](../src/features/mandarin/docs/api-spec.md).
 
 - **Google Cloud Text-to-Speech**: Integration in [../api/get-tts-audio.js](../api/get-tts-audio.js)
 - **Google Cloud Storage**: Used for caching generated audio files
@@ -63,9 +164,34 @@ This project is a Vite + React + TypeScript application for Mandarin vocabulary 
     - `VocabularyCard.css`: Styles for card layout, feedback, and responsiveness
   - **Implemented in Epic 5 (Stories 5.1–5.4)**
 
-- Navigation is handled by React Router
-- Routes defined in [../src/router/Router.tsx](../src/router/Router.tsx)
-- Path constants in [../src/constants/paths.ts](../src/constants/paths.ts)
+## Navigation & Routing
+
+The Mandarin feature uses nested routing with React Router.
+
+**Route Structure:**
+
+```
+/ (Root)
+└── /mandarin/* (MandarinRoutes)
+    ├── /mandarin/ → redirects to /vocabulary-list
+    ├── /mandarin/vocabulary-list (VocabularyListPage)
+    └── /mandarin/flashcards/:listId (FlashCardPage)
+```
+
+**Navigation Flow:**
+
+1. User visits `/mandarin` → auto-redirects to `/mandarin/vocabulary-list`
+2. User selects a vocabulary list → navigates to `/mandarin/flashcards/:listId`
+3. `FlashCardPage` loads CSV data for the selected list
+4. User studies flashcards and marks words as mastered
+5. Progress auto-saves to localStorage
+6. User returns to vocabulary list → sees updated progress percentages
+
+**Implementation:**
+
+- Routes defined in [`src/router/Router.tsx`](../src/router/Router.tsx)
+- Path constants in [`src/constants/paths.ts`](../src/constants/paths.ts)
+- Feature routes in [`src/features/mandarin/router/MandarinRoutes.tsx`](../src/features/mandarin/router/MandarinRoutes.tsx)
 
 - **Architecture**: This file for system-level design
 - **Implementation**: Detailed implementation notes in [./issue-implementation/](./issue-implementation/)

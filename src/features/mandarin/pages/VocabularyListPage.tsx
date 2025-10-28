@@ -20,16 +20,18 @@ import { useNavigate } from "react-router-dom";
 
 import { FilterChip, VocabularyCard } from "../components";
 import { useProgressState } from "../hooks";
-import type { VocabularyList } from "../types";
+import { VocabularyList } from "../types";
 import {
   extractDistinctDifficulties,
   extractDistinctTags,
   getFilteredVocabularyLists,
 } from "../utils";
 
-export function VocabularyListPage() {
+export { VocabularyListPage };
+
+function VocabularyListPage() {
   // Read mastered progress map from the provider via selector hook
-  const masteredMap = useProgressState((s) => (s.ui && s.ui.masteredProgress) || {});
+  const { masteredProgress } = useProgressState((s) => s.ui);
 
   const [lists, setLists] = useState<VocabularyList[]>([]);
   const [search, setSearch] = useState("");
@@ -132,8 +134,7 @@ export function VocabularyListPage() {
         ) : (
           filteredLists.map((list) => {
             // Calculate progress for this list using provider state
-            const masteredSet: Set<string> =
-              (masteredMap && masteredMap[list.id]) || new Set<string>();
+            const masteredSet: Set<string> = masteredProgress?.[list.id] || new Set<string>();
             const mastered = masteredSet.size;
             const percent = list.wordCount
               ? Math.round((mastered / (list.wordCount ?? 0)) * 100)

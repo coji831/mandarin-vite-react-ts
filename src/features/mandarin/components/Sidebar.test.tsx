@@ -3,7 +3,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ProgressStateContext } from "../context";
 import type { UserState as AppUserState } from "../reducers";
-import { Card, ExposedProgressState, ProgressState as ListsProgressState } from "../types";
+import { RootState } from "../reducers/rootReducer";
+import { Card, ProgressState as ListsProgressState } from "../types";
 import { Sidebar } from "./Sidebar";
 
 describe("Sidebar", () => {
@@ -43,7 +44,7 @@ describe("Sidebar", () => {
   const mockListId = "test-list";
   it("shows full list and highlights mastered words", () => {
     // Provide a minimal state shape expected by selectors used in Sidebar
-    const mockState: ExposedProgressState = {
+    const mockState: RootState = {
       lists: {} as ListsProgressState,
       user: {} as AppUserState,
       ui: {
@@ -53,12 +54,6 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
-      // legacy aliases
-      selectedList: mockListId,
-      selectedWords: [],
-      masteredProgress: { [mockListId]: masteredWordIds },
-      loading: false,
-      error: "",
     };
     render(
       <ProgressStateContext.Provider value={mockState}>
@@ -80,7 +75,7 @@ describe("Sidebar", () => {
 
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = jest.fn();
-    const mockState2: ExposedProgressState = {
+    const mockState2: RootState = {
       lists: {} as ListsProgressState,
       user: {} as AppUserState,
       ui: {
@@ -90,12 +85,6 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
-      // legacy aliases
-      selectedList: mockListId,
-      selectedWords: [],
-      masteredProgress: { [mockListId]: masteredWordIds },
-      loading: false,
-      error: "",
     };
     render(
       <ProgressStateContext.Provider value={mockState2}>

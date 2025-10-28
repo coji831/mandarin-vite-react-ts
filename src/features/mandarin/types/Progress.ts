@@ -1,7 +1,4 @@
 import type { Word } from "./Vocabulary";
-import type { ProgressState as ListsProgressState } from "./ProgressNormalized";
-import type { UserState as AppUserState } from "../reducers/userReducer";
-import type { UiState as AppUiState } from "../reducers/uiReducer";
 
 export interface ProgressContextType {
   masteredProgress: { [listId: string]: Set<string> };
@@ -42,26 +39,3 @@ export type UserProgressListEntry = {
 
 // Legacy compatibility types
 export type MasteredProgressMap = { [listId: string]: Set<string> };
-
-export interface LegacyProgressState {
-  selectedList: string | null;
-  selectedWords: Word[];
-  masteredProgress: MasteredProgressMap;
-  loading: boolean;
-  error: string;
-}
-
-// Exposed state shape that the provider currently returns for backwards
-// compatibility. This is the root state merged with `ui` aliases so
-// legacy selectors (s => s.selectedWords) continue to work.
-export interface ExposedProgressState {
-  lists: ListsProgressState;
-  user: AppUserState;
-  ui: AppUiState;
-  // Legacy aliases
-  selectedList: string | null;
-  selectedWords: Word[];
-  masteredProgress: MasteredProgressMap;
-  loading: boolean;
-  error: string;
-}

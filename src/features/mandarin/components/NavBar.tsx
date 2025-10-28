@@ -9,13 +9,13 @@
 import { useNavigate } from "react-router-dom";
 
 import { useProgressState } from "../hooks";
-import type { ExposedProgressState } from "../types";
+import type { RootState } from "../reducers/rootReducer";
 
 export { NavBar };
 
 function NavBar() {
   const navigate = useNavigate();
-  const selectedList = useProgressState((s: ExposedProgressState) => s.selectedList ?? null);
+  const selectedList = useProgressState((s: RootState) => s.ui?.selectedList ?? null);
 
   return (
     <div className="flex flex-center gap-10 padding-10">

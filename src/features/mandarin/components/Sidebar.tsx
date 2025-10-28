@@ -9,7 +9,8 @@
  */
 import React from "react";
 import { useProgressState } from "../hooks";
-import { Card, ExposedProgressState } from "../types";
+import { Card } from "../types";
+import { RootState } from "../reducers/rootReducer";
 
 export { Sidebar };
 
@@ -30,10 +31,8 @@ function Sidebar({
   onBackToList,
 }: Readonly<Props>) {
   // Use selector hook to read only the needed slices
-  const masteredProgress = useProgressState(
-    (s: ExposedProgressState) => s.ui.masteredProgress ?? {}
-  );
-  const selectedList = useProgressState((s: ExposedProgressState) => s.ui.selectedList ?? null);
+  const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
+  const selectedList = useProgressState((s: RootState) => s.ui.selectedList ?? null);
   const masteredWordIds =
     selectedList && masteredProgress[selectedList]
       ? masteredProgress[selectedList]

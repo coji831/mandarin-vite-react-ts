@@ -19,7 +19,7 @@ This document follows `docs/templates/implementation-large-epic-template.md` (st
 
 **Implementation Goal:** Replace the legacy flattened provider with a reducer-driven normalized state, export a stable public hook API (`useProgressState(selector)`, `useProgressActions()`), and ensure tests and release procedures cover the reset behavior.
 
-**Status:** Planned
+**Status:** Completed
 
 **Last Update:** 2025-10-19
 

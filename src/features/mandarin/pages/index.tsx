@@ -8,5 +8,5 @@
  * Last updated: 2025-10-09
  * See docs/conventions.md for comment guidelines.
  */
-export * from "./VocabularyListPage";
 export * from "./FlashCardPage";
+export * from "./VocabularyListPage";

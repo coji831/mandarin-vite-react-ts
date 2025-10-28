@@ -37,45 +37,66 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 
 ## 3. State Management & Architecture
 
-### State Management & Architecture (Update)
-
 **Progress Tracking:**
 
-- All vocabulary progress is tracked per user/device using a reducer-driven context/provider architecture.
-- Progress is stored in localStorage, namespaced by user/device ID from `useUserIdentity`.
-- All progress operations (marking words, loading lists, persisting state) are centralized in the `ProgressProvider` and accessed via hooks:
-  - Use `useProgressState` for selectors (read-only): `const selectedWords = useProgressState(s => s.ui?.selectedWords ?? [])`.
-  - Use `useProgressActions` for imperative updates (markWordLearned, setSelectedWords, etc.): `const { markWordLearned } = useProgressActions()`.
-- Context objects (`ProgressStateContext`, `ProgressDispatchContext`) are defined in a separate file for Fast Refresh compatibility; the provider file only exports the component.
-- Legacy hooks and helpers (`useProgressData`, `useMandarinProgress`, legacy localStorage keys) have been removed. See `scripts/cleanup-report.json` for audit history.
+- All vocabulary progress is tracked per user/device using a reducer-driven context architecture.
+- Progress is automatically persisted to localStorage, namespaced by user/device ID.
+- State management follows a unidirectional data flow pattern with three composed sub-reducers:
+  - `listsReducer`: Manages normalized vocabulary data (wordsById, wordIds, mastered status)
+  - `userReducer`: Manages user identity and settings
+  - `uiReducer`: Manages UI state (selected list, selected words, loading states)
+- The root reducer (`rootReducer`) composes all sub-reducers into a single state tree.
 
-**React Context API:**
+**Context Architecture:**
 
-- `ProgressStateContext` and `ProgressDispatchContext` provide mastered words, selected list, and selected words for the current user.
-- `ProgressProvider` wraps the app and exposes state/actions via hooks.
-- `useMandarinContext` combines progress and vocabulary context for unified access in components.
-- All UI components consume context directly—no prop drilling.
+- Split context pattern for performance optimization:
+  - `ProgressStateContext`: Provides read-only state access
+  - `ProgressDispatchContext`: Provides action dispatch function
+- Contexts are defined separately from the provider component for React Fast Refresh compatibility.
+- `ProgressProvider` wraps the application and initializes state from localStorage on mount.
 
 **Custom Hooks:**
 
-- `useProgressState`: Selector hook for reading progress state from context.
-- `useProgressActions`: Returns memoized action creators for updating progress state.
-- `useUserIdentity`: Manages user/device identity and persistence.
+- `useProgressState(selector)`: Selector hook for reading state with memoization to prevent unnecessary re-renders.
+  - Signature: `useProgressState<T>(selector: (s: RootState) => T): T`
+  - Examples:
+    - `const selectedWords = useProgressState(s => s.ui?.selectedWords ?? [])`
+    - `const loading = useProgressState(s => s.ui?.isLoading ?? false)`
+    - `const masteredProgress = useProgressState(s => s.ui?.masteredProgress ?? {})`
+- `useProgressActions()`: Returns stable, memoized action creators for all state updates.
+  - Returns object with functions:
+    - `setSelectedList(listId)` - Select vocabulary list
+    - `setSelectedWords(words)` - Set current words
+    - `markWordLearned(id)` - Mark word as mastered
+    - `setMasteredProgress(mastered)` - Bulk update progress
+    - `setLoading(isLoading)` - Update loading state
+    - `setError(error)` - Set error message
+    - `resetProgress()` - Clear all progress
+    - `init()` - Initialize state
+  - Example: `const { markWordLearned, setSelectedList } = useProgressActions()`
+- `useProgressDispatch()`: Direct access to dispatch function (used internally by action creators).
+- `useUserIdentity()`: Manages user/device identity and persistence.
+  - Returns: `[UserIdentity, refreshFn]`
 
-- **Vocabulary List UI:**
+**Component Integration:**
 
-  - Card-based layout with progress bar, search/filter, and responsive design.
-  - Progress indicator uses context state for per-list mastered percentage.
+- Components use granular selectors via `useProgressState` to subscribe only to needed state slices.
+  - All selectors access state via `s.ui.*`, `s.lists.*`, or `s.user.*` pattern
+  - Example: `useProgressState(s => s.ui?.selectedWords ?? [])` instead of legacy `s.selectedWords`
+- All state mutations go through action creators from `useProgressActions()`.
+- No prop drilling—all components access context directly via hooks.
+- State type is `RootState` with three slices: `lists`, `user`, `ui`
 
-**No Daily Commitment Logic:**
+**Vocabulary List UI:**
 
-- All legacy daily commitment and section logic has been removed.
-- Progress is now list-focused and user-centric.
+- Card-based layout with progress tracking, search/filter, and responsive design.
+- Progress indicators calculate mastered percentage from context state per list.
 
-**Multi-User Ready:**
+**Multi-User Architecture:**
 
-- Architecture supports multiple users and prepares for future cloud sync.
-- All progress is scoped to the current user/device.
+- All progress is scoped to the current user/device identity.
+- Architecture supports multiple users with isolated progress tracking.
+- Designed for future cloud sync integration.
 
 ---
 
@@ -105,17 +126,3 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 - CSV system enables easy vocabulary updates and maintenance
 - Standard data format (No,Chinese,Pinyin,English) ensures consistency
 - Audio fetched from backend TTS API
-
----
-
-## 5. Vocabulary List UI (Epic 5)
-
-- **Card-Based Layout**: Vocabulary lists are shown as cards with name, description, metadata (word count, difficulty, tags), and progress indicator.
-- **Search & Filtering**: Users can search by name/description and filter by difficulty or tags. Filters use OR/AND logic and update results in real time.
-- **Progress Indicator**: Each card shows user progress (as a percentage bar) for started lists.
-- **Responsive & Accessible**: Layout adapts to all screen sizes. Cards and controls have accessible focus, touch targets, and dark mode support.
-- **Components**:
-  - `VocabularyListPage.tsx`: Handles search/filter UI, card grid, and state
-  - `VocabularyCard.tsx`: Renders each card with metadata and progress
-  - `VocabularyCard.css`: Styles for all UI, feedback, and responsive features
-- **Implemented in Epic 5 (Stories 5.1–5.4)**

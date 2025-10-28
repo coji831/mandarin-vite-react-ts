@@ -7,9 +7,9 @@
 import { useContext, useMemo } from "react";
 
 import { ProgressStateContext } from "../context";
-import { ExposedProgressState } from "../types";
+import { RootState } from "../reducers/rootReducer";
 
-export function useProgressState<T>(selector: (s: ExposedProgressState) => T): T {
+export function useProgressState<T>(selector: (s: RootState) => T): T {
   const state = useContext(ProgressStateContext);
   if (state === null) throw new Error("useProgressState must be used within a ProgressProvider");
   // simple memoization hook; keep minimal for now

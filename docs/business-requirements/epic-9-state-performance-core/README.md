@@ -12,7 +12,7 @@
 - Provide `useProgressState(selector)` and `useProgressActions()` as the public API; update consumers to use them.
 - Add reducer unit tests and hook tests to validate action stability and selector correctness.
 
-**Status:** Planned
+**Status:** Completed
 
 **Last Update:** 2025-10-16
 
@@ -54,12 +54,12 @@ Rationale: Group low-risk infra changes first (types, reducer) to make subsequen
 
 ## Acceptance Criteria
 
-- [ ] Provider exposes `useProgressState(selector)` and `useProgressActions()`.
-- [ ] `MARK_WORD_LEARNED` updates normalized state in O(1) with accompanying unit test.
-- [ ] Action functions returned from `useProgressActions()` are stable across unrelated state changes (testable via hook tests).
-- [ ] Two high-frequency components (e.g., `VocabularyCard`, `ConversationTurns`) show measurable reduced render counts in React Profiler after conversion.
-- [ ] Reducer and selector unit tests cover edge cases (restore/restore-from-legacy, reset, empty lists).
-- [ ] Implementation PRs for steps 9.1–9.4 include or reference the required files listed in the implementation doc (`docs/issue-implementation/epic-9-state-performance-core/README.md` → "Missing scope (source scan)") and tick the verification checklist in the PR description.
+- [x] Provider exposes `useProgressState(selector)` and `useProgressActions()`.
+- [x] `MARK_WORD_LEARNED` updates normalized state in O(1) with accompanying unit test.
+- [x] Action functions returned from `useProgressActions()` are stable across unrelated state changes (testable via hook tests).
+- [x] Two high-frequency components (e.g., `VocabularyCard`, `ConversationTurns`) show measurable reduced render counts in React Profiler after conversion.
+- [x] Reducer and selector unit tests cover edge cases (restore/restore-from-legacy, reset, empty lists).
+- [x] Implementation PRs for steps 9.1–9.4 include or reference the required files listed in the implementation doc (`docs/issue-implementation/epic-9-state-performance-core/README.md` → "Missing scope (source scan)") and tick the verification checklist in the PR description.
 
 ## Architecture Decisions
 

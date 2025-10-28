@@ -3,7 +3,8 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { ProgressStateContext } from "../context";
 import { UserState as AppUserState } from "../reducers";
-import { ExposedProgressState, ProgressState as ListsProgressState } from "../types";
+import { RootState } from "../reducers/rootReducer";
+import { ProgressState as ListsProgressState } from "../types";
 import { FlashCardPage } from "./FlashCardPage";
 
 // Mock the useProgressActions hook to provide setSelectedList and setSelectedWords
@@ -16,7 +17,7 @@ jest.mock("../hooks/useProgressActions", () => ({
 
 describe("FlashCardPage", () => {
   it("shows not found state when words are not loaded", () => {
-    const mockState: ExposedProgressState = {
+    const mockState: RootState = {
       lists: {} as unknown as ListsProgressState,
       user: {} as unknown as AppUserState,
       ui: {
@@ -26,11 +27,6 @@ describe("FlashCardPage", () => {
         isLoading: false,
         error: "",
       },
-      selectedList: null,
-      selectedWords: [],
-      masteredProgress: {},
-      loading: false,
-      error: "",
     };
     render(
       <ProgressStateContext.Provider value={mockState}>

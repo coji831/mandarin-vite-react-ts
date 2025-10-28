@@ -3,16 +3,16 @@ import React, { useRef } from "react";
 import { useProgressState } from "./useProgressState";
 import { useProgressActions } from "./useProgressActions";
 import { ProgressStateContext, ProgressDispatchContext } from "../context/ProgressContext";
-import type { ProgressContextType, ExposedProgressState } from "../types/Progress";
+import type { ProgressContextType } from "../types/Progress";
 import type { ProgressState as ListsProgressState } from "../types/ProgressNormalized";
 import type { UserState as AppUserState } from "../reducers/userReducer";
-import type { ProgressAction } from "../reducers/rootReducer";
+import type { ProgressAction, RootState } from "../reducers/rootReducer";
 
 // Mock fetch for vocabulary data
 global.fetch = jest.fn();
 
 function TestHook({ callback }: { callback: (hook: ProgressContextType) => void }) {
-  const state = useProgressState((s) => s as ExposedProgressState);
+  const state = useProgressState((s) => s as RootState);
   const actions = useProgressActions();
   const called = useRef(false);
 
@@ -93,7 +93,7 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
 
   it("should initialize with default state", () => {
     let hookState: ProgressContextType | undefined;
-    const mockState: ExposedProgressState = {
+    const mockState: RootState = {
       lists: {} as unknown as ListsProgressState,
       user: {} as unknown as AppUserState,
       ui: {
@@ -103,11 +103,6 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
         isLoading: false,
         error: "",
       },
-      selectedList: null,
-      selectedWords: [],
-      masteredProgress: {},
-      loading: false,
-      error: "",
     };
 
     const noopDispatch = (() => {}) as React.Dispatch<ProgressAction>;
@@ -132,9 +127,9 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
     // the placeholder as skipped until the API is reintroduced.
   });
 
-  it("should expose list-focused API functions", () => {
+  it("should mark a word as learned", () => {
     let hookState: ProgressContextType | undefined;
-    const mockState: ExposedProgressState = {
+    const mockState: RootState = {
       lists: {} as unknown as ListsProgressState,
       user: {} as unknown as AppUserState,
       ui: {
@@ -144,11 +139,6 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
         isLoading: false,
         error: "",
       },
-      selectedList: null,
-      selectedWords: [],
-      masteredProgress: {},
-      loading: false,
-      error: "",
     };
 
     const noopDispatch = (() => {}) as React.Dispatch<ProgressAction>;
