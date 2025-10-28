@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+
 import { VocabularyCard } from "./VocabularyCard";
 
 describe("VocabularyCard", () => {

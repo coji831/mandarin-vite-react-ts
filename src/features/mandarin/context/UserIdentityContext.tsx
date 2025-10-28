@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext } from "react";
-import { useUserIdentity } from "../hooks/useUserIdentity";
-import { UserIdentity } from "../utils/progressHelpers";
+
+import { useUserIdentity } from "../hooks";
+import { UserIdentity } from "../utils";
 
 type UserIdentityContextType = {
   identity: UserIdentity;

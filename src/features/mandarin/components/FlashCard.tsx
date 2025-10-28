@@ -11,7 +11,9 @@
  */
 
 import { useMemo, useState } from "react";
-import { useProgressContext } from "../context/ProgressContext";
+
+import { useProgressActions, useProgressState } from "../hooks";
+import { RootState } from "../reducers/rootReducer";
 import { Card, Word } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
@@ -24,17 +26,24 @@ type FlashCardProps = {
 };
 
 export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
-  const { calculateListProgress, masteredProgress, markWordLearned } = useProgressContext();
+  // Select only the parts of progress state this component needs to avoid re-renders
+  // use masteredProgress from ui and compute simple progress locally
+  const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
+  const { markWordLearned } = useProgressActions();
 
   const cards: Card[] = words.map(mapToCard);
 
-  // Navigation handlers
-  const handleSidebarClick = (index: number) => setCurrentCardIndex(index);
-  const handlePrevious = () => setCurrentCardIndex((i) => (i > 0 ? i - 1 : i));
-  const handleNext = () => setCurrentCardIndex((i) => (i < filteredWords.length - 1 ? i + 1 : i));
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
   const [search, setSearch] = useState("");
+
+  // Navigation handlers
+  const handleSidebarClick = (index: number) => {
+    setShowDetails(false);
+    setCurrentCardIndex(index);
+  };
+  const handlePrevious = () => setCurrentCardIndex((i) => (i > 0 ? i - 1 : i));
+  const handleNext = () => setCurrentCardIndex((i) => (i < filteredWords.length - 1 ? i + 1 : i));
   const filteredWords = useMemo(() => {
     if (!search.trim()) return cards;
     return cards.filter(
@@ -50,14 +59,12 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
     return null;
   }
 
-  // Mastery logic: use context API
-  const { mastered, percent } = calculateListProgress(listId, words.length);
-  const masteredWords = masteredProgress[listId] || new Set();
+  // Mastery logic: compute from masteredProgress
+  const masteredWords = masteredProgress[listId] || new Set<string>();
+  const mastered = masteredWords.size;
+  const percent = words.length === 0 ? 0 : Math.round((mastered / words.length) * 100);
 
   const currentCard = filteredWords[currentCardIndex];
-
-  // Sidebar click handler (assume defined elsewhere in the file)
-  // ...existing code...
 
   return (
     <div className="flashcard-layout flex" style={{ width: "100%", height: "100%" }}>
@@ -90,6 +97,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
               >
                 {currentCard.character}
               </div>
+              <div style={{ color: "#b3c7ff", marginTop: 8 }}>{percent}% mastered</div>
               {/* Speak and Show Details Row */}
               <div
                 className="flex"
@@ -153,22 +161,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
           minHeight: "100%",
         }}
       >
-        {showDetails && currentCard ? (
-          <>
-            <WordDetails {...currentCard} />
-            {/* Speak Example Sentence Button, styled and separated */}
-            {/* <div
-              style={{
-                width: "100%",
-                marginTop: 28,
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <PlayButton mandarinText={currentCard.sentence} />
-            </div> */}
-          </>
-        ) : null}
+        {showDetails && <WordDetails {...currentCard} />}
       </div>
     </div>
   );

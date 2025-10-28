@@ -7,18 +7,19 @@
  * - Filtering and selection handled via props.
  * - Story 4-8: Updated for route-based navigation.
  */
-import { CSSProperties } from "react";
-import { useProgressContext } from "../context/ProgressContext";
-import { Card, Word } from "../types";
+import React from "react";
+import { useProgressState } from "../hooks";
+import { Card } from "../types";
+import { RootState } from "../reducers/rootReducer";
 
 export { Sidebar };
 
 type Props = {
   currentCardIndex: number;
   search: string;
-  setSearch: (value: string) => void;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
   filteredWords: Card[];
-  handleSidebarClick: (idx: number) => void;
+  handleSidebarClick: (_idx: number) => void;
   onBackToList: () => void;
 };
 function Sidebar({
@@ -29,10 +30,13 @@ function Sidebar({
   handleSidebarClick,
   onBackToList,
 }: Readonly<Props>) {
-  // Use context for mastered progress
-  const { masteredProgress, selectedList: selectedList } = useProgressContext();
+  // Use selector hook to read only the needed slices
+  const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
+  const selectedList = useProgressState((s: RootState) => s.ui.selectedList ?? null);
   const masteredWordIds =
-    selectedList && masteredProgress[selectedList] ? masteredProgress[selectedList] : new Set();
+    selectedList && masteredProgress[selectedList]
+      ? masteredProgress[selectedList]
+      : new Set<string>();
   const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
   const total = filteredWords.length;
   return (
@@ -127,26 +131,4 @@ function Sidebar({
   );
 }
 
-const NoResults = () => (
-  <div style={{ fontSize: "14px", color: "#666", textAlign: "center" }}>No results found</div>
-);
-
-const characterStyle: CSSProperties = {
-  textAlign: "center",
-  fontSize: "16px",
-  fontWeight: "bold",
-  transition: "color 0.2s",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "8px",
-  fontSize: "14px",
-  border: "1px solid #ccc",
-  borderRadius: "4px",
-  marginBottom: "15px",
-  outline: "none",
-  transition: "border-color 0.2s",
-  background: "#fff",
-  color: "#333",
-};
+// helper styles removed — unused in current implementation

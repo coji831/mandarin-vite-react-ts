@@ -2,6 +2,8 @@
 
 This guide provides a systematic approach to creating effective AI prompts for this project. Using structured prompts ensures consistent, predictable results and makes collaboration more efficient.
 
+> Note: Some example prompts reference legacy hooks such as `useMandarinProgress` or `useProgressData`. Those legacy hooks were removed during Epic-9; refer to `src/features/mandarin/docs/design.md` for the modern `useProgressState` / `useProgressActions` APIs.
+
 ## Prompt Structure Template
 
 Every AI prompt should follow this general structure:

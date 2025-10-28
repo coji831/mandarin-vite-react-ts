@@ -6,7 +6,7 @@
  * - Pure presentational; does not manage persistence or parent state.
  * - All fields are required; alerts if any are missing.
  */
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Card } from "../types";
 
 export { AddForm };
@@ -17,7 +17,6 @@ type Props = {
 };
 
 function AddForm({ addCard, onCancel }: Props) {
-  const [showAddForm, setShowAddForm] = useState(false);
   const [newCard, setNewCard] = useState({
     wordId: "",
     character: "",

@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
+
+import { ProgressStateContext } from "../context";
+import type { UserState as AppUserState } from "../reducers";
+import { RootState } from "../reducers/rootReducer";
+import { Card, ProgressState as ListsProgressState } from "../types";
 import { Sidebar } from "./Sidebar";
-import { ProgressContextType } from "../types";
-import { ProgressContext } from "../context/ProgressContext";
-import { Card } from "../types/Card";
 
 describe("Sidebar", () => {
   const words: Card[] = [
@@ -41,23 +43,20 @@ describe("Sidebar", () => {
   const masteredWordIds = new Set(["1", "3"]);
   const mockListId = "test-list";
   it("shows full list and highlights mastered words", () => {
-    // Mock context with mastered words for test list
-    const mockContext: ProgressContextType = {
-      selectedList: mockListId,
-      setSelectedList: () => {},
-      selectedWords: [],
-      setSelectedWords: () => {},
-      masteredProgress: { [mockListId]: masteredWordIds },
-      setMasteredProgress: () => {},
-      error: "",
-      setError: () => {},
-      loading: false,
-      setLoading: () => {},
-      markWordLearned: () => {},
-      calculateListProgress: () => ({ mastered: 2, percent: 66 }),
+    // Provide a minimal state shape expected by selectors used in Sidebar
+    const mockState: RootState = {
+      lists: {} as ListsProgressState,
+      user: {} as AppUserState,
+      ui: {
+        selectedList: mockListId,
+        selectedWords: [],
+        masteredProgress: { [mockListId]: masteredWordIds },
+        isLoading: false,
+        error: "",
+      },
     };
     render(
-      <ProgressContext.Provider value={mockContext}>
+      <ProgressStateContext.Provider value={mockState}>
         <Sidebar
           currentCardIndex={0}
           search=""
@@ -66,7 +65,7 @@ describe("Sidebar", () => {
           handleSidebarClick={() => {}}
           onBackToList={() => {}}
         />
-      </ProgressContext.Provider>
+      </ProgressStateContext.Provider>
     );
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
@@ -76,23 +75,19 @@ describe("Sidebar", () => {
 
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = jest.fn();
+    const mockState2: RootState = {
+      lists: {} as ListsProgressState,
+      user: {} as AppUserState,
+      ui: {
+        selectedList: mockListId,
+        selectedWords: [],
+        masteredProgress: { [mockListId]: masteredWordIds },
+        isLoading: false,
+        error: "",
+      },
+    };
     render(
-      <ProgressContext.Provider
-        value={{
-          selectedList: mockListId,
-          setSelectedList: () => {},
-          selectedWords: [],
-          setSelectedWords: () => {},
-          masteredProgress: { [mockListId]: masteredWordIds },
-          setMasteredProgress: () => {},
-          error: "",
-          setError: () => {},
-          loading: false,
-          setLoading: () => {},
-          markWordLearned: () => {},
-          calculateListProgress: () => ({ mastered: 2, percent: 66 }),
-        }}
-      >
+      <ProgressStateContext.Provider value={mockState2}>
         <Sidebar
           currentCardIndex={0}
           search=""
@@ -101,7 +96,7 @@ describe("Sidebar", () => {
           handleSidebarClick={handleSidebarClick}
           onBackToList={() => {}}
         />
-      </ProgressContext.Provider>
+      </ProgressStateContext.Provider>
     );
     fireEvent.click(screen.getByText("好"));
     expect(handleSidebarClick).toHaveBeenCalled();

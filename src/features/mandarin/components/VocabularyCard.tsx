@@ -1,6 +1,5 @@
-import React from "react";
+import { DifficultyLevel, VocabularyList } from "../types";
 import "./VocabularyCard.css";
-import type { VocabularyList, DifficultyLevel } from "../types/Vocabulary";
 
 interface VocabularyCardProps {
   list: VocabularyList;

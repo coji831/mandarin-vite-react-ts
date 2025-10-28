@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ConversationTurns, PlaybackControls } from ".";
 import { useAudioPlayback, useConversationGenerator } from "../hooks";
@@ -29,7 +29,6 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
   const [ttsFallback, setTtsFallback] = useState(false);
 
   const {
-    audioData,
     isPlaying,
     currentTurn,
     playAudio,
@@ -82,7 +81,7 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
       }
       console.error("Failed to play audio, using browser TTS:", error);
     }
-  }, [conversation, playAudio]);
+  }, [conversation, playAudio, wordId]);
 
   const handleClose = useCallback(() => {
     setIsVisible(false);
@@ -128,6 +127,11 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
                 <p>Audio unavailable, using browser TTS.</p>
               </div>
             )}
+            <div style={{ marginTop: 8 }}>
+              <button onClick={handleClose} className="secondary">
+                Close
+              </button>
+            </div>
           </>
         )}
       </div>

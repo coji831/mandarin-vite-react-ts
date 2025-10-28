@@ -9,20 +9,29 @@ import { UserProgress } from "../types/Progress";
 
 const USER_IDENTITY_KEY = "user_identity";
 const PROGRESS_KEY_PREFIX = "progress_";
-const OLD_PROGRESS_KEY = "user_progress";
 
 export type UserIdentity = {
   userId: string;
   lastActive: number;
 };
 
+// TODO (cleanup/epic-9): Migration helpers below (OLD_PROGRESS_KEY and
+// migrateOldProgressFormat) are retained for a deprecation window. After
+// successful verification in production, remove `OLD_PROGRESS_KEY` usage and
+// delete `migrateOldProgressFormat()` and related code. See
+// docs/issue-implementation/epic-9-state-performance-core/cleanup-plan.md
+// for the removal workflow and verification steps.
+
 // Get or create user identity (device-based for now)
 export function getUserIdentity(): UserIdentity {
-  let identityRaw = localStorage.getItem(USER_IDENTITY_KEY);
+  const identityRaw = localStorage.getItem(USER_IDENTITY_KEY);
   if (identityRaw) {
     try {
       return JSON.parse(identityRaw);
-    } catch {}
+    } catch (err) {
+      // If identity parsing fails, fall through and create a new identity.
+      console.warn("Failed to parse user identity from localStorage:", err);
+    }
   }
   // Generate new identity
   const newIdentity: UserIdentity = {
@@ -46,7 +55,10 @@ export function getUserProgress(userId: string): UserProgress {
   if (storedProgress) {
     try {
       return JSON.parse(storedProgress);
-    } catch {}
+    } catch (err) {
+      // Corrupt stored progress - log and reinitialize
+      console.warn("Failed to parse stored progress for userId", userId, err);
+    }
   }
   // New user: create empty progress
   const newProgress: UserProgress = { lists: [] };
@@ -60,13 +72,7 @@ export function saveUserProgress(userId: string, progress: UserProgress): void {
 }
 
 // Migration utility: move old single-user progress to new userId
-export function migrateOldProgressFormat(): void {
-  const old = localStorage.getItem(OLD_PROGRESS_KEY);
-  if (!old) return;
-  try {
-    const progress: UserProgress = JSON.parse(old);
-    const { userId } = getUserIdentity();
-    saveUserProgress(userId, progress);
-    localStorage.removeItem(OLD_PROGRESS_KEY);
-  } catch {}
-}
+// NOTE: Migration from the old `user_progress` key is removed. Any existing
+// migration behavior has already been applied; this cleanup removes the old
+// migration hook. If a rollback is necessary, see the cleanup plan at
+// docs/issue-implementation/epic-9-state-performance-core/cleanup-plan.md

@@ -1,0 +1,110 @@
+{
+  "scanned": 82,
+  "hits": {
+    "useMandarinProgress": [
+      {
+        "file": "src\\features\\mandarin\\hooks\\useProgressContext.test.tsx",
+        "matches": [
+          {
+            "line": 88,
+            "text": "describe(\"list-focused progress API (formerly useMandarinProgress)\", () => {"
+          }
+        ]
+      }
+    ],
+    "useProgressData": [
+      {
+        "file": "src\\features\\mandarin\\hooks\\useMandarinProgress.ts",
+        "matches": [
+          {
+            "line": 27,
+            "text": "export function useProgressData(): ProgressDataContext {"
+          }
+        ]
+      },
+      {
+        "file": "src\\features\\mandarin\\hooks\\useProgressContext.ts",
+        "matches": [
+          {
+            "line": 4,
+            "text": "* Compatibility shim for the legacy `useProgressData` hook / ProgressContext consumer"
+          }
+        ]
+      }
+    ],
+    "useProgressContextImport": [],
+    "legacyProgressKey": [
+      {
+        "file": "src\\features\\mandarin\\hooks\\useProgressImport.ts",
+        "matches": [
+          {
+            "line": 5,
+            "text": "* Custom hook for importing user progress (user_progress.json) and handling navigation/state update."
+          },
+          {
+            "line": 10,
+            "text": "* Custom hook for importing user progress (user_progress.json) and handling navigation/state update."
+          },
+          {
+            "line": 21,
+            "text": "// legacy `user_progress` localStorage key to support older import flows."
+          },
+          {
+            "line": 26,
+            "text": "// historical `user_progress` shape in the codebase."
+          }
+        ]
+      },
+      {
+        "file": "src\\features\\mandarin\\utils\\legacyProgress.ts",
+        "matches": [
+          {
+            "line": 2,
+            "text": "* legacyProgress.ts"
+          }
+        ]
+      },
+      {
+        "file": "src\\features\\mandarin\\utils\\progressHelpers.ts",
+        "matches": [
+          {
+            "line": 18,
+            "text": "// TODO (cleanup/epic-9): Migration helpers below (OLD_PROGRESS_KEY and"
+          },
+          {
+            "line": 20,
+            "text": "// successful verification in production, remove `OLD_PROGRESS_KEY` usage and"
+          },
+          {
+            "line": 75,
+            "text": "// NOTE: Migration from the old `user_progress` key is removed. Any existing"
+          }
+        ]
+      }
+    ],
+    "localStorageGet": [
+      {
+        "file": "src\\features\\mandarin\\utils\\legacyProgress.ts",
+        "matches": [
+          {
+            "line": 19,
+            "text": "const raw = window.localStorage.getItem(LEGACY_KEY);"
+          }
+        ]
+      },
+      {
+        "file": "src\\features\\mandarin\\utils\\progressHelpers.ts",
+        "matches": [
+          {
+            "line": 27,
+            "text": "const identityRaw = localStorage.getItem(USER_IDENTITY_KEY);"
+          },
+          {
+            "line": 54,
+            "text": "const storedProgress = localStorage.getItem(storageKey);"
+          }
+        ]
+      }
+    ]
+  }
+}
