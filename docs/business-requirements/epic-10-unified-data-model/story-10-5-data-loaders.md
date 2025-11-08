@@ -12,9 +12,9 @@ Normalized data loaders ensure reliable state initialization, reduce bugs, and s
 
 ## Acceptance Criteria
 
-- [ ] Data loaders output normalized objects matching the new types
-- [ ] State initialization uses normalized data
-- [ ] Tests verify loader output and state shape
+- [x] Data loaders output normalized objects matching the new types
+- [x] State initialization uses normalized data
+- [x] Tests verify loader output and state shape
 
 ## Business Rules
 
@@ -29,7 +29,7 @@ Normalized data loaders ensure reliable state initialization, reduce bugs, and s
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #
 - **Merge Date**:
 - **Key Commit**:
