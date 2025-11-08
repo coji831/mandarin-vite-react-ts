@@ -12,9 +12,9 @@ Normalized state enables reliable data access, reduces bugs, and improves mainta
 
 ## Acceptance Criteria
 
-- [ ] State slices use normalized maps and arrays for vocabulary and progress
-- [ ] All selectors join static and progress data via `wordId`
-- [ ] Tests verify normalization and linkage
+- [x] State slices use normalized maps and arrays for vocabulary and progress
+- [x] All selectors join static and progress data via `wordId`
+- [x] Tests verify normalization and linkage
 
 ## Business Rules
 
@@ -29,7 +29,7 @@ Normalized state enables reliable data access, reduces bugs, and improves mainta
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #
 - **Merge Date**:
 - **Key Commit**:

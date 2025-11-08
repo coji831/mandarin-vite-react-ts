@@ -1,3 +1,9 @@
+import { normalizeVocab } from "./normalizeVocab";
+// Load and normalize vocab data from CSV
+export async function loadNormalizedVocab(url: string) {
+  const raw = await loadCsvVocab(url);
+  return normalizeVocab(raw);
+}
 /* High-level design: load CSV vocab into VocabWord[]
    - Detect comma/tab separators and handle quoted fields
    - Lightweight validation; on error log and return []
