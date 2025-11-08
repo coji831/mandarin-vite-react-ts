@@ -12,9 +12,9 @@ Unified selectors improve data access, reduce bugs, and support scalable feature
 
 ## Acceptance Criteria
 
-- [ ] Selectors join static and progress data via `wordId`
-- [ ] All components use updated selectors
-- [ ] Tests verify selector logic and data joining
+- [x] Selectors join static and progress data via `wordId`
+- [x] All components use updated selectors
+- [x] Tests verify selector logic and data joining
 
 ## Business Rules
 
@@ -29,7 +29,7 @@ Unified selectors improve data access, reduce bugs, and support scalable feature
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: #
 - **Merge Date**:
 - **Key Commit**:
