@@ -12,15 +12,15 @@
 
 import { useMemo, useState } from "react";
 
+import { WordBasic } from "types";
 import { useProgressActions, useProgressState } from "../hooks";
 import { RootState } from "../reducers/rootReducer";
-import { Card, Word } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
 
 type FlashCardProps = {
-  words: Word[];
+  words: WordBasic[];
   listId: string;
   onBackToList: () => void;
 };
@@ -31,7 +31,7 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
   const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
   const { markWordLearned } = useProgressActions();
 
-  const cards: Card[] = words.map(mapToCard);
+  const cards = words.map(mapToCard);
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -161,19 +161,27 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
           minHeight: "100%",
         }}
       >
-        {showDetails && <WordDetails {...currentCard} />}
+        {showDetails && currentCard && (
+          <WordDetails
+            wordId={currentCard.wordId}
+            chinese={currentCard.character}
+            pinyin={currentCard.pinyin}
+            english={currentCard.meaning}
+          />
+        )}
       </div>
     </div>
   );
 }
 
 // Map VocabWord[] to Card[] for UI compatibility
-const mapToCard = (w: Word): Card => ({
+// Map WordBasic[] to Card[] for UI compatibility
+const mapToCard = (w: WordBasic) => ({
   wordId: w.wordId,
-  character: w.character || "",
+  character: w.chinese || "",
   pinyin: w.pinyin || "",
-  meaning: w.meaning || "",
-  sentence: "", // No sentence in VocabWord, set empty or add logic if available
+  meaning: w.english || "",
+  sentence: "",
   sentencePinyin: "",
   sentenceMeaning: "",
 });

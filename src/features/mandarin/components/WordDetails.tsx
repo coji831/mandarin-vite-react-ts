@@ -6,12 +6,15 @@
  */
 
 import { useState } from "react";
-import { Card } from "../types";
+
+import { WordBasic } from "types";
 import { ConversationBox } from "./ConversationBox";
 
 export { WordDetails };
 
-function WordDetails({ wordId, character, pinyin, meaning }: Readonly<Card>) {
+type WordDetailsProps = WordBasic & { wordId: string };
+
+function WordDetails({ wordId, chinese, pinyin, english }: Readonly<WordDetailsProps>) {
   const [showExample, setShowExample] = useState(false);
 
   return (
@@ -20,11 +23,11 @@ function WordDetails({ wordId, character, pinyin, meaning }: Readonly<Card>) {
         <strong>Pinyin:</strong> {pinyin}
       </p>
       <p>
-        <strong>Meaning:</strong> {meaning}
+        <strong>Meaning:</strong> {english}
       </p>
 
       {/* Explicit Example Generation Button */}
-      {wordId && character && (
+      {wordId && chinese && (
         <div>
           <button
             style={{
@@ -41,11 +44,7 @@ function WordDetails({ wordId, character, pinyin, meaning }: Readonly<Card>) {
             {showExample ? "Hide Example" : "View Example"}
           </button>
           {showExample && (
-            <ConversationBox
-              wordId={wordId}
-              word={character}
-              onClose={() => setShowExample(false)}
-            />
+            <ConversationBox wordId={wordId} word={chinese} onClose={() => setShowExample(false)} />
           )}
         </div>
       )}
