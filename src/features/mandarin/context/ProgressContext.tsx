@@ -8,7 +8,7 @@
  */
 import React, { createContext, ReactNode, useEffect, useReducer, useState } from "react";
 
-import { initialState, ProgressAction, progressReducer, RootState } from "../reducers";
+import { RootState, rootReducer, initialState, RootAction } from "../reducers/rootReducer";
 import {
   getUserIdentity,
   getUserProgress,
@@ -20,14 +20,17 @@ import {
 export const ProgressStateContext = createContext<RootState | null>(
   null
 ) as React.Context<RootState | null>;
-export const ProgressDispatchContext = createContext<React.Dispatch<ProgressAction> | null>(
+export const ProgressDispatchContext = createContext<React.Dispatch<RootAction> | null>(
   null
-) as React.Context<React.Dispatch<ProgressAction> | null>;
+) as React.Context<React.Dispatch<RootAction> | null>;
 
 type Props = { children: ReactNode };
 
 export function ProgressProvider({ children }: Props) {
-  const [state, dispatch] = useReducer(progressReducer, initialState);
+  const [state, dispatch] = useReducer<React.Reducer<RootState, RootAction>>(
+    rootReducer,
+    initialState
+  );
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -49,7 +52,10 @@ export function ProgressProvider({ children }: Props) {
         });
 
         if (Object.keys(serialized).length > 0) {
-          dispatch({ type: "UI/SET_MASTERED_PROGRESS", payload: { mastered: serialized } });
+          dispatch({
+            type: "UI/SET_MASTERED_PROGRESS",
+            payload: { mastered: serialized },
+          } as RootAction);
         }
       } finally {
         setReady(true);
@@ -60,24 +66,30 @@ export function ProgressProvider({ children }: Props) {
   }, []);
 
   // Persist compatibility UI mastered progress when it changes (selectedList, selectedWords)
+  // Extract UI slice and relevant fields for useEffect dependencies
+  const ui = (state as RootState).ui;
+  const masteredProgress = ui && ui.masteredProgress;
+  const selectedList = ui && ui.selectedList;
+  const selectedWords = ui && ui.selectedWords;
+
   useEffect(() => {
     // we only persist when a user identity exists
     try {
       const identity = getUserIdentity();
       const userId = identity.userId;
-      const masteredMap = (state.ui && state.ui.masteredProgress) || {};
+      const masteredMap = masteredProgress || {};
       const userProgress = persistMasteredProgress(masteredMap, getUserProgress(userId));
       saveUserProgress(userId, userProgress);
     } catch (e) {
       // best-effort persistence — don't block UI
       console.warn("Progress persistence failed:", e);
     }
-  }, [state.ui, state.ui.masteredProgress, state.ui.selectedList, state.ui.selectedWords]);
+  }, [state, ui, masteredProgress, selectedList, selectedWords]);
 
   if (!ready) return null;
 
   return (
-    <ProgressStateContext.Provider value={state}>
+    <ProgressStateContext.Provider value={state as RootState}>
       <ProgressDispatchContext.Provider value={dispatch}>
         {children}
       </ProgressDispatchContext.Provider>

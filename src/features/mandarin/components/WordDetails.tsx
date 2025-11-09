@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 
-import { WordBasic } from "types";
+import { WordBasic } from "../types";
 import { ConversationBox } from "./ConversationBox";
 
 export { WordDetails };

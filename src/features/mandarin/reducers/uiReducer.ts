@@ -4,19 +4,8 @@
  * Small reducer for UI flags related to progress (loading states, timestamps).
  * Automation: see docs/automation/ai-file-operations.md
  */
-import type { MasteredProgressMap } from "../types/Progress";
-import type { Word } from "../types/Vocabulary";
 
-export type UiState = {
-  isLoading: boolean;
-  lastUpdated?: string | null;
-
-  // Compatibility fields (legacy shapes)
-  selectedList?: string | null;
-  selectedWords?: Word[];
-  masteredProgress?: MasteredProgressMap;
-  error?: string;
-};
+import { UiState, WordBasic } from "../types";
 
 export const uiInitialState: UiState = {
   isLoading: false,
@@ -31,7 +20,7 @@ export type UiAction =
   | { type: "UI/SET_LOADING"; payload: { isLoading: boolean } }
   | { type: "UI/SET_UPDATED"; payload: { when: string } }
   | { type: "UI/SET_SELECTED_LIST"; payload: { listId: string | null } }
-  | { type: "UI/SET_SELECTED_WORDS"; payload: { words: Word[] } }
+  | { type: "UI/SET_SELECTED_WORDS"; payload: { words: WordBasic[] } }
   | { type: "UI/SET_ERROR"; payload: { error?: string } }
   | {
       type: "UI/SET_MASTERED_PROGRESS";
@@ -54,7 +43,7 @@ export function uiReducer(state: UiState = uiInitialState, action: UiAction): Ui
     case "UI/SET_MASTERED_PROGRESS": {
       // convert serialized form into Sets
       const serialized = action.payload.mastered || {};
-      const mastered: MasteredProgressMap = {};
+      const mastered: Record<string, Set<string>> = {};
       Object.keys(serialized).forEach((listId) => {
         const progressObj = serialized[listId] || {};
         mastered[listId] = new Set(Object.keys(progressObj).filter((k) => progressObj[k]));

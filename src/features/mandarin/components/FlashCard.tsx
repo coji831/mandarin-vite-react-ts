@@ -12,9 +12,9 @@
 
 import { useMemo, useState } from "react";
 
-import { WordBasic } from "types";
 import { useProgressActions, useProgressState } from "../hooks";
-import { RootState } from "../reducers/rootReducer";
+import { RootState } from "../reducers";
+import { WordBasic } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";
 import { WordDetails } from "./WordDetails";
@@ -174,14 +174,10 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
   );
 }
 
-// Map VocabWord[] to Card[] for UI compatibility
-// Map WordBasic[] to Card[] for UI compatibility
+// Map WordBasic[] to UI card shape (no sentence fields)
 const mapToCard = (w: WordBasic) => ({
   wordId: w.wordId,
   character: w.chinese || "",
   pinyin: w.pinyin || "",
   meaning: w.english || "",
-  sentence: "",
-  sentencePinyin: "",
-  sentenceMeaning: "",
 });

@@ -2,8 +2,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ProgressStateContext } from "../context";
-import type { UserState as AppUserState } from "../reducers";
-import { RootState } from "../reducers/rootReducer";
+import { UserState as AppUserState, RootState } from "../reducers";
 import { Card, ProgressState as ListsProgressState } from "../types";
 import { Sidebar } from "./Sidebar";
 
@@ -14,9 +13,6 @@ describe("Sidebar", () => {
       character: "你",
       pinyin: "nǐ",
       meaning: "you",
-      sentence: "你好吗？",
-      sentencePinyin: "nǐ hǎo ma?",
-      sentenceMeaning: "How are you?",
       mastered: true,
     },
     {
@@ -24,9 +20,6 @@ describe("Sidebar", () => {
       character: "好",
       pinyin: "hǎo",
       meaning: "good",
-      sentence: "很好。",
-      sentencePinyin: "hěn hǎo.",
-      sentenceMeaning: "Very good.",
       mastered: false,
     },
     {
@@ -34,9 +27,6 @@ describe("Sidebar", () => {
       character: "吗",
       pinyin: "ma",
       meaning: "question particle",
-      sentence: "你好吗？",
-      sentencePinyin: "nǐ hǎo ma?",
-      sentenceMeaning: "How are you?",
       mastered: true,
     },
   ];
@@ -45,8 +35,8 @@ describe("Sidebar", () => {
   it("shows full list and highlights mastered words", () => {
     // Provide a minimal state shape expected by selectors used in Sidebar
     const mockState: RootState = {
-      lists: {} as ListsProgressState,
-      user: {} as AppUserState,
+      progress: { wordsById: {}, wordIds: [] },
+      user: { userId: null, preferences: {} },
       ui: {
         selectedList: mockListId,
         selectedWords: [],
@@ -54,6 +44,7 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
+      vocabLists: { itemsById: {}, itemIds: [] },
     };
     render(
       <ProgressStateContext.Provider value={mockState}>
@@ -76,8 +67,8 @@ describe("Sidebar", () => {
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = jest.fn();
     const mockState2: RootState = {
-      lists: {} as ListsProgressState,
-      user: {} as AppUserState,
+      progress: { wordsById: {}, wordIds: [] },
+      user: { userId: null, preferences: {} },
       ui: {
         selectedList: mockListId,
         selectedWords: [],
@@ -85,6 +76,7 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
+      vocabLists: { itemsById: {}, itemIds: [] },
     };
     render(
       <ProgressStateContext.Provider value={mockState2}>
