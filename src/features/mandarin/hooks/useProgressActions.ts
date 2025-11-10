@@ -10,7 +10,7 @@
 import { useMemo } from "react";
 
 import { RootState } from "../reducers";
-import { Word } from "../types";
+import { WordBasic } from "../types";
 import { useProgressDispatch } from "./useProgressDispatch";
 import { useProgressState } from "./useProgressState";
 
@@ -24,7 +24,7 @@ export function useProgressActions() {
       // Legacy-compatible setters
       setSelectedList: (listId: string | null) =>
         dispatch({ type: "UI/SET_SELECTED_LIST", payload: { listId } }),
-      setSelectedWords: (words: Word[]) =>
+      setSelectedWords: (words: WordBasic[]) =>
         dispatch({ type: "UI/SET_SELECTED_WORDS", payload: { words } }),
       setLoading: (isLoading: boolean) =>
         dispatch({ type: "UI/SET_LOADING", payload: { isLoading } }),

@@ -1,39 +1,41 @@
-import { ProgressState } from "../types";
-import { ListsAction, listsInitialState, listsReducer } from "./listsReducer";
-import { UiAction, uiInitialState, uiReducer, UiState } from "./uiReducer";
+import { ListState, ProgressState, UiState } from "../types/";
+import { ListAction, listsInitialState, listsReducer } from "./listReducer";
+import { ProgressAction, progressInitialState, progressReducer } from "./progressReducer";
+import { UiAction, uiInitialState, uiReducer } from "./uiReducer";
 import { UserAction, userInitialState, userReducer, UserState } from "./userReducer";
 
-export type ProgressAction = ListsAction | UserAction | UiAction;
+export type RootAction = ListAction | ProgressAction | UserAction | UiAction;
 
 // New RootState composes the lists (progress) slice with the user and ui slices.
-export interface RootState {
-  lists: ProgressState;
+export type RootState = {
+  vocabLists: ListState;
+  progress: ProgressState;
   user: UserState;
   ui: UiState;
-}
+};
 
 export const initialState: RootState = {
-  lists: listsInitialState,
+  vocabLists: listsInitialState,
+  progress: progressInitialState,
   user: userInitialState,
   ui: uiInitialState,
 };
 
-export function rootReducer(state: RootState = initialState, action: ProgressAction): RootState {
+export function rootReducer(state: RootState = initialState, action: RootAction): RootState {
   return {
-    lists: listsReducer(state.lists, action as ListsAction),
+    vocabLists: listsReducer(state.vocabLists, action as ListAction),
+    progress: progressReducer(state.progress, action as ProgressAction),
     user: userReducer(state.user, action as UserAction),
     ui: uiReducer(state.ui, action as UiAction),
   };
 }
 
-// Keep a backwards-compatible alias that matches previous `progressReducer` export
-export const progressReducer = ((s: RootState | undefined, a: ProgressAction) =>
-  rootReducer(s || initialState, a)) as typeof rootReducer;
-
 // Export sub-reducers for targeted unit tests and future composition
 export {
   listsInitialState,
   listsReducer,
+  progressInitialState,
+  progressReducer,
   uiInitialState,
   uiReducer,
   userInitialState,

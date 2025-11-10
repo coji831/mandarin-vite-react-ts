@@ -1,4 +1,4 @@
-import { DifficultyLevel, VocabularyList } from "../types";
+import { VocabularyList } from "../types";
 import "./VocabularyCard.css";
 
 interface VocabularyCardProps {
@@ -8,7 +8,7 @@ interface VocabularyCardProps {
   masteredCount?: number;
 }
 
-const getDifficultyColor = (difficulty: DifficultyLevel): string => {
+const getDifficultyColor = (difficulty: string): string => {
   switch (difficulty) {
     case "beginner":
       return "#4caf50"; // Green
@@ -50,11 +50,12 @@ export function VocabularyCard({ list, onSelect, progress, masteredCount }: Voca
         )}
         {list.tags && list.tags.length > 0 && (
           <div className="tags-container" title="Categories and topics">
-            {list.tags.slice(0, 5).map((tag, index) => (
-              <span key={index} className="tag">
-                {tag}
-              </span>
-            ))}
+            {list.tags &&
+              list.tags.slice(0, 5).map((tag: string, index: number) => (
+                <span key={index} className="tag">
+                  {tag}
+                </span>
+              ))}
           </div>
         )}
       </div>

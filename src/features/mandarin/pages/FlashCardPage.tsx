@@ -17,11 +17,10 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { loadCsvVocab } from "utils";
 import { FlashCard } from "../components";
 import { useProgressActions, useProgressState } from "../hooks";
-import { VocabularyListMeta, Word } from "../types";
-import { transformVocabWord } from "../utils";
+import { VocabularyList, WordBasic } from "../types";
+import { loadCsvVocab } from "../utils";
 
 export { FlashCardPage };
 
@@ -41,14 +40,19 @@ function FlashCardPage() {
         if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
         const lists = await res.json();
 
-        const found = (lists as VocabularyListMeta[]).find((l) => l.id === listId);
+        const found = (lists as VocabularyList[]).find((l) => l.id === listId);
         if (!found || !found.file) throw new Error("List not found or missing file");
         const words = await loadCsvVocab(`/data/vocabulary/${found.file}`);
 
         // Defensive: check if words is an array and has expected fields
         if (Array.isArray(words) && words.length > 0 && words[0].wordId) {
-          // covert to Word type if needed (assuming loadCsvVocab returns VocabWord[])
-          const wordList: Word[] = words.map(transformVocabWord);
+          // convert to WordBasic type
+          const wordList: WordBasic[] = words.map((w) => ({
+            wordId: w.wordId,
+            chinese: w.Chinese ?? "",
+            pinyin: w.Pinyin ?? "",
+            english: w.English ?? "",
+          }));
           setSelectedWords(wordList);
         } else {
           console.error("Loaded words are empty or invalid:", words);
@@ -85,6 +89,7 @@ function FlashCardPage() {
   }
 
   // Render FlashCard deck in CSV order
+  // selectedWords is now WordBasic[]
   return (
     <FlashCard
       words={selectedWords}

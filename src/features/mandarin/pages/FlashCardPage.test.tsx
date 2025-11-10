@@ -18,8 +18,8 @@ jest.mock("../hooks/useProgressActions", () => ({
 describe("FlashCardPage", () => {
   it("shows not found state when words are not loaded", () => {
     const mockState: RootState = {
-      lists: {} as unknown as ListsProgressState,
-      user: {} as unknown as AppUserState,
+      progress: { wordsById: {}, wordIds: [] },
+      user: { userId: null, preferences: {} },
       ui: {
         selectedList: null,
         selectedWords: [],
@@ -27,6 +27,7 @@ describe("FlashCardPage", () => {
         isLoading: false,
         error: "",
       },
+      vocabLists: { itemsById: {}, itemIds: [] },
     };
     render(
       <ProgressStateContext.Provider value={mockState}>
