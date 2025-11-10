@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { generateConversation as apiGenerateConversation } from "../services";
+import { ConversationService } from "../services";
 import { Conversation } from "../types";
 
 export function useConversationGenerator() {
@@ -16,7 +16,8 @@ export function useConversationGenerator() {
       setIsLoading(true);
       setError(null);
       try {
-        const conversation = await apiGenerateConversation(params);
+        const conversationService = new ConversationService();
+        const conversation = await conversationService.generateConversation(params);
         return conversation;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Unknown error";

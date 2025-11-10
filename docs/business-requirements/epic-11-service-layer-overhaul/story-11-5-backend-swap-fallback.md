@@ -14,7 +14,7 @@ Providing robust backend swap and fallback logic ensures the app is resilient to
 
 - [x] Backend can be swapped with minimal code changes
 - [x] Fallback logic is robust and tested
-- [x] Documentation is updated
+- [x] Documentation is updated (including migration of all hooks and removal of old API modules)
 
 ## Business Rules
 

@@ -2,7 +2,7 @@
 
 ## Technical Scope
 
-All services (VocabularyDataService, AudioService) now support backend swap via dependency injection (DI) through their constructors. Fallback logic is robust and tested. See code comments in src/features/mandarin/services/interfaces.ts for detailed documentation of the backend swap/fallback pattern.
+All services (VocabularyDataService, AudioService, ConversationService) now support backend swap via dependency injection (DI) through their constructors. Fallback logic is robust and tested. All hooks (useAudioPlayback, useConversationGenerator) have been migrated to use the new service layer. Old API modules (audioApi.ts, conversationApi.ts) are deprecated and no longer in use. See code comments in src/features/mandarin/services/interfaces.ts for detailed documentation of the backend swap/fallback pattern.
 
 ## Implementation Details
 
@@ -48,7 +48,7 @@ Unit tests for backend swap and fallback logic in all services are included in *
 
 **Status:** Complete
 **Owner:** GitHub Copilot
-**Last updated:** 2025-11-10
+**Last updated:** 2025-11-11
 
 ---
 

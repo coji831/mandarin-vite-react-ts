@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { requestAudio } from "../services";
+import { AudioService } from "../services";
 import type { ConversationAudio } from "../types";
 
 export function useAudioPlayback() {
@@ -15,7 +15,12 @@ export function useAudioPlayback() {
     setIsLoading(true);
     setError(null);
     try {
-      const audio = await requestAudio(params);
+      const audioService = new AudioService();
+      const audio = await audioService.fetchAudioForWord(
+        params.wordId,
+        params.voice,
+        params.bitrate
+      );
       setAudioData(audio);
       setIsPlaying(true);
       setCurrentTurn(0); // Start at first turn
