@@ -81,8 +81,17 @@ This guide provides essential knowledge for AI agents working in the `mandarin-v
 
 ## 📄 Business Requirements & Implementation Docs
 
-- All business requirements (epics, stories) must use the templates in `docs/templates/` and be stored in `docs/business-requirements/`.
-- All implementation docs must use the matching templates in `docs/templates/` and be stored in `docs/issue-implementation/`.
+- **Documentation Naming Conventions:**
+
+  - Epic business requirements: `README.md` under `docs/business-requirements/{epic-folder}/`
+  - Epic implementation docs: `README.md` under `docs/issue-implementation/{epic-folder}/`
+  - Story business requirements: `story-<epic>.<story>-<short-title>.md` under the epic's BR folder
+  - Story implementation docs: `implementation-<epic>.<story>-<short-title>.md` under the epic's implementation folder
+  - All docs must use the official templates and section order from `docs/templates/`
+  - All docs must include cross-references (epic/story ↔ implementation) and status/owner/last updated fields
+
+- All epic business requirements must be a `README.md` under their own folder in `docs/business-requirements/{epic-folder}/`, with each story as a separate markdown file in the same folder.
+- All implementation docs must be a `README.md` under their own folder in `docs/issue-implementation/{epic-folder}/`, with each story implementation as a separate markdown file in the same folder.
 - For every epic or story, ensure the business requirements and implementation docs are aligned:
   - Section names, order, and required fields must match the template exactly.
   - Cross-reference related docs (epic/story ↔ implementation) using links.
