@@ -12,8 +12,8 @@ Establishing clear interfaces and base classes for all data/audio services ensur
 
 ## Acceptance Criteria
 
-- [ ] Interfaces cover all vocabulary and audio fetching needs
-- [ ] Pattern for fallback and backend swapping is documented
+- [x] Interfaces cover all vocabulary and audio fetching needs
+- [x] Pattern for fallback and backend swapping is documented
 
 ## Business Rules
 
@@ -29,10 +29,10 @@ Establishing clear interfaces and base classes for all data/audio services ensur
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Complete
+- **PR**: See Epic 11 PR or implementation doc
+- **Merge Date**: 2025-11-10
+- **Key Commit**: See repo history for Epic 11, Story 1
 
 ---
 

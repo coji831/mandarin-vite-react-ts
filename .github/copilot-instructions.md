@@ -126,6 +126,11 @@ This guide provides essential knowledge for AI agents working in the `mandarin-v
 - Follow reducer/context patterns for all new stateful features
 - Use CSV format for vocabulary data
 
+### When closing an epic or story
+
+- Update the status in both the business requirements (BR) and implementation docs to "complete".
+- Mark all acceptance criteria (AC) as done in the BR (business requirements) doc only.
+
 ---
 
 _If any section is unclear or missing, ask for clarification or request additional documentation from maintainers._
