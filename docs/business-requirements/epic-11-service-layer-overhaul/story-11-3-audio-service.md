@@ -12,8 +12,8 @@ Centralizing TTS/audio fetching in a dedicated service enables robust fallback l
 
 ## Acceptance Criteria
 
-- [ ] All TTS/audio fetching is routed through the new service
-- [ ] Service provides fallback logic (e.g., alternate API, local audio)
+- [x] All TTS/audio fetching is routed through the new service
+- [x] Service provides fallback logic (e.g., alternate API, local audio)
 
 ## Business Rules
 
@@ -29,10 +29,10 @@ Centralizing TTS/audio fetching in a dedicated service enables robust fallback l
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Complete
+- **PR**: See Epic 11 PR or implementation doc
+- **Merge Date**: 2025-11-10
+- **Key Commit**: See repo history for Epic 11, Story 3
 
 ---
 

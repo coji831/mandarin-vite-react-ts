@@ -1,4 +1,3 @@
-
 # Implementation 11.2: Implement Vocabulary Data Service
 
 ## Technical Scope
@@ -20,7 +19,7 @@ Example usage:
 ```typescript
 const service = new VocabularyDataService();
 const lists = await service.fetchAllLists();
-const words = await service.fetchWordsForList('1');
+const words = await service.fetchWordsForList("1");
 ```
 
 ## Architecture Integration
