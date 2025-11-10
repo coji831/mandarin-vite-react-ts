@@ -41,11 +41,12 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 
 - All vocabulary progress is tracked per user/device using a reducer-driven context architecture.
 - Progress is automatically persisted to localStorage, namespaced by user/device ID.
-- State management follows a unidirectional data flow pattern with three composed sub-reducers:
-  - `listsReducer`: Manages normalized vocabulary data (wordsById, wordIds, mastered status)
-  - `userReducer`: Manages user identity and settings
-  - `uiReducer`: Manages UI state (selected list, selected words, loading states)
-- The root reducer (`rootReducer`) composes all sub-reducers into a single state tree.
+- State management follows a unidirectional data flow pattern with four canonical state slices:
+  - `vocabLists`: Normalized vocabulary data (itemsById, itemIds)
+  - `progress`: Normalized progress data (wordsById, wordIds)
+  - `user`: User identity and settings
+  - `ui`: UI state (selected list, selected words, loading states)
+- The root reducer (`rootReducer`) composes all slices into a single state tree: `{ vocabLists, progress, user, ui }`.
 
 **Context Architecture:**
 
@@ -81,11 +82,11 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 **Component Integration:**
 
 - Components use granular selectors via `useProgressState` to subscribe only to needed state slices.
-  - All selectors access state via `s.ui.*`, `s.lists.*`, or `s.user.*` pattern
+  - All selectors access state via `s.ui.*`, `s.vocabLists.*`, `s.progress.*`, or `s.user.*` pattern
   - Example: `useProgressState(s => s.ui?.selectedWords ?? [])` instead of legacy `s.selectedWords`
 - All state mutations go through action creators from `useProgressActions()`.
 - No prop drilling—all components access context directly via hooks.
-- State type is `RootState` with three slices: `lists`, `user`, `ui`
+  - State type is `RootState` with four slices: `vocabLists`, `progress`, `user`, `ui`
 
 **Vocabulary List UI:**
 

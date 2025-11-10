@@ -14,8 +14,8 @@
 - Data loaders output normalized objects matching the new types
 - Documentation updated and cross-referenced
 
-**Status:** Planned
-**Last Update:** 2025-11-07
+**Status:** Complete
+**Last Update:** 2025-11-10
 
 ## Background
 
@@ -48,13 +48,13 @@ This epic is divided into stories based on the following approach:
 
 ## Acceptance Criteria
 
-- [ ] All vocabulary and progress data normalized by `wordId`
-- [ ] State slices: `dataState`, `progressState`, `userState`, `uiState` with clear responsibilities
-- [ ] Type definitions for all major objects, with explicit field names
-- [ ] Selectors join static and progress data via `wordId`
-- [ ] All components refactored to use unified types
-- [ ] Data loaders output normalized objects matching the new types
-- [ ] Documentation updated and cross-referenced
+- [x] All vocabulary and progress data normalized by `wordId`
+- [x] State slices: `dataState`, `progressState`, `userState`, `uiState` with clear responsibilities
+- [x] Type definitions for all major objects, with explicit field names
+- [x] Selectors join static and progress data via `wordId`
+- [x] All components refactored to use unified types
+- [x] Data loaders output normalized objects matching the new types
+- [x] Documentation updated and cross-referenced
 
 ## Architecture Decisions
 

@@ -11,13 +11,14 @@
 - Update selectors, components, and data loaders
 - Documentation and cross-referencing
 
-**Status:** Planned
+**Status:** Complete
 
 ## Technical Overview
 
 **Implementation Goal:** Refactor all state, selectors, components, and loaders to use a unified, normalized data model for Mandarin vocabulary and progress.
-**Status:** Planned
-**Last Update:** 2025-11-07
+**Status:** Complete
+**Last Update:** 2025-11-10
+**Completion Note:** All state, types, reducers, selectors, components, and data loaders are now fully normalized and unified by `wordId`. No legacy or duplicate fields remain. All acceptance criteria are met and the implementation is production-ready.
 
 ## Architecture Decisions
 

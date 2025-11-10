@@ -39,22 +39,25 @@ The application uses a **reducer-based architecture with React Context API** for
 
 The root reducer combines three domain-specific sub-reducers:
 
-1. **`listsReducer`**: Manages normalized vocabulary data
+1. **`vocabLists`**: Normalized vocabulary data (type: `ListState`)
 
-   - State: `{ wordsById: Record<WordId, WordEntity>, wordIds: WordId[] }`
-   - Handles: Word mastery status, vocabulary data normalization
-   - Actions: `INIT`, `RESET`, `MARK_WORD_LEARNED`
+- State: `{ itemsById: Record<wordId, WordBasic>, itemIds: string[] }`
+- Handles: Vocabulary normalization and lookup
 
-2. **`userReducer`**: Manages user identity and preferences
+2. **`progress`**: Normalized progress data (type: `ProgressState`)
 
-   - State: `{ userId: string, preferences: Record<string, unknown> }`
-   - Handles: User settings, device identity
-   - Actions: `USER/SET_ID`, `USER/SET_PREF`
+- State: `{ wordsById: Record<wordId, WordProgress>, wordIds: string[] }`
+- Handles: Per-word progress tracking
 
-3. **`uiReducer`**: Manages UI state and legacy compatibility
-   - State: `{ isLoading, lastUpdated, selectedList, selectedWords, masteredProgress, error }`
-   - Handles: Loading states, current selection, mastered word tracking
-   - Actions: `UI/SET_LOADING`, `UI/SET_SELECTED_LIST`, `UI/SET_SELECTED_WORDS`, `UI/ADD_MASTERED_WORD`, etc.
+3. **`user`**: User identity and preferences (type: `UserState`)
+
+- State: `{ userId: string | null, preferences: Record<string, unknown> }`
+- Handles: User/device identity and settings
+
+4. **`ui`**: UI state and compatibility (type: `UiState`)
+
+- State: `{ isLoading, lastUpdated, selectedList, selectedWords, masteredProgress, error }`
+- Handles: UI flags, selection, and mastered word tracking
 
 ### Split Context Pattern
 
