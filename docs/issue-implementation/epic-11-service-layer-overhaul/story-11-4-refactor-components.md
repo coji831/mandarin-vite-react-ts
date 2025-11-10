@@ -1,20 +1,23 @@
 # Implementation 11.4: Refactor Components to Use Services
 
+**Status:** Complete
+**Owner:** GitHub Copilot
+**Last updated:** 2025-11-10
+
 ## Technical Scope
 
-Refactor all components and pages (e.g., PlayButton, FlashCardPage, VocabularyListPage) to use the new service layer for all data/audio access. Remove all direct fetch/API calls from UI code. Update tests to mock the service layer.
+All components and pages (PlayButton, FlashCardPage, VocabularyListPage) have been refactored to use the new service layer (`VocabularyDataService`, `AudioService`) for all data/audio access. All direct fetch/API calls have been removed from UI code. Tests have been updated and all pass. See [business requirements](../../business-requirements/epic-11-service-layer-overhaul/story-11-4-refactor-components.md) for acceptance criteria.
 
 ## Implementation Details
 
-```typescript
-// Example refactor pattern
-// Before:
-const res = await fetch("/api/vocab");
-// After:
-const vocab = await vocabularyDataService.fetchAllLists();
-```
+### Example Refactor Pattern
 
-All data/audio access in UI code must use the new service layer. Tests are updated to mock service functions.
+// Before:
+// const res = await fetch("/api/vocab");
+// After:
+// const vocab = await vocabularyDataService.fetchAllLists();
+
+All data/audio access in UI code now uses the new service layer. Tests are updated to mock service functions where needed.
 
 ## Architecture Integration
 
@@ -24,15 +27,23 @@ All data/audio access in UI code must use the new service layer. Tests are updat
 
 ## Technical Challenges & Solutions
 
-Problem: Identifying all direct fetch/API calls in components
-Solution: Use code search and review to ensure all are refactored
-
-Problem: Updating tests to mock service layer
-Solution: Use Jest/RTL mocks for service functions
+- **Identifying all direct fetch/API calls in components:** Used code search and review to ensure all are refactored.
+- **Updating tests to mock service layer:** Used Jest/RTL mocks for service functions as needed.
 
 ## Testing Implementation
 
-All refactored components/pages must pass existing and new tests with service layer mocked
+All refactored components/pages pass existing and new tests with the service layer mocked where appropriate. No regressions observed.
+
+---
+
+**Cross-references:**
+
+- [Business Requirements for Story 11.4](../../business-requirements/epic-11-service-layer-overhaul/story-11-4-refactor-components.md)
+- [Epic 11 README](../../business-requirements/epic-11-service-layer-overhaul/README.md)
+
+**Status:** Complete
+**Owner:** GitHub Copilot
+**Last updated:** 2025-11-10
 
 ---
 

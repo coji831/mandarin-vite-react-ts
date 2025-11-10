@@ -12,8 +12,8 @@ Refactoring all components to use the new service layer ensures maintainability,
 
 ## Acceptance Criteria
 
-- [ ] No direct fetch/API calls in components
-- [ ] All data/audio access goes through service functions
+- [x] No direct fetch/API calls in components
+- [x] All data/audio access goes through service functions
 
 ## Business Rules
 
@@ -29,10 +29,10 @@ Refactoring all components to use the new service layer ensures maintainability,
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Complete
+- **PR**: See epic-11-service-layer-overhaul branch
+- **Merge Date**: 2025-11-10
+- **Key Commit**: (to be filled after merge)
 
 ---
 

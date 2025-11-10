@@ -5,7 +5,9 @@
  * - Handles TTS audio playback for the given text, including API call, caching, and error handling.
  * - Purely presentational except for internal audio state; does not persist data or manage parent state.
  */
+
 import { useCallback, useRef, useState, useEffect } from "react";
+import { AudioService } from "../services/audioService";
 
 export { PlayButton };
 
@@ -23,10 +25,7 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
   useEffect(() => {
     // Only clear if the text has actually changed from what generated the current audioUrl
     // We use a data attribute on the audio element to store the last text that generated audio.
-    if (
-      audioRef.current &&
-      audioRef.current.dataset.lastText !== mandarinText
-    ) {
+    if (audioRef.current && audioRef.current.dataset.lastText !== mandarinText) {
       setAudioUrl(undefined);
       setError(undefined); // Clear any previous error for the old text
       // Revoke the object URL to free up memory if it's a blob URL
@@ -57,9 +56,7 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
         await audioRef.current.play();
       } catch (e) {
         console.error("Audio replay error:", e);
-        setError(
-          "Audio playback blocked by browser. Please click play manually.",
-        );
+        setError("Audio playback blocked by browser. Please click play manually.");
       }
       return; // Exit, no API call needed
     }
@@ -68,32 +65,14 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
     setIsLoading(true);
 
     try {
-      console.log("Calling API for new audio:", mandarinText);
-      const response = await fetch("/api/get-tts-audio", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", // Specify JSON content type
-        },
-        body: JSON.stringify({ text: mandarinText }), // Send the text as JSON
-      });
-
-      // Check if the response was successful
-      if (!response.ok) {
-        const errorText = await response.text(); // Get error message from backend
-        throw new Error(
-          `Failed to get audio: ${response.status} - ${
-            errorText || response.statusText
-          }`,
-        );
+      console.log("Calling AudioService for new audio:", mandarinText);
+      const audioService = new AudioService();
+      // Use fetchAudioForWord, which returns a ConversationAudio object
+      const audio = await audioService.fetchAudioForWord(mandarinText);
+      if (!audio.audioUrl) {
+        throw new Error("AudioService did not return an audio URL.");
       }
-
-      // --- IMPORTANT CHANGE HERE ---
-      // Expected response is now JSON with an audioUrl
-      const data = await response.json();
-      if (!data.audioUrl) {
-        throw new Error("Backend did not return an audio URL.");
-      }
-      const url = data.audioUrl;
+      const url = audio.audioUrl;
       setAudioUrl(url); // Store the public GCS URL
 
       // Play the audio automatically once the URL is set
@@ -128,22 +107,12 @@ function PlayButton({ mandarinText }: Readonly<Props>) {
           The 'track' element is already hidden. */}
       <audio ref={audioRef} hidden autoPlay>
         <source src={audioUrl} type="audio/mpeg" />
-        <track
-          hidden
-          kind="captions"
-          srcLang="zh"
-          label="Mandarin captions"
-          default={false}
-        />
+        <track hidden kind="captions" srcLang="zh" label="Mandarin captions" default={false} />
         Your browser does not support the audio element.
       </audio>
 
       {/* Error text adjusted to be under the button */}
-      {error && (
-        <p style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-          Error: {error}
-        </p>
-      )}
+      {error && <p style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>Error: {error}</p>}
       {/* Optional: Add a subtle indicator that audio is from cache/GCS if desired */}
       {audioUrl &&
         !isLoading &&

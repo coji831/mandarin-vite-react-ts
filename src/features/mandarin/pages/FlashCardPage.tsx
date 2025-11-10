@@ -16,11 +16,10 @@
 
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { FlashCard } from "../components";
 import { useProgressActions, useProgressState } from "../hooks";
-import { VocabularyList, WordBasic } from "../types";
-import { loadCsvVocab } from "../utils";
+// Removed unused VocabularyList, WordBasic imports after refactor
+import { VocabularyDataService } from "../services/vocabularyDataService";
 
 export { FlashCardPage };
 
@@ -36,24 +35,10 @@ function FlashCardPage() {
       if (!listId) return;
       setSelectedList(listId);
       try {
-        const res = await fetch("/data/vocabulary/vocabularyLists.json");
-        if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
-        const lists = await res.json();
-
-        const found = (lists as VocabularyList[]).find((l) => l.id === listId);
-        if (!found || !found.file) throw new Error("List not found or missing file");
-        const words = await loadCsvVocab(`/data/vocabulary/${found.file}`);
-
-        // Defensive: check if words is an array and has expected fields
+        const vocabService = new VocabularyDataService();
+        const words = await vocabService.fetchWordsForList(listId);
         if (Array.isArray(words) && words.length > 0 && words[0].wordId) {
-          // convert to WordBasic type
-          const wordList: WordBasic[] = words.map((w) => ({
-            wordId: w.wordId,
-            chinese: w.Chinese ?? "",
-            pinyin: w.Pinyin ?? "",
-            english: w.English ?? "",
-          }));
-          setSelectedWords(wordList);
+          setSelectedWords(words);
         } else {
           console.error("Loaded words are empty or invalid:", words);
           setSelectedWords([]);
