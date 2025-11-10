@@ -12,9 +12,9 @@ Providing robust backend swap and fallback logic ensures the app is resilient to
 
 ## Acceptance Criteria
 
-- [ ] Backend can be swapped with minimal code changes
-- [ ] Fallback logic is robust and tested
-- [ ] Documentation is updated
+- [x] Backend can be swapped with minimal code changes
+- [x] Fallback logic is robust and tested
+- [x] Documentation is updated
 
 ## Business Rules
 
@@ -30,10 +30,10 @@ Providing robust backend swap and fallback logic ensures the app is resilient to
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Complete
+- **PR**: See epic-11-service-layer-overhaul branch
+- **Merge Date**: 2025-11-10
+- **Key Commit**: (to be filled after merge)
 
 ---
 

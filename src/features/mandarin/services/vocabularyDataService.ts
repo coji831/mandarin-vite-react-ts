@@ -4,9 +4,31 @@
 import { IVocabularyDataService, BaseService } from "./interfaces";
 import { VocabularyList } from "../types/Vocabulary";
 import { WordBasic, WordProgress } from "../types/word";
-import { loadCsvVocab, VocabWord } from "../utils/csvLoader";
+import { loadCsvVocab } from "../utils/csvLoader";
 
-const VOCAB_LISTS_URL = "/data/vocabulary/vocabularyLists.json";
+// Backend interface for DI/configurable backend swap
+export interface IVocabularyBackend {
+  fetchLists(): Promise<VocabularyList[]>;
+  fetchWords(list: VocabularyList): Promise<WordBasic[]>;
+}
+
+// Default backend implementation using fetch and CSV loader
+export class DefaultVocabularyBackend implements IVocabularyBackend {
+  async fetchLists(): Promise<VocabularyList[]> {
+    const res = await fetch("/data/vocabulary/vocabularyLists.json");
+    if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
+    return res.json();
+  }
+  async fetchWords(list: VocabularyList): Promise<WordBasic[]> {
+    const wordsRaw = await loadCsvVocab(`/data/vocabulary/${list.file}`);
+    return wordsRaw.map((w) => ({
+      wordId: w.wordId,
+      chinese: w.Chinese,
+      pinyin: w.Pinyin,
+      english: w.English,
+    }));
+  }
+}
 
 export class VocabularyDataService
   extends BaseService<[string], VocabularyList>
@@ -14,11 +36,17 @@ export class VocabularyDataService
 {
   private listsCache: VocabularyList[] | null = null;
   private wordsCache: Record<string, WordBasic[]> = {};
+  private backend: IVocabularyBackend;
 
   /**
    * Fallback service must implement IVocabularyDataService and extend BaseService for type safety
    */
   declare fallbackService?: IVocabularyDataService & BaseService<[string], VocabularyList>;
+
+  constructor(backend?: IVocabularyBackend) {
+    super();
+    this.backend = backend || new DefaultVocabularyBackend();
+  }
 
   // Required by BaseService: fetch a single VocabularyList by id
   async fetch(listId: string): Promise<VocabularyList> {
@@ -35,9 +63,7 @@ export class VocabularyDataService
   async fetchAllLists(): Promise<VocabularyList[]> {
     if (this.listsCache) return this.listsCache;
     try {
-      const res = await fetch(VOCAB_LISTS_URL);
-      if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
-      const data = await res.json();
+      const data = await this.backend.fetchLists();
       this.listsCache = data;
       return data;
     } catch (err) {
@@ -52,14 +78,7 @@ export class VocabularyDataService
     if (this.wordsCache[listId]) return this.wordsCache[listId];
     const list = await this.fetchVocabularyList(listId);
     try {
-      const wordsRaw = await loadCsvVocab(`/data/vocabulary/${list.file}`);
-      // Map VocabWord to WordBasic
-      const words: WordBasic[] = wordsRaw.map((w) => ({
-        wordId: w.wordId,
-        chinese: w.Chinese,
-        pinyin: w.Pinyin,
-        english: w.English,
-      }));
+      const words = await this.backend.fetchWords(list);
       this.wordsCache[listId] = words;
       return words;
     } catch (err) {

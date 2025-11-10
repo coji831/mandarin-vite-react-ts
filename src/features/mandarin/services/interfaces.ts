@@ -43,15 +43,25 @@ export interface IConversationService {
 }
 
 /**
- * Abstract base class for service implementations with fallback and backend swap support
- */
-
-/**
- * Abstract base class for service implementations with fallback and backend swap support.
+ * Abstract base class for service implementations with backend swap and fallback support.
  *
- * To use, extend BaseService with concrete argument and return types for fetch.
- * Example:
- *   class MyService extends BaseService<MyArgs, MyResult> { ... }
+ * Backend Swap Pattern:
+ * - Each service (e.g., VocabularyDataService, AudioService) accepts a backend implementation via constructor (DI/config).
+ * - To swap backends, implement the relevant backend interface (e.g., IVocabularyBackend, IAudioBackend),
+ *   and pass it to the service constructor.
+ * - This enables runtime backend selection, testing, and future extensibility.
+ *
+ * Fallback Pattern:
+ * - Each service supports a fallbackService property (of the same interface/type).
+ * - If the primary backend fails, the service will attempt the fallbackService.
+ * - This ensures robust error handling and reliability.
+ *
+ * Example usage:
+ *   const svc = new VocabularyDataService(new CustomBackend());
+ *   svc.fallbackService = new VocabularyDataService(new LocalCacheBackend());
+ *
+ * For business requirements and rationale, see:
+ *   docs/business-requirements/epic-11-service-layer-overhaul/story-11-5-backend-swap-fallback.md
  */
 export abstract class BaseService<Args extends unknown[] = [], Result = unknown> {
   /**
@@ -79,11 +89,3 @@ export abstract class BaseService<Args extends unknown[] = [], Result = unknown>
     }
   }
 }
-
-/**
- * Example documentation for backend swap pattern:
- *
- * To swap backends, implement the relevant interface (e.g., IVocabularyDataService)
- * in a new class, and update the service provider in the app's dependency injection
- * or context layer. Use BaseService for shared fallback logic.
- */

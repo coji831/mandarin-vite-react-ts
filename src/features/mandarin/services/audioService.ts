@@ -5,6 +5,52 @@ import { IAudioService, BaseService } from "./interfaces";
 import { ConversationAudio } from "../types/Conversation";
 import { API_ROUTES } from "../../../../shared/constants/apiPaths";
 
+// Backend interface for DI/configurable backend swap
+export interface IAudioBackend {
+  fetchAudio(params: {
+    wordId?: string;
+    conversationId?: string;
+    voice?: string;
+    bitrate?: number;
+  }): Promise<ConversationAudio>;
+}
+
+// Default backend implementation using fetch
+export class DefaultAudioBackend implements IAudioBackend {
+  async fetchAudio(params: {
+    wordId?: string;
+    conversationId?: string;
+    voice?: string;
+    bitrate?: number;
+  }): Promise<ConversationAudio> {
+    const { wordId, conversationId, voice, bitrate } = params;
+    let endpoint: string;
+    let body: { wordId?: string; conversationId?: string; voice?: string; bitrate?: number };
+    if (conversationId) {
+      endpoint = API_ROUTES.conversationAudioGenerate;
+      body = { conversationId, voice, bitrate };
+    } else if (wordId) {
+      endpoint = API_ROUTES.conversationAudioGenerate;
+      body = { wordId, voice, bitrate };
+    } else {
+      throw new Error("Either wordId or conversationId must be provided");
+    }
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      throw new Error(`Audio generation failed: ${response.statusText}`);
+    }
+    const audio = await response.json();
+    if (wordId) {
+      audio.conversationId = wordId;
+    }
+    return audio;
+  }
+}
+
 export class AudioService
   extends BaseService<
     [{ wordId?: string; conversationId?: string; voice?: string; bitrate?: number }],
@@ -17,6 +63,13 @@ export class AudioService
       [{ wordId?: string; conversationId?: string; voice?: string; bitrate?: number }],
       ConversationAudio
     >;
+
+  private backend: IAudioBackend;
+
+  constructor(backend?: IAudioBackend) {
+    super();
+    this.backend = backend || new DefaultAudioBackend();
+  }
 
   async fetchAudioForConversation(
     conversationId: string,
@@ -55,31 +108,6 @@ export class AudioService
     voice?: string;
     bitrate?: number;
   }): Promise<ConversationAudio> {
-    const { wordId, conversationId, voice, bitrate } = params;
-    let endpoint: string;
-    let body: { wordId?: string; conversationId?: string; voice?: string; bitrate?: number };
-    if (conversationId) {
-      endpoint = API_ROUTES.conversationAudioGenerate;
-      body = { conversationId, voice, bitrate };
-    } else if (wordId) {
-      endpoint = API_ROUTES.conversationAudioGenerate;
-      body = { wordId, voice, bitrate };
-    } else {
-      throw new Error("Either wordId or conversationId must be provided");
-    }
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`Audio generation failed: ${response.statusText}`);
-    }
-    const audio = await response.json();
-    // For fetchAudioForWord, set conversationId to wordId for test compatibility
-    if (wordId) {
-      audio.conversationId = wordId;
-    }
-    return audio;
+    return this.backend.fetchAudio(params);
   }
 }

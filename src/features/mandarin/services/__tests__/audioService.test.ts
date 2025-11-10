@@ -77,4 +77,24 @@ describe("AudioService", () => {
     const audio = await service.fetchAudioForWord("w2");
     expect(audio.audioUrl).toBe("fallback.mp3");
   });
+
+  it("supports backend swap via DI", async () => {
+    // Custom backend mock
+    const customBackend = {
+      fetchAudio: jest.fn((params) =>
+        Promise.resolve({
+          conversationId: params.wordId || params.conversationId || "custom",
+          audioUrl: "custom.mp3",
+          generatedAt: "now",
+        })
+      ),
+    };
+    const svc = new AudioService(customBackend);
+    const audio1 = await svc.fetchAudioForWord("w99");
+    expect(audio1.audioUrl).toBe("custom.mp3");
+    expect(audio1.conversationId).toBe("w99");
+    const audio2 = await svc.fetchAudioForConversation("c99");
+    expect(audio2.audioUrl).toBe("custom.mp3");
+    expect(audio2.conversationId).toBe("c99");
+  });
 });

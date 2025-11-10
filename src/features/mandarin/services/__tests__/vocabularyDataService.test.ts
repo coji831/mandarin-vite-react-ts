@@ -51,6 +51,25 @@ describe("VocabularyDataService", () => {
     expect(progress).toEqual({ wordId: "1" });
   });
 
+  it("supports backend swap via DI", async () => {
+    // Custom backend mock
+    const customBackend = {
+      fetchLists: jest.fn(() =>
+        Promise.resolve([{ id: "99", name: "Custom", description: "", file: "custom.csv" }])
+      ),
+      fetchWords: jest.fn(() =>
+        Promise.resolve([
+          { wordId: "99", chinese: "自定义", pinyin: "zì dìng yì", english: "custom" },
+        ])
+      ),
+    };
+    const svc = new VocabularyDataService(customBackend);
+    const lists = await svc.fetchAllLists();
+    expect(lists[0].id).toBe("99");
+    const words = await svc.fetchWordsForList("99");
+    expect(words[0].wordId).toBe("99");
+  });
+
   it("uses fallbackService for fetchAllLists on error", async () => {
     const fallback = new VocabularyDataService();
     fallback.fetchAllLists = jest.fn(() =>
