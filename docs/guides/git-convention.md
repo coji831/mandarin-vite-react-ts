@@ -49,11 +49,7 @@ Example:
 
 ## Commit Message Conventions
 
-All commits **must** follow the Conventional Commits format:
-
-```
-<type>(<scope>): <description>
-```
+All commits **must** follow the [Conventional Commits format](../templates/commit-message-template.md)
 
 ### Types
 

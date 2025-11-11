@@ -14,9 +14,9 @@ This folder contains business requirements, epics, user stories, and project pla
 
 ## Templates
 
-- [Business Requirements Large Epic Template](../templates/business-requirements-large-epic-template.md)
-- [Business Requirements Small Epic Template](../templates/business-requirements-small-epic-template.md)
-- [Business Requirements Story Template](../templates/business-requirements-story-template.md)
+- [Business Requirements Large Epic Template](../templates/epic-business-requirements-template.md)
+- [Business Requirements Small Epic Template](../templates/epic-business-requirements-template.md)
+- [Business Requirements Story Template](../templates/story-business-requirements-template.md)
 
 ## Usage
 

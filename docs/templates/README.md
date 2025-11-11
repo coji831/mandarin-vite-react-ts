@@ -14,19 +14,17 @@ This folder contains the single source of truth for all documentation templates 
 
 ## Template Index
 
-- [Business Requirements Large Epic Template](business-requirements-large-epic-template.md)
-- [Business Requirements Small Epic Template](business-requirements-small-epic-template.md)
-- [Business Requirements Story Template](business-requirements-story-template.md)
-- [Implementation Large Epic Template](implementation-large-epic-template.md)
-- [Implementation Small Epic Template](implementation-small-epic-template.md)
-- [Implementation Story Template](implementation-story-template.md)
+- [Business Requirements Epic Template](epic-business-requirements-template.md)
+- [Business Requirements Story Template](story-business-requirements-template.md)
+- [Implementation Epic Template](epic-implementation-template.md)
+- [Implementation Story Template](story-implementation-template.md)
 - [Commit Message Template](commit-message-template.md)
 - [Feature Design Template](feature-design-template.md)
 - [File Summary Template](file-summary-template.md)
 
 ## Related Guides
 
-- [Business Requirements Format Guide](../guides/business-requirements-format.md)
+- [Business Requirements Format Guide](../guides/business-requirements-format-guide.md)
 - [Implementation Format Guide](../guides/implementation-format.md)
 - [Project Conventions Guide](../guides/conventions.md)
 - [SOLID Principles for React Guide](../guides/solid-principles.md)
@@ -38,8 +36,11 @@ This folder contains the single source of truth for all documentation templates 
 
 ## AI & Workflow Resources
 
-- [AI File Operations Guide](../guides/ai-file-operations.md)
-- [Structured AI Prompts Guide](../guides/structured-ai-prompts.md)
+- [Copilot Instructions](../../.github/copilot-instructions.md) – Primary AI operational playbook
+  - Story-Level Development Workflow
+  - Automation Protocol (trigger: "refer #file:automation")
+  - Quality Gates & Alignment Checklists
+- [Structured AI Prompts Guide](../automation/structured-ai-prompts.md) – Detailed prompt catalog with examples
 
 - Main README files for navigation:
   - Project root: `README.md`

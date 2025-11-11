@@ -81,7 +81,7 @@ Stories are divided to separate interface design, service implementation, and UI
 
 - Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
 - Operational notes: All new services must be documented and tested
-- Links: reference implementation templates at `docs/templates/implementation-large-epic-template.md`
+- Links: reference implementation templates at `docs/templates/epic-implementation-template.md`
 
 ---
 

@@ -15,9 +15,9 @@ This folder contains implementation details, completed epics, and user stories f
 
 ## Templates
 
-- [Implementation Large Epic Template](../templates/implementation-large-epic-template.md)
-- [Implementation Small Epic Template](../templates/implementation-small-epic-template.md)
-- [Implementation Story Template](../templates/implementation-story-template.md)
+- [Implementation Large Epic Template](../templates/epic-implementation-template.md)
+- [Implementation Small Epic Template](../templates/epic-implementation-template.md)
+- [Implementation Story Template](../templates/story-implementation-template.md)
 
 ## Usage
 

@@ -122,9 +122,12 @@ When adding new state or actions to the Mandarin feature:
 
 ---
 
-## AI File Operations
+## AI Workflow & Automation
 
-For standardized AI workflow commands and file operations, see [ai-file-operations.md](./ai-file-operations.md).
+For standardized AI workflow steps, automation protocol, and structured prompt format, see:
+
+- **Primary**: `.github/copilot-instructions.md` → sections: **Story-Level Development Workflow** and **Automation Protocol**
+- **Prompt Catalog**: `docs/automation/structured-ai-prompts.md` for detailed prompt examples
 
 ---
 

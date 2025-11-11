@@ -19,18 +19,14 @@ The Business Requirements documents should:
 3. **Maintain tracking information** - Include implementation status, timelines, and key milestone commits
 4. **Explain the "why"** - Focus on the reasons for features rather than implementation details
 
-## Epic Size Guidelines
+## Epic Documentation Guidelines
 
-### For Small Epics (1-2 stories)
+All epics now use a single unified template for business requirements, regardless of size or number of stories.
 
-1. **Single document approach** - Document epic and story details in one README.md
-2. **Simplified structure** - Use abbreviated template focusing on core sections
-3. **Consolidated criteria** - Combine epic and story acceptance criteria
+**Key points:**
 
-### For Large Epics (3+ stories)
-
-1. **Split documentation** - Use README.md for epic overview and separate files for stories
-2. **Clear story divisions** - Explain how and why the epic breaks into distinct stories
-3. **Cross-references** - Link related stories and maintain relationship documentation
-4. **Delegated details** - Keep epic concise, put specifics in story documents
-5. **Consistent terminology** - Use same terms and concepts across all documents
+1. **Single template for all epics** – Use the canonical epic business requirements template for every epic.
+2. **Epic and story structure** – Place the epic overview in a README.md and create separate files for each story as needed.
+3. **Story breakdown** – Clearly explain how and why the epic is divided into stories, and maintain cross-references between epic and story docs.
+4. **Consistent terminology** – Use the same terms and concepts across all documents.
+5. **Acceptance criteria** – Write acceptance criteria as a checklist in the epic, and map each item to stories or test cases as appropriate.

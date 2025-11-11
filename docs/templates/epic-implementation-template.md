@@ -1,10 +1,10 @@
-# Implementation Large Epic Template
+# Template For Epic Implementation
 
-# Epic <number>: <Epic Name>
+# Epic [EPIC-NUMBER]: [Epic-Title]
 
 ## Epic Summary
 
-**Goal:** <One-sentence technical goal statement>
+**Goal:** [One-sentence-technical-goal-statement]
 
 **Key Points:**
 
@@ -16,20 +16,18 @@
 
 **Status:** <Planned/In Progress/Completed>
 
-## [Required] Technical Overview
-
-**Implementation Goal:** <Describe the technical objectives and scope of the implementation>
-
-**Status:** <e.g., In Progress, Completed>
-
 **Last Update:** <Date>
 
-## [Required] Architecture Decisions
+## Technical Overview
+
+[Describe the technical objectives and scope of the implementation]
+
+## Architecture Decisions
 
 1. <Decision 1 - be specific about technical choices and reasoning>
 2. <Decision 2 - include rationale and alternatives considered>
 
-## [Required] Technical Implementation
+## Technical Implementation
 
 ### Architecture
 

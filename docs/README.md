@@ -27,17 +27,18 @@
 
 ### AI Assistance Guides
 
-- [guides/ai-file-operations.md](guides/ai-file-operations.md) – AI file operation guide
-- [guides/structured-ai-prompts.md](guides/structured-ai-prompts.md) – Creating effective AI prompts
+- [Copilot Instructions](../.github/copilot-instructions.md) – Primary AI operational playbook
+  - Story-Level Development Workflow
+  - Automation Protocol (trigger: "refer #file:automation")
+  - Quality Gates & Cross-Doc Alignment
+- [automation/structured-ai-prompts.md](automation/structured-ai-prompts.md) – Structured prompt catalog with examples
 
 ### Templates
 
-- [Business Requirements Large Epic Template](templates/business-requirements-large-epic-template.md)
-- [Business Requirements Small Epic Template](templates/business-requirements-small-epic-template.md)
-- [Business Requirements Story Template](templates/business-requirements-story-template.md)
-- [Implementation Large Epic Template](templates/implementation-large-epic-template.md)
-- [Implementation Small Epic Template](templates/implementation-small-epic-template.md)
-- [Implementation Story Template](templates/implementation-story-template.md)
+- [Epic Business Requirements Template](templates/epic-business-requirements-template.md)
+- [Story Business Requirements Template](templates/story-business-requirements-template.md)
+- [Epic Implementation Template](templates/epic-implementation-template.md)
+- [Story Implementation Template](templates/story-implementation-template.md)
 
 ## Project Management Documentation
 

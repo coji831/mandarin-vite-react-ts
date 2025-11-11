@@ -34,7 +34,7 @@ Provides a stable type contract and testing surface so future refactors and cons
 
 ## User Journey [Optional]
 
-- Notes: This story is low-risk and should avoid changes to consumers. Follow `docs/templates/business-requirements-story-template.md` for PR description and testing checklist.
+Notes: This story is low-risk and should avoid changes to consumers.
 
 ## Business Rules
 

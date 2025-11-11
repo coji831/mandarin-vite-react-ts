@@ -1,136 +1,275 @@
 # Copilot Instructions for AI Coding Agents
 
-This guide provides essential knowledge for AI agents working in the `mandarin-vite-react-ts` codebase. Follow these instructions to be immediately productive and maintain project conventions.
+Operational playbook for AI agents contributing to `mandarin-vite-react-ts`. Follow these rules to stay aligned, produce high‑quality changes, and keep documentation in sync.
 
-## 🏗️ Big Picture Architecture
+## ⚡ TL;DR Quick Start
 
-- **Frontend:** React + TypeScript, built with Vite. Feature-based organization in `src/features/`.
-- **State Management:** Reducer-based architecture using Context API. State is split into `lists`, `user`, and `ui` slices, with automatic localStorage persistence.
-- **Backend:** Serverless functions in `api/` (Text-to-Speech), plus optional local Express backend in `local-backend/`.
-- **Data:** Vocabulary and examples loaded from CSV/JSON in `public/data/`, processed via `src/utils/csvLoader.ts`.
-- **Routing:** React Router, with routes defined in `src/router/` and constants in `src/constants/paths.ts`.
+Install: `npm install`
+Run dev: `npm run dev` (port 5173)
+Run local backend: `npm run start-backend` (port 3001)
+Run tests: `npm test`
+Epic BR: use `docs/templates/epic-business-requirements-template.md`
+Story BR: use `docs/templates/story-business-requirements-template.md`
+Epic Implementation: `docs/templates/epic-implementation-template.md`
+Story Implementation: `docs/templates/story-implementation-template.md`
+Code change: follow `docs/guides/code-conventions.md` + `docs/guides/solid-principles.md`
+Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
 
-## 🧩 Critical Workflows
+## 📚 Table of Contents
 
-- **Development:**
-  - Install dependencies: `npm install`
-  - Start dev server: `npm run dev` (default port: 5173)
-- **Testing:**
-  - Run tests: `npm test` (Jest + React Testing Library)
-- **Deployment:**
-  - Vercel CLI: `vercel` (see `vercel.json` for config)
-- **Data Update:**
-  - Add/modify vocabulary: update CSVs in `public/data/vocabulary/` (format: `No,Chinese,Pinyin,English`)
-  - Use `csvLoader.ts` for parsing and normalization
+1. Architecture Overview
+2. Workflows
+3. Templates Index
+4. Naming & Structure
+5. State Management Rules
+6. Testing Rules
+7. Documentation Standards
+8. Code Change Checklist
+9. Git & Branching
+10. Closing Epics & Stories
+11. Quality Gates
+12. Cross‑Doc Alignment Checklist
+13. Automation Protocol
+14. Resources
 
-## 📝 Project-Specific Patterns & Conventions
+## 🏗️ Architecture Overview
 
-### Code Conventions
+**Frontend**: React + TypeScript via Vite; feature folders in `src/features/`.
+**State**: Context + reducers; slices: `lists`, `user`, `ui`; persisted via localStorage.
+**Backend**: Serverless functions in `api/` (e.g., TTS) + optional Express in `local-backend/`.
+**Data**: CSV/JSON in `public/data/`, loaded by `src/utils/csvLoader.ts`.
+**Routing**: React Router; constants in `src/constants/paths.ts`.
 
-- Use TypeScript and React functional components throughout
-- Prefer named function declarations for components
-- Use `type` for type definitions unless extending external types
-- Always use explicit type annotations; avoid `any`
-- Feature code lives in its own folder under `src/features/`
-- Route constants in `src/constants/paths.ts`; use React Router for navigation
-- Vocabulary data is always loaded via CSV and `csvLoader.ts`
+## 🔄 Workflows
 
-### State Management
+Development: install → run dev → run local backend (optional) → iterate.
+Testing: `npm test` (Jest + RTL) for unit/component tests.
+Deployment: use `vercel` with `vercel.json` config.
+Data Update: modify CSV under `public/data/vocabulary/`; parse via `csvLoader.ts`.
 
-- Reducer files: `{domain}Reducer.ts` in `src/features/{feature}/reducers/`
-- Action types: SCREAMING_SNAKE_CASE, prefixed by domain (e.g., `UI/SET_LOADING`)
-- Action creators: Exported from `useProgressActions()` hook, verb-based camelCase
-- Selectors: Use `useProgressState(selector)` with inline arrow functions, always access via slice (`s.ui.*`, `s.lists.*`, `s.user.*`)
-- State shape: `{ lists, user, ui }` with normalized data (`itemsById`, `itemIds`)
-- Immutability: Use spread operators, never mutate state directly
-- Type definitions in `src/types/`
+### 🧪 Story-Level Development Workflow
 
-### Testing
+Follow this sequence whenever implementing or updating a story (smallest deliverable linked to an epic):
 
-- Reducer tests: Each action type in isolation, files in `__tests__/`
-- Component tests: Mock context providers, test selector/action creator usage
+1. Review Requirements
 
-### Routing
+- Open the story BR file (`docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-*.md`) and its epic BR `README.md`.
+- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-*.md` + epic implementation `README.md`).
+- Confirm Acceptance Criteria (AC) clarity; note any ambiguous items in a "Questions / Clarifications" subsection (add if missing).
 
-- Page components in `pages` subdirectory of feature
-- Use nested routes for complex features
-- Path constants from `src/constants/paths.ts`
+2. Plan Changes
 
-**Component Design:**
+- Identify impacted feature folder(s) under `src/features/`.
+- Check design doc (`src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts.
+- If adding public APIs/components/hooks, prepare file header summaries (template: `docs/templates/file-summary-template.md`).
 
-- No prop drilling; all components access context via hooks
-- Card-based UI for vocabulary lists and progress
-  **Multi-User Support:**
-- Progress is scoped per user/device (see `useUserIdentity()`)
-  **Feature Isolation:**
-- Each feature in `src/features/` is self-contained with its own components, logic, and docs
+3. Implement Code
 
-## 🤖 AI Automation & Prompting
+- Create/update components, hooks, reducers, types within the feature folder.
+- Maintain state rules (domain-prefixed action types, immutable updates, normalized collections).
+- Keep scope tightly bound to story AC; defer extras into a new follow-up story.
 
-- All AI prompt interactions should follow the structured format in `docs/automation/structured-ai-prompts.md`:
-  ```
-  [TASK]: <specific task description>
-  [CONTEXT]: <file path or epic/story reference>
-  [PARAMETERS]: <specific parameters needed>
-  [OUTPUT]: <expected output format>
-  [CONSTRAINTS]: <any limitations or requirements>
-  ```
-- See `docs/automation/ai-file-operations.md` for step-by-step workflow guidance (design, plan, implement, document).
-- Always use project templates from `docs/templates/` for requirements, stories, and implementation docs.
-- Reference business requirements in `docs/business-requirements/` and implementation docs in `docs/issue-implementation/`.
+4. Tests (Create / Update)
 
-## 📄 Business Requirements & Implementation Docs
+- Add or adjust unit/component tests to cover happy path + at least one edge case from AC.
+- Ensure new reducers/actions/selectors have isolated tests.
+- Avoid brittle UI assertions (prefer role/text queries via RTL).
 
-- **Documentation Naming Conventions:**
+5. Run Locally (If Needed)
 
-  - Epic business requirements: `README.md` under `docs/business-requirements/{epic-folder}/`
-  - Epic implementation docs: `README.md` under `docs/issue-implementation/{epic-folder}/`
-  - Story business requirements: `story-<epic>.<story>-<short-title>.md` under the epic's BR folder
-  - Story implementation docs: `implementation-<epic>.<story>-<short-title>.md` under the epic's implementation folder
-  - All docs must use the official templates and section order from `docs/templates/`
-  - All docs must include cross-references (epic/story ↔ implementation) and status/owner/last updated fields
+- Start app: `npm run dev`.
+- Start local backend (if API integration touched): `npm run start-backend`.
+- Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
 
-- All epic business requirements must be a `README.md` under their own folder in `docs/business-requirements/{epic-folder}/`, with each story as a separate markdown file in the same folder.
-- All implementation docs must be a `README.md` under their own folder in `docs/issue-implementation/{epic-folder}/`, with each story implementation as a separate markdown file in the same folder.
-- For every epic or story, ensure the business requirements and implementation docs are aligned:
-  - Section names, order, and required fields must match the template exactly.
-  - Cross-reference related docs (epic/story ↔ implementation) using links.
-  - Status, rationale, and technical details must be consistent between both docs.
-- When updating or creating requirements/implementation docs, always verify:
-  - Template compliance (section headers, required fields)
-  - Alignment and cross-referencing between business and implementation docs
-  - Use the structured prompt format for all AI-assisted documentation tasks
+6. Update Documentation
 
-## 🔗 Integration Points
+- Story BR: mark progressed AC (leave unchecked until fully validated).
+- Story implementation doc: record decisions, data shape changes, performance notes.
+- Epic docs: only update if cross-cutting decisions or shared architecture changed.
+- Update Last Update date fields accordingly.
 
-- **TTS API:**
-  - Frontend calls serverless functions in `api/get-tts-audio.js` for audio playback
-- **Local Backend:**
-  - For advanced dev, use `local-backend/server.js` (Express)
+7. Pre-Commit Gate
 
-## 📁 Key Files & Directories
+- Run tests: `npm test` (or targeted pattern) → must pass.
+- Type check & lint if configured (`tsc --noEmit`, ESLint task) – ensure clean.
+- Verify Quality Gates & Cross‑Doc Alignment checklists.
+- If instructed to "wait before commit": stage changes but defer commit; add a note in the story implementation doc explaining the hold reason.
 
-- `src/features/mandarin/` — Mandarin learning feature
-- `public/data/vocabulary/` — Vocabulary CSVs
-- `api/` — Serverless backend (TTS)
-- `src/utils/csvLoader.ts` — Data loader utility
-- `src/router/Router.tsx` — App routing
-- `src/constants/paths.ts` — Route constants
-- `docs/architecture.md` — System overview
-- `src/features/mandarin/docs/design.md` — Feature design
+8. Commit (When Allowed)
 
-## 🛡️ How to Stay Aligned
+- Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`.
+- Include scope referencing story (e.g., `feat(story-11-2): add progress sync reducer`).
+- Ensure BR + implementation doc updates are in the same commit for traceability.
 
-- Always use provided templates in `docs/templates/` for new requirements and stories
-- Reference business requirements in `docs/business-requirements/`
-- Follow reducer/context patterns for all new stateful features
-- Use CSV format for vocabulary data
+Concise Checklist:
+`Review → Plan → Implement → Test → Run → Docs → Gates → Commit`
 
-### When closing an epic or story
+Edge Cases to Watch:
 
-- Update the status in both the business requirements (BR) and implementation docs to "complete".
-- Mark all acceptance criteria (AC) as done in the BR (business requirements) doc only.
+- Partial AC completion: split remaining work into new story file.
+- Data model shifts: update unified model docs & API specs.
+- Performance regressions: add note + follow-up optimization story.
+- Feature flag introduction: document in epic BR + implementation README.
+
+If any step is blocked (missing requirements, unclear AC, external dependency): pause implementation and record the blocker under a "Pending / Blockers" subsection in both BR and implementation story docs.
+
+## 📦 Templates Index
+
+Business Requirements Format Guide: `docs/guides/business-requirements-format-guide.md`
+Epic BR Template: `docs/templates/epic-business-requirements-template.md`
+Story BR Template: `docs/templates/story-business-requirements-template.md`
+Epic Implementation Template: `docs/templates/epic-implementation-template.md`
+Story Implementation Template: `docs/templates/story-implementation-template.md`
+Commit Message Template: `docs/templates/commit-message-template.md`
+File Header / Summary Template: `docs/templates/file-summary-template.md`
+
+## 🏷️ Naming & Structure
+
+Epic BR: `docs/business-requirements/epic-<num>-<slug>/README.md`
+Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-<short>.md`
+Epic Implementation: `docs/issue-implementation/epic-<num>-<slug>/README.md`
+Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-<short>.md`
+Feature code: `src/features/<feature>/`
+Reducer files: `src/features/<feature>/reducers/<domain>Reducer.ts`
+Design docs: `src/features/<feature>/docs/design.md`
+Architecture overview: `docs/architecture.md`
+
+## 🧠 State Management Rules
+
+Reducers: `{domain}Reducer.ts`; action types SCREAMING_SNAKE_CASE with domain prefix.
+Actions: exposed via `use<name>Actions()` hook; verb-based camelCase.
+Selectors: always `use<name>State(s => s.slice?.value ?? fallback)`; never select entire root state.
+Immutability: use spreads; no direct mutation.
+Normalized data: maintain `itemsById` + `itemIds` pairs.
+Types: explicit definitions in `src/feature/<feature>/types/`.
+
+## 🧪 Testing Rules
+
+Reducers: isolated action tests.
+Hooks: verify memoization & stable references.
+Components: context mocking for state/actions.
+Stories/Epics: AC reflected in tests where feasible.
+Add tests for new logic before declaring story complete.
+
+## 📝 Documentation Standards
+
+Always use templates listed in Templates Index.
+Epic creation checklist:
+
+- Create BR README + implementation README.
+- Scaffold initial story files (BR + implementation) if known.
+- Link epic ↔ implementation ↔ stories bidirectionally.
+  Story creation checklist:
+- Create BR story file + implementation story file.
+- Link back to epic BR + implementation README.
+  Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
+  Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
+
+## 🛠️ Code Change Checklist
+
+- Refer: `code-conventions.md` + `solid-principles.md`.
+- Update design docs if feature logic or architecture changes.
+- Update architecture (`docs/architecture.md`) if cross‑cutting changes.
+- Update API specs (`api/api-spec.md`, `local-backend/docs/api-spec.md`) if endpoints/contracts change.
+- Add/update file header summary if exported surface changed.
+- Update related epic/story BR + implementation docs for status, rationale, new decisions.
+- Add/update tests (unit/integration) to cover new paths.
+- Consider performance impact; document if complexity changes.
+
+## 🌿 Git & Branching
+
+Branch naming: `epic-<num>-<slug>` primary; optional `feature/<short>` or `fix/<short>`.
+Conventional Commits: `<type>(<scope>): <description>`; scopes: `epic-11`, `story-11-2`, `component`, `hook`, `api`, `docs`.
+Always consult: `docs/guides/git-convention.md` + `docs/templates/commit-message-template.md`.
+Feature flags: document flag names & purpose in epic BR + implementation README when used.
+
+## ✅ Closing Epics & Stories
+
+1. Confirm all AC items checked in BR. If not:
+   - Split remaining into new story OR
+   - Defer with explicit "Deferred" subsection.
+2. Update `Status: Completed` in BR + implementation docs.
+3. Update `Last Update` date in both.
+4. Ensure PR number is referenced in both docs.
+5. Commit BR + implementation changes together.
+
+## 🧷 Quality Gates (Before Merge / Close)
+
+Tests passing (`npm test`).
+Type check clean (`tsc --noEmit`).
+Lint clean (ESLint if configured).
+Docs updated (BR, implementation, design, architecture, API specs as needed).
+File headers updated for public surfaces.
+All AC either complete or documented exception.
+
+## 🔗 Cross‑Doc Alignment Checklist
+
+- BR ↔ implementation ↔ stories all cross-link.
+- Status & Last Update synchronized.
+- Templates followed (all required sections intact).
+- AC list maps to stories or tests.
+- Architecture/design/API decisions recorded if changed.
+
+## 🤖 Automation Protocol
+
+### Trigger Phrase
+
+When you see "refer #file:automation" or "refer the automation folder" in a user request, activate strict automation protocol mode.
+
+### Mandatory Behavior
+
+1. Read story/epic BR and implementation docs first (in full).
+2. Follow the Story-Level Development Workflow section above sequentially.
+3. Use templates from `docs/templates/` exactly—preserve heading names and order verbatim.
+4. When creating docs: populate placeholders with realistic content; do not remove or rearrange headings.
+5. When producing code: enforce `docs/guides/code-conventions.md` + `docs/guides/solid-principles.md`; include inline comments referencing doc sections.
+6. When producing git artifacts: follow `docs/guides/git-convention.md` for branch names, commit message format (Conventional Commits), and PR titles/descriptions.
+7. For ambiguous requirements, missing templates, or critical missing files: STOP and return a short list of missing items plus 2 proposed options.
+8. Do not run git commands, write files, or push to repository unless explicitly instructed after review.
+
+### Output Contract (for "start implement workflow" requests)
+
+Produce artifacts in this order:
+
+1. Short action summary (bulleted).
+2. Implementation plan (list of target files + responsibilities).
+3. Files to create/update: unified git diff patch preferred; if not possible, provide per-file full contents with absolute path headers.
+4. Tests (file paths + full test contents).
+5. Branch name, Conventional Commit message, PR title, and PR description.
+6. Exact Status strings to insert into both business and implementation README files (absolute paths).
+7. Final checklist of ambiguous decisions or blockers (if any).
+
+### Structured AI Prompt Format
+
+Use this format for all AI interactions (detailed examples in `docs/automation/structured-ai-prompts.md`):
+
+```
+[TASK]: <task>
+[CONTEXT]: <file or epic/story>
+[PARAMETERS]: <inputs>
+[OUTPUT]: <format>
+[CONSTRAINTS]: <rules>
+```
+
+## 📁 Key Files & Directories (Quick Index)
+
+`src/features/<feature>/` – core feature
+`public/data/vocabulary/` – CSV vocabulary
+`api/` – serverless functions
+`local-backend/` – Express dev server
+`src/utils/csvLoader.ts` – data loader
+`docs/architecture.md` – system overview
+`**/design.md` – feature design
+
+## 🛠️ Resources
+
+Code Conventions: `docs/guides/code-conventions.md`
+SOLID Principles: `docs/guides/solid-principles.md`
+Git Workflow: `docs/guides/git-convention.md`
+Business Requirements Format: `docs/guides/business-requirements-format-guide.md`
+Automation Protocols: `docs/automation/structured-ai-prompts.md`
+Architecture: `docs/architecture.md`
 
 ---
 
-_If any section is unclear or missing, ask for clarification or request additional documentation from maintainers._
+If any section is unclear or missing—ask for clarification before proceeding.

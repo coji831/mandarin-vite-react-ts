@@ -1,4 +1,6 @@
-# Story [X.Y]: [Story Title]
+# Template For Story Business Requirements
+
+# Story [EPIC_NUMBER.STORY_NUMBER]: [Story_Title]
 
 ## Description
 
@@ -12,17 +14,17 @@
 
 ## Acceptance Criteria
 
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] [Criterion 3]
-- [ ] [Criterion 4]
-- [ ] [Criterion 5]
+- [ ] [Criterion_1]
+- [ ] [Criterion_2]
+- [ ] [Criterion_3]
+- [ ] [Criterion_4]
+- [ ] [Criterion_5]
 
 ## Business Rules
 
-1. [Business rule 1]
-2. [Business rule 2]
-3. [Business rule 3]
+1. [Business_rule_1]
+2. [Business_rule_2]
+3. [Business_rule_3]
 
 ## Related Issues
 
@@ -35,8 +37,6 @@
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
 - **Key Commit**: [commit-hash] ([Brief commit description])
-
-## User Journey [Optional]
 
 ## Business Rules
 

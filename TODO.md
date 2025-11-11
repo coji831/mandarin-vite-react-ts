@@ -20,12 +20,12 @@ Sections
 
 ## Todo (near-term)
 
+## Backlog
+
 - [ ] Refactor `#file:local-backend` — modernize syntax and approach for Google APIs, simplify credential handling
 - [ ] Update backend/vercel APIs to return and throw more meaningful logs/errors for better debug support (include structured error objects and request IDs)
 - [ ] Support pinyin and English meaning in conversation generation and UI (display and toggleable playback)
 - [ ] Support turn-based conversations with UI indicator and per-turn audio playback controls
-
-## Backlog
 
 ## Done
 

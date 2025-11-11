@@ -1,10 +1,11 @@
-# Business Requirements Large Epic Template
+```markdown
+# Template For Epic Business Requirements
 
-# Epic [NUMBER]: [Epic Title]
+# Epic [EPIC-NUMBER]: [Epic-Title]
 
 ## Epic Summary
 
-**Goal:** [One-sentence goal statement]
+**Goal:** [One-sentence-goal-statement]
 
 **Key Points:**
 
@@ -107,4 +108,4 @@ Keep titles concise; add detailed implementation notes, verification steps, and 
 
 - Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
 - Operational notes: <ANY_RUNTIME_NOTES_OR_FEATURE_FLAGS>
-- Links: reference implementation templates at `docs/templates/implementation-large-epic-template.md`
+```

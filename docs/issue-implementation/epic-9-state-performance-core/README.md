@@ -1,6 +1,6 @@
 # Implementation epic-9: State & Performance Core
 
-This document follows `docs/templates/implementation-large-epic-template.md` (structure-aligned; headings kept human-friendly).
+This document follows `docs/templates/epic-implementation-template.md` (structure-aligned; headings kept human-friendly).
 
 ## Epic Summary
 
