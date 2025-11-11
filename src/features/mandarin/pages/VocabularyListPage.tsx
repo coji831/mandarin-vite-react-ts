@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { FilterChip, VocabularyCard } from "../components";
 import { useProgressState } from "../hooks";
 import { VocabularyList } from "../types";
+import { VocabularyDataService } from "../services/vocabularyDataService";
 import {
   extractDistinctDifficulties,
   extractDistinctTags,
@@ -42,9 +43,8 @@ function VocabularyListPage() {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const res = await fetch("/data/vocabulary/vocabularyLists.json");
-        if (!res.ok) throw new Error("Failed to fetch vocabulary lists");
-        const data: VocabularyList[] = await res.json();
+        const vocabService = new VocabularyDataService();
+        const data = await vocabService.fetchAllLists();
         setLists(data);
       } catch (error) {
         console.warn(error);
