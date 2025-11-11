@@ -10,7 +10,7 @@ import path from "path";
 
 import { fileURLToPath } from "url";
 import conversationRoutes from "./routes/conversation.js";
-import { API_ROUTES } from "../shared/constants/apiPaths.js";
+import ttsRoutes from "./routes/tts.js";
 import { initializeStorage } from "./utils/conversationCache.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -91,6 +91,7 @@ app.use((req, res, next) => {
 
 // Register API routes
 app.use("/api", conversationRoutes);
+app.use("/api", ttsRoutes);
 
 // Scaffolder/static serving (only in scaffold mode)
 if (conversationMode === "scaffold") {

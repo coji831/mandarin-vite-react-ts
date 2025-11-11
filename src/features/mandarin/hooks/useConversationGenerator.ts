@@ -1,18 +1,14 @@
 import { useCallback, useState } from "react";
 
 import { ConversationService } from "../services";
-import { Conversation } from "../types";
+import { Conversation, ConversationGenerateRequest } from "../types";
 
 export function useConversationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const generateConversation = useCallback(
-    async (params: {
-      wordId: string;
-      word: string;
-      generatorVersion?: string;
-    }): Promise<Conversation> => {
+    async (params: ConversationGenerateRequest): Promise<Conversation> => {
       setIsLoading(true);
       setError(null);
       try {

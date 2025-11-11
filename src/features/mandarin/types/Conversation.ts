@@ -32,3 +32,21 @@ export type AudioTimeline = {
   mark: string; // "turn-1", "turn-2", etc.
   timeSeconds: number; // Start time of this turn
 };
+
+/**
+ * ConversationAudioRequest: Parameters for requesting conversation audio
+ */
+export type ConversationAudioRequest = {
+  wordId: string;
+  voice?: string;
+  bitrate?: number;
+};
+
+/**
+ * ConversationGenerateRequest: Parameters for generating a conversation
+ */
+export type ConversationGenerateRequest = {
+  wordId: string;
+  word: string;
+  generatorVersion?: string;
+};

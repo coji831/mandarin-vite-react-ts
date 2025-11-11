@@ -12,9 +12,9 @@
 - Decouples UI from backend implementation details
 - Provides a single point for error handling and configuration
 
-**Status:** Planned
+**Status:** Complete
 
-**Last Update:** 2025-11-10
+**Last Update:** 2025-11-11
 
 ## Background
 
@@ -44,11 +44,11 @@ Stories are divided to separate interface design, service implementation, and UI
 
 ## Acceptance Criteria
 
-- [ ] All data and audio fetching is routed through the new service layer
-- [ ] Service layer provides fallback logic for failures (e.g., alternate API, local fallback)
-- [ ] Backend can be swapped via config or DI with minimal code changes
-- [ ] All relevant components refactored to use service functions
-- [ ] Service layer and usage patterns are documented for maintainers
+- [x] All data and audio fetching is routed through the new service layer
+- [x] Service layer provides fallback logic for failures (e.g., alternate API, local fallback)
+- [x] Backend can be swapped via config or DI with minimal code changes
+- [x] All relevant components refactored to use service functions
+- [x] Service layer and usage patterns are documented for maintainers
 
 ## Architecture Decisions
 

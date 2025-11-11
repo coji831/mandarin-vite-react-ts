@@ -27,15 +27,14 @@ Sections
 
 ## Backlog
 
-- [ ] Overhaul data/audio services layer — Design and implement a unified services layer for data and audio fetching. All new services must provide fallback logic and be easy to swap for other backends.
-- [ ] Add data/audio fetching services — Implement dedicated service functions for vocabulary data and audio (TTS) fetching. Services should abstract API calls and provide fallback logic.
-- [ ] Migrate components to use services — Refactor all components to use the new services layer instead of calling APIs directly. Ensure all data/audio access goes through service functions.
-- [ ] Ensure service fallback and backend swap — All services must have robust fallback logic and be designed for easy backend switching (e.g., config or DI). Document the pattern for future maintainers.
-
 ## Done
 
 - [x] Re-organize `#file:features` — move `conversation/` under `mandarin/` and update imports/paths
 - [x] Unify data objects across data and components (e.g., `Card`, `Word`, `ConversationTurn`) for consistency
+- [x] Overhaul data/audio services layer — Design and implement a unified services layer for data and audio fetching. All new services must provide fallback logic and be easy to swap for other backends.
+- [x] Add data/audio fetching services — Implement dedicated service functions for vocabulary data and audio (TTS) fetching. Services should abstract API calls and provide fallback logic.
+- [x] Migrate components to use services — Refactor all components to use the new services layer instead of calling APIs directly. Ensure all data/audio access goes through service functions.
+- [x] Ensure service fallback and backend swap — All services must have robust fallback logic and be designed for easy backend switching (e.g., config or DI). Document the pattern for future maintainers.
 
 ---
 

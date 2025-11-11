@@ -1,11 +1,24 @@
+// Mock VocabularyDataService and fetchWordsForList
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { ProgressStateContext } from "../context";
-import { UserState as AppUserState } from "../reducers";
 import { RootState } from "../reducers/rootReducer";
-import { ProgressState as ListsProgressState } from "../types";
 import { FlashCardPage } from "./FlashCardPage";
+
+// Mock the VocabularyDataService to control its behavior in tests
+jest.mock("../services/vocabularyDataService", () => {
+  return {
+    VocabularyDataService: jest.fn().mockImplementation(() => ({
+      fetchWordsForList: jest.fn(() =>
+        Promise.resolve([
+          { wordId: "1", chinese: "你", pinyin: "nǐ", english: "you" },
+          { wordId: "2", chinese: "好", pinyin: "hǎo", english: "good" },
+        ])
+      ), // Default: returns valid array
+    })),
+  };
+});
 
 // Mock the useProgressActions hook to provide setSelectedList and setSelectedWords
 jest.mock("../hooks/useProgressActions", () => ({

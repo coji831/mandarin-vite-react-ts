@@ -2,14 +2,18 @@
 // Tests for service interfaces and base class (Story 11.1)
 
 import {
+  Conversation,
+  ConversationAudio,
+  VocabularyList,
+  WordBasic,
+  WordProgress,
+} from "../../types";
+import {
   BaseService,
-  IVocabularyDataService,
   IAudioService,
   IConversationService,
+  IVocabularyDataService,
 } from "../interfaces";
-import { VocabularyList } from "../../types/Vocabulary";
-import { WordBasic, WordProgress } from "../../types/word";
-import { Conversation, ConversationAudio } from "../../types/Conversation";
 
 describe("Service Interfaces", () => {
   it("should allow implementation of IVocabularyDataService", () => {
@@ -33,11 +37,11 @@ describe("Service Interfaces", () => {
 
   it("should allow implementation of IAudioService", () => {
     class TestAudioService implements IAudioService {
-      fetchAudioForConversation(): Promise<ConversationAudio> {
+      fetchConversationAudio(): Promise<ConversationAudio> {
         return Promise.resolve({ conversationId: "", audioUrl: "", generatedAt: "" });
       }
-      fetchAudioForWord(): Promise<ConversationAudio> {
-        return Promise.resolve({ conversationId: "", audioUrl: "", generatedAt: "" });
+      fetchWordAudio(): Promise<{ audioUrl: string }> {
+        return Promise.resolve({ audioUrl: "" });
       }
     }
     const svc = new TestAudioService();
@@ -46,8 +50,18 @@ describe("Service Interfaces", () => {
 
   it("should allow implementation of IConversationService", () => {
     class TestConvService implements IConversationService {
-      generateConversation(): Promise<Conversation> {
-        return Promise.resolve({ id: "", wordId: "", word: "", turns: [], generatedAt: "" });
+      generateConversation(params: {
+        wordId: string;
+        word: string;
+        generatorVersion?: string;
+      }): Promise<Conversation> {
+        return Promise.resolve({
+          id: "",
+          wordId: params.wordId,
+          word: params.word,
+          turns: [],
+          generatedAt: "",
+        });
       }
     }
     const svc = new TestConvService();

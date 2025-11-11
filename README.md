@@ -8,7 +8,7 @@ PinyinPal is an interactive web application designed to help new learners master
 
 - **Interactive Flashcards:** Practice vocabulary with pinyin, characters, and English definitions with audio playback.
 - **Vocabulary Lists:** Browse HSK-level vocabulary organized by difficulty with card-based interface.
-- **Audio Pronunciation:** Text-to-speech integration for accurate Mandarin pronunciation practice.
+- **Audio & Conversation Playback:** Robust, type-safe service layer for both word and conversation audio, with automatic backend and browser TTS fallback for reliability.
 - **Progress Tracking:** Per-user progress tracking with automatic localStorage persistence and mastery indicators.
 
 ## 🛠️ Tech Stack
@@ -22,7 +22,8 @@ PinyinPal is an interactive web application designed to help new learners master
   - Composed sub-reducers (lists, user, ui)
 - **Testing:** **Jest** with React Testing Library
 - **Styling:** CSS with modular organization
-- **Backend:** Serverless functions (Vercel) for TTS API
+- **Service Layer:** Unified, type-safe service interfaces for audio and conversation, supporting backend swap and fallback.
+- **Backend:** Serverless functions (Vercel) for TTS API and conversation generation
 
 ## 🚀 Installation & Getting Started
 

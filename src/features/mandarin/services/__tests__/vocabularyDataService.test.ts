@@ -16,7 +16,7 @@ global.fetch = jest.fn((url: string) => {
     return Promise.resolve({ ok: true, json: () => Promise.resolve(mockLists) });
   }
   return Promise.reject("Unknown URL");
-}) as any;
+}) as unknown as typeof fetch;
 
 jest.mock("../../utils/csvLoader", () => ({
   loadCsvVocab: jest.fn(() =>

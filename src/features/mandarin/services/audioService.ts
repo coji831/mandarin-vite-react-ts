@@ -1,40 +1,51 @@
 // src/features/mandarin/services/audioService.ts
 // AudioService implementation with fallback support (Epic 11, Story 11.3)
 
-import { IAudioService, BaseService } from "./interfaces";
-import { ConversationAudio } from "../types/Conversation";
 import { API_ROUTES } from "../../../../shared/constants/apiPaths";
+import type {
+  ConversationAudio,
+  ConversationAudioRequest,
+  WordAudio,
+  WordAudioRequest,
+} from "../types";
+import type { IAudioBackend, IAudioService } from "./interfaces";
 
-// Backend interface for DI/configurable backend swap
-export interface IAudioBackend {
-  fetchAudio(params: {
-    wordId?: string;
-    conversationId?: string;
-    voice?: string;
-    bitrate?: number;
-  }): Promise<ConversationAudio>;
+// AudioService with backend swap and fallback support
+export class AudioService implements IAudioService {
+  protected backend: IAudioBackend;
+  declare fallbackService?: AudioService;
+
+  constructor(backend?: IAudioBackend) {
+    this.backend = backend || new DefaultAudioBackend();
+  }
+
+  // Fetch audio for a conversation by word Id
+  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+    try {
+      return await this.backend.fetchConversationAudio(params);
+    } catch (err) {
+      if (!this.fallbackService) throw err;
+      return this.fallbackService.fetchConversationAudio(params);
+    }
+  }
+
+  // Fetch audio for a single word by Chinese text
+  async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
+    try {
+      return await this.backend.fetchWordAudio(params);
+    } catch (err) {
+      if (!this.fallbackService) throw err;
+      return this.fallbackService.fetchWordAudio(params);
+    }
+  }
 }
 
 // Default backend implementation using fetch
 export class DefaultAudioBackend implements IAudioBackend {
-  async fetchAudio(params: {
-    wordId?: string;
-    conversationId?: string;
-    voice?: string;
-    bitrate?: number;
-  }): Promise<ConversationAudio> {
-    const { wordId, conversationId, voice, bitrate } = params;
-    let endpoint: string;
-    let body: { wordId?: string; conversationId?: string; voice?: string; bitrate?: number };
-    if (conversationId) {
-      endpoint = API_ROUTES.conversationAudioGenerate;
-      body = { conversationId, voice, bitrate };
-    } else if (wordId) {
-      endpoint = API_ROUTES.conversationAudioGenerate;
-      body = { wordId, voice, bitrate };
-    } else {
-      throw new Error("Either wordId or conversationId must be provided");
-    }
+  async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
+    const { chinese } = params;
+    const endpoint = API_ROUTES.ttsAudio;
+    const body = { text: chinese };
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,71 +54,21 @@ export class DefaultAudioBackend implements IAudioBackend {
     if (!response.ok) {
       throw new Error(`Audio generation failed: ${response.statusText}`);
     }
+    const data = await response.json();
+    return data;
+  }
+
+  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+    const endpoint = API_ROUTES.conversationAudioGenerate;
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) {
+      throw new Error(`Audio generation failed: ${response.statusText}`);
+    }
     const audio = await response.json();
-    if (wordId) {
-      audio.conversationId = wordId;
-    }
     return audio;
-  }
-}
-
-export class AudioService
-  extends BaseService<
-    [{ wordId?: string; conversationId?: string; voice?: string; bitrate?: number }],
-    ConversationAudio
-  >
-  implements IAudioService
-{
-  declare fallbackService?: IAudioService &
-    BaseService<
-      [{ wordId?: string; conversationId?: string; voice?: string; bitrate?: number }],
-      ConversationAudio
-    >;
-
-  private backend: IAudioBackend;
-
-  constructor(backend?: IAudioBackend) {
-    super();
-    this.backend = backend || new DefaultAudioBackend();
-  }
-
-  async fetchAudioForConversation(
-    conversationId: string,
-    voice?: string,
-    bitrate?: number
-  ): Promise<ConversationAudio> {
-    try {
-      return await this.fetch({ conversationId, voice, bitrate });
-    } catch (err) {
-      if (this.fallbackService) {
-        return this.fallbackService.fetchAudioForConversation(conversationId, voice, bitrate);
-      }
-      throw err;
-    }
-  }
-
-  async fetchAudioForWord(
-    wordId: string,
-    voice?: string,
-    bitrate?: number
-  ): Promise<ConversationAudio> {
-    try {
-      return await this.fetch({ wordId, voice, bitrate });
-    } catch (err) {
-      if (this.fallbackService) {
-        return this.fallbackService.fetchAudioForWord(wordId, voice, bitrate);
-      }
-      throw err;
-    }
-  }
-
-  // Required by BaseService: fetch audio for either conversation or word
-  async fetch(params: {
-    wordId?: string;
-    conversationId?: string;
-    voice?: string;
-    bitrate?: number;
-  }): Promise<ConversationAudio> {
-    return this.backend.fetchAudio(params);
   }
 }

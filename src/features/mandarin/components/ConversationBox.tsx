@@ -25,22 +25,14 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
     clearError,
   } = useConversationGenerator();
 
-  // Browser TTS fallback state
-  const [ttsFallback, setTtsFallback] = useState(false);
-
   const {
     isPlaying,
     currentTurn,
-    playAudio,
+    playConversationAudio,
     pauseAudio,
     isLoading: isLoadingAudio,
     error: audioError,
   } = useAudioPlayback();
-
-  useEffect(() => {
-    handleGenerateConversation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wordId, word]);
 
   const handleGenerateConversation = useCallback(async () => {
     console.log("Generating conversation for:", wordId, word);
@@ -62,32 +54,23 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
 
   const handlePlayAudio = useCallback(async () => {
     if (!conversation) return;
-    try {
-      await playAudio({
-        wordId,
-        voice: "cmn-CN-Standard-A",
-        bitrate: 128,
-      });
-      setTtsFallback(false);
-    } catch (error) {
-      // Fallback to browser TTS
-      if (conversation) {
-        setTtsFallback(true);
-        const utter = new window.SpeechSynthesisUtterance(
-          conversation.turns.map((t) => t.text).join(". ")
-        );
-        utter.lang = "zh-CN";
-        window.speechSynthesis.speak(utter);
-      }
-      console.error("Failed to play audio, using browser TTS:", error);
-    }
-  }, [conversation, playAudio, wordId]);
+    await playConversationAudio({
+      wordId: conversation.wordId,
+      voice: "cmn-CN-Standard-A",
+      bitrate: 128,
+    });
+  }, [conversation, playConversationAudio]);
 
   const handleClose = useCallback(() => {
     setIsVisible(false);
     pauseAudio();
     onClose?.();
   }, [pauseAudio, onClose]);
+
+  // Automatically generate conversation on mount
+  useEffect(() => {
+    handleGenerateConversation();
+  }, [handleGenerateConversation]);
 
   if (!isVisible && !isGenerating) return null;
 
@@ -122,11 +105,7 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
               error={audioError}
               className="conversation-box__controls"
             />
-            {ttsFallback && (
-              <div className="conversation-box__tts-fallback">
-                <p>Audio unavailable, using browser TTS.</p>
-              </div>
-            )}
+            {/* Audio fallback UI is now handled by useAudioPlayback's error state */}
             <div style={{ marginTop: 8 }}>
               <button onClick={handleClose} className="secondary">
                 Close

@@ -6,15 +6,12 @@
  * - Pure presentational; does not manage state or persistence.
  * - Used as a reference/learning resource page.
  */
+import { useAudioPlayback } from "../hooks";
 export { Basic };
 
 // LearningPage component for tones, pronouns, and pinyin tone marks
 const Basic = () => {
-  const playAudio = (text: string | undefined) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "zh-CN";
-    speechSynthesis.speak(utterance);
-  };
+  const { playWordAudio } = useAudioPlayback();
 
   return (
     <div
@@ -70,7 +67,7 @@ const Basic = () => {
                 cursor: "pointer",
                 marginTop: "5px",
               }}
-              onClick={() => playAudio(item.character)}
+              onClick={() => playWordAudio({ chinese: item.character })}
             >
               Play
             </button>
@@ -119,7 +116,7 @@ const Basic = () => {
                 marginTop: "5px",
                 marginRight: "10px",
               }}
-              onClick={() => playAudio(item.character)}
+              onClick={() => playWordAudio({ chinese: item.character })}
             >
               Play Pronoun
             </button>
@@ -133,7 +130,7 @@ const Basic = () => {
                 cursor: "pointer",
                 marginTop: "5px",
               }}
-              onClick={() => playAudio(item.sentence)}
+              onClick={() => playWordAudio({ chinese: item.sentence })}
             >
               Play Sentence
             </button>
@@ -179,7 +176,7 @@ const Basic = () => {
                 cursor: "pointer",
                 marginTop: "5px",
               }}
-              onClick={() => playAudio(item.character)}
+              onClick={() => playWordAudio({ chinese: item.character })}
             >
               Play
             </button>

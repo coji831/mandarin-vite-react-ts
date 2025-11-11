@@ -4,6 +4,26 @@
 
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
+## Robust Service Layer for Audio & Conversation
+
+The application implements a robust, type-safe service layer for all audio (TTS) and conversation (text generation) features. All backend interactions for audio and conversation are routed through dedicated service modules:
+
+- **AudioService**: Implements `IAudioService`, supports backend swap and browser TTS fallback, with unified error handling and type-safe request/response.
+- **ConversationService**: Implements `IConversationService`, supports backend swap/fallback, and uses type-safe request params.
+
+### Backend Swap & Fallback
+
+- Both services support backend swap and fallback logic via configuration or dependency injection.
+- If the primary backend fails, the service layer automatically falls back to an alternate backend (e.g., browser TTS for audio).
+- All error handling and fallback logic is centralized in the service layer, ensuring maintainability and reliability.
+
+### Hooks
+
+- **useAudioPlayback**: Centralizes audio playback logic, exposes play/stop/loading/error state, and handles all fallback/error logic.
+- **useConversationGenerator**: Centralizes conversation generation, exposes generate/loading/error state, and handles all fallback/error logic.
+
+All components use these hooks for audio and conversation features, ensuring a DRY and robust architecture.
+
 ## Main Modules
 
 - **api**: Contains backend/serverless functions for Text-to-Speech services

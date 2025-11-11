@@ -126,4 +126,8 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 - Data loaded from CSV files using csvLoader.ts utility
 - CSV system enables easy vocabulary updates and maintenance
 - Standard data format (No,Chinese,Pinyin,English) ensures consistency
-- Audio fetched from backend TTS API
+- **Robust, type-safe service layer for audio and conversation:**
+  - All audio (TTS) and conversation (text generation) features use dedicated service modules (`AudioService`, `ConversationService`) that implement type-safe interfaces and support backend swap/fallback.
+  - Fallback logic (e.g., browser TTS for audio) and error handling are centralized in the service layer.
+  - Components use `useAudioPlayback` and `useConversationGenerator` hooks for all audio/conversation features, ensuring DRY, robust, and maintainable code.
+- Audio fetched from backend TTS API (with browser TTS fallback)

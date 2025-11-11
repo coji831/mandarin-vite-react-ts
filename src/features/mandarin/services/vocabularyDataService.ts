@@ -1,16 +1,10 @@
 // src/features/mandarin/services/vocabularyDataService.ts
 // VocabularyDataService implementation with fallback and cache support (Epic 11, Story 11.2)
 
-import { IVocabularyDataService, BaseService } from "./interfaces";
 import { VocabularyList } from "../types/Vocabulary";
 import { WordBasic, WordProgress } from "../types/word";
 import { loadCsvVocab } from "../utils/csvLoader";
-
-// Backend interface for DI/configurable backend swap
-export interface IVocabularyBackend {
-  fetchLists(): Promise<VocabularyList[]>;
-  fetchWords(list: VocabularyList): Promise<WordBasic[]>;
-}
+import { BaseService, IVocabularyBackend, IVocabularyDataService } from "./interfaces";
 
 // Default backend implementation using fetch and CSV loader
 export class DefaultVocabularyBackend implements IVocabularyBackend {

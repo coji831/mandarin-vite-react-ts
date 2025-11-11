@@ -2,9 +2,17 @@
 // Unified service interfaces and base classes for vocabulary and audio services
 // Story 11.1 (Epic 11: Service Layer Overhaul)
 
-import { VocabularyList } from "../types/Vocabulary";
-import { WordBasic, WordProgress } from "../types/word";
-import { Conversation, ConversationAudio } from "../types/Conversation";
+import {
+  Conversation,
+  ConversationAudio,
+  ConversationAudioRequest,
+  ConversationGenerateRequest,
+  VocabularyList,
+  WordAudio,
+  WordAudioRequest,
+  WordBasic,
+  WordProgress,
+} from "../types";
 
 /**
  * Interface for vocabulary data service operations
@@ -18,28 +26,43 @@ export interface IVocabularyDataService {
 }
 
 /**
+ * Backend interface for DI/configurable backend swap
+ */
+export interface IVocabularyBackend {
+  fetchLists(): Promise<VocabularyList[]>;
+  fetchWords(list: VocabularyList): Promise<WordBasic[]>;
+}
+
+/**
  * Interface for audio (TTS) service operations
  */
 export interface IAudioService {
-  fetchAudioForConversation(
-    conversationId: string,
-    voice?: string,
-    bitrate?: number
-  ): Promise<ConversationAudio>;
-  fetchAudioForWord(wordId: string, voice?: string, bitrate?: number): Promise<ConversationAudio>;
+  fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio>;
+  fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
   // ...other methods as needed
+}
+
+/**
+ * Interface for audio backend implementations (used by AudioService)
+ */
+export interface IAudioBackend {
+  fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
+  fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio>;
 }
 
 /**
  * Interface for conversation generation service operations
  */
 export interface IConversationService {
-  generateConversation(params: {
-    wordId: string;
-    word: string;
-    generatorVersion?: string;
-  }): Promise<Conversation>;
+  generateConversation(params: ConversationGenerateRequest): Promise<Conversation>;
   // ...other methods as needed
+}
+
+/**
+ * Interface for conversation backend implementations (used by ConversationService)
+ */
+export interface IConversationBackend {
+  generateConversation(params: ConversationGenerateRequest): Promise<Conversation>;
 }
 
 /**

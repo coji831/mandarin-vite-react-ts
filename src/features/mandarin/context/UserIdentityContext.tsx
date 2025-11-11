@@ -20,8 +20,8 @@ export function UserIdentityProvider({ children }: UserIdentityProviderProps) {
   );
 }
 
-export function useUserIdentityContext() {
-  const ctx = useContext(UserIdentityContext);
-  if (!ctx) throw new Error("useUserIdentityContext must be used within a UserIdentityProvider");
-  return ctx;
-}
+// export function useUserIdentityContext() {
+//   const ctx = useContext(UserIdentityContext);
+//   if (!ctx) throw new Error("useUserIdentityContext must be used within a UserIdentityProvider");
+//   return ctx;
+// }
