@@ -54,7 +54,7 @@ Follow this sequence whenever implementing or updating a story (smallest deliver
 1. Review Requirements
 
 - Open the story BR file (`docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-*.md`) and its epic BR `README.md`.
-- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-*.md` + epic implementation `README.md`).
+- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-*.md` + epic implementation `README.md`).
 - Confirm Acceptance Criteria (AC) clarity; note any ambiguous items in a "Questions / Clarifications" subsection (add if missing).
 
 2. Plan Changes
@@ -126,9 +126,9 @@ File Header / Summary Template: `docs/templates/file-summary-template.md`
 ## 🏷️ Naming & Structure
 
 Epic BR: `docs/business-requirements/epic-<num>-<slug>/README.md`
-Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-<short>.md`
+Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
 Epic Implementation: `docs/issue-implementation/epic-<num>-<slug>/README.md`
-Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-<short>.md`
+Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
 Feature code: `src/features/<feature>/`
 Reducer files: `src/features/<feature>/reducers/<domain>Reducer.ts`
 Design docs: `src/features/<feature>/docs/design.md`
