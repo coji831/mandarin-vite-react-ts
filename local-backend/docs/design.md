@@ -20,3 +20,29 @@ Provides a local Express server for TTS (Text-to-Speech) requests, with Google C
 ## Error Handling
 
 - Handles missing credentials, GCS errors, and API errors with clear logs and HTTP status codes.
+
+# Google TTS Service
+
+This backend uses Google Cloud Text-to-Speech (TTS) for audio generation. All credentials and configuration are loaded from environment variables only.
+
+## Required Environment Variables
+
+- `CONVERSATION_MODE`: `real` or `scaffold`
+- `GCS_BUCKET_NAME`: Google Cloud Storage bucket for audio/conversation cache
+- `GEMINI_API_CREDENTIALS_RAW`: Service account JSON for Gemini API and GCS
+- `GOOGLE_TTS_CREDENTIALS_RAW`: Service account JSON for GCP TTS
+
+## Migration Notes
+
+- All Google API logic is modularized in `utils/googleTTSService.js`.
+- No credentials are hardcoded; all are loaded from `.env.local`.
+- Express handlers and routes should use only async service functions for TTS.
+
+## Usage Example
+
+```js
+import { synthesizeSpeech } from "../utils/googleTTSService.js";
+const audioContent = await synthesizeSpeech("你好世界");
+```
+
+See `googleTTSService.js` for details.
