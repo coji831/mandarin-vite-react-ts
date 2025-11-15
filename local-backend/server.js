@@ -11,7 +11,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import conversationRoutes from "./routes/conversation.js";
 import ttsRoutes from "./routes/tts.js";
+
 import { initializeStorage } from "./utils/conversationCache.js";
+import { requestIdMiddleware, errorHandler } from "./utils/errorHandler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,6 +27,9 @@ const PORT = 3001; // Choose a port for your local backend (e.g., 3001)
 
 // Middleware to parse JSON request bodies
 app.use(json());
+
+// Request ID middleware for all requests
+app.use(requestIdMiddleware);
 
 const conversationMode = process.env.CONVERSATION_MODE;
 
@@ -92,6 +97,9 @@ app.use((req, res, next) => {
 // Register API routes
 app.use("/api", conversationRoutes);
 app.use("/api", ttsRoutes);
+
+// Error handler middleware (must be after all routes)
+app.use(errorHandler);
 
 // Scaffolder/static serving (only in scaffold mode)
 if (conversationMode === "scaffold") {

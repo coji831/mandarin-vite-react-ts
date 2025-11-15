@@ -5,8 +5,18 @@
 - **Request Body:** `{ text: string }`
 - **Response:** `{ audioUrl: string }` (on success)
 - **Errors:**
+
   - 400: Missing or invalid text
   - 500: TTS/GCS errors (see logs for details)
+  - All error responses are JSON objects with the following structure:
+    ```json
+    {
+      "code": "ERROR_CODE",
+      "message": "Error message",
+      "requestId": "..."
+    }
+    ```
+  - The `X-Request-Id` header is included in all responses for traceability.
 
 ## Environment Variables
 

@@ -19,7 +19,18 @@ Provides a local Express server for TTS (Text-to-Speech) requests, with Google C
 
 ## Error Handling
 
-- Handles missing credentials, GCS errors, and API errors with clear logs and HTTP status codes.
+- All API requests are assigned a unique `requestId` (via `requestIdMiddleware`).
+- Errors are handled by a centralized `errorHandler` middleware.
+- All error responses are structured as:
+  ```json
+  {
+    "code": "ERROR_CODE",
+    "message": "Error message",
+    "requestId": "..."
+  }
+  ```
+- Errors are logged with the requestId for traceability.
+- See `utils/errorHandler.js` for implementation details.
 
 # Google TTS Service
 
