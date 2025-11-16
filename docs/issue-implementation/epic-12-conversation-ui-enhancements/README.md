@@ -1,8 +1,8 @@
 # Epic 12 Implementation: Conversation UI Enhancements
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
-**Status:** In Progress
-**Last Update:** 2025-11-15
+**Status:** In Progress (Story 12.4 Completed)
+**Last Update:** 2025-11-16
 
 ## Overview
 

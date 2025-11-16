@@ -1,4 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
+// Utility for localStorage persistence
+function getSettingFromStorage(key: string, defaultValue: boolean) {
+  try {
+    const value = localStorage.getItem(key);
+    if (value === null) return defaultValue;
+    return value === "true";
+  } catch {
+    return defaultValue;
+  }
+}
+
+function setSettingToStorage(key: string, value: boolean) {
+  try {
+    localStorage.setItem(key, value ? "true" : "false");
+  } catch {}
+}
 
 import { ConversationTurns, PlaybackControls } from ".";
 import { useAudioPlayback, useConversationGenerator } from "../hooks";
@@ -17,6 +33,21 @@ type ConversationBoxProps = {
 function ConversationBox({ wordId, word, onClose, className = "" }: ConversationBoxProps) {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [showPinyin, setShowPinyin] = useState(() => getSettingFromStorage("showPinyin", true));
+  const [showEnglish, setShowEnglish] = useState(() => getSettingFromStorage("showEnglish", true));
+  // Handlers for toggles
+  const handleTogglePinyin = useCallback(() => {
+    setShowPinyin((prev) => {
+      setSettingToStorage("showPinyin", !prev);
+      return !prev;
+    });
+  }, []);
+  const handleToggleEnglish = useCallback(() => {
+    setShowEnglish((prev) => {
+      setSettingToStorage("showEnglish", !prev);
+      return !prev;
+    });
+  }, []);
 
   const {
     generateConversation,
@@ -91,10 +122,32 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
         )}
         {conversation && (
           <>
+            <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
+              <button
+                onClick={handleTogglePinyin}
+                aria-pressed={showPinyin}
+                aria-label={showPinyin ? "Hide pinyin" : "Show pinyin"}
+                className={showPinyin ? "active" : ""}
+                style={{ minWidth: 80 }}
+              >
+                {showPinyin ? "Hide Pinyin" : "Show Pinyin"}
+              </button>
+              <button
+                onClick={handleToggleEnglish}
+                aria-pressed={showEnglish}
+                aria-label={showEnglish ? "Hide English" : "Show English"}
+                className={showEnglish ? "active" : ""}
+                style={{ minWidth: 80 }}
+              >
+                {showEnglish ? "Hide English" : "Show English"}
+              </button>
+            </div>
             <ConversationTurns
               turns={conversation.turns}
               currentTurn={currentTurn}
               isPlaying={isPlaying}
+              showPinyin={showPinyin}
+              showEnglish={showEnglish}
               className="conversation-box__turns"
             />
             <PlaybackControls

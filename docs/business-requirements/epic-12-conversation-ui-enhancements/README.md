@@ -14,9 +14,9 @@ Modernize the backend and redesign the conversation UI to deliver an accessible,
 - Ensure the UI displays and toggles pinyin and English, and supports per-turn audio playback and navigation.
 - Follow Google Cloud API and leading UI/UX patterns for turn-based conversation interfaces.
 
-**Status:** Draft
+**Status:** In Progress (Story 12.4 Completed)
 
-**Last Update:** 2025-11-14
+**Last Update:** 2025-11-16
 
 ## Background
 
@@ -40,7 +40,7 @@ This epic consists of the following user stories:
 
 4. **Display and Toggle Pinyin/English in Conversation UI**
 
-- As a learner, I want to see pinyin and English meaning for each line in a generated conversation, and be able to toggle their visibility, so that I can understand pronunciation and meaning without leaving the app.
+- As a learner, I want to see pinyin and English meaning for each line in a generated conversation, and be able to toggle their visibility, so that I can understand pronunciation and meaning without leaving the app. **(Completed 2025-11-16)**
 
 5. **Turn-Based Navigation and Highlighting in Conversation UI**
 
