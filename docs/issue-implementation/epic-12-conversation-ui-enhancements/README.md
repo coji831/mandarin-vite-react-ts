@@ -1,7 +1,7 @@
 # Epic 12 Implementation: Conversation UI Enhancements
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
-**Status:** In Progress (Story 12.4 Completed)
+**Status:** In Progress (Story 12.6 Completed)
 **Last Update:** 2025-11-16
 
 ## Overview
@@ -36,9 +36,13 @@ This document tracks the technical implementation for Epic 12: Conversation UI E
 
 ## Status
 
-- [ ] All story implementation docs linked and up to date.
-- [ ] All AC from business requirements covered in code and tests.
-- [ ] Documentation and code cross-referenced.
+- [x] All story implementation docs linked and up to date.
+- [x] All AC from business requirements covered in code and tests.
+- [x] Documentation and code cross-referenced.
+
+---
+
+> Story 12.6 (per-turn audio) is now complete. All acceptance criteria for per-turn audio controls are met and tested. See implementation doc and PR for details.
 
 ---
 

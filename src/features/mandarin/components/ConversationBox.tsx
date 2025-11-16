@@ -36,6 +36,7 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
   const [showPinyin, setShowPinyin] = useState(() => getSettingFromStorage("showPinyin", true));
   const [showEnglish, setShowEnglish] = useState(() => getSettingFromStorage("showEnglish", true));
   const [activeTurn, setActiveTurn] = useState(0);
+  const [playingTurn, setPlayingTurn] = useState<number | null>(null);
   // Handlers for toggles
   const handleTogglePinyin = useCallback(() => {
     setShowPinyin((prev) => {
@@ -84,12 +85,30 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
 
   const {
     isPlaying,
-    currentTurn,
     playConversationAudio,
     pauseAudio,
     isLoading: isLoadingAudio,
     error: audioError,
   } = useAudioPlayback();
+
+  // Per-turn audio handlers
+  const handlePlayTurnAudio = useCallback(
+    async (turnIdx: number) => {
+      if (!conversation) return;
+      setPlayingTurn(turnIdx);
+      await playConversationAudio({
+        wordId: conversation.wordId,
+        voice: "cmn-CN-Standard-A",
+        bitrate: 128,
+        // Optionally: pass turn index for backend if needed
+      });
+    },
+    [conversation, playConversationAudio]
+  );
+  const handlePauseTurnAudio = useCallback(() => {
+    pauseAudio();
+    setPlayingTurn(null);
+  }, [pauseAudio]);
 
   const handleGenerateConversation = useCallback(async () => {
     console.log("Generating conversation for:", wordId, word);
@@ -189,7 +208,10 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
             <ConversationTurns
               turns={conversation.turns}
               currentTurn={activeTurn}
+              playingTurn={playingTurn}
               isPlaying={isPlaying}
+              onPlayTurn={handlePlayTurnAudio}
+              onPauseTurn={handlePauseTurnAudio}
               showPinyin={showPinyin}
               showEnglish={showEnglish}
               className="conversation-box__turns"

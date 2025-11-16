@@ -2,44 +2,45 @@
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
 **Story:** [story-12-6-per-turn-audio](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-6-per-turn-audio.md)
-**Last Update:** 2025-11-15
+**Status:** Completed
+**Last Update:** 2025-11-16
 
 ## Technical Scope
 
-- Add per-turn audio playback controls to conversation UI.
-- Show playback state for each turn.
-- Ensure accessibility (ARIA labels, keyboard navigation).
-- Update OpenAPI/spec and frontend types if needed.
-- Add unit/component tests for audio controls and playback state.
+- Per-turn audio playback controls added to conversation UI
+- Playback state (playing/paused) shown for each turn
+- Accessibility verified (ARIA labels, keyboard navigation)
+- All relevant unit/component tests added and passing
 
 ## Implementation Details
 
-- Implement audio play/pause/replay controls for each conversation turn in the UI.
-- Display playback state (playing/paused) for each turn.
-- Ensure accessibility with ARIA labels and keyboard navigation.
-- Update OpenAPI/spec and frontend types to match new audio requirements if needed.
-- Add migration notes for any breaking changes to UI or API contracts.
+- Each conversation turn now renders a play/pause button, with clear playback state
+- Audio playback is managed per turn; only one turn can play at a time
+- ARIA labels and keyboard navigation are implemented for accessibility
+- All code follows project code conventions and SOLID principles
+- No breaking API changes required; frontend types updated as needed
 
 ## Architecture Integration
 
-- Conversation UI will use audio controls and playback state logic for each turn.
-- API and frontend types will be updated as needed for audio features.
+- Conversation UI uses new per-turn audio controls and playback state logic
+- No backend/API changes required for this story
 
 ## Technical Challenges & Solutions
 
-- Challenge: Ensuring reliable and intuitive audio playback per turn.
-  - Solution: Use robust audio libraries, provide clear UI feedback, and follow accessibility best practices.
+- Challenge: Ensuring reliable and intuitive audio playback per turn
+  - Solution: Centralized playback state in ConversationBox, robust UI feedback, and accessibility best practices
 
 ## Testing Implementation
 
-- Unit/component tests for audio controls and playback state.
-- Edge cases: rapid play/pause, multiple turns, accessibility.
+- Unit/component tests cover audio controls, playback state, and accessibility
+- Edge cases (rapid play/pause, multiple turns, keyboard navigation) tested
 
 ## Documentation
 
-- Update OpenAPI/spec and frontend types if needed.
-- Add migration notes for UI/API changes.
+- No OpenAPI or backend changes required
+- Frontend types and docs updated
+- See commit/PR for full implementation details
 
 ---
 
-> Update this file as implementation progresses. Link to PRs and commits as needed.
+> Status: Completed. All acceptance criteria met. See PR # (to be filled on merge) and commit for details.

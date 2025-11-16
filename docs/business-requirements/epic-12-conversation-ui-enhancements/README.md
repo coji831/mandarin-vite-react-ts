@@ -14,7 +14,7 @@ Modernize the backend and redesign the conversation UI to deliver an accessible,
 - Ensure the UI displays and toggles pinyin and English, and supports per-turn audio playback and navigation.
 - Follow Google Cloud API and leading UI/UX patterns for turn-based conversation interfaces.
 
-**Status:** In Progress (Story 12.4 Completed)
+**Status:** In Progress (Story 12.6 Completed)
 
 **Last Update:** 2025-11-16
 
@@ -62,7 +62,7 @@ Stories are divided to first address technical debt and backend compatibility, t
 - [ ] Local backend refactored for modern Google API usage and secure credential handling, compatible with Vercel API structure.
 - [ ] Backend/Vercel APIs return structured errors and meaningful logs with request IDs.
 - [ ] Conversation generation and UI support pinyin and English meaning, with display and toggleable playback.
-- [ ] Turn-based conversation UI with per-turn audio controls and accessibility features.
+  - [x] Turn-based conversation UI with per-turn audio controls and accessibility features.
 - [ ] All new features covered by unit/integration tests and documented.
 
 ## Architecture Decisions
