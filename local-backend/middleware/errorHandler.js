@@ -16,8 +16,7 @@ export function errorHandler(err, req, res, next) {
     requestId,
   };
   // Log error with requestId
-  if (typeof logError === "function") logError(error);
-  else console.error("[API Error]", error);
+  logError(error);
   res.status(err.status || 500).json(error);
 }
 

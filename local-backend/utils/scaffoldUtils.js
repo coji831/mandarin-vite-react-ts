@@ -165,7 +165,7 @@ async function validateScaffoldAudio(filename) {
 export async function handleGetScaffoldText(wordId, word, generatorVersion) {
   const { loadFixture, enforceTurns, shortHash } = await import("./scaffoldUtils.js");
 
-  console.log(`[ConversationProcessor] Scaffold mode: loading fixture for ${wordId}`);
+  console.log(`[ScaffoldUtils] Scaffold mode: loading fixture for ${wordId}`);
 
   let conversation = await loadFixture(wordId, generatorVersion);
 

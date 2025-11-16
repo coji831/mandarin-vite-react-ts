@@ -1,3 +1,18 @@
+// Fallback backend for local development
+export class LocalConversationBackend implements IConversationBackend {
+  async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
+    const endpoint = "http://localhost:3001/api/mandarin/conversation/text/generate";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) {
+      throw new Error(`Conversation generation failed (local): ${response.statusText}`);
+    }
+    return response.json();
+  }
+}
 import { API_ROUTES } from "../../../../shared/constants/apiPaths";
 import { Conversation, ConversationGenerateRequest } from "../types";
 import { IConversationBackend, IConversationService } from "./interfaces";
@@ -7,8 +22,11 @@ export class ConversationService implements IConversationService {
   private backend: IConversationBackend;
   declare fallbackService?: ConversationService;
 
-  constructor(backend?: IConversationBackend) {
+  constructor(backend?: IConversationBackend, withFallback = true) {
     this.backend = backend || new DefaultConversationBackend();
+    if (withFallback) {
+      this.fallbackService = new ConversationService(new LocalConversationBackend(), false);
+    }
   }
 
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {

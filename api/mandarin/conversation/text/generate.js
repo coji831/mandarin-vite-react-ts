@@ -1,193 +1,180 @@
-// api/mandarin/conversation/text/generate.js - Vercel Serverless Function for Conversation Text Generation
-// This file was moved from api/conversation/text/generate.js to better organize mandarin features.
+// api/mandarin/conversation/text/generate.js
+// Vercel serverless function for conversation text generation
+// Refactored to match local-backend service layer patterns
 
 import { Storage } from "@google-cloud/storage";
-import { computeHash } from "../../../../local-backend/utils/hashUtils.js";
+import crypto from "crypto";
 
-// Storage client will be initialized per request
-let storage = null;
-let BUCKET_NAME = null;
+// Client instances
+let storageClient = null;
+let bucketName = null;
 
-// Initialize storage client
+/**
+ * Initialize Google Cloud Storage client
+ */
 function initializeStorage() {
-  if (storage) return; // Already initialized
+  if (storageClient) return;
 
   try {
-    const gcsCredentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
-    if (!gcsCredentialsJson) {
-      console.log("[TextGenerate] GEMINI_API_CREDENTIALS_RAW not set, skipping GCS initialization");
+    const credentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
+    if (!credentialsJson) {
+      console.log("[ConversationText] GEMINI_API_CREDENTIALS_RAW not set");
       return;
     }
 
-    const gcsCredentials = JSON.parse(gcsCredentialsJson);
-    BUCKET_NAME = process.env.GCS_BUCKET_NAME;
+    const credentials = JSON.parse(credentialsJson);
+    bucketName = process.env.GCS_BUCKET_NAME;
 
-    if (!BUCKET_NAME) {
-      console.log("[TextGenerate] GCS_BUCKET_NAME not set, skipping GCS initialization");
+    if (!bucketName) {
+      console.log("[ConversationText] GCS_BUCKET_NAME not set");
       return;
     }
 
-    storage = new Storage({
-      credentials: gcsCredentials,
-      projectId: gcsCredentials.project_id,
+    storageClient = new Storage({
+      credentials,
+      projectId: credentials.project_id,
     });
 
-    console.log(`[TextGenerate] GCS initialized with bucket: ${BUCKET_NAME}`);
+    console.log(`[ConversationText] Storage initialized: ${bucketName}`);
   } catch (error) {
-    console.error("[TextGenerate] Failed to initialize GCS:", error.message);
+    console.error("[ConversationText] Storage init failed:", error.message);
   }
 }
 
-async function checkTextCache(wordId, hash) {
-  if (!storage || !BUCKET_NAME) {
-    console.log("[TextGenerate] Storage not initialized, skipping cache lookup");
-    return null;
-  }
-
-  const filePath = `convo/${wordId}/${hash}.json`;
-  const file = storage.bucket(BUCKET_NAME).file(filePath);
-
-  try {
-    const [exists] = await file.exists();
-    if (!exists) {
-      console.log(`[TextGenerate] Cache miss for ${wordId}/${hash}`);
-      return null;
-    }
-
-    const [contents] = await file.download();
-    console.log(`[TextGenerate] Cache hit for ${wordId}/${hash}`);
-    return JSON.parse(contents.toString());
-  } catch (err) {
-    console.error("[TextGenerate] GCS cache lookup error:", err.message);
-    return null;
-  }
+/**
+ * Compute conversation text hash (SHA256)
+ */
+function computeConversationTextHash(wordId) {
+  return crypto.createHash("sha256").update(wordId).digest("hex");
 }
 
-async function cacheConversationText(wordId, hash, convo) {
-  if (!storage || !BUCKET_NAME) {
-    console.log("[TextGenerate] Storage not initialized, skipping cache store");
-    return false;
-  }
-
-  const filePath = `convo/${wordId}/${hash}.json`;
-  const file = storage.bucket(BUCKET_NAME).file(filePath);
-
-  try {
-    await file.save(JSON.stringify(convo), { contentType: "application/json" });
-    console.log(`[TextGenerate] Successfully stored conversation in cache: ${wordId}/${hash}`);
-    return true;
-  } catch (err) {
-    console.error("[TextGenerate] GCS cache store error:", err.message);
-    if (err.code === 403) {
-      console.error("[TextGenerate] Permission denied - check Storage Object Creator role");
-    }
-    return false;
-  }
+/**
+ * Check if file exists in GCS
+ */
+async function fileExists(filePath) {
+  if (!storageClient || !bucketName) return false;
+  const file = storageClient.bucket(bucketName).file(filePath);
+  const [exists] = await file.exists();
+  return exists;
 }
 
-async function generateConversationText(wordId, prompt, generatorVersion) {
-  const geminiCredentialsRaw = process.env.GEMINI_API_CREDENTIALS_RAW;
-  if (!geminiCredentialsRaw) throw new Error("Missing GEMINI_API_CREDENTIALS_RAW env var");
+/**
+ * Download file from GCS
+ */
+async function downloadFile(filePath) {
+  const file = storageClient.bucket(bucketName).file(filePath);
+  const [contents] = await file.download();
+  return contents;
+}
 
-  const geminiCredentials = JSON.parse(geminiCredentialsRaw);
-  const { JWT } = await import("google-auth-library");
+/**
+ * Upload file to GCS
+ */
+async function uploadFile(filePath, buffer, contentType) {
+  const file = storageClient.bucket(bucketName).file(filePath);
+  await file.save(buffer, { contentType });
+}
 
-  const client = new JWT({
-    email: geminiCredentials.client_email,
-    key: geminiCredentials.private_key,
-    scopes: ["https://www.googleapis.com/auth/generative-language"],
-  });
+/**
+ * Create conversation prompt
+ */
+function createConversationPrompt(word) {
+  return `Generate a short Mandarin conversation using ${word}. Please respond with a simple conversation in this format:
+A: [first speaker line]
+B: [second speaker line]
+A: [third speaker line]
+B: [fourth speaker line]
 
-  const modelName = "models/gemini-2.0-flash-lite";
-  const accessToken = await client.getAccessToken();
+Keep it conversational and natural, with exactly 4 lines total. Only use Mandarin Chinese characters—do not include pinyin, English, or any translations.`;
+}
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `${prompt}. Please respond with a simple conversation in this format:
-                      A: [first speaker line]
-                      B: [second speaker line]
-                      A: [third speaker line]
-                      B: [fourth speaker line]
-                    Keep it conversational and natural, with exactly 4 lines total. Only use Mandarin Chinese characters—do not include pinyin, English, or any translations.`,
-              },
-            ],
-          },
-        ],
-      }),
-    }
-  );
+/**
+ * Parse conversation text from Gemini response
+ */
+function parseConversationText(rawText) {
+  const lines = rawText.split("\n").filter((line) => line.trim());
+  const turns = [];
 
-  const data = await response.json();
-
-  let turns = [];
-
-  if (data.error) {
-    console.log("[TextGenerate] Gemini API error detected:", data.error);
-    console.log("[TextGenerate] Using fallback conversation due to API error");
-  }
-
-  if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-    const generatedText = data.candidates[0].content.parts[0].text;
-    console.log("[TextGenerate] Generated text:", generatedText);
-
-    const lines = generatedText.split("\n").filter((line) => line.trim());
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed.startsWith("A:")) {
-        turns.push({ speaker: "A", text: trimmed.substring(2).trim() });
-      } else if (trimmed.startsWith("B:")) {
-        turns.push({ speaker: "B", text: trimmed.substring(2).trim() });
-      }
-    }
-
-    if (turns.length < 3) {
-      console.log("[TextGenerate] Not enough turns generated, using fallback");
-      turns = [];
-    } else {
-      turns = turns.slice(0, 5);
-      console.log(`[TextGenerate] Successfully parsed ${turns.length} conversation turns`);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("A:")) {
+      turns.push({ speaker: "A", text: trimmed.substring(2).trim() });
+    } else if (trimmed.startsWith("B:")) {
+      turns.push({ speaker: "B", text: trimmed.substring(2).trim() });
     }
   }
 
-  if (turns.length === 0) {
-    console.log("[TextGenerate] No valid candidates in response, using fallback");
-    turns = [
-      { speaker: "A", text: `你好，你能用'${wordId}'造个句子吗？` },
-      { speaker: "B", text: `当然可以！'${wordId}'是一个很有用的词。` },
-      { speaker: "A", text: `太好了，你能再给一个例子吗？` },
-      { speaker: "B", text: `没问题，这是另一个用${wordId}的例子。` },
+  // Fallback if not enough turns
+  if (turns.length < 3) {
+    console.log("[ConversationText] Not enough turns, using fallback");
+    return [
+      { speaker: "A", text: "你好，今天天气真好。" },
+      { speaker: "B", text: "是的，我们去公园走走吧。" },
+      { speaker: "A", text: "好主意，我们现在就走。" },
     ];
   }
 
-  return {
-    id: "",
-    generatedAt: "",
-    wordId,
-    generatorVersion,
-    prompt,
-    turns,
-  };
+  return turns.slice(0, 5);
 }
 
-function createConversationPrompt(word) {
-  return `Generate a short Mandarin conversation using ${word}`;
+/**
+ * Generate text via Gemini API
+ */
+async function generateText(prompt) {
+  const credentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
+  if (!credentialsJson) {
+    throw new Error("GEMINI_API_CREDENTIALS_RAW not set");
+  }
+
+  const credentials = JSON.parse(credentialsJson);
+  const { JWT } = await import("google-auth-library");
+
+  const jwtClient = new JWT({
+    email: credentials.client_email,
+    key: credentials.private_key,
+    scopes: ["https://www.googleapis.com/auth/generative-language"],
+  });
+
+  const model = process.env.GEMINI_MODEL || "models/gemini-2.0-flash-lite";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent`;
+  const accessToken = await jwtClient.getAccessToken();
+
+  console.log(`[ConversationText] Calling Gemini API: ${model}`);
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken.token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[ConversationText] Gemini API error: ${response.status}`);
+    throw new Error(`Gemini API failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!generatedText) {
+    console.error("[ConversationText] No text in response");
+    throw new Error("Gemini API response missing text content");
+  }
+
+  console.log(`[ConversationText] Generated ${generatedText.length} characters`);
+  return generatedText;
 }
 
-// Main Vercel handler
+/**
+ * Main Vercel handler
+ */
 export default async function handler(req, res) {
-  console.log(`[TextGenerate] ${req.method} request received`);
+  console.log(`[ConversationText] ${req.method} request received`);
 
   // Initialize storage
   initializeStorage();
@@ -209,23 +196,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { wordId, word } = req.body || {};
+    const { wordId, word, generatorVersion = "v1" } = req.body || {};
 
-    if (!wordId) {
-      return res.status(400).json({ error: "wordId is required in request body" });
+    if (!wordId || !word) {
+      return res.status(400).json({
+        error: "wordId and word are required",
+      });
     }
 
-    console.log(`[TextGenerate] Generating conversation for wordId: ${wordId}, word: ${word}`);
+    console.log(`[ConversationText] Generating for: ${word} (${wordId})`);
 
-    const conversationPrompt = createConversationPrompt(word || wordId);
-    const hash = computeHash(wordId);
+    const hash = computeConversationTextHash(wordId);
+    const cachePath = `convo/${wordId}/${hash}.json`;
 
-    // Try cache lookup first
-    let conversation = await checkTextCache(wordId, hash);
-
-    if (conversation) {
-      // Cache hit: return cached conversation
-      console.log(`[TextGenerate] Cache hit for conversation ${wordId}`);
+    // Check cache first
+    const exists = await fileExists(cachePath);
+    if (exists) {
+      console.log(`[ConversationText] Cache hit: ${cachePath}`);
+      const buffer = await downloadFile(cachePath);
+      const conversation = JSON.parse(buffer.toString());
       return res.json({
         ...conversation,
         _metadata: {
@@ -236,15 +225,28 @@ export default async function handler(req, res) {
       });
     }
 
-    // Cache miss: call Gemini and cache result
-    console.log(`[TextGenerate] Cache miss, generating new conversation for ${wordId}`);
-    conversation = await generateConversationText(wordId, conversationPrompt, "v1");
-    conversation.generatedAt = new Date().toISOString();
-    conversation.id = `${wordId}-${hash}`;
-    conversation.word = word || wordId;
+    // Cache miss - generate
+    console.log(`[ConversationText] Cache miss: ${cachePath}`);
+    const prompt = createConversationPrompt(word);
+    const rawText = await generateText(prompt);
+    const turns = parseConversationText(rawText);
 
-    // Cache the result
-    await cacheConversationText(wordId, hash, conversation);
+    const conversation = {
+      id: `${wordId}-${hash}`,
+      wordId,
+      word,
+      generatorVersion,
+      prompt: `Generate a short Mandarin conversation using ${word}`,
+      turns,
+      generatedAt: new Date().toISOString(),
+    };
+
+    console.log(`[ConversationText] Generated ${turns.length} turns`);
+
+    // Save to cache
+    const buffer = Buffer.from(JSON.stringify(conversation));
+    await uploadFile(cachePath, buffer, "application/json");
+    console.log(`[ConversationText] Successfully cached: ${cachePath}`);
 
     return res.json({
       ...conversation,
@@ -255,7 +257,7 @@ export default async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error("[TextGenerate] Error:", error);
+    console.error("[ConversationText] Error:", error);
     return res.status(500).json({
       error: "Failed to generate conversation",
       message: error.message,

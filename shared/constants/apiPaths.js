@@ -11,7 +11,7 @@ export const API_ROUTES = {
 // Route patterns for Express.js (without /api prefix)
 export const ROUTE_PATTERNS = {
   // New patterns
-  conversationTextGenerate: "/mandarin/conversation/text/generate",
-  conversationAudioGenerate: "/mandarin/conversation/audio/generate",
+  conversationTextGenerate: "/text/generate",
+  conversationAudioGenerate: "/audio/generate",
   ttsAudio: "/get-tts-audio",
 };

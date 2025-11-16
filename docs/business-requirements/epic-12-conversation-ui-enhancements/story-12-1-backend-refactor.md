@@ -1,39 +1,49 @@
 # Story 12.1: Backend Refactor for Modern Google API and Vercel Compatibility
 
-## Story Summary
+## Description
 
-**Goal:**
-Refactor the local backend to use modern Google API libraries and async/await, with a structure that is easy to migrate to Vercel API format, improving maintainability, security, and portability.
+**As a** developer,
+**I want to** refactor the local backend to use modern Google API libraries and clean service layer architecture,
+**So that** the codebase is maintainable, secure, and easily portable to Vercel serverless functions.
 
-**Status:** Draft
+## Business Value
 
-**Last Update:** 2025-11-14
+Refactoring the backend to use modern patterns improves:
 
-## Background
-
-The current local backend uses legacy Express code and outdated Google API usage, with ad-hoc credential handling. This increases maintenance burden and security risk, and makes it difficult to share logic with Vercel API endpoints.
+- **Maintainability**: Clear separation of concerns makes code easier to understand and modify
+- **Security**: Centralized credential management reduces risk of credential leaks
+- **Portability**: Service layer design enables easy migration to Vercel serverless functions
+- **Developer Experience**: Better error handling and logging speeds up debugging
+- **Code Quality**: Removal of over-engineered abstractions improves readability
 
 ## Acceptance Criteria
 
-- [ ] All Google API usage in local-backend is updated to use the latest official libraries and async/await syntax.
-- [ ] Credential loading is moved to environment variables or secure config files.
-- [ ] Backend modules and handlers are structured for compatibility with Vercel API format (e.g., shared logic, minimal Express coupling).
-- [ ] Documentation in `local-backend/docs/` is updated to reflect new setup and usage.
-- [ ] Unit/integration tests cover refactored code and credential handling.
+- [x] All Google API usage in local-backend is updated to use the latest official libraries and async/await syntax.
+- [x] Credential loading is moved to environment variables or secure config files.
+- [x] Backend modules and handlers are structured for compatibility with Vercel API format (e.g., shared logic, minimal Express coupling).
+- [x] Documentation in `local-backend/docs/` is updated to reflect new setup and usage.
+- [x] Unit/integration tests cover refactored code and credential handling.
 
-## Implementation Approach
+## Business Rules
 
-- Refactor Google API logic into modular, testable functions.
-- Use environment variables for all credentials and sensitive config.
-- Design handler signatures to be easily portable to Vercel API endpoints.
-- Update documentation and add migration notes for future Vercel API conversion.
+1. All credentials must be loaded from environment variables only - no hardcoded secrets
+2. Service layer functions must be pure (no Express coupling) for Vercel compatibility
+3. All Google Cloud API calls must use latest official libraries with async/await
+4. Error responses must include request IDs for traceability
+5. Documentation must be updated to reflect all architectural changes
 
-## Risks & Mitigations
+## Related Issues
 
-- Risk: Refactor introduces regressions — Mitigation: Add/expand tests, incremental rollout.
-- Risk: Migration to Vercel API is still non-trivial — Mitigation: Document all assumptions and differences.
+- [**Story 12.2**](./story-12-2-error-handling.md) (Depends on service layer structure)
+- [**Story 12.3**](./story-12-3-update-conversation-api.md) (Uses refactored backend)
 
-## Implementation Notes
+## Implementation Status
 
-- Follow code conventions and solid principles.
-- Use `.env` for local secrets, never commit credentials.
+- **Status**: Completed
+- **PR**: [Pending]
+- **Merge Date**: 2025-11-16
+- **Key Commits**:
+  - Service layer refactoring (conversationService, gcsService, geminiService, ttsService)
+  - Removed cacheWrapper.js over-engineering
+  - Updated all local-backend documentation
+  - Centralized configuration with validation

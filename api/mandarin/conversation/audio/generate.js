@@ -1,125 +1,108 @@
-// api/mandarin/conversation/audio/generate.js - Vercel Serverless Function for Conversation Audio Generation
-// This file was moved from api/conversation/audio/generate.js to better organize mandarin features.
+// api/mandarin/conversation/audio/generate.js
+// Vercel serverless function for conversation audio generation
+// Refactored to match local-backend service layer patterns
 
 import { Storage } from "@google-cloud/storage";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
-import { computeHash } from "../../../../local-backend/utils/hashUtils.js";
+import crypto from "crypto";
 
-// Storage client and TTS client will be initialized per request
-let storage = null;
-let BUCKET_NAME = null;
+// Client instances
+let storageClient = null;
 let ttsClient = null;
+let bucketName = null;
 
-// Initialize storage and TTS clients
+/**
+ * Initialize Google Cloud clients
+ * Uses TTS credentials for both TTS and GCS operations
+ */
 function initializeClients() {
-  if (storage && ttsClient) return; // Already initialized
+  if (storageClient && ttsClient) return;
 
   try {
-    const gcsCredentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
-    if (!gcsCredentialsJson) {
-      console.log("[AudioGenerate] GEMINI_API_CREDENTIALS_RAW not set, skipping initialization");
+    const credentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
+    if (!credentialsJson) {
+      console.log("[ConversationAudio] GOOGLE_TTS_CREDENTIALS_RAW not set");
       return;
     }
 
-    const gcsCredentials = JSON.parse(gcsCredentialsJson);
-    BUCKET_NAME = process.env.GCS_BUCKET_NAME;
+    const credentials = JSON.parse(credentialsJson);
+    bucketName = process.env.GCS_BUCKET_NAME;
 
-    if (!BUCKET_NAME) {
-      console.log("[AudioGenerate] GCS_BUCKET_NAME not set, skipping initialization");
+    if (!bucketName) {
+      console.log("[ConversationAudio] GCS_BUCKET_NAME not set");
       return;
     }
 
-    // Initialize Storage client
-    storage = new Storage({
-      credentials: gcsCredentials,
-      projectId: gcsCredentials.project_id,
+    storageClient = new Storage({
+      credentials,
+      projectId: credentials.project_id,
     });
 
-    // Initialize TTS client with the same credentials
     ttsClient = new TextToSpeechClient({
-      credentials: gcsCredentials,
-      projectId: gcsCredentials.project_id,
+      credentials,
+      projectId: credentials.project_id,
     });
 
-    console.log(`[AudioGenerate] Clients initialized with bucket: ${BUCKET_NAME}`);
+    console.log(`[ConversationAudio] Clients initialized: ${bucketName}`);
   } catch (error) {
-    console.error("[AudioGenerate] Failed to initialize clients:", error.message);
+    console.error("[ConversationAudio] Client init failed:", error.message);
   }
 }
 
-async function checkAudioCache(wordId, hash) {
-  if (!storage || !BUCKET_NAME) {
-    console.log("[AudioGenerate] Storage not initialized, skipping cache lookup");
-    return { exists: false };
-  }
-
-  try {
-    const audioFilePath = `convo/${wordId}/${hash}.mp3`;
-    const audioFile = storage.bucket(BUCKET_NAME).file(audioFilePath);
-    const [exists] = await audioFile.exists();
-
-    if (exists) {
-      console.log(`[AudioGenerate] Cache hit for audio: ${audioFilePath}`);
-      return {
-        exists: true,
-        audioUrl: `https://storage.googleapis.com/${BUCKET_NAME}/${audioFilePath}`,
-      };
-    }
-
-    console.log(`[AudioGenerate] Cache miss for audio: ${audioFilePath}`);
-    return { exists: false };
-  } catch (error) {
-    console.log(`[AudioGenerate] Cache check failed: ${error.message}`);
-    return { exists: false };
-  }
+/**
+ * Compute conversation text hash (SHA256)
+ */
+function computeConversationTextHash(wordId) {
+  return crypto.createHash("sha256").update(wordId).digest("hex");
 }
 
-async function checkTextCache(wordId, hash) {
-  if (!storage || !BUCKET_NAME) {
-    return null;
-  }
-
-  const filePath = `convo/${wordId}/${hash}.json`;
-  const file = storage.bucket(BUCKET_NAME).file(filePath);
-
-  try {
-    const [exists] = await file.exists();
-    if (!exists) return null;
-
-    const [contents] = await file.download();
-    return JSON.parse(contents.toString());
-  } catch (err) {
-    console.error("[AudioGenerate] Text cache lookup error:", err.message);
-    return null;
-  }
+/**
+ * Compute conversation audio hash from turns
+ */
+function computeConversationAudioHash(turns) {
+  const text = turns.map((t) => t.text).join("\n");
+  return crypto.createHash("sha256").update(text).digest("hex");
 }
 
-async function cacheConversationAudio(wordId, hash, audioBuffer) {
-  if (!storage || !BUCKET_NAME) {
-    console.log("[AudioGenerate] Storage not initialized, skipping audio cache");
-    return null;
-  }
-
-  try {
-    const audioFilePath = `convo/${wordId}/${hash}.mp3`;
-    const audioFile = storage.bucket(BUCKET_NAME).file(audioFilePath);
-
-    await audioFile.save(audioBuffer, {
-      metadata: { contentType: "audio/mpeg" },
-      public: true,
-    });
-
-    const audioUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${audioFilePath}`;
-    console.log(`[AudioGenerate] Successfully stored audio: ${audioFilePath}`);
-    return audioUrl;
-  } catch (error) {
-    console.error(`[AudioGenerate] Failed to store audio: ${error.message}`);
-    throw error;
-  }
+/**
+ * Check if file exists in GCS
+ */
+async function fileExists(filePath) {
+  if (!storageClient || !bucketName) return false;
+  const file = storageClient.bucket(bucketName).file(filePath);
+  const [exists] = await file.exists();
+  return exists;
 }
 
+/**
+ * Download file from GCS
+ */
+async function downloadFile(filePath) {
+  const file = storageClient.bucket(bucketName).file(filePath);
+  const [contents] = await file.download();
+  return contents;
+}
+
+/**
+ * Upload file to GCS
+ */
+async function uploadFile(filePath, buffer, contentType) {
+  const file = storageClient.bucket(bucketName).file(filePath);
+  await file.save(buffer, { contentType });
+}
+
+/**
+ * Get public URL for GCS file
+ */
+function getPublicUrl(filePath) {
+  return `https://storage.googleapis.com/${bucketName}/${filePath}`;
+}
+
+/**
+ * Extract Chinese text from conversation turns for TTS
+ */
 function extractTextFromConversation(conversation) {
-  if (!conversation || !conversation.turns || !Array.isArray(conversation.turns)) {
+  if (!conversation?.turns || !Array.isArray(conversation.turns)) {
     return null;
   }
 
@@ -131,16 +114,19 @@ function extractTextFromConversation(conversation) {
   });
 
   const combinedText = chineseTexts.join("。");
-  console.log(`[AudioGenerate] Extracted Chinese text from conversation: ${combinedText}`);
+  console.log(`[ConversationAudio] Extracted text: ${combinedText}`);
   return combinedText;
 }
 
-async function generateTTSAudio(text, voice = "cmn-CN-Standard-A") {
+/**
+ * Synthesize speech using Google Cloud TTS
+ */
+async function synthesizeSpeech(text, voice = "cmn-CN-Wavenet-B") {
   if (!ttsClient) {
     throw new Error("TTS client not initialized");
   }
 
-  console.log(`[AudioGenerate] Generating TTS for text: "${text}"`);
+  console.log(`[ConversationAudio] Generating TTS for: "${text}"`);
 
   const request = {
     input: { text },
@@ -154,14 +140,15 @@ async function generateTTSAudio(text, voice = "cmn-CN-Standard-A") {
   };
 
   const [response] = await ttsClient.synthesizeSpeech(request);
-  console.log(`[AudioGenerate] TTS generated successfully`);
-
+  console.log("[ConversationAudio] TTS generated successfully");
   return response.audioContent;
 }
 
-// Main Vercel handler
+/**
+ * Main Vercel handler
+ */
 export default async function handler(req, res) {
-  console.log(`[AudioGenerate] ${req.method} request received`);
+  console.log(`[ConversationAudio] ${req.method} request received`);
 
   // Initialize clients
   initializeClients();
@@ -183,55 +170,75 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { wordId, voice = "cmn-CN-Standard-A", bitrate = 128, format = "url" } = req.body || {};
+    const { wordId, voice = "cmn-CN-Wavenet-B" } = req.body || {};
 
     if (!wordId) {
-      return res.status(400).json({ error: "wordId is required in request body" });
+      return res.status(400).json({ error: "wordId is required" });
     }
 
-    console.log(`[AudioGenerate] Generating audio for wordId: ${wordId}`);
+    console.log(`[ConversationAudio] Generating audio for: ${wordId}`);
 
-    const hash = computeHash(wordId);
+    const hash = computeConversationTextHash(wordId);
+    const conversationId = `${wordId}-${hash}`;
 
-    // Check if audio already exists
-    const cached = await checkAudioCache(wordId, hash);
-    if (cached && cached.exists) {
+    // Retrieve conversation text to get turns
+    const conversationPath = `convo/${wordId}/${hash}.json`;
+    const conversationExists = await fileExists(conversationPath);
+
+    if (!conversationExists) {
+      return res.status(404).json({
+        error: `Conversation not found for wordId: ${wordId}. Generate text first.`,
+      });
+    }
+
+    const buffer = await downloadFile(conversationPath);
+    const conversation = JSON.parse(buffer.toString());
+
+    // Build audio cache path
+    const audioHash = computeConversationAudioHash(conversation.turns);
+    const audioPath = `convo/${wordId}/${audioHash}.mp3`;
+
+    // Check audio cache
+    const audioExists = await fileExists(audioPath);
+    if (audioExists) {
+      console.log(`[ConversationAudio] Cache hit: ${audioPath}`);
+      const audioUrl = getPublicUrl(audioPath);
       return res.json({
-        conversationId: `${wordId}-${hash}`,
-        audioUrl: cached.audioUrl,
+        conversationId,
+        audioUrl,
         voice,
-        bitrate,
-        isCached: true,
+        cached: true,
         generatedAt: new Date().toISOString(),
       });
     }
 
-    // Extract text for TTS from cached conversation
-    let conversation = await checkTextCache(wordId, hash);
-    console.log(`[AudioGenerate] Retrieved conversation for TTS`);
+    // Cache miss - generate audio
+    console.log(`[ConversationAudio] Cache miss: ${audioPath}`);
+    console.log(`[ConversationAudio] Generating audio for ${conversation.turns.length} turns`);
 
+    // Extract text for TTS
     let textForTTS = extractTextFromConversation(conversation);
-    if (typeof textForTTS !== "string" || !textForTTS.trim()) {
+    if (!textForTTS?.trim()) {
+      console.log("[ConversationAudio] No valid text, using fallback");
       textForTTS = "你好，今天天气真好。是的，我们去公园走走吧。好主意，我们现在就走。";
     }
-    console.log(`[AudioGenerate] Text for TTS: ${textForTTS}`);
 
-    // Generate audio using TTS client directly
-    const audioContent = await generateTTSAudio(textForTTS, voice);
+    const audioBuffer = await synthesizeSpeech(textForTTS, voice);
 
-    // Store in GCS under conversation cache path
-    const storedUrl = await cacheConversationAudio(wordId, hash, audioContent);
+    // Upload to GCS
+    await uploadFile(audioPath, audioBuffer, "audio/mpeg");
+    console.log(`[ConversationAudio] Successfully cached: ${audioPath}`);
 
+    const audioUrl = getPublicUrl(audioPath);
     return res.json({
-      conversationId: `${wordId}-${hash}`,
-      audioUrl: storedUrl,
+      conversationId,
+      audioUrl,
       voice,
-      bitrate,
-      isCached: false,
+      cached: false,
       generatedAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("[AudioGenerate] Error:", error);
+    console.error("[ConversationAudio] Error:", error);
     return res.status(500).json({
       error: "Failed to generate audio",
       message: error.message,

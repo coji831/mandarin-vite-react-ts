@@ -1,18 +1,27 @@
-// local-backend/utils/googleTTSService.js
-// Modular Google Cloud Text-to-Speech service logic
-// Loads credentials from environment variables only
-
+// ttsService.js
+// Dedicated Google Cloud Text-to-Speech (TTS) service
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
+import { config } from "../config/index.js";
 
 let ttsClient = null;
 
+/**
+ * Optional explicit initialization of TTS client
+ * If not called, client will be lazily initialized on first use
+ */
+export function initializeTTS(credentials) {
+  ttsClient = new TextToSpeechClient({
+    credentials: credentials,
+    projectId: credentials.project_id,
+  });
+}
+
 export function getTTSClient() {
   if (ttsClient) return ttsClient;
-  const ttsCredentialsJson = process.env.GOOGLE_TTS_CREDENTIALS_RAW;
-  if (!ttsCredentialsJson) {
+  const ttsCredentials = config.googleTtsCredentials;
+  if (!ttsCredentials) {
     throw new Error("GOOGLE_TTS_CREDENTIALS_RAW environment variable is not set");
   }
-  const ttsCredentials = JSON.parse(ttsCredentialsJson);
   ttsClient = new TextToSpeechClient({
     credentials: ttsCredentials,
     projectId: ttsCredentials.project_id,
@@ -31,11 +40,11 @@ export async function synthesizeSpeech(text, options = {}) {
   const request = {
     input: { text },
     voice: {
-      languageCode: options.languageCode || "cmn-CN",
-      name: options.voice || "cmn-CN-Standard-A",
+      languageCode: options.languageCode || config.tts.languageCode,
+      name: options.voice || config.tts.voiceDefault,
     },
     audioConfig: {
-      audioEncoding: options.audioEncoding || "MP3",
+      audioEncoding: options.audioEncoding || config.tts.audioEncoding,
     },
   };
   const [response] = await client.synthesizeSpeech(request);
