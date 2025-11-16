@@ -35,6 +35,7 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
   const [isVisible, setIsVisible] = useState(false);
   const [showPinyin, setShowPinyin] = useState(() => getSettingFromStorage("showPinyin", true));
   const [showEnglish, setShowEnglish] = useState(() => getSettingFromStorage("showEnglish", true));
+  const [activeTurn, setActiveTurn] = useState(0);
   // Handlers for toggles
   const handleTogglePinyin = useCallback(() => {
     setShowPinyin((prev) => {
@@ -48,6 +49,31 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
       return !prev;
     });
   }, []);
+  // Navigation handlers
+  const handleNextTurn = useCallback(() => {
+    setActiveTurn((prev) => {
+      if (!conversation) return prev;
+      return Math.min(prev + 1, conversation.turns.length - 1);
+    });
+  }, [conversation]);
+  const handlePrevTurn = useCallback(() => {
+    setActiveTurn((prev) => Math.max(prev - 1, 0));
+  }, []);
+  // Keyboard navigation
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!isVisible || !conversation) return;
+      if (e.key === "ArrowRight") {
+        handleNextTurn();
+        e.preventDefault();
+      } else if (e.key === "ArrowLeft") {
+        handlePrevTurn();
+        e.preventDefault();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isVisible, conversation, handleNextTurn, handlePrevTurn]);
 
   const {
     generateConversation,
@@ -75,8 +101,8 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
         generatorVersion: "v1",
       });
       setConversation(newConversation);
+      setActiveTurn(0);
       console.log(newConversation);
-
       setIsVisible(true);
     } catch (error) {
       console.error("Failed to generate conversation:", error);
@@ -142,9 +168,27 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
                 {showEnglish ? "Hide English" : "Show English"}
               </button>
             </div>
+            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+              <button
+                onClick={handlePrevTurn}
+                aria-label="Previous turn"
+                disabled={activeTurn === 0}
+                style={{ minWidth: 40 }}
+              >
+                &#8592; Prev
+              </button>
+              <button
+                onClick={handleNextTurn}
+                aria-label="Next turn"
+                disabled={activeTurn === conversation.turns.length - 1}
+                style={{ minWidth: 40 }}
+              >
+                Next &#8594;
+              </button>
+            </div>
             <ConversationTurns
               turns={conversation.turns}
-              currentTurn={currentTurn}
+              currentTurn={activeTurn}
               isPlaying={isPlaying}
               showPinyin={showPinyin}
               showEnglish={showEnglish}

@@ -21,7 +21,12 @@ function ConversationTurns({
   return (
     <div className={`conversation-turns ${className}`}>
       {turns.map((turn, index) => (
-        <div key={index} className="conversation-turn" role="listitem">
+        <div
+          key={index}
+          className={`conversation-turn${index === currentTurn ? " current" : ""}`}
+          role="listitem"
+          aria-current={index === currentTurn ? "true" : undefined}
+        >
           <span className="conversation-turn__speaker">{turn.speaker}</span>
           <div className="conversation-turn__content">
             <p className="conversation-turn__text">{turn.chinese}</p>

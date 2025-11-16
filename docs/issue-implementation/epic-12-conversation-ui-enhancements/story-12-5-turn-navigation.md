@@ -2,7 +2,8 @@
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
 **Story:** [story-12-5-turn-navigation](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
-**Last Update:** 2025-11-15
+**Last Update:** 2025-11-16
+**Status:** Completed
 
 ## Technical Scope
 
@@ -13,10 +14,10 @@
 
 ## Implementation Details
 
-- Implement navigation controls (e.g., next/previous buttons, keyboard shortcuts) in the conversation UI.
-- Visually highlight the current turn using design system styles.
-- Ensure accessibility with ARIA labels and keyboard navigation support.
-- Optionally, auto-advance to next turn after audio playback.
+- Navigation controls (Prev/Next buttons, ArrowLeft/ArrowRight keys) added to ConversationBox.
+- Current turn highlighted in ConversationTurns with .current class and aria-current.
+- Accessibility: ARIA labels, keyboard navigation, and color contrast verified.
+- Unit/component tests for navigation and highlighting (see ConversationTurns.navigation.test.tsx).
 
 ## Architecture Integration
 
@@ -30,12 +31,12 @@
 
 ## Testing Implementation
 
-- Unit/component tests for navigation and highlighting.
-- Edge cases: first/last turn, rapid navigation, accessibility.
+- All tests pass for navigation, highlighting, and accessibility.
 
 ## Documentation
 
-- Update feature design doc for navigation/highlighting.
+- Feature design doc updated for navigation/highlighting.
+- See business requirements: [story-12-5-turn-navigation.md](../../../business-requirements/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
 
 ---
 
