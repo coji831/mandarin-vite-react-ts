@@ -2,7 +2,9 @@
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
 **Story:** [story-12-2-error-handling](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-2-error-handling.md)
-**Last Update:** 2025-11-15
+
+**Status:** Completed
+**Last Update:** 2025-11-16
 
 ## Technical Scope
 
@@ -44,6 +46,16 @@
 - Update OpenAPI/spec for error object.
 - Add migration notes for API consumers.
 
+
 ---
 
-> Update this file as implementation progresses. Link to PRs and commits as needed.
+**Completion Note (2025-11-16):**
+
+All acceptance criteria met:
+- All backend APIs return structured error objects with `code`, `message`, and `requestId` fields
+- Errors are logged with request IDs for traceability
+- Middleware/utilities added for consistent error and log handling
+- API spec documentation updated for new error format
+- Unit/integration tests cover error handling and logging
+
+Story 12.2 is now closed.
