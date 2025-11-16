@@ -69,11 +69,22 @@ Generate or retrieve cached conversation text for a vocabulary word.
   "wordId": "word-123",
   "word": "你好",
   "generatorVersion": "v1",
-  "prompt": "Generate a short Mandarin conversation using 你好",
+  "prompt": "...",
   "turns": [
-    { "speaker": "A", "text": "你好，今天天气真好。" },
-    { "speaker": "B", "text": "是的，我们去公园走走吧。" },
-    { "speaker": "A", "text": "好主意，我们现在就走。" }
+    {
+      "speaker": "A",
+      "chinese": "你好！",
+      "pinyin": "Nǐ hǎo!",
+      "english": "Hello!",
+      "audioUrl": "https://storage.googleapis.com/bucket/convo/word-123/turn1.mp3"
+    },
+    {
+      "speaker": "B",
+      "chinese": "你好吗？",
+      "pinyin": "Nǐ hǎo ma?",
+      "english": "How are you?",
+      "audioUrl": "https://storage.googleapis.com/bucket/convo/word-123/turn2.mp3"
+    }
   ],
   "generatedAt": "2025-11-16T12:00:00.000Z",
   "_metadata": {
@@ -82,6 +93,8 @@ Generate or retrieve cached conversation text for a vocabulary word.
   }
 }
 ```
+
+> **Note:** Each turn now includes `chinese`, `pinyin`, `english`, and `audioUrl` fields. Audio is referenced by URL per turn.
 
 **Errors:**
 

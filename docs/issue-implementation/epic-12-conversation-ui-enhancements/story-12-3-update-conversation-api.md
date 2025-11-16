@@ -2,23 +2,23 @@
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
 **Story:** [story-12-3-update-conversation-api](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-3-update-conversation-api.md)
-**Last Update:** 2025-11-15
+**Last Update:** 2025-11-16
 
 ## Technical Scope
 
-- Refactor conversation API to return a ConversationTurn object for each turn (Chinese, pinyin, English, speaker, audioUrl).
-- Store and reference audio files by URL (not inline data).
-- Optimize LLM/Gemini API usage for minimal token cost.
-- Update OpenAPI/spec and frontend API types.
-- Expand tests for new structure and edge cases.
+- Conversation API now returns a ConversationTurn object for each turn (Chinese, pinyin, English, speaker, audioUrl).
+- Audio files are stored and referenced by URL per turn (not inline data).
+- LLM/Gemini API usage is optimized for minimal token cost (concise prompt, only required context).
+- OpenAPI/spec and frontend API types updated.
+- Tests expanded for new structure and edge cases.
 
 ## Implementation Details
 
-- Define `ConversationTurn` and `Conversation` types in backend and frontend code.
-- Refactor API handler to return structured conversation data with all required fields.
-- Integrate audio file storage (e.g., S3, CDN) and update turns with audio URLs.
-- Ensure API response handles missing audio gracefully (audioUrl nullable).
-- Document new API structure in OpenAPI/spec and update consumers.
+- `ConversationTurn` and `Conversation` types updated in backend and frontend code.
+- API handler returns structured conversation data with all required fields.
+- Audio file storage integrated; each turn updated with audio URL.
+- API response handles missing audio gracefully (audioUrl nullable).
+- API structure documented in OpenAPI/spec and consumers updated.
 
 ## Architecture Integration
 
@@ -41,8 +41,34 @@
 
 ## Documentation
 
-- Update OpenAPI/spec for new ConversationTurn structure.
-- Add usage/migration notes for frontend consumers.
+- OpenAPI/spec updated for new ConversationTurn structure.
+- Usage/migration notes added for frontend consumers.
+
+### Example Response
+
+```json
+{
+  "conversationId": "abc123",
+  "turns": [
+    {
+      "speaker": "A",
+      "chinese": "你好！",
+      "pinyin": "Nǐ hǎo!",
+      "english": "Hello!",
+      "audioUrl": "https://cdn.example.com/audio/abc123/turn1.mp3"
+    },
+    {
+      "speaker": "B",
+      "chinese": "你好吗？",
+      "pinyin": "Nǐ hǎo ma?",
+      "english": "How are you?",
+      "audioUrl": "https://cdn.example.com/audio/abc123/turn2.mp3"
+    }
+  ]
+}
+```
+
+> **Note:** Each turn now includes `chinese`, `pinyin`, `english`, and `audioUrl` fields. Audio is referenced by URL per turn.
 
 ---
 

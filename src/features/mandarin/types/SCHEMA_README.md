@@ -20,8 +20,10 @@ Defines canonical TypeScript schemas for `Conversation` and `ConversationAudio` 
 ### ConversationTurn
 
 - `speaker`: "A", "B", or descriptive name
-- `text`: Mandarin dialogue
-- `translation`: Optional English translation
+- `chinese`: Mandarin dialogue (required)
+- `pinyin`: Pinyin transcription (required)
+- `english`: English translation (required)
+- `audioUrl`: URL to audio for this turn (required)
 
 ### ConversationAudio
 

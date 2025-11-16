@@ -15,13 +15,13 @@ The current API returns conversation data with limited fields and inconsistent a
 
 ## Acceptance Criteria
 
-- [ ] API returns a ConversationTurn object for each turn, including: Chinese, pinyin, English, speaker, and audioUrl fields.
-- [ ] Audio URLs are generated and linked only when audio is available, not as inline blobs or base64.
-- [ ] Conversation object structure supports referencing audio by URL in each turn, not duplicating audio data.
-- [ ] If the API consumes Gemini (or other LLM) endpoints, requests are optimized to minimize token usage (concise prompts, only required context sent).
-- [ ] API response is documented in OpenAPI/spec and includes all new fields.
-- [ ] Storage approach allows for efficient retrieval and caching of audio files (e.g., S3, CDN, or similar), and is ready for future batch or on-demand audio generation.
-- [ ] Unit/integration tests cover new structure and edge cases (missing audio, missing pinyin/English, etc).
+- [x] API returns a ConversationTurn object for each turn, including: Chinese, pinyin, English, speaker, and audioUrl fields.
+- [x] Audio URLs are generated and linked only when audio is available, not as inline blobs or base64.
+- [x] Conversation object structure supports referencing audio by URL in each turn, not duplicating audio data.
+- [x] If the API consumes Gemini (or other LLM) endpoints, requests are optimized to minimize token usage (concise prompts, only required context sent).
+- [x] API response is documented in OpenAPI/spec and includes all new fields.
+- [x] Storage approach allows for efficient retrieval and caching of audio files (e.g., S3, CDN, or similar), and is ready for future batch or on-demand audio generation.
+- [x] Unit/integration tests cover new structure and edge cases (missing audio, missing pinyin/English, etc).
 
 ## Implementation Approach
 
@@ -56,6 +56,8 @@ The current API returns conversation data with limited fields and inconsistent a
   ]
 }
 ```
+
+> **Note:** Each turn now includes `chinese`, `pinyin`, `english`, and `audioUrl` fields. Audio is referenced by URL per turn.
 
 - Document the new structure in OpenAPI/spec and update all consumers.
 - Ensure the API can handle missing audio gracefully (e.g., null or absent audioUrl).

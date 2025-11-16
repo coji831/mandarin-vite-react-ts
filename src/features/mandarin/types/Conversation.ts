@@ -14,8 +14,10 @@ export type Conversation = {
 
 export type ConversationTurn = {
   speaker: string; // "A", "B", or descriptive names
-  text: string; // Dialogue text in target language
-  translation?: string; // Optional English translation
+  chinese: string; // Dialogue text in Mandarin
+  pinyin: string; // Pinyin transcription
+  english: string; // English translation
+  audioUrl: string; // URL to audio for this turn
 };
 
 export type ConversationAudio = {

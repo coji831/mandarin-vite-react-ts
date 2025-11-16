@@ -32,10 +32,32 @@ function parseConversationText(rawText) {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.startsWith("A:")) {
-      turns.push({ speaker: "A", text: trimmed.substring(2).trim() });
+    let speaker = null;
+    let chinese = "";
+    let pinyin = "";
+    let english = "";
+    // Expect format: A: <Chinese> | <Pinyin> | <English>
+    const match = trimmed.match(/^(A|B):\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*)$/);
+    if (match) {
+      speaker = match[1];
+      chinese = match[2];
+      pinyin = match[3];
+      english = match[4];
+    } else if (trimmed.startsWith("A:")) {
+      speaker = "A";
+      chinese = trimmed.substring(2).trim();
     } else if (trimmed.startsWith("B:")) {
-      turns.push({ speaker: "B", text: trimmed.substring(2).trim() });
+      speaker = "B";
+      chinese = trimmed.substring(2).trim();
+    }
+    if (speaker) {
+      turns.push({
+        speaker,
+        chinese,
+        pinyin,
+        english,
+        audioUrl: "", // To be filled after audio synthesis
+      });
     }
   }
 
@@ -43,9 +65,9 @@ function parseConversationText(rawText) {
   if (turns.length < 3) {
     logger.warn("Not enough turns generated, using fallback");
     return [
-      { speaker: "A", text: "你好，今天天气真好。" },
-      { speaker: "B", text: "是的，我们去公园走走吧。" },
-      { speaker: "A", text: "好主意，我们现在就走。" },
+      { speaker: "A", chinese: "你好，今天天气真好。", pinyin: "", english: "", audioUrl: "" },
+      { speaker: "B", chinese: "是的，我们去公园走走吧。", pinyin: "", english: "", audioUrl: "" },
+      { speaker: "A", chinese: "好主意，我们现在就走。", pinyin: "", english: "", audioUrl: "" },
     ];
   }
 
@@ -77,8 +99,10 @@ export async function generateConversationText(wordId, word, generatorVersion = 
   logger.info(`Cache miss: ${cachePath}`);
   logger.info(`Generating conversation for word: ${word} (${wordId})`);
 
-  // Build prompt
-  const prompt = createConversationPrompt(word);
+  // Build prompt: request Chinese, pinyin, and English for each turn
+  const prompt = createConversationPrompt(word, {
+    requireRichTurn: true,
+  });
 
   // Generate text via Gemini API
   const rawText = await geminiService.generateText(prompt, {
@@ -87,7 +111,7 @@ export async function generateConversationText(wordId, word, generatorVersion = 
     maxTokens: config.gemini.maxTokens,
   });
 
-  // Parse into structured format
+  // Parse into structured format (now includes chinese, pinyin, english, audioUrl)
   const turns = parseConversationText(rawText);
 
   // Build conversation object
@@ -139,48 +163,42 @@ export async function generateConversationAudio(wordId, voice = config.tts.voice
   const buffer = await gcsService.downloadFile(conversationPath);
   const conversation = JSON.parse(buffer.toString());
 
-  // Build audio cache path
-  const audioHash = computeConversationAudioHash(conversation.turns);
-  const audioPath = config.cachePaths.conversationAudio
-    .replace("{wordId}", wordId)
-    .replace("{hash}", audioHash);
-
-  // Check audio cache
-  const audioExists = await gcsService.fileExists(audioPath);
-  if (audioExists) {
-    logger.info(`Cache hit: ${audioPath}`);
-    const audioUrl = gcsService.getPublicUrl(audioPath);
-    return {
-      conversationId,
-      audioUrl,
-      voice,
-      cached: true,
-      generatedAt: new Date().toISOString(),
-    };
+  // Per-turn audio synthesis and upload
+  logger.info(`Generating audio for each of ${conversation.turns.length} turns`);
+  const updatedTurns = [];
+  for (let i = 0; i < conversation.turns.length; i++) {
+    const turn = conversation.turns[i];
+    const text = turn.chinese || turn.text || "";
+    if (!text.trim()) {
+      updatedTurns.push({ ...turn, audioUrl: "" });
+      continue;
+    }
+    // Build per-turn audio path
+    const turnAudioHash = computeConversationAudioHash([turn]);
+    const turnAudioPath = config.cachePaths.conversationAudio
+      .replace("{wordId}", wordId)
+      .replace("{hash}", `${audioHash}-turn${i + 1}`);
+    // Check cache for this turn
+    let audioUrl = "";
+    if (await gcsService.fileExists(turnAudioPath)) {
+      audioUrl = gcsService.getPublicUrl(turnAudioPath);
+    } else {
+      const audioBuffer = await ttsService.synthesizeSpeech(text, { voice });
+      await gcsService.uploadFile(turnAudioPath, audioBuffer, "audio/mpeg");
+      audioUrl = gcsService.getPublicUrl(turnAudioPath);
+    }
+    updatedTurns.push({ ...turn, audioUrl });
   }
-
-  // Cache miss - generate audio
-  logger.info(`Cache miss: ${audioPath}`);
-  logger.info(`Generating audio for ${conversation.turns.length} turns`);
-
-  // Extract text for TTS
-  const textForTTS = extractTextFromConversation(conversation);
-  if (!textForTTS?.trim()) {
-    logger.warn("No valid text extracted, using fallback");
-    const fallbackText = "你好，今天天气真好。是的，我们去公园走走吧。好主意，我们现在就走。";
-    const audioBuffer = await ttsService.synthesizeSpeech(fallbackText, { voice });
-    await gcsService.uploadFile(audioPath, audioBuffer, "audio/mpeg");
-  } else {
-    const audioBuffer = await ttsService.synthesizeSpeech(textForTTS, { voice });
-    await gcsService.uploadFile(audioPath, audioBuffer, "audio/mpeg");
-  }
-
-  logger.info(`Successfully cached: ${audioPath}`);
-
-  const audioUrl = gcsService.getPublicUrl(audioPath);
+  // Optionally, update the conversation object in storage with per-turn audio URLs
+  const updatedConversation = { ...conversation, turns: updatedTurns };
+  await gcsService.uploadFile(
+    conversationPath,
+    Buffer.from(JSON.stringify(updatedConversation)),
+    "application/json"
+  );
   return {
     conversationId,
-    audioUrl,
+    turns: updatedTurns,
     voice,
     cached: false,
     generatedAt: new Date().toISOString(),

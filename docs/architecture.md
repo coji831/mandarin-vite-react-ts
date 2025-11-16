@@ -4,6 +4,20 @@
 
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
+## ConversationTurn Structure & Per-Turn Audio (Epic 12)
+
+The backend Conversation API now returns a rich `ConversationTurn` structure for each turn, including:
+
+- `speaker`: "A", "B", or descriptive name
+- `chinese`: Mandarin text
+- `pinyin`: Pinyin transcription
+- `english`: English translation
+- `audioUrl`: URL to audio for this turn
+
+Audio is synthesized and stored per turn, and each turn references its audio by URL. This supports scalable storage, efficient frontend consumption, and future extensibility.
+
+---
+
 ## Robust Service Layer for Audio & Conversation
 
 The application implements a robust, type-safe service layer for all audio (TTS) and conversation (text generation) features. All backend interactions for audio and conversation are routed through dedicated service modules:

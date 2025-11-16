@@ -46,12 +46,12 @@
 - Update OpenAPI/spec for error object.
 - Add migration notes for API consumers.
 
-
 ---
 
 **Completion Note (2025-11-16):**
 
 All acceptance criteria met:
+
 - All backend APIs return structured error objects with `code`, `message`, and `requestId` fields
 - Errors are logged with request IDs for traceability
 - Middleware/utilities added for consistent error and log handling

@@ -42,7 +42,14 @@ function enforceTurns(turns) {
   if (turns.length > 5) {
     return turns.slice(0, 5);
   }
-  return turns;
+  // Enrich each turn with required fields if missing
+  return turns.map((turn, idx) => ({
+    speaker: turn.speaker || (idx % 2 === 0 ? "A" : "B"),
+    chinese: turn.chinese || turn.text || "",
+    pinyin: turn.pinyin || "", // Placeholder, to be filled by pinyin service
+    english: turn.english || turn.translation || "",
+    audioUrl: turn.audioUrl || "", // Placeholder, to be filled after audio synthesis
+  }));
 }
 
 // Conversation scaffold functions
