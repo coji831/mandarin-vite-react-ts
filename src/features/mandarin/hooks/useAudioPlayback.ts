@@ -1,12 +1,7 @@
 import { useRef, useState } from "react";
 
 import { AudioService } from "../services";
-import type {
-  WordAudio,
-  ConversationAudio,
-  ConversationAudioRequest,
-  WordAudioRequest,
-} from "../types";
+import type { WordAudio, ConversationAudio, WordAudioRequest } from "../types";
 
 export function useAudioPlayback() {
   const [audioData, setAudioData] = useState<
@@ -54,10 +49,12 @@ export function useAudioPlayback() {
     backendFetch,
     fallbackText,
     fallbackToBrowserTTS = true,
+    onAudioUrlGenerated,
   }: {
     backendFetch: () => Promise<WordAudio | ConversationAudio>;
     fallbackText: string;
     fallbackToBrowserTTS?: boolean;
+    onAudioUrlGenerated?: (audioUrl: string) => void;
   }) {
     setIsLoading(true);
     setError(null);
@@ -76,6 +73,7 @@ export function useAudioPlayback() {
       ) {
         url = `http://localhost:3001${url}`;
       }
+      if (onAudioUrlGenerated) onAudioUrlGenerated(url);
       await playBackendAudio(url);
     } catch (err) {
       if (!fallbackToBrowserTTS) {
@@ -104,20 +102,45 @@ export function useAudioPlayback() {
     });
   }
 
-  // Conversation audio
-  async function playConversationAudio(params: {
+  // Play audio for a specific turn
+  async function playTurnAudio(params: {
     wordId: string;
+    turnIndex: number;
+    text: string;
     voice?: string;
-    bitrate?: number;
     fallbackToBrowserTTS?: boolean;
-    fallbackText?: string;
   }) {
-    const audioService = new AudioService();
-    const backendFetch = () =>
-      audioService.fetchConversationAudio(params as ConversationAudioRequest);
-    const fallbackText = params.fallbackText || "";
-    const fallbackToBrowserTTS = params.fallbackToBrowserTTS;
-    await playAudio({ backendFetch, fallbackText, fallbackToBrowserTTS });
+    setIsLoading(true);
+    setError(null);
+    try {
+      const audioService = new AudioService();
+      const { audioUrl } = await audioService.fetchTurnAudio({
+        wordId: params.wordId,
+        turnIndex: params.turnIndex,
+        text: params.text,
+        voice: params.voice,
+      });
+      let url = audioUrl;
+      if (!url) throw new Error("No audioUrl for this turn");
+      if (
+        url.startsWith("/") &&
+        typeof window !== "undefined" &&
+        window.location.hostname === "localhost"
+      ) {
+        url = `http://localhost:3001${url}`;
+      }
+      await playBackendAudio(url);
+      setIsPlaying(true);
+    } catch (err) {
+      if (!params.fallbackToBrowserTTS) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+        setIsLoading(false);
+        return;
+      }
+      playBrowserTTS(params.text || "");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   // General pause function
@@ -133,7 +156,7 @@ export function useAudioPlayback() {
     isPlaying,
     currentTurn,
     playWordAudio,
-    playConversationAudio,
+    playTurnAudio,
     pauseAudio,
     isLoading,
     error,

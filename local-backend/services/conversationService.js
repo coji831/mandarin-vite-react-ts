@@ -146,11 +146,11 @@ export async function generateConversationText(wordId, word, generatorVersion = 
  * @param {string} voice - TTS voice name
  * @returns {Promise<Object>} Audio metadata { conversationId, audioUrl, voice, cached }
  */
-export async function generateConversationAudio(wordId, voice = config.tts.voiceDefault) {
+
+// On-demand per-turn audio generation
+export async function generateTurnAudio(wordId, turnIndex, text, voice = config.tts.voiceDefault) {
   const hash = computeConversationTextHash(wordId);
   const conversationId = `${wordId}-${hash}`;
-
-  // First, retrieve the conversation text to get turns
   const conversationPath = config.cachePaths.conversationText
     .replace("{wordId}", wordId)
     .replace("{hash}", hash);
@@ -162,43 +162,49 @@ export async function generateConversationAudio(wordId, voice = config.tts.voice
 
   const buffer = await gcsService.downloadFile(conversationPath);
   const conversation = JSON.parse(buffer.toString());
-
-  // Per-turn audio synthesis and upload
-  logger.info(`Generating audio for each of ${conversation.turns.length} turns`);
-  const updatedTurns = [];
-  for (let i = 0; i < conversation.turns.length; i++) {
-    const turn = conversation.turns[i];
-    const text = turn.chinese || turn.text || "";
-    if (!text.trim()) {
-      updatedTurns.push({ ...turn, audioUrl: "" });
-      continue;
-    }
-    // Build per-turn audio path
-    const turnAudioHash = computeConversationAudioHash([turn]);
-    const turnAudioPath = config.cachePaths.conversationAudio
-      .replace("{wordId}", wordId)
-      .replace("{hash}", `${audioHash}-turn${i + 1}`);
-    // Check cache for this turn
-    let audioUrl = "";
-    if (await gcsService.fileExists(turnAudioPath)) {
-      audioUrl = gcsService.getPublicUrl(turnAudioPath);
-    } else {
-      const audioBuffer = await ttsService.synthesizeSpeech(text, { voice });
-      await gcsService.uploadFile(turnAudioPath, audioBuffer, "audio/mpeg");
-      audioUrl = gcsService.getPublicUrl(turnAudioPath);
-    }
-    updatedTurns.push({ ...turn, audioUrl });
+  if (!conversation.turns || !conversation.turns[turnIndex]) {
+    throw new Error(`Turn ${turnIndex} not found in conversation`);
   }
-  // Optionally, update the conversation object in storage with per-turn audio URLs
-  const updatedConversation = { ...conversation, turns: updatedTurns };
+
+  // If audioUrl already exists, return it
+  if (conversation.turns[turnIndex].audioUrl && conversation.turns[turnIndex].audioUrl.trim()) {
+    return {
+      conversationId,
+      turnIndex,
+      audioUrl: conversation.turns[turnIndex].audioUrl,
+      voice,
+      cached: true,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
+  // Generate audio for this turn only
+  const crypto = await import("crypto");
+  const turnAudioHash = crypto.createHash("sha256").update(text).digest("hex");
+  const turnAudioPath = config.cachePaths.conversationAudio
+    .replace("{wordId}", wordId)
+    .replace("{hash}", `${hash}-turn${turnIndex + 1}-${turnAudioHash}`);
+  let audioUrl = "";
+  if (await gcsService.fileExists(turnAudioPath)) {
+    audioUrl = gcsService.getPublicUrl(turnAudioPath);
+  } else {
+    const audioBuffer = await ttsService.synthesizeSpeech(text, { voice });
+    await gcsService.uploadFile(turnAudioPath, audioBuffer, "audio/mpeg");
+    audioUrl = gcsService.getPublicUrl(turnAudioPath);
+  }
+
+  // Update conversation JSON with new audioUrl for this turn
+  conversation.turns[turnIndex].audioUrl = audioUrl;
   await gcsService.uploadFile(
     conversationPath,
-    Buffer.from(JSON.stringify(updatedConversation)),
+    Buffer.from(JSON.stringify(conversation)),
     "application/json"
   );
+
   return {
     conversationId,
-    turns: updatedTurns,
+    turnIndex,
+    audioUrl,
     voice,
     cached: false,
     generatedAt: new Date().toISOString(),

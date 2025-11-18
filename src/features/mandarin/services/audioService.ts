@@ -16,7 +16,12 @@ export class LocalAudioBackend implements IAudioBackend {
     return data;
   }
 
-  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
     const endpoint = "http://localhost:3001" + API_ROUTES.conversationAudioGenerate;
     const response = await fetch(endpoint, {
       method: "POST",
@@ -26,8 +31,7 @@ export class LocalAudioBackend implements IAudioBackend {
     if (!response.ok) {
       throw new Error(`Audio generation failed (local): ${response.statusText}`);
     }
-    const audio = await response.json();
-    return audio;
+    return await response.json();
   }
 }
 // src/features/mandarin/services/audioService.ts
@@ -55,12 +59,17 @@ export class AudioService implements IAudioService {
   }
 
   // Fetch audio for a conversation by word Id
-  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
     try {
-      return await this.backend.fetchConversationAudio(params);
+      return await this.backend.fetchTurnAudio(params);
     } catch (err) {
       if (!this.fallbackService) throw err;
-      return this.fallbackService.fetchConversationAudio(params);
+      return this.fallbackService.fetchTurnAudio(params);
     }
   }
 
@@ -93,7 +102,12 @@ export class DefaultAudioBackend implements IAudioBackend {
     return data;
   }
 
-  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
     const endpoint = API_ROUTES.conversationAudioGenerate;
     const response = await fetch(endpoint, {
       method: "POST",
@@ -103,7 +117,6 @@ export class DefaultAudioBackend implements IAudioBackend {
     if (!response.ok) {
       throw new Error(`Audio generation failed: ${response.statusText}`);
     }
-    const audio = await response.json();
-    return audio;
+    return await response.json();
   }
 }

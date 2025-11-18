@@ -170,21 +170,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { wordId, voice = "cmn-CN-Wavenet-B" } = req.body || {};
+    const { wordId, turnIndex, text, voice = "cmn-CN-Wavenet-B" } = req.body || {};
 
-    if (!wordId) {
-      return res.status(400).json({ error: "wordId is required" });
+    if (!wordId || typeof turnIndex !== "number" || !text) {
+      return res.status(400).json({ error: "wordId, turnIndex, and text are required" });
     }
-
-    console.log(`[ConversationAudio] Generating audio for: ${wordId}`);
 
     const hash = computeConversationTextHash(wordId);
     const conversationId = `${wordId}-${hash}`;
-
-    // Retrieve conversation text to get turns
     const conversationPath = `convo/${wordId}/${hash}.json`;
     const conversationExists = await fileExists(conversationPath);
-
     if (!conversationExists) {
       return res.status(404).json({
         error: `Conversation not found for wordId: ${wordId}. Generate text first.`,
@@ -193,45 +188,45 @@ export default async function handler(req, res) {
 
     const buffer = await downloadFile(conversationPath);
     const conversation = JSON.parse(buffer.toString());
+    if (!conversation.turns || !conversation.turns[turnIndex]) {
+      return res.status(400).json({ error: `Turn ${turnIndex} not found in conversation` });
+    }
 
-    // Build audio cache path
-    const audioHash = computeConversationAudioHash(conversation.turns);
-    const audioPath = `convo/${wordId}/${audioHash}.mp3`;
-
-    // Check audio cache
-    const audioExists = await fileExists(audioPath);
-    if (audioExists) {
-      console.log(`[ConversationAudio] Cache hit: ${audioPath}`);
-      const audioUrl = getPublicUrl(audioPath);
+    // If audioUrl already exists, return it
+    if (conversation.turns[turnIndex].audioUrl && conversation.turns[turnIndex].audioUrl.trim()) {
       return res.json({
         conversationId,
-        audioUrl,
+        turnIndex,
+        audioUrl: conversation.turns[turnIndex].audioUrl,
         voice,
         cached: true,
         generatedAt: new Date().toISOString(),
       });
     }
 
-    // Cache miss - generate audio
-    console.log(`[ConversationAudio] Cache miss: ${audioPath}`);
-    console.log(`[ConversationAudio] Generating audio for ${conversation.turns.length} turns`);
-
-    // Extract text for TTS
-    let textForTTS = extractTextFromConversation(conversation);
-    if (!textForTTS?.trim()) {
-      console.log("[ConversationAudio] No valid text, using fallback");
-      textForTTS = "你好，今天天气真好。是的，我们去公园走走吧。好主意，我们现在就走。";
+    // Generate audio for this turn only
+    const turnAudioHash = crypto.createHash("sha256").update(text).digest("hex");
+    const turnAudioPath = `convo/${wordId}/${hash}-turn${turnIndex + 1}-${turnAudioHash}.mp3`;
+    let audioUrl = "";
+    if (await fileExists(turnAudioPath)) {
+      audioUrl = getPublicUrl(turnAudioPath);
+    } else {
+      const audioBuffer = await synthesizeSpeech(text, voice);
+      await uploadFile(turnAudioPath, audioBuffer, "audio/mpeg");
+      audioUrl = getPublicUrl(turnAudioPath);
     }
 
-    const audioBuffer = await synthesizeSpeech(textForTTS, voice);
+    // Update conversation JSON with new audioUrl for this turn
+    conversation.turns[turnIndex].audioUrl = audioUrl;
+    await uploadFile(
+      conversationPath,
+      Buffer.from(JSON.stringify(conversation)),
+      "application/json"
+    );
 
-    // Upload to GCS
-    await uploadFile(audioPath, audioBuffer, "audio/mpeg");
-    console.log(`[ConversationAudio] Successfully cached: ${audioPath}`);
-
-    const audioUrl = getPublicUrl(audioPath);
     return res.json({
       conversationId,
+      turnIndex,
       audioUrl,
       voice,
       cached: false,
