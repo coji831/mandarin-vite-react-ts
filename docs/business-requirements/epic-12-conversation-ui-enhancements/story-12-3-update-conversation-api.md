@@ -5,9 +5,9 @@
 **Goal:**
 Update the backend conversation API to return a detailed, efficient ConversationTurn structure for each turn, including Chinese, pinyin, English, speaker, and audio URLs, with a scalable and maintainable storage approach for audio and text.
 
-**Status:** Draft
+**Status:** Completed
 
-**Last Update:** 2025-11-14
+**Last Update:** 2025-12-09
 
 ## Background
 

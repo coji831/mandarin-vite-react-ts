@@ -1,42 +1,64 @@
 /**
- * Conversation Service
- * High-level service for conversation text and audio generation.
- * Orchestrates cache, Gemini API, TTS, and GCS operations.
+ * @file api/_lib/services/conversationService.js
+ * @description High-level conversation generation orchestration with caching.
+ *
+ * This service generates multi-turn Mandarin conversations using the Gemini API,
+ * with intelligent caching in Google Cloud Storage. Each conversation includes
+ * Chinese text, pinyin, and English translations for all turns.
+ *
+ * @exports generateConversationText(wordId, word) - Generate conversation with caching
+ *
+ * @flow
+ * 1. Compute conversation hash based on wordId
+ * 2. Check GCS cache for existing conversation
+ * 3. If cache hit: download and parse cached JSON
+ * 4. If cache miss:
+ *    a. Generate prompt via promptUtils
+ *    b. Call Gemini API for raw conversation text
+ *    c. Parse response into ConversationTurn[] structure
+ *    d. Upload to GCS cache
+ * 5. Return conversation object
+ *
+ * @structure ConversationTurn
+ * {
+ *   speaker: "A" | "B" | string,
+ *   chinese: string,
+ *   pinyin: string,
+ *   english: string,
+ *   audioUrl?: string  // Populated separately via /api/conversation with type: "audio"
+ * }
+ *
+ * @caching GCS path: `conversation/text/{wordId}/{hash}.json`
+ * @dependencies
+ * - services/geminiService.js - Gemini API client
+ * - services/gcsService.js - Cache storage operations
+ * - utils/promptUtils.js - Prompt generation
+ * - utils/conversationUtils.js - Response parsing
+ * - utils/hashUtils.js - Cache key generation
+ *
+ * @architecture Pure function (no Express or Vercel coupling)
+ * @shared Used by both local-backend and Vercel API
  */
-
 import { config } from "../config/index.js";
 import { createLogger } from "../utils/logger.js";
 import * as geminiService from "./geminiService.js";
 import * as ttsService from "./ttsService.js";
 import * as gcsService from "./gcsService.js";
 import { extractTextFromConversation } from "../utils/conversationUtils.js";
-import { computeConversationTextHash, computeConversationAudioHash } from "../utils/hashUtils.js";
+import { computeConversationTextHash } from "../utils/hashUtils.js";
 import { createConversationPrompt } from "../utils/promptUtils.js";
 
 const logger = createLogger("ConversationService");
 
-// ============================================================================
-// TEXT GENERATION
-// ============================================================================
-
-/**
- * Parse conversation text from Gemini API response
- * Extracts speaker turns in "A: ... B: ..." format
- * @param {string} rawText - Raw text from Gemini API
- * @returns {Array<{speaker: string, text: string}>} Parsed conversation turns
- * @private
- */
 function parseConversationText(rawText) {
   const lines = rawText.split("\n").filter((line) => line.trim());
   const turns = [];
-
   for (const line of lines) {
     const trimmed = line.trim();
     let speaker = null;
     let chinese = "";
     let pinyin = "";
     let english = "";
-    // Expect format: A: <Chinese> | <Pinyin> | <English>
     const match = trimmed.match(/^(A|B):\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*)$/);
     if (match) {
       speaker = match[1];
@@ -51,17 +73,9 @@ function parseConversationText(rawText) {
       chinese = trimmed.substring(2).trim();
     }
     if (speaker) {
-      turns.push({
-        speaker,
-        chinese,
-        pinyin,
-        english,
-        audioUrl: "", // To be filled after audio synthesis
-      });
+      turns.push({ speaker, chinese, pinyin, english, audioUrl: "" });
     }
   }
-
-  // Ensure we have 3-5 turns
   if (turns.length < 3) {
     logger.warn("Not enough turns generated, using fallback");
     return [
@@ -70,51 +84,29 @@ function parseConversationText(rawText) {
       { speaker: "A", chinese: "好主意，我们现在就走。", pinyin: "", english: "", audioUrl: "" },
     ];
   }
-
-  return turns.slice(0, 5); // Limit to 5 turns max
+  return turns.slice(0, 5);
 }
 
-/**
- * Generate conversation text (with caching)
- * @param {string} wordId - Vocabulary word ID
- * @param {string} word - The word itself
- * @param {string} generatorVersion - Version identifier (default: v1)
- * @returns {Promise<Object>} Conversation object with turns
- */
 export async function generateConversationText(wordId, word, generatorVersion = "v1") {
   const hash = computeConversationTextHash(wordId);
   const cachePath = config.cachePaths.conversationText
     .replace("{wordId}", wordId)
     .replace("{hash}", hash);
-
-  // Check cache first
   const exists = await gcsService.fileExists(cachePath);
   if (exists) {
     logger.info(`Cache hit: ${cachePath}`);
     const buffer = await gcsService.downloadFile(cachePath);
     return JSON.parse(buffer.toString());
   }
-
-  // Cache miss - generate new conversation
   logger.info(`Cache miss: ${cachePath}`);
   logger.info(`Generating conversation for word: ${word} (${wordId})`);
-
-  // Build prompt: request Chinese, pinyin, and English for each turn
-  const prompt = createConversationPrompt(word, {
-    requireRichTurn: true,
-  });
-
-  // Generate text via Gemini API
+  const prompt = createConversationPrompt(word, { requireRichTurn: true });
   const rawText = await geminiService.generateText(prompt, {
     model: config.gemini.model,
     temperature: config.gemini.temperature,
     maxTokens: config.gemini.maxTokens,
   });
-
-  // Parse into structured format (now includes chinese, pinyin, english, audioUrl)
   const turns = parseConversationText(rawText);
-
-  // Build conversation object
   const conversation = {
     id: `${wordId}-${hash}`,
     wordId,
@@ -124,49 +116,28 @@ export async function generateConversationText(wordId, word, generatorVersion = 
     turns,
     generatedAt: new Date().toISOString(),
   };
-
   logger.info(`Generated ${turns.length} turns for conversation ${conversation.id}`);
-
-  // Save to cache
   const buffer = Buffer.from(JSON.stringify(conversation));
   await gcsService.uploadFile(cachePath, buffer, "application/json");
   logger.info(`Successfully cached: ${cachePath}`);
-
   return conversation;
 }
 
-// ============================================================================
-// AUDIO GENERATION
-// ============================================================================
-
-/**
- * Generate conversation audio (with caching)
- *
- * @param {string} wordId - Word identifier for conversation lookup
- * @param {string} voice - TTS voice name
- * @returns {Promise<Object>} Audio metadata { conversationId, audioUrl, voice, cached }
- */
-
-// On-demand per-turn audio generation
 export async function generateTurnAudio(wordId, turnIndex, text, voice = config.tts.voiceDefault) {
   const hash = computeConversationTextHash(wordId);
   const conversationId = `${wordId}-${hash}`;
   const conversationPath = config.cachePaths.conversationText
     .replace("{wordId}", wordId)
     .replace("{hash}", hash);
-
   const conversationExists = await gcsService.fileExists(conversationPath);
   if (!conversationExists) {
     throw new Error(`Conversation not found for wordId: ${wordId}. Generate text first.`);
   }
-
   const buffer = await gcsService.downloadFile(conversationPath);
   const conversation = JSON.parse(buffer.toString());
   if (!conversation.turns || !conversation.turns[turnIndex]) {
     throw new Error(`Turn ${turnIndex} not found in conversation`);
   }
-
-  // If audioUrl already exists, return it
   if (conversation.turns[turnIndex].audioUrl && conversation.turns[turnIndex].audioUrl.trim()) {
     return {
       conversationId,
@@ -177,8 +148,6 @@ export async function generateTurnAudio(wordId, turnIndex, text, voice = config.
       generatedAt: new Date().toISOString(),
     };
   }
-
-  // Generate audio for this turn only
   const crypto = await import("crypto");
   const turnAudioHash = crypto.createHash("sha256").update(text).digest("hex");
   const turnAudioPath = config.cachePaths.conversationAudio
@@ -192,15 +161,12 @@ export async function generateTurnAudio(wordId, turnIndex, text, voice = config.
     await gcsService.uploadFile(turnAudioPath, audioBuffer, "audio/mpeg");
     audioUrl = gcsService.getPublicUrl(turnAudioPath);
   }
-
-  // Update conversation JSON with new audioUrl for this turn
   conversation.turns[turnIndex].audioUrl = audioUrl;
   await gcsService.uploadFile(
     conversationPath,
     Buffer.from(JSON.stringify(conversation)),
     "application/json"
   );
-
   return {
     conversationId,
     turnIndex,

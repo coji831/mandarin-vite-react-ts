@@ -2,16 +2,36 @@
 
 ## Text-to-Speech API
 
-- **Endpoint**: [/api/get-tts-audio](../../../../api/get-tts-audio.js)
+### Word Audio (Single Word)
+
+- **Endpoint**: [/api/tts](../../../../api/tts.js) (migrated from `/api/get-tts-audio`)
 - **Method**: POST
 - **Request Body** (JSON):
   - `text`: string (1-15 words of Mandarin text) (required)
-  - `voice`: string (optional, defaults to standard Mandarin female voice)
-- **Response**: `{ audioUrl: string }` (Google Cloud Storage URL)
-- **Used by**: `PlayButton` component to generate audio for vocabulary words
+  - `voice`: string (optional, defaults to `cmn-CN-Wavenet-B`)
+- **Response**: `{ audioUrl: string, cached: boolean }` (Google Cloud Storage URL)
+- **Used by**: `PlayButton` component, `fetchWordAudio` in AudioService
 - **Cache Strategy**: Generated audio is cached in Google Cloud Storage using MD5 hash of the text to avoid regeneration
-- **Error Handling**: Returns error messages for invalid text or voice parameters
-- For implementation details, see [`docs/issues/google-cloud-tts-integration.md`](../../../../docs/issues/google-cloud-tts-integration.md)
+- **Error Handling**: Returns standardized error objects with `code`, `message`, and `metadata`
+
+### Conversation Turn Audio (Per-Turn)
+
+- **Endpoint**: [/api/conversation](../../../../api/conversation.js) (unified endpoint)
+- **Method**: POST
+- **Request Body** (JSON):
+  - `type`: "audio" (required)
+  - `wordId`: string (required)
+  - `turnIndex`: number (required)
+  - `text`: string (Mandarin text for the turn, required)
+  - `voice`: string (optional)
+- **Response**: `{ conversationId: string, turnIndex: number, audioUrl: string, voice: string, cached: boolean, generatedAt: string }`
+- **Used by**: `ConversationTurns` component, `fetchTurnAudio` in AudioService
+- **Error Handling**: Returns standardized error objects with `code`, `message`, and `metadata`
+
+### Notes
+
+- All audio features use the robust, type-safe `AudioService` abstraction, which supports backend swap/fallback and browser TTS fallback (see `useAudioPlayback`).
+- `fetchConversationAudio` is legacy/test only; all production code uses `fetchTurnAudio` for per-turn audio.
 
 ## Data Loading
 
@@ -25,27 +45,31 @@
 
 ## State Management API
 
-Components interact with progress state through custom hooks. The state follows a structured pattern with three main slices.
+Components interact with progress state through custom hooks. The state follows a structured pattern with four main slices.
 
 ### State Structure (RootState)
 
 ```typescript
 {
-  lists: {              // Normalized vocabulary data
-    wordsById: Record<WordId, WordEntity>
-    wordIds: WordId[]
-  }
-  user: {               // User preferences
-    userId: string
-    preferences: Record<string, unknown>
-  }
-  ui: {                 // UI state
+  vocabLists: {              // Normalized vocabulary data
+    itemsById: Record<string, WordBasic>
+    itemIds: string[]
+  },
+  progress: {                // Normalized progress data
+    wordsById: Record<string, WordProgress>
+    wordIds: string[]
+  },
+  user: {                    // User identity and preferences
+    userId?: string | null
+    preferences?: Record<string, unknown>
+  },
+  ui: {                      // UI state
     isLoading: boolean
-    lastUpdated: string
-    selectedList: string
-    selectedWords: Word[]
-    masteredProgress: Map<listId, Set<wordId>>
-    error: string
+    lastUpdated?: string | null
+    selectedList?: string | null
+    selectedWords?: WordBasic[]
+    masteredProgress?: Record<string, Set<string>>
+    error?: string
   }
 }
 ```
@@ -59,12 +83,12 @@ const data = useProgressState(selector);
 - **Purpose**: Subscribe to specific slices of state with memoization
 - **Signature**: `useProgressState<T>(selector: (s: RootState) => T): T`
 - **Pattern**: Pass selector function to extract only needed data
-- **Important**: Always access via `s.ui.*`, `s.lists.*`, or `s.user.*` pattern
+- **Important**: Always access via `s.ui.*`, `s.vocabLists.*`, `s.progress.*`, or `s.user.*` pattern
 - **Examples**:
   - `useProgressState(s => s.ui?.selectedWords ?? [])`
   - `useProgressState(s => s.ui?.isLoading ?? false)`
   - `useProgressState(s => s.ui?.masteredProgress ?? {})`
-  - `useProgressState(s => s.lists?.wordsById)`
+  - `useProgressState(s => s.vocabLists?.itemsById)`
   - `useProgressState(s => s.user?.userId)`
 
 ### Update State (useProgressActions)
@@ -76,9 +100,9 @@ const { markWordLearned, setSelectedList } = useProgressActions();
 - **Purpose**: Get stable action creators for state mutations
 - **Returns**: Object with memoized functions:
   - `setSelectedList(listId)`: Select a vocabulary list
-  - `setSelectedWords(words)`: Set current word selection
+  - `setSelectedWords(words)`: Set current word selection (array of WordBasic)
   - `markWordLearned(id)`: Mark a word as mastered
-  - `setMasteredProgress(mastered)`: Set entire mastered progress map
+  - `setMasteredProgress(mastered)`: Set entire mastered progress map (Record<string, Set<string>>)
   - `setLoading(isLoading)`: Update loading state
   - `setError(error)`: Set error message
   - `resetProgress()`: Clear all progress
@@ -122,13 +146,13 @@ Manages user/device identity.
 
 The following actions are available via `useProgressActions()`:
 
-| Action                | Type                       | Payload                                                 | Description                                                         |
-| --------------------- | -------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
-| `setSelectedList`     | `UI/SET_SELECTED_LIST`     | `{ listId: string \| null }`                            | Select a vocabulary list                                            |
-| `setSelectedWords`    | `UI/SET_SELECTED_WORDS`    | `{ words: Word[] }`                                     | Set current word selection                                          |
-| `setLoading`          | `UI/SET_LOADING`           | `{ isLoading: boolean }`                                | Update loading state                                                |
-| `setError`            | `UI/SET_ERROR`             | `{ error?: string }`                                    | Set error message                                                   |
-| `setMasteredProgress` | `UI/SET_MASTERED_PROGRESS` | `{ mastered: Record<string, Record<string, boolean>> }` | Bulk update mastered words                                          |
-| `markWordLearned`     | Multiple                   | `id: string`                                            | Mark word as learned (dispatches to both `lists` and `ui` reducers) |
-| `resetProgress`       | `RESET`                    | none                                                    | Clear all progress data                                             |
-| `init`                | `INIT`                     | none                                                    | Initialize state                                                    |
+| Action                | Type                       | Payload                                     | Description                                                              |
+| --------------------- | -------------------------- | ------------------------------------------- | ------------------------------------------------------------------------ |
+| `setSelectedList`     | `UI/SET_SELECTED_LIST`     | `{ listId: string \| null }`                | Select a vocabulary list                                                 |
+| `setSelectedWords`    | `UI/SET_SELECTED_WORDS`    | `{ words: WordBasic[] }`                    | Set current word selection                                               |
+| `setLoading`          | `UI/SET_LOADING`           | `{ isLoading: boolean }`                    | Update loading state                                                     |
+| `setError`            | `UI/SET_ERROR`             | `{ error?: string }`                        | Set error message                                                        |
+| `setMasteredProgress` | `UI/SET_MASTERED_PROGRESS` | `{ mastered: Record<string, Set<string>> }` | Bulk update mastered words                                               |
+| `markWordLearned`     | Multiple                   | `id: string`                                | Mark word as learned (dispatches to both `vocabLists` and `ui` reducers) |
+| `resetProgress`       | `RESET`                    | none                                        | Clear all progress data                                                  |
+| `init`                | `INIT`                     | none                                        | Initialize state                                                         |

@@ -13,7 +13,7 @@ import { createLogger } from "../utils/logger.js";
 const router = express.Router();
 const logger = createLogger("TTS");
 
-// POST /get-tts-audio
+// POST / (mounted at ROUTE_PATTERNS.ttsAudio = "/get-tts-audio")
 router.post(
   "/",
   asyncHandler(

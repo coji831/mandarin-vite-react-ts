@@ -37,9 +37,15 @@ export interface IVocabularyBackend {
  * Interface for audio (TTS) service operations
  */
 export interface IAudioService {
-  fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio>;
   fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
-  // ...other methods as needed
+  fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }>;
+  // For legacy/test compatibility
+  fetchConversationAudio?(params: ConversationAudioRequest): Promise<ConversationAudio>;
 }
 
 /**
@@ -47,7 +53,14 @@ export interface IAudioService {
  */
 export interface IAudioBackend {
   fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
-  fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio>;
+  fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }>;
+  // For legacy/test compatibility
+  fetchConversationAudio?(params: ConversationAudioRequest): Promise<ConversationAudio>;
 }
 
 /**

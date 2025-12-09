@@ -9,11 +9,17 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 0;
+  padding: 12px;
   background: none;
   border: none;
   box-shadow: none;
   transition: background 0.2s, border 0.2s;
+  border-radius: 8px;
+  position: relative;
+}
+
+.conversation-turn:hover {
+  background: rgba(100, 108, 255, 0.05);
 }
 
 .conversation-turn.current {
@@ -21,8 +27,19 @@
   background: rgba(100, 108, 255, 0.08);
 }
 
-.conversation-turn.played {
-  background: rgba(100, 108, 255, 0.04);
+.conversation-turn.playing {
+  background: rgba(100, 108, 255, 0.12);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    background: rgba(100, 108, 255, 0.12);
+  }
+  50% {
+    background: rgba(100, 108, 255, 0.18);
+  }
 }
 
 .conversation-turn__speaker {
@@ -44,6 +61,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  position: relative;
 }
 
 .conversation-turn__text {
@@ -51,6 +69,43 @@
   color: #e2e3f7;
   font-weight: 500;
   margin: 0;
+}
+
+.audio-playing-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.audio-loading-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 .conversation-turn__translation {

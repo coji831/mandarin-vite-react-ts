@@ -2,7 +2,8 @@
 
 **Epic:** [epic-12-conversation-ui-enhancements](../../business-requirements/epic-12-conversation-ui-enhancements/README.md)
 **Story:** [story-12-3-update-conversation-api](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-3-update-conversation-api.md)
-**Last Update:** 2025-11-16
+**Status:** Completed
+**Last Update:** 2025-12-09
 
 ## Technical Scope
 
@@ -72,4 +73,44 @@
 
 ---
 
-> Update this file as implementation progresses. Link to PRs and commits as needed.
+## Completion Notes
+
+**Completion Date:** 2025-12-09
+
+**Implementation Summary:**
+
+The ConversationTurn structure has been fully implemented across both local-backend and Vercel API:
+
+1. **Backend Services:**
+
+   - `conversationService.js` generates conversation with full ConversationTurn structure
+   - Each turn includes `speaker`, `chinese`, `pinyin`, `english`, and `audioUrl` fields
+   - Gemini API prompts optimized for concise token usage
+   - Audio URLs generated on-demand via separate `/api/conversation` endpoint with `type: "audio"`
+
+2. **API Endpoints:**
+
+   - `/api/conversation` (POST with `type: "text"`) returns conversation with turns
+   - `/api/conversation` (POST with `type: "audio"`) generates per-turn audio and returns URL
+   - Both local-backend and Vercel API support identical response structure
+
+3. **Frontend Integration:**
+
+   - Types updated in `src/features/mandarin/types/`
+   - `conversationService.ts` updated to handle new structure
+   - UI components consume ConversationTurn structure for display and audio playback
+
+4. **Documentation:**
+   - API specifications updated in `api/docs/api-spec.md` and `local-backend/docs/api-spec.md`
+   - Type definitions documented in feature design docs
+   - Architecture.md includes ConversationTurn structure overview
+
+**All acceptance criteria met:**
+
+- ✅ ConversationTurn structure with all required fields
+- ✅ Audio URLs generated and linked per turn
+- ✅ No audio data duplication (URL references only)
+- ✅ Gemini API token usage optimized
+- ✅ API response documented in specs
+- ✅ Efficient storage and caching (GCS)
+- ✅ Tests cover structure and edge cases

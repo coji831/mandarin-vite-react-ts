@@ -19,7 +19,7 @@ const logger = createLogger("ConversationController");
 // ============================================================================
 // HEALTH CHECK
 // ============================================================================
-
+// GET /health (mounted at /mandarin/conversation)
 router.get(
   "/health",
   asyncHandler(
@@ -37,7 +37,7 @@ router.get(
 // ============================================================================
 // TEXT GENERATION
 // ============================================================================
-
+// POST /text/generate (mounted at /mandarin/conversation)
 router.post(
   ROUTE_PATTERNS.conversationTextGenerate,
   asyncHandler(
@@ -70,24 +70,36 @@ router.post(
 // ============================================================================
 // AUDIO GENERATION
 // ============================================================================
-
+// POST /audio/generate (mounted at /mandarin/conversation)
+// On-demand per-turn audio generation
 router.post(
   ROUTE_PATTERNS.conversationAudioGenerate,
   asyncHandler(
     async (req, res) => {
-      const { wordId, voice } = req.body || {};
+      const { wordId, turnIndex, text, voice } = req.body || {};
 
-      if (!wordId) {
-        throw validationError("wordId is required", { field: "wordId" });
+      if (!wordId || typeof turnIndex !== "number" || !text) {
+        throw validationError("wordId, turnIndex, and text are required", {
+          missing: [
+            !wordId && "wordId",
+            typeof turnIndex !== "number" && "turnIndex",
+            !text && "text",
+          ].filter(Boolean),
+        });
       }
 
-      logger.info(`Generating audio for wordId: ${wordId}`);
+      logger.info(`Generating audio for wordId: ${wordId}, turnIndex: ${turnIndex}`);
 
       try {
-        const audioMetadata = await conversationService.generateConversationAudio(wordId, voice);
+        const audioMetadata = await conversationService.generateTurnAudio(
+          wordId,
+          turnIndex,
+          text,
+          voice
+        );
         res.json(audioMetadata);
       } catch (error) {
-        throw convoAudioError(error.message, { wordId });
+        throw convoAudioError(error.message, { wordId, turnIndex });
       }
     },
     { logPrefix: "ConversationAudio" }

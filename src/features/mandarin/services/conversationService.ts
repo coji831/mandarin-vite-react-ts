@@ -1,11 +1,11 @@
 // Fallback backend for local development
 export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = "http://localhost:3001/api/mandarin/conversation/text/generate";
+    const endpoint = "http://localhost:3001" + API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ type: "text", ...params }),
     });
     if (!response.ok) {
       throw new Error(`Conversation generation failed (local): ${response.statusText}`);
@@ -42,11 +42,11 @@ export class ConversationService implements IConversationService {
 // Default backend implementation using fetch
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ROUTES.conversationTextGenerate;
+    const endpoint = API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ type: "text", ...params }),
     });
     if (!response.ok) {
       throw new Error(`Conversation generation failed: ${response.statusText}`);

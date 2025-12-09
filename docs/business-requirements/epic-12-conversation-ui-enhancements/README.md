@@ -14,9 +14,9 @@ Modernize the backend and redesign the conversation UI to deliver an accessible,
 - Ensure the UI displays and toggles pinyin and English, and supports per-turn audio playback and navigation.
 - Follow Google Cloud API and leading UI/UX patterns for turn-based conversation interfaces.
 
-**Status:** In Progress (Story 12.6 Completed)
+**Status:** Completed
 
-**Last Update:** 2025-11-16
+**Last Update:** 2025-12-09
 
 ## Background
 
@@ -59,11 +59,13 @@ Stories are divided to first address technical debt and backend compatibility, t
 
 ## Acceptance Criteria
 
-- [ ] Local backend refactored for modern Google API usage and secure credential handling, compatible with Vercel API structure.
-- [ ] Backend/Vercel APIs return structured errors and meaningful logs with request IDs.
-- [ ] Conversation generation and UI support pinyin and English meaning, with display and toggleable playback.
-  - [x] Turn-based conversation UI with per-turn audio controls and accessibility features.
-- [ ] All new features covered by unit/integration tests and documented.
+- [x] Local backend refactored for modern Google API usage and secure credential handling, compatible with Vercel API structure.
+- [x] Backend migrated to Vercel serverless functions under `api/` folder with unified endpoints.
+- [x] Backend/Vercel APIs return structured errors and meaningful logs with request IDs.
+- [x] Conversation API returns rich ConversationTurn structure with Chinese, pinyin, English, speaker, and audio URLs.
+- [x] Conversation generation and UI support pinyin and English meaning, with display and toggleable playback.
+- [x] Turn-based conversation UI with per-turn audio controls and accessibility features.
+- [x] All new features covered by unit/integration tests and documented.
 
 ## Architecture Decisions
 
@@ -80,11 +82,13 @@ Stories are divided to first address technical debt and backend compatibility, t
 
 ## Implementation Plan
 
-1. Refactor local-backend for modern Google API usage and modular structure
-2. Standardize backend error handling and logging
-3. Update conversation generation to include pinyin and English meaning
-4. Implement frontend toggles and audio controls for conversation turns
-5. Redesign UI for turn-based navigation, highlighting, and accessibility
+1. ✅ Refactor local-backend for modern Google API usage and modular structure
+2. ✅ Migrate backend to Vercel serverless functions (`api/` folder)
+3. ✅ Standardize backend error handling and logging
+4. ✅ Update conversation API to return ConversationTurn structure with all required fields
+5. ✅ Update conversation generation to include pinyin and English meaning
+6. ✅ Implement frontend toggles and audio controls for conversation turns
+7. ✅ Redesign UI for turn-based navigation, highlighting, and accessibility
 
 ## Risks & mitigations
 
