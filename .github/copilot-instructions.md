@@ -54,7 +54,7 @@ Follow this sequence whenever implementing or updating a story (smallest deliver
 1. Review Requirements
 
 - Open the story BR file (`docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-*.md`) and its epic BR `README.md`.
-- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-*.md` + epic implementation `README.md`).
+- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-*.md` + epic implementation `README.md`).
 - Confirm Acceptance Criteria (AC) clarity; note any ambiguous items in a "Questions / Clarifications" subsection (add if missing).
 
 2. Plan Changes
@@ -126,9 +126,9 @@ File Header / Summary Template: `docs/templates/file-summary-template.md`
 ## 🏷️ Naming & Structure
 
 Epic BR: `docs/business-requirements/epic-<num>-<slug>/README.md`
-Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-<short>.md`
+Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
 Epic Implementation: `docs/issue-implementation/epic-<num>-<slug>/README.md`
-Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/implementation-<epic>.<story>-<short>.md`
+Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
 Feature code: `src/features/<feature>/`
 Reducer files: `src/features/<feature>/reducers/<domain>Reducer.ts`
 Design docs: `src/features/<feature>/docs/design.md`
@@ -153,17 +153,25 @@ Add tests for new logic before declaring story complete.
 
 ## 📝 Documentation Standards
 
-Always use templates listed in Templates Index.
+**Strict Template Compliance:**
+
+- All documentation (BR, implementation, etc.) must strictly match the structure and sections of the corresponding template in `docs/templates/`.
+- Do NOT add extra, duplicate, or non-template sections (such as "Status") unless they are explicitly present in the template file.
+- When updating or creating docs, always cross-check with the latest template to ensure full compliance.
+
 Epic creation checklist:
 
-- Create BR README + implementation README.
-- Scaffold initial story files (BR + implementation) if known.
+- Create BR README and implementation README using only the sections defined in their templates.
+- Scaffold initial story files (BR + implementation) if known, matching template structure exactly.
 - Link epic ↔ implementation ↔ stories bidirectionally.
-  Story creation checklist:
-- Create BR story file + implementation story file.
+
+Story creation checklist:
+
+- Create BR story file and implementation story file using only the sections defined in their templates.
 - Link back to epic BR + implementation README.
-  Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
-  Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
+
+Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
+Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
 
 ## 🛠️ Code Change Checklist
 

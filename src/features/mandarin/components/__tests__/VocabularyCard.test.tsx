@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { VocabularyCard } from "./VocabularyCard";
+import { VocabularyCard } from "../VocabularyCard";
 
 describe("VocabularyCard", () => {
   it("shows 'Not started' when progress is 0 and masteredCount is 0", () => {

@@ -4,10 +4,11 @@ This project is primarily frontend, but some features interact with backend APIs
 
 ## Example: Text-to-Speech API
 
-- Endpoint: [/api/get-tts-audio](../../../api/get-tts-audio.js)
+- Endpoint: [/api/tts](../../../api/tts.js) (migrated from `/api/get-tts-audio`)
 - Method: POST
-- Body: `{ text: string }` (1-15 words)
-- Response: `{ audioUrl: string }` (Google Cloud Storage URL)
+- Body: `{ text: string, voice?: string }` (1-15 words)
+- Response: `{ audioUrl: string, cached: boolean }` (Google Cloud Storage URL)
+- **Migration Note**: Fully migrated to Vercel serverless (December 2025). See [api/docs/api-spec.md](../../../api/docs/api-spec.md) for complete specification.
 
 See feature-specific API specs in each feature's [docs/api-spec.md](../mandarin/docs/api-spec.md).
 

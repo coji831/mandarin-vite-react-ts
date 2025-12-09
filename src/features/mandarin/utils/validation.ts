@@ -21,8 +21,8 @@ export function isValidTurn(turn: unknown): turn is ConversationTurn {
   const t = turn as ConversationTurn;
   return (
     typeof t?.speaker === "string" &&
-    typeof t?.text === "string" &&
-    t.text.length > 0 &&
-    t.text.length <= 200
+    typeof t?.chinese === "string" &&
+    t.chinese.length > 0 &&
+    t.chinese.length <= 200
   );
 }

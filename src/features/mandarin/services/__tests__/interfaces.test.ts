@@ -43,6 +43,9 @@ describe("Service Interfaces", () => {
       fetchWordAudio(): Promise<{ audioUrl: string }> {
         return Promise.resolve({ audioUrl: "" });
       }
+      fetchTurnAudio(): Promise<{ audioUrl: string }> {
+        return Promise.resolve({ audioUrl: "" });
+      }
     }
     const svc = new TestAudioService();
     expect(svc).toBeDefined();

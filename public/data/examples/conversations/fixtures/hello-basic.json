@@ -7,18 +7,24 @@
   "turns": [
     {
       "speaker": "A",
-      "text": "你好！",
-      "translation": "Hello!"
+      "chinese": "你好！",
+      "pinyin": "Nǐ hǎo!",
+      "english": "Hello!",
+      "audioUrl": ""
     },
     {
       "speaker": "B",
-      "text": "你好！很高兴见到你。",
-      "translation": "Hello! Nice to meet you."
+      "chinese": "你好！很高兴见到你。",
+      "pinyin": "Nǐ hǎo! Hěn gāoxìng jiàn dào nǐ.",
+      "english": "Hello! Nice to meet you.",
+      "audioUrl": ""
     },
     {
       "speaker": "A",
-      "text": "我也很高兴见到你。",
-      "translation": "Nice to meet you too."
+      "chinese": "我也很高兴见到你。",
+      "pinyin": "Wǒ yě hěn gāoxìng jiàn dào nǐ.",
+      "english": "Nice to meet you too.",
+      "audioUrl": ""
     }
   ],
   "generatedAt": "2025-10-10T12:00:00Z",

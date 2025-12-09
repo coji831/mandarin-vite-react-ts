@@ -1,80 +1,34 @@
-// local-backend/server.js  (Updated for Stage 2: GCS Caching)
+// local-backend/server.js
+// Main Express server with mode-based initialization and route configuration
 
-// Load environment variables from .env.local file in the project root
-// The path is relative to this server.js file.
-
-import { Storage } from "@google-cloud/storage"; // For Google Cloud Storage interaction
-import dotenv from "dotenv";
 import express, { json } from "express";
-import path from "path";
 
-import { fileURLToPath } from "url";
-import conversationRoutes from "./routes/conversation.js";
-import ttsRoutes from "./routes/tts.js";
-import { initializeStorage } from "./utils/conversationCache.js";
+import { config } from "./config/index.js";
+import mainRouter from "./routes/index.js";
+import { initializeGCS } from "./services/gcsService.js";
+import { requestIdMiddleware, errorHandler } from "./middleware/errorHandler.js";
+import { createLogger } from "./utils/logger.js";
+import { configureScaffoldRoutes } from "./controllers/scaffoldController.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Load environment variables from project root
-const envPath = path.resolve(__dirname, "..", ".env.local");
-console.log(`[Server] Loading env from: ${envPath}`);
-dotenv.config({ path: envPath });
+const logger = createLogger("Server");
 
 const app = express();
-const PORT = 3001; // Choose a port for your local backend (e.g., 3001)
+const PORT = config.port;
 
 // Middleware to parse JSON request bodies
 app.use(json());
 
-const conversationMode = process.env.CONVERSATION_MODE;
+// Request ID middleware for all requests
+app.use(requestIdMiddleware);
 
-console.log(
-  `[Local Backend Init] Starting in ${
-    conversationMode ? conversationMode.toUpperCase() : "UNDEFINED"
-  } mode...`
-);
+logger.info(`Starting in ${config.conversationMode.toUpperCase()} mode...`);
 
-// Initialize Google Cloud clients only in real mode
-let storageClient;
-let GCS_BUCKET_NAME;
-
-if (conversationMode === "real") {
-  try {
-    console.log("[Local Backend Init] Real mode: Initializing Google Cloud clients...");
-
-    // Parse credentials for GCS (use Gemini credentials for GCS operations)
-    const gcsCredentialsJson = process.env.GEMINI_API_CREDENTIALS_RAW;
-    if (!gcsCredentialsJson) {
-      throw new Error("GEMINI_API_CREDENTIALS_RAW environment variable is not set in .env.local.");
-    }
-    const gcsCredentials = JSON.parse(gcsCredentialsJson);
-
-    GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME;
-    if (!GCS_BUCKET_NAME) {
-      throw new Error(
-        "GCS_BUCKET_NAME environment variable is not set in .env.local. Caching will not work."
-      );
-    }
-
-    storageClient = new Storage({
-      credentials: gcsCredentials,
-      projectId: gcsCredentials.project_id,
-    });
-
-    // Initialize conversation generator with storage client
-    initializeStorage(storageClient, GCS_BUCKET_NAME);
-
-    console.log(`[Local Backend Init] GCS Caching enabled for bucket: ${GCS_BUCKET_NAME}`);
-    console.log("[Local Backend Init] Google Cloud clients initialized.");
-  } catch (initError) {
-    console.error(
-      "[Local Backend Init Error] Failed to initialize Google Cloud clients:",
-      initError
-    );
-    process.exit(1);
-  }
-} else {
-  console.log("[Local Backend Init] Scaffold mode: Skipping Google Cloud client initialization.");
+// Initialize Google Cloud services
+// Note: Config module already validated credentials for real mode
+// In scaffold mode, services will handle missing credentials gracefully
+if (config.gcsCredentials && config.gcsBucket) {
+  initializeGCS(config.gcsCredentials, config.gcsBucket);
+  logger.info(`GCS service initialized for bucket: ${config.gcsBucket}`);
 }
 
 // CORS middleware for all API routes
@@ -89,68 +43,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register API routes
-app.use("/api", conversationRoutes);
-app.use("/api", ttsRoutes);
+// Register API routes (feature-based)
+app.use("/api", mainRouter);
 
-// Scaffolder/static serving (only in scaffold mode)
-if (conversationMode === "scaffold") {
-  app.use("/data", express.static(path.join(__dirname, "..", "public", "data")));
-  app.use("/data/examples/conversations/audio", (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Range");
-    res.header("Access-Control-Expose-Headers", "Content-Range, Content-Length");
-    next();
-  });
-  console.log("Local backend started in SCAFFOLD mode:", "ENABLED");
-} else {
-  // Real mode: Add audio proxy endpoint to handle CORS for GCS audio files
-  app.get("/audio/:filename", async (req, res) => {
-    try {
-      const { filename } = req.params;
-      const audioUrl = `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${filename}`;
+// Configure mode-specific routes
+configureScaffoldRoutes(app); // Static file serving in scaffold mode
 
-      console.log(`[Audio Proxy] Proxying audio file: ${filename}`);
+// Error handler middleware (must be after all routes)
+app.use(errorHandler);
 
-      const fetch = (await import("node-fetch")).default;
-      const response = await fetch(audioUrl);
-
-      if (!response.ok) {
-        return res.status(404).json({ error: "Audio file not found" });
-      }
-
-      // Set proper headers for audio streaming with CORS
-      res.set({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Range",
-        "Access-Control-Expose-Headers": "Content-Range, Content-Length",
-        "Content-Type": response.headers.get("content-type") || "audio/mpeg",
-        "Content-Length": response.headers.get("content-length"),
-        "Accept-Ranges": "bytes",
-      });
-
-      // Handle range requests for audio seeking
-      const range = req.headers.range;
-      if (range) {
-        res.set("Content-Range", response.headers.get("content-range"));
-        res.status(206);
-      }
-
-      // Get the audio buffer and send it
-      const audioBuffer = await response.buffer();
-      res.send(audioBuffer);
-    } catch (error) {
-      console.error("[Audio Proxy] Error:", error);
-      res.status(500).json({ error: "Failed to proxy audio file" });
-    }
-  });
-
-  console.log("Local backend started in REAL mode:", "ENABLED");
-}
+logger.info(`Backend started in ${config.conversationMode.toUpperCase()} mode: READY`);
 
 // Start the Express server
 app.listen(PORT, () => {
-  console.log(`[Local Backend] Server listening on http://localhost:${PORT}`);
+  logger.info(`Server listening on http://localhost:${PORT}`);
 });
 
 /*
@@ -158,5 +64,5 @@ Required environment variables:
 - CONVERSATION_MODE: "scaffold" for fixture mode, "real" for Gemini/TTS/GCS mode
 - GCS_BUCKET_NAME: Google Cloud Storage bucket for audio/conversation cache
 - GEMINI_API_CREDENTIALS_RAW: Service account JSON for Gemini API and GCS
-- GOOGLE_TTS_CREDENTIALS_RAW: Service account JSON for GCP TTS (used in conversationProcessor)
+- GOOGLE_TTS_CREDENTIALS_RAW: Service account JSON for GCP TTS
 */

@@ -1,3 +1,44 @@
+// Fallback backend for local development
+export class LocalAudioBackend implements IAudioBackend {
+  async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
+    const { chinese } = params;
+    const endpoint = "http://localhost:3001" + API_ROUTES.ttsAudio;
+    const body = { text: chinese };
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      throw new Error(`Audio generation failed (local): ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  }
+
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
+    const endpoint = "http://localhost:3001" + API_ROUTES.conversation;
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "audio", ...params }),
+    });
+    if (!response.ok) {
+      throw new Error(`Audio generation failed (local): ${response.statusText}`);
+    }
+    return await response.json();
+  }
+
+  // For legacy/test compatibility
+  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+    throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
+  }
+}
 // src/features/mandarin/services/audioService.ts
 // AudioService implementation with fallback support (Epic 11, Story 11.3)
 
@@ -15,21 +56,27 @@ export class AudioService implements IAudioService {
   protected backend: IAudioBackend;
   declare fallbackService?: AudioService;
 
-  constructor(backend?: IAudioBackend) {
+  constructor(backend?: IAudioBackend, withFallback = true) {
     this.backend = backend || new DefaultAudioBackend();
-  }
-
-  // Fetch audio for a conversation by word Id
-  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
-    try {
-      return await this.backend.fetchConversationAudio(params);
-    } catch (err) {
-      if (!this.fallbackService) throw err;
-      return this.fallbackService.fetchConversationAudio(params);
+    if (withFallback) {
+      this.fallbackService = new AudioService(new LocalAudioBackend(), false);
     }
   }
 
-  // Fetch audio for a single word by Chinese text
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
+    try {
+      return await this.backend.fetchTurnAudio(params);
+    } catch (err) {
+      if (!this.fallbackService) throw err;
+      return this.fallbackService.fetchTurnAudio(params);
+    }
+  }
+
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     try {
       return await this.backend.fetchWordAudio(params);
@@ -37,6 +84,14 @@ export class AudioService implements IAudioService {
       if (!this.fallbackService) throw err;
       return this.fallbackService.fetchWordAudio(params);
     }
+  }
+
+  // For legacy/test compatibility
+  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+    if (typeof this.backend.fetchConversationAudio === "function") {
+      return this.backend.fetchConversationAudio(params);
+    }
+    throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
   }
 }
 
@@ -58,17 +113,26 @@ export class DefaultAudioBackend implements IAudioBackend {
     return data;
   }
 
-  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
-    const endpoint = API_ROUTES.conversationAudioGenerate;
+  async fetchTurnAudio(params: {
+    wordId: string;
+    turnIndex: number;
+    text: string;
+    voice?: string;
+  }): Promise<{ audioUrl: string }> {
+    const endpoint = API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ type: "audio", ...params }),
     });
     if (!response.ok) {
       throw new Error(`Audio generation failed: ${response.statusText}`);
     }
-    const audio = await response.json();
-    return audio;
+    return await response.json();
+  }
+
+  // For legacy/test compatibility
+  async fetchConversationAudio(params: ConversationAudioRequest): Promise<ConversationAudio> {
+    throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
   }
 }

@@ -1,7 +1,21 @@
+/**
+ * ConversationBox component
+ *
+ * - Displays a modal/overlay for a generated Mandarin conversation for a given word.
+ * - Handles conversation data fetching, loading, and error states.
+ * - Delegates all turn navigation and per-turn audio playback to ConversationTurns.
+ * - Supports closing the box and retrying conversation generation.
+ * - UI/UX: Modern, accessible, and responsive; integrates with ConversationTurns for audio and navigation.
+ *
+ * Usage:
+ *   <ConversationBox wordId={...} word={...} onClose={...} />
+ *
+ * See also: ConversationTurns, useConversationGenerator, useAudioPlayback
+ */
 import { useCallback, useEffect, useState } from "react";
 
-import { ConversationTurns, PlaybackControls } from ".";
-import { useAudioPlayback, useConversationGenerator } from "../hooks";
+import { ConversationTurns } from ".";
+import { useConversationGenerator } from "../hooks";
 import { Conversation } from "../types";
 import "./ConversationBox.css";
 
@@ -18,21 +32,13 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Audio and turn navigation logic moved to ConversationTurns
   const {
     generateConversation,
     isLoading: isGenerating,
     error: generationError,
     clearError,
   } = useConversationGenerator();
-
-  const {
-    isPlaying,
-    currentTurn,
-    playConversationAudio,
-    pauseAudio,
-    isLoading: isLoadingAudio,
-    error: audioError,
-  } = useAudioPlayback();
 
   const handleGenerateConversation = useCallback(async () => {
     console.log("Generating conversation for:", wordId, word);
@@ -45,27 +51,16 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
       });
       setConversation(newConversation);
       console.log(newConversation);
-
       setIsVisible(true);
     } catch (error) {
       console.error("Failed to generate conversation:", error);
     }
   }, [wordId, word, generateConversation, clearError]);
 
-  const handlePlayAudio = useCallback(async () => {
-    if (!conversation) return;
-    await playConversationAudio({
-      wordId: conversation.wordId,
-      voice: "cmn-CN-Standard-A",
-      bitrate: 128,
-    });
-  }, [conversation, playConversationAudio]);
-
   const handleClose = useCallback(() => {
     setIsVisible(false);
-    pauseAudio();
     onClose?.();
-  }, [pauseAudio, onClose]);
+  }, [onClose]);
 
   // Automatically generate conversation on mount
   useEffect(() => {
@@ -93,19 +88,9 @@ function ConversationBox({ wordId, word, onClose, className = "" }: Conversation
           <>
             <ConversationTurns
               turns={conversation.turns}
-              currentTurn={currentTurn}
-              isPlaying={isPlaying}
+              wordId={conversation.wordId}
               className="conversation-box__turns"
             />
-            <PlaybackControls
-              onPlay={handlePlayAudio}
-              onPause={pauseAudio}
-              isPlaying={isPlaying}
-              isLoading={isLoadingAudio}
-              error={audioError}
-              className="conversation-box__controls"
-            />
-            {/* Audio fallback UI is now handled by useAudioPlayback's error state */}
             <div style={{ marginTop: 8 }}>
               <button onClick={handleClose} className="secondary">
                 Close

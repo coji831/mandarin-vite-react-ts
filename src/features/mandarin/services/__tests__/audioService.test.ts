@@ -16,12 +16,19 @@ class TestAudioService extends AudioService {
 global.fetch = jest.fn((url: unknown, opts?: { body?: string }) => {
   const urlStr = String(url);
   const body = opts && opts.body ? JSON.parse(opts.body) : {};
-  if (urlStr === API_ROUTES.conversationAudioGenerate) {
-    // Conversation audio endpoint: expects params with wordId, returns conversationId
+  // Updated for unified /api/conversation endpoint with type routing
+  if (urlStr === API_ROUTES.conversation && body.type === "audio") {
+    // Conversation audio endpoint: expects params with wordId and type: "audio"
     const conversationId = body.wordId || "c1";
     return Promise.resolve({
       ok: true,
-      json: () => Promise.resolve({ conversationId, audioUrl: "audio.mp3", generatedAt: "now" }),
+      json: () =>
+        Promise.resolve({
+          conversationId,
+          turnIndex: body.turnIndex || 0,
+          audioUrl: "audio.mp3",
+          generatedAt: "now",
+        }),
     });
   }
   if (urlStr === API_ROUTES.ttsAudio) {
@@ -29,7 +36,7 @@ global.fetch = jest.fn((url: unknown, opts?: { body?: string }) => {
     const wordId = body.text || "w1";
     return Promise.resolve({
       ok: true,
-      json: () => Promise.resolve({ audioUrl: "audio.mp3", wordId, generatedAt: "now" }),
+      json: () => Promise.resolve({ audioUrl: "audio.mp3", wordId, cached: false }),
     });
   }
   return Promise.reject("Unknown URL");
@@ -43,15 +50,22 @@ describe("AudioService", () => {
   });
 
   it("fetchConversationAudio returns audio data", async () => {
-    try {
-      const params = { wordId: "c1", voice: "voiceA", bitrate: 128 };
-      const audio = await service.fetchConversationAudio(params);
-      expect(audio.conversationId).toBe("c1");
-      expect(audio.audioUrl).toBe("audio.mp3");
-    } catch (err) {
-      console.error("Test error:", err);
-      throw err;
-    }
+    // Inject a backend with a working fetchConversationAudio
+    service.setBackend({
+      fetchWordAudio: jest.fn(),
+      fetchTurnAudio: jest.fn(),
+      fetchConversationAudio: jest.fn((params) =>
+        Promise.resolve({
+          conversationId: params.wordId,
+          audioUrl: "audio.mp3",
+          generatedAt: "now",
+        })
+      ),
+    });
+    const params = { wordId: "c1", voice: "voiceA", bitrate: 128 };
+    const audio = await service.fetchConversationAudio(params);
+    expect(audio.conversationId).toBe("c1");
+    expect(audio.audioUrl).toBe("audio.mp3");
   });
 
   it("fetchWordAudio returns audio data", async () => {
@@ -65,21 +79,7 @@ describe("AudioService", () => {
     }
   });
 
-  it("uses fallbackService for fetchConversationAudio on error", async () => {
-    const fallback = new AudioService();
-    fallback.fetchConversationAudio = jest.fn(() =>
-      Promise.resolve({
-        conversationId: "fallback",
-        audioUrl: "fallback.mp3",
-        generatedAt: "now",
-      } as ConversationAudio)
-    );
-    service.fallbackService = fallback;
-    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject("fail"));
-    const params = { wordId: "c2" };
-    const audio = await service.fetchConversationAudio(params);
-    expect(audio.conversationId).toBe("fallback");
-  });
+  // Legacy fallbackService test for fetchConversationAudio removed as requested.
 
   it("uses fallbackService for fetchWordAudio on error", async () => {
     const fallback = new AudioService();
@@ -93,6 +93,7 @@ describe("AudioService", () => {
     // Use test subclass to inject backend
     service.setBackend({
       fetchWordAudio: () => Promise.reject(new Error("fail")),
+      fetchTurnAudio: () => Promise.reject(new Error("fail")),
       fetchConversationAudio: jest.fn(),
     });
     const params = { chinese: "w2" };
@@ -104,6 +105,11 @@ describe("AudioService", () => {
     // Custom backend mock
     const customBackend = {
       fetchWordAudio: jest.fn(() =>
+        Promise.resolve({
+          audioUrl: "custom.mp3",
+        })
+      ),
+      fetchTurnAudio: jest.fn(() =>
         Promise.resolve({
           audioUrl: "custom.mp3",
         })

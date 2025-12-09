@@ -4,6 +4,20 @@
 
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
+## ConversationTurn Structure & Per-Turn Audio (Epic 12)
+
+The backend Conversation API now returns a rich `ConversationTurn` structure for each turn, including:
+
+- `speaker`: "A", "B", or descriptive name
+- `chinese`: Mandarin text
+- `pinyin`: Pinyin transcription
+- `english`: English translation
+- `audioUrl`: URL to audio for this turn
+
+Audio is synthesized and stored per turn, and each turn references its audio by URL. This supports scalable storage, efficient frontend consumption, and future extensibility.
+
+---
+
 ## Robust Service Layer for Audio & Conversation
 
 The application implements a robust, type-safe service layer for all audio (TTS) and conversation (text generation) features. All backend interactions for audio and conversation are routed through dedicated service modules:
@@ -26,8 +40,8 @@ All components use these hooks for audio and conversation features, ensuring a D
 
 ## Main Modules
 
-- **api**: Contains backend/serverless functions for Text-to-Speech services
-- **local-backend**: Express server for local development
+- **api**: Vercel serverless functions for production deployment (TTS, conversation)
+- **local-backend**: Express server for local development (mirrors api/)
 - **public/data/vocabulary**: CSV-based vocabulary data organized by HSK level
 - **src/features**: Feature-based organization of React components and logic
 - **src/components**: Reusable UI components
@@ -36,12 +50,239 @@ All components use these hooks for audio and conversation features, ensuring a D
 - **src/constants**: Application-wide constants and configuration
 - **docs**: Documentation structure for architecture, implementation, and templates
 
+## Backend Architecture: Dual Backend Pattern
+
+### Overview
+
+The application maintains two separate backends with shared business logic:
+
+1. **Vercel Serverless API (`api/`)** - Production deployment
+2. **Express Local Backend (`local-backend/`)** - Local development
+
+Both backends share 100% of business logic (services, utilities) while using different HTTP handler patterns.
+
+### Vercel API Structure (`api/`)
+
+**Folder Structure:**
+
+```
+api/
+├── tts.js                              # Vercel handler for /api/tts
+├── conversation.js                     # Vercel handler for /api/conversation
+├── _lib/                               # Shared business logic
+│   ├── config/
+│   │   └── index.js                    # Environment variable parsing
+│   ├── controllers/
+│   │   ├── ttsController.js            # TTS validation and orchestration
+│   │   └── conversationController.js   # Conversation routing (type-based)
+│   ├── services/
+│   │   ├── ttsService.js               # Google Cloud TTS client
+│   │   ├── gcsService.js               # Google Cloud Storage operations
+│   │   ├── geminiService.js            # Gemini API client
+│   │   └── conversationService.js      # Conversation generation & caching
+│   └── utils/
+│       ├── hashUtils.js                # Cache key generation
+│       ├── errorFactory.js             # Standardized error responses
+│       ├── logger.js                   # Simplified logging
+│       ├── conversationUtils.js        # Parsing and formatting
+│       └── promptUtils.js              # Gemini prompt generation
+└── docs/
+    ├── api-spec.md                     # Endpoint specifications
+    ├── design.md                       # Architecture details
+    └── README.md                       # Setup and deployment guide
+```
+
+**Handler Pattern:**
+
+```javascript
+// api/tts.js - Vercel entry point
+import { ttsController } from "./_lib/controllers/ttsController.js";
+
+export default async function handler(req, res) {
+  try {
+    await ttsController(req, res);
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
+}
+
+// api/_lib/controllers/ttsController.js - Stateless controller
+export async function ttsController(req, res) {
+  // Manual method checking (no Express router)
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+
+  // Direct validation and service calls
+  const { text, language, voiceName } = req.body;
+  // ... business logic
+  res.json({ audioUrl });
+}
+```
+
+**Key Characteristics:**
+
+- **Stateless**: No shared state between invocations
+- **Single Responsibility**: Each handler wraps exactly one controller
+- **Error Handling**: Try-catch at handler level, inline validation in controllers
+- **Import Paths**: All imports require `.js` extensions for ES modules
+- **Configuration**: Simplified (no mode validation, production-only)
+
+**Endpoints:**
+
+- `POST /api/tts` - Generate TTS audio, returns `{ audioUrl }`
+- `POST /api/conversation` - Unified endpoint with type-based routing:
+  - `{ type: "text", wordId, word }` → Generate conversation turns
+  - `{ type: "audio", conversationId, turnIndex, text, language }` → Generate per-turn audio
+
+### Local Backend Structure (`local-backend/`)
+
+**Folder Structure:**
+
+```
+local-backend/
+├── server.js                           # Express app entry point
+├── routes/
+│   └── index.js                        # Route definitions (uses shared ROUTE_PATTERNS)
+├── controllers/
+│   ├── ttsController.js                # TTS endpoint handlers
+│   ├── conversationController.js       # Conversation endpoint handlers
+│   ├── scaffoldController.js           # Fixture serving (dev only)
+│   └── healthController.js             # Health checks
+├── services/                           # Identical to api/_lib/services/
+├── utils/                              # Superset of api/_lib/utils/
+├── middleware/
+│   ├── asyncHandler.js                 # Async route wrapper
+│   └── errorHandler.js                 # Request ID propagation
+├── config/
+│   └── index.js                        # Extended config with mode validation
+└── docs/
+    ├── api-spec.md                     # Endpoint specifications
+    └── design.md                       # Architecture details
+```
+
+**Handler Pattern:**
+
+```javascript
+// local-backend/controllers/ttsController.js - Express style
+export const generateTTSAudio = asyncHandler(async (req, res) => {
+  const { text, language, voiceName } = req.body;
+  // ... same business logic as Vercel version
+  res.json({ audioUrl });
+});
+
+// local-backend/routes/index.js - Express routing
+import { ROUTE_PATTERNS } from "../../shared/constants/apiPaths.js";
+
+router.post(ROUTE_PATTERNS.ttsAudio, ttsController.generateTTSAudio);
+```
+
+**Key Characteristics:**
+
+- **Express Middleware Stack**: `asyncHandler`, `errorHandler`, CORS, body-parser
+- **Scaffold Mode**: Supports offline development with fixture data
+- **Comprehensive Logging**: Request IDs, detailed error traces, file logging
+- **Development Tools**: Health checks, scaffold fixture endpoints
+
+**Endpoints:**
+
+- `POST /api/tts` - Same as Vercel
+- `POST /api/mandarin/conversation/text` - Conversation text generation
+- `POST /api/mandarin/conversation/audio` - Per-turn audio generation
+- `GET /api/health` - Health check
+- `GET /api/mandarin/conversation/scaffold` - Fixture serving (scaffold mode)
+
+### Shared Business Logic
+
+**Services (100% Shared):**
+
+All service files are **identical** between `api/_lib/services/` and `local-backend/services/`:
+
+- `ttsService.js` - Google Cloud TTS client with lazy initialization
+- `gcsService.js` - Google Cloud Storage operations (upload, download, exists, getPublicUrl)
+- `geminiService.js` - Gemini API client with JWT authentication
+- `conversationService.js` - Conversation generation with caching and parsing
+
+**Services are pure functions with no Express or Vercel coupling**, enabling seamless code reuse.
+
+**Configuration:**
+
+- **Vercel (`api/_lib/config/`)**: Simplified, production-only, no mode validation
+- **Local (`local-backend/config/`)**: Extended with mode switching (scaffold/real), development defaults
+
+Both parse the same environment variables:
+
+- `GOOGLE_TTS_CREDENTIALS_RAW` (JSON)
+- `GEMINI_API_CREDENTIALS_RAW` (JSON)
+- `GCS_CREDENTIALS_RAW` (JSON, optional)
+- `GCS_BUCKET_NAME` (string)
+
+### API Path Mapping
+
+**Shared Constants (`shared/constants/apiPaths.js`):**
+
+```javascript
+export const API_ROUTES = {
+  ttsAudio: "/api/tts",
+  conversation: "/api/conversation",
+  // Legacy aliases for local-backend
+  conversationText: "/api/mandarin/conversation/text",
+  conversationAudio: "/api/mandarin/conversation/audio",
+};
+
+export const ROUTE_PATTERNS = {
+  ttsAudio: "/api/tts",
+  conversationText: "/api/mandarin/conversation/text",
+  conversationAudio: "/api/mandarin/conversation/audio",
+};
+```
+
+**Frontend Service Layer:**
+
+Frontend services use `API_ROUTES` constants and always point to Vercel-compatible paths:
+
+```typescript
+// src/features/mandarin/services/audioService.ts
+const response = await fetch(API_ROUTES.ttsAudio, {
+  method: "POST",
+  body: JSON.stringify({ text, language, voiceName }),
+});
+
+// src/features/mandarin/services/conversationService.ts
+const response = await fetch(API_ROUTES.conversation, {
+  method: "POST",
+  body: JSON.stringify({ type: "text", wordId, word }),
+});
+```
+
+### Migration Benefits
+
+1. **Code Reuse**: 100% of business logic shared between dev and production
+2. **Consistency**: Identical service behavior in both environments
+3. **Flexibility**: Express features (middleware, logging) for dev; Vercel scalability for prod
+4. **Maintainability**: Single source of truth for business logic
+5. **Testing**: Local backend enables comprehensive integration testing
+
+### Development Workflow
+
+- **Local Development**: `npm run start-backend` (Express on port 3001)
+- **Frontend Dev Server**: `npm run dev` (Vite on port 5173)
+- **Production Deployment**: `vercel` (deploys `api/` handlers)
+
+Frontend automatically points to correct backend based on environment:
+
+- Dev: `http://localhost:3001` (if configured)
+- Prod: Vercel API routes
+
 ## Module Interaction
 
-- The frontend (React) interacts with backend APIs (e.g., TTS) via HTTP requests
+- The frontend (React) interacts with backend APIs (e.g., TTS, conversation) via HTTP requests
+- Frontend services use shared `API_ROUTES` constants for endpoint paths
 - Features are organized in self-contained modules with their own components and logic
 - Common UI elements are shared via the components directory
 - Routing handles navigation between different features and pages
+- Backend services (TTS, GCS, Gemini) are pure functions callable from both Express and Vercel handlers
 
 ## State Management
 

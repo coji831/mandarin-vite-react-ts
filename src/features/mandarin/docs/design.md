@@ -13,18 +13,21 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
   - Loaded using `csvLoader.ts` utility in [src/utils/](../../../../src/utils/)
 - Example sentences are loaded from JSON files:
   - [public/data/examples/](../../../../public/data/examples/)
-- Each word includes:
-  - Character (Chinese)
-  - Pinyin
-  - Meaning (English)
-  - Example sentence (optional)
-  - Translations (optional)
+- Each word is a `WordBasic`:
+  - `wordId`: string (unique ID)
+  - `chinese`: string (Mandarin characters)
+  - `pinyin`: string
+  - `english`: string
+- Conversation data is generated per word (see ConversationService), with each turn having:
+  - `speaker`, `chinese`, `pinyin`, `english`, `audioUrl`
+  - Per-turn audio is generated and fetched via `fetchTurnAudio` (see AudioService)
 
 ---
 
 ## 2. Main Components
 
-- **PlayButton**: Integrate with TTS API for audio
+- **PlayButton**: Integrate with TTS API for single-word audio (uses fetchWordAudio)
+- **ConversationTurns**: Renders conversation turns, per-turn audio, navigation, and visual feedback (uses fetchTurnAudio)
 - **FlashCard**: Show word details, audio playback (uses context for all state/actions)
 - **WordDetails**: Show detailed word info
 
@@ -83,7 +86,7 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 
 - Components use granular selectors via `useProgressState` to subscribe only to needed state slices.
   - All selectors access state via `s.ui.*`, `s.vocabLists.*`, `s.progress.*`, or `s.user.*` pattern
-  - Example: `useProgressState(s => s.ui?.selectedWords ?? [])` instead of legacy `s.selectedWords`
+  - Example: `useProgressState(s => s.ui?.selectedWords ?? [])` (selectedWords is an array of WordBasic)
 - All state mutations go through action creators from `useProgressActions()`.
 - No prop drilling—all components access context directly via hooks.
   - State type is `RootState` with four slices: `vocabLists`, `progress`, `user`, `ui`
@@ -126,8 +129,10 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 - Data loaded from CSV files using csvLoader.ts utility
 - CSV system enables easy vocabulary updates and maintenance
 - Standard data format (No,Chinese,Pinyin,English) ensures consistency
-- **Robust, type-safe service layer for audio and conversation:**
+  **Robust, type-safe service layer for audio and conversation:**
   - All audio (TTS) and conversation (text generation) features use dedicated service modules (`AudioService`, `ConversationService`) that implement type-safe interfaces and support backend swap/fallback.
-  - Fallback logic (e.g., browser TTS for audio) and error handling are centralized in the service layer.
+  - `fetchWordAudio` is used for single-word audio (PlayButton, FlashCard), `fetchTurnAudio` is used for per-turn audio (ConversationTurns).
+  - Fallback logic (e.g., browser TTS for audio) and error handling are centralized in the service layer and `useAudioPlayback` hook.
+  - `fetchConversationAudio` is legacy/test only; all production code uses `fetchTurnAudio` for per-turn audio.
   - Components use `useAudioPlayback` and `useConversationGenerator` hooks for all audio/conversation features, ensuring DRY, robust, and maintainable code.
-- Audio fetched from backend TTS API (with browser TTS fallback)
+  - Audio is fetched from backend TTS API (with browser TTS fallback for errors or offline).

@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { ProgressStateContext } from "../context";
-import { UserState as AppUserState, RootState } from "../reducers";
-import { Card, ProgressState as ListsProgressState } from "../types";
-import { Sidebar } from "./Sidebar";
+import { ProgressStateContext } from "../../context";
+import { RootState } from "../../reducers";
+import { Card } from "../../types";
+import { Sidebar } from "../Sidebar";
 
 describe("Sidebar", () => {
   const words: Card[] = [

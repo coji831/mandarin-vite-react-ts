@@ -1,23 +1,52 @@
 import crypto from "crypto";
 
 /**
- * Deterministic SHA256 hash used for conversation cache keys.
- * Current implementation hashes the provided wordId only.
- * Keep signature stable so callers remain compatible.
- * @param {string} [wordId] - Word identifier used to derive the cache key
- * @returns {string} hex digest
+ * Generic hash function - base implementation
+ * @param {string} input - String to hash
+ * @returns {string} SHA256 hex digest
  */
-export function computeHash(wordId = "") {
-  // Deterministic hash for cache key - use only wordId
-  // Keep the signature and parameter order so existing call sites remain valid.
-  return crypto.createHash("sha256").update(`${wordId}`).digest("hex");
+export function computeHash(input = "") {
+  return crypto.createHash("sha256").update(`${input}`).digest("hex");
 }
 
 /**
- * Short, human-friendly hash used for scaffold fixture ids.
- * Mirrors the previous shortHash implementation.
- * @param {string} str
- * @returns {string}
+ * Generate consistent cache key for conversation text
+ * Maintains same hash output as before (wordId only)
+ * @param {string} wordId - Word identifier
+ * @param {string} generatorVersion - Generator version (currently unused to maintain backward compatibility)
+ * @returns {string} SHA256 hash
+ */
+export function computeConversationTextHash(wordId, generatorVersion = "v1") {
+  // NOTE: Currently only hashing wordId to maintain backward compatibility
+  // In future, may include generatorVersion: `${wordId}-${generatorVersion}`
+  return computeHash(wordId);
+}
+
+/**
+ * Generate consistent cache key for conversation audio
+ * @param {Array<{text: string}>} turns - Conversation turns
+ * @returns {string} SHA256 hash
+ */
+export function computeConversationAudioHash(turns) {
+  const text = turns.map((t) => t.text).join("\n");
+  return computeHash(text);
+}
+
+/**
+ * Generate consistent cache key for TTS
+ * @param {string} text - Text to synthesize
+ * @param {string} voice - Voice name (optional, for future use)
+ * @returns {string} SHA256 hash (currently MD5 for backward compatibility)
+ */
+export function computeTTSHash(text, voice = "") {
+  // Use MD5 for TTS to maintain backward compatibility with existing cache
+  return crypto.createHash("md5").update(`${text}${voice}`).digest("hex");
+}
+
+/**
+ * Short, human-friendly hash used for scaffold fixture ids
+ * @param {string} str - String to hash
+ * @returns {string} 6-character hash
  */
 export function shortHash(str) {
   let hash = 0;
