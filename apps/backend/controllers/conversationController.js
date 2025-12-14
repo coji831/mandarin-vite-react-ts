@@ -7,14 +7,84 @@
 import express from "express";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { config } from "../config/index.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 import * as conversationService from "../services/conversationService.js";
 import { createConversationResponse } from "../utils/conversationUtils.js";
-import { asyncHandler } from "../middleware/asyncHandler.js";
-import { validationError, convoTextError, convoAudioError } from "../utils/errorFactory.js";
+import { convoAudioError, convoTextError, validationError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
 
 const router = express.Router();
 const logger = createLogger("ConversationController");
+
+// ============================================================================
+// UNIFIED CONVERSATION ENDPOINT (type-based routing)
+// ============================================================================
+// POST / (mounted at /api/conversation)
+// Handles both text and audio generation based on { type: "text" | "audio" }
+router.post(
+  "/",
+  asyncHandler(
+    async (req, res) => {
+      const { type } = req.body || {};
+
+      if (type === "text") {
+        // Text generation
+        const { wordId, word, generatorVersion = "v1" } = req.body;
+
+        if (!wordId || !word) {
+          throw validationError("wordId and word are required for text generation", {
+            missing: [!wordId && "wordId", !word && "word"].filter(Boolean),
+          });
+        }
+
+        logger.info(`Generating conversation text for: ${word} (${wordId})`);
+
+        try {
+          const conversation = await conversationService.generateConversationText(
+            wordId,
+            word,
+            generatorVersion
+          );
+          res.json(createConversationResponse(conversation, "real"));
+        } catch (error) {
+          throw convoTextError(error.message, { wordId, word });
+        }
+      } else if (type === "audio") {
+        // Audio generation
+        const { wordId, turnIndex, text, voice } = req.body;
+
+        if (!wordId || typeof turnIndex !== "number" || !text) {
+          throw validationError("wordId, turnIndex, and text are required for audio generation", {
+            missing: [
+              !wordId && "wordId",
+              typeof turnIndex !== "number" && "turnIndex",
+              !text && "text",
+            ].filter(Boolean),
+          });
+        }
+
+        logger.info(`Generating audio for wordId: ${wordId}, turnIndex: ${turnIndex}`);
+
+        try {
+          const audioMetadata = await conversationService.generateTurnAudio(
+            wordId,
+            turnIndex,
+            text,
+            voice
+          );
+          res.json(audioMetadata);
+        } catch (error) {
+          throw convoAudioError(error.message, { wordId, turnIndex });
+        }
+      } else {
+        throw validationError("type field is required and must be 'text' or 'audio'", {
+          provided: type,
+        });
+      }
+    },
+    { logPrefix: "Conversation" }
+  )
+);
 
 // ============================================================================
 // HEALTH CHECK

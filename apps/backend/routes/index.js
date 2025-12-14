@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Use shared route patterns for consistency
 router.use(ROUTE_PATTERNS.ttsAudio, ttsRouter);
-router.use("/mandarin/conversation", conversationRouter);
+router.use("/conversation", conversationRouter);
 router.use("/health", healthRouter);
 
 export default router;

@@ -1,6 +1,6 @@
 # System Architecture
 
-> Note: Several older docs reference legacy progress hooks (e.g., `useMandarinProgress` / `useProgressData`). The progress API has been migrated to a reducer + provider model — see `src/features/mandarin/docs/design.md` for the current contract and migration notes.
+> Note: This project now uses a **monorepo structure** with npm workspaces. Frontend is in `apps/frontend/`, backend in `apps/backend/`, and shared packages in `packages/`. Several older docs reference legacy progress hooks (e.g., `useMandarinProgress` / `useProgressData`). The progress API has been migrated to a reducer + provider model — see `apps/frontend/src/features/mandarin/docs/design.md` for the current contract and migration notes.
 
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
@@ -40,33 +40,38 @@ All components use these hooks for audio and conversation features, ensuring a D
 
 ## Main Modules
 
-- **api**: Vercel serverless functions for production deployment (TTS, conversation)
-- **local-backend**: Express server for local development (mirrors api/)
-- **public/data/vocabulary**: CSV-based vocabulary data organized by HSK level
-- **src/features**: Feature-based organization of React components and logic
-- **src/components**: Reusable UI components
-- **src/utils**: Utilities including csvLoader.ts for processing vocabulary data
-- **src/router**: React Router configuration
-- **src/constants**: Application-wide constants and configuration
+### Monorepo Structure
+
+- **apps/frontend**: React + Vite frontend application
+  - `src/features`: Feature-based organization (e.g., mandarin learning)
+  - `src/components`: Reusable UI components
+  - `src/router`: React Router configuration
+  - `public/data/vocabulary`: CSV-based vocabulary data organized by HSK level
+- **apps/backend**: Node.js + Express backend API
+  - `src/`: Main backend source (consolidated Express server)
+  - `api/`: Vercel serverless functions (for production deployment)
+  - Consolidates previous `api/` and `local-backend/` directories
+- **packages/shared-types**: Shared TypeScript type definitions
+- **packages/shared-constants**: Shared constants (API endpoints, HSK levels, etc.)
 - **docs**: Documentation structure for architecture, implementation, and templates
 
-## Backend Architecture: Dual Backend Pattern
+## Backend Architecture: Unified Backend with Dual Deployment
 
 ### Overview
 
-The application maintains two separate backends with shared business logic:
+The backend is located in `apps/backend/` and supports two deployment modes:
 
-1. **Vercel Serverless API (`api/`)** - Production deployment
-2. **Express Local Backend (`local-backend/`)** - Local development
+1. **Vercel Serverless** (`apps/backend/api/`) - Production deployment via Vercel Functions
+2. **Express Development Server** (`apps/backend/src/`) - Local development with hot reload
 
-Both backends share 100% of business logic (services, utilities) while using different HTTP handler patterns.
+Both deployment modes share 100% of business logic (services, utilities) while using different HTTP handler patterns. The monorepo structure enables clean separation and code reuse through workspace packages.
 
-### Vercel API Structure (`api/`)
+### Vercel API Structure (`apps/backend/api/`)
 
 **Folder Structure:**
 
 ```
-api/
+apps/backend/api/
 ├── tts.js                              # Vercel handler for /api/tts
 ├── conversation.js                     # Vercel handler for /api/conversation
 ├── _lib/                               # Shared business logic
@@ -136,13 +141,14 @@ export async function ttsController(req, res) {
   - `{ type: "text", wordId, word }` → Generate conversation turns
   - `{ type: "audio", conversationId, turnIndex, text, language }` → Generate per-turn audio
 
-### Local Backend Structure (`local-backend/`)
+### Express Development Server (`apps/backend/src/`)
 
 **Folder Structure:**
 
 ```
-local-backend/
-├── server.js                           # Express app entry point
+apps/backend/
+├── src/
+│   └── index.js                        # Express app entry point
 ├── routes/
 │   └── index.js                        # Route definitions (uses shared ROUTE_PATTERNS)
 ├── controllers/
@@ -243,13 +249,13 @@ export const ROUTE_PATTERNS = {
 Frontend services use `API_ROUTES` constants and always point to Vercel-compatible paths:
 
 ```typescript
-// src/features/mandarin/services/audioService.ts
+// apps/frontend/src/features/mandarin/services/audioService.ts
 const response = await fetch(API_ROUTES.ttsAudio, {
   method: "POST",
   body: JSON.stringify({ text, language, voiceName }),
 });
 
-// src/features/mandarin/services/conversationService.ts
+// apps/frontend/src/features/mandarin/services/conversationService.ts
 const response = await fetch(API_ROUTES.conversation, {
   method: "POST",
   body: JSON.stringify({ type: "text", wordId, word }),
@@ -266,9 +272,10 @@ const response = await fetch(API_ROUTES.conversation, {
 
 ### Development Workflow
 
-- **Local Development**: `npm run start-backend` (Express on port 3001)
-- **Frontend Dev Server**: `npm run dev` (Vite on port 5173)
-- **Production Deployment**: `vercel` (deploys `api/` handlers)
+- **Local Development**: `npm run dev:backend` (Express on port 3001)
+- **Frontend Dev Server**: `npm run dev:frontend` (Vite on port 5173)
+- **Both Simultaneously**: `npm run dev` (runs both with concurrently)
+- **Production Deployment**: `vercel` (deploys `apps/backend/api/` handlers)
 
 Frontend automatically points to correct backend based on environment:
 
@@ -395,21 +402,22 @@ Component
 - **Format**: Serialized to JSON for storage, deserialized to Sets/Objects for runtime
 - **Helpers**: `progressHelpers.ts` provides `getUserProgress()`, `saveUserProgress()`, `persistMasteredProgress()`, `restoreMasteredProgress()`
 
-For detailed state management documentation, see [`src/features/mandarin/docs/design.md`](../src/features/mandarin/docs/design.md) and [`src/features/mandarin/docs/api-spec.md`](../src/features/mandarin/docs/api-spec.md).
+For detailed state management documentation, see [`apps/frontend/src/features/mandarin/docs/design.md`](../apps/frontend/src/features/mandarin/docs/design.md) and [`apps/frontend/src/features/mandarin/docs/api-spec.md`](../apps/frontend/src/features/mandarin/docs/api-spec.md).
 
-- **Google Cloud Text-to-Speech**: Integration in [../api/get-tts-audio.js](../api/get-tts-audio.js)
+- **Google Cloud Text-to-Speech**: Integration in [../apps/backend/api/tts.js](../apps/backend/api/tts.js)
 - **Google Cloud Storage**: Used for caching generated audio files
 
-- **Local Backend**: Express server providing TTS/GCS functionality during development
+- **Backend**: Express server and Vercel functions providing TTS/GCS/Conversation functionality
 
-  - Mirrors the serverless functions in the [../api/](../api/) directory
+  - Production: Serverless functions in [../apps/backend/api/](../apps/backend/api/) directory
+  - Development: Express server in [../apps/backend/src/](../apps/backend/src/) directory
   - Includes detailed logging and error handling for development
 
 - **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
 
-  - Loads vocabulary data from CSV files in [../public/data/vocabulary/](../public/data/vocabulary/)
+  - Loads vocabulary data from CSV files in [../apps/frontend/public/data/vocabulary/](../apps/frontend/public/data/vocabulary/)
   - CSV data structure follows standard format: `No,Chinese,Pinyin,English`
-  - Processes CSV data using [../src/utils/csvLoader.ts](../src/utils/csvLoader.ts) utility
+  - Processes CSV data using [../apps/frontend/src/utils/csvLoader.ts](../apps/frontend/src/utils/csvLoader.ts) utility
   - Uses context-based state management (implemented in Epic 3)
   - Uses nested routing structure (implemented in Epic 4)
   - Organized as separate page components for each step in the learning workflow
@@ -453,14 +461,14 @@ The Mandarin feature uses nested routing with React Router.
 
 **Implementation:**
 
-- Routes defined in [`src/router/Router.tsx`](../src/router/Router.tsx)
-- Path constants in [`src/constants/paths.ts`](../src/constants/paths.ts)
-- Feature routes in [`src/features/mandarin/router/MandarinRoutes.tsx`](../src/features/mandarin/router/MandarinRoutes.tsx)
+- Routes defined in [`apps/frontend/src/router/Router.tsx`](../apps/frontend/src/router/Router.tsx)
+- Path constants in [`apps/frontend/src/constants/paths.ts`](../apps/frontend/src/constants/paths.ts)
+- Feature routes in [`apps/frontend/src/features/mandarin/router/MandarinRoutes.tsx`](../apps/frontend/src/features/mandarin/router/MandarinRoutes.tsx)
 
 - **Architecture**: This file for system-level design
 - **Implementation**: Detailed implementation notes in [./issue-implementation/](./issue-implementation/)
 - **Business Requirements**: Planning and requirements in [./business-requirements/](./business-requirements/)
-- **Feature-Specific**: For detailed design of specific features, see each feature's docs folder (e.g., [../src/features/mandarin/docs/](../src/features/mandarin/docs/))
+- **Feature-Specific**: For detailed design of specific features, see each feature's docs folder (e.g., [../apps/frontend/src/features/mandarin/docs/](../apps/frontend/src/features/mandarin/docs/))
 
 ## Future Architecture (Placeholders)
 

@@ -1,6 +1,5 @@
 // TTS Controller
 import express from "express";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 import { config } from "../config/index.js";
 import { synthesizeSpeech } from "../services/ttsService.js";
@@ -31,6 +30,18 @@ router.post(
           wordCount: words.length,
           field: "text",
         });
+      }
+
+      // Scaffold mode: return mock audio URL
+      if (config.conversationMode === "scaffold") {
+        const hash = computeTTSHash(text, voice);
+        logger.info(`Scaffold mode: returning mock TTS for text: "${text}"`);
+        res.status(200).json({
+          audioUrl: `https://storage.googleapis.com/mandarin-tts-audio-dev/tts/${hash}.mp3`,
+          cached: true,
+          scaffold: true,
+        });
+        return;
       }
 
       // Generate hash for caching (include voice in hash)

@@ -35,7 +35,14 @@ PinyinPal is an interactive web application designed to help new learners master
 
 ## 🚀 Installation & Getting Started
 
-Follow these steps to get a local copy of the project running on your machine.
+This project uses **npm workspaces** for monorepo management. Follow these steps to get started:
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### Setup
 
 1. **Clone the repository:**
    ```bash
@@ -49,11 +56,44 @@ Follow these steps to get a local copy of the project running on your machine.
    ```bash
    npm install
    ```
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-   The app will now be running on `http://localhost:5173`.
+   This installs dependencies for all workspaces (frontend, backend, and shared packages).
+
+### Development
+
+**Run both frontend and backend concurrently:**
+
+```bash
+npm run dev
+```
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3001`
+
+**Or run them separately:**
+
+```bash
+# Frontend only
+npm run dev:frontend
+
+# Backend only
+npm run dev:backend
+```
+
+### Build
+
+```bash
+# Build all workspaces
+npm run build
+
+# Build frontend only (for production)
+npm run build:frontend
+```
+
+### Testing
+
+```bash
+npm run test
+```
 
 ## 🗺️ Future Vision & Roadmap
 
@@ -64,11 +104,44 @@ This project is more than just a Mandarin learning tool; it's designed with scal
 
 ## 📁 Project Structure
 
-- [`src/features/mandarin/`](src/features/mandarin/): Main Mandarin learning feature
-- [`public/data/`](public/data/): Static vocabulary and example data
-- [`api/`](api/): Serverless functions for TTS
-- [`local-backend/`](local-backend/): Local development server
-- [`docs/`](docs/): Project documentation
+This project uses a **monorepo structure** with npm workspaces:
+
+```
+mandarin-vite-react-ts/
+├── apps/
+│   ├── frontend/          # React + Vite frontend application
+│   │   ├── src/           # Frontend source code
+│   │   │   ├── features/mandarin/  # Main Mandarin learning feature
+│   │   │   ├── pages/     # Page components
+│   │   │   ├── router/    # Routing configuration
+│   │   │   └── types/     # TypeScript types
+│   │   ├── public/data/   # Static vocabulary and example data
+│   │   └── package.json   # Frontend dependencies
+│   └── backend/           # Node.js + Express backend API
+│       ├── src/           # Backend source code
+│       ├── api/           # Serverless functions for Vercel
+│       └── package.json   # Backend dependencies
+├── packages/
+│   ├── shared-types/      # Shared TypeScript types
+│   └── shared-constants/  # Shared constants (API endpoints, etc.)
+├── docs/                  # Project documentation
+└── package.json           # Root workspace configuration
+```
+
+### Workspaces
+
+- **@mandarin/frontend** - React application with Vite (`apps/frontend/`)
+- **@mandarin/backend** - Express API server (`apps/backend/`)
+- **@mandarin/shared-types** - Shared TypeScript type definitions (`packages/shared-types/`)
+- **@mandarin/shared-constants** - Shared constants and configuration (`packages/shared-constants/`)
+
+### Legacy Directories
+
+The following directories contain legacy code and will be removed after full migration:
+
+- `api/` - Old serverless functions (consolidated into `apps/backend/api`)
+- `local-backend/` - Old Express server (consolidated into `apps/backend`)
+- `src/` - Old frontend code (moved to `apps/frontend/src`)
 
 ## 📚 Documentation
 
@@ -79,7 +152,14 @@ This project is more than just a Mandarin learning tool; it's designed with scal
 - [Business Requirements (Epics, Stories, PRs)](docs/business-requirements/README.md)
 - [Technical Implementation Details](docs/issue-implementation/README.md)
 - Feature Design
-  - [Mandarin](src/features/mandarin/docs/design.md)
+  - [Mandarin](apps/frontend/src/features/mandarin/docs/design.md)
+
+## 🔧 Environment Variables
+
+Create `.env` files in the appropriate workspace directories:
+
+- `apps/backend/.env` - Backend environment variables (Google Cloud credentials, database URLs)
+- `apps/frontend/.env` - Frontend environment variables (optional)
 
 ## 🤝 Contributing
 
