@@ -6,6 +6,7 @@
 
 - [architecture.md](architecture.md) – System architecture overview
 - [templates/README.md](templates/README.md) – **Source of truth for all templates and formats**
+- [knowledge-base/README.md](knowledge-base/README.md) – Quick-reference technical guides by category
 
 ### Workflow & Process Guides
 

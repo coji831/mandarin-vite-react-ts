@@ -8,8 +8,10 @@ PinyinPal is an interactive web application designed to help new learners master
 
 - **Interactive Flashcards:** Practice vocabulary with pinyin, characters, and English definitions with audio playback.
 - **Vocabulary Lists:** Browse HSK-level vocabulary organized by difficulty with card-based interface.
-- **Audio & Conversation Playback:** Robust, type-safe service layer for both word and conversation audio, with automatic backend and browser TTS fallback for reliability.
-- **Progress Tracking:** Per-user progress tracking with automatic localStorage persistence and mastery indicators.
+- **AI-Generated Conversations:** Context-aware conversation generation with word usage examples and audio playback.
+- **Audio & TTS Integration:** Robust service layer with Google Cloud TTS backend and browser TTS fallback for reliability.
+- **Multi-User Support:** Per-user progress tracking with automatic localStorage persistence and mastery indicators.
+- **Performance-Optimized State:** Split contexts with normalized state and granular selectors for scalability.
 
 ## 🛠️ Tech Stack
 
@@ -22,8 +24,14 @@ PinyinPal is an interactive web application designed to help new learners master
   - Composed sub-reducers (lists, user, ui)
 - **Testing:** **Jest** with React Testing Library
 - **Styling:** CSS with modular organization
-- **Service Layer:** Unified, type-safe service interfaces for audio and conversation, supporting backend swap and fallback.
-- **Backend:** Serverless functions (Vercel) for TTS API and conversation generation
+- **Service Layer:** Unified, type-safe service interfaces for audio, conversation, and data management
+- **Backend (Current):** Serverless functions (Vercel) + Express local dev server
+- **Backend (In Development):** Node.js/Express production backend with:
+  - PostgreSQL (production) / SQLite (local) database
+  - Multi-user authentication
+  - Redis caching layer
+  - RESTful API architecture
+- **Infrastructure:** Vercel deployment with planned migration to ASP.NET Core 8
 
 ## 🚀 Installation & Getting Started
 
