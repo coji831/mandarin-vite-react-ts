@@ -14,7 +14,7 @@
 
 **Status:** Planned
 
-**Last Update:** December 9, 2025
+**Last Update:** December 14, 2025
 
 ## Background
 
@@ -43,27 +43,27 @@ The current system has evolved to include complex features (TTS, conversation ge
 
 This epic consists of the following user stories:
 
-1. **Story 13.1: Monorepo Structure Setup**
+1. [**Story 13.1: Monorepo Structure Setup**](./story-13-1-monorepo-setup.md)
 
    - As a developer, I want to set up npm workspaces with apps/frontend and apps/backend, so that frontend and backend can be developed and deployed independently.
 
-2. **Story 13.2: Database Schema & ORM Configuration**
+2. [**Story 13.2: Database Schema & ORM Configuration**](./story-13-2-database-schema.md)
 
    - As a developer, I want to configure PostgreSQL with Prisma ORM and define User, Progress, and Word models, so that user data persists reliably across sessions and devices.
 
-3. **Story 13.3: JWT Authentication System**
+3. [**Story 13.3: JWT Authentication System**](./story-13-3-authentication.md)
 
    - As a user, I want to register an account and log in with email/password, so that my progress is saved and accessible from any device.
 
-4. **Story 13.4: Multi-User Progress API**
+4. [**Story 13.4: Multi-User Progress API**](./story-13-4-progress-api.md)
 
    - As a user, I want my progress to be saved per-user on the server, so that I can access my progress from any device without losing data.
 
-5. **Story 13.5: Redis Caching Layer**
+5. [**Story 13.5: Redis Caching Layer**](./story-13-5-redis-caching.md)
 
    - As a developer, I want to implement Redis caching for API responses, so that repeated requests are faster and reduce external API costs.
 
-6. **Story 13.6: Clean Architecture Preparation for .NET Migration**
+6. [**Story 13.6: Clean Architecture Preparation for .NET Migration**](./story-13-6-clean-architecture.md)
    - As a developer, I want to structure backend code following clean architecture principles, so that business logic can be migrated to .NET in the future without rewriting everything.
 
 ## Story Breakdown Logic
