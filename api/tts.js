@@ -1,5 +1,5 @@
 /**
- * @file apps/backend/api/tts.js
+ * @file api/tts.js
  * @description Vercel serverless handler for Text-to-Speech API endpoint.
  *
  * This handler provides a stateless entry point for the /api/tts endpoint,
@@ -12,11 +12,11 @@
  * @architecture Vercel Serverless Function (stateless, no Express)
  * @see apps/backend/docs/api-spec.md for full endpoint documentation
  */
-import { config } from "../config/index.js";
-import { synthesizeSpeech } from "../services/ttsService.js";
-import * as gcsService from "../services/gcsService.js";
-import { computeTTSHash } from "../utils/hashUtils.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../apps/backend/config/index.js";
+import { synthesizeSpeech } from "../apps/backend/services/ttsService.js";
+import * as gcsService from "../apps/backend/services/gcsService.js";
+import { computeTTSHash } from "../apps/backend/utils/hashUtils.js";
+import { createLogger } from "../apps/backend/utils/logger.js";
 
 const logger = createLogger("TTS");
 

@@ -1,6 +1,6 @@
 /**
  * Shared constants for Mandarin Learning App
- * Exports configuration values and constants used across frontend and backend
+ * TypeScript version - works with both frontend and backend
  */
 
 // API Endpoints
@@ -12,7 +12,6 @@ export const API_ENDPOINTS = {
 
 // HSK Levels
 export const HSK_LEVELS = [1, 2, 3, 4, 5, 6] as const;
-export type HSKLevel = (typeof HSK_LEVELS)[number];
 
 // Language Codes
 export const LANGUAGE_CODES = {

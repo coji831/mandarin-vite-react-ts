@@ -1,5 +1,5 @@
 /**
- * @file apps/backend/api/conversation.js
+ * @file api/conversation.js
  * @description Vercel serverless handler for unified Conversation API endpoint.
  *
  * This handler provides a stateless entry point for the /api/conversation endpoint,
@@ -15,10 +15,10 @@
  * @architecture Vercel Serverless Function (stateless, no Express)
  * @see apps/backend/docs/api-spec.md for full endpoint documentation
  */
-import { config } from "../config/index.js";
-import * as conversationService from "../services/conversationService.js";
-import { createConversationResponse } from "../utils/conversationUtils.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../apps/backend/config/index.js";
+import * as conversationService from "../apps/backend/services/conversationService.js";
+import { createConversationResponse } from "../apps/backend/utils/conversationUtils.js";
+import { createLogger } from "../apps/backend/utils/logger.js";
 
 const logger = createLogger("Conversation");
 

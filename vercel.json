@@ -4,19 +4,15 @@
   "installCommand": "npm install",
   "framework": null,
   "functions": {
-    "apps/backend/api/**/*.js": {
+    "api/**/*.js": {
       "memory": 1024,
       "maxDuration": 10
     }
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/apps/backend/api/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": "/apps/frontend/dist/$1"
     }
   ]
 }
