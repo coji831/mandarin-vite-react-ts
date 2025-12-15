@@ -4,29 +4,48 @@
   "version": "0.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "test:db": "jest tests/database.test.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
     "@google-cloud/text-to-speech": "^6.1.0",
     "@mandarin/shared-constants": "*",
     "@mandarin/shared-types": "*",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "google-auth-library": "^10.4.0",
     "md5": "^2.3.0",
     "node-fetch": "^3.3.2",
+    "pg": "^8.16.3",
+    "prisma": "^7.1.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/md5": "^2.3.5",
     "@types/node": "^24.7.2",
     "jest": "^30.2.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.3"
   }
 }

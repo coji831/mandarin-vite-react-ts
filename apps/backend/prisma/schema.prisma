@@ -1,0 +1,69 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  displayName  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  sessions  Session[]
+  progress  Progress[]
+
+  @@index([email])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+}
+
+model Progress {
+  id           String   @id @default(uuid())
+  userId       String
+  wordId       String
+  studyCount   Int      @default(0)
+  correctCount Int      @default(0)
+  confidence   Float    @default(0)
+  nextReview   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId])
+  @@index([nextReview])
+}
+
+model VocabularyWord {
+  id              String  @id @default(uuid())
+  traditional     String
+  simplified      String
+  pinyin          String
+  english         String
+  level           String
+  category        String?
+  exampleSentence String?
+
+  @@index([level])
+}
