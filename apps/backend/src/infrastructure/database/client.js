@@ -5,6 +5,8 @@
  * This module provides a singleton instance of Prisma Client with proper
  * connection pooling and logging configuration for development and production.
  *
+ * Environment variables are loaded by apps/backend/config/index.js (reads root .env.local)
+ *
  * @see https://www.prisma.io/docs/guides/performance-and-optimization/connection-management
  */
 
@@ -16,7 +18,15 @@ const { Pool } = pkg;
 const globalForPrisma = global;
 
 function createPrismaClient() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 10, // Maximum pool size
+    idleTimeoutMillis: 30000, // Close idle connections after 30s
+    connectionTimeoutMillis: 10000, // 10s timeout for new connections
+    keepAlive: true, // Enable TCP keep-alive
+    keepAliveInitialDelayMillis: 10000, // Start keep-alive after 10s
+  });
+
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({

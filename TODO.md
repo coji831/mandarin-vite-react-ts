@@ -22,6 +22,7 @@ Sections
 
 ## Backlog
 
+- [ ] Migrate auth to React Query + Axios — Replace custom `authFetch` wrapper with industry-standard Axios interceptors and React Query for better caching, retry logic, and TypeScript support (Estimate: 12 hours)
 - [ ] Refactor `#file:local-backend` — modernize syntax and approach for Google APIs, simplify credential handling
 - [ ] Update backend/vercel APIs to return and throw more meaningful logs/errors for better debug support (include structured error objects and request IDs)
 - [ ] Support pinyin and English meaning in conversation generation and UI (display and toggleable playback)
@@ -45,4 +46,4 @@ Notes
 
 ---
 
-Last updated: 2025-10-13
+Last updated: 2025-12-16

@@ -1,5 +1,7 @@
 node_modules
-# Keep environment variables out of version control
+# Environment variables (backend loads from root .env.local via config/index.js)
 .env
+.env.local
+.env.*.local
 
 /src/generated/prisma

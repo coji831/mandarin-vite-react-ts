@@ -12,14 +12,14 @@ Implementing secure authentication enables multi-user support, allowing users to
 
 ## Acceptance Criteria
 
-- [ ] POST /api/v1/auth/register endpoint creates new user with hashed password (bcrypt)
-- [ ] POST /api/v1/auth/login endpoint validates credentials and returns JWT access + refresh tokens
-- [ ] POST /api/v1/auth/refresh endpoint exchanges valid refresh token for new access token
-- [ ] POST /api/v1/auth/logout endpoint invalidates refresh token
-- [ ] Auth middleware (requireAuth) validates JWT tokens on protected routes
-- [ ] Frontend login/register forms integrated with backend auth endpoints
-- [ ] JWT access tokens expire after 15 minutes, refresh tokens after 7 days
-- [ ] Rate limiting enforced: max 5 login attempts per minute per IP
+- [x] POST /api/v1/auth/register endpoint creates new user with hashed password (bcrypt)
+- [x] POST /api/v1/auth/login endpoint validates credentials and returns JWT access + refresh tokens
+- [x] POST /api/v1/auth/refresh endpoint exchanges valid refresh token for new access token
+- [x] POST /api/v1/auth/logout endpoint invalidates refresh token
+- [x] Auth middleware (requireAuth) validates JWT tokens on protected routes
+- [x] Frontend login/register forms integrated with backend auth endpoints
+- [x] JWT access tokens expire after 15 minutes, refresh tokens after 7 days
+- [x] Rate limiting enforced: max 5 login attempts per minute per IP
 
 ## Business Rules
 
@@ -36,7 +36,7 @@ Implementing secure authentication enables multi-user support, allowing users to
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Completed
+- **PR**: #[TBD]
+- **Merge Date**: [TBD]
+- **Key Commit**: [TBD]

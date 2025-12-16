@@ -36,6 +36,7 @@ function parseJsonEnv(envVar, required = false) {
 export const config = {
   // Server
   port: parseInt(process.env.PORT || "3001", 10),
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   envPath,
 
   // Mode

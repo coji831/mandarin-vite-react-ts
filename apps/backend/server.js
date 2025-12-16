@@ -2,6 +2,8 @@
 // Main Express server with mode-based initialization and route configuration
 
 import express, { json } from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import { config } from "./config/index.js";
 import mainRouter from "./routes/index.js";
@@ -15,8 +17,19 @@ const logger = createLogger("Server");
 const app = express();
 const PORT = config.port;
 
+// CORS configuration (allow credentials for httpOnly cookies)
+app.use(
+  cors({
+    origin: config.frontendUrl || "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 // Middleware to parse JSON request bodies
 app.use(json());
+
+// Cookie parser middleware (required for httpOnly cookies)
+app.use(cookieParser());
 
 // Request ID middleware for all requests
 app.use(requestIdMiddleware);
@@ -30,18 +43,6 @@ if (config.gcsCredentials && config.gcsBucket) {
   initializeGCS(config.gcsCredentials, config.gcsBucket);
   logger.info(`GCS service initialized for bucket: ${config.gcsBucket}`);
 }
-
-// CORS middleware for all API routes
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method === "OPTIONS") return res.sendStatus(200);
-  next();
-});
 
 // Register API routes (feature-based)
 app.use("/api", mainRouter);
