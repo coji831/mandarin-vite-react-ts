@@ -2,7 +2,8 @@
 export class LocalAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
-    const endpoint = "http://localhost:3001" + API_ROUTES.ttsAudio;
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+    const endpoint = API_BASE + API_ROUTES.ttsAudio;
     const body = { text: chinese };
     const response = await fetch(endpoint, {
       method: "POST",
@@ -22,7 +23,8 @@ export class LocalAudioBackend implements IAudioBackend {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    const endpoint = "http://localhost:3001" + API_ROUTES.conversation;
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+    const endpoint = API_BASE + API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

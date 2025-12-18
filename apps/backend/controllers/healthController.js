@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Health check endpoint
 router.get(
-  ROUTE_PATTERNS.conversationHealth,
+  "/",
   asyncHandler(
     async (req, res) => {
       res.json(createHealthResponse(config.conversationMode));

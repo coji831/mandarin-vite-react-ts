@@ -80,12 +80,9 @@ export function useAudioPlayback() {
       if (!audio.audioUrl) throw new Error("No audioUrl returned from backend");
 
       let url = audio.audioUrl;
-      if (
-        url.startsWith("/") &&
-        typeof window !== "undefined" &&
-        window.location.hostname === "localhost"
-      ) {
-        url = `http://localhost:3001${url}`;
+      if (url.startsWith("/")) {
+        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+        url = `${API_BASE}${url}`;
       }
       if (onAudioUrlGenerated) onAudioUrlGenerated(url);
       await playBackendAudio(url);
@@ -136,12 +133,9 @@ export function useAudioPlayback() {
       });
       let url = audioUrl;
       if (!url) throw new Error("No audioUrl for this turn");
-      if (
-        url.startsWith("/") &&
-        typeof window !== "undefined" &&
-        window.location.hostname === "localhost"
-      ) {
-        url = `http://localhost:3001${url}`;
+      if (url.startsWith("/")) {
+        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+        url = `${API_BASE}${url}`;
       }
       await playBackendAudio(url);
       setIsPlaying(true);

@@ -10,9 +10,10 @@
  * @see https://www.prisma.io/docs/guides/performance-and-optimization/connection-management
  */
 
-import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import pkgPrisma from "@prisma/client";
 import pkg from "pg";
+const { PrismaClient } = pkgPrisma;
 const { Pool } = pkg;
 
 const globalForPrisma = global;

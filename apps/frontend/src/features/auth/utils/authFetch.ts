@@ -7,6 +7,7 @@
 import { API_ENDPOINTS } from "@mandarin/shared-constants";
 
 const TOKEN_KEY = "accessToken";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 let refreshPromise: Promise<string> | null = null;
 let onLogout: (() => void) | null = null;
@@ -34,7 +35,7 @@ async function refreshAccessToken(): Promise<string> {
   refreshPromise = (async () => {
     try {
       console.log("[authFetch] Refreshing access token...");
-      const response = await fetch(API_ENDPOINTS.AUTH_REFRESH, {
+      const response = await fetch(API_BASE + API_ENDPOINTS.AUTH_REFRESH, {
         method: "POST",
         credentials: "include",
       });

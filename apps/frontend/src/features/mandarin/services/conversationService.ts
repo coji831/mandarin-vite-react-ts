@@ -1,7 +1,8 @@
 // Fallback backend for local development
 export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = "http://localhost:3001" + API_ROUTES.conversation;
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+    const endpoint = API_BASE + API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
