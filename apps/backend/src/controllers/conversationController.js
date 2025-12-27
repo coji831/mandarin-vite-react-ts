@@ -22,7 +22,7 @@ const logger = createLogger("ConversationController");
 // POST / (mounted at /api/conversation)
 // Handles both text and audio generation based on { type: "text" | "audio" }
 router.post(
-  "/",
+  `${ROUTE_PATTERNS.conversation}`,
   asyncHandler(
     async (req, res) => {
       const { type } = req.body || {};
@@ -91,7 +91,7 @@ router.post(
 // ============================================================================
 // GET /health (mounted at /mandarin/conversation)
 router.get(
-  "/health",
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.health}`,
   asyncHandler(
     async (req, res) => {
       res.json({
@@ -109,7 +109,7 @@ router.get(
 // ============================================================================
 // POST /text/generate (mounted at /mandarin/conversation)
 router.post(
-  ROUTE_PATTERNS.conversationTextGenerate,
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationTextGenerate}`,
   asyncHandler(
     async (req, res) => {
       const { wordId, word, generatorVersion = "v1" } = req.body || {};
@@ -143,7 +143,7 @@ router.post(
 // POST /audio/generate (mounted at /mandarin/conversation)
 // On-demand per-turn audio generation
 router.post(
-  ROUTE_PATTERNS.conversationAudioGenerate,
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationAudioGenerate}`,
   asyncHandler(
     async (req, res) => {
       const { wordId, turnIndex, text, voice } = req.body || {};

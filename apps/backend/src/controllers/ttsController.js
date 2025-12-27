@@ -8,13 +8,14 @@ import { computeTTSHash } from "../utils/hashUtils.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { validationError, ttsError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 const logger = createLogger("TTS");
 
 // POST / (mounted at ROUTE_PATTERNS.ttsAudio = "/get-tts-audio")
 router.post(
-  "/",
+  ROUTE_PATTERNS.ttsAudio,
   asyncHandler(
     async (req, res) => {
       const { text, voice = config.tts.voiceDefault } = req.body;

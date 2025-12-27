@@ -3,26 +3,19 @@
  * Provides user data, login, register, logout, and token refresh functionality
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  ReactNode,
-} from "react";
 import { API_ENDPOINTS } from "@mandarin/shared-constants";
-import type { User, AuthContextValue, LoginCredentials, RegisterData } from "../types";
-import { setLogoutHandler, clearLogoutHandler } from "../utils/authFetch";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+
+import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
+import { clearLogoutHandler, setLogoutHandler } from "../utils/authFetch";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = "accessToken";
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const baseApiUrl = import.meta.env.VITE_API_URL;
 
 // Fallback in case shared-constants not loaded
-const AUTH_ME_ENDPOINT = API_BASE + (API_ENDPOINTS.AUTH_ME || "/api/v1/auth/me");
+const AUTH_ME_ENDPOINT = baseApiUrl + (API_ENDPOINTS.AUTH_ME || "/api/v1/auth/me");
 
 // Helper to decode JWT and check if expired
 function isTokenExpired(token: string): boolean {
@@ -44,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshTokens = useCallback(async () => {
     try {
       console.log("[refreshTokens] Starting refresh...");
-      const response = await fetch(API_BASE + API_ENDPOINTS.AUTH_REFRESH, {
+      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_REFRESH, {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
       });
@@ -216,7 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const response = await fetch(API_BASE + API_ENDPOINTS.AUTH_LOGIN, {
+      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
@@ -244,7 +237,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      const response = await fetch(API_BASE + API_ENDPOINTS.AUTH_REGISTER, {
+      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_REGISTER, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -272,7 +265,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await fetch(API_BASE + API_ENDPOINTS.AUTH_LOGOUT, {
+      await fetch(baseApiUrl + API_ENDPOINTS.AUTH_LOGOUT, {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
       });

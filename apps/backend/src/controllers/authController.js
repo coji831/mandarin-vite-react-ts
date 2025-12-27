@@ -1,10 +1,10 @@
 /**
- * @file apps/backend/src/api/controllers/authController.js
+ * @file apps/backend/src/controllers/authController.js
  * @description Authentication controller handling HTTP requests for auth endpoints
  */
 
-import { AuthService } from "../../core/services/AuthService.js";
-import { createLogger } from "../../../utils/logger.js";
+import { AuthService } from "../services/AuthService.js";
+import { createLogger } from "../utils/logger.js";
 
 const authService = new AuthService();
 const logger = createLogger("AuthController");

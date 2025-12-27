@@ -1,5 +1,5 @@
 /**
- * @file apps/backend/src/core/services/AuthService.js
+ * @file apps/backend/src/services/AuthService.js
  * @description JWT authentication service for user registration, login, token management
  *
  * Handles:
@@ -12,12 +12,13 @@
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../infrastructure/database/client.js";
+import { prisma } from "../models/index.js";
+import config from "../config/index.js";
 
 export class AuthService {
   constructor() {
-    this.JWT_SECRET = process.env.JWT_SECRET;
-    this.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+    this.JWT_SECRET = config.jwtSecret;
+    this.JWT_REFRESH_SECRET = config.jwtRefreshSecret;
     this.ACCESS_TOKEN_EXPIRY = "15m";
     this.REFRESH_TOKEN_EXPIRY = "7d";
 
