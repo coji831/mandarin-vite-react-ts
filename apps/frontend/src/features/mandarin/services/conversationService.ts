@@ -43,7 +43,8 @@ export class ConversationService implements IConversationService {
 // Default backend implementation using fetch
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ROUTES.conversation;
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const endpoint = API_BASE ? API_BASE + API_ROUTES.conversation : API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
