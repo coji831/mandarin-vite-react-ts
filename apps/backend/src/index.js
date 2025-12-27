@@ -18,9 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 // CORS middleware for development
 app.use(
   cors({
-    origin: config.frontendUrl,
-    credentials: true,
+    //origin: config.frontendUrl,
+    origin: true, // reflect request Origin (allows any origin)
+    credentials: true, // allow cookies/auth headers
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"], // add any other headers you use
   })
 );
 
