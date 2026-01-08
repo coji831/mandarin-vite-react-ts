@@ -12,9 +12,9 @@
 - Add Redis caching layer to reduce external API costs and improve response times by 50%+
 - Structure code with clean architecture (Controllers/Services/Repositories) to prepare for future .NET migration
 
-**Status:** Planned
+**Status:** In Progress (Stories 13.1-13.3 Complete)
 
-**Last Update:** December 14, 2025
+**Last Update:** January 8, 2026
 
 ## Background
 
@@ -180,13 +180,3 @@ Each story builds upon the previous, ensuring incremental delivery with testable
 - OpenAPI/Swagger spec generated from code — .NET backend can implement same spec (contract-first development)
 - Database schema is technology-agnostic — Entity Framework Core can connect to same PostgreSQL database
 - Business logic in Services is pure TypeScript — Can be translated to C# line-by-line with minimal changes
-
----
-
-## Related Documentation
-
-- [Architecture Overview](../../architecture.md)
-- [Epic 14: .NET Backend Migration](../epic-14-dotnet-backend-migration/README.md)
-- [Code Conventions](../../guides/code-conventions.md)
-- [SOLID Principles](../../guides/solid-principles.md)
-- [Git Convention Guide](../../guides/git-convention.md)
