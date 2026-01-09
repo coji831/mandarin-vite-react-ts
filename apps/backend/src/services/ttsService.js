@@ -50,3 +50,22 @@ export async function synthesizeSpeech(text, options = {}) {
   const [response] = await client.synthesizeSpeech(request);
   return response.audioContent;
 }
+
+/**
+ * Health check for Google Cloud TTS
+ * Attempts a lightweight API call (listVoices) if available to validate credentials.
+ * @returns {Promise<boolean>} True if TTS accessible
+ */
+export async function healthCheck() {
+  try {
+    const client = getTTSClient();
+    if (!client) return false;
+    if (typeof client.listVoices === "function") {
+      // lightweight call to verify access (no billing for listing voices)
+      await client.listVoices({});
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+}

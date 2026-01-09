@@ -1,5 +1,5 @@
 /**
- * @file apps/backend/src/api/routes/auth.js
+ * @file apps/backend/src/routes/auth.js
  * @description Authentication routes
  */
 
@@ -24,14 +24,14 @@ const authLimiter = rateLimit({
 });
 
 // Apply rate limiting to login and register (most vulnerable to brute force)
-router.post("/register", authLimiter, authController.register);
-router.post("/login", authLimiter, authController.login);
+router.post("/v1/auth/register", authLimiter, authController.register);
+router.post("/v1/auth/login", authLimiter, authController.login);
 
 // Refresh and logout don't need rate limiting (already authenticated)
-router.post("/refresh", authController.refresh);
-router.post("/logout", authController.logout);
+router.post("/v1/auth/refresh", authController.refresh);
+router.post("/v1/auth/logout", authController.logout);
 
 // Protected route - get current user
-router.get("/me", authenticateToken, authController.getCurrentUser);
+router.get("/v1/auth/me", authenticateToken, authController.getCurrentUser);
 
 export default router;

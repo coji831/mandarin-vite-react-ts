@@ -88,7 +88,9 @@ export const API_ROUTES = {
 
 // Route Patterns - Backend usage (Express route patterns without /api prefix)
 export const ROUTE_PATTERNS = {
+  health: "/health",
   ttsAudio: "/tts",
+  conversation: "/conversation",
   conversationTextGenerate: "/text/generate",
   conversationAudioGenerate: "/audio/generate",
 };

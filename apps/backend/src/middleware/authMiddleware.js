@@ -1,13 +1,13 @@
 /**
- * @file apps/backend/src/api/middleware/authMiddleware.js
+ * @file apps/backend/src/middleware/authMiddleware.js
  * @description JWT authentication middleware for protected routes
  */
 
 import jwt from "jsonwebtoken";
 
 /**
- * Verify JWT access token from Authorization header
- * Adds decoded user payload to req.user
+ * Require valid JWT access token
+ * Attaches decoded user payload to req.user
  */
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -41,3 +41,27 @@ export function authenticateToken(req, res, next) {
     });
   }
 }
+
+/**
+ * Optional auth - attaches user if token valid, but doesn't require it
+ */
+export function optionalAuth(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+  } catch (error) {
+    // Silent fail - continue without auth
+  }
+
+  next();
+}
+
+// Alias for consistency with existing code
+export const requireAuth = authenticateToken;

@@ -8,8 +8,9 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load environment variables from project root .env.local
-const envPath = path.resolve(__dirname, "..", "..", "..", ".env.local");
+const envPath = path.resolve(__dirname, "..", "..", "..", "..", ".env.local");
 dotenv.config({ path: envPath });
+console.log(`[Config] Loaded environment variables from ${envPath}`);
 
 /**
  * Parse JSON from environment variable safely
@@ -38,6 +39,11 @@ export const config = {
   port: parseInt(process.env.PORT || "3001", 10),
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   envPath,
+  nodeEnvironment: process.env.NODE_ENV || "development",
+
+  //JWT
+  jwtSecret: process.env.JWT_SECRET || "default_jwt_secret",
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "default_jwt_refresh_secret",
 
   // Mode
   conversationMode: process.env.CONVERSATION_MODE || "scaffold",

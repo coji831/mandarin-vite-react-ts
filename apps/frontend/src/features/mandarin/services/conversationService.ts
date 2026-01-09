@@ -3,15 +3,28 @@ export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
     const endpoint = API_BASE + API_ROUTES.conversation;
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "text", ...params }),
-    });
-    if (!response.ok) {
-      throw new Error(`Conversation generation failed (local): ${response.statusText}`);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "text", ...params }),
+      });
+      if (!response.ok) {
+        const text = await response.text().catch(() => "<unreadable>");
+        console.error("Conversation generation failed (local)", {
+          endpoint,
+          status: response.status,
+          body: text,
+        });
+        throw new Error(
+          `Conversation generation failed (local): ${response.status} ${response.statusText} - ${text}`
+        );
+      }
+      return response.json();
+    } catch (err) {
+      console.error("LocalConversationBackend.generateConversation error", { err, endpoint });
+      throw err;
     }
-    return response.json();
   }
 }
 import { API_ROUTES } from "@mandarin/shared-constants";
@@ -43,7 +56,8 @@ export class ConversationService implements IConversationService {
 // Default backend implementation using fetch
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ROUTES.conversation;
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const endpoint = API_BASE ? API_BASE + API_ROUTES.conversation : API_ROUTES.conversation;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

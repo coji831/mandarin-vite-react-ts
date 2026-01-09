@@ -9,6 +9,8 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { config } from "../config/index.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import * as conversationService from "../services/conversationService.js";
+import * as geminiService from "../services/geminiService.js";
+import * as ttsService from "../services/ttsService.js";
 import { createConversationResponse } from "../utils/conversationUtils.js";
 import { convoAudioError, convoTextError, validationError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
@@ -22,7 +24,7 @@ const logger = createLogger("ConversationController");
 // POST / (mounted at /api/conversation)
 // Handles both text and audio generation based on { type: "text" | "audio" }
 router.post(
-  "/",
+  `${ROUTE_PATTERNS.conversation}`,
   asyncHandler(
     async (req, res) => {
       const { type } = req.body || {};
@@ -91,13 +93,19 @@ router.post(
 // ============================================================================
 // GET /health (mounted at /mandarin/conversation)
 router.get(
-  "/health",
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.health}`,
   asyncHandler(
     async (req, res) => {
+      const geminiOk = await geminiService.healthCheck().catch(() => false);
+      const ttsOk = await ttsService.healthCheck().catch(() => false);
       res.json({
         mode: config.conversationMode,
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
+        services: {
+          gemini: geminiOk,
+          tts: ttsOk,
+        },
       });
     },
     { logPrefix: "Conversation" }
@@ -109,7 +117,7 @@ router.get(
 // ============================================================================
 // POST /text/generate (mounted at /mandarin/conversation)
 router.post(
-  ROUTE_PATTERNS.conversationTextGenerate,
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationTextGenerate}`,
   asyncHandler(
     async (req, res) => {
       const { wordId, word, generatorVersion = "v1" } = req.body || {};
@@ -143,7 +151,7 @@ router.post(
 // POST /audio/generate (mounted at /mandarin/conversation)
 // On-demand per-turn audio generation
 router.post(
-  ROUTE_PATTERNS.conversationAudioGenerate,
+  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationAudioGenerate}`,
   asyncHandler(
     async (req, res) => {
       const { wordId, turnIndex, text, voice } = req.body || {};
