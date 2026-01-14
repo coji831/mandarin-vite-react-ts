@@ -36,7 +36,6 @@ describe("FlashCardPage", () => {
       ui: {
         selectedList: null,
         selectedWords: [],
-        masteredProgress: {},
         isLoading: false,
         error: "",
       },

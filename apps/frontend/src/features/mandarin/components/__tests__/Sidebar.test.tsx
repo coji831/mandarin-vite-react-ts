@@ -40,7 +40,6 @@ describe("Sidebar", () => {
       ui: {
         selectedList: mockListId,
         selectedWords: [],
-        masteredProgress: { [mockListId]: masteredWordIds },
         isLoading: false,
         error: "",
       },
@@ -72,7 +71,6 @@ describe("Sidebar", () => {
       ui: {
         selectedList: mockListId,
         selectedWords: [],
-        masteredProgress: { [mockListId]: masteredWordIds },
         isLoading: false,
         error: "",
       },

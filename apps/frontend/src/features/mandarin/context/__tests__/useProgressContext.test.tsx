@@ -49,8 +49,7 @@ function TestHook({ callback }: { callback: (hook: unknown) => void }) {
         )
       ),
     calculateListProgress: (listId: string, wordCount: number) => {
-      const masteredSet: Set<string> =
-        (state.ui?.masteredProgress && state.ui!.masteredProgress[listId]) || new Set<string>();
+      const masteredSet: Set<string> = new Set<string>();
       const mastered = masteredSet.size;
       const percent = wordCount === 0 ? 0 : Math.round((mastered / wordCount) * 100);
       return { mastered, percent };
@@ -87,7 +86,6 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
       ui: {
         selectedList: null,
         selectedWords: [],
-        masteredProgress: {},
         isLoading: false,
         error: "",
       },
@@ -123,7 +121,6 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
       ui: {
         selectedList: null,
         selectedWords: [],
-        masteredProgress: {},
         isLoading: false,
         error: "",
       },

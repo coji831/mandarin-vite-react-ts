@@ -17,8 +17,6 @@ describe("VocabularyCard", () => {
           file: "test.csv",
         }}
         onSelect={() => {}}
-        progress={0}
-        masteredCount={0}
       />
     );
     expect(screen.getByText(/Not started/i)).toBeInTheDocument();
@@ -37,8 +35,6 @@ describe("VocabularyCard", () => {
           file: "test.csv",
         }}
         onSelect={() => {}}
-        progress={50}
-        masteredCount={5}
       />
     );
     expect(screen.getByText(/5 \/ 10 mastered \(50%\)/i)).toBeInTheDocument();
@@ -57,8 +53,6 @@ describe("VocabularyCard", () => {
           file: "test.csv",
         }}
         onSelect={() => {}}
-        progress={100}
-        masteredCount={10}
       />
     );
     expect(screen.getByText(/10 \/ 10 mastered \(100%\)/i)).toBeInTheDocument();

@@ -31,7 +31,7 @@ describe("ProgressApiService", () => {
         json: async () => mockResponse,
       });
 
-      const result = await service.getAllProgress(mockToken);
+      const result = await service.getAllProgress();
 
       expect(global.fetch).toHaveBeenCalledWith(API_ENDPOINTS.PROGRESS, {
         method: "GET",
@@ -49,9 +49,7 @@ describe("ProgressApiService", () => {
         status: 500,
       });
 
-      await expect(service.getAllProgress(mockToken)).rejects.toThrow(
-        "Failed to fetch progress: 500"
-      );
+      await expect(service.getAllProgress()).rejects.toThrow("Failed to fetch progress: 500");
     });
   });
 
@@ -69,7 +67,7 @@ describe("ProgressApiService", () => {
         json: async () => mockResponse,
       });
 
-      const result = await service.getWordProgress("word1", mockToken);
+      const result = await service.getWordProgress("word1");
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining("/word1"),
@@ -89,7 +87,7 @@ describe("ProgressApiService", () => {
         status: 404,
       });
 
-      await expect(service.getWordProgress("word1", mockToken)).rejects.toThrow(
+      await expect(service.getWordProgress("word1")).rejects.toThrow(
         "Progress not found for this word"
       );
     });
@@ -111,7 +109,7 @@ describe("ProgressApiService", () => {
         json: async () => mockResponse,
       });
 
-      const result = await service.updateWordProgress("word1", updateData, mockToken);
+      const result = await service.updateWordProgress("word1", updateData);
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining("/word1"),
@@ -133,9 +131,9 @@ describe("ProgressApiService", () => {
         status: 400,
       });
 
-      await expect(
-        service.updateWordProgress("word1", { confidence: 0.5 }, mockToken)
-      ).rejects.toThrow("Failed to update word progress: 400");
+      await expect(service.updateWordProgress("word1", { confidence: 0.5 })).rejects.toThrow(
+        "Failed to update word progress: 400"
+      );
     });
   });
 
@@ -157,7 +155,7 @@ describe("ProgressApiService", () => {
         json: async () => mockResponse,
       });
 
-      const result = await service.batchUpdateProgress(updates, mockToken);
+      const result = await service.batchUpdateProgress(updates);
 
       expect(global.fetch).toHaveBeenCalledWith(
         API_ENDPOINTS.PROGRESS_BATCH,
@@ -179,7 +177,7 @@ describe("ProgressApiService", () => {
         status: 500,
       });
 
-      await expect(service.batchUpdateProgress({ updates: [] }, mockToken)).rejects.toThrow(
+      await expect(service.batchUpdateProgress({ updates: [] })).rejects.toThrow(
         "Failed to batch update progress: 500"
       );
     });
@@ -201,7 +199,7 @@ describe("ProgressApiService", () => {
         json: async () => mockStats,
       });
 
-      const result = await service.getProgressStats(mockToken);
+      const result = await service.getProgressStats();
 
       expect(global.fetch).toHaveBeenCalledWith(
         API_ENDPOINTS.PROGRESS_STATS,
@@ -221,7 +219,7 @@ describe("ProgressApiService", () => {
         status: 500,
       });
 
-      await expect(service.getProgressStats(mockToken)).rejects.toThrow(
+      await expect(service.getProgressStats()).rejects.toThrow(
         "Failed to fetch progress stats: 500"
       );
     });
