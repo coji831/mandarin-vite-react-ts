@@ -47,157 +47,176 @@ All components use these hooks for audio and conversation features, ensuring a D
   - `src/components`: Reusable UI components
   - `src/router`: React Router configuration
   - `public/data/vocabulary`: CSV-based vocabulary data organized by HSK level
-- **apps/backend**: Node.js + Express backend API
-  - `src/`: Main backend source (consolidated Express server)
-  - `api/`: Vercel serverless functions (for production deployment)
-  - Consolidates previous `api/` and `local-backend/` directories
+- **apps/backend**: Node.js + Express backend API (deployed to Railway in production)
+  - `src/`: Core services, controllers, and business logic
+  - `routes/`: Express route definitions
+  - `prisma/`: Database schema and migrations
+  - Deployed via `Procfile` to Railway for production
 - **packages/shared-types**: Shared TypeScript type definitions
 - **packages/shared-constants**: Shared constants (API endpoints, HSK levels, etc.)
 - **docs**: Documentation structure for architecture, implementation, and templates
 
-## Backend Architecture: Unified Backend with Dual Deployment
+## Backend Architecture: Single Express Application
 
 ### Overview
 
-The backend is located in `apps/backend/` and supports two deployment modes:
+The backend is located in `apps/backend/` and uses a **single Express application** for both development and production:
 
-1. **Vercel Serverless** (`apps/backend/api/`) - Production deployment via Vercel Functions
-2. **Express Development Server** (`apps/backend/src/`) - Local development with hot reload
+- **Development**: Local Express server on port 3001 with hot reload via `tsx watch`
+- **Production**: Same Express app deployed to Railway via `Procfile`
 
-Both deployment modes share 100% of business logic (services, utilities) while using different HTTP handler patterns. The monorepo structure enables clean separation and code reuse through workspace packages.
+This unified approach eliminates the dual-backend maintenance burden and ensures identical behavior across environments. The monorepo structure enables clean separation and code reuse through workspace packages.
 
-### Vercel API Structure (`apps/backend/api/`)
-
-**Folder Structure:**
-
-```
-apps/backend/api/
-├── tts.js                              # Vercel handler for /api/tts
-├── conversation.js                     # Vercel handler for /api/conversation
-├── _lib/                               # Shared business logic
-│   ├── config/
-│   │   └── index.js                    # Environment variable parsing
-│   ├── controllers/
-│   │   ├── ttsController.js            # TTS validation and orchestration
-│   │   └── conversationController.js   # Conversation routing (type-based)
-│   ├── services/
-│   │   ├── ttsService.js               # Google Cloud TTS client
-│   │   ├── gcsService.js               # Google Cloud Storage operations
-│   │   ├── geminiService.js            # Gemini API client
-│   │   └── conversationService.js      # Conversation generation & caching
-│   └── utils/
-│       ├── hashUtils.js                # Cache key generation
-│       ├── errorFactory.js             # Standardized error responses
-│       ├── logger.js                   # Simplified logging
-│       ├── conversationUtils.js        # Parsing and formatting
-│       └── promptUtils.js              # Gemini prompt generation
-└── docs/
-    ├── api-spec.md                     # Endpoint specifications
-    ├── design.md                       # Architecture details
-    └── README.md                       # Setup and deployment guide
-```
-
-**Handler Pattern:**
-
-```javascript
-// api/tts.js - Vercel entry point
-import { ttsController } from "./_lib/controllers/ttsController.js";
-
-export default async function handler(req, res) {
-  try {
-    await ttsController(req, res);
-  } catch (error) {
-    res.status(500).json({ error: error.message || "Internal Server Error" });
-  }
-}
-
-// api/_lib/controllers/ttsController.js - Stateless controller
-export async function ttsController(req, res) {
-  // Manual method checking (no Express router)
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
-    return;
-  }
-
-  // Direct validation and service calls
-  const { text, language, voiceName } = req.body;
-  // ... business logic
-  res.json({ audioUrl });
-}
-```
-
-**Key Characteristics:**
-
-- **Stateless**: No shared state between invocations
-- **Single Responsibility**: Each handler wraps exactly one controller
-- **Error Handling**: Try-catch at handler level, inline validation in controllers
-- **Import Paths**: All imports require `.js` extensions for ES modules
-- **Configuration**: Simplified (no mode validation, production-only)
-
-**Endpoints:**
-
-- `POST /api/tts` - Generate TTS audio, returns `{ audioUrl }`
-- `POST /api/conversation` - Unified endpoint with type-based routing:
-  - `{ type: "text", wordId, word }` → Generate conversation turns
-  - `{ type: "audio", conversationId, turnIndex, text, language }` → Generate per-turn audio
-
-### Express Development Server (`apps/backend/src/`)
+### Express Backend Structure (`apps/backend/`)
 
 **Folder Structure:**
 
 ```
 apps/backend/
-├── src/
-│   └── index.js                        # Express app entry point
-├── routes/
-│   └── index.js                        # Route definitions (uses shared ROUTE_PATTERNS)
-├── controllers/
-│   ├── ttsController.js                # TTS endpoint handlers
-│   ├── conversationController.js       # Conversation endpoint handlers
-│   ├── scaffoldController.js           # Fixture serving (dev only)
-│   └── healthController.js             # Health checks
-├── services/                           # Identical to api/_lib/services/
-├── utils/                              # Superset of api/_lib/utils/
-├── middleware/
-│   ├── asyncHandler.js                 # Async route wrapper
-│   └── errorHandler.js                 # Request ID propagation
+├── server.js                           # Express app entry point
 ├── config/
-│   └── index.js                        # Extended config with mode validation
-└── docs/
-    ├── api-spec.md                     # Endpoint specifications
-    └── design.md                       # Architecture details
+│   └── index.js                        # Environment variable parsing
+├── routes/
+│   └── index.js                        # Route aggregation
+├── controllers/
+│   ├── ttsController.js                # TTS endpoints
+│   ├── conversationController.js       # Conversation endpoints
+│   ├── healthController.js             # Health checks
+│   └── scaffoldController.js           # Dev fixtures
+├── src/
+│   ├── api/
+│   │   ├── controllers/
+│   │   │   └── authController.js       # Authentication endpoints
+│   │   ├── routes/
+│   │   │   └── auth.js                 # Auth route definitions
+│   │   └── middleware/
+│   │       ├── authenticate.js         # JWT validation
+│   │       └── rateLimiter.js          # Rate limiting
+│   └── core/
+│       ├── services/
+│       │   ├── AuthService.js          # Auth business logic
+│       │   ├── ttsService.js           # Google Cloud TTS client
+│       │   ├── gcsService.js           # Google Cloud Storage
+│       │   ├── geminiService.js        # Gemini API client
+│       │   └── conversationService.js  # Conversation generation
+│       └── repositories/
+│           └── UserRepository.js       # Database access layer
+├── prisma/
+│   └── schema.prisma                   # Database schema
+├── utils/
+│   ├── hashUtils.js                    # Cache key generation
+│   ├── logger.js                       # Structured logging
+│   └── conversationUtils.js            # Parsing and formatting
+├── Procfile                            # Railway deployment config
+└── railway.toml                        # Railway build settings
 ```
 
 **Handler Pattern:**
 
 ```javascript
-// local-backend/controllers/ttsController.js - Express style
-export const generateTTSAudio = asyncHandler(async (req, res) => {
-  const { text, language, voiceName } = req.body;
-  // ... same business logic as Vercel version
-  res.json({ audioUrl });
+// server.js - Express app entry point
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import mainRouter from "./routes/index.js";
+
+const app = express();
+
+// Middleware
+app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(express.json());
+app.use(cookieParser());
+
+// Routes
+app.use("/api", mainRouter);
+
+app.listen(PORT, () => {
+  console.log(`Backend server running on port ${PORT}`);
 });
 
-// local-backend/routes/index.js - Express routing
-import { ROUTE_PATTERNS } from "../../shared/constants/apiPaths.js";
-
-router.post(ROUTE_PATTERNS.ttsAudio, ttsController.generateTTSAudio);
+// controllers/ttsController.js - Express route handler
+export const generateTTSAudio = async (req, res) => {
+  const { text, voice } = req.body;
+  // ... business logic
+  res.json({ audioUrl });
+};
 ```
 
 **Key Characteristics:**
 
-- **Express Middleware Stack**: `asyncHandler`, `errorHandler`, CORS, body-parser
-- **Scaffold Mode**: Supports offline development with fixture data
-- **Comprehensive Logging**: Request IDs, detailed error traces, file logging
-- **Development Tools**: Health checks, scaffold fixture endpoints
+- **Express Middleware**: CORS with credentials, cookie-parser for httpOnly cookies, rate limiting
+- **JWT Authentication**: Access tokens (15min) + refresh tokens (7 days) in httpOnly cookies
+- **Clean Architecture**: Controllers → Services → Repositories pattern
+- **Database**: PostgreSQL with Prisma ORM, connection pooling via Supabase
+- **Deployment**: Railway via Procfile, automatic migrations on release
 
 **Endpoints:**
 
-- `POST /api/tts` - Same as Vercel
-- `POST /api/mandarin/conversation/text` - Conversation text generation
-- `POST /api/mandarin/conversation/audio` - Per-turn audio generation
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login (returns JWT + sets refresh cookie)
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `POST /api/v1/auth/logout` - Clear refresh token
+- `GET /api/v1/auth/me` - Get current user (requires authentication)
+- `POST /api/tts` - Generate TTS audio
+- `POST /api/conversation` - Generate conversation (text + audio)
 - `GET /api/health` - Health check
-- `GET /api/mandarin/conversation/scaffold` - Fixture serving (scaffold mode)
+
+### Deployment Configuration
+
+**Railway Deployment (`Procfile`):**
+
+```
+web: npm run start
+release: npx prisma migrate deploy
+```
+
+**Railway Build Configuration (`railway.toml`):**
+
+```toml
+[build]
+builder = "RAILPACK"
+buildCommand = "npm install && npx prisma generate --schema=apps/backend/prisma/schema.prisma"
+
+[deploy]
+startCommand = "npm run dev --workspace=@mandarin/backend"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[env]
+NODE_ENV = "production"
+```
+
+**Environment Variables (Production):**
+
+- `DATABASE_URL`: PostgreSQL connection string (Supabase)
+- `JWT_SECRET`: Access token signing key
+- `JWT_REFRESH_SECRET`: Refresh token signing key
+- `FRONTEND_URL`: CORS origin (e.g., `https://pinyinpal.vercel.app`)
+- `GOOGLE_TTS_CREDENTIALS_RAW`: Google Cloud service account JSON
+- `GEMINI_API_CREDENTIALS_RAW`: Gemini API service account JSON
+- `GCS_BUCKET_NAME`: Google Cloud Storage bucket name
+- `NODE_ENV`: `production`
+
+**Development Commands:**
+
+```bash
+# Install dependencies (monorepo root)
+npm install
+
+# Run backend locally
+npm run dev:backend              # Port 3001 with hot reload
+
+# Run frontend locally
+npm run dev:frontend             # Port 5173 with Vite
+
+# Run both concurrently
+npm run dev                      # Starts both frontend + backend
+
+# Database operations
+npm run db:migrate               # Run Prisma migrations
+npm run db:studio                # Open Prisma Studio
+npm run db:seed                  # Seed database with test data
+```
 
 ### Shared Business Logic
 

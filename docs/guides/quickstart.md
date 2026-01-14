@@ -77,18 +77,25 @@ npm run preview         # Preview production build
 
 ```
 mandarin-vite-react-ts/
-├── src/                    # Frontend source code
-│   ├── main.tsx           # App entry point
-│   ├── App.tsx            # Root component
-│   └── features/          # Feature modules
-│       └── mandarin/      # Mandarin learning feature
-├── public/                # Static assets
-│   └── data/              # CSV vocabulary files
-├── local-backend/         # Express backend server
-├── api/                   # Serverless functions (Vercel)
+├── apps/
+│   ├── frontend/          # React + Vite frontend
+│   │   ├── src/           # Frontend source code
+│   │   │   ├── main.tsx   # App entry point
+│   │   │   └── features/  # Feature modules
+│   │   └── public/        # Static assets & CSV data
+│   └── backend/           # Express backend (Railway)
+│       ├── server.js      # Express app entry
+│       ├── controllers/   # Route handlers
+│       ├── src/core/      # Services & repositories
+│       ├── prisma/        # Database schema
+│       └── Procfile       # Railway deployment
+├── packages/              # Shared code
+│   ├── shared-types/      # TypeScript types
+│   └── shared-constants/  # API routes, constants
 └── docs/                  # Documentation
-    ├── knowledge-base/    # Quick reference guides
-    └── business-requirements/  # Epic documentation
+    ├── guides/            # Setup guides
+    ├── knowledge-base/    # Transferable patterns
+    └── business-requirements/  # Epic/story docs
 ```
 
 ---

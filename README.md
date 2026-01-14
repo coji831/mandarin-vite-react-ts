@@ -25,13 +25,16 @@ PinyinPal is an interactive web application designed to help new learners master
 - **Testing:** **Jest** with React Testing Library
 - **Styling:** CSS with modular organization
 - **Service Layer:** Unified, type-safe service interfaces for audio, conversation, and data management
-- **Backend (Current):** Serverless functions (Vercel) + Express local dev server
-- **Backend (In Development):** Node.js/Express production backend with:
-  - PostgreSQL (production) / SQLite (local) database
-  - Multi-user authentication
-  - Redis caching layer
+- **Backend:** Node.js/Express deployed to Railway with:
+  - PostgreSQL database (Supabase)
+  - JWT authentication with httpOnly cookies
+  - Multi-user support with per-user progress tracking
+  - Google Cloud TTS and Gemini API integration
   - RESTful API architecture
-- **Infrastructure:** Vercel deployment with planned migration to ASP.NET Core 8
+- **Infrastructure:**
+  - Frontend: Vercel (React + Vite)
+  - Backend: Railway (Express + PostgreSQL)
+  - Future: Planned migration to ASP.NET Core 8
 
 ## 🚀 Installation & Getting Started
 

@@ -34,17 +34,18 @@ Close epic/story: verify all AC done → update Status & Last Update in BR + imp
 
 ## 🏗️ Architecture Overview
 
-**Frontend**: React + TypeScript via Vite; feature folders in `src/features/`.
+**Frontend**: React + TypeScript via Vite; feature folders in `apps/frontend/src/features/`.
 **State**: Context + reducers; slices: `lists`, `user`, `ui`; persisted via localStorage.
-**Backend**: Serverless functions in `api/` (e.g., TTS) + optional Express in `local-backend/`.
+**Backend**: Express + Prisma in `apps/backend/`; deployed to Railway in production, runs locally on port 3001 for development.
 **Data**: CSV/JSON in `public/data/`, loaded by `src/utils/csvLoader.ts`.
 **Routing**: React Router; constants in `src/constants/paths.ts`.
+**Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
 
 ## 🔄 Workflows
 
-Development: install → run dev → run local backend (optional) → iterate.
+Development: install → run dev (starts frontend + backend concurrently) → iterate.
 Testing: `npm test` (Jest + RTL) for unit/component tests.
-Deployment: use `vercel` with `vercel.json` config.
+Deployment: Frontend deploys to Vercel; Backend deploys to Railway (via Procfile).
 Data Update: modify CSV under `public/data/vocabulary/`; parse via `csvLoader.ts`.
 
 ### 🧪 Story-Level Development Workflow
