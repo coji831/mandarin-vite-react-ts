@@ -35,7 +35,7 @@ const app = express();
 
 // Middleware (order matters!)
 app.use(express.json());
-app.use(corsMiddleware);  // Apply CORS once, before routes
+app.use(corsMiddleware); // Apply CORS once, before routes
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -137,12 +137,14 @@ export function verifyToken(token: string): any {
 ## Troubleshooting
 
 **CORS errors persist:**
+
 1. Verify CORS middleware is before routes
 2. Check for duplicate CORS calls
 3. Confirm `FRONTEND_URL` is set
 4. Ensure `credentials: true` in both frontend and backend
 
 **Authentication middleware not working:**
+
 1. Check JWT_SECRET matches between sign/verify
 2. Verify token extraction logic
 3. Confirm Prisma client is initialized
@@ -156,6 +158,7 @@ See [Supabase Setup Guide](./supabase-setup-guide.md#troubleshooting)
 - [Express.js Best Practices](https://expressjs.com/en/advanced/best-practice-security.html)
 
 **Learn more:**
+
 - [Backend Architecture Patterns](../knowledge-base/backend-architecture.md) - Layered architecture, CORS concepts
 - [Authentication Concepts](../knowledge-base/backend-authentication.md) - OAuth, SSO, session strategies
 

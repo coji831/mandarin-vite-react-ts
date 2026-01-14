@@ -5,15 +5,22 @@ Configure environment variables for development, testing, and production.
 ## File Structure
 
 ```
-├── .env.local          # Local development (gitignored)
-├── .env.example        # Template for team (committed)
+mandarin-vite-react-ts/
+├── .env.local          # Local development (gitignored) - SINGLE SOURCE FOR BOTH FRONTEND & BACKEND
+├── .env.example        # Template for team (committed) - AT PROJECT ROOT
+├── apps/
+│   ├── frontend/       # Reads .env.local from root via Vite
+│   └── backend/        # Reads .env.local from root via dotenv config
 ```
+
+**Important**: This project uses a **single `.env.local` file at the project root** for both frontend and backend to simplify development. The backend explicitly loads from the root via `dotenv.config({ path: '../../../../.env.local' })` in `apps/backend/src/config/index.js`.
 
 ## Setup Steps
 
-**1. Copy example file:**
+**1. Copy example file (at project root):**
 
 ```bash
+# From project root
 cp .env.example .env.local
 ```
 

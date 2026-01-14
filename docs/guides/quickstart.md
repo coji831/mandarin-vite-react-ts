@@ -46,12 +46,28 @@ Open your browser and you should see the Mandarin learning app!
 
 If you need API features (TTS audio, conversation generation):
 
+**1. Configure environment variables:**
+
+```bash
+# Copy example file to .env.local at project root
+cp .env.example .env.local
+
+# Edit .env.local and add your credentials:
+# - DATABASE_URL (PostgreSQL connection)
+# - JWT secrets (generate with crypto)
+# - Google Cloud credentials (TTS + Gemini)
+```
+
+**2. Start backend:**
+
 ```bash
 # In a new terminal window
 npm run start-backend
 ```
 
 **Backend runs at:** `http://localhost:3001`
+
+> **Note**: The project uses a single `.env.local` file at the project root for both frontend and backend. See `.env.example` for all required variables.
 
 ---
 
@@ -77,6 +93,8 @@ npm run preview         # Preview production build
 
 ```
 mandarin-vite-react-ts/
+├── .env.local             # Environment variables (gitignored, copy from .env.example)
+├── .env.example           # Environment template (committed)
 ├── apps/
 │   ├── frontend/          # React + Vite frontend
 │   │   ├── src/           # Frontend source code
