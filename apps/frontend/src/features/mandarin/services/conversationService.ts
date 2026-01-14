@@ -2,7 +2,7 @@
 export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ROUTES.conversation;
+    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -27,7 +27,7 @@ export class LocalConversationBackend implements IConversationBackend {
     }
   }
 }
-import { API_ROUTES } from "@mandarin/shared-constants";
+import { API_ENDPOINTS } from "@mandarin/shared-constants";
 import { Conversation, ConversationGenerateRequest } from "../types";
 import { IConversationBackend, IConversationService } from "./interfaces";
 
@@ -57,7 +57,7 @@ export class ConversationService implements IConversationService {
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     const API_BASE = import.meta.env.VITE_API_URL || "";
-    const endpoint = API_BASE ? API_BASE + API_ROUTES.conversation : API_ROUTES.conversation;
+    const endpoint = API_BASE ? API_BASE + API_ENDPOINTS.CONVERSATION : API_ENDPOINTS.CONVERSATION;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

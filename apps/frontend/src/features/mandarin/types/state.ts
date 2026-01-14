@@ -11,14 +11,13 @@ export type UserState = {
 };
 
 /**
- * UiState: UI flags and compatibility fields
+ * UiState: UI flags only (Story 13.4: masteredProgress migrated to ProgressState)
  */
 export type UiState = {
   isLoading: boolean;
   lastUpdated?: string | null;
   selectedList?: string | null;
   selectedWords?: WordBasic[];
-  masteredProgress?: Record<string, Set<string>>;
   error?: string;
 };
 

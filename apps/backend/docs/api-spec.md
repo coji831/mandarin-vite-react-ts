@@ -101,6 +101,238 @@ Generate or retrieve cached conversation text for a vocabulary word.
 - `400 VALIDATION_ERROR`: Missing wordId or word
 - `500 CONVO_TEXT_ERROR`: Gemini API failure or parsing error
 
+## Progress Tracking Endpoints (Story 13.4)
+
+All progress endpoints require authentication via JWT Bearer token.
+
+### GET /api/v1/progress
+
+Get all progress records for authenticated user.
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "id": "uuid-1",
+    "wordId": "word-123",
+    "studyCount": 5,
+    "correctCount": 4,
+    "confidence": 0.8,
+    "nextReview": "2026-01-20T10:00:00.000Z",
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-01-14T14:30:00.000Z"
+  }
+]
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### GET /api/v1/progress/:wordId
+
+Get progress for specific word.
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid-1",
+  "wordId": "word-123",
+  "studyCount": 5,
+  "correctCount": 4,
+  "confidence": 0.8,
+  "nextReview": "2026-01-20T10:00:00.000Z",
+  "createdAt": "2026-01-10T08:00:00.000Z",
+  "updatedAt": "2026-01-14T14:30:00.000Z"
+}
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 PROGRESS_NOT_FOUND`: No progress record exists for this word
+
+### PUT /api/v1/progress/:wordId
+
+Update or create progress for specific word.
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "studyCount": 6,
+  "correctCount": 5,
+  "confidence": 0.9
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid-1",
+  "wordId": "word-123",
+  "studyCount": 6,
+  "correctCount": 5,
+  "confidence": 0.9,
+  "nextReview": "2026-01-25T10:00:00.000Z",
+  "createdAt": "2026-01-10T08:00:00.000Z",
+  "updatedAt": "2026-01-14T15:00:00.000Z"
+}
+```
+
+**Validation:**
+
+- `studyCount`: must be non-negative integer
+- `correctCount`: must be non-negative integer
+- `confidence`: must be number between 0 and 1
+
+**Errors:**
+
+- `400 MISSING_WORD_ID`: wordId parameter is required
+- `400 INVALID_STUDY_COUNT`: studyCount must be non-negative number
+- `400 INVALID_CORRECT_COUNT`: correctCount must be non-negative number
+- `400 INVALID_CONFIDENCE`: confidence must be between 0 and 1
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### DELETE /api/v1/progress/:wordId
+
+Delete progress for specific word (toggle mastery).
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (204 No Content)**
+
+No response body on success.
+
+**Errors:**
+
+- `400 MISSING_WORD_ID`: wordId parameter is required
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 PROGRESS_NOT_FOUND`: No progress record exists for this word
+
+### POST /api/v1/progress/batch
+
+Batch update progress for multiple words (atomic transaction).
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "updates": [
+    {
+      "wordId": "word-123",
+      "studyCount": 1,
+      "confidence": 0.5
+    },
+    {
+      "wordId": "word-456",
+      "studyCount": 2,
+      "confidence": 0.7
+    }
+  ]
+}
+```
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "id": "uuid-1",
+    "wordId": "word-123",
+    "studyCount": 1,
+    "correctCount": 0,
+    "confidence": 0.5,
+    "nextReview": "2026-01-15T10:00:00.000Z",
+    "createdAt": "2026-01-14T16:00:00.000Z",
+    "updatedAt": "2026-01-14T16:00:00.000Z"
+  },
+  {
+    "id": "uuid-2",
+    "wordId": "word-456",
+    "studyCount": 2,
+    "correctCount": 0,
+    "confidence": 0.7,
+    "nextReview": "2026-01-18T10:00:00.000Z",
+    "createdAt": "2026-01-14T16:00:00.000Z",
+    "updatedAt": "2026-01-14T16:00:00.000Z"
+  }
+]
+```
+
+**Errors:**
+
+- `400 INVALID_UPDATES`: updates must be an array
+- `400 EMPTY_UPDATES`: updates array cannot be empty
+- `400 MISSING_WORD_ID`: Each update must have a wordId
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### GET /api/v1/progress/stats
+
+Get progress statistics summary for authenticated user.
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "totalWords": 1500,
+  "studiedWords": 250,
+  "masteredWords": 85,
+  "totalStudyCount": 1200,
+  "averageConfidence": 0.68,
+  "wordsToReviewToday": 12
+}
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+**Notes:**
+
+- `masteredWords`: Words with confidence ≥ 0.8
+- `wordsToReviewToday`: Words with `nextReview` date ≤ current time
+- `averageConfidence`: Mean confidence across all studied words
+
 ### POST /api/mandarin/conversation/audio/generate
 
 Generate or retrieve cached audio for a conversation. Conversation text must exist first.
@@ -191,3 +423,214 @@ All errors follow this structure:
 - `ENABLE_DETAILED_LOGS`: Enable debug logs (default: false)
 - `ENABLE_CACHE`: Enable caching (default: true)
 - `ENABLE_METRICS`: Enable metrics collection (default: false)
+
+## Progress Endpoints (Story 13.4)
+
+### GET /api/v1/progress
+
+Get all progress records for authenticated user.
+
+**Auth:** Required (JWT Bearer token)
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "id": "uuid-1",
+    "userId": "user-123",
+    "wordId": "hsk1_001",
+    "studyCount": 5,
+    "correctCount": 3,
+    "confidence": 0.6,
+    "nextReview": "2026-01-15T10:00:00.000Z",
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-01-14T12:00:00.000Z"
+  }
+]
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### GET /api/v1/progress/:wordId
+
+Get progress for specific word.
+
+**Auth:** Required (JWT Bearer token)
+
+**Path Parameters:**
+
+- `wordId` (string): Unique word identifier
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid-1",
+  "userId": "user-123",
+  "wordId": "hsk1_001",
+  "studyCount": 5,
+  "correctCount": 3,
+  "confidence": 0.6,
+  "nextReview": "2026-01-15T10:00:00.000Z",
+  "createdAt": "2026-01-10T08:00:00.000Z",
+  "updatedAt": "2026-01-14T12:00:00.000Z"
+}
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 PROGRESS_NOT_FOUND`: No progress record exists for this word
+
+### PUT /api/v1/progress/:wordId
+
+Update or create progress for specific word. Uses upsert pattern.
+
+**Auth:** Required (JWT Bearer token)
+
+**Path Parameters:**
+
+- `wordId` (string): Unique word identifier
+
+**Request Body:**
+
+```json
+{
+  "studyCount": 6,
+  "correctCount": 5,
+  "confidence": 0.9
+}
+```
+
+> **Note:** All fields are optional. `nextReview` date is calculated server-side based on `confidence` using spaced repetition algorithm.
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid-1",
+  "userId": "user-123",
+  "wordId": "hsk1_001",
+  "studyCount": 6,
+  "correctCount": 5,
+  "confidence": 0.9,
+  "nextReview": "2026-01-20T10:00:00.000Z",
+  "createdAt": "2026-01-10T08:00:00.000Z",
+  "updatedAt": "2026-01-14T14:30:00.000Z"
+}
+```
+
+**Errors:**
+
+- `400 INVALID_CONFIDENCE`: Confidence must be between 0 and 1
+- `400 INVALID_STUDY_COUNT`: Study count must be non-negative
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### DELETE /api/v1/progress/:wordId
+
+Delete progress record for specific word. Used for "toggle mastery" feature.
+
+**Auth:** Required (JWT Bearer token)
+
+**Path Parameters:**
+
+- `wordId` (string): Unique word identifier
+
+**Response (204 No Content):**
+
+No response body on success.
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 PROGRESS_NOT_FOUND`: No progress record exists for this word
+
+### POST /api/v1/progress/batch
+
+Batch update progress for multiple words. Atomic transaction (all succeed or all fail).
+
+**Auth:** Required (JWT Bearer token)
+
+**Request Body:**
+
+```json
+{
+  "updates": [
+    {
+      "wordId": "hsk1_001",
+      "studyCount": 5,
+      "correctCount": 3,
+      "confidence": 0.6
+    },
+    {
+      "wordId": "hsk1_002",
+      "studyCount": 2,
+      "correctCount": 1,
+      "confidence": 0.3
+    }
+  ]
+}
+```
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "id": "uuid-1",
+    "wordId": "hsk1_001",
+    "studyCount": 5,
+    "correctCount": 3,
+    "confidence": 0.6
+  },
+  {
+    "id": "uuid-2",
+    "wordId": "hsk1_002",
+    "studyCount": 2,
+    "correctCount": 1,
+    "confidence": 0.3
+  }
+]
+```
+
+**Errors:**
+
+- `400 EMPTY_UPDATES`: Updates array cannot be empty
+- `400 INVALID_UPDATES`: Updates must be an array
+- `400 MISSING_WORD_ID`: Each update must have a wordId
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+### GET /api/v1/progress/stats
+
+Get summary statistics for authenticated user's progress.
+
+**Auth:** Required (JWT Bearer token)
+
+**Response (200 OK):**
+
+```json
+{
+  "totalWords": 150,
+  "studiedWords": 45,
+  "masteredWords": 12,
+  "totalStudyCount": 230,
+  "averageConfidence": 0.72,
+  "wordsToReviewToday": 8
+}
+```
+
+**Field Definitions:**
+
+- `totalWords`: Total vocabulary words available in system
+- `studiedWords`: Number of words user has studied (any progress record exists)
+- `masteredWords`: Words with confidence ≥ 0.8
+- `totalStudyCount`: Sum of all studyCount values
+- `averageConfidence`: Mean confidence across all studied words
+- `wordsToReviewToday`: Words with `nextReview` date ≤ today
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token

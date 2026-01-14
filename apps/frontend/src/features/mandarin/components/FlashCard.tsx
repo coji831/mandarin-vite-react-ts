@@ -25,11 +25,12 @@ type FlashCardProps = {
   onBackToList: () => void;
 };
 
-export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
+export function FlashCard({ words, onBackToList }: FlashCardProps) {
   // Select only the parts of progress state this component needs to avoid re-renders
-  // use masteredProgress from ui and compute simple progress locally
-  const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
-  const { markWordLearned } = useProgressActions();
+  // Story 13.4: Single source - progress reducer (backend, binary mastery)
+  const progressState = useProgressState((s: RootState) => s.progress?.wordsById ?? {});
+  const { markWordLearned, unmarkWordLearned } = useProgressActions();
+  const [toggleError, setToggleError] = useState<string | null>(null);
 
   const cards = words.map(mapToCard);
 
@@ -59,8 +60,15 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
     return null;
   }
 
-  // Mastery logic: compute from masteredProgress
-  const masteredWords = masteredProgress[listId] || new Set<string>();
+  // Mastery logic: compute from progressState
+  // Binary check - record exists = mastered (confidence always 1.0)
+  const masteredWords = new Set<string>();
+  words.forEach((w) => {
+    if (progressState[w.wordId]) {
+      // Just check if record exists
+      masteredWords.add(w.wordId);
+    }
+  });
   const mastered = masteredWords.size;
   const percent = words.length === 0 ? 0 : Math.round((mastered / words.length) * 100);
 
@@ -119,19 +127,36 @@ export function FlashCard({ words, listId, onBackToList }: FlashCardProps) {
                 </button>
               </div>
               {/* Mastered Button Row */}
-              <div className="flex flex-center" style={{ width: "100%" }}>
+              <div
+                className="flex flex-center"
+                style={{ width: "100%", flexDirection: "column", gap: "8px" }}
+              >
                 <button
-                  onClick={() => markWordLearned(currentCard.wordId)}
-                  disabled={masteredWords.has(currentCard.wordId)}
+                  onClick={async () => {
+                    try {
+                      setToggleError(null);
+                      if (masteredWords.has(currentCard.wordId)) {
+                        await unmarkWordLearned(currentCard.wordId);
+                      } else {
+                        await markWordLearned(currentCard.wordId);
+                      }
+                    } catch (error) {
+                      console.error("Failed to toggle mastery:", error);
+                      setToggleError("Failed to update progress. Please try again.");
+                    }
+                  }}
                   style={{
-                    background: masteredWords.has(currentCard.wordId) ? "#aaaaaa" : "#38405aff",
+                    background: masteredWords.has(currentCard.wordId) ? "#4caf50" : "#38405aff",
                     color: "#ffffff",
                     minWidth: 140,
                     transition: "background 0.2s, box-shadow 0.2s",
                   }}
                 >
-                  {masteredWords.has(currentCard.wordId) ? "Mastered" : "Mark as Mastered"}
+                  {masteredWords.has(currentCard.wordId) ? "Mastered ✓" : "Mark as Mastered"}
                 </button>
+                {toggleError && (
+                  <span style={{ color: "#ff6b6b", fontSize: 14 }}>{toggleError}</span>
+                )}
               </div>
               {/* Navigation Buttons at bottom corners */}
               <div className="flex" style={{ width: "100%", justifyContent: "space-around" }}>

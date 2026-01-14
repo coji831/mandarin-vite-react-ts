@@ -68,7 +68,6 @@ Components interact with progress state through custom hooks. The state follows 
     lastUpdated?: string | null
     selectedList?: string | null
     selectedWords?: WordBasic[]
-    masteredProgress?: Record<string, Set<string>>
     error?: string
   }
 }
@@ -87,7 +86,6 @@ const data = useProgressState(selector);
 - **Examples**:
   - `useProgressState(s => s.ui?.selectedWords ?? [])`
   - `useProgressState(s => s.ui?.isLoading ?? false)`
-  - `useProgressState(s => s.ui?.masteredProgress ?? {})`
   - `useProgressState(s => s.vocabLists?.itemsById)`
   - `useProgressState(s => s.user?.userId)`
 
@@ -146,13 +144,12 @@ Manages user/device identity.
 
 The following actions are available via `useProgressActions()`:
 
-| Action                | Type                       | Payload                                     | Description                                                              |
-| --------------------- | -------------------------- | ------------------------------------------- | ------------------------------------------------------------------------ |
-| `setSelectedList`     | `UI/SET_SELECTED_LIST`     | `{ listId: string \| null }`                | Select a vocabulary list                                                 |
-| `setSelectedWords`    | `UI/SET_SELECTED_WORDS`    | `{ words: WordBasic[] }`                    | Set current word selection                                               |
-| `setLoading`          | `UI/SET_LOADING`           | `{ isLoading: boolean }`                    | Update loading state                                                     |
-| `setError`            | `UI/SET_ERROR`             | `{ error?: string }`                        | Set error message                                                        |
-| `setMasteredProgress` | `UI/SET_MASTERED_PROGRESS` | `{ mastered: Record<string, Set<string>> }` | Bulk update mastered words                                               |
-| `markWordLearned`     | Multiple                   | `id: string`                                | Mark word as learned (dispatches to both `vocabLists` and `ui` reducers) |
-| `resetProgress`       | `RESET`                    | none                                        | Clear all progress data                                                  |
-| `init`                | `INIT`                     | none                                        | Initialize state                                                         |
+| Action             | Type                    | Payload                      | Description                                                              |
+| ------------------ | ----------------------- | ---------------------------- | ------------------------------------------------------------------------ |
+| `setSelectedList`  | `UI/SET_SELECTED_LIST`  | `{ listId: string \| null }` | Select a vocabulary list                                                 |
+| `setSelectedWords` | `UI/SET_SELECTED_WORDS` | `{ words: WordBasic[] }`     | Set current word selection                                               |
+| `setLoading`       | `UI/SET_LOADING`        | `{ isLoading: boolean }`     | Update loading state                                                     |
+| `setError`         | `UI/SET_ERROR`          | `{ error?: string }`         | Set error message                                                        |
+| `markWordLearned`  | Multiple                | `id: string`                 | Mark word as learned (dispatches to both `vocabLists` and `ui` reducers) |
+| `resetProgress`    | `RESET`                 | none                         | Clear all progress data                                                  |
+| `init`             | `INIT`                  | none                         | Initialize state                                                         |

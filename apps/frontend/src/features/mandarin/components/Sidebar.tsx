@@ -8,6 +8,7 @@
  * - Story 4-8: Updated for route-based navigation.
  */
 import React from "react";
+
 import { useProgressState } from "../hooks";
 import { Card } from "../types";
 import { RootState } from "../reducers/rootReducer";
@@ -30,14 +31,18 @@ function Sidebar({
   handleSidebarClick,
   onBackToList,
 }: Readonly<Props>) {
-  // Use selector hook to read only the needed slices
-  const masteredProgress = useProgressState((s: RootState) => s.ui.masteredProgress ?? {});
-  const selectedList = useProgressState((s: RootState) => s.ui.selectedList ?? null);
-  const masteredWordIds =
-    selectedList && masteredProgress[selectedList]
-      ? masteredProgress[selectedList]
-      : new Set<string>();
-  const mastered = filteredWords.filter((w) => masteredWordIds.has(w.wordId)).length;
+  // Story 13.4: Read from progress reducer (backend-synced, binary mastery)
+  const progressState = useProgressState((s: RootState) => s.progress?.wordsById ?? {});
+
+  // Calculate mastered words from progress reducer
+  const masteredWordIds = new Set<string>();
+  filteredWords.forEach((w) => {
+    if (progressState[w.wordId]) {
+      masteredWordIds.add(w.wordId);
+    }
+  });
+
+  const mastered = masteredWordIds.size;
   const total = filteredWords.length;
   return (
     <div className="flashcard-sidebar flex flex-col padding-10 gap-10" style={{ width: "30%" }}>

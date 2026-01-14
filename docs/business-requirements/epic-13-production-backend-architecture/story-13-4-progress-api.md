@@ -12,14 +12,20 @@ Migrating progress tracking from localStorage to the backend completes the multi
 
 ## Acceptance Criteria
 
-- [ ] GET /api/v1/progress endpoint returns all progress for authenticated user
-- [ ] GET /api/v1/progress/:wordId endpoint returns specific progress record
-- [ ] PUT /api/v1/progress/:wordId endpoint updates progress (studyCount, correctCount, confidence)
-- [ ] POST /api/v1/progress/batch endpoint handles bulk progress updates
-- [ ] GET /api/v1/progress/stats endpoint returns summary statistics
-- [ ] Data migration utility successfully imports localStorage progress to backend
-- [ ] Frontend fully integrated with backend API (no more CSV/localStorage for progress)
-- [ ] Cross-device sync verified: progress on device A appears on device B after login
+- [x] GET /api/v1/progress endpoint returns all progress for authenticated user
+- [x] GET /api/v1/progress/:wordId endpoint returns specific progress record
+- [x] PUT /api/v1/progress/:wordId endpoint updates progress (studyCount, correctCount, confidence)
+- [x] POST /api/v1/progress/batch endpoint handles bulk progress updates
+- [x] GET /api/v1/progress/stats endpoint returns summary statistics
+- [x] Data migration utility successfully imports localStorage progress to backend
+- [x] Frontend fully integrated with backend API (no more CSV/localStorage for progress)
+- [x] Cross-device sync verified: progress on device A appears on device B after login
+
+## Additional Features (Beyond Original AC)
+
+- [x] DELETE /api/v1/progress/:wordId endpoint for toggle mastery (unmark learned words)
+- [x] UI toggle button in FlashCard component with error handling
+- [x] Optimistic UI updates with server reconciliation
 
 ## Business Rules
 
@@ -36,7 +42,12 @@ Migrating progress tracking from localStorage to the backend completes the multi
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Completed
+- **PR**: TBD (awaiting commit)
+- **Last Update**: 2026-01-14
+- **Key Changes**:
+  - 6 progress API endpoints (5 from AC + DELETE for toggle)
+  - Frontend reducer with UNMARK_WORD_LEARNED action
+  - Error handling in FlashCard toggle UI
+  - Selector pattern for state access (selectWordsById)
+  - Comprehensive test coverage added

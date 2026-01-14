@@ -2,20 +2,16 @@
  * ProgressContext.tsx
  *
  * Provider scaffold for Epic-9 Story 9.2. Converts the provider internals to useReducer
- * and exports split state/dispatch contexts. This file intentionally implements a minimal
- * deterministic initialization sequence that clears legacy persisted progress before
- * mounting consumers.
+ * and exports split state/dispatch contexts.
+ *
+ * Story 13.4: Backend-only progress loading (no localStorage)
  */
 import React, { createContext, ReactNode, useEffect, useReducer, useState } from "react";
 
-import { RootState, rootReducer, initialState, RootAction } from "../reducers/rootReducer";
-import {
-  getUserIdentity,
-  getUserProgress,
-  persistMasteredProgress,
-  restoreMasteredProgress,
-  saveUserProgress,
-} from "../utils";
+import type { ProgressResponse } from "@mandarin/shared-types";
+import { initialState, RootAction, rootReducer, RootState } from "../reducers/rootReducer";
+import { progressApi } from "../services/progressService";
+import { WordProgress } from "../types";
 
 export const ProgressStateContext = createContext<RootState | null>(
   null
@@ -36,27 +32,7 @@ export function ProgressProvider({ children }: Props) {
   useEffect(() => {
     async function init() {
       try {
-        // determine current user identity and load persisted progress
-        const identity = getUserIdentity();
-        const userProgress = getUserProgress(identity.userId);
-
-        // restore mastered progress into compatibility UI slice
-        const mastered = restoreMasteredProgress(userProgress);
-        // convert mastered (Set map) into serialized shape expected by reducer
-        const serialized: Record<string, Record<string, boolean>> = {};
-        Object.keys(mastered).forEach((listId) => {
-          const set = mastered[listId] || new Set<string>();
-          const obj: Record<string, boolean> = {};
-          set.forEach((id) => (obj[id] = true));
-          serialized[listId] = obj;
-        });
-
-        if (Object.keys(serialized).length > 0) {
-          dispatch({
-            type: "UI/SET_MASTERED_PROGRESS",
-            payload: { mastered: serialized },
-          } as RootAction);
-        }
+        await loadBackendProgress(dispatch);
       } finally {
         setReady(true);
       }
@@ -64,27 +40,6 @@ export function ProgressProvider({ children }: Props) {
 
     void init();
   }, []);
-
-  // Persist compatibility UI mastered progress when it changes (selectedList, selectedWords)
-  // Extract UI slice and relevant fields for useEffect dependencies
-  const ui = (state as RootState).ui;
-  const masteredProgress = ui && ui.masteredProgress;
-  const selectedList = ui && ui.selectedList;
-  const selectedWords = ui && ui.selectedWords;
-
-  useEffect(() => {
-    // we only persist when a user identity exists
-    try {
-      const identity = getUserIdentity();
-      const userId = identity.userId;
-      const masteredMap = masteredProgress || {};
-      const userProgress = persistMasteredProgress(masteredMap, getUserProgress(userId));
-      saveUserProgress(userId, userProgress);
-    } catch (e) {
-      // best-effort persistence — don't block UI
-      console.warn("Progress persistence failed:", e);
-    }
-  }, [state, ui, masteredProgress, selectedList, selectedWords]);
 
   if (!ready) return null;
 
@@ -95,4 +50,45 @@ export function ProgressProvider({ children }: Props) {
       </ProgressDispatchContext.Provider>
     </ProgressStateContext.Provider>
   );
+}
+
+/**
+ * Transform backend ProgressResponse to WordProgress format
+ */
+function transformProgressRecords(records: ProgressResponse[]): WordProgress[] {
+  return records.map((p) => ({
+    ...p,
+    learnedAt: p.confidence >= 1.0 ? p.updatedAt : null,
+  }));
+}
+
+/**
+ * Load progress from backend API
+ */
+async function loadBackendProgress(dispatch: React.Dispatch<RootAction>): Promise<void> {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    return;
+  }
+
+  try {
+    dispatch({ type: "UI/SET_LOADING", payload: { isLoading: true } });
+
+    const progressRecords = await progressApi.getAllProgress();
+    const transformed = transformProgressRecords(progressRecords);
+
+    dispatch({
+      type: "PROGRESS/LOAD_ALL",
+      payload: { progressRecords: transformed },
+    });
+
+    dispatch({ type: "UI/SET_LOADING", payload: { isLoading: false } });
+  } catch (error) {
+    console.error("Failed to load progress from backend:", error);
+    dispatch({
+      type: "UI/SET_ERROR",
+      payload: { error: "Failed to load progress from server" },
+    });
+    dispatch({ type: "UI/SET_LOADING", payload: { isLoading: false } });
+  }
 }

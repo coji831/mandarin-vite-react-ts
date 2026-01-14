@@ -77,10 +77,11 @@ export function saveUserProgress(userId: string, progress: UserProgress): void {
 }
 
 // =========================
-// Mastery Conversion Utilities
+// Mastery Conversion Utilities (DEPRECATED - Story 13.4)
 // =========================
 
 /**
+ * @deprecated Use progress reducer + backend API instead of localStorage
  * Convert stored UserProgress -> { [listId]: Set<string> }
  */
 export function restoreMasteredProgress(userProgress: UserProgress): Record<string, Set<string>> {
@@ -94,6 +95,7 @@ export function restoreMasteredProgress(userProgress: UserProgress): Record<stri
 }
 
 /**
+ * @deprecated Use progress reducer + backend API instead of localStorage
  * Convert Sets -> UserProgress. If storedTemplate is provided, preserve list.words arrays.
  */
 export function persistMasteredProgress(

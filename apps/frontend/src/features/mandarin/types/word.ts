@@ -14,6 +14,11 @@ export type WordBasic = {
 export type WordProgress = {
   wordId: string;
   learnedAt?: string | null;
+  // Backend progress fields (Story 13.4)
+  studyCount?: number;
+  correctCount?: number;
+  confidence?: number; // 0.0 - 1.0 scale
+  nextReview?: string; // ISO 8601 date string
 };
 
 /**

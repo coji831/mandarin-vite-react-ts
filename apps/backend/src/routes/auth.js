@@ -7,6 +7,7 @@ import express from "express";
 import { rateLimit } from "express-rate-limit";
 import * as authController from "../controllers/authController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
@@ -24,14 +25,14 @@ const authLimiter = rateLimit({
 });
 
 // Apply rate limiting to login and register (most vulnerable to brute force)
-router.post("/v1/auth/register", authLimiter, authController.register);
-router.post("/v1/auth/login", authLimiter, authController.login);
+router.post(ROUTE_PATTERNS.authRegister, authLimiter, authController.register);
+router.post(ROUTE_PATTERNS.authLogin, authLimiter, authController.login);
 
 // Refresh and logout don't need rate limiting (already authenticated)
-router.post("/v1/auth/refresh", authController.refresh);
-router.post("/v1/auth/logout", authController.logout);
+router.post(ROUTE_PATTERNS.authRefresh, authController.refresh);
+router.post(ROUTE_PATTERNS.authLogout, authController.logout);
 
 // Protected route - get current user
-router.get("/v1/auth/me", authenticateToken, authController.getCurrentUser);
+router.get(ROUTE_PATTERNS.authMe, authenticateToken, authController.getCurrentUser);
 
 export default router;

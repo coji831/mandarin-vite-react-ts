@@ -314,8 +314,17 @@ The root reducer combines three domain-specific sub-reducers:
 
 2. **`progress`**: Normalized progress data (type: `ProgressState`)
 
+- Source: Backend API (`/api/v1/progress/*`) with JWT authentication
 - State: `{ wordsById: Record<wordId, WordProgress>, wordIds: string[] }`
-- Handles: Per-word progress tracking
+- Persistence: PostgreSQL database (user-isolated via `userId` foreign key)
+- Selectors: Always use `selectWordsById(state)` - avoid direct state access
+- Actions:
+  - `PROGRESS/LOAD_ALL` - Batch load from backend on login
+  - `MARK_WORD_LEARNED` - Optimistic update + API sync (confidence = 1.0)
+  - `UNMARK_WORD_LEARNED` - Delete progress record (toggle mastery)
+  - `PROGRESS/UPDATE_WORD` - Optimistic update before API response
+  - `PROGRESS/SYNC_WORD` - Reconcile with authoritative server data
+- Cross-Device Sync: Progress automatically syncs across devices via backend
 
 3. **`user`**: User identity and preferences (type: `UserState`)
 
@@ -386,21 +395,26 @@ useProgressActions().markWordLearned(id)
 Component
 ```
 
-### Multi-User Support
+### Multi-User Support (Epic 13)
 
-- **User Identity**: Tracked per device via `getUserIdentity()` helper
-- **Progress Isolation**: All progress namespaced by `userId` in localStorage
-- **Storage Keys**:
-  - `user_identity`: User/device identity
-  - `progress_{userId}`: Per-user progress data
-- **Architecture**: Ready for future cloud sync or authentication integration
+- **Authentication (Story 13.3):** JWT-based authentication with refresh tokens
+- **User Identity:** Tracked server-side via `userId` (from JWT)
+- **Progress Isolation:** All progress records filtered by authenticated `userId`
+- **Database:** PostgreSQL with Prisma ORM
+  - `users` table: email, passwordHash, displayName, tokens
+  - `progress` table: userId, wordId, studyCount, correctCount, confidence, nextReview
+  - Unique constraint on `(userId, wordId)` prevents duplicates
+- **Cross-Device Sync:** Progress automatically synced across devices via backend API
+- **Security:** bcrypt password hashing, JWT token expiration, strict user isolation
 
-### Persistence Strategy
+### Persistence Strategy (Updated: Story 13.4)
 
-- **Auto-save**: Progress automatically persisted to localStorage on state changes
-- **Initialization**: Progress loaded from localStorage on `ProgressProvider` mount
-- **Format**: Serialized to JSON for storage, deserialized to Sets/Objects for runtime
-- **Helpers**: `progressHelpers.ts` provides `getUserProgress()`, `saveUserProgress()`, `persistMasteredProgress()`, `restoreMasteredProgress()`
+- **Backend API:** Progress saved to PostgreSQL via `/api/v1/progress/*` endpoints
+- **Optimistic Updates:** Frontend immediately updates UI before API response
+- **Server Reconciliation:** API response is authoritative; reconciles with optimistic state
+- **Spaced Repetition:** `nextReview` dates calculated server-side based on confidence
+- **Migration Complete:** localStorage no longer used for progress (migrated in Story 13.4)
+- **Selectors:** Always use `selectWordsById(state)` from `progressReducer.ts`
 
 For detailed state management documentation, see [`apps/frontend/src/features/mandarin/docs/design.md`](../apps/frontend/src/features/mandarin/docs/design.md) and [`apps/frontend/src/features/mandarin/docs/api-spec.md`](../apps/frontend/src/features/mandarin/docs/api-spec.md).
 

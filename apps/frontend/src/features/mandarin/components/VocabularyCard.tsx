@@ -1,30 +1,26 @@
-import { VocabularyList } from "../types";
+import { VocabularyList, WordProgress } from "../types";
+import type { RootState } from "../reducers";
+import { selectWordsById } from "../reducers/progressReducer";
+import { useProgressState } from "../hooks";
 import "./VocabularyCard.css";
 
 interface VocabularyCardProps {
   list: VocabularyList;
   onSelect: (list: VocabularyList) => void;
-  progress?: number; // 0-100, optional
-  masteredCount?: number;
+  wordIds?: string[]; // Optional: actual word IDs for this list for accurate progress calculation
 }
 
-const getDifficultyColor = (difficulty: string): string => {
-  switch (difficulty) {
-    case "beginner":
-      return "#4caf50"; // Green
-    case "intermediate":
-      return "#ff9800"; // Orange
-    case "advanced":
-      return "#f44336"; // Red
-    default:
-      return "#757575"; // Gray for unknown
-  }
-};
+export function VocabularyCard({ list, onSelect, wordIds }: VocabularyCardProps) {
+  // Story 13.4: Get progress data using selector (avoids direct state access)
+  const progressData = useProgressState((s: RootState) =>
+    selectWordsById(s.progress ?? { wordsById: {}, wordIds: [] })
+  );
 
-export function VocabularyCard({ list, onSelect, progress, masteredCount }: VocabularyCardProps) {
-  // For demo, use a random progress if not provided
-  const progressValue = typeof progress === "number" ? progress : 0;
-  const mastered = typeof masteredCount === "number" ? masteredCount : 0;
+  // Calculate progress from backend data
+  const calculatedProgress = calculateListProgress(list, progressData, wordIds);
+
+  const progressValue = calculatedProgress.progressPercent;
+  const mastered = calculatedProgress.masteredCount;
   const notStarted = progressValue === 0 && mastered === 0;
   return (
     <div className="vocabulary-card" tabIndex={0} aria-label={`Vocabulary list: ${list.name}`}>
@@ -78,3 +74,75 @@ export function VocabularyCard({ list, onSelect, progress, masteredCount }: Voca
     </div>
   );
 }
+
+/**
+ * Calculate vocabulary list progress metrics from backend progress data.
+ *
+ * Applies mastery criteria (confidence ≥ 0.8 OR correctCount ≥ 3) to determine
+ * how many words in the list have been mastered.
+ *
+ * Story 13.4: Progress migrated from localStorage to backend; wordIds now
+ * loaded from vocabulary files and passed as separate prop.
+ *
+ * @param list - The vocabulary list containing metadata (name, wordCount)
+ * @param progressData - Record of wordId → WordProgress from reducer state
+ * @param actualWordIds - Array of word IDs belonging to this list (required for accurate calculation)
+ * @returns Object containing:
+ *   - masteredCount: Number of words meeting mastery criteria
+ *   - progressPercent: Percentage (0-100) of list completion
+ *
+ * @example
+ * const progress = calculateListProgress(
+ *   { id: "hsk1", wordCount: 150, ...otherFields },
+ *   { "word1": { confidence: 0.9, ... }, "word2": { correctCount: 4, ... } },
+ *   ["word1", "word2", "word3"]
+ * );
+ * // Returns: { masteredCount: 2, progressPercent: 67 }
+ */
+function calculateListProgress(
+  list: VocabularyList,
+  progressData?: Record<string, WordProgress>,
+  actualWordIds?: string[]
+): { masteredCount: number; progressPercent: number } {
+  if (!progressData) {
+    return { masteredCount: 0, progressPercent: 0 };
+  }
+
+  // If we have actual word IDs, use them for accurate calculation
+  if (actualWordIds && actualWordIds.length > 0) {
+    const masteredCount = actualWordIds.filter((wordId) => {
+      const progress = progressData[wordId];
+      if (!progress) return false;
+
+      // Mastery criteria: confidence >= 0.8 or correctCount >= 3
+      const hasHighConfidence = (progress.confidence ?? 0) >= 0.8;
+      const hasEnoughCorrect = (progress.correctCount ?? 0) >= 3;
+      return hasHighConfidence || hasEnoughCorrect;
+    }).length;
+
+    const progressPercent = Math.round((masteredCount / actualWordIds.length) * 100);
+    return { masteredCount, progressPercent };
+  }
+
+  // Fallback: use wordCount as denominator (less accurate)
+  // This will show 0% until words are loaded and passed via actualWordIds
+  const wordCount = list.wordCount ?? 0;
+  if (wordCount === 0) {
+    return { masteredCount: 0, progressPercent: 0 };
+  }
+
+  return { masteredCount: 0, progressPercent: 0 };
+}
+
+const getDifficultyColor = (difficulty: string): string => {
+  switch (difficulty) {
+    case "beginner":
+      return "#4caf50"; // Green
+    case "intermediate":
+      return "#ff9800"; // Orange
+    case "advanced":
+      return "#f44336"; // Red
+    default:
+      return "#757575"; // Gray for unknown
+  }
+};

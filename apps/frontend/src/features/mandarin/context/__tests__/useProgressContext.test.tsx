@@ -1,11 +1,11 @@
 import { render } from "@testing-library/react";
 import React, { useRef } from "react";
 
-import { ProgressDispatchContext, ProgressStateContext } from "../context";
-import { UserState as AppUserState, RootState } from "../reducers";
-import { RootAction } from "../reducers/rootReducer";
-import { useProgressActions } from "./useProgressActions";
-import { useProgressState } from "./useProgressState";
+import { ProgressDispatchContext, ProgressStateContext } from "..";
+import { UserState as AppUserState, RootState } from "../../reducers";
+import { RootAction } from "../../reducers/rootReducer";
+import { useProgressActions } from "../../hooks/useProgressActions";
+import { useProgressState } from "../../hooks/useProgressState";
 
 // Mock fetch for vocabulary data
 global.fetch = jest.fn();
@@ -18,22 +18,8 @@ function TestHook({ callback }: { callback: (hook: unknown) => void }) {
   const actions = useProgressActions();
   const called = useRef(false);
 
-  // assemble legacy-shaped object the same way the compat shim does
+  // Story 13.4: Removed legacy masteredProgress - now uses progress.wordsById
   const hook = {
-    masteredProgress: state.ui?.masteredProgress || {},
-    setMasteredProgress: (updater: React.SetStateAction<Record<string, Set<string>>>) => {
-      // emulate legacy setter by serializing and calling actions.setMasteredProgress
-      const current = state.ui?.masteredProgress || {};
-      const next = typeof updater === "function" ? updater(current) : updater;
-      const serialized: Record<string, Record<string, boolean>> = {};
-      Object.keys(next || {}).forEach((listId) => {
-        const set = next[listId] || new Set<string>();
-        const obj: Record<string, boolean> = {};
-        set.forEach((id: string) => (obj[id] = true));
-        serialized[listId] = obj;
-      });
-      actions.setMasteredProgress(serialized);
-    },
     selectedList: state.ui?.selectedList ?? null,
     setSelectedList: (v: React.SetStateAction<string | null>) =>
       actions.setSelectedList(
@@ -43,13 +29,15 @@ function TestHook({ callback }: { callback: (hook: unknown) => void }) {
       ),
     markWordLearned: actions.markWordLearned,
     selectedWords: state.ui?.selectedWords || [],
-    setSelectedWords: (v: React.SetStateAction<import("../types/word").WordBasic[]>) =>
+    setSelectedWords: (v: React.SetStateAction<import("../../types/word").WordBasic[]>) =>
       actions.setSelectedWords(
         typeof v === "function"
-          ? (v as (p: import("../types/word").WordBasic[]) => import("../types/word").WordBasic[])(
-              state.ui?.selectedWords || []
-            )
-          : (v as import("../types/word").WordBasic[])
+          ? (
+              v as (
+                p: import("../../types/word").WordBasic[]
+              ) => import("../../types/word").WordBasic[]
+            )(state.ui?.selectedWords || [])
+          : (v as import("../../types/word").WordBasic[])
       ),
     loading: state.ui?.isLoading ?? false,
     setLoading: (v: React.SetStateAction<boolean>) =>

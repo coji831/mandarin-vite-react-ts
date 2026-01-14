@@ -24,6 +24,7 @@ export function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // { userId, email, ... }
+    req.userId = decoded.userId; // Convenience field for controllers
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {

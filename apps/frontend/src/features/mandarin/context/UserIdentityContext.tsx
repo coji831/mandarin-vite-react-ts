@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode } from "react";
 
 import { useUserIdentity } from "../hooks";
 import { UserIdentity } from "../utils";

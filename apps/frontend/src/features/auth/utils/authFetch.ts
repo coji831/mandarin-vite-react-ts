@@ -84,6 +84,7 @@ async function getValidToken(): Promise<string> {
 /**
  * Authenticated fetch wrapper with automatic token refresh
  * Handles token expiry transparently - components just make normal requests
+ * Automatically prepends API_BASE to all URLs
  */
 export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
   try {
@@ -94,8 +95,12 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
     const headers = new Headers(options.headers);
     headers.set("Authorization", `Bearer ${token}`);
 
+    // Prepend API base URL
+    const fullUrl = API_BASE + url;
+    console.log(url);
+
     // Make request
-    const response = await fetch(url, {
+    const response = await fetch(fullUrl, {
       ...options,
       headers,
       credentials: "include", // Include cookies
@@ -107,7 +112,7 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
       const newToken = await refreshAccessToken();
 
       headers.set("Authorization", `Bearer ${newToken}`);
-      return fetch(url, {
+      return fetch(fullUrl, {
         ...options,
         headers,
         credentials: "include",

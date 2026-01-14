@@ -2,7 +2,7 @@
 // Unit tests for AudioService (Epic 11, Story 11.3)
 
 import { ConversationAudio, WordAudio } from "features/mandarin/types";
-import { API_ROUTES } from "@mandarin/shared-constants";
+import { API_ENDPOINTS } from "@mandarin/shared-constants";
 import { AudioService } from "../audioService";
 import { IAudioBackend } from "../interfaces";
 
@@ -17,7 +17,7 @@ global.fetch = jest.fn((url: unknown, opts?: { body?: string }) => {
   const urlStr = String(url);
   const body = opts && opts.body ? JSON.parse(opts.body) : {};
   // Updated for unified /api/conversation endpoint with type routing
-  if (urlStr === API_ROUTES.conversation && body.type === "audio") {
+  if (urlStr === API_ENDPOINTS.CONVERSATION && body.type === "audio") {
     // Conversation audio endpoint: expects params with wordId and type: "audio"
     const conversationId = body.wordId || "c1";
     return Promise.resolve({
@@ -31,7 +31,7 @@ global.fetch = jest.fn((url: unknown, opts?: { body?: string }) => {
         }),
     });
   }
-  if (urlStr === API_ROUTES.ttsAudio) {
+  if (urlStr === API_ENDPOINTS.TTS) {
     // Word audio endpoint: expects { text: chinese }, returns audioUrl
     const wordId = body.text || "w1";
     return Promise.resolve({

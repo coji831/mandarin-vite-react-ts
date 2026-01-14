@@ -13,6 +13,28 @@ export const API_ENDPOINTS = {
   AUTH_REFRESH: "/api/v1/auth/refresh",
   AUTH_LOGOUT: "/api/v1/auth/logout",
   AUTH_ME: "/api/v1/auth/me",
+  PROGRESS: "/api/v1/progress",
+  PROGRESS_WORD: (wordId: string) => `/api/v1/progress/${wordId}`,
+  PROGRESS_BATCH: "/api/v1/progress/batch",
+  PROGRESS_STATS: "/api/v1/progress/stats",
+} as const;
+
+// Route Patterns - Backend usage (Express route patterns without /api prefix)
+export const ROUTE_PATTERNS = {
+  health: "/health",
+  ttsAudio: "/tts",
+  conversation: "/conversation",
+  conversationTextGenerate: "/text/generate",
+  conversationAudioGenerate: "/audio/generate",
+  progress: "/v1/progress",
+  progressWord: (wordId: string) => `/v1/progress/${wordId}`,
+  progressBatch: "/v1/progress/batch",
+  progressStats: "/v1/progress/stats",
+  authRegister: "/v1/auth/register",
+  authLogin: "/v1/auth/login",
+  authRefresh: "/v1/auth/refresh",
+  authLogout: "/v1/auth/logout",
+  authMe: "/v1/auth/me",
 } as const;
 
 // HSK Levels
@@ -75,22 +97,4 @@ export const ERROR_MESSAGES = {
   SERVER_ERROR: "Internal server error",
   TTS_ERROR: "Text-to-speech service error",
   CONVERSATION_ERROR: "Conversation service error",
-} as const;
-
-// API Routes - Frontend usage (full paths including /api prefix)
-export const API_ROUTES = {
-  ttsAudio: "/api/tts",
-  conversation: "/api/conversation",
-  // Legacy (deprecated)
-  conversationTextGenerate: "/api/conversation",
-  conversationAudioGenerate: "/api/conversation",
-} as const;
-
-// Route Patterns - Backend usage (Express route patterns without /api prefix)
-export const ROUTE_PATTERNS = {
-  health: "/health",
-  ttsAudio: "/tts",
-  conversation: "/conversation",
-  conversationTextGenerate: "/text/generate",
-  conversationAudioGenerate: "/audio/generate",
 } as const;

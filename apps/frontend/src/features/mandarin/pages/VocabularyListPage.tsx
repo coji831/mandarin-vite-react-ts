@@ -19,7 +19,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { FilterChip, VocabularyCard } from "../components";
-import { useProgressState } from "../hooks";
 import { VocabularyList } from "../types";
 import { VocabularyDataService } from "../services/vocabularyDataService";
 import {
@@ -31,10 +30,8 @@ import {
 export { VocabularyListPage };
 
 function VocabularyListPage() {
-  // Read mastered progress map from the provider via selector hook
-  const { masteredProgress } = useProgressState((s) => s.ui);
-
   const [lists, setLists] = useState<VocabularyList[]>([]);
+  const [listWordIds, setListWordIds] = useState<Record<string, string[]>>({});
   const [search, setSearch] = useState("");
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -46,6 +43,21 @@ function VocabularyListPage() {
         const vocabService = new VocabularyDataService();
         const data = await vocabService.fetchAllLists();
         setLists(data);
+
+        // Load word IDs for each list to enable accurate progress calculation
+        const wordIdsMap: Record<string, string[]> = {};
+        await Promise.all(
+          data.map(async (list) => {
+            try {
+              const words = await vocabService.fetchWordsForList(list.id);
+              wordIdsMap[list.id] = words.map((w) => w.wordId);
+            } catch (error) {
+              console.warn(`Failed to load words for list ${list.id}:`, error);
+              wordIdsMap[list.id] = [];
+            }
+          })
+        );
+        setListWordIds(wordIdsMap);
       } catch (error) {
         console.warn(error);
       }
@@ -133,19 +145,12 @@ function VocabularyListPage() {
           </div>
         ) : (
           filteredLists.map((list) => {
-            // Calculate progress for this list using provider state
-            const masteredSet: Set<string> = masteredProgress?.[list.id] || new Set<string>();
-            const mastered = masteredSet.size;
-            const percent = list.wordCount
-              ? Math.round((mastered / (list.wordCount ?? 0)) * 100)
-              : 0;
             return (
               <VocabularyCard
                 key={list.name}
                 list={list}
                 onSelect={() => navigate(`/mandarin/flashcards/${list.id}`)}
-                progress={percent}
-                masteredCount={mastered}
+                wordIds={listWordIds[list.id]}
               />
             );
           })

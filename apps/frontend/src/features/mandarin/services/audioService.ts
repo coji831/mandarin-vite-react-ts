@@ -3,7 +3,7 @@ export class LocalAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
     const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ROUTES.ttsAudio;
+    const endpoint = API_BASE + API_ENDPOINTS.TTS;
     const body = { text: chinese };
     const response = await fetch(endpoint, {
       method: "POST",
@@ -24,7 +24,7 @@ export class LocalAudioBackend implements IAudioBackend {
     voice?: string;
   }): Promise<{ audioUrl: string }> {
     const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ROUTES.conversation;
+    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,7 +44,7 @@ export class LocalAudioBackend implements IAudioBackend {
 // src/features/mandarin/services/audioService.ts
 // AudioService implementation with fallback support (Epic 11, Story 11.3)
 
-import { API_ROUTES } from "@mandarin/shared-constants";
+import { API_ENDPOINTS } from "@mandarin/shared-constants";
 import type {
   ConversationAudio,
   ConversationAudioRequest,
@@ -101,7 +101,7 @@ export class AudioService implements IAudioService {
 export class DefaultAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
-    const endpoint = API_ROUTES.ttsAudio;
+    const endpoint = API_ENDPOINTS.TTS;
     const body = { text: chinese };
     const response = await fetch(endpoint, {
       method: "POST",
@@ -121,7 +121,7 @@ export class DefaultAudioBackend implements IAudioBackend {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    const endpoint = API_ROUTES.conversation;
+    const endpoint = API_ENDPOINTS.CONVERSATION;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

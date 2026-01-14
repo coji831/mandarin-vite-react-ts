@@ -23,6 +23,41 @@ export interface UserProgress {
   confidenceLevel: number;
 }
 
+// Progress API types (Story 13.4)
+export interface ProgressResponse {
+  id: string;
+  wordId: string;
+  studyCount: number;
+  correctCount: number;
+  confidence: number;
+  nextReview: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
+}
+
+export interface ProgressStatsResponse {
+  totalWords: number;
+  studiedWords: number;
+  masteredWords: number;
+  totalStudyCount: number;
+  averageConfidence: number;
+  wordsToReviewToday: number;
+}
+
+export interface UpdateProgressRequest {
+  studyCount?: number;
+  correctCount?: number;
+  confidence?: number;
+}
+
+export interface BatchUpdateRequest {
+  updates: Array<{
+    wordId: string;
+    studyCount?: number;
+    correctCount?: number;
+    confidence?: number;
+  }>;
+}
+
 // Conversation types
 export interface ConversationMessage {
   role: "user" | "assistant" | "system";
