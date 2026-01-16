@@ -38,6 +38,7 @@
     "express-list-endpoints": "^7.1.1",
     "express-rate-limit": "^8.2.1",
     "google-auth-library": "^10.4.0",
+    "ioredis": "^5.9.2",
     "jsonwebtoken": "^9.0.3",
     "md5": "^2.3.0",
     "node-fetch": "^3.3.2",
@@ -54,7 +55,9 @@
     "@types/md5": "^2.3.5",
     "@types/node": "^24.7.2",
     "cross-env": "^10.1.0",
+    "ioredis-mock": "^8.13.1",
     "jest": "^30.2.0",
+    "testcontainers": "^11.11.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.8.3"

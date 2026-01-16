@@ -10,16 +10,16 @@
 
 ### 1.1 Railway Redis Provisioning
 
-- [ ] Open Railway dashboard for `mandarin-backend` project
-- [ ] Click "New" → "Database" → "Add Redis"
-- [ ] Wait for Redis instance to provision (~1 minute)
-- [ ] Verify `REDIS_URL` environment variable appears in Variables tab
-- [ ] Copy `REDIS_URL` value (format: `redis://:password@host:port`)
-- [ ] Test connection from Railway dashboard (Redis tab → "Connect" button)
+- [x] Open Railway dashboard for `mandarin-backend` project
+- [x] Click "New" → "Database" → "Add Redis"
+- [x] Wait for Redis instance to provision (~1 minute)
+- [x] Verify `REDIS_URL` environment variable appears in Variables tab
+- [x] Copy `REDIS_URL` value (format: `redis://:password@host:port`)
+- [x] Test connection from Railway dashboard (Redis tab → "Connect" button)
 
 ### 1.2 Local Development Configuration
 
-- [ ] Update `.env.example` (root folder):
+- [x] Update `.env.example` (root folder) with this example config:
   ```bash
   # Redis Configuration
   REDIS_URL="redis://default:password@redis.railway.internal:6379"
@@ -27,17 +27,17 @@
   CACHE_TTL_TTS="86400"
   CACHE_TTL_CONVERSATION="3600"
   ```
-- [ ] Update local `.env.local` (root folder) with Railway Redis URL (same as production)
-- [ ] Document in `apps/backend/README.md`: "Development uses same Railway Redis instance (separate database index)"
+- [x] Update local `.env.local` (root folder) with real Railway Redis URL in step 1.1 (same as production)
+- [x] Document in `apps/backend/README.md`: "Development uses same Railway Redis instance (separate database index)"
 
 ### 1.3 Dependencies Installation
 
-- [ ] Add Redis packages to `apps/backend/package.json`:
+- [x] Add Redis packages to `apps/backend/package.json`:
   ```bash
   npm install ioredis --workspace=@mandarin/backend
   npm install -D ioredis-mock testcontainers --workspace=@mandarin/backend
   ```
-- [ ] Verify installation: `npm list ioredis --workspace=@mandarin/backend`
+- [x] Verify installation: `npm list ioredis --workspace=@mandarin/backend`
 - [ ] Commit: `chore(story-13-5): add ioredis dependencies`
 
 ---
@@ -539,5 +539,5 @@ If issues arise post-deployment:
 
 ---
 
-**Last Updated**: January 14, 2026  
-**Progress**: 0/80 steps completed
+**Last Updated**: January 16, 2026  
+**Progress**: 11/80 steps completed (Phase 1 complete, awaiting review)

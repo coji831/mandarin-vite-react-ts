@@ -62,6 +62,23 @@ GEMINI_MAX_TOKENS=1000
 ENABLE_DETAILED_LOGS=true
 ```
 
+### Redis Caching
+
+```env
+# Redis connection (Railway auto-injects in production)
+# For local development, copy REDIS_URL from Railway dashboard
+REDIS_URL=redis://default:password@redis.railway.internal:6379
+
+# Enable/disable caching
+CACHE_ENABLED=true
+
+# Cache TTL values (seconds)
+CACHE_TTL_TTS=86400        # 24 hours for TTS audio
+CACHE_TTL_CONVERSATION=3600  # 1 hour for conversations
+```
+
+**Note**: Development uses the same Railway Redis instance as production (separate database indexes via key prefixes `mandarin:`).
+
 ### Scaffold Mode
 
 For development without API keys:
