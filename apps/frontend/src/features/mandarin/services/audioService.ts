@@ -101,7 +101,8 @@ export class AudioService implements IAudioService {
 export class DefaultAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
-    const endpoint = API_ENDPOINTS.TTS;
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const endpoint = API_BASE + API_ENDPOINTS.TTS;
     const body = { text: chinese };
     const response = await fetch(endpoint, {
       method: "POST",
@@ -121,7 +122,8 @@ export class DefaultAudioBackend implements IAudioBackend {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

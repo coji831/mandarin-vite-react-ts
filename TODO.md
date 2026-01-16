@@ -20,6 +20,8 @@ Sections
 
 ## Todo (near-term)
 
+- [ ] Refactor frontend services layer — Centralize API baseURL configuration instead of repeating `VITE_API_URL` resolution in each service method (affects `audioService.ts`, `conversationService.ts`). Create shared config utility for consistent backend URL handling across all API calls.
+
 ## Backlog
 
 - [ ] Migrate auth to React Query + Axios — Replace custom `authFetch` wrapper with industry-standard Axios interceptors and React Query for better caching, retry logic, and TypeScript support (Estimate: 12 hours)
