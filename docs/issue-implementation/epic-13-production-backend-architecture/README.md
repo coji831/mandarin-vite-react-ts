@@ -12,9 +12,9 @@
 - Add Redis caching layer to reduce external API costs by >50% and improve response times
 - Structure code with clean architecture (Controllers/Services/Repositories) preparing for .NET migration
 
-**Status:** In Progress (Stories 13.1-13.4 Complete)
+**Status:** In Progress (Stories 13.1-13.4 Complete, 13.5 Complete)
 
-**Last Update:** January 14, 2026
+**Last Update:** 2024-12-20
 
 ## Technical Overview
 
@@ -243,4 +243,72 @@ ProgressController → ProgressService → ProgressRepository → Prisma → Pos
 TTSController → CachedTTSService → RedisCache → Redis
                                 → GCSService → Google Cloud Storage
                                 → TTSService → Google TTS API
+
+ConversationController → CachedConversationService → RedisCache → Redis
+                                                  → ConversationService → Gemini API
+```
+
+## Story Implementations
+
+### [Story 13.1: Monorepo Structure Setup](./story-13-1-monorepo-setup.md)
+
+**Status**: ✅ Completed
+**Key Deliverables**: npm workspaces configured, apps/frontend and apps/backend folders, package.json scripts
+
+### [Story 13.2: Database Schema & ORM Configuration](./story-13-2-database-schema.md)
+
+**Status**: ✅ Completed
+**Key Deliverables**: Prisma schema with User, Progress, Word models, migration scripts, Supabase integration
+
+### [Story 13.3: JWT Authentication System](./story-13-3-authentication.md)
+
+**Status**: ✅ Completed
+**Key Deliverables**: Register/login/refresh endpoints, bcrypt password hashing, JWT validation middleware, refresh token rotation
+
+### [Story 13.4: Multi-User Progress API](./story-13-4-progress-api.md)
+
+**Status**: ✅ Completed
+**Key Deliverables**: Progress CRUD endpoints, per-user isolation, batch update API, stats aggregation, frontend migration from localStorage
+
+### [Story 13.5: Redis Caching Layer](./story-13-5-redis-caching.md)
+
+**Status**: ✅ Completed (2024-12-20)
+**Branch**: epic-13-production-backend-architecture
+**Commits**: bb70a7f, 3cfbaed, bcae1d0, 853b774, 82ab568, b7e950c
+
+**Key Deliverables**:
+
+- Cache abstractions: `RedisClient`, `RedisCacheService`, `NoOpCacheService`, factory pattern
+- Domain-specific cached services: `CachedTTSService` (24h TTL), `CachedConversationService` (1h TTL)
+- SHA256 cache key generation for deterministic caching
+- Server integration: graceful shutdown, metrics middleware, health endpoint with Redis status
+- Comprehensive testing: 34 passing tests (22 cache service + 12 cached service + 11 integration)
+- Load testing infrastructure: Artillery config, LOAD_TEST_README.md
+- Monitoring: Health endpoint with aggregated cache metrics (hits/misses/hitRate per service)
+- Documentation: redis-caching-guide.md (400+ lines), API spec updates, expanded backend README
+
+**Performance Results**:
+
+- Integration tests: 66% hit rate achieved (exceeds 50% target)
+- Expected production: <20ms p95 for cache hits vs 1.5-2.5s for misses
+- > 75% TTS hit rate expected after warmup period
+- Fail-open error handling ensures system functions without Redis
+
+**Technical Highlights**:
+
+- ES module architecture with manual mocks (Jest compatibility)
+- Singleton RedisClient with static `getInstance()` method
+- Synchronous factory to avoid race conditions
+- ioredis-mock for integration tests (no Docker required)
+- Cache-aside pattern with base64 audio storage, JSON conversation storage
+
+**Files Changed**: 23 total (7 cache/config, 2 domain services, 5 server integration, 6 tests, 3 load testing/docs)
+
+### [Story 13.6: Clean Architecture Preparation](./story-13-6-clean-architecture.md)
+
+**Status**: Planned
+**Key Deliverables**: Controllers/Services/Repositories refactor, OpenAPI spec, Swagger UI
+
+```
+
 ```
