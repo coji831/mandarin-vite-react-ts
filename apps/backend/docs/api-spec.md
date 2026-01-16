@@ -1,10 +1,19 @@
 # Local Backend API Specification
 
+## Table of Contents
+
+- [Health Check](#health-check)
+- [Caching Strategy](#caching-strategy)
+- [TTS Endpoints](#tts-endpoints)
+- [Conversation Endpoints](#conversation-endpoints)
+- [Progress Tracking Endpoints](#progress-tracking-endpoints-story-134)
+- [Authentication](#authentication)
+
 ## Health Check
 
 ### GET /api/health
 
-General health check endpoint.
+General health check endpoint with Redis cache status and metrics.
 
 **Response:**
 
@@ -12,9 +21,75 @@ General health check endpoint.
 {
   "status": "ok",
   "mode": "real",
-  "timestamp": "2025-11-16T12:00:00.000Z"
+  "timestamp": "2025-11-16T12:00:00.000Z",
+  "services": {
+    "gemini": true,
+    "tts": true
+  },
+  "cache": {
+    "redis": {
+      "connected": true
+    },
+    "metrics": {
+      "services": {
+        "TTS": {
+          "hits": 150,
+          "misses": 50,
+          "total": 200,
+          "hitRate": "75.00"
+        },
+        "Conversation": {
+          "hits": 80,
+          "misses": 20,
+          "total": 100,
+          "hitRate": "80.00"
+        }
+      },
+      "overall": {
+        "hits": 230,
+        "misses": 70,
+        "total": 300,
+        "hitRate": "76.67"
+      }
+    }
+  }
 }
 ```
+
+**Cache Metrics Fields:**
+
+- `hits`: Number of cache hits (requests served from Redis)
+- `misses`: Number of cache misses (requests requiring external API calls)
+- `total`: Total requests processed
+- `hitRate`: Percentage of requests served from cache (as string)
+
+## Caching Strategy
+
+The backend implements Redis-based caching to reduce external API calls and improve response times.
+
+### TTS Caching
+
+- **Cache Key Format**: `tts:{SHA256(text + voice)}`
+- **TTL**: 24 hours (86400 seconds)
+- **Storage**: Audio data stored as base64-encoded strings
+- **Behavior**: First request fetches from Google TTS and caches result; subsequent requests return cached audio instantly
+
+### Conversation Caching
+
+- **Cache Key Format**: `conv:{wordId}:{SHA256(prompt)}`
+- **TTL**: 1 hour (3600 seconds)
+- **Storage**: Conversation JSON serialized as string
+- **Invalidation**: Can be manually cleared by wordId pattern via `clearCache()` method
+- **Behavior**: First request generates via Gemini and caches result; subsequent requests return cached conversation
+
+### Cache Fallback
+
+When Redis is unavailable:
+
+- System automatically falls back to `NoOpCacheService`
+- All requests bypass cache and call external APIs directly
+- No errors thrown; graceful degradation
+- Health endpoint shows `redis.connected: false`
 
 ## TTS Endpoints
 

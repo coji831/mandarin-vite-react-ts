@@ -27,6 +27,10 @@ Start here if you're new to the project:
 - **[Linting](linting-guide.md)** - ESLint and Prettier setup for code quality
 - **[Testing](testing-guide.md)** - Jest + React Testing Library setup and patterns
 
+### Backend Services
+
+- **[Redis Caching](redis-caching-guide.md)** - Railway Redis setup, caching strategy, monitoring, troubleshooting
+
 ### Code Quality
 
 - **[Code Conventions](code-conventions.md)** - Project coding standards, state management patterns

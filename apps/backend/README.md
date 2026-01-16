@@ -62,22 +62,34 @@ GEMINI_MAX_TOKENS=1000
 ENABLE_DETAILED_LOGS=true
 ```
 
-### Redis Caching
+### Redis Caching (Story 13.5)
+
+The backend uses **Railway Redis** for caching TTS and conversation responses to reduce API costs and improve performance.
 
 ```env
-# Redis connection (Railway auto-injects in production)
-# For local development, copy REDIS_URL from Railway dashboard
+# Redis connection URL (Railway auto-injects in production)
+# For local development, copy REDIS_URL from Railway dashboard → Redis Variables
 REDIS_URL=redis://default:password@redis.railway.internal:6379
 
-# Enable/disable caching
+# Enable or disable caching
 CACHE_ENABLED=true
 
 # Cache TTL values (seconds)
 CACHE_TTL_TTS=86400        # 24 hours for TTS audio
-CACHE_TTL_CONVERSATION=3600  # 1 hour for conversations
+CACHE_TTL_CONVERSATION=3600  # 1 hour for conversation text
 ```
 
-**Note**: Development uses the same Railway Redis instance as production (separate database indexes via key prefixes `mandarin:`).
+**Key Points:**
+
+- **`REDIS_URL`**: Railway automatically injects this in production. For local dev, copy the value from Railway dashboard (Redis service → Variables tab).
+- **`CACHE_ENABLED`**: Set to `false` to disable caching (server falls back to `NoOpCacheService`).
+- **TTL Values**: Adjust based on content volatility. TTS audio rarely changes (24h), conversations may update more frequently (1h).
+- **Namespace**: All keys prefixed with `mandarin:` to isolate from other Railway projects sharing the Redis instance.
+- **Graceful Fallback**: If Redis is unavailable, server continues functioning without cache (all requests hit external APIs).
+
+**Cache Metrics**: Visit `/api/health` to see cache hit/miss rates and verify Redis connection status.
+
+**Full Documentation**: See [`docs/guides/redis-caching-guide.md`](../../docs/guides/redis-caching-guide.md) for setup, troubleshooting, and monitoring.
 
 ### Scaffold Mode
 
