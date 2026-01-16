@@ -9,9 +9,28 @@ import { asyncHandler } from "../middleware/asyncHandler.js";
 import { validationError, ttsError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { CachedTTSService } from "../services/tts/CachedTTSService.js";
+import { getCacheService } from "../services/cache/index.js";
+import { registerCacheMetrics } from "../middleware/cacheMetrics.js";
 
 const router = express.Router();
 const logger = createLogger("TTS");
+
+// Initialize TTS service with caching
+const ttsService = {
+  async synthesizeSpeech(text, options) {
+    return synthesizeSpeech(text, options);
+  },
+  async healthCheck() {
+    return true; // TTS service doesn't have explicit health check
+  },
+};
+
+const cacheService = getCacheService();
+const cachedTtsService = new CachedTTSService(ttsService, cacheService);
+
+// Register metrics for monitoring
+registerCacheMetrics("TTS", () => cachedTtsService.getMetrics());
 
 // POST / (mounted at ROUTE_PATTERNS.ttsAudio = "/get-tts-audio")
 router.post(
@@ -60,7 +79,7 @@ router.post(
         } else {
           // Cache miss - generate and store
           logger.info(`Cache miss: ${cachePath}`);
-          const audioBuffer = await synthesizeSpeech(text, { voice });
+          const audioBuffer = await cachedTtsService.synthesizeSpeech(text, { voice });
           await gcsService.uploadFile(cachePath, audioBuffer, "audio/mpeg");
           logger.info(`Successfully cached: ${cachePath}`);
         }

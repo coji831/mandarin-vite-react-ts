@@ -108,7 +108,19 @@ class RedisClient {
   isReady() {
     return this.client && this.isConnected;
   }
+
+  /**
+   * Get singleton instance
+   * @returns {RedisClient}
+   */
+  static getInstance() {
+    if (!RedisClient.instance) {
+      RedisClient.instance = new RedisClient();
+    }
+    return RedisClient.instance;
+  }
 }
 
-// Export singleton instance
+// Export singleton instance and class
 export const redisClient = new RedisClient();
+export { RedisClient };

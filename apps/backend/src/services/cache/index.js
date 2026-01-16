@@ -30,8 +30,8 @@ export async function createCacheService() {
   }
 
   try {
-    // Attempt connection and ping with 5-second timeout
-    await client.connect();
+    // Don't call connect() if already connected/connecting
+    // Just ping to verify health
     const isHealthy = await redisClient.ping(5000);
 
     if (isHealthy) {
@@ -49,13 +49,31 @@ export async function createCacheService() {
 }
 
 /**
- * Get or create singleton cache service instance
- * @returns {Promise<import('./CacheService.js').CacheService>} Cached service instance
+ * Get or create singleton cache service instance (synchronous)
+ * @returns {import('./CacheService.js').CacheService} Cached service instance
  */
-export async function getCacheService() {
-  if (!cacheServiceInstance) {
-    cacheServiceInstance = await createCacheService();
+export function getCacheService() {
+  if (cacheServiceInstance) {
+    return cacheServiceInstance;
   }
+
+  // Create synchronously
+  if (!cacheConfig.enabled) {
+    logger.info("Caching disabled via CACHE_ENABLED=false");
+    cacheServiceInstance = new NoOpCacheService();
+    return cacheServiceInstance;
+  }
+
+  const client = redisClient.getClient();
+  if (!client) {
+    logger.warn("Redis client not initialized, using NoOpCacheService");
+    cacheServiceInstance = new NoOpCacheService();
+    return cacheServiceInstance;
+  }
+
+  // Redis client exists, use it (connection happens in background)
+  logger.info("Using RedisCacheService");
+  cacheServiceInstance = new RedisCacheService(client);
   return cacheServiceInstance;
 }
 

@@ -14,9 +14,19 @@ import * as ttsService from "../services/ttsService.js";
 import { createConversationResponse } from "../utils/conversationUtils.js";
 import { convoAudioError, convoTextError, validationError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
+import { CachedConversationService } from "../services/conversation/CachedConversationService.js";
+import { getCacheService } from "../services/cache/index.js";
+import { registerCacheMetrics } from "../middleware/cacheMetrics.js";
 
 const router = express.Router();
 const logger = createLogger("ConversationController");
+
+// Initialize conversation service with caching
+const cacheService = getCacheService();
+const cachedConversationService = new CachedConversationService(conversationService, cacheService);
+
+// Register metrics for monitoring
+registerCacheMetrics("Conversation", () => cachedConversationService.getMetrics());
 
 // ============================================================================
 // UNIFIED CONVERSATION ENDPOINT (type-based routing)
@@ -42,7 +52,7 @@ router.post(
         logger.info(`Generating conversation text for: ${word} (${wordId})`);
 
         try {
-          const conversation = await conversationService.generateConversationText(
+          const conversation = await cachedConversationService.generateConversationText(
             wordId,
             word,
             generatorVersion
@@ -68,7 +78,7 @@ router.post(
         logger.info(`Generating audio for wordId: ${wordId}, turnIndex: ${turnIndex}`);
 
         try {
-          const audioMetadata = await conversationService.generateTurnAudio(
+          const audioMetadata = await cachedConversationService.generateTurnAudio(
             wordId,
             turnIndex,
             text,
@@ -131,7 +141,7 @@ router.post(
       logger.info(`Generating conversation text for: ${word} (${wordId})`);
 
       try {
-        const conversation = await conversationService.generateConversationText(
+        const conversation = await cachedConversationService.generateConversationText(
           wordId,
           word,
           generatorVersion
@@ -169,7 +179,7 @@ router.post(
       logger.info(`Generating audio for wordId: ${wordId}, turnIndex: ${turnIndex}`);
 
       try {
-        const audioMetadata = await conversationService.generateTurnAudio(
+        const audioMetadata = await cachedConversationService.generateTurnAudio(
           wordId,
           turnIndex,
           text,

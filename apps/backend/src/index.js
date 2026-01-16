@@ -3,13 +3,29 @@ import dotenv from "dotenv";
 
 import express from "express";
 import config from "./config/index.js";
-import routes from "./routes/index.js";
 import { getAllRoutes } from "./utils/routeUtils.js";
+import { getCacheService } from "./services/cache/index.js";
+import { RedisClient } from "./services/cache/RedisClient.js";
+import { createLogger } from "./utils/logger.js";
 
 // Load environment variables
 dotenv.config();
 
+const logger = createLogger("Server");
 const app = express();
+
+// Initialize cache service (singleton)
+const cacheService = getCacheService();
+logger.info("Cache service initialized", {
+  type: cacheService.constructor.name,
+  enabled: cacheService.constructor.name !== "NoOpCacheService",
+});
+
+// Export cache service for controllers to use
+export { cacheService };
+
+// Import routes after cache service is initialized
+import routes from "./routes/index.js";
 
 // Middleware
 app.use(express.json());
@@ -75,10 +91,35 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Graceful shutdown handler
+process.on("SIGTERM", async () => {
+  logger.info("SIGTERM received, shutting down gracefully");
+  try {
+    const redisClient = RedisClient.getInstance();
+    await redisClient.quit();
+    logger.info("Redis connection closed");
+  } catch (error) {
+    logger.error("Error during shutdown", error);
+  }
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  logger.info("SIGINT received, shutting down gracefully");
+  try {
+    const redisClient = RedisClient.getInstance();
+    await redisClient.quit();
+    logger.info("Redis connection closed");
+  } catch (error) {
+    logger.error("Error during shutdown", error);
+  }
+  process.exit(0);
+});
+
 // Start server
 app.listen(config.port, () => {
-  console.log(`Backend server running on port ${config.port}`);
-  console.log(`Environment: ${config.nodeEnvironment}`);
+  logger.info(`Backend server running on port ${config.port}`);
+  logger.info(`Environment: ${config.nodeEnvironment}`);
 });
 
 export default app;
