@@ -38,7 +38,7 @@
   npm install -D ioredis-mock testcontainers --workspace=@mandarin/backend
   ```
 - [x] Verify installation: `npm list ioredis --workspace=@mandarin/backend`
-- [ ] Commit: `chore(story-13-5): add ioredis dependencies`
+- [x] Commit: `chore(story-13-5): add ioredis dependencies`
 
 ---
 
@@ -46,117 +46,117 @@
 
 ### 2.1 Redis Configuration Module
 
-- [ ] Create `apps/backend/src/config/redis.js`
-- [ ] Parse `REDIS_URL` environment variable
-- [ ] Handle Railway Redis format (with password authentication)
-- [ ] Configure connection options:
+- [x] Create `apps/backend/src/config/redis.js`
+- [x] Parse `REDIS_URL` environment variable
+- [x] Handle Railway Redis format (with password authentication)
+- [x] Configure connection options:
   - `maxRetriesPerRequest: 3`
   - `enableReadyCheck: true`
   - `retryStrategy: exponential backoff (1s, 2s, 4s, max 10s)`
   - `lazyConnect: true`
-- [ ] Export configuration object
-- [ ] Test: `node -e "require('./apps/backend/src/config/redis.js')"`
+- [x] Export configuration object
+- [x] Test: `node -e "require('./apps/backend/src/config/redis.js')"`
 
 ### 2.2 Redis Client Wrapper
 
-- [ ] Create `apps/backend/src/services/cache/RedisClient.js`
-- [ ] Import ioredis and config
-- [ ] Initialize ioredis client with config
-- [ ] Add event listeners:
+- [x] Create `apps/backend/src/services/cache/RedisClient.js`
+- [x] Import ioredis and config
+- [x] Initialize ioredis client with config
+- [x] Add event listeners:
   - `connect`: log "Redis connected"
   - `error`: log error but don't throw
   - `close`: log "Redis connection closed"
   - `reconnecting`: log "Redis reconnecting..."
-- [ ] Implement `ping()` method with 1s timeout
-- [ ] Implement `quit()` method for graceful shutdown
-- [ ] Export singleton instance
-- [ ] Test manually: Create test script to verify connection
+- [x] Implement `ping()` method with 1s timeout
+- [x] Implement `quit()` method for graceful shutdown
+- [x] Export singleton instance
+- [x] Test manually: Create test script to verify connection
 
 ### 2.3 Cache Service Interface
 
-- [ ] Create `apps/backend/src/services/cache/CacheService.js` (abstract class)
-- [ ] Define methods:
+- [x] Create `apps/backend/src/services/cache/CacheService.js` (abstract class)
+- [x] Define methods:
   - `async get(key)`
   - `async set(key, value, ttl)`
   - `async delete(key)`
   - `async clear(pattern)`
   - `async getMulti(keys)`
-- [ ] Add JSDoc comments for each method
-- [ ] Export abstract class
+- [x] Add JSDoc comments for each method
+- [x] Export abstract class
 
 ### 2.4 Redis Cache Implementation
 
-- [ ] Create `apps/backend/src/services/cache/RedisCacheService.js`
-- [ ] Extend `CacheService` abstract class
-- [ ] Constructor accepts `redisClient` dependency
-- [ ] Implement `get()`:
+- [x] Create `apps/backend/src/services/cache/RedisCacheService.js`
+- [x] Extend `CacheService` abstract class
+- [x] Constructor accepts `redisClient` dependency
+- [x] Implement `get()`:
   - Add namespace prefix: `mandarin:`
   - Call `redisClient.get(key)`
   - Return null on error (fail-open)
-- [ ] Implement `set()`:
+- [x] Implement `set()`:
   - Add namespace prefix
   - Serialize value if object: `JSON.stringify()`
   - Call `redisClient.setex(key, ttl, value)`
   - Log error and continue on failure
-- [ ] Implement `delete()`:
+- [x] Implement `delete()`:
   - Add namespace prefix
   - Call `redisClient.del(key)`
-- [ ] Implement `clear()`:
+- [x] Implement `clear()`:
   - Use `SCAN` (not `KEYS`) for pattern matching
   - Delete in batches using pipeline
-- [ ] Implement `getMulti()`:
+- [x] Implement `getMulti()`:
   - Use `mget` for batch retrieval
   - Return Map of results
-- [ ] Add structured logging for all operations
-- [ ] Export class
+- [x] Add structured logging for all operations
+- [x] Export class
 
 ### 2.5 No-Op Cache Implementation
 
-- [ ] Create `apps/backend/src/services/cache/NoOpCacheService.js`
-- [ ] Extend `CacheService` abstract class
-- [ ] Implement all methods to return immediately:
+- [x] Create `apps/backend/src/services/cache/NoOpCacheService.js`
+- [x] Extend `CacheService` abstract class
+- [x] Implement all methods to return immediately:
   - `get()` → `null`
   - `set()` → `void` (no-op)
   - `delete()` → `void` (no-op)
   - `clear()` → `void` (no-op)
   - `getMulti()` → `new Map()`
-- [ ] Log "CACHE_DISABLED" warning on initialization
-- [ ] Export class
+- [x] Log "CACHE_DISABLED" warning on initialization
+- [x] Export class
 
 ### 2.6 Cache Factory
 
-- [ ] Create `apps/backend/src/services/cache/index.js`
-- [ ] Import all cache implementations
-- [ ] Implement `createCacheService()`:
+- [x] Create `apps/backend/src/services/cache/index.js`
+- [x] Import all cache implementations
+- [x] Implement `createCacheService()`:
   - Check if `CACHE_ENABLED === 'true'`
   - Try `redisClient.ping()` with timeout
   - If healthy → return `new RedisCacheService(redisClient)`
   - If error → log warning, return `new NoOpCacheService()`
-- [ ] Implement `getCacheService()` singleton
-- [ ] Export factory functions
-- [ ] Test: Import and verify singleton pattern works
+- [x] Implement `getCacheService()` singleton
+- [x] Export factory functions
+- [x] Test: Import and verify singleton pattern works
 
 ### 2.7 Unit Tests - Cache Services
 
-- [ ] Create `apps/backend/src/services/cache/__tests__/RedisCacheService.test.js`
-- [ ] Use `ioredis-mock` to mock Redis
-- [ ] Test cases:
+- [x] Create `apps/backend/tests/services/cache/RedisCacheService.test.js`
+- [x] Use `ioredis-mock` to mock Redis
+- [x] Test cases:
   - `set() then get() returns same value`
   - `get() non-existent key returns null`
   - `delete() removes key`
   - `clear() removes pattern-matched keys`
-  - `TTL expires after configured time`
+  - `TTL expires after configured time` (skipped - mock limitation)
   - `Redis error doesn't crash (returns null)`
-- [ ] Run tests: `npm test -- RedisCacheService`
-- [ ] Verify all tests pass
+- [x] Run tests: `npm test -- RedisCacheService`
+- [x] Verify all tests pass
 
-- [ ] Create `apps/backend/src/services/cache/__tests__/NoOpCacheService.test.js`
-- [ ] Test cases:
+- [x] Create `apps/backend/tests/services/cache/NoOpCacheService.test.js`
+- [x] Test cases:
   - `get() always returns null`
   - `set() doesn't throw`
   - `Logs CACHE_DISABLED on init`
-- [ ] Run tests: `npm test -- NoOpCacheService`
-- [ ] Verify all tests pass
+- [x] Run tests: `npm test -- NoOpCacheService`
+- [x] Verify all tests pass
 
 ---
 
@@ -540,4 +540,4 @@ If issues arise post-deployment:
 ---
 
 **Last Updated**: January 16, 2026  
-**Progress**: 11/80 steps completed (Phase 1 complete, awaiting review)
+**Progress**: 46/80 steps completed (Phases 1-2 complete with logger integration, ready to commit)
