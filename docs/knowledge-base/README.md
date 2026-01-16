@@ -44,7 +44,7 @@
 ### Integration Patterns
 
 - **[Google Cloud Services](./integration-google-cloud.md)** — TTS, Storage, Gemini AI integration patterns
-- **[Caching Strategies](./integration-caching.md)** — Redis patterns, cache-aside, cache invalidation
+- **[Caching Strategies](./integration-caching.md)** — Redis patterns, cache-aside, fail-open strategies, base64 binary storage, SHA256 cache keys
 
 ### Infrastructure Concepts
 
@@ -58,6 +58,7 @@
 - **[SOLID Principles](./solid-principles.md)** — Software design principles for maintainable code
 - **[Documentation Patterns](./documentation-patterns.md)** — Technical writing, architecture docs, decision records
 - **[Planning & Estimation Strategies](./planning-estimation-strategies.md)** — Complexity multipliers, estimation frameworks, work breakdown
+- **[Testing ES Modules with Jest](./testing-es-modules-jest.md)** — Manual mocks, stateful factories, ioredis-mock patterns
 - **[.NET Patterns](./dotnet-patterns.md)** — ASP.NET Core, EF Core (coming after Epic 14)
 
 ---
@@ -118,6 +119,11 @@
 | File storage            | [Google Cloud](./integration-google-cloud.md)      | Cloud Storage          |
 | AI conversations        | [Google Cloud](./integration-google-cloud.md)      | Gemini AI              |
 | API caching             | [Caching Strategies](./integration-caching.md)     | Redis Patterns         |
+| Cache fail-open         | [Caching Strategies](./integration-caching.md)     | Fail-Open vs Closed    |
+| Binary data in Redis    | [Caching Strategies](./integration-caching.md)     | Base64 Storage         |
+| Cache key hashing       | [Caching Strategies](./integration-caching.md)     | SHA256 Keys            |
+| Jest with ES modules    | [Testing ES Modules](./testing-es-modules-jest.md) | Manual Mocks           |
+| ioredis-mock tests      | [Testing ES Modules](./testing-es-modules-jest.md) | Integration Tests      |
 | Deployment              | [Deployment](./infra-deployment.md)                | Vercel                 |
 | Production cookies      | [Deployment](./infra-deployment.md)                | Cookie Configuration   |
 | Secrets                 | [Deployment](./infra-deployment.md)                | Environment Variables  |
@@ -164,6 +170,7 @@ Each guide follows this structure:
 
 - **Dec 9, 2025** — Split monolithic technical documentation into focused guides
 - **Dec 14, 2025** — Renamed from cookbook to knowledge-base
+- **Jan 16, 2026** — Added ES Modules + Jest testing patterns, enhanced caching strategies (fail-open, base64, SHA256)
 - **After Epic 14** — Will add .NET patterns guide
 
 ---
