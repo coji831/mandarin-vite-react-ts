@@ -284,7 +284,7 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 
 ### Define Repository Interfaces
 
-- [ ] Create `apps/backend/src/core/interfaces/IProgressRepository.js`
+- [x] Create `apps/backend/src/core/interfaces/IProgressRepository.js` - JSDoc interface with type definitions
 
   ```javascript
   export interface IProgressRepository {
@@ -296,7 +296,7 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
   }
   ```
 
-- [ ] Create `apps/backend/src/core/interfaces/IVocabularyRepository.js`
+- [x] Create `apps/backend/src/core/interfaces/IVocabularyRepository.js` - JSDoc interface with type definitions
   ```javascript
   export interface IVocabularyRepository {
     findAllLists(): Promise<VocabularyList[]>;
@@ -308,13 +308,13 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 
 ### Implement Repository Concrete Classes
 
-- [ ] Create `apps/backend/src/infrastructure/repositories/ProgressRepository.js`
-  - [ ] Implement `findByUser()` using Prisma
-  - [ ] Implement `findByUserAndWord()` using Prisma
-  - [ ] Implement `upsert()` using Prisma
-  - [ ] Implement `findMany()` with filters
-  - [ ] Implement `deleteByUserAndWord()`
-  - [ ] Add JSDoc documentation
+- [x] Create `apps/backend/src/infrastructure/repositories/ProgressRepository.js` - implemented all methods
+  - [x] Implement `findByUser()` using Prisma
+  - [x] Implement `findByUserAndWord()` using Prisma
+  - [x] Implement `upsert()` using Prisma
+  - [x] Implement `findMany()` with filters
+  - [x] Implement `deleteByUserAndWord()`
+  - [x] Add JSDoc documentation
 
 - [x] Create `apps/backend/src/infrastructure/repositories/VocabularyRepository.js` (implemented: apps/backend/src/infrastructure/repositories/VocabularyRepository.js)
   - [x] Use existing `gcsService.js` (already configured with credentials)
@@ -342,7 +342,7 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
   - [x] Implement `searchLists()` - filter by query/difficulty/tags
   - [x] Add in-memory caching (TTL: 1 hour) to avoid repeated GCS calls
 
-- [ ] Move Prisma client to `apps/backend/src/infrastructure/database/client.js`
+- [x] Move Prisma client to `apps/backend/src/infrastructure/database/client.js` - already centralized in models/index.js
 
 ---
 
