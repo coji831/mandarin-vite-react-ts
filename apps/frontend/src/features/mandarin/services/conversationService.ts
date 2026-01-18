@@ -1,10 +1,11 @@
+import { ApiClient } from "../../../services/apiClient";
+
 // Fallback backend for local development
 export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
+    const endpoint = API_ENDPOINTS.CONVERSATION;
     try {
-      const response = await fetch(endpoint, {
+      const response = await ApiClient.publicRequest(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "text", ...params }),
@@ -17,7 +18,7 @@ export class LocalConversationBackend implements IConversationBackend {
           body: text,
         });
         throw new Error(
-          `Conversation generation failed (local): ${response.status} ${response.statusText} - ${text}`
+          `Conversation generation failed (local): ${response.status} ${response.statusText} - ${text}`,
         );
       }
       return response.json();
@@ -56,9 +57,8 @@ export class ConversationService implements IConversationService {
 // Default backend implementation using fetch
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const API_BASE = import.meta.env.VITE_API_URL || "";
-    const endpoint = API_BASE ? API_BASE + API_ENDPOINTS.CONVERSATION : API_ENDPOINTS.CONVERSATION;
-    const response = await fetch(endpoint, {
+    const endpoint = API_ENDPOINTS.CONVERSATION;
+    const response = await ApiClient.publicRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "text", ...params }),

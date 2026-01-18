@@ -4,18 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "main": "src/index.js",
-  "types": "src/index.ts",
+  "types": "src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./src/index.d.ts",
       "import": "./src/index.js",
       "default": "./src/index.js"
     }
   },
   "scripts": {
     "test": "echo \"No tests yet\""
-  },
-  "devDependencies": {
-    "typescript": "^5.8.3"
   }
 }

@@ -14,6 +14,7 @@
  */
 import { useRef, useState } from "react";
 
+import { ApiClient } from "../../../services/apiClient";
 import { AudioService } from "../services";
 import type { WordAudio, ConversationAudio, WordAudioRequest } from "../types";
 
@@ -81,8 +82,7 @@ export function useAudioPlayback() {
 
       let url = audio.audioUrl;
       if (url.startsWith("/")) {
-        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-        url = `${API_BASE}${url}`;
+        url = `${ApiClient.config.baseURL}${url}`;
       }
       if (onAudioUrlGenerated) onAudioUrlGenerated(url);
       await playBackendAudio(url);
@@ -134,8 +134,7 @@ export function useAudioPlayback() {
       let url = audioUrl;
       if (!url) throw new Error("No audioUrl for this turn");
       if (url.startsWith("/")) {
-        const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-        url = `${API_BASE}${url}`;
+        url = `${ApiClient.config.baseURL}${url}`;
       }
       await playBackendAudio(url);
       setIsPlaying(true);

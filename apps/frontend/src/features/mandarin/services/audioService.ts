@@ -1,11 +1,12 @@
+import { ApiClient } from "../../../services/apiClient";
+
 // Fallback backend for local development
 export class LocalAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ENDPOINTS.TTS;
+    const endpoint = API_ENDPOINTS.TTS;
     const body = { text: chinese };
-    const response = await fetch(endpoint, {
+    const response = await ApiClient.publicRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -23,9 +24,8 @@ export class LocalAudioBackend implements IAudioBackend {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
-    const response = await fetch(endpoint, {
+    const endpoint = API_ENDPOINTS.CONVERSATION;
+    const response = await ApiClient.publicRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "audio", ...params }),
@@ -101,10 +101,9 @@ export class AudioService implements IAudioService {
 export class DefaultAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     const { chinese } = params;
-    const API_BASE = import.meta.env.VITE_API_URL || "";
-    const endpoint = API_BASE + API_ENDPOINTS.TTS;
+    const endpoint = API_ENDPOINTS.TTS;
     const body = { text: chinese };
-    const response = await fetch(endpoint, {
+    const response = await ApiClient.publicRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -122,9 +121,8 @@ export class DefaultAudioBackend implements IAudioBackend {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    const API_BASE = import.meta.env.VITE_API_URL || "";
-    const endpoint = API_BASE + API_ENDPOINTS.CONVERSATION;
-    const response = await fetch(endpoint, {
+    const endpoint = API_ENDPOINTS.CONVERSATION;
+    const response = await ApiClient.publicRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "audio", ...params }),
