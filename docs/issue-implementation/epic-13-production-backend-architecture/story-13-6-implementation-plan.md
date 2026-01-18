@@ -261,22 +261,22 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 
 ### Create New Directory Structure
 
-- [ ] Create `apps/backend/src/api/` directory
-  - [ ] Create `apps/backend/src/api/controllers/`
-  - [ ] Create `apps/backend/src/api/routes/`
-  - [ ] Create `apps/backend/src/api/middleware/`
-  - [ ] Create `apps/backend/src/api/docs/`
+- [x] Create `apps/backend/src/api/` directory
+  - [x] Create `apps/backend/src/api/controllers/`
+  - [x] Create `apps/backend/src/api/routes/`
+  - [x] Create `apps/backend/src/api/middleware/`
+  - [x] Create `apps/backend/src/api/docs/`
 
-- [ ] Create `apps/backend/src/core/` directory
-  - [ ] Create `apps/backend/src/core/services/`
-  - [ ] Create `apps/backend/src/core/interfaces/`
-  - [ ] Create `apps/backend/src/core/domain/`
+- [x] Create `apps/backend/src/core/` directory
+  - [x] Create `apps/backend/src/core/services/`
+  - [x] Create `apps/backend/src/core/interfaces/`
+  - [x] Create `apps/backend/src/core/domain/`
 
-- [ ] Create `apps/backend/src/infrastructure/` directory
-  - [ ] Create `apps/backend/src/infrastructure/repositories/`
-  - [ ] Create `apps/backend/src/infrastructure/database/`
-  - [ ] Create `apps/backend/src/infrastructure/cache/`
-  - [ ] Create `apps/backend/src/infrastructure/external/`
+- [x] Create `apps/backend/src/infrastructure/` directory
+  - [x] Create `apps/backend/src/infrastructure/repositories/`
+  - [x] Create `apps/backend/src/infrastructure/database/`
+  - [x] Create `apps/backend/src/infrastructure/cache/`
+  - [x] Create `apps/backend/src/infrastructure/external/`
 
 ---
 
