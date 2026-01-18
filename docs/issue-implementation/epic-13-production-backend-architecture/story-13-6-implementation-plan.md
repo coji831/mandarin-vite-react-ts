@@ -519,31 +519,35 @@ After Phase 3, verify:
 
 ---
 
-## 🎮 Phase 5: Update Controllers (API Layer) (1.5 hours)
+## 🎮 Phase 5: Update Controllers (API Layer) (IN PROGRESS)
 
 ### Refactor Existing Controllers
 
 - [ ] Move `apps/backend/src/controllers/` → `apps/backend/src/api/controllers/`
+  - [x] Copy all controllers to new location
+  - [ ] Convert to class-based with dependency injection
+  - [ ] Remove business logic (ensure only HTTP mapping)
 
 - [ ] Update `ProgressController.js` to use dependency injection
+  - [x] Convert to class with constructor accepting progressService
+  - [ ] Convert all export const functions to class methods
+  - [ ] Update service references from direct instantiation to this.progressService
+  - [ ] Remove direct ProgressService import/instantiation
 
-  ```javascript
-  export class ProgressController {
-    constructor(progressService) {
-      this.service = progressService;
-    }
+- [ ] Update `AuthController.js` to use dependency injection
+  - [ ] Convert to class with constructor accepting authService
+  - [ ] Convert all export const functions to class methods
+  - [ ] Update service references to this.authService
 
-    async list(req, res) {
-      /* HTTP mapping only */
-    }
-    async update(req, res) {
-      /* HTTP mapping only */
-    }
-    async getStats(req, res) {
-      /* HTTP mapping only */
-    }
-  }
-  ```
+- [ ] Update `ConversationController.js` to use dependency injection
+  - [ ] Convert to class with constructor
+  - [ ] Accept conversationService, cacheService via DI
+  - [ ] Convert router.post() to class methods
+
+- [ ] Update `TtsController.js` to use dependency injection
+  - [ ] Convert to class with constructor
+  - [ ] Accept ttsService, cacheService, gcsClient via DI
+  - [ ] Convert router.post() to class methods
 
 - [ ] Remove all business logic from controllers (move to services)
 - [ ] Keep only: request validation, response formatting, status codes
