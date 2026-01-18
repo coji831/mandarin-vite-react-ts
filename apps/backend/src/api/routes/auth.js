@@ -1,15 +1,27 @@
 /**
- * @file apps/backend/src/routes/auth.js
+ * @file apps/backend/src/api/routes/auth.js
  * @description Authentication routes
  */
 
 import express from "express";
 import { rateLimit } from "express-rate-limit";
-import * as authController from "../controllers/authController.js";
-import { authenticateToken } from "../middleware/authMiddleware.js";
+import AuthController from "../controllers/authController.js";
+import { AuthService } from "../../core/services/AuthService.js";
+import { AuthRepository } from "../../infrastructure/repositories/AuthRepository.js";
+import { JwtService } from "../../infrastructure/security/JwtService.js";
+import { PasswordService } from "../../infrastructure/security/PasswordService.js";
+import { authenticateToken } from "../../middleware/authMiddleware.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
+
+// Initialize dependencies
+const authRepository = new AuthRepository();
+const jwtService = new JwtService();
+const passwordService = new PasswordService();
+const authService = new AuthService(authRepository, jwtService, passwordService);
+const authController = new AuthController(authService);
 
 // Rate limiter for auth endpoints (prevent brute force attacks)
 const authLimiter = rateLimit({
@@ -25,14 +37,26 @@ const authLimiter = rateLimit({
 });
 
 // Apply rate limiting to login and register (most vulnerable to brute force)
-router.post(ROUTE_PATTERNS.authRegister, authLimiter, authController.register);
-router.post(ROUTE_PATTERNS.authLogin, authLimiter, authController.login);
+router.post(
+  ROUTE_PATTERNS.authRegister,
+  authLimiter,
+  asyncHandler(authController.register.bind(authController)),
+);
+router.post(
+  ROUTE_PATTERNS.authLogin,
+  authLimiter,
+  asyncHandler(authController.login.bind(authController)),
+);
 
 // Refresh and logout don't need rate limiting (already authenticated)
-router.post(ROUTE_PATTERNS.authRefresh, authController.refresh);
-router.post(ROUTE_PATTERNS.authLogout, authController.logout);
+router.post(ROUTE_PATTERNS.authRefresh, asyncHandler(authController.refresh.bind(authController)));
+router.post(ROUTE_PATTERNS.authLogout, asyncHandler(authController.logout.bind(authController)));
 
 // Protected route - get current user
-router.get(ROUTE_PATTERNS.authMe, authenticateToken, authController.getCurrentUser);
+router.get(
+  ROUTE_PATTERNS.authMe,
+  authenticateToken,
+  asyncHandler(authController.getCurrentUser.bind(authController)),
+);
 
 export default router;

@@ -1,12 +1,15 @@
-// Main router entry point
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import express from "express";
+/**
+ * @file apps/backend/src/api/routes/index.js
+ * @description Main router entry point for clean architecture routes
+ */
 
-import conversationRouter from "../controllers/conversationController.js";
-import healthRouter from "../controllers/healthController.js";
-import ttsRouter from "../controllers/ttsController.js";
+import express from "express";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import authRouter from "./auth.js";
 import progressRouter from "./progress.js";
+import conversationRouter from "./conversationRoutes.js";
+import ttsRouter from "./ttsRoutes.js";
+import healthRouter from "../controllers/healthController.js";
 
 const router = express.Router();
 
@@ -16,9 +19,13 @@ router.use(authRouter);
 // Progress routes (v1)
 router.use(progressRouter);
 
-// Use shared route patterns for consistency
-router.use(ttsRouter);
+// Conversation routes
 router.use(conversationRouter);
+
+// TTS routes
+router.use(ttsRouter);
+
+// Health check (legacy controller - to be refactored)
 router.use(healthRouter);
 
 export default router;

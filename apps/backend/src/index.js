@@ -25,7 +25,7 @@ logger.info("Cache service initialized", {
 export { cacheService };
 
 // Import routes after cache service is initialized
-import routes from "./routes/index.js";
+import routes from "./api/routes/index.js";
 
 // Middleware
 app.use(express.json());
@@ -39,7 +39,7 @@ app.use(
     credentials: true, // allow cookies/auth headers
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"], // add any other headers you use
-  })
+  }),
 );
 
 // Mount routes
@@ -68,7 +68,7 @@ app.get("/routes", (req, res) => {
               ${allRoutes
                 .map(
                   (r) =>
-                    `<tr><td><code>${r.methods}</code></td><td><code>${r.path}</code></td></tr>`
+                    `<tr><td><code>${r.methods}</code></td><td><code>${r.path}</code></td></tr>`,
                 )
                 .join("")}
             </tbody>
