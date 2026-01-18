@@ -1,62 +1,72 @@
 /**
- * @file apps/backend/src/controllers/authController.js
+ * @file apps/backend/src/api/controllers/authController.js
  * @description Authentication controller handling HTTP requests for auth endpoints
+ * Clean architecture: API layer - handles HTTP mapping, cookies, status codes only
  */
 
-import { AuthService } from "../services/AuthService.js";
-import { createLogger } from "../utils/logger.js";
+import { createLogger } from "../../utils/logger.js";
 
-const authService = new AuthService();
 const logger = createLogger("AuthController");
 
 /**
- * Helper to set refresh token cookie with consistent settings
+ * AuthController class with dependency injection
  */
-function setRefreshTokenCookie(res, refreshToken) {
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-}
+export class AuthController {
+  /**
+   * @param {object} authService - AuthService instance
+   */
+  constructor(authService) {
+    this.authService = authService;
+  }
 
-/**
- * Helper to clear refresh token cookie with matching settings
- */
-function clearRefreshTokenCookie(res) {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-    path: "/",
-  });
-}
+  /**
+   * Helper to set refresh token cookie with consistent settings
+   */
+  setRefreshTokenCookie(res, refreshToken) {
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+  }
 
-/**
- * Register new user
- * POST /api/v1/auth/register
- * Body: { email, password, displayName? }
- */
-export const register = async (req, res) => {
-  try {
-    const { email, password, displayName } = req.body;
+  /**
+   * Helper to clear refresh token cookie with matching settings
+   */
+  clearRefreshTokenCookie(res) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      path: "/",
+    });
+  }
 
-    if (!email || !password) {
-      return res.status(400).json({
-        error: "Bad Request",
-        code: "MISSING_FIELDS",
-        message: "Email and password are required",
-      });
-    }
+  /**
+   * Register new user
+   * POST /api/v1/auth/register
+   * Body: { email, password, displayName? }
+   */
+  async register(req, res) {
+    try {
+      const { email, password, displayName } = req.body;
 
-    const result = await authService.register(email, password, displayName);
+      if (!email || !password) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "MISSING_FIELDS",
+          message: "Email and password are required",
+        });
+      }
 
-    logger.info("User registered successfully", { email, ip: req.ip });
+      const result = await this.authService.register(email, password, displayName);
 
-    // Set refresh token as httpOnly cookie
-    setRefreshTokenCookie(res, result.tokens.refreshToken);
+      logger.info("User registered successfully", { email, ip: req.ip });
+
+      // Set refresh token as httpOnly cookie
+      this.setRefreshTokenCookie(res, result.tokens.refreshToken);
 
     res.status(201).json({
       success: true,

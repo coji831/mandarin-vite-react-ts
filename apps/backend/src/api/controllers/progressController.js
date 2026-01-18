@@ -82,14 +82,14 @@ export class ProgressController {
       message: "Failed to fetch word progress",
     });
   }
-};
+  }
 
-/**
- * Update progress for specific word
- * PUT /api/v1/progress/:wordId
- * Body: { studyCount?, correctCount?, confidence? }
- */
-export const updateWordProgress = async (req, res) => {
+  /**
+   * Update progress for specific word
+   * PUT /api/v1/progress/:wordId
+   * Body: { studyCount?, correctCount?, confidence? }
+   */
+  async updateWordProgress(req, res) {
   try {
     const userId = req.userId;
     const { wordId } = req.params;
@@ -131,7 +131,7 @@ export const updateWordProgress = async (req, res) => {
       });
     }
 
-    const updated = await progressService.updateProgress(userId, wordId, {
+    const updated = await this.progressService.updateProgress(userId, wordId, {
       studyCount,
       correctCount,
       confidence,
@@ -150,14 +150,14 @@ export const updateWordProgress = async (req, res) => {
       message: "Failed to update progress",
     });
   }
-};
+  }
 
-/**
- * Batch update progress for multiple words
- * POST /api/v1/progress/batch
- * Body: { updates: [{ wordId, studyCount?, correctCount?, confidence? }] }
- */
-export const batchUpdateProgress = async (req, res) => {
+  /**
+   * Batch update progress for multiple words
+   * POST /api/v1/progress/batch
+   * Body: { updates: [{ wordId, studyCount?, correctCount?, confidence? }] }
+   */
+  async batchUpdateProgress(req, res) {
   try {
     const userId = req.userId;
     const { updates } = req.body;
@@ -222,7 +222,7 @@ export const batchUpdateProgress = async (req, res) => {
       }
     }
 
-    const results = await progressService.batchUpdateProgress(userId, updates);
+    const results = await this.progressService.batchUpdateProgress(userId, updates);
 
     res.status(200).json(results);
   } catch (error) {
@@ -237,13 +237,13 @@ export const batchUpdateProgress = async (req, res) => {
       message: "Failed to batch update progress",
     });
   }
-};
+  }
 
-/**
- * Delete progress for specific word
- * DELETE /api/v1/progress/:wordId
- */
-export const deleteWordProgress = async (req, res) => {
+  /**
+   * Delete progress for specific word
+   * DELETE /api/v1/progress/:wordId
+   */
+  async deleteWordProgress(req, res) {
   try {
     const userId = req.userId;
     const { wordId } = req.params;
@@ -256,7 +256,7 @@ export const deleteWordProgress = async (req, res) => {
       });
     }
 
-    const deleted = await progressService.deleteProgress(userId, wordId);
+    const deleted = await this.progressService.deleteProgress(userId, wordId);
 
     if (!deleted) {
       return res.status(404).json({
@@ -279,17 +279,17 @@ export const deleteWordProgress = async (req, res) => {
       message: "Failed to delete progress",
     });
   }
-};
+  }
 
-/**
- * Get progress statistics for authenticated user
- * GET /api/v1/progress/stats
- */
-export const getProgressStats = async (req, res) => {
+  /**
+   * Get progress statistics for authenticated user
+   * GET /api/v1/progress/stats
+   */
+  async getProgressStats(req, res) {
   try {
     const userId = req.userId;
 
-    const stats = await progressService.getProgressStats(userId);
+    const stats = await this.progressService.getProgressStats(userId);
 
     res.status(200).json(stats);
   } catch (error) {
@@ -300,4 +300,5 @@ export const getProgressStats = async (req, res) => {
       message: "Failed to fetch progress statistics",
     });
   }
-};
+  }
+}
