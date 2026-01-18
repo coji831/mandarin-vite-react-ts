@@ -1,114 +1,100 @@
 // TTS Controller
-import express from "express";
-
 import { config } from "../config/index.js";
-import { synthesizeSpeech } from "../services/ttsService.js";
-import * as gcsService from "../services/gcsService.js";
 import { computeTTSHash } from "../utils/hashUtils.js";
-import { asyncHandler } from "../middleware/asyncHandler.js";
 import { validationError, ttsError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import { CachedTTSService } from "../services/tts/CachedTTSService.js";
-import { getCacheService } from "../services/cache/index.js";
-import { registerCacheMetrics } from "../middleware/cacheMetrics.js";
 
-const router = express.Router();
 const logger = createLogger("TTS");
 
-// Initialize TTS service with caching
-const ttsService = {
-  async synthesizeSpeech(text, options) {
-    return synthesizeSpeech(text, options);
-  },
-  async healthCheck() {
-    return true; // TTS service doesn't have explicit health check
-  },
-};
+/**
+ * TtsController handles HTTP requests for text-to-speech generation
+ * @class
+ */
+class TtsController {
+  /**
+   * @param {Object} ttsService - Text-to-speech service
+   * @param {Object} gcsService - Google Cloud Storage service
+   */
+  constructor(ttsService, gcsService) {
+    this.ttsService = ttsService;
+    this.gcsService = gcsService;
+  }
 
-const cacheService = getCacheService();
-const cachedTtsService = new CachedTTSService(ttsService, cacheService);
+  /**
+   * Generate TTS audio
+   * POST / (mounted at ROUTE_PATTERNS.ttsAudio = "/get-tts-audio")
+   */
+  async getTtsAudio(req, res) {
+    const { text, voice = config.tts.voiceDefault } = req.body;
 
-// Register metrics for monitoring
-registerCacheMetrics("TTS", () => cachedTtsService.getMetrics());
+    if (!text || text.trim() === "") {
+      throw validationError("Text is required.", { field: "text" });
+    }
 
-// POST / (mounted at ROUTE_PATTERNS.ttsAudio = "/get-tts-audio")
-router.post(
-  ROUTE_PATTERNS.ttsAudio,
-  asyncHandler(
-    async (req, res) => {
-      const { text, voice = config.tts.voiceDefault } = req.body;
+    // Input validation: 1-15 words
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length === 0 || words.length > config.tts.maxWords) {
+      throw validationError(`Please enter between 1 and ${config.tts.maxWords} words.`, {
+        wordCount: words.length,
+        field: "text",
+      });
+    }
 
-      if (!text || text.trim() === "") {
-        throw validationError("Text is required.", { field: "text" });
-      }
-
-      // Input validation: 1-15 words
-      const words = text.split(/\s+/).filter(Boolean);
-      if (words.length === 0 || words.length > config.tts.maxWords) {
-        throw validationError(`Please enter between 1 and ${config.tts.maxWords} words.`, {
-          wordCount: words.length,
-          field: "text",
-        });
-      }
-
-      // Scaffold mode: return mock audio URL
-      if (config.conversationMode === "scaffold") {
-        const hash = computeTTSHash(text, voice);
-        logger.info(`Scaffold mode: returning mock TTS for text: "${text}"`);
-        res.status(200).json({
-          audioUrl: `https://storage.googleapis.com/mandarin-tts-audio-dev/tts/${hash}.mp3`,
-          cached: true,
-          scaffold: true,
-        });
-        return;
-      }
-
-      // Generate hash for caching (include voice in hash)
+    // Scaffold mode: return mock audio URL
+    if (config.conversationMode === "scaffold") {
       const hash = computeTTSHash(text, voice);
-      const cachePath = config.cachePaths.tts.replace("{hash}", hash);
+      logger.info(`Scaffold mode: returning mock TTS for text: "${text}"`);
+      res.status(200).json({
+        audioUrl: `https://storage.googleapis.com/mandarin-tts-audio-dev/tts/${hash}.mp3`,
+        cached: true,
+        scaffold: true,
+      });
+      return;
+    }
 
-      try {
-        // Check cache first
-        const exists = await gcsService.fileExists(cachePath);
-        let cached = false;
+    // Generate hash for caching (include voice in hash)
+    const hash = computeTTSHash(text, voice);
+    const cachePath = config.cachePaths.tts.replace("{hash}", hash);
 
-        if (exists) {
-          logger.info(`Cache hit: ${cachePath}`);
-          cached = true;
-        } else {
-          // Cache miss - generate and store
-          logger.info(`Cache miss: ${cachePath}`);
-          const audioBuffer = await cachedTtsService.synthesizeSpeech(text, { voice });
-          await gcsService.uploadFile(cachePath, audioBuffer, "audio/mpeg");
-          logger.info(`Successfully cached: ${cachePath}`);
-        }
+    try {
+      // Check cache first
+      const exists = await this.gcsService.fileExists(cachePath);
+      let cached = false;
 
-        const audioUrl = gcsService.getPublicUrl(cachePath);
-        res.status(200).json({ audioUrl, cached });
-      } catch (error) {
-        // Enhanced error handling with specific error codes
-        if (error.code === 7 || error.details?.includes("API key not valid")) {
-          throw ttsError("Authentication error with TTS/GCS API. Check local backend logs.", {
-            originalError: error.message,
-          });
-        } else if (error.code === 3 && error.details?.includes("Billing account not enabled")) {
-          throw ttsError("Google Cloud Billing not enabled. Check local backend logs.", {
-            originalError: error.message,
-          });
-        } else if (error.code === 403 && error.details?.includes("Forbidden")) {
-          throw ttsError(
-            "GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles.",
-            { originalError: error.message }
-          );
-        }
-        throw ttsError(error.message || "TTS generation failed", {
+      if (exists) {
+        logger.info(`Cache hit: ${cachePath}`);
+        cached = true;
+      } else {
+        // Cache miss - generate and store
+        logger.info(`Cache miss: ${cachePath}`);
+        const audioBuffer = await this.ttsService.synthesizeSpeech(text, { voice });
+        await this.gcsService.uploadFile(cachePath, audioBuffer, "audio/mpeg");
+        logger.info(`Successfully cached: ${cachePath}`);
+      }
+
+      const audioUrl = this.gcsService.getPublicUrl(cachePath);
+      res.status(200).json({ audioUrl, cached });
+    } catch (error) {
+      // Enhanced error handling with specific error codes
+      if (error.code === 7 || error.details?.includes("API key not valid")) {
+        throw ttsError("Authentication error with TTS/GCS API. Check local backend logs.", {
           originalError: error.message,
         });
+      } else if (error.code === 3 && error.details?.includes("Billing account not enabled")) {
+        throw ttsError("Google Cloud Billing not enabled. Check local backend logs.", {
+          originalError: error.message,
+        });
+      } else if (error.code === 403 && error.details?.includes("Forbidden")) {
+        throw ttsError(
+          "GCS permission denied. Ensure service account has Storage Object Creator/Viewer roles.",
+          { originalError: error.message },
+        );
       }
-    },
-    { logPrefix: "TTS" }
-  )
-);
+      throw ttsError(error.message || "TTS generation failed", {
+        originalError: error.message,
+      });
+    }
+  }
+}
 
-export default router;
+export default TtsController;
