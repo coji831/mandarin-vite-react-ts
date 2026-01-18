@@ -371,13 +371,15 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 - [x] Ensure `calculateNextReview()` remains pure (no external dependencies)
 - [x] Update JSDoc documentation
 
-### AuthService Refactoring
+### AuthService Refactoring ✅
 
-- [ ] Move `apps/backend/src/services/AuthService.js` → `apps/backend/src/core/services/AuthService.js`
-- [ ] Create `apps/backend/src/core/interfaces/IAuthRepository.js`
-- [ ] Create `apps/backend/src/infrastructure/repositories/AuthRepository.js`
-- [ ] Extract JWT/bcrypt operations to infrastructure layer
-- [ ] Keep authentication logic in core service (pure business rules)
+- [x] Move `apps/backend/src/services/AuthService.js` → `apps/backend/src/core/services/AuthService.js`
+- [x] Create `apps/backend/src/core/interfaces/IAuthRepository.js`
+- [x] Create `apps/backend/src/infrastructure/repositories/AuthRepository.js`
+- [x] Extract JWT operations to `apps/backend/src/infrastructure/security/JwtService.js`
+- [x] Extract password hashing to `apps/backend/src/infrastructure/security/PasswordService.js`
+- [x] Keep authentication logic in core service (pure business rules)
+- [x] Update to use dependency injection (repository, jwtService, passwordService)
 
 ### Cache Services → Infrastructure Layer
 
