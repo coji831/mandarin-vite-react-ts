@@ -346,14 +346,14 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 
 ---
 
-## 🧠 Phase 3: Refactor Existing Services (Core Layer) (2 hours)
+## 🧠 Phase 3: Refactor Existing Services (Core Layer) (3 hours)
 
-### ProgressService Refactoring
+### ProgressService Refactoring ✅
 
-- [ ] Move `apps/backend/src/services/ProgressService.js` → `apps/backend/src/core/services/ProgressService.js`
-- [ ] Update ProgressService to accept `IProgressRepository` via constructor
-- [ ] Remove all direct Prisma imports from service
-- [ ] Add `calculateMasteryStats(userId, listId)` method
+- [x] Move `apps/backend/src/services/ProgressService.js` → `apps/backend/src/core/services/ProgressService.js`
+- [x] Update ProgressService to accept `IProgressRepository` via constructor
+- [x] Remove all direct Prisma imports from service
+- [x] Add `calculateMasteryStats(userId, listId)` method
   ```javascript
   async calculateMasteryStats(userId, listId, wordIds) {
     const progress = await this.repository.findByUser(userId);
@@ -368,8 +368,8 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
     };
   }
   ```
-- [ ] Ensure `calculateNextReview()` remains pure (no external dependencies)
-- [ ] Update JSDoc documentation
+- [x] Ensure `calculateNextReview()` remains pure (no external dependencies)
+- [x] Update JSDoc documentation
 
 ### AuthService Refactoring
 
@@ -379,18 +379,71 @@ Frontend → Backend API (/api/v1/vocabulary/*) → GCS Bucket → Backend → F
 - [ ] Extract JWT/bcrypt operations to infrastructure layer
 - [ ] Keep authentication logic in core service (pure business rules)
 
-### Cache Services (Already Clean)
+### Cache Services → Infrastructure Layer
 
-- [ ] Move `apps/backend/src/services/cache/` → `apps/backend/src/infrastructure/cache/`
-- [ ] Keep interfaces in `apps/backend/src/core/interfaces/ICacheService.js`
-- [ ] Update imports across codebase
+- [x] Move `apps/backend/src/services/cache/` → `apps/backend/src/infrastructure/cache/`
+  - [x] Move `CacheService.js` (abstract base class)
+  - [x] Move `RedisCacheService.js` (Redis implementation)
+  - [x] Move `NoOpCacheService.js` (No-op implementation)
+  - [x] Move `RedisClient.js` (Redis client wrapper)
+  - [x] Move `index.js` (exports)
+- [x] Create `apps/backend/src/core/interfaces/ICacheService.js` (interface definition)
+- [x] Update all imports across codebase:
+  - [x] Update `CachedConversationService.js` imports
+  - [x] Update `CachedTTSService.js` imports
+  - [ ] Update any controller/service imports
 
-### External Services
+### External API Clients → Infrastructure Layer
 
-- [ ] Move TTS/Conversation services to `apps/backend/src/infrastructure/external/`
-  - [ ] `apps/backend/src/infrastructure/external/GoogleTTSClient.js`
-  - [ ] `apps/backend/src/infrastructure/external/GeminiClient.js`
-- [ ] Keep high-level service wrappers in core if they contain business logic
+Move low-level API clients to infrastructure (no business logic, pure I/O):
+
+- [x] **GeminiClient** (Gemini AI API)
+  - [x] Move `apps/backend/src/services/geminiService.js` → `apps/backend/src/infrastructure/external/GeminiClient.js`
+  - [x] Keep only: authentication, HTTP requests, response parsing
+  - [x] Remove: conversation-specific logic (stays in ConversationService)
+  - [x] Update imports in ConversationService
+
+- [x] **GoogleTTSClient** (Google Text-to-Speech API)
+  - [x] Move `apps/backend/src/services/ttsService.js` → `apps/backend/src/infrastructure/external/GoogleTTSClient.js`
+  - [x] Keep only: TTS client initialization, synthesizeSpeech method
+  - [x] Update imports in CachedTTSService
+
+- [x] **GCSClient** (Google Cloud Storage)
+  - [x] Move `apps/backend/src/services/gcsService.js` → `apps/backend/src/infrastructure/external/GCSClient.js`
+  - [x] Keep only: storage client initialization, upload/download operations
+  - [x] Update imports in VocabularyRepository, ConversationService
+
+### Conversation Services → Core Layer
+
+Move business logic services to core (orchestration, parsing, prompts):
+
+- [x] **ConversationService** (High-level orchestration)
+  - [x] Move `apps/backend/src/services/conversationService.js` → `apps/backend/src/core/services/ConversationService.js`
+  - [x] Keep: conversation generation logic, parsing, prompt creation, orchestration
+  - [x] Update to use infrastructure clients (GeminiClient, GoogleTTSClient, GCSClient)
+  - [x] Inject clients via constructor (dependency injection)
+  - [x] Update imports in CachedConversationService, controllers
+
+- [x] **CachedConversationService** (Decorator pattern)
+  - [x] Move `apps/backend/src/services/conversation/CachedConversationService.js` → `apps/backend/src/core/services/CachedConversationService.js`
+  - [x] Update imports to use core/services/ConversationService
+  - [x] Update imports to use infrastructure/cache
+
+- [x] **CachedTTSService** (Decorator pattern)
+  - [x] Move `apps/backend/src/services/tts/CachedTTSService.js` → `apps/backend/src/core/services/CachedTTSService.js`
+  - [x] Update imports to use infrastructure/external/GoogleTTSClient
+  - [x] Update imports to use infrastructure/cache
+
+### Clean Architecture Validation
+
+After Phase 3, verify:
+
+- [ ] `core/services/` contains ONLY business logic (no Prisma, no Express, no external API clients)
+- [ ] `core/services/` accepts dependencies via constructor (DI pattern)
+- [ ] `infrastructure/external/` contains ONLY low-level API clients (Gemini, TTS, GCS)
+- [ ] `infrastructure/cache/` contains ONLY cache implementations (Redis, NoOp)
+- [ ] `infrastructure/repositories/` contains ONLY data access (Prisma, GCS data fetching)
+- [ ] All services use interfaces from `core/interfaces/`
 
 ---
 
