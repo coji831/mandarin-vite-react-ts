@@ -1,0 +1,28 @@
+# Dependencies & Build Artifacts (Highest priority for savings)
+node_modules/
+dist/
+build/
+out/
+target/
+bin/
+obj/
+
+# Large Data & Media
+*.log
+*.csv
+*.jsonl
+*.mp4
+*.png
+*.jpg
+*.pdf
+.git/
+
+# Environment & Secrets (Safety + Savings)
+.env*
+*.pem
+*.key
+
+# Tool-specific
+.vscode/
+.idea/
+.claude/sessions/  # Prevents Claude from reading its own history as code
