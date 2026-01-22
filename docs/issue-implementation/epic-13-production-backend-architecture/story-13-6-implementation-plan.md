@@ -650,7 +650,43 @@ After Phase 3, verify:
 
 ---
 
-## 📚 Phase 6: OpenAPI Documentation (1.5 hours)
+## 📚 Phase 6: OpenAPI Documentation ✅ COMPLETE (1.5 hours)
+
+### Install Dependencies ✅
+
+- [x] Install swagger packages: `swagger-jsdoc@7.0.0`, `swagger-ui-express@6.1.0`
+
+### Generate OpenAPI Spec ✅
+
+- [x] Create `apps/backend/src/api/docs/openapi.js`
+  - [x] Define OpenAPI 3.1 configuration
+  - [x] Configure swagger-jsdoc to scan routes
+  - [x] Define security schemes (JWT bearerAuth, cookieAuth)
+  - [x] Define core schemas (Error, VocabularyList, VocabularyWord, Progress)
+
+- [x] Add JSDoc annotations to vocabulary routes
+  - [x] GET /api/v1/vocabulary/lists
+  - [x] GET /api/v1/vocabulary/lists/:listId
+  - [x] GET /api/v1/vocabulary/lists/:listId/words
+  - [x] GET /api/v1/vocabulary/search
+  - [x] GET /api/v1/vocabulary/lists/:listId/progress (protected)
+
+- [x] Define schema components in `apps/backend/src/api/docs/schemas.js`
+  - [x] ListProgress schema
+  - [x] ProgressStats schema
+  - [x] Error response schema
+
+### Swagger UI Setup ✅
+
+- [x] Add Swagger UI routes to `apps/backend/src/index.js`
+  - [x] `/api-docs` - Interactive Swagger UI
+  - [x] `/api-docs.json` - Raw OpenAPI spec
+
+- [x] Test Swagger UI at `http://localhost:3001/api-docs`
+
+**Phase 6 Commit:** (pending)
+
+---
 
 ### Install Dependencies
 

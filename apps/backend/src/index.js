@@ -1,8 +1,9 @@
 import cors from "cors";
 import dotenv from "dotenv";
-
 import express from "express";
+import swaggerUi from "swagger-ui-express";
 import config from "./config/index.js";
+import { swaggerSpec } from "./api/docs/openapi.js";
 import { getAllRoutes } from "./utils/routeUtils.js";
 import { getCacheService } from "./services/cache/index.js";
 import { RedisClient } from "./services/cache/RedisClient.js";
@@ -44,6 +45,13 @@ app.use(
 
 // Mount routes
 app.use("/api", routes);
+
+// Swagger API documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 // Health check endpoint (move BEFORE error handler)
 app.get("/routes", (req, res) => {
