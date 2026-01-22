@@ -176,8 +176,8 @@ public class ProgressService : IProgressService
     }
 
     public async Task<MasteryStats> CalculateMasteryStatsAsync(
-        string userId, 
-        string listId, 
+        string userId,
+        string listId,
         List<string> wordIds)
     {
         var progress = await _repository.FindByUserAsync(userId);

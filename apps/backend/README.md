@@ -74,7 +74,9 @@ npm start
 
 - **Swagger UI**: http://localhost:3001/api-docs
 - **OpenAPI JSON**: http://localhost:3001/api-docs.json
-- **Route Li
+- **Route List**: View all routes at `/api-docs`
+
+## Environment Variables
 
 Set in `.env.local` (see `.env.local.example`):
 
@@ -99,7 +101,7 @@ GEMINI_API_CREDENTIALS_RAW={"type":"service_account",...}
 
 ### Optional Configuration
 
-```env
+````env
 PORT=3001
 NODE_ENV=development
 GEMINI_MODEL=models/gemini-2.0-flash-lite
@@ -108,6 +110,10 @@ GEMINI_MAX_TOKENS=1000
 CACHE_TTL_TTS=86400        # 24 hours
 CACHE_TTL_CONVERSATION=3600  # 1 hour
 ENABLE_DETAILED_LOGS=true
+```
+
+## Redis Caching
+
 The backend uses **Railway Redis** for caching TTS and conversation responses to reduce API costs and improve performance.
 
 ```env
@@ -121,7 +127,7 @@ CACHE_ENABLED=true
 # Cache TTL values (seconds)
 CACHE_TTL_TTS=86400        # 24 hours for TTS audio
 CACHE_TTL_CONVERSATION=3600  # 1 hour for conversation text
-```
+````
 
 **Key Points:**
 
