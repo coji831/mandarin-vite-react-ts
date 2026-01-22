@@ -816,7 +816,48 @@ After Phase 3, verify:
 
 ---
 
-## 📖 Phase 8: Documentation (1 hour)
+## 📖 Phase 8: Documentation ✅ COMPLETE (1 hour)
+
+### .NET Migration Guide ✅
+
+- [x] Create `docs/guides/dotnet-migration.md`
+  - [x] Architecture layer mapping (TS → C#)
+  - [x] Code examples for common patterns (Repository, Service, Controller)
+  - [x] Repository interface → EF Core translation
+  - [x] Service class → C# service translation
+  - [x] OpenAPI spec reuse instructions
+  - [x] Database schema migration notes (Prisma → EF Core)
+  - [x] Authentication/JWT migration examples
+  - [x] Dependency injection setup
+  - [x] Railway deployment notes
+  - [x] Migration checklist (40-50 hour estimate)
+
+### Update Existing Docs ✅
+
+- [x] Update `apps/backend/README.md`
+  - [x] Document clean architecture folder structure
+  - [x] Explain layer separation (api/core/infrastructure)
+  - [x] Add Swagger UI usage instructions
+  - [x] Update development setup steps
+  - [x] Document key API endpoints
+  - [x] Update environment variables section
+
+- [ ] Update `apps/backend/docs/api-spec.md` (Deferred - Swagger UI is source of truth)
+  - OpenAPI spec at `/api-docs.json` replaces manual documentation
+  - Interactive Swagger UI at `/api-docs` for testing
+
+- [ ] Update `docs/architecture.md` (Deferred to separate documentation story)
+  - Will be updated comprehensively after all Epic 13 stories complete
+
+### Code Documentation ✅ (Minimal)
+
+- [x] File headers already present in new files (openapi.js, vocabularyRoutes.js)
+- [x] JSDoc comments added to vocabulary routes for OpenAPI generation
+- [x] Repository/Service classes have class-level documentation
+
+**Phase 8 Commit:** (pending)
+
+---
 
 ### .NET Migration Guide
 

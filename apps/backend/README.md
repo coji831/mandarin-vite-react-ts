@@ -1,23 +1,57 @@
-# Local Backend
+# Backend Server
 
-Express server for local development and testing, providing TTS, AI conversation generation, and caching via Google Cloud services.
+Express server for Mandarin learning platform, providing TTS, AI conversation generation, vocabulary management, and progress tracking.
+
+## Architecture
+
+**Clean Architecture (Story 13-6)**: Separates concerns into layers for maintainability and future .NET migration.
+
+```
+apps/backend/src/
+├── api/                    # HTTP layer (controllers, routes, middleware)
+│   ├── controllers/       # HTTP request/response mapping
+│   ├── routes/            # Route definitions with DI
+│   ├── middleware/        # Auth, error handling, async wrapper
+│   └── docs/              # OpenAPI 3.1 specification
+├── core/                   # Business logic (framework-agnostic)
+│   ├── services/          # Business logic services
+│   ├── interfaces/        # Repository & service interfaces
+│   └── domain/            # Domain models
+├── infrastructure/         # External dependencies
+│   ├── repositories/      # Data access (Prisma)
+│   ├── external/          # API clients (Gemini, TTS, GCS)
+│   ├── cache/             # Redis cache implementation
+│   └── database/          # Database client
+├── config/                # Configuration management
+├── utils/                 # Shared utilities
+└── index.js              # Application entry point
+```
+
+**Design Principles:**
+
+- **Dependency Injection**: All controllers/services receive dependencies via constructor
+- **Interface-Based**: Core layer depends on interfaces, not concrete implementations
+- **Separation of Concerns**: No Prisma/Express in core/, no business logic in api/
+- **OpenAPI First**: API documented with Swagger UI (`/api-docs`)
 
 ## Purpose
 
 - **Development Environment**: Test and debug API functionality without deploying
-- **Shared Logic**: Business logic designed for portability to Vercel serverless functions
-- **Scaffold Mode**: Deterministic fixtures for UI development and testing
-- **Real Mode**: Live Google Cloud API integration (TTS, Gemini, GCS)
+- **Production Ready**: Deployed to Railway with PostgreSQL + Redis
+- **Clean Architecture**: Prepared for .NET migration (Epic 14)
+- **API Documentation**: Interactive Swagger UI for all endpoints
 
 ## Features
 
-- ✅ **Modern Google APIs**: Latest `@google-cloud/*` libraries with async/await
-- ✅ **Service Layer Architecture**: Clean separation (routes → controllers → services)
-- ✅ **Conversation Generation**: AI-powered Mandarin conversations via Gemini API
+- ✅ **Clean Architecture**: Layered design (api/core/infrastructure)
+- ✅ **OpenAPI 3.1**: Interactive Swagger UI at `/api-docs`
+- ✅ **Vocabulary API**: Fetch lists/words from GCS, search/filter
+- ✅ **Progress Tracking**: User progress with spaced repetition
+- ✅ **Conversation Generation**: AI-powered dialogues via Gemini API
 - ✅ **Text-to-Speech**: Google Cloud TTS with caching
-- ✅ **GCS Caching**: Automatic caching for audio and conversation data
+- ✅ **Redis Caching**: Automatic caching for TTS and conversations
+- ✅ **JWT Authentication**: Secure endpoints with access/refresh tokens
 - ✅ **Error Tracing**: Request ID propagation for debugging
-- ✅ **Mode Toggle**: Scaffold (fixtures) or Real (live APIs)
 
 ## Quick Start
 
@@ -29,24 +63,36 @@ npm install
 cp .env.local.example .env.local
 # Edit .env.local with your credentials
 
-# Start in scaffold mode (no API keys needed)
-$env:CONVERSATION_MODE="scaffold"; npm run start-backend
+# Start development server
+npm run dev  # Runs on http://localhost:3001
 
-# Or start in real mode (requires Google Cloud credentials)
-$env:CONVERSATION_MODE="real"; npm run start-backend
+# Or start production mode
+npm start
 ```
 
-Server runs on `http://localhost:3001` by default.
+### API Documentation
 
-## Environment Variables
-
-### Required for Real Mode
+- **Swagger UI**: http://localhost:3001/api-docs
+- **OpenAPI JSON**: http://localhost:3001/api-docs.json
+- **Route Li
 
 Set in `.env.local` (see `.env.local.example`):
 
 ```env
-CONVERSATION_MODE=real
-GCS_BUCKET_NAME=your-bucket-name
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/mandarin
+
+# Redis Cache
+REDIS_URL=redis://localhost:6379
+CACHE_ENABLED=true
+
+# JWT Authentication
+JWT_SECRET=your-secret-key-here
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
+
+# Google Cloud Services
+GCS_BUCKET_NAME=mandarin-vocab-data
 GOOGLE_TTS_CREDENTIALS_RAW={"type":"service_account",...}
 GEMINI_API_CREDENTIALS_RAW={"type":"service_account",...}
 ```
@@ -55,15 +101,13 @@ GEMINI_API_CREDENTIALS_RAW={"type":"service_account",...}
 
 ```env
 PORT=3001
-GCS_CREDENTIALS_RAW={...}  # Dedicated GCS service account (optional)
+NODE_ENV=development
 GEMINI_MODEL=models/gemini-2.0-flash-lite
 GEMINI_TEMPERATURE=0.7
 GEMINI_MAX_TOKENS=1000
+CACHE_TTL_TTS=86400        # 24 hours
+CACHE_TTL_CONVERSATION=3600  # 1 hour
 ENABLE_DETAILED_LOGS=true
-```
-
-### Redis Caching (Story 13.5)
-
 The backend uses **Railway Redis** for caching TTS and conversation responses to reduce API costs and improve performance.
 
 ```env
