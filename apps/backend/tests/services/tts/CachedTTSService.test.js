@@ -1,7 +1,8 @@
 // apps/backend/tests/services/tts/CachedTTSService.test.js
 // Unit tests for CachedTTSService
 
-import { CachedTTSService } from "../../../src/services/tts/CachedTTSService.js";
+import { describe, test, expect, beforeEach } from "vitest";
+import { CachedTTSService } from "../../../src/core/services/CachedTTSService.js";
 
 // Simple mock cache service
 function createMockCache() {

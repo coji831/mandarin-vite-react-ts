@@ -3,7 +3,8 @@
  * @description Tests for Prisma database client and basic CRUD operations
  */
 
-import { prisma } from "../src/infrastructure/database/client.js";
+import { describe, test, expect, afterAll } from "vitest";
+import { prisma } from "../../src/infrastructure/database/client.js";
 import bcrypt from "bcrypt";
 
 describe("Database Client", () => {
@@ -51,7 +52,7 @@ describe("Database Client", () => {
           email, // Same email
           passwordHash: await bcrypt.hash("TestPassword123!", 10),
         },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -91,7 +92,7 @@ describe("Database Client", () => {
           wordId: word.id,
           studyCount: 2,
         },
-      })
+      }),
     ).rejects.toThrow();
   });
 });

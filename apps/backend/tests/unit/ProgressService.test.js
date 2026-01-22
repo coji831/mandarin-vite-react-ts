@@ -3,27 +3,36 @@
  * @description Unit tests for ProgressService
  */
 
-import { ProgressService } from "../../src/services/ProgressService.js";
-import { prisma } from "../../src/models/index.js";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { ProgressService } from "../../src/core/services/ProgressService.js";
+import { prisma } from "../../src/infrastructure/database/client.js";
 
 // Mock Prisma client
-jest.mock("../../src/models/index.js", () => ({
+vi.mock("../../src/infrastructure/database/client.js", () => ({
   prisma: {
     progress: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      upsert: jest.fn(),
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
     },
-    $transaction: jest.fn(),
+    $transaction: vi.fn(),
   },
 }));
 
 describe("ProgressService", () => {
   let progressService;
+  let mockRepository;
 
   beforeEach(() => {
-    progressService = new ProgressService();
-    jest.clearAllMocks();
+    // Create mock repository with all required methods
+    mockRepository = {
+      findByUser: vi.fn(),
+      findByUserAndWord: vi.fn(),
+      upsert: vi.fn(),
+    };
+
+    progressService = new ProgressService(mockRepository);
+    vi.clearAllMocks();
   });
 
   describe("calculateNextReview", () => {
@@ -60,19 +69,16 @@ describe("ProgressService", () => {
         { id: "1", userId: "user1", wordId: "word1", confidence: 0.5 },
         { id: "2", userId: "user1", wordId: "word2", confidence: 0.8 },
       ];
-      prisma.progress.findMany.mockResolvedValue(mockProgress);
+      mockRepository.findByUser.mockResolvedValue(mockProgress);
 
       const result = await progressService.getProgressForUser("user1");
 
-      expect(prisma.progress.findMany).toHaveBeenCalledWith({
-        where: { userId: "user1" },
-        orderBy: { updatedAt: "desc" },
-      });
+      expect(mockRepository.findByUser).toHaveBeenCalledWith("user1");
       expect(result).toEqual(mockProgress);
     });
 
     it("should return empty array if no progress", async () => {
-      prisma.progress.findMany.mockResolvedValue([]);
+      mockRepository.findByUser.mockResolvedValue([]);
 
       const result = await progressService.getProgressForUser("user1");
 
@@ -88,20 +94,16 @@ describe("ProgressService", () => {
         wordId: "word1",
         confidence: 0.5,
       };
-      prisma.progress.findUnique.mockResolvedValue(mockProgress);
+      mockRepository.findByUserAndWord.mockResolvedValue(mockProgress);
 
       const result = await progressService.getProgressForWord("user1", "word1");
 
-      expect(prisma.progress.findUnique).toHaveBeenCalledWith({
-        where: {
-          userId_wordId: { userId: "user1", wordId: "word1" },
-        },
-      });
+      expect(mockRepository.findByUserAndWord).toHaveBeenCalledWith("user1", "word1");
       expect(result).toEqual(mockProgress);
     });
 
     it("should return null if progress not found", async () => {
-      prisma.progress.findUnique.mockResolvedValue(null);
+      mockRepository.findByUserAndWord.mockResolvedValue(null);
 
       const result = await progressService.getProgressForWord("user1", "word1");
 
@@ -120,7 +122,7 @@ describe("ProgressService", () => {
         confidence: 0.8,
         nextReview: new Date("2026-01-15"),
       };
-      prisma.progress.upsert.mockResolvedValue(mockUpdated);
+      mockRepository.upsert.mockResolvedValue(mockUpdated);
 
       const result = await progressService.updateProgress("user1", "word1", {
         studyCount: 5,
@@ -128,7 +130,7 @@ describe("ProgressService", () => {
         confidence: 0.8,
       });
 
-      expect(prisma.progress.upsert).toHaveBeenCalled();
+      expect(mockRepository.upsert).toHaveBeenCalled();
       expect(result).toEqual(mockUpdated);
     });
 
@@ -142,41 +144,37 @@ describe("ProgressService", () => {
         confidence: 0,
         nextReview: expect.any(Date),
       };
-      prisma.progress.upsert.mockResolvedValue(mockCreated);
+      mockRepository.upsert.mockResolvedValue(mockCreated);
 
       const result = await progressService.updateProgress("user1", "word1", {
         studyCount: 1,
       });
 
-      expect(prisma.progress.upsert).toHaveBeenCalled();
+      expect(mockRepository.upsert).toHaveBeenCalled();
       expect(result).toEqual(mockCreated);
     });
 
     it("should calculate nextReview when confidence is provided", async () => {
-      prisma.progress.upsert.mockImplementation(({ create, update }) => {
-        return Promise.resolve({ ...create, ...update });
-      });
+      mockRepository.upsert.mockResolvedValue({ id: "1" });
 
       await progressService.updateProgress("user1", "word1", {
         confidence: 0.8,
       });
 
-      const call = prisma.progress.upsert.mock.calls[0][0];
-      expect(call.update.nextReview).toBeInstanceOf(Date);
-      expect(call.create.nextReview).toBeInstanceOf(Date);
+      const call = mockRepository.upsert.mock.calls[0];
+      // Third argument is the data object
+      expect(call[2].nextReview).toBeInstanceOf(Date);
     });
 
     it("should not recalculate nextReview if confidence not provided", async () => {
-      prisma.progress.upsert.mockImplementation(({ create, update }) => {
-        return Promise.resolve({ ...create, ...update });
-      });
+      mockRepository.upsert.mockResolvedValue({ id: "1" });
 
       await progressService.updateProgress("user1", "word1", {
         studyCount: 5,
       });
 
-      const call = prisma.progress.upsert.mock.calls[0][0];
-      expect(call.update.nextReview).toBeUndefined();
+      const call = mockRepository.upsert.mock.calls[0];
+      expect(call[2].nextReview).toBeUndefined();
     });
   });
 
@@ -190,26 +188,32 @@ describe("ProgressService", () => {
         { id: "1", userId: "user1", wordId: "word1", confidence: 0.5 },
         { id: "2", userId: "user1", wordId: "word2", confidence: 0.8 },
       ];
-      prisma.$transaction.mockResolvedValue(mockResults);
+      mockRepository.upsert
+        .mockResolvedValueOnce(mockResults[0])
+        .mockResolvedValueOnce(mockResults[1]);
 
       const result = await progressService.batchUpdateProgress("user1", updates);
 
-      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(mockRepository.upsert).toHaveBeenCalledTimes(2);
       expect(result).toEqual(mockResults);
     });
 
     it("should handle empty updates array", async () => {
-      prisma.$transaction.mockResolvedValue([]);
-
       const result = await progressService.batchUpdateProgress("user1", []);
 
-      expect(prisma.$transaction).toHaveBeenCalledWith([]);
+      expect(mockRepository.upsert).not.toHaveBeenCalled();
       expect(result).toEqual([]);
     });
   });
 
   describe("getProgressStats", () => {
     it("should calculate statistics correctly", async () => {
+      const past = new Date();
+      past.setDate(past.getDate() - 1); // Yesterday
+
+      const future = new Date();
+      future.setDate(future.getDate() + 5); // 5 days from now
+
       const mockProgress = [
         {
           id: "1",
@@ -218,7 +222,7 @@ describe("ProgressService", () => {
           studyCount: 5,
           correctCount: 4,
           confidence: 0.8,
-          nextReview: new Date("2026-01-05"), // Past
+          nextReview: past, // Past - due for review
         },
         {
           id: "2",
@@ -227,7 +231,7 @@ describe("ProgressService", () => {
           studyCount: 3,
           correctCount: 2,
           confidence: 0.6,
-          nextReview: new Date("2026-01-12"), // Future
+          nextReview: future, // Future - not due yet
         },
         {
           id: "3",
@@ -236,10 +240,10 @@ describe("ProgressService", () => {
           studyCount: 0,
           correctCount: 0,
           confidence: 0,
-          nextReview: new Date("2026-01-10"),
+          nextReview: future,
         },
       ];
-      prisma.progress.findMany.mockResolvedValue(mockProgress);
+      mockRepository.findByUser.mockResolvedValue(mockProgress);
 
       const result = await progressService.getProgressStats("user1");
 
@@ -254,7 +258,7 @@ describe("ProgressService", () => {
     });
 
     it("should return zeros for user with no progress", async () => {
-      prisma.progress.findMany.mockResolvedValue([]);
+      mockRepository.findByUser.mockResolvedValue([]);
 
       const result = await progressService.getProgressStats("user1");
 

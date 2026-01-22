@@ -3,17 +3,18 @@
  * @description Unit tests for ProgressController
  */
 
-import * as progressController from "../../src/controllers/progressController.js";
-import { ProgressService } from "../../src/services/ProgressService.js";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { ProgressController } from "../../src/api/controllers/ProgressController.js";
+import { ProgressService } from "../../src/core/services/ProgressService.js";
 
 // Mock ProgressService
-jest.mock("../../src/services/ProgressService.js");
+vi.mock("../../src/core/services/ProgressService.js");
 
 // Mock logger
-jest.mock("../../src/utils/logger.js", () => ({
+vi.mock("../../src/utils/logger.js", () => ({
   createLogger: () => ({
-    error: jest.fn(),
-    info: jest.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
   }),
 }));
 
@@ -21,6 +22,7 @@ describe("ProgressController", () => {
   let mockReq;
   let mockRes;
   let mockService;
+  let progressController;
 
   beforeEach(() => {
     mockReq = {
@@ -29,11 +31,12 @@ describe("ProgressController", () => {
       body: {},
     };
     mockRes = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
     };
     mockService = new ProgressService();
-    jest.clearAllMocks();
+    progressController = new ProgressController(mockService);
+    vi.clearAllMocks();
   });
 
   describe("getAllProgress", () => {
@@ -58,7 +61,7 @@ describe("ProgressController", () => {
         expect.objectContaining({
           error: "Internal Server Error",
           code: "FETCH_PROGRESS_FAILED",
-        })
+        }),
       );
     });
   });
@@ -91,7 +94,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "PROGRESS_NOT_FOUND",
-        })
+        }),
       );
     });
 
@@ -104,7 +107,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "MISSING_WORD_ID",
-        })
+        }),
       );
     });
   });
@@ -142,7 +145,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "INVALID_CONFIDENCE",
-        })
+        }),
       );
     });
 
@@ -156,7 +159,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "INVALID_STUDY_COUNT",
-        })
+        }),
       );
     });
   });
@@ -191,7 +194,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "INVALID_UPDATES",
-        })
+        }),
       );
     });
 
@@ -204,7 +207,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "EMPTY_UPDATES",
-        })
+        }),
       );
     });
 
@@ -219,7 +222,7 @@ describe("ProgressController", () => {
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           code: "MISSING_WORD_ID",
-        })
+        }),
       );
     });
   });
@@ -253,7 +256,7 @@ describe("ProgressController", () => {
         expect.objectContaining({
           error: "Internal Server Error",
           code: "FETCH_STATS_FAILED",
-        })
+        }),
       );
     });
   });

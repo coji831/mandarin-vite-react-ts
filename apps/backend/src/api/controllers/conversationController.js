@@ -1,7 +1,8 @@
 /**
- * Conversation Controller (Real Mode Only)
- * Handles conversation text and audio generation endpoints.
- * Scaffold mode conversation logic is in scaffoldController.js
+ * @file apps/backend/src/api/controllers/conversationController.js
+ * @description Conversation Controller (Real Mode Only)
+ * Handles conversation text and audio generation endpoints
+ * Clean architecture: API layer - handles HTTP mapping only
  */
 
 import { config } from "../../config/index.js";
@@ -18,13 +19,9 @@ const logger = createLogger("ConversationController");
 class ConversationController {
   /**
    * @param {Object} conversationService - Conversation business logic service
-   * @param {Object} geminiService - Gemini API service
-   * @param {Object} ttsService - Text-to-speech service
    */
-  constructor(conversationService, geminiService, ttsService) {
+  constructor(conversationService) {
     this.conversationService = conversationService;
-    this.geminiService = geminiService;
-    this.ttsService = ttsService;
   }
 
   /**
@@ -89,24 +86,6 @@ class ConversationController {
         provided: type,
       });
     }
-  }
-
-  /**
-   * Health check endpoint
-   * GET /health (mounted at /mandarin/conversation)
-   */
-  async healthCheck(req, res) {
-    const geminiOk = await this.geminiService.healthCheck().catch(() => false);
-    const ttsOk = await this.ttsService.healthCheck().catch(() => false);
-    res.json({
-      mode: config.conversationMode,
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      services: {
-        gemini: geminiOk,
-        tts: ttsOk,
-      },
-    });
   }
 
   /**

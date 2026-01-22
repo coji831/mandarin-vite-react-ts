@@ -7,8 +7,8 @@ import express from "express";
 import { ProgressController } from "../controllers/progressController.js";
 import { ProgressService } from "../../core/services/ProgressService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
-import { authenticateToken } from "../../middleware/authMiddleware.js";
-import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();

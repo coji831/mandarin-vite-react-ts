@@ -1,6 +1,7 @@
 /**
- * @file apps/backend/src/middleware/authMiddleware.js
+ * @file apps/backend/src/api/middleware/authMiddleware.js
  * @description JWT authentication middleware for protected routes
+ * Clean architecture: API layer middleware
  */
 
 import jwt from "jsonwebtoken";

@@ -1,7 +1,8 @@
 // apps/backend/tests/services/cache/NoOpCacheService.test.js
 // Unit tests for NoOpCacheService
 
-import { NoOpCacheService } from "../../../src/services/cache/NoOpCacheService.js";
+import { describe, test, expect, beforeEach } from "vitest";
+import { NoOpCacheService } from "../../../src/infrastructure/cache/NoOpCacheService.js";
 
 describe("NoOpCacheService", () => {
   let cacheService;

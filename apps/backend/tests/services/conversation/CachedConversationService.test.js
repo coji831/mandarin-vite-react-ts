@@ -1,7 +1,8 @@
 // apps/backend/tests/services/conversation/CachedConversationService.test.js
 // Unit tests for CachedConversationService
 
-import { CachedConversationService } from "../../../src/services/conversation/CachedConversationService.js";
+import { describe, test, expect, beforeEach } from "vitest";
+import { CachedConversationService } from "../../../src/core/services/CachedConversationService.js";
 
 // Simple mock cache service
 function createMockCache() {

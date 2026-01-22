@@ -2,10 +2,11 @@
 // Integration tests for Redis caching layer
 // Note: Uses ioredis-mock instead of Testcontainers for environments without Docker
 
+import { describe, test, expect, beforeAll, afterAll } from "vitest";
 import RedisMock from "ioredis-mock";
-import { RedisCacheService } from "../../src/services/cache/RedisCacheService.js";
-import { CachedTTSService } from "../../src/services/tts/CachedTTSService.js";
-import { CachedConversationService } from "../../src/services/conversation/CachedConversationService.js";
+import { RedisCacheService } from "../../src/infrastructure/cache/RedisCacheService.js";
+import { CachedTTSService } from "../../src/core/services/CachedTTSService.js";
+import { CachedConversationService } from "../../src/core/services/CachedConversationService.js";
 
 describe("Redis Caching Integration", () => {
   let redisClient;

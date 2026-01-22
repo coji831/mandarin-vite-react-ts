@@ -3,8 +3,9 @@
  * @description Tests for authentication service and endpoints
  */
 
-import { AuthService } from "../src/core/services/AuthService.js";
-import { prisma } from "../src/infrastructure/database/client.js";
+import { describe, test, expect, beforeAll, beforeEach, afterAll } from "vitest";
+import { AuthService } from "../../src/core/services/AuthService.js";
+import { prisma } from "../../src/infrastructure/database/client.js";
 import bcrypt from "bcrypt";
 
 describe("AuthService", () => {
@@ -41,25 +42,25 @@ describe("AuthService", () => {
 
     test("rejects weak password (no uppercase)", async () => {
       await expect(authService.register(testUserEmail, "weakpass123", "Test")).rejects.toThrow(
-        "Password must be at least 8 characters"
+        "Password must be at least 8 characters",
       );
     });
 
     test("rejects weak password (no lowercase)", async () => {
       await expect(authService.register(testUserEmail, "WEAKPASS123", "Test")).rejects.toThrow(
-        "Password must be at least 8 characters"
+        "Password must be at least 8 characters",
       );
     });
 
     test("rejects weak password (no number)", async () => {
       await expect(authService.register(testUserEmail, "WeakPassword", "Test")).rejects.toThrow(
-        "Password must be at least 8 characters"
+        "Password must be at least 8 characters",
       );
     });
 
     test("rejects weak password (too short)", async () => {
       await expect(authService.register(testUserEmail, "Pass1", "Test")).rejects.toThrow(
-        "Password must be at least 8 characters"
+        "Password must be at least 8 characters",
       );
     });
 
@@ -67,7 +68,7 @@ describe("AuthService", () => {
       await authService.register(testUserEmail, "ValidPass123!", "Test");
 
       await expect(authService.register(testUserEmail, "ValidPass123!", "Test2")).rejects.toThrow(
-        "User already exists"
+        "User already exists",
       );
     });
 
@@ -115,13 +116,13 @@ describe("AuthService", () => {
 
     test("rejects invalid email", async () => {
       await expect(authService.login("nonexistent@example.com", "LoginTest123!")).rejects.toThrow(
-        "Invalid credentials"
+        "Invalid credentials",
       );
     });
 
     test("rejects invalid password", async () => {
       await expect(authService.login(testUserEmail, "WrongPassword123!")).rejects.toThrow(
-        "Invalid credentials"
+        "Invalid credentials",
       );
     });
 
@@ -133,7 +134,7 @@ describe("AuthService", () => {
       });
 
       await expect(authService.login(testUserEmail, "LoginTest123!")).rejects.toThrow(
-        "Invalid credentials"
+        "Invalid credentials",
       );
     });
   });
@@ -168,7 +169,7 @@ describe("AuthService", () => {
 
     test("rejects invalid refresh token", async () => {
       await expect(authService.refresh("invalid-token-12345")).rejects.toThrow(
-        "Invalid refresh token"
+        "Invalid refresh token",
       );
     });
 

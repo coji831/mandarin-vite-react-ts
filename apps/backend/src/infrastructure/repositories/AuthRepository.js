@@ -4,7 +4,7 @@
  * Implements IAuthRepository interface
  */
 
-import { prisma } from "../../models/index.js";
+import { prisma } from "../database/client.js";
 
 export class AuthRepository {
   /**

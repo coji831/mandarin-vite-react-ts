@@ -10,8 +10,8 @@ import { AuthService } from "../../core/services/AuthService.js";
 import { AuthRepository } from "../../infrastructure/repositories/AuthRepository.js";
 import { JwtService } from "../../infrastructure/security/JwtService.js";
 import { PasswordService } from "../../infrastructure/security/PasswordService.js";
-import { authenticateToken } from "../../middleware/authMiddleware.js";
-import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();

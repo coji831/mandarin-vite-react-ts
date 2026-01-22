@@ -1,6 +1,6 @@
 /**
- * IVocabularyRepository interface
- * Repository contract for vocabulary data access
+ * @file apps/backend/src/core/interfaces/IVocabularyRepository.js
+ * @description Repository interface for vocabulary data access
  *
  * Implementations should handle:
  * - Fetching vocabulary lists (from GCS or local)
@@ -14,9 +14,9 @@
  * @property {string} id - List identifier
  * @property {string} name - List name
  * @property {string} description - List description
- * @property {string} difficulty - Difficulty level
+ * @property {string} difficulty - Difficulty level (beginner, intermediate, advanced)
  * @property {string[]} tags - Associated tags
- * @property {string} csvFile - CSV filename
+ * @property {string} csvFile - CSV filename in GCS bucket
  */
 
 /**
@@ -28,11 +28,15 @@
  */
 
 /**
- * @typedef {Object} IVocabularyRepository
- * @property {function(): Promise<VocabularyList[]>} findAllLists - Get all vocabulary lists
- * @property {function(string): Promise<VocabularyList|null>} findListById - Get specific list
- * @property {function(string): Promise<Word[]>} findWordsForList - Get words for a list
- * @property {function(string, Object): Promise<VocabularyList[]>} searchLists - Search with filters
+ * @typedef {Object} SearchFilters
+ * @property {string[]} [difficulties] - Filter by difficulty levels
+ * @property {string[]} [tags] - Filter by tags
  */
 
-export default {};
+/**
+ * @typedef {Object} IVocabularyRepository
+ * @property {() => Promise<VocabularyList[]>} findAllLists - Get all vocabulary lists
+ * @property {(listId: string) => Promise<VocabularyList|null>} findListById - Get specific list by ID
+ * @property {(listId: string) => Promise<Word[]>} findWordsForList - Get all words for a specific list
+ * @property {(query: string, filters?: SearchFilters) => Promise<VocabularyList[]>} searchLists - Search lists with optional filters
+ */

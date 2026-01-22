@@ -1,5 +1,8 @@
-// local-backend/config/index.js
-// Centralized configuration for all backend services
+/**
+ * @file apps/backend/src/config/index.js
+ * @description Centralized configuration for backend services
+ * Clean architecture: Configuration layer
+ */
 
 import dotenv from "dotenv";
 import path from "path";
@@ -94,25 +97,25 @@ if (config.conversationMode === "real") {
 
   if (!config.gcsBucket) {
     throw new Error(
-      "[Config] GCS_BUCKET_NAME is required when CONVERSATION_MODE=real. Check .env.local file."
+      "[Config] GCS_BUCKET_NAME is required when CONVERSATION_MODE=real. Check .env.local file.",
     );
   }
 
   if (!config.googleTtsCredentials || !config.googleTtsCredentials.client_email) {
     throw new Error(
-      "[Config] GOOGLE_TTS_CREDENTIALS_RAW is invalid or missing. Required for real mode."
+      "[Config] GOOGLE_TTS_CREDENTIALS_RAW is invalid or missing. Required for real mode.",
     );
   }
 
   if (!config.geminiCredentials || !config.geminiCredentials.client_email) {
     throw new Error(
-      "[Config] GEMINI_API_CREDENTIALS_RAW is invalid or missing. Required for real mode."
+      "[Config] GEMINI_API_CREDENTIALS_RAW is invalid or missing. Required for real mode.",
     );
   }
 
   if (!config.gcsCredentials || !config.gcsCredentials.client_email) {
     throw new Error(
-      "[Config] GCS credentials missing. Set GCS_CREDENTIALS_RAW or ensure GOOGLE_TTS_CREDENTIALS_RAW has Storage Object Creator role."
+      "[Config] GCS credentials missing. Set GCS_CREDENTIALS_RAW or ensure GOOGLE_TTS_CREDENTIALS_RAW has Storage Object Creator role.",
     );
   }
 

@@ -1,9 +1,10 @@
-// local-backend/tests/errorHandler.test.js
+// apps/backend/tests/unit/errorHandler.test.js
 // Test for errorHandler and requestIdMiddleware
 
+import { describe, test, expect, beforeEach } from "vitest";
 import express from "express";
 import request from "supertest";
-import { requestIdMiddleware, errorHandler } from "../utils/errorHandler.js";
+import { requestIdMiddleware, errorHandler } from "../../src/api/middleware/errorHandler.js";
 
 describe("errorHandler middleware", () => {
   let app;

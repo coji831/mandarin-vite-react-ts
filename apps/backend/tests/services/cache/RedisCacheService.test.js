@@ -1,8 +1,9 @@
 // apps/backend/tests/services/cache/RedisCacheService.test.js
 // Unit tests for RedisCacheService using ioredis-mock
 
+import { describe, test, expect, beforeEach, afterEach } from "vitest";
 import RedisMock from "ioredis-mock";
-import { RedisCacheService } from "../../../src/services/cache/RedisCacheService.js";
+import { RedisCacheService } from "../../../src/infrastructure/cache/RedisCacheService.js";
 
 describe("RedisCacheService", () => {
   let redisMock;

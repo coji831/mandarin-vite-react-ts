@@ -50,8 +50,10 @@ export class AuthController {
    * Body: { email, password, displayName? }
    */
   async register(req, res) {
+    let email; // Declare outside try block for error logging
     try {
-      const { email, password, displayName } = req.body;
+      email = req.body.email;
+      const { password, displayName } = req.body;
 
       if (!email || !password) {
         return res.status(400).json({

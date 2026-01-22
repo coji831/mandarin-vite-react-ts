@@ -1,4 +1,10 @@
-import { downloadFile } from "../../services/gcsService.js";
+/**
+ * @file apps/backend/src/infrastructure/repositories/VocabularyRepository.js
+ * @description Infrastructure implementation that retrieves vocabulary lists and CSVs from GCS
+ * Clean architecture: implements IVocabularyRepository interface
+ */
+
+import * as gcsClient from "../external/GCSClient.js";
 import { vocabularyConfig } from "../../config/vocabulary.js";
 import { parseCsvText } from "../parsers/CsvParser.js";
 
@@ -30,8 +36,8 @@ export class VocabularyRepository {
       return this._listsCache;
     }
 
-    // downloadFile abstracts GCS auth and SDK usage
-    const contents = await downloadFile(vocabularyConfig.listsFile);
+    // Use GCSClient from infrastructure/external
+    const contents = await gcsClient.downloadFile(vocabularyConfig.listsFile);
     const raw = contents.toString("utf-8");
 
     const lists = JSON.parse(raw);
@@ -60,8 +66,8 @@ export class VocabularyRepository {
 
     const csvFile = list.csvFile || `${list.id}.csv`;
 
-    // download file buffer from GCS
-    const buf = await downloadFile(csvFile);
+    // download file buffer from GCS using GCSClient
+    const buf = await gcsClient.downloadFile(csvFile);
     const csvText = buf.toString("utf-8");
 
     const rows = parseCsvText(csvText);
