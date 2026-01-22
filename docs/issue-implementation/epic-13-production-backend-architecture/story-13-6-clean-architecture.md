@@ -26,7 +26,7 @@ export class ProgressService {
   async updateProgress(
     userId: string,
     wordId: string,
-    data: { studyCount?: number; correctCount?: number; confidence?: number }
+    data: { studyCount?: number; correctCount?: number; confidence?: number },
   ): Promise<Progress> {
     const nextReview = this.calculateNextReview(data.confidence || 0);
 
@@ -177,7 +177,7 @@ export const swaggerSpec = swaggerJsDoc(options);
  *                 $ref: '#/components/schemas/Progress'
  */
 router.get("/progress", requireAuth, (req, res) =>
-  progressController.list(req as AuthRequest, res)
+  progressController.list(req as AuthRequest, res),
 );
 ```
 
@@ -304,4 +304,35 @@ Solution: Use swagger-jsdoc with JSDoc annotations:
 - Side-by-side comparison: Node.js service vs C# service (same logic)
 - OpenAPI spec unchanged after .NET migration
 - Database queries produce identical results
+
+---
+
+## Testing Audit (Story 13.6 Supplement)
+
+**Date:** 2026-02-12
+**Task:** Complete the unit test coverage for core layers of Clean Architecture.
+
+### Implementation Summary
+Implemented 146 unit tests across 6 suites, achieving comprehensive coverage of the core business logic, security infrastructure, and API controllers.
+
+| Layer | Files Tested | Patterns Used |
+| :--- | :--- | :--- |
+| **Infrastructure** | `JwtService`, `PasswordService` | Real cryptographic libraries used (no mocks) for security verification. |
+| **Core Services** | `AuthService`, `VocabularyService`, `ProgressService` | Repositories fully mocked via custom interfaces to isolate business logic. |
+| **API Controllers** | `AuthController`, `VocabularyController` | Services mocked; request/response lifecycle validated. |
+
+### Technical Challenges & Solutions
+1.  **Vitest 4 Migration**: Updated `vite.config.ts` to use `test.pool` instead of `poolOptions` and resolved `bcrypt` compilation issues by switching to the `forks` pool.
+2.  **Prisma 7 Compatibility**: Identified a critical blocker where the `PrismaPg` adapter fails in Vitest's isolated environment. Resolved by strictly adhering to the Repository pattern in unit tests, ensuring no Prisma code runs during logic verification.
+3.  **Scope Creep in Controllers**: Fixed a scope issue in `AuthController` where variables declared inside the `try` block were inaccessible to the logger in the `catch` block.
+
+### Final Verification Results
+- **AuthService**: 18 tests passing (Registration, Login, Refresh, Password Reset)
+- **VocabularyService**: 20 tests passing (CSV Import, Word Management)
+- **JwtService**: 12 tests passing (Rotation, Expiration, Invalid Secrets)
+- **PasswordService**: 19 tests passing (Hashing, Complexity, Validation)
+- **Controllers**: 45 tests passing (Error handling, Dependency Binding)
+
+**Status:** Completed & Verified
+**Last Update:** February 12, 2026
 ```

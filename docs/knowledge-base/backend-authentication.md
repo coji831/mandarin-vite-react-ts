@@ -105,6 +105,39 @@ app.post("/api/auth/login", async (req, res) => {
 });
 ```
 
+---
+
+## Security Service Testing Boundaries
+
+**Category:** Security & Testing  
+**Context:** Deciding what to mock in JWT/Password services
+
+When unit testing security infrastructure (like a `JwtService` or `PasswordService`), a critical architectural decision is whether to mock the underlying libraries (`jsonwebtoken`, `bcrypt`).
+
+### To Mock or Not to Mock?
+
+| Dependency         | Recommendation      | Reason                                                                                                                                                                                   |
+| :----------------- | :------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bcrypt**         | **DO NOT MOCK**     | The utility of the test is verifying that the hashing and comparison logic works with real algorithms. Mocking `bcrypt.hash` to return `"fixed_string"` defeats the purpose of the test. |
+| **JWT Library**    | **DO NOT MOCK**     | You need to verify that tokens created by the service are actually parsable and have the correct expiration/claims.                                                                      |
+| **Key Management** | **MOCK ENV/SECRET** | Do not use production secrets. Provide test-specific secrets via dependency injection or a `.env.test` file.                                                                             |
+
+### The "Cost Factor" Tradeoff
+
+Using real `bcrypt` in tests comes with a performance penalty. Bcrypt is designed to be slow.
+
+- **Struggle**: Running 20+ password tests can add ~1s to the test suite.
+- **Solution**: For **unit tests** specifically, you can reduce the salt rounds (e.g., `rounds: 1`) in test environment to speed up execution, while keeping higher rounds for integration/production environments.
+
+### Boundary Checklist
+
+1.  Verify the service correctly handles **expired** tokens.
+2.  Verify the service rejects tokens signed with the **wrong secret**.
+3.  Verify the password validator rejects **common/weak** passwords.
+4.  Verify that sanitization logic (e.g., `sanitizeUser`) actually removes the hashed password from the object.
+
+---
+
 ### httpOnly Cookies for Refresh Tokens (XSS Protection)
 
 **When Adopted:** Epic 13 Story 13.3  
@@ -209,7 +242,7 @@ app.use(
     credentials: true, // Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 // MUST install cookie-parser middleware

@@ -2,23 +2,43 @@
 
 Setup and best practices for testing React components, hooks, and backend services.
 
-## Quick Start
+## Backend Testing (Vitest)
+
+The backend uses **Vitest** for unit and integration testing.
+
+### Quick Start (Backend)
 
 ```bash
-# Run all tests
-npm test
-
-# Watch mode
-npm test -- --watch
-
-# Coverage
-npm test -- --coverage
-
-# Specific file
-npm test path/to/file.test.ts
+# In apps/backend
+npm test                      # Run all tests
+npm test -- <path>            # Run specific file
+npm run test:coverage         # Check coverage
 ```
 
-## Configuration
+### Mocking Strategy (Clean Architecture)
+
+We follow a hierarchical mocking pattern to ensure isolation:
+
+1.  **Controllers**: Mock the **Service layer**. Test HTTP status codes, cookie management, and request/response mapping.
+2.  **Services**: Mock the **Repository layer** and any **Infrastructure clients** (Gemini, GCS). Test business logic, validation, and orchestration.
+3.  **Infrastructure**: Test in isolation. Mock external network calls (SDKs, APIs) but use real logic for side-effect free services (JWT, Password hashing).
+
+#### Example: Mocking Repositories in Services
+
+```javascript
+const mockRepository = {
+  findUserByEmail: vi.fn(),
+  create: vi.fn(),
+};
+const service = new AuthService(mockRepository, jwtService, passwordService);
+```
+
+### Performance Optimization
+
+- **Bcrypt Hashing**: Regular hashing is intentionally slow. In unit tests, this can bottleneck the suite. If performance becomes an issue (>1s per file), consider using a decreased cost factor for testing if the logic allows.
+- **Test Isolation**: Prefer `vi.mock()` for external modules to prevent side effects and improve speed.
+
+## Configuration (Frontend)
 
 **jest.config.js:**
 
@@ -200,14 +220,17 @@ jest.mock("../services/api", () => ({
 ## Troubleshooting
 
 **"Not wrapped in act(...)"**
+
 - Use `waitFor` for async updates
 - Ensure all state updates are inside `act()`
 
 **Tests pass individually but fail together**
+
 - Add `afterEach(() => jest.clearAllMocks())`
 - Clean up side effects in `afterEach`
 
 **"Can't perform state update on unmounted component"**
+
 - Add cleanup functions in `useEffect`
 - Use AbortController for fetch requests
 
@@ -217,6 +240,7 @@ jest.mock("../services/api", () => ({
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 
 **Learn more:**
+
 - [React Patterns](../knowledge-base/frontend-react-patterns.md) - Strict Mode, cleanup patterns
 - [Testing Guide (Full)](./testing-guide-detailed.md) - Advanced patterns, integration tests
 

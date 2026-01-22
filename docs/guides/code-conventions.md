@@ -14,6 +14,34 @@
 - Use React Router for navigation and routing
 - Use the CSV-based vocabulary system with `csvLoader.ts`
 
+## Backend Conventions
+
+### Error Logging & Scoping
+
+When handling requests that might fail, declare identification variables (like `email` or `id`) **outside** the `try` block. This ensures they are accessible for logging in the `catch` block even if the failure occurs during the extraction from `req.body`.
+
+```javascript
+async login(req, res) {
+  let email; // Declare outside for error logging
+  try {
+    email = req.body.email;
+    const { password } = req.body;
+    // ... logic ...
+  } catch (error) {
+    // email is available here for context
+    logger.error("Login failed", { email, error: error.message });
+    res.status(500).json({ error: "..." });
+  }
+}
+```
+
+### Clean Architecture Layers
+
+- **Controllers**: Only handle HTTP concerns (status, cookies, body parsing).
+- **Services**: Pure business logic. Must not know about `req`, `res`, or Prisma directly.
+- **Repositories**: Direct data access. Encapsulate Prisma queries.
+- **Interfaces**: Define contracts in `src/core/interfaces/`.
+
 ## State Management Conventions
 
 ### Reducer Files
@@ -193,16 +221,19 @@ export function useAuth() {
     if (!isAuthenticated) return;
 
     // Refresh every 10 minutes (tokens expire in 15)
-    const refreshInterval = setInterval(async () => {
-      try {
-        await fetch("/api/auth/refresh", {
-          method: "POST",
-          credentials: "include",
-        });
-      } catch (error) {
-        console.error("Background refresh failed:", error);
-      }
-    }, 10 * 60 * 1000);
+    const refreshInterval = setInterval(
+      async () => {
+        try {
+          await fetch("/api/auth/refresh", {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Background refresh failed:", error);
+        }
+      },
+      10 * 60 * 1000,
+    );
 
     return () => clearInterval(refreshInterval);
   }, [isAuthenticated]);

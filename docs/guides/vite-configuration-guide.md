@@ -59,10 +59,33 @@ export default defineConfig({
 });
 ```
 
-**What this does:**
-- Routes `/api/*` requests to `http://localhost:3001`
-- `proxyReq`: Sends browser cookies to backend
-- `proxyRes`: Sends backend's Set-Cookie headers to browser
+## Backend Testing (Vitest 4)
+
+The backend uses Vitest for testing. Configuration requires specific adjustments for monorepo and ESM support.
+
+### Migration to Vitest 4
+
+In Vitest 4, `test.poolOptions` has been removed. Migrate options directly to the top level:
+
+```javascript
+// apps/backend/vitest.config.js
+export default defineConfig({
+  test: {
+    environment: "node",
+    globals: true,
+    pool: "forks", // Recommended for backend modules like bcrypt
+    // poolOptions removed, move options here
+  },
+});
+```
+
+### Prisma 7 Integration Struggles
+
+There is a known issue with **Prisma 7** and **Vitest** when using the `PrismaPg` adapter.
+
+**The Symptom:** Requests fail with "Invalid invocation" errors or adapter context loss during parallel execution.
+**The Struggle:** Even with `singleFork: true`, the adapter state can become corrupted in the Vitest environment.
+**Status:** Integration tests requiring real DB connectivity are currently unstable. Use **Repository Mocking** for unit tests until a stable adapter/Vitest bridge is established.
 
 **Learn more:** [Frontend Development Server Concepts](../knowledge-base/frontend-development-server.md) - Proxy architecture, cookie forwarding mechanics, event handlers explained
 
@@ -75,7 +98,7 @@ Enable credentials in fetch requests:
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
   return fetch(`/api${endpoint}`, {
     ...options,
-    credentials: "include",  // Send cookies with requests
+    credentials: "include", // Send cookies with requests
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
@@ -98,13 +121,13 @@ Set cookies with environment-aware options:
 // Backend: utils/cookieHelpers.ts
 export function getCookieOptions() {
   const isProduction = process.env.NODE_ENV === "production";
-  
+
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "strict" : "lax",  // lax for dev
+    sameSite: isProduction ? "strict" : "lax", // lax for dev
     path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   };
 }
 
@@ -170,17 +193,20 @@ import { Button } from "@/components/Button";
 ## Troubleshooting
 
 **Cookies not being set:**
+
 1. Verify `credentials: "include"` in frontend fetch
 2. Check proxy event handlers are configured
 3. Confirm backend uses `sameSite: "lax"` in development
 4. Ensure backend CORS has `credentials: true`
 
 **Proxy not forwarding requests:**
+
 1. Confirm requests start with `/api`
 2. Check backend is running on port 3001
 3. Verify `changeOrigin: true` in proxy config
 
 **Environment variables undefined:**
+
 1. Ensure variable has `VITE_` prefix
 2. Restart dev server after changing `.env.local`
 3. Check file is named `.env.local` (not `.env.locale`)
@@ -191,6 +217,7 @@ import { Button } from "@/components/Button";
 - [Vite Proxy Documentation](https://vitejs.dev/config/server-options.html#server-proxy)
 
 **Learn more:**
+
 - [Frontend Development Server](../knowledge-base/frontend-development-server.md) - How proxies work, HMR, HTTPS setup
 - [Infrastructure Configuration](../knowledge-base/infra-configuration-management.md) - Environment variable strategies
 

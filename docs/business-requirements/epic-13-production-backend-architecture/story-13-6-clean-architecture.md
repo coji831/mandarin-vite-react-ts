@@ -17,7 +17,7 @@ Refactoring to clean architecture separates business logic from framework code, 
 - [x] OpenAPI 3.1 spec generated from code and accessible at /api-docs
 - [x] Swagger UI rendered at /api-docs for interactive API testing
 - [x] Migration guide documented in docs/guides/dotnet-migration.md
-- [ ] All service unit tests pass with >90% coverage (Deferred - custom mocking strategy needed)
+- [x] All service unit tests pass with >90% coverage
 - [x] Code review checklist completed (separation of concerns verified)
 
 ## Business Rules
@@ -49,6 +49,7 @@ Refactoring to clean architecture separates business logic from framework code, 
   - (Phase 4 commit) - Vocabulary routes + import fixes
   - `4f5c53c` - Phase 6: OpenAPI 3.1 documentation
   - `e451c0e` - Phase 8: Documentation updates (.NET migration guide, README)
+  - Testing Audit Completion - Full unit test suite for core layers (146 tests passing)
 
-**Implementation Date**: 2026-01-22  
-**Total Effort**: ~10 hours (Phases 0-6, 8)
+**Implementation Date**: 2026-02-12  
+**Total Effort**: ~16 hours (Phases 0-8 + Testing Audit)

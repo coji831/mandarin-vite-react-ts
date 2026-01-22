@@ -88,6 +88,33 @@ Complex business logic, multiple data sources, testability required
 
 ---
 
+## Clean Architecture Mocking Hierarchy
+
+**Category:** Architecture & Testing  
+**Context:** Maintaining test isolation in multi-layered systems
+
+Testing a Clean Architecture system efficiently requires a structured approach to mocking. By mocking exactly one layer deep, you ensure that unit tests are fast and laser-focused on the logic under test.
+
+### The Hierarchy
+
+| Layer Under Test | Dependency to Mock       | What to Verify                                                        |
+| :--------------- | :----------------------- | :-------------------------------------------------------------------- |
+| **Controller**   | Service                  | HTTP status codes, JSON payload format, Cookie headers (`Set-Cookie`) |
+| **Service**      | Repository & Clients     | Business rule application, data transformations, orchestration logic  |
+| **Repository**   | Database Client (Prisma) | Correct query generation, handling of "Not Found" vs "Internal Error" |
+
+### Why This Matters for Decoupling
+
+By injecting a mocked Repository into a Service, the Service tests become entirely independent of your database engine (Postgres, SQLite, or even a JSON file). If you switch databases, your Service unit tests should remain unchanged and passing.
+
+### Testing Boundary Rules
+
+1.  **Never mock the language/core libraries**: Test real logic (math, dates, string parsing).
+2.  **Mock Network/IO**: Anything crossing the process boundary (HTTP calls, DB queries) must be mocked.
+3.  **Mock Volatile Utilities**: Mock things that change with time (`new Date()`) or randomness (`Math.random()`) to ensure determinism.
+
+---
+
 ## CORS (Cross-Origin Resource Sharing) Deep Dive
 
 **Category:** Security & HTTP  
@@ -224,7 +251,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
-  })
+  }),
 );
 
 // No CORS in route files
@@ -256,7 +283,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 ```
 
