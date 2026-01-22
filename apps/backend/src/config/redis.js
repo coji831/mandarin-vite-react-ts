@@ -17,27 +17,50 @@ dotenv.config({ path: envPath });
 /**
  * Parse Redis URL from environment
  * Railway format: redis://:password@host:port or redis://default:password@host:port
- * @returns {Object} Parsed Redis configuration
+ * @returns {Object} Parsed Redis configuration with type info
  */
 function parseRedisUrl() {
   const redisUrl = process.env.REDIS_URL;
 
   if (!redisUrl) {
     logger.warn("REDIS_URL not set, Redis will not be available");
-    return null;
+    return { urlType: "not configured" };
+  }
+
+  // Skip Redis if using Railway internal hostname in local development
+  if (redisUrl.includes("redis.railway.internal") && process.env.NODE_ENV !== "production") {
+    logger.warn(
+      "Skipping Redis connection: Railway internal hostname detected in local development. Use localhost or disable REDIS_URL for local dev.",
+    );
+    return { urlType: "internal (skipped)" };
   }
 
   try {
     const url = new URL(redisUrl);
+    const hostname = url.hostname;
+
+    // Determine URL type
+    let urlType;
+    if (hostname.includes("railway.internal")) {
+      urlType = "Railway internal";
+    } else if (hostname.includes(".rlwy.net") || hostname.includes(".railway.app")) {
+      urlType = "Railway public";
+    } else if (hostname === "localhost" || hostname === "127.0.0.1") {
+      urlType = "localhost";
+    } else {
+      urlType = "external";
+    }
+
     return {
-      host: url.hostname,
+      host: hostname,
       port: parseInt(url.port, 10) || 6379,
       password: url.password || undefined,
       username: url.username || undefined,
+      urlType,
     };
   } catch (error) {
     logger.error("Invalid REDIS_URL format", error);
-    return null;
+    return { urlType: "invalid" };
   }
 }
 
@@ -79,10 +102,12 @@ export const cacheConfig = {
   },
 };
 
+// Log configuration status
 logger.info("Configuration loaded:", {
+  cacheEnabled: cacheConfig.enabled,
+  urlType: redisConfig.urlType || "not configured",
   host: redisConfig.host || "not configured",
   port: redisConfig.port || "not configured",
   keyPrefix: redisConfig.keyPrefix,
-  cacheEnabled: cacheConfig.enabled,
   ttl: cacheConfig.ttl,
 });

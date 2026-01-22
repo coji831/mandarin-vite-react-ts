@@ -115,6 +115,129 @@ By injecting a mocked Repository into a Service, the Service tests become entire
 
 ---
 
+## Repository Delete Operations: Boolean Return Pattern
+
+**Category:** Data Access Patterns  
+**Context:** Handling "not found" gracefully in delete operations
+
+### The Problem with Void Returns
+
+When implementing repository delete methods, a common mistake is returning `void` when the record might not exist:
+
+```javascript
+// ❌ BAD: Void return, swallows "not found" information
+async deleteByUserAndWord(userId, wordId) {
+  try {
+    await prisma.progress.delete({ where: { userId_wordId: { userId, wordId } } });
+  } catch (error) {
+    if (error.code === "P2025") { // Record not found
+      return; // Silently ignore
+    }
+    throw error;
+  }
+}
+
+// Service layer
+async deleteProgress(userId, wordId) {
+  await this.repository.deleteByUserAndWord(userId, wordId); // No return value
+}
+
+// Controller layer
+const deleted = await this.service.deleteProgress(userId, wordId);
+if (!deleted) { // Always undefined! Always triggers 404
+  return res.status(404).json({ error: "Not Found" });
+}
+```
+
+**Result:** The controller always receives `undefined`, causing false 404 responses even when deletion succeeds.
+
+### Solution: Boolean Return for Success/Not Found
+
+**Pattern:** Repository returns `true` if deleted, `false` if not found:
+
+```javascript
+// ✅ GOOD: Boolean return indicates success
+async deleteByUserAndWord(userId, wordId) {
+  try {
+    await prisma.progress.delete({ where: { userId_wordId: { userId, wordId } } });
+    return true; // Record deleted successfully
+  } catch (error) {
+    if (error.code === "P2025") { // Prisma: Record not found
+      return false; // Record didn't exist
+    }
+    throw error; // Unexpected error, let caller handle
+  }
+}
+
+// Service layer: propagate boolean
+async deleteProgress(userId, wordId) {
+  return await this.repository.deleteByUserAndWord(userId, wordId);
+}
+
+// Controller layer: proper conditional
+const deleted = await this.service.deleteProgress(userId, wordId);
+if (!deleted) {
+  return res.status(404).json({ error: "Not Found" }); // Only triggers if record didn't exist
+}
+res.status(204).send(); // Success: No Content
+```
+
+### When to Use This Pattern
+
+| Operation           | Return Type                             | Reason                                                  |
+| :------------------ | :-------------------------------------- | :------------------------------------------------------ |
+| **Create**          | `Promise<Entity>`                       | Always succeeds or throws (duplicate key = error)       |
+| **Read (Single)**   | `Promise<Entity \| null>`               | `null` indicates "not found"                            |
+| **Read (Multiple)** | `Promise<Entity[]>`                     | Empty array indicates "none found"                      |
+| **Update**          | `Promise<Entity>` or `Promise<boolean>` | Boolean if you need to distinguish not found vs updated |
+| **Delete**          | `Promise<boolean>`                      | `true` = deleted, `false` = didn't exist                |
+
+### Alternative Pattern: Throw on Not Found
+
+Some teams prefer throwing exceptions for "not found":
+
+```javascript
+// Alternative: Throw custom error
+async deleteByUserAndWord(userId, wordId) {
+  try {
+    await prisma.progress.delete({ where: { userId_wordId: { userId, wordId } } });
+  } catch (error) {
+    if (error.code === "P2025") {
+      throw new RecordNotFoundError(`Progress not found for user ${userId}, word ${wordId}`);
+    }
+    throw error;
+  }
+}
+
+// Controller catches specific error
+try {
+  await this.service.deleteProgress(userId, wordId);
+  res.status(204).send();
+} catch (error) {
+  if (error instanceof RecordNotFoundError) {
+    return res.status(404).json({ error: "Not Found" });
+  }
+  throw error; // Re-throw unexpected errors
+}
+```
+
+**Tradeoff:**
+
+- **Boolean return**: Simpler, no custom error classes, more functional style
+- **Throw on not found**: More explicit control flow, easier to trace in logs, aligns with "exceptions for exceptional cases"
+
+### Real-World Impact
+
+In Story 13.6, the `deleteProgress` endpoint was returning 404 errors even after successful deletions. The issue was traced to:
+
+1. Repository silently ignored P2025 (record not found) and returned `void`
+2. Service didn't return anything either
+3. Controller checked `if (!deleted)` which was always `undefined` (falsy)
+
+**Fix:** Changed repository to return `boolean`, propagated through service layer, controller now correctly differentiates success from not found.
+
+---
+
 ## CORS (Cross-Origin Resource Sharing) Deep Dive
 
 **Category:** Security & HTTP  

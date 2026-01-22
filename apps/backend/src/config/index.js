@@ -44,6 +44,9 @@ export const config = {
   envPath,
   nodeEnvironment: process.env.NODE_ENV || "development",
 
+  // Database
+  databaseUrl: process.env.DATABASE_URL,
+
   //JWT
   jwtSecret: process.env.JWT_SECRET || "default_jwt_secret",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "default_jwt_refresh_secret",

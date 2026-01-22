@@ -30,14 +30,12 @@ CachedService (wrapper)
 ### Production/Development (Shared Instance)
 
 1. **Provision Redis on Railway**
-
    - Open Railway project dashboard
    - Click "New" → "Database" → "Add Redis"
    - Wait ~1 minute for provisioning
    - Redis URL auto-injected as `REDIS_URL` environment variable
 
 2. **Verify Connection**
-
    - Go to Redis service tab in Railway
    - Click "Connect" to test connection
    - Note the URL format: `redis://default:password@redis.railway.internal:6379`
@@ -47,6 +45,188 @@ CachedService (wrapper)
    - Example: `mandarin:tts:abc123`, `mandarin:conv:word-456:def789`
 
 ### Local Development Configuration
+
+**Important**: Railway's internal Redis hostname (`redis.railway.internal`) is **NOT accessible** from your local machine. This hostname only works within Railway's internal network.
+
+#### Options for Local Development
+
+**Option 1: Disable Redis (Recommended for Quick Start)**
+
+The backend automatically falls back to `NoOpCacheService` when Redis is unavailable.
+
+```bash
+# In .env.local - Comment out or remove REDIS_URL
+# REDIS_URL="redis://default:password@redis.railway.internal:6379"
+
+# Cache will be disabled, but app works normally
+CACHE_ENABLED="true"  # Can still be true, will gracefully fallback
+```
+
+**Option 2: Local Redis Instance**
+
+Install Redis locally for full caching functionality:
+
+```bash
+# Windows (via Chocolatey)
+choco install redis-64
+
+# macOS (via Homebrew)
+brew install redis
+brew services start redis
+
+# Linux (Ubuntu/Debian)
+sudo apt-get install redis-server
+sudo systemctl start redis
+```
+
+Then update `.env.local`:
+
+```bash
+REDIS_URL="redis://localhost:6379"
+CACHE_ENABLED="true"
+```
+
+**Option 3: Railway Public Redis URL (Recommended for Team Development)**
+
+Railway can expose Redis publicly via TCP Proxy, allowing local development to use the production Redis instance.
+
+**Enable TCP Proxy on Railway:**
+
+1. Go to Railway Dashboard → Your Project → Redis Service
+2. Click **Settings** tab
+3. Scroll to **Networking** section
+4. Enable **TCP Proxy** (may require Pro plan or be available by default on newer projects)
+5. Railway will generate a public URL like: `redis://default:password@redis-production-xxxx.proxy.rlwy.net:12345`
+
+**Copy the Public URL:**
+
+- Look for **REDIS_PUBLIC_URL** or **REDIS_URL** with a `.proxy.rlwy.net` hostname
+- If not auto-generated, you can manually construct it using the credentials from the internal URL
+
+**Update `.env.local`:**
+
+```bash
+# Use the public Railway Redis URL for local development
+REDIS_URL="redis://default:YourPassword@redis-production-xxxx.proxy.rlwy.net:12345"
+CACHE_ENABLED="true"
+```
+
+**Benefits:**
+
+- ✅ Full caching functionality in local dev
+- ✅ Shared cache between local dev and production (useful for testing)
+- ✅ No need to install Redis locally
+- ✅ Same data as production environment
+
+**Drawbacks:**
+
+- ⚠️ Requires Pro plan or TCP Proxy feature
+- ⚠️ Slower latency than localhost (~50-200ms depending on location)
+- ⚠️ Shares cache namespace with production (use `keyPrefix` to isolate if needed)
+
+**Option 4: Railway External Redis URL (Legacy/Manual Setup)**
+
+If Railway provides an external URL (rare for free tier), use that:
+
+```bash
+# Check Railway Redis service for external connection URL
+REDIS_URL="redis://default:password@external-hostname:6379"
+```
+
+#### Auto-Detection Logic
+
+The backend automatically detects Railway internal hostnames in local development:
+
+```javascript
+// apps/backend/src/config/redis.js
+if (redisUrl.includes("redis.railway.internal") && process.env.NODE_ENV !== "production") {
+  logger.warn(
+    "Skipping Redis connection: Railway internal hostname detected in local development.",
+  );
+  return null; // Falls back to NoOpCacheService
+}
+```
+
+#### Troubleshooting Common Errors
+
+**Error: `getaddrinfo ENOTFOUND redis.railway.internal`**
+
+- **Cause**: Attempting to connect to Railway's internal Redis from local machine
+- **Solution**: Comment out `REDIS_URL` in `.env.local` or use localhost Redis
+- **Verification**: Backend logs should show: `[CacheFactory] Using NoOpCacheService`
+
+**Error: `MaxRetriesPerRequestError: Reached the max retries per request limit`**
+
+- **Cause**: Redis client trying to connect to unreachable host
+- **Solution**: Same as above - disable REDIS_URL for local dev
+- **Impact**: Minimal - GCS cache layer still works, only Redis layer disabled
+
+#### Verifying Cache Status
+
+Check the server startup logs:
+
+```bash
+# With Redis disabled (local dev):
+[Redis Config Warning] Skipping Redis connection: Railway internal hostname detected
+[CacheFactory] Using NoOpCacheService
+[Server] Cache service initialized { type: 'NoOpCacheService', enabled: false }
+
+# With Redis enabled (production or local Redis):
+[Redis Config] Configuration loaded: { host: 'localhost', port: 6379 }
+[RedisClient] Connected to Redis
+[CacheFactory] Using RedisCacheService
+[Server] Cache service initialized { type: 'RedisCacheService', enabled: true }
+```
+
+#### Verifying Redis Connection from Local Development
+
+To test if Redis caching is working correctly from your local machine:
+
+1. **Enable Cache and Use Public URL**:
+
+   ```bash
+   # In .env.local
+   REDIS_URL="redis://default:password@switchback.proxy.rlwy.net:PORT"
+   CACHE_ENABLED="true"
+   ```
+
+2. **Start the Backend**:
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Check Logs for Successful Connection**:
+
+   ```bash
+   [Redis Config] Configuration loaded: { host: 'switchback.proxy.rlwy.net', port: 13172 }
+   [RedisClient] Connected to Redis
+   [RedisClient] Redis client ready
+   [CacheFactory] Using RedisCacheService
+   [Server] Cache service initialized { type: 'RedisCacheService', enabled: true }
+   ```
+
+4. **Test Cache Operations**:
+   - Make a TTS request: `POST http://localhost:3001/tts` with `{ "text": "你好" }`
+   - First request: Should see `[CachedTTSService] Cache Miss`
+   - Second request (same text): Should see `[CachedTTSService] Cache Hit`
+
+5. **Verify with Health Endpoint**:
+   ```bash
+   curl http://localhost:3001/api/health
+   ```
+   Should show:
+   ```json
+   {
+     "cache": {
+       "redis": {
+         "connected": true,
+         "hits": 1,
+         "misses": 1
+       }
+     }
+   }
+   ```
 
 #### Option 1: Use Railway Redis (Recommended)
 
@@ -180,7 +360,6 @@ Visit `http://localhost:3001/api/health` (or production URL) to see real-time ca
 
 1. Open Railway project → Redis service
 2. View built-in metrics:
-
    - **Memory Usage**: Should stay <100MB for typical usage
    - **Commands/Second**: Spikes during high traffic
    - **Connected Clients**: Backend connection count (usually 1)

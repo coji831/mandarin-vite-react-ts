@@ -66,7 +66,7 @@ export class ProgressService {
   }
 
   async deleteProgress(userId, wordId) {
-    await this.repository.deleteByUserAndWord(userId, wordId);
+    return await this.repository.deleteByUserAndWord(userId, wordId);
   }
 
   async batchUpdateProgress(userId, updates) {

@@ -130,7 +130,7 @@ export function validateEnv() {
   if (missing.length > 0) {
     throw new Error(
       `Missing required environment variables: ${missing.join(", ")}\n` +
-        `Please check .env.example for required configuration.`
+        `Please check .env.example for required configuration.`,
     );
   }
 }
@@ -613,6 +613,76 @@ export const env = cleanEnv(process.env, {
   JWT_SECRET: str({ minLength: 32 }),
 });
 ```
+
+---
+
+## Common Configuration Issues
+
+**Category:** Troubleshooting  
+**Context:** Environment variable pitfalls discovered in production
+
+### Issue 1: Environment Variable Defined But Not Exported
+
+**Symptom:** Application logs show `undefined` for a variable that exists in `.env.local`
+
+**Example:**
+
+```typescript
+// .env.local (variable IS defined)
+DATABASE_URL = "postgresql://localhost:5432/app";
+
+// config/index.js (variable NOT exported)
+export const config = {
+  port: process.env.PORT || 3001,
+  jwtSecret: process.env.JWT_SECRET,
+  // Missing: databaseUrl export!
+};
+
+// database/client.js (tries to use config)
+import { config } from "../config/index.js";
+const prisma = new PrismaClient({
+  datasources: {
+    db: { url: config.databaseUrl }, // undefined!
+  },
+});
+
+// Result: "Invalid invocation" error from Prisma
+```
+
+**Root Cause:**  
+The environment variable is loaded by `dotenv` but not added to the exported config object.
+
+**Solution:**  
+Explicitly export all required environment variables in your config module:
+
+```typescript
+// config/index.js - FIXED
+export const config = {
+  port: process.env.PORT || 3001,
+  jwtSecret: process.env.JWT_SECRET,
+  databaseUrl: process.env.DATABASE_URL, // ✅ Now exported
+};
+```
+
+**Prevention:**
+
+1. Use TypeScript for config modules (type errors catch missing exports)
+2. Validate config on startup:
+   ```typescript
+   if (!config.databaseUrl) {
+     throw new Error("DATABASE_URL must be configured");
+   }
+   ```
+3. Use schema validation (Zod) to ensure all required fields exist
+
+**When This Happens:**
+
+- Adding new environment variables without updating config exports
+- Copy-pasting config code and forgetting to add new variables
+- Incremental refactoring where new config isn't propagated
+
+**Real-World Impact:**  
+In Story 13.6, Prisma failed to connect during login because `DATABASE_URL` wasn't exported from the config module. The variable existed in `.env.local`, but `config.databaseUrl` was `undefined` when passed to `PrismaPg` adapter.
 
 ---
 

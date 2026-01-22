@@ -12,9 +12,9 @@
 - Add Redis caching layer to reduce external API costs and improve response times by 50%+
 - Structure code with clean architecture (Controllers/Services/Repositories) to prepare for future .NET migration
 
-**Status:** In Progress (Stories 13.1-13.3 Complete, 13.4 Pending, 13.5 Complete)
+**Status: Completed** (Stories 13.1-13.6 Complete)
 
-**Last Update:** 2024-12-20
+**Last Update: 2026-01-22**
 
 ## Background
 
@@ -44,23 +44,18 @@ The current system has evolved to include complex features (TTS, conversation ge
 This epic consists of the following user stories:
 
 1. [**Story 13.1: Monorepo Structure Setup**](./story-13-1-monorepo-setup.md)
-
    - As a developer, I want to set up npm workspaces with apps/frontend and apps/backend, so that frontend and backend can be developed and deployed independently.
 
 2. [**Story 13.2: Database Schema & ORM Configuration**](./story-13-2-database-schema.md)
-
    - As a developer, I want to configure PostgreSQL with Prisma ORM and define User, Progress, and Word models, so that user data persists reliably across sessions and devices.
 
 3. [**Story 13.3: JWT Authentication System**](./story-13-3-authentication.md)
-
    - As a user, I want to register an account and log in with email/password, so that my progress is saved and accessible from any device.
 
 4. [**Story 13.4: Multi-User Progress API**](./story-13-4-progress-api.md)
-
    - As a user, I want my progress to be saved per-user on the server, so that I can access my progress from any device without losing data.
 
 5. [**Story 13.5: Redis Caching Layer**](./story-13-5-redis-caching.md) ✅ **Completed**
-
    - As a developer, I want to implement Redis caching for API responses, so that repeated requests are faster and reduce external API costs.
    - **Implementation**: 6 phases completed, 23 files changed, 34 tests passing
    - **Key Deliverables**: Cache abstractions, CachedTTSService (24h TTL), CachedConversationService (1h TTL), integration tests achieving 66% hit rate, Artillery load test config, comprehensive monitoring
@@ -95,31 +90,26 @@ Each story builds upon the previous, ensuring incremental delivery with testable
 ## Architecture Decisions
 
 - **Decision:** Monorepo with npm Workspaces (not Turborepo/Nx)
-
   - Rationale: Lightweight, built-in to npm, sufficient for current scale (2 packages: frontend + backend)
   - Alternatives considered: Turborepo (more features but overkill), Nx (complex for small team), separate repos (harder to coordinate changes)
   - Implications: Simpler setup, can upgrade to Turborepo later if build caching becomes critical
 
 - **Decision:** PostgreSQL + Prisma ORM
-
   - Rationale: Postgres is proven, has free tier (Supabase/Neon), .NET compatible (EF Core can use same database). Prisma is TypeScript-first, generates types automatically, excellent DX.
   - Alternatives considered: MongoDB (no strong need for schemaless), MySQL (Postgres has better JSON support), raw SQL (slower development, no type safety)
   - Implications: Schema migrations are versioned, can be shared with future .NET backend. Prisma client is heavy (bundle size) but acceptable for backend.
 
 - **Decision:** JWT Authentication (not OAuth/Passport yet)
-
   - Rationale: Simple, stateless, sufficient for MVP. Can add Google/Facebook OAuth in future epic.
   - Alternatives considered: Session-based auth (requires session store), OAuth (complex, not needed yet), Magic links (worse UX for repeat users)
   - Implications: Tokens expire after 15 minutes, refresh tokens required. Must handle token refresh gracefully in frontend.
 
 - **Decision:** Redis for Caching (Upstash free tier)
-
   - Rationale: Fast, reliable, free tier available (10k requests/day), supports complex data types
   - Alternatives considered: Memcached (simpler but less features), In-memory (lost on redeploy), Database caching (slower)
   - Implications: Cache invalidation strategy required. Must handle Redis unavailable gracefully (fallback to database/API).
 
 - **Decision:** Clean Architecture Layers (Controllers → Services → Repositories)
-
   - Rationale: Separates concerns, business logic becomes framework-agnostic (can port to .NET), testable in isolation
   - Alternatives considered: Flat structure (faster for MVP but harder to migrate), Domain-driven design (too complex for current needs)
   - Implications: More files/folders (slightly slower initial development), but pays off during .NET migration (Services can be ported directly to C#).
@@ -143,22 +133,18 @@ Each story builds upon the previous, ensuring incremental delivery with testable
 ## Risks & mitigations
 
 - **Risk:** Database migration breaks existing users' progress — Severity: High
-
   - Mitigation: Create migration script to import localStorage data to backend, test thoroughly with 10+ beta users before production rollout, provide manual import UI as backup
   - Rollback: Keep localStorage sync enabled for first 2 weeks post-deployment (write to both localStorage and backend), can revert to localStorage-only mode via feature flag
 
 - **Risk:** Auth security vulnerabilities (token theft, weak passwords) — Severity: High
-
   - Mitigation: Use proven JWT libraries (jsonwebtoken + bcrypt), implement rate limiting (express-rate-limit), security audit checklist before production, HTTPS only, httpOnly cookies for refresh tokens
   - Rollback: Emergency auth disable flag (APP_AUTH_ENABLED=false), revert to read-only mode if breach detected, rotate JWT secret immediately
 
 - **Risk:** Redis downtime affecting user experience — Severity: Medium
-
   - Mitigation: Graceful fallback to database queries if Redis unavailable (try-catch around Redis calls), monitor cache hit rates and alert if <30%, use Upstash (99.9% SLA)
   - Rollback: Disable Redis integration via environment variable (USE_REDIS=false), all traffic goes to origin APIs/database
 
 - **Risk:** Vercel serverless cold starts causing slow response (>1s) — Severity: Low
-
   - Mitigation: Use Vercel edge functions where possible, implement keep-alive ping every 5 minutes, optimize bundle size, measure p95 latency
   - Rollback: Migrate to Railway/Render if cold starts >500ms for >10% of requests (cost ~$5/month)
 

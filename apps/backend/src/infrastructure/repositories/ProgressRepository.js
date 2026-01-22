@@ -79,7 +79,7 @@ export class ProgressRepository {
    * Delete progress for a specific word
    * @param {string} userId - User ID
    * @param {string} wordId - Word ID
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} - True if deleted, false if not found
    */
   async deleteByUserAndWord(userId, wordId) {
     try {
@@ -88,10 +88,11 @@ export class ProgressRepository {
           userId_wordId: { userId, wordId },
         },
       });
+      return true;
     } catch (error) {
-      // Record not found - ignore (Prisma error code P2025)
+      // Record not found - return false (Prisma error code P2025)
       if (error.code === "P2025") {
-        return;
+        return false;
       }
       throw error;
     }

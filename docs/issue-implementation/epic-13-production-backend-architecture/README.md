@@ -12,9 +12,9 @@
 - Add Redis caching layer to reduce external API costs by >50% and improve response times
 - Structure code with clean architecture (Controllers/Services/Repositories) preparing for .NET migration
 
-**Status:** In Progress (Stories 13.1-13.4 Complete, 13.5 Complete)
+**Status: Completed** (Stories 13.1-13.6 Complete)
 
-**Last Update:** 2024-12-20
+**Last Update: 2026-01-22**
 
 ## Technical Overview
 
@@ -60,31 +60,26 @@ This epic transforms the current dual-backend system (local-backend + api/) into
 ## Architecture Decisions
 
 1. **Monorepo with npm Workspaces (not Turborepo/Nx)**
-
    - **Rationale**: Lightweight, built-in to npm, sufficient for current scale (2 packages: frontend + backend)
    - **Alternatives**: Turborepo (more features but overkill for 2 packages), Nx (complex for small team), separate repos (harder to coordinate changes)
    - **Implications**: Simpler setup, can upgrade to Turborepo later if build caching becomes critical
 
 2. **PostgreSQL + Prisma ORM**
-
    - **Rationale**: Postgres is proven, has free tier (Supabase/Neon), .NET compatible (EF Core can use same database). Prisma is TypeScript-first, generates types automatically, excellent DX
    - **Alternatives**: MongoDB (no strong need for schemaless), MySQL (Postgres has better JSON support), raw SQL (slower development, no type safety)
    - **Implications**: Schema migrations are versioned, can be shared with future .NET backend. Prisma client is heavy (bundle size) but acceptable for backend
 
 3. **JWT Authentication (not OAuth/Passport yet)**
-
    - **Rationale**: Simple, stateless, sufficient for MVP. Can add Google/Facebook OAuth in future epic
    - **Alternatives**: Session-based auth (requires session store), OAuth (complex, not needed yet), Magic links (worse UX for repeat users)
    - **Implications**: Tokens expire after 15 minutes, refresh tokens required. Must handle token refresh gracefully in frontend
 
 4. **Redis for Caching (Upstash free tier)**
-
    - **Rationale**: Fast, reliable, free tier available (10k requests/day), supports complex data types
    - **Alternatives**: Memcached (simpler but less features), In-memory (lost on redeploy), Database caching (slower)
    - **Implications**: Cache invalidation strategy required. Must handle Redis unavailable gracefully (fallback to database/API)
 
 5. **Clean Architecture Layers (Controllers → Services → Repositories)**
-
    - **Rationale**: Separates concerns, business logic becomes framework-agnostic (can port to .NET), testable in isolation
    - **Alternatives**: Flat structure (faster for MVP but harder to migrate), Domain-driven design (too complex for current needs)
    - **Implications**: More files/folders (slightly slower initial development), but pays off during .NET migration (Services can be ported directly to C#)

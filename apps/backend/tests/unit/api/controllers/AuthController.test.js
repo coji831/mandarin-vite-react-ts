@@ -3,7 +3,7 @@
  * Tests HTTP layer for authentication endpoints with mocked AuthService
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { AuthController } from "../../../../src/api/controllers/AuthController.js";
+import AuthController from "../../../../src/api/controllers/authController";
 
 describe("AuthController", () => {
   let authController;
