@@ -7,7 +7,6 @@ import express from "express";
 import TtsController from "../controllers/ttsController.js";
 import { CachedTTSService } from "../../core/services/CachedTTSService.js";
 import { getCacheService } from "../../infrastructure/cache/index.js";
-import { GCSClient } from "../../infrastructure/external/GCSClient.js";
 import * as gcsService from "../../services/gcsService.js";
 import { synthesizeSpeech } from "../../services/ttsService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -29,9 +28,6 @@ const ttsService = {
 // Initialize TTS service with caching
 const cacheService = getCacheService();
 const cachedTtsService = new CachedTTSService(ttsService, cacheService);
-
-// Initialize GCS client
-const gcsClient = new GCSClient();
 
 // Initialize controller
 const ttsController = new TtsController(cachedTtsService, gcsService);

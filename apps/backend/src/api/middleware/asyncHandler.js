@@ -1,8 +1,8 @@
 // local-backend/middleware/asyncHandler.js
 // Higher-order function to wrap async route handlers with error handling and logging
 
-import { createLogger } from "../utils/logger.js";
-import { validationError } from "../utils/errorFactory.js";
+import { createLogger } from "../../utils/logger.js";
+import { validationError } from "../../utils/errorFactory.js";
 
 /**
  * Wraps async route handlers with consistent error handling, logging, and optional validation

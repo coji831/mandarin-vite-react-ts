@@ -8,7 +8,7 @@
 // Set via GCS_CREDENTIALS_RAW environment variable.
 //
 import { Storage } from "@google-cloud/storage";
-import { config } from "../config/index.js";
+import { config } from "../../config/index.js";
 
 let storageClient = null;
 let bucketName = null;

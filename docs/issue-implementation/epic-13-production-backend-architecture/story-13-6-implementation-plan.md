@@ -460,12 +460,12 @@ After Phase 3, verify:
 
 ---
 
-## 🆕 Phase 4: Create New Vocabulary Service ⏸️ PARTIALLY COMPLETE (2 hours)
+## 🆕 Phase 4: Create New Vocabulary Service ✅ COMPLETE (2 hours)
 
-**Status:** VocabularyService and CsvParser created, but not fully wired or tested yet.
-**Included in:** Phase 3b commit (12f0a8c)
+**Status:** VocabularyService, VocabularyRepository, CsvParser, and routes fully wired.
+**Commits:** Phase 3b (12f0a8c), Phase 4 route wiring + import fixes
 
-### VocabularyService (Core Layer)
+### VocabularyService (Core Layer) ✅
 
 - [x] Create `apps/backend/src/core/services/VocabularyService.js` (implemented: apps/backend/src/core/services/VocabularyService.js)
 
@@ -486,10 +486,10 @@ After Phase 3, verify:
   }
   ```
 
-### CSV Parsing Infrastructure
+### CSV Parsing Infrastructure ✅
 
 - [x] Create `apps/backend/src/infrastructure/parsers/CsvParser.js` (implemented: apps/backend/src/infrastructure/parsers/CsvParser.js)
-  - [ ] Port `csvLoader.ts` logic from frontend
+  - [x] Port `csvLoader.ts` logic from frontend
   - [ ] Add server-side validation (word count limits, required fields)
   - [ ] Handle UTF-8 encoding properly
   - [ ] Add error handling for malformed CSV
@@ -497,14 +497,14 @@ After Phase 3, verify:
 - [ ] Move vocabulary data files to backend (optional - keep in public for now)
   - Decision: Keep in `public/data/vocabulary/` but access from backend file system
 
-### VocabularyRepository Implementation
+### VocabularyRepository Implementation ✅
 
-- [ ] Use existing `gcsService.js` infrastructure (already exists in backend)
-- [ ] Reference existing patterns from TTS audio storage
-- [ ] Fetch `vocabularyLists.json` from GCS bucket using SDK
-- [ ] Fetch CSV files from GCS bucket (not HTTP URLs)
-- [ ] Pass CSV text to CsvParser for processing
-- [ ] Implement search/filter logic:
+- [x] Use existing `gcsService.js` infrastructure (already exists in backend)
+- [x] Reference existing patterns from TTS audio storage
+- [x] Fetch `vocabularyLists.json` from GCS bucket using SDK
+- [x] Fetch CSV files from GCS bucket (not HTTP URLs)
+- [x] Pass CSV text to CsvParser for processing
+- [x] Implement search/filter logic
 
   ```javascript
   async searchLists(query, { difficulties, tags }) {
@@ -628,20 +628,22 @@ After Phase 3, verify:
 - [x] Deleted legacy controllers (authController, conversationController, progressController, ttsController)
 - [x] Deleted legacy routes/ folder
 - [x] Updated apps/backend/src/index.js to use api/routes/index.js
-- [ ] Add new vocabulary routes:
-  ```javascript
-  router.get("/vocabulary/lists", vocabularyController.listVocabularyLists);
-  router.get("/vocabulary/lists/:listId", vocabularyController.getVocabularyList);
-  router.get("/vocabulary/lists/:listId/words", vocabularyController.getWordsForList);
-  router.get(
-    "/vocabulary/lists/:listId/progress",
-    requireAuth,
-    vocabularyController.getListProgress,
-  );
-  router.get("/vocabulary/search", vocabularyController.searchLists);
-  ```
+- [x] Add new vocabulary routes (implemented: apps/backend/src/api/routes/vocabularyRoutes.js)
+  - [x] GET /api/v1/vocabulary/lists
+  - [x] GET /api/v1/vocabulary/lists/:listId
+  - [x] GET /api/v1/vocabulary/lists/:listId/words
+  - [x] GET /api/v1/vocabulary/search
+  - [x] GET /api/v1/vocabulary/lists/:listId/progress (protected)
 
-**Phase 5 Commits:**
+- [x] Fixed import paths across api/ folder structure
+  - [x] Fixed config imports (../../config/index.js)
+  - [x] Fixed utils imports (../../utils/)
+  - [x] Fixed infrastructure imports (../../infrastructure/)
+  - [x] Fixed middleware imports
+
+- [x] Installed csv-parse package for vocabulary parsing
+
+**Phase 4 & 5 Commits:**
 
 - `f54ca60` - refactor(story-13-6): convert controllers to class-based DI pattern (Phase 5)
 - `865e9af` - refactor(story-13-6): wire routes with DI + cleanup legacy files (Phase 5)

@@ -4,12 +4,12 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import { config } from "../config/index.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../../config/index.js";
+import { createLogger } from "../../utils/logger.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
-import { validationError } from "../utils/errorFactory.js";
-import { createConversationResponse } from "../utils/conversationUtils.js";
-import { handleGetScaffoldText, getScaffoldAudioMetadata } from "../utils/scaffoldUtils.js";
+import { validationError } from "../../utils/errorFactory.js";
+import { createConversationResponse } from "../../utils/conversationUtils.js";
+import { handleGetScaffoldText, getScaffoldAudioMetadata } from "../../utils/scaffoldUtils.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logger = createLogger("Scaffold");
@@ -51,8 +51,8 @@ export function configureScaffoldRoutes(app) {
         const conversation = await handleGetScaffoldText(wordId, word);
         res.json(createConversationResponse(conversation, "scaffold"));
       },
-      { logPrefix: "ScaffoldConversationText" }
-    )
+      { logPrefix: "ScaffoldConversationText" },
+    ),
   );
 
   // Scaffold-specific conversation audio endpoint
@@ -75,8 +75,8 @@ export function configureScaffoldRoutes(app) {
         const audioMetadata = await getScaffoldAudioMetadata(wordId, format);
         res.json({ ...audioMetadata, voice, bitrate, cached: Math.random() > 0.3 });
       },
-      { logPrefix: "ScaffoldConversationAudio" }
-    )
+      { logPrefix: "ScaffoldConversationAudio" },
+    ),
   );
 
   logger.info("Scaffold routes configured: static data serving + conversation endpoints enabled");

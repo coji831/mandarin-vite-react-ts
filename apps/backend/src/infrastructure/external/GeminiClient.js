@@ -5,8 +5,8 @@
  * Business logic (prompts, parsing, caching) belongs in core/services/.
  */
 
-import { config } from "../config/index.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../../config/index.js";
+import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("GeminiAPI");
 

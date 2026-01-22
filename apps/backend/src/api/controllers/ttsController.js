@@ -1,8 +1,8 @@
 // TTS Controller
-import { config } from "../config/index.js";
-import { computeTTSHash } from "../utils/hashUtils.js";
-import { validationError, ttsError } from "../utils/errorFactory.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../../config/index.js";
+import { computeTTSHash } from "../../utils/hashUtils.js";
+import { validationError, ttsError } from "../../utils/errorFactory.js";
+import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("TTS");
 

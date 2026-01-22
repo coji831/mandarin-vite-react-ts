@@ -4,10 +4,10 @@
  * Scaffold mode conversation logic is in scaffoldController.js
  */
 
-import { config } from "../config/index.js";
-import { createConversationResponse } from "../utils/conversationUtils.js";
-import { convoAudioError, convoTextError, validationError } from "../utils/errorFactory.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../../config/index.js";
+import { createConversationResponse } from "../../utils/conversationUtils.js";
+import { convoAudioError, convoTextError, validationError } from "../../utils/errorFactory.js";
+import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("ConversationController");
 

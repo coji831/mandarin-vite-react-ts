@@ -4,7 +4,7 @@
  */
 
 import express from "express";
-import ProgressController from "../controllers/progressController.js";
+import { ProgressController } from "../controllers/progressController.js";
 import { ProgressService } from "../../core/services/ProgressService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
 import { authenticateToken } from "../../middleware/authMiddleware.js";
@@ -13,7 +13,7 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
-// Initialize dependencies
+// Initialize dependencies (ProgressRepository uses shared Prisma client from models/index.js)
 const progressRepository = new ProgressRepository();
 const progressService = new ProgressService(progressRepository);
 const progressController = new ProgressController(progressService);

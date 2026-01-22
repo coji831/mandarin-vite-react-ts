@@ -1,12 +1,12 @@
 // Health Controller
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import express from "express";
-import { config } from "../config/index.js";
+import { config } from "../../config/index.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
-import { createHealthResponse } from "../utils/conversationUtils.js";
-import * as geminiService from "../services/geminiService.js";
-import * as ttsService from "../services/ttsService.js";
-import { RedisClient } from "../services/cache/RedisClient.js";
+import { createHealthResponse } from "../../utils/conversationUtils.js";
+import * as geminiService from "../../services/geminiService.js";
+import * as ttsService from "../../services/ttsService.js";
+import { RedisClient } from "../../services/cache/RedisClient.js";
 import { getCacheMetrics } from "../middleware/cacheMetrics.js";
 
 const router = express.Router();
@@ -42,8 +42,8 @@ router.get(
         },
       });
     },
-    { logPrefix: "Health" }
-  )
+    { logPrefix: "Health" },
+  ),
 );
 
 export default router;

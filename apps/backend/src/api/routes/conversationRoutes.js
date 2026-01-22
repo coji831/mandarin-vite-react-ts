@@ -6,11 +6,11 @@
 import express from "express";
 import ConversationController from "../controllers/conversationController.js";
 import { CachedConversationService } from "../../core/services/CachedConversationService.js";
-import { ConversationService } from "../../core/services/ConversationService.js";
+import * as conversationService from "../../core/services/ConversationService.js";
 import { getCacheService } from "../../infrastructure/cache/index.js";
-import { GeminiClient } from "../../infrastructure/external/GeminiClient.js";
-import { GoogleTTSClient } from "../../infrastructure/external/GoogleTTSClient.js";
-import { GCSClient } from "../../infrastructure/external/GCSClient.js";
+import * as geminiClient from "../../infrastructure/external/GeminiClient.js";
+import * as ttsClient from "../../infrastructure/external/GoogleTTSClient.js";
+import * as gcsClient from "../../infrastructure/external/GCSClient.js";
 import * as geminiService from "../../services/geminiService.js";
 import * as ttsService from "../../services/ttsService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -19,13 +19,7 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
-// Initialize infrastructure clients
-const geminiClient = new GeminiClient();
-const ttsClient = new GoogleTTSClient();
-const gcsClient = new GCSClient();
-
 // Initialize conversation service with caching
-const conversationService = new ConversationService(geminiClient, ttsClient, gcsClient);
 const cacheService = getCacheService();
 const cachedConversationService = new CachedConversationService(conversationService, cacheService);
 

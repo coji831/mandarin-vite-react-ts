@@ -2,7 +2,7 @@
 // Google Cloud Text-to-Speech (TTS) infrastructure client
 // Low-level API client - business logic belongs in core/services/
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
-import { config } from "../config/index.js";
+import { config } from "../../config/index.js";
 
 let ttsClient = null;
 

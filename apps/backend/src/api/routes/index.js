@@ -9,6 +9,7 @@ import authRouter from "./auth.js";
 import progressRouter from "./progress.js";
 import conversationRouter from "./conversationRoutes.js";
 import ttsRouter from "./ttsRoutes.js";
+import vocabularyRouter from "./vocabularyRoutes.js";
 import healthRouter from "../controllers/healthController.js";
 
 const router = express.Router();
@@ -24,6 +25,9 @@ router.use(conversationRouter);
 
 // TTS routes
 router.use(ttsRouter);
+
+// Vocabulary routes (v1)
+router.use(vocabularyRouter);
 
 // Health check (legacy controller - to be refactored)
 router.use(healthRouter);
