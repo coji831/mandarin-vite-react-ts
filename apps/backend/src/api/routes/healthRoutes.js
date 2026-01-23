@@ -4,7 +4,7 @@
  */
 
 import express from "express";
-import { HealthController } from "../controllers/HealthController.js";
+import { HealthController } from "../controllers/healthController.js";
 import * as geminiClient from "../../infrastructure/external/GeminiClient.js";
 import * as ttsClient from "../../infrastructure/external/GoogleTTSClient.js";
 import { redisClient } from "../../infrastructure/cache/RedisClient.js";

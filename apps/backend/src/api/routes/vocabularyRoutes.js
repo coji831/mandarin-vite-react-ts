@@ -4,7 +4,7 @@
  */
 
 import express from "express";
-import { VocabularyController } from "../controllers/VocabularyController.js";
+import { VocabularyController } from "../controllers/vocabularyController.js";
 import { VocabularyService } from "../../core/services/VocabularyService.js";
 import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
 import { ProgressService } from "../../core/services/ProgressService.js";

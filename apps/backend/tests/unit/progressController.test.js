@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ProgressController } from "../../src/api/controllers/ProgressController.js";
+import { ProgressController } from "../../src/api/controllers/progressController.js";
 import { ProgressService } from "../../src/core/services/ProgressService.js";
 
 // Mock ProgressService

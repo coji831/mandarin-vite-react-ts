@@ -3,7 +3,7 @@
  * Tests HTTP layer for vocabulary endpoints with mocked services
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { VocabularyController } from "../../../../src/api/controllers/VocabularyController.js";
+import { VocabularyController } from "../../../../src/api/controllers/vocabularyController.js";
 
 describe("VocabularyController", () => {
   let vocabularyController;

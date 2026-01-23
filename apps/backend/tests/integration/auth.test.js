@@ -5,6 +5,9 @@
 
 import { describe, test, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import { AuthService } from "../../src/core/services/AuthService.js";
+import { AuthRepository } from "../../src/infrastructure/repositories/AuthRepository.js";
+import { JwtService } from "../../src/infrastructure/security/JwtService.js";
+import { PasswordService } from "../../src/infrastructure/security/PasswordService.js";
 import { prisma } from "../../src/infrastructure/database/client.js";
 import bcrypt from "bcrypt";
 
@@ -13,7 +16,10 @@ describe("AuthService", () => {
   let testUserEmail;
 
   beforeAll(() => {
-    authService = new AuthService();
+    const authRepository = new AuthRepository();
+    const jwtService = new JwtService();
+    const passwordService = new PasswordService();
+    authService = new AuthService(authRepository, jwtService, passwordService);
   });
 
   beforeEach(() => {
