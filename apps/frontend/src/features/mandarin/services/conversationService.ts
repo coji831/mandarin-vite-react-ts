@@ -5,7 +5,7 @@ export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     const endpoint = API_ENDPOINTS.CONVERSATION;
     try {
-      const response = await ApiClient.publicRequest(endpoint, {
+      const response = await ApiClient.authRequest(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "text", ...params }),
@@ -58,7 +58,7 @@ export class ConversationService implements IConversationService {
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.publicRequest(endpoint, {
+    const response = await ApiClient.authRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "text", ...params }),

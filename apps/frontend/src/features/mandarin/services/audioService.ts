@@ -6,7 +6,7 @@ export class LocalAudioBackend implements IAudioBackend {
     const { chinese } = params;
     const endpoint = API_ENDPOINTS.TTS;
     const body = { text: chinese };
-    const response = await ApiClient.publicRequest(endpoint, {
+    const response = await ApiClient.authRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -25,7 +25,7 @@ export class LocalAudioBackend implements IAudioBackend {
     voice?: string;
   }): Promise<{ audioUrl: string }> {
     const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.publicRequest(endpoint, {
+    const response = await ApiClient.authRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "audio", ...params }),
@@ -103,7 +103,7 @@ export class DefaultAudioBackend implements IAudioBackend {
     const { chinese } = params;
     const endpoint = API_ENDPOINTS.TTS;
     const body = { text: chinese };
-    const response = await ApiClient.publicRequest(endpoint, {
+    const response = await ApiClient.authRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -122,7 +122,7 @@ export class DefaultAudioBackend implements IAudioBackend {
     voice?: string;
   }): Promise<{ audioUrl: string }> {
     const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.publicRequest(endpoint, {
+    const response = await ApiClient.authRequest(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "audio", ...params }),

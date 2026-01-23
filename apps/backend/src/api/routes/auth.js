@@ -37,22 +37,27 @@ const authLimiter = rateLimit({
 });
 
 // Apply rate limiting to login and register (most vulnerable to brute force)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1auth~1register
 router.post(
   ROUTE_PATTERNS.authRegister,
   authLimiter,
   asyncHandler(authController.register.bind(authController)),
 );
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1auth~1login
 router.post(
   ROUTE_PATTERNS.authLogin,
   authLimiter,
   asyncHandler(authController.login.bind(authController)),
 );
 
-// Refresh and logout don't need rate limiting (already authenticated)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1auth~1refresh
 router.post(ROUTE_PATTERNS.authRefresh, asyncHandler(authController.refresh.bind(authController)));
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1auth~1logout
 router.post(ROUTE_PATTERNS.authLogout, asyncHandler(authController.logout.bind(authController)));
 
-// Protected route - get current user
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1auth~1me
 router.get(
   ROUTE_PATTERNS.authMe,
   authenticateToken,

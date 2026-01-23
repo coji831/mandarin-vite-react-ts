@@ -22,7 +22,7 @@ const healthController = new HealthController(
   getCacheMetrics,
 );
 
-// Health check endpoint
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1health
 router.get(
   ROUTE_PATTERNS.health,
   asyncHandler(healthController.checkHealth.bind(healthController)),

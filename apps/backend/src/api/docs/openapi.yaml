@@ -1,0 +1,806 @@
+openapi: 3.1.0
+info:
+  title: Mandarin Learning Platform API
+  version: 1.0.0
+  description: |
+    Production backend API for Mandarin vocabulary learning and AI-powered conversation generation. 
+    All endpoints are versioned under /api/v1. 
+    Authentication required for AI services (TTS, Conversations) to control API costs.
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:3001/api
+    description: Development server
+  - url: https://mandarin-backend.railway.app/api
+    description: Production server (Railway)
+
+tags:
+  - name: System
+    description: Health and system monitoring
+  - name: Authentication
+    description: User authentication and session management
+  - name: Vocabulary
+    description: Vocabulary lists and word management
+  - name: Progress
+    description: User learning progress tracking
+  - name: TTS
+    description: Text-to-speech synthesis
+  - name: Conversations
+    description: AI-powered conversation generation
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token for authenticated requests
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+      description: HTTP-only refresh token cookie
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - error
+
+    VocabularyList:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique list identifier
+        name:
+          type: string
+          description: List display name
+        description:
+          type: string
+          description: List description
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          description: Difficulty level
+        tags:
+          type: array
+          items:
+            type: string
+          description: Category tags
+        csvFile:
+          type: string
+          description: CSV filename in GCS bucket
+      required:
+        - id
+        - name
+
+    VocabularyWord:
+      type: object
+      properties:
+        wordId:
+          type: string
+          description: Unique word identifier
+        simplified:
+          type: string
+          description: Simplified Chinese characters
+        traditional:
+          type: string
+          description: Traditional Chinese characters
+        pinyin:
+          type: string
+          description: Pinyin pronunciation
+        english:
+          type: string
+          description: English translation
+      required:
+        - wordId
+        - simplified
+        - pinyin
+        - english
+
+    Progress:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Progress record ID
+        userId:
+          type: string
+          description: User ID
+        wordId:
+          type: string
+          description: Word ID
+        confidenceLevel:
+          type: integer
+          minimum: 0
+          maximum: 4
+          description: "0=New, 1=Learning, 2=Familiar, 3=Confident, 4=Mastered"
+        reviewCount:
+          type: integer
+          description: Number of times reviewed
+        lastReviewedAt:
+          type: string
+          format: date-time
+          description: Last review timestamp
+        nextReviewAt:
+          type: string
+          format: date-time
+          description: Next scheduled review
+      required:
+        - userId
+        - wordId
+        - confidenceLevel
+
+    ListProgress:
+      type: object
+      properties:
+        listId:
+          type: string
+        totalWords:
+          type: integer
+        masteredCount:
+          type: integer
+        learningCount:
+          type: integer
+        newCount:
+          type: integer
+
+paths:
+  /v1/health:
+    get:
+      summary: Health check endpoint
+      tags:
+        - System
+      description: Returns operational status of backend services and external dependencies
+      responses:
+        "200":
+          description: System is operational
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  mode:
+                    type: string
+                    example: real
+                  timestamp:
+                    type: string
+                    format: date-time
+                  services:
+                    type: object
+                    properties:
+                      gemini:
+                        type: boolean
+                      tts:
+                        type: boolean
+                  cache:
+                    type: object
+                    properties:
+                      redis:
+                        type: object
+                        properties:
+                          connected:
+                            type: boolean
+        "500":
+          description: Health check failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      description: Creates a new user account with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                  accessToken:
+                    type: string
+        "400":
+          description: Validation error or weak password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: User already exists
+        "429":
+          description: Rate limit exceeded
+
+  /v1/auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Authentication
+      description: Authenticates user and returns JWT tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                  accessToken:
+                    type: string
+        "401":
+          description: Invalid credentials
+        "429":
+          description: Rate limit exceeded
+
+  /v1/auth/refresh:
+    post:
+      summary: Refresh access token
+      tags:
+        - Authentication
+      description: Rotates refresh token and provides new access token
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+        "401":
+          description: Invalid refresh token
+
+  /v1/auth/logout:
+    post:
+      summary: Logout user
+      tags:
+        - Authentication
+      description: Invalidates refresh token
+      responses:
+        "200":
+          description: Logged out successfully
+
+  /v1/auth/me:
+    get:
+      summary: Get current user
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      description: Returns authenticated user's profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+        "401":
+          description: Unauthorized
+
+  /v1/vocabulary/lists:
+    get:
+      summary: Get all vocabulary lists
+      tags:
+        - Vocabulary
+      responses:
+        "200":
+          description: List of vocabulary lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VocabularyList"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /v1/vocabulary/lists/{listId}:
+    get:
+      summary: Get vocabulary list by ID
+      tags:
+        - Vocabulary
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+          description: Vocabulary list ID
+      responses:
+        "200":
+          description: Vocabulary list details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VocabularyList"
+        "404":
+          description: List not found
+        "500":
+          description: Server error
+
+  /v1/vocabulary/lists/{listId}/words:
+    get:
+      summary: Get all words in a vocabulary list
+      tags:
+        - Vocabulary
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+          description: Vocabulary list ID
+      responses:
+        "200":
+          description: List of vocabulary words
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VocabularyWord"
+        "500":
+          description: Server error
+
+  /v1/vocabulary/search:
+    get:
+      summary: Search vocabulary lists
+      tags:
+        - Vocabulary
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query (matches name and description)
+        - in: query
+          name: difficulty
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced]
+          description: Filter by difficulty level
+        - in: query
+          name: tags
+          schema:
+            type: string
+          description: Comma-separated tags to filter by
+      responses:
+        "200":
+          description: Filtered vocabulary lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VocabularyList"
+        "500":
+          description: Server error
+
+  /v1/vocabulary/lists/{listId}/progress:
+    get:
+      summary: Get user progress for a vocabulary list
+      tags:
+        - Vocabulary
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+          description: Vocabulary list ID
+      responses:
+        "200":
+          description: Progress statistics for the list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListProgress"
+        "401":
+          description: Unauthorized (missing or invalid JWT)
+        "500":
+          description: Server error
+
+  /v1/progress:
+    get:
+      summary: Get all user progress
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of progress records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Progress"
+        "401":
+          description: Unauthorized
+
+  /v1/progress/stats:
+    get:
+      summary: Get progress statistics
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Aggregated statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalWords:
+                    type: integer
+                  masteredWords:
+                    type: integer
+                  averageConfidence:
+                    type: number
+        "401":
+          description: Unauthorized
+
+  /v1/progress/{wordId}:
+    get:
+      summary: Get progress for specific word
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: wordId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Word progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Progress not found
+
+    put:
+      summary: Update word progress
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: wordId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confidenceLevel:
+                  type: integer
+                  minimum: 0
+                  maximum: 4
+      responses:
+        "200":
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete word progress
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: wordId
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Progress deleted
+        "401":
+          description: Unauthorized
+
+  /v1/progress/batch:
+    post:
+      summary: Batch update progress
+      tags:
+        - Progress
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updates:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        "200":
+          description: Batch update successful
+        "401":
+          description: Unauthorized
+
+  /v1/tts:
+    post:
+      summary: Generate text-to-speech audio
+      tags:
+        - TTS
+      security:
+        - bearerAuth: []
+      description: |
+        Synthesizes Chinese text to speech using Google Cloud TTS. 
+        Results are cached for 24 hours to reduce API costs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Chinese text to synthesize (1-15 words)
+                  example: 你好
+                voice:
+                  type: string
+                  description: Voice identifier
+                  default: cmn-CN-Wavenet-B
+                  example: cmn-CN-Wavenet-B
+      responses:
+        "200":
+          description: Audio URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  audioUrl:
+                    type: string
+                    description: Public URL to MP3 audio file
+                    example: https://storage.googleapis.com/bucket/tts/abc123.mp3
+                  cached:
+                    type: boolean
+                    description: Whether result was served from cache
+        "400":
+          description: Validation error (empty text, too many words)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized (missing or invalid JWT)
+        "500":
+          description: TTS generation failed
+
+  /v1/conversations:
+    post:
+      summary: Generate conversation (unified endpoint)
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      description: Type-based routing for conversation text or audio generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - type
+                    - wordId
+                    - word
+                  properties:
+                    type:
+                      type: string
+                      enum: [text]
+                    wordId:
+                      type: string
+                    word:
+                      type: string
+                    generatorVersion:
+                      type: string
+                      default: v1
+                - type: object
+                  required:
+                    - type
+                    - wordId
+                    - turnIndex
+                    - text
+                  properties:
+                    type:
+                      type: string
+                      enum: [audio]
+                    wordId:
+                      type: string
+                    turnIndex:
+                      type: number
+                    text:
+                      type: string
+                    voice:
+                      type: string
+      responses:
+        "200":
+          description: Conversation generated successfully
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "500":
+          description: Generation failed
+
+  /v1/conversations/text/generate:
+    post:
+      summary: Generate conversation text
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      description: Generates AI conversation dialogue using Gemini (cached 1 hour)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wordId
+                - word
+              properties:
+                wordId:
+                  type: string
+                  example: hello
+                word:
+                  type: string
+                  example: 你好
+                generatorVersion:
+                  type: string
+                  default: v1
+      responses:
+        "200":
+          description: Conversation text generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  wordId:
+                    type: string
+                  word:
+                    type: string
+                  turns:
+                    type: array
+                    items:
+                      type: object
+                  _metadata:
+                    type: object
+        "401":
+          description: Unauthorized
+
+  /v1/conversations/audio/generate:
+    post:
+      summary: Generate conversation audio
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      description: Generates audio for a specific conversation turn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wordId
+                - turnIndex
+                - text
+              properties:
+                wordId:
+                  type: string
+                turnIndex:
+                  type: number
+                text:
+                  type: string
+                voice:
+                  type: string
+      responses:
+        "200":
+          description: Audio generated successfully
+        "401":
+          description: Unauthorized

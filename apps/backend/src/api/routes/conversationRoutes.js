@@ -11,6 +11,7 @@ import { getCacheService } from "../../infrastructure/cache/index.js";
 import * as geminiClient from "../../infrastructure/external/GeminiClient.js";
 import * as ttsClient from "../../infrastructure/external/GoogleTTSClient.js";
 import * as gcsClient from "../../infrastructure/external/GCSClient.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { registerCacheMetrics } from "../middleware/cacheMetrics.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
@@ -30,21 +31,24 @@ const conversationController = new ConversationController(cachedConversationServ
 // Register metrics for monitoring
 registerCacheMetrics("Conversation", () => cachedConversationService.getMetrics());
 
-// Unified conversation endpoint (type-based routing)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1conversations
 router.post(
-  ROUTE_PATTERNS.conversation,
+  ROUTE_PATTERNS.conversations,
+  authenticateToken,
   asyncHandler(conversationController.generateConversation.bind(conversationController)),
 );
 
-// Text generation endpoint
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1conversations~1text~1generate
 router.post(
-  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationTextGenerate}`,
+  `${ROUTE_PATTERNS.conversations}${ROUTE_PATTERNS.conversationTextGenerate}`,
+  authenticateToken,
   asyncHandler(conversationController.generateText.bind(conversationController)),
 );
 
-// Audio generation endpoint
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1conversations~1audio~1generate
 router.post(
-  `${ROUTE_PATTERNS.conversation}${ROUTE_PATTERNS.conversationAudioGenerate}`,
+  `${ROUTE_PATTERNS.conversations}${ROUTE_PATTERNS.conversationAudioGenerate}`,
+  authenticateToken,
   asyncHandler(conversationController.generateAudio.bind(conversationController)),
 );
 

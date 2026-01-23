@@ -7,6 +7,7 @@
 export declare const API_ENDPOINTS: {
   readonly TTS: string;
   readonly CONVERSATION: string;
+  readonly VOCABULARY: string;
   readonly HEALTH: string;
   readonly AUTH_REGISTER: string;
   readonly AUTH_LOGIN: string;
@@ -23,7 +24,8 @@ export declare const API_ENDPOINTS: {
 export declare const ROUTE_PATTERNS: {
   readonly health: string;
   readonly ttsAudio: string;
-  readonly conversation: string;
+  readonly vocabulary: string;
+  readonly conversations: string;
   readonly conversationTextGenerate: string;
   readonly conversationAudioGenerate: string;
   readonly progress: string;

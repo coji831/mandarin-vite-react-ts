@@ -76,7 +76,7 @@ app.use(
   }),
 );
 
-// Mount routes
+// Mount routes under /api
 app.use("/api", routes);
 
 // Swagger API documentation
