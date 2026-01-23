@@ -1,6 +1,6 @@
 # System Architecture
 
-> Note: Several older docs reference legacy progress hooks (e.g., `useMandarinProgress` / `useProgressData`). The progress API has been migrated to a reducer + provider model — see `src/features/mandarin/docs/design.md` for the current contract and migration notes.
+> Note: This project now uses a **monorepo structure** with npm workspaces. Frontend is in `apps/frontend/`, backend in `apps/backend/`, and shared packages in `packages/`. Several older docs reference legacy progress hooks (e.g., `useMandarinProgress` / `useProgressData`). The progress API has been migrated to a reducer + provider model — see `apps/frontend/src/features/mandarin/docs/design.md` for the current contract and migration notes.
 
 This project is a Vite + React + TypeScript application for Mandarin vocabulary learning and related features.
 
@@ -40,158 +40,195 @@ All components use these hooks for audio and conversation features, ensuring a D
 
 ## Main Modules
 
-- **api**: Vercel serverless functions for production deployment (TTS, conversation)
-- **local-backend**: Express server for local development (mirrors api/)
-- **public/data/vocabulary**: CSV-based vocabulary data organized by HSK level
-- **src/features**: Feature-based organization of React components and logic
-- **src/components**: Reusable UI components
-- **src/utils**: Utilities including csvLoader.ts for processing vocabulary data
-- **src/router**: React Router configuration
-- **src/constants**: Application-wide constants and configuration
+### Monorepo Structure
+
+- **apps/frontend**: React + Vite frontend application
+  - `src/features`: Feature-based organization (e.g., mandarin learning)
+  - `src/components`: Reusable UI components
+  - `src/router`: React Router configuration
+  - `public/data/vocabulary`: CSV-based vocabulary data organized by HSK level
+- **apps/backend**: Node.js + Express backend API (deployed to Railway in production)
+  - `src/`: Core services, controllers, and business logic
+  - `routes/`: Express route definitions
+  - `prisma/`: Database schema and migrations
+  - Deployed via `Procfile` to Railway for production
+- **packages/shared-types**: Shared TypeScript type definitions
+- **packages/shared-constants**: Shared constants (API endpoints, HSK levels, etc.)
 - **docs**: Documentation structure for architecture, implementation, and templates
 
-## Backend Architecture: Dual Backend Pattern
+## Backend Architecture: Single Express Application
 
 ### Overview
 
-The application maintains two separate backends with shared business logic:
+The backend is located in `apps/backend/` and uses a **single Express application** for both development and production:
 
-1. **Vercel Serverless API (`api/`)** - Production deployment
-2. **Express Local Backend (`local-backend/`)** - Local development
+- **Development**: Local Express server on port 3001 with hot reload via `tsx watch`
+- **Production**: Same Express app deployed to Railway via `Procfile`
 
-Both backends share 100% of business logic (services, utilities) while using different HTTP handler patterns.
+This unified approach eliminates the dual-backend maintenance burden and ensures identical behavior across environments. The monorepo structure enables clean separation and code reuse through workspace packages.
 
-### Vercel API Structure (`api/`)
-
-**Folder Structure:**
-
-```
-api/
-├── tts.js                              # Vercel handler for /api/tts
-├── conversation.js                     # Vercel handler for /api/conversation
-├── _lib/                               # Shared business logic
-│   ├── config/
-│   │   └── index.js                    # Environment variable parsing
-│   ├── controllers/
-│   │   ├── ttsController.js            # TTS validation and orchestration
-│   │   └── conversationController.js   # Conversation routing (type-based)
-│   ├── services/
-│   │   ├── ttsService.js               # Google Cloud TTS client
-│   │   ├── gcsService.js               # Google Cloud Storage operations
-│   │   ├── geminiService.js            # Gemini API client
-│   │   └── conversationService.js      # Conversation generation & caching
-│   └── utils/
-│       ├── hashUtils.js                # Cache key generation
-│       ├── errorFactory.js             # Standardized error responses
-│       ├── logger.js                   # Simplified logging
-│       ├── conversationUtils.js        # Parsing and formatting
-│       └── promptUtils.js              # Gemini prompt generation
-└── docs/
-    ├── api-spec.md                     # Endpoint specifications
-    ├── design.md                       # Architecture details
-    └── README.md                       # Setup and deployment guide
-```
-
-**Handler Pattern:**
+**ESM Import Requirements**: Backend uses ES modules. All imports must include explicit `.js` extensions, even when importing TypeScript-authored files:
 
 ```javascript
-// api/tts.js - Vercel entry point
-import { ttsController } from "./_lib/controllers/ttsController.js";
+// ✅ Correct
+import { AuthService } from "./services/AuthService.js";
 
-export default async function handler(req, res) {
-  try {
-    await ttsController(req, res);
-  } catch (error) {
-    res.status(500).json({ error: error.message || "Internal Server Error" });
-  }
-}
-
-// api/_lib/controllers/ttsController.js - Stateless controller
-export async function ttsController(req, res) {
-  // Manual method checking (no Express router)
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
-    return;
-  }
-
-  // Direct validation and service calls
-  const { text, language, voiceName } = req.body;
-  // ... business logic
-  res.json({ audioUrl });
-}
+// ❌ Wrong (works in Vite but fails in Node.js ESM)
+import { AuthService } from "./services/AuthService";
 ```
 
-**Key Characteristics:**
+**Shared Constants**: Backend imports from `packages/shared-constants` via the `index.js` file (defined in `package.json` `"main"` field). The package provides TypeScript types via `index.d.ts`.
 
-- **Stateless**: No shared state between invocations
-- **Single Responsibility**: Each handler wraps exactly one controller
-- **Error Handling**: Try-catch at handler level, inline validation in controllers
-- **Import Paths**: All imports require `.js` extensions for ES modules
-- **Configuration**: Simplified (no mode validation, production-only)
-
-**Endpoints:**
-
-- `POST /api/tts` - Generate TTS audio, returns `{ audioUrl }`
-- `POST /api/conversation` - Unified endpoint with type-based routing:
-  - `{ type: "text", wordId, word }` → Generate conversation turns
-  - `{ type: "audio", conversationId, turnIndex, text, language }` → Generate per-turn audio
-
-### Local Backend Structure (`local-backend/`)
+### Express Backend Structure (`apps/backend/`)
 
 **Folder Structure:**
 
 ```
-local-backend/
+apps/backend/
 ├── server.js                           # Express app entry point
-├── routes/
-│   └── index.js                        # Route definitions (uses shared ROUTE_PATTERNS)
-├── controllers/
-│   ├── ttsController.js                # TTS endpoint handlers
-│   ├── conversationController.js       # Conversation endpoint handlers
-│   ├── scaffoldController.js           # Fixture serving (dev only)
-│   └── healthController.js             # Health checks
-├── services/                           # Identical to api/_lib/services/
-├── utils/                              # Superset of api/_lib/utils/
-├── middleware/
-│   ├── asyncHandler.js                 # Async route wrapper
-│   └── errorHandler.js                 # Request ID propagation
 ├── config/
-│   └── index.js                        # Extended config with mode validation
-└── docs/
-    ├── api-spec.md                     # Endpoint specifications
-    └── design.md                       # Architecture details
+│   └── index.js                        # Environment variable parsing
+├── routes/
+│   └── index.js                        # Route aggregation
+├── controllers/
+│   ├── ttsController.js                # TTS endpoints
+│   ├── conversationController.js       # Conversation endpoints
+│   ├── healthController.js             # Health checks
+│   └── scaffoldController.js           # Dev fixtures
+├── src/
+│   ├── api/
+│   │   ├── controllers/
+│   │   │   └── authController.js       # Authentication endpoints
+│   │   ├── routes/
+│   │   │   └── auth.js                 # Auth route definitions
+│   │   └── middleware/
+│   │       ├── authenticate.js         # JWT validation
+│   │       └── rateLimiter.js          # Rate limiting
+│   └── core/
+│       ├── services/
+│       │   ├── AuthService.js          # Auth business logic
+│       │   ├── ttsService.js           # Google Cloud TTS client
+│       │   ├── gcsService.js           # Google Cloud Storage
+│       │   ├── geminiService.js        # Gemini API client
+│       │   └── conversationService.js  # Conversation generation
+│       └── repositories/
+│           └── UserRepository.js       # Database access layer
+├── prisma/
+│   └── schema.prisma                   # Database schema
+├── utils/
+│   ├── hashUtils.js                    # Cache key generation
+│   ├── logger.js                       # Structured logging
+│   └── conversationUtils.js            # Parsing and formatting
+├── Procfile                            # Railway deployment config
+└── railway.toml                        # Railway build settings
 ```
 
 **Handler Pattern:**
 
 ```javascript
-// local-backend/controllers/ttsController.js - Express style
-export const generateTTSAudio = asyncHandler(async (req, res) => {
-  const { text, language, voiceName } = req.body;
-  // ... same business logic as Vercel version
-  res.json({ audioUrl });
+// server.js - Express app entry point
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import mainRouter from "./routes/index.js";
+
+const app = express();
+
+// Middleware
+app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(express.json());
+app.use(cookieParser());
+
+// Routes
+app.use("/api", mainRouter);
+
+app.listen(PORT, () => {
+  console.log(`Backend server running on port ${PORT}`);
 });
 
-// local-backend/routes/index.js - Express routing
-import { ROUTE_PATTERNS } from "../../shared/constants/apiPaths.js";
-
-router.post(ROUTE_PATTERNS.ttsAudio, ttsController.generateTTSAudio);
+// controllers/ttsController.js - Express route handler
+export const generateTTSAudio = async (req, res) => {
+  const { text, voice } = req.body;
+  // ... business logic
+  res.json({ audioUrl });
+};
 ```
 
 **Key Characteristics:**
 
-- **Express Middleware Stack**: `asyncHandler`, `errorHandler`, CORS, body-parser
-- **Scaffold Mode**: Supports offline development with fixture data
-- **Comprehensive Logging**: Request IDs, detailed error traces, file logging
-- **Development Tools**: Health checks, scaffold fixture endpoints
+- **Express Middleware**: CORS with credentials, cookie-parser for httpOnly cookies, rate limiting
+- **JWT Authentication**: Access tokens (15min) + refresh tokens (7 days) in httpOnly cookies
+- **Clean Architecture**: Controllers → Services → Repositories pattern
+- **Database**: PostgreSQL with Prisma ORM, connection pooling via Supabase
+- **Deployment**: Railway via Procfile, automatic migrations on release
 
 **Endpoints:**
 
-- `POST /api/tts` - Same as Vercel
-- `POST /api/mandarin/conversation/text` - Conversation text generation
-- `POST /api/mandarin/conversation/audio` - Per-turn audio generation
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/login` - User login (returns JWT + sets refresh cookie)
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `POST /api/v1/auth/logout` - Clear refresh token
+- `GET /api/v1/auth/me` - Get current user (requires authentication)
+- `POST /api/tts` - Generate TTS audio
+- `POST /api/conversation` - Generate conversation (text + audio)
 - `GET /api/health` - Health check
-- `GET /api/mandarin/conversation/scaffold` - Fixture serving (scaffold mode)
+
+### Deployment Configuration
+
+**Railway Deployment (`Procfile`):**
+
+```
+web: npm run start
+release: npx prisma migrate deploy
+```
+
+**Railway Build Configuration (`railway.toml`):**
+
+```toml
+[build]
+builder = "RAILPACK"
+buildCommand = "npm install && npx prisma generate --schema=apps/backend/prisma/schema.prisma"
+
+[deploy]
+startCommand = "npm run dev --workspace=@mandarin/backend"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[env]
+NODE_ENV = "production"
+```
+
+**Environment Variables (Production):**
+
+- `DATABASE_URL`: PostgreSQL connection string (Supabase)
+- `JWT_SECRET`: Access token signing key
+- `JWT_REFRESH_SECRET`: Refresh token signing key
+- `FRONTEND_URL`: CORS origin (e.g., `https://pinyinpal.vercel.app`)
+- `GOOGLE_TTS_CREDENTIALS_RAW`: Google Cloud service account JSON
+- `GEMINI_API_CREDENTIALS_RAW`: Gemini API service account JSON
+- `GCS_BUCKET_NAME`: Google Cloud Storage bucket name
+- `NODE_ENV`: `production`
+
+**Development Commands:**
+
+```bash
+# Install dependencies (monorepo root)
+npm install
+
+# Run backend locally
+npm run dev:backend              # Port 3001 with hot reload
+
+# Run frontend locally
+npm run dev:frontend             # Port 5173 with Vite
+
+# Run both concurrently
+npm run dev                      # Starts both frontend + backend
+
+# Database operations
+npm run db:migrate               # Run Prisma migrations
+npm run db:studio                # Open Prisma Studio
+npm run db:seed                  # Seed database with test data
+```
 
 ### Shared Business Logic
 
@@ -243,13 +280,13 @@ export const ROUTE_PATTERNS = {
 Frontend services use `API_ROUTES` constants and always point to Vercel-compatible paths:
 
 ```typescript
-// src/features/mandarin/services/audioService.ts
+// apps/frontend/src/features/mandarin/services/audioService.ts
 const response = await fetch(API_ROUTES.ttsAudio, {
   method: "POST",
   body: JSON.stringify({ text, language, voiceName }),
 });
 
-// src/features/mandarin/services/conversationService.ts
+// apps/frontend/src/features/mandarin/services/conversationService.ts
 const response = await fetch(API_ROUTES.conversation, {
   method: "POST",
   body: JSON.stringify({ type: "text", wordId, word }),
@@ -266,9 +303,10 @@ const response = await fetch(API_ROUTES.conversation, {
 
 ### Development Workflow
 
-- **Local Development**: `npm run start-backend` (Express on port 3001)
-- **Frontend Dev Server**: `npm run dev` (Vite on port 5173)
-- **Production Deployment**: `vercel` (deploys `api/` handlers)
+- **Local Development**: `npm run dev:backend` (Express on port 3001)
+- **Frontend Dev Server**: `npm run dev:frontend` (Vite on port 5173)
+- **Both Simultaneously**: `npm run dev` (runs both with concurrently)
+- **Production Deployment**: `vercel` (deploys `apps/backend/api/` handlers)
 
 Frontend automatically points to correct backend based on environment:
 
@@ -307,8 +345,17 @@ The root reducer combines three domain-specific sub-reducers:
 
 2. **`progress`**: Normalized progress data (type: `ProgressState`)
 
+- Source: Backend API (`/api/v1/progress/*`) with JWT authentication
 - State: `{ wordsById: Record<wordId, WordProgress>, wordIds: string[] }`
-- Handles: Per-word progress tracking
+- Persistence: PostgreSQL database (user-isolated via `userId` foreign key)
+- Selectors: Always use `selectWordsById(state)` - avoid direct state access
+- Actions:
+  - `PROGRESS/LOAD_ALL` - Batch load from backend on login
+  - `MARK_WORD_LEARNED` - Optimistic update + API sync (confidence = 1.0)
+  - `UNMARK_WORD_LEARNED` - Delete progress record (toggle mastery)
+  - `PROGRESS/UPDATE_WORD` - Optimistic update before API response
+  - `PROGRESS/SYNC_WORD` - Reconcile with authoritative server data
+- Cross-Device Sync: Progress automatically syncs across devices via backend
 
 3. **`user`**: User identity and preferences (type: `UserState`)
 
@@ -379,37 +426,41 @@ useProgressActions().markWordLearned(id)
 Component
 ```
 
-### Multi-User Support
+### Multi-User Support (Epic 13)
 
-- **User Identity**: Tracked per device via `getUserIdentity()` helper
-- **Progress Isolation**: All progress namespaced by `userId` in localStorage
-- **Storage Keys**:
-  - `user_identity`: User/device identity
-  - `progress_{userId}`: Per-user progress data
-- **Architecture**: Ready for future cloud sync or authentication integration
+- **Authentication (Story 13.3):** JWT-based authentication with refresh tokens
+- **User Identity:** Tracked server-side via `userId` (from JWT)
+- **Progress Isolation:** All progress records filtered by authenticated `userId`
+- **Database:** PostgreSQL with Prisma ORM
+  - `users` table: email, passwordHash, displayName, tokens
+  - `progress` table: userId, wordId, studyCount, correctCount, confidence, nextReview
+  - Unique constraint on `(userId, wordId)` prevents duplicates
+- **Cross-Device Sync:** Progress automatically synced across devices via backend API
+- **Security:** bcrypt password hashing, JWT token expiration, strict user isolation
 
-### Persistence Strategy
+### Persistence Strategy (Updated: Story 13.4)
 
-- **Auto-save**: Progress automatically persisted to localStorage on state changes
-- **Initialization**: Progress loaded from localStorage on `ProgressProvider` mount
-- **Format**: Serialized to JSON for storage, deserialized to Sets/Objects for runtime
-- **Helpers**: `progressHelpers.ts` provides `getUserProgress()`, `saveUserProgress()`, `persistMasteredProgress()`, `restoreMasteredProgress()`
+- **Backend API:** Progress saved to PostgreSQL via `/api/v1/progress/*` endpoints
+- **Optimistic Updates:** Frontend immediately updates UI before API response
+- **Server Reconciliation:** API response is authoritative; reconciles with optimistic state
+- **Spaced Repetition:** `nextReview` dates calculated server-side based on confidence
+- **Migration Complete:** localStorage no longer used for progress (migrated in Story 13.4)
+- **Selectors:** Always use `selectWordsById(state)` from `progressReducer.ts`
 
-For detailed state management documentation, see [`src/features/mandarin/docs/design.md`](../src/features/mandarin/docs/design.md) and [`src/features/mandarin/docs/api-spec.md`](../src/features/mandarin/docs/api-spec.md).
+For detailed state management documentation, see [`apps/frontend/src/features/mandarin/docs/design.md`](../apps/frontend/src/features/mandarin/docs/design.md) and [`apps/frontend/src/features/mandarin/docs/api-spec.md`](../apps/frontend/src/features/mandarin/docs/api-spec.md).
 
-- **Google Cloud Text-to-Speech**: Integration in [../api/get-tts-audio.js](../api/get-tts-audio.js)
+- **Google Cloud Text-to-Speech**: Integration in [../apps/backend/api/tts.js](../apps/backend/api/tts.js)
 - **Google Cloud Storage**: Used for caching generated audio files
 
-- **Local Backend**: Express server providing TTS/GCS functionality during development
-
-  - Mirrors the serverless functions in the [../api/](../api/) directory
+- **Backend**: Express server and Vercel functions providing TTS/GCS/Conversation functionality
+  - Production: Serverless functions in [../apps/backend/api/](../apps/backend/api/) directory
+  - Development: Express server in [../apps/backend/src/](../apps/backend/src/) directory
   - Includes detailed logging and error handling for development
 
 - **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
-
-  - Loads vocabulary data from CSV files in [../public/data/vocabulary/](../public/data/vocabulary/)
+  - Loads vocabulary data from CSV files in [../apps/frontend/public/data/vocabulary/](../apps/frontend/public/data/vocabulary/)
   - CSV data structure follows standard format: `No,Chinese,Pinyin,English`
-  - Processes CSV data using [../src/utils/csvLoader.ts](../src/utils/csvLoader.ts) utility
+  - Processes CSV data using [../apps/frontend/src/utils/csvLoader.ts](../apps/frontend/src/utils/csvLoader.ts) utility
   - Uses context-based state management (implemented in Epic 3)
   - Uses nested routing structure (implemented in Epic 4)
   - Organized as separate page components for each step in the learning workflow
@@ -417,7 +468,6 @@ For detailed state management documentation, see [`src/features/mandarin/docs/de
   - **Progress Logic Extraction**: All progress calculation logic is handled by helpers in `progressHelpers.ts`.
 
 - **Mandarin Feature: Vocabulary List UI (Epic 5)**
-
   - **Card-Based UI**: Vocabulary lists are displayed as interactive cards with metadata (word count, difficulty, tags) and progress indicators.
   - **Search & Filter**: Users can search by name/description and filter by difficulty or tags, with real-time updates and combined logic.
   - **Responsive Design**: Layout adapts to mobile, tablet, and desktop using CSS Grid/Flexbox. Touch targets and accessibility are ensured.
@@ -453,14 +503,14 @@ The Mandarin feature uses nested routing with React Router.
 
 **Implementation:**
 
-- Routes defined in [`src/router/Router.tsx`](../src/router/Router.tsx)
-- Path constants in [`src/constants/paths.ts`](../src/constants/paths.ts)
-- Feature routes in [`src/features/mandarin/router/MandarinRoutes.tsx`](../src/features/mandarin/router/MandarinRoutes.tsx)
+- Routes defined in [`apps/frontend/src/router/Router.tsx`](../apps/frontend/src/router/Router.tsx)
+- Path constants in [`apps/frontend/src/constants/paths.ts`](../apps/frontend/src/constants/paths.ts)
+- Feature routes in [`apps/frontend/src/features/mandarin/router/MandarinRoutes.tsx`](../apps/frontend/src/features/mandarin/router/MandarinRoutes.tsx)
 
 - **Architecture**: This file for system-level design
 - **Implementation**: Detailed implementation notes in [./issue-implementation/](./issue-implementation/)
 - **Business Requirements**: Planning and requirements in [./business-requirements/](./business-requirements/)
-- **Feature-Specific**: For detailed design of specific features, see each feature's docs folder (e.g., [../src/features/mandarin/docs/](../src/features/mandarin/docs/))
+- **Feature-Specific**: For detailed design of specific features, see each feature's docs folder (e.g., [../apps/frontend/src/features/mandarin/docs/](../apps/frontend/src/features/mandarin/docs/))
 
 ## Future Architecture (Placeholders)
 

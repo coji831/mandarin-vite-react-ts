@@ -1,0 +1,47 @@
+# Load Testing Configuration for Redis Caching Layer
+# Test TTS and Conversation endpoints under load to verify cache hit rates
+
+config:
+  target: "http://localhost:3001"
+  phases:
+    - duration: 60
+      arrivalRate: 10 # 10 requests per second
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  # TTS Cache Test - Hammer with same request to maximize cache hits
+  - name: "TTS Cache Hit Rate Test"
+    weight: 50
+    flow:
+      - post:
+          url: "/api/tts/get-tts-audio"
+          json:
+            text: "你好世界"
+            voice: "cmn-CN-Wavenet-A"
+      - think: 1 # 1 second pause between requests
+
+  # TTS Varied Test - Different texts to test cache misses
+  - name: "TTS Cache Miss Test"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/tts/get-tts-audio"
+          json:
+            text: "{{ $randomString() }}"
+            voice: "cmn-CN-Wavenet-A"
+      - think: 1
+
+  # Conversation Cache Test - Same wordId to maximize cache hits
+  - name: "Conversation Cache Hit Rate Test"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/conversation"
+          json:
+            type: "text"
+            wordId: "load-test-word-123"
+            word: "你好"
+            generatorVersion: "v1"
+      - think: 1

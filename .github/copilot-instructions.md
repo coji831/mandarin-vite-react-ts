@@ -34,17 +34,18 @@ Close epic/story: verify all AC done → update Status & Last Update in BR + imp
 
 ## 🏗️ Architecture Overview
 
-**Frontend**: React + TypeScript via Vite; feature folders in `src/features/`.
+**Frontend**: React + TypeScript via Vite; feature folders in `apps/frontend/src/features/`.
 **State**: Context + reducers; slices: `lists`, `user`, `ui`; persisted via localStorage.
-**Backend**: Serverless functions in `api/` (e.g., TTS) + optional Express in `local-backend/`.
+**Backend**: Express + Prisma in `apps/backend/`; deployed to Railway in production, runs locally on port 3001 for development.
 **Data**: CSV/JSON in `public/data/`, loaded by `src/utils/csvLoader.ts`.
 **Routing**: React Router; constants in `src/constants/paths.ts`.
+**Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
 
 ## 🔄 Workflows
 
-Development: install → run dev → run local backend (optional) → iterate.
+Development: install → run dev (starts frontend + backend concurrently) → iterate.
 Testing: `npm test` (Jest + RTL) for unit/component tests.
-Deployment: use `vercel` with `vercel.json` config.
+Deployment: Frontend deploys to Vercel; Backend deploys to Railway (via Procfile).
 Data Update: modify CSV under `public/data/vocabulary/`; parse via `csvLoader.ts`.
 
 ### 🧪 Story-Level Development Workflow
@@ -172,6 +173,77 @@ Story creation checklist:
 
 Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
 Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
+
+## 📚 Knowledge Base Update Protocol
+
+**When to Extract Lessons to Knowledge Base:**
+
+Update KB after resolving non-trivial technical struggles (3+ hours debugging, infrastructure integration complexity, architectural patterns discovered, or repeated questions across stories).
+
+**Triggers for KB Updates:**
+
+- Story took 2x+ longer than estimated due to infrastructure/integration complexity
+- Discovered reusable architectural pattern not documented anywhere
+- Solved cross-cutting technical issue (CORS, cookies, proxy, connection pooling, React lifecycle)
+- Found non-obvious configuration requirement (environment setup, tooling quirks)
+- Implemented security pattern (auth flows, input validation, rate limiting)
+- Performance optimization with measurable impact (>20% improvement)
+
+**Content Distribution: Guides vs Knowledge Base:**
+
+- **Guides** (`docs/guides/`): Project-specific, action-focused, step-by-step setup/configuration
+
+  - Example: "How to configure Vite proxy for cookie forwarding in THIS project"
+  - Format: Numbered steps, code snippets, file paths, commands
+  - Audience: Contributors setting up or maintaining THIS codebase
+
+- **Knowledge Base** (`docs/knowledge-base/`): Transferable concepts, deep dives, architectural patterns
+  - Example: "Why dev proxies don't forward cookies by default + HTTP header mechanics"
+  - Format: Conceptual explanations, diagrams, tradeoff analysis, alternative approaches
+  - Audience: Engineers learning concepts applicable to ANY similar project
+
+**Extraction Workflow (After Completing Story):**
+
+1. **Identify Reusable Content** — Review implementation doc "Technical Challenges & Solutions" section for patterns applicable beyond this story.
+
+2. **Determine Target Location:**
+
+   - Quick reference / project setup → Update relevant guide in `docs/guides/`
+   - Deep technical concept / architectural pattern → Update/create KB article in `docs/knowledge-base/`
+   - Both? Add quick reference to guide with "Learn more: [KB Article]" link
+
+3. **Extract & Organize:**
+
+   - Remove verbose postmortem/lesson sections from story implementation doc
+   - Distribute actionable patterns to guides (concise, directive format)
+   - Distribute conceptual explanations to KB (detailed, educational format)
+   - Keep story implementation doc focused on WHAT was built, not WHY/HOW in detail
+
+4. **Cross-Link:**
+
+   - Story implementation doc: Add "Related Documentation" or "Technical Guidance" section with links to updated guides/KB
+   - Guide: Add "Learn more" links to KB articles for deeper understanding
+   - KB README: Update index with new/enhanced articles
+
+5. **Maintain Template Compliance:**
+   - After extraction, verify story/epic docs still match templates exactly
+   - Remove all non-template sections (postmortems, root cause analysis, etc.)
+   - Keep only template-defined sections
+
+**KB Article Structure Guidelines:**
+
+- Start with one-sentence summary (what concept, why it matters)
+- Include "When to Use" and "When NOT to Use" sections
+- Provide concrete code examples (before/after, good/bad)
+- Explain tradeoffs and alternatives considered
+- Link to related KB articles and external authoritative sources
+
+**Example Extraction:**
+
+- Story 13.3 encountered cookie forwarding issues (5+ hours debugging)
+- **Guide Update**: [Vite Configuration Guide](docs/guides/vite-configuration-guide.md) — Added "Cookie-based auth through dev proxy" section with exact config
+- **KB Update**: [Frontend Development Server](docs/knowledge-base/frontend-development-server.md) — Added deep dive on proxy mechanics, why headers aren't forwarded by default, security implications
+- **Story Doc**: Removed postmortem, added links to both guide and KB in "Technical Challenges" section
 
 ## 🛠️ Code Change Checklist
 

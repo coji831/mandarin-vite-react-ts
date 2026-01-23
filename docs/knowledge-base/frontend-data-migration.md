@@ -198,6 +198,171 @@ Multi-user apps, cross-device sync, analytics
 
 ---
 
+## Auth State Restoration with /me Endpoint
+
+**When Adopted:** Epic 13 Story 13.3 (JWT Authentication System)  
+**Why:** Restore auth state on page refresh without exposing credentials  
+**Use Case:** httpOnly cookie-based authentication, session recovery
+
+### Problem: Auth State Lost on Refresh
+
+With httpOnly cookies, JavaScript cannot read the refresh token directly. On page refresh, AuthContext resets to `isAuthenticated: false` until user makes an authenticated request.
+
+**Old Approach (localStorage — Vulnerable to XSS):**
+
+```typescript
+// ❌ DON'T: Store tokens in localStorage
+const user = JSON.parse(localStorage.getItem("user"));
+setUser(user);
+```
+
+**New Approach (GET /me Endpoint):**
+
+```typescript
+// ✅ DO: Restore from backend session
+useEffect(() => {
+  authFetch("/auth/me")
+    .then((res) => res.json())
+    .then((userData) => setUser(userData))
+    .catch(() => setUser(null)); // Not logged in
+}, []);
+```
+
+### Implementation Pattern
+
+**Backend: GET /me Endpoint**
+
+```typescript
+// apps/backend/src/routes/auth.ts
+import { Router } from "express";
+import { authenticateToken } from "../middleware/auth.js";
+
+const router = Router();
+
+router.get("/me", authenticateToken, (req, res) => {
+  // authenticateToken middleware attaches user to req
+  res.json({
+    id: req.user.id,
+    username: req.user.username,
+    email: req.user.email,
+  });
+});
+
+export default router;
+```
+
+**Frontend: AuthContext Restoration Flow**
+
+```typescript
+// apps/frontend/src/contexts/AuthContext.tsx
+import { createContext, useEffect, useState, useRef } from "react";
+import { authFetch } from "../utils/authFetch";
+
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const isMounted = useRef(true);
+
+  // Restore session on mount
+  useEffect(() => {
+    isMounted.current = true;
+
+    const restoreSession = async () => {
+      try {
+        const response = await authFetch("/auth/me");
+        if (!response.ok) throw new Error("Not authenticated");
+
+        const userData = await response.json();
+        if (isMounted.current) {
+          setUser(userData);
+        }
+      } catch (error) {
+        console.log("No active session");
+        if (isMounted.current) {
+          setUser(null);
+        }
+      } finally {
+        if (isMounted.current) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    restoreSession();
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  // Show loading state while checking session
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+**Key Implementation Notes:**
+
+1. **isMounted guard:** Prevent React 18 Strict Mode double-mount race conditions
+2. **isLoading state:** Show loading UI while checking session (prevents flash of logged-out state)
+3. **authFetch wrapper:** Automatically includes `credentials: 'include'` for cookies
+4. **Graceful failure:** No session = not logged in (not an error)
+
+### Migration from localStorage User Storage
+
+**Before (Epic 6):**
+
+```typescript
+// ❌ Old: localStorage for user identity
+const userId = localStorage.getItem("userId");
+if (userId) {
+  setUser({ id: userId });
+}
+```
+
+**After (Epic 13):**
+
+```typescript
+// ✅ New: Backend /me endpoint
+const response = await authFetch("/auth/me");
+const userData = await response.json();
+setUser(userData);
+```
+
+**Migration Steps:**
+
+1. Remove `localStorage.setItem('userId', ...)` from login flow
+2. Remove `localStorage.getItem('userId')` from AuthContext
+3. Add GET /me endpoint to backend
+4. Add session restoration in AuthContext useEffect
+5. Update protected routes to check `isLoading` state
+
+### Key Benefits
+
+- **XSS Protection:** No tokens in localStorage/sessionStorage
+- **Consistent State:** Backend is source of truth
+- **Automatic Expiry:** Session expires when refresh token expires
+- **Better UX:** No flash of logged-out state
+- **Simpler Logic:** No manual token parsing or validation
+
+### When to Use
+
+- Any httpOnly cookie-based authentication
+- Session-based auth (Express sessions, Passport.js)
+- SSR apps (Next.js, Remix) with server-side session checks
+- Mobile apps with secure token storage (iOS Keychain, Android KeyStore)
+
+---
+
 ## Data Structure Refactoring
 
 **When Adopted:** Epic 7 (Remove Daily Commitment), Epic 10 (Unified Data Model)  

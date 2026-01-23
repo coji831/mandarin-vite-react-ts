@@ -174,6 +174,8 @@ REDIS_URL=redis://localhost:6379
 - Validate required vars on startup (fail fast)
 - Use different values per environment (dev, staging, prod)
 - Rotate secrets regularly (especially after leaks)
+- **Configure FRONTEND_URL for CORS with credentials** (authentication)
+- **Use environment-aware cookie settings** (sameSite, secure flags)
 
 ### When to Use
 
@@ -181,8 +183,227 @@ All projects with secrets, multi-environment deployments
 
 ---
 
+## Production Cookie Configuration (Vercel)
+
+**When Adopted:** Epic 13 Story 13.3  
+**Why:** httpOnly cookies require environment-specific configuration for security  
+**Use Case:** JWT refresh tokens, session cookies in production
+
+### FRONTEND_URL for CORS
+
+CORS with credentials requires specific origin (not wildcard):
+
+```bash
+# .env.local (Development)
+FRONTEND_URL=http://localhost:5173
+
+# Vercel Environment Variables (Production)
+FRONTEND_URL=https://your-app.vercel.app
+```
+
+**Backend Usage:**
+
+```javascript
+// apps/backend/src/shared/config/index.js
+export default {
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+  port: process.env.PORT || 3001,
+  nodeEnv: process.env.NODE_ENV || "development",
+};
+
+// apps/backend/src/server.js
+import cors from "cors";
+import config from "./shared/config/index.js";
+
+app.use(
+  cors({
+    origin: config.frontendUrl, // Loaded from FRONTEND_URL
+    credentials: true, // Allow cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+```
+
+### Cookie Secure & SameSite Flags
+
+Production requires HTTPS-only cookies with strict CSRF protection:
+
+```javascript
+// Environment-aware cookie configuration
+const cookieOptions = {
+  httpOnly: true, // Never accessible to JavaScript
+
+  // HTTPS-only in production, HTTP allowed in development
+  secure: process.env.NODE_ENV === "production",
+
+  // Strict in production (CSRF protection), lax in dev (allow dev proxy)
+  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+
+  path: "/", // Available to all routes
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+// Set cookie
+res.cookie("refreshToken", token, cookieOptions);
+
+// Clear cookie (MUST use matching options)
+const { maxAge, ...clearOptions } = cookieOptions;
+res.clearCookie("refreshToken", clearOptions);
+```
+
+### Vercel-Specific Considerations
+
+**1. Serverless Function Timeout**
+
+Vercel hobby plan limits functions to 10s execution:
+
+```javascript
+// Add timeout warnings for long operations
+const timeout = setTimeout(() => {
+  console.warn("Function approaching timeout (8s)");
+}, 8000);
+
+// Clear timeout when done
+clearTimeout(timeout);
+```
+
+**2. Connection Pooling Required**
+
+Vercel serverless functions need connection pooling:
+
+```javascript
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Use connection pooling for serverless
+  relationMode = "prisma"
+}
+
+// .env.local (Production - use Supabase pooler URL)
+DATABASE_URL="postgresql://...?pgbouncer=true&connection_limit=1"
+```
+
+**3. Cookie Domain (Multi-Subdomain)**
+
+If using custom domain with subdomains:
+
+```javascript
+// Allow cookie across subdomains
+res.cookie("refreshToken", token, {
+  ...cookieOptions,
+  domain: ".yourdomain.com", // Leading dot = all subdomains
+});
+```
+
+### Deployment Checklist
+
+Before deploying to Vercel:
+
+**Environment Variables:**
+
+- [ ] `FRONTEND_URL` set to Vercel domain (e.g., `https://app.vercel.app`)
+- [ ] `NODE_ENV=production`
+- [ ] `DATABASE_URL` uses connection pooling (Supabase pooler)
+- [ ] `JWT_SECRET` and `JWT_REFRESH_SECRET` set (use `openssl rand -base64 32`)
+
+**Cookie Configuration:**
+
+- [ ] `secure: true` in production (automatic with `NODE_ENV=production`)
+- [ ] `sameSite: strict` in production (CSRF protection)
+- [ ] `httpOnly: true` always (XSS protection)
+- [ ] Cookie path matches between set and clear operations
+
+**CORS Configuration:**
+
+- [ ] `origin` set to specific Vercel domain (not wildcard)
+- [ ] `credentials: true` enabled
+- [ ] Frontend uses `credentials: 'include'` in all auth requests
+
+**Testing:**
+
+- [ ] Test login flow in production
+- [ ] Verify cookie stored in browser (DevTools > Application > Cookies)
+- [ ] Test logout clears cookie
+- [ ] Test token refresh works automatically
+- [ ] Verify CORS headers in Network tab
+
+### Common Production Issues
+
+**Issue: Cookies work locally but not in Vercel**
+
+**Cause:** `sameSite: strict` + missing `secure: true`
+
+**Fix:**
+
+```javascript
+// ❌ BAD: Hardcoded to development settings
+res.cookie("refreshToken", token, {
+  httpOnly: true,
+  sameSite: "lax", // Wrong for production
+  secure: false, // Wrong for production
+});
+
+// ✅ GOOD: Environment-aware
+res.cookie("refreshToken", token, {
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+  secure: process.env.NODE_ENV === "production",
+});
+```
+
+**Issue: CORS error in production but not locally**
+
+**Cause:** `FRONTEND_URL` not set or set to localhost
+
+**Fix:**
+
+```bash
+# Verify Vercel environment variable
+vercel env ls
+
+# Should show:
+# FRONTEND_URL (Production): https://your-app.vercel.app
+
+# If missing, add:
+vercel env add FRONTEND_URL
+# Enter: https://your-app.vercel.app
+```
+
+**Issue: Cookie cleared on logout locally but not in production**
+
+**Cause:** Clear options don't match set options
+
+**Fix:** Extract cookie config to shared constant:
+
+```javascript
+// shared/config/cookies.js
+export const REFRESH_TOKEN_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+  path: "/",
+};
+
+// Usage in authController
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../config/cookies.js";
+
+// Set
+res.cookie("refreshToken", token, {
+  ...REFRESH_TOKEN_COOKIE_OPTIONS,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
+// Clear (exact matching options)
+res.clearCookie("refreshToken", REFRESH_TOKEN_COOKIE_OPTIONS);
+```
+
+---
+
 **Related Guides:**
 
 - [Google Cloud Services](./integration-google-cloud.md) — API keys to secure
-- [Backend Authentication](./backend-authentication.md) — JWT secrets
+- [Backend Authentication](./backend-authentication.md) — JWT secrets, httpOnly cookies
 - [Caching Strategies](./integration-caching.md) — Redis connection URLs
+- [Vite Setup](./vite-setup.md) — Dev proxy cookie forwarding
+- [Troubleshooting](./troubleshooting.md) — Cookie & CORS issues

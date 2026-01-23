@@ -1,0 +1,73 @@
+{
+  "name": "@mandarin/backend",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:db": "vitest run tests/integration/database.test.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/text-to-speech": "^6.1.0",
+    "@mandarin/shared-constants": "*",
+    "@mandarin/shared-types": "*",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "express-list-endpoints": "^7.1.1",
+    "express-rate-limit": "^8.2.1",
+    "google-auth-library": "^10.4.0",
+    "ioredis": "^5.9.2",
+    "js-yaml": "^4.1.1",
+    "jsonwebtoken": "^9.0.3",
+    "md5": "^2.3.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.3",
+    "prisma": "^7.1.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/md5": "^2.3.5",
+    "@types/node": "^24.7.2",
+    "@vitest/ui": "^4.0.17",
+    "cross-env": "^10.1.0",
+    "ioredis-mock": "^8.13.1",
+    "supertest": "^7.2.2",
+    "testcontainers": "^11.11.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.17"
+  }
+}

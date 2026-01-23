@@ -1,11 +1,9 @@
 {
-  "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "*": ["*"]
-    },
-    "types": ["@testing-library/jest-dom", "node"]
-  },
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "references": [
+    { "path": "./apps/frontend" },
+    { "path": "./apps/backend" },
+    { "path": "./packages/shared-constants" },
+    { "path": "./packages/shared-types" }
+  ]
 }

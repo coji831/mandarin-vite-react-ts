@@ -14,6 +14,34 @@
 - Use React Router for navigation and routing
 - Use the CSV-based vocabulary system with `csvLoader.ts`
 
+## Backend Conventions
+
+### Error Logging & Scoping
+
+When handling requests that might fail, declare identification variables (like `email` or `id`) **outside** the `try` block. This ensures they are accessible for logging in the `catch` block even if the failure occurs during the extraction from `req.body`.
+
+```javascript
+async login(req, res) {
+  let email; // Declare outside for error logging
+  try {
+    email = req.body.email;
+    const { password } = req.body;
+    // ... logic ...
+  } catch (error) {
+    // email is available here for context
+    logger.error("Login failed", { email, error: error.message });
+    res.status(500).json({ error: "..." });
+  }
+}
+```
+
+### Clean Architecture Layers
+
+- **Controllers**: Only handle HTTP concerns (status, cookies, body parsing).
+- **Services**: Pure business logic. Must not know about `req`, `res`, or Prisma directly.
+- **Repositories**: Direct data access. Encapsulate Prisma queries.
+- **Interfaces**: Define contracts in `src/core/interfaces/`.
+
 ## State Management Conventions
 
 ### Reducer Files
@@ -140,6 +168,186 @@ const words = state.selectedWords; // Don't use legacy top-level aliases
 - Follow the standard format: `No,Chinese,Pinyin,English`
 - Process with `csvLoader.ts` utility in `../src/utils/`
 - Document any structure changes in implementation docs
+
+## Authentication Patterns
+
+### authFetch Wrapper
+
+Use wrapper for automatic token refresh on protected endpoints:
+
+```typescript
+// src/utils/authFetch.ts
+export async function authFetch(url: string, options?: RequestInit) {
+  let response = await fetch(url, {
+    ...options,
+    credentials: "include", // Include cookies
+  });
+
+  // Auto-refresh on 401
+  if (response.status === 401) {
+    await fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    // Retry original request
+    response = await fetch(url, {
+      ...options,
+      credentials: "include",
+    });
+  }
+
+  return response;
+}
+```
+
+**Usage:**
+
+```typescript
+// Instead of fetch()
+const response = await authFetch("/api/protected/resource");
+```
+
+### Background Token Refresh
+
+Implement proactive refresh timer (5 minutes before expiry):
+
+```typescript
+// src/features/auth/hooks/useAuth.ts
+export function useAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // Refresh every 10 minutes (tokens expire in 15)
+    const refreshInterval = setInterval(
+      async () => {
+        try {
+          await fetch("/api/auth/refresh", {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Background refresh failed:", error);
+        }
+      },
+      10 * 60 * 1000,
+    );
+
+    return () => clearInterval(refreshInterval);
+  }, [isAuthenticated]);
+
+  return { isAuthenticated };
+}
+```
+
+### Auth State Restoration
+
+Use `/me` endpoint for robust initial auth state:
+
+```typescript
+// On app mount
+useEffect(() => {
+  const restoreAuth = async () => {
+    try {
+      const response = await authFetch("/api/auth/me");
+      if (response.ok) {
+        const user = await response.json();
+        dispatch({ type: "SET_USER", payload: user });
+      }
+    } catch (error) {
+      // User not authenticated - normal flow
+      dispatch({ type: "CLEAR_USER" });
+    }
+  };
+
+  restoreAuth();
+}, []);
+```
+
+### Security Logging
+
+Structure failed login logs with context:
+
+```typescript
+// Backend: src/routes/auth.ts
+import { logger } from "../utils/logger";
+
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await validateCredentials(email, password);
+
+  if (!user) {
+    // Log failed attempt with sanitized details
+    logger.warn("Failed login attempt", {
+      email: email.toLowerCase(),
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+      timestamp: new Date().toISOString(),
+    });
+
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  // Success flow...
+});
+```
+
+**Key Points:**
+
+- Sanitize email (lowercase, no sensitive data)
+- Include IP for rate limiting/blocking
+- Log user-agent for device tracking
+- Use structured logging (JSON) for monitoring tools
+
+### Protected Route Pattern
+
+```typescript
+// Backend: middleware/requireAuth.ts
+import jwt from "jsonwebtoken";
+
+export async function requireAuth(req, res, next) {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Bearer token
+
+    if (!token) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+}
+
+// Apply to routes
+app.get("/api/protected/resource", requireAuth, handler);
+```
+
+**Frontend Protected Component:**
+
+```typescript
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) return <LoadingSpinner />;
+  if (!isAuthenticated) return <Navigate to="/login" />;
+
+  return <>{children}</>;
+}
+```
+
+### Reference
+
+- **Source Story**: [Story 13.3: JWT Authentication System](../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
+- **Implementation**: Story 13.3 (commit e9b28c1)
+- [Backend Setup Guide](./backend-setup-guide.md)
+- [Testing Guide](./testing-guide.md)
 
 ## Commit Message & Pull Request Standards
 

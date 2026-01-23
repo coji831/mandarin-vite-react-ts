@@ -1,0 +1,7 @@
+node_modules
+# Environment variables (backend loads from root .env.local via config/index.js)
+.env
+.env.local
+.env.*.local
+
+/src/generated/prisma

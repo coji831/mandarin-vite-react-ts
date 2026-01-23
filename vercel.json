@@ -1,8 +1,6 @@
 {
-  "rewrites": [
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
-    }
-  ]
+  "buildCommand": "npm run build:frontend",
+  "outputDirectory": "apps/frontend/dist",
+  "installCommand": "npm install",
+  "framework": null
 }

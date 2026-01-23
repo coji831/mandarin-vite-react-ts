@@ -21,25 +21,9 @@ Our project follows a single-branch-per-epic approach:
 4. When all stories are complete, create a PR for the entire epic
 5. After review, merge the epic branch into `main`
 
-## Improvement: Feature-Flagged Development
+## Feature Flags (Optional)
 
-To enhance our workflow while maintaining the epic branch approach, we're implementing feature flags:
-
-### Benefits
-
-- Allow merging of incomplete epics for easier collaboration
-- Enable isolated testing of features in production-like environments
-- Support gradual rollout of features
-- Reduce merge conflicts by more frequent integration
-
-### Implementation
-
-1. Use environment variables for simple feature flags
-2. For complex features, implement a feature flag service
-3. Wrap features in conditional rendering based on flags
-4. Document flag status in epic documentation
-
-Example:
+For incomplete epics that need early merging, use feature flags:
 
 ```tsx
 {
@@ -151,12 +135,6 @@ git commit -m "fix(story-5-1): correct form validation error handling"
 # Refactor code
 git commit -m "refactor(story-5-1): extract form validation to custom hook"
 ```
-
-## Integration with CI/CD
-
-- Each PR triggers automated checks
-- Epic branches can be deployed to staging environments
-- Feature flag status is managed via environment variables
 
 ## Resources
 
