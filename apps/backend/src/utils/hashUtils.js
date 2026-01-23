@@ -44,7 +44,7 @@ export function computeTTSHash(text, voice = "") {
 }
 
 /**
- * Short, human-friendly hash used for scaffold fixture ids
+ * Short, human-friendly hash used for stable identifiers
  * @param {string} str - String to hash
  * @returns {string} 6-character hash
  */

@@ -51,8 +51,8 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || "default_jwt_secret",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "default_jwt_refresh_secret",
 
-  // Mode
-  conversationMode: process.env.CONVERSATION_MODE || "scaffold",
+  // Mode (Deprecated: Always real)
+  // conversationMode: process.env.CONVERSATION_MODE || "real",
 
   // Google Cloud Credentials
   googleTtsCredentials: parseJsonEnv("GOOGLE_TTS_CREDENTIALS_RAW"),
@@ -94,38 +94,28 @@ export const config = {
   },
 };
 
-// Validation: fail fast on missing critical config in real mode
-if (config.conversationMode === "real") {
-  console.log("[Config] Validating real mode configuration...");
+// Validation: fail fast on missing critical config
+console.log("[Config] Validating infrastructure configuration...");
 
-  if (!config.gcsBucket) {
-    throw new Error(
-      "[Config] GCS_BUCKET_NAME is required when CONVERSATION_MODE=real. Check .env.local file.",
-    );
-  }
-
-  if (!config.googleTtsCredentials || !config.googleTtsCredentials.client_email) {
-    throw new Error(
-      "[Config] GOOGLE_TTS_CREDENTIALS_RAW is invalid or missing. Required for real mode.",
-    );
-  }
-
-  if (!config.geminiCredentials || !config.geminiCredentials.client_email) {
-    throw new Error(
-      "[Config] GEMINI_API_CREDENTIALS_RAW is invalid or missing. Required for real mode.",
-    );
-  }
-
-  if (!config.gcsCredentials || !config.gcsCredentials.client_email) {
-    throw new Error(
-      "[Config] GCS credentials missing. Set GCS_CREDENTIALS_RAW or ensure GOOGLE_TTS_CREDENTIALS_RAW has Storage Object Creator role.",
-    );
-  }
-
-  console.log(`[Config] Using GCS credentials from: ${config.gcsCredentials.client_email}`);
-  console.log("[Config] Real mode configuration validated successfully");
-} else {
-  console.log("[Config] Scaffold mode - skipping Google Cloud credential validation");
+if (!config.gcsBucket) {
+  throw new Error("[Config] GCS_BUCKET_NAME is required. Check .env.local file.");
 }
+
+if (!config.googleTtsCredentials || !config.googleTtsCredentials.client_email) {
+  throw new Error("[Config] GOOGLE_TTS_CREDENTIALS_RAW is invalid or missing.");
+}
+
+if (!config.geminiCredentials || !config.geminiCredentials.client_email) {
+  throw new Error("[Config] GEMINI_API_CREDENTIALS_RAW is invalid or missing.");
+}
+
+if (!config.gcsCredentials || !config.gcsCredentials.client_email) {
+  throw new Error(
+    "[Config] GCS credentials missing. Set GCS_CREDENTIALS_RAW or ensure GOOGLE_TTS_CREDENTIALS_RAW has Storage Object Creator role.",
+  );
+}
+
+console.log(`[Config] Using GCS credentials from: ${config.gcsCredentials.client_email}`);
+console.log("[Config] Infrastructure configuration validated successfully");
 
 export default config;

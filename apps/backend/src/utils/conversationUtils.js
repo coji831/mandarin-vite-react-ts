@@ -1,14 +1,13 @@
 /**
  * Create conversation response metadata
  * @param {Object} conversation - Conversation object
- * @param {string} mode - Processing mode (scaffold/real)
  * @returns {Object} Conversation with metadata
  */
-export function createConversationResponse(conversation, mode) {
+export function createConversationResponse(conversation) {
   return {
     ...conversation,
     _metadata: {
-      mode,
+      mode: "real",
       processedAt: new Date().toISOString(),
     },
   };
@@ -16,15 +15,14 @@ export function createConversationResponse(conversation, mode) {
 
 /**
  * Create health check response
- * @param {string} mode - Current conversation mode
  * @param {string} service - Service name
  * @returns {Object} Health check response
  */
-export function createHealthResponse(mode, service = "conversation") {
+export function createHealthResponse(service) {
   return {
     status: "ok",
     service,
-    mode,
+    mode: "real",
     timestamp: new Date().toISOString(),
   };
 }

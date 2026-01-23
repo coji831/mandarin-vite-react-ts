@@ -5,7 +5,6 @@
  * Clean architecture: API layer - handles HTTP mapping only
  */
 
-import { config } from "../../config/index.js";
 import { createConversationResponse } from "../../utils/conversationUtils.js";
 import { convoAudioError, convoTextError, validationError } from "../../utils/errorFactory.js";
 import { createLogger } from "../../utils/logger.js";
@@ -50,7 +49,7 @@ class ConversationController {
           word,
           generatorVersion,
         );
-        res.json(createConversationResponse(conversation, "real"));
+        res.json(createConversationResponse(conversation));
       } catch (error) {
         throw convoTextError(error.message, { wordId, word });
       }
@@ -109,7 +108,7 @@ class ConversationController {
         word,
         generatorVersion,
       );
-      res.json(createConversationResponse(conversation, "real"));
+      res.json(createConversationResponse(conversation));
     } catch (error) {
       throw convoTextError(error.message, { wordId, word });
     }

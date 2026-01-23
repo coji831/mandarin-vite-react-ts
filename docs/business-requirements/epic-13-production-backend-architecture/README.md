@@ -14,7 +14,7 @@
 
 **Status: Completed** (Stories 13.1-13.6 Complete)
 
-**Last Update: 2026-01-22**
+**Last Update: 2026-01-23** (Legacy scaffold mode removed)
 
 ## Background
 

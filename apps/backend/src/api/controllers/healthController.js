@@ -4,7 +4,6 @@
  * Clean architecture: API layer - handles HTTP mapping only
  */
 
-import { config } from "../../config/index.js";
 import { createHealthResponse } from "../../utils/conversationUtils.js";
 import { createLogger } from "../../utils/logger.js";
 
@@ -33,7 +32,7 @@ export class HealthController {
    */
   async checkHealth(req, res) {
     try {
-      const base = createHealthResponse(config.conversationMode);
+      const base = createHealthResponse();
 
       // Check external services
       const geminiOk = await this.geminiService.healthCheck().catch(() => false);
