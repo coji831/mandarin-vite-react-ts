@@ -1,15 +1,25 @@
 # Authentication & Security
 
 **Category:** Backend Development  
-**Last Updated:** December 9, 2025
+**Last Updated:** January 23, 2026  
+**Epic 13 Reference:** [Story 13.3 Authentication](../issue-implementation/epic-13-production-backend-architecture/story-13-3-authentication.md)
+
+## TL;DR Quick Reference
+
+```bash
+# Install
+npm install jsonwebtoken bcrypt cookie-parser
+
+# Pattern: Access token (15min) + Refresh token (7 days, httpOnly cookie)
+# Security: bcrypt cost 10, JWT rotation on refresh, HTTPS-only in prod
+```
 
 ---
 
 ## JWT Authentication (Access + Refresh Tokens)
 
-**When Adopted:** Epic 13 (Production Backend Architecture)  
-**Why:** Stateless auth, scalable, mobile-friendly  
-**Use Case:** Multi-session user authentication
+**Use Case:** Multi-session, cross-device auth for SPA + mobile  
+**Security:** Stateless, revocable via token rotation
 
 ### Minimal Example
 

@@ -30,6 +30,30 @@ npm install
 
 ## Common Errors
 
+### Deployment Errors
+
+**"ERR_MODULE_NOT_FOUND" on Railway/Linux (Case-Sensitivity)**
+
+**Symptom**: Backend works locally on Windows but fails on Railway with `Cannot find module './controllers/vocabularyController.js'`.
+
+**Root Cause**: Git doesn't track filename case changes by default. Windows is case-insensitive but Linux (Railway) is case-sensitive.
+
+**Solution**:
+
+```bash
+# 1. Force Git to recognize case change
+git rm --cached apps/backend/src/api/controllers/VocabularyController.js
+
+# 2. Rename file to lowercase
+git add apps/backend/src/api/controllers/vocabularyController.js
+
+# 3. Commit and push
+git commit -m "fix: rename VocabularyController to lowercase for Linux compatibility"
+git push
+```
+
+**Prevention**: Use lowercase for all filenames in backend code to avoid cross-platform issues.
+
 ### TypeScript Errors
 
 **"Type 'undefined' is not assignable"**

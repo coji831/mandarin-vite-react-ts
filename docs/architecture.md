@@ -67,6 +67,18 @@ The backend is located in `apps/backend/` and uses a **single Express applicatio
 
 This unified approach eliminates the dual-backend maintenance burden and ensures identical behavior across environments. The monorepo structure enables clean separation and code reuse through workspace packages.
 
+**ESM Import Requirements**: Backend uses ES modules. All imports must include explicit `.js` extensions, even when importing TypeScript-authored files:
+
+```javascript
+// ✅ Correct
+import { AuthService } from "./services/AuthService.js";
+
+// ❌ Wrong (works in Vite but fails in Node.js ESM)
+import { AuthService } from "./services/AuthService";
+```
+
+**Shared Constants**: Backend imports from `packages/shared-constants` via the `index.js` file (defined in `package.json` `"main"` field). The package provides TypeScript types via `index.d.ts`.
+
 ### Express Backend Structure (`apps/backend/`)
 
 **Folder Structure:**
@@ -441,13 +453,11 @@ For detailed state management documentation, see [`apps/frontend/src/features/ma
 - **Google Cloud Storage**: Used for caching generated audio files
 
 - **Backend**: Express server and Vercel functions providing TTS/GCS/Conversation functionality
-
   - Production: Serverless functions in [../apps/backend/api/](../apps/backend/api/) directory
   - Development: Express server in [../apps/backend/src/](../apps/backend/src/) directory
   - Includes detailed logging and error handling for development
 
 - **Mandarin Feature**: Contains vocabulary learning flow and flashcard system
-
   - Loads vocabulary data from CSV files in [../apps/frontend/public/data/vocabulary/](../apps/frontend/public/data/vocabulary/)
   - CSV data structure follows standard format: `No,Chinese,Pinyin,English`
   - Processes CSV data using [../apps/frontend/src/utils/csvLoader.ts](../apps/frontend/src/utils/csvLoader.ts) utility
@@ -458,7 +468,6 @@ For detailed state management documentation, see [`apps/frontend/src/features/ma
   - **Progress Logic Extraction**: All progress calculation logic is handled by helpers in `progressHelpers.ts`.
 
 - **Mandarin Feature: Vocabulary List UI (Epic 5)**
-
   - **Card-Based UI**: Vocabulary lists are displayed as interactive cards with metadata (word count, difficulty, tags) and progress indicators.
   - **Search & Filter**: Users can search by name/description and filter by difficulty or tags, with real-time updates and combined logic.
   - **Responsive Design**: Layout adapts to mobile, tablet, and desktop using CSS Grid/Flexbox. Touch targets and accessibility are ensured.

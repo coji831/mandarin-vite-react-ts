@@ -43,7 +43,10 @@ NODE_ENV=development
 
 # Frontend
 FRONTEND_URL=http://localhost:5173
-VITE_API_URL=http://localhost:3001
+VITE_API_URL=http://localhost:3001  # REQUIRED: Used by frontend services for API baseURL
+
+# ⚠️ IMPORTANT: VITE_API_URL is mandatory even when using Vite proxy.
+# The proxy can mask configuration issues during local dev that will break in production.
 
 # External Services
 GOOGLE_CLOUD_TTS_API_KEY=your-api-key

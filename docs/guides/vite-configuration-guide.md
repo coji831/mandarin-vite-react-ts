@@ -21,6 +21,10 @@ export default defineConfig({
 
 ## Backend Proxy with Cookie Forwarding
 
+⚠️ **Critical Warning**: A working Vite proxy can **mask** a missing or incorrect `VITE_API_URL` environment variable. The proxy intercepts `/api/*` requests before they reach your fetch logic, so invalid baseURL configurations may go unnoticed until production deployment.
+
+**Best Practice**: Always verify that `VITE_API_URL` is correctly set in `.env.local`, even when using a local proxy.
+
 Configure proxy to forward cookies between frontend (localhost:5173) and backend (localhost:3001):
 
 ```typescript

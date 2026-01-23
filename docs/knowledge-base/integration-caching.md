@@ -1,15 +1,26 @@
 # Caching Strategies
 
 **Category:** Third-Party Integrations  
-**Last Updated:** January 16, 2026
+**Last Updated:** January 23, 2026  
+**Epic 13 Reference:** [Story 13.5 Redis Caching](../issue-implementation/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
+
+## TL;DR Quick Reference
+
+```bash
+# Install
+npm install ioredis ioredis-mock
+
+# Cache pattern: Try cache → fetch on miss → store → return
+# Fail-open: Catch Redis errors, proceed without cache
+# TTLs: TTS 24h, Conversations 1h, Progress 5min
+```
 
 ---
 
 ## Redis Cache-Aside Pattern
 
-**When Adopted:** Epic 13 (Production Backend Architecture)  
-**Why:** Reduce expensive API calls (TTS, AI), improve response times  
-**Use Case:** Cache TTS audio, AI conversations, user progress
+**Use Case:** Reduce expensive API calls (TTS $0.000016/char, Gemini $0.00025/1k tokens)  
+**Performance:** <20ms cached vs 1.5-2.5s uncached
 
 ### Minimal Example
 

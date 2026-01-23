@@ -1,7 +1,18 @@
 # ES Modules + Jest Testing Patterns
 
 **Category:** Testing  
-**Last Updated:** January 16, 2026
+**Last Updated:** January 23, 2026  
+**Epic 13 Reference:** [Story 13.5 Testing](../issue-implementation/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
+
+## TL;DR Quick Reference
+
+```bash
+# Key Lessons from Epic 13
+✅ Use manual mocks (plain objects) instead of jest.fn() for ESM
+✅ Use ioredis-mock for Redis integration tests (no Docker)
+✅ Explicit .js extensions required in Node ESM imports
+❌ Avoid jest.spyOn() with ES modules - causes state pollution
+```
 
 ---
 

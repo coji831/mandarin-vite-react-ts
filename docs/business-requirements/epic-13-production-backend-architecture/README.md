@@ -78,14 +78,14 @@ Each story builds upon the previous, ensuring incremental delivery with testable
 
 ## Acceptance Criteria
 
-- [ ] Multi-user system functional: Users can register, login, and maintain isolated progress (verify: create 2 users, check progress isolation in database)
-- [ ] Authentication secure: JWT tokens with refresh mechanism, bcrypt password hashing (verify: JWT validation tests pass, passwords not stored in plaintext)
-- [ ] Database reliable: PostgreSQL persisting all user data and progress with zero data loss (verify: stress test with 100+ concurrent users)
+- [x] Multi-user system functional: Users can register, login, and maintain isolated progress (verify: create 2 users, check progress isolation in database)
+- [x] Authentication secure: JWT tokens with refresh mechanism, bcrypt password hashing (verify: JWT validation tests pass, passwords not stored in plaintext)
+- [x] Database reliable: PostgreSQL persisting all user data and progress with zero data loss (verify: stress test with 100+ concurrent users)
 - [x] Caching effective: Redis reducing external API calls by >50%, API response times <200ms p95 (verified: integration tests show 66% hit rate, fail-open error handling working)
-- [ ] Architecture clean: Controllers/Services/Repositories separation, OpenAPI spec published (verify: code review checklist, Swagger UI accessible at /api-docs)
-- [ ] Production deployed: Backend running with health monitoring (verify: /health endpoint returns 200, Vercel deployment succeeds)
-- [ ] Frontend migrated: All data fetching uses backend API, no local CSV loading for progress (verify: network tab shows API calls, localStorage cleared)
-- [ ] Documentation complete: Architecture diagrams, API docs, deployment runbook (verify: docs/architecture.md updated, runbook tested by second developer)
+- [x] Architecture clean: Controllers/Services/Repositories separation, OpenAPI spec published (verify: code review checklist, Swagger UI accessible at /api-docs)
+- [x] Production deployed: Backend running with health monitoring (verify: /health endpoint returns 200, Vercel deployment succeeds)
+- [x] Frontend migrated: All data fetching uses backend API, no local CSV loading for progress (verify: network tab shows API calls, localStorage cleared)
+- [x] Documentation complete: Architecture diagrams, API docs, deployment runbook (verify: docs/architecture.md updated, runbook tested by second developer)
 
 ## Architecture Decisions
 

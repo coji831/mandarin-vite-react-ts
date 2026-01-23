@@ -38,6 +38,35 @@ const service = new AuthService(mockRepository, jwtService, passwordService);
 - **Bcrypt Hashing**: Regular hashing is intentionally slow. In unit tests, this can bottleneck the suite. If performance becomes an issue (>1s per file), consider using a decreased cost factor for testing if the logic allows.
 - **Test Isolation**: Prefer `vi.mock()` for external modules to prevent side effects and improve speed.
 
+### ESM Module Mocking (Epic 13 Discovery)
+
+**Problem**: `jest.fn()` and automated mocking patterns can cause corruption when testing ES modules with complex dependencies.
+
+**Solution**: Use manual mock patterns for service-layer tests:
+
+```javascript
+// tests/services/AuthService.test.js
+const mockRepository = {
+  findUserByEmail: vi.fn(),
+  create: vi.fn(),
+};
+
+const mockJwtService = {
+  generateAccessToken: vi.fn(),
+  generateRefreshToken: vi.fn(),
+};
+
+const service = new AuthService(mockRepository, mockJwtService, passwordService);
+```
+
+**Why**: Manual mocks provide explicit control over dependencies and prevent module resolution issues in Vitest/Jest with ESM.
+
+**When to use**:
+
+- Service-layer unit tests that inject repositories/clients
+- Controller tests that inject services
+- Any test requiring isolation of business logic from infrastructure
+
 ## Configuration (Frontend)
 
 **jest.config.js:**
