@@ -10,7 +10,7 @@ PinyinPal is an interactive web application designed to help new learners master
 - **Vocabulary Lists:** Browse HSK-level vocabulary organized by difficulty with card-based interface.
 - **AI-Generated Conversations:** Context-aware conversation generation with word usage examples and audio playback.
 - **Audio & TTS Integration:** Robust service layer with Google Cloud TTS backend and browser TTS fallback for reliability.
-- **Multi-User Support:** Per-user progress tracking with automatic localStorage persistence and mastery indicators.
+- **Multi-User Support:** Per-user progress tracking with database persistence and cross-device synchronization via backend API.
 - **Performance-Optimized State:** Split contexts with normalized state and granular selectors for scalability.
 
 ## 🛠️ Tech Stack
@@ -27,14 +27,19 @@ PinyinPal is an interactive web application designed to help new learners master
 - **Service Layer:** Unified, type-safe service interfaces for audio, conversation, and data management
 - **Backend:** Node.js/Express deployed to Railway with:
   - PostgreSQL database (Supabase)
-  - JWT authentication with httpOnly cookies
-  - Multi-user support with per-user progress tracking
+  - JWT authentication with httpOnly cookies and refresh token rotation
+  - Multi-user support with per-user progress tracking and database persistence
+  - Redis caching layer (Upstash) for TTS and conversation responses
   - Google Cloud TTS and Gemini API integration
+  - Clean architecture (Controllers/Services/Repositories)
   - RESTful API architecture
 - **Infrastructure:**
-  - Frontend: Vercel (React + Vite)
-  - Backend: Railway (Express + PostgreSQL)
-  - Future: Planned migration to ASP.NET Core 8
+  - Frontend: Vercel (React + Vite, deployed from main branch)
+  - Backend: Railway (Express + PostgreSQL + Redis)
+  - Caching: Upstash Redis (production) with graceful fallback
+  - Database: Supabase (PostgreSQL with connection pooling)
+  - Storage: Google Cloud Storage (TTS audio and conversation caching)
+  - APIs: Google Cloud TTS, Gemini AI for conversation generation
 
 ## 🚀 Installation & Getting Started
 
@@ -102,8 +107,16 @@ npm run test
 
 This project is more than just a Mandarin learning tool; it's designed with scalability and future growth in mind.
 
+**Completed Milestones:**
+
+- ✅ **Multi-User Architecture:** Production-ready backend with authentication, database persistence, and Redis caching
+- ✅ **Cross-Device Sync:** Users can access their progress from any device via JWT authentication
+
+**Next Steps:**
+
 - **Polyglot Expansion:** The core architecture is being built to easily support the addition of other languages, allowing PinyinPal to become a multi-language learning platform.
 - **Micro-Frontend Conversion:** We plan to explore converting the application into a micro-frontend architecture. This would allow different features (e.g., flashcards, tone drills) to be developed and deployed independently, making the project more robust and maintainable for a larger community.
+- **.NET Backend Migration:** Planned migration to ASP.NET Core 8 for improved performance on CPU-intensive operations (Epic xx).
 
 ## 📁 Project Structure
 
@@ -112,39 +125,48 @@ This project uses a **monorepo structure** with npm workspaces:
 ```
 mandarin-vite-react-ts/
 ├── apps/
-│   ├── frontend/          # React + Vite frontend application
-│   │   ├── src/           # Frontend source code
-│   │   │   ├── features/mandarin/  # Main Mandarin learning feature
-│   │   │   ├── pages/     # Page components
-│   │   │   ├── router/    # Routing configuration
-│   │   │   └── types/     # TypeScript types
-│   │   ├── public/data/   # Static vocabulary and example data
-│   │   └── package.json   # Frontend dependencies
-│   └── backend/           # Node.js + Express backend API
-│       ├── src/           # Backend source code
-│       ├── api/           # Serverless functions for Vercel
-│       └── package.json   # Backend dependencies
+│   ├── frontend/                    # React + Vite frontend application
+│   │   ├── src/
+│   │   │   ├── features/            # Feature modules (mandarin learning)
+│   │   │   ├── pages/               # Page components
+│   │   │   ├── components/          # Reusable UI components
+│   │   │   ├── router/              # React Router configuration
+│   │   │   ├── services/            # API service layer
+│   │   │   └── types/               # TypeScript type definitions
+│   │   ├── public/data/             # Static vocabulary CSVs and examples
+│   │   ├── vite.config.ts           # Vite configuration
+│   │   └── package.json             # Frontend dependencies
+│   └── backend/                     # Node.js + Express backend API
+│       ├── src/
+│       │   ├── api/                 # HTTP layer (controllers, routes, middleware)
+│       │   ├── core/                # Business logic (services, repositories)
+│       │   ├── config/              # Environment configuration
+│       │   └── utils/               # Shared utilities
+│       ├── prisma/                  # Database schema and migrations
+│       ├── tests/                   # Integration and unit tests
+│       ├── Procfile                 # Railway deployment config
+│       └── package.json             # Backend dependencies
 ├── packages/
-│   ├── shared-types/      # Shared TypeScript types
-│   └── shared-constants/  # Shared constants (API endpoints, etc.)
-├── docs/                  # Project documentation
-└── package.json           # Root workspace configuration
+│   ├── shared-types/                # Shared TypeScript types
+│   └── shared-constants/            # Shared constants (API routes, etc.)
+├── docs/
+│   ├── architecture.md              # System architecture overview
+│   ├── guides/                      # Setup and development guides
+│   ├── knowledge-base/              # Transferable technical concepts
+│   ├── business-requirements/       # Epic and story specifications
+│   └── issue-implementation/        # Technical implementation details
+├── terraform/                       # Infrastructure as code (future)
+├── .env.local                       # Environment variables (gitignored)
+├── .env.example                     # Environment template (committed)
+└── package.json                     # Root workspace configuration
 ```
 
 ### Workspaces
 
 - **@mandarin/frontend** - React application with Vite (`apps/frontend/`)
-- **@mandarin/backend** - Express API server (`apps/backend/`)
+- **@mandarin/backend** - Express API server deployed to Railway (`apps/backend/`)
 - **@mandarin/shared-types** - Shared TypeScript type definitions (`packages/shared-types/`)
 - **@mandarin/shared-constants** - Shared constants and configuration (`packages/shared-constants/`)
-
-### Legacy Directories
-
-The following directories contain legacy code and will be removed after full migration:
-
-- `api/` - Old serverless functions (consolidated into `apps/backend/api`)
-- `local-backend/` - Old Express server (consolidated into `apps/backend`)
-- `src/` - Old frontend code (moved to `apps/frontend/src`)
 
 ## 📚 Documentation
 
@@ -159,30 +181,69 @@ The following directories contain legacy code and will be removed after full mig
 
 ## 🔧 Environment Variables
 
-Create `.env` files in the appropriate workspace directories:
+This project uses a **single `.env.local` file at the project root** for both frontend and backend configuration.
 
-- `apps/backend/.env` - Backend environment variables (Google Cloud credentials, database URLs)
-- `apps/frontend/.env` - Frontend environment variables (optional)
+**Setup:**
+
+1. Copy the example file:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Fill in required values (see `.env.example` for detailed instructions):
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `JWT_SECRET` and `JWT_REFRESH_SECRET` - Generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+   - `REDIS_URL` - Redis connection (optional for development, caching falls back gracefully)
+   - `GOOGLE_TTS_CREDENTIALS_RAW` - Google Cloud service account JSON
+   - `VITE_API_URL` - Backend API URL (http://localhost:3001 for development)
+
+**First-time Database Setup:**
+
+After configuring environment variables, initialize the database:
+
+```bash
+npx prisma migrate dev
+```
+
+For detailed configuration instructions, see [Environment Setup Guide](docs/guides/environment-setup-guide.md).
 
 ## 🤝 Contributing
 
-We welcome contributions of all kinds! If you want to help, please check out our **`CONTRIBUTING.md`** file for details on our code of conduct and the process for submitting pull requests.
+We welcome contributions! Please follow these guidelines:
+
+1. **Code Conventions:** Follow patterns in [Code Conventions Guide](docs/guides/code-conventions.md)
+2. **Git Workflow:** Use Conventional Commits as described in [Git Convention Guide](docs/guides/git-convention.md)
+3. **Documentation:** Update relevant docs when making changes
+4. **Testing:** Add tests for new features and bug fixes
+
+For detailed workflow, see [Workflow Guide](docs/guides/workflow.md).
 
 ## 🚀 Deployment
 
-Deploy your own Vite project with Vercel.
+**Production Deployment:**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/vite-react&template=vite-react)
+- **Frontend:** Deployed to Vercel (automatic deployment from main branch)
+- **Backend:** Deployed to Railway with PostgreSQL and Redis
+- **Live App:** [https://mandarin-vite-react-ts.vercel.app/](https://mandarin-vite-react-ts.vercel.app/)
 
-_Live Example: https://vite-react-example.vercel.app_
+**Deploy Your Own:**
 
-### Deploying From Your Terminal
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/coji831/mandarin-vite-react-ts)
 
-You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
+**Manual Deployment:**
 
-```shell
-$ vercel
+```bash
+# Frontend (Vercel CLI)
+npm install -g vercel
+vercel
+
+# Backend (Railway CLI)
+npm install -g @railway/cli
+railway up
 ```
+
+For detailed deployment instructions, see [Backend Setup Guide](docs/guides/backend-setup-guide.md).
 
 ## 📄 License
 

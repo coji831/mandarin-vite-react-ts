@@ -1,8 +1,21 @@
 # Troubleshooting Guide
 
+**Audience:** Developers debugging common development issues  
+**Last Updated:** January 2026
+
 Quick solutions to common development issues.
 
-## Quick Diagnostics
+**💡 Tip:** Use `Ctrl+F` to search for your specific error message or keyword.
+
+**Severity Legend:**
+
+- 🔴 **Critical** — Blocks development
+- 🟡 **Common** — Frequently encountered
+- 🟢 **Rare** — Edge case
+
+---
+
+## 🚀 Quick Diagnostics
 
 **Development server won't start:**
 
@@ -28,11 +41,11 @@ npm install
 2. Restart dev server: `Ctrl+C` then `npm run dev`
 3. Clear browser cache
 
-## Common Errors
+## ⚠️ Common Errors
 
-### Deployment Errors
+### 🏗️ Deployment Errors
 
-**"ERR_MODULE_NOT_FOUND" on Railway/Linux (Case-Sensitivity)**
+**🟡 "ERR_MODULE_NOT_FOUND" on Railway/Linux (Case-Sensitivity)**
 
 **Symptom**: Backend works locally on Windows but fails on Railway with `Cannot find module './controllers/vocabularyController.js'`.
 
@@ -54,16 +67,16 @@ git push
 
 **Prevention**: Use lowercase for all filenames in backend code to avoid cross-platform issues.
 
-### TypeScript Errors
+### 📦 TypeScript Errors
 
-**"Type 'undefined' is not assignable"**
+**🟡 "Type 'undefined' is not assignable"\*\***
 
 ```typescript
 // Use nullish coalescing
 const name: string = user.name ?? "Unknown";
 ```
 
-**"Property does not exist on type"**
+**🟡 "Property does not exist on type"\*\***
 
 ```typescript
 // Add to interface or make optional
@@ -73,13 +86,13 @@ interface User {
 }
 ```
 
-**"Cannot find module '@/...'"**
+**🟡 "Cannot find module '@/...'"**
 
 Restart TypeScript server: `Cmd+Shift+P` > "TypeScript: Restart TS Server"
 
-### Test Errors
+### 🧪 Test Errors
 
-**"TextEncoder is not defined"**
+**🟢 "TextEncoder is not defined"\*\***
 
 Add to `setupTests.ts`:
 
@@ -89,7 +102,7 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 ```
 
-**"Cannot find module 'utils/...'"**
+**🟡 "Cannot find module 'utils/...'"**
 
 Update `jest.config.js`:
 
@@ -99,7 +112,7 @@ moduleNameMapper: {
 }
 ```
 
-**Test timeout**
+**🟢 Test timeout**
 
 ```typescript
 // Increase timeout for slow test
@@ -108,16 +121,16 @@ test("loads data", async () => {
 }, 10000); // 10 seconds
 ```
 
-### Build Errors
+### 🏗️ Build Errors
 
-**Out of memory**
+**🔴 Out of memory**
 
 ```bash
 $env:NODE_OPTIONS="--max-old-space-size=4096"
 npm run build
 ```
 
-**Port already in use**
+**🟡 Port already in use**
 
 ```bash
 # Kill process on port
@@ -125,9 +138,9 @@ netstat -ano | findstr :3001
 taskkill /PID <PID> /F
 ```
 
-## Cookie Authentication Issues
+## 🍪 Cookie Authentication Issues
 
-### Cookies not visible in browser
+### 🔴 Cookies not visible in browser
 
 **Check:** DevTools > Network > Response headers for `Set-Cookie`
 
@@ -156,7 +169,7 @@ server: {
 
 **Learn more:** [Frontend Development Server](../knowledge-base/frontend-development-server.md#cookie-forwarding-in-proxied-environments)
 
-### Cookie blocked (SameSite)
+### 🟡 Cookie blocked (SameSite)
 
 **Check:** Browser console for "SameSite" warnings
 
@@ -170,7 +183,7 @@ res.cookie("refreshToken", token, {
 });
 ```
 
-### CORS credentials error
+### 🔴 CORS credentials error
 
 **Check:** Response headers for `Access-Control-Allow-Origin: *`
 
@@ -188,7 +201,7 @@ app.use(
 
 **Learn more:** [CORS Deep Dive](../knowledge-base/backend-architecture.md#cors-cross-origin-resource-sharing-deep-dive)
 
-### Cookies not sent with requests
+### 🟡 Cookies not sent with requests
 
 **Fix:** Add `credentials: "include"` to fetch:
 
@@ -200,7 +213,7 @@ fetch("/api/auth/login", {
 });
 ```
 
-### Cookie not cleared on logout
+### 🟢 Cookie not cleared on logout
 
 **Fix:** Match options exactly between set and clear:
 
@@ -217,7 +230,7 @@ res.cookie("refreshToken", token, cookieOptions);
 res.clearCookie("refreshToken", cookieOptions);
 ```
 
-## Quick Diagnostic Checklist
+## ✅ Quick Diagnostic Checklist
 
 **Cookie authentication not working? Check:**
 
@@ -228,9 +241,9 @@ res.clearCookie("refreshToken", cookieOptions);
 5. ✅ Backend CORS has `credentials: true` + specific origin?
 6. ✅ Vite proxy forwards cookie headers?
 
-## State Issues
+## 🧩 State Issues
 
-**Infinite re-render:**
+**🔴 Infinite re-render:**
 
 ```tsx
 // Move setState to useEffect or event handler
@@ -239,7 +252,7 @@ useEffect(() => {
 }, []); // Empty deps = run once
 ```
 
-**State not persisting:**
+**🟡 State not persisting:**
 
 ```typescript
 // Check localStorage

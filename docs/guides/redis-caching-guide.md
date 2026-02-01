@@ -2,7 +2,51 @@
 
 Complete guide to Redis caching implementation in the Mandarin app backend.
 
-## Overview
+## TL;DR Quick Reference
+
+**Install:**
+
+```bash
+npm install ioredis
+```
+
+**Production:** Use Railway Redis with `REDIS_URL` environment variable (auto-configured)
+
+**Local Development Options:**
+
+- **Quick Start:** Disable Redis → App falls back gracefully to no-cache mode
+- **Full Caching:** Install local Redis OR use Railway public URL (TCP Proxy)
+
+**Test Connection:**
+
+```bash
+# Check backend logs on startup
+npm run start-backend
+# Look for: "[CacheFactory] Using RedisCacheService" (enabled)
+# Or: "[CacheFactory] Using NoOpCacheService" (disabled/fallback)
+```
+
+**Cache Metrics:**
+Check health endpoint: `http://localhost:3001/api/health`
+
+```json
+{
+  "cache": {
+    "enabled": true,
+    "type": "RedisCacheService",
+    "connection": "connected"
+  }
+}
+```
+
+**Key Patterns:**
+
+- TTS cache: `mandarin:tts:{text-hash}` (24 hour TTL)
+- Conversation cache: `mandarin:conv:{word}:{context-hash}` (1 hour TTL)
+
+---
+
+## 🚀 Overview
 
 The backend uses **Railway Redis** for caching TTS audio and conversation text to reduce external API costs and improve response times. Redis runs in a shared dev/prod environment with namespace isolation via key prefixes.
 
@@ -25,7 +69,7 @@ CachedService (wrapper)
      └─ Cache Miss → Call external API → Store in Redis → Return data
 ```
 
-## Railway Redis Setup
+## 🚀 Railway Redis Setup
 
 ### Production/Development (Shared Instance)
 
@@ -270,7 +314,7 @@ CACHE_ENABLED="false"
 
 Server will use `NoOpCacheService` (all requests bypass cache).
 
-## Cache Key Format
+## 🏗️ Cache Key Format
 
 ### TTS Keys
 
@@ -302,7 +346,7 @@ Key: conv:word-123:4093303f22caab6034f8a496bb05d6efefc4b5adb8bcade9affc41db72694
 
 **TTL**: 1 hour (3600 seconds)
 
-## Cache Invalidation
+## 🔧 Cache Invalidation
 
 ### Manual Invalidation (Conversation)
 
@@ -333,7 +377,7 @@ railway run redis-cli
 > FLUSHDB
 ```
 
-## Monitoring
+## 📊 Monitoring
 
 ### Health Endpoint Metrics
 
@@ -381,7 +425,7 @@ Cache operations are logged via `createLogger()`:
 [RedisCacheService] Cache Hit: tts:a9d0701a...
 ```
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Error: "Redis connection error: Redis is already connecting/connected"
 

@@ -1,5 +1,8 @@
 # TODO — Project-wide (GitHub-friendly)
 
+**Audience:** Project maintainers, developers tracking tasks  
+**Last Updated:** January 2026
+
 This file is a simple, human-editable TODO list compatible with GitHub (checkboxes are interactive in PRs and on GitHub.com).
 
 Usage:
@@ -20,32 +23,48 @@ Sections
 
 ## Todo (near-term)
 
-- [ ] Refactor frontend services layer — Centralize API baseURL configuration instead of repeating `VITE_API_URL` resolution in each service method (affects `audioService.ts`, `conversationService.ts`). Create shared config utility for consistent backend URL handling across all API calls.
+- [ ] Refactor frontend services layer - Centralize API baseURL configuration across services
 
 ## Backlog
 
-- [ ] Migrate auth to React Query + Axios — Replace custom `authFetch` wrapper with industry-standard Axios interceptors and React Query for better caching, retry logic, and TypeScript support (Estimate: 12 hours)
-- [ ] Refactor `#file:local-backend` — modernize syntax and approach for Google APIs, simplify credential handling
-- [ ] Update backend/vercel APIs to return and throw more meaningful logs/errors for better debug support (include structured error objects and request IDs)
-- [ ] Support pinyin and English meaning in conversation generation and UI (display and toggleable playback)
-- [ ] Support turn-based conversations with UI indicator and per-turn audio playback controls
+- [ ] Migrate auth to React Query + Axios - Replace custom `authFetch` with industry standards
+- [ ] Improve backend error logging - Add structured error objects and request IDs
 
 ## Done
 
-- [x] Re-organize `#file:features` — move `conversation/` under `mandarin/` and update imports/paths
-- [x] Unify data objects across data and components (e.g., `Card`, `Word`, `ConversationTurn`) for consistency
-- [x] Overhaul data/audio services layer — Design and implement a unified services layer for data and audio fetching. All new services must provide fallback logic and be easy to swap for other backends.
-- [x] Add data/audio fetching services — Implement dedicated service functions for vocabulary data and audio (TTS) fetching. Services should abstract API calls and provide fallback logic.
-- [x] Migrate components to use services — Refactor all components to use the new services layer instead of calling APIs directly. Ensure all data/audio access goes through service functions.
-- [x] Ensure service fallback and backend swap — All services must have robust fallback logic and be designed for easy backend switching (e.g., config or DI). Document the pattern for future maintainers.
+- [x] Re-organize features - Moved `conversation/` under `mandarin/`
+- [x] Unify data objects - Standardized `Card`, `Word`, `ConversationTurn`
+- [x] Overhaul services layer - Designed unified services with fallback logic
+- [x] Add data/audio services - Implemented vocabulary and TTS service functions
+- [x] Migrate components to services - Refactored all components to use services layer
+- [x] Ensure service fallback - Added robust fallback and backend swap support
+- [x] Modernize backend Google API integration - Simplify credential handling
+- [x] Add pinyin/English support to conversations - Display and audio playback
+- [x] Support turn-based conversations - UI indicators and per-turn audio controls
 
 ---
 
-Notes
+## How to Create GitHub Issues
 
-- Checkboxes in this file are purely a convenience; converting them to Issues gives you proper tracking, assignment, and linking to PRs.
-- If you'd like, I can create Issues automatically for each unchecked item or open a PR that adds this file on a branch.
+**Quick command (using GitHub CLI):**
+
+```bash
+# Create issue from TODO item
+gh issue create --title "Refactor frontend services layer" --body "Centralize API baseURL configuration across services. See TODO.md for context."
+
+# List existing issues
+gh issue list
+```
+
+**Best Practice:** For tasks requiring >2 hours or affecting multiple files, create a GitHub issue with:
+
+- Detailed implementation plan
+- Affected files/components
+- Acceptance criteria
+- Estimated effort
+
+Then reference the issue number in TODO.md: `- [ ] Task summary (#123)`
 
 ---
 
-Last updated: 2025-12-16
+Last updated: January 2026

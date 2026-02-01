@@ -1,5 +1,8 @@
 # Linting Guide
 
+**Audience:** Developers setting up code quality tools  
+**Last Updated:** January 2026
+
 Quick setup for ESLint, Prettier, and TypeScript checking.
 
 ## Quick Commands
@@ -48,7 +51,7 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
     },
-  }
+  },
 );
 ```
 

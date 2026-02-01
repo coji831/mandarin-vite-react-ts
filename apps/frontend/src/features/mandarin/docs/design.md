@@ -102,6 +102,27 @@ The Mandarin feature provides vocabulary learning, flashcards, and review.
 - Architecture supports multiple users with isolated progress tracking.
 - Designed for future cloud sync integration.
 
+**Backend Integration:**
+
+- **Progress API**: Vocabulary progress syncs with backend via `/api/v1/progress` endpoints
+  - `GET /api/v1/progress/:userId` - Fetch user progress from database
+  - `POST /api/v1/progress` - Save progress updates (authenticated)
+  - `PUT /api/v1/progress/:progressId` - Update existing progress
+  - Multi-user isolation enforced at database level (userId foreign key)
+- **Authentication State**: Managed by `AuthContext` in [apps/frontend/src/features/auth/context/AuthContext.tsx](../../../auth/context/AuthContext.tsx)
+  - JWT access tokens (15 min expiry) stored in memory
+  - Refresh tokens (7 days) in httpOnly cookies
+  - Automatic token refresh via `authFetch` wrapper
+  - Auth state restoration on app mount via `/api/v1/auth/me`
+- **Storage Strategy**: Local-first with backend sync
+  - localStorage serves as cache for offline access
+  - Backend is source of truth for cross-device sync
+  - Conflict resolution: Last-write-wins on server
+- **Service Layer**: All API calls use centralized `ApiClient`
+  - `ApiClient.authRequest()` for authenticated endpoints (auto-handles token refresh)
+  - `ApiClient.publicRequest()` for public endpoints
+  - Implementation: [apps/frontend/src/services/apiClient.ts](../../../../services/apiClient.ts)
+
 ---
 
 ## 4. Page Structure

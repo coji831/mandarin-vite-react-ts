@@ -9,6 +9,235 @@
 - [Progress Tracking Endpoints](#progress-tracking-endpoints-story-134)
 - [Authentication](#authentication)
 
+## Authentication
+
+All authentication endpoints are at `/api/v1/auth`.
+
+### POST /api/v1/auth/register
+
+Create a new user account.
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "displayName": "John Doe" // optional
+}
+```
+
+**Password Requirements:**
+
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+
+**Response (201 Created):**
+
+```json
+{
+  "user": {
+    "id": "uuid-123",
+    "email": "user@example.com",
+    "displayName": "John Doe",
+    "createdAt": "2026-01-14T10:00:00.000Z"
+  },
+  "accessToken": "eyJhbGc...xyz",
+  "expiresIn": 900
+}
+```
+
+**Set-Cookie Header:**
+
+```
+refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/
+```
+
+**Errors:**
+
+- `400 INVALID_EMAIL`: Email format is invalid
+- `400 WEAK_PASSWORD`: Password does not meet requirements
+- `409 EMAIL_EXISTS`: Email already registered
+- `500 REGISTRATION_ERROR`: Server error during registration
+
+---
+
+### POST /api/v1/auth/login
+
+Authenticate existing user and issue tokens.
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "user": {
+    "id": "uuid-123",
+    "email": "user@example.com",
+    "displayName": "John Doe"
+  },
+  "accessToken": "eyJhbGc...xyz",
+  "expiresIn": 900
+}
+```
+
+**Set-Cookie Header:**
+
+```
+refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/
+```
+
+**Errors:**
+
+- `400 MISSING_CREDENTIALS`: Email or password not provided
+- `401 INVALID_CREDENTIALS`: Email or password incorrect
+- `429 TOO_MANY_REQUESTS`: Rate limit exceeded (max 5 attempts per minute per IP)
+- `500 LOGIN_ERROR`: Server error during login
+
+**Rate Limiting:**
+
+- Maximum 5 login attempts per minute per IP address
+- Failed attempts are logged for security monitoring
+
+---
+
+### POST /api/v1/auth/refresh
+
+Exchange refresh token for new access token.
+
+**Request:**
+
+No body required. Refresh token is read from httpOnly cookie.
+
+**Cookie Header:**
+
+```
+refreshToken=<token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "accessToken": "eyJhbGc...xyz",
+  "expiresIn": 900
+}
+```
+
+**Set-Cookie Header:**
+
+```
+refreshToken=<new_token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/
+```
+
+> **Note:** Refresh token rotation is implemented. Old refresh token is invalidated and new one is issued.
+
+**Errors:**
+
+- `401 MISSING_REFRESH_TOKEN`: No refresh token cookie present
+- `401 INVALID_REFRESH_TOKEN`: Refresh token expired or invalid
+- `500 REFRESH_ERROR`: Server error during token refresh
+
+---
+
+### POST /api/v1/auth/logout
+
+Invalidate refresh token and clear session.
+
+**Request:**
+
+No body required. Refresh token is read from httpOnly cookie.
+
+**Cookie Header:**
+
+```
+refreshToken=<token>
+```
+
+**Response (204 No Content):**
+
+No response body. `Set-Cookie` header clears the refresh token.
+
+**Set-Cookie Header:**
+
+```
+refreshToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid refresh token
+- `500 LOGOUT_ERROR`: Server error during logout
+
+---
+
+### GET /api/v1/auth/me
+
+Get currently authenticated user's profile.
+
+**Auth:** Required (JWT Bearer token)
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid-123",
+  "email": "user@example.com",
+  "displayName": "John Doe",
+  "createdAt": "2026-01-10T08:00:00.000Z"
+}
+```
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing, expired, or invalid access token
+- `404 USER_NOT_FOUND`: User account no longer exists
+
+---
+
+### JWT Token Details
+
+**Access Token:**
+
+- **Type**: Bearer token (sent in Authorization header)
+- **Lifetime**: 15 minutes
+- **Payload**: `{ userId, email, type: "access" }`
+- **Usage**: Include in Authorization header for all protected endpoints
+
+**Refresh Token:**
+
+- **Type**: HttpOnly cookie (automatic browser handling)
+- **Lifetime**: 7 days
+- **Payload**: `{ userId, tokenId, type: "refresh" }`
+- **Storage**: Database-backed (can be revoked server-side)
+- **Rotation**: New refresh token issued on every refresh request
+
+**Security Features:**
+
+- bcrypt password hashing (cost factor: 10)
+- Refresh token rotation prevents replay attacks
+- HttpOnly cookies prevent XSS attacks
+- Secure flag enforced in production (HTTPS only)
+- Rate limiting on login endpoint (5 attempts/minute/IP)
+
+---
+
 ## Health Check
 
 ### GET /api/health
@@ -176,7 +405,7 @@ Generate or retrieve cached conversation text for a vocabulary word.
 - `400 VALIDATION_ERROR`: Missing wordId or word
 - `500 CONVO_TEXT_ERROR`: Gemini API failure or parsing error
 
-## Progress Tracking Endpoints (Story 13.4)
+## Progress Tracking Endpoints
 
 All progress endpoints require authentication via JWT Bearer token.
 
@@ -499,7 +728,7 @@ All errors follow this structure:
 - `ENABLE_CACHE`: Enable caching (default: true)
 - `ENABLE_METRICS`: Enable metrics collection (default: false)
 
-## Progress Endpoints (Story 13.4)
+## Progress Endpoints
 
 ### GET /api/v1/progress
 

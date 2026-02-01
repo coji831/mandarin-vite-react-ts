@@ -146,48 +146,39 @@ test("increments counter", () => {
 
 ## React Strict Mode Testing
 
-**Enable Strict Mode in tests:**
+React Strict Mode intentionally double-mounts components in development to expose side effects and missing cleanup.
+
+**Quick Fix:** Ensure useEffect cleanup functions properly cancel async operations.
+
+**Example:**
 
 ```typescript
-function renderWithStrictMode(ui: React.ReactElement) {
-  return render(<React.StrictMode>{ui}</React.StrictMode>);
-}
+useEffect(() => {
+  const controller = new AbortController();
+
+  fetch("/api/data", { signal: controller.signal })
+    .then((data) => setState(data))
+    .catch((err) => {
+      if (err.name === "AbortError") return; // Ignore aborts
+    });
+
+  return () => controller.abort(); // Cleanup on unmount
+}, []);
 ```
 
-**Test cleanup:**
+**When testing with Strict Mode:**
 
 ```typescript
-test("cleans up on unmount", () => {
-  const cleanup = jest.fn();
-
-  function Component() {
-    useEffect(() => cleanup, []);
-    return null;
-  }
-
-  const { unmount } = render(<Component />);
-  unmount();
-
-  expect(cleanup).toHaveBeenCalled();
-});
+// API calls may happen twice in tests
+expect(mockFetch).toHaveBeenCalledTimes(2); // Double-mount behavior
 ```
 
-**Handle double-mounting:**
+📖 **Deep Dive:** See [React Strict Mode Deep Dive](../knowledge-base/frontend-react-patterns.md#react-strict-mode-deep-dive) for:
 
-```typescript
-test("handles double API calls", async () => {
-  const mockFetch = jest.fn().mockResolvedValue({ json: async () => ({}) });
-  global.fetch = mockFetch;
-
-  renderWithStrictMode(<MyComponent />);
-
-  await waitFor(() => {
-    expect(mockFetch).toHaveBeenCalledTimes(2); // Strict Mode doubles calls
-  });
-});
-```
-
-**Learn more:** [React Strict Mode Deep Dive](../knowledge-base/frontend-react-patterns.md#react-strict-mode-deep-dive) - Why double-mounting, race conditions, cleanup patterns
+- Why double-mounting happens
+- Common race conditions and solutions
+- AbortController patterns
+- Testing strategies for concurrent features
 
 ## Backend Testing
 

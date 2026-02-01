@@ -16,6 +16,8 @@
 
 ## Backend Conventions
 
+> 📖 **Deep Dive:** For Clean Architecture patterns, see [backend-architecture.md](../knowledge-base/backend-architecture.md)
+
 ### Error Logging & Scoping
 
 When handling requests that might fail, declare identification variables (like `email` or `id`) **outside** the `try` block. This ensures they are accessible for logging in the `catch` block even if the failure occurs during the extraction from `req.body`.
@@ -43,6 +45,11 @@ async login(req, res) {
 - **Interfaces**: Define contracts in `src/core/interfaces/`.
 
 ## State Management Conventions
+
+> 📖 **Deep Dive:** For transferable state management patterns, see:
+>
+> - [frontend-state-management.md](../knowledge-base/frontend-state-management.md) — Normalized state, localStorage
+> - [frontend-react-patterns.md](../knowledge-base/frontend-react-patterns.md) — Context API, useReducer
 
 ### Reducer Files
 
@@ -112,6 +119,8 @@ const words = state.selectedWords; // Don't use legacy top-level aliases
 ```
 
 ### Testing Conventions
+
+> 📖 **Deep Dive:** For testing patterns and mocking strategies, see [testing-guide.md](testing-guide.md)
 
 - **Reducer Tests**: Test each action type in isolation
   - File: `__tests__/{reducer}.test.ts`
@@ -342,12 +351,78 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 ```
 
+### Backend API Communication Patterns
+
+**Use Centralized ApiClient:**
+
+```typescript
+import { ApiClient } from "@/services/apiClient";
+import { API_ROUTES } from "@mandarin/shared-constants";
+
+// Authenticated request (auto-handles token refresh)
+const response = await ApiClient.authRequest(API_ROUTES.progress.getProgress(userId), {
+  method: "GET",
+});
+
+// Public request (no authentication)
+const healthResponse = await ApiClient.publicRequest("/api/health");
+```
+
+**DO NOT use raw fetch() directly** - always go through ApiClient for:
+
+- Consistent credential handling
+- Automatic token refresh
+- Centralized error handling
+- Easy migration to React Query later
+
+**Service Layer Pattern:**
+
+```typescript
+// services/progressService.ts
+export class ProgressService {
+  async getProgress(userId: string): Promise<ProgressData> {
+    const response = await ApiClient.authRequest(`/api/v1/progress/${userId}`);
+    if (!response.ok) throw new Error("Failed to fetch progress");
+    return response.json();
+  }
+
+  async saveProgress(data: ProgressUpdate): Promise<void> {
+    await ApiClient.authRequest("/api/v1/progress", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+}
+```
+
+**Error Handling:**
+
+```typescript
+try {
+  const data = await progressService.getProgress(userId);
+  dispatch({ type: "PROGRESS_LOADED", payload: data });
+} catch (error) {
+  if (error.response?.status === 401) {
+    // Auth error - handled by authFetch
+    dispatch({ type: "AUTH_ERROR" });
+  } else {
+    dispatch({ type: "PROGRESS_ERROR", payload: error.message });
+  }
+}
+```
+
 ### Reference
 
-- **Source Story**: [Story 13.3: JWT Authentication System](../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
-- **Implementation**: Story 13.3 (commit e9b28c1)
-- [Backend Setup Guide](./backend-setup-guide.md)
-- [Testing Guide](./testing-guide.md)
+**Project Documentation:**
+
+- [Backend Setup Guide](./backend-setup-guide.md) - Server configuration, middleware, clean architecture
+- [API Specification](../../apps/backend/docs/api-spec.md) - Complete endpoint reference
+- [Testing Guide](./testing-guide.md) - Unit and integration testing patterns
+
+**Knowledge Base:**
+
+- [Backend Authentication](../knowledge-base/backend-authentication.md) - JWT patterns, token refresh
+- [Backend Architecture](../knowledge-base/backend-architecture.md) - Layered architecture, CORS
 
 ## Commit Message & Pull Request Standards
 

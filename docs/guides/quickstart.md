@@ -1,10 +1,11 @@
 # Quick Start Guide
 
 **Category:** Getting Started  
-**Last Updated:** December 9, 2025  
+**Audience:** New developers getting started  
+**Last Updated:** January 30, 2026  
 **Time to Complete:** 5 minutes
 
-> **Purpose:** Get the project running on your machine in 5 minutes.
+> **Purpose:** Get the frontend running in 5 minutes. For backend setup, see [Backend Quick Start](backend-quickstart.md).
 
 ---
 
@@ -16,7 +17,7 @@
 
 ---
 
-## 🚀 5-Minute Setup
+## 🚀 Frontend Setup (5 Minutes)
 
 ### 1. Clone & Install
 
@@ -29,7 +30,7 @@ cd mandarin-vite-react-ts
 npm install
 ```
 
-### 2. Run Development Server
+### 2. Start Development Server
 
 ```bash
 # Start frontend
@@ -40,34 +41,7 @@ npm run dev
 
 Open your browser and you should see the Mandarin learning app!
 
----
-
-## 🔧 Optional: Run Local Backend
-
-If you need API features (TTS audio, conversation generation):
-
-**1. Configure environment variables:**
-
-```bash
-# Copy example file to .env.local at project root
-cp .env.example .env.local
-
-# Edit .env.local and add your credentials:
-# - DATABASE_URL (PostgreSQL connection)
-# - JWT secrets (generate with crypto)
-# - Google Cloud credentials (TTS + Gemini)
-```
-
-**2. Start backend:**
-
-```bash
-# In a new terminal window
-npm run start-backend
-```
-
-**Backend runs at:** `http://localhost:3001`
-
-> **Note**: The project uses a single `.env.local` file at the project root for both frontend and backend. See `.env.example` for all required variables.
+> **Note:** The frontend uses a Vite proxy to connect to the production backend by default. API features (vocabulary, flashcards, audio) work out of the box without backend setup.
 
 ---
 
@@ -76,11 +50,9 @@ npm run start-backend
 ```bash
 # Development
 npm run dev              # Start frontend (localhost:5173)
-npm run start-backend    # Start backend (localhost:3001)
 
-# Testing & Quality
+# Testing
 npm test                 # Run all tests
-npm run lint            # Check code quality
 
 # Production
 npm run build           # Build for production
@@ -89,76 +61,48 @@ npm run preview         # Preview production build
 
 ---
 
-## 🔍 Project Structure Overview
-
-```
-mandarin-vite-react-ts/
-├── .env.local             # Environment variables (gitignored, copy from .env.example)
-├── .env.example           # Environment template (committed)
-├── apps/
-│   ├── frontend/          # React + Vite frontend
-│   │   ├── src/           # Frontend source code
-│   │   │   ├── main.tsx   # App entry point
-│   │   │   └── features/  # Feature modules
-│   │   └── public/        # Static assets & CSV data
-│   └── backend/           # Express backend (Railway)
-│       ├── server.js      # Express app entry
-│       ├── controllers/   # Route handlers
-│       ├── src/core/      # Services & repositories
-│       ├── prisma/        # Database schema
-│       └── Procfile       # Railway deployment
-├── packages/              # Shared code
-│   ├── shared-types/      # TypeScript types
-│   └── shared-constants/  # API routes, constants
-└── docs/                  # Documentation
-    ├── guides/            # Setup guides
-    ├── knowledge-base/    # Transferable patterns
-    └── business-requirements/  # Epic/story docs
-```
-
----
-
 ## 🎯 Next Steps
 
-### For New Developers
+### Need Backend Development?
+- **Run Local Backend:** See [Backend Quick Start](backend-quickstart.md) for 10-minute backend setup
 
-1. **Read the README:** `README.md` - Project overview
-2. **Browse Knowledge Base:** `docs/knowledge-base/README.md` - Quick reference guides
-3. **Check Architecture:** `docs/architecture.md` - System design
+### Learn the Codebase
+- **Project Overview:** [README.md](../../README.md)
+- **System Architecture:** [docs/architecture.md](../architecture.md)
+- **Frontend Architecture:** [apps/frontend/README.md](../../apps/frontend/README.md)
 
-### Learn Specific Topics
-
-- **Vite Configuration:** [Vite Setup Guide](./vite-setup.md)
-- **Testing:** [Testing Guide](./testing-setup.md)
-- **Code Quality:** [Linting & Formatting](./linting-setup.md)
-- **Git Workflow:** [Git Conventions](./git-workflow.md)
+### Explore Topics
+- **Vite Configuration:** [Vite Configuration Guide](vite-configuration-guide.md)
+- **Testing:** [Testing Guide](testing-guide.md)
+- **Code Conventions:** [Code Conventions](code-conventions.md)
+- **Git Workflow:** [Git Conventions](git-convention.md)
 
 ---
 
 ## ❓ Troubleshooting
 
-### Port already in use
+### Port 5173 already in use
 
 ```bash
-# Kill process on port 5173 (frontend)
-npx kill-port 5173
-
-# Kill process on port 3001 (backend)
-npx kill-port 3001
+# Windows
+netstat -ano | findstr :5173
+taskkill /PID <PID> /F
 ```
 
-### "Cannot find module" errors
+### Module not found errors
 
 ```bash
-# Clear cache and reinstall
-rm -rf node_modules package-lock.json
 npm install
 ```
 
+### Changes not appearing
+
+Press `Ctrl+Shift+R` (hard refresh) in browser
+
 ### More Issues?
 
-See [Troubleshooting Guide](./troubleshooting.md) or ask in team chat.
+See [Troubleshooting Guide](troubleshooting.md) for comprehensive solutions.
 
 ---
 
-**You're all set! 🎉 Happy coding!**
+**You're all set! 🎉 Start exploring the codebase.**

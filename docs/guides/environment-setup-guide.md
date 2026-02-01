@@ -31,11 +31,23 @@ cp .env.example .env.local
 
 # Database
 DATABASE_URL=postgresql://postgres:[PASSWORD]@localhost:5432/mandarin_dev
+# Railway example: postgresql://postgres:pass@containers-us-west-123.railway.app:5432/railway
+# Supabase example: postgresql://postgres:[PASSWORD]@db.project.supabase.co:5432/postgres
 
 # Authentication
-JWT_SECRET=your-super-secret-jwt-key-min-32-chars
-JWT_ACCESS_EXPIRY=15m
-JWT_REFRESH_EXPIRY=7d
+# Generate JWT secrets with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars-change-in-production
+JWT_REFRESH_SECRET=your-jwt-refresh-secret-different-from-access-secret
+JWT_ACCESS_EXPIRY=15m   # Access token lifetime
+JWT_REFRESH_EXPIRY=7d   # Refresh token lifetime
+
+# Redis Caching (Optional - falls back gracefully if unavailable)
+# Railway example: redis://default:password@redis.railway.internal:6379
+# Upstash example: redis://default:password@host.upstash.io:6379
+REDIS_URL=redis://default:password@localhost:6379
+CACHE_ENABLED=true
+CACHE_TTL_TTS=86400         # TTS cache: 24 hours
+CACHE_TTL_CONVERSATION=3600  # Conversation cache: 1 hour
 
 # Server
 PORT=3001
@@ -49,8 +61,25 @@ VITE_API_URL=http://localhost:3001  # REQUIRED: Used by frontend services for AP
 # The proxy can mask configuration issues during local dev that will break in production.
 
 # External Services
-GOOGLE_CLOUD_TTS_API_KEY=your-api-key
+# Google Cloud service account JSON (single-line string)
+GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
+GEMINI_API_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
+GCS_BUCKET_NAME=your-bucket-name
 ```
+
+**JWT Secret Generation:**
+
+```bash
+# Generate secure random secrets (run this twice for access + refresh secrets)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+**Important Notes:**
+
+- **JWT_SECRET vs JWT_REFRESH_SECRET**: Use different secrets for access and refresh tokens
+- **Redis**: Optional for development; backend falls back to no-cache mode gracefully
+- **Database**: Railway and Supabase both provide free PostgreSQL tiers
+- **Google Credentials**: Service account JSON must be on a single line with escaped quotes
 
 **3. Update `.gitignore`:**
 
@@ -78,17 +107,45 @@ GOOGLE_CLOUD_TTS_API_KEY=your-api-key
 Load environment variables:
 
 ```typescript
-// src/server.ts
+// apps/backend/src/config/index.js
 import dotenv from "dotenv";
-dotenv.config(); // Loads .env.local automatically
+import path from "path";
+
+// Load .env.local from project root
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env.local") });
 
 // Validate required variables
-const required = ["DATABASE_URL", "JWT_SECRET", "FRONTEND_URL"];
+const required = ["DATABASE_URL", "JWT_SECRET", "JWT_REFRESH_SECRET", "FRONTEND_URL"];
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
   throw new Error(`Missing environment variables: ${missing.join(", ")}`);
 }
+
+// Export parsed config
+export const config = {
+  database: {
+    url: process.env.DATABASE_URL,
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+    accessExpiry: process.env.JWT_ACCESS_EXPIRY || "15m",
+    refreshExpiry: process.env.JWT_REFRESH_EXPIRY || "7d",
+  },
+  redis: {
+    url: process.env.REDIS_URL,
+    enabled: process.env.CACHE_ENABLED !== "false",
+    ttl: {
+      tts: parseInt(process.env.CACHE_TTL_TTS || "86400"),
+      conversation: parseInt(process.env.CACHE_TTL_CONVERSATION || "3600"),
+    },
+  },
+  server: {
+    port: parseInt(process.env.PORT || "3001"),
+    frontendUrl: process.env.FRONTEND_URL,
+  },
+};
 ```
 
 ## Test Configuration
@@ -160,7 +217,7 @@ GOOGLE_API_KEY=your-google-api-key-here
 
 ## Reference
 
-- [Story 13.3: JWT Authentication](../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
+- [JWT Authentication](../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 **Learn more:**
 
@@ -168,4 +225,4 @@ GOOGLE_API_KEY=your-google-api-key-here
 
 ---
 
-**Last Updated:** January 9, 2026
+**Last Updated:** January 29, 2026

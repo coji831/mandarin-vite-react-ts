@@ -1,5 +1,8 @@
 # Review Checklist
 
+**Audience:** Developers before committing, code reviewers  
+**Last Updated:** January 2026
+
 ## Documentation Review
 
 - [ ] All docs use the correct template from `docs/templates`

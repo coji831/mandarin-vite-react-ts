@@ -60,6 +60,34 @@ Start here if you're new to the project:
 
 ## 🧭 Quick Reference
 
+### Quick Reference Card
+
+| Need                     | Command/File                           | Guide                                                    |
+| ------------------------ | -------------------------------------- | -------------------------------------------------------- |
+| Start dev server         | `npm run dev`                          | [quickstart](quickstart.md)                              |
+| Start backend            | `npm run start-backend`                | [backend-setup](backend-setup-guide.md)                  |
+| Run tests                | `npm test`                             | [testing-guide](testing-guide.md)                        |
+| Configure env vars       | Edit `.env.local`                      | [environment-setup](environment-setup-guide.md)          |
+| Fix CORS issues          | Check proxy config in `vite.config.ts` | [vite-configuration](vite-configuration-guide.md)        |
+| Database migrations      | `npm run db:migrate`                   | [backend-setup](backend-setup-guide.md)                  |
+| Add new feature          | See workflow checklist →               | [workflow](workflow.md)                                  |
+| Fix TypeScript errors    | Common patterns →                      | [troubleshooting](troubleshooting.md)                    |
+| Commit message format    | `type(scope): description`             | [git-convention](git-convention.md)                      |
+| Redis caching setup      | `REDIS_URL` in `.env.local`            | [redis-caching-guide](redis-caching-guide.md)            |
+| Cookie authentication    | Check `credentials: "include"`         | [backend-setup](backend-setup-guide.md)                  |
+| State management pattern | Reducer + Context API                  | [code-conventions](code-conventions.md#state-management) |
+
+### 🆘 Common Issues at a Glance
+
+- **Port 5173 in use** → Kill process: `netstat -ano | findstr :5173` then `taskkill /PID <PID> /F`
+- **Cookies not working** → Check Vite proxy config has `credentials: true` and cookie forwarding handlers
+- **Module not found** → Run `npm install` + restart dev server
+- **Changes not appearing** → Hard refresh: `Ctrl+Shift+R`
+- **Backend connection failed** → Verify `VITE_API_URL` matches backend URL
+- **Database connection error** → Check `DATABASE_URL` format in `.env.local`
+
+**Full troubleshooting:** See [troubleshooting.md](troubleshooting.md)
+
 ### Daily Development Commands
 
 ```bash

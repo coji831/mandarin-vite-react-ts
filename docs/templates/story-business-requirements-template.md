@@ -37,9 +37,3 @@
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
 - **Key Commit**: [commit-hash] ([Brief commit description])
-
-## Business Rules
-
-1. [Business rule 1]
-2. [Business rule 2]
-3. [Business rule 3]
