@@ -551,7 +551,7 @@ Update `docs/architecture.md`:
 - Shared TypeScript types in `@mandarin/shared-types`
 
 **Services:**
-- `progressService.ts` - Migrated ✅ (Story 14.3)
+- `progressService.ts` - Migrated ✅ (Story 14.4)
 - `conversationService.ts` - Legacy (uses `ApiClient.authRequest`)
 - `audioService.ts` - Legacy (uses `ApiClient.authRequest`)
 
@@ -562,7 +562,7 @@ Update `docs/architecture.md`:
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
 - [Epic 14 Implementation](./README.md)
-- [Story 14.3 BR](../../business-requirements/epic-14-api-modernization/story-14-3-progress-service-migration.md)
-- [Story 14.2 Implementation](./story-14-2-axios-interceptors.md) (Previous)
+- [Story 14.4 BR](../../business-requirements/epic-14-api-modernization/story-14-4-progress-service-migration.md)
+- [Story 14.3 Implementation](./story-14-2-axios-interceptors.md) (Previous)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 - [Architecture Overview](../../architecture.md)

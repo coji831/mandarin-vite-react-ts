@@ -41,24 +41,28 @@ Migrating to industry-standard Axios with centralized configuration addresses th
 
 This epic consists of the following user stories:
 
-1. [**Story 14.1: Centralized API Configuration**](./story-14-1-centralized-api-config.md)
+1. [**Story 14.1: Jest to Vitest Migration**](./story-14-1-jest-to-vitest-migration.md)
+   - As a **frontend developer**, I want to **migrate all frontend tests from Jest to Vitest**, so that **testing infrastructure aligns with Vite tooling and avoids monorepo module resolution issues**.
+
+2. [**Story 14.2: Centralized API Configuration**](./story-14-2-centralized-api-config.md)
    - As a **frontend developer**, I want to **configure API base URLs in one location**, so that **changes don't require editing multiple service files**.
 
-2. [**Story 14.2: Axios Migration with Interceptors**](./story-14-2-axios-interceptors.md)
+3. [**Story 14.3: Axios Migration with Interceptors**](./story-14-3-axios-interceptors.md)
    - As a **frontend developer**, I want to **use Axios with automatic token refresh interceptors**, so that **401 responses trigger seamless re-authentication without user disruption**.
 
-3. [**Story 14.3: Progress Service Axios Migration**](./story-14-3-progress-service-migration.md)
+4. [**Story 14.4: Progress Service Axios Migration**](./story-14-4-progress-service-migration.md)
    - As a **frontend developer**, I want to **migrate progress API calls to the new Axios client**, so that **progress tracking benefits from centralized error handling and retry logic**.
 
 ## Story Breakdown Logic
 
 This epic is divided into stories based on incremental migration approach:
 
-- **Story 14.1** focuses on foundational infrastructure (centralized config) without breaking changes
-- **Story 14.2** migrates core services (conversation, audio, auth) to Axios with interceptors
-- **Story 14.3** completes migration with progress service, validating the pattern across all API calls
+- **Story 14.1** migrates testing infrastructure from Jest to Vitest, resolving monorepo module resolution issues
+- **Story 14.2** focuses on foundational infrastructure (centralized API config) with new Axios client
+- **Story 14.3** migrates core services (conversation, audio, auth) to Axios with interceptors
+- **Story 14.4** completes migration with progress service, validating the pattern across all API calls
 
-Each story builds upon the previous, allowing iterative testing and rollback if issues emerge.
+Each story builds upon the previous, allowing iterative testing and rollback if issues emerge. Story 14.1 is implemented first to ensure clean testing infrastructure for all subsequent API changes.
 
 ## Acceptance Criteria
 
@@ -137,8 +141,9 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 **Related Documentation:**
 
 - [Epic 14 Implementation](../../issue-implementation/epic-14-api-modernization/README.md)
-- [Story 14.1 BR](./story-14-1-centralized-api-config.md)
-- [Story 14.2 BR](./story-14-2-axios-interceptors.md)
-- [Story 14.3 BR](./story-14-3-progress-service-migration.md)
+- [Story 14.1 BR](./story-14-1-jest-to-vitest-migration.md)
+- [Story 14.2 BR](./story-14-2-centralized-api-config.md)
+- [Story 14.3 BR](./story-14-3-axios-interceptors.md)
+- [Story 14.4 BR](./story-14-4-progress-service-migration.md)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 - [Architecture Overview](../../architecture.md)

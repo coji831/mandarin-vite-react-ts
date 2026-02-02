@@ -308,7 +308,7 @@ export default apiClient;
 ## Architecture Integration
 
 ```
-API Request Flow (Story 14.2):
+API Request Flow (Story 14.3):
 
 Component → apiClient.get('/api/v1/progress')
                 ↓
@@ -539,7 +539,7 @@ describe("retryInterceptor", () => {
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
 - [Epic 14 Implementation](./README.md)
-- [Story 14.2 BR](../../business-requirements/epic-14-api-modernization/story-14-2-axios-interceptors.md)
-- [Story 14.1 Implementation](./story-14-1-centralized-api-config.md) (Previous)
-- [Story 14.3 Implementation](./story-14-3-progress-service-migration.md) (Next)
+- [Story 14.3 BR](../../business-requirements/epic-14-api-modernization/story-14-3-axios-interceptors.md)
+- [Story 14.2 Implementation](./story-14-1-centralized-api-config.md) (Previous)
+- [Story 14.3 Implementation](./story-14-4-progress-service-migration.md) (Next)
 - [Code Conventions Guide](../../guides/code-conventions.md)

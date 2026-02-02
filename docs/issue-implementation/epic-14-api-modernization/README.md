@@ -245,7 +245,7 @@ React Components
 3. Migrate `authService.ts` to Axios
 4. Remove `authFetch.ts` wrapper
 
-**Phase 3 (Story 14.3):**
+**Phase 4 (Story 14.4):**
 
 1. Migrate `useProgressActions.ts` to Axios
 2. Add typed interfaces for progress API
@@ -268,8 +268,9 @@ React Components
 **Related Documentation:**
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
-- [Story 14.1 Implementation](./story-14-1-centralized-api-config.md)
-- [Story 14.2 Implementation](./story-14-2-axios-interceptors.md)
-- [Story 14.3 Implementation](./story-14-3-progress-service-migration.md)
+- [Story 14.1 Implementation](./story-14-1-jest-to-vitest-migration.md)
+- [Story 14.2 Implementation](./story-14-2-centralized-api-config.md)
+- [Story 14.3 Implementation](./story-14-3-axios-interceptors.md)
+- [Story 14.4 Implementation](./story-14-4-progress-service-migration.md)
 - [Architecture Overview](../../architecture.md)
 - [Code Conventions](../../guides/code-conventions.md)

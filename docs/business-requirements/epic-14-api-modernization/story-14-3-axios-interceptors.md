@@ -1,4 +1,4 @@
-# Story 14.2: Axios Interceptors (Auth Refresh + Retry Logic)
+# Story 14.3: Axios Interceptors (Auth Refresh + Retry Logic)
 
 ## Description
 
@@ -39,8 +39,8 @@ This story implements the core functionality that makes Epic 14 valuable: automa
 ## Related Issues
 
 - [**Epic 14 BR**](./README.md) (Parent epic)
-- [**Story 14.1: Centralized Config**](./story-14-1-centralized-api-config.md) (Depends on)
-- [**Story 14.3: Progress Service Migration**](./story-14-3-progress-service-migration.md) (Unblocks)
+- [**Story 14.2: Centralized Config**](./story-14-1-centralized-api-config.md) (Depends on)
+- [**Story 14.4: Progress Service Migration**](./story-14-4-progress-service-migration.md) (Unblocks)
 
 ## Implementation Status
 

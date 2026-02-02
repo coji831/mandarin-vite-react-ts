@@ -1,4 +1,4 @@
-# Story 14.3: Progress Service Migration with Typed Responses
+# Story 14.4: Progress Service Migration with Typed Responses
 
 ## Description
 
@@ -38,7 +38,7 @@ This story validates the Epic 14 architecture by migrating the most critical ser
 
 - [**Epic 14 BR**](./README.md) (Parent epic)
 - [**Story 14.1: Centralized Config**](./story-14-1-centralized-api-config.md) (Depends on)
-- [**Story 14.2: Interceptors**](./story-14-2-axios-interceptors.md) (Depends on)
+- [**Story 14.3: Interceptors**](./story-14-2-axios-interceptors.md) (Depends on)
 - [**Epic 15: Learning Retention**](../epic-15-learning-retention/README.md) (Unblocks - requires robust progress API)
 
 ## Implementation Status

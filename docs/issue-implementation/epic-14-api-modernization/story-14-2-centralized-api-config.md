@@ -136,7 +136,7 @@ axiosClient (services/axiosClient.ts)
 **Solution:** Create `axiosClient` as a new parallel implementation. Existing services continue using `authFetch` until Story 14.2-14.3 systematically migrate them. This allows incremental adoption and easy rollback if issues arise.
 
 ```typescript
-// Existing pattern (unchanged in Story 14.1)
+// Existing pattern (unchanged in Story 14.2)
 import { authFetch } from "../features/auth/utils/authFetch";
 const response = await authFetch("/api/v1/progress");
 
@@ -216,7 +216,7 @@ const response = await authFetch("/api/v1/progress");
 
 ## Performance Considerations
 
-**No performance impact in Story 14.1:**
+**No performance impact in Story 14.2:**
 - Axios bundle size: ~13KB gzipped (acceptable for features gained)
 - No runtime overhead (client created once at module load)
 - Existing services unchanged (no regression risk)
@@ -229,7 +229,7 @@ const response = await authFetch("/api/v1/progress");
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
 - [Epic 14 Implementation](./README.md)
-- [Story 14.1 BR](../../business-requirements/epic-14-api-modernization/story-14-1-centralized-api-config.md)
-- [Story 14.2 Implementation](./story-14-2-axios-interceptors.md) (Next)
+- [Story 14.2 BR](../../business-requirements/epic-14-api-modernization/story-14-2-centralized-api-config.md)
+- [Story 14.2 Implementation](./story-14-3-axios-interceptors.md) (Next)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 ```

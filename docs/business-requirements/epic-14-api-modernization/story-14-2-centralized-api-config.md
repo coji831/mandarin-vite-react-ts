@@ -1,4 +1,4 @@
-# Story 14.1: Centralized API Config & Axios Client Setup
+# Story 14.2: Centralized API Config & Axios Client Setup
 
 ## Description
 
@@ -8,12 +8,12 @@
 
 ## Business Value
 
-This foundational story eliminates configuration duplication and establishes the infrastructure for automatic token refresh and retry logic. It unblocks Stories 14.2 and 14.3 by providing the Axios client that subsequent stories will enhance with interceptors and migrate services to.
+This foundational story eliminates configuration duplication and establishes the infrastructure for automatic token refresh and retry logic. It unblocks Stories 14.3 and 14.4 by providing the Axios client that subsequent stories will enhance with interceptors and migrate services to.
 
 **Impact:**
 
 - Reduces maintenance burden (single config source vs. scattered declarations)
-- Enables Stories 14.2-14.3 (interceptors require Axios instance)
+- Enables Stories 14.3-14.4 (interceptors require Axios instance)
 - Improves developer experience (import one client, not multiple utilities)
 
 ## Acceptance Criteria
@@ -36,8 +36,8 @@ This foundational story eliminates configuration duplication and establishes the
 ## Related Issues
 
 - [**Epic 14 BR**](./README.md) (Parent epic)
-- [**Story 14.2: Interceptors**](./story-14-2-axios-interceptors.md) (Blocked by this story)
-- [**Story 14.3: Progress Service Migration**](./story-14-3-progress-service-migration.md) (Blocked by this story)
+- [**Story 14.3: Interceptors**](./story-14-3-axios-interceptors.md) (Blocked by this story)
+- [**Story 14.4: Progress Service Migration**](./story-14-4-progress-service-migration.md) (Blocked by this story)
 
 ## Implementation Status
 
