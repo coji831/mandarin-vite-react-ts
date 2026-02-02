@@ -314,6 +314,26 @@ Other error? → Normalize error → Throw NormalizedError
    - Network throttling scenario (DevTools → Network → Slow 3G)
    - Concurrent 401s scenario (3 simultaneous requests with expired token)
 
+## Technical Guidance
+
+**Interceptor Architecture**: See [Frontend Advanced Patterns - HTTP Client Interceptor Architecture](../../knowledge-base/frontend-advanced-patterns.md#http-client-interceptor-architecture) for:
+- Race condition prevention with singleton promises
+- Proactive vs reactive token refresh patterns
+- Exponential backoff strategies
+- Circular dependency avoidance
+- Token expiry detection with buffer
+
+**Testing Interceptors**: See [Testing Guide - HTTP Client Testing](../../guides/testing-guide.md#http-client-testing-axios-mock-adapter) for:
+- axios-mock-adapter limitations (network errors, timeouts, status 0)
+- Testing error normalization vs retry execution
+- Token refresh flow testing patterns
+- Performance considerations with retry delays
+
+**Design Decisions**:
+- **Hybrid refresh approach**: Proactive (30s buffer) + reactive (401 handling) prevents most auth failures while catching edge cases
+- **Singleton pattern**: `refreshPromise` coalesces multiple simultaneous refresh requests (prevents race conditions, reduces backend load)
+- **Native axios for refresh**: Refresh endpoint uses `axios.create()` to avoid circular interceptor dependency
+
 ## Related Documentation
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)

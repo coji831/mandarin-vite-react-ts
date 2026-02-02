@@ -268,6 +268,16 @@ Frontend only sends credentials to trusted domains (configured in `api.ts`):
 - Automatic retries reduce user-perceived latency for transient failures
 - Token refresh prevents full re-authentication round trips
 
+## Technical Guidance
+
+**Testing Patterns**: See [Testing Guide - HTTP Client Testing](../../guides/testing-guide.md#http-client-testing-axios-mock-adapter) for axios-mock-adapter setup and error testing patterns.
+
+**Error Normalization Pattern**: Implemented in interceptor to distinguish HTTP errors (use response message) from network errors (use axios error message). See error interceptor implementation for fallback logic.
+
+**Security Pattern**: Conditional `withCredentials` based on domain whitelist. See [Code Conventions - API Client](../../guides/code-conventions.md#api-client-conventions-story-142a) for when to override.
+
+**Monorepo Shared Types**: `@mandarin/shared-types/api` provides `ApiResponse<T>`, `ApiError`, `NormalizedError` for type-safe API contracts across frontend/backend.
+
 ## Related Documentation
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)

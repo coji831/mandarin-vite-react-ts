@@ -238,6 +238,198 @@ const service = new AuthService(mockRepository, mockJwtService, passwordService)
 - Controller tests that inject services
 - Any test requiring isolation of business logic from infrastructure
 
+## HTTP Client Testing (axios-mock-adapter)
+
+**When to Use**: Testing Axios interceptors, API service layers, error handling
+
+### Basic Setup
+
+```typescript
+import MockAdapter from "axios-mock-adapter";
+import { apiClient } from "../services/axiosClient";
+
+describe("apiClient", () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(apiClient);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    mock.restore(); // Always restore to avoid leaking mocks
+  });
+
+  it("should handle successful response", async () => {
+    mock.onGet("/users").reply(200, { success: true, data: { users: [] } });
+
+    const response = await apiClient.get("/users");
+    expect(response.status).toBe(200);
+    expect(response.data.success).toBe(true);
+  });
+});
+```
+
+### Testing Request Interceptors
+
+```typescript
+it("should add Authorization header when token exists", async () => {
+  localStorage.setItem("accessToken", "test-token-123");
+
+  mock.onGet("/protected").reply((config) => {
+    expect(config.headers!.Authorization).toBe("Bearer test-token-123");
+    return [200, { success: true, data: {} }];
+  });
+
+  await apiClient.get("/protected");
+});
+
+it("should make request without Authorization header when no token", async () => {
+  mock.onGet("/public").reply((config) => {
+    expect(config.headers!.Authorization).toBeUndefined();
+    return [200, { success: true, data: {} }];
+  });
+
+  await apiClient.get("/public");
+});
+```
+
+### Testing Error Handling
+
+```typescript
+it("should normalize 500 server errors", async () => {
+  mock.onGet("/error").reply(500, { message: "Internal server error" });
+
+  try {
+    await apiClient.get("/error");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.status).toBe(500);
+    expect(normalized.message).toBe("Internal server error");
+    expect(normalized.code).toBe("ERR_BAD_RESPONSE");
+  }
+});
+
+it("should normalize network errors", async () => {
+  mock.onGet("/network-fail").networkError();
+
+  try {
+    await apiClient.get("/network-fail");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.code).toBe("ERR_NETWORK");
+    expect(normalized.message).toBeTruthy();
+  }
+});
+```
+
+### axios-mock-adapter Limitations
+
+**Problem 1: Network errors don't set error.code**
+
+```typescript
+// ❌ This doesn't work for testing retry logic
+mock.onGet("/test").networkError();
+// Mock creates error without error.code property
+// Interceptor checks: error.code === 'ERR_NETWORK' → false
+// Retry logic never executes
+
+// ✅ Workaround: Test error normalization instead of retry execution
+it("should normalize network errors gracefully", async () => {
+  mock.onGet("/network-fail").networkError();
+  try {
+    await apiClient.get("/network-fail");
+  } catch (error) {
+    expect(error.code).toBe("ERR_NETWORK");
+  }
+});
+```
+
+**Problem 2: Timeout doesn't match production behavior**
+
+```typescript
+// Production: ECONNABORTED error with error.code set
+// Mock: Creates generic timeout without code
+
+// ✅ Verify timeout normalization exists
+it("should normalize timeout errors with proper code", async () => {
+  mock.onGet("/timeout").timeout();
+  try {
+    await apiClient.get("/timeout");
+  } catch (error) {
+    expect(error.code).toBe("ECONNABORTED"); // Preserved by interceptor
+    expect(error.message).toContain("timeout");
+  }
+});
+```
+
+**Problem 3: Status 0 doesn't trigger network retry**
+
+```typescript
+// ❌ Status 0 used by some for network errors, but doesn't match production
+mock.onGet("/test").reply(0, null);
+// Doesn't set error.response to null (required for network detection)
+
+// ✅ Use .networkError() or .timeout() instead
+mock.onGet("/test").networkError(); // Correct pattern
+```
+
+**Best Practices for Interceptor Testing:**
+
+1. **Test error normalization, not retry execution**: Mock adapter limitations make testing retry logic unreliable
+2. **Verify retry indirectly**: Use console logs or timeout test duration to confirm retries execute
+3. **Test 401 refresh separately**: Mock refresh endpoint with `.replyOnce(401).onGet(...).reply(200)` for retry simulation
+4. **Use config inspection**: Reply with function `(config) => { expect(config.headers); return [200, {}]; }`
+5. **Clear localStorage between tests**: Token state bleeds between test cases
+
+### Testing Token Refresh Flow
+
+```typescript
+it("should handle 401 error and normalize message", async () => {
+  localStorage.setItem("accessToken", "invalid-token");
+
+  mock.onGet("/protected").reply(401, { message: "Token invalid" });
+  mock.onPost("/api/v1/auth/refresh").reply(401, { message: "Refresh failed" });
+
+  try {
+    await apiClient.get("/protected");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.status).toBe(401);
+    expect(normalized.message).toBe("Token invalid");
+  }
+});
+```
+
+**Why this works:**
+
+- Tests reactive 401 handling path (refresh attempt)
+- Verifies error normalization after refresh failure
+- Avoids testing proactive refresh (requires JWT decoding, complex setup)
+
+### Performance Considerations
+
+**Test Duration with Retry Logic:**
+
+- Exponential backoff delays: 1s + 2s + 4s = 7s per retry test
+- Timeout tests: 7s+ per test (waiting for actual timeout)
+- **Mitigation**: Use `testTimeout: 10000` in vitest.config.ts
+- **Tip**: Group slow tests in separate suite, run in parallel
+
+```typescript
+describe("Network Retry Logic", () => {
+  it("should normalize timeout errors with proper code", async () => {
+    mock.onGet("/timeout").timeout();
+    // Test takes 7+ seconds due to retry delays
+  }, 10000); // Explicit 10s timeout for this test
+});
+```
+
+---
+
 ## Component Testing (React Testing Library)
 
 ```typescript
