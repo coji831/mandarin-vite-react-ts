@@ -2,6 +2,175 @@
 
 Setup and best practices for testing React components, hooks, and backend services.
 
+## Frontend Testing (Vitest)
+
+**As of Epic 14**: The frontend uses **Vitest** for all testing (migrated from Jest).
+
+### Quick Start (Frontend)
+
+```bash
+# In apps/frontend
+npm test                      # Run all tests
+npm test -- <path>            # Run specific file
+npm run test:coverage         # Check coverage
+npm run test:ui               # Interactive UI test runner
+npm run test:watch            # Watch mode (auto-rerun on changes)
+```
+
+### Configuration
+
+**Location**: `apps/frontend/vite.config.ts`
+
+```typescript
+/// <reference types="vitest" />
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,                    // describe, it, expect available without imports
+    environment: 'jsdom',              // Simulate browser DOM for React
+    setupFiles: './src/setupTests.ts', // Runs before each test file
+    clearMocks: true,                  // Auto-reset mocks between tests
+    mockReset: true,
+    restoreMocks: true,
+    testTimeout: 10000,                // 10s timeout (industry standard)
+    coverage: {
+      provider: 'v8',                  // Fast coverage provider
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        branches: 40,
+        functions: 40,
+        lines: 40,
+        statements: 40,
+      },
+    },
+  },
+});
+```
+
+**Setup File**: `apps/frontend/src/setupTests.ts`
+
+```typescript
+import '@testing-library/jest-dom';
+import { afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Mock browser APIs (required for many components)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+global.IntersectionObserver = class IntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as any;
+```
+
+### Jest to Vitest Migration
+
+**When migrating tests from Jest**:
+
+1. **Import changes**:
+   ```typescript
+   // Before (Jest)
+   import { jest } from '@jest/globals';
+   
+   // After (Vitest)
+   import { vi } from 'vitest';
+   ```
+
+2. **Mock function replacements**:
+   ```typescript
+   // Before (Jest)
+   const mockFn = jest.fn();
+   jest.spyOn(module, 'method');
+   jest.clearAllMocks();
+   jest.resetAllMocks();
+   jest.mock('./module');
+   
+   // After (Vitest)
+   const mockFn = vi.fn();
+   vi.spyOn(module, 'method');
+   vi.clearAllMocks();
+   vi.resetAllMocks();
+   vi.mock('./module');
+   ```
+
+3. **Everything else stays the same**:
+   - `describe`, `it`, `expect` work identically
+   - React Testing Library unchanged
+   - `beforeEach`, `afterEach` unchanged
+
+**Automated migration script**:
+
+```bash
+# PowerShell (Windows)
+Get-ChildItem -Path apps/frontend/src -Filter *.test.ts* -Recurse | ForEach-Object {
+  $content = Get-Content $_.FullName -Raw
+  $content = $content -replace 'jest\.fn\(', 'vi.fn('
+  $content = $content -replace 'jest\.spyOn\(', 'vi.spyOn('
+  $content = $content -replace 'jest\.mock\(', 'vi.mock('
+  $content = $content -replace 'jest\.clearAllMocks\(', 'vi.clearAllMocks('
+  $content = $content -replace 'jest\.resetAllMocks\(', 'vi.resetAllMocks('
+  Set-Content -Path $_.FullName -Value $content
+}
+```
+
+### Component Testing with Context Providers
+
+**Problem**: Component tests fail with "must be used within Provider" errors.
+
+**Solution**: Wrap components in required context providers:
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { ProgressStateContext } from '../../context';
+import { RootState } from '../../reducers';
+import { VocabularyCard } from '../VocabularyCard';
+
+const createMockState = (overrides = {}): RootState => ({
+  progress: { wordsById: {}, wordIds: [] },
+  user: { userId: null, preferences: {} },
+  ui: { selectedList: null, selectedWords: [], isLoading: false, error: '' },
+  vocabLists: { itemsById: {}, itemIds: [] },
+  ...overrides,
+});
+
+it('renders correctly', () => {
+  const mockState = createMockState({
+    progress: {
+      wordsById: {
+        word1: { wordId: 'word1', confidence: 1, lastReviewed: new Date().toISOString() },
+      },
+      wordIds: ['word1'],
+    },
+  });
+
+  render(
+    <ProgressStateContext.Provider value={mockState}>
+      <VocabularyCard list={{...}} onSelect={() => {}} />
+    </ProgressStateContext.Provider>
+  );
+
+  expect(screen.getByText('Test List')).toBeInTheDocument();
+});
+```
+
 ## Backend Testing (Vitest)
 
 The backend uses **Vitest** for unit and integration testing.
@@ -67,37 +236,7 @@ const service = new AuthService(mockRepository, mockJwtService, passwordService)
 - Controller tests that inject services
 - Any test requiring isolation of business logic from infrastructure
 
-## Configuration (Frontend)
-
-**jest.config.js:**
-
-```javascript
-export default {
-  preset: "ts-jest",
-  testEnvironment: "jsdom",
-  roots: ["<rootDir>/src"],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
-  transform: {
-    "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
-  },
-  moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "^@/(.*)$": "<rootDir>/src/$1",
-  },
-};
-```
-
-**setupTests.ts:**
-
-```typescript
-import "@testing-library/jest-dom";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
-```
-
-## Component Testing
+## Component Testing (React Testing Library)
 
 ```typescript
 import { render, screen } from "@testing-library/react";

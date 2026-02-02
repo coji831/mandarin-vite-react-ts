@@ -53,6 +53,11 @@
 - **[Git Workflow Strategies](./git-workflow.md)** — Conventional Commits, branching models, trunk-based development
 - **[Git Workflow Strategies](./git-workflow.md)** — Conventional Commits, branching models, trunk-based development
 
+### Testing & Quality
+
+- **[ES Modules Testing (Jest/Vitest)](./testing-es-modules-jest.md)** — Manual mocks, Redis mocking, Jest vs Vitest ESM patterns
+- **[Vitest Monorepo Version Conflicts](./vitest-monorepo-version-conflicts.md)** — Diagnosing and resolving Vite version conflicts, Vitest 4.x migration
+
 ### General Principles
 
 - **[SOLID Principles](./solid-principles.md)** — Software design principles for maintainable code

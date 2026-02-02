@@ -1,14 +1,18 @@
-# ES Modules + Jest Testing Patterns
+# ES Modules + Testing Patterns (Jest/Vitest)
 
 **Category:** Testing  
-**Last Updated:** January 23, 2026  
-**Epic 13 Reference:** [Story 13.5 Testing](../issue-implementation/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
+**Last Updated:** February 2, 2026  
+**Related:** Epic 13 (Backend), Epic 14 Story 14.1 (Frontend Vitest Migration)  
+
+> **Note**: As of Epic 14, the **frontend uses Vitest** (migrated from Jest). This guide covers both Jest (backend) and Vitest (frontend) patterns.
 
 ## TL;DR Quick Reference
 
 ```bash
-# Key Lessons from Epic 13
-✅ Use manual mocks (plain objects) instead of jest.fn() for ESM
+# Key Lessons from Epic 13 (Backend/Jest) & Epic 14 (Frontend/Vitest)
+✅ Use manual mocks (plain objects) instead of jest.fn() for ESM (backend)
+✅ Vitest has better ESM support than Jest (frontend migrated)
+✅ Use vi.fn() in Vitest (direct equivalent to jest.fn())
 ✅ Use ioredis-mock for Redis integration tests (no Docker)
 ✅ Explicit .js extensions required in Node ESM imports
 ❌ Avoid jest.spyOn() with ES modules - causes state pollution
