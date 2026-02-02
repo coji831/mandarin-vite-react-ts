@@ -1,62 +1,36 @@
-# ES Modules + Testing Patterns (Jest/Vitest)
+# ES Modules + Vitest Testing Patterns
 
 **Category:** Testing  
 **Last Updated:** February 2, 2026  
-**Related:** Epic 13 (Backend), Epic 14 Story 14.1 (Frontend Vitest Migration)
+**Related:** Epic 13 (Backend Migration), Epic 14 Story 14.1 (Frontend Migration)
 
-> **Note**: Both frontend and backend use **Vitest**. This guide covers Jest patterns from Epic 13 migration and current Vitest patterns.
+> **Context**: Project migrated from Jest to Vitest (Epic 13-14). Both frontend and backend now use Vitest.
 
 ## TL;DR Quick Reference
 
 ```bash
-# Key Lessons from Epic 13 & 14 (Both use Vitest now)
-✅ Use manual mocks (plain objects) instead of jest.fn() for ESM
-✅ Vitest has better ESM support than Jest (both frontend & backend migrated)
-✅ Use vi.fn() in Vitest (direct equivalent to jest.fn())
+# Key Lessons (Vitest + ES Modules)
+✅ Use manual mocks (plain objects) for complex dependencies
+✅ Use vi.fn() and vi.mock() for simple cases
 ✅ Use ioredis-mock for Redis integration tests (no Docker)
 ✅ Explicit .js extensions required in Node ESM imports
-❌ Avoid jest.spyOn() with ES modules - causes state pollution
+✅ Manual factory functions provide better isolation than auto-mocking
 ```
 
 ---
 
 ## Overview
 
-Testing ES modules with Jest requires workarounds due to incomplete ES module support. This guide covers common issues and solutions discovered during Story 13.5 (Redis Caching Layer).
+Testing ES modules with Vitest requires understanding manual mock patterns for service-layer isolation. This guide covers patterns discovered during Epic 13 (backend migration) and Epic 14 (frontend migration).
 
 ---
 
-## Problem: `jest.fn()` Not Defined in ES Modules
+## Pattern: Manual Mock Factories
 
-### Symptom
-
-```bash
-ReferenceError: jest is not defined
-
-  9 | // Mock Prisma client
-> 10 | jest.mock("../../src/models/index.js", () => ({
-     | ^
-  11 |   prisma: {
-```
-
-### Root Cause
-
-Jest's global `jest` object is unavailable when using `NODE_OPTIONS=--experimental-vm-modules` for ES module support.
-
-### Solution: Manual Mock Factories
-
-**Instead of `jest.mock()` and `jest.fn()`:**
+For service-layer tests requiring dependency injection:
 
 ```typescript
-// ❌ Don't do this in ES modules
-jest.mock("../../src/services/ttsService.js");
-const mockFn = jest.fn();
-```
-
-**Use manual factory functions:**
-
-```typescript
-// ✅ Do this instead
+// ✅ Manual factory pattern (preferred for services)
 function createMockTtsService() {
   return {
     synthesizeSpeech: async (text: string) => ({
@@ -104,6 +78,13 @@ describe("CachedTTSService", () => {
   });
 });
 ```
+
+**Why manual factories?**
+
+- Explicit control over mock behavior
+- No module resolution issues
+- Clear test setup (easier to debug)
+- Works consistently in ES modules
 
 ---
 
@@ -169,9 +150,9 @@ function createMockConversationService() {
 
 ---
 
-## Pattern: Spy-like Tracking
+## Pattern: Call Tracking (Alternative to vi.fn())
 
-To verify function calls without `jest.fn()`:
+To verify function calls without vi.fn():
 
 ```typescript
 function createMockTtsServiceWithTracking() {
@@ -183,7 +164,7 @@ function createMockTtsServiceWithTracking() {
       return { audio: Buffer.from("mock") };
     },
 
-    // Test helper: verify calls
+    // Test helpers
     getCalls: () => calls,
     getCallCount: () => calls.length,
     wasCalledWith: (text: string) => calls.some((c) => c.text === text),
@@ -207,7 +188,7 @@ it("should call TTS service once on cache miss", async () => {
 
 ## Integration Testing with ioredis-mock
 
-**Problem**: Real Redis requires Docker (Testcontainers), which may not be available locally.
+**Problem**: Real Redis requires Docker, which may not be available locally.
 
 **Solution**: Use `ioredis-mock` for in-memory Redis simulation:
 
@@ -244,61 +225,83 @@ describe("Redis Integration Tests", () => {
 
 ---
 
-## Automated Edit Pitfall: replace_string_in_file
+## When to Use vi.fn() vs Manual Mocks
 
-**Problem**: Using `replace_string_in_file` tool on test files can corrupt code (duplicate blocks, misaligned syntax).
+**Use `vi.fn()`**:
 
-**Solution**: When AI agent needs to update tests:
+- Simple spy/stub for single functions
+- Quick inline mocks
+- Testing function call counts
 
-1. **Delete existing test file** (if corrupted)
-2. **Create new test file** from scratch with `create_file`
-3. Use simple, focused tests (5-6 tests per file max)
+**Use manual factories**:
 
-**Example** (Story 13.5 experience):
+- Service-layer unit tests
+- Complex dependencies with multiple methods
+- Stateful mocks (caches, counters)
+- Better test isolation
 
-- Attempt 1: `replace_string_in_file` → duplicated test code, syntax errors
-- Attempt 2: Delete + recreate → clean, working tests
+**Example with `vi.fn()`**:
+
+```typescript
+import { vi } from "vitest";
+
+it("calls callback on success", async () => {
+  const callback = vi.fn();
+  await service.process(callback);
+  expect(callback).toHaveBeenCalledWith({ success: true });
+});
+```
 
 ---
 
-## Jest Configuration for ES Modules
+## Vitest Configuration for ES Modules
 
-**Required `jest.config.js`:**
+**Required `vitest.config.js` (backend)**:
 
 ```javascript
 export default {
-  testEnvironment: "node",
-  transform: {},
-  extensionsToTreatAsEsm: [".ts"],
-  moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1", // Strip .js extensions
+  test: {
+    globals: true,
+    environment: "node",
   },
 };
 ```
 
-**Required `package.json` script:**
+**Required `package.json` script**:
 
 ```json
 {
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   }
 }
+```
+
+**ES Module imports** (Node.js requirement):
+
+```typescript
+// ✅ Explicit .js extensions required
+import { service } from "./service.js";
+
+// ❌ Will fail in Node ESM
+import { service } from "./service";
 ```
 
 ---
 
 ## Key Takeaways
 
-1. **Manual mocks** are more reliable than `jest.mock()` in ES modules
-2. **Factory functions** provide flexible, stateful mocks
-3. **Closure-based tracking** replaces `jest.fn()` spy functionality
+1. **Manual mocks** provide better isolation for service-layer tests
+2. **Factory functions** create flexible, stateful mocks
+3. **Closure-based tracking** replaces vi.fn() for call verification
 4. **ioredis-mock** eliminates Docker dependency for Redis tests
-5. **Recreate test files** from scratch instead of automated edits when corrupted
+5. **vi.fn()** still useful for simple cases (callbacks, inline stubs)
 
 ---
 
-**Related Guides:**
+**Related Documentation:**
 
-- [Testing Guide](../guides/testing-guide.md) — Project-specific test setup
+- [Testing Guide](../guides/testing-guide.md) — Project-specific Vitest setup
+- [Vitest Monorepo Version Conflicts](./vitest-monorepo-version-conflicts.md) — Vite version troubleshooting
 - [Backend Architecture](./backend-architecture.md) — Testable service patterns

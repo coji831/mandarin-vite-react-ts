@@ -23,22 +23,22 @@ npm run test:watch            # Watch mode (auto-rerun on changes)
 
 ```typescript
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
   test: {
-    globals: true,                    // describe, it, expect available without imports
-    environment: 'jsdom',              // Simulate browser DOM for React
-    setupFiles: './src/setupTests.ts', // Runs before each test file
-    clearMocks: true,                  // Auto-reset mocks between tests
+    globals: true, // describe, it, expect available without imports
+    environment: "jsdom", // Simulate browser DOM for React
+    setupFiles: "./src/setupTests.ts", // Runs before each test file
+    clearMocks: true, // Auto-reset mocks between tests
     mockReset: true,
     restoreMocks: true,
-    testTimeout: 10000,                // 10s timeout (industry standard)
+    testTimeout: 10000, // 10s timeout (industry standard)
     coverage: {
-      provider: 'v8',                  // Fast coverage provider
-      reporter: ['text', 'json', 'html'],
+      provider: "v8", // Fast coverage provider
+      reporter: ["text", "json", "html"],
       thresholds: {
         branches: 40,
         functions: 40,
@@ -53,9 +53,9 @@ export default defineConfig({
 **Setup File**: `apps/frontend/src/setupTests.ts`
 
 ```typescript
-import '@testing-library/jest-dom';
-import { afterEach, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import "@testing-library/jest-dom";
+import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 // Cleanup after each test
 afterEach(() => {
@@ -63,9 +63,9 @@ afterEach(() => {
 });
 
 // Mock browser APIs (required for many components)
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     addEventListener: vi.fn(),
@@ -86,29 +86,31 @@ global.IntersectionObserver = class IntersectionObserver {
 **When migrating tests from Jest**:
 
 1. **Import changes**:
+
    ```typescript
    // Before (Jest)
-   import { jest } from '@jest/globals';
-   
+   import { jest } from "@jest/globals";
+
    // After (Vitest)
-   import { vi } from 'vitest';
+   import { vi } from "vitest";
    ```
 
 2. **Mock function replacements**:
+
    ```typescript
    // Before (Jest)
    const mockFn = jest.fn();
-   jest.spyOn(module, 'method');
+   jest.spyOn(module, "method");
    jest.clearAllMocks();
    jest.resetAllMocks();
-   jest.mock('./module');
-   
+   jest.mock("./module");
+
    // After (Vitest)
    const mockFn = vi.fn();
-   vi.spyOn(module, 'method');
+   vi.spyOn(module, "method");
    vi.clearAllMocks();
    vi.resetAllMocks();
-   vi.mock('./module');
+   vi.mock("./module");
    ```
 
 3. **Everything else stays the same**:

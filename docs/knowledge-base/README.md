@@ -55,7 +55,7 @@
 
 ### Testing & Quality
 
-- **[ES Modules Testing (Jest/Vitest)](./testing-es-modules-jest.md)** — Manual mocks, Redis mocking, Jest vs Vitest ESM patterns
+- **[ES Modules Testing (Vitest)](./testing-es-modules-vitest.md)** — Manual mocks, Redis mocking, Vitest ESM patterns
 - **[Vitest Monorepo Version Conflicts](./vitest-monorepo-version-conflicts.md)** — Diagnosing and resolving Vite version conflicts, Vitest 4.x migration
 
 ### General Principles

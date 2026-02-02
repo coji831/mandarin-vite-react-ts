@@ -2,7 +2,7 @@
 
 **Category:** Testing / Build Configuration  
 **Last Updated:** February 2, 2026  
-**Related:** Epic 14 Story 14.1 (Jest to Vitest Migration)  
+**Related:** Epic 14 Story 14.1 (Jest to Vitest Migration)
 
 ## TL;DR Quick Reference
 
@@ -30,9 +30,9 @@ In monorepo environments, **Vitest may bundle an older version of Vite** as a ne
 ### TypeScript Build Errors
 
 ```
-apps/frontend/vite.config.ts(10,12): error TS2322: Type 'Plugin<any>' is not 
+apps/frontend/vite.config.ts(10,12): error TS2322: Type 'Plugin<any>' is not
 assignable to type 'Plugin<any>[]'.
-  Type 'Plugin<any>' is missing the following properties from type 'Plugin<any>[]': 
+  Type 'Plugin<any>' is missing the following properties from type 'Plugin<any>[]':
   length, pop, push, concat, and 33 more.
 ```
 
@@ -44,7 +44,9 @@ If you need `as any` in your Vite config, you likely have a version mismatch:
 // ❌ BAD: Type assertion indicates version conflict
 export default defineConfig({
   plugins: [react() as any],
-  test: { /* ... */ },
+  test: {
+    /* ... */
+  },
 });
 ```
 
@@ -58,6 +60,7 @@ npm list vite --all
 ```
 
 **Expected Output (Healthy)**:
+
 ```
 frontend@0.1.0 f:\React\mandarin-vite-react-ts\apps\frontend
 ├── vite@6.4.1
@@ -66,6 +69,7 @@ frontend@0.1.0 f:\React\mandarin-vite-react-ts\apps\frontend
 ```
 
 **Problem Output (Version Conflict)**:
+
 ```
 frontend@0.1.0 f:\React\mandarin-vite-react-ts\apps\frontend
 ├── vite@6.4.1
@@ -76,6 +80,7 @@ frontend@0.1.0 f:\React\mandarin-vite-react-ts\apps\frontend
 ### Step 2: Identify TypeScript Confusion
 
 TypeScript sees two conflicting `vite` module types:
+
 - `node_modules/vite@6.4.1/types/*.d.ts`
 - `node_modules/vitest/node_modules/vite@5.4.21/types/*.d.ts`
 
@@ -97,6 +102,7 @@ npm install --save-dev @vitest/coverage-v8@4.0.18
 ```
 
 **Verify deduplication**:
+
 ```bash
 npm list vite --all
 # Should show "vite@6.4.1 deduped" under vitest
@@ -111,6 +117,7 @@ npm install --save-dev vite@5.4.21
 ```
 
 **Tradeoffs**:
+
 - ❌ Lose latest Vite features and performance improvements
 - ❌ Security updates delayed
 - ✅ Simpler immediate fix
@@ -128,6 +135,7 @@ In root `package.json`, force a single Vite version across all workspaces:
 ```
 
 **Tradeoffs**:
+
 - ⚠️ May break Vitest if it depends on Vite 5.x APIs
 - ⚠️ Use only as a temporary workaround
 - ✅ Guarantees version deduplication
@@ -142,7 +150,7 @@ Always specify exact or caret versions in `package.json`:
 {
   "devDependencies": {
     "vite": "^6.4.1",
-    "vitest": "^4.0.18",        // ✅ Major version matches Vite
+    "vitest": "^4.0.18", // ✅ Major version matches Vite
     "@vitest/ui": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18"
   }
@@ -169,24 +177,26 @@ If you see multiple Vite versions (especially without "deduped"), investigate im
 
 ## Vitest Version History
 
-| Vitest Version | Bundled Vite Version | Status |
-|----------------|---------------------|--------|
-| 1.x.x          | 5.x.x               | Legacy (Vite 5 compatible) |
-| 2.x.x          | 5.x.x               | Transition (Vite 5 compatible) |
-| 3.x.x          | 6.x.x               | Stable (Vite 6 compatible) |
-| 4.x.x          | 6.x.x               | **Current** (Vite 6 compatible) |
+| Vitest Version | Bundled Vite Version | Status                          |
+| -------------- | -------------------- | ------------------------------- |
+| 1.x.x          | 5.x.x                | Legacy (Vite 5 compatible)      |
+| 2.x.x          | 5.x.x                | Transition (Vite 5 compatible)  |
+| 3.x.x          | 6.x.x                | Stable (Vite 6 compatible)      |
+| 4.x.x          | 6.x.x                | **Current** (Vite 6 compatible) |
 
 **Rule of Thumb**: Vitest major version ≈ Vite major version + 1 or 2 (varies)
 
 ## When to Use Which
 
 ### Use Vitest 4.x When:
+
 - ✅ Using Vite 6.x (latest)
 - ✅ Starting new projects
 - ✅ Want latest testing features
 - ✅ Can accommodate breaking changes (reporter syntax, coverage options)
 
 ### Stay on Vitest 1.x When:
+
 - ❌ Locked to Vite 5.x for compatibility
 - ❌ Large test suite with complex setup (migration cost high)
 - ⚠️ Only as temporary measure (upgrade path required)
@@ -237,7 +247,7 @@ test: {
 ```bash
 $ npm run build
 
-apps/frontend/vite.config.ts(10,12): error TS2322: Type 'Plugin<any>' 
+apps/frontend/vite.config.ts(10,12): error TS2322: Type 'Plugin<any>'
 is not assignable to type 'Plugin<any>[]'.
 ```
 
@@ -270,8 +280,10 @@ frontend@0.1.0
 ```typescript
 // ✅ GOOD: Type-safe configuration, no assertions
 export default defineConfig({
-  plugins: [react()],  // No 'as any' needed
-  test: { /* ... */ },
+  plugins: [react()], // No 'as any' needed
+  test: {
+    /* ... */
+  },
 });
 ```
 
@@ -287,5 +299,5 @@ export default defineConfig({
 ## Related Documentation
 
 - [Testing Guide](../guides/testing-guide.md) - Frontend Vitest configuration
-- [ES Modules Testing](./testing-es-modules-jest.md) - Jest vs Vitest comparison
+- [ES Modules Testing](./testing-es-modules-vitest.md) - Vitest ESM patterns
 - [Vite Configuration Guide](../guides/vite-configuration-guide.md) - Production config
