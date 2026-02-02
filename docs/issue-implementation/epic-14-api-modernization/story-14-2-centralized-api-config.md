@@ -214,14 +214,54 @@ const response = await authFetch("/api/v1/progress");
 
 ```
 
+## Security Requirements (Backend Team)
+
+### CORS Configuration (Required)
+
+Backend must configure CORS to support `withCredentials: true`:
+
+```javascript
+// apps/backend/src/index.js
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Exact origin, NOT "*"
+  credentials: true, // Required for withCredentials
+}));
+```
+
+**Why:** Frontend `withCredentials: true` requires backend `Access-Control-Allow-Credentials: true` + specific origin.
+
+### CSRF Protection (Recommended)
+
+**Current:** JWT in httpOnly cookies + SameSite=Strict attribute (implemented in Epic 13)
+
+**Additional (optional):** Add CSRF token header validation:
+
+```javascript
+// Backend middleware
+const csrfToken = req.headers["x-xsrf-token"];
+// Validate against session-bound token
+```
+
+**Frontend support:** `apiClient` can add `X-XSRF-TOKEN` header in Phase 2 (Story 14.2b).
+
+### Domain Whitelist
+
+Frontend only sends credentials to trusted domains (configured in `api.ts`):
+- `localhost`, `127.0.0.1` (dev)
+- `mandarin-app.com` (production)
+- `railway.app` (backend hosting)
+- `vercel.app` (preview deployments)
+
+**Update whitelist** when adding new deployment domains.
+
 ## Performance Considerations
 
-**No performance impact in Story 14.2:**
+**No performance impact in Story 14.2a:**
 - Axios bundle size: ~13KB gzipped (acceptable for features gained)
 - No runtime overhead (client created once at module load)
 - Existing services unchanged (no regression risk)
 
-**Expected improvements in Story 14.2+:**
+**Expected improvements in Story 14.2b:**
 - Automatic retries reduce user-perceived latency for transient failures
 - Token refresh prevents full re-authentication round trips
 

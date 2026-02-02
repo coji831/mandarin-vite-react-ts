@@ -14,6 +14,71 @@
 - Use React Router for navigation and routing
 - Use the CSV-based vocabulary system with `csvLoader.ts`
 
+## API Client Conventions (Story 14.2a)
+
+### Using axiosClient
+
+**Preferred for all new API calls:**
+
+```typescript
+import { apiClient } from "@/services/axiosClient";
+import type { ApiResponse } from "@mandarin/shared-types";
+
+// Type-safe GET request
+interface ProgressData {
+  masteredWords: number;
+  reviewWords: number;
+}
+
+const response = await apiClient.get<ApiResponse<ProgressData>>("/api/v1/progress");
+const progress = response.data.data; // Type-safe access
+
+// POST with body
+await apiClient.post("/api/v1/progress", { wordId: "123", confidence: 0.8 });
+
+// Override timeout for long operations
+await apiClient.get("/api/v1/export", { timeout: 30000 }); // 30s for file download
+```
+
+**Error Handling:**
+
+```typescript
+try {
+  const response = await apiClient.get<ApiResponse<UserData>>("/api/v1/user");
+  return response.data.data;
+} catch (error) {
+  const normalized = error as NormalizedError; // Auto-normalized by interceptor
+  console.error(normalized.message); // User-friendly message
+  console.error(normalized.status); // HTTP status code (if applicable)
+  console.error(normalized.code); // Error code (ECONNABORTED, ERR_NETWORK, etc.)
+}
+```
+
+**Legacy Pattern (migrate incrementally):**
+
+```typescript
+// Old way - still works but deprecated
+import { authFetch } from "@/features/auth/utils/authFetch";
+const response = await authFetch("/api/v1/progress");
+```
+
+### ApiResponse<T> Type
+
+All API responses follow this structure (from `@mandarin/shared-types`):
+
+```typescript
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  error?: ApiError;
+}
+```
+
+**When to override defaults:**
+- **Timeout**: Long operations (uploads, downloads, reports)
+- **Credentials**: Public endpoints that don't need cookies (rare)
+
 ## Backend Conventions
 
 > 📖 **Deep Dive:** For Clean Architecture patterns, see [backend-architecture.md](../knowledge-base/backend-architecture.md)

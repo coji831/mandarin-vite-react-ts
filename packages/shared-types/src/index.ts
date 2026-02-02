@@ -89,10 +89,5 @@ export interface TTSResponse {
   error?: string;
 }
 
-// API Response types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
+// API Response types (Story 14.2a - Enhanced)
+export * from "./api";
