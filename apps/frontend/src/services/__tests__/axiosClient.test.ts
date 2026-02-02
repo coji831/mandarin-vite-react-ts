@@ -236,4 +236,84 @@ describe("axiosClient", () => {
       expect(defaultImport).toBe(apiClient);
     });
   });
+
+  describe("Auth Interceptors (Story 14.3)", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
+
+    it("should add Authorization header when token exists", async () => {
+      const validToken = createMockJWT({ exp: Date.now() / 1000 + 3600 }); // Valid 1h
+      localStorage.setItem("accessToken", validToken);
+
+      mock.onGet("/protected").reply((config) => {
+        expect(config.headers!.Authorization).toBe(`Bearer ${validToken}`);
+        return [200, { success: true, data: {} }];
+      });
+
+      await apiClient.get("/protected");
+    });
+
+    it("should make request without Authorization header when no token", async () => {
+      mock.onGet("/public").reply((config) => {
+        expect(config.headers!.Authorization).toBeUndefined();
+        return [200, { success: true, data: {} }];
+      });
+
+      await apiClient.get("/public");
+    });
+
+    it("should handle 401 error and normalize message", async () => {
+      localStorage.setItem("accessToken", "invalid-token");
+
+      mock.onGet("/protected").reply(401, { message: "Token invalid" });
+      mock.onPost("/api/v1/auth/refresh").reply(401, { message: "Refresh failed" });
+
+      try {
+        await apiClient.get("/protected");
+        expect.fail("Should have thrown error");
+      } catch (error) {
+        const normalized = error as NormalizedError;
+        expect(normalized.status).toBe(401);
+        expect(normalized.message).toBe("Token invalid");
+      }
+    });
+  });
+
+  describe("Network Retry Logic (Story 14.3)", () => {
+    it("should handle network errors gracefully", async () => {
+      mock.onGet("/network-fail").networkError();
+
+      try {
+        await apiClient.get("/network-fail");
+        expect.fail("Should have thrown error");
+      } catch (error) {
+        const normalized = error as NormalizedError;
+        expect(normalized.code).toBe("ERR_NETWORK");
+        expect(normalized.message).toBeTruthy();
+      }
+    });
+
+    it("should normalize timeout errors with proper code", async () => {
+      mock.onGet("/timeout").timeout();
+
+      try {
+        await apiClient.get("/timeout");
+        expect.fail("Should have thrown error");
+      } catch (error) {
+        const normalized = error as NormalizedError;
+        expect(normalized.code).toBe("ECONNABORTED");
+        expect(normalized.message).toContain("timeout");
+      }
+    });
+  });
 });
+
+// Helper: Create mock JWT
+function createMockJWT(payload: { exp: number }): string {
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const body = btoa(JSON.stringify(payload));
+  const signature = "mock-signature";
+  return `${header}.${body}.${signature}`;
+}

@@ -76,6 +76,7 @@ interface ApiResponse<T> {
 ```
 
 **When to override defaults:**
+
 - **Timeout**: Long operations (uploads, downloads, reports)
 - **Credentials**: Public endpoints that don't need cookies (rare)
 

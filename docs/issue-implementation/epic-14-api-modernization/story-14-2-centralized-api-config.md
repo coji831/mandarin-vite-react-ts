@@ -212,7 +212,7 @@ import { authFetch } from "@/features/auth/utils/authFetch";
 const response = await authFetch("/api/v1/progress");
 ```
 
-```
+````
 
 ## Security Requirements (Backend Team)
 
@@ -226,7 +226,7 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173", // Exact origin, NOT "*"
   credentials: true, // Required for withCredentials
 }));
-```
+````
 
 **Why:** Frontend `withCredentials: true` requires backend `Access-Control-Allow-Credentials: true` + specific origin.
 
@@ -247,6 +247,7 @@ const csrfToken = req.headers["x-xsrf-token"];
 ### Domain Whitelist
 
 Frontend only sends credentials to trusted domains (configured in `api.ts`):
+
 - `localhost`, `127.0.0.1` (dev)
 - `mandarin-app.com` (production)
 - `railway.app` (backend hosting)
@@ -257,11 +258,13 @@ Frontend only sends credentials to trusted domains (configured in `api.ts`):
 ## Performance Considerations
 
 **No performance impact in Story 14.2a:**
+
 - Axios bundle size: ~13KB gzipped (acceptable for features gained)
 - No runtime overhead (client created once at module load)
 - Existing services unchanged (no regression risk)
 
 **Expected improvements in Story 14.2b:**
+
 - Automatic retries reduce user-perceived latency for transient failures
 - Token refresh prevents full re-authentication round trips
 
@@ -272,4 +275,7 @@ Frontend only sends credentials to trusted domains (configured in `api.ts`):
 - [Story 14.2 BR](../../business-requirements/epic-14-api-modernization/story-14-2-centralized-api-config.md)
 - [Story 14.2 Implementation](./story-14-3-axios-interceptors.md) (Next)
 - [Code Conventions Guide](../../guides/code-conventions.md)
+
+```
+
 ```
