@@ -23,12 +23,34 @@ This epic modernizes the frontend API layer by migrating from custom `fetch` wra
 **Current State:**
 
 ```typescript
-// apps/frontend/src/services/conversationService.ts
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-// Repeated in audioService.ts, authService.ts, progressService.ts
+// apps/frontend/src/config/api.ts (ALREADY EXISTS)
+export const API_CONFIG = {
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
+  timeout: 10000,
+  withCredentials: true,
+};
+
+// apps/frontend/src/features/auth/utils/authFetch.ts (ALREADY EXISTS)
+// Custom implementation of token refresh + retry
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const token = await getValidToken(); // Manual JWT decode + expiry check
+  const response = await fetch(API_BASE + url, { ...options, headers });
+  if (response.status === 401) {
+    await refreshAccessToken(); // Single retry attempt
+    return fetch(API_BASE + url, { ...options, headers });
+  }
+  return response;
+}
+
+// apps/frontend/src/services/progressService.ts (EXAMPLE)
+import { authFetch } from "../../auth/utils/authFetch";
+
+const response = await authFetch(API_ENDPOINTS.PROGRESS, { method: "GET" });
+if (!response.ok) throw new Error("Failed");
+return response.json(); // ❌ No type safety
 ```
 
-**Target State:**
+**Target State (Replace authFetch with Axios):**
 
 ```typescript
 // apps/frontend/src/config/api.config.ts
@@ -156,13 +178,14 @@ React Components
 
 **Impacted Files:**
 
-- `src/config/api.config.ts` (new)
-- `src/services/api.client.ts` (new)
-- `src/services/conversationService.ts` (migrate)
-- `src/services/audioService.ts` (migrate)
-- `src/services/authService.ts` (migrate)
-- `src/features/mandarin/hooks/useProgressActions.ts` (migrate)
-- `src/utils/authFetch.ts` (deprecated, remove)
+- `src/config/api.ts` (update to export Axios config)
+- `src/services/axiosClient.ts` (new - replaces ApiClient)
+- `src/features/mandarin/services/conversationService.ts` (migrate from ApiClient)
+- `src/features/mandarin/services/audioService.ts` (migrate from ApiClient)
+- `src/features/mandarin/services/progressService.ts` (migrate from authFetch)
+- `src/features/mandarin/hooks/useProgressActions.ts` (update imports)
+- `src/features/auth/utils/authFetch.ts` (deprecated, keep for rollback)
+- `src/services/apiClient.ts` (deprecated, keep for rollback)
 
 ### Testing Strategy
 

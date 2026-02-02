@@ -18,15 +18,22 @@
 
 ## Background
 
-The current frontend API layer uses custom `fetch` wrappers with duplicated configuration logic across multiple service files (`conversationService.ts`, `audioService.ts`, `authService.ts`). Each service manually resolves `VITE_API_URL`, handles errors inconsistently, and lacks automatic retry or token refresh capabilities.
+The current frontend API layer has **partial centralization** with existing infrastructure:
 
-This technical debt creates several problems:
+**Existing Infrastructure:**
 
-- **Maintenance burden**: Changes to API configuration require editing multiple files
-- **Inconsistent error handling**: Each service implements error logic differently
-- **No automatic token refresh**: 401 responses require manual intervention
-- **Poor TypeScript support**: Response types not enforced at compile time
-- **Developer friction**: Adding new API calls requires understanding custom patterns
+- ✅ Centralized config: `src/config/api.ts` with `API_CONFIG`
+- ✅ Auth wrapper: `src/features/auth/utils/authFetch.ts` handles token refresh
+- ✅ Unified client: `src/services/apiClient.ts` provides `authRequest()`/`publicRequest()`
+
+**However, limitations remain:**
+
+- **Custom fetch implementation**: `authFetch` reinvents patterns Axios provides (interceptors, retries)
+- **Manual token expiry checking**: Uses `atob()` to decode JWT and check expiry time manually
+- **Single retry attempt**: Only retries once on 401, no exponential backoff for network errors
+- **No typed responses**: Services return raw `Response` objects, not type-safe data
+- **Inconsistent error handling**: Services parse errors differently (some check `response.ok`, others throw generically)
+- **Developer friction**: Adding interceptor logic requires modifying `authFetch` core code
 
 Migrating to industry-standard Axios with centralized configuration addresses these issues while establishing a robust foundation for upcoming features (retention system, word examples, knowledge hub).
 
