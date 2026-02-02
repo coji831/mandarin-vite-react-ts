@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 // __tests__/audioService.test.ts
 // Unit tests for AudioService (Epic 11, Story 11.3)
 
@@ -13,7 +14,7 @@ class TestAudioService extends AudioService {
   }
 }
 
-global.fetch = jest.fn((url: unknown, opts?: { body?: string }) => {
+global.fetch = vi.fn((url: unknown, opts?: { body?: string }) => {
   const urlStr = String(url);
   const body = opts && opts.body ? JSON.parse(opts.body) : {};
   // Updated for unified /api/conversation endpoint with type routing
@@ -52,9 +53,9 @@ describe("AudioService", () => {
   it("fetchConversationAudio returns audio data", async () => {
     // Inject a backend with a working fetchConversationAudio
     service.setBackend({
-      fetchWordAudio: jest.fn(),
-      fetchTurnAudio: jest.fn(),
-      fetchConversationAudio: jest.fn((params) =>
+      fetchWordAudio: vi.fn(),
+      fetchTurnAudio: vi.fn(),
+      fetchConversationAudio: vi.fn((params) =>
         Promise.resolve({
           conversationId: params.wordId,
           audioUrl: "audio.mp3",
@@ -83,7 +84,7 @@ describe("AudioService", () => {
 
   it("uses fallbackService for fetchWordAudio on error", async () => {
     const fallback = new AudioService();
-    fallback.fetchWordAudio = jest.fn(() =>
+    fallback.fetchWordAudio = vi.fn(() =>
       Promise.resolve({
         audioUrl: "fallback.mp3",
       } as WordAudio)
@@ -94,7 +95,7 @@ describe("AudioService", () => {
     service.setBackend({
       fetchWordAudio: () => Promise.reject(new Error("fail")),
       fetchTurnAudio: () => Promise.reject(new Error("fail")),
-      fetchConversationAudio: jest.fn(),
+      fetchConversationAudio: vi.fn(),
     });
     const params = { chinese: "w2" };
     const audio = await service.fetchWordAudio(params);
@@ -104,17 +105,17 @@ describe("AudioService", () => {
   it("supports backend swap via DI", async () => {
     // Custom backend mock
     const customBackend = {
-      fetchWordAudio: jest.fn(() =>
+      fetchWordAudio: vi.fn(() =>
         Promise.resolve({
           audioUrl: "custom.mp3",
         })
       ),
-      fetchTurnAudio: jest.fn(() =>
+      fetchTurnAudio: vi.fn(() =>
         Promise.resolve({
           audioUrl: "custom.mp3",
         })
       ),
-      fetchConversationAudio: jest.fn((params) =>
+      fetchConversationAudio: vi.fn((params) =>
         Promise.resolve({
           conversationId: params.wordId || "custom",
           audioUrl: "custom.mp3",

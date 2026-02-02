@@ -1,4 +1,5 @@
-import "@testing-library/jest-dom";
+import { vi } from "vitest";
+
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ProgressStateContext } from "../../context";
@@ -33,9 +34,15 @@ describe("Sidebar", () => {
   const masteredWordIds = new Set(["1", "3"]);
   const mockListId = "test-list";
   it("shows full list and highlights mastered words", () => {
-    // Provide a minimal state shape expected by selectors used in Sidebar
+    // Provide progress data with mastered words (wordId "1" and "3")
     const mockState: RootState = {
-      progress: { wordsById: {}, wordIds: [] },
+      progress: {
+        wordsById: {
+          "1": { wordId: "1", confidence: 1, lastReviewed: new Date().toISOString() },
+          "3": { wordId: "3", confidence: 1, lastReviewed: new Date().toISOString() },
+        },
+        wordIds: ["1", "3"],
+      },
       user: { userId: null, preferences: {} },
       ui: {
         selectedList: mockListId,
@@ -55,16 +62,19 @@ describe("Sidebar", () => {
           handleSidebarClick={() => {}}
           onBackToList={() => {}}
         />
-      </ProgressStateContext.Provider>
+      </ProgressStateContext.Provider>,
     );
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
     expect(screen.getByText("吗")).toBeInTheDocument();
-    expect(screen.getAllByTitle("Mastered").length).toBe(2);
+
+    // Check for mastered checkmarks (2 words mastered: "你" and "吗")
+    const masteredCheckmarks = screen.getAllByTitle("Mastered");
+    expect(masteredCheckmarks).toHaveLength(2);
   });
 
   it("focuses flashcard deck on sidebar item click", () => {
-    const handleSidebarClick = jest.fn();
+    const handleSidebarClick = vi.fn();
     const mockState2: RootState = {
       progress: { wordsById: {}, wordIds: [] },
       user: { userId: null, preferences: {} },
@@ -86,7 +96,7 @@ describe("Sidebar", () => {
           handleSidebarClick={handleSidebarClick}
           onBackToList={() => {}}
         />
-      </ProgressStateContext.Provider>
+      </ProgressStateContext.Provider>,
     );
     fireEvent.click(screen.getByText("好"));
     expect(handleSidebarClick).toHaveBeenCalled();

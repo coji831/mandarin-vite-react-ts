@@ -1,10 +1,11 @@
+import { vi } from "vitest";
 import { loadCsvVocab } from "../csvLoader";
 
 describe("loadCsvVocab", () => {
   it("parses CSV string and returns VocabWord[]", async () => {
     // Simulate fetch by monkey-patching global.fetch
     const csv = "No,Chinese,Pinyin,English\n1,你好,ni hao,hello\n2,谢谢,xiexie,thank you";
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       text: async () => csv,
     });
@@ -16,7 +17,7 @@ describe("loadCsvVocab", () => {
   });
 
   it("returns [] for empty CSV", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       text: async () => "No,Chinese,Pinyin,English",
     });
@@ -29,8 +30,8 @@ describe("csvLoader", () => {
   it("should normalize wordId to string and validate uniqueness", async () => {
     // Simulate a CSV with duplicate and missing wordIds
     const csv = `No,Chinese,Pinyin,English\n1,你好,ni hao,hello\n2,谢谢,xie xie,thanks\n2,再见,zai jian,goodbye\n,请,qing,please`;
-    global.fetch = jest.fn(() =>
-      Promise.resolve({ ok: true, text: () => Promise.resolve(csv) })
+    global.fetch = vi.fn(() =>
+      Promise.resolve({ ok: true, text: () => Promise.resolve(csv) }),
     ) as any;
     const result = await loadCsvVocab("test.csv");
     expect(result).toHaveLength(4);

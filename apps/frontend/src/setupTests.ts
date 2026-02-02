@@ -1,20 +1,46 @@
 import "@testing-library/jest-dom";
+import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 
-// Polyfill TextEncoder for test environment (jsdom)
-// Use require to avoid type conflicts in TypeScript
-const { TextEncoder, TextDecoder } = require("util");
-if (typeof global.TextEncoder === "undefined") {
-  global.TextEncoder = TextEncoder;
-}
-if (typeof global.TextDecoder === "undefined") {
-  global.TextDecoder = TextDecoder;
-}
+// Comprehensive cleanup after each test (industry standard)
+afterEach(() => {
+  cleanup();
+  // Mocks are auto-reset via vitest config (clearMocks, mockReset, restoreMocks)
+});
 
-// Lightweight fetch mock for Node/Jest environment. Some tests render
-// components that call `fetch`; in the browser environment fetch exists,
-// but in Node/Jest it's undefined which causes noisy console errors.
-// Provide a guarded mock so tests can optionally spy on calls.
-if (typeof (global as any).fetch === "undefined") {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (global as any).fetch = jest.fn(() => Promise.resolve({ json: () => ({}) }));
-}
+// Mock window.matchMedia (required for many component tests)
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // Deprecated
+    removeListener: vi.fn(), // Deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock IntersectionObserver (common for lazy loading, animations)
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+  takeRecords() {
+    return [];
+  }
+} as any;
+
+// Mock ResizeObserver (common for responsive components)
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+} as any;
+
+// Note: Do NOT mock fetch globally - mock per-test when needed
+// Example per-test mock: global.fetch = vi.fn(() => Promise.resolve({ json: () => ({}) }))

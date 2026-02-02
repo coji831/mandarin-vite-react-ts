@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { render } from "@testing-library/react";
 import React, { useRef } from "react";
 
@@ -8,7 +9,7 @@ import { useProgressActions } from "../../hooks/useProgressActions";
 import { useProgressState } from "../../hooks/useProgressState";
 
 // Mock fetch for vocabulary data
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 // Helper: noop dispatch for RootAction
 const noopDispatch: React.Dispatch<RootAction> = () => {};
@@ -74,7 +75,7 @@ function TestHook({ callback }: { callback: (hook: unknown) => void }) {
 
 describe("list-focused progress API (formerly useMandarinProgress)", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
   });
 

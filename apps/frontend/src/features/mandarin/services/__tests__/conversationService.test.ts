@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 // __tests__/conversationService.test.ts
 // Unit tests for ConversationService (Epic 11, Story 11.2)
 
@@ -13,21 +14,21 @@ const mockConversation: Conversation = {
   generatedAt: "now",
 };
 
-global.fetch = jest.fn(() =>
+global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
     status: 200,
     statusText: "OK",
     json: () => Promise.resolve(mockConversation),
-  })
+  }),
 ) as unknown as typeof fetch;
 
 describe("ConversationService", () => {
   let service: ConversationService;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    global.fetch = jest.fn((url: unknown) => {
+    vi.clearAllMocks();
+    global.fetch = vi.fn((url: unknown) => {
       // Debug: log the URL used in fetch
 
       console.log("fetch called with URL:", url);
@@ -50,11 +51,11 @@ describe("ConversationService", () => {
 
   it("uses fallbackService on error", async () => {
     const fallback = new ConversationService();
-    fallback.generateConversation = jest.fn(() =>
-      Promise.resolve({ ...mockConversation, id: "fallback" })
+    fallback.generateConversation = vi.fn(() =>
+      Promise.resolve({ ...mockConversation, id: "fallback" }),
     );
     service.fallbackService = fallback;
-    (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject("fail"));
+    (global.fetch as any).mockImplementationOnce(() => Promise.reject("fail"));
     const params: ConversationGenerateRequest = { wordId: "w2", word: "hello" };
     const conv = await service.generateConversation(params);
     expect(conv.id).toBe("fallback");
@@ -62,8 +63,8 @@ describe("ConversationService", () => {
 
   it("supports backend swap via DI", async () => {
     const customBackend: IConversationBackend = {
-      generateConversation: jest.fn((params: ConversationGenerateRequest) =>
-        Promise.resolve({ ...mockConversation, id: "custom", word: params.word })
+      generateConversation: vi.fn((params: ConversationGenerateRequest) =>
+        Promise.resolve({ ...mockConversation, id: "custom", word: params.word }),
       ),
     };
     const svc = new ConversationService(customBackend);

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 /**
  * @file apps/frontend/src/features/mandarin/services/__tests__/progressApiService.test.ts
  * @description Unit tests for progressApi service
@@ -7,7 +8,7 @@ import { progressApi, ProgressApiService } from "../progressService";
 import { API_ENDPOINTS } from "@mandarin/shared-constants";
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe("ProgressApiService", () => {
   let service: ProgressApiService;
@@ -15,18 +16,18 @@ describe("ProgressApiService", () => {
 
   beforeEach(() => {
     service = new ProgressApiService();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("getAllProgress", () => {
     it("should fetch all progress with auth headers", async () => {
       const mockResponse = [{ id: "1", wordId: "word1", studyCount: 5, confidence: 0.8 }];
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       });
@@ -44,7 +45,7 @@ describe("ProgressApiService", () => {
     });
 
     it("should throw error on failed request", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 500,
       });
@@ -62,7 +63,7 @@ describe("ProgressApiService", () => {
         confidence: 0.8,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       });
@@ -82,7 +83,7 @@ describe("ProgressApiService", () => {
     });
 
     it("should throw specific error on 404", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 404,
       });
@@ -104,7 +105,7 @@ describe("ProgressApiService", () => {
         nextReview: "2026-01-15",
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       });
@@ -126,7 +127,7 @@ describe("ProgressApiService", () => {
     });
 
     it("should throw error on failed update", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 400,
       });
@@ -150,7 +151,7 @@ describe("ProgressApiService", () => {
         { id: "2", wordId: "word2", confidence: 0.8 },
       ];
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       });
@@ -172,7 +173,7 @@ describe("ProgressApiService", () => {
     });
 
     it("should throw error on batch update failure", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 500,
       });
@@ -194,7 +195,7 @@ describe("ProgressApiService", () => {
         wordsToReviewToday: 3,
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockStats,
       });
@@ -214,7 +215,7 @@ describe("ProgressApiService", () => {
     });
 
     it("should throw error on stats fetch failure", async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      (global.fetch as any).mockResolvedValue({
         ok: false,
         status: 500,
       });
