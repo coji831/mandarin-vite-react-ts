@@ -4,14 +4,14 @@
 **Last Updated:** February 2, 2026  
 **Related:** Epic 13 (Backend), Epic 14 Story 14.1 (Frontend Vitest Migration)  
 
-> **Note**: As of Epic 14, the **frontend uses Vitest** (migrated from Jest). This guide covers both Jest (backend) and Vitest (frontend) patterns.
+> **Note**: Both frontend and backend use **Vitest**. This guide covers Jest patterns from Epic 13 migration and current Vitest patterns.
 
 ## TL;DR Quick Reference
 
 ```bash
-# Key Lessons from Epic 13 (Backend/Jest) & Epic 14 (Frontend/Vitest)
-✅ Use manual mocks (plain objects) instead of jest.fn() for ESM (backend)
-✅ Vitest has better ESM support than Jest (frontend migrated)
+# Key Lessons from Epic 13 & 14 (Both use Vitest now)
+✅ Use manual mocks (plain objects) instead of jest.fn() for ESM
+✅ Vitest has better ESM support than Jest (both frontend & backend migrated)
 ✅ Use vi.fn() in Vitest (direct equivalent to jest.fn())
 ✅ Use ioredis-mock for Redis integration tests (no Docker)
 ✅ Explicit .js extensions required in Node ESM imports
