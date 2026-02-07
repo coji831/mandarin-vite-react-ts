@@ -12,9 +12,9 @@
 - Provide foundation for Epic 15-17 features requiring robust API infrastructure
 - Reduce boilerplate and improve developer experience for future API integrations
 
-**Status:** Planned
+**Status:** Completed
 
-**Last Update:** February 2, 2026
+**Last Update:** February 7, 2026
 
 ## Background
 
@@ -80,10 +80,10 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 - [x] 401 responses automatically trigger token refresh without user disruption (Story 14.3)
 - [x] Network errors retry 3x with exponential backoff (Story 14.3)
 - [x] All API responses typed with TypeScript interfaces (Stories 14.4-14.6)
-- [ ] No `ApiClient.authRequest` calls remain in `conversationService.ts`, `audioService.ts` (Stories 14.5-14.6)
+- [x] No `ApiClient.authRequest` calls remain in `conversationService.ts`, `audioService.ts` (Stories 14.5-14.6)
 - [x] Progress API calls use Axios client with typed responses (Story 14.4)
-- [x] Conversation API calls use Axios client with typed responses (Story 14.5 - Planned)
-- [x] Audio API calls use Axios client with typed responses (Story 14.6 - Planned)
+- [x] Conversation API calls use Axios client with typed responses (Story 14.5)
+- [x] Audio API calls use Axios client with typed responses (Story 14.6)
 - [x] Error handling surfaces meaningful messages to users (not raw HTTP codes) (Stories 14.4-14.6)
 - [x] Tests cover interceptor logic (token refresh, retry, error transformation) (Story 14.3)
 

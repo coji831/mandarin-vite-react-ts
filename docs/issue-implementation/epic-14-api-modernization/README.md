@@ -12,9 +12,9 @@
 - Retry logic with exponential backoff improves reliability for transient network failures
 - Foundation established for Epic 15-17 features requiring robust API infrastructure
 
-**Status:** Planned
+**Status:** Completed
 
-**Last Update:** February 2, 2026
+**Last Update:** February 7, 2026
 
 ## Stories
 
@@ -32,10 +32,10 @@ This epic is broken down into the following stories:
 4. [**Story 14.4: Progress Service Migration**](./story-14-4-progress-service-migration.md) — ✅ **Completed**
    - Migrate progress service to Axios with typed responses
 
-5. [**Story 14.5: Conversation Service Migration**](./story-14-5-conversation-service-migration.md) — 🔲 **Planned**
+5. [**Story 14.5: Conversation Service Migration**](./story-14-5-conversation-service-migration.md) — ✅ **Completed**
    - Migrate conversation service to Axios with typed responses
 
-6. [**Story 14.6: Audio Service Migration**](./story-14-6-audio-service-migration.md) — 🔲 **Planned**
+6. [**Story 14.6: Audio Service Migration**](./story-14-6-audio-service-migration.md) — ✅ **Completed**
    - Migrate audio service to Axios with typed responses (completes epic)
 
 ## Technical Overview
