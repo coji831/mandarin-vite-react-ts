@@ -181,5 +181,54 @@ export interface TTSResponse {
   error?: string;
 }
 
+// Audio API types (Story 14.6)
+export interface WordAudio {
+  audioUrl: string;
+  audioContent?: string;
+  text: string;
+  languageCode?: string;
+  voiceName?: string;
+}
+
+export interface WordAudioRequest {
+  chinese: string;
+  voice?: string;
+}
+
+export interface WordAudioApiResponse {
+  success: boolean;
+  data: WordAudio;
+  message?: string;
+}
+
+export interface TurnAudioRequest {
+  wordId: string;
+  turnIndex: number;
+  text: string;
+  voice?: string;
+}
+
+export interface TurnAudioResponse {
+  audioUrl: string;
+}
+
+export interface TurnAudioApiResponse {
+  success: boolean;
+  data: TurnAudioResponse;
+  message?: string;
+}
+
+export interface ConversationAudio {
+  audioUrl: string;
+  conversationId?: string;
+  turnIndex?: number;
+}
+
+export interface ConversationAudioRequest {
+  conversationId: string;
+  turnIndex?: number;
+  text?: string;
+}
+
 // API Response types (Story 14.2a - Enhanced)
 export * from "./api";

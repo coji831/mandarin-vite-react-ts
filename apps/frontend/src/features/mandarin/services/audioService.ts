@@ -1,42 +1,54 @@
-import { ApiClient } from "../../../services/apiClient";
+/**
+ * @file audioService.ts
+ * @description API service for audio generation (TTS)
+ *
+ * Story 14.6: Migrated to apiClient with full TypeScript type safety
+ * Uses Axios with automatic token refresh and retry logic
+ */
+
+import { apiClient } from "../../../services/axiosClient";
+import type {
+  WordAudioApiResponse,
+  WordAudioRequest,
+  TurnAudioApiResponse,
+  TurnAudioRequest,
+  TurnAudioResponse,
+} from "@mandarin/shared-types";
 
 // Fallback backend for local development
 export class LocalAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
-    const { chinese } = params;
-    const endpoint = API_ENDPOINTS.TTS;
-    const body = { text: chinese };
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`Audio generation failed (local): ${response.statusText}`);
+    try {
+      const { chinese } = params;
+      const response = await apiClient.post<WordAudioApiResponse>(API_ENDPOINTS.TTS, {
+        text: chinese,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("LocalAudioBackend.fetchWordAudio error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.TTS,
+      });
+      throw new Error("Failed to generate audio. Please try again.");
     }
-    const data = await response.json();
-    return data;
   }
 
-  async fetchTurnAudio(params: {
-    wordId: string;
-    turnIndex: number;
-    text: string;
-    voice?: string;
-  }): Promise<{ audioUrl: string }> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "audio", ...params }),
-    });
-    if (!response.ok) {
-      throw new Error(`Audio generation failed (local): ${response.statusText}`);
+  async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
+    try {
+      const response = await apiClient.post<TurnAudioApiResponse>(API_ENDPOINTS.CONVERSATION, {
+        type: "audio",
+        ...params,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("LocalAudioBackend.fetchTurnAudio error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.CONVERSATION,
+      });
+      throw new Error("Failed to generate conversation audio. Please try again.");
     }
-    return await response.json();
   }
 
-  // For legacy/test compatibility
   async fetchConversationAudio(_params: ConversationAudioRequest): Promise<ConversationAudio> {
     throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
   }
@@ -97,43 +109,40 @@ export class AudioService implements IAudioService {
   }
 }
 
-// Default backend implementation using fetch
+// Default backend implementation using Axios
 export class DefaultAudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
-    const { chinese } = params;
-    const endpoint = API_ENDPOINTS.TTS;
-    const body = { text: chinese };
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`Audio generation failed: ${response.statusText}`);
+    try {
+      const { chinese } = params;
+      const response = await apiClient.post<WordAudioApiResponse>(API_ENDPOINTS.TTS, {
+        text: chinese,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("DefaultAudioBackend.fetchWordAudio error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.TTS,
+      });
+      throw new Error("Failed to generate audio. Please try again.");
     }
-    const data = await response.json();
-    return data;
   }
 
-  async fetchTurnAudio(params: {
-    wordId: string;
-    turnIndex: number;
-    text: string;
-    voice?: string;
-  }): Promise<{ audioUrl: string }> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "audio", ...params }),
-    });
-    if (!response.ok) {
-      throw new Error(`Audio generation failed: ${response.statusText}`);
+  async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
+    try {
+      const response = await apiClient.post<TurnAudioApiResponse>(API_ENDPOINTS.CONVERSATION, {
+        type: "audio",
+        ...params,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("DefaultAudioBackend.fetchTurnAudio error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.CONVERSATION,
+      });
+      throw new Error("Failed to generate conversation audio. Please try again.");
     }
-    return await response.json();
   }
 
-  // For legacy/test compatibility
   async fetchConversationAudio(_params: ConversationAudioRequest): Promise<ConversationAudio> {
     throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
   }

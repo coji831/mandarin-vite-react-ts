@@ -19,13 +19,13 @@ This story completes Epic 14 by migrating the final service to Axios. Audio gene
 
 ## Acceptance Criteria
 
-- [ ] TypeScript interfaces defined: `WordAudioApiResponse`, `TurnAudioApiResponse` in `@mandarin/shared-types`
-- [ ] `audioService.ts` refactored: Replace `ApiClient.authRequest` calls with `apiClient.post()`
-- [ ] Axios responses typed: All methods return typed promises (`Promise<WordAudio>`, not `Promise<Response>`)
-- [ ] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
-- [ ] Both backend implementations migrated: `DefaultAudioBackend` and `LocalAudioBackend`
-- [ ] All existing tests pass: No regression in audio generation functionality
-- [ ] Tests updated: Mock Axios instead of fetch for audio service tests
+- [x] TypeScript interfaces defined: `WordAudioApiResponse`, `TurnAudioApiResponse` in `@mandarin/shared-types`
+- [x] `audioService.ts` refactored: Replace `ApiClient.authRequest` calls with `apiClient.post()`
+- [x] Axios responses typed: All methods return typed promises (`Promise<WordAudio>`, not `Promise<Response>`)
+- [x] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
+- [x] Both backend implementations migrated: `DefaultAudioBackend` and `LocalAudioBackend`
+- [x] All existing tests pass: No regression in audio generation functionality
+- [x] Tests updated: Mock Axios instead of fetch for audio service tests
 - [ ] Retry logic verified: TTS timeout scenarios trigger automatic retry (manual testing)
 
 ## Business Rules
@@ -46,7 +46,7 @@ This story completes Epic 14 by migrating the final service to Axios. Audio gene
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Last Update**: 2026-02-07

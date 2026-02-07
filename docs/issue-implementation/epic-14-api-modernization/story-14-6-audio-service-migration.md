@@ -2,12 +2,12 @@
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **Last Update**: 2026-02-07
-- **Key Files to Modify**:
-  - `packages/shared-types/src/index.ts` (add audio API types)
-  - `apps/frontend/src/features/mandarin/services/audioService.ts` (migrate to Axios)
-  - `apps/frontend/src/features/mandarin/services/__tests__/audioService.test.ts` (update mocks)
+- **Key Files Modified**:
+  - `packages/shared-types/src/index.ts` (added audio API types)
+  - `apps/frontend/src/features/mandarin/services/audioService.ts` (migrated to Axios)
+  - `apps/frontend/src/features/mandarin/services/__tests__/audioService.test.ts` (updated tests)
 
 ## Technical Scope
 
