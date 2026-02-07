@@ -1,4 +1,14 @@
-# Implementation 14-3: Progress Service Migration with Typed Responses
+# Implementation 14.4: Progress Service Migration with Typed Responses
+
+## Implementation Status
+
+- **Status**: Completed
+- **Last Update**: 2026-02-07
+- **Key Files Modified**:
+  - `packages/shared-types/src/progress.types.ts` (created)
+  - `apps/frontend/src/features/mandarin/services/progressService.ts` (migrated)
+  - `apps/frontend/src/features/auth/context/AuthContext.tsx` (logout callback integration)
+  - `apps/frontend/src/features/mandarin/services/__tests__/progressService.test.ts` (19 tests)
 
 ## Technical Scope
 

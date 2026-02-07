@@ -16,6 +16,28 @@
 
 **Last Update:** February 2, 2026
 
+## Stories
+
+This epic is broken down into the following stories:
+
+1. [**Story 14.1: Jest to Vitest Migration**](./story-14-1-jest-to-vitest-migration.md) — ✅ **Completed**
+   - Migrate testing infrastructure from Jest to Vitest for Vite compatibility
+
+2. [**Story 14.2: Centralized API Configuration**](./story-14-2-centralized-api-config.md) — ✅ **Completed**
+   - Create centralized API configuration and Axios client
+
+3. [**Story 14.3: Axios Interceptors & Auth Resilience**](./story-14-3-axios-interceptors.md) — ✅ **Completed**
+   - Implement request/response interceptors for token refresh and retry logic
+
+4. [**Story 14.4: Progress Service Migration**](./story-14-4-progress-service-migration.md) — ✅ **Completed**
+   - Migrate progress service to Axios with typed responses
+
+5. [**Story 14.5: Conversation Service Migration**](./story-14-5-conversation-service-migration.md) — 🔲 **Planned**
+   - Migrate conversation service to Axios with typed responses
+
+6. [**Story 14.6: Audio Service Migration**](./story-14-6-audio-service-migration.md) — 🔲 **Planned**
+   - Migrate audio service to Axios with typed responses (completes epic)
+
 ## Technical Overview
 
 This epic modernizes the frontend API layer by migrating from custom `fetch` wrappers to industry-standard Axios with centralized configuration and interceptors. The current architecture has duplicated API configuration across multiple service files, inconsistent error handling, and no automatic token refresh mechanism.
@@ -272,5 +294,7 @@ React Components
 - [Story 14.2 Implementation](./story-14-2-centralized-api-config.md)
 - [Story 14.3 Implementation](./story-14-3-axios-interceptors.md)
 - [Story 14.4 Implementation](./story-14-4-progress-service-migration.md)
+- [Story 14.5 Implementation](./story-14-5-conversation-service-migration.md)
+- [Story 14.6 Implementation](./story-14-6-audio-service-migration.md)
 - [Architecture Overview](../../architecture.md)
 - [Code Conventions](../../guides/code-conventions.md)

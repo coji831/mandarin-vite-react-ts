@@ -8,6 +8,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 
 import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
 import { clearLogoutHandler, setLogoutHandler } from "../utils/authFetch";
+import { setLogoutCallback, clearLogoutCallback } from "../../../services/axiosClient";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, accessToken);
       console.log(
         "[refreshTokens] Stored. Verifying:",
-        localStorage.getItem(TOKEN_KEY)?.substring(0, 20) + "..."
+        localStorage.getItem(TOKEN_KEY)?.substring(0, 20) + "...",
       );
       return accessToken;
     } catch (error) {
@@ -193,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(intervalId);
   }, [user, refreshTokens]);
 
-  // Register logout handler for authFetch
+  // Register logout handler for authFetch (legacy)
   useEffect(() => {
     const handleAutoLogout = () => {
       console.log("[AuthContext] Auto-logout triggered by authFetch");
@@ -204,6 +205,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLogoutHandler(handleAutoLogout);
 
     return () => clearLogoutHandler();
+  }, []);
+
+  // Register logout callback for apiClient (Story 14.4)
+  useEffect(() => {
+    const handleApiClientLogout = () => {
+      console.log("[AuthContext] Auto-logout triggered by apiClient");
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+    };
+
+    setLogoutCallback(handleApiClientLogout);
+
+    return () => clearLogoutCallback();
   }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {

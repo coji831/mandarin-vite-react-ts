@@ -3,6 +3,7 @@
  *
  * Returns memoized action creators that dispatch to the Progress reducer.
  * Story 13.4: Added API integration with optimistic updates + server sync (backend-only)
+ * Story 14.4: Updated to use apiClient instead of authFetch (automatic token refresh)
  * Related docs:
  * - docs/automation/ai-file-operations.md
  * - docs/automation/automation-protocol.md
@@ -51,6 +52,7 @@ export function useProgressActions() {
             studyCount: 1,
             correctCount: 1,
             confidence: 1.0,
+            learnedAt: now,
           });
 
           // Reconcile with server response
@@ -58,7 +60,7 @@ export function useProgressActions() {
             type: "PROGRESS/SYNC_WORD",
             payload: {
               wordId: id,
-              data: { ...updated, learnedAt: updated.confidence >= 0.8 ? updated.updatedAt : null },
+              data: updated,
             },
           });
         } catch (error) {
@@ -84,22 +86,17 @@ export function useProgressActions() {
         }
       },
 
-      // Load all progress from backend (Story 13.4)
+      // Load all progress from backend (Story 14.4)
       loadAllProgress: async () => {
         try {
           dispatch({ type: "UI/SET_LOADING", payload: { isLoading: true } });
 
           const progressRecords = await progressApi.getAllProgress();
 
-          // Transform backend response to WordProgress format
-          const transformed: WordProgress[] = progressRecords.map((p) => ({
-            ...p,
-            learnedAt: p.confidence >= 0.8 ? p.updatedAt : null,
-          }));
-
+          // progressRecords are already in WordProgress format (Story 14.4)
           dispatch({
             type: "PROGRESS/LOAD_ALL",
-            payload: { progressRecords: transformed },
+            payload: { progressRecords },
           });
 
           dispatch({ type: "UI/SET_LOADING", payload: { isLoading: false } });
@@ -143,6 +140,6 @@ export function useProgressActions() {
       resetProgress: () => dispatch({ type: "RESET" }),
       init: () => dispatch({ type: "INIT" }),
     }),
-    [dispatch]
+    [dispatch],
   );
 }

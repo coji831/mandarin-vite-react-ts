@@ -23,7 +23,27 @@ export interface UserProgress {
   confidenceLevel: number;
 }
 
-// Progress API types (Story 13.4)
+// Progress API types (Story 13.4 / Story 14.4 - Enhanced)
+/**
+ * Word progress data structure (matches backend schema)
+ */
+export interface WordProgress {
+  wordId: string;
+  userId: string;
+  studyCount: number;
+  correctCount: number;
+  confidence: number; // 0.0 - 1.0
+  learnedAt: string | null; // ISO 8601 datetime
+  nextReviewDate: string | null; // ISO 8601 datetime
+  lastReviewedAt: string | null; // ISO 8601 datetime
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Legacy alias for backward compatibility
+ * @deprecated Use WordProgress instead
+ */
 export interface ProgressResponse {
   id: string;
   wordId: string;
@@ -32,6 +52,24 @@ export interface ProgressResponse {
   confidence: number;
   nextReview: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
+}
+
+/**
+ * API response for progress queries
+ */
+export interface ProgressApiResponse {
+  success: boolean;
+  data: WordProgress[];
+  message?: string;
+}
+
+/**
+ * API response for single progress item
+ */
+export interface SingleProgressApiResponse {
+  success: boolean;
+  data: WordProgress;
+  message?: string;
 }
 
 export interface ProgressStatsResponse {
@@ -43,19 +81,39 @@ export interface ProgressStatsResponse {
   wordsToReviewToday: number;
 }
 
+/**
+ * Request payload for updating word progress
+ */
 export interface UpdateProgressRequest {
   studyCount?: number;
   correctCount?: number;
   confidence?: number;
+  learnedAt?: string | null;
+  nextReviewDate?: string | null;
+  lastReviewedAt?: string | null;
 }
 
+/**
+ * Request payload for batch progress updates
+ */
 export interface BatchUpdateRequest {
   updates: Array<{
     wordId: string;
-    studyCount?: number;
-    correctCount?: number;
-    confidence?: number;
+    data: UpdateProgressRequest;
   }>;
+}
+
+/**
+ * API response for batch updates
+ */
+export interface BatchUpdateApiResponse {
+  success: boolean;
+  data: {
+    updated: number;
+    failed: number;
+    results: WordProgress[];
+  };
+  message?: string;
 }
 
 // Conversation types

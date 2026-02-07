@@ -1,153 +1,131 @@
 /**
  * @file apps/frontend/src/features/mandarin/services/progressService.ts
- * @description API service for progress tracking (Story 13.4)
+ * @description API service for progress tracking
  *
- * Uses authFetch wrapper which handles API base URL + auth headers
- * Implements BaseService for consistency with other services
+ * Story 14.4: Migrated to apiClient with full TypeScript type safety
+ * Uses Axios with automatic token refresh and retry logic
+ *
+ * @see docs/issue-implementation/epic-14-api-modernization/story-14-4-progress-service-migration.md
  */
 
-import { API_ENDPOINTS } from "@mandarin/shared-constants";
+import { apiClient } from "../../../services/axiosClient";
 import type {
-  ProgressResponse,
-  ProgressStatsResponse,
+  WordProgress,
+  ProgressApiResponse,
+  SingleProgressApiResponse,
   UpdateProgressRequest,
   BatchUpdateRequest,
+  BatchUpdateApiResponse,
+  ProgressStatsResponse,
 } from "@mandarin/shared-types";
-import { authFetch } from "../../auth/utils/authFetch";
-import { BaseService } from "./interfaces";
 
-export class ProgressApiService extends BaseService<
-  [string?],
-  ProgressResponse | ProgressResponse[]
-> {
+/**
+ * Progress API service using Axios with typed responses
+ * Replaces authFetch with automatic token refresh and retry logic
+ */
+export const progressApi = {
   /**
-   * Required by BaseService: fetch progress (all or by wordId)
+   * Get all progress for current user
+   * @returns Array of WordProgress items
+   * @throws Error with user-friendly message on failure
    */
-  async fetch(wordId?: string): Promise<ProgressResponse | ProgressResponse[]> {
-    if (wordId) {
-      return this.getWordProgress(wordId);
+  async getAllProgress(): Promise<WordProgress[]> {
+    try {
+      const response = await apiClient.get<ProgressApiResponse>("/api/v1/progress");
+      return response.data.data;
+    } catch (error) {
+      console.error("[progressApi] Failed to fetch all progress:", error);
+      throw new Error("Failed to load your progress. Please try again.");
     }
-    return this.getAllProgress();
-  }
-  /**
-   * Fetch all progress for authenticated user
-   */
-  async getAllProgress(): Promise<ProgressResponse[]> {
-    console.log(API_ENDPOINTS);
-
-    const response = await authFetch(API_ENDPOINTS.PROGRESS, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch progress: ${response.status}`);
-    }
-
-    return response.json();
-  }
+  },
 
   /**
-   * Fetch progress for specific word
+   * Get progress for specific word
+   * @param wordId - The ID of the word
+   * @returns WordProgress item or null if not found
+   * @throws Error with user-friendly message on failure (except 404)
    */
-  async getWordProgress(wordId: string): Promise<ProgressResponse> {
-    const endpoint =
-      typeof API_ENDPOINTS.PROGRESS_WORD === "function"
-        ? API_ENDPOINTS.PROGRESS_WORD(wordId)
-        : `/api/v1/progress/${wordId}`;
-
-    const response = await authFetch(endpoint, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Progress not found for this word");
+  async getWordProgress(wordId: string): Promise<WordProgress | null> {
+    try {
+      const response = await apiClient.get<SingleProgressApiResponse>(`/api/v1/progress/${wordId}`);
+      return response.data.data;
+    } catch (error: any) {
+      // 404 means no progress exists yet (valid case)
+      if (error.response?.status === 404) {
+        return null;
       }
-      throw new Error(`Failed to fetch word progress: ${response.status}`);
+      console.error(`[progressApi] Failed to fetch progress for ${wordId}:`, error);
+      throw new Error("Failed to load word progress. Please try again.");
     }
-
-    return response.json();
-  }
+  },
 
   /**
    * Update progress for specific word
+   * @param wordId - The ID of the word
+   * @param data - Partial progress data to update
+   * @returns Updated WordProgress item
+   * @throws Error with user-friendly message on failure
    */
-  async updateWordProgress(wordId: string, data: UpdateProgressRequest): Promise<ProgressResponse> {
-    const endpoint =
-      typeof API_ENDPOINTS.PROGRESS_WORD === "function"
-        ? API_ENDPOINTS.PROGRESS_WORD(wordId)
-        : `/api/v1/progress/${wordId}`;
-
-    const response = await authFetch(endpoint, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update word progress: ${response.status}`);
+  async updateWordProgress(wordId: string, data: UpdateProgressRequest): Promise<WordProgress> {
+    try {
+      const response = await apiClient.put<SingleProgressApiResponse>(
+        `/api/v1/progress/${wordId}`,
+        data,
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error(`[progressApi] Failed to update progress for ${wordId}:`, error);
+      throw new Error("Failed to save your progress. Please try again.");
     }
-
-    return response.json();
-  }
+  },
 
   /**
    * Batch update progress for multiple words
+   * @param updates - Array of word IDs and their update data
+   * @returns Array of updated WordProgress items
+   * @throws Error with user-friendly message on failure
    */
-  async batchUpdateProgress(updates: BatchUpdateRequest): Promise<ProgressResponse[]> {
-    const response = await authFetch(API_ENDPOINTS.PROGRESS_BATCH, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updates),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to batch update progress: ${response.status}`);
+  async batchUpdateProgress(updates: BatchUpdateRequest): Promise<WordProgress[]> {
+    try {
+      const response = await apiClient.post<BatchUpdateApiResponse>(
+        "/api/v1/progress/batch",
+        updates,
+      );
+      return response.data.data.results;
+    } catch (error) {
+      console.error("[progressApi] Failed to batch update progress:", error);
+      throw new Error("Failed to save your progress. Please try again.");
     }
-
-    return response.json();
-  }
+  },
 
   /**
-   * Delete progress for specific word
+   * Delete progress for specific word (reset to untouched)
+   * @param wordId - The ID of the word
+   * @throws Error with user-friendly message on failure
    */
   async deleteProgress(wordId: string): Promise<void> {
-    const endpoint =
-      typeof API_ENDPOINTS.PROGRESS_WORD === "function"
-        ? API_ENDPOINTS.PROGRESS_WORD(wordId)
-        : `/api/v1/progress/${wordId}`;
-
-    const response = await authFetch(endpoint, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Progress not found for this word");
-      }
-      throw new Error(`Failed to delete progress: ${response.status}`);
+    try {
+      await apiClient.delete(`/api/v1/progress/${wordId}`);
+    } catch (error) {
+      console.error(`[progressApi] Failed to delete progress for ${wordId}:`, error);
+      throw new Error("Failed to reset word progress. Please try again.");
     }
-  }
+  },
 
   /**
    * Get progress statistics for authenticated user
+   * @returns Progress statistics summary
+   * @throws Error with user-friendly message on failure
    */
   async getProgressStats(): Promise<ProgressStatsResponse> {
-    const response = await authFetch(API_ENDPOINTS.PROGRESS_STATS, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch progress stats: ${response.status}`);
+    try {
+      const response = await apiClient.get<{ success: boolean; data: ProgressStatsResponse }>(
+        "/api/v1/progress/stats",
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("[progressApi] Failed to fetch progress stats:", error);
+      throw new Error("Failed to load progress statistics. Please try again.");
     }
-
-    return response.json();
-  }
-}
-
-// Singleton instance (authFetch handles base URL)
-export const progressApi = new ProgressApiService();
+  },
+};

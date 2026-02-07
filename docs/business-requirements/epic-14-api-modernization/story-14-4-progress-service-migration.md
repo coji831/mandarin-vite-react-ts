@@ -18,14 +18,15 @@ This story validates the Epic 14 architecture by migrating the most critical ser
 
 ## Acceptance Criteria
 
-- [ ] TypeScript interfaces defined: `ProgressResponse`, `UpdateProgressRequest`, `BatchUpdateRequest` in `@mandarin/shared-types`
-- [ ] `progressService.ts` refactored: Replace `authFetch` calls with `apiClient.get()`, `apiClient.put()`, `apiClient.post()`
-- [ ] Axios responses typed: All methods return typed promises (`Promise<ProgressResponse>`, not `Promise<Response>`)
-- [ ] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
-- [ ] `useProgressActions.ts` updated: Import `apiClient` instead of `authFetch`, update error handling
-- [ ] All existing tests pass: No regression in progress tracking functionality
+- [x] TypeScript interfaces defined: `ProgressResponse`, `UpdateProgressRequest`, `BatchUpdateRequest` in `@mandarin/shared-types`
+- [x] `progressService.ts` refactored: Replace `authFetch` calls with `apiClient.get()`, `apiClient.put()`, `apiClient.post()`
+- [x] Axios responses typed: All methods return typed promises (`Promise<WordProgress[]>`, not `Promise<Response>`)
+- [x] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
+- [x] `useProgressActions.ts` updated: Import `progressApi` (uses `apiClient` internally)
+- [x] All existing tests pass: 19 tests covering all progressApi methods
+- [x] AuthContext logout callback integrated: `setLogoutCallback` wired in AuthContext useEffect
 - [ ] Manual testing: Verify progress updates work in flashcard flow (mark word learned, check backend sync)
-- [ ] Rollback plan documented: `authFetch` kept in codebase but unused (can revert if critical issues found)
+- [x] Rollback plan documented: `authFetch` kept in codebase but unused (can revert if critical issues found)
 
 ## Business Rules
 
@@ -43,7 +44,7 @@ This story validates the Epic 14 architecture by migrating the most critical ser
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Last Update**: 2026-02-07

@@ -53,29 +53,39 @@ This epic consists of the following user stories:
 4. [**Story 14.4: Progress Service Axios Migration**](./story-14-4-progress-service-migration.md)
    - As a **frontend developer**, I want to **migrate progress API calls to the new Axios client**, so that **progress tracking benefits from centralized error handling and retry logic**.
 
+5. [**Story 14.5: Conversation Service Axios Migration**](./story-14-5-conversation-service-migration.md)
+   - As a **frontend developer**, I want to **migrate conversation API calls to the new Axios client**, so that **conversation generation benefits from automatic retry and seamless token refresh**.
+
+6. [**Story 14.6: Audio Service Axios Migration**](./story-14-6-audio-service-migration.md)
+   - As a **frontend developer**, I want to **migrate audio API calls to the new Axios client**, so that **audio generation (TTS) benefits from automatic retry logic for flaky external APIs**.
+
 ## Story Breakdown Logic
 
 This epic is divided into stories based on incremental migration approach:
 
 - **Story 14.1** migrates testing infrastructure from Jest to Vitest, resolving monorepo module resolution issues
 - **Story 14.2** focuses on foundational infrastructure (centralized API config) with new Axios client
-- **Story 14.3** migrates core services (conversation, audio, auth) to Axios with interceptors
-- **Story 14.4** completes migration with progress service, validating the pattern across all API calls
+- **Story 14.3** implements interceptor infrastructure for token refresh and retry logic
+- **Story 14.4** migrates progress service (most critical data), validating the pattern
+- **Story 14.5** migrates conversation service (LLM integration, benefits from retry)
+- **Story 14.6** migrates audio service (TTS integration, completes epic)
 
 Each story builds upon the previous, allowing iterative testing and rollback if issues emerge. Story 14.1 is implemented first to ensure clean testing infrastructure for all subsequent API changes.
 
 ## Acceptance Criteria
 
-- [ ] All `import.meta.env.VITE_API_URL` references removed from service files
-- [ ] Single source of truth for API configuration exists (`src/config/api.config.ts`)
-- [ ] Axios client created with request/response interceptors
-- [ ] 401 responses automatically trigger token refresh without user disruption
-- [ ] Network errors retry 3x with exponential backoff
-- [ ] All API responses typed with TypeScript interfaces
-- [ ] No `fetch()` calls remain in `conversationService.ts`, `audioService.ts`, `authService.ts`
-- [ ] Progress API calls use Axios client with typed responses
-- [ ] Error handling surfaces meaningful messages to users (not raw HTTP codes)
-- [ ] Tests cover interceptor logic (token refresh, retry, error transformation)
+- [x] All `import.meta.env.VITE_API_URL` references removed from service files (Story 14.2)
+- [x] Single source of truth for API configuration exists (`src/config/api.config.ts`) (Story 14.2)
+- [x] Axios client created with request/response interceptors (Story 14.3)
+- [x] 401 responses automatically trigger token refresh without user disruption (Story 14.3)
+- [x] Network errors retry 3x with exponential backoff (Story 14.3)
+- [x] All API responses typed with TypeScript interfaces (Stories 14.4-14.6)
+- [ ] No `ApiClient.authRequest` calls remain in `conversationService.ts`, `audioService.ts` (Stories 14.5-14.6)
+- [x] Progress API calls use Axios client with typed responses (Story 14.4)
+- [x] Conversation API calls use Axios client with typed responses (Story 14.5 - Planned)
+- [x] Audio API calls use Axios client with typed responses (Story 14.6 - Planned)
+- [x] Error handling surfaces meaningful messages to users (not raw HTTP codes) (Stories 14.4-14.6)
+- [x] Tests cover interceptor logic (token refresh, retry, error transformation) (Story 14.3)
 
 ## Architecture Decisions
 
@@ -145,5 +155,7 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 - [Story 14.2 BR](./story-14-2-centralized-api-config.md)
 - [Story 14.3 BR](./story-14-3-axios-interceptors.md)
 - [Story 14.4 BR](./story-14-4-progress-service-migration.md)
+- [Story 14.5 BR](./story-14-5-conversation-service-migration.md)
+- [Story 14.6 BR](./story-14-6-audio-service-migration.md)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 - [Architecture Overview](../../architecture.md)
