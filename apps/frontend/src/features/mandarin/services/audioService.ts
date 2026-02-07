@@ -4,78 +4,24 @@
  *
  * Story 14.6: Migrated to apiClient with full TypeScript type safety
  * Uses Axios with automatic token refresh and retry logic
+ * Simplified: Removed duplicate backend classes, relies on Axios interceptors for resilience
  */
 
-import { apiClient } from "../../../services/axiosClient";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type {
-  WordAudioApiResponse,
-  WordAudioRequest,
   TurnAudioApiResponse,
   TurnAudioRequest,
   TurnAudioResponse,
-} from "@mandarin/shared-types";
-
-// Fallback backend for local development
-export class LocalAudioBackend implements IAudioBackend {
-  async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
-    try {
-      const { chinese } = params;
-      const response = await apiClient.post<WordAudioApiResponse>(API_ENDPOINTS.TTS, {
-        text: chinese,
-      });
-      return response.data.data;
-    } catch (error: any) {
-      console.error("LocalAudioBackend.fetchWordAudio error", {
-        error: error.message,
-        endpoint: API_ENDPOINTS.TTS,
-      });
-      throw new Error("Failed to generate audio. Please try again.");
-    }
-  }
-
-  async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
-    try {
-      const response = await apiClient.post<TurnAudioApiResponse>(API_ENDPOINTS.CONVERSATION, {
-        type: "audio",
-        ...params,
-      });
-      return response.data.data;
-    } catch (error: any) {
-      console.error("LocalAudioBackend.fetchTurnAudio error", {
-        error: error.message,
-        endpoint: API_ENDPOINTS.CONVERSATION,
-      });
-      throw new Error("Failed to generate conversation audio. Please try again.");
-    }
-  }
-
-  async fetchConversationAudio(_params: ConversationAudioRequest): Promise<ConversationAudio> {
-    throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
-  }
-}
-// src/features/mandarin/services/audioService.ts
-// AudioService implementation with fallback support (Epic 11, Story 11.3)
-
-import { API_ENDPOINTS } from "@mandarin/shared-constants";
-import type {
-  ConversationAudio,
-  ConversationAudioRequest,
-  WordAudio,
+  WordAudioApiResponse,
   WordAudioRequest,
-} from "../types";
+} from "@mandarin/shared-types";
+import { apiClient } from "services";
+import type { ConversationAudio, ConversationAudioRequest, WordAudio } from "../types";
 import type { IAudioBackend, IAudioService } from "./interfaces";
 
-// AudioService with backend swap and fallback support
+// AudioService with DI support for testing
 export class AudioService implements IAudioService {
-  protected backend: IAudioBackend;
-  declare fallbackService?: AudioService;
-
-  constructor(backend?: IAudioBackend, withFallback = true) {
-    this.backend = backend || new DefaultAudioBackend();
-    if (withFallback) {
-      this.fallbackService = new AudioService(new LocalAudioBackend(), false);
-    }
-  }
+  constructor(private backend: IAudioBackend = new AudioBackend()) {}
 
   async fetchTurnAudio(params: {
     wordId: string;
@@ -83,21 +29,11 @@ export class AudioService implements IAudioService {
     text: string;
     voice?: string;
   }): Promise<{ audioUrl: string }> {
-    try {
-      return await this.backend.fetchTurnAudio(params);
-    } catch (err) {
-      if (!this.fallbackService) throw err;
-      return this.fallbackService.fetchTurnAudio(params);
-    }
+    return this.backend.fetchTurnAudio(params);
   }
 
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
-    try {
-      return await this.backend.fetchWordAudio(params);
-    } catch (err) {
-      if (!this.fallbackService) throw err;
-      return this.fallbackService.fetchWordAudio(params);
-    }
+    return this.backend.fetchWordAudio(params);
   }
 
   // For legacy/test compatibility
@@ -109,19 +45,20 @@ export class AudioService implements IAudioService {
   }
 }
 
-// Default backend implementation using Axios
-export class DefaultAudioBackend implements IAudioBackend {
+// Backend implementation using Axios with typed responses
+export class AudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     try {
       const { chinese } = params;
-      const response = await apiClient.post<WordAudioApiResponse>(API_ENDPOINTS.TTS, {
+      const response = await apiClient.post<WordAudioApiResponse>(ROUTE_PATTERNS.ttsAudio, {
         text: chinese,
       });
       return response.data.data;
-    } catch (error: any) {
-      console.error("DefaultAudioBackend.fetchWordAudio error", {
-        error: error.message,
-        endpoint: API_ENDPOINTS.TTS,
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("[AudioBackend] fetchWordAudio error", {
+        error: message,
+        endpoint: ROUTE_PATTERNS.ttsAudio,
       });
       throw new Error("Failed to generate audio. Please try again.");
     }
@@ -129,15 +66,16 @@ export class DefaultAudioBackend implements IAudioBackend {
 
   async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
     try {
-      const response = await apiClient.post<TurnAudioApiResponse>(API_ENDPOINTS.CONVERSATION, {
+      const response = await apiClient.post<TurnAudioApiResponse>(ROUTE_PATTERNS.conversations, {
         type: "audio",
         ...params,
       });
       return response.data.data;
-    } catch (error: any) {
-      console.error("DefaultAudioBackend.fetchTurnAudio error", {
-        error: error.message,
-        endpoint: API_ENDPOINTS.CONVERSATION,
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("[AudioBackend] fetchTurnAudio error", {
+        error: message,
+        endpoint: ROUTE_PATTERNS.conversations,
       });
       throw new Error("Failed to generate conversation audio. Please try again.");
     }

@@ -14,9 +14,9 @@
  */
 import { useRef, useState } from "react";
 
-import { ApiClient } from "../../../services/apiClient";
+import { API_CONFIG } from "config";
 import { AudioService } from "../services";
-import type { WordAudio, ConversationAudio, WordAudioRequest } from "../types";
+import type { ConversationAudio, WordAudio, WordAudioRequest } from "../types";
 
 export function useAudioPlayback() {
   const [audioData, setAudioData] = useState<
@@ -82,7 +82,7 @@ export function useAudioPlayback() {
 
       let url = audio.audioUrl;
       if (url.startsWith("/")) {
-        url = `${ApiClient.config.baseURL}${url}`;
+        url = `${API_CONFIG.baseURL}${url}`;
       }
       if (onAudioUrlGenerated) onAudioUrlGenerated(url);
       await playBackendAudio(url);
@@ -134,7 +134,7 @@ export function useAudioPlayback() {
       let url = audioUrl;
       if (!url) throw new Error("No audioUrl for this turn");
       if (url.startsWith("/")) {
-        url = `${ApiClient.config.baseURL}${url}`;
+        url = `${API_CONFIG.baseURL}${url}`;
       }
       await playBackendAudio(url);
       setIsPlaying(true);

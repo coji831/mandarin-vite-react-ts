@@ -17,10 +17,11 @@
  * ```
  */
 
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-import { API_CONFIG } from "../config/api";
+
 import type { NormalizedError } from "@mandarin/shared-types";
-import { API_ENDPOINTS } from "@mandarin/shared-constants";
+import { API_CONFIG } from "config";
 
 const TOKEN_KEY = "accessToken";
 let refreshPromise: Promise<string> | null = null;
@@ -67,7 +68,7 @@ async function refreshAccessToken(): Promise<string> {
     try {
       console.log("[apiClient] Refreshing access token...");
       const response = await axios.post(
-        API_CONFIG.baseURL + API_ENDPOINTS.AUTH_REFRESH,
+        API_CONFIG.baseURL + ROUTE_PATTERNS.authRefresh,
         {},
         { withCredentials: true },
       );

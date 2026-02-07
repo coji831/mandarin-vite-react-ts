@@ -3,23 +3,6 @@
  * JavaScript version for Node.js backend
  */
 
-// API Endpoints
-export const API_ENDPOINTS = {
-  TTS: "/api/v1/tts",
-  CONVERSATION: "/api/v1/conversations",
-  HEALTH: "/api/v1/health",
-  AUTH_REGISTER: "/api/v1/auth/register",
-  AUTH_LOGIN: "/api/v1/auth/login",
-  AUTH_REFRESH: "/api/v1/auth/refresh",
-  AUTH_LOGOUT: "/api/v1/auth/logout",
-  AUTH_ME: "/api/v1/auth/me",
-  PROGRESS: "/api/v1/progress",
-  PROGRESS_WORD: (wordId) => `/api/v1/progress/${wordId}`,
-  PROGRESS_BATCH: "/api/v1/progress/batch",
-  PROGRESS_STATS: "/api/v1/progress/stats",
-  VOCABULARY: "/api/v1/vocabulary",
-};
-
 // Route Patterns - Backend usage (Express route patterns without /api prefix)
 export const ROUTE_PATTERNS = {
   health: "/v1/health",

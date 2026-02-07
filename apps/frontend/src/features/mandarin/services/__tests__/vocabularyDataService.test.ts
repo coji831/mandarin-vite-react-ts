@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 // __tests__/vocabularyDataService.test.ts
 // Unit tests for VocabularyDataService (Epic 11, Story 11.2)
 

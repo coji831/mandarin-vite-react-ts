@@ -8,16 +8,17 @@
  * @see docs/issue-implementation/epic-14-api-modernization/story-14-4-progress-service-migration.md
  */
 
-import { apiClient } from "../../../services/axiosClient";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type {
-  WordProgress,
+  BatchUpdateApiResponse,
+  BatchUpdateRequest,
   ProgressApiResponse,
+  ProgressStatsResponse,
   SingleProgressApiResponse,
   UpdateProgressRequest,
-  BatchUpdateRequest,
-  BatchUpdateApiResponse,
-  ProgressStatsResponse,
+  WordProgress,
 } from "@mandarin/shared-types";
+import { apiClient } from "services";
 
 /**
  * Progress API service using Axios with typed responses
@@ -31,7 +32,7 @@ export const progressApi = {
    */
   async getAllProgress(): Promise<WordProgress[]> {
     try {
-      const response = await apiClient.get<ProgressApiResponse>("/api/v1/progress");
+      const response = await apiClient.get<ProgressApiResponse>(ROUTE_PATTERNS.progress);
       return response.data.data;
     } catch (error) {
       console.error("[progressApi] Failed to fetch all progress:", error);
@@ -47,11 +48,13 @@ export const progressApi = {
    */
   async getWordProgress(wordId: string): Promise<WordProgress | null> {
     try {
-      const response = await apiClient.get<SingleProgressApiResponse>(`/api/v1/progress/${wordId}`);
+      const response = await apiClient.get<SingleProgressApiResponse>(
+        ROUTE_PATTERNS.progressWord(wordId),
+      );
       return response.data.data;
     } catch (error: any) {
       // 404 means no progress exists yet (valid case)
-      if (error.response?.status === 404) {
+      if (error?.response?.status === 404 || error?.status === 404) {
         return null;
       }
       console.error(`[progressApi] Failed to fetch progress for ${wordId}:`, error);
@@ -69,7 +72,7 @@ export const progressApi = {
   async updateWordProgress(wordId: string, data: UpdateProgressRequest): Promise<WordProgress> {
     try {
       const response = await apiClient.put<SingleProgressApiResponse>(
-        `/api/v1/progress/${wordId}`,
+        ROUTE_PATTERNS.progressWord(wordId),
         data,
       );
       return response.data.data;
@@ -88,7 +91,7 @@ export const progressApi = {
   async batchUpdateProgress(updates: BatchUpdateRequest): Promise<WordProgress[]> {
     try {
       const response = await apiClient.post<BatchUpdateApiResponse>(
-        "/api/v1/progress/batch",
+        ROUTE_PATTERNS.progressBatch,
         updates,
       );
       return response.data.data.results;
@@ -105,7 +108,7 @@ export const progressApi = {
    */
   async deleteProgress(wordId: string): Promise<void> {
     try {
-      await apiClient.delete(`/api/v1/progress/${wordId}`);
+      await apiClient.delete(ROUTE_PATTERNS.progressWord(wordId));
     } catch (error) {
       console.error(`[progressApi] Failed to delete progress for ${wordId}:`, error);
       throw new Error("Failed to reset word progress. Please try again.");
@@ -120,7 +123,7 @@ export const progressApi = {
   async getProgressStats(): Promise<ProgressStatsResponse> {
     try {
       const response = await apiClient.get<{ success: boolean; data: ProgressStatsResponse }>(
-        "/api/v1/progress/stats",
+        ROUTE_PATTERNS.progressStats,
       );
       return response.data.data;
     } catch (error) {

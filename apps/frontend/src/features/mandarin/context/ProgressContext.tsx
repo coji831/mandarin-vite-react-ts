@@ -8,16 +8,14 @@
  */
 import React, { createContext, ReactNode, useEffect, useReducer, useState } from "react";
 
-import type { ProgressResponse } from "@mandarin/shared-types";
 import { initialState, RootAction, rootReducer, RootState } from "../reducers/rootReducer";
-import { progressApi } from "../services/progressService";
-import { WordProgress } from "../types";
+import { progressApi } from "../services";
 
 export const ProgressStateContext = createContext<RootState | null>(
-  null
+  null,
 ) as React.Context<RootState | null>;
 export const ProgressDispatchContext = createContext<React.Dispatch<RootAction> | null>(
-  null
+  null,
 ) as React.Context<React.Dispatch<RootAction> | null>;
 
 type Props = { children: ReactNode };
@@ -25,7 +23,7 @@ type Props = { children: ReactNode };
 export function ProgressProvider({ children }: Props) {
   const [state, dispatch] = useReducer<React.Reducer<RootState, RootAction>>(
     rootReducer,
-    initialState
+    initialState,
   );
   const [ready, setReady] = useState(false);
 
@@ -53,16 +51,6 @@ export function ProgressProvider({ children }: Props) {
 }
 
 /**
- * Transform backend ProgressResponse to WordProgress format
- */
-function transformProgressRecords(records: ProgressResponse[]): WordProgress[] {
-  return records.map((p) => ({
-    ...p,
-    learnedAt: p.confidence >= 1.0 ? p.updatedAt : null,
-  }));
-}
-
-/**
  * Load progress from backend API
  */
 async function loadBackendProgress(dispatch: React.Dispatch<RootAction>): Promise<void> {
@@ -75,11 +63,10 @@ async function loadBackendProgress(dispatch: React.Dispatch<RootAction>): Promis
     dispatch({ type: "UI/SET_LOADING", payload: { isLoading: true } });
 
     const progressRecords = await progressApi.getAllProgress();
-    const transformed = transformProgressRecords(progressRecords);
 
     dispatch({
       type: "PROGRESS/LOAD_ALL",
-      payload: { progressRecords: transformed },
+      payload: { progressRecords },
     });
 
     dispatch({ type: "UI/SET_LOADING", payload: { isLoading: false } });

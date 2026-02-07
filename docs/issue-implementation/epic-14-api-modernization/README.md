@@ -12,7 +12,7 @@
 - Retry logic with exponential backoff improves reliability for transient network failures
 - Foundation established for Epic 15-17 features requiring robust API infrastructure
 
-**Status:** Completed
+**Status:** Completed (with post-epic simplification)
 
 **Last Update:** February 7, 2026
 
@@ -37,6 +37,18 @@ This epic is broken down into the following stories:
 
 6. [**Story 14.6: Audio Service Migration**](./story-14-6-audio-service-migration.md) — ✅ **Completed**
    - Migrate audio service to Axios with typed responses (completes epic)
+
+### Post-Epic Simplification
+
+After completing Stories 14.4-14.6, additional cleanup was performed to remove technical debt:
+
+- **Removed duplicate backend classes** (LocalAudioBackend, LocalConversationBackend) — 90% identical to Default\* variants
+- **Removed manual fallback logic** — Now trusts Axios interceptors (Story 14.3) for resilience
+- **Fixed type safety issues** — Replaced `any` with `unknown`, added proper type guards
+- **Code reduction:** 307 → 155 lines (49.5% reduction in audio + conversation services)
+- **Test simplification:** Removed 10+ duplicate backend tests, maintained 100% coverage (42/42 passing)
+
+**Result:** Cleaner, more maintainable service layer that relies on centralized Axios resilience patterns instead of per-service fallback implementations.
 
 ## Technical Overview
 

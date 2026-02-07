@@ -13,6 +13,8 @@ export default defineConfig({
     alias: {
       src: path.resolve(__dirname, "src"),
       utils: path.resolve(__dirname, "src/utils"),
+      config: path.resolve(__dirname, "src/config"),
+      services: path.resolve(__dirname, "src/services"),
     },
   },
   server: {

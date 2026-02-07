@@ -23,9 +23,9 @@ Sections
 
 ## Todo (near-term)
 
-- [ ] Refactor frontend services layer - Centralize API baseURL configuration across services
-
 ## Backlog
+
+- [ ] Refactor services to direct export pattern - Remove Service wrapper classes, export audioApi/conversationApi objects like progressService (Epic 14 follow-up)
 
 - [ ] Migrate auth to React Query + Axios - Replace custom `authFetch` with industry standards
 - [ ] Improve backend error logging - Add structured error objects and request IDs
@@ -41,6 +41,7 @@ Sections
 - [x] Modernize backend Google API integration - Simplify credential handling
 - [x] Add pinyin/English support to conversations - Display and audio playback
 - [x] Support turn-based conversations - UI indicators and per-turn audio controls
+- [x] Refactor frontend services layer - Centralize API baseURL configuration across services
 
 ---
 

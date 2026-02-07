@@ -51,7 +51,7 @@ describe("progressApi (Story 14.4)", () => {
         },
       ];
 
-      mock.onGet("/api/v1/progress").reply(200, {
+      mock.onGet("/v1/progress").reply(200, {
         success: true,
         data: mockProgress,
       });
@@ -65,7 +65,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw user-friendly error on 500 failure", async () => {
-      mock.onGet("/api/v1/progress").reply(500);
+      mock.onGet("/v1/progress").reply(500);
 
       await expect(progressApi.getAllProgress()).rejects.toThrow(
         "Failed to load your progress. Please try again.",
@@ -73,7 +73,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw user-friendly error on network failure", async () => {
-      mock.onGet("/api/v1/progress").networkError();
+      mock.onGet("/v1/progress").networkError();
 
       await expect(progressApi.getAllProgress()).rejects.toThrow(
         "Failed to load your progress. Please try again.",
@@ -96,7 +96,7 @@ describe("progressApi (Story 14.4)", () => {
         updatedAt: "2026-01-15T00:00:00Z",
       };
 
-      mock.onGet("/api/v1/progress/word1").reply(200, {
+      mock.onGet("/v1/progress/word1").reply(200, {
         success: true,
         data: mockProgress,
       });
@@ -108,7 +108,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should return null on 404 (word not yet learned)", async () => {
-      mock.onGet("/api/v1/progress/newword").reply(404);
+      mock.onGet("/v1/progress/newword").reply(404);
 
       const result = await progressApi.getWordProgress("newword");
 
@@ -116,7 +116,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw error on non-404 failure", async () => {
-      mock.onGet("/api/v1/progress/word1").reply(500);
+      mock.onGet("/v1/progress/word1").reply(500);
 
       await expect(progressApi.getWordProgress("word1")).rejects.toThrow(
         "Failed to load word progress. Please try again.",
@@ -139,7 +139,7 @@ describe("progressApi (Story 14.4)", () => {
         updatedAt: "2026-02-02T00:00:00Z",
       };
 
-      mock.onPut("/api/v1/progress/word1").reply(200, {
+      mock.onPut("/v1/progress/word1").reply(200, {
         success: true,
         data: updatedProgress,
       });
@@ -156,7 +156,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw user-friendly error on update failure", async () => {
-      mock.onPut("/api/v1/progress/word1").reply(500);
+      mock.onPut("/v1/progress/word1").reply(500);
 
       await expect(progressApi.updateWordProgress("word1", { confidence: 0.5 })).rejects.toThrow(
         "Failed to save your progress. Please try again.",
@@ -193,7 +193,7 @@ describe("progressApi (Story 14.4)", () => {
         },
       ];
 
-      mock.onPost("/api/v1/progress/batch").reply(200, {
+      mock.onPost("/v1/progress/batch").reply(200, {
         success: true,
         data: {
           updated: 2,
@@ -216,7 +216,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw error on batch update failure", async () => {
-      mock.onPost("/api/v1/progress/batch").reply(500);
+      mock.onPost("/v1/progress/batch").reply(500);
 
       await expect(progressApi.batchUpdateProgress({ updates: [] })).rejects.toThrow(
         "Failed to save your progress. Please try again.",
@@ -226,13 +226,13 @@ describe("progressApi (Story 14.4)", () => {
 
   describe("deleteProgress", () => {
     it("should delete word progress successfully", async () => {
-      mock.onDelete("/api/v1/progress/word1").reply(204);
+      mock.onDelete("/v1/progress/word1").reply(204);
 
       await expect(progressApi.deleteProgress("word1")).resolves.toBeUndefined();
     });
 
     it("should throw user-friendly error on delete failure", async () => {
-      mock.onDelete("/api/v1/progress/word1").reply(500);
+      mock.onDelete("/v1/progress/word1").reply(500);
 
       await expect(progressApi.deleteProgress("word1")).rejects.toThrow(
         "Failed to reset word progress. Please try again.",
@@ -251,7 +251,7 @@ describe("progressApi (Story 14.4)", () => {
         wordsToReviewToday: 3,
       };
 
-      mock.onGet("/api/v1/progress/stats").reply(200, {
+      mock.onGet("/v1/progress/stats").reply(200, {
         success: true,
         data: mockStats,
       });
@@ -264,7 +264,7 @@ describe("progressApi (Story 14.4)", () => {
     });
 
     it("should throw error on stats fetch failure", async () => {
-      mock.onGet("/api/v1/progress/stats").reply(500);
+      mock.onGet("/v1/progress/stats").reply(500);
 
       await expect(progressApi.getProgressStats()).rejects.toThrow(
         "Failed to load progress statistics. Please try again.",
@@ -287,7 +287,7 @@ describe("progressApi (Story 14.4)", () => {
         updatedAt: "2026-01-15T00:00:00Z",
       };
 
-      mock.onGet("/api/v1/progress/word1").reply(200, {
+      mock.onGet("/v1/progress/word1").reply(200, {
         success: true,
         data: mockProgress,
       });
