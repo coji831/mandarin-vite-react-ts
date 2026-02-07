@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 // Mock VocabularyDataService and fetchWordsForList
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -7,10 +8,10 @@ import { RootState } from "../reducers/rootReducer";
 import { FlashCardPage } from "./FlashCardPage";
 
 // Mock the VocabularyDataService to control its behavior in tests
-jest.mock("../services/vocabularyDataService", () => {
+vi.mock("../services/vocabularyDataService", () => {
   return {
-    VocabularyDataService: jest.fn().mockImplementation(() => ({
-      fetchWordsForList: jest.fn(() =>
+    VocabularyDataService: vi.fn().mockImplementation(() => ({
+      fetchWordsForList: vi.fn(() =>
         Promise.resolve([
           { wordId: "1", chinese: "你", pinyin: "nǐ", english: "you" },
           { wordId: "2", chinese: "好", pinyin: "hǎo", english: "good" },
@@ -21,7 +22,7 @@ jest.mock("../services/vocabularyDataService", () => {
 });
 
 // Mock the useProgressActions hook to provide setSelectedList and setSelectedWords
-jest.mock("../hooks/useProgressActions", () => ({
+vi.mock("../hooks/useProgressActions", () => ({
   useProgressActions: () => ({
     setSelectedList: () => {},
     setSelectedWords: () => {},

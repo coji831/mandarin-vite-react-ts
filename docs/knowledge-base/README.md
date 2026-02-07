@@ -31,6 +31,8 @@
 - **[UI & Component Patterns](./frontend-ui-patterns.md)** — Card-based UI, search/filter, responsive design
 - **[Data Migration](./frontend-data-migration.md)** — localStorage migrations, user identification strategies
 - **[Development Server Concepts](./frontend-development-server.md)** — Dev proxy architecture, cookie forwarding, HMR
+- **[API Response Patterns](./api-response-patterns.md)** — Wrapper vs. direct response patterns, Axios integration, migration pitfalls
+- **[TypeScript Error Handling](./typescript-error-handling.md)** — Best practices for `error: unknown`, type guards, AxiosError narrowing
 
 ### Backend Patterns
 
@@ -52,6 +54,11 @@
 - **[Configuration Management](./infra-configuration-management.md)** — Environment variables, validation, security
 - **[Git Workflow Strategies](./git-workflow.md)** — Conventional Commits, branching models, trunk-based development
 - **[Git Workflow Strategies](./git-workflow.md)** — Conventional Commits, branching models, trunk-based development
+
+### Testing & Quality
+
+- **[ES Modules Testing (Vitest)](./testing-es-modules-vitest.md)** — Manual mocks, Redis mocking, Vitest ESM patterns
+- **[Vitest Monorepo Version Conflicts](./vitest-monorepo-version-conflicts.md)** — Diagnosing and resolving Vite version conflicts, Vitest 4.x migration
 
 ### General Principles
 

@@ -12,9 +12,11 @@
 - Retry logic with exponential backoff improves reliability for transient network failures
 - Foundation established for Epic 15-17 features requiring robust API infrastructure
 
-**Status:** Planned
+**Status:** Completed (with post-epic simplification)
 
-**Last Update:** February 2, 2026
+**Last Update:** February 7, 2026
+
+> **📝 Post-Epic Work:** This epic included significant post-completion work: code simplification (49.5% reduction), bug discovery and systematic fix across 3 services, and creation of 2 comprehensive KB articles. See [POST-EPIC-NOTES.md](./POST-EPIC-NOTES.md) for complete details on cleanup, discoveries, and lessons learned.
 
 ## Technical Overview
 
@@ -23,12 +25,34 @@ This epic modernizes the frontend API layer by migrating from custom `fetch` wra
 **Current State:**
 
 ```typescript
-// apps/frontend/src/services/conversationService.ts
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-// Repeated in audioService.ts, authService.ts, progressService.ts
+// apps/frontend/src/config/api.ts (ALREADY EXISTS)
+export const API_CONFIG = {
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
+  timeout: 10000,
+  withCredentials: true,
+};
+
+// apps/frontend/src/features/auth/utils/authFetch.ts (ALREADY EXISTS)
+// Custom implementation of token refresh + retry
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const token = await getValidToken(); // Manual JWT decode + expiry check
+  const response = await fetch(API_BASE + url, { ...options, headers });
+  if (response.status === 401) {
+    await refreshAccessToken(); // Single retry attempt
+    return fetch(API_BASE + url, { ...options, headers });
+  }
+  return response;
+}
+
+// apps/frontend/src/services/progressService.ts (EXAMPLE)
+import { authFetch } from "../../auth/utils/authFetch";
+
+const response = await authFetch(API_ENDPOINTS.PROGRESS, { method: "GET" });
+if (!response.ok) throw new Error("Failed");
+return response.json(); // ❌ No type safety
 ```
 
-**Target State:**
+**Target State (Replace authFetch with Axios):**
 
 ```typescript
 // apps/frontend/src/config/api.config.ts
@@ -156,13 +180,14 @@ React Components
 
 **Impacted Files:**
 
-- `src/config/api.config.ts` (new)
-- `src/services/api.client.ts` (new)
-- `src/services/conversationService.ts` (migrate)
-- `src/services/audioService.ts` (migrate)
-- `src/services/authService.ts` (migrate)
-- `src/features/mandarin/hooks/useProgressActions.ts` (migrate)
-- `src/utils/authFetch.ts` (deprecated, remove)
+- `src/config/api.ts` (update to export Axios config)
+- `src/services/axiosClient.ts` (new - replaces ApiClient)
+- `src/features/mandarin/services/conversationService.ts` (migrate from ApiClient)
+- `src/features/mandarin/services/audioService.ts` (migrate from ApiClient)
+- `src/features/mandarin/services/progressService.ts` (migrate from authFetch)
+- `src/features/mandarin/hooks/useProgressActions.ts` (update imports)
+- `src/features/auth/utils/authFetch.ts` (deprecated, keep for rollback)
+- `src/services/apiClient.ts` (deprecated, keep for rollback)
 
 ### Testing Strategy
 
@@ -222,7 +247,7 @@ React Components
 3. Migrate `authService.ts` to Axios
 4. Remove `authFetch.ts` wrapper
 
-**Phase 3 (Story 14.3):**
+**Phase 4 (Story 14.4):**
 
 1. Migrate `useProgressActions.ts` to Axios
 2. Add typed interfaces for progress API
@@ -245,8 +270,11 @@ React Components
 **Related Documentation:**
 
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
-- [Story 14.1 Implementation](./story-14-1-centralized-api-config.md)
-- [Story 14.2 Implementation](./story-14-2-axios-interceptors.md)
-- [Story 14.3 Implementation](./story-14-3-progress-service-migration.md)
+- [Story 14.1 Implementation](./story-14-1-jest-to-vitest-migration.md)
+- [Story 14.2 Implementation](./story-14-2-centralized-api-config.md)
+- [Story 14.3 Implementation](./story-14-3-axios-interceptors.md)
+- [Story 14.4 Implementation](./story-14-4-progress-service-migration.md)
+- [Story 14.5 Implementation](./story-14-5-conversation-service-migration.md)
+- [Story 14.6 Implementation](./story-14-6-audio-service-migration.md)
 - [Architecture Overview](../../architecture.md)
 - [Code Conventions](../../guides/code-conventions.md)

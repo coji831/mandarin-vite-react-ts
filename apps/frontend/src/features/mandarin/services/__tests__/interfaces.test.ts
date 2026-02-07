@@ -1,6 +1,7 @@
 // __tests__/interfaces.test.ts
 // Tests for service interfaces and base class (Story 11.1)
 
+import { describe, it, expect } from "vitest";
 import {
   Conversation,
   ConversationAudio,
@@ -24,7 +25,7 @@ describe("Service Interfaces", () => {
       fetchAllLists(): Promise<VocabularyList[]> {
         return Promise.resolve([]);
       }
-      fetchWordsForList(listId: string): Promise<WordBasic[]> {
+      fetchWordsForList(_listId: string): Promise<WordBasic[]> {
         return Promise.resolve([]);
       }
       fetchWordProgress(wordId: string): Promise<WordProgress> {
@@ -75,12 +76,12 @@ describe("Service Interfaces", () => {
 describe("BaseService", () => {
   it("should support fallback logic", async () => {
     class PrimaryService extends BaseService<[string], string> {
-      fetch(id: string): Promise<string> {
+      fetch(_id: string): Promise<string> {
         return Promise.reject("fail");
       }
     }
     class FallbackService extends BaseService<[string], string> {
-      fetch(id: string): Promise<string> {
+      fetch(_id: string): Promise<string> {
         return Promise.resolve("fallback");
       }
     }

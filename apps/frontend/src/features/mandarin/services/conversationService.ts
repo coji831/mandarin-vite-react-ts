@@ -1,71 +1,43 @@
-import { ApiClient } from "../../../services/apiClient";
+/**
+ * @file conversationService.ts
+ * @description API service for conversation generation
+ *
+ * Story 14.5: Migrated to apiClient with full TypeScript type safety
+ * Uses Axios with automatic token refresh and retry logic
+ * Simplified: Removed duplicate backend classes, relies on Axios interceptors for resilience
+ */
 
-// Fallback backend for local development
-export class LocalConversationBackend implements IConversationBackend {
-  async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
-    try {
-      const response = await ApiClient.authRequest(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "text", ...params }),
-      });
-      if (!response.ok) {
-        const text = await response.text().catch(() => "<unreadable>");
-        console.error("Conversation generation failed (local)", {
-          endpoint,
-          status: response.status,
-          body: text,
-        });
-        throw new Error(
-          `Conversation generation failed (local): ${response.status} ${response.statusText} - ${text}`,
-        );
-      }
-      return response.json();
-    } catch (err) {
-      console.error("LocalConversationBackend.generateConversation error", { err, endpoint });
-      throw err;
-    }
-  }
-}
-import { API_ENDPOINTS } from "@mandarin/shared-constants";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { apiClient } from "services";
 import { Conversation, ConversationGenerateRequest } from "../types";
 import { IConversationBackend, IConversationService } from "./interfaces";
 
-// Default backend implementation using fetch
+// ConversationService with DI support for testing
 export class ConversationService implements IConversationService {
-  private backend: IConversationBackend;
-  declare fallbackService?: ConversationService;
-
-  constructor(backend?: IConversationBackend, withFallback = true) {
-    this.backend = backend || new DefaultConversationBackend();
-    if (withFallback) {
-      this.fallbackService = new ConversationService(new LocalConversationBackend(), false);
-    }
-  }
+  constructor(private backend: IConversationBackend = new ConversationBackend()) {}
 
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    try {
-      return await this.backend.generateConversation(params);
-    } catch (err) {
-      if (!this.fallbackService) throw err;
-      return this.fallbackService.generateConversation(params);
-    }
+    return this.backend.generateConversation(params);
   }
 }
 
-// Default backend implementation using fetch
-export class DefaultConversationBackend implements IConversationBackend {
+// Backend implementation using Axios with typed responses
+export class ConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "text", ...params }),
-    });
-    if (!response.ok) {
-      throw new Error(`Conversation generation failed: ${response.statusText}`);
+    try {
+      // Backend returns conversation directly with _metadata (not wrapped in ApiResponse)
+      const response = await apiClient.post<Conversation>(ROUTE_PATTERNS.conversations, {
+        type: "text",
+        ...params,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("[ConversationBackend] generateConversation error", {
+        error: message,
+        endpoint: ROUTE_PATTERNS.conversations,
+      });
+      throw new Error("Failed to generate conversation. Please try again.");
     }
-    return response.json();
   }
 }

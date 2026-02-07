@@ -3,19 +3,20 @@
  * Provides user data, login, register, logout, and token refresh functionality
  */
 
-import { API_ENDPOINTS } from "@mandarin/shared-constants";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
+import { API_CONFIG } from "config";
+import { clearLogoutCallback, setLogoutCallback } from "services";
 import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
-import { clearLogoutHandler, setLogoutHandler } from "../utils/authFetch";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = "accessToken";
-const baseApiUrl = import.meta.env.VITE_API_URL;
+const baseApiUrl = API_CONFIG.baseURL;
 
 // Fallback in case shared-constants not loaded
-const AUTH_ME_ENDPOINT = baseApiUrl + (API_ENDPOINTS.AUTH_ME || "/api/v1/auth/me");
+const AUTH_ME_ENDPOINT = baseApiUrl + ROUTE_PATTERNS.authMe;
 
 // Helper to decode JWT and check if expired
 function isTokenExpired(token: string): boolean {
@@ -37,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshTokens = useCallback(async () => {
     try {
       console.log("[refreshTokens] Starting refresh...");
-      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_REFRESH, {
+      const response = await fetch(baseApiUrl + ROUTE_PATTERNS.authRefresh, {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
       });
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, accessToken);
       console.log(
         "[refreshTokens] Stored. Verifying:",
-        localStorage.getItem(TOKEN_KEY)?.substring(0, 20) + "..."
+        localStorage.getItem(TOKEN_KEY)?.substring(0, 20) + "...",
       );
       return accessToken;
     } catch (error) {
@@ -193,23 +194,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(intervalId);
   }, [user, refreshTokens]);
 
-  // Register logout handler for authFetch
+  // Register logout callback for apiClient (Story 14.3)
   useEffect(() => {
-    const handleAutoLogout = () => {
-      console.log("[AuthContext] Auto-logout triggered by authFetch");
+    const handleApiClientLogout = () => {
+      console.log("[AuthContext] Auto-logout triggered by apiClient");
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);
     };
 
-    setLogoutHandler(handleAutoLogout);
+    setLogoutCallback(handleApiClientLogout);
 
-    return () => clearLogoutHandler();
+    return () => clearLogoutCallback();
   }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_LOGIN, {
+      const response = await fetch(baseApiUrl + ROUTE_PATTERNS.authLogin, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
@@ -237,7 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      const response = await fetch(baseApiUrl + API_ENDPOINTS.AUTH_REGISTER, {
+      const response = await fetch(baseApiUrl + ROUTE_PATTERNS.authRegister, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -265,7 +266,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await fetch(baseApiUrl + API_ENDPOINTS.AUTH_LOGOUT, {
+      await fetch(baseApiUrl + ROUTE_PATTERNS.authLogout, {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
       });

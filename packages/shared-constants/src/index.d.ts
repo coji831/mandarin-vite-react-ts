@@ -3,23 +3,6 @@
  * Provides IDE autocomplete for JavaScript exports
  */
 
-// API Endpoints
-export declare const API_ENDPOINTS: {
-  readonly TTS: string;
-  readonly CONVERSATION: string;
-  readonly VOCABULARY: string;
-  readonly HEALTH: string;
-  readonly AUTH_REGISTER: string;
-  readonly AUTH_LOGIN: string;
-  readonly AUTH_REFRESH: string;
-  readonly AUTH_LOGOUT: string;
-  readonly AUTH_ME: string;
-  readonly PROGRESS: string;
-  readonly PROGRESS_WORD: (wordId: string) => string;
-  readonly PROGRESS_BATCH: string;
-  readonly PROGRESS_STATS: string;
-};
-
 // Route Patterns
 export declare const ROUTE_PATTERNS: {
   readonly health: string;

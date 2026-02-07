@@ -12,21 +12,30 @@
 - Provide foundation for Epic 15-17 features requiring robust API infrastructure
 - Reduce boilerplate and improve developer experience for future API integrations
 
-**Status:** Planned
+**Status:** Completed (with post-epic simplification)
 
-**Last Update:** February 2, 2026
+**Last Update:** February 7, 2026
+
+> **📝 Post-Epic Work:** After completing all stories, additional cleanup removed duplicate code (49.5% reduction) and systematic debugging fixed a response unwrapping bug across 3 services. See [POST-EPIC-NOTES.md](../../issue-implementation/epic-14-api-modernization/POST-EPIC-NOTES.md) for details.
 
 ## Background
 
-The current frontend API layer uses custom `fetch` wrappers with duplicated configuration logic across multiple service files (`conversationService.ts`, `audioService.ts`, `authService.ts`). Each service manually resolves `VITE_API_URL`, handles errors inconsistently, and lacks automatic retry or token refresh capabilities.
+The current frontend API layer has **partial centralization** with existing infrastructure:
 
-This technical debt creates several problems:
+**Existing Infrastructure:**
 
-- **Maintenance burden**: Changes to API configuration require editing multiple files
-- **Inconsistent error handling**: Each service implements error logic differently
-- **No automatic token refresh**: 401 responses require manual intervention
-- **Poor TypeScript support**: Response types not enforced at compile time
-- **Developer friction**: Adding new API calls requires understanding custom patterns
+- ✅ Centralized config: `src/config/api.ts` with `API_CONFIG`
+- ✅ Auth wrapper: `src/features/auth/utils/authFetch.ts` handles token refresh
+- ✅ Unified client: `src/services/apiClient.ts` provides `authRequest()`/`publicRequest()`
+
+**However, limitations remain:**
+
+- **Custom fetch implementation**: `authFetch` reinvents patterns Axios provides (interceptors, retries)
+- **Manual token expiry checking**: Uses `atob()` to decode JWT and check expiry time manually
+- **Single retry attempt**: Only retries once on 401, no exponential backoff for network errors
+- **No typed responses**: Services return raw `Response` objects, not type-safe data
+- **Inconsistent error handling**: Services parse errors differently (some check `response.ok`, others throw generically)
+- **Developer friction**: Adding interceptor logic requires modifying `authFetch` core code
 
 Migrating to industry-standard Axios with centralized configuration addresses these issues while establishing a robust foundation for upcoming features (retention system, word examples, knowledge hub).
 
@@ -34,37 +43,54 @@ Migrating to industry-standard Axios with centralized configuration addresses th
 
 This epic consists of the following user stories:
 
-1. [**Story 14.1: Centralized API Configuration**](./story-14-1-centralized-api-config.md)
+1. [**Story 14.1: Jest to Vitest Migration**](./story-14-1-jest-to-vitest-migration.md)
+   - As a **frontend developer**, I want to **migrate all frontend tests from Jest to Vitest**, so that **testing infrastructure aligns with Vite tooling and avoids monorepo module resolution issues**.
+
+2. [**Story 14.2: Centralized API Configuration**](./story-14-2-centralized-api-config.md)
    - As a **frontend developer**, I want to **configure API base URLs in one location**, so that **changes don't require editing multiple service files**.
 
-2. [**Story 14.2: Axios Migration with Interceptors**](./story-14-2-axios-interceptors.md)
+3. [**Story 14.3: Axios Migration with Interceptors**](./story-14-3-axios-interceptors.md)
    - As a **frontend developer**, I want to **use Axios with automatic token refresh interceptors**, so that **401 responses trigger seamless re-authentication without user disruption**.
 
-3. [**Story 14.3: Progress Service Axios Migration**](./story-14-3-progress-service-migration.md)
+4. [**Story 14.4: Progress Service Axios Migration**](./story-14-4-progress-service-migration.md)
    - As a **frontend developer**, I want to **migrate progress API calls to the new Axios client**, so that **progress tracking benefits from centralized error handling and retry logic**.
+
+5. [**Story 14.5: Conversation Service Axios Migration**](./story-14-5-conversation-service-migration.md)
+   - As a **frontend developer**, I want to **migrate conversation API calls to the new Axios client**, so that **conversation generation benefits from automatic retry and seamless token refresh**.
+
+6. [**Story 14.6: Audio Service Axios Migration**](./story-14-6-audio-service-migration.md)
+   - As a **frontend developer**, I want to **migrate audio API calls to the new Axios client**, so that **audio generation (TTS) benefits from automatic retry logic for flaky external APIs**.
 
 ## Story Breakdown Logic
 
 This epic is divided into stories based on incremental migration approach:
 
-- **Story 14.1** focuses on foundational infrastructure (centralized config) without breaking changes
-- **Story 14.2** migrates core services (conversation, audio, auth) to Axios with interceptors
-- **Story 14.3** completes migration with progress service, validating the pattern across all API calls
+- **Story 14.1** migrates testing infrastructure from Jest to Vitest, resolving monorepo module resolution issues
+- **Story 14.2** focuses on foundational infrastructure (centralized API config) with new Axios client
+- **Story 14.3** implements interceptor infrastructure for token refresh and retry logic
+- **Story 14.4** migrates progress service (most critical data), validating the pattern
+- **Story 14.5** migrates conversation service (LLM integration, benefits from retry)
+- **Story 14.6** migrates audio service (TTS integration, completes epic)
 
-Each story builds upon the previous, allowing iterative testing and rollback if issues emerge.
+Each story builds upon the previous, allowing iterative testing and rollback if issues emerge. Story 14.1 is implemented first to ensure clean testing infrastructure for all subsequent API changes.
 
 ## Acceptance Criteria
 
-- [ ] All `import.meta.env.VITE_API_URL` references removed from service files
-- [ ] Single source of truth for API configuration exists (`src/config/api.config.ts`)
-- [ ] Axios client created with request/response interceptors
-- [ ] 401 responses automatically trigger token refresh without user disruption
-- [ ] Network errors retry 3x with exponential backoff
-- [ ] All API responses typed with TypeScript interfaces
-- [ ] No `fetch()` calls remain in `conversationService.ts`, `audioService.ts`, `authService.ts`
-- [ ] Progress API calls use Axios client with typed responses
-- [ ] Error handling surfaces meaningful messages to users (not raw HTTP codes)
-- [ ] Tests cover interceptor logic (token refresh, retry, error transformation)
+- [x] All `import.meta.env.VITE_API_URL` references removed from service files (Story 14.2)
+- [x] Single source of truth for API configuration exists (`src/config/api.config.ts`) (Story 14.2)
+- [x] Axios client created with request/response interceptors (Story 14.3)
+- [x] 401 responses automatically trigger token refresh without user disruption (Story 14.3)
+- [x] Network errors retry 3x with exponential backoff (Story 14.3)
+- [x] All API responses typed with TypeScript interfaces (Stories 14.4-14.6)
+- [x] No `ApiClient.authRequest` calls remain in `conversationService.ts`, `audioService.ts` (Stories 14.5-14.6)
+- [x] Progress API calls use Axios client with typed responses (Story 14.4)
+- [x] Conversation API calls use Axios client with typed responses (Story 14.5)
+- [x] Audio API calls use Axios client with typed responses (Story 14.6)
+- [x] Error handling surfaces meaningful messages to users (not raw HTTP codes) (Stories 14.4-14.6)
+- [x] Tests cover interceptor logic (token refresh, retry, error transformation) (Story 14.3)
+- [x] **Post-Epic:** Duplicate backend classes removed (LocalAudioBackend, LocalConversationBackend)
+- [x] **Post-Epic:** Manual fallback logic removed (trusts Axios interceptors)
+- [x] **Post-Epic:** Type safety improved (error: unknown with proper guards)
 
 ## Architecture Decisions
 
@@ -130,8 +156,11 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 **Related Documentation:**
 
 - [Epic 14 Implementation](../../issue-implementation/epic-14-api-modernization/README.md)
-- [Story 14.1 BR](./story-14-1-centralized-api-config.md)
-- [Story 14.2 BR](./story-14-2-axios-interceptors.md)
-- [Story 14.3 BR](./story-14-3-progress-service-migration.md)
+- [Story 14.1 BR](./story-14-1-jest-to-vitest-migration.md)
+- [Story 14.2 BR](./story-14-2-centralized-api-config.md)
+- [Story 14.3 BR](./story-14-3-axios-interceptors.md)
+- [Story 14.4 BR](./story-14-4-progress-service-migration.md)
+- [Story 14.5 BR](./story-14-5-conversation-service-migration.md)
+- [Story 14.6 BR](./story-14-6-audio-service-migration.md)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 - [Architecture Overview](../../architecture.md)

@@ -23,7 +23,7 @@ export type ProgressAction =
 
 export function progressReducer(
   state: ProgressState = progressInitialState,
-  action: ProgressAction
+  action: ProgressAction,
 ): ProgressState {
   switch (action.type) {
     case "INIT":

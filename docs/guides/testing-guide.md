@@ -2,6 +2,177 @@
 
 Setup and best practices for testing React components, hooks, and backend services.
 
+## Frontend Testing (Vitest)
+
+**As of Epic 14**: The frontend uses **Vitest** for all testing (migrated from Jest).
+
+### Quick Start (Frontend)
+
+```bash
+# In apps/frontend
+npm test                      # Run all tests
+npm test -- <path>            # Run specific file
+npm run test:coverage         # Check coverage
+npm run test:ui               # Interactive UI test runner
+npm run test:watch            # Watch mode (auto-rerun on changes)
+```
+
+### Configuration
+
+**Location**: `apps/frontend/vite.config.ts`
+
+```typescript
+/// <reference types="vitest" />
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true, // describe, it, expect available without imports
+    environment: "jsdom", // Simulate browser DOM for React
+    setupFiles: "./src/setupTests.ts", // Runs before each test file
+    clearMocks: true, // Auto-reset mocks between tests
+    mockReset: true,
+    restoreMocks: true,
+    testTimeout: 10000, // 10s timeout (industry standard)
+    coverage: {
+      provider: "v8", // Fast coverage provider
+      reporter: ["text", "json", "html"],
+      thresholds: {
+        branches: 40,
+        functions: 40,
+        lines: 40,
+        statements: 40,
+      },
+    },
+  },
+});
+```
+
+**Setup File**: `apps/frontend/src/setupTests.ts`
+
+```typescript
+import "@testing-library/jest-dom";
+import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
+
+// Mock browser APIs (required for many components)
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+global.IntersectionObserver = class IntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as any;
+```
+
+### Jest to Vitest Migration
+
+**When migrating tests from Jest**:
+
+1. **Import changes**:
+
+   ```typescript
+   // Before (Jest)
+   import { jest } from "@jest/globals";
+
+   // After (Vitest)
+   import { vi } from "vitest";
+   ```
+
+2. **Mock function replacements**:
+
+   ```typescript
+   // Before (Jest)
+   const mockFn = jest.fn();
+   jest.spyOn(module, "method");
+   jest.clearAllMocks();
+   jest.resetAllMocks();
+   jest.mock("./module");
+
+   // After (Vitest)
+   const mockFn = vi.fn();
+   vi.spyOn(module, "method");
+   vi.clearAllMocks();
+   vi.resetAllMocks();
+   vi.mock("./module");
+   ```
+
+3. **Everything else stays the same**:
+   - `describe`, `it`, `expect` work identically
+   - React Testing Library unchanged
+   - `beforeEach`, `afterEach` unchanged
+
+**Automated migration script**:
+
+```bash
+# PowerShell (Windows)
+Get-ChildItem -Path apps/frontend/src -Filter *.test.ts* -Recurse | ForEach-Object {
+  $content = Get-Content $_.FullName -Raw
+  $content = $content -replace 'jest\.fn\(', 'vi.fn('
+  $content = $content -replace 'jest\.spyOn\(', 'vi.spyOn('
+  $content = $content -replace 'jest\.mock\(', 'vi.mock('
+  $content = $content -replace 'jest\.clearAllMocks\(', 'vi.clearAllMocks('
+  $content = $content -replace 'jest\.resetAllMocks\(', 'vi.resetAllMocks('
+  Set-Content -Path $_.FullName -Value $content
+}
+```
+
+### Component Testing with Context Providers
+
+**Problem**: Component tests fail with "must be used within Provider" errors.
+
+**Solution**: Wrap components in required context providers:
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { ProgressStateContext } from '../../context';
+import { RootState } from '../../reducers';
+import { VocabularyCard } from '../VocabularyCard';
+
+const createMockState = (overrides = {}): RootState => ({
+  progress: { wordsById: {}, wordIds: [] },
+  user: { userId: null, preferences: {} },
+  ui: { selectedList: null, selectedWords: [], isLoading: false, error: '' },
+  vocabLists: { itemsById: {}, itemIds: [] },
+  ...overrides,
+});
+
+it('renders correctly', () => {
+  const mockState = createMockState({
+    progress: {
+      wordsById: {
+        word1: { wordId: 'word1', confidence: 1, lastReviewed: new Date().toISOString() },
+      },
+      wordIds: ['word1'],
+    },
+  });
+
+  render(
+    <ProgressStateContext.Provider value={mockState}>
+      <VocabularyCard list={{...}} onSelect={() => {}} />
+    </ProgressStateContext.Provider>
+  );
+
+  expect(screen.getByText('Test List')).toBeInTheDocument();
+});
+```
+
 ## Backend Testing (Vitest)
 
 The backend uses **Vitest** for unit and integration testing.
@@ -67,37 +238,242 @@ const service = new AuthService(mockRepository, mockJwtService, passwordService)
 - Controller tests that inject services
 - Any test requiring isolation of business logic from infrastructure
 
-## Configuration (Frontend)
+## HTTP Client Testing (axios-mock-adapter)
 
-**jest.config.js:**
+**When to Use**: Testing Axios interceptors, API service layers, error handling
 
-```javascript
-export default {
-  preset: "ts-jest",
-  testEnvironment: "jsdom",
-  roots: ["<rootDir>/src"],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
-  transform: {
-    "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
-  },
-  moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "^@/(.*)$": "<rootDir>/src/$1",
-  },
-};
-```
-
-**setupTests.ts:**
+### Basic Setup
 
 ```typescript
-import "@testing-library/jest-dom";
-import dotenv from "dotenv";
-import path from "path";
+import MockAdapter from "axios-mock-adapter";
+import { apiClient } from "../services/axiosClient";
 
-dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
+describe("apiClient", () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(apiClient);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    mock.restore(); // Always restore to avoid leaking mocks
+  });
+
+  it("should handle successful response", async () => {
+    mock.onGet("/users").reply(200, { success: true, data: { users: [] } });
+
+    const response = await apiClient.get("/users");
+    expect(response.status).toBe(200);
+    expect(response.data.success).toBe(true);
+  });
+});
 ```
 
-## Component Testing
+### Testing Request Interceptors
+
+```typescript
+it("should add Authorization header when token exists", async () => {
+  localStorage.setItem("accessToken", "test-token-123");
+
+  mock.onGet("/protected").reply((config) => {
+    expect(config.headers!.Authorization).toBe("Bearer test-token-123");
+    return [200, { success: true, data: {} }];
+  });
+
+  await apiClient.get("/protected");
+});
+
+it("should make request without Authorization header when no token", async () => {
+  mock.onGet("/public").reply((config) => {
+    expect(config.headers!.Authorization).toBeUndefined();
+    return [200, { success: true, data: {} }];
+  });
+
+  await apiClient.get("/public");
+});
+```
+
+### Testing Error Handling
+
+```typescript
+it("should normalize 500 server errors", async () => {
+  mock.onGet("/error").reply(500, { message: "Internal server error" });
+
+  try {
+    await apiClient.get("/error");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.status).toBe(500);
+    expect(normalized.message).toBe("Internal server error");
+    expect(normalized.code).toBe("ERR_BAD_RESPONSE");
+  }
+});
+
+it("should normalize network errors", async () => {
+  mock.onGet("/network-fail").networkError();
+
+  try {
+    await apiClient.get("/network-fail");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.code).toBe("ERR_NETWORK");
+    expect(normalized.message).toBeTruthy();
+  }
+});
+```
+
+### axios-mock-adapter Limitations
+
+**Problem 1: Network errors don't set error.code**
+
+```typescript
+// ❌ This doesn't work for testing retry logic
+mock.onGet("/test").networkError();
+// Mock creates error without error.code property
+// Interceptor checks: error.code === 'ERR_NETWORK' → false
+// Retry logic never executes
+
+// ✅ Workaround: Test error normalization instead of retry execution
+it("should normalize network errors gracefully", async () => {
+  mock.onGet("/network-fail").networkError();
+  try {
+    await apiClient.get("/network-fail");
+  } catch (error) {
+    expect(error.code).toBe("ERR_NETWORK");
+  }
+});
+```
+
+**Problem 2: Timeout doesn't match production behavior**
+
+```typescript
+// Production: ECONNABORTED error with error.code set
+// Mock: Creates generic timeout without code
+
+// ✅ Verify timeout normalization exists
+it("should normalize timeout errors with proper code", async () => {
+  mock.onGet("/timeout").timeout();
+  try {
+    await apiClient.get("/timeout");
+  } catch (error) {
+    expect(error.code).toBe("ECONNABORTED"); // Preserved by interceptor
+    expect(error.message).toContain("timeout");
+  }
+});
+```
+
+**Problem 3: Status 0 doesn't trigger network retry**
+
+```typescript
+// ❌ Status 0 used by some for network errors, but doesn't match production
+mock.onGet("/test").reply(0, null);
+// Doesn't set error.response to null (required for network detection)
+
+// ✅ Use .networkError() or .timeout() instead
+mock.onGet("/test").networkError(); // Correct pattern
+```
+
+**Best Practices for Interceptor Testing:**
+
+1. **Test error normalization, not retry execution**: Mock adapter limitations make testing retry logic unreliable
+2. **Verify retry indirectly**: Use console logs or timeout test duration to confirm retries execute
+3. **Test 401 refresh separately**: Mock refresh endpoint with `.replyOnce(401).onGet(...).reply(200)` for retry simulation
+4. **Use config inspection**: Reply with function `(config) => { expect(config.headers); return [200, {}]; }`
+5. **Clear localStorage between tests**: Token state bleeds between test cases
+
+### Testing Token Refresh Flow
+
+```typescript
+it("should handle 401 error and normalize message", async () => {
+  localStorage.setItem("accessToken", "invalid-token");
+
+  mock.onGet("/protected").reply(401, { message: "Token invalid" });
+  mock.onPost("/api/v1/auth/refresh").reply(401, { message: "Refresh failed" });
+
+  try {
+    await apiClient.get("/protected");
+    expect.fail("Should have thrown error");
+  } catch (error) {
+    const normalized = error as NormalizedError;
+    expect(normalized.status).toBe(401);
+    expect(normalized.message).toBe("Token invalid");
+  }
+});
+```
+
+**Why this works:**
+
+- Tests reactive 401 handling path (refresh attempt)
+- Verifies error normalization after refresh failure
+- Avoids testing proactive refresh (requires JWT decoding, complex setup)
+
+### Aligning Mocks with Backend Behavior
+
+**Critical Pattern:** Test mocks must **exactly** match actual backend response structure. Mismatched mocks create false confidence—tests pass while production fails.
+
+**Common Mistake:** Assuming backends wrap responses in `{ success, data }` envelope when they return data directly.
+
+```typescript
+// ❌ INCORRECT - Assumed wrapper that doesn't exist
+mock.onGet("/api/v1/progress").reply(200, {
+  success: true,
+  data: [{ wordId: "123", confidence: 0.8 }],
+});
+// Test passes ✅ but production fails ❌ - backend returns array directly
+
+// ✅ CORRECT - Matches actual backend response
+mock.onGet("/api/v1/progress").reply(200, [{ wordId: "123", confidence: 0.8 }]);
+```
+
+**Why This Matters:**
+
+1. **Backend returns:** `res.json([...])` → HTTP body is `[...]`
+2. **Axios wraps:** Response becomes `{ data: [...], status: 200, ... }`
+3. **Frontend accesses:** `response.data` → Gets array directly
+4. **If mock wraps:** `response.data` → `{ success: true, data: [...] }` (wrong structure)
+5. **Result:** `response.data.forEach(...)` works in tests, fails in production with "forEach is not a function"
+
+**Validation Checklist:**
+
+- [ ] Inspect actual backend controller: What does `res.json(...)` receive?
+- [ ] Mock should return that **exact** structure (no wrapper unless backend adds it)
+- [ ] Test with network inspector: Compare mock response to real API response
+- [ ] For arrays: Mock returns `[...]`, NOT `{ data: [...] }`
+- [ ] For objects: Mock returns `{ id, name }`, NOT `{ success: true, data: { id, name } }`
+
+**Discovery Context (Epic 14):**
+
+During migration to Axios, assumed backend used standardized wrapper pattern. Post-migration runtime errors revealed backend returns data directly. Test mocks had incorrect wrappers—all tests passed, but production broke immediately. Required systematic fix across 3 services (8 methods, 10 test mocks).
+
+**Related Documentation:**
+
+- [Backend Response Structure Standards](./code-conventions.md#backend-response-structure)
+- [API Response Patterns KB](../knowledge-base/api-response-patterns.md)
+
+### Performance Considerations
+
+**Test Duration with Retry Logic:**
+
+- Exponential backoff delays: 1s + 2s + 4s = 7s per retry test
+- Timeout tests: 7s+ per test (waiting for actual timeout)
+- **Mitigation**: Use `testTimeout: 10000` in vitest.config.ts
+- **Tip**: Group slow tests in separate suite, run in parallel
+
+```typescript
+describe("Network Retry Logic", () => {
+  it("should normalize timeout errors with proper code", async () => {
+    mock.onGet("/timeout").timeout();
+    // Test takes 7+ seconds due to retry delays
+  }, 10000); // Explicit 10s timeout for this test
+});
+```
+
+---
+
+## Component Testing (React Testing Library)
 
 ```typescript
 import { render, screen } from "@testing-library/react";
