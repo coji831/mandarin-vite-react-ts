@@ -134,6 +134,40 @@ export interface ConversationResponse {
   suggestions?: string[];
 }
 
+// Conversation API types (Story 14.5)
+export interface ConversationTurn {
+  speaker: string;
+  chinese: string;
+  pinyin: string;
+  english: string;
+  audioUrl: string;
+}
+
+export interface Conversation {
+  id: string;
+  wordId: string;
+  word: string;
+  meaning?: string;
+  context?: string;
+  turns: ConversationTurn[];
+  generatedAt: string;
+  generatorVersion?: string;
+  hash?: string;
+}
+
+export interface ConversationGenerateRequest {
+  wordId: string;
+  word: string;
+  generatorVersion?: string;
+  type?: "text" | "audio";
+}
+
+export interface ConversationApiResponse {
+  success: boolean;
+  data: Conversation;
+  message?: string;
+}
+
 // TTS types
 export interface TTSRequest {
   text: string;

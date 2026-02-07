@@ -1,30 +1,29 @@
-import { ApiClient } from "../../../services/apiClient";
+/**
+ * @file conversationService.ts
+ * @description API service for conversation generation
+ *
+ * Story 14.5: Migrated to apiClient with full TypeScript type safety
+ * Uses Axios with automatic token refresh and retry logic
+ */
+
+import { apiClient } from "../../../services/axiosClient";
+import type { ConversationApiResponse } from "@mandarin/shared-types";
 
 // Fallback backend for local development
 export class LocalConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
     try {
-      const response = await ApiClient.authRequest(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "text", ...params }),
+      const response = await apiClient.post<ConversationApiResponse>(API_ENDPOINTS.CONVERSATION, {
+        type: "text",
+        ...params,
       });
-      if (!response.ok) {
-        const text = await response.text().catch(() => "<unreadable>");
-        console.error("Conversation generation failed (local)", {
-          endpoint,
-          status: response.status,
-          body: text,
-        });
-        throw new Error(
-          `Conversation generation failed (local): ${response.status} ${response.statusText} - ${text}`,
-        );
-      }
-      return response.json();
-    } catch (err) {
-      console.error("LocalConversationBackend.generateConversation error", { err, endpoint });
-      throw err;
+      return response.data.data;
+    } catch (error: any) {
+      console.error("LocalConversationBackend.generateConversation error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.CONVERSATION,
+      });
+      throw new Error("Failed to generate conversation. Please try again.");
     }
   }
 }
@@ -54,18 +53,21 @@ export class ConversationService implements IConversationService {
   }
 }
 
-// Default backend implementation using fetch
+// Default backend implementation using Axios
 export class DefaultConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
-    const endpoint = API_ENDPOINTS.CONVERSATION;
-    const response = await ApiClient.authRequest(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "text", ...params }),
-    });
-    if (!response.ok) {
-      throw new Error(`Conversation generation failed: ${response.statusText}`);
+    try {
+      const response = await apiClient.post<ConversationApiResponse>(API_ENDPOINTS.CONVERSATION, {
+        type: "text",
+        ...params,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("DefaultConversationBackend.generateConversation error", {
+        error: error.message,
+        endpoint: API_ENDPOINTS.CONVERSATION,
+      });
+      throw new Error("Failed to generate conversation. Please try again.");
     }
-    return response.json();
   }
 }

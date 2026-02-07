@@ -19,13 +19,13 @@ This story completes the API modernization for conversation features, which are 
 
 ## Acceptance Criteria
 
-- [ ] TypeScript interfaces defined: `ConversationApiResponse`, `ConversationGenerateRequest` in `@mandarin/shared-types`
-- [ ] `conversationService.ts` refactored: Replace `ApiClient.authRequest` calls with `apiClient.post()`
-- [ ] Axios responses typed: All methods return typed promises (`Promise<Conversation>`, not `Promise<Response>`)
-- [ ] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
-- [ ] Both backend implementations migrated: `DefaultConversationBackend` and `LocalConversationBackend`
-- [ ] All existing tests pass: No regression in conversation generation functionality
-- [ ] Tests updated: Mock Axios instead of fetch for conversation service tests
+- [x] TypeScript interfaces defined: `ConversationApiResponse`, `ConversationGenerateRequest` in `@mandarin/shared-types`
+- [x] `conversationService.ts` refactored: Replace `ApiClient.authRequest` calls with `apiClient.post()`
+- [x] Axios responses typed: All methods return typed promises (`Promise<Conversation>`, not `Promise<Response>`)
+- [x] Error handling updated: Use Axios error structure (`error.response.data`) instead of `response.ok` checks
+- [x] Both backend implementations migrated: `DefaultConversationBackend` and `LocalConversationBackend`
+- [x] All existing tests pass: No regression in conversation generation functionality
+- [x] Tests updated: Mock Axios instead of fetch for conversation service tests
 - [ ] Retry logic verified: Slow/timeout scenarios trigger automatic retry (manual testing)
 
 ## Business Rules
@@ -45,7 +45,7 @@ This story completes the API modernization for conversation features, which are 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Last Update**: 2026-02-07

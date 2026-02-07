@@ -2,12 +2,12 @@
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **Last Update**: 2026-02-07
-- **Key Files to Modify**:
-  - `packages/shared-types/src/index.ts` (add conversation API types)
-  - `apps/frontend/src/features/mandarin/services/conversationService.ts` (migrate to Axios)
-  - `apps/frontend/src/features/mandarin/services/__tests__/conversationService.test.ts` (update mocks)
+- **Key Files Modified**:
+  - `packages/shared-types/src/index.ts` (added conversation API types)
+  - `apps/frontend/src/features/mandarin/services/conversationService.ts` (migrated to Axios)
+  - `apps/frontend/src/features/mandarin/services/__tests__/conversationService.test.ts` (updated tests)
 
 ## Technical Scope
 
