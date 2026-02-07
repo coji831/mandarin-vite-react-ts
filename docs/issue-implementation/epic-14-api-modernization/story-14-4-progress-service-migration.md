@@ -412,18 +412,32 @@ try {
 }
 ```
 
-### Challenge 2: Response Data Unwrapping
+### Challenge 2: Response Data Unwrapping (UPDATED: Feb 7, 2026)
 
-**Problem:** Backend returns `{ success: true, data: [...] }` structure. Axios returns `{ data: { success: true, data: [...] } }`. Double `.data` access confusing.
+**Problem:** Initial implementation assumed backend returns `{ success: true, data: [...] }` wrapped structure. Frontend accessed `response.data.data` (Axios wraps backend response + backend wrapper). However, root cause investigation revealed backend actually returns data **directly** via `res.json(data)`, not wrapped.
 
-**Solution:** Define typed response interfaces (`ProgressResponse`) that match backend structure exactly. Services unwrap once: `response.data.data`. Components receive clean typed arrays.
+**Root Cause Analysis:**
+
+1. **Backend Behavior:** Controllers return `res.json([...])` or `res.json({ wordId, ... })` directly - NO `{ success, data }` wrapper
+2. **Axios Behavior:** Automatically wraps HTTP response body in `{ data: <body> }` structure
+3. **Bug:** Frontend accessed `response.data.data`, which evaluates to `[...].data` = `undefined` (accessing `.data` property on unwrapped array/object)
+4. **Test Mocks:** Returned `{ success: true, data: [...] }` (idealized/assumed structure) - tests passed but production runtime failed
+
+**Corrected Solution:** Use `response.data` directly (single unwrap). Backend returns data unwrapped → Axios wraps once → frontend unwraps once.
 
 ```typescript
+// BEFORE (INCORRECT - assumed double wrapper)
 const response = await apiClient.get<ProgressResponse>("/api/v1/progress");
-// response: AxiosResponse<ProgressResponse>
-// response.data: ProgressResponse = { success: true, data: WordProgress[] }
-return response.data.data; // WordProgress[]
+return response.data.data; // ❌ Accesses undefined
+
+// AFTER (CORRECT - single unwrap)
+const response = await apiClient.get<WordProgress[]>("/api/v1/progress");
+return response.data; // ✅ Returns WordProgress[] directly
 ```
+
+**Impact:** Removed 3 wrapper type imports (ProgressApiResponse, SingleProgressApiResponse, BatchUpdateApiResponse) as they no longer match backend reality. Updated 3 test mocks to return direct data.
+
+**Related:** This pattern extended to conversationService (1 method) and audioService (2 methods) - systematic fix applied across all migrated services.
 
 ### Challenge 3: Optimistic Updates + Type Safety
 
@@ -573,6 +587,6 @@ Update `docs/architecture.md`:
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
 - [Epic 14 Implementation](./README.md)
 - [Story 14.4 BR](../../business-requirements/epic-14-api-modernization/story-14-4-progress-service-migration.md)
-- [Story 14.3 Implementation](./story-14-2-axios-interceptors.md) (Previous)
+- [Story 14.3 Implementation](./story-14-3-axios-interceptors.md) (Previous)
 - [Code Conventions Guide](../../guides/code-conventions.md)
 - [Architecture Overview](../../architecture.md)

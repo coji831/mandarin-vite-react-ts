@@ -477,7 +477,110 @@ try {
 }
 ```
 
-### Reference
+### Backend Response Structure
+
+**Standard Pattern:** Backend controllers return data **directly** via `res.json(data)`, not wrapped in `{ success, data }` envelope.
+
+```javascript
+// ✅ Correct Pattern (Project Standard)
+res.json([{ id: 1, name: "Item" }]); // Array
+res.json({ id: 1, name: "Item" }); // Object
+
+// ❌ Avoid (Not Used)
+res.json({ success: true, data: [...] }); // Wrapper envelope
+```
+
+**Frontend Consumption:** Axios automatically wraps HTTP response body as `{ data: <body> }`. Access directly:
+
+```typescript
+// Backend returns: [{ wordId: "123", ... }]
+const response = await apiClient.get<WordProgress[]>("/api/v1/progress");
+const progress = response.data; // WordProgress[] - direct access
+
+// ❌ AVOID double unwrap (common migration mistake)
+const wrong = response.data.data; // undefined - no wrapper exists
+```
+
+**Type Safety:** Define types matching **actual** backend response, not idealized wrapper:
+
+```typescript
+// ✅ Correct - matches backend reality
+const response = await apiClient.get<WordProgress[]>("/api/v1/progress");
+
+// ❌ Incorrect - assumes wrapper that doesn't exist
+interface ProgressApiResponse {
+  success: boolean;
+  data: WordProgress[];
+}
+const response = await apiClient.get<ProgressApiResponse>("/api/v1/progress");
+```
+
+**Test Mocks:** Must exactly match backend behavior:
+
+```typescript
+// ✅ Correct - returns direct data
+mock.onGet("/api/v1/progress").reply(200, mockProgressArray);
+
+// ❌ Incorrect - wraps data (doesn't match backend)
+mock.onGet("/api/v1/progress").reply(200, { success: true, data: mockProgressArray });
+```
+
+### Error Handling Standards
+
+**TypeScript Pattern:** Use `error: unknown` with type narrowing, never `error: any`.
+
+```typescript
+// ✅ Correct - Type-safe error handling
+import { AxiosError } from "axios";
+
+try {
+  const response = await apiClient.get("/api/v1/data");
+  return response.data;
+} catch (error: unknown) {
+  // Narrow to AxiosError for HTTP-specific handling
+  if (error instanceof AxiosError) {
+    if (error.response?.status === 404) {
+      return null; // Valid case - resource not found
+    }
+    console.error("API error:", error.response?.status, error.message);
+  }
+
+  // Fallback for non-Axios errors
+  throw new Error("Failed to load data. Please try again.");
+}
+```
+
+**User-Facing Messages:** Always provide friendly error messages, log technical details separately:
+
+```typescript
+// ✅ Good - User sees friendly message, dev sees details
+catch (error: unknown) {
+  console.error("Technical context:", { endpoint: "/api/data", error });
+  throw new Error("Failed to load data. Please try again.");
+}
+
+// ❌ Bad - Exposes technical details to users
+catch (error: unknown) {
+  throw error; // May show "Network Error" or stack traces
+}
+```
+
+**404 Handling:** Distinguish between "not found" (valid) vs. "error" states:
+
+```typescript
+// Valid: Progress not found for new words
+try {
+  const response = await apiClient.get(`/api/v1/progress/${wordId}`);
+  return response.data;
+} catch (error: unknown) {
+  if (error instanceof AxiosError && error.response?.status === 404) {
+    return null; // Valid - user hasn't learned this word yet
+  }
+  throw new Error("Failed to load progress."); // Genuine error
+}
+```
+
+**Reference:**
 
 **Project Documentation:**
 
@@ -487,6 +590,8 @@ try {
 
 **Knowledge Base:**
 
+- [API Response Patterns](../knowledge-base/api-response-patterns.md) - Wrapper vs. direct patterns, tradeoffs
+- [TypeScript Error Handling](../knowledge-base/typescript-error-handling.md) - Best practices for `error: unknown`, type guards
 - [Backend Authentication](../knowledge-base/backend-authentication.md) - JWT patterns, token refresh
 - [Backend Architecture](../knowledge-base/backend-architecture.md) - Layered architecture, CORS
 

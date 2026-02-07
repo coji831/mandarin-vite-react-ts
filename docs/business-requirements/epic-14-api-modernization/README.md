@@ -16,6 +16,8 @@
 
 **Last Update:** February 7, 2026
 
+> **📝 Post-Epic Work:** After completing all stories, additional cleanup removed duplicate code (49.5% reduction) and systematic debugging fixed a response unwrapping bug across 3 services. See [POST-EPIC-NOTES.md](../../issue-implementation/epic-14-api-modernization/POST-EPIC-NOTES.md) for details.
+
 ## Background
 
 The current frontend API layer has **partial centralization** with existing infrastructure:
@@ -89,29 +91,6 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 - [x] **Post-Epic:** Duplicate backend classes removed (LocalAudioBackend, LocalConversationBackend)
 - [x] **Post-Epic:** Manual fallback logic removed (trusts Axios interceptors)
 - [x] **Post-Epic:** Type safety improved (error: unknown with proper guards)
-
-## Post-Epic Simplification
-
-After completing all 6 stories, additional cleanup work removed technical debt:
-
-**Duplicate Code Elimination:**
-
-- Removed `LocalAudioBackend` and `LocalConversationBackend` (90% identical to their Default\* counterparts)
-- Code reduction: 307 → 155 lines (49.5% reduction)
-- Duplication: ~44% eliminated
-
-**Architecture Improvement:**
-
-- Removed manual fallback logic from service constructors
-- Services now rely on centralized Axios interceptors (Story 14.3) for resilience
-- Simplified to single backend per service with optional DI for testing
-
-**Quality Improvements:**
-
-- Replaced `error: any` with `error: unknown` + proper type guards
-- Fixed type mismatches in ProgressContext.tsx
-- Added missing Vitest imports
-- All 42 tests passing (100% coverage maintained)
 
 ## Architecture Decisions
 

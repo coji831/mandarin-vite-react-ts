@@ -263,13 +263,33 @@ LocalConversationBackend (secondary)
 
 **Solution:** Keep service logic unchanged; only migrate backend implementations. Fallback chain works identically because both throw errors on failure, triggering service's try-catch logic.
 
-### Challenge 2: Conversation Generation Timeouts
+### Challenge 2: Response Data Unwrapping (Feb 7, 2026)
+
+**Problem:** Initial implementation accessed `response.data.data` assuming backend wrapped responses. Post-migration debugging revealed backend returns data directly (no wrapper), causing `undefined` access.
+
+**Root Cause:** Backend controllers return `res.json(conversation)` directly. Axios wraps as `{ data: conversation }`. Accessing `response.data.data` attempts `conversation.data` → `undefined`.
+
+**Solution:** Changed to `response.data` (single unwrap). Removed `ConversationApiResponse` wrapper type import. Updated 4 test mocks to return direct data structure matching backend.
+
+```typescript
+// BEFORE (INCORRECT)
+const response = await apiClient.post<ConversationApiResponse>(endpoint, params);
+return response.data.data; // ❌ undefined
+
+// AFTER (CORRECT)
+const response = await apiClient.post<Conversation>(endpoint, params);
+return response.data; // ✅ Conversation object
+```
+
+**Related:** Systematic issue discovered across progressService (5 methods), audioService (2 methods), and conversationService (1 method). See Story 14.4 Challenge 2 for detailed root cause analysis.
+
+### Challenge 3: Conversation Generation Timeouts
 
 **Problem:** LLM API calls can be slow (5-15s). Network timeout errors should trigger retry, not immediate failure.
 
 **Solution:** Axios interceptor already configured with 3x retry + exponential backoff for network errors (Story 14.3). No additional code needed; migration automatically gets retry behavior.
 
-### Challenge 3: Error Message Consistency
+### Challenge 4: Error Message Consistency
 
 **Problem:** Conversation errors should be user-friendly ("Failed to generate conversation") not technical ("Network Error").
 

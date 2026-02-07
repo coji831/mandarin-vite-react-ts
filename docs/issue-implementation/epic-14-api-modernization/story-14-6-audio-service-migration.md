@@ -363,13 +363,33 @@ LocalAudioBackend (secondary)
 
 **Solution:** Axios interceptor automatically retries network errors 3x with exponential backoff (1s, 2s, 4s). TTS timeout errors trigger retry without code changes.
 
-### Challenge 2: Dual Audio Endpoints
+### Challenge 2: Response Data Unwrapping (Feb 7, 2026)
+
+**Problem:** Initial implementation accessed `response.data.data` assuming backend wrapped responses. Post-migration debugging revealed backend returns data directly (no wrapper), causing `undefined` access.
+
+**Root Cause:** Backend controllers return `res.json({ audioUrl: "..." })` directly. Axios wraps as `{ data: { audioUrl: "..." } }`. Accessing `response.data.data` attempts `{ audioUrl }.data` → `undefined`.
+
+**Solution:** Changed to `response.data` (single unwrap). Removed `WordAudioApiResponse` and `TurnAudioApiResponse` wrapper type imports. Updated 6 test mocks to return direct data structure matching backend.
+
+```typescript
+// BEFORE (INCORRECT)
+const response = await apiClient.post<WordAudioApiResponse>(endpoint, params);
+return response.data.data; // ❌ undefined
+
+// AFTER (CORRECT)
+const response = await apiClient.post<WordAudio>(endpoint, params);
+return response.data; // ✅ WordAudio object
+```
+
+**Related:** Systematic issue discovered across progressService (5 methods), audioService (2 methods), and conversationService (1 method). See Story 14.4 Challenge 2 for detailed root cause analysis.
+
+### Challenge 3: Dual Audio Endpoints
 
 **Problem:** Service has two audio methods: `fetchWordAudio()` (single word TTS) and `fetchTurnAudio()` (conversation turn TTS). Different endpoints, same retry logic needed.
 
 **Solution:** Both methods migrated to Axios independently. Each gets automatic retry/refresh via shared apiClient. No duplication of retry logic.
 
-### Challenge 3: Legacy Method Compatibility
+### Challenge 4: Legacy Method Compatibility
 
 **Problem:** Old code may still call `fetchConversationAudio()` (deprecated method). Breaking this would cause runtime errors.
 

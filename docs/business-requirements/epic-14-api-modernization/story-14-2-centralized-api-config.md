@@ -18,13 +18,13 @@ This foundational story eliminates configuration duplication and establishes the
 
 ## Acceptance Criteria
 
-- [ ] `axios` package installed (`npm install axios` - version ^1.6.0)
-- [ ] `src/config/api.ts` updated to export Axios-compatible config object
-- [ ] `src/services/axiosClient.ts` created with configured Axios instance
-- [ ] Axios instance uses `API_CONFIG.baseURL`, `timeout`, and `withCredentials: true`
-- [ ] Axios instance exports both default export and named `apiClient`
-- [ ] No breaking changes to existing services (they continue using `authFetch`/`ApiClient`)
-- [ ] Documentation updated: Add Axios client usage example to `docs/guides/code-conventions.md`
+- [x] `axios` package installed (`npm install axios` - version ^1.6.0)
+- [x] `src/config/api.ts` updated to export Axios-compatible config object
+- [x] `src/services/axiosClient.ts` created with configured Axios instance
+- [x] Axios instance uses `API_CONFIG.baseURL`, `timeout`, and `withCredentials: true`
+- [x] Axios instance exports both default export and named `apiClient`
+- [x] No breaking changes to existing services (they continue using `authFetch`/`ApiClient`)
+- [x] Documentation updated: Add Axios client usage example to `docs/guides/code-conventions.md`
 
 ## Business Rules
 
@@ -41,7 +41,8 @@ This foundational story eliminates configuration duplication and establishes the
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Last Update**: 2026-02-07
+- **Implementation Doc**: [Story 14.2 Implementation](../../issue-implementation/epic-14-api-modernization/story-14-2-centralized-api-config.md)

@@ -410,6 +410,49 @@ it("should handle 401 error and normalize message", async () => {
 - Verifies error normalization after refresh failure
 - Avoids testing proactive refresh (requires JWT decoding, complex setup)
 
+### Aligning Mocks with Backend Behavior
+
+**Critical Pattern:** Test mocks must **exactly** match actual backend response structure. Mismatched mocks create false confidence—tests pass while production fails.
+
+**Common Mistake:** Assuming backends wrap responses in `{ success, data }` envelope when they return data directly.
+
+```typescript
+// ❌ INCORRECT - Assumed wrapper that doesn't exist
+mock.onGet("/api/v1/progress").reply(200, {
+  success: true,
+  data: [{ wordId: "123", confidence: 0.8 }],
+});
+// Test passes ✅ but production fails ❌ - backend returns array directly
+
+// ✅ CORRECT - Matches actual backend response
+mock.onGet("/api/v1/progress").reply(200, [{ wordId: "123", confidence: 0.8 }]);
+```
+
+**Why This Matters:**
+
+1. **Backend returns:** `res.json([...])` → HTTP body is `[...]`
+2. **Axios wraps:** Response becomes `{ data: [...], status: 200, ... }`
+3. **Frontend accesses:** `response.data` → Gets array directly
+4. **If mock wraps:** `response.data` → `{ success: true, data: [...] }` (wrong structure)
+5. **Result:** `response.data.forEach(...)` works in tests, fails in production with "forEach is not a function"
+
+**Validation Checklist:**
+
+- [ ] Inspect actual backend controller: What does `res.json(...)` receive?
+- [ ] Mock should return that **exact** structure (no wrapper unless backend adds it)
+- [ ] Test with network inspector: Compare mock response to real API response
+- [ ] For arrays: Mock returns `[...]`, NOT `{ data: [...] }`
+- [ ] For objects: Mock returns `{ id, name }`, NOT `{ success: true, data: { id, name } }`
+
+**Discovery Context (Epic 14):**
+
+During migration to Axios, assumed backend used standardized wrapper pattern. Post-migration runtime errors revealed backend returns data directly. Test mocks had incorrect wrappers—all tests passed, but production broke immediately. Required systematic fix across 3 services (8 methods, 10 test mocks).
+
+**Related Documentation:**
+
+- [Backend Response Structure Standards](./code-conventions.md#backend-response-structure)
+- [API Response Patterns KB](../knowledge-base/api-response-patterns.md)
+
 ### Performance Considerations
 
 **Test Duration with Retry Logic:**

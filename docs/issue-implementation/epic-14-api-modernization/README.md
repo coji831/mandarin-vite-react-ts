@@ -16,39 +16,7 @@
 
 **Last Update:** February 7, 2026
 
-## Stories
-
-This epic is broken down into the following stories:
-
-1. [**Story 14.1: Jest to Vitest Migration**](./story-14-1-jest-to-vitest-migration.md) — ✅ **Completed**
-   - Migrate testing infrastructure from Jest to Vitest for Vite compatibility
-
-2. [**Story 14.2: Centralized API Configuration**](./story-14-2-centralized-api-config.md) — ✅ **Completed**
-   - Create centralized API configuration and Axios client
-
-3. [**Story 14.3: Axios Interceptors & Auth Resilience**](./story-14-3-axios-interceptors.md) — ✅ **Completed**
-   - Implement request/response interceptors for token refresh and retry logic
-
-4. [**Story 14.4: Progress Service Migration**](./story-14-4-progress-service-migration.md) — ✅ **Completed**
-   - Migrate progress service to Axios with typed responses
-
-5. [**Story 14.5: Conversation Service Migration**](./story-14-5-conversation-service-migration.md) — ✅ **Completed**
-   - Migrate conversation service to Axios with typed responses
-
-6. [**Story 14.6: Audio Service Migration**](./story-14-6-audio-service-migration.md) — ✅ **Completed**
-   - Migrate audio service to Axios with typed responses (completes epic)
-
-### Post-Epic Simplification
-
-After completing Stories 14.4-14.6, additional cleanup was performed to remove technical debt:
-
-- **Removed duplicate backend classes** (LocalAudioBackend, LocalConversationBackend) — 90% identical to Default\* variants
-- **Removed manual fallback logic** — Now trusts Axios interceptors (Story 14.3) for resilience
-- **Fixed type safety issues** — Replaced `any` with `unknown`, added proper type guards
-- **Code reduction:** 307 → 155 lines (49.5% reduction in audio + conversation services)
-- **Test simplification:** Removed 10+ duplicate backend tests, maintained 100% coverage (42/42 passing)
-
-**Result:** Cleaner, more maintainable service layer that relies on centralized Axios resilience patterns instead of per-service fallback implementations.
+> **📝 Post-Epic Work:** This epic included significant post-completion work: code simplification (49.5% reduction), bug discovery and systematic fix across 3 services, and creation of 2 comprehensive KB articles. See [POST-EPIC-NOTES.md](./POST-EPIC-NOTES.md) for complete details on cleanup, discoveries, and lessons learned.
 
 ## Technical Overview
 

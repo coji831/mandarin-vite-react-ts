@@ -1,8 +1,5 @@
 # Story 14.3: Axios Interceptors (Auth Refresh + Retry Logic)
 
-**Status**: ✅ Completed  
-**Last Updated**: 2025-01-03
-
 ## Description
 
 **As a** user,
@@ -50,8 +47,8 @@ This story implements the core functionality that makes Epic 14 valuable: automa
 
 ## Implementation Status
 
-- **Status**: ✅ Completed (Manual testing pending AuthContext integration)
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Last Update**: 2026-01-03
 - **Implementation Doc**: [Story 14.3 Implementation](../../issue-implementation/epic-14-api-modernization/story-14-3-axios-interceptors.md)
