@@ -13,22 +13,22 @@ export type VocabWord = {
 
 export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
   try {
-    console.log(`Fetching CSV from: ${url}`);
+    //console.log(`Fetching CSV from: ${url}`);
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`Failed to fetch CSV: ${res.status} ${res.statusText}`);
     }
     const text = await res.text();
-    console.log(`CSV content length: ${text.length} characters`);
+    //console.log(`CSV content length: ${text.length} characters`);
 
     // Detect if CSV uses tabs or commas as separator
     const firstLine = text.split(/\r?\n/)[0];
     const separator = firstLine.includes("\t") ? "\t" : ",";
-    console.log(`Using separator: "${separator === "\t" ? "tab" : "comma"}"`);
+    //console.log(`Using separator: "${separator === "\t" ? "tab" : "comma"}"`);
 
     // Split into lines, handling different line endings
     const lines = text.trim().split(/\r?\n/);
-    console.log(`Found ${lines.length} lines in CSV`);
+    //console.log(`Found ${lines.length} lines in CSV`);
 
     if (lines.length <= 1) {
       console.warn("CSV file seems empty or only has headers");
@@ -36,7 +36,7 @@ export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
     }
 
     const [header, ...rows] = lines;
-    console.log(`Header: ${header}`);
+    //console.log(`Header: ${header}`);
 
     const seenWordIds = new Set<string>();
     return rows.map((row, idx) => {

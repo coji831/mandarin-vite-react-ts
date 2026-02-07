@@ -36,10 +36,8 @@ describe("AudioService (Story 14.6)", () => {
 
   describe("AudioBackend", () => {
     it("should fetch word audio with typed response", async () => {
-      mock.onPost("/v1/tts").reply(200, {
-        success: true,
-        data: mockWordAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/tts").reply(200, mockWordAudio);
 
       const backend = new AudioBackend();
       const result = await backend.fetchWordAudio({ chinese: "你好" });
@@ -67,10 +65,8 @@ describe("AudioService (Story 14.6)", () => {
     });
 
     it("should fetch turn audio with typed response", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockTurnAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockTurnAudio);
 
       const backend = new AudioBackend();
       const result = await backend.fetchTurnAudio({
@@ -98,10 +94,8 @@ describe("AudioService (Story 14.6)", () => {
 
   describe("AudioService", () => {
     it("should delegate to backend successfully", async () => {
-      mock.onPost("/v1/tts").reply(200, {
-        success: true,
-        data: mockWordAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/tts").reply(200, mockWordAudio);
 
       const service = new AudioService();
       const result = await service.fetchWordAudio({ chinese: "你好" });
@@ -110,10 +104,8 @@ describe("AudioService (Story 14.6)", () => {
     });
 
     it("should allow custom backend via DI", async () => {
-      mock.onPost("/v1/tts").reply(200, {
-        success: true,
-        data: mockWordAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/tts").reply(200, mockWordAudio);
 
       const customBackend = new AudioBackend();
       const service = new AudioService(customBackend);
@@ -123,10 +115,8 @@ describe("AudioService (Story 14.6)", () => {
     });
 
     it("should delegate turn audio to backend", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockTurnAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockTurnAudio);
 
       const service = new AudioService();
       const result = await service.fetchTurnAudio({
@@ -150,10 +140,8 @@ describe("AudioService (Story 14.6)", () => {
 
   describe("Type safety", () => {
     it("should provide TypeScript autocomplete for WordAudio fields", async () => {
-      mock.onPost("/v1/tts").reply(200, {
-        success: true,
-        data: mockWordAudio,
-      });
+      // Backend returns data directly (not wrapped)
+      mock.onPost("/v1/tts").reply(200, mockWordAudio);
 
       const backend = new AudioBackend();
       const result = await backend.fetchWordAudio({ chinese: "你好" });

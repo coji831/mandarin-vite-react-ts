@@ -25,6 +25,8 @@ Sections
 
 ## Backlog
 
+- [ ] Standardize API response structure - Document and enforce consistent response format across all backend endpoints (currently returns data directly; consider standardizing with or without wrapper like `{ success, data }`)
+
 - [ ] Refactor services to direct export pattern - Remove Service wrapper classes, export audioApi/conversationApi objects like progressService (Epic 14 follow-up)
 
 - [ ] Migrate auth to React Query + Axios - Replace custom `authFetch` with industry standards

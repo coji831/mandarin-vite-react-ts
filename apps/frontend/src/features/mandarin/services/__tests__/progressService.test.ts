@@ -51,10 +51,7 @@ describe("progressApi (Story 14.4)", () => {
         },
       ];
 
-      mock.onGet("/v1/progress").reply(200, {
-        success: true,
-        data: mockProgress,
-      });
+      mock.onGet("/v1/progress").reply(200, mockProgress);
 
       const result = await progressApi.getAllProgress();
 
@@ -139,10 +136,7 @@ describe("progressApi (Story 14.4)", () => {
         updatedAt: "2026-02-02T00:00:00Z",
       };
 
-      mock.onPut("/v1/progress/word1").reply(200, {
-        success: true,
-        data: updatedProgress,
-      });
+      mock.onPut("/v1/progress/word1").reply(200, updatedProgress);
 
       const result = await progressApi.updateWordProgress("word1", {
         studyCount: 6,
@@ -251,10 +245,7 @@ describe("progressApi (Story 14.4)", () => {
         wordsToReviewToday: 3,
       };
 
-      mock.onGet("/v1/progress/stats").reply(200, {
-        success: true,
-        data: mockStats,
-      });
+      mock.onGet("/v1/progress/stats").reply(200, mockStats);
 
       const result = await progressApi.getProgressStats();
 

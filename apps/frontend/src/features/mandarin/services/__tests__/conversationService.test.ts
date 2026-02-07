@@ -48,10 +48,8 @@ describe("ConversationService (Story 14.5)", () => {
 
   describe("ConversationBackend", () => {
     it("should generate conversation with typed response", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockConversation,
-      });
+      // Backend returns conversation directly with _metadata (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockConversation);
 
       const backend = new ConversationBackend();
       const params: ConversationGenerateRequest = { wordId: "word1", word: "你好" };
@@ -87,10 +85,8 @@ describe("ConversationService (Story 14.5)", () => {
 
   describe("ConversationService", () => {
     it("should delegate to backend successfully", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockConversation,
-      });
+      // Backend returns conversation directly with _metadata (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockConversation);
 
       const service = new ConversationService();
       const params: ConversationGenerateRequest = { wordId: "word1", word: "你好" };
@@ -100,10 +96,8 @@ describe("ConversationService (Story 14.5)", () => {
     });
 
     it("should allow custom backend via DI", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockConversation,
-      });
+      // Backend returns conversation directly with _metadata (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockConversation);
 
       const customBackend = new ConversationBackend();
       const service = new ConversationService(customBackend);
@@ -116,10 +110,8 @@ describe("ConversationService (Story 14.5)", () => {
 
   describe("Type safety", () => {
     it("should provide TypeScript autocomplete for Conversation fields", async () => {
-      mock.onPost("/v1/conversations").reply(200, {
-        success: true,
-        data: mockConversation,
-      });
+      // Backend returns conversation directly with _metadata (not wrapped)
+      mock.onPost("/v1/conversations").reply(200, mockConversation);
 
       const backend = new ConversationBackend();
       const params: ConversationGenerateRequest = { wordId: "word1", word: "你好" };

@@ -8,13 +8,7 @@
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import type {
-  TurnAudioApiResponse,
-  TurnAudioRequest,
-  TurnAudioResponse,
-  WordAudioApiResponse,
-  WordAudioRequest,
-} from "@mandarin/shared-types";
+import type { TurnAudioRequest, TurnAudioResponse, WordAudioRequest } from "@mandarin/shared-types";
 import { apiClient } from "services";
 import type { ConversationAudio, ConversationAudioRequest, WordAudio } from "../types";
 import type { IAudioBackend, IAudioService } from "./interfaces";
@@ -50,10 +44,11 @@ export class AudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     try {
       const { chinese } = params;
-      const response = await apiClient.post<WordAudioApiResponse>(ROUTE_PATTERNS.ttsAudio, {
+      // Backend returns { audioUrl, cached } directly (not wrapped in ApiResponse)
+      const response = await apiClient.post<WordAudio>(ROUTE_PATTERNS.ttsAudio, {
         text: chinese,
       });
-      return response.data.data;
+      return response.data;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown error";
       console.error("[AudioBackend] fetchWordAudio error", {
@@ -66,11 +61,12 @@ export class AudioBackend implements IAudioBackend {
 
   async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
     try {
-      const response = await apiClient.post<TurnAudioApiResponse>(ROUTE_PATTERNS.conversations, {
+      // Backend returns audio metadata directly (not wrapped in ApiResponse)
+      const response = await apiClient.post<TurnAudioResponse>(ROUTE_PATTERNS.conversations, {
         type: "audio",
         ...params,
       });
-      return response.data.data;
+      return response.data;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown error";
       console.error("[AudioBackend] fetchTurnAudio error", {
@@ -81,6 +77,7 @@ export class AudioBackend implements IAudioBackend {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async fetchConversationAudio(_params: ConversationAudioRequest): Promise<ConversationAudio> {
     throw new Error("fetchConversationAudio is not implemented. Use fetchTurnAudio instead.");
   }

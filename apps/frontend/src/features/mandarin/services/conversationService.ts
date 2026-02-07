@@ -8,7 +8,6 @@
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import type { ConversationApiResponse } from "@mandarin/shared-types";
 import { apiClient } from "services";
 import { Conversation, ConversationGenerateRequest } from "../types";
 import { IConversationBackend, IConversationService } from "./interfaces";
@@ -26,14 +25,16 @@ export class ConversationService implements IConversationService {
 export class ConversationBackend implements IConversationBackend {
   async generateConversation(params: ConversationGenerateRequest): Promise<Conversation> {
     try {
-      const response = await apiClient.post<ConversationApiResponse>(ROUTE_PATTERNS.conversations, {
+      // Backend returns conversation directly with _metadata (not wrapped in ApiResponse)
+      const response = await apiClient.post<Conversation>(ROUTE_PATTERNS.conversations, {
         type: "text",
         ...params,
       });
-      return response.data.data;
-    } catch (error: any) {
+      return response.data;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
       console.error("[ConversationBackend] generateConversation error", {
-        error: error.message,
+        error: message,
         endpoint: ROUTE_PATTERNS.conversations,
       });
       throw new Error("Failed to generate conversation. Please try again.");

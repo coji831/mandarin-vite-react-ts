@@ -10,14 +10,12 @@
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type {
-  BatchUpdateApiResponse,
   BatchUpdateRequest,
-  ProgressApiResponse,
   ProgressStatsResponse,
-  SingleProgressApiResponse,
   UpdateProgressRequest,
   WordProgress,
 } from "@mandarin/shared-types";
+import type { AxiosError } from "axios";
 import { apiClient } from "services";
 
 /**
@@ -32,8 +30,9 @@ export const progressApi = {
    */
   async getAllProgress(): Promise<WordProgress[]> {
     try {
-      const response = await apiClient.get<ProgressApiResponse>(ROUTE_PATTERNS.progress);
-      return response.data.data;
+      // Backend returns array directly, not wrapped in { success, data }
+      const response = await apiClient.get<WordProgress[]>(ROUTE_PATTERNS.progress);
+      return response.data;
     } catch (error) {
       console.error("[progressApi] Failed to fetch all progress:", error);
       throw new Error("Failed to load your progress. Please try again.");
@@ -48,13 +47,13 @@ export const progressApi = {
    */
   async getWordProgress(wordId: string): Promise<WordProgress | null> {
     try {
-      const response = await apiClient.get<SingleProgressApiResponse>(
-        ROUTE_PATTERNS.progressWord(wordId),
-      );
-      return response.data.data;
-    } catch (error: any) {
+      // Backend returns object directly, not wrapped
+      const response = await apiClient.get<WordProgress>(ROUTE_PATTERNS.progressWord(wordId));
+      return response.data;
+    } catch (error: unknown) {
       // 404 means no progress exists yet (valid case)
-      if (error?.response?.status === 404 || error?.status === 404) {
+      const axiosError = error as AxiosError;
+      if (axiosError?.response?.status === 404 || (error as { status?: number })?.status === 404) {
         return null;
       }
       console.error(`[progressApi] Failed to fetch progress for ${wordId}:`, error);
@@ -71,11 +70,9 @@ export const progressApi = {
    */
   async updateWordProgress(wordId: string, data: UpdateProgressRequest): Promise<WordProgress> {
     try {
-      const response = await apiClient.put<SingleProgressApiResponse>(
-        ROUTE_PATTERNS.progressWord(wordId),
-        data,
-      );
-      return response.data.data;
+      // Backend returns updated object directly
+      const response = await apiClient.put<WordProgress>(ROUTE_PATTERNS.progressWord(wordId), data);
+      return response.data;
     } catch (error) {
       console.error(`[progressApi] Failed to update progress for ${wordId}:`, error);
       throw new Error("Failed to save your progress. Please try again.");
@@ -90,11 +87,12 @@ export const progressApi = {
    */
   async batchUpdateProgress(updates: BatchUpdateRequest): Promise<WordProgress[]> {
     try {
-      const response = await apiClient.post<BatchUpdateApiResponse>(
+      // Backend returns { updated, results } directly
+      const response = await apiClient.post<{ updated: number; results: WordProgress[] }>(
         ROUTE_PATTERNS.progressBatch,
         updates,
       );
-      return response.data.data.results;
+      return response.data.results;
     } catch (error) {
       console.error("[progressApi] Failed to batch update progress:", error);
       throw new Error("Failed to save your progress. Please try again.");
@@ -122,10 +120,9 @@ export const progressApi = {
    */
   async getProgressStats(): Promise<ProgressStatsResponse> {
     try {
-      const response = await apiClient.get<{ success: boolean; data: ProgressStatsResponse }>(
-        ROUTE_PATTERNS.progressStats,
-      );
-      return response.data.data;
+      // Backend returns stats object directly
+      const response = await apiClient.get<ProgressStatsResponse>(ROUTE_PATTERNS.progressStats);
+      return response.data;
     } catch (error) {
       console.error("[progressApi] Failed to fetch progress stats:", error);
       throw new Error("Failed to load progress statistics. Please try again.");
