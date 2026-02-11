@@ -272,4 +272,275 @@ describe("ProgressService", () => {
       });
     });
   });
+
+  // Story 15.1: Spaced Repetition Enhancement Tests
+  describe("calculateNextReview with performanceMultiplier (Story 15.1)", () => {
+    it("should use performanceMultiplier when provided (quiz mode)", () => {
+      const result = progressService.calculateNextReview(0.5, 1.0);
+      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+      // 1.0 multiplier should give max days (30)
+      expect(daysDiff).toBe(30);
+    });
+
+    it("should use performanceMultiplier 0.0 for immediate review", () => {
+      const result = progressService.calculateNextReview(0.8, 0.0);
+      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+      // 0.0 multiplier should give min days (1)
+      expect(daysDiff).toBe(1);
+    });
+
+    it("should fall back to confidence² when performanceMultiplier is null", () => {
+      const resultWithNull = progressService.calculateNextReview(0.5, null);
+      const resultWithoutParam = progressService.calculateNextReview(0.5);
+      
+      // Both should give same result (backward compatibility)
+      expect(resultWithNull.getTime()).toBe(resultWithoutParam.getTime());
+    });
+
+    it("should prioritize performanceMultiplier over confidence", () => {
+      // Even with high confidence, multiplier 0.0 should give 1 day
+      const result = progressService.calculateNextReview(1.0, 0.0);
+      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+      expect(daysDiff).toBe(1);
+    });
+  });
+
+  describe("recordQuizResult (Story 15.1)", () => {
+    let mockQuizResultRepository;
+
+    beforeEach(() => {
+      mockQuizResultRepository = {
+        create: vi.fn(),
+        findLatestByUserAndWord: vi.fn(),
+      };
+      progressService = new ProgressService(mockRepository, mockQuizResultRepository);
+      vi.clearAllMocks();
+    });
+
+    it("should throw error if QuizResultRepository not injected", async () => {
+      const serviceWithoutQuizRepo = new ProgressService(mockRepository);
+
+      await expect(
+        serviceWithoutQuizRepo.recordQuizResult({
+          userId: "user1",
+          wordId: "word1",
+          correct: true,
+          questionType: "multiple_choice",
+        })
+      ).rejects.toThrow("QuizResultRepository not injected");
+    });
+
+    it("should record correct answer with 1.0x multiplier", async () => {
+      const existingProgress = {
+        userId: "user1",
+        wordId: "word1",
+        studyCount: 3,
+        correctCount: 2,
+        confidence: 0.6,
+        lapseCount: 2,
+        currentDelay: 5,
+      };
+      mockRepository.findByUserAndWord.mockResolvedValue(existingProgress);
+      mockRepository.upsert.mockResolvedValue({ id: "1", lapseCount: 0 });
+      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
+
+      const result = await progressService.recordQuizResult({
+        userId: "user1",
+        wordId: "word1",
+        correct: true,
+        questionType: "type_pinyin",
+        timeSpentMs: 3500,
+      });
+
+      // Check progress upsert called with correct data
+      expect(mockRepository.upsert).toHaveBeenCalledWith("user1", "word1", {
+        studyCount: 4,
+        correctCount: 3,
+        nextReview: expect.any(Date),
+        lapseCount: 0, // Reset on correct
+        currentDelay: 30, // 1.0 multiplier gives max days
+        confidence: 0.6, // Preserved
+      });
+
+      // Check quiz result created
+      expect(mockQuizResultRepository.create).toHaveBeenCalledWith({
+        userId: "user1",
+        wordId: "word1",
+        correct: true,
+        questionType: "type_pinyin",
+        timeSpentMs: 3500,
+      });
+
+      // Check return value
+      expect(result.lapseCount).toBe(0);
+      expect(result.isLeech).toBe(false);
+      expect(result.nextReviewDate).toBeInstanceOf(Date);
+    });
+
+    it("should record incorrect answer with 0.0x multiplier", async () => {
+      const existingProgress = {
+        userId: "user1",
+        wordId: "word1",
+        studyCount: 3,
+        correctCount: 2,
+        confidence: 0.6,
+        lapseCount: 2,
+        currentDelay: 5,
+      };
+      mockRepository.findByUserAndWord.mockResolvedValue(existingProgress);
+      mockRepository.upsert.mockResolvedValue({ id: "1", lapseCount: 3 });
+      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
+
+      const result = await progressService.recordQuizResult({
+        userId: "user1",
+        wordId: "word1",
+        correct: false,
+        questionType: "multiple_choice",
+      });
+
+      // Check lapse count incremented
+      expect(mockRepository.upsert).toHaveBeenCalledWith("user1", "word1", {
+        studyCount: 4,
+        correctCount: 2, // Not incremented
+        nextReview: expect.any(Date),
+        lapseCount: 3, // Incremented from 2
+        currentDelay: 1, // 0.0 multiplier gives min days
+        confidence: 0.6,
+      });
+
+      expect(result.lapseCount).toBe(3);
+      expect(result.isLeech).toBe(false);
+    });
+
+    it("should mark as leech when lapseCount >= 5", async () => {
+      const existingProgress = {
+        userId: "user1",
+        wordId: "word1",
+        studyCount: 8,
+        correctCount: 3,
+        confidence: 0.3,
+        lapseCount: 4,
+        currentDelay: 2,
+      };
+      mockRepository.findByUserAndWord.mockResolvedValue(existingProgress);
+      mockRepository.upsert.mockResolvedValue({ id: "1", lapseCount: 5 });
+      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
+
+      const result = await progressService.recordQuizResult({
+        userId: "user1",
+        wordId: "word1",
+        correct: false,
+        questionType: "type_character",
+      });
+
+      expect(result.lapseCount).toBe(5);
+      expect(result.isLeech).toBe(true); // >= 5 threshold
+    });
+
+    it("should handle new word with no existing progress", async () => {
+      mockRepository.findByUserAndWord.mockResolvedValue(null);
+      mockRepository.upsert.mockResolvedValue({ id: "1", lapseCount: 0 });
+      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
+
+      const result = await progressService.recordQuizResult({
+        userId: "user1",
+        wordId: "word1",
+        correct: true,
+        questionType: "multiple_choice",
+      });
+
+      // Check default values used
+      expect(mockRepository.upsert).toHaveBeenCalledWith("user1", "word1", {
+        studyCount: 1,
+        correctCount: 1,
+        nextReview: expect.any(Date),
+        lapseCount: 0,
+        currentDelay: 30,
+        confidence: 0, // Default
+      });
+
+      expect(result.isLeech).toBe(false);
+    });
+  });
+
+  describe("determineAlgorithmMode (Story 15.1)", () => {
+    let mockQuizResultRepository;
+
+    beforeEach(() => {
+      mockQuizResultRepository = {
+        create: vi.fn(),
+        findLatestByUserAndWord: vi.fn(),
+      };
+      progressService = new ProgressService(mockRepository, mockQuizResultRepository);
+      vi.clearAllMocks();
+    });
+
+    it("should return 'flashcard' when QuizResultRepository not injected", async () => {
+      const serviceWithoutQuizRepo = new ProgressService(mockRepository);
+
+      const mode = await serviceWithoutQuizRepo.determineAlgorithmMode("user1", "word1");
+
+      expect(mode).toBe("flashcard");
+    });
+
+    it("should return 'flashcard' when no quiz results exist", async () => {
+      mockQuizResultRepository.findLatestByUserAndWord.mockResolvedValue(null);
+      mockRepository.findByUserAndWord.mockResolvedValue({
+        userId: "user1",
+        wordId: "word1",
+        updatedAt: new Date(),
+      });
+
+      const mode = await progressService.determineAlgorithmMode("user1", "word1");
+
+      expect(mode).toBe("flashcard");
+    });
+
+    it("should return 'quiz' when quiz result exists but no progress", async () => {
+      mockQuizResultRepository.findLatestByUserAndWord.mockResolvedValue({
+        userId: "user1",
+        wordId: "word1",
+        answeredAt: new Date(),
+      });
+      mockRepository.findByUserAndWord.mockResolvedValue(null);
+
+      const mode = await progressService.determineAlgorithmMode("user1", "word1");
+
+      expect(mode).toBe("quiz");
+    });
+
+    it("should return 'quiz' when quiz result is more recent", async () => {
+      const now = new Date();
+      const recentQuiz = new Date(now.getTime() + 1000); // 1 second later
+      const olderProgress = new Date(now.getTime() - 1000); // 1 second earlier
+
+      mockQuizResultRepository.findLatestByUserAndWord.mockResolvedValue({
+        answeredAt: recentQuiz,
+      });
+      mockRepository.findByUserAndWord.mockResolvedValue({
+        updatedAt: olderProgress,
+      });
+
+      const mode = await progressService.determineAlgorithmMode("user1", "word1");
+
+      expect(mode).toBe("quiz");
+    });
+
+    it("should return 'flashcard' when progress is more recent", async () => {
+      const now = new Date();
+      const recentProgress = new Date(now.getTime() + 1000); // 1 second later
+      const olderQuiz = new Date(now.getTime() - 1000); // 1 second earlier
+
+      mockQuizResultRepository.findLatestByUserAndWord.mockResolvedValue({
+        answeredAt: olderQuiz,
+      });
+      mockRepository.findByUserAndWord.mockResolvedValue({
+        updatedAt: recentProgress,
+      });
+
+      const mode = await progressService.determineAlgorithmMode("user1", "word1");
+
+      expect(mode).toBe("flashcard");
+    });
+  });
 });

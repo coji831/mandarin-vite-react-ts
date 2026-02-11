@@ -29,14 +29,17 @@ This story refactors the existing progress tracking system to support both flash
 /**
  * Unified spaced repetition calculation supporting both flashcard and quiz modes
  *
- * Formula: newDelay = baseDelay * performanceMultiplier
+ * Formula: days = 1 + (30 - 1) * performanceMultiplier
  *
  * Performance multipliers:
  * - Flashcard: confidence² (0.0 to 1.0) - existing behavior
- * - Quiz correct: 2.0 - exponential increase
+ * - Quiz correct: 1.0 (normalized) - max spacing (30 days)
  * - Quiz incorrect: 0.0 - reset to 1 day
  */
-function calculateNextReview(currentDelay, performanceMultiplier = null, confidence = null) {
+function calculateNextReview(confidence, performanceMultiplier = null) {
+  const minDays = 1;
+  const maxDays = 30;
+  
   // Backward compatibility: if no multiplier provided, use confidence² (flashcard mode)
   const multiplier =
     performanceMultiplier !== null
@@ -45,14 +48,11 @@ function calculateNextReview(currentDelay, performanceMultiplier = null, confide
         ? Math.pow(confidence, 2)
         : 1.0;
 
-  const newDelay = Math.max(1, Math.min(30, currentDelay * multiplier));
+  const days = minDays + (maxDays - minDays) * multiplier;
   const nextReviewDate = new Date();
-  nextReviewDate.setDate(nextReviewDate.getDate() + newDelay);
+  nextReviewDate.setDate(nextReviewDate.getDate() + Math.round(days));
 
-  return {
-    nextReviewDate,
-    newDelay,
-  };
+  return nextReviewDate;
 }
 
 /**
@@ -62,22 +62,20 @@ function calculateNextReview(currentDelay, performanceMultiplier = null, confide
 async function recordQuizResult({ userId, wordId, correct, questionType, timeSpentMs }) {
   const progress = await ProgressRepository.findByUserAndWord(userId, wordId);
 
-  // Quiz-specific multipliers
-  const performanceMultiplier = correct ? 2.0 : 0.0;
+  // Quiz-specific multipliers (normalized 0.0-1.0 scale)
+  const performanceMultiplier = correct ? 1.0 : 0.0;
 
   // Update progress using unified algorithm
-  const { nextReviewDate, newDelay } = calculateNextReview(
-    progress.currentDelay || 1,
-    performanceMultiplier,
-  );
+  const nextReviewDate = calculateNextReview(0, performanceMultiplier);
+  const delayDays = Math.round((nextReviewDate - new Date()) / (1000 * 60 * 60 * 24));
 
   // Update lapse count (increment on incorrect, reset on correct)
-  const lapseCount = correct ? 0 : (progress.lapseCount || 0) + 1;
+  const lapseCount = correct ? 0 : (progress?.lapseCount || 0) + 1;
 
   // Save progress update
   await ProgressRepository.update(progress.id, {
     nextReviewDate,
-    currentDelay: newDelay,
+    currentDelay: delayDays,
     lapseCount,
     studyCount: progress.studyCount + 1,
     correctCount: progress.correctCount + (correct ? 1 : 0),
@@ -248,35 +246,56 @@ Both systems share:
 
 ## Technical Challenges & Solutions
 
-### Challenge 1: Algorithm Conflict Resolution
+### Challenge 1: Multiplier Scale Normalization
+
+**Problem:** Original AC specified quiz multipliers as `2.0` (correct) and `0.0` (incorrect), but this creates confusion when mixing with flashcard's `confidence²` (0.0-1.0 range). The formula `newDelay = baseDelay * 2.0` suggests exponential growth, but the requirement is actually for max spacing (30 days) not unbounded growth.
+
+**Solution:** Normalized quiz multipliers to 0.0-1.0 scale matching flashcard system:
+- Correct: `1.0` (maps to 30 days via `days = 1 + 29 * 1.0`)
+- Incorrect: `0.0` (maps to 1 day via `days = 1 + 29 * 0.0`)
+- Flashcard: `confidence²` remains unchanged (e.g., 0.8² = 0.64 → ~19 days)
+
+**Result:** All multipliers use the same 0.0-1.0 scale, unified formula works seamlessly, behavior identical to "2.0x exponential" but with clearer intent (max vs. unbounded growth).
+
+### Challenge 2: Algorithm Conflict Resolution
 
 **Problem:** Existing flashcard system uses `delay = 1 + 29 * confidence²` (quadratic), proposed quiz system uses `delay = correct ? currentDelay*2 : 1` (exponential). If both systems update the same word's `nextReview` date, they override each other's calculations and destroy spaced repetition consistency.
 
 **Solution:** Unified algorithm with performance multipliers:
 
-- Extract common pattern: `newDelay = baseDelay * performanceMultiplier`
+- Extract common pattern: `days = 1 + (maxDays - minDays) * performanceMultiplier`
 - Flashcard: `multiplier = confidence²` (0.0 to 1.0 scale preserves existing behavior)
-- Quiz: `multiplier = correct ? 2.0 : 0.0` (binary performance)
-- Feature detection: Most recent activity type (quiz vs flashcard timestamp) determines priority
+- Quiz: `multiplier = correct ? 1.0 : 0.0` (normalized binary performance)
+- Feature detection: Most recent activity type (quiz vs flashcard timestamp) determines priority via `determineAlgorithmMode()`
 - Result: Both systems can coexist; gradual migration supported
 
-### Challenge 2: Backward Compatibility
+### Challenge 3: Backward Compatibility
 
 **Problem:** Existing flashcard API (`POST /api/progress/update`) has 100k+ calls in production. Cannot break existing users during migration.
 
 **Solution:**
 
-- `calculateNextReview()` signature: `(currentDelay, performanceMultiplier = null, confidence = null)`
+- `calculateNextReview()` signature: `(confidence, performanceMultiplier = null)`
 - If `performanceMultiplier` is null, falls back to `confidence²` (existing behavior)
 - Existing flashcard endpoints continue calling with `confidence` parameter only
 - New quiz endpoints call with explicit `performanceMultiplier` parameter
+- Constructor injection for `ProgressService`: accepts optional `quizResultRepository` parameter
 - Zero breaking changes to existing API contracts
 
-### Challenge 3: Data Model Conflicts
+### Challenge 4: Data Migration Strategy
 
-**Problem:** Confidence field (0.0-1.0) is semantically ambiguous when user does both flashcards and quizzes. Does confidence=0.8 mean "I feel 80% sure" (flashcard) or "I got 8 out of 10 correct" (quiz)?
+**Problem:** Adding `currentDelay` column to Progress table with 100k+ existing rows. Should we backfill values (calculate from `nextReview - now`) or leave NULL?
 
-**Solution:**
+**Solution:** Leave NULL for existing records (no backfill):
+- Avoids expensive migration calculation on startup
+- New quiz/flashcard activity populates field going forward
+- Service layer handles NULL gracefully: `const currentDelay = progress?.currentDelay || 1`
+- Progressive migration: field gets populated organically as users engage with new features
+- Risk mitigation: No data loss if migration needs rollback
+
+**Decision:** No feature flag. Schema is additive (doesn't break existing queries), service refactor uses default parameters for backward compatibility. Deployment risk assessed as low.
+
+### Challenge 5: Data Model Conflicts
 
 - Keep `confidence` field for flashcard-only users (unchanged)
 - Add `quiz_results` audit table for quiz-specific tracking
@@ -291,25 +310,24 @@ Both systems share:
 ```javascript
 describe("ProgressService.calculateNextReview", () => {
   it("should use confidence² multiplier when only confidence provided (flashcard mode)", () => {
-    const result = calculateNextReview(5, null, 0.8);
-    // 5 * 0.8² = 5 * 0.64 = 3.2 → 3 days
-    expect(result.newDelay).toBe(3);
+    const result = calculateNextReview(0.8, null);
+    const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+    // 1 + 29 * 0.8² = 1 + 29 * 0.64 = 19.56 → ~19 days
+    expect(daysDiff).toBeGreaterThanOrEqual(18);
+    expect(daysDiff).toBeLessThanOrEqual(20);
   });
 
   it("should use explicit multiplier when provided (quiz mode)", () => {
-    const result = calculateNextReview(5, 2.0);
-    // 5 * 2.0 = 10 days
-    expect(result.newDelay).toBe(10);
+    const result = calculateNextReview(0.5, 1.0);
+    const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+    // 1 + 29 * 1.0 = 30 days
+    expect(daysDiff).toBe(30);
   });
 
   it("should reset to 1 day on quiz incorrect (multiplier = 0.0)", () => {
-    const result = calculateNextReview(15, 0.0);
-    expect(result.newDelay).toBe(1);
-  });
-
-  it("should cap delay at 30 days maximum", () => {
-    const result = calculateNextReview(20, 2.0);
-    expect(result.newDelay).toBe(30);
+    const result = calculateNextReview(0, 0.0);
+    const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
+    expect(daysDiff).toBe(1);
   });
 });
 

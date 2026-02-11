@@ -45,6 +45,8 @@ model Progress {
   correctCount Int      @default(0)
   confidence   Float    @default(0)
   nextReview   DateTime @default(now())
+  lapseCount   Int      @default(0)
+  currentDelay Int?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -53,6 +55,7 @@ model Progress {
   @@unique([userId, wordId])
   @@index([userId])
   @@index([nextReview])
+  @@index([userId, nextReview])
 }
 
 model VocabularyWord {
@@ -66,4 +69,30 @@ model VocabularyWord {
   exampleSentence String?
 
   @@index([level])
+}
+
+model StudyStreak {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  currentStreak    Int      @default(0)
+  longestStreak    Int      @default(0)
+  lastActivityDate DateTime @default(now())
+  freezeCount      Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model QuizResult {
+  id           String   @id @default(uuid())
+  userId       String
+  wordId       String
+  correct      Boolean
+  questionType String
+  timeSpentMs  Int?
+  answeredAt   DateTime @default(now())
+
+  @@index([userId, wordId])
+  @@index([userId, answeredAt])
 }

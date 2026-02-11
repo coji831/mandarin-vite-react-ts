@@ -637,6 +637,100 @@ Authorization: Bearer <access_token>
 - `wordsToReviewToday`: Words with `nextReview` date ≤ current time
 - `averageConfidence`: Mean confidence across all studied words
 
+---
+
+## Spaced Repetition Algorithm (Story 15.1)
+
+The progress system uses a **unified spaced repetition algorithm** that supports both flashcard (confidence-based) and quiz (performance-based) study modes.
+
+### Unified Formula
+
+```
+newDelay = baseDelay * performanceMultiplier
+finalDays = 1 + (30 - 1) * multiplier
+```
+
+Where:
+- `baseDelay`: Current spacing interval in days (or 1 for first review)
+- `performanceMultiplier`: Scaling factor based on activity type
+- Final result: 1-30 day range
+
+### Performance Multipliers
+
+| Activity Type | Multiplier Calculation | Example |
+|--------------|----------------------|---------|
+| **Flashcard** | `confidence²` | 0.8 confidence → 0.64 multiplier → ~19 days |
+| **Quiz (Correct)** | `1.0` (fixed) | Correct answer → 1.0 multiplier → 30 days max |
+| **Quiz (Incorrect)** | `0.0` (fixed) | Incorrect answer → 0.0 multiplier → 1 day (immediate) |
+
+### Feature Detection
+
+The system automatically determines which algorithm to use based on **most recent activity**:
+
+1. If `quiz_results.answeredAt > progress.updatedAt` → **Quiz algorithm**
+2. Otherwise → **Flashcard algorithm**
+
+This allows seamless coexistence:
+- User does flashcard review (confidence 0.8) → nextReview set to 19 days
+- User then does quiz (correct) → nextReview updated to 30 days (quiz wins)
+- User later does flashcard (confidence 0.5) → nextReview updated to 8 days (flashcard wins)
+
+### Schema Additions
+
+**Progress Table (Enhanced):**
+
+```typescript
+{
+  // Existing fields...
+  lapseCount: number;        // Consecutive incorrect quiz answers (Story 15.1)
+  currentDelay: number | null; // Current spacing interval in days (Story 15.1)
+}
+```
+
+**QuizResult Table (New):**
+
+```typescript
+{
+  id: string;
+  userId: string;
+  wordId: string;
+  correct: boolean;
+  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  timeSpentMs: number | null;
+  answeredAt: Date;
+}
+```
+
+**StudyStreak Table (New):**
+
+```typescript
+{
+  id: string;
+  userId: string;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityDate: Date;
+  freezeCount: number;
+}
+```
+
+### Backward Compatibility
+
+All existing flashcard API calls continue to work without modification:
+
+- `PUT /api/v1/progress/:wordId` with `confidence` → uses `confidence²` multiplier
+- Quiz-specific endpoints (Story 15.2) → use explicit multipliers (1.0 or 0.0)
+- Service layer automatically selects correct algorithm based on activity type
+
+### Leeches
+
+Words with `lapseCount >= 5` are flagged as "leeches" (difficult vocabulary requiring targeted review). Leech tracking is exposed via:
+
+- `POST /api/progress/test-result` response includes `isLeech: boolean`
+- `GET /api/progress/leeches` endpoint (Story 15.2) returns high-difficulty words
+
+---
+
 ### POST /api/mandarin/conversation/audio/generate
 
 Generate or retrieve cached audio for a conversation. Conversation text must exist first.

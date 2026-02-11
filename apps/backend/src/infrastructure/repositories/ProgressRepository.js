@@ -35,13 +35,15 @@ export class ProgressRepository {
 
   /**
    * Create or update progress for a word
+   * Story 15.1: Updated to support lapseCount and currentDelay fields
+   * 
    * @param {string} userId - User ID
    * @param {string} wordId - Word ID
-   * @param {object} data - Progress data { studyCount?, correctCount?, confidence?, nextReview? }
+   * @param {object} data - Progress data { studyCount?, correctCount?, confidence?, nextReview?, lapseCount?, currentDelay? }
    * @returns {Promise<object>} Updated progress record
    */
   async upsert(userId, wordId, data) {
-    const { studyCount, correctCount, confidence, nextReview } = data;
+    const { studyCount, correctCount, confidence, nextReview, lapseCount, currentDelay } = data;
 
     return prisma.progress.upsert({
       where: {
@@ -52,6 +54,8 @@ export class ProgressRepository {
         ...(correctCount !== undefined && { correctCount }),
         ...(confidence !== undefined && { confidence }),
         ...(nextReview && { nextReview }),
+        ...(lapseCount !== undefined && { lapseCount }),
+        ...(currentDelay !== undefined && { currentDelay }),
       },
       create: {
         userId,
@@ -60,6 +64,8 @@ export class ProgressRepository {
         correctCount: correctCount || 0,
         confidence: confidence || 0,
         nextReview: nextReview || new Date(),
+        lapseCount: lapseCount || 0,
+        currentDelay: currentDelay || null,
       },
     });
   }
