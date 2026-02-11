@@ -32,6 +32,16 @@ Sections
 - [ ] Migrate auth to React Query + Axios - Replace custom `authFetch` with industry standards
 - [ ] Improve backend error logging - Add structured error objects and request IDs
 
+### Future Epics (Long-term)
+
+- [ ] **Epic: Advanced Spaced Repetition (FSRS)** - Replace exponential algorithm with ML-powered FSRS v6 (DSR model, 21 parameters, 20-30% fewer reviews for same retention). Requires mathematical modeling + backend refactor. Dependencies: Epic 15. References: `docs/business-requirements/epic-15-learning-retention/Vocabulary-Retention-Feature-Design.md` (FSRS section).
+
+- [ ] **Epic: Handwriting Recognition System** - Canvas-based character input (40x40mm) with stroke-order validation and CNN for 30K+ character recognition. Highest retention value for orthographic production. Requires ML model integration (Apple-style CNN or Vision API). Dependencies: Epic 15. Mobile-optimized UI critical.
+
+- [ ] **Epic: Radical-Based Learning** - "Select radical" question type + character decomposition viewer. Builds discrimination learning for similar characters. Requires 214 Kangxi radical database + character breakdown logic. Dependencies: Epic 15, Epic 17 (Knowledge Hub). Optional: AI-generated radical etymology + mnemonics via LLM.
+
+- [ ] **Epic: Progress Visualization Dashboard** - Mastery heatmap (red/green zones), retention curves, weak area identification. Self-efficacy boost through visual progress tracking. Requires data aggregation + charting library (Chart.js/D3). Dependencies: Epic 15. No AI needed.
+
 ## Done
 
 - [x] Re-organize features - Moved `conversation/` under `mandarin/`
