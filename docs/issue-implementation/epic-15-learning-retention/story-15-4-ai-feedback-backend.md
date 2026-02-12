@@ -37,7 +37,7 @@ Integrates Gemini API to generate personalized error explanations for incorrect 
 export async function generateFeedback(
   { wordId, userAnswer, correctAnswer, questionType },
   cacheService,
-  vocabularyRepo
+  vocabularyRepo,
 ) {
   // 1. Input sanitization (prevent prompt injection)
   const sanitizedUserAnswer = sanitizeInput(userAnswer);
@@ -106,6 +106,7 @@ Keep language simple and encouraging.`;
 ```
 
 **Benefits:**
+
 - Single API call gets both classification AND explanation
 - Eliminates need for complex tone-parsing regex
 - AI understands context better than manual rules
@@ -123,7 +124,7 @@ export async function generateAIFeedback(req, res) {
   const feedback = await generateFeedback(
     { wordId, userAnswer, correctAnswer, questionType },
     redisCacheService,
-    vocabularyRepo
+    vocabularyRepo,
   );
 
   return res.status(200).json({
@@ -146,7 +147,7 @@ router.post(
   "/v1/quiz/feedback",
   authenticateToken,
   feedbackLimiter,
-  asyncHandler(generateAIFeedback)
+  asyncHandler(generateAIFeedback),
 );
 ```
 
@@ -170,6 +171,7 @@ class CacheMetrics {
 ```
 
 **Benefits:**
+
 - Simple in-memory counter (production: migrate to Prometheus/Datadog)
 - No external dependencies
 - Immediate visibility into caching effectiveness
@@ -177,37 +179,38 @@ class CacheMetrics {
   const userTone = extractTone(userAnswer);
   const correctTone = extractTone(correctAnswer);
   if (removeTone(userAnswer) === removeTone(correctAnswer) && userTone !== correctTone) {
-    return "tone";
+  return "tone";
   }
 
   // Character error (visual similarity)
   if (wordDetails.chinese !== userAnswer && isSimilarCharacter(wordDetails.chinese, userAnswer)) {
-    return "character";
+  return "character";
   }
 
   return "meaning"; // Semantic confusion
-}
+  }
 
 function getFallbackFeedback(errorType) {
-  const fallbacks = {
-    tone: {
-      explanation:
-        "Remember, tone marks change meaning in Chinese. Practice distinguishing the four tones.",
-      errorType: "tone",
-    },
-    character: {
-      explanation:
-        "These characters look similar but have different meanings. Notice the small differences.",
-      errorType: "character",
-    },
-    meaning: {
-      explanation: "Review this word again to reinforce your memory. Consider creating a mnemonic.",
-      errorType: "meaning",
-    },
-  };
-  return fallbacks[errorType] || fallbacks.meaning;
+const fallbacks = {
+tone: {
+explanation:
+"Remember, tone marks change meaning in Chinese. Practice distinguishing the four tones.",
+errorType: "tone",
+},
+character: {
+explanation:
+"These characters look similar but have different meanings. Notice the small differences.",
+errorType: "character",
+},
+meaning: {
+explanation: "Review this word again to reinforce your memory. Consider creating a mnemonic.",
+errorType: "meaning",
+},
+};
+return fallbacks[errorType] || fallbacks.meaning;
 }
-```
+
+````
 
 ### API Endpoint with Rate Limiting
 
@@ -275,7 +278,7 @@ function sanitize(input) {
 
 // Route registration
 router.post("/feedback", authenticateJWT, feedbackLimiter, generateFeedback);
-```
+````
 
 ## Architecture Integration
 
@@ -339,6 +342,7 @@ export async function generateFeedback(params, cacheService, vocabularyRepo) {
 ```
 
 **Benefits:**
+
 - Saved ~3 hours of regex engineering
 - AI understands context better (e.g., semantic confusion between "hello" and "hi")
 - Fallback classification logic still available if JSON parsing fails
@@ -382,6 +386,7 @@ cacheMetrics.record("hit"); // → prometheus.counter('cache_hits').inc()
 ```
 
 **Benefits:**
+
 - Zero infrastructure dependencies now
 - Immediate visibility in dev logs
 - Production migration deferred to dedicated monitoring story
@@ -393,6 +398,7 @@ cacheMetrics.record("hit"); // → prometheus.counter('cache_hits').inc()
 **Problem:** Testing 3-second timeout requires waiting 3+ seconds, slowing test suite.
 
 **Attempted Solutions:**
+
 - `vi.useFakeTimers()` - Doesn't work with Promise.race
 - Mocking Promise.race - Too invasive
 
@@ -401,7 +407,7 @@ cacheMetrics.record("hit"); // → prometheus.counter('cache_hits').inc()
 ```javascript
 it("should return fallback feedback on Gemini API timeout", async () => {
   vi.spyOn(GeminiClient, "generateText").mockImplementation(
-    () => new Promise((resolve) => setTimeout(() => resolve("Too slow"), 5000))
+    () => new Promise((resolve) => setTimeout(() => resolve("Too slow"), 5000)),
   );
   // ... test runs for 3s and passes
 }, 6000); // Test timeout > API timeout
@@ -480,7 +486,7 @@ Duration  3.42s (transform 116ms, setup 40ms, test 3.03s)
 
 **Implementation Status:** ✅ Completed
 
-- **Commit:** e6b08e0
+- **Commit:** 61badac
 - **Last Update:** 2026-02-12
 - **Test Status:** 16/16 passing (100%)
 - **API Docs:** Complete with prompt template, examples, error codes
