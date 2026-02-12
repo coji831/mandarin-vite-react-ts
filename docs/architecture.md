@@ -166,6 +166,55 @@ Controller → Service (business logic) → Repository (database)
 - Auth system: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#authentication)
 - Environment setup: [docs/guides/environment-setup-guide.md](./guides/environment-setup-guide.md)
 
+## Progress & Spaced Repetition System
+
+**Pattern:** Unified algorithm with dual-mode support (flashcard + quiz)
+
+**Core Formula:**
+
+```
+nextReviewDays = 1 + (30 - 1) × performanceMultiplier
+```
+
+**Performance Multipliers:**
+
+- **Flashcard Review**: `confidence²` (0.0 to 1.0 scale, subjective self-rating)
+- **Quiz Correct**: `1.0` (maximum spacing, 30 days)
+- **Quiz Incorrect**: `0.0` (reset to 1 day for immediate review)
+
+**Feature Detection:** System automatically determines which algorithm to use based on most recent activity type (quiz results take precedence over flashcard reviews when both exist).
+
+**Progress Tracking:**
+
+- **Study Metrics**: `studyCount`, `correctCount`, `confidence`, `nextReview` (existing fields)
+- **Quiz Metrics**: `lapseCount` (consecutive failures), `currentDelay` (spacing interval in days)
+- **Audit Trail**: `quiz_results` table logs every quiz answer with timestamp, question type, time spent
+
+**Leech Detection:**
+
+- Words with `lapseCount >= 5` flagged as "leeches" (high-difficulty vocabulary)
+- Accessible via `GET /api/v1/progress/leeches` endpoint
+- Sorted by struggle intensity (highest lapseCount first)
+- Enables targeted review for 15% of words causing 50% of failures (Pareto principle)
+
+**Key Endpoints:**
+
+- `GET /api/v1/progress/due` - Fetch words requiring review (based on `nextReview <= date`)
+- `POST /api/v1/progress/test-result` - Save quiz answer, adjust spaced repetition
+- `GET /api/v1/progress/leeches` - Fetch struggling vocabulary for targeted practice
+- `PUT /api/v1/progress/:wordId` - Update flashcard confidence (legacy endpoint, still supported)
+
+**Backward Compatibility:**
+
+- Existing flashcard API calls continue using `confidence²` multiplier
+- No retroactive changes to existing progress records
+- Gradual migration enabled (users can use flashcards, quizzes, or both)
+
+**See detailed documentation:**
+
+- Spaced repetition guide: [docs/guides/spaced-repetition-integration-guide.md](./guides/spaced-repetition-integration-guide.md)
+- API specification: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#progress-tracking-endpoints)
+
 ## External Services
 
 **Google Cloud Platform:**
@@ -184,9 +233,18 @@ Controller → Service (business logic) → Repository (database)
 
 **Supabase PostgreSQL:**
 
-- **Purpose**: User accounts, progress tracking, authentication
+- **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/infrastructure/database/client.js`)
 - **Configuration**: `DATABASE_URL`
+- **Key Tables**: `users`, `progress`, `refresh_tokens`, `quiz_results`, `study_streaks`, `user_badges`
+
+**Gamification System:**
+
+- **Streak Tracking**: 48-hour grace period with freeze currency system (earn per 10 perfect quizzes)
+- **Badge Awards**: 4 milestone tiers (7/30/100/365-day streaks), mystery box exclusive variants
+- **XP System**: +10 base per correct answer, +5 bonus for 7+ day streaks, 500 XP daily cap
+- **Mystery Boxes**: 5% drop rate on 7-day multiples, random rewards (50 XP / 1 freeze / rare badge)
+- **API Endpoints**: `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges`
 
 ## Deployment Architecture
 

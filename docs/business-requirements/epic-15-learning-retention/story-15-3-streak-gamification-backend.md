@@ -19,19 +19,19 @@ Gamification elements (streaks, badges, XP) are proven to increase daily active 
 
 ## Acceptance Criteria
 
-- [ ] `GET /api/progress/streak` endpoint returns { currentStreak, longestStreak, freezeCount, lastActivityDate }
-- [ ] Streak automatically increments when user saves quiz answer within 48 hours of last activity
-- [ ] Streak resets to 0 if no activity for >48 hours (unless freeze spent)
-- [ ] `POST /api/progress/streak/freeze` endpoint spends 1 freeze to protect current streak
-- [ ] Freeze spend validation: reject if freezeCount < 1 or streak not at risk
-- [ ] `GET /api/gamification/badges` endpoint returns { earned: [], available: [] } badge arrays
-- [ ] Badge award logic: 7-day (1 week), 30-day (1 month), 100-day (100 days), 365-day (1 year) streak milestones
-- [ ] XP calculation: +10 base per correct answer, +5 bonus if current streak >= 7 days
-- [ ] Streak freeze earn logic: award 1 freeze per 10 consecutive perfect quiz completions (10/10 correct)
-- [ ] Mystery box drop logic: 5% chance on milestone quizzes (streak multiple of 7 days)
-- [ ] Mystery box rewards: random selection from [50 XP, 1 freeze, "Golden Flame" badge variant]
-- [ ] All endpoints require JWT authentication
-- [ ] API documentation updated with gamification endpoint details
+- [x] `GET /api/progress/streak` endpoint returns { currentStreak, longestStreak, freezeCount, lastActivityDate }
+- [x] Streak automatically increments when user saves quiz answer within 48 hours of last activity
+- [x] Streak resets to 0 if no activity for >48 hours (unless freeze spent)
+- [x] `POST /api/progress/streak/freeze` endpoint spends 1 freeze to protect current streak
+- [x] Freeze spend validation: reject if freezeCount < 1 or streak not at risk
+- [x] `GET /api/gamification/badges` endpoint returns { earned: [], available: [] } badge arrays
+- [x] Badge award logic: 7-day (1 week), 30-day (1 month), 100-day (100 days), 365-day (1 year) streak milestones
+- [x] XP calculation: +10 base per correct answer, +5 bonus if current streak >= 7 days
+- [x] Streak freeze earn logic: award 1 freeze per 10 consecutive perfect quiz completions (10/10 correct)
+- [x] Mystery box drop logic: 5% chance on milestone quizzes (streak multiple of 7 days)
+- [x] Mystery box rewards: random selection from [50 XP, 1 freeze, "Golden Flame" badge variant]
+- [x] All endpoints require JWT authentication
+- [x] API documentation updated with gamification endpoint details
 
 ## Business Rules
 
@@ -56,7 +56,9 @@ Gamification elements (streaks, badges, XP) are proven to increase daily active 
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
+- **Status**: Completed
+- **Commit**: 6bd7c7a
+- **PR**: #TBD
 - **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Last Update**: 2026-02-12
+- **Key Commit**: TBD
