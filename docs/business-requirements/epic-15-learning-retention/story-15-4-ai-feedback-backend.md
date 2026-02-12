@@ -19,16 +19,16 @@ AI-generated error explanations address the critical learning gap: "Why did I ge
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/quiz/feedback` endpoint accepts { wordId, userAnswer, correctAnswer, questionType }
-- [ ] Endpoint calls Gemini API with prompt: "Explain why learner confused [userAnswer] with [correctAnswer] for Chinese word [wordDetails]. Focus on tone/character/meaning differences."
-- [ ] Response returns { explanation, errorType: 'tone'|'character'|'meaning' } with 2-3 sentence explanation
-- [ ] Redis caching: key = `quiz:feedback:{wordId}:{userAnswer}`, TTL = 24 hours
-- [ ] Cache hit rate logged for monitoring (target: >60% hit rate after 1 week)
-- [ ] Fallback to generic message if Gemini API timeout (3 seconds) or error
-- [ ] Rate limiting: max 10 feedback requests per minute per user
-- [ ] Sanitize user input before sending to Gemini API (prevent prompt injection attacks)
-- [ ] API documentation includes Gemini prompt template and error handling flow
-- [ ] Environment variable `GEMINI_API_KEY` required; endpoint returns 503 if missing
+- [x] `POST /api/quiz/feedback` endpoint accepts { wordId, userAnswer, correctAnswer, questionType }
+- [x] Endpoint calls Gemini API with prompt: "Explain why learner confused [userAnswer] with [correctAnswer] for Chinese word [wordDetails]. Focus on tone/character/meaning differences."
+- [x] Response returns { explanation, errorType: 'tone'|'character'|'meaning' } with 2-3 sentence explanation
+- [x] Redis caching: key = `quiz:feedback:{wordId}:{userAnswer}`, TTL = 24 hours
+- [x] Cache hit rate logged for monitoring (target: >60% hit rate after 1 week)
+- [x] Fallback to generic message if Gemini API timeout (3 seconds) or error
+- [x] Rate limiting: max 10 feedback requests per minute per user
+- [x] Sanitize user input before sending to Gemini API (prevent prompt injection attacks)
+- [x] API documentation includes Gemini prompt template and error handling flow
+- [x] Environment variable `GEMINI_API_KEY` required; endpoint returns 503 if missing
 
 ## Business Rules
 
@@ -62,7 +62,7 @@ AI-generated error explanations address the critical learning gap: "Why did I ge
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Completed
+- **Commit**: e6b08e0
+- **PR**: #TBD
+- **Last Update**: 2026-02-12

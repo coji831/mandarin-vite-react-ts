@@ -8,6 +8,7 @@
 - [Conversation Endpoints](#conversation-endpoints)
 - [Progress Tracking Endpoints](#progress-tracking-endpoints-story-134)
 - [Gamification Endpoints](#gamification-endpoints-story-153)
+- [AI Feedback Endpoints](#ai-feedback-endpoints-story-154)
 - [Authentication](#authentication)
 
 ## Authentication
@@ -1573,3 +1574,231 @@ streakBonus = currentStreak >= 7 ? 5 : 0
 - Targeted review sessions for difficult vocabulary
 - Identifying words needing mnemonic devices or alternative learning strategies
 - Prioritizing vocabulary for focused practice
+
+---
+
+## AI Feedback Endpoints (Story 15.4)
+
+AI-powered error explanations using Gemini API with Redis caching for cost optimization.
+
+### POST /api/v1/quiz/feedback
+
+Generate AI-powered explanation for incorrect quiz answers.
+
+**Auth:** Required (JWT Bearer token)
+
+**Rate Limit:** 10 requests per minute per user
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "wordId": 1,
+  "userAnswer": "mǎ",
+  "correctAnswer": "mā",
+  "questionType": "tone_audio"
+}
+```
+
+**Request Field Definitions:**
+
+- `wordId` (number, required): ID of the vocabulary word being tested
+- `userAnswer` (string, required): User's incorrect answer (max 100 chars)
+- `correctAnswer` (string, required): Correct answer for comparison (max 100 chars)
+- `questionType` (string, required): Type of quiz question
+
+**Valid Question Types:**
+
+- `tone_audio`: Listening comprehension (tone identification)
+- `character_choice`: Multiple choice (Chinese characters)
+- `pinyin_choice`: Multiple choice (pinyin)
+- `english_choice`: Multiple choice (English meaning)
+- `character_input`: Free-text input (Chinese characters)
+
+**Response (200 OK):**
+
+```json
+{
+  "explanation": "You confused mā (mother) with mǎ (horse). These words use the same syllable but different tones. The first tone (mā) is high and level, while the third tone (mǎ) starts low, dips, and rises. Practice listening carefully to tone differences!",
+  "errorType": "tone"
+}
+```
+
+**Response Field Definitions:**
+
+- `explanation` (string): 2-3 sentence explanation of the error (max 300 chars)
+- `errorType` (string): Classification of error type
+
+**Error Types:**
+
+- `tone`: Different tones on same pinyin syllable (mā vs mǎ)
+- `character`: Different Chinese characters (妈 vs 马)
+- `meaning`: Semantic confusion (hello vs hi, mother vs mom)
+- `generic`: Fallback when AI unavailable or error classification uncertain
+
+**Caching Behavior:**
+
+- Cache key: `quiz:feedback:{wordId}:{userAnswer}` (case-insensitive)
+- TTL: 24 hours
+- Cache shared across users (common errors benefit all learners)
+- Cache hit rate logged every 50 requests
+- Target: >60% hit rate after 1 week of usage
+
+**Business Rules:**
+
+1. **Input Sanitization:**
+   - User answer and correct answer stripped of dangerous characters (`<>{}[]`)
+   - Maximum 100 characters per field
+   - Empty strings after sanitization rejected (400 error)
+
+2. **Timeout Handling:**
+   - Gemini API call has 3-second timeout
+   - Timeout returns generic fallback message (non-blocking UX)
+   - Fallback: "We couldn't generate detailed feedback right now. Review this word again to reinforce your memory. Pay attention to tones, character shapes, and meanings."
+
+3. **AI Prompt Strategy:**
+   - Prompts Gemini to classify error type AND provide explanation
+   - Response expected in JSON format: `{"errorType": "...", "explanation": "..."}`
+   - Fallback classification logic if JSON parsing fails
+   - Beginner-friendly language (no linguistic jargon)
+
+4. **Rate Limiting:**
+   - 10 requests per minute per user IP
+   - 429 error returned if limit exceeded
+   - Prevents API abuse and cost overruns
+
+5. **Cost Optimization:**
+   - Redis caching reduces API calls by ~70-80%
+   - Cache metrics logged for monitoring
+   - Daily Gemini API quota monitoring (future: auto-disable if exceeded)
+
+**Errors:**
+
+- `400 BAD_REQUEST`: Missing required fields, invalid wordId, empty answers after sanitization
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 NOT_FOUND`: Word ID does not exist in database
+- `429 TOO_MANY_REQUESTS`: Rate limit exceeded (10/minute)
+- `503 SERVICE_UNAVAILABLE`: Gemini API credentials missing or invalid
+- `500 INTERNAL_ERROR`: Unexpected server error
+
+**Error Response Examples:**
+
+```json
+// Missing required fields
+{
+  "error": "Missing required fields: wordId, userAnswer, correctAnswer, questionType are all required"
+}
+
+// Invalid wordId
+{
+  "error": "Invalid wordId: must be a positive number"
+}
+
+// Word not found
+{
+  "error": "Word not found"
+}
+
+// Rate limit exceeded
+{
+  "error": "Too many feedback requests. Please wait a moment before requesting more explanations."
+}
+
+// Gemini API unavailable
+{
+  "error": "AI feedback service is temporarily unavailable"
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "wordId": 1,
+    "userAnswer": "mǎ",
+    "correctAnswer": "mā",
+    "questionType": "tone_audio"
+  }' \
+  https://api.example.com/api/v1/quiz/feedback
+```
+
+**Example Response (Tone Error):**
+
+```json
+{
+  "explanation": "You confused mā (mother) with mǎ (horse). The first tone (mā) is high and level, while the third tone (mǎ) starts low, dips, and rises. Practice listening carefully to tone differences!",
+  "errorType": "tone"
+}
+```
+
+**Example Response (Character Error):**
+
+```json
+{
+  "explanation": "These characters look similar but have different radicals. 妈 (mother) has the 女 (woman) radical on the left, while 马 (horse) is a standalone character. Focus on the left side of the character to distinguish them.",
+  "errorType": "character"
+}
+```
+
+**Example Response (Fallback - AI Timeout):**
+
+```json
+{
+  "explanation": "We couldn't generate detailed feedback right now. Review this word again to reinforce your memory. Pay attention to tones, character shapes, and meanings.",
+  "errorType": "generic"
+}
+```
+
+**Gemini Prompt Template:**
+
+```
+You are a Mandarin Chinese tutor helping a beginner student understand their mistake.
+
+**Student's mistake:**
+- Question type: {questionType}
+- Student answered: "{userAnswer}"
+- Correct answer: "{correctAnswer}"
+- Word: {simplified} ({pinyin}) meaning "{english}"
+
+**Task:**
+1. Classify the error type as one of: "tone", "character", or "meaning"
+   - "tone": Different tone marks (e.g., mā vs mǎ)
+   - "character": Different Chinese characters (e.g., 妈 vs 马)
+   - "meaning": Semantic confusion (e.g., confusing hello with hi)
+
+2. Explain the confusion in 2-3 simple sentences suitable for beginners.
+3. Provide a helpful learning tip if applicable.
+
+**Format your response as JSON:**
+{
+  "errorType": "tone"|"character"|"meaning",
+  "explanation": "Your 2-3 sentence explanation here."
+}
+
+Keep language simple and encouraging. Focus on helping the student understand WHY they made this mistake.
+```
+
+**Use Cases:**
+
+- Post-quiz feedback screen: show explanation after incorrect answer
+- Review mode: allow users to request explanations for previously missed words
+- Study insights: aggregate error types to identify weak areas (tone vs character recognition)
+- Adaptive learning: prioritize practice sessions based on error type patterns
+
+**Performance Metrics:**
+
+- Average response time: ~500ms (cache hit), ~1.5s (cache miss + Gemini call)
+- Cache hit rate target: >60% after 1 week, >80% after 1 month
+- Gemini API cost per request: ~$0.0001 USD (highly cost-effective with caching)
+- Rate limit prevents excessive costs from individual users
+
+---

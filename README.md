@@ -43,7 +43,7 @@ PinyinPal is an interactive web application designed to help new learners master
   - Caching: Upstash Redis (production) with graceful fallback
   - Database: Supabase (PostgreSQL with connection pooling)
   - Storage: Google Cloud Storage (TTS audio and conversation caching)
-  - APIs: Google Cloud TTS, Gemini AI for conversation generation
+  - APIs: Google Cloud TTS, Gemini AI for conversation generation and AI-powered quiz feedback
 
 ## 🚀 Installation & Getting Started
 

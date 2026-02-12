@@ -7,6 +7,7 @@ import express from "express";
 import authRouter from "./auth.js";
 import progressRouter from "./progress.js";
 import gamificationRouter from "./gamificationRoutes.js";
+import aiFeedbackRouter from "./aiFeedbackRoutes.js";
 import conversationRouter from "./conversationRoutes.js";
 import ttsRouter from "./ttsRoutes.js";
 import vocabularyRouter from "./vocabularyRoutes.js";
@@ -25,6 +26,9 @@ router.use(progressRouter);
 
 // Gamification routes (v1) - Story 15.3
 router.use(gamificationRouter);
+
+// AI Feedback routes (v1) - Story 15.4
+router.use(aiFeedbackRouter);
 
 // Conversation routes
 router.use(conversationRouter);

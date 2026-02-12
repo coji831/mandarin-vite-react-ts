@@ -246,6 +246,16 @@ nextReviewDays = 1 + (30 - 1) × performanceMultiplier
 - **Mystery Boxes**: 5% drop rate on 7-day multiples, random rewards (50 XP / 1 freeze / rare badge)
 - **API Endpoints**: `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges`
 
+**AI Feedback System:**
+
+- **Purpose**: Personalized error explanations for incorrect quiz answers using Gemini API
+- **Error Classification**: Tone errors (mā vs mǎ), character confusion (妈 vs 马), meaning mix-ups
+- **Caching**: Redis 24-hour TTL, cache key per word+answer combination, ~70-80% cost reduction
+- **Timeout Protection**: 3-second limit with graceful fallback to generic messages
+- **Rate Limiting**: 10 requests/minute per user to prevent API abuse
+- **Security**: Input sanitization (XSS prevention), JWT authentication required
+- **API Endpoint**: `POST /api/v1/quiz/feedback`
+
 ## Deployment Architecture
 
 **Production Environment:**
