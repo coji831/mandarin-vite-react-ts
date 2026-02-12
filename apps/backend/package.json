@@ -24,7 +24,10 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "migrate:clean": "node scripts/clean-all-vocabulary.js",
+    "migrate:vocab": "node scripts/migrate-vocabulary-by-csv-id.js",
+    "migrate:categories": "node scripts/migrate-categories-by-csv-id.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",

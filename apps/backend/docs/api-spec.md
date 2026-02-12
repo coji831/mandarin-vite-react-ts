@@ -651,17 +651,18 @@ finalDays = 1 + (30 - 1) * multiplier
 ```
 
 Where:
+
 - `baseDelay`: Current spacing interval in days (or 1 for first review)
 - `performanceMultiplier`: Scaling factor based on activity type
 - Final result: 1-30 day range
 
 ### Performance Multipliers
 
-| Activity Type | Multiplier Calculation | Example |
-|--------------|----------------------|---------|
-| **Flashcard** | `confidence²` | 0.8 confidence → 0.64 multiplier → ~19 days |
-| **Quiz (Correct)** | `1.0` (fixed) | Correct answer → 1.0 multiplier → 30 days max |
-| **Quiz (Incorrect)** | `0.0` (fixed) | Incorrect answer → 0.0 multiplier → 1 day (immediate) |
+| Activity Type        | Multiplier Calculation | Example                                               |
+| -------------------- | ---------------------- | ----------------------------------------------------- |
+| **Flashcard**        | `confidence²`          | 0.8 confidence → 0.64 multiplier → ~19 days           |
+| **Quiz (Correct)**   | `1.0` (fixed)          | Correct answer → 1.0 multiplier → 30 days max         |
+| **Quiz (Incorrect)** | `0.0` (fixed)          | Incorrect answer → 0.0 multiplier → 1 day (immediate) |
 
 ### Feature Detection
 
@@ -671,6 +672,7 @@ The system automatically determines which algorithm to use based on **most recen
 2. Otherwise → **Flashcard algorithm**
 
 This allows seamless coexistence:
+
 - User does flashcard review (confidence 0.8) → nextReview set to 19 days
 - User then does quiz (correct) → nextReview updated to 30 days (quiz wins)
 - User later does flashcard (confidence 0.5) → nextReview updated to 8 days (flashcard wins)
@@ -682,7 +684,7 @@ This allows seamless coexistence:
 ```typescript
 {
   // Existing fields...
-  lapseCount: number;        // Consecutive incorrect quiz answers (Story 15.1)
+  lapseCount: number; // Consecutive incorrect quiz answers (Story 15.1)
   currentDelay: number | null; // Current spacing interval in days (Story 15.1)
 }
 ```
@@ -695,7 +697,7 @@ This allows seamless coexistence:
   userId: string;
   wordId: string;
   correct: boolean;
-  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  questionType: "multiple_choice" | "type_pinyin" | "type_character";
   timeSpentMs: number | null;
   answeredAt: Date;
 }
@@ -1032,3 +1034,204 @@ Get summary statistics for authenticated user's progress.
 **Errors:**
 
 - `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+---
+
+### GET /api/v1/progress/due
+
+Get vocabulary words due for review based on spaced repetition schedule. Returns words where `nextReview <= requestedDate`.
+
+**Auth:** Required (JWT Bearer token)
+
+**Query Parameters:**
+
+- `date` (string, optional): Target date in YYYY-MM-DD format. Defaults to current date if not provided.
+
+**Response (200 OK):**
+
+```json
+{
+  "date": "2026-02-12",
+  "count": 15,
+  "words": [
+    {
+      "id": "hsk3-band1-001",
+      "simplified": "你好",
+      "traditional": "你好",
+      "pinyin": "nǐ hǎo",
+      "english": "hello",
+      "nextReview": "2026-02-10T08:00:00.000Z",
+      "studyCount": 5,
+      "lapseCount": 1,
+      "currentDelay": 3,
+      "categories": ["Greetings", "Daily Communication"]
+    }
+  ]
+}
+```
+
+**Business Rules:**
+
+- Maximum 20 words returned per request (prevents user fatigue)
+- Results sorted by `nextReview` ascending (oldest due first)
+- Only returns words belonging to authenticated user
+- Includes vocabulary enrichment (chinese, pinyin, english, categories)
+
+**Errors:**
+
+- `400 INVALID_DATE`: Date format must be YYYY-MM-DD
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+**Example:**
+
+```bash
+# Get words due today
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/due
+
+# Get words due on specific date
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/due?date=2026-02-15
+```
+
+---
+
+### POST /api/v1/progress/test-result
+
+Save quiz answer and update progress using quiz-specific spaced repetition algorithm. Updates `nextReview`, `lapseCount`, `studyCount`, and creates audit record in `quiz_results` table.
+
+**Auth:** Required (JWT Bearer token)
+
+**Request Body:**
+
+```json
+{
+  "wordId": "hsk3-band1-042",
+  "correct": true,
+  "questionType": "multiple_choice",
+  "timeSpentMs": 3500
+}
+```
+
+**Field Definitions:**
+
+- `wordId` (string, required): Unique word identifier
+- `correct` (boolean, required): Whether answer was correct
+- `questionType` (enum, required): One of `multiple_choice`, `type_pinyin`, `type_character`
+- `timeSpentMs` (number, optional): Time spent on question in milliseconds
+
+**Response (200 OK):**
+
+```json
+{
+  "nextReviewDate": "2026-03-14T08:00:00.000Z",
+  "lapseCount": 0,
+  "isLeech": false
+}
+```
+
+**Response Field Definitions:**
+
+- `nextReviewDate`: Calculated next review date using spaced repetition
+  - Correct answer: 30 days (maximum spacing)
+  - Incorrect answer: 1 day (immediate review)
+- `lapseCount`: Total consecutive incorrect answers (resets to 0 on correct answer)
+- `isLeech`: True if `lapseCount >= 5` (flagged for targeted review)
+
+**Business Rules:**
+
+- Uses unified spaced repetition algorithm with quiz-specific multipliers
+- Correct answer: `performanceMultiplier = 1.0` → 30 day interval
+- Incorrect answer: `performanceMultiplier = 0.0` → 1 day interval
+- `lapseCount` increments on incorrect, resets on correct
+- Creates audit record in `quiz_results` table with timestamp and metadata
+- Rate limited to 100 requests/hour per user (prevents XP farming)
+
+**Errors:**
+
+- `400 MISSING_WORD_ID`: wordId is required
+- `400 INVALID_CORRECT`: correct must be boolean
+- `400 INVALID_QUESTION_TYPE`: questionType must be one of [multiple_choice, type_pinyin, type_character]
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `429 RATE_LIMIT_EXCEEDED`: Too many quiz submissions (max 100/hour)
+
+**Example:**
+
+```bash
+# Submit correct answer
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"wordId":"hsk3-band1-042","correct":true,"questionType":"multiple_choice","timeSpentMs":3500}' \
+  https://api.example.com/api/v1/progress/test-result
+
+# Submit incorrect answer
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"wordId":"hsk3-band1-042","correct":false,"questionType":"type_pinyin"}' \
+  https://api.example.com/api/v1/progress/test-result
+```
+
+---
+
+### GET /api/v1/progress/leeches
+
+Get vocabulary words with high lapse counts (struggling vocabulary requiring targeted review). Returns words where `lapseCount >= threshold`.
+
+**Auth:** Required (JWT Bearer token)
+
+**Query Parameters:**
+
+- `minLapseCount` (number, optional): Minimum lapse count threshold. Defaults to 5 if not provided.
+
+**Response (200 OK):**
+
+```json
+{
+  "count": 8,
+  "words": [
+    {
+      "id": "hsk3-band1-123",
+      "simplified": "虽然",
+      "traditional": "雖然",
+      "pinyin": "suīrán",
+      "english": "although",
+      "nextReview": "2026-02-12T08:00:00.000Z",
+      "studyCount": 15,
+      "lapseCount": 8,
+      "currentDelay": 1,
+      "categories": ["Grammar", "Conjunctions"]
+    }
+  ]
+}
+```
+
+**Business Rules:**
+
+- Default threshold: `lapseCount >= 5` (configurable via query param)
+- Results sorted by `lapseCount` descending (highest struggle first)
+- Maximum 20 words returned per request
+- Includes vocabulary enrichment (chinese, pinyin, english, categories)
+- Leech status helps identify 15% of words causing 50% of failures (Pareto principle)
+
+**Errors:**
+
+- `400 INVALID_LAPSE_COUNT`: minLapseCount must be positive integer
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+
+**Example:**
+
+```bash
+# Get default leeches (lapseCount >= 5)
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/leeches
+
+# Get severely struggling words (lapseCount >= 10)
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/leeches?minLapseCount=10
+```
+
+**Use Cases:**
+
+- Targeted review sessions for difficult vocabulary
+- Identifying words needing mnemonic devices or alternative learning strategies
+- Prioritizing vocabulary for focused practice

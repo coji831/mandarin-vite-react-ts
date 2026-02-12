@@ -2,25 +2,27 @@
  * ProgressService (Core Layer)
  * Business logic for vocabulary progress tracking with spaced repetition.
  * Framework-agnostic service that depends on IProgressRepository interface.
- * 
+ *
  * Story 15.1: Supports unified spaced repetition algorithm for both flashcard (confidence-based)
  * and quiz (performance-based) systems with automatic feature detection.
+ * Story 15.2: Added quiz API support methods (getDueWords, getLeechesByUser)
  */
 
 export class ProgressService {
-  constructor(repository, quizResultRepository = null) {
+  constructor(repository, quizResultRepository = null, vocabularyRepository = null) {
     this.repository = repository; // IProgressRepository
     this.quizResultRepository = quizResultRepository; // IQuizResultRepository (optional, for quiz support)
+    this.vocabularyRepository = vocabularyRepository; // IVocabularyRepository (optional, for enrichment)
   }
 
   /**
    * Calculate next review date using unified spaced repetition algorithm
    * Story 15.1: Refactored to support both flashcard and quiz systems
-   * 
+   *
    * Formula: days = 1 + (30 - 1) * performanceMultiplier
    * - Flashcard mode: performanceMultiplier = confidence² (pass confidence, multiplier null)
    * - Quiz mode: performanceMultiplier = explicit value (pass any confidence, multiplier provided)
-   * 
+   *
    * @param {number} confidence - Confidence score (0.0 - 1.0) for flashcard mode
    * @param {number|null} performanceMultiplier - Explicit multiplier for quiz mode (overrides confidence²)
    * @returns {Date} - Next review date
@@ -28,12 +30,15 @@ export class ProgressService {
   calculateNextReview(confidence, performanceMultiplier = null) {
     const minDays = 1;
     const maxDays = 30;
-    
+
     // Use explicit multiplier if provided (quiz mode), otherwise compute from confidence (flashcard mode)
-    const multiplier = performanceMultiplier !== null 
-      ? performanceMultiplier 
-      : (confidence !== null ? Math.pow(confidence, 2) : 1.0);
-    
+    const multiplier =
+      performanceMultiplier !== null
+        ? performanceMultiplier
+        : confidence !== null
+          ? Math.pow(confidence, 2)
+          : 1.0;
+
     const days = minDays + (maxDays - minDays) * multiplier;
 
     const nextReview = new Date();
@@ -127,11 +132,11 @@ export class ProgressService {
   /**
    * Record a quiz result and update progress with quiz-specific spaced repetition
    * Story 15.1: New method for quiz system integration
-   * 
+   *
    * Uses performance-based multipliers:
    * - Correct answer: 2.0x (aggressive spacing) → 30 days
    * - Incorrect answer: 0.0x (immediate review) → 1 day
-   * 
+   *
    * @param {object} data - Quiz result data
    * @param {string} data.userId - User ID
    * @param {string} data.wordId - Word ID
@@ -144,7 +149,7 @@ export class ProgressService {
     const { userId, wordId, correct, questionType, timeSpentMs } = data;
 
     if (!this.quizResultRepository) {
-      throw new Error('QuizResultRepository not injected - quiz support disabled');
+      throw new Error("QuizResultRepository not injected - quiz support disabled");
     }
 
     // Get current progress (or null if word never studied)
@@ -161,14 +166,14 @@ export class ProgressService {
     const delayDays = Math.round((nextReview - new Date()) / (1000 * 60 * 60 * 24));
 
     // Update lapse count (increment on incorrect, reset on correct)
-    const lapseCount = correct 
-      ? 0 
-      : (currentProgress?.lapseCount || 0) + 1;
+    const lapseCount = correct ? 0 : (currentProgress?.lapseCount || 0) + 1;
 
     // Update progress with new values
     const updatedProgress = await this.repository.upsert(userId, wordId, {
       studyCount: (currentProgress?.studyCount || 0) + 1,
-      correctCount: correct ? (currentProgress?.correctCount || 0) + 1 : currentProgress?.correctCount,
+      correctCount: correct
+        ? (currentProgress?.correctCount || 0) + 1
+        : currentProgress?.correctCount,
       nextReview,
       lapseCount,
       currentDelay: delayDays,
@@ -193,20 +198,114 @@ export class ProgressService {
   }
 
   /**
+   * Get vocabulary words due for review
+   * Story 15.2: New method for quiz system
+   *
+   * @param {string} userId - User ID
+   * @param {Date} date - Target date (defaults to today)
+   * @param {number} [limit=20] - Maximum words to return
+   * @returns {Promise<Array>} Enriched words with progress data
+   */
+  async getDueWords(userId, date = new Date(), limit = 20) {
+    // Fetch progress records where nextReview <= date
+    const progressRecords = await this.repository.findDueByUserAndDate(userId, date, limit);
+
+    if (!this.vocabularyRepository) {
+      // Return raw progress if vocabulary repository not available
+      return progressRecords;
+    }
+
+    // Enrich with vocabulary details (batch operation)
+    const wordIds = progressRecords.map((p) => p.wordId);
+    const words = await this.vocabularyRepository.findByIds(wordIds);
+
+    // Create lookup map for O(1) access
+    const wordMap = new Map(words.map((w) => [w.id, w]));
+
+    // Merge progress + vocabulary data
+    return progressRecords
+      .map((progress) => {
+        const word = wordMap.get(progress.wordId);
+        if (!word) return null; // Skip words that don't exist in vocabulary
+
+        return {
+          id: word.id,
+          simplified: word.simplified,
+          traditional: word.traditional,
+          pinyin: word.pinyin,
+          english: word.english,
+          nextReview: progress.nextReview,
+          studyCount: progress.studyCount,
+          lapseCount: progress.lapseCount || 0,
+          currentDelay: progress.currentDelay || null,
+          categories: word.categories?.map((wc) => wc.category?.name).filter(Boolean) || [],
+        };
+      })
+      .filter(Boolean); // Remove null entries
+  }
+
+  /**
+   * Get user's struggling vocabulary (leeches)
+   * Story 15.2: New method for quiz system
+   *
+   * @param {string} userId - User ID
+   * @param {number} [minLapseCount=5] - Minimum lapses to qualify as leech
+   * @param {number} [limit=20] - Maximum leeches to return
+   * @returns {Promise<Array>} Enriched leech words with progress data
+   */
+  async getLeechesByUser(userId, minLapseCount = 5, limit = 20) {
+    // Fetch progress records with high lapse count
+    const progressRecords = await this.repository.findLeechesByUser(userId, minLapseCount, limit);
+
+    if (!this.vocabularyRepository) {
+      // Return raw progress if vocabulary repository not available
+      return progressRecords;
+    }
+
+    // Enrich with vocabulary details (batch operation)
+    const wordIds = progressRecords.map((p) => p.wordId);
+    const words = await this.vocabularyRepository.findByIds(wordIds);
+
+    // Create lookup map
+    const wordMap = new Map(words.map((w) => [w.id, w]));
+
+    // Merge progress + vocabulary data
+    return progressRecords
+      .map((progress) => {
+        const word = wordMap.get(progress.wordId);
+        if (!word) return null;
+
+        return {
+          id: word.id,
+          simplified: word.simplified,
+          traditional: word.traditional,
+          pinyin: word.pinyin,
+          english: word.english,
+          lapseCount: progress.lapseCount,
+          studyCount: progress.studyCount,
+          correctCount: progress.correctCount || 0,
+          nextReview: progress.nextReview,
+          categories: word.categories?.map((wc) => wc.category?.name).filter(Boolean) || [],
+        };
+      })
+      .filter(Boolean);
+  }
+
+  /**
    * Determine which algorithm should be used for a word (quiz vs flashcard)
    * Story 15.1: Feature detection based on most recent activity timestamp
-   * 
+   *
    * Rule: "Most recent activity type wins"
    * - If latest quiz result is newer than progress.updatedAt → use quiz algorithm
    * - Otherwise → use flashcard algorithm
-   * 
+   *
    * @param {string} userId - User ID
    * @param {string} wordId - Word ID
    * @returns {Promise<string>} Algorithm mode: 'quiz' or 'flashcard'
    */
   async determineAlgorithmMode(userId, wordId) {
     if (!this.quizResultRepository) {
-      return 'flashcard'; // No quiz support, default to flashcard
+      return "flashcard"; // No quiz support, default to flashcard
     }
 
     const latestQuiz = await this.quizResultRepository.findLatestByUserAndWord(userId, wordId);
@@ -214,19 +313,19 @@ export class ProgressService {
 
     // No quiz results exist → flashcard mode
     if (!latestQuiz) {
-      return 'flashcard';
+      return "flashcard";
     }
 
     // No progress record → quiz mode (quiz result is only activity)
     if (!progress) {
-      return 'quiz';
+      return "quiz";
     }
 
     // Compare timestamps: most recent activity wins
     const quizTimestamp = new Date(latestQuiz.answeredAt).getTime();
     const flashcardTimestamp = new Date(progress.updatedAt).getTime();
 
-    return quizTimestamp > flashcardTimestamp ? 'quiz' : 'flashcard';
+    return quizTimestamp > flashcardTimestamp ? "quiz" : "flashcard";
   }
 }
 

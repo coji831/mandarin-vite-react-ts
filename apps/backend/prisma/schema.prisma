@@ -18,8 +18,9 @@ model User {
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 
-  sessions  Session[]
-  progress  Progress[]
+  sessions     Session[]
+  progress     Progress[]
+  customLists  VocabularyList[]
 
   @@index([email])
 }
@@ -56,19 +57,78 @@ model Progress {
   @@index([userId])
   @@index([nextReview])
   @@index([userId, nextReview])
+  @@index([userId, lapseCount])
 }
 
 model VocabularyWord {
-  id              String  @id @default(uuid())
+  id              String   @id
   traditional     String
   simplified      String
   pinyin          String
   english         String
-  level           String
-  category        String?
   exampleSentence String?
+  audioUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
 
-  @@index([level])
+  categories WordCategory[]
+  lists      WordList[]
+
+  @@index([pinyin])
+  @@index([simplified])
+}
+
+model Category {
+  id           String         @id @default(uuid())
+  name         String         @unique
+  description  String?
+  icon         String?
+  displayOrder Int?
+
+  words WordCategory[]
+
+  @@index([name])
+}
+
+model VocabularyList {
+  id          String   @id
+  name        String
+  description String?
+  difficulty  String?
+  isPublic    Boolean  @default(true)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  words   WordList[]
+  creator User?      @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@index([difficulty])
+  @@index([createdBy])
+}
+
+model WordCategory {
+  wordId     String
+  categoryId String
+
+  word     VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  category Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([wordId, categoryId])
+  @@index([categoryId])
+}
+
+model WordList {
+  wordId    String
+  listId    String
+  sortOrder Int?
+  addedAt   DateTime @default(now())
+
+  word VocabularyWord  @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  list VocabularyList  @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@id([wordId, listId])
+  @@index([listId, sortOrder])
 }
 
 model StudyStreak {

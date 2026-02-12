@@ -62,8 +62,39 @@ This creates:
 
 - `users` table (authentication)
 - `progress` table (vocabulary progress tracking)
+- `vocabulary_word`, `category`, `vocabulary_list` tables (normalized vocabulary data)
+- Junction tables: `word_category`, `word_list` (many-to-many relationships)
 
 **Verify:** Check your database - tables should exist now.
+
+### 2a. Load Vocabulary Data (Optional)
+
+The backend includes migration scripts to populate vocabulary from CSV files:
+
+```bash
+# Navigate to backend directory
+cd apps/backend
+
+# Clean existing vocabulary data (if any)
+npm run migrate:clean
+
+# Load 500 HSK 3.0 Band 1 words
+npm run migrate:vocab
+
+# Load thematic categories (daily-communication, food-dining, etc.)
+npm run migrate:categories
+
+# Check migration status
+node scripts/check-migration-progress.js
+```
+
+**Expected Result:**
+
+- 500 vocabulary words (IDs 1-500)
+- 7 thematic categories
+- 624 word-category links
+
+**Note:** This step is optional for backend development. The API works with or without vocabulary data, but quiz features require it.
 
 ### 3. Start Backend Server
 
@@ -108,6 +139,11 @@ npm run db:migrate         # Run migrations
 npm run db:generate        # Generate Prisma client
 npm run db:studio          # Open Prisma Studio (GUI)
 npm run db:reset           # Reset database (WARNING: deletes data)
+
+# Vocabulary Data Migration (apps/backend)
+npm run migrate:clean      # Delete all vocabulary data
+npm run migrate:vocab      # Load 500 words from CSV files
+npm run migrate:categories # Load thematic categories
 
 # Testing
 npm run test:backend       # Run backend tests

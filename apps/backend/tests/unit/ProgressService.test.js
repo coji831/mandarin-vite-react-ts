@@ -292,7 +292,7 @@ describe("ProgressService", () => {
     it("should fall back to confidence² when performanceMultiplier is null", () => {
       const resultWithNull = progressService.calculateNextReview(0.5, null);
       const resultWithoutParam = progressService.calculateNextReview(0.5);
-      
+
       // Both should give same result (backward compatibility)
       expect(resultWithNull.getTime()).toBe(resultWithoutParam.getTime());
     });
@@ -326,7 +326,7 @@ describe("ProgressService", () => {
           wordId: "word1",
           correct: true,
           questionType: "multiple_choice",
-        })
+        }),
       ).rejects.toThrow("QuizResultRepository not injected");
     });
 
@@ -541,6 +541,277 @@ describe("ProgressService", () => {
       const mode = await progressService.determineAlgorithmMode("user1", "word1");
 
       expect(mode).toBe("flashcard");
+    });
+  });
+
+  describe("getDueWords (Story 15.2 Phase 2)", () => {
+    let mockVocabularyRepository;
+
+    beforeEach(() => {
+      mockVocabularyRepository = {
+        findByIds: vi.fn(),
+      };
+      mockRepository.findDueByUserAndDate = vi.fn();
+      progressService = new ProgressService(mockRepository, null, mockVocabularyRepository);
+    });
+
+    it("should return enriched due words with vocabulary data", async () => {
+      const mockProgress = [
+        {
+          id: "p1",
+          userId: "user1",
+          wordId: "1",
+          nextReview: "2025-01-15",
+          lapseCount: 2,
+          studyCount: 10,
+          currentDelay: null,
+        },
+        {
+          id: "p2",
+          userId: "user1",
+          wordId: "2",
+          nextReview: "2025-01-15",
+          lapseCount: 0,
+          studyCount: 5,
+          currentDelay: null,
+        },
+      ];
+      const mockVocab = [
+        {
+          id: "1",
+          simplified: "你好",
+          traditional: "你好",
+          pinyin: "nǐ hǎo",
+          english: "hello",
+          categories: [{ category: { name: "Greetings" } }],
+        },
+        {
+          id: "2",
+          simplified: "再见",
+          traditional: "再見",
+          pinyin: "zài jiàn",
+          english: "goodbye",
+          categories: [{ category: { name: "Farewells" } }],
+        },
+      ];
+      mockRepository.findDueByUserAndDate.mockResolvedValue(mockProgress);
+      mockVocabularyRepository.findByIds.mockResolvedValue(mockVocab);
+
+      const result = await progressService.getDueWords("user1", "2025-01-15", 20);
+
+      expect(mockRepository.findDueByUserAndDate).toHaveBeenCalledWith("user1", "2025-01-15", 20);
+      expect(mockVocabularyRepository.findByIds).toHaveBeenCalledWith(["1", "2"]);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        id: "1",
+        simplified: "你好",
+        traditional: "你好",
+        pinyin: "nǐ hǎo",
+        english: "hello",
+        nextReview: "2025-01-15",
+        lapseCount: 2,
+        studyCount: 10,
+        categories: ["Greetings"],
+      });
+      expect(result[1]).toMatchObject({
+        id: "2",
+        simplified: "再见",
+        traditional: "再見",
+        pinyin: "zài jiàn",
+        english: "goodbye",
+        lapseCount: 0,
+        studyCount: 5,
+        categories: ["Farewells"],
+      });
+    });
+
+    it("should filter out words without vocabulary data", async () => {
+      const mockProgress = [
+        { id: "p1", userId: "user1", wordId: "1", nextReview: "2025-01-15", lapseCount: 0 },
+        { id: "p2", userId: "user1", wordId: "2", nextReview: "2025-01-15", lapseCount: 1 },
+      ];
+      const mockVocab = [
+        {
+          id: "1",
+          simplified: "你好",
+          traditional: "你好",
+          pinyin: "nǐ hǎo",
+          english: "hello",
+          categories: [],
+        },
+      ];
+      mockRepository.findDueByUserAndDate.mockResolvedValue(mockProgress);
+      mockVocabularyRepository.findByIds.mockResolvedValue(mockVocab);
+
+      const result = await progressService.getDueWords("user1", "2025-01-15", 20);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe("1");
+    });
+
+    it("should return empty array if no due words", async () => {
+      mockRepository.findDueByUserAndDate.mockResolvedValue([]);
+      mockVocabularyRepository.findByIds.mockResolvedValue([]);
+
+      const result = await progressService.getDueWords("user1", "2025-01-15", 20);
+
+      expect(result).toEqual([]);
+    });
+
+    it("should return raw progress data when vocabularyRepository is missing", async () => {
+      const serviceWithoutVocab = new ProgressService(mockRepository, null, null);
+      const mockProgress = [{ id: "p1", userId: "user1", wordId: "1", nextReview: "2025-01-15" }];
+      mockRepository.findDueByUserAndDate.mockResolvedValue(mockProgress);
+
+      const result = await serviceWithoutVocab.getDueWords("user1", "2025-01-15", 20);
+
+      // Should return raw progress records without enrichment
+      expect(result).toEqual(mockProgress);
+    });
+
+    it("should use default limit if not provided", async () => {
+      mockRepository.findDueByUserAndDate.mockResolvedValue([]);
+      mockVocabularyRepository.findByIds.mockResolvedValue([]);
+
+      await progressService.getDueWords("user1", "2025-01-15");
+
+      expect(mockRepository.findDueByUserAndDate).toHaveBeenCalledWith("user1", "2025-01-15", 20);
+    });
+  });
+
+  describe("getLeechesByUser (Story 15.2 Phase 2)", () => {
+    let mockVocabularyRepository;
+
+    beforeEach(() => {
+      mockVocabularyRepository = {
+        findByIds: vi.fn(),
+      };
+      mockRepository.findLeechesByUser = vi.fn();
+      progressService = new ProgressService(mockRepository, null, mockVocabularyRepository);
+    });
+
+    it("should return enriched leeches with vocabulary data", async () => {
+      const mockLeeches = [
+        {
+          id: "p1",
+          userId: "user1",
+          wordId: "3",
+          nextReview: "2025-01-16",
+          lapseCount: 8,
+          studyCount: 20,
+          correctCount: 5,
+        },
+        {
+          id: "p2",
+          userId: "user1",
+          wordId: "4",
+          nextReview: "2025-01-17",
+          lapseCount: 6,
+          studyCount: 15,
+          correctCount: 4,
+        },
+      ];
+      const mockVocab = [
+        {
+          id: "3",
+          simplified: "难",
+          traditional: "難",
+          pinyin: "nán",
+          english: "difficult",
+          categories: [{ category: { name: "Adjectives" } }],
+        },
+        {
+          id: "4",
+          simplified: "复杂",
+          traditional: "複雜",
+          pinyin: "fù zá",
+          english: "complex",
+          categories: [{ category: { name: "Adjectives" } }],
+        },
+      ];
+      mockRepository.findLeechesByUser.mockResolvedValue(mockLeeches);
+      mockVocabularyRepository.findByIds.mockResolvedValue(mockVocab);
+
+      const result = await progressService.getLeechesByUser("user1", 5, 20);
+
+      expect(mockRepository.findLeechesByUser).toHaveBeenCalledWith("user1", 5, 20);
+      expect(mockVocabularyRepository.findByIds).toHaveBeenCalledWith(["3", "4"]);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        id: "3",
+        simplified: "难",
+        traditional: "難",
+        pinyin: "nán",
+        english: "difficult",
+        lapseCount: 8,
+        studyCount: 20,
+        correctCount: 5,
+        categories: ["Adjectives"],
+      });
+      expect(result[1]).toMatchObject({
+        id: "4",
+        simplified: "复杂",
+        traditional: "複雜",
+        pinyin: "fù zá",
+        english: "complex",
+        lapseCount: 6,
+        studyCount: 15,
+        correctCount: 4,
+        categories: ["Adjectives"],
+      });
+    });
+
+    it("should filter out leeches without vocabulary data", async () => {
+      const mockLeeches = [
+        { id: "p1", userId: "user1", wordId: "3", lapseCount: 8, studyCount: 20, correctCount: 5 },
+        { id: "p2", userId: "user1", wordId: "4", lapseCount: 6, studyCount: 15, correctCount: 4 },
+      ];
+      const mockVocab = [
+        {
+          id: "3",
+          simplified: "难",
+          traditional: "難",
+          pinyin: "nán",
+          english: "difficult",
+          categories: [],
+        },
+      ];
+      mockRepository.findLeechesByUser.mockResolvedValue(mockLeeches);
+      mockVocabularyRepository.findByIds.mockResolvedValue(mockVocab);
+
+      const result = await progressService.getLeechesByUser("user1", 5, 20);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe("3");
+    });
+
+    it("should return empty array if no leeches", async () => {
+      mockRepository.findLeechesByUser.mockResolvedValue([]);
+      mockVocabularyRepository.findByIds.mockResolvedValue([]);
+
+      const result = await progressService.getLeechesByUser("user1", 5, 20);
+
+      expect(result).toEqual([]);
+    });
+
+    it("should return raw progress data when vocabularyRepository is missing", async () => {
+      const serviceWithoutVocab = new ProgressService(mockRepository, null, null);
+      const mockLeeches = [{ id: "p1", userId: "user1", wordId: "3", lapseCount: 8 }];
+      mockRepository.findLeechesByUser.mockResolvedValue(mockLeeches);
+
+      const result = await serviceWithoutVocab.getLeechesByUser("user1", 5, 20);
+
+      // Should return raw progress records without enrichment
+      expect(result).toEqual(mockLeeches);
+    });
+
+    it("should use default parameters if not provided", async () => {
+      mockRepository.findLeechesByUser.mockResolvedValue([]);
+      mockVocabularyRepository.findByIds.mockResolvedValue([]);
+
+      await progressService.getLeechesByUser("user1");
+
+      expect(mockRepository.findLeechesByUser).toHaveBeenCalledWith("user1", 5, 20);
     });
   });
 });

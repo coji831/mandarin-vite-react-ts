@@ -301,4 +301,172 @@ export class ProgressController {
       });
     }
   }
+
+  /**
+   * Get vocabulary words due for review
+   * Story 15.2: New quiz system endpoint
+   * GET /api/v1/progress/due?date=YYYY-MM-DD
+   */
+  async getDueWords(req, res) {
+    try {
+      const userId = req.userId;
+      const dateParam = req.query.date;
+
+      // Parse and validate date
+      const requestedDate = dateParam ? new Date(dateParam) : new Date();
+
+      if (isNaN(requestedDate.getTime())) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INVALID_DATE",
+          message: "Invalid date format. Use YYYY-MM-DD.",
+        });
+      }
+
+      logger.info("Fetching due words", {
+        userId,
+        date: requestedDate.toISOString().split("T")[0],
+      });
+
+      const dueWords = await this.progressService.getDueWords(userId, requestedDate);
+
+      logger.info("Successfully fetched due words", { userId, count: dueWords.length });
+
+      res.status(200).json({
+        date: requestedDate.toISOString().split("T")[0],
+        count: dueWords.length,
+        words: dueWords,
+      });
+    } catch (error) {
+      logger.error("Error fetching due words", { error: error.message, userId: req.userId });
+      res.status(500).json({
+        error: "Internal Server Error",
+        code: "FETCH_DUE_WORDS_FAILED",
+        message: "Failed to fetch due words",
+      });
+    }
+  }
+
+  /**
+   * Save quiz answer and update progress
+   * Story 15.2: New quiz system endpoint (uses Story 15.1's recordQuizResult)
+   * POST /api/v1/progress/test-result
+   * Body: { wordId, correct, questionType, timeSpentMs }
+   */
+  async saveTestResult(req, res) {
+    try {
+      const userId = req.userId;
+      const { wordId, correct, questionType, timeSpentMs } = req.body;
+
+      // Validate required fields
+      if (!wordId || typeof correct !== "boolean" || !questionType) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "MISSING_REQUIRED_FIELDS",
+          message: "Missing required fields: wordId, correct, questionType",
+        });
+      }
+
+      // Validate questionType
+      const validQuestionTypes = ["multiple_choice", "type_pinyin", "type_character"];
+      if (!validQuestionTypes.includes(questionType)) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INVALID_QUESTION_TYPE",
+          message: "questionType must be: multiple_choice, type_pinyin, or type_character",
+        });
+      }
+
+      // Validate timeSpentMs if provided
+      if (timeSpentMs !== undefined && (typeof timeSpentMs !== "number" || timeSpentMs < 0)) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INVALID_TIME_SPENT",
+          message: "timeSpentMs must be a non-negative number",
+        });
+      }
+
+      logger.info("Recording quiz result", { userId, wordId, correct, questionType });
+
+      // Call Story 15.1 method: recordQuizResult()
+      const result = await this.progressService.recordQuizResult({
+        userId,
+        wordId,
+        correct,
+        questionType,
+        timeSpentMs,
+      });
+
+      logger.info("Successfully recorded quiz result", {
+        userId,
+        wordId,
+        correct,
+        isLeech: result.isLeech,
+      });
+
+      res.status(200).json({
+        wordId,
+        correct,
+        nextReview: result.nextReviewDate,
+        lapseCount: result.lapseCount,
+        isLeech: result.isLeech,
+      });
+    } catch (error) {
+      logger.error("Error saving test result", { error: error.message, userId: req.userId });
+
+      // Handle specific errors
+      if (error.message.includes("QuizResultRepository not injected")) {
+        return res.status(503).json({
+          error: "Service Unavailable",
+          code: "QUIZ_SUPPORT_DISABLED",
+          message: "Quiz functionality is not available",
+        });
+      }
+
+      res.status(500).json({
+        error: "Internal Server Error",
+        code: "SAVE_TEST_RESULT_FAILED",
+        message: "Failed to save quiz result",
+      });
+    }
+  }
+
+  /**
+   * Get user's struggling vocabulary (leeches)
+   * Story 15.2: New quiz system endpoint
+   * GET /api/v1/progress/leeches?minLapseCount=5
+   */
+  async getLeeches(req, res) {
+    try {
+      const userId = req.userId;
+      const minLapseCount = parseInt(req.query.minLapseCount, 10) || 5;
+
+      if (isNaN(minLapseCount) || minLapseCount < 1) {
+        return res.status(400).json({
+          error: "Bad Request",
+          code: "INVALID_LAPSE_COUNT",
+          message: "minLapseCount must be a positive integer",
+        });
+      }
+
+      logger.info("Fetching leeches", { userId, minLapseCount });
+
+      const leeches = await this.progressService.getLeechesByUser(userId, minLapseCount);
+
+      logger.info("Successfully fetched leeches", { userId, count: leeches.length });
+
+      res.status(200).json({
+        minLapseCount,
+        count: leeches.length,
+        leeches,
+      });
+    } catch (error) {
+      logger.error("Error fetching leeches", { error: error.message, userId: req.userId });
+      res.status(500).json({
+        error: "Internal Server Error",
+        code: "FETCH_LEECHES_FAILED",
+        message: "Failed to fetch struggling vocabulary",
+      });
+    }
+  }
 }

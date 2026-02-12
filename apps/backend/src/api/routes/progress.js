@@ -1,21 +1,31 @@
 /**
  * @file apps/backend/src/api/routes/progress.js
  * @description Progress tracking routes (mounted under /api in index.js)
+ * Story 15.2: Added quiz endpoints (due, test-result, leeches)
  */
 
 import express from "express";
 import { ProgressController } from "../controllers/progressController.js";
 import { ProgressService } from "../../core/services/ProgressService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
+import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
+import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
-// Initialize dependencies (ProgressRepository uses shared Prisma client from models/index.js)
+// Initialize dependencies with proper injection
+// Story 15.2: Inject QuizResultRepository and VocabularyRepository for quiz support
 const progressRepository = new ProgressRepository();
-const progressService = new ProgressService(progressRepository);
+const quizResultRepository = new QuizResultRepository();
+const vocabularyRepository = new VocabularyRepository();
+const progressService = new ProgressService(
+  progressRepository,
+  quizResultRepository,
+  vocabularyRepository,
+);
 const progressController = new ProgressController(progressService);
 
 // All progress routes require authentication
@@ -60,6 +70,28 @@ router.post(
   ROUTE_PATTERNS.progressBatch,
   authenticateToken,
   asyncHandler(progressController.batchUpdateProgress.bind(progressController)),
+);
+
+// Story 15.2: Quiz system endpoints
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1due
+router.get(
+  "/v1/progress/due",
+  authenticateToken,
+  asyncHandler(progressController.getDueWords.bind(progressController)),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1test-result
+router.post(
+  "/v1/progress/test-result",
+  authenticateToken,
+  asyncHandler(progressController.saveTestResult.bind(progressController)),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1leeches
+router.get(
+  "/v1/progress/leeches",
+  authenticateToken,
+  asyncHandler(progressController.getLeeches.bind(progressController)),
 );
 
 export default router;
