@@ -579,4 +579,283 @@ describe("ProgressController", () => {
       );
     });
   });
+
+  describe("saveTestResult - Gamification Integration", () => {
+    let mockStreakService;
+    let mockGamificationService;
+    let mockProgressRepo;
+    let mockQuizResultRepo;
+
+    beforeEach(() => {
+      // Mock ProgressRepository
+      mockProgressRepo = {
+        updateProgress: vi.fn(),
+      };
+
+      // Mock QuizResultRepository
+      mockQuizResultRepo = {
+        create: vi.fn(),
+      };
+
+      // Mock StreakService
+      mockStreakService = {
+        updateStreak: vi.fn(),
+        checkAndAwardFreeze: vi.fn(),
+      };
+
+      // Mock GamificationService
+      mockGamificationService = {
+        calculateXP: vi.fn(),
+        checkAndAwardBadges: vi.fn(),
+        checkMysteryBoxDrop: vi.fn(),
+      };
+
+      // Create controller with gamification services
+      progressController = new ProgressController(
+        mockService,
+        mockProgressRepo,
+        mockQuizResultRepo,
+        mockStreakService,
+        mockGamificationService,
+      );
+
+      mockReq.body = {
+        wordId: "word1",
+        isCorrect: true,
+        responseTime: 1500,
+      };
+    });
+
+    it("should enrich response with gamification data when all services available", async () => {
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.8,
+      });
+
+      mockStreakService.updateStreak.mockResolvedValue({
+        userId: "user1",
+        currentStreak: 10,
+        longestStreak: 15,
+        freezeCount: 2,
+        lastActivityDate: new Date(),
+      });
+
+      mockGamificationService.calculateXP.mockReturnValue(15); // Base 10 + bonus 5
+
+      mockGamificationService.checkAndAwardBadges.mockResolvedValue([
+        {
+          badgeId: "7-day-streak",
+          name: "7-Day Warrior",
+          tier: "bronze",
+          earnedDate: new Date(),
+        },
+      ]);
+
+      mockStreakService.checkAndAwardFreeze.mockResolvedValue({
+        awarded: true,
+        freezeCount: 3,
+      });
+
+      mockGamificationService.checkMysteryBoxDrop.mockReturnValue({
+        reward: "50 XP",
+        description: "Bonus XP reward!",
+      });
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          progressId: "prog1",
+          newConfidence: 0.8,
+          currentStreak: 10,
+          xpEarned: 15,
+          newBadges: expect.arrayContaining([
+            expect.objectContaining({
+              badgeId: "7-day-streak",
+            }),
+          ]),
+          freezeAwarded: true,
+          mysteryBox: expect.objectContaining({
+            reward: "50 XP",
+          }),
+        }),
+      );
+    });
+
+    it("should return base response when gamification services unavailable", async () => {
+      // Controller without gamification services
+      progressController = new ProgressController(
+        mockService,
+        mockProgressRepo,
+        mockQuizResultRepo,
+      );
+
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.8,
+      });
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        progressId: "prog1",
+        newConfidence: 0.8,
+      });
+    });
+
+    it("should handle gamification service errors gracefully", async () => {
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.8,
+      });
+
+      // Simulate streak service error
+      mockStreakService.updateStreak.mockRejectedValue(new Error("Streak DB error"));
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      // Should still return success with base response
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          progressId: "prog1",
+          newConfidence: 0.8,
+        }),
+      );
+    });
+
+    it("should not award XP for incorrect answers", async () => {
+      mockReq.body.isCorrect = false;
+
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.4,
+      });
+
+      mockStreakService.updateStreak.mockResolvedValue({
+        userId: "user1",
+        currentStreak: 5,
+        longestStreak: 10,
+        freezeCount: 1,
+        lastActivityDate: new Date(),
+      });
+
+      mockGamificationService.calculateXP.mockReturnValue(0); // No XP for incorrect
+
+      mockGamificationService.checkAndAwardBadges.mockResolvedValue([]);
+      mockStreakService.checkAndAwardFreeze.mockResolvedValue({ awarded: false });
+      mockGamificationService.checkMysteryBoxDrop.mockReturnValue(null);
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockGamificationService.calculateXP).toHaveBeenCalledWith(false, 5);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          xpEarned: 0,
+        }),
+      );
+    });
+
+    it("should include streak bonus when streak >= 7 days", async () => {
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.9,
+      });
+
+      mockStreakService.updateStreak.mockResolvedValue({
+        userId: "user1",
+        currentStreak: 7,
+        longestStreak: 10,
+        freezeCount: 0,
+        lastActivityDate: new Date(),
+      });
+
+      mockGamificationService.calculateXP.mockReturnValue(15); // Base 10 + bonus 5
+
+      mockGamificationService.checkAndAwardBadges.mockResolvedValue([]);
+      mockStreakService.checkAndAwardFreeze.mockResolvedValue({ awarded: false });
+      mockGamificationService.checkMysteryBoxDrop.mockReturnValue(null);
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockGamificationService.calculateXP).toHaveBeenCalledWith(true, 7);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          xpEarned: 15,
+        }),
+      );
+    });
+
+    it("should check for freeze award after 10 consecutive correct quizzes", async () => {
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.85,
+      });
+
+      mockStreakService.updateStreak.mockResolvedValue({
+        userId: "user1",
+        currentStreak: 12,
+        longestStreak: 15,
+        freezeCount: 2,
+        lastActivityDate: new Date(),
+      });
+
+      mockGamificationService.calculateXP.mockReturnValue(15);
+      mockGamificationService.checkAndAwardBadges.mockResolvedValue([]);
+
+      mockStreakService.checkAndAwardFreeze.mockResolvedValue({
+        awarded: true,
+        freezeCount: 3,
+        message: "Earned 1 freeze for 10 consecutive perfect quizzes!",
+      });
+
+      mockGamificationService.checkMysteryBoxDrop.mockReturnValue(null);
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockStreakService.checkAndAwardFreeze).toHaveBeenCalledWith("user1");
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          freezeAwarded: true,
+        }),
+      );
+    });
+
+    it("should check for mystery box drop on 7-day milestones", async () => {
+      mockService.recordQuizResult.mockResolvedValue({
+        progressId: "prog1",
+        newConfidence: 0.82,
+      });
+
+      mockStreakService.updateStreak.mockResolvedValue({
+        userId: "user1",
+        currentStreak: 14, // 7-day milestone
+        longestStreak: 20,
+        freezeCount: 1,
+        lastActivityDate: new Date(),
+      });
+
+      mockGamificationService.calculateXP.mockReturnValue(15);
+      mockGamificationService.checkAndAwardBadges.mockResolvedValue([]);
+      mockStreakService.checkAndAwardFreeze.mockResolvedValue({ awarded: false });
+
+      mockGamificationService.checkMysteryBoxDrop.mockReturnValue({
+        reward: "1 Streak Freeze",
+        description: "Lucky! You received a streak freeze!",
+      });
+
+      await progressController.saveTestResult(mockReq, mockRes);
+
+      expect(mockGamificationService.checkMysteryBoxDrop).toHaveBeenCalledWith(14);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mysteryBox: expect.objectContaining({
+            reward: "1 Streak Freeze",
+          }),
+        }),
+      );
+    });
+  });
 });

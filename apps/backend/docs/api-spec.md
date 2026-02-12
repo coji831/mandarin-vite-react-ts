@@ -7,6 +7,7 @@
 - [TTS Endpoints](#tts-endpoints)
 - [Conversation Endpoints](#conversation-endpoints)
 - [Progress Tracking Endpoints](#progress-tracking-endpoints-story-134)
+- [Gamification Endpoints](#gamification-endpoints-story-153)
 - [Authentication](#authentication)
 
 ## Authentication
@@ -1126,17 +1127,43 @@ Save quiz answer and update progress using quiz-specific spaced repetition algor
 {
   "nextReviewDate": "2026-03-14T08:00:00.000Z",
   "lapseCount": 0,
-  "isLeech": false
+  "isLeech": false,
+  "xpEarned": 15,
+  "newBadges": [
+    {
+      "id": "bronze_flame",
+      "name": "Bronze Flame",
+      "streakRequired": 7,
+      "icon": "🔥"
+    }
+  ],
+  "freezeAwarded": true,
+  "mysteryBox": {
+    "type": "xp",
+    "amount": 50,
+    "name": "Bonus XP",
+    "icon": "✨"
+  }
 }
 ```
 
-**Response Field Definitions:**
+- **Gamification side effects (Story 15.3):**
+  - Updates user's study streak (48-hour grace period)
+  - Awards XP: +10 base per correct answer, +5 bonus if current streak ≥ 7 days
+  - Checks and awards badges at 7/30/100/365-day streak milestones
+  - Awards 1 freeze per 10 consecutive perfect quizzes (max 5 freezes)
+  - Rolls for mystery box drop (5% chance) on streak milestones (7, 14, 21, 28...)
+    **Response Field Definitions:**
 
 - `nextReviewDate`: Calculated next review date using spaced repetition
   - Correct answer: 30 days (maximum spacing)
   - Incorrect answer: 1 day (immediate review)
 - `lapseCount`: Total consecutive incorrect answers (resets to 0 on correct answer)
 - `isLeech`: True if `lapseCount >= 5` (flagged for targeted review)
+- `xpEarned` (Story 15.3): XP points awarded for this answer (+10 base, +5 bonus if streak ≥ 7)
+- `newBadges` (Story 15.3): Array of newly unlocked badges (7/30/100/365-day streak milestones)
+- `freezeAwarded` (Story 15.3): True if user earned 1 freeze (10 consecutive perfect quizzes)
+- `mysteryBox` (Story 15.3): Random reward object if dropped (5% chance on 7-day streak multiples), null otherwise
 
 **Business Rules:**
 
@@ -1229,6 +1256,317 @@ curl -H "Authorization: Bearer $TOKEN" \
 curl -H "Authorization: Bearer $TOKEN" \
   https://api.example.com/api/v1/progress/leeches?minLapseCount=10
 ```
+
+---
+
+## Gamification Endpoints (Story 15.3)
+
+All gamification endpoints require authentication via JWT Bearer token.
+
+### GET /api/v1/progress/streak
+
+Get current study streak data for authenticated user.
+
+**Auth:** Required (JWT Bearer token)
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "currentStreak": 14,
+  "longestStreak": 28,
+  "freezeCount": 2,
+  "lastActivityDate": "2026-02-11T15:30:00.000Z"
+}
+```
+
+**Response Field Definitions:**
+
+- `currentStreak`: Consecutive days with quiz activity (resets if >48h inactive without freeze)
+- `longestStreak`: All-time longest streak achieved (never decreases)
+- `freezeCount`: Available freeze currency to protect streak (0-5 cap)
+- `lastActivityDate`: Timestamp of most recent quiz completion
+
+**Business Rules:**
+
+- **48-hour grace period**: User has 48 hours from `lastActivityDate` to complete another quiz before streak resets
+- Streak increments by 1 per calendar day (multiple quizzes per day still count as 1)
+- Grace period accommodates time zones and weekend travel patterns
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 STREAK_NOT_FOUND`: User has never completed a quiz
+- `500 INTERNAL_ERROR`: Database or service error
+
+**Example:**
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/streak
+```
+
+---
+
+### POST /api/v1/progress/streak/freeze
+
+Spend 1 freeze to protect current streak by extending grace period by 24 hours.
+
+**Auth:** Required (JWT Bearer token)
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+
+None (empty body).
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Freeze spent successfully",
+  "freezeCount": 1,
+  "lastActivityDate": "2026-02-10T15:30:00.000Z"
+}
+```
+
+**Response Field Definitions:**
+
+- `freezeCount`: Remaining freezes after spending (decremented by 1)
+- `lastActivityDate`: Extended grace period end (original date + 24 hours)
+
+**Business Rules:**
+
+- Can only spend freeze when streak is **at risk** (>48 hours since `lastActivityDate`)
+- Cannot spend freeze if within normal 48-hour grace period (400 error)
+- Extends `lastActivityDate` by exactly 24 hours (not current time)
+- Maximum 1 freeze spend per 7-day period (prevents hoarding abuse)
+- Freeze spend does NOT increment `currentStreak` (only protects existing streak)
+
+**Validation Rules:**
+
+- `freezeCount >= 1` required (400 error if 0 freezes)
+- Streak must be at risk: `(now - lastActivityDate) > 48 hours` (400 error if not at risk)
+- User must have active streak record (404 error if no streak exists)
+
+**Errors:**
+
+- `400 NO_FREEZES_AVAILABLE`: User has 0 freezes remaining
+- `400 STREAK_NOT_AT_RISK`: Cannot spend freeze within 48-hour grace period
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 NO_STREAK_RECORD`: User has never completed a quiz
+- `500 INTERNAL_ERROR`: Database or service error
+
+**Example:**
+
+```bash
+# Spend freeze to protect streak
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/progress/streak/freeze
+```
+
+**Use Cases:**
+
+- User goes on vacation and wants to preserve 100-day streak
+- Emergency scenarios (illness, travel) where quiz completion impossible
+- Strategic use before known busy periods
+
+---
+
+### GET /api/v1/gamification/badges
+
+Get earned badges and progress toward available badges for authenticated user.
+
+**Auth:** Required (JWT Bearer token)
+
+**Headers:**
+
+```
+Authorization: Bearer <access_token>
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "earned": [
+    {
+      "id": "bronze_flame",
+      "name": "Bronze Flame",
+      "streakRequired": 7,
+      "icon": "🔥",
+      "earnedDate": "2026-01-18T10:00:00.000Z"
+    },
+    {
+      "id": "silver_flame",
+      "name": "Silver Flame",
+      "streakRequired": 30,
+      "icon": "🔥",
+      "earnedDate": "2026-02-08T14:30:00.000Z"
+    }
+  ],
+  "available": [
+    {
+      "id": "gold_flame",
+      "name": "Gold Flame",
+      "streakRequired": 100,
+      "icon": "🔥",
+      "progress": 42,
+      "percentComplete": 42
+    },
+    {
+      "id": "diamond_flame",
+      "name": "Diamond Flame",
+      "streakRequired": 365,
+      "icon": "💎",
+      "progress": 42,
+      "percentComplete": 12
+    }
+  ]
+}
+```
+
+**Response Field Definitions:**
+
+**Earned Badges:**
+
+- `id`: Unique badge identifier (bronze_flame, silver_flame, gold_flame, diamond_flame)
+- `name`: Display name for badge
+- `streakRequired`: Streak milestone required to earn badge
+- `icon`: Emoji icon representing badge
+- `earnedDate`: Timestamp when badge was unlocked
+
+**Available Badges:**
+
+- `id`, `name`, `streakRequired`, `icon`: Same as earned badges
+- `progress`: User's current `longestStreak` value (toward this badge)
+- `percentComplete`: Progress percentage (0-100, rounded to integer)
+
+**Badge Milestones:**
+
+| Badge ID          | Name                | Streak Required             | Icon |
+| ----------------- | ------------------- | --------------------------- | ---- |
+| bronze_flame      | Bronze Flame        | 7 days                      | 🔥   |
+| silver_flame      | Silver Flame        | 30 days                     | 🔥   |
+| gold_flame        | Gold Flame          | 100 days                    | 🔥   |
+| diamond_flame     | Diamond Flame       | 365 days                    | 💎   |
+| golden_flame_rare | Golden Flame (Rare) | N/A (mystery box exclusive) | ✨🔥 |
+
+**Business Rules:**
+
+- Each badge awarded only once (no duplicates)
+- Badges awarded based on `longestStreak`, not `currentStreak` (permanent achievement)
+- Progress shown for next unearned badge tier
+- `available` array shows all unearned badges with progress (not just next tier)
+- `golden_flame_rare` badge not shown in available list (mystery box surprise)
+
+**Errors:**
+
+- `401 UNAUTHORIZED`: Missing or invalid JWT token
+- `404 NO_STREAK_RECORD`: User has never completed a quiz
+- `500 INTERNAL_ERROR`: Database or service error
+
+**Example:**
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.example.com/api/v1/gamification/badges
+```
+
+**Use Cases:**
+
+- Display badge collection in user profile
+- Show progress bars for next badge milestones
+- Celebrate badge unlocks with confetti/animations
+- Social sharing of badge achievements
+
+---
+
+### Mystery Box System
+
+Mystery boxes are **not** a standalone endpoint. They are awarded as part of quiz completion (`POST /api/v1/progress/test-result` response).
+
+**Drop Conditions:**
+
+- User must be on a streak milestone (7-day multiple: 7, 14, 21, 28, 35...)
+- 5% random chance per eligible quiz
+- Only drops once per milestone (e.g., if missed at day 14, can still drop at day 21)
+
+**Reward Types:**
+
+```json
+[
+  { "type": "xp", "amount": 50, "name": "Bonus XP", "icon": "✨" },
+  { "type": "freeze", "amount": 1, "name": "Streak Freeze", "icon": "❄️" },
+  { "type": "badge", "id": "golden_flame_rare", "name": "Golden Flame (Rare)", "icon": "✨🔥" }
+]
+```
+
+**Business Rules:**
+
+- Random selection from 3 reward types (equal probability)
+- XP rewards bypass daily 500 XP cap (bonus incentive)
+- Freeze rewards can exceed 5-freeze cap temporarily
+- Rare badge variant is exclusive to mystery box (not achievable via streaks)
+
+**Example Response (in test-result):**
+
+```json
+{
+  "nextReviewDate": "2026-03-14T08:00:00.000Z",
+  "xpEarned": 10,
+  "mysteryBox": {
+    "type": "freeze",
+    "amount": 1,
+    "name": "Streak Freeze",
+    "icon": "❄️"
+  }
+}
+```
+
+---
+
+### XP System
+
+XP (experience points) are awarded via quiz completion. No standalone XP endpoint exists.
+
+**XP Formula:**
+
+```
+xpEarned = baseXP + streakBonus
+baseXP = correct ? 10 : 0
+streakBonus = currentStreak >= 7 ? 5 : 0
+```
+
+**Examples:**
+
+- Correct answer, 3-day streak: `10 + 0 = 10 XP`
+- Correct answer, 7-day streak: `10 + 5 = 15 XP`
+- Incorrect answer: `0 XP` (no penalty, just no reward)
+
+**Business Rules:**
+
+- Only correct answers award XP (incorrect = 0 XP)
+- Streak bonus activates at 7+ day streak (Bronze Flame milestone)
+- Daily XP cap: **500 XP** (prevents marathon gaming sessions)
+- Mystery box XP rewards **bypass** daily cap (bonus incentive)
+- XP resets do not occur (lifetime cumulative)
+
+**Future Expansion (Not in Story 15.3):**
+
+- User profile displaying total XP count
+- Leaderboards (weekly/monthly/all-time)
+- XP-based unlocks (premium word lists, themes)
 
 **Use Cases:**
 

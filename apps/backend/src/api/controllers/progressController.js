@@ -14,9 +14,13 @@ const logger = createLogger("ProgressController");
 export class ProgressController {
   /**
    * @param {object} progressService - ProgressService instance
+   * @param {object} streakService - StreakService instance (Story 15.3)
+   * @param {object} gamificationService - GamificationService instance (Story 15.3)
    */
-  constructor(progressService) {
+  constructor(progressService, streakService = null, gamificationService = null) {
     this.progressService = progressService;
+    this.streakService = streakService;
+    this.gamificationService = gamificationService;
   }
 
   /**
@@ -404,12 +408,60 @@ export class ProgressController {
         isLeech: result.isLeech,
       });
 
+      // Story 15.3: Gamification integration (optional - graceful degradation if services unavailable)
+      let gamificationData = {};
+
+      if (this.streakService && this.gamificationService) {
+        try {
+          // Update streak (48h grace period logic)
+          const updatedStreak = await this.streakService.updateStreak(userId);
+
+          // Calculate XP earned (+10 base, +5 if streak >= 7)
+          const xpEarned = this.gamificationService.calculateXP(
+            correct,
+            updatedStreak.currentStreak,
+          );
+
+          // Check and award badges for milestones (7, 30, 100, 365 days)
+          const newBadges = await this.gamificationService.checkAndAwardBadges(
+            userId,
+            updatedStreak.longestStreak,
+          );
+
+          // Check if user earned freeze (10 consecutive perfect quizzes)
+          const freezeAwarded = await this.streakService.checkAndAwardFreeze(userId);
+
+          // Check mystery box drop (5% chance on 7-day milestones)
+          const mysteryBox = this.gamificationService.checkMysteryBoxDrop(
+            updatedStreak.currentStreak,
+          );
+
+          gamificationData = {
+            currentStreak: updatedStreak.currentStreak,
+            xpEarned,
+            newBadges: newBadges.length > 0 ? newBadges : undefined,
+            freezeAwarded: freezeAwarded ? true : undefined,
+            mysteryBox: mysteryBox || undefined,
+          };
+
+          logger.info("Gamification data attached", {
+            userId,
+            xpEarned,
+            badgeCount: newBadges.length,
+          });
+        } catch (error) {
+          logger.warn("Gamification features unavailable", { error: error.message });
+          // Continue without gamification data (graceful degradation)
+        }
+      }
+
       res.status(200).json({
         wordId,
         correct,
         nextReview: result.nextReviewDate,
         lapseCount: result.lapseCount,
         isLeech: result.isLeech,
+        ...gamificationData,
       });
     } catch (error) {
       logger.error("Error saving test result", { error: error.message, userId: req.userId });

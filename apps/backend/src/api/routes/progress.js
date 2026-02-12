@@ -10,6 +10,10 @@ import { ProgressService } from "../../core/services/ProgressService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
 import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
 import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
+import { StreakService } from "../../core/services/StreakService.js";
+import { GamificationService } from "../../core/services/GamificationService.js";
+import { StreakRepository } from "../../infrastructure/repositories/StreakRepository.js";
+import { BadgeRepository } from "../../infrastructure/repositories/BadgeRepository.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
@@ -18,15 +22,26 @@ const router = express.Router();
 
 // Initialize dependencies with proper injection
 // Story 15.2: Inject QuizResultRepository and VocabularyRepository for quiz support
+// Story 15.3: Inject StreakService and GamificationService for gamification features
 const progressRepository = new ProgressRepository();
 const quizResultRepository = new QuizResultRepository();
 const vocabularyRepository = new VocabularyRepository();
+const streakRepository = new StreakRepository();
+const badgeRepository = new BadgeRepository();
+
 const progressService = new ProgressService(
   progressRepository,
   quizResultRepository,
   vocabularyRepository,
 );
-const progressController = new ProgressController(progressService);
+const streakService = new StreakService(streakRepository, quizResultRepository);
+const gamificationService = new GamificationService(badgeRepository, streakRepository);
+
+const progressController = new ProgressController(
+  progressService,
+  streakService,
+  gamificationService,
+);
 
 // All progress routes require authentication
 // Note: These are relative paths - main app mounts them under /api

@@ -50,6 +50,25 @@ export class QuizResultRepository {
       },
     });
   }
+
+  /**
+   * Find recent quiz results for user (for streak freeze earning logic)
+   * Story 15.3: Used to check for 10 consecutive perfect quizzes
+   * @param {string} userId - User ID
+   * @param {number} limit - Number of recent results to fetch
+   * @returns {Promise<array>} Array of quiz results (most recent first)
+   */
+  async findRecent(userId, limit = 10) {
+    return prisma.quizResult.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        answeredAt: "desc",
+      },
+      take: limit,
+    });
+  }
 }
 
 export default QuizResultRepository;
