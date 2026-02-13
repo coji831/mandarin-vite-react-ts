@@ -1,17 +1,18 @@
 /**
- * Unit tests for AIFeedbackService
+ * Unit tests for CachedAIFeedbackService
  * Tests AI feedback generation, caching, timeout handling, and error classification
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { generateFeedback } from "../../../src/core/services/AIFeedbackService.js";
+import { CachedAIFeedbackService } from "../../../src/core/services/CachedAIFeedbackService.js";
 import * as GeminiClient from "../../../src/infrastructure/external/GeminiClient.js";
 import { cacheMetrics } from "../../../src/utils/CacheMetrics.js";
 
 // Mock external dependencies
 vi.mock("../../../src/infrastructure/external/GeminiClient.js");
 
-describe("AIFeedbackService", () => {
+describe("CachedAIFeedbackService", () => {
+  let feedbackService;
   let mockCacheService;
   let mockVocabularyRepo;
   let mockWord;
@@ -48,6 +49,9 @@ describe("AIFeedbackService", () => {
           "You confused mā (mother) with mǎ (horse). These words use the same syllable but different tones. The first tone (mā) is high and level, while the third tone (mǎ) starts low, dips, and rises. Practice listening carefully to tone differences!",
       }),
     );
+
+    // Initialize service with dependencies
+    feedbackService = new CachedAIFeedbackService(mockVocabularyRepo, mockCacheService);
   });
 
   afterEach(() => {
@@ -63,16 +67,12 @@ describe("AIFeedbackService", () => {
 
       mockCacheService.get.mockResolvedValue(JSON.stringify(cachedFeedback));
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result).toEqual(cachedFeedback);
       expect(mockCacheService.get).toHaveBeenCalledWith("quiz:feedback:1:mǎ");
@@ -84,16 +84,12 @@ describe("AIFeedbackService", () => {
     it("should call Gemini API on cache miss", async () => {
       mockCacheService.get.mockResolvedValue(null);
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.errorType).toBe("tone");
       expect(result.explanation).toContain("confused mā");
@@ -109,16 +105,12 @@ describe("AIFeedbackService", () => {
     it("should sanitize user input before processing", async () => {
       const maliciousInput = "<script>alert('xss')</script>mǎ";
 
-      await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: maliciousInput,
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: maliciousInput,
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       // Check that cache key uses sanitized input (brackets removed)
       expect(mockCacheService.get).toHaveBeenCalledWith(
@@ -128,16 +120,12 @@ describe("AIFeedbackService", () => {
 
     it("should throw error for empty answers after sanitization", async () => {
       await expect(
-        generateFeedback(
-          {
-            wordId: 1,
-            userAnswer: "<<<>>>", // Will be empty after sanitization
-            correctAnswer: "mā",
-            questionType: "tone_audio",
-          },
-          mockCacheService,
-          mockVocabularyRepo,
-        ),
+        feedbackService.generateFeedback({
+          wordId: 1,
+          userAnswer: "<<<>>>", // Will be empty after sanitization
+          correctAnswer: "mā",
+          questionType: "tone_audio",
+        }),
       ).rejects.toThrow("Invalid input");
     });
 
@@ -150,16 +138,12 @@ describe("AIFeedbackService", () => {
           }),
       );
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.errorType).toBe("generic");
       expect(result.explanation).toContain("couldn't generate detailed feedback");
@@ -168,16 +152,12 @@ describe("AIFeedbackService", () => {
     it("should return fallback feedback on Gemini API error", async () => {
       vi.spyOn(GeminiClient, "generateText").mockRejectedValue(new Error("Gemini API failed"));
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.errorType).toBe("generic");
       expect(result.explanation).toContain("couldn't generate detailed feedback");
@@ -187,16 +167,12 @@ describe("AIFeedbackService", () => {
       mockVocabularyRepo.findById.mockResolvedValue(null);
 
       await expect(
-        generateFeedback(
-          {
-            wordId: 999,
-            userAnswer: "mǎ",
-            correctAnswer: "mā",
-            questionType: "tone_audio",
-          },
-          mockCacheService,
-          mockVocabularyRepo,
-        ),
+        feedbackService.generateFeedback({
+          wordId: 999,
+          userAnswer: "mǎ",
+          correctAnswer: "mā",
+          questionType: "tone_audio",
+        }),
       ).rejects.toThrow("Word not found: 999");
     });
 
@@ -208,16 +184,12 @@ describe("AIFeedbackService", () => {
 
       vi.spyOn(GeminiClient, "generateText").mockResolvedValue(JSON.stringify(geminiResponse));
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "马",
-          correctAnswer: "妈",
-          questionType: "character_choice",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "马",
+        correctAnswer: "妈",
+        questionType: "character_choice",
+      });
 
       expect(result.errorType).toBe("character");
       expect(result.explanation).toContain("similar");
@@ -233,16 +205,12 @@ describe("AIFeedbackService", () => {
 
       vi.spyOn(GeminiClient, "generateText").mockResolvedValue(geminiResponseWithExtra);
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "hello",
-          correctAnswer: "hi",
-          questionType: "english_choice",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "hello",
+        correctAnswer: "hi",
+        questionType: "english_choice",
+      });
 
       expect(result.errorType).toBe("meaning");
       expect(result.explanation).toContain("similar meanings");
@@ -253,59 +221,43 @@ describe("AIFeedbackService", () => {
         "This is a plain text explanation without JSON format.",
       );
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.explanation).toBe("This is a plain text explanation without JSON format.");
       expect(result.errorType).toBe("tone"); // Classified by fallback logic
     });
 
     it("should generate correct cache key for multiple requests", async () => {
-      await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
-      await generateFeedback(
-        {
-          wordId: 2,
-          userAnswer: "nǐ",
-          correctAnswer: "ní",
-          questionType: "pinyin_choice",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      await feedbackService.generateFeedback({
+        wordId: 2,
+        userAnswer: "nǐ",
+        correctAnswer: "ní",
+        questionType: "pinyin_choice",
+      });
 
       expect(mockCacheService.get).toHaveBeenNthCalledWith(1, "quiz:feedback:1:mǎ");
       expect(mockCacheService.get).toHaveBeenNthCalledWith(2, "quiz:feedback:2:nǐ");
     });
 
     it("should cache feedback with 24-hour TTL", async () => {
-      await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(mockCacheService.set).toHaveBeenCalledWith(
         "quiz:feedback:1:mǎ",
@@ -318,16 +270,12 @@ describe("AIFeedbackService", () => {
       // Mock Gemini to return plain text without JSON
       vi.spyOn(GeminiClient, "generateText").mockResolvedValue("Tone marks change the meaning.");
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ", // Different tone
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ", // Different tone
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.errorType).toBe("tone");
     });
@@ -342,16 +290,12 @@ describe("AIFeedbackService", () => {
         english: "mother",
       });
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "马", // Different Chinese character
-          correctAnswer: "妈",
-          questionType: "character_choice",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "马", // Different Chinese character
+        correctAnswer: "妈",
+        questionType: "character_choice",
+      });
 
       expect(result.errorType).toBe("character");
     });
@@ -360,16 +304,12 @@ describe("AIFeedbackService", () => {
       const longText = "a".repeat(500);
       vi.spyOn(GeminiClient, "generateText").mockResolvedValue(longText);
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "mǎ",
-          correctAnswer: "mā",
-          questionType: "tone_audio",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "mǎ",
+        correctAnswer: "mā",
+        questionType: "tone_audio",
+      });
 
       expect(result.explanation.length).toBeLessThanOrEqual(300);
     });
@@ -381,16 +321,12 @@ describe("AIFeedbackService", () => {
         "Semantic confusion between similar words.",
       );
 
-      const result = await generateFeedback(
-        {
-          wordId: 1,
-          userAnswer: "hello",
-          correctAnswer: "hi",
-          questionType: "english_choice",
-        },
-        mockCacheService,
-        mockVocabularyRepo,
-      );
+      const result = await feedbackService.generateFeedback({
+        wordId: 1,
+        userAnswer: "hello",
+        correctAnswer: "hi",
+        questionType: "english_choice",
+      });
 
       expect(result.errorType).toBe("meaning");
     });

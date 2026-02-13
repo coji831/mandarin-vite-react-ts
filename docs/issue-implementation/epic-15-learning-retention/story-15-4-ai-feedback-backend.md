@@ -417,6 +417,200 @@ it("should return fallback feedback on Gemini API timeout", async () => {
 
 ---
 
+### Challenge 6: Cache Factory Pattern Alignment (Post-Implementation)
+
+**Problem:** Initial implementation attempted to directly import `RedisCacheService` class and used undefined `redisCacheService` variable:
+
+```javascript
+// ❌ Incorrect - Direct class import
+import { RedisCacheService } from "../../../src/infrastructure/cache/RedisCacheService.js";
+// ... undefined redisCacheService variable used
+```
+
+**Error on Server Start:**
+
+```
+SyntaxError: The requested module '../../infrastructure/cache/index.js'
+does not provide an export named 'redisCacheService'
+```
+
+**Root Cause:** Violated factory pattern established in Epic 14 (API Modernization). The cache architecture uses `getCacheService()` factory that:
+
+1. Returns singleton `RedisCacheService` instance when Redis available
+2. Gracefully falls back to `NoOpCacheService` when Redis unavailable
+3. Handles environment-aware initialization (detects Railway internal hostnames)
+4. Provides consistent interface across the application
+
+**Discovered via:** Redis Caching Guide (`docs/guides/redis-caching-guide.md`) and Story 13.5 implementation docs.
+
+**Correct Pattern (from TTS/Conversation routes):**
+
+```javascript
+// ✅ Correct - Factory pattern with singleton
+import { getCacheService } from "../../infrastructure/cache/index.js";
+const cacheService = getCacheService();
+
+// Pass to service functions
+const feedback = await generateFeedback(params, cacheService, vocabularyRepo);
+```
+
+**Why This Pattern Matters:**
+
+- **Graceful Degradation**: NoOpCacheService fallback when Redis unavailable (local dev without Redis)
+- **Singleton Management**: Single cache instance prevents connection duplication
+- **Environment Detection**: Auto-detects Railway internal hostnames in local dev
+- **Consistency**: All services (TTS, Conversation, AI Feedback) use same pattern
+
+**Alignment Verification:**
+
+Compared with existing implementations:
+
+- ✅ `ttsRoutes.js`: Uses `getCacheService()` → passes to `CachedTTSService` constructor
+- ✅ `conversationRoutes.js`: Uses `getCacheService()` → passes to `CachedConversationService` constructor
+- ✅ `AIFeedbackController.js`: Now uses `getCacheService()` → passes to `generateFeedback()` function
+
+**Lesson Learned:** Always review existing architectural patterns in knowledge base and implementation docs before introducing new features. The factory pattern prevents direct class instantiation and provides critical infrastructure abstractions (fallback, singleton, environment awareness).
+
+**References:**
+
+- Epic 14 restructure: `docs/issue-implementation/epic-14-api-modernization/`
+- Story 13.5: `docs/issue-implementation/epic-13-production-backend-architecture/story-13-5-redis-caching.md`
+- Redis guide: `docs/guides/redis-caching-guide.md` (sections on `getCacheService()` usage)
+
+---
+
+### Challenge 7: Architectural Consistency - Class-Based Service Pattern (Post-Implementation)
+
+**Problem:** After fixing Challenge 6 (cache factory pattern), noticed architectural inconsistency:
+
+- **AIFeedbackService**: Function-based with parameters `generateFeedback(params, cacheService, vocabularyRepo)`
+- **AIFeedbackController**: Module-level dependency initialization, function export
+- **TTS/Conversation**: Class-based services with constructor injection, class-based controllers
+
+**Inconsistency Example:**
+
+```javascript
+// ❌ AIFeedbackController (function-based, module-level DI)
+const cacheService = getCacheService();
+const vocabularyRepo = new VocabularyRepository();
+
+export async function generateAIFeedback(req, res) {
+  const feedback = await generateFeedback(params, cacheService, vocabularyRepo);
+  // ...
+}
+
+// ✅ TtsController (class-based, constructor DI)
+class TtsController {
+  constructor(cachedTtsService, gcsClient) {
+    this.ttsService = cachedTtsService;
+    this.gcsClient = gcsClient;
+  }
+  // ...
+}
+```
+
+**Root Cause:** Story 15.4 was first feature after Epic 14 restructure; initial implementation didn't match established patterns from TTS/Conversation features (which were refactored IN Epic 14).
+
+**Solution - Three-Part Refactoring:**
+
+**1. Created `CachedAIFeedbackService` Class** (matching `CachedTTSService` pattern):
+
+```javascript
+// New: core/services/CachedAIFeedbackService.js
+export class CachedAIFeedbackService {
+  constructor(vocabularyRepo, cacheService) {
+    this.vocabularyRepo = vocabularyRepo;
+    this.cacheService = cacheService;
+    this.metrics = { hits: 0, misses: 0 };
+  }
+
+  async generateFeedback({ wordId, userAnswer, correctAnswer, questionType }) {
+    // Cache logic + Gemini API orchestration
+  }
+
+  getMetrics() {
+    return this.metrics;
+  }
+}
+```
+
+**2. Converted `AIFeedbackController` to Class**:
+
+```javascript
+// Updated: api/controllers/AIFeedbackController.js
+export class AIFeedbackController {
+  constructor(feedbackService) {
+    this.feedbackService = feedbackService;
+  }
+
+  async generateAIFeedback(req, res) {
+    const feedback = await this.feedbackService.generateFeedback(params);
+    // ...
+  }
+}
+```
+
+**3. Updated Routes for Dependency Wiring** (matching `ttsRoutes.js` pattern):
+
+```javascript
+// Updated: api/routes/aiFeedbackRoutes.js
+const cacheService = getCacheService();
+const vocabularyRepo = new VocabularyRepository();
+const feedbackService = new CachedAIFeedbackService(vocabularyRepo, cacheService);
+const controller = new AIFeedbackController(feedbackService);
+
+// Register metrics (consistent with TTS/Conversation)
+registerCacheMetrics("AIFeedback", () => feedbackService.getMetrics());
+
+router.post("/v1/quiz/feedback", asyncHandler(controller.generateAIFeedback.bind(controller)));
+```
+
+**Architecture Alignment Benefits:**
+
+1. **Testability**: Controllers receive mocked service instances (no module-level singletons)
+2. **Consistency**: All features (TTS, Conversation, AIFeedback) follow identical pattern
+3. **Clean Architecture**: Dependency injection happens in routes layer (wiring), not controllers
+4. **Metrics**: Service exposes `getMetrics()` for cache monitoring middleware
+5. **Maintainability**: New developers see consistent pattern across codebase
+
+**Test Impact:** Updated 16 tests from function calls to class instantiation:
+
+```javascript
+// Before:
+const result = await generateFeedback(params, mockCache, mockRepo);
+
+// After:
+const service = new CachedAIFeedbackService(mockRepo, mockCache);
+const result = await service.generateFeedback(params);
+```
+
+**Verification:**
+
+- ✅ All 16 tests passing (3.04s duration, same as before)
+- ✅ Backend starts successfully with log: `[CachedAIFeedbackService] Initialized AI Feedback Service with cache`
+- ✅ Cache metrics registered via `registerCacheMetrics("AIFeedback", ...)`
+- ✅ Pattern matches TTS/Conversation exactly (verified via side-by-side comparison)
+
+**Lesson Learned:**
+
+When implementing the first feature AFTER a major architectural restructure (Epic 14), always:
+
+1. Review reference implementations (TTS, Conversation) for established patterns
+2. Check if similar features were refactored during the restructure
+3. Follow the NEW pattern, not pre-restructure examples
+4. Verify consistency across the codebase before declaring feature complete
+
+This challenge transformed Story 15.4 from "works but inconsistent" to "production-ready and maintainable."
+
+**References:**
+
+- `apps/backend/src/api/routes/ttsRoutes.js` - Reference implementation
+- `apps/backend/src/core/services/CachedTTSService.js` - Service wrapper pattern
+- `apps/backend/src/api/controllers/ttsController.js` - Class-based controller
+- Epic 14 docs: `docs/issue-implementation/epic-14-api-modernization/`
+
+---
+
 ## Test Results
 
 **Test Coverage:** 16 unit tests (100% passing)
@@ -424,30 +618,30 @@ it("should return fallback feedback on Gemini API timeout", async () => {
 **Test Execution:**
 
 ```
-✓ tests/core/services/AIFeedbackService.test.js (16 tests) 3026ms
-  ✓ AIFeedbackService (16)
+✓ tests/core/services/AIFeedbackService.test.js (16 tests) 3038ms
+  ✓ CachedAIFeedbackService (16)
     ✓ generateFeedback (15)
-      ✓ should return cached feedback on cache hit 4ms
-      ✓ should call Gemini API on cache miss 2ms
-      ✓ should sanitize user input before processing 1ms
-      ✓ should throw error for empty answers after sanitization 2ms
-      ✓ should return fallback feedback on Gemini API timeout 3008ms
-      ✓ should return fallback feedback on Gemini API error 2ms
+      ✓ should return cached feedback on cache hit 6ms
+      ✓ should call Gemini API on cache miss 3ms
+      ✓ should sanitize user input before processing 2ms
+      ✓ should throw error for empty answers after sanitization 3ms
+      ✓ should return fallback feedback on Gemini API timeout 3012ms
+      ✓ should return fallback feedback on Gemini API error 1ms
       ✓ should handle word not found error 1ms
       ✓ should parse JSON response from Gemini correctly 1ms
-      ✓ should extract JSON from Gemini response with extra text 0ms
-      ✓ should fallback to raw text if JSON parsing fails 0ms
-      ✓ should generate correct cache key for multiple requests 0ms
+      ✓ should extract JSON from Gemini response with extra text 1ms
+      ✓ should fallback to raw text if JSON parsing fails 1ms
+      ✓ should generate correct cache key for multiple requests 1ms
       ✓ should cache feedback with 24-hour TTL 1ms
-      ✓ should classify tone errors correctly (fallback logic) 0ms
-      ✓ should classify character errors correctly (fallback logic) 0ms
+      ✓ should classify tone errors correctly (fallback logic) 1ms
+      ✓ should classify character errors correctly (fallback logic) 1ms
       ✓ should limit explanation length when parsing plain text 0ms
     ✓ Error type classification (fallback) (1)
-      ✓ should classify meaning errors as default 0ms
+      ✓ should classify meaning errors as default 1ms
 
 Test Files  1 passed (1)
 Tests  16 passed (16)
-Duration  3.42s (transform 116ms, setup 40ms, test 3.03s)
+Duration  3.65s (transform 170ms, setup 60ms, import 189ms, tests 3.04s)
 ```
 
 **Test Categories:**
@@ -473,23 +667,32 @@ Duration  3.42s (transform 116ms, setup 40ms, test 3.03s)
 
 **Files Created:**
 
-- `AIFeedbackService.js` (257 lines) - Core business logic
-- `AIFeedbackController.js` (97 lines) - HTTP layer
-- `aiFeedbackRoutes.js` (29 lines) - Route definitions
+- `AIFeedbackService.js` → `CachedAIFeedbackService.js` (300 lines) - Service layer with cache integration (refactored to class-based)
+- `AIFeedbackController.js` (113 lines) - HTTP layer (refactored to class-based)
+- `aiFeedbackRoutes.js` (41 lines) - Route definitions with dependency wiring
 - `CacheMetrics.js` (77 lines) - Metrics tracking
-- `AIFeedbackService.test.js` (404 lines) - Test suite
+- `AIFeedbackService.test.js` (399 lines) - Test suite (updated for class instantiation)
 
 **Files Modified:**
 
 - `apps/backend/src/api/routes/index.js` - Wired routes
 - `apps/backend/docs/api-spec.md` - Added endpoint documentation (+200 lines)
 
-**Implementation Status:** ✅ Completed
+**Architectural Refactoring (Challenge 7):**
 
-- **Commit:** 61badac
-- **Last Update:** 2026-02-12
-- **Test Status:** 16/16 passing (100%)
+- Converted function-based service → `CachedAIFeedbackService` class (matching TTS/Conversation pattern)
+- Converted function-based controller → `AIFeedbackController` class
+- Moved dependency wiring from controller to routes layer
+- Added cache metrics registration via `registerCacheMetrics()`
+
+**Implementation Status:** ✅ Completed + Refactored
+
+- **Initial Commit:** 61badac (function-based implementation)
+- **Refactoring:** Class-based architecture alignment
+- **Last Update:** 2026-02-13
+- **Test Status:** 16/16 passing (100%) - tests updated for class pattern
 - **API Docs:** Complete with prompt template, examples, error codes
+- **Architecture:** Aligned with TTS/Conversation patterns
 
 ---
 
