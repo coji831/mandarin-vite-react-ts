@@ -23,6 +23,8 @@ Sections
 
 ## Todo (near-term)
 
+- [ ] Fix jest-dom global type setup - Currently component tests require explicit `import "@testing-library/jest-dom";` despite `setupFiles: "./src/setupTests.ts"` and `globals: true` in vitest.config.ts. Matchers work at runtime but TypeScript doesn't recognize types globally. Investigate: (1) vitest.d.ts type declarations, (2) tsconfig.json types array, (3) Vitest 4.x + TypeScript 5.x + jest-dom 6.x compatibility, (4) custom test setup patterns. Goal: Remove explicit imports from QuizProgressBar.test.tsx, DailyReview.test.tsx and future component tests.
+
 ## Backlog
 
 - [ ] Standardize API response structure - Document and enforce consistent response format across all backend endpoints (currently returns data directly; consider standardizing with or without wrapper like `{ success, data }`)
