@@ -67,7 +67,10 @@ mandarin-vite-react-ts/
 
 **Structure:**
 
-- **Features** (`src/features/`): Self-contained modules (mandarin, auth, etc.)
+- **Features** (`src/features/`): Self-contained modules
+  - **Mandarin**: Vocabulary learning, quiz system, conversations
+  - **Gamification**: Streaks, badges, XP progress, achievement display
+  - **Auth**: User authentication and session management
 - **Shared Components** (`src/components/`): Reusable UI primitives
 - **Routing** (`src/router/`): React Router configuration
 - **Services** (per-feature): API clients, backend integration

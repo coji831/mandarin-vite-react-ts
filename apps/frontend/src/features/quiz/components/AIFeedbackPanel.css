@@ -1,0 +1,144 @@
+/* AIFeedbackPanel Component Styles */
+
+.ai-feedback-panel {
+  background: #232a3a;
+  border: 1px solid #38405a;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Error type badge */
+.error-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.error-badge-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.error-badge-tone {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+.error-badge-character {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.error-badge-meaning {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+}
+
+.error-badge-generic {
+  background: rgba(107, 114, 128, 0.15);
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  color: #9ca3af;
+}
+
+/* Feedback content */
+.feedback-content {
+  margin-top: 12px;
+}
+
+.feedback-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Loading skeleton */
+.feedback-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line-1 {
+  width: 90%;
+}
+
+.skeleton-line-2 {
+  width: 75%;
+}
+
+.skeleton-line-3 {
+  width: 85%;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Fallback message */
+.feedback-fallback {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(107, 114, 128, 0.1);
+  border: 1px solid rgba(107, 114, 128, 0.2);
+  border-radius: 8px;
+}
+
+.fallback-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.feedback-fallback p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .ai-feedback-panel {
+    padding: 14px;
+  }
+
+  .feedback-text {
+    font-size: 14px;
+  }
+
+  .error-badge {
+    font-size: 12px;
+  }
+
+  .error-badge-icon {
+    font-size: 14px;
+  }
+}
