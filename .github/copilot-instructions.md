@@ -318,10 +318,16 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
    - Update `docs/guides/code-conventions.md` if new patterns emerged (naming, error handling, testing).
    - Add cross-links between story doc, guides, and KB articles.
    - See "Knowledge Base Update Protocol" section for detailed extraction workflow.
-4. Update `Status: Completed` in BR + implementation docs.
-5. Update `Last Update` date in both.
-6. Ensure PR number is referenced in both docs.
-7. Commit BR + implementation changes together.
+4. **Run all feature tests before closing**:
+   - Execute full test suite for the affected feature: `npm test -- --run src/features/<feature>/`
+   - Verify 100% pass rate (no failures, no skipped tests except explicitly documented).
+   - If tests fail, fix issues before proceeding with closure.
+   - Document final test count and pass rate in implementation doc.
+   - For epic closure, run tests for ALL features touched by epic stories.
+5. Update `Status: Completed` in BR + implementation docs.
+6. Update `Last Update` date in both.
+7. Ensure PR number is referenced in both docs.
+8. Commit BR + implementation changes together.
 
 ## 🧷 Quality Gates (Before Merge / Close)
 
