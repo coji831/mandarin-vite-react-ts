@@ -1,0 +1,95 @@
+/* QuizCard Component Styles - Dark Theme */
+
+.quizCard {
+  background: #232a3a;
+  border: 1px solid #38405a;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.modeIndicator {
+  display: inline-block;
+  background: rgba(102, 126, 234, 0.15);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: #a5b4fc;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.question {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.question h2 {
+  font-size: 3rem;
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
+}
+
+.question p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0.5rem 0;
+}
+
+.pinyin {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.optionButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid #38405a;
+  color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px; /* Touch-friendly */
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.optionButton:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.optionButton:active {
+  transform: translateY(0);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .quizCard {
+    padding: 1.5rem;
+  }
+
+  .question h2 {
+    font-size: 2.5rem;
+  }
+
+  .options {
+    grid-template-columns: 1fr;
+  }
+}

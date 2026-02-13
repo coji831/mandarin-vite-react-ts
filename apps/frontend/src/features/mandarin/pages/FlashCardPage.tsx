@@ -66,9 +66,7 @@ function FlashCardPage() {
     return (
       <div>
         <h2>List Not Found or Empty</h2>
-        <button onClick={() => navigate("/mandarin/vocabulary-list")}>
-          Back to Vocabulary List
-        </button>
+        <button onClick={() => navigate("/learn/vocabulary-list")}>Back to Vocabulary List</button>
       </div>
     );
   }
@@ -79,7 +77,7 @@ function FlashCardPage() {
     <FlashCard
       words={selectedWords}
       listId={listId || ""}
-      onBackToList={() => navigate("/mandarin/vocabulary-list")}
+      onBackToList={() => navigate("/learn/vocabulary-list")}
     />
   );
 }

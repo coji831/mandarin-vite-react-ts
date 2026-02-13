@@ -9,17 +9,21 @@ React + TypeScript + Vite application for PinyinPal Mandarin learning platform.
 ```
 apps/frontend/src/
 ├── features/                    # Feature modules
-│   └── mandarin/               # Mandarin learning feature
-│       ├── components/         # Feature-specific components
-│       ├── contexts/           # State management (Context + useReducer)
-│       ├── hooks/              # Custom hooks (actions, selectors)
-│       ├── reducers/           # State reducers (lists, progress, user, ui)
-│       ├── services/           # API clients (audio, conversation, progress)
-│       ├── types/              # TypeScript type definitions
-│       ├── utils/              # Feature utilities
-│       ├── router/             # Feature routing
-│       ├── pages/              # Feature pages
-│       └── docs/               # Feature design documentation
+│   ├── mandarin/               # Mandarin learning feature
+│   │   ├── components/         # Feature-specific components
+│   │   ├── contexts/           # State management (Context + useReducer)
+│   │   ├── hooks/              # Custom hooks (actions, selectors)
+│   │   ├── reducers/           # State reducers (lists, progress, user, ui)
+│   │   ├── services/           # API clients (audio, conversation, progress)
+│   │   ├── types/              # TypeScript type definitions
+│   │   ├── utils/              # Feature utilities
+│   │   ├── router/             # Feature routing
+│   │   ├── pages/              # Feature pages
+│   │   └── docs/               # Feature design documentation
+│   └── quiz/                   # Quiz & spaced repetition feature
+│       ├── components/         # Quiz UI components (QuizCard, ToneInput, TypeAnswerInput)
+│       ├── types/              # Quiz type definitions
+│       └── __tests__/          # Component tests
 ├── components/                  # Shared UI components
 │   ├── common/                 # Reusable primitives
 │   └── docs/                   # Component API documentation
@@ -49,6 +53,7 @@ apps/frontend/src/
 ## Features
 
 - ✅ **Feature-Based Architecture**: Self-contained mandarin learning module
+- ✅ **Quiz Components**: Reusable UI components for multi-mode quiz interactions (multiple choice, type pinyin, type character)
 - ✅ **Split Context State**: Separate contexts for lists, progress, user, UI
 - ✅ **Normalized State**: Record-based data structures for performance
 - ✅ **React Router v6**: Nested routes with type-safe navigation

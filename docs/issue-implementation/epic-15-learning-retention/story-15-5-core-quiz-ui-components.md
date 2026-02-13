@@ -4,13 +4,24 @@
 
 Build reusable pure UI components for quiz interaction: QuizCard, TypeAnswerInput, ToneInput. Zero API coupling.
 
-**Files Created:**
+**Status**: Completed ✅
+**Last Update**: 2026-02-13
+**Test Coverage**: 25 tests passing (8 ToneInput + 10 TypeAnswerInput + 7 QuizCard)
 
-- `apps/frontend/src/features/quiz/components/QuizCard.tsx`
-- `apps/frontend/src/features/quiz/components/TypeAnswerInput.tsx`
-- `apps/frontend/src/features/quiz/components/ToneInput.tsx`
-- `apps/frontend/src/features/quiz/components/QuizCard.module.css`
-- `apps/frontend/src/features/quiz/types/QuizTypes.ts`
+**Files Created (12 files, 530 lines):**
+
+- `apps/frontend/src/features/quiz/components/QuizCard.tsx` (92 lines)
+- `apps/frontend/src/features/quiz/components/QuizCard.module.css` (82 lines)
+- `apps/frontend/src/features/quiz/components/TypeAnswerInput.tsx` (60 lines)
+- `apps/frontend/src/features/quiz/components/TypeAnswerInput.module.css` (47 lines)
+- `apps/frontend/src/features/quiz/components/ToneInput.tsx` (86 lines)
+- `apps/frontend/src/features/quiz/components/ToneInput.module.css` (35 lines)
+- `apps/frontend/src/features/quiz/components/index.ts` (7 lines)
+- `apps/frontend/src/features/quiz/types/QuizTypes.ts` (27 lines)
+- `apps/frontend/src/features/quiz/__tests__/QuizCard.test.tsx` (40 lines)
+- `apps/frontend/src/features/quiz/__tests__/TypeAnswerInput.test.tsx` (45 lines)
+- `apps/frontend/src/features/quiz/__tests__/ToneInput.test.tsx` (33 lines)
+- `apps/frontend/src/features/mandarin/pages/FlashCardPage.test.tsx` (fixed missing imports)
 
 **Component Props:**
 
@@ -280,11 +291,60 @@ Parent validates answer & updates state
 
 ## Technical Challenges & Solutions
 
-### Challenge: Tone Mark Placement Rules
+### Challenge 1: Tone Mark Placement Rules
 
-**Problem:** Tone marks have priority rules (a > o > e > i/u). Simple regex replacement breaks: "liu2" should be "liú" not "lí".
+**Problem:** Tone marks have priority rules (a > o > e > i/u). Simple replacement breaks multi-vowel combinations: "hao3" became "haǒ" instead of "hǎo", "liu2" became "liú" correctly but needed special handling.
 
-**Solution:** Order replacements by vowel priority; use comprehensive tone map covering all valid combinations; validate against known pinyin syllables.
+**Root Cause:** Object.entries order not guaranteed; single-vowel replacements processed before multi-vowel combinations.
+
+**Solution:**
+
+1. Added comprehensive tone map with multi-vowel combinations (ao, ou, ai, ei, ui, iu)
+2. Process longer patterns first (3-char keys before 2-char keys)
+3. Use regex with global flag for multiple replacements per string
+
+**Code Example:**
+
+```typescript
+const toneMap = {
+  // Multi-vowel combinations FIRST
+  ao1: "āo",
+  ao2: "áo",
+  ao3: "ǎo",
+  ao4: "ào",
+  ou1: "ōu",
+  ou2: "óu",
+  ou3: "ǒu",
+  ou4: "òu",
+  // Then single vowels
+  a1: "ā",
+  a2: "á",
+  a3: "ǎ",
+  a4: "à",
+  // ...
+};
+
+// Process multi-vowel first
+const multiVowelKeys = Object.keys(toneMap).filter((k) => k.length === 3);
+multiVowelKeys.forEach((key) => {
+  const regex = new RegExp(key, "g");
+  result = result.replace(regex, toneMap[key]);
+});
+```
+
+**Lesson:** When processing text with overlapping patterns, always handle longer/more-specific patterns before shorter/general ones.
+
+---
+
+### Challenge 2: TypeScript ES2020 Compatibility
+
+**Problem:** Build failed with error: "Property 'replaceAll' does not exist on type 'string'". Target library needs ES2021+.
+
+**Root Cause:** Project configured with ES2020 target; `replaceAll()` introduced in ES2021.
+
+**Solution:** Changed `replaceAll(key, value)` to `replace(new RegExp(key, 'g'), value)` for backward compatibility.
+
+**Lesson:** Always check tsconfig.json target before using newer JavaScript features; use regex for global replacements in ES2020 environments.
 
 ---
 

@@ -1,26 +1,40 @@
 import { Route, Routes } from "react-router-dom";
-import { mandarin_page, root, todo_page, auth_page } from "../constants/paths";
+import { learn_page, root, auth_page } from "../constants/paths";
 import { MandarinRoutes } from "../features/mandarin/router/MandarinRoutes";
 import { AuthPage, ProtectedRoute } from "../features/auth";
-import Root from "../layouts/Root";
-import Home from "../pages/Home";
-import Todo from "../pages/Todo";
+import { AppLayout } from "../layouts/AppLayout";
+import { Dashboard } from "../pages/Dashboard";
+import { ProgressPage } from "../pages/ProgressPage";
 
 function MainRoutes() {
   return (
     <Routes>
-      <Route path={root} element={<Root />}>
-        <Route element={<Home />} index></Route>
+      <Route path={root} element={<AppLayout />}>
         <Route
-          path={mandarin_page + "/*"}
+          index
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path={learn_page + "/*"}
           element={
             <ProtectedRoute>
               <MandarinRoutes />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="progress"
+          element={
+            <ProtectedRoute>
+              <ProgressPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path={auth_page} element={<AuthPage />} />
-        <Route element={<Todo />} path={todo_page}></Route>
       </Route>
     </Routes>
   );

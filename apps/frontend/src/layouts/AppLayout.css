@@ -1,0 +1,152 @@
+/* AppLayout.css - Root layout with unified navigation */
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Navbar */
+.app-navbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+}
+
+.navbar-title {
+  color: white;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 2rem;
+}
+
+.navbar-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.navbar-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.navbar-link.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+/* User Section */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.user-name {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-logout,
+.btn-login {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover,
+.btn-login:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Main Content Area */
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .app-navbar {
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .navbar-links {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: space-around;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .navbar-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .navbar-user {
+    margin-left: auto;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .navbar-logo {
+    font-size: 1.25rem;
+  }
+
+  .navbar-links {
+    gap: 0.25rem;
+  }
+
+  .navbar-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}

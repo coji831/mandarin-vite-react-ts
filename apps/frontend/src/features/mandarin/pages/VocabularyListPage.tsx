@@ -55,7 +55,7 @@ function VocabularyListPage() {
               console.warn(`Failed to load words for list ${list.id}:`, error);
               wordIdsMap[list.id] = [];
             }
-          })
+          }),
         );
         setListWordIds(wordIdsMap);
       } catch (error) {
@@ -72,18 +72,18 @@ function VocabularyListPage() {
   // Filtering logic
   const filteredLists: VocabularyList[] = useMemo(
     () => getFilteredVocabularyLists(lists, search, selectedDifficulties, selectedTags)(),
-    [lists, search, selectedDifficulties, selectedTags]
+    [lists, search, selectedDifficulties, selectedTags],
   );
 
   // Handlers for filter chip selection
   const updateDifficultySelection = (difficulty: string) => {
     setSelectedDifficulties((prev) =>
-      prev.includes(difficulty) ? prev.filter((x) => x !== difficulty) : [...prev, difficulty]
+      prev.includes(difficulty) ? prev.filter((x) => x !== difficulty) : [...prev, difficulty],
     );
   };
   const updateTagSelection = (tag: string) =>
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag],
     );
 
   // Clear all filters
@@ -149,7 +149,7 @@ function VocabularyListPage() {
               <VocabularyCard
                 key={list.name}
                 list={list}
-                onSelect={() => navigate(`/mandarin/flashcards/${list.id}`)}
+                onSelect={() => navigate(`/learn/flashcards/${list.id}`)}
                 wordIds={listWordIds[list.id]}
               />
             );

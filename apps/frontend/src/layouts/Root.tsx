@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import { todo_page, root, mandarin_page, auth_page } from "../constants/paths";
+import { root, mandarin_page, auth_page } from "../constants/paths";
 import { useAuth } from "../features/auth";
 
 function Root() {
@@ -20,11 +20,6 @@ function Root() {
         <div className="nav-bar-item">
           <Link to={mandarin_page}>
             <button>Mandarin</button>
-          </Link>
-        </div>
-        <div className="nav-bar-item">
-          <Link to={todo_page}>
-            <button>Todo</button>
           </Link>
         </div>
         <div className="nav-bar-item" style={{ marginLeft: "auto" }}>

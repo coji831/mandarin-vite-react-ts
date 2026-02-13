@@ -1,0 +1,88 @@
+/* LearnLayout.css - Learn section layout with sub-navigation */
+
+.learn-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px); /* Account for AppLayout navbar height */
+}
+
+/* Learn Sub-Navbar */
+.learn-subnav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: #1a1d2e;
+  border-bottom: 2px solid #38405a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 60px; /* Height of AppLayout navbar */
+  z-index: 50;
+}
+
+.subnav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.subnav-link:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.subnav-link.active {
+  color: #a5b4fc;
+  background: rgba(102, 126, 234, 0.2);
+  border-bottom-color: #667eea;
+}
+
+/* Main Content */
+.learn-content {
+  flex: 1;
+  padding: 2rem;
+  background: #242424;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .learn-subnav {
+    padding: 0.5rem 1rem;
+    gap: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .subnav-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  .learn-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .learn-subnav {
+    padding: 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .subnav-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .learn-content {
+    padding: 0.75rem;
+  }
+}

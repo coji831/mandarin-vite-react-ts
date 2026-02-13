@@ -6,14 +6,14 @@ import { useState } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { RegisterForm } from "../components/RegisterForm";
 import { useNavigate } from "react-router-dom";
-import { mandarin_page } from "../../../constants/paths";
+import { learn_page } from "../../../constants/paths";
 
 export function AuthPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    navigate(mandarin_page);
+    navigate(learn_page);
   };
 
   return (

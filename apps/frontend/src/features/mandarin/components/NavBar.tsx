@@ -20,11 +20,11 @@ function NavBar() {
   return (
     <div className="flex flex-center gap-10 padding-10">
       {selectedList ? (
-        <button onClick={() => navigate(`/mandarin/flashcards/${selectedList}`)}>Flashcards</button>
+        <button onClick={() => navigate(`/learn/flashcards/${selectedList}`)}>Flashcards</button>
       ) : (
-        <button onClick={() => navigate("/mandarin")}>Flashcards</button>
+        <button onClick={() => navigate("/learn")}>Flashcards</button>
       )}
-      <button onClick={() => navigate("/mandarin/basic")}>Basic</button>
+      <button onClick={() => navigate("/learn/basic")}>Basic</button>
     </div>
   );
 }

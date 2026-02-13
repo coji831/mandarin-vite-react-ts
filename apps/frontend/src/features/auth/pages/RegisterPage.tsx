@@ -4,14 +4,14 @@
 
 import { useNavigate } from "react-router-dom";
 import { RegisterForm } from "../components/RegisterForm";
-import { mandarin_page } from "../../../constants/paths";
+import { learn_page } from "../../../constants/paths";
 
 export function RegisterPage() {
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    // Redirect to mandarin page after successful registration
-    navigate(mandarin_page);
+    // Redirect to learn page after successful registration
+    navigate(learn_page);
   };
 
   const handleSwitchToLogin = () => {
