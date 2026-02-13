@@ -3,7 +3,6 @@
  * Story 15.6: Quiz Container & State Management
  */
 
-import "@testing-library/jest-dom";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { QuizLoading } from "../QuizLoading";

@@ -3,7 +3,6 @@
  * Story 15.6: Quiz Container & State Management
  */
 
-import "@testing-library/jest-dom";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { DailyReviewQuiz } from "../DailyReviewQuiz";
