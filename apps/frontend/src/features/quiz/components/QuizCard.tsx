@@ -8,9 +8,8 @@
  *
  * Story 15.5: Core Quiz UI Components
  */
-import React from "react";
 import { QuestionMode } from "../types/QuizTypes";
-import styles from "./QuizCard.module.css";
+import "./QuizCard.css";
 
 interface QuizCardProps {
   question: {
@@ -32,30 +31,30 @@ function QuizCard({ question, mode, options, onAnswer }: QuizCardProps) {
       type_pinyin: "🔤 Type Pinyin",
       type_character: "✏️ Type Character",
     };
-    return <div className={styles.modeIndicator}>{labels[mode]}</div>;
+    return <div className="modeIndicator">{labels[mode]}</div>;
   };
 
   const renderQuestion = () => {
     switch (mode) {
       case "multiple_choice":
         return (
-          <div className={styles.question}>
+          <div className="question">
             <h2>{question.word}</h2>
-            <p className={styles.pinyin}>({question.pinyin})</p>
+            <p className="pinyin">({question.pinyin})</p>
             <p>What does this mean?</p>
           </div>
         );
       case "type_pinyin":
         return (
-          <div className={styles.question}>
+          <div className="question">
             <h2>{question.word}</h2>
             <p>Type the pinyin:</p>
           </div>
         );
       case "type_character":
         return (
-          <div className={styles.question}>
-            <p className={styles.pinyin}>{question.pinyin}</p>
+          <div className="question">
+            <p className="pinyin">{question.pinyin}</p>
             <p>{question.english}</p>
             <p>Type the Chinese character:</p>
           </div>
@@ -66,9 +65,9 @@ function QuizCard({ question, mode, options, onAnswer }: QuizCardProps) {
   const renderAnswerInput = () => {
     if (mode === "multiple_choice" && options) {
       return (
-        <div className={styles.options}>
+        <div className="options">
           {options.map((option, idx) => (
-            <button key={idx} className={styles.optionButton} onClick={() => onAnswer(option)}>
+            <button key={idx} className="optionButton" onClick={() => onAnswer(option)}>
               {option}
             </button>
           ))}
@@ -79,7 +78,7 @@ function QuizCard({ question, mode, options, onAnswer }: QuizCardProps) {
   };
 
   return (
-    <div className={styles.quizCard}>
+    <div className="quizCard">
       {renderModeIndicator()}
       {renderQuestion()}
       {renderAnswerInput()}

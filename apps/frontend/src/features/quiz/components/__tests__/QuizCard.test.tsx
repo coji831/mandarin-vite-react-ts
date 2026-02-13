@@ -4,7 +4,7 @@
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { QuizCard } from "../components/QuizCard";
+import { QuizCard } from "../../components/QuizCard";
 
 describe("QuizCard", () => {
   describe("Multiple Choice Mode", () => {

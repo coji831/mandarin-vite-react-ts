@@ -1,9 +1,11 @@
 /**
- * Quiz page placeholder
+ * Quiz page
+ * Story 15.6: Quiz Container & State Management
  *
- * Temporary placeholder for Quiz feature.
- * Will be replaced with full quiz implementation in Story 15.5-15.8.
+ * Renders daily review quiz with interleaved questions
  */
+import { DailyReviewQuiz } from "../features/quiz/containers";
+
 export { QuizPage };
 
 function QuizPage() {
@@ -19,22 +21,10 @@ function QuizPage() {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
       }}
     >
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem", color: "rgba(255, 255, 255, 0.95)" }}>
-        📝 Quiz
+      <h1 style={{ fontSize: "2rem", marginBottom: "1.5rem", color: "rgba(255, 255, 255, 0.95)" }}>
+        📝 Daily Review Quiz
       </h1>
-      <p style={{ color: "rgba(255, 255, 255, 0.6)", marginBottom: "1.5rem" }}>
-        Test your knowledge with interactive quizzes.
-      </p>
-      <div
-        style={{
-          padding: "1.5rem",
-          background: "rgba(102, 126, 234, 0.15)",
-          borderRadius: "8px",
-          border: "1px solid rgba(102, 126, 234, 0.3)",
-        }}
-      >
-        <p style={{ margin: 0, color: "#a5b4fc" }}>🚧 Quiz feature coming soon (Story 15.5-15.8)</p>
-      </div>
+      <DailyReviewQuiz />
     </div>
   );
 }

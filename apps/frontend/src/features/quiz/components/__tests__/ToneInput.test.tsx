@@ -4,7 +4,7 @@
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { ToneInput } from "../components/ToneInput";
+import { ToneInput } from "../../components/ToneInput";
 
 describe("ToneInput", () => {
   it("renders input element", () => {

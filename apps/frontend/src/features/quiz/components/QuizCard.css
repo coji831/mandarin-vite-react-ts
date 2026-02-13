@@ -66,6 +66,7 @@
   min-height: 44px; /* Touch-friendly */
   font-weight: 500;
   font-family: inherit;
+  width: 100%;
 }
 
 .optionButton:hover {

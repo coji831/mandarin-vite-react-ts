@@ -1,0 +1,52 @@
+/* QuizComplete Component Styles - Dark Theme */
+
+.quizCompleteContainer {
+  text-align: center;
+  padding: 2rem;
+}
+
+.completeTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.resultsCard {
+  padding: 1.5rem;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.resultText {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.accuracyText {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.retryButton {
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.retryButton:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.retryButton:active {
+  transform: translateY(0);
+}

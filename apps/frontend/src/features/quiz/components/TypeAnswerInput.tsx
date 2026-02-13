@@ -9,15 +9,15 @@
  */
 import { useState, KeyboardEvent } from "react";
 import { ToneInput } from "./ToneInput";
-import styles from "./TypeAnswerInput.module.css";
+import "./TypeAnswerInput.css";
 
 type InputMode = "type_pinyin" | "type_character";
 
-interface TypeAnswerInputProps {
+type TypeAnswerInputProps = {
   placeholder: string;
   mode: InputMode;
   onAnswer: (answer: string) => void;
-}
+};
 
 export { TypeAnswerInput };
 
@@ -39,7 +39,7 @@ function TypeAnswerInput({ placeholder, mode, onAnswer }: TypeAnswerInputProps) 
   };
 
   return (
-    <div className={styles.typeAnswerContainer}>
+    <div className="typeAnswerContainer">
       {mode === "type_pinyin" ? (
         <ToneInput value={value} onChange={setValue} />
       ) : (
@@ -49,16 +49,12 @@ function TypeAnswerInput({ placeholder, mode, onAnswer }: TypeAnswerInputProps) 
           onChange={(e) => setValue(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder={placeholder}
-          className={styles.answerInput}
+          className="answerInput"
           autoComplete="off"
           autoCorrect="off"
         />
       )}
-      <button
-        onClick={handleSubmit}
-        disabled={value.trim().length === 0}
-        className={styles.submitButton}
-      >
+      <button onClick={handleSubmit} disabled={value.trim().length === 0} className="submitButton">
         Submit
       </button>
     </div>

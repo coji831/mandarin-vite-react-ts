@@ -8,6 +8,7 @@
 }
 
 .toneInput {
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid #38405a;
   color: rgba(255, 255, 255, 0.95);

@@ -19,18 +19,18 @@ This story implements the core quiz logic and state management that orchestrates
 
 ## Acceptance Criteria
 
-- [ ] `DailyReviewTest.tsx` container component manages quiz state with reducer pattern
-- [ ] State machine phases: LOADING → QUESTION → ANSWER_FEEDBACK → NEXT | COMPLETE
-- [ ] Quiz session initialized with array of due words (mocked data for this story, real API in Story 15.8)
-- [ ] Question type interleaving: for each word, randomly select from ['multiple_choice', 'type_pinyin', 'type_character']
-- [ ] Interleaving happens per word (not blocked by type: not "all MC, then all pinyin, then all character")
-- [ ] `QuizProgressBar.tsx` component shows "X / Y completed" with visual progress bar
-- [ ] Progress bar updates after each answer (increments X counter)
-- [ ] State tracks current question index, total questions, user answers array
-- [ ] User answers stored as { wordId, questionType, userAnswer, correct, timestamp }
-- [ ] Quiz completion triggered when currentIndex === totalQuestions
-- [ ] Component composition: DailyReviewTest wraps QuizCard/TypeAnswerInput/ToneInput from Story 15.5
-- [ ] TypeScript quiz state interface defined with strict types (no `any`)
+- [x] `DailyReviewTest.tsx` container component manages quiz state with reducer pattern
+- [x] State machine phases: LOADING → QUESTION → ANSWER_FEEDBACK → NEXT | COMPLETE
+- [x] Quiz session initialized with array of due words (mocked data for this story, real API in Story 15.8)
+- [x] Question type interleaving: for each word, randomly select from ['multiple_choice', 'type_pinyin', 'type_character']
+- [x] Interleaving happens per word (not blocked by type: not "all MC, then all pinyin, then all character")
+- [x] `QuizProgressBar.tsx` component shows "X / Y completed" with visual progress bar
+- [x] Progress bar updates after each answer (increments X counter)
+- [x] State tracks current question index, total questions, user answers array
+- [x] User answers stored as { wordId, questionType, userAnswer, correct, timestamp }
+- [x] Quiz completion triggered when currentIndex === totalQuestions
+- [x] Component composition: DailyReviewTest wraps QuizCard/TypeAnswerInput/ToneInput from Story 15.5
+- [x] TypeScript quiz state interface defined with strict types (no `any`)
 
 ## Business Rules
 
@@ -64,7 +64,7 @@ This story implements the core quiz logic and state management that orchestrates
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Completed
+- **PR**: N/A (committed directly to epic-15-learning-retention branch)
+- **Merge Date**: February 13, 2026
+- **Last Update**: February 13, 2026

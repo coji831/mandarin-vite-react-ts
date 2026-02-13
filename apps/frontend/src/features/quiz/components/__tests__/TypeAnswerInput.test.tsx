@@ -4,7 +4,7 @@
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { TypeAnswerInput } from "../components/TypeAnswerInput";
+import { TypeAnswerInput } from "../../components/TypeAnswerInput";
 
 describe("TypeAnswerInput", () => {
   it("renders ToneInput in pinyin mode", () => {
