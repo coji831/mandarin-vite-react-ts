@@ -15,6 +15,9 @@ export declare const ROUTE_PATTERNS: {
   readonly progressWord: (wordId: string) => string;
   readonly progressBatch: string;
   readonly progressStats: string;
+  readonly progressDue: string;
+  readonly progressTestResult: string;
+  readonly progressLeeches: string;
   readonly authRegister: string;
   readonly authLogin: string;
   readonly authRefresh: string;

@@ -93,4 +93,45 @@ describe("ToneInput", () => {
 
     expect(mockOnChange).toHaveBeenCalledWith("mǎ");
   });
+
+  // Story 15.8: Nasal finals tone conversion (an, en, in, un, ang, eng, ing, ong)
+  it("converts ban1 → bān (nasal final an)", () => {
+    const mockOnChange = vi.fn();
+    render(<ToneInput value="" onChange={mockOnChange} />);
+
+    const input = screen.getByPlaceholderText(/type pinyin/i);
+    fireEvent.change(input, { target: { value: "ban1" } });
+
+    expect(mockOnChange).toHaveBeenCalledWith("bān");
+  });
+
+  it("converts fen1 → fēn (nasal final en)", () => {
+    const mockOnChange = vi.fn();
+    render(<ToneInput value="" onChange={mockOnChange} />);
+
+    const input = screen.getByPlaceholderText(/type pinyin/i);
+    fireEvent.change(input, { target: { value: "fen1" } });
+
+    expect(mockOnChange).toHaveBeenCalledWith("fēn");
+  });
+
+  it("converts ming2 → míng (nasal final ing)", () => {
+    const mockOnChange = vi.fn();
+    render(<ToneInput value="" onChange={mockOnChange} />);
+
+    const input = screen.getByPlaceholderText(/type pinyin/i);
+    fireEvent.change(input, { target: { value: "ming2" } });
+
+    expect(mockOnChange).toHaveBeenCalledWith("míng");
+  });
+
+  it("converts zhong1 → zhōng (nasal final ong)", () => {
+    const mockOnChange = vi.fn();
+    render(<ToneInput value="" onChange={mockOnChange} />);
+
+    const input = screen.getByPlaceholderText(/type pinyin/i);
+    fireEvent.change(input, { target: { value: "zhong1" } });
+
+    expect(mockOnChange).toHaveBeenCalledWith("zhōng");
+  });
 });

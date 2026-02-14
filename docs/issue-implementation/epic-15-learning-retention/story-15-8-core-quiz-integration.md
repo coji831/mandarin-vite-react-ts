@@ -2,19 +2,30 @@
 
 ## Technical Scope
 
-Connect quiz UI (Stories 15.5-15.6) to backend APIs (Stories 15.1-15.2). Implement optimistic UI, localStorage persistence, and error handling.
+Connect quiz UI (Stories 15.5-15.6) to backend APIs (Stories 15.1-15.2). Implement optimistic UI, backend response capture, error handling, and code cleanup.
 
 **Files Modified:**
 
-- `apps/frontend/src/features/quiz/containers/DailyReviewTest.tsx` - Replace mocked data with API calls
-- `apps/frontend/src/features/quiz/hooks/useQuizAPI.ts` - API client hook
-- `apps/frontend/src/features/quiz/utils/persistence.ts` - localStorage persistence
-- `apps/frontend/src/features/dashboard/components/Dashboard.tsx` - Add "Start Daily Review" button
+Frontend:
+
+- `apps/frontend/src/features/quiz/containers/DailyReviewQuiz.tsx` - Enhanced handleAnswer to async, capture backend response, enrich QuizAnswer with word details
+- `apps/frontend/src/features/quiz/reducers/quizReducer.ts` - Added UPDATE_ANSWER_METADATA action
+- `apps/frontend/src/features/quiz/components/QuizComplete.tsx` - Added "Your Answer" column to results table
+- `apps/frontend/src/features/quiz/components/ToneInput.tsx` - Refactored to use centralized toneMap
+- `apps/frontend/src/constants/toneMap.ts` - **NEW** Centralized tone map with pre-sorted keys (96 patterns including nasal finals)
+
+Backend:
+
+- `apps/backend/src/core/services/ProgressService.js` - Changed default quiz limit from 20 to 10, removed debug console.logs
+- `apps/backend/src/infrastructure/repositories/ProgressRepository.js` - Removed debug console.logs
+- `apps/backend/prisma/seed.js` - Removed sample progress creation logic (50 lines)
+- `apps/backend/scripts/check-db-data.js` - **DELETED** (diagnostic script)
+- `apps/backend/scripts/test-due-words-api.js` - **DELETED** (debugging script)
 
 **API Integration:**
 
-- `GET /api/progress/due` - Fetch due words on quiz start
-- `POST /api/progress/test-result` - Save after each answer
+- `GET /api/progress/due` - Fetch due words on quiz start (70/30 backfill strategy, 10-word limit)
+- `POST /api/progress/test-result` - Save after each answer (returns nextReviewDate, lapseCount)
 
 ## Implementation Details
 
@@ -274,11 +285,171 @@ Quiz complete → clearQuizSession() → show summary
 
 ## Technical Challenges & Solutions
 
-### Challenge: Race Condition with Multiple Answer Submissions
+### Challenge 1: QuizAnswer Objects Missing Word Details
 
-**Problem:** User rapidly clicks answers before previous save completes; duplicate API calls or state conflicts.
+**Problem:** Results table showed "just its id" instead of actual words. QuizAnswer objects only contained wordId, not word/pinyin/english fields.
 
-**Solution:** Disable submit button while saving; add request debouncing; use React.useTransition for concurrent rendering.
+**Root Cause:** `handleAnswer()` in DailyReviewQuiz.tsx only passed minimal data when creating QuizAnswer:
+
+```typescript
+// Before: Only 5 fields
+{
+  wordId: currentQuestion.wordId,
+  questionType: currentQuestion.mode,
+  userAnswer,
+  correct,
+  timestamp: new Date(),
+}
+```
+
+**Solution:** Enhanced QuizAnswer creation to include full word details from currentQuestion:
+
+```typescript
+// After: 8 fields (added word, pinyin, english)
+{
+  wordId: currentQuestion.wordId,
+  word: currentQuestion.word,           // NEW
+  pinyin: currentQuestion.pinyin,       // NEW
+  english: currentQuestion.english,     // NEW
+  questionType: currentQuestion.mode,
+  userAnswer,
+  correct,
+  timestamp: new Date(),
+}
+```
+
+**Impact:** Results table now displays actual vocabulary instead of IDs. No schema changes required.
+
+---
+
+### Challenge 2: Backend Response Metadata Not Captured
+
+**Problem:** `nextReview` and `lapseCount` from backend appeared as "N/A" and 0 in quiz results.
+
+**Root Cause:** `saveTestResult()` was called without `await`, so response containing nextReviewDate and lapseCount was never captured.
+
+**Solution:**
+
+1. Made `handleAnswer()` async
+2. Awaited `saveTestResult()` response
+3. Added new reducer action `UPDATE_ANSWER_METADATA` to merge backend data:
+
+```typescript
+case "UPDATE_ANSWER_METADATA": {
+  const updatedAnswers = state.answers.map((answer, index) =>
+    index === state.answers.length - 1 && answer.wordId === action.wordId
+      ? { ...answer, nextReview: action.nextReview, lapseCount: action.lapseCount }
+      : answer
+  );
+  return { ...state, answers: updatedAnswers };
+}
+```
+
+4. Dispatched metadata update after receiving response:
+
+```typescript
+const result = await saveTestResult({...});
+dispatch({
+  type: "UPDATE_ANSWER_METADATA",
+  wordId: currentQuestion.wordId,
+  nextReview: result.nextReviewDate,
+  lapseCount: result.lapseCount,
+});
+```
+
+**Impact:** Quiz results now show accurate nextReview dates and lapseCount for progress tracking.
+
+---
+
+### Challenge 3: ToneInput Nasal Finals Not Converting
+
+**Problem:** User reported "fen3" wasn't converting to "fěn" (and similar patterns: ban1, ming2, zhong1).
+
+**Root Cause:** Original toneMap only had single-vowel and multi-vowel diphthongs, missing nasal finals pattern matching.
+
+**Solution:** Added 32 new patterns for nasal finals (an, en, in, un, ang, eng, ing, ong):
+
+```typescript
+// Added to toneMap
+an1: "ān", an2: "án", an3: "ǎn", an4: "àn",
+en1: "ēn", en2: "én", en3: "ěn", en4: "èn",
+in1: "īn", in2: "ín", in3: "ǐn", in4: "ìn",
+un1: "ūn", un2: "ún", un3: "ǔn", un4: "ùn",
+ang1: "āng", ang2: "áng", ang3: "ǎng", ang4: "àng",
+eng1: "ēng", eng2: "éng", eng3: "ěng", eng4: "èng",
+ing1: "īng", ing2: "íng", ing3: "ǐng", ing4: "ìng",
+ong1: "ōng", ong2: "óng", ong3: "ǒng", ong4: "òng",
+```
+
+**Impact:** ToneInput now correctly handles ban1→bān, fen1→fēn, ming2→míng, zhong1→zhōng patterns.
+
+---
+
+### Challenge 4: ToneMap Performance - Runtime Sorting on Every Keystroke
+
+**Problem:** `convertToneMarks()` called `Object.keys(toneMap).sort()` on every input change, creating 96-key array and sorting it repeatedly.
+
+**Root Cause:** Sorting was necessary to match longest patterns first (ang1 before an1), but doing it runtime was inefficient.
+
+**Solution:**
+
+1. Moved toneMap to `src/constants/toneMap.ts` for reusability
+2. Created pre-sorted export:
+
+```typescript
+export const toneMapKeys = Object.keys(toneMap).sort((a, b) => b.length - a.length);
+```
+
+3. Updated ToneInput to use pre-sorted keys:
+
+```typescript
+// Before
+const sortedKeys = Object.keys(toneMap).sort((a, b) => b.length - a.length);
+
+// After
+import { toneMapKeys } from "../../../constants/toneMap";
+toneMapKeys.forEach((key) => { ... });
+```
+
+**Impact:** Eliminated O(n log n) sort operation on every keystroke; now O(1) array lookup. Sorting happens once at module load.
+
+---
+
+### Challenge 5: Quiz Limit Mismatch with User Expectations
+
+**Problem:** 20-word default quiz limit caused fatigue during testing; user wanted shorter sessions (10 words).
+
+**Root Cause:** Backend `getDueWords()` defaulted to `limit = 20`; 70/30 backfill strategy calculated 6 new words (30% of 20).
+
+**Solution:** Changed default limit parameter in ProgressService:
+
+```javascript
+// Before
+async getDueWords(userId, date = new Date(), limit = 20)
+
+// After
+async getDueWords(userId, date = new Date(), limit = 10)
+```
+
+**Impact:** Quizzes now default to 10 words with 3 new words backfill (30% of 10). Tests updated to reflect new limit.
+
+---
+
+### Challenge 6: Production Code Cluttered with Debugging Artifacts
+
+**Problem:** Obsolete debugging code remained from development: sample progress seed logic, diagnostic scripts, 14 console.log statements in production paths.
+
+**Root Cause:** Debugging artifacts not cleaned up after bug resolution.
+
+**Solution:**
+
+1. Removed sample progress seed loop (50 lines) from `seed.js` - no longer needed with 70/30 backfill auto-creating progress
+2. Deleted `check-db-data.js` (73 lines) - diagnostic script for verifying seeded data
+3. Deleted `test-due-words-api.js` (89 lines) - debugging script for "NO DUE WORDS" bug
+4. Removed 11 console.logs from `ProgressService.js` (getDueWords, getUnlearnedWords)
+5. Removed 3 console.logs from `ProgressRepository.js` (findDueByUserAndDate)
+
+**Impact:** Clean production codebase; faster seed times; no console noise in prod logs.
 
 ---
 

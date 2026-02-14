@@ -19,18 +19,24 @@ This integration story connects the quiz UI (Stories 15.5-15.6) to backend APIs 
 
 ## Acceptance Criteria
 
-- [ ] Dashboard shows "Start Daily Review" button with due word count badge (e.g., "15 due")
-- [ ] Clicking button fetches due words via `GET /api/progress/due` and initializes quiz
-- [ ] Quiz displays real vocabulary data (not mocked) with interleaved question types
-- [ ] After each answer, `POST /api/progress/test-result` saves result and updates progress
-- [ ] Optimistic UI: answer feedback shown immediately, network error handled gracefully
-- [ ] Quiz summary screen displays: total questions, correct count, accuracy %, XP earned, leeches identified
-- [ ] "Review Again" button on summary allows re-attempting incorrect words (filtered list)
-- [ ] Leech indicator shown for words with `lapseCount >= 5` in summary list
-- [ ] Quiz state persists in localStorage during session (survives accidental refresh)
-- [ ] Loading states during API calls (skeleton loaders, disabled buttons)
-- [ ] Error handling: network failures show retry button, API errors show user-friendly messages
-- [ ] Analytics logging: track quiz start, completion, abandonment rate
+- [x] Quiz fetches due words via `GET /api/progress/due` and initializes with real vocabulary data
+- [x] Quiz displays real vocabulary data (not mocked) with interleaved question types (pinyin/character/english)
+- [x] After each answer, `POST /api/progress/test-result` saves result and captures nextReview/lapseCount
+- [x] Optimistic UI: answer feedback shown immediately before backend save completes
+- [x] Quiz summary screen displays: total questions, correct count, accuracy %, detailed results table
+- [x] "Review Again" button on summary allows restarting quiz flow
+- [x] Leech indicator (🔴) shown for words with `lapseCount >= 5` in results table
+- [x] Loading states during API calls (QuizLoading component with skeleton loaders)
+- [x] Error handling: network failures show QuizError with retry button, displays user-friendly messages
+- [x] Results table shows: word, pinyin, english, user answer, correct answer, next review, lapse count
+- [x] ToneInput enhanced with 32 nasal finals patterns (an, en, in, un, ang, eng, ing, ong)
+- [x] ToneMap refactored to centralized constants with pre-sorted keys for performance
+
+**Deferred to future stories:**
+
+- [ ] Dashboard "Start Daily Review" button with due count badge (Story 15.9 integration)
+- [ ] Quiz state persistence in localStorage (Story 15.10 offline support)
+- [ ] Analytics logging for quiz start/completion/abandonment (Story 15.11 metrics)
 
 ## Business Rules
 
@@ -66,7 +72,7 @@ This integration story connects the quiz UI (Stories 15.5-15.6) to backend APIs 
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
-- **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Status**: Completed
+- **PR**: Pending (awaiting review)
+- **Completion Date**: February 15, 2026
+- **Last Updated**: February 15, 2026

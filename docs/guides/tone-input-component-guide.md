@@ -8,9 +8,31 @@
 
 ---
 
+## ⚠️ Current Implementation Note (Story 15.8)
+
+The production ToneInput component uses a **pattern-matching approach** with a centralized tone map for performance:
+
+- **Tone Map**: `apps/frontend/src/constants/toneMap.ts` (96 pre-sorted patterns including nasal finals)
+- **Component**: `apps/frontend/src/features/quiz/components/ToneInput.tsx` (uses toneMap for conversion)
+- **Approach**: String replacement with regex patterns sorted by length (longest first)
+
+**Key differences from guide below:**
+
+- Guide shows **vowel-finding algorithm** (character analysis)
+- Production uses **pattern-matching** (direct substitution: `ban1` → `bān`, `fen1` → `fēn`)
+- Production includes **nasal finals** (an, en, in, un, ang, eng, ing, ong) as complete units
+- **Performance**: Pre-sorted keys eliminate runtime O(n log n) sort on every keystroke
+
+**When to use each approach:**
+
+- **Pattern-matching (current)**: Fixed vocabulary context (quiz input), known pinyin patterns
+- **Vowel-finding (guide)**: Free-form input, educational tools, unknown syllables
+
+---
+
 ## Overview
 
-Mandarin Chinese has four tones (plus a neutral tone), represented by diacritical marks above vowels. A tone input component must allow users to type: 
+Mandarin Chinese has four tones (plus a neutral tone), represented by diacritical marks above vowels. A tone input component must allow users to type:
 
 - **Numeric suffix notation**: `ma1`, `ma2`, `ma3`, `ma4` (easy to type)
 - **Converted to Unicode tone marks**: `mā`, `má`, `mǎ`, `mà` (correct format for validation)
@@ -39,15 +61,12 @@ Priority Order: a > o/e > i/u (last vowel if i/u combination)
 
 1. **If syllable contains 'a'**: Tone mark goes on 'a'
    - Example: `bai` + tone 3 → `bǎi` (not `baǐ`)
-   
 2. **If no 'a', but has 'o' or 'e'**: Tone mark goes on 'o' or 'e'
    - Example: `tou` + tone 2 → `tóu` (not `toú`)
    - Example: `hei` + tone 1 → `hēi` (not `heī`)
-   
 3. **If only 'i' and 'u'**: Tone mark goes on the **second vowel**
    - Exception: `iu` → mark on `u` (e.g., `liu4` → `liù`)
    - Exception: `ui` → mark on `i` (e.g., `dui4` → `duì`)
-   
 4. **Single vowel**: Tone mark goes on that vowel
    - Example: `li` + tone 3 → `lǐ`
 
@@ -61,14 +80,14 @@ Priority Order: a > o/e > i/u (last vowel if i/u combination)
 // apps/frontend/src/utils/toneConversion.ts
 
 export const TONE_MARKS: Record<string, Record<number, string>> = {
-  'a': { 1: 'ā', 2: 'á', 3: 'ǎ', 4: 'à', 5: 'a' },
-  'e': { 1: 'ē', 2: 'é', 3: 'ě', 4: 'è', 5: 'e' },
-  'i': { 1: 'ī', 2: 'í', 3: 'ǐ', 4: 'ì', 5: 'i' },
-  'o': { 1: 'ō', 2: 'ó', 3: 'ǒ', 4: 'ò', 5: 'o' },
-  'u': { 1: 'ū', 2: 'ú', 3: 'ǔ', 4: 'ù', 5: 'u' },
-  'ü': { 1: 'ǖ', 2: 'ǘ', 3: 'ǚ', 4: 'ǜ', 5: 'ü' },
+  a: { 1: "ā", 2: "á", 3: "ǎ", 4: "à", 5: "a" },
+  e: { 1: "ē", 2: "é", 3: "ě", 4: "è", 5: "e" },
+  i: { 1: "ī", 2: "í", 3: "ǐ", 4: "ì", 5: "i" },
+  o: { 1: "ō", 2: "ó", 3: "ǒ", 4: "ò", 5: "o" },
+  u: { 1: "ū", 2: "ú", 3: "ǔ", 4: "ù", 5: "u" },
+  ü: { 1: "ǖ", 2: "ǘ", 3: "ǚ", 4: "ǜ", 5: "ü" },
   // Handle 'v' as alternative input for 'ü'
-  'v': { 1: 'ǖ', 2: 'ǘ', 3: 'ǚ', 4: 'ǜ', 5: 'ü' }
+  v: { 1: "ǖ", 2: "ǘ", 3: "ǚ", 4: "ǜ", 5: "ü" },
 };
 ```
 
@@ -83,33 +102,33 @@ export const TONE_MARKS: Record<string, Record<number, string>> = {
 
 /**
  * Convert numeric pinyin (ma3) to tone marks (mǎ)
- * 
+ *
  * @param input - Raw pinyin string with numeric tone (e.g., "ma3", "liu4")
  * @returns Pinyin with Unicode tone marks (e.g., "mǎ", "liù")
  */
 export function convertPinyinTone(input: string): string {
   // Normalize input (lowercase, trim)
   const normalized = input.toLowerCase().trim();
-  
+
   // Extract tone number (last character if 1-5)
   const toneMatch = normalized.match(/^(.+?)([1-5])$/);
   if (!toneMatch) {
     return normalized; // No tone number found, return as-is
   }
-  
+
   const [, syllable, toneStr] = toneMatch;
   const tone = parseInt(toneStr, 10);
-  
+
   // Find target vowel for tone mark
   const targetVowel = findToneVowel(syllable);
   if (!targetVowel) {
     return normalized; // No vowel found (invalid pinyin)
   }
-  
+
   // Replace target vowel with tone-marked version
   const markedVowel = TONE_MARKS[targetVowel][tone];
   const result = syllable.replace(targetVowel, markedVowel);
-  
+
   return result;
 }
 
@@ -119,22 +138,22 @@ export function convertPinyinTone(input: string): string {
  */
 function findToneVowel(syllable: string): string | null {
   // Rule 1: If 'a' exists, use 'a'
-  if (syllable.includes('a')) return 'a';
-  
+  if (syllable.includes("a")) return "a";
+
   // Rule 2: If 'o' or 'e' exists (no 'a'), use 'o' or 'e'
-  if (syllable.includes('o')) return 'o';
-  if (syllable.includes('e')) return 'e';
-  
+  if (syllable.includes("o")) return "o";
+  if (syllable.includes("e")) return "e";
+
   // Rule 3: If 'iu' or 'ui' combination, use second vowel
-  if (syllable.includes('iu')) return 'u'; // liu4 → liù
-  if (syllable.includes('ui')) return 'i'; // dui4 → duì
-  
+  if (syllable.includes("iu")) return "u"; // liu4 → liù
+  if (syllable.includes("ui")) return "i"; // dui4 → duì
+
   // Rule 4: Otherwise, find last vowel in i/u/ü sequence
-  const vowels = ['ü', 'v', 'u', 'i']; // Check ü/v first (specific), then u/i
+  const vowels = ["ü", "v", "u", "i"]; // Check ü/v first (specific), then u/i
   for (const vowel of vowels) {
     if (syllable.includes(vowel)) return vowel;
   }
-  
+
   return null; // No valid vowel found
 }
 ```
@@ -144,57 +163,57 @@ function findToneVowel(syllable: string): string | null {
 ```typescript
 // apps/frontend/src/utils/toneConversion.test.ts
 
-import { convertPinyinTone } from './toneConversion';
+import { convertPinyinTone } from "./toneConversion";
 
-describe('convertPinyinTone', () => {
+describe("convertPinyinTone", () => {
   // Rule 1: 'a' priority
   test('converts syllable with "a"', () => {
-    expect(convertPinyinTone('ma1')).toBe('mā');
-    expect(convertPinyinTone('ma3')).toBe('mǎ');
-    expect(convertPinyinTone('bai4')).toBe('bài'); // Not baǐ
+    expect(convertPinyinTone("ma1")).toBe("mā");
+    expect(convertPinyinTone("ma3")).toBe("mǎ");
+    expect(convertPinyinTone("bai4")).toBe("bài"); // Not baǐ
   });
-  
+
   // Rule 2: 'o' / 'e' priority (no 'a')
   test('converts syllable with "o"', () => {
-    expect(convertPinyinTone('tou2')).toBe('tóu');
-    expect(convertPinyinTone('wo3')).toBe('wǒ');
+    expect(convertPinyinTone("tou2")).toBe("tóu");
+    expect(convertPinyinTone("wo3")).toBe("wǒ");
   });
-  
+
   test('converts syllable with "e"', () => {
-    expect(convertPinyinTone('hei1')).toBe('hēi');
-    expect(convertPinyinTone('mei3')).toBe('měi');
+    expect(convertPinyinTone("hei1")).toBe("hēi");
+    expect(convertPinyinTone("mei3")).toBe("měi");
   });
-  
+
   // Rule 3: 'iu' / 'ui' special cases
   test('converts "iu" (mark on u)', () => {
-    expect(convertPinyinTone('liu4')).toBe('liù');
-    expect(convertPinyinTone('jiu3')).toBe('jiǔ');
+    expect(convertPinyinTone("liu4")).toBe("liù");
+    expect(convertPinyinTone("jiu3")).toBe("jiǔ");
   });
-  
+
   test('converts "ui" (mark on i)', () => {
-    expect(convertPinyinTone('dui4')).toBe('duì');
-    expect(convertPinyinTone('hui2')).toBe('huí');
+    expect(convertPinyinTone("dui4")).toBe("duì");
+    expect(convertPinyinTone("hui2")).toBe("huí");
   });
-  
+
   // Rule 4: Single vowel
-  test('converts single vowel', () => {
-    expect(convertPinyinTone('li3')).toBe('lǐ');
-    expect(convertPinyinTone('bu4')).toBe('bù');
+  test("converts single vowel", () => {
+    expect(convertPinyinTone("li3")).toBe("lǐ");
+    expect(convertPinyinTone("bu4")).toBe("bù");
   });
-  
+
   // Edge cases
-  test('handles neutral tone (5)', () => {
-    expect(convertPinyinTone('ma5')).toBe('ma'); // Unmarked
+  test("handles neutral tone (5)", () => {
+    expect(convertPinyinTone("ma5")).toBe("ma"); // Unmarked
   });
-  
-  test('handles ü (v) notation', () => {
-    expect(convertPinyinTone('lv3')).toBe('lǚ'); // lü3
-    expect(convertPinyinTone('nü3')).toBe('nǚ');
+
+  test("handles ü (v) notation", () => {
+    expect(convertPinyinTone("lv3")).toBe("lǚ"); // lü3
+    expect(convertPinyinTone("nü3")).toBe("nǚ");
   });
-  
-  test('returns input unchanged if no tone number', () => {
-    expect(convertPinyinTone('ma')).toBe('ma');
-    expect(convertPinyinTone('hello')).toBe('hello'); // Invalid pinyin
+
+  test("returns input unchanged if no tone number", () => {
+    expect(convertPinyinTone("ma")).toBe("ma");
+    expect(convertPinyinTone("hello")).toBe("hello"); // Invalid pinyin
   });
 });
 ```
@@ -232,7 +251,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     setRawInput(raw);
-    
+
     // Convert if input ends with tone number (1-5)
     if (/[1-5]$/.test(raw)) {
       const converted = convertPinyinTone(raw);
@@ -268,7 +287,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
           className={`tone-input ${isCorrect ? 'correct' : ''} ${isIncorrect ? 'incorrect' : ''}`}
           aria-label="Pinyin tone input"
         />
-        
+
         {/* Show converted preview above input */}
         {convertedValue && convertedValue !== rawInput && (
           <div className="tone-preview" aria-live="polite">
@@ -276,7 +295,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* Validation feedback */}
       {isCorrect && (
         <div className="feedback correct" role="status">
@@ -288,7 +307,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
           ❌ Incorrect. Expected: {correctAnswer}
         </div>
       )}
-      
+
       {/* Help text */}
       <div className="help-text">
         Tip: Type number after syllable (ma3 → mǎ)
@@ -326,7 +345,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
 
 .tone-input:focus {
   outline: none;
-  border-color: #4A90E2;
+  border-color: #4a90e2;
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
@@ -346,7 +365,7 @@ export const ToneInput: React.FC<ToneInputProps> = ({
   left: 16px;
   font-size: 24px;
   font-weight: bold;
-  color: #4A90E2;
+  color: #4a90e2;
   pointer-events: none;
 }
 
@@ -408,7 +427,7 @@ export const ToneInputMobile: React.FC<ToneInputProps> = ({ onSubmit, ...props }
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLInputElement>) => {
     const cursorPosition = e.currentTarget.selectionStart || 0;
     const char = input[cursorPosition - 1];
-    
+
     // Check if character is a vowel
     if (char && ['a', 'e', 'i', 'o', 'u', 'ü', 'v'].includes(char.toLowerCase())) {
       longPressTimer.current = setTimeout(() => {
@@ -428,16 +447,16 @@ export const ToneInputMobile: React.FC<ToneInputProps> = ({ onSubmit, ...props }
   // Select tone mark
   const selectTone = useCallback((tone: number) => {
     if (!selectedVowel) return;
-    
+
     const markedVowel = TONE_MARKS[selectedVowel.toLowerCase()][tone];
     const cursorPosition = input.lastIndexOf(selectedVowel);
-    
+
     // Replace vowel with tone-marked version
     const newInput =
       input.slice(0, cursorPosition) +
       markedVowel +
       input.slice(cursorPosition + 1);
-    
+
     setInput(newInput);
     setShowTonePicker(false);
     setSelectedVowel(null);
@@ -453,7 +472,7 @@ export const ToneInputMobile: React.FC<ToneInputProps> = ({ onSubmit, ...props }
         onTouchEnd={handleTouchEnd}
         {...props}
       />
-      
+
       {/* Tone picker popup */}
       {showTonePicker && selectedVowel && (
         <div className="tone-picker">
@@ -508,7 +527,7 @@ export function validatePinyin(userAnswer: string, correctAnswer: string): boole
   // Normalize both answers to tone-marked format
   const normalizedUser = convertPinyinTone(userAnswer).toLowerCase().trim();
   const normalizedCorrect = correctAnswer.toLowerCase().trim();
-  
+
   return normalizedUser === normalizedCorrect;
 }
 
@@ -518,22 +537,22 @@ export function validatePinyin(userAnswer: string, correctAnswer: string): boole
 export function getPinyinFeedback(userAnswer: string, correctAnswer: string): string {
   const userConverted = convertPinyinTone(userAnswer);
   const correct = correctAnswer;
-  
+
   // Exact match
   if (userConverted === correct) {
-    return 'Perfect!';
+    return "Perfect!";
   }
-  
+
   // Check if only tone is wrong
   const userBase = removeTones(userConverted);
   const correctBase = removeTones(correct);
-  
+
   if (userBase === correctBase) {
     const userTone = detectTone(userConverted);
     const correctTone = detectTone(correct);
     return `Close! You used tone ${userTone}, but ${correctBase} uses tone ${correctTone}.`;
   }
-  
+
   // Completely wrong
   return `Incorrect. The correct pinyin is: ${correct}`;
 }
@@ -541,32 +560,53 @@ export function getPinyinFeedback(userAnswer: string, correctAnswer: string): st
 // Helper: Remove tone marks for comparison
 function removeTones(pinyin: string): string {
   const toneMap: Record<string, string> = {
-    'ā': 'a', 'á': 'a', 'ǎ': 'a', 'à': 'a',
-    'ē': 'e', 'é': 'e', 'ě': 'e', 'è': 'e',
-    'ī': 'i', 'í': 'i', 'ǐ': 'i', 'ì': 'i',
-    'ō': 'o', 'ó': 'o', 'ǒ': 'o', 'ò': 'o',
-    'ū': 'u', 'ú': 'u', 'ǔ': 'u', 'ù': 'u',
-    'ǖ': 'ü', 'ǘ': 'ü', 'ǚ': 'ü', 'ǜ': 'ü'
+    ā: "a",
+    á: "a",
+    ǎ: "a",
+    à: "a",
+    ē: "e",
+    é: "e",
+    ě: "e",
+    è: "e",
+    ī: "i",
+    í: "i",
+    ǐ: "i",
+    ì: "i",
+    ō: "o",
+    ó: "o",
+    ǒ: "o",
+    ò: "o",
+    ū: "u",
+    ú: "u",
+    ǔ: "u",
+    ù: "u",
+    ǖ: "ü",
+    ǘ: "ü",
+    ǚ: "ü",
+    ǜ: "ü",
   };
-  
-  return pinyin.split('').map(char => toneMap[char] || char).join('');
+
+  return pinyin
+    .split("")
+    .map((char) => toneMap[char] || char)
+    .join("");
 }
 
 // Helper: Detect tone number from pinyin
 function detectTone(pinyin: string): number {
   const toneMarks = {
-    1: ['ā', 'ē', 'ī', 'ō', 'ū', 'ǖ'],
-    2: ['á', 'é', 'í', 'ó', 'ú', 'ǘ'],
-    3: ['ǎ', 'ě', 'ǐ', 'ǒ', 'ǔ', 'ǚ'],
-    4: ['à', 'è', 'ì', 'ò', 'ù', 'ǜ']
+    1: ["ā", "ē", "ī", "ō", "ū", "ǖ"],
+    2: ["á", "é", "í", "ó", "ú", "ǘ"],
+    3: ["ǎ", "ě", "ǐ", "ǒ", "ǔ", "ǚ"],
+    4: ["à", "è", "ì", "ò", "ù", "ǜ"],
   };
-  
+
   for (const [tone, marks] of Object.entries(toneMarks)) {
-    if (marks.some(mark => pinyin.includes(mark))) {
+    if (marks.some((mark) => pinyin.includes(mark))) {
       return parseInt(tone, 10);
     }
   }
-  
+
   return 5; // Neutral tone (no mark)
 }
 ```

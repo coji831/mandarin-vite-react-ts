@@ -6,6 +6,7 @@
  * Story 15.5: Core Quiz UI Components
  */
 import { ChangeEvent, useState } from "react";
+import { toneMap, toneMapKeys } from "../../../constants/toneMap";
 import "./ToneInput.css";
 
 type ToneInputProps = {
@@ -23,18 +24,9 @@ function ToneInput({ value, onChange }: ToneInputProps) {
 
     let result = input.toLowerCase();
 
-    // Process multi-vowel combinations first (longer matches)
-    const multiVowelKeys = Object.keys(toneMap)
-      .filter((k) => k.length === 3)
-      .sort((a, b) => b.length - a.length);
-    multiVowelKeys.forEach((key) => {
-      const regex = new RegExp(key, "g");
-      result = result.replace(regex, toneMap[key]);
-    });
-
-    // Then process single vowels
-    const singleVowelKeys = Object.keys(toneMap).filter((k) => k.length === 2);
-    singleVowelKeys.forEach((key) => {
+    // Use pre-sorted keys to match longer patterns before shorter ones
+    // This ensures "ang1" matches before "an1" or "a1"
+    toneMapKeys.forEach((key) => {
       const regex = new RegExp(key, "g");
       result = result.replace(regex, toneMap[key]);
     });
@@ -69,58 +61,3 @@ function ToneInput({ value, onChange }: ToneInputProps) {
     </div>
   );
 }
-
-// Tone map with priority: multi-vowel combos first, then single vowels
-// Pinyin rule: tone mark priority is a > o > e > i/u
-const toneMap: Record<string, string> = {
-  // Multi-vowel combinations (must be processed first)
-  ao1: "āo",
-  ao2: "áo",
-  ao3: "ǎo",
-  ao4: "ào",
-  ou1: "ōu",
-  ou2: "óu",
-  ou3: "ǒu",
-  ou4: "òu",
-  ai1: "āi",
-  ai2: "ái",
-  ai3: "ǎi",
-  ai4: "ài",
-  ei1: "ēi",
-  ei2: "éi",
-  ei3: "ěi",
-  ei4: "èi",
-  ui1: "uī",
-  ui2: "uí",
-  ui3: "uǐ",
-  ui4: "uì",
-  iu1: "iū",
-  iu2: "iú",
-  iu3: "iǔ",
-  iu4: "iù",
-  // Single vowels
-  a1: "ā",
-  a2: "á",
-  a3: "ǎ",
-  a4: "à",
-  o1: "ō",
-  o2: "ó",
-  o3: "ǒ",
-  o4: "ò",
-  e1: "ē",
-  e2: "é",
-  e3: "ě",
-  e4: "è",
-  i1: "ī",
-  i2: "í",
-  i3: "ǐ",
-  i4: "ì",
-  u1: "ū",
-  u2: "ú",
-  u3: "ǔ",
-  u4: "ù",
-  ü1: "ǖ",
-  ü2: "ǘ",
-  ü3: "ǚ",
-  ü4: "ǜ",
-};

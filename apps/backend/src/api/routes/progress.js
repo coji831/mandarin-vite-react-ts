@@ -59,6 +59,28 @@ router.get(
   asyncHandler(progressController.getProgressStats.bind(progressController)),
 );
 
+// Story 15.2: Quiz system endpoints (must come BEFORE /:wordId to avoid route collision)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1due
+router.get(
+  ROUTE_PATTERNS.progressDue,
+  authenticateToken,
+  asyncHandler(progressController.getDueWords.bind(progressController)),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1test-result
+router.post(
+  ROUTE_PATTERNS.progressTestResult,
+  authenticateToken,
+  asyncHandler(progressController.saveTestResult.bind(progressController)),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1leeches
+router.get(
+  ROUTE_PATTERNS.progressLeeches,
+  authenticateToken,
+  asyncHandler(progressController.getLeeches.bind(progressController)),
+);
+
 // OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1{wordId}
 router.get(
   ROUTE_PATTERNS.progressWord(":wordId"),
@@ -85,28 +107,6 @@ router.post(
   ROUTE_PATTERNS.progressBatch,
   authenticateToken,
   asyncHandler(progressController.batchUpdateProgress.bind(progressController)),
-);
-
-// Story 15.2: Quiz system endpoints
-// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1due
-router.get(
-  "/v1/progress/due",
-  authenticateToken,
-  asyncHandler(progressController.getDueWords.bind(progressController)),
-);
-
-// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1test-result
-router.post(
-  "/v1/progress/test-result",
-  authenticateToken,
-  asyncHandler(progressController.saveTestResult.bind(progressController)),
-);
-
-// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1leeches
-router.get(
-  "/v1/progress/leeches",
-  authenticateToken,
-  asyncHandler(progressController.getLeeches.bind(progressController)),
 );
 
 export default router;

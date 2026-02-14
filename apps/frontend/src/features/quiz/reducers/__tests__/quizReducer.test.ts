@@ -1,6 +1,7 @@
 /**
  * Tests for quiz reducer
  * Story 15.6: Quiz Container & State Management
+ * Story 15.8: Added ERROR phase and RESET_QUIZ tests
  */
 
 import { describe, it, expect } from "vitest";
@@ -60,6 +61,48 @@ describe("quizReducer", () => {
     expect(newState.phase).toBe("ANSWER_FEEDBACK");
     expect(newState.answers).toHaveLength(1);
     expect(newState.answers[0]).toEqual(answer);
+  });
+
+  it("updates answer metadata with backend response", () => {
+    const state: QuizState = {
+      phase: "ANSWER_FEEDBACK",
+      questions: [
+        {
+          wordId: "1",
+          word: "你好",
+          pinyin: "nǐhǎo",
+          english: "hello",
+          mode: "multiple_choice",
+          options: ["hello", "thank you", "goodbye", "yes"],
+        },
+      ],
+      currentIndex: 0,
+      answers: [
+        {
+          wordId: "1",
+          word: "你好",
+          pinyin: "nǐhǎo",
+          english: "hello",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correct: true,
+          timestamp: new Date(),
+        },
+      ],
+    };
+
+    const action: QuizAction = {
+      type: "UPDATE_ANSWER_METADATA",
+      wordId: "1",
+      nextReview: "2026-02-21T10:00:00Z",
+      lapseCount: 0,
+    };
+    const newState = quizReducer(state, action);
+
+    expect(newState.answers[0].nextReview).toBe("2026-02-21T10:00:00Z");
+    expect(newState.answers[0].lapseCount).toBe(0);
+    expect(newState.answers[0].word).toBe("你好");
+    expect(newState.answers[0].pinyin).toBe("nǐhǎo");
   });
 
   it("advances to next question", () => {
@@ -159,5 +202,98 @@ describe("quizReducer", () => {
     const newState = quizReducer(state, action);
 
     expect(newState).toEqual(state);
+  });
+
+  // Story 15.8: Error handling tests
+  describe("error handling", () => {
+    it("sets error state with SET_ERROR action", () => {
+      const state: QuizState = {
+        phase: "LOADING",
+        questions: [],
+        currentIndex: 0,
+        answers: [],
+      };
+
+      const action: QuizAction = { type: "SET_ERROR", error: "Failed to fetch words" };
+      const newState = quizReducer(state, action);
+
+      expect(newState.phase).toBe("ERROR");
+      expect(newState.error).toBe("Failed to fetch words");
+    });
+
+    it("clears error on INITIALIZE_QUIZ", () => {
+      const state: QuizState = {
+        phase: "ERROR",
+        questions: [],
+        currentIndex: 0,
+        answers: [],
+        error: "Previous error",
+      };
+
+      const questions: QuizQuestion[] = [
+        {
+          wordId: "1",
+          word: "你好",
+          pinyin: "nǐhǎo",
+          english: "hello",
+          mode: "multiple_choice",
+          options: ["hello", "thank you", "goodbye", "yes"],
+        },
+      ];
+
+      const action: QuizAction = { type: "INITIALIZE_QUIZ", questions };
+      const newState = quizReducer(state, action);
+
+      expect(newState.phase).toBe("QUESTION");
+      expect(newState.error).toBeUndefined();
+    });
+
+    it("resets quiz with RESET_QUIZ action", () => {
+      const state: QuizState = {
+        phase: "COMPLETE",
+        questions: [
+          {
+            wordId: "1",
+            word: "你好",
+            pinyin: "nǐhǎo",
+            english: "hello",
+            mode: "multiple_choice",
+            options: ["hello", "thank you", "goodbye", "yes"],
+          },
+        ],
+        currentIndex: 1,
+        answers: [
+          {
+            wordId: "1",
+            questionType: "multiple_choice",
+            userAnswer: "hello",
+            correct: true,
+            timestamp: new Date(),
+          },
+        ],
+      };
+
+      const action: QuizAction = { type: "RESET_QUIZ" };
+      const newState = quizReducer(state, action);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    it("preserves error state through other actions", () => {
+      const state: QuizState = {
+        phase: "ERROR",
+        questions: [],
+        currentIndex: 0,
+        answers: [],
+        error: "Network error",
+      };
+
+      const action: QuizAction = { type: "COMPLETE_QUIZ" };
+      const newState = quizReducer(state, action);
+
+      // Should update phase but preserve error
+      expect(newState.phase).toBe("COMPLETE");
+      expect(newState.error).toBe("Network error");
+    });
   });
 });

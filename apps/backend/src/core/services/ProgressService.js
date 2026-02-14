@@ -199,16 +199,41 @@ export class ProgressService {
 
   /**
    * Get vocabulary words due for review
-   * Story 15.2: New method for quiz system
+   * Story 15.8: Enhanced with 70/30 strategy (70% due words, 30% new words)
    *
    * @param {string} userId - User ID
    * @param {Date} date - Target date (defaults to today)
-   * @param {number} [limit=20] - Maximum words to return
+   * @param {number} [limit=10] - Maximum words to return
    * @returns {Promise<Array>} Enriched words with progress data
    */
-  async getDueWords(userId, date = new Date(), limit = 20) {
+  async getDueWords(userId, date = new Date(), limit = 10) {
     // Fetch progress records where nextReview <= date
-    const progressRecords = await this.repository.findDueByUserAndDate(userId, date, limit);
+    let progressRecords = await this.repository.findDueByUserAndDate(userId, date, limit);
+
+    // Story 15.8: Backfill with new words if fewer than requested (70/30 strategy)
+    // Target: 70% review, 30% new words to prevent stagnation
+    if (progressRecords.length < limit && this.vocabularyRepository) {
+      const targetNewWords = Math.ceil(limit * 0.3); // 30% of limit
+      const availableSlots = limit - progressRecords.length;
+      const newWordsNeeded = Math.min(targetNewWords, availableSlots);
+
+      const newWords = await this.getUnlearnedWords(userId, newWordsNeeded);
+
+      // Auto-create initial progress for new words
+      for (const word of newWords) {
+        const initialProgress = await this.repository.upsert(userId, word.id, {
+          studyCount: 0,
+          correctCount: 0,
+          confidence: 0,
+          nextReview: new Date(), // Due immediately for first quiz
+          lapseCount: 0,
+          currentDelay: 1, // Initial 1-day delay
+        });
+
+        // Add to progress records for enrichment
+        progressRecords.push(initialProgress);
+      }
+    }
 
     if (!this.vocabularyRepository) {
       // Return raw progress if vocabulary repository not available
@@ -242,6 +267,42 @@ export class ProgressService {
         };
       })
       .filter(Boolean); // Remove null entries
+  }
+
+  /**
+   * Get unlearned vocabulary words (words without progress records)
+   * Story 15.8: Helper method for new word introduction
+   *
+   * @param {string} userId - User ID
+   * @param {number} limit - Maximum words to return
+   * @returns {Promise<Array>} Vocabulary words without progress
+   */
+  async getUnlearnedWords(userId, limit = 10) {
+    if (!this.vocabularyRepository) {
+      return [];
+    }
+
+    // Get all wordIds user has studied
+    const allProgress = await this.repository.findMany({ userId });
+    const learnedWordIds = new Set(allProgress.map((p) => p.wordId));
+
+    // Import prisma client to query vocabulary without progress
+    const { prisma } = await import("../../infrastructure/database/client.js");
+
+    // Fetch random vocabulary words that user hasn't studied
+    const unlearnedWords = await prisma.vocabularyWord.findMany({
+      where: {
+        id: {
+          notIn: Array.from(learnedWordIds),
+        },
+      },
+      take: limit,
+      orderBy: {
+        id: "asc", // Simple ordering for consistency
+      },
+    });
+
+    return unlearnedWords;
   }
 
   /**

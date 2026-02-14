@@ -1,11 +1,37 @@
 /**
  * Tests for DailyReviewQuiz container
  * Story 15.6: Quiz Container & State Management
+ * Updated for Story 15.8: Backend API integration
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { DailyReviewQuiz } from "../DailyReviewQuiz";
+
+// Mock response data
+const MOCK_DUE_WORDS = [
+  { id: 1, word: "你好", english: "hello", pinyin: "nǐ hǎo" },
+  { id: 2, word: "谢谢", english: "thank you", pinyin: "xiè xie" },
+  { id: 3, word: "再见", english: "goodbye", pinyin: "zài jiàn" },
+  { id: 4, word: "早上好", english: "good morning", pinyin: "zǎo shàng hǎo" },
+];
+
+// Mock API hooks with default successful behavior
+const mockFetchDueWords = vi.fn();
+const mockSaveTestResult = vi.fn();
+
+vi.mock("../../hooks/useQuizAPI", () => ({
+  useFetchDueWords: () => ({
+    fetchDueWords: mockFetchDueWords,
+    loading: false,
+    error: null,
+  }),
+  useSaveTestResult: () => ({
+    saveTestResult: mockSaveTestResult,
+    saving: false,
+    error: null,
+  }),
+}));
 
 // Mock child components
 vi.mock("../../components", () => ({
@@ -30,15 +56,33 @@ vi.mock("../../components", () => ({
   QuizComplete: ({ answers }: any) => (
     <div data-testid="quiz-complete">Quiz Complete! {answers.length} questions</div>
   ),
+  QuizError: ({ error, onRetry }: any) => (
+    <div data-testid="quiz-error">
+      <p>{error}</p>
+      <button onClick={onRetry}>Retry</button>
+    </div>
+  ),
 }));
 
 describe("DailyReviewQuiz", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Default: successful API response
+    mockFetchDueWords.mockResolvedValue({ words: MOCK_DUE_WORDS });
+    mockSaveTestResult.mockResolvedValue({
+      success: true,
+      nextReviewDate: new Date().toISOString(),
+    });
+  });
+
   it("shows first question after initialization", async () => {
     render(<DailyReviewQuiz />);
 
     await waitFor(() => {
       expect(screen.getByTestId("quiz-card")).toBeInTheDocument();
     });
+
+    expect(mockFetchDueWords).toHaveBeenCalledTimes(1);
   });
 
   it("displays progress bar with correct count", async () => {

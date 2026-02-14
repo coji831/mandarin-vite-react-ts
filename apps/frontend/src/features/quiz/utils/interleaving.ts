@@ -23,7 +23,7 @@ const QUESTION_MODES: QuestionMode[] = ["multiple_choice", "type_pinyin", "type_
 /**
  * Creates interleaved quiz questions with random mode per word
  *
- * @param words - Array of words to quiz on
+ * @param words Array of words to quiz on
  * @returns Array of quiz questions with random modes
  */
 export function createInterleavedQuestions(words: Word[]): QuizQuestion[] {
@@ -51,8 +51,8 @@ export function createInterleavedQuestions(words: Word[]): QuizQuestion[] {
 /**
  * Generates 4 options for multiple choice: 3 wrong + 1 correct, shuffled
  *
- * @param correctWord - The correct answer word
- * @param allWords - Pool of words to select distractors from
+ * @param correctWord The correct answer word
+ * @param allWords Pool of words to select distractors from
  * @returns Array of 4 shuffled options (English meanings)
  */
 export function generateDistractors(correctWord: Word, allWords: Word[]): string[] {
