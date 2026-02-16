@@ -1,0 +1,217 @@
+/**
+ * MysteryBoxModal Component Styles
+ * Story 15.9: Gamification & AI Integration
+ */
+
+/* Overlay */
+.mystery-box-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Modal container */
+.mystery-box-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Confetti container */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall 3s linear infinite;
+}
+
+/* Content */
+.mystery-box-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+}
+
+/* Gift box */
+.gift-box {
+  margin-bottom: 1.5rem;
+  transition: transform 0.5s ease;
+}
+
+.gift-box.revealed {
+  transform: scale(0.8) translateY(-20px);
+  opacity: 0.3;
+}
+
+.gift-icon {
+  font-size: 5rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* Reward reveal */
+.reward-reveal {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.reward-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+}
+
+.reward-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.reward-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.reward-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+/* Close button */
+.close-button {
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 30px;
+  padding: 0.875rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.close-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: #f0f0f0;
+}
+
+.close-button:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    animation: none;
+  }
+
+  .gift-icon {
+    animation: none;
+  }
+
+  .mystery-box-modal {
+    animation: fadeIn 0.3s ease-in;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .mystery-box-modal {
+    padding: 2rem;
+  }
+
+  .gift-icon {
+    font-size: 4rem;
+  }
+
+  .reward-icon {
+    font-size: 3rem;
+  }
+
+  .reward-title {
+    font-size: 1.5rem;
+  }
+
+  .reward-text {
+    font-size: 1.25rem;
+  }
+}

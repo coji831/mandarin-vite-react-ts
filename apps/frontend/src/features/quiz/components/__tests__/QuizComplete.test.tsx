@@ -2,12 +2,15 @@
  * Tests for QuizComplete component
  * Story 15.6: Quiz Container & State Management
  * Story 15.8: Updated tests for stats grid and XP display
+ * Story 15.9: Added tests for gamification rewards (mystery box, badges, freeze)
  */
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { QuizComplete } from "../QuizComplete";
 import { QuizAnswer } from "../../types/QuizTypes";
+import type { MysteryBox } from "../../hooks/useQuizAPI";
+import type { Badge } from "../../../gamification/types/GamificationTypes";
 
 describe("QuizComplete", () => {
   const mockAnswers: QuizAnswer[] = [
@@ -140,5 +143,185 @@ describe("QuizComplete", () => {
 
     render(<QuizComplete answers={fiveCorrect} />);
     expect(screen.getByText("+50")).toBeInTheDocument(); // 5 correct * 10 XP
+  });
+
+  // ========================================
+  // Story 15.9: Gamification Rewards Tests
+  // ========================================
+
+  describe("Gamification Rewards", () => {
+    it("displays backend-sourced XP when provided", () => {
+      render(<QuizComplete answers={mockAnswers} totalXP={25} />);
+      expect(screen.getByText("+25")).toBeInTheDocument();
+    });
+
+    it("falls back to calculated XP when totalXP not provided", () => {
+      render(<QuizComplete answers={mockAnswers} />);
+      expect(screen.getByText("+20")).toBeInTheDocument(); // 2 correct * 10 XP
+    });
+
+    it("displays new badges section when badges earned", () => {
+      const newBadges: Badge[] = [
+        {
+          id: "bronze_flame",
+          name: "Bronze Flame",
+          description: "Maintain a 7-day streak",
+          icon: "🔥",
+        },
+      ];
+
+      render(<QuizComplete answers={mockAnswers} newBadges={newBadges} />);
+
+      expect(screen.getByText(/New Badges Earned/i)).toBeInTheDocument();
+      expect(screen.getByText("Bronze Flame")).toBeInTheDocument();
+      expect(screen.getByText("🔥")).toBeInTheDocument();
+    });
+
+    it("displays multiple new badges", () => {
+      const newBadges: Badge[] = [
+        {
+          id: "bronze_flame",
+          name: "Bronze Flame",
+          description: "Maintain a 7-day streak",
+          icon: "🔥",
+        },
+        {
+          id: "silver_flame",
+          name: "Silver Flame",
+          description: "Maintain a 30-day streak",
+          icon: "🔥",
+        },
+      ];
+
+      render(<QuizComplete answers={mockAnswers} newBadges={newBadges} />);
+
+      expect(screen.getByText("Bronze Flame")).toBeInTheDocument();
+      expect(screen.getByText("Silver Flame")).toBeInTheDocument();
+    });
+
+    it("does not display badges section when no badges earned", () => {
+      render(<QuizComplete answers={mockAnswers} />);
+      expect(screen.queryByText(/New Badges Earned/i)).not.toBeInTheDocument();
+    });
+
+    it("displays freeze awarded notification", () => {
+      render(<QuizComplete answers={mockAnswers} freezeAwarded={true} />);
+      expect(screen.getByText(/You earned 1 Streak Freeze/i)).toBeInTheDocument();
+      expect(screen.getByText("❄️")).toBeInTheDocument();
+    });
+
+    it("does not display freeze notification when not awarded", () => {
+      render(<QuizComplete answers={mockAnswers} />);
+      expect(screen.queryByText(/You earned 1 Streak Freeze/i)).not.toBeInTheDocument();
+    });
+
+    it("displays mystery box modal when mysteryBox provided", () => {
+      const mysteryBox: MysteryBox = {
+        type: "xp",
+        amount: 50,
+        name: "Bonus XP",
+        icon: "⭐",
+        droppedAt: "2026-02-15T10:00:00.000Z",
+        milestone: 7,
+      };
+
+      render(<QuizComplete answers={mockAnswers} mysteryBox={mysteryBox} />);
+      expect(screen.getByText(/Mystery Box/i)).toBeInTheDocument();
+    });
+
+    it("does not display mystery box modal when not provided", () => {
+      render(<QuizComplete answers={mockAnswers} />);
+      expect(screen.queryByText(/Mystery Box/i)).not.toBeInTheDocument();
+    });
+
+    it("displays all gamification rewards together", () => {
+      const newBadges: Badge[] = [
+        {
+          id: "bronze_flame",
+          name: "Bronze Flame",
+          description: "Maintain a 7-day streak",
+          icon: "🔥",
+        },
+      ];
+
+      const mysteryBox: MysteryBox = {
+        type: "xp",
+        amount: 50,
+        name: "Bonus XP",
+        icon: "⭐",
+        droppedAt: "2026-02-15T10:00:00.000Z",
+        milestone: 7,
+      };
+
+      render(
+        <QuizComplete
+          answers={mockAnswers}
+          totalXP={25}
+          newBadges={newBadges}
+          freezeAwarded={true}
+          mysteryBox={mysteryBox}
+        />,
+      );
+
+      // All rewards should be displayed
+      expect(screen.getByText("+25")).toBeInTheDocument(); // XP
+      expect(screen.getByText(/New Badges Earned/i)).toBeInTheDocument(); // Badge section
+      expect(screen.getByText(/You earned 1 Streak Freeze/i)).toBeInTheDocument(); // Freeze
+      expect(screen.getByText(/Mystery Box/i)).toBeInTheDocument(); // Mystery box
+    });
+
+    it("handles leeches display (lapseCount >= 5)", () => {
+      const answersWithLeeches: QuizAnswer[] = [
+        {
+          wordId: "1",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correct: true,
+          timestamp: new Date(),
+          lapseCount: 7,
+        },
+        {
+          wordId: "2",
+          questionType: "type_pinyin",
+          userAnswer: "xièxie",
+          correct: false,
+          timestamp: new Date(),
+          lapseCount: 5,
+        },
+      ];
+
+      render(<QuizComplete answers={answersWithLeeches} />);
+      expect(screen.getByText(/2 words need attention/i)).toBeInTheDocument();
+    });
+
+    it("does not display leech alert when no leeches", () => {
+      const answersWithoutLeeches: QuizAnswer[] = [
+        {
+          wordId: "1",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correct: true,
+          timestamp: new Date(),
+          lapseCount: 2,
+        },
+      ];
+
+      render(<QuizComplete answers={answersWithoutLeeches} />);
+      expect(screen.queryByText(/words need attention/i)).not.toBeInTheDocument();
+    });
+
+    it("displays badge descriptions in new badges section", () => {
+      const newBadges: Badge[] = [
+        {
+          id: "bronze_flame",
+          name: "Bronze Flame",
+          description: "Maintain a 7-day streak",
+          icon: "🔥",
+        },
+      ];
+
+      render(<QuizComplete answers={mockAnswers} newBadges={newBadges} />);
+      expect(screen.getByText("Maintain a 7-day streak")).toBeInTheDocument();
+    });
   });
 });

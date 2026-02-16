@@ -18,6 +18,10 @@ export declare const ROUTE_PATTERNS: {
   readonly progressDue: string;
   readonly progressTestResult: string;
   readonly progressLeeches: string;
+  readonly progressStreak: string;
+  readonly progressStreakFreeze: string;
+  readonly gamificationBadges: string;
+  readonly quizFeedback: string;
   readonly authRegister: string;
   readonly authLogin: string;
   readonly authRefresh: string;

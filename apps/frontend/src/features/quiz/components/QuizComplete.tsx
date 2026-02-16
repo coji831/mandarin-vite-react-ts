@@ -2,30 +2,49 @@
  * QuizComplete Component
  * Story 15.6: Quiz Container & State Management
  * Story 15.8: Added XP calculation and Review Again button
+ * Story 15.9: Integrated backend XP, mystery box, and badge rewards
  *
  * Displays quiz results with accuracy metrics and gamification rewards.
  * Shows correct/incorrect count, overall percentage, and XP earned.
+ * Now displays mystery box rewards and newly earned badges from backend.
  * Provides button to review words again.
  */
 
+import { useState } from "react";
 import { QuizAnswer } from "../types/QuizTypes";
+import type { MysteryBox } from "../hooks/useQuizAPI";
+import type { Badge } from "../../gamification/types/GamificationTypes";
+import { MysteryBoxModal } from "../../gamification/components/MysteryBoxModal";
 import "./QuizComplete.css";
 
 export { QuizComplete };
 
 type QuizCompleteProps = {
   answers: QuizAnswer[];
+  totalXP?: number; // Story 15.9: Backend-sourced XP (replaces client calculation)
+  mysteryBox?: MysteryBox; // Story 15.9: Random reward (7-day multiples)
+  newBadges?: Badge[]; // Story 15.9: Newly earned badges
+  freezeAwarded?: boolean; // Story 15.9: True if freeze was awarded during quiz
   onReviewAgain?: () => void;
 };
 
-function QuizComplete({ answers, onReviewAgain }: QuizCompleteProps) {
+function QuizComplete({
+  answers,
+  totalXP,
+  mysteryBox,
+  newBadges,
+  freezeAwarded,
+  onReviewAgain,
+}: QuizCompleteProps) {
   const correctCount = answers.filter((a) => a.correct).length;
   const totalCount = answers.length;
   const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
-  // XP calculation: 10 XP per correct answer
-  // TODO Story 15.9: Replace with actual XP from backend API response
-  const xpEarned = correctCount * 10;
+  // Story 15.9: Use backend XP source with fallback (Option A)
+  const xpEarned = totalXP !== undefined ? totalXP : correctCount * 10;
+
+  // Story 15.9: Mystery box modal state
+  const [showMysteryBox, setShowMysteryBox] = useState(!!mysteryBox);
 
   // Identify leeches (words with lapseCount >= 5)
   const leeches = answers.filter((a) => (a.lapseCount || 0) >= 5);
@@ -77,6 +96,27 @@ function QuizComplete({ answers, onReviewAgain }: QuizCompleteProps) {
           </span>
         </div>
       </div>
+
+      {/* Story 15.9: New Badges Earned */}
+      {newBadges && newBadges.length > 0 && (
+        <div className="newBadgesSection">
+          <h3 className="badgesTitle">🎉 New Badges Earned!</h3>
+          <div className="badgesGrid">
+            {newBadges.map((badge) => (
+              <div key={badge.id} className="badgeCard">
+                <span className="badgeIcon">{badge.icon}</span>
+                <div className="badgeInfo">
+                  <strong>{badge.name}</strong>
+                  <p>{badge.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Story 15.9: Freeze Awarded Notification */}
+      {freezeAwarded && <div className="freezeAlert">❄️ You earned 1 Streak Freeze!</div>}
 
       {leeches.length > 0 && (
         <div className="leechAlert">
@@ -195,6 +235,15 @@ function QuizComplete({ answers, onReviewAgain }: QuizCompleteProps) {
       >
         Review Again
       </button>
+
+      {/* Story 15.9: Mystery Box Modal */}
+      {mysteryBox && (
+        <MysteryBoxModal
+          mysteryBox={mysteryBox}
+          isOpen={showMysteryBox}
+          onClose={() => setShowMysteryBox(false)}
+        />
+      )}
     </div>
   );
 }

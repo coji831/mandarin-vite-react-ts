@@ -6,6 +6,7 @@
 
 import express from "express";
 import { ProgressController } from "../controllers/progressController.js";
+import { GamificationController } from "../controllers/GamificationController.js";
 import { ProgressService } from "../../core/services/ProgressService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
 import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
@@ -42,6 +43,9 @@ const progressController = new ProgressController(
   streakService,
   gamificationService,
 );
+
+// Story 15.3: Instantiate GamificationController for streak routes
+const gamificationController = new GamificationController(streakService, gamificationService);
 
 // All progress routes require authentication
 // Note: These are relative paths - main app mounts them under /api
@@ -81,6 +85,22 @@ router.get(
   asyncHandler(progressController.getLeeches.bind(progressController)),
 );
 
+// Story 15.3: Streak endpoints (must come BEFORE /:wordId to avoid "streak" being captured as wordId)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1streak
+router.get(
+  ROUTE_PATTERNS.progressStreak,
+  authenticateToken,
+  asyncHandler(gamificationController.getStreak),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1streak~1freeze
+router.post(
+  ROUTE_PATTERNS.progressStreakFreeze,
+  authenticateToken,
+  asyncHandler(gamificationController.spendFreeze),
+);
+
+// IMPORTANT: /:wordId routes must come LAST to avoid capturing specific endpoints
 // OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1{wordId}
 router.get(
   ROUTE_PATTERNS.progressWord(":wordId"),

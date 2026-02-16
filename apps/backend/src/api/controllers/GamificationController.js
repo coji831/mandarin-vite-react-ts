@@ -24,13 +24,13 @@ export class GamificationController {
    * GET /api/v1/progress/streak
    * Fetch user's streak data
    *
-   * @param {object} req - Express request (expects req.user.id from JWT)
+   * @param {object} req - Express request (expects req.userId from auth middleware)
    * @param {object} res - Express response
    * @returns {Promise<void>}
    */
   async getStreak(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const streak = await this.streakService.getStreak(userId);
 
       return res.status(200).json({
@@ -54,13 +54,13 @@ export class GamificationController {
    * - Only works when streak at risk (>48h since last activity)
    * - Extends lastActivityDate by 24 hours
    *
-   * @param {object} req - Express request (expects req.user.id from JWT)
+   * @param {object} req - Express request (expects req.userId from auth middleware)
    * @param {object} res - Express response
    * @returns {Promise<void>}
    */
   async spendFreeze(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const result = await this.streakService.spendFreeze(userId);
 
       return res.status(200).json({
@@ -95,13 +95,13 @@ export class GamificationController {
    *   available: [{ id, name, icon, tier, progress, required, percentComplete }]
    * }
    *
-   * @param {object} req - Express request (expects req.user.id from JWT)
+   * @param {object} req - Express request (expects req.userId from auth middleware)
    * @param {object} res - Express response
    * @returns {Promise<void>}
    */
   async getBadges(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const badges = await this.gamificationService.getBadges(userId);
 
       return res.status(200).json(badges);

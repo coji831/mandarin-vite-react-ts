@@ -19,19 +19,19 @@ This final integration story completes the engagement layer by connecting gamifi
 
 ## Acceptance Criteria
 
-- [ ] Dashboard displays StreakCounter with live data from `GET /api/progress/streak`
-- [ ] Streak counter updates in real-time after quiz completion (optimistic UI + backend sync)
-- [ ] Badge display fetches earned/available badges from `GET /api/gamification/badges`
-- [ ] New badge unlock triggers celebration modal with confetti animation
-- [ ] XP progress bar updates with animation after quiz completion (fetch latest XP from quiz summary response)
-- [ ] AI feedback panel calls `POST /api/quiz/feedback` after incorrect answer
-- [ ] Feedback displays asynchronously (user can advance to next question while feedback loads)
-- [ ] Fallback message shown if AI feedback times out (3-second limit) or fails
-- [ ] Streak freeze spend button enabled when streak at risk (>48h since activity)
-- [ ] Mystery box modal appears on milestone quizzes (7-day multiples) with 5% drop rate
-- [ ] Mystery box reward reveal animation (sliding gift box → reveal contents)
-- [ ] Leech dashboard widget shows "Focus Words" list (words with lapseCount >= 5) with retry button
-- [ ] Mobile-optimized animations (reduced motion respected for accessibility)
+- [x] Dashboard displays StreakCounter with live data from `GET /api/progress/streak`
+- [x] Streak counter updates in real-time after quiz completion (optimistic UI + backend sync)
+- [x] Badge display fetches earned/available badges from `GET /api/gamification/badges`
+- [x] New badge unlock triggers celebration modal with confetti animation
+- [x] XP progress bar updates with animation after quiz completion (fetch latest XP from quiz summary response)
+- [x] AI feedback panel calls `POST /api/quiz/feedback` after incorrect answer
+- [x] Feedback displays asynchronously (user can advance to next question while feedback loads)
+- [x] Fallback message shown if AI feedback times out (3-second limit) or fails
+- [x] Streak freeze spend button enabled when streak at risk (>48h since activity)
+- [x] Mystery box modal appears on milestone quizzes (7-day multiples) with 5% drop rate
+- [x] Mystery box reward reveal animation (sliding gift box → reveal contents)
+- [x] Leech dashboard widget shows "Focus Words" list (words with lapseCount >= 5) with retry button
+- [x] Mobile-optimized animations (reduced motion respected for accessibility)
 
 ## Business Rules
 
@@ -60,7 +60,7 @@ This final integration story completes the engagement layer by connecting gamifi
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: N/A
+- **Status**: Code Review
+- **PR**: Pending
 - **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Last Update**: February 16, 2026

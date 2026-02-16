@@ -1,50 +1,143 @@
 /**
  * Dashboard page
+ * Story 15.9: Gamification & AI Integration
  *
  * Main landing page for authenticated users.
- * Shows quick stats, action cards, and navigation shortcuts.
- * Phase 3: Integrated with gamification components (Story 15.7).
+ * Shows quick stats, action cards, navigation shortcuts, and live gamification data.
+ * Features:
+ * - Live streak counter and badge display (API-driven)
+ * - Leech widget for focus words (shows when 3+ leeches)
+ * - Freeze spending with confirmation modal
+ * - Badge celebration modal for newly earned badges
  */
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { StreakCounter, XPProgressBar, BadgeDisplay } from "../features/gamification/components";
+import { LeechWidget } from "../features/dashboard/components/LeechWidget";
+import {
+  useFetchStreak,
+  useFetchBadges,
+  useSpendFreeze,
+} from "../features/gamification/hooks/useGamificationAPI";
 import type { StreakData, Badge } from "../features/gamification/types/GamificationTypes";
 import "./Dashboard.css";
 
 export { Dashboard };
 
-// Mock data - Story 15.9 will replace with API calls
-const mockStreakData: StreakData = {
-  currentStreak: 7,
-  longestStreak: 12,
-  freezeCount: 3,
-  lastActivityDate: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-};
-
-const mockBadges: Badge[] = [
-  {
-    id: "badge-1",
-    name: "Quick Learner",
-    description: "Complete 10 quizzes",
-    icon: "⚡",
-    earnedDate: new Date("2024-01-15"),
-  },
-  {
-    id: "badge-2",
-    name: "Week Warrior",
-    description: "Maintain a 7-day streak",
-    icon: "🔥",
-    earnedDate: new Date(),
-  },
-  {
-    id: "badge-3",
-    name: "Perfectionist",
-    description: "Get 100% on a quiz",
-    icon: "💯",
-    earnedDate: undefined,
-  },
-];
-
 function Dashboard() {
+  const { fetchStreak, loading: streakLoading, error: streakError } = useFetchStreak();
+  const { fetchBadges, loading: badgesLoading, error: badgesError } = useFetchBadges();
+  const { spendFreeze, loading: spendingFreeze, error: freezeError } = useSpendFreeze();
+
+  const [streakData, setStreakData] = useState<StreakData | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [showFreezeConfirm, setShowFreezeConfirm] = useState(false);
+  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
+  const [newBadge, setNewBadge] = useState<Badge | null>(null);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Fetch streak data
+        const streakResponse = await fetchStreak();
+        setStreakData({
+          currentStreak: streakResponse.currentStreak,
+          longestStreak: streakResponse.longestStreak,
+          freezeCount: streakResponse.freezeCount,
+          lastActivityDate: new Date(streakResponse.lastActivityDate),
+        });
+
+        // Fetch badges
+        const badgeResponse = await fetchBadges();
+        const allBadges = [
+          ...badgeResponse.earned.map((badge) => ({
+            id: badge.id,
+            name: badge.name,
+            description: `Maintain a ${badge.streakRequired}-day streak`,
+            icon: badge.icon,
+            earnedDate: badge.earnedDate ? new Date(badge.earnedDate) : undefined,
+          })),
+          ...badgeResponse.available.map((badge) => ({
+            id: badge.id,
+            name: badge.name,
+            description: `Maintain a ${badge.streakRequired}-day streak`,
+            icon: badge.icon,
+            earnedDate: undefined,
+          })),
+        ];
+        setBadges(allBadges);
+
+        // Check for new badges (Story 15.9 AC: Badge celebration modal)
+        const lastSeenBadges = localStorage.getItem("last_seen_badges");
+        const lastSeenIds = lastSeenBadges ? JSON.parse(lastSeenBadges) : [];
+        const currentEarnedIds = badgeResponse.earned.map((b) => b.id);
+
+        const newlyEarned = badgeResponse.earned.find((badge) => !lastSeenIds.includes(badge.id));
+        if (newlyEarned) {
+          setNewBadge({
+            id: newlyEarned.id,
+            name: newlyEarned.name,
+            description: `Maintain a ${newlyEarned.streakRequired}-day streak`,
+            icon: newlyEarned.icon,
+            earnedDate: newlyEarned.earnedDate ? new Date(newlyEarned.earnedDate) : undefined,
+          });
+          setShowBadgeCelebration(true);
+          localStorage.setItem("last_seen_badges", JSON.stringify(currentEarnedIds));
+        } else if (lastSeenIds.length === 0 && currentEarnedIds.length > 0) {
+          // First load: set without showing modal
+          localStorage.setItem("last_seen_badges", JSON.stringify(currentEarnedIds));
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      }
+    };
+
+    loadDashboardData();
+  }, [fetchStreak, fetchBadges]);
+
+  const handleSpendFreeze = async () => {
+    setShowFreezeConfirm(false);
+    try {
+      const response = await spendFreeze();
+      // Update streak data with new freeze count
+      if (streakData) {
+        setStreakData({
+          ...streakData,
+          freezeCount: response.freezeCount,
+          lastActivityDate: new Date(response.lastActivityDate),
+        });
+      }
+      alert("✅ Streak freeze activated! Your streak is protected for today.");
+    } catch {
+      alert(`❌ ${freezeError || "Failed to activate streak freeze. Please try again."}`);
+    }
+  };
+
+  const handleCloseBadgeCelebration = () => {
+    setShowBadgeCelebration(false);
+    setNewBadge(null);
+  };
+  if (streakLoading || badgesLoading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h1>Loading...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (streakError || badgesError) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h1>⚠️ Error Loading Dashboard</h1>
+          <p>{streakError || badgesError}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -52,20 +145,36 @@ function Dashboard() {
         <p>Continue your Mandarin learning journey</p>
       </div>
 
+      {/* Leech Widget - Shows when 3+ leeches */}
+      <LeechWidget />
+
       <div className="dashboard-layout">
         {/* Left Column: Stats & Badges */}
         <div className="dashboard-left">
           {/* Quick Stats - Gamification Components */}
           <div className="stats-grid">
-            <StreakCounter streakData={mockStreakData} />
+            {streakData && <StreakCounter streakData={streakData} />}
             <XPProgressBar currentXP={280} />
             <StatCard icon="📚" label="Words Learned" value="Coming Soon" />
           </div>
 
+          {/* Freeze Spend Button */}
+          {streakData && streakData.freezeCount > 0 && (
+            <div className="freeze-actions">
+              <button
+                onClick={() => setShowFreezeConfirm(true)}
+                className="freeze-button"
+                disabled={spendingFreeze}
+              >
+                ❄️ Use Streak Freeze ({streakData.freezeCount})
+              </button>
+            </div>
+          )}
+
           {/* Badges Section */}
           <div className="badges-section">
             <h3>Your Badges</h3>
-            <BadgeDisplay badges={mockBadges} />
+            <BadgeDisplay badges={badges} />
           </div>
         </div>
 
@@ -104,6 +213,59 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Freeze Confirmation Modal */}
+      {showFreezeConfirm && (
+        <div className="modal-overlay" onClick={() => setShowFreezeConfirm(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>❄️ Use Streak Freeze?</h3>
+            <p>
+              This will protect your streak for today. You have {streakData?.freezeCount} freezes
+              remaining.
+            </p>
+            <div className="modal-actions">
+              <button
+                onClick={handleSpendFreeze}
+                className="modal-button confirm"
+                disabled={spendingFreeze}
+              >
+                {spendingFreeze ? "Activating..." : "Yes, Use It"}
+              </button>
+              <button onClick={() => setShowFreezeConfirm(false)} className="modal-button cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Badge Celebration Modal */}
+      {showBadgeCelebration && newBadge && (
+        <div className="modal-overlay badge-celebration" onClick={handleCloseBadgeCelebration}>
+          <div className="modal-content celebration" onClick={(e) => e.stopPropagation()}>
+            <div className="confetti-container">
+              {Array.from({ length: 30 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="confetti-piece"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 3}s`,
+                    backgroundColor: ["#ffd700", "#ff6b6b", "#4ecdc4", "#45b7d1", "#f7b801"][i % 5],
+                  }}
+                />
+              ))}
+            </div>
+            <div className="badge-celebration-icon">{newBadge.icon}</div>
+            <h2 className="badge-celebration-title">🎉 New Badge Earned!</h2>
+            <h3 className="badge-celebration-name">{newBadge.name}</h3>
+            <p className="badge-celebration-description">{newBadge.description}</p>
+            <button onClick={handleCloseBadgeCelebration} className="modal-button celebrate">
+              Awesome! 🎉
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

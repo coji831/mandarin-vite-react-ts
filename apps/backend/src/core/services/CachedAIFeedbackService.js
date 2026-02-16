@@ -33,10 +33,10 @@ export class CachedAIFeedbackService {
   /**
    * Generate AI-powered feedback for quiz errors
    * @param {Object} params - Feedback parameters
-   * @param {number} params.wordId - Vocabulary word ID
+   * @param {string} params.wordId - Vocabulary word ID (e.g., "hsk3-band1-125")
    * @param {string} params.userAnswer - User's incorrect answer
    * @param {string} params.correctAnswer - Correct answer
-   * @param {string} params.questionType - Type of question (tone_audio, character_choice, etc.)
+   * @param {string} params.questionType - Type of question (multiple_choice, type_pinyin, type_character)
    * @returns {Promise<{explanation: string, errorType: string}>} Feedback object
    */
   async generateFeedback({ wordId, userAnswer, correctAnswer, questionType }) {
@@ -90,7 +90,9 @@ export class CachedAIFeedbackService {
       if (error.message === "Request timeout") {
         logger.warn(`Gemini API timeout for wordId ${wordId}`);
       } else {
-        logger.error(`Gemini API error: ${error.message}`);
+        logger.error(`Gemini API error for wordId ${wordId}: ${error.message}`);
+        logger.error(`Error stack: ${error.stack}`);
+        logger.error(`Error type: ${error.constructor.name}`);
       }
 
       // Return fallback feedback on timeout or error
@@ -100,7 +102,7 @@ export class CachedAIFeedbackService {
 
   /**
    * Generate cache key for feedback
-   * @param {number} wordId - Word ID
+   * @param {string} wordId - Word ID (e.g., "hsk3-band1-125")
    * @param {string} userAnswer - User's answer
    * @returns {string} Cache key
    */
@@ -120,34 +122,52 @@ export class CachedAIFeedbackService {
   async generateAIFeedback(userAnswer, correctAnswer, word, questionType) {
     const prompt = buildAIPrompt(userAnswer, correctAnswer, word, questionType);
 
-    logger.debug(`Calling Gemini API for wordId: ${word.id}`);
+    logger.info(`Calling Gemini API for wordId: ${word.id}`);
+    logger.info(`Prompt length: ${prompt.length} characters`);
 
-    const response = await generateText(prompt, {
-      temperature: 0.7,
-      maxTokens: 200,
-    });
-
-    // Parse response - expect JSON format
     try {
-      // Try to extract JSON from response
-      const jsonMatch = response.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        if (parsed.explanation && parsed.errorType) {
-          return {
-            explanation: parsed.explanation,
-            errorType: parsed.errorType.toLowerCase(),
-          };
-        }
-      }
+      const response = await generateText(prompt, {
+        temperature: 0.7,
+        maxTokens: 200,
+      });
 
-      // Fallback: use the whole response as explanation, classify manually
-      const errorType = classifyErrorType(userAnswer, correctAnswer, word);
-      return {
-        explanation: response.trim().substring(0, 300), // Limit length
-        errorType,
-      };
+      logger.info(`Gemini response received: ${response.substring(0, 100)}...`);
+
+      // Parse response - expect JSON format
+      try {
+        // Try to extract JSON from response
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.explanation && parsed.errorType) {
+            logger.info(`Successfully parsed JSON response for wordId: ${word.id}`);
+            return {
+              explanation: parsed.explanation,
+              errorType: parsed.errorType.toLowerCase(),
+            };
+          }
+        }
+
+        // Fallback: use the whole response as explanation, classify manually
+        logger.warn(`Could not parse JSON from Gemini response, using raw text`);
+        const errorType = classifyErrorType(userAnswer, correctAnswer, word);
+        return {
+          explanation: response.trim().substring(0, 300), // Limit length
+          errorType,
+        };
+      } catch (parseError) {
+        logger.warn(`Failed to parse Gemini JSON response: ${parseError.message}`);
+        const errorType = classifyErrorType(userAnswer, correctAnswer, word);
+        return {
+          explanation: response.trim().substring(0, 300), // Limit length
+          errorType,
+        };
+      }
     } catch (error) {
+      logger.error(`generateAIFeedback error: ${error.message}`);
+      throw error; // Re-throw to be caught by outer try-catch
+    }
+    {
       logger.warn(`Failed to parse Gemini JSON response, using raw text`);
       const errorType = classifyErrorType(userAnswer, correctAnswer, word);
       return {

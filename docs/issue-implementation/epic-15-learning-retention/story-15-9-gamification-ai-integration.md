@@ -6,10 +6,15 @@ Connect gamification UI (Story 15.7) and AI feedback display to backend APIs (St
 
 **Files Modified:**
 
-- `apps/frontend/src/features/dashboard/components/Dashboard.tsx` - Add StreakCounter, leech widget
-- `apps/frontend/src/features/quiz/containers/DailyReviewTest.tsx` - Integrate AI feedback, mystery box modal
+- `apps/frontend/src/pages/Dashboard.tsx` - Integrated StreakCounter, BadgeDisplay, XPProgressBar with live API data
+- `apps/frontend/src/features/quiz/containers/DailyReviewQuiz.tsx` - Integrated AI feedback, mystery box, manual next button, input clearing
+- `apps/frontend/src/features/quiz/containers/DailyReviewQuiz.css` - Added `.nextButton` styling
 - `apps/frontend/src/features/gamification/hooks/useGamificationAPI.ts` - API client for streaks/badges
 - `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` - API client for AI explanations
+- `apps/backend/src/api/controllers/AIFeedbackController.js` - Fixed question type validation, wordId type handling
+- `apps/backend/src/core/services/CachedAIFeedbackService.js` - Enhanced logging for production observability
+- `apps/backend/src/core/services/AIFeedbackService.js` - JSDoc updates
+- `apps/backend/src/infrastructure/clients/GeminiClient.js` - Enhanced logging (debug → info)
 
 **API Integration:**
 
@@ -338,11 +343,113 @@ User advances to next question (feedback loads in background)
 
 ## Technical Challenges & Solutions
 
-### Challenge: AI Feedback Latency Blocks Quiz Flow
+### Challenge 1: Question Type Validation Mismatch
+
+**Problem:** AI feedback generation always failed with validation error. Frontend sent `type_pinyin` and `type_character` question types, but backend controller only accepted `tone_audio`, `character_choice`, `tone_combined` in validation enum.
+
+**Root Cause:** Controller validation logic written before quiz frontend standardized on different type names (`multiple_choice`, `type_pinyin`, `type_character`).
+
+**Solution:** Updated `AIFeedbackController.js` validation enum (line 60-69) to match frontend question types:
+
+```javascript
+const questionType = req.body.questionType;
+if (!["multiple_choice", "type_pinyin", "type_character"].includes(questionType)) {
+  return failureResponse(res, `Invalid question type: ${questionType}`, 400);
+}
+```
+
+**Impact:** AI feedback now generates successfully for all question types.
+
+---
+
+### Challenge 2: Prisma Type Validation Error (WordId String vs Int)
+
+**Problem:** AI feedback requests failed with Prisma error: "Argument `id`: Invalid value provided. Expected String, provided Int."
+
+**Root Cause:** Controller converted `wordId` from request body to integer using `parseInt("hsk3-band1-125", 10)`, but Prisma schema defines `Vocabulary.id` as `String` (composite format: `hsk3-band1-125`).
+
+**Solution:** Removed type conversion and validated as string instead:
+
+```javascript
+// Before
+const wordId = parseInt(req.body.wordId, 10);
+if (!wordId || isNaN(wordId)) {
+  return failureResponse(res, "Invalid or missing wordId", 400);
+}
+
+// After
+const wordId = req.body.wordId;
+if (!wordId || typeof wordId !== "string") {
+  return failureResponse(res, "Invalid or missing wordId", 400);
+}
+```
+
+**Impact:** Word vocabulary lookups now succeed, enabling AI feedback generation.
+
+---
+
+### Challenge 3: Auto-Advance Faster Than AI Feedback Generation
+
+**Problem:** Auto-advance timeout (1.5s → 5s) started immediately on incorrect answer submission, advancing to next question before AI feedback loaded. User never saw generated feedback.
+
+**Root Cause:** Sequential execution: `generateFeedback()` fires → `setTimeout(advance, 5000)` fires immediately → user advances before feedback loads (3s API call).
+
+**Iteration 1:** Moved timeout into `.then()` callback - waited for feedback + 5s.
+**Iteration 2:** User feedback: 5s still rushed for reading detailed explanations.
+**Final Solution:** Removed auto-advance entirely for incorrect answers; added manual "Next Question →" button that appears after feedback loads or fails:
+
+```tsx
+// DailyReviewQuiz.tsx line 114-127
+if (!correct) {
+  setFeedbackLoading(true);
+  generateFeedback({
+    /* ... */
+  })
+    .then((response) => {
+      setAiFeedback(response.explanation);
+      setFeedbackLoading(false);
+      // User manually clicks "Next" button when ready
+    })
+    .catch((err) => {
+      console.error("AI feedback generation failed:", err);
+      setFeedbackLoading(false);
+      // User can still click "Next" button even if feedback fails
+    });
+}
+```
+
+**UX Improvement:** User has full control over reading pace; feedback never cut off mid-read.
+
+---
+
+### Challenge 4: Input Field Persists Between Questions
+
+**Problem:** After answering a question and advancing to the next, the input field retained previous answer text instead of clearing.
+
+**Root Cause:** React component instance reused across question changes; internal state (`value`) persisted.
+
+**Solution:** Added `key={state.currentIndex}` prop to `TypeAnswerInput` to force component remount on question change:
+
+```tsx
+<TypeAnswerInput
+  key={state.currentIndex} // Force remount on question change to clear input
+  placeholder={currentQuestion.mode === "type_pinyin" ? "Type pinyin..." : "Type character..."}
+  mode={currentQuestion.mode}
+  onAnswer={handleAnswer}
+/>
+```
+
+**Impact:** Fresh input field with empty state for each new question.
+
+---
+
+### Challenge 5: AI Feedback Latency Blocks Quiz Flow (Original Design Issue)
 
 **Problem:** Waiting for 3-second Gemini API response delays next question transition (poor UX).
 
 **Solution:** Async pattern — show feedback immediately ("Incorrect"), advance to next question, load AI explanation in background, show notification when ready ("💡 Explanation available").
+
+**Note:** This challenge was addressed in original design but combined with Challenge #3 (auto-advance timing) in final implementation.
 
 ---
 

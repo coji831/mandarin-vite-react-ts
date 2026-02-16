@@ -54,7 +54,7 @@ export async function generateText(prompt, options = {}) {
 
   const endpoint = `${config.gemini.endpoint}/${model}:generateContent`;
 
-  logger.debug(`Calling Gemini API: ${model}`);
+  logger.info(`Calling Gemini API: ${model} at ${endpoint}`);
 
   const requestBody = {
     contents: [
@@ -108,7 +108,7 @@ export async function generateText(prompt, options = {}) {
     throw new Error("Gemini API response missing expected text content");
   }
 
-  logger.debug(`Generated ${generatedText.length} characters`);
+  logger.info(`Generated ${generatedText.length} characters from Gemini API`);
   return generatedText;
 }
 

@@ -41,11 +41,10 @@ export class AIFeedbackController {
         });
       }
 
-      // Validate wordId is a number
-      const wordIdNum = parseInt(wordId, 10);
-      if (isNaN(wordIdNum) || wordIdNum <= 0) {
+      // Validate wordId is a non-empty string (e.g., "hsk3-band1-125")
+      if (typeof wordId !== "string" || wordId.trim().length === 0) {
         return res.status(400).json({
-          error: "Invalid wordId: must be a positive number",
+          error: "Invalid wordId: must be a non-empty string",
         });
       }
 
@@ -56,25 +55,19 @@ export class AIFeedbackController {
         });
       }
 
-      // Validate question type is valid enum
-      const validQuestionTypes = [
-        "tone_audio",
-        "character_choice",
-        "pinyin_choice",
-        "english_choice",
-        "character_input",
-      ];
+      // Validate question type is valid enum (matches frontend QuestionMode)
+      const validQuestionTypes = ["multiple_choice", "type_pinyin", "type_character"];
       if (!validQuestionTypes.includes(questionType)) {
         return res.status(400).json({
           error: `Invalid questionType: must be one of ${validQuestionTypes.join(", ")}`,
         });
       }
 
-      logger.info(`Generating feedback for wordId=${wordIdNum}, user=${req.user?.id || "unknown"}`);
+      logger.info(`Generating feedback for wordId=${wordId}, user=${req.user?.id || "unknown"}`);
 
       // Generate feedback via service
       const feedback = await this.feedbackService.generateFeedback({
-        wordId: wordIdNum,
+        wordId,
         userAnswer,
         correctAnswer,
         questionType,

@@ -14,10 +14,10 @@ const logger = createLogger("AIFeedbackService");
 /**
  * Generate AI-powered feedback for quiz errors
  * @param {Object} params - Feedback parameters
- * @param {number} params.wordId - Vocabulary word ID
+ * @param {string} params.wordId - Vocabulary word ID (e.g., "hsk3-band1-125")
  * @param {string} params.userAnswer - User's incorrect answer
  * @param {string} params.correctAnswer - Correct answer
- * @param {string} params.questionType - Type of question (tone_audio, character_choice, etc.)
+ * @param {string} params.questionType - Type of question (multiple_choice, type_pinyin, type_character)
  * @param {Object} cacheService - Redis cache service instance
  * @param {Object} vocabularyRepo - VocabularyRepository instance
  * @returns {Promise<{explanation: string, errorType: string}>} Feedback object
@@ -82,7 +82,7 @@ export async function generateFeedback(
 
 /**
  * Generate cache key for feedback
- * @param {number} wordId - Word ID
+ * @param {string} wordId - Word ID (e.g., "hsk3-band1-125")
  * @param {string} userAnswer - User's answer
  * @returns {string} Cache key
  */
