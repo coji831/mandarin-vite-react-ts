@@ -15,9 +15,9 @@
 - Leech detection algorithm: flag words after 5 consecutive failures (`lapseCount >= 5`)
 - Backward compatibility layer ensures flashcard/quiz coexistence without algorithm conflicts
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** January 20, 2025
+**Last Update:** February 17, 2026
 
 ## Technical Overview
 
@@ -323,5 +323,8 @@ DailyReviewTest.tsx
 - [Story 15.7 Implementation: Gamification & Feedback Display UI](./story-15-7-gamification-feedback-display-ui.md)
 - [Story 15.8 Implementation: Core Quiz Backend Integration](./story-15-8-core-quiz-integration.md)
 - [Story 15.9 Implementation: Gamification & AI Integration](./story-15-9-gamification-ai-integration.md)
+- [Story 15.10 Implementation: Quiz UX Polish & Results Enhancement](./story-15-10-quiz-ux-polish.md)
+- [Story 15.11 Implementation: Feature Extensions & Future Adaptability](./story-15-11-feature-extensions.md)
+- [Story 15.12 Implementation: Documentation Finalization & Code Quality](./story-15-12-documentation-finalization.md)
 - [Epic 14: API Modernization](../epic-14-api-modernization/README.md) (dependency)
 - [Architecture Overview](../../architecture.md)

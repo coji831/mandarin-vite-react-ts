@@ -14,9 +14,9 @@
 - Enables data-driven insights for team analytics and progress reporting
 - Supports multiple difficulty levels (multiple choice → type answers) for diverse learner preferences
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** January 20, 2025
+**Last Update:** February 17, 2026
 
 ## Background
 
@@ -42,7 +42,7 @@ This epic addresses these issues by implementing a daily review quiz system with
 
 ## User Stories
 
-This epic consists of 9 user stories organized by implementation layer for parallel development:
+This epic consists of 12 user stories organized by implementation layer for parallel development:
 
 ### Backend Stories (API & Database)
 
@@ -77,9 +77,23 @@ This epic consists of 9 user stories organized by implementation layer for paral
 9. [**Story 15.9: Gamification & AI Integration**](./story-15-9-gamification-ai-integration.md)
    - As a **learner**, I want to **earn badges, XP, and streak rewards with AI-powered feedback**, so that **I feel rewarded for consistent study and understand my mistakes**.
 
+### Polish & Closure Stories
+
+10. [**Story 15.10: Quiz UX Polish & Results Enhancement**](./story-15-10-quiz-ux-polish.md)
+
+- As a **learner**, I want to **experience a polished quiz with stable layouts, clear instructions, and enhanced results display**, so that **the quiz feels professional and provides actionable feedback without visual jarring**.
+
+11. [**Story 15.11: Feature Extensions & Future Adaptability**](./story-15-11-feature-extensions.md)
+
+- As a **developer**, I want to **implement advanced quiz features and add architectural hooks for future enhancements**, so that **the quiz system handles multi-meaning words, provides better input methods, and supports planned expansions**.
+
+12. [**Story 15.12: Documentation Finalization & Code Quality**](./story-15-12-documentation-finalization.md)
+
+- As a **development team**, I want to **finalize Epic 15 with clean code, accurate documentation, and verified business rules**, so that **the codebase is maintainable and ready for production deployment**.
+
 ## Story Breakdown Logic
 
-This epic is divided into 9 stories using **UI/API separation principle** to enable parallel development and minimize coupling:
+This epic is divided into 12 user stories using **UI/API separation principle** to enable parallel development and minimize coupling:
 
 **Backend Group (Stories 15.1-15.4):**
 
@@ -99,6 +113,12 @@ This epic is divided into 9 stories using **UI/API separation principle** to ena
 - **Story 15.8**: Connects quiz UI to backend APIs (fetch due words, save results, analytics)
 - **Story 15.9**: Connects gamification UI to backend APIs (streaks, rewards, AI feedback)
 
+**Polish & Closure Group (Stories 15.10-15.12):**
+
+- **Story 15.10**: UX polish addressing layout stability, guidance features, results enhancements (19 UX improvements from user feedback)
+- **Story 15.11**: Feature extensions (multi-meaning support, pinyin conversion, quiz retention, UI component migration) and future architecture hooks (filters, distractors, feedback providers)
+- **Story 15.12**: Documentation finalization, ESLint cleanup, type safety audits, business rule verification
+
 **Benefits of This Structure:**
 
 - Backend team and frontend team can work in parallel (40% faster delivery)
@@ -106,6 +126,8 @@ This epic is divided into 9 stories using **UI/API separation principle** to ena
 - Pure UI components are reusable across features
 - Each story has clear, focused acceptance criteria
 - Story 15.1 ensures independent operation (quiz system won't break existing flashcard users)
+- Story 15.11 adds extensibility hooks without implementing full features (YAGNI principle)
+- Story 15.12 ensures production-ready code with comprehensive documentation
 
 ## Acceptance Criteria
 
@@ -227,6 +249,9 @@ This epic is divided into 9 stories using **UI/API separation principle** to ena
 - [Story 15.7 BR: Gamification & Feedback Display UI](./story-15-7-gamification-feedback-display-ui.md)
 - [Story 15.8 BR: Core Quiz Backend Integration](./story-15-8-core-quiz-integration.md)
 - [Story 15.9 BR: Gamification & AI Integration](./story-15-9-gamification-ai-integration.md)
+- [Story 15.10 Implementation: Quiz UX Polish & Results Enhancement](./story-15-10-quiz-ux-polish.md)
+- [Story 15.11 Implementation: Feature Extensions & Future Adaptability](./story-15-11-feature-extensions.md)
+- [Story 15.12 Implementation: Documentation Finalization & Code Quality](./story-15-12-documentation-finalization.md)
 - [Enhancements from Research](./enhancements-from-research.md) (research mapping)
 - [Architecture Overview](../../architecture.md)
 - [Epic 14: API Modernization](../epic-14-api-modernization/README.md) (dependency)
