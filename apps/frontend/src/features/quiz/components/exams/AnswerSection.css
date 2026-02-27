@@ -1,0 +1,19 @@
+@import "../../../../styles/globals.css";
+
+/* AnswerSection: container for input or feedback content */
+.answerContent {
+  flex: 0 0 200px;
+  max-width: 600px;
+  align-self: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .answerContent {
+    flex: 0 0 180px;
+    max-width: 100%;
+  }
+}

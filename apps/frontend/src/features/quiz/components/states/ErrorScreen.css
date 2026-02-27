@@ -1,0 +1,30 @@
+/* ErrorScreen Component Styles - Dark Theme */
+/* Component Reorganization: Renamed from QuizError */
+/* Story 15.10: CSS Cleanup - Optimized with global utilities */
+
+.quizError {
+  padding: var(--space-2xl) var(--space-xl);
+  min-height: 400px;
+  /* Uses .flex-col-center and .text-center utilities from globals.css */
+}
+
+.errorIcon {
+  font-size: var(--font-5xl);
+  margin-bottom: var(--space-lg);
+  opacity: 0.9;
+}
+
+.errorTitle {
+  color: var(--color-error);
+  font-size: var(--font-2xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.errorMessage {
+  color: var(--text-tertiary);
+  font-size: var(--font-md);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 400px;
+  line-height: 1.5;
+}

@@ -169,6 +169,7 @@ async function generateAIFeedback(userAnswer, correctAnswer, word, questionType)
 
 /**
  * Build prompt for Gemini API
+ * Story 15.10: Shortened for mobile display
  * @param {string} userAnswer - User's answer
  * @param {string} correctAnswer - Correct answer
  * @param {Object} word - Word details
@@ -176,27 +177,22 @@ async function generateAIFeedback(userAnswer, correctAnswer, word, questionType)
  * @returns {string} Formatted prompt
  */
 function buildAIPrompt(userAnswer, correctAnswer, word, questionType) {
-  return `You are a Mandarin Chinese tutor helping a beginner student understand their mistake.
+  return `You are a Mandarin Chinese tutor helping a beginner student.
 
 **Student's mistake:**
-- Question type: ${questionType}
-- Student answered: "${userAnswer}"
-- Correct answer: "${correctAnswer}"
+- Question: ${questionType}
+- Student: "${userAnswer}"
+- Correct: "${correctAnswer}"
 - Word: ${word.simplified} (${word.pinyin}) meaning "${word.english}"
 
 **Task:**
-1. Classify the error type as one of: "tone", "character", or "meaning"
-   - "tone": Different tone marks (e.g., mā vs mǎ)
-   - "character": Different Chinese characters (e.g., 妈 vs 马)
-   - "meaning": Semantic confusion (e.g., confusing hello with hi)
+1. Classify error as: "tone", "character", or "meaning"
+2. Explain in 2 brief sentences (under 100 words, suitable for mobile display)
 
-2. Explain the confusion in 2-3 simple sentences suitable for beginners.
-3. Provide a helpful learning tip if applicable.
-
-**Format your response as JSON:**
+**Return JSON:**
 {
   "errorType": "tone"|"character"|"meaning",
-  "explanation": "Your 2-3 sentence explanation here."
+  "explanation": "Your brief explanation here."
 }
 
 Keep language simple and encouraging. Focus on helping the student understand WHY they made this mistake.`;

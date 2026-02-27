@@ -1,8 +1,9 @@
 /**
  * LeechWidget Component
  * Story 15.9: Gamification & AI Integration
+ * Story 15.10: Updated terminology to "Struggling Words"
  *
- * Displays "Focus Words" - vocabulary with lapseCount >= 5.
+ * Displays "Struggling Words" - vocabulary with lapseCount >= 5.
  * Only shown when user has 3+ leeches (business rule).
  * Provides quick access to targeted review.
  *
@@ -92,7 +93,7 @@ function LeechWidget() {
     <div className="leech-widget">
       <div className="leech-header">
         <h3 className="leech-title">
-          🎯 Focus Words <span className="leech-badge">{totalCount}</span>
+          🎯 Struggling Words <span className="leech-badge">{totalCount}</span>
         </h3>
         <button onClick={handleDismiss} className="dismiss-button" aria-label="Dismiss">
           ×

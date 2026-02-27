@@ -1,0 +1,90 @@
+/* QuestionSection Component Styles - Dark Theme */
+/* Component Reorganization: Renamed from QuizCard -> QuestionDisplay -> QuestionSection */
+/* Story 15.10: CSS Cleanup - Optimized with tokens */
+
+.quizCard {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Question display */
+.question {
+  margin: var(--space-md) 0;
+  min-height: 100px;
+  /* Uses .flex-col-center and .text-center utilities */
+}
+
+.question h2 {
+  font-size: var(--font-5xl);
+  margin: var(--space-sm) 0;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.question p {
+  font-size: var(--font-md);
+  color: var(--text-secondary);
+  margin: var(--space-xs) 0;
+}
+
+.pinyin {
+  font-size: var(--font-xl);
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin: var(--space-xs) 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .question {
+    min-height: 80px;
+    margin: var(--space-sm) 0;
+  }
+
+  .question h2 {
+    font-size: var(--font-4xl);
+  }
+
+  .question p {
+    font-size: var(--font-sm);
+  }
+
+  .pinyin {
+    font-size: var(--font-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .question h2 {
+    font-size: var(--font-3xl);
+  }
+}
+
+/* Header styles moved into QuestionSection */
+.questionCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+}
+
+.quizTypeIcon {
+  font-size: var(--font-2xl);
+}
+
+.hintIconButton {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-xl);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.hintIconButton:hover {
+  color: var(--text-primary);
+}
+
+.questionCardContent {
+  margin-top: var(--space-sm);
+}

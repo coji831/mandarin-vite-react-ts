@@ -523,6 +523,132 @@ QuizComplete (red borders, relative time, friendly wording)
 
 ---
 
+### Challenge 4: Tooltip Overflow in Fixed-Height Container
+
+**Problem:** PinyinToneInput tooltip used `position: relative` (in-flow), consuming ~70px of limited vertical space in 200px fixed-height `.answerContent` container, causing overflow scrollbars and jarring layout shifts.
+
+**Root Cause:** Tooltip was part of document flow, pushing input field down within constrained container. When tooltip appeared/disappeared, layout jumped noticeably.
+
+**Solution:** Changed tooltip to `position: absolute` with `bottom: calc(100% + 0.5rem)` positioning strategy (inspired by StreakCounter pattern in codebase). Tooltip now floats above container without affecting layout flow.
+
+**Implementation:**
+
+```css
+.toneTooltip {
+  position: absolute;
+  bottom: calc(100% + 0.5rem); /* Above container with 8px gap */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+```
+
+**Impact:** No layout shift when tooltip appears; smooth fade-in animation; fits within mobile viewport constraints without overflow.
+
+**Lesson:** Always use absolute/fixed positioning for overlay elements (tooltips, dropdowns, modals) to prevent layout shifts, especially in fixed-height containers.
+
+---
+
+### Challenge 5: QuizContext Undefined Access Prevention
+
+**Problem:** During refactoring QuizContext, accidentally introduced early `return;` statement before `saveTestResult()` call in `handleAnswer()`, breaking backend save and gamification updates.
+
+**Root Cause:** Debugging artifact left in code; easy to miss during review since syntax was valid.
+
+**Solution:** Removed early return statement; added eslint check for unreachable code after returns.
+
+**Implementation:**
+
+```tsx
+// BEFORE (broken)
+// Save to backend and capture gamification data
+return;  // ❌ Accidental early return
+try {
+  await saveTestResult(...);
+}
+
+// AFTER (fixed)
+// Save to backend and capture gamification data
+try {
+  await saveTestResult(...);
+}
+```
+
+**Impact:** Backend saves now work correctly; XP, mystery box, badges, and freeze awards properly captured.
+
+**Lesson:** Use linting rules to catch unreachable code; add unit tests for async action side effects (saves, API calls).
+
+---
+
+### Challenge 6: ResultsLayout Scrolling UX with Sticky Header
+
+**Problem:** Results page lacked visual hierarchy when scrolling through long results table. "Quiz Complete! 🎉" header disappeared, losing context. Also, Review Again button stuck to bottom of table without spacing.
+
+**Solution:** Made header sticky (`position: sticky; top: 0`) with background and shadow for floating effect. Added `gap: var(--space-lg)` to container for consistent spacing between all elements.
+
+**Implementation:**
+
+```css
+.completeTitle {
+  position: sticky;
+  top: 0;
+  background: var(--background);
+  z-index: 10;
+  padding: var(--space-sm) 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.quizCompleteContainer {
+  gap: var(--space-lg); /* Consistent spacing */
+}
+```
+
+**Impact:** Header stays visible during scroll; improved results page navigation; Review Again button has proper spacing from table.
+
+**Lesson:** Use sticky positioning for context-preserving headers in scrollable content; prefer flexbox `gap` over margin for consistent spacing.
+
+---
+
+### Challenge 7: Button Style Consistency Across Components
+
+**Problem:** Help icon (ℹ️) in PinyinToneInput had different styling than Hint button (💡) in QuestionSection, creating visual inconsistency despite similar purposes.
+
+**Root Cause:** Components developed separately; no shared button style pattern for icon-only actions.
+
+**Solution:** Unified styling by reusing `.hintIconButton` class from QuestionSection. Both now share transparent background, hover effects, and focus states.
+
+**Implementation:**
+
+```css
+.hintIconButton {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-xl);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.hintIconButton:hover {
+  color: var(--text-primary);
+}
+```
+
+**Impact:** Consistent iconography styling across quiz UI; reduced CSS duplication; improved visual cohesion.
+
+**Lesson:** Extract common button patterns into shared classes; document button variants in style guide for future components.
+
+---
+
+## Implementation Status
+
+- **Status**: Completed
+- **Last Update**: February 27, 2026
+
+---
+
 **Related Documentation:**
 
 - [Story 15.10 BR](../../business-requirements/epic-15-learning-retention/story-15-10-quiz-ux-polish.md)

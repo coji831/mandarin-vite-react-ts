@@ -1,6 +1,7 @@
 #root {
   margin: 0 auto;
-  padding: 2rem;
+  /* Story 15.10: Remove padding */
+  padding: 0;
   text-align: center;
 }
 
@@ -73,7 +74,6 @@ button {
   filter: drop-shadow(0 0 0.8em rgba(100, 164, 253, 0.667));
 }
 
-
 button.primary {
   background-color: #646cff;
   color: white;
@@ -93,7 +93,6 @@ button.secondary:hover {
   background-color: #f0f0f0aa;
 }
 
-
 div.container {
   border: 1px red solid;
   box-sizing: border-box;
@@ -109,7 +108,7 @@ div.container {
   justify-content: center;
   align-items: center;
 }
- 
+
 .padding-10 {
   padding: 10px;
 }

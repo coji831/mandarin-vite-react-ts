@@ -3,7 +3,7 @@
 .learn-layout {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 60px); /* Account for AppLayout navbar height */
+  /* Removed min-height - let content dictate height naturally to prevent overflow */
 }
 
 /* Learn Sub-Navbar */
@@ -42,13 +42,18 @@
   color: #a5b4fc;
   background: rgba(102, 126, 234, 0.2);
   border-bottom-color: #667eea;
+  font-weight: 600; /* Story 15.10: Enhanced active state clarity */
 }
 
 /* Main Content */
 .learn-content {
   flex: 1;
-  padding: 2rem;
+  padding: 1.5rem 0; /* Removed horizontal padding to prevent overflow */
   background: #242424;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 130px); /* Fill viewport minus navbars */
 }
 
 /* Mobile Responsive */
@@ -67,7 +72,7 @@
   }
 
   .learn-content {
-    padding: 1rem;
+    padding: 1rem 0; /* Keep vertical padding only */
   }
 }
 
@@ -83,6 +88,6 @@
   }
 
   .learn-content {
-    padding: 0.75rem;
+    padding: 0.75rem 0; /* Keep vertical padding only */
   }
 }

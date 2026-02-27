@@ -1,0 +1,97 @@
+/**
+ * ExamLayout Component Styles
+ * Epic 19: State Refactor
+ *
+ * Styles for the unified exam phase orchestrator (QUESTION + ANSWER_FEEDBACK).
+ * Consolidates layout styles from DailyReviewQuiz.css and layout.css.
+ */
+
+@import "../../../../styles/globals.css";
+
+/* Container wrapper */
+.examLayoutContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+/* Main quiz card container */
+.quizMainCard {
+  height: 650px;
+  min-width: 650px;
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+  background: var(--surface-overlay);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Question card wrapper */
+.questionCardWrapper {
+  flex: 3 0 0;
+  padding-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Answer input/feedback container - two-zone layout */
+.answerInputContainer {
+  flex: 2 0 0;
+  padding-top: var(--space-lg);
+  margin-top: auto;
+  gap: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+
+/* .answerContent moved to AnswerSection.css to keep section styles colocated */
+
+.answerActionBar {
+  flex: 0 0 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .examLayoutContainer {
+    padding: 0 0.75rem;
+    gap: 1rem;
+  }
+
+  .quizMainCard {
+    min-width: unset;
+    height: 450px;
+    padding: 1rem;
+  }
+
+  .questionCardWrapper {
+    flex: 3 0 0;
+    padding-bottom: 1rem;
+  }
+
+  .questionCardHeader {
+    margin-bottom: 0.5rem;
+  }
+
+  .answerInputContainer {
+    flex: 2 0 0;
+    padding-top: var(--space-md);
+  }
+
+  /* .answerContent mobile rules moved to AnswerSection.css */
+
+  .answerActionBar {
+    flex: 0 0 50px;
+  }
+}

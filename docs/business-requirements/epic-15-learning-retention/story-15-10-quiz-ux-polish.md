@@ -33,45 +33,45 @@ Story 15.9 delivered core gamification & AI features, but the UX has several rou
 
 ### Quiz Page Stability (4 AC)
 
-- [ ] Quiz page layout has reserved space for AI feedback/rewards (no jumping when elements appear)
-- [ ] Submit button smoothly transitions to Next button without layout shift
-- [ ] Button states clearly visible (disabled → loading → clickable)
-- [ ] Quiz element spacing consistent across question types (multiple choice, typing, tone)
+- [x] Quiz page layout has reserved space for AI feedback/rewards (no jumping when elements appear)
+- [x] Submit button smoothly transitions to Next button without layout shift
+- [x] Button states clearly visible (disabled → loading → clickable)
+- [x] Quiz element spacing consistent across question types (multiple choice, typing, tone)
 
 ### Navigation & Question Display (3 AC)
 
-- [ ] Sub-navbar has consistent spacing and clear active state styling
-- [ ] Question types have visual icons (🎯 multiple choice, ✏️ typing, 🔊 tone)
-- [ ] Question display has reserved height to prevent layout shifts between types
+- [x] Sub-navbar has consistent spacing and clear active state styling
+- [x] Question types have visual icons (🎯 multiple choice, ✏️ typing, 🔊 tone)
+- [x] Question display has reserved height to prevent layout shifts between types
 
 ### Guidance Features (2 AC)
 
-- [ ] Hint button shows word meaning/pinyin in expandable panel (hidden by default)
-- [ ] Tone input has tooltip explaining numeric notation ("Type ma3 for mǎ")
+- [x] Hint button shows word meaning/pinyin in expandable panel (hidden by default)
+- [x] Tone input has tooltip explaining numeric notation ("Type ma3 for mǎ")
 
 ### Styling & AI Feedback (3 AC)
 
-- [ ] All quiz components use app theme colors, fonts, and spacing
-- [ ] AI feedback highlights user answer vs. correct answer clearly (bold/color distinction)
-- [ ] AI prompt updated to be concise for mobile ("Focus on tone/character/meaning differences. Keep it brief.")
+- [x] All quiz components use app theme colors, fonts, and spacing
+- [x] AI feedback highlights user answer vs. correct answer clearly (bold/color distinction)
+- [x] AI prompt updated to be concise for mobile ("Focus on tone/character/meaning differences. Keep it brief.")
 
 ### Results Page Enhancements (5 AC)
 
-- [ ] Results page fits without horizontal scroll on mobile (320px min width)
-- [ ] Next review shows relative time ("in 3 days" instead of "Feb 19, 2026")
-- [ ] Lapse count has tooltip explaining "Times missed in a row"
-- [ ] Wrong answers have red left border instead of separate status column
-- [ ] Results table rows alternate background color for readability
+- [x] Results page fits without horizontal scroll on mobile (320px min width)
+- [x] Next review shows relative time ("in 3 days" instead of "Feb 19, 2026")
+- [x] Lapse count has tooltip explaining "Times missed in a row"
+- [x] Wrong answers have red left border instead of separate status column
+- [x] Results table rows alternate background color for readability
 
 ### User-Friendly Wording (2 AC)
 
-- [ ] "Leeches" replaced with "Struggling Words" in LeechWidget
-- [ ] "Lapse Count" replaced with "Times Missed" in results table
+- [x] "Leeches" replaced with "Struggling Words" in LeechWidget
+- [x] "Lapse Count" replaced with "Times Missed" in results table
 
 ### Dashboard & Input Fixes (2 AC)
 
-- [ ] Dashboard layout fits in 1 screen (no scroll) with quiz button + due count badge visible
-- [ ] Pinyin validation ignores spaces ("ni hao" === "nǐhǎo", "ma3 ma4" === "mǎmà")
+- [x] Dashboard layout fits in 1 screen (no scroll) with quiz button + due count badge visible
+- [x] Pinyin validation ignores spaces ("ni hao" === "nǐhǎo", "ma3 ma4" === "mǎmà")
 
 ## Business Rules
 
@@ -99,7 +99,7 @@ Story 15.9 delivered core gamification & AI features, but the UX has several rou
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: N/A
 - **Merge Date**: N/A
-- **Last Update**: February 17, 2026
+- **Last Update**: February 27, 2026

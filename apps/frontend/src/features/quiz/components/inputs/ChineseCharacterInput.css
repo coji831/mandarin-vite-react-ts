@@ -1,0 +1,65 @@
+/**
+ * ChineseCharacterInput Component Styles
+ * Styles for Chinese character input with count indicator and pinyin toggle scaffold
+ */
+
+.chineseCharacterInputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+/* Character count indicator */
+.characterCount {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: var(--surface-dark);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+/* Pinyin toggle button (disabled in Phase 1) */
+.pinyinToggle {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: var(--surface-light-5);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pinyinToggle:not(:disabled) {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.pinyinToggle:not(:disabled):hover {
+  background: var(--surface-light-10);
+}
+
+/* Suggestion dropdown (hidden - Phase 2 scaffold) */
+.suggestionDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: var(--surface-overlay);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}

@@ -60,9 +60,9 @@ export type FeedbackResponse = {
 };
 
 /**
- * Timeout duration for AI feedback request (3 seconds)
+ * Timeout duration for AI feedback request (5 seconds)
  */
-const FEEDBACK_TIMEOUT_MS = 3000;
+const FEEDBACK_TIMEOUT_MS = 5000;
 
 /**
  * Fallback message when AI feedback times out or fails
@@ -76,7 +76,7 @@ const FALLBACK_MESSAGE =
 
 /**
  * Hook for generating AI-powered quiz feedback
- * POST /api/v1/quiz/feedback with 3-second timeout
+ * POST /api/v1/quiz/feedback with 5-second timeout
  *
  * @returns Hook state containing generateFeedback function, loading state, and error state
  */
@@ -121,7 +121,7 @@ export function useGenerateFeedback() {
 
         // Check if error is due to timeout/abort
         if (err instanceof Error && err.name === "AbortError") {
-          console.warn("AI feedback request timed out after 3 seconds");
+          console.warn("AI feedback request timed out after 5 seconds");
           setError("Timeout");
           // Return fallback message
           return {

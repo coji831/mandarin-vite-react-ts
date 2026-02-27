@@ -94,8 +94,14 @@ function VocabularyListPage() {
   };
 
   return (
-    <div>
-      <div className="search-filter-bar">
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>
+      {/* Story 15.10: Reorganized filter layout for better UX */}
+      <div className="vocab-page-header">
+        <h1 className="vocab-page-title">Vocabulary Lists</h1>
+        <p className="vocab-page-subtitle">Browse and select vocabulary lists to study</p>
+      </div>
+
+      <div className="search-section">
         <input
           type="search"
           placeholder="Search vocabulary lists..."
@@ -104,31 +110,44 @@ function VocabularyListPage() {
           className="search-box"
           aria-label="Search vocabulary lists"
         />
-        <div className="filter-group">
-          <span className="filter-label">Difficulty:</span>
-          {allDifficulties.map((d) => (
-            <FilterChip
-              key={d}
-              label={d}
-              selected={selectedDifficulties.includes(d)}
-              onClick={() => updateDifficultySelection(d)}
-            />
-          ))}
+      </div>
+
+      <div className="filter-section">
+        <div className="filter-row">
+          <div className="filter-group">
+            <span className="filter-label">Difficulty:</span>
+            <div className="filter-chips">
+              {allDifficulties.map((d) => (
+                <FilterChip
+                  key={d}
+                  label={d}
+                  selected={selectedDifficulties.includes(d)}
+                  onClick={() => updateDifficultySelection(d)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="filter-group">
-          <span className="filter-label">Tags:</span>
-          {allTags.map((t) => (
-            <FilterChip
-              key={t}
-              label={t}
-              selected={selectedTags.includes(t)}
-              onClick={() => updateTagSelection(t)}
-            />
-          ))}
+
+        <div className="filter-row">
+          <div className="filter-group">
+            <span className="filter-label">Tags:</span>
+            <div className="filter-chips">
+              {allTags.map((t) => (
+                <FilterChip
+                  key={t}
+                  label={t}
+                  selected={selectedTags.includes(t)}
+                  onClick={() => updateTagSelection(t)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
+
         {(search || selectedDifficulties.length > 0 || selectedTags.length > 0) && (
-          <button className="clear-all" onClick={clearAll} type="button">
-            Clear All
+          <button className="clear-all-button" onClick={clearAll} type="button">
+            ✕ Clear All Filters
           </button>
         )}
       </div>

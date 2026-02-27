@@ -1,0 +1,72 @@
+/**
+ * QuizBadgesSection Component Styles
+ * Story 15.10: Quiz UX Polish - CSS Cleanup
+ *
+ * Optimized to use tokens from globals.css
+ */
+
+.newBadgesSection {
+  width: 100%;
+  margin: var(--space-md) 0;
+  padding: var(--space-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-bg) 0%,
+    var(--color-primary-bg-light) 100%
+  );
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-lg);
+}
+
+.badgesTitle {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+  text-align: center;
+}
+
+.badgesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+.badgeCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-light-5);
+  border: 1px solid var(--surface-light-10);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.badgeCard:hover {
+  background: var(--surface-light-8);
+  border-color: var(--color-primary-border);
+}
+
+.badgeIcon {
+  font-size: var(--font-5xl);
+  flex-shrink: 0;
+}
+
+.badgeInfo {
+  text-align: left;
+  flex: 1;
+}
+
+.badgeInfo strong {
+  display: block;
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.badgeInfo p {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}

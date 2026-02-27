@@ -1,108 +1,33 @@
-/* DailyReviewQuiz Container Styles - Dark Theme */
+/**
+ * DailyReviewQuiz Container Styles
+ * Epic 19: State Refactor - Simplified container styles
+ * Story 15.10: Quiz UX Polish - CSS Cleanup
+ *
+ * Minimal container styles for quiz wrapper.
+ * Layout-specific styles moved to ExamLayout.css and ResultsLayout.css.
+ */
 
 .dailyReviewContainer {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.feedbackContainer {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.feedbackCorrect {
-  background: rgba(16, 185, 129, 0.15);
-}
-
-.feedbackIncorrect {
-  background: rgba(239, 68, 68, 0.15);
-}
-
-.feedbackText {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.feedbackTextCorrect {
-  color: #10b981;
-}
-
-.feedbackTextIncorrect {
-  color: #ef4444;
-}
-/* Story 15.9: AI Feedback Styles */
-.aiFeedbackSection {
-  margin-top: 1rem;
-}
-
-.aiFeedbackLoading {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
-  margin: 0;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.aiFeedbackBox {
-  padding: 0.875rem 1rem;
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  border-radius: 8px;
-  text-align: left;
-}
-
-.aiFeedbackLabel {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #667eea;
-  margin: 0 0 0.5rem 0;
-}
-
-.aiFeedbackText {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.nextButton {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  min-height: calc(100vh - 190px);
+  padding: 2rem 1rem;
+  overflow-x: hidden;
+  /* Centering applied via .flex-center utility in TSX */
 }
 
-.nextButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+.quizContentWrapper {
+  max-width: 65%;
+  gap: 1.5rem;
+  /* Flex column applied via .flex-col utility in TSX */
 }
 
-.nextButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .dailyReviewContainer {
+    padding: 1rem 0.75rem;
+  }
 
-.nextButton:focus {
-  outline: 2px solid #667eea;
-  outline-offset: 2px;
+  .quizContentWrapper {
+    max-width: 95%;
+  }
 }

@@ -1,0 +1,65 @@
+/**
+ * ResultsLayout Component Styles
+ * Component Reorganization: Renamed from CompletionLayout (Epic 19: State Refactor)
+ * Story 15.10: Quiz UX Polish - CSS Cleanup
+ *
+ * Parent container styles only.
+ * Child component styles are in their respective CSS files:
+ * - StatsGrid.css
+ * - BadgesDisplay.css
+ * - LeechWarning.css
+ * - ResultsTable.css
+ */
+
+@import "../../../../styles/globals.css";
+
+.quizCompleteContainer {
+  padding: var(--space-lg);
+  min-width: 700px;
+  margin: 0 auto;
+  max-height: calc(100vh - 190px);
+  overflow-y: auto;
+  gap: var(--space-lg);
+  /* Flex column centering + text-center applied via utilities in TSX */
+}
+
+.completeTitle {
+  font-size: var(--font-3xl);
+  margin-bottom: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  background: var(--background);
+  z-index: 10;
+  padding: var(--space-sm) 0;
+  margin-top: calc(var(--space-sm) * -1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Freeze Awarded Alert (parent component feature) */
+.freezeAlert {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+  color: var(--color-info);
+  font-size: var(--font-sm);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .quizCompleteContainer {
+    padding: var(--space-md);
+    max-height: calc(100vh - 130px);
+    max-width: 100%;
+  }
+
+  .completeTitle {
+    font-size: var(--font-2xl);
+    margin-bottom: 0;
+  }
+}
