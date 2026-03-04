@@ -1,12 +1,13 @@
 /**
- * Tests for DailyReviewQuiz container
+ * Tests for QuizPage
  * Story 15.6: Quiz Container & State Management
- * Updated for Story 15.8: Backend API integration
+ * Story 15.8: Backend API integration
+ * Story 15.11: Renamed from DailyReviewQuiz, moved to pages/
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { DailyReviewQuiz } from "../DailyReviewQuiz";
+import { QuizPage } from "../QuizPage";
 
 // Mock response data
 const MOCK_DUE_WORDS = [
@@ -64,7 +65,7 @@ vi.mock("../../components", () => ({
   ),
 }));
 
-describe("DailyReviewQuiz", () => {
+describe("QuizPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: successful API response
@@ -76,7 +77,7 @@ describe("DailyReviewQuiz", () => {
   });
 
   it("shows first question after initialization", async () => {
-    render(<DailyReviewQuiz />);
+    render(<QuizPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId("quiz-card")).toBeInTheDocument();
@@ -86,7 +87,7 @@ describe("DailyReviewQuiz", () => {
   });
 
   it("displays progress bar with correct count", async () => {
-    render(<DailyReviewQuiz />);
+    render(<QuizPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId("quiz-progress-bar")).toBeInTheDocument();
@@ -96,7 +97,7 @@ describe("DailyReviewQuiz", () => {
   });
 
   it("shows feedback after answering", async () => {
-    render(<DailyReviewQuiz />);
+    render(<QuizPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId("quiz-card")).toBeInTheDocument();
@@ -111,7 +112,7 @@ describe("DailyReviewQuiz", () => {
   });
 
   it("verifies quiz structure for completion", () => {
-    render(<DailyReviewQuiz />);
+    render(<QuizPage />);
 
     // Verify completion UI doesn't appear during initial quiz state
     expect(screen.queryByText("Quiz Complete! 🎉")).not.toBeInTheDocument();
@@ -119,7 +120,7 @@ describe("DailyReviewQuiz", () => {
   });
 
   it("has all required UI elements", async () => {
-    render(<DailyReviewQuiz />);
+    render(<QuizPage />);
 
     await waitFor(() => {
       // Progress bar, quiz card, and input should all be present

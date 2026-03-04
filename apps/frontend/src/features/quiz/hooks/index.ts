@@ -13,6 +13,5 @@ export type {
   TestResultResponse,
   MysteryBox,
   Badge,
-  FeedbackRequest,
-  FeedbackResponse,
 } from "./useQuizAPI";
+export type { FeedbackRequest, FeedbackResponse } from "./useAIFeedback";

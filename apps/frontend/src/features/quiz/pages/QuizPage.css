@@ -1,10 +1,13 @@
 /**
- * DailyReviewQuiz Container Styles
- * Epic 19: State Refactor - Simplified container styles
- * Story 15.10: Quiz UX Polish - CSS Cleanup
- *
- * Minimal container styles for quiz wrapper.
- * Layout-specific styles moved to ExamLayout.css and ResultsLayout.css.
+ * QuizPage.css
+ * Styles for quiz session page container and layout
+ * 
+ * Story 15.6: Original quiz container styles
+ * Story 15.10: Quiz UX Polish - CSS Cleanup, layout stability
+ * Story 15.11: Moved from containers/ to pages/ folder
+ * 
+ * Note: Class names preserved as .dailyReview* for backward compatibility
+ * (avoiding cascading CSS updates across multiple components)
  */
 
 .dailyReviewContainer {

@@ -19,10 +19,12 @@
  * Provides button to review words again.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuizState, useQuizActions } from "../../contexts";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { formatRelativeTime } from "../../utils/dateFormatting";
+import { getLastQuizResult, clearQuizResult } from "../../utils/quizStorage";
 import { StatsGrid, ResultsTable, BadgesDisplay, LeechWarning } from "../results";
 import { Button } from "../../../../components";
 import "./ResultsLayout.css";
@@ -33,6 +35,7 @@ function ResultsLayout() {
   // Read all state from context
   const { answers, totalXP, mysteryBox, newBadges, freezeAwarded } = useQuizState();
   const { handleRetry } = useQuizActions();
+  const navigate = useNavigate();
 
   const correctCount = answers.filter((a) => a.correct).length;
   const totalCount = answers.length;
@@ -44,8 +47,32 @@ function ResultsLayout() {
   // Story 15.9: Mystery box modal state
   const [showMysteryBox, setShowMysteryBox] = useState(!!mysteryBox);
 
+  // Story 15.11: Get last quiz result for Review Mistakes feature
+  const [lastResult, setLastResult] = useState(getLastQuizResult());
+
+  useEffect(() => {
+    // Refresh last result when component mounts
+    setLastResult(getLastQuizResult());
+  }, []);
+
   // Identify leeches (words with lapseCount >= 5)
   const leeches = answers.filter((a) => (a.lapseCount || 0) >= 5);
+
+  // Story 15.11: Handler for Review Mistakes button
+  const handleReviewMistakes = () => {
+    if (!lastResult || lastResult.incorrectWords.length === 0) return;
+
+    const wordIds = lastResult.incorrectWords.map((w) => w.wordId).join(",");
+    navigate(`/learn/quiz?wordIds=${wordIds}&mode=review`);
+  };
+
+  // Story 15.11: Handler for New Quiz button
+  const handleNewQuiz = () => {
+    clearQuizResult();
+    handleRetry(); // This already reloads due words
+  };
+
+  const hasIncorrectWords = lastResult && lastResult.incorrectWords.length > 0;
 
   // Format date helper (Story 15.10: Now using relative time)
   const formatDate = (isoDate?: string) => {
@@ -75,9 +102,17 @@ function ResultsLayout() {
       {/* Detailed Results Table (Story 15.10: Removed Status column, added red borders) */}
       <ResultsTable answers={answers} formatDate={formatDate} />
 
-      <Button variant="primary" onClick={handleRetry}>
-        Review Again
-      </Button>
+      {/* Story 15.11: Action buttons for next steps */}
+      <div className="quizActions flex-row-center" style={{ gap: "1rem", marginTop: "1.5rem" }}>
+        {hasIncorrectWords && (
+          <Button variant="secondary" onClick={handleReviewMistakes}>
+            Review Mistakes ({lastResult.incorrectWords.length})
+          </Button>
+        )}
+        <Button variant="primary" onClick={handleNewQuiz}>
+          New Quiz
+        </Button>
+      </div>
 
       {/* Story 15.9: Mystery Box Modal */}
       {mysteryBox && (

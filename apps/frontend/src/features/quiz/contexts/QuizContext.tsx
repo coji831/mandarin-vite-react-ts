@@ -36,6 +36,7 @@ import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
 import { QuizQuestion, QuizAnswer } from "../types/QuizTypes";
 import { createInterleavedQuestions } from "../utils/interleaving";
 import { validatePinyinAnswer } from "../utils/validation";
+import { saveQuizResult } from "../utils/quizStorage";
 import type { MysteryBox } from "../hooks/useQuizAPI";
 import type { Badge } from "../../gamification/types/GamificationTypes";
 
@@ -175,6 +176,13 @@ export function QuizProvider({ children }: QuizProviderProps) {
   useEffect(() => {
     loadDueWords();
   }, [loadDueWords]);
+
+  // Story 15.11: Save quiz results when quiz completes
+  useEffect(() => {
+    if (state.phase === "COMPLETE" && state.answers.length > 0) {
+      saveQuizResult(state.answers);
+    }
+  }, [state.phase, state.answers]);
 
   // Reset hint and answer input when question changes
   useEffect(() => {

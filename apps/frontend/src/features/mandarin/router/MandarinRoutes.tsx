@@ -4,14 +4,15 @@
  * Defines the routing for the Learn section (/learn/* routes):
  * - Uses LearnLayout for shared layout and nested routes with sub-navbar
  * - Redirects root to vocabulary list
- * - /vocabulary-list: VocabularyListPage (list selection and search)
- * - /flashcards/:listId: FlashCardPage (study flashcards for selected vocabulary list)
- * - /quiz: QuizPage (quiz feature - Story 15.5+)
- * - /review: ReviewPage (spaced repetition review)
+ * - /vocabulary-list: VocabularyListPage (mandarin-specific)
+ * - /flashcards/:listId: FlashCardPage (mandarin-specific)
+ * - /quiz: QuizPage (feature-owned by quiz feature)
+ * - /review: ReviewPage (cross-cutting)
  * - /basic: Basic (reference guide)
  *
  * Updated for Epic 15: Navigation redesign with two-level navbar
  * Phase 3: Routes migrated from /mandarin to /learn
+ * Story 15.11: Updated quiz import to feature-owned pages/
  * Follows project conventions in docs/guides/conventions.md
  */
 import { Navigate, Route, Routes } from "react-router-dom";
@@ -19,7 +20,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Basic } from "../components/Basic";
 import { FlashCardPage, VocabularyListPage } from "../pages";
 import { LearnLayout } from "../../../layouts/LearnLayout";
-import { QuizPage } from "../../../pages/QuizPage";
+import { QuizPage } from "../../quiz/pages";
 import { ReviewPage } from "../../../pages/ReviewPage";
 
 export function MandarinRoutes() {
