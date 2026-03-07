@@ -18,10 +18,17 @@
  * - QUESTION: Shows exam layout with question + answer section
  * - ANSWER_FEEDBACK: Shows feedback section with AI explanation
  * - COMPLETE: Shows results layout with stats, badges, XP
+ * - DAILY_COMPLETE: Shows previous results when quiz already completed today
  */
 
 import { QuizProvider, useQuizState, useQuizActions } from "../contexts";
-import { ExamLayout, ResultsLayout, ErrorScreen, LoadingScreen } from "../components";
+import {
+  ExamLayout,
+  ResultsLayout,
+  ErrorScreen,
+  LoadingScreen,
+  EmptyStateScreen,
+} from "../components";
 import "./QuizPage.css";
 
 export function QuizPage() {
@@ -37,7 +44,7 @@ export function QuizPage() {
 }
 
 function QuizRouter() {
-  const { phase, error } = useQuizState();
+  const { phase, error, sessionSummary, expiresAt, noDueWordsMessage } = useQuizState();
   const { handleRetry } = useQuizActions();
 
   switch (phase) {
@@ -50,6 +57,14 @@ function QuizRouter() {
     case "QUESTION":
     case "ANSWER_FEEDBACK":
       return <ExamLayout />;
+
+    case "DAILY_COMPLETE":
+      return (
+        <ResultsLayout isDailyComplete={true} summary={sessionSummary} expiresAt={expiresAt} />
+      );
+
+    case "NO_DUE_WORDS":
+      return <EmptyStateScreen message={noDueWordsMessage} />;
 
     case "COMPLETE":
       return <ResultsLayout />;

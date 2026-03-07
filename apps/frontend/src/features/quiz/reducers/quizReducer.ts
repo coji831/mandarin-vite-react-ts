@@ -3,16 +3,22 @@
  * Story 15.6: Quiz Container & State Management
  * Story 15.8: Added ERROR phase and error handling
  * Story 15.9: Added gamification data capture (XP, mystery boxes, badges, freezes)
+ * Story 15.11 Phase 8: Added UI state consolidation (answerValue, showHint, aiFeedback, sessionId)
  *
  * Manages quiz flow state machine:
  * LOADING → QUESTION → ANSWER_FEEDBACK → COMPLETE | ERROR
  */
 
-import { QuizQuestion, QuizAnswer } from "../types/QuizTypes";
-import type { MysteryBox } from "../hooks/useQuizAPI";
-import type { Badge } from "../../gamification/types/GamificationTypes";
+import { QuizQuestion, QuizAnswer, MysteryBox, Badge, QuizSessionSummary } from "../types";
 
-export type QuizPhase = "LOADING" | "QUESTION" | "ANSWER_FEEDBACK" | "COMPLETE" | "ERROR";
+export type QuizPhase =
+  | "LOADING"
+  | "QUESTION"
+  | "ANSWER_FEEDBACK"
+  | "COMPLETE"
+  | "DAILY_COMPLETE"
+  | "NO_DUE_WORDS"
+  | "ERROR";
 
 export interface QuizState {
   phase: QuizPhase;
@@ -25,16 +31,40 @@ export interface QuizState {
   mysteryBox?: MysteryBox; // Random reward (only one per quiz session)
   newBadges: Badge[]; // Newly earned badges during this quiz
   freezeAwarded: boolean; // True if a freeze was awarded during quiz
+  // Story 15.11 Phase 8: UI state consolidation
+  sessionId: string | null; // Backend quiz session ID
+  answerValue: string; // Current answer input value
+  showHint: boolean; // Whether hint is visible
+  aiFeedback: string | null; // AI-generated feedback for last answer
+  feedbackLoading: boolean; // Loading state for AI feedback
+  // Daily quiz status
+  sessionSummary: QuizSessionSummary | null; // Backend-calculated session summary (for daily complete)
+  expiresAt: string | null; // Midnight expiration timestamp for daily quiz reset
+  // No due words message
+  noDueWordsMessage?: string; // Celebration message when all caught up
 }
 
 export type QuizAction =
-  | { type: "INITIALIZE_QUIZ"; questions: QuizQuestion[] }
+  | { type: "INITIALIZE_QUIZ"; questions: QuizQuestion[]; sessionId: string }
   | { type: "SUBMIT_ANSWER"; answer: QuizAnswer }
   | { type: "UPDATE_ANSWER_METADATA"; wordId: string; nextReview: string; lapseCount: number } // Story 15.8: Merge backend response
   | { type: "ADD_XP_EARNED"; xp: number } // Story 15.9: Accumulate XP from backend
   | { type: "SET_MYSTERY_BOX"; mysteryBox: MysteryBox } // Story 15.9: Store mystery box reward
   | { type: "ADD_NEW_BADGES"; badges: Badge[] } // Story 15.9: Collect newly earned badges
   | { type: "SET_FREEZE_AWARDED"; awarded: boolean } // Story 15.9: Track if freeze was awarded
+  | { type: "SET_SESSION_ID"; sessionId: string } // Story 15.11 Phase 8: Store session ID
+  | { type: "SET_ANSWER_VALUE"; value: string } // Story 15.11 Phase 8: Update answer input
+  | { type: "SET_SHOW_HINT"; show: boolean } // Story 15.11 Phase 8: Toggle hint visibility
+  | { type: "SET_AI_FEEDBACK"; feedback: string | null } // Story 15.11 Phase 8: Set AI feedback
+  | { type: "SET_FEEDBACK_LOADING"; loading: boolean } // Story 15.11 Phase 8: Set feedback loading state
+  | { type: "CLEAR_UI_STATE" } // Story 15.11 Phase 8: Clear UI state between questions
+  | {
+      type: "SHOW_DAILY_COMPLETE_RESULTS";
+      sessionId: string;
+      summary: QuizSessionSummary;
+      expiresAt: string;
+    } // Daily quiz already completed
+  | { type: "SHOW_NO_DUE_WORDS"; message: string } // Flow 1.2: No due words (all caught up)
   | { type: "NEXT_QUESTION" }
   | { type: "COMPLETE_QUIZ" }
   | { type: "SET_ERROR"; error: string } // Story 15.8: Set error state
@@ -50,6 +80,15 @@ export const initialState: QuizState = {
   mysteryBox: undefined,
   newBadges: [],
   freezeAwarded: false,
+  // Story 15.11 Phase 8: UI state defaults
+  sessionId: null,
+  answerValue: "",
+  showHint: false,
+  aiFeedback: null,
+  feedbackLoading: false,
+  // Daily quiz status
+  sessionSummary: null,
+  expiresAt: null,
 };
 
 export function quizReducer(state: QuizState, action: QuizAction): QuizState {
@@ -59,6 +98,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         ...state,
         phase: "QUESTION",
         questions: action.questions,
+        sessionId: action.sessionId,
         currentIndex: 0,
         answers: [],
         error: undefined, // Clear any previous errors
@@ -67,6 +107,11 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         mysteryBox: undefined,
         newBadges: [],
         freezeAwarded: false,
+        // Reset UI state
+        answerValue: "",
+        showHint: false,
+        aiFeedback: null,
+        feedbackLoading: false,
       };
 
     case "SUBMIT_ANSWER":
@@ -115,10 +160,67 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       };
 
     // Story 15.9: Track if freeze was awarded
-    case "SET_FREEZE_AWARDED":
+    // Story 15.11 Phase 8: UI state management actions
+    case "SET_SESSION_ID":
       return {
         ...state,
-        freezeAwarded: action.awarded || state.freezeAwarded,
+        sessionId: action.sessionId,
+      };
+
+    case "SET_ANSWER_VALUE":
+      return {
+        ...state,
+        answerValue: action.value,
+      };
+
+    case "SET_SHOW_HINT":
+      return {
+        ...state,
+        showHint: action.show,
+      };
+
+    case "SET_AI_FEEDBACK":
+      return {
+        ...state,
+        aiFeedback: action.feedback,
+      };
+
+    case "SET_FEEDBACK_LOADING":
+      return {
+        ...state,
+        feedbackLoading: action.loading,
+      };
+
+    case "CLEAR_UI_STATE":
+      return {
+        ...state,
+        answerValue: "",
+        showHint: false,
+        aiFeedback: null,
+        feedbackLoading: false,
+      };
+
+    case "SHOW_DAILY_COMPLETE_RESULTS":
+      return {
+        ...state,
+        phase: "DAILY_COMPLETE",
+        sessionId: action.sessionId,
+        sessionSummary: action.summary,
+        expiresAt: action.expiresAt,
+        currentIndex: action.summary.totalQuestions,
+        // Clear questions since we're showing previous results
+        questions: [],
+        answers: [],
+      };
+
+    case "SHOW_NO_DUE_WORDS":
+      return {
+        ...state,
+        phase: "NO_DUE_WORDS",
+        noDueWordsMessage: action.message,
+        questions: [],
+        answers: [],
+        error: undefined,
       };
 
     case "NEXT_QUESTION": {
@@ -130,6 +232,11 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         ...state,
         phase: "QUESTION",
         currentIndex: nextIndex,
+        // Clear UI state for next question
+        answerValue: "",
+        showHint: false,
+        aiFeedback: null,
+        feedbackLoading: false,
       };
     }
 

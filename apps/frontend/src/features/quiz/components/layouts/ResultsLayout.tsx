@@ -6,6 +6,7 @@
  * Story 15.9: Integrated backend XP, mystery box, and badge rewards
  * Story 15.10: UI polish - relative time, updated wording, red borders for incorrect
  * Epic 19: State Refactor - Reads from context (zero props)
+ * Story 15.11: Added daily quiz complete view with countdown timer
  *
  * Layout orchestrator for quiz completion phase.
  * Displays quiz results with accuracy metrics and gamification rewards.
@@ -16,6 +17,7 @@
  * - Leech alert (struggling words warning)
  * - Results table (detailed word-by-word breakdown)
  * - Mystery box modal (7-day streak rewards)
+ * - Countdown timer (daily quiz complete only)
  * Provides button to review words again.
  */
 
@@ -25,24 +27,51 @@ import { useQuizState, useQuizActions } from "../../contexts";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { formatRelativeTime } from "../../utils/dateFormatting";
 import { getLastQuizResult, clearQuizResult } from "../../utils/quizStorage";
-import { StatsGrid, ResultsTable, BadgesDisplay, LeechWarning } from "../results";
+import {
+  StatsGrid,
+  ResultsTable,
+  BadgesDisplay,
+  LeechWarning,
+  NextQuizCountdown,
+} from "../results";
 import { Button } from "../../../../components";
+import type { QuizSessionSummary } from "../../types";
 import "./ResultsLayout.css";
 
 export { ResultsLayout };
 
-function ResultsLayout() {
+interface ResultsLayoutProps {
+  isDailyComplete?: boolean;
+  summary?: QuizSessionSummary | null;
+  expiresAt?: string | null;
+}
+
+function ResultsLayout({
+  isDailyComplete = false,
+  summary: propSummary,
+  expiresAt,
+}: ResultsLayoutProps = {}) {
   // Read all state from context
-  const { answers, totalXP, mysteryBox, newBadges, freezeAwarded } = useQuizState();
+  const {
+    answers,
+    totalXP,
+    mysteryBox,
+    newBadges,
+    freezeAwarded,
+    sessionSummary: contextSummary,
+  } = useQuizState();
   const { handleRetry } = useQuizActions();
   const navigate = useNavigate();
 
-  const correctCount = answers.filter((a) => a.correct).length;
-  const totalCount = answers.length;
-  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+  // Use prop summary for daily complete, context summary for regular complete
+  const sessionSummary = isDailyComplete ? propSummary : contextSummary;
 
-  // Story 15.9: Use backend XP source with fallback (Option A)
-  const xpEarned = totalXP !== undefined ? totalXP : correctCount * 10;
+  // Story 15.11: Use backend-calculated metrics from session summary
+  const correctCount = sessionSummary?.correctCount ?? answers.filter((a) => a.correct).length;
+  const totalCount = sessionSummary?.totalAnswered ?? answers.length;
+  const accuracy = sessionSummary?.accuracyRate ?? 0;
+  const xpEarned = sessionSummary?.totalXP ?? totalXP ?? 0;
+  const leeches = sessionSummary?.leechWords ?? [];
 
   // Story 15.9: Mystery box modal state
   const [showMysteryBox, setShowMysteryBox] = useState(!!mysteryBox);
@@ -54,9 +83,6 @@ function ResultsLayout() {
     // Refresh last result when component mounts
     setLastResult(getLastQuizResult());
   }, []);
-
-  // Identify leeches (words with lapseCount >= 5)
-  const leeches = answers.filter((a) => (a.lapseCount || 0) >= 5);
 
   // Story 15.11: Handler for Review Mistakes button
   const handleReviewMistakes = () => {
@@ -73,6 +99,7 @@ function ResultsLayout() {
   };
 
   const hasIncorrectWords = lastResult && lastResult.incorrectWords.length > 0;
+  const [countdownExpired, setCountdownExpired] = useState(false);
 
   // Format date helper (Story 15.10: Now using relative time)
   const formatDate = (isoDate?: string) => {
@@ -80,9 +107,27 @@ function ResultsLayout() {
     return formatRelativeTime(isoDate);
   };
 
+  // Handler for countdown expiration
+  const handleCountdownExpire = () => {
+    setCountdownExpired(true);
+  };
+
   return (
     <div className="quizCompleteContainer flex-col-center text-center">
-      <h2 className="completeTitle">Quiz Complete! 🎉</h2>
+      {/* Daily Complete Banner */}
+      {isDailyComplete && (
+        <div className="daily-complete-banner">
+          <h2 className="completeTitle">Today's Quiz Complete! ✅</h2>
+          <p className="daily-complete-message">
+            You've finished today's quiz. Review your results below or come back tomorrow for a new
+            quiz!
+          </p>
+          <NextQuizCountdown expiresAt={expiresAt || null} onExpire={handleCountdownExpire} />
+        </div>
+      )}
+
+      {/* Regular Complete Title */}
+      {!isDailyComplete && <h2 className="completeTitle">Quiz Complete! 🎉</h2>}
 
       <StatsGrid
         correctCount={correctCount}
@@ -109,9 +154,15 @@ function ResultsLayout() {
             Review Mistakes ({lastResult.incorrectWords.length})
           </Button>
         )}
-        <Button variant="primary" onClick={handleNewQuiz}>
-          New Quiz
-        </Button>
+        {isDailyComplete ? (
+          <Button variant="primary" disabled={!countdownExpired} onClick={handleNewQuiz}>
+            {countdownExpired ? "New Quiz" : "Next Quiz"}
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={handleNewQuiz}>
+            New Quiz
+          </Button>
+        )}
       </div>
 
       {/* Story 15.9: Mystery Box Modal */}

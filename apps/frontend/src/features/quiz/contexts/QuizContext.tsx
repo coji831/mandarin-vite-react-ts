@@ -1,23 +1,46 @@
 /**
  * Quiz Context - Centralized State Management
  * Epic 19: State Refactor
+ * Story 15.11 Phase 8: Backend-centric quiz session architecture
+ * Story 15.11 Part B: Business logic extraction to hooks and services
  *
  * Provides centralized state management for the entire quiz flow,
  * eliminating props drilling by exposing state and actions through context.
  *
+ * Architecture (Part B Refactor):
+ * - Pure orchestrator pattern (delegates to hooks and services)
+ * - useQuizSession: Session initialization and lifecycle
+ * - useAnswerSubmission: Answer submission orchestration
+ * - useGamificationCapture: Reward processing (XP, badges, mystery box)
+ * - quizTransformers: Data transformation (backend ↔ frontend formats)
+ *
  * State includes:
- * - Quiz flow state (phase, questions, currentIndex, answers)
- * - UI state (answerValue, showHint)
- * - AI feedback state (aiFeedback, feedbackLoading)
+ * - Quiz flow state (phase, questions, currentIndex, answers, sessionId)
+ * - UI state (answerValue, showHint, aiFeedback, feedbackLoading)
  * - Gamification data (totalXP, mysteryBox, newBadges, freezeAwarded)
  *
  * Actions include:
- * - handleAnswer: Submit answer and trigger backend save + AI feedback
+ * - handleAnswer: Submit answer to backend session for validation
  * - handleNext: Advance to next question
- * - handleRetry: Reset quiz and reload due words
+ * - handleRetry: Reset quiz and start new session
  * - setAnswerValue: Update type input value
  * - toggleHint: Show/hide hint overlay
- * - getCorrectAnswer: Get correct answer for current question
+ *
+ * Phase 8 Changes:
+ * - Removed business logic (validation, correct answer calculation) - now backend
+ * - Replaced loadDueWords() with startQuizSession() - backend generates questions
+ * - Replaced handleAnswer() logic with submitAnswer() API call
+ * - Consolidated UI state into reducer (answerValue, showHint, aiFeedback, feedbackLoading)
+ * - Questions come from backend pre-sanitized (no correct answers exposed)
+ *
+ * Part B Changes (Clean Architecture):
+ * - Reduced from 350 → 246 lines (30% reduction)
+ * - Extracted session logic to useQuizSession hook
+ * - Extracted answer submission to useAnswerSubmission hook
+ * - Extracted gamification to useGamificationCapture hook
+ * - Extracted transformers to quizTransformers service
+ * - Removed AI feedback orchestration (now backend auto-generates)
+ * - AI feedback comes from backend with 3-second timeout built-in
  */
 
 import {
@@ -25,20 +48,17 @@ import {
   useContext,
   useReducer,
   useRef,
-  useState,
   useEffect,
   useCallback,
   ReactNode,
 } from "react";
-import { useFetchDueWords, useSaveTestResult } from "../hooks/useQuizAPI";
-import { useGenerateFeedback } from "../hooks/useAIFeedback";
 import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
-import { QuizQuestion, QuizAnswer } from "../types/QuizTypes";
-import { createInterleavedQuestions } from "../utils/interleaving";
-import { validatePinyinAnswer } from "../utils/validation";
+import { QuizQuestion, QuizAnswer, MysteryBox, Badge, QuizSessionSummary } from "../types";
 import { saveQuizResult } from "../utils/quizStorage";
-import type { MysteryBox } from "../hooks/useQuizAPI";
-import type { Badge } from "../../gamification/types/GamificationTypes";
+import { useGamificationCapture } from "../hooks/useGamificationCapture";
+import { useAnswerSubmission } from "../hooks/useAnswerSubmission";
+import { useQuizSession } from "../hooks/useQuizSession";
+import { useSessionSummary } from "../hooks/useSessionSummary";
 
 // ============================================================================
 // Context Types
@@ -51,15 +71,16 @@ interface QuizStateContext {
   currentIndex: number;
   answers: QuizAnswer[];
   error?: string;
+  sessionId: string | null;
 
   // Derived state
   currentQuestion: QuizQuestion | null;
 
-  // UI state
+  // UI state (from reducer)
   answerValue: string;
   showHint: boolean;
 
-  // AI feedback state
+  // AI feedback state (from reducer)
   aiFeedback: string | null;
   feedbackLoading: boolean;
 
@@ -68,6 +89,11 @@ interface QuizStateContext {
   mysteryBox?: MysteryBox;
   newBadges: Badge[];
   freezeAwarded: boolean;
+
+  // Session summary (backend-calculated metrics)
+  sessionSummary: QuizSessionSummary | null;
+  expiresAt: string | null;
+  noDueWordsMessage?: string;
 }
 
 interface QuizActionsContext {
@@ -80,10 +106,6 @@ interface QuizActionsContext {
   // UI actions
   setAnswerValue: (value: string) => void;
   toggleHint: () => void;
-
-  // Utility
-  getCorrectAnswer: (question: QuizQuestion) => string;
-  validateAnswer: (userAnswer: string, question: QuizQuestion) => boolean;
 }
 
 // ============================================================================
@@ -122,73 +144,58 @@ interface QuizProviderProps {
 }
 
 export function QuizProvider({ children }: QuizProviderProps) {
-  // Core state (reducer)
+  // Core state (reducer) - now includes UI state
   const [state, dispatch] = useReducer(quizReducer, initialState);
-
-  // API hooks
-  const { fetchDueWords } = useFetchDueWords();
-  const { saveTestResult } = useSaveTestResult();
-  const { generateFeedback } = useGenerateFeedback();
 
   // Refs
   const questionStartTime = useRef<number>(0);
 
-  // UI state
-  const [aiFeedback, setAiFeedback] = useState<string | null>(null);
-  const [feedbackLoading, setFeedbackLoading] = useState(false);
-  const [showHint, setShowHint] = useState(false);
-  const [answerValue, setAnswerValue] = useState("");
+  // Derived state (computed once for hooks)
+  const currentQuestion =
+    state.questions.length > 0 && state.currentIndex < state.questions.length
+      ? state.questions[state.currentIndex]
+      : null;
+
+  // Gamification capture hook (Story 15.11 Part B Phase 3)
+  // Hook invoked for side effects (captures gamification data in reducer)
+  useGamificationCapture(dispatch);
+
+  // Answer submission hook (Story 15.11 Part B Phase 4)
+  const { submitAnswer } = useAnswerSubmission({
+    sessionId: state.sessionId,
+    currentQuestion,
+    questionStartTime,
+    dispatch,
+  });
+
+  // Quiz session hook (Story 15.11 Part B Phase 5)
+  const { startSession } = useQuizSession({
+    dispatch,
+    questionStartTime,
+  });
 
   // ============================================================================
   // Effects
   // ============================================================================
 
-  // Load due words on mount
-  const loadDueWords = useCallback(async () => {
-    try {
-      const response = await fetchDueWords();
+  // Start quiz session on mount (Story 15.11 Part B Phase 5: delegated to useQuizSession hook)
+  useEffect(() => {
+    startSession();
+  }, [startSession]);
 
-      if (response.words.length === 0) {
-        dispatch({
-          type: "SET_ERROR",
-          error: "No words due for review today. Great job staying on track!",
-        });
-        return;
-      }
+  // Story 15.11: Fetch session summary from backend when quiz completes
+  // Backend provides pre-calculated metrics (accuracy, XP, leech detection)
+  const { summary: sessionSummary } = useSessionSummary(
+    state.phase === "COMPLETE" && state.sessionId ? state.sessionId : null,
+    true, // autoFetch when sessionId available
+  );
 
-      // Map backend DueWord format to frontend format
-      const words = response.words.map((w) => ({
-        id: w.id,
-        chinese: w.simplified,
-        pinyin: w.pinyin,
-        english: w.english,
-      }));
-
-      const questions = createInterleavedQuestions(words);
-      dispatch({ type: "INITIALIZE_QUIZ", questions });
-      questionStartTime.current = Date.now();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to load quiz";
-      dispatch({ type: "SET_ERROR", error: errorMessage });
+  // Save quiz results to localStorage when summary is available
+  useEffect(() => {
+    if (state.phase === "COMPLETE" && sessionSummary && state.answers.length > 0) {
+      saveQuizResult(state.answers, sessionSummary);
     }
-  }, [fetchDueWords]);
-
-  useEffect(() => {
-    loadDueWords();
-  }, [loadDueWords]);
-
-  // Story 15.11: Save quiz results when quiz completes
-  useEffect(() => {
-    if (state.phase === "COMPLETE" && state.answers.length > 0) {
-      saveQuizResult(state.answers);
-    }
-  }, [state.phase, state.answers]);
-
-  // Reset hint and answer input when question changes
-  useEffect(() => {
-    setShowHint(false);
-    setAnswerValue("");
-  }, [state.currentIndex]);
+  }, [state.phase, sessionSummary, state.answers]);
 
   // ============================================================================
   // Actions
@@ -197,159 +204,38 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const handleNext = useCallback(() => {
     dispatch({ type: "NEXT_QUESTION" });
     questionStartTime.current = Date.now();
-    setAiFeedback(null);
-    setAnswerValue("");
   }, []);
 
   const handleRetry = useCallback(() => {
     dispatch({ type: "RESET_QUIZ" });
-    loadDueWords();
-  }, [loadDueWords]);
+    startSession();
+  }, [startSession]);
 
-  const getCorrectAnswer = useCallback((question: QuizQuestion): string => {
-    switch (question.mode) {
-      case "type_pinyin":
-        return question.pinyin;
-      case "type_character":
-        return question.word;
-      case "multiple_choice":
-        return question.english;
-      default:
-        return "";
-    }
-  }, []);
-
-  const validateAnswer = useCallback((userAnswer: string, question: QuizQuestion): boolean => {
-    switch (question.mode) {
-      case "multiple_choice":
-        return userAnswer.toLowerCase() === question.english.toLowerCase();
-      case "type_pinyin":
-        return validatePinyinAnswer(userAnswer, question.pinyin);
-      case "type_character":
-        return userAnswer === question.word;
-      default:
-        return false;
-    }
-  }, []);
-
+  // Story 15.11 Part B Phase 4: Delegate to useAnswerSubmission hook
   const handleAnswer = useCallback(
     async (userAnswer: string) => {
-      const currentQuestion = state.questions[state.currentIndex];
-      const correct = validateAnswer(userAnswer, currentQuestion);
-      const timeSpentMs = Date.now() - questionStartTime.current;
-
-      // Clear previous AI feedback
-      setAiFeedback(null);
-      setFeedbackLoading(false);
-
-      // Optimistic UI: Show feedback immediately with word details
-      dispatch({
-        type: "SUBMIT_ANSWER",
-        answer: {
-          wordId: currentQuestion.wordId,
-          word: currentQuestion.word,
-          pinyin: currentQuestion.pinyin,
-          english: currentQuestion.english,
-          questionType: currentQuestion.mode,
-          userAnswer,
-          correct,
-          timestamp: new Date(),
-        },
-      });
-
-      // Generate AI feedback for incorrect answers (async, non-blocking)
-      if (!correct) {
-        setFeedbackLoading(true);
-        generateFeedback({
-          wordId: currentQuestion.wordId,
-          userAnswer,
-          correctAnswer: getCorrectAnswer(currentQuestion),
-          questionType: currentQuestion.mode,
-        })
-          .then((response) => {
-            setAiFeedback(response.explanation);
-            setFeedbackLoading(false);
-          })
-          .catch((err) => {
-            console.error("AI feedback generation failed:", err);
-            setFeedbackLoading(false);
-          });
-      }
-
-      // Save to backend and capture gamification data
-      try {
-        const result = await saveTestResult({
-          wordId: currentQuestion.wordId,
-          correct,
-          questionType: currentQuestion.mode,
-          timeSpentMs,
-        });
-
-        // Update answer with backend metadata
-        dispatch({
-          type: "UPDATE_ANSWER_METADATA",
-          wordId: currentQuestion.wordId,
-          nextReview: result.nextReviewDate,
-          lapseCount: result.lapseCount,
-        });
-
-        // Capture gamification data
-        if (result.xpEarned !== undefined) {
-          dispatch({ type: "ADD_XP_EARNED", xp: result.xpEarned });
-        }
-
-        if (result.mysteryBox) {
-          dispatch({ type: "SET_MYSTERY_BOX", mysteryBox: result.mysteryBox });
-        }
-
-        if (result.newBadges && result.newBadges.length > 0) {
-          const convertedBadges = result.newBadges.map((apiBadge) => ({
-            id: apiBadge.id,
-            name: apiBadge.name,
-            description: `Maintain a ${apiBadge.streakRequired}-day streak`,
-            icon: apiBadge.icon,
-            streakRequired: apiBadge.streakRequired,
-            earnedDate: new Date(),
-          }));
-
-          dispatch({ type: "ADD_NEW_BADGES", badges: convertedBadges });
-        }
-
-        if (result.freezeAwarded !== undefined) {
-          dispatch({ type: "SET_FREEZE_AWARDED", awarded: result.freezeAwarded });
-        }
-      } catch (err) {
-        console.error("Failed to save test result:", err);
-      }
+      await submitAnswer(userAnswer);
     },
-    [
-      state.questions,
-      state.currentIndex,
-      validateAnswer,
-      getCorrectAnswer,
-      generateFeedback,
-      saveTestResult,
-    ],
+    [submitAnswer],
   );
 
   const handleSubmitAnswer = useCallback(() => {
-    if (answerValue.trim().length === 0) return;
-    handleAnswer(answerValue.trim().toLowerCase());
-    setAnswerValue("");
-  }, [answerValue, handleAnswer]);
+    if (state.answerValue.trim().length === 0) return;
+    handleAnswer(state.answerValue.trim().toLowerCase());
+    dispatch({ type: "SET_ANSWER_VALUE", value: "" });
+  }, [state.answerValue, handleAnswer]);
+
+  const setAnswerValue = useCallback((value: string) => {
+    dispatch({ type: "SET_ANSWER_VALUE", value });
+  }, []);
 
   const toggleHint = useCallback(() => {
-    setShowHint((prev) => !prev);
-  }, []);
+    dispatch({ type: "SET_SHOW_HINT", show: !state.showHint });
+  }, [state.showHint]);
 
   // ============================================================================
   // Context Values
   // ============================================================================
-
-  const currentQuestion =
-    state.questions.length > 0 && state.currentIndex < state.questions.length
-      ? state.questions[state.currentIndex]
-      : null;
 
   const stateValue: QuizStateContext = {
     phase: state.phase,
@@ -357,15 +243,19 @@ export function QuizProvider({ children }: QuizProviderProps) {
     currentIndex: state.currentIndex,
     answers: state.answers,
     error: state.error,
+    sessionId: state.sessionId,
     currentQuestion,
-    answerValue,
-    showHint,
-    aiFeedback,
-    feedbackLoading,
+    answerValue: state.answerValue,
+    showHint: state.showHint,
+    aiFeedback: state.aiFeedback,
+    feedbackLoading: state.feedbackLoading,
     totalXP: state.totalXP,
     mysteryBox: state.mysteryBox,
     newBadges: state.newBadges,
     freezeAwarded: state.freezeAwarded,
+    sessionSummary,
+    expiresAt: state.expiresAt,
+    noDueWordsMessage: state.noDueWordsMessage,
   };
 
   const actionsValue: QuizActionsContext = {
@@ -375,8 +265,6 @@ export function QuizProvider({ children }: QuizProviderProps) {
     handleRetry,
     setAnswerValue,
     toggleHint,
-    getCorrectAnswer,
-    validateAnswer,
   };
 
   return (

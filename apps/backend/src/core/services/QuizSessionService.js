@@ -1,0 +1,492 @@
+/**
+ * QuizSessionService (Core Layer)
+ * Business logic for quiz session management with server-side validation
+ * Story 15.11 Phase 8: Backend-centric quiz architecture for security and consistency
+ *
+ * Responsibilities:
+ * - Create quiz sessions with interleaved question generation
+ * - Validate answers server-side (prevents client-side cheating)
+ * - Update progress and gamification after each answer
+ * - Manage session lifecycle (expiration, completion)
+ * 
+ * Clean Architecture: Application Layer Service
+ * Orchestrates domain entities and infrastructure
+
+ */
+
+import { QuizSession } from "../domain/entities/QuizSession.js";
+import {
+  calculateSessionSummary,
+  calculateIsLeech,
+} from "../domain/services/SessionSummaryCalculator.js";
+import { getEndOfDay } from "../domain/constants/BusinessRules.js";
+
+export class QuizSessionService {
+  constructor(
+    sessionRepository,
+    learningService,
+    gamificationService,
+    vocabularyRepository,
+    aiFeedbackService = null,
+  ) {
+    this.sessionRepository = sessionRepository;
+    this.learningService = learningService; // LearningService for quiz-based learning
+    this.gamificationService = gamificationService;
+    this.vocabularyRepository = vocabularyRepository;
+    this.aiFeedbackService = aiFeedbackService; // AI Feedback service for automatic error explanations
+  }
+
+  // ============================================================================
+  // Public API
+  // ============================================================================
+
+  /**
+   * Create a new quiz session with generated questions
+   * Story 15.11 Phase 8: Server-side question generation
+   *
+   * @param {string} userId - User ID
+   * @param {Date} [date] - Target date for due words (defaults to today)
+   * @param {number} [limit=10] - Maximum number of words to include
+   * @returns {Promise<object>} Created session with { sessionId, questions (without answers), expiresAt }
+   */
+  async createSession(userId, date = new Date(), limit = 10) {
+    // Check for non-expired completed session (daily quiz limit)
+    const completedSession = await this.sessionRepository.findMostRecentCompleted(userId);
+    if (completedSession && new Date() < new Date(completedSession.expiresAt)) {
+      // User already completed quiz today, return summary instead
+      const summary = await this.getSessionSummary(completedSession.id);
+      return {
+        alreadyCompleted: true,
+        sessionId: completedSession.id,
+        summary,
+        expiresAt: completedSession.expiresAt,
+        questions: [], // No new questions when already completed
+      };
+    }
+
+    // Check for existing active session
+    const existingSession = await this.sessionRepository.findActiveByUser(userId);
+    if (existingSession) {
+      // Return existing session (client can resume or abandon)
+      const sessionEntity = new QuizSession(existingSession);
+      return {
+        alreadyCompleted: false,
+        sessionId: sessionEntity.id,
+        questions: sessionEntity.getSanitizedQuestions(),
+        currentIndex: sessionEntity.currentIndex,
+        expiresAt: sessionEntity.expiresAt,
+        isResume: true,
+      };
+    }
+
+    // Fetch due words from learning service
+    const dueWords = await this.learningService.getDueWords(userId, date, limit);
+
+    // Flow 1.2: No due words available (all caught up)
+    if (dueWords.length === 0) {
+      return {
+        alreadyCompleted: false,
+        noDueWords: true,
+        sessionId: null,
+        questions: [],
+        expiresAt: null,
+        isResume: false,
+        message: "You're all caught up! Come back later for more practice.",
+      };
+    }
+
+    // Generate interleaved questions (3 types per word, shuffled)
+    const questions = this._generateInterleavedQuestions(dueWords);
+
+    // Create session (expires in 1 hour)
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    const session = await this.sessionRepository.create({
+      userId,
+      questions,
+      expiresAt,
+    });
+
+    // Return sanitized questions (without correct answers)
+    return {
+      alreadyCompleted: false,
+      sessionId: session.id,
+      questions: QuizSession.sanitizeQuestionsForClient(questions),
+      expiresAt: session.expiresAt,
+      isResume: false,
+    };
+  }
+
+  /**
+   * Submit an answer for validation and update progress
+   * Story 15.11 Phase 8: Server-side answer validation
+   *
+   * @param {string} sessionId - Session ID
+   * @param {string} questionId - Question identifier (format: wordId_questionType)
+   * @param {string} userAnswer - User's answer
+   * @param {number} timeSpentMs - Time spent on question in milliseconds
+   * @returns {Promise<object>} Result with { correct, correctAnswer, feedback, gamification, nextQuestion }
+   */
+  async submitAnswer(sessionId, questionId, userAnswer, timeSpentMs) {
+    // Fetch session
+    const session = await this.sessionRepository.findById(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    // Validate session status
+    if (session.status !== "ACTIVE") {
+      throw new Error(`Session is ${session.status.toLowerCase()}`);
+    }
+
+    // Check expiration
+    if (new Date() > new Date(session.expiresAt)) {
+      await this.sessionRepository.update(sessionId, { status: "EXPIRED" });
+      throw new Error("Session expired");
+    }
+
+    // Find question in session
+    const question = session.questions.find((q) => q.id === questionId);
+    if (!question) {
+      throw new Error("Question not found in session");
+    }
+
+    // Check if already answered
+    const existingAnswer = session.answers.find((a) => a.questionId === questionId);
+    if (existingAnswer) {
+      throw new Error("Question already answered");
+    }
+
+    // Validate answer
+    const isCorrect = this._validateAnswer(userAnswer, question);
+
+    // Record answer in session
+    const updatedAnswers = [
+      ...session.answers,
+      {
+        questionId,
+        wordId: question.wordId,
+        userAnswer,
+        correct: isCorrect,
+        timeSpentMs,
+        answeredAt: new Date().toISOString(),
+      },
+    ];
+
+    const newIndex = session.currentIndex + 1;
+    const isComplete = newIndex >= session.questions.length;
+
+    // Update session - set midnight expiration when complete (daily quiz reset)
+    await this.sessionRepository.update(sessionId, {
+      answers: updatedAnswers,
+      currentIndex: newIndex,
+      status: isComplete ? "COMPLETE" : "ACTIVE",
+      completedAt: isComplete ? new Date() : undefined,
+      expiresAt: isComplete ? getEndOfDay() : undefined,
+    });
+
+    // Update progress (spaced repetition)
+    const progressUpdate = await this.learningService.recordQuizResult({
+      userId: session.userId,
+      wordId: question.wordId,
+      correct: isCorrect,
+      questionType: question.questionType,
+      timeSpentMs,
+    });
+
+    // Update gamification (only if correct)
+    let gamificationUpdate = null;
+    if (isCorrect) {
+      gamificationUpdate = await this.gamificationService.processQuizAnswer({
+        userId: session.userId,
+        wordId: question.wordId,
+        correct: isCorrect,
+        timeSpentMs,
+      });
+    }
+
+    // Generate AI feedback automatically for incorrect answers (Story 15.11 Phase 9)
+    // Non-blocking with 3-second timeout to avoid delaying quiz flow
+    let aiFeedback = null;
+    if (!isCorrect && this.aiFeedbackService) {
+      try {
+        const feedbackPromise = this.aiFeedbackService.generateFeedback({
+          wordId: question.wordId,
+          userAnswer,
+          correctAnswer: this._getCorrectAnswer(question),
+          questionType: question.questionType,
+        });
+
+        // Wait max 3 seconds for AI feedback (don't block response)
+        aiFeedback = await Promise.race([
+          feedbackPromise,
+          new Promise((resolve) => setTimeout(() => resolve(null), 3000)),
+        ]);
+      } catch (err) {
+        // AI feedback generation is non-critical - log and continue
+        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+        logger.warn("AI feedback generation failed (non-critical)", {
+          error: err.message,
+          wordId: question.wordId,
+        });
+      }
+    }
+
+    // Get next question (if any)
+    const nextQuestion = !isComplete
+      ? QuizSession.sanitizeQuestionsForClient([session.questions[newIndex]])[0]
+      : null;
+
+    return {
+      correct: isCorrect,
+      correctAnswer: this._getCorrectAnswer(question),
+      feedback: {
+        nextReview: progressUpdate.nextReviewDate,
+        lapseCount: progressUpdate.lapseCount,
+        isLeech: progressUpdate.isLeech,
+      },
+      gamification: gamificationUpdate
+        ? {
+            xpEarned: gamificationUpdate.xpEarned || 0,
+            newBadges: gamificationUpdate.newBadges || [],
+            mysteryBox: gamificationUpdate.mysteryBox || null,
+            freezeAwarded: gamificationUpdate.freezeAwarded || false,
+          }
+        : null,
+      aiFeedback: aiFeedback
+        ? {
+            explanation: aiFeedback.explanation,
+            errorType: aiFeedback.errorType,
+          }
+        : null,
+      nextQuestion,
+      sessionComplete: isComplete,
+      progress: {
+        current: newIndex,
+        total: session.questions.length,
+      },
+    };
+  }
+
+  /**
+   * Get session details (for resume or review)
+   * @param {string} sessionId - Session ID
+   * @returns {Promise<object>} Session details
+   */
+  async getSession(sessionId) {
+    const session = await this.sessionRepository.findById(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    return {
+      sessionId: session.id,
+      status: session.status,
+      currentIndex: session.currentIndex,
+      totalQuestions: session.questions.length,
+      questionsAnswered: session.answers.length,
+      questions: QuizSession.sanitizeQuestionsForClient(session.questions),
+      expiresAt: session.expiresAt,
+      completedAt: session.completedAt,
+    };
+  }
+
+  /**
+   * Abandon current session (mark as expired)
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>} True if session was abandoned
+   */
+  async abandonSession(userId) {
+    const session = await this.sessionRepository.findActiveByUser(userId);
+    if (!session) {
+      return false;
+    }
+
+    await this.sessionRepository.update(session.id, {
+      status: "EXPIRED",
+    });
+
+    return true;
+  }
+
+  /**
+   * Get session summary with calculated statistics
+   * Story 15.11: Move business logic to backend - session metrics calculation
+   *
+   * @param {string} sessionId - Session ID
+   * @returns {Promise<object>} Session summary with accuracy, XP, leech words, etc.
+   * @throws {Error} If session not found
+   */
+  async getSessionSummary(sessionId) {
+    // Fetch session with all related data
+    const session = await this.sessionRepository.findById(sessionId, {
+      includeAnswers: true,
+      includeQuestions: true,
+      includeWords: true,
+    });
+
+    if (!session) {
+      throw new Error(`Session not found: ${sessionId}`);
+    }
+
+    // Use domain service to calculate summary
+    const summary = calculateSessionSummary(session);
+
+    return summary;
+  }
+
+  // ============================================================================
+  // Private Helper Methods
+  // ============================================================================
+
+  /**
+   * Generate interleaved questions (3 types per word, shuffled)
+   * Fisher-Yates shuffle per word for consistent randomization
+   * @private
+   * @param {Array} words - Due words array
+   * @returns {Array} Interleaved questions
+   */
+  _generateInterleavedQuestions(words) {
+    const questionTypes = ["multiple_choice", "type_pinyin", "type_character"];
+
+    const allQuestions = [];
+
+    words.forEach((word) => {
+      // Shuffle question types for THIS word (Fisher-Yates)
+      const shuffledTypes = [...questionTypes];
+      for (let i = shuffledTypes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledTypes[i], shuffledTypes[j]] = [shuffledTypes[j], shuffledTypes[i]];
+      }
+
+      // Create questions for each type
+      shuffledTypes.forEach((questionType) => {
+        allQuestions.push({
+          id: `${word.id}_${questionType}`,
+          wordId: word.id,
+          questionType,
+          word: {
+            id: word.id,
+            simplified: word.simplified,
+            traditional: word.traditional,
+            pinyin: word.pinyin,
+            english: word.english,
+          },
+          correctAnswer: this._getCorrectAnswerForType(word, questionType),
+        });
+      });
+    });
+
+    return allQuestions;
+  }
+
+  /**
+   * Get correct answer for question type
+   * @private
+   * @param {object} word - Word object
+   * @param {string} questionType - Question type
+   * @returns {string|Array} Correct answer(s)
+   */
+  _getCorrectAnswerForType(word, questionType) {
+    switch (questionType) {
+      case "multiple_choice":
+        return word.english;
+      case "type_pinyin":
+        return word.pinyin;
+      case "type_character":
+        return word.simplified;
+      default:
+        throw new Error(`Unknown question type: ${questionType}`);
+    }
+  }
+
+  /**
+   * Get correct answer from question object
+   * @private
+   * @param {object} question - Question object
+   * @returns {string} Correct answer
+   */
+  _getCorrectAnswer(question) {
+    return question.correctAnswer;
+  }
+
+  /**
+   * Validate user answer against correct answer
+   * Handles normalization and multi-answer support
+   * @private
+   * @param {string} userAnswer - User's answer
+   * @param {object} question - Question object with correctAnswer
+   * @returns {boolean} True if correct
+   */
+  _validateAnswer(userAnswer, question) {
+    const { questionType, correctAnswer } = question;
+
+    // Normalize user input
+    const normalizedUser = this._normalizeAnswer(userAnswer, questionType);
+    const normalizedCorrect = this._normalizeAnswer(correctAnswer, questionType);
+
+    // Handle multi-answer support (semicolon or comma separated)
+    if (
+      typeof normalizedCorrect === "string" &&
+      (normalizedCorrect.includes(";") || normalizedCorrect.includes(","))
+    ) {
+      const acceptableAnswers = normalizedCorrect.split(/[;,]/).map((ans) => ans.trim());
+      return acceptableAnswers.some((acceptable) =>
+        this._answersMatch(normalizedUser, acceptable, questionType),
+      );
+    }
+
+    // Single answer comparison
+    return this._answersMatch(normalizedUser, normalizedCorrect, questionType);
+  }
+
+  /**
+   * Normalize answer for comparison
+   * @private
+   * @param {string} answer - Answer to normalize
+   * @param {string} questionType - Question type
+   * @returns {string} Normalized answer
+   */
+  _normalizeAnswer(answer, questionType) {
+    if (!answer) return "";
+
+    let normalized = answer.toString().trim().toLowerCase();
+
+    // Question-specific normalization
+    if (questionType === "type_pinyin") {
+      // Remove extra spaces between syllables (optional normalization)
+      normalized = normalized.replace(/\s+/g, " ");
+    } else if (questionType === "type_character") {
+      // No spaces allowed in character answers
+      normalized = normalized.replace(/\s+/g, "");
+    }
+
+    return normalized;
+  }
+
+  /**
+   * Check if two normalized answers match
+   * @private
+   * @param {string} userAnswer - Normalized user answer
+   * @param {string} correctAnswer - Normalized correct answer
+   * @param {string} questionType - Question type
+   * @returns {boolean} True if match
+   */
+  _answersMatch(userAnswer, correctAnswer, questionType) {
+    if (questionType === "type_pinyin") {
+      // Pinyin: Allow space variations (e.g., "hěn hǎo" vs "hěnhǎo")
+      const userNoSpace = userAnswer.replace(/\s+/g, "");
+      const correctNoSpace = correctAnswer.replace(/\s+/g, "");
+      return userNoSpace === correctNoSpace || userAnswer === correctAnswer;
+    }
+
+    // Default: exact match after normalization
+    return userAnswer === correctAnswer;
+  }
+
+  // Note: _sanitizeQuestionsForClient method moved to QuizSession domain entity
+  // Use: QuizSession.sanitizeQuestionsForClient(questions)
+}
+
+export default QuizSessionService;
