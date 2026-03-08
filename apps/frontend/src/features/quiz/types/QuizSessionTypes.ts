@@ -46,6 +46,7 @@ export type QuizSessionQuestion = {
     pinyin?: string; // Omitted for type_pinyin questions
     english?: string; // Omitted for multiple_choice questions
   };
+  options?: string[]; // Present for multiple_choice questions only
 };
 
 /**

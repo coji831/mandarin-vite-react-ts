@@ -594,35 +594,36 @@ export class QuizSessionService {
   _generateInterleavedQuestions(words) {
     const questionTypes = ["multiple_choice", "type_pinyin", "type_character"];
 
-    const allQuestions = [];
+    return words.map((word, index) => {
+      // Pick one random question type per word
+      const questionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
 
-    words.forEach((word) => {
-      // Shuffle question types for THIS word (Fisher-Yates)
-      const shuffledTypes = [...questionTypes];
-      for (let i = shuffledTypes.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledTypes[i], shuffledTypes[j]] = [shuffledTypes[j], shuffledTypes[i]];
+      // Generate MC options: 1 correct + 3 distractors from other words
+      let options;
+      if (questionType === "multiple_choice") {
+        const distractors = words
+          .filter((_, i) => i !== index)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+          .map((w) => w.english);
+        options = [...distractors, word.english].sort(() => Math.random() - 0.5);
       }
 
-      // Create questions for each type
-      shuffledTypes.forEach((questionType) => {
-        allQuestions.push({
-          id: `${word.id}_${questionType}`,
-          wordId: word.id,
-          questionType,
-          word: {
-            id: word.id,
-            simplified: word.simplified,
-            traditional: word.traditional,
-            pinyin: word.pinyin,
-            english: word.english,
-          },
-          correctAnswer: this._getCorrectAnswerForType(word, questionType),
-        });
-      });
+      return {
+        id: `${word.id}_${questionType}`,
+        wordId: word.id,
+        questionType,
+        word: {
+          id: word.id,
+          simplified: word.simplified,
+          traditional: word.traditional,
+          pinyin: word.pinyin,
+          english: word.english,
+        },
+        correctAnswer: this._getCorrectAnswerForType(word, questionType),
+        ...(options && { options }),
+      };
     });
-
-    return allQuestions;
   }
 
   /**

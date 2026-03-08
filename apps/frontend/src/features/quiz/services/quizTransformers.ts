@@ -28,13 +28,14 @@ import type { Badge } from "../../gamification/types/GamificationTypes";
  */
 export function transformSessionToQuestions(questions: QuizSessionQuestion[]): QuizQuestion[] {
   return questions.map((q) => ({
-    id: `${q.wordId}-${q.questionType}`, // Phase 8: Unique identifier for session questions
+    id: q.id, // Use backend-assigned ID directly (format: wordId_questionType)
     wordId: q.wordId,
     mode: q.questionType,
     word: q.word.simplified,
     // Backend intentionally omits pinyin for type_pinyin and english for multiple_choice (security)
     pinyin: q.word.pinyin,
     english: q.word.english,
+    options: q.options, // Present for multiple_choice questions
   }));
 }
 

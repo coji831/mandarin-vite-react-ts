@@ -94,7 +94,7 @@ export function useAnswerSubmission({
       try {
         // Submit answer to backend session for validation
         const result = await quizApi.submitAnswer(sessionId, {
-          questionId: currentQuestion.id || `${currentQuestion.wordId}-${currentQuestion.mode}`,
+          questionId: currentQuestion.id || `${currentQuestion.wordId}_${currentQuestion.mode}`,
           userAnswer,
           timeSpentMs,
         });

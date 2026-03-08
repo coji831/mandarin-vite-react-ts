@@ -164,10 +164,16 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Handle network errors: Retry with exponential backoff
+    // Handle network errors: Retry with exponential backoff (GET only — POST/PUT/DELETE are not idempotent)
     const isNetworkError =
       !error.response && (error.code === "ECONNABORTED" || error.code === "ERR_NETWORK");
-    if (isNetworkError && originalRequest && (originalRequest._retryCount || 0) < 3) {
+    const isSafeMethod = (originalRequest?.method?.toUpperCase() ?? "GET") === "GET";
+    if (
+      isNetworkError &&
+      isSafeMethod &&
+      originalRequest &&
+      (originalRequest._retryCount || 0) < 3
+    ) {
       originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
       const delay = Math.pow(2, originalRequest._retryCount - 1) * 1000; // 1s, 2s, 4s
 

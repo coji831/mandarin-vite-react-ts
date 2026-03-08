@@ -1,10 +1,10 @@
 /**
  * @file QuizSession.js
  * @description QuizSession aggregate root - Domain entity for quiz session management
- * 
+ *
  * Clean Architecture: Domain Layer - Core business entity
  * Encapsulates quiz session business logic and invariants
- * 
+ *
  * Responsibilities:
  * - Maintain quiz session state and business rules
  * - Sanitize questions for client (security)
@@ -19,7 +19,7 @@ export class QuizSession {
     this.questions = data.questions || [];
     this.answers = data.answers || [];
     this.currentIndex = data.currentIndex || 0;
-    this.status = data.status || 'ACTIVE';
+    this.status = data.status || "ACTIVE";
     this.startedAt = data.startedAt || new Date();
     this.expiresAt = data.expiresAt;
     this.completedAt = data.completedAt;
@@ -66,18 +66,18 @@ export class QuizSession {
    * Mark session as completed
    */
   markCompleted() {
-    this.status = 'COMPLETED';
+    this.status = "COMPLETED";
     this.completedAt = new Date();
   }
 
   /**
    * Sanitize questions for client response (Security)
-   * 
+   *
    * Business rules:
    * - Never expose correct answers to client (prevents cheating)
    * - Omit pinyin for type_pinyin questions (answer protection)
    * - Omit english for multiple_choice questions (answer protection)
-   * 
+   *
    * @param {Array<object>} questions - Questions to sanitize
    * @returns {Array<object>} Sanitized questions safe for client
    */
@@ -91,11 +91,13 @@ export class QuizSession {
         simplified: q.word.simplified,
         traditional: q.word.traditional,
         // Security: Omit pinyin for type_pinyin (user must recall it)
-        ...(q.questionType !== 'type_pinyin' && { pinyin: q.word.pinyin }),
+        ...(q.questionType !== "type_pinyin" && { pinyin: q.word.pinyin }),
         // Security: Omit english for multiple_choice (user must select from options)
-        ...(q.questionType !== 'multiple_choice' && { english: q.word.english }),
+        ...(q.questionType !== "multiple_choice" && { english: q.word.english }),
       },
       // Security: correctAnswer NEVER sent to client
+      // Include shuffled options for multiple_choice (no correct answer revealed)
+      ...(q.options && { options: q.options }),
     }));
   }
 
@@ -113,7 +115,7 @@ export class QuizSession {
    */
   calculateAccuracy() {
     if (this.answers.length === 0) return 0;
-    const correctCount = this.answers.filter(a => a.correct).length;
+    const correctCount = this.answers.filter((a) => a.correct).length;
     return Math.round((correctCount / this.answers.length) * 100);
   }
 
@@ -122,9 +124,9 @@ export class QuizSession {
    * @returns {object}
    */
   getSummary() {
-    const correctCount = this.answers.filter(a => a.correct).length;
+    const correctCount = this.answers.filter((a) => a.correct).length;
     const totalCount = this.answers.length;
-    
+
     return {
       sessionId: this.id,
       totalQuestions: this.questions.length,

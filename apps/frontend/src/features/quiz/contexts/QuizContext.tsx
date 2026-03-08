@@ -178,7 +178,11 @@ export function QuizProvider({ children }: QuizProviderProps) {
   // ============================================================================
 
   // Start quiz session on mount (Story 15.11 Part B Phase 5: delegated to useQuizSession hook)
+  // Ref guard prevents double-invocation in React 18 StrictMode (mount → unmount → remount)
+  const sessionStarted = useRef(false);
   useEffect(() => {
+    if (sessionStarted.current) return;
+    sessionStarted.current = true;
     startSession();
   }, [startSession]);
 
