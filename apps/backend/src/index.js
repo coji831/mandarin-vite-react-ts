@@ -30,10 +30,7 @@ logger.info("Cache service initialized", {
 // Import routes after cache service is initialized
 import routes from "./api/routes/index.js";
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+// CORS must be first — before body parsers — so error responses also carry CORS headers
 // CORS configuration with explicit origin whitelist
 const allowedOrigins = [
   config.frontendUrl, // Production frontend (from FRONTEND_URL env var)
@@ -75,6 +72,10 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+// Body parsers after CORS so error responses always include CORS headers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Mount routes under /api
 app.use("/api", routes);

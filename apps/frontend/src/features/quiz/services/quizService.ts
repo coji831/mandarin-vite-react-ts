@@ -50,7 +50,7 @@ export const quizApi = {
 
       const response = await apiClient.post<QuizSessionStartResponse>(
         ROUTE_PATTERNS.quizSessionStart,
-        null,
+        {},
         { params },
       );
 
@@ -116,7 +116,7 @@ export const quizApi = {
   async getSessionSummary(sessionId: string): Promise<QuizSessionSummary> {
     try {
       const response = await apiClient.get<QuizSessionSummary>(
-        `/api${ROUTE_PATTERNS.quizSessionSummary(sessionId)}`,
+        ROUTE_PATTERNS.quizSessionSummary(sessionId),
       );
 
       // Validate response
