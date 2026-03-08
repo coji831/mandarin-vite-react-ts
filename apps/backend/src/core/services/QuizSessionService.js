@@ -29,6 +29,7 @@ export class QuizSessionService {
     vocabularyRepository,
     aiFeedbackService = null,
     streakService = null,
+    summaryRepository = null,
   ) {
     this.sessionRepository = sessionRepository;
     this.learningService = learningService; // LearningService for quiz-based learning
@@ -36,6 +37,7 @@ export class QuizSessionService {
     this.vocabularyRepository = vocabularyRepository;
     this.aiFeedbackService = aiFeedbackService; // AI Feedback service for automatic error explanations
     this.streakService = streakService; // StreakService for streak tracking
+    this.summaryRepository = summaryRepository; // QuizSessionSummaryRepository for Flow 5 database persistence
   }
 
   // ============================================================================
@@ -52,6 +54,19 @@ export class QuizSessionService {
    * @returns {Promise<object>} Created session with { sessionId, questions (without answers), expiresAt }
    */
   async createSession(userId, date = new Date(), limit = 10) {
+    // Flow 5: Cleanup expired quiz session summaries on new quiz start (7-day TTL)
+    if (this.summaryRepository) {
+      try {
+        await this.summaryRepository.deleteExpired(userId);
+      } catch (err) {
+        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+        logger.warn("Failed to cleanup expired summaries (non-critical)", {
+          error: err.message,
+          userId,
+        });
+      }
+    }
+
     // Check for non-expired completed session (daily quiz limit)
     const completedSession = await this.sessionRepository.findMostRecentCompleted(userId);
     if (completedSession && new Date() < new Date(completedSession.expiresAt)) {
@@ -180,7 +195,16 @@ export class QuizSessionService {
     // Validate answer
     const isCorrect = this._validateAnswer(userAnswer, question);
 
-    // Record answer in session
+    // Update progress FIRST (spaced repetition) - need lapseCount for answer record
+    const progressUpdate = await this.learningService.recordQuizResult({
+      userId: session.userId,
+      wordId: question.wordId,
+      correct: isCorrect,
+      questionType: question.questionType,
+      timeSpentMs,
+    });
+
+    // Record answer in session WITH progress fields (for persistence)
     const updatedAnswers = [
       ...session.answers,
       {
@@ -190,6 +214,8 @@ export class QuizSessionService {
         correct: isCorrect,
         timeSpentMs,
         answeredAt: new Date().toISOString(),
+        lapseCount: progressUpdate.lapseCount,
+        isLeech: progressUpdate.isLeech,
       },
     ];
 
@@ -203,15 +229,6 @@ export class QuizSessionService {
       status: isComplete ? "COMPLETE" : "ACTIVE",
       completedAt: isComplete ? new Date() : undefined,
       expiresAt: isComplete ? getEndOfDay() : undefined,
-    });
-
-    // Update progress (spaced repetition)
-    const progressUpdate = await this.learningService.recordQuizResult({
-      userId: session.userId,
-      wordId: question.wordId,
-      correct: isCorrect,
-      questionType: question.questionType,
-      timeSpentMs,
     });
 
     // Generate AI feedback automatically for incorrect answers (Story 15.11 Phase 9)
@@ -322,6 +339,60 @@ export class QuizSessionService {
         freezeAwarded,
         currentStreak,
       };
+
+      // Flow 5: Persist session summary to database (7-day TTL for review mistakes)
+      if (this.summaryRepository) {
+        try {
+          const completedAt = new Date();
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 7); // 7-day TTL
+
+          // Build incorrect words detail array (use stored progress fields)
+          const incorrectWords = updatedAnswers
+            .filter((a) => !a.correct)
+            .map((answer) => {
+              const q = session.questions.find((q) => q.id === answer.questionId);
+              return {
+                wordId: answer.wordId,
+                hanzi: q.word.simplified,
+                pinyin: q.word.pinyin,
+                english: q.word.english,
+                userAnswer: answer.userAnswer,
+                correctAnswer: this._getCorrectAnswer(q),
+                questionType: answer.questionType,
+                lapseCount: answer.lapseCount || 0,
+                isLeech: answer.isLeech || false,
+              };
+            });
+
+          // Extract leech word IDs (lapseCount >= 5)
+          const leechWordIds = incorrectWords.filter((w) => w.isLeech).map((w) => w.wordId);
+
+          await this.summaryRepository.create({
+            userId: session.userId,
+            sessionId,
+            completedAt,
+            totalQuestions: session.questions.length,
+            correctCount,
+            incorrectCount: updatedAnswers.length - correctCount,
+            accuracyRate,
+            xpEarned,
+            newBadgeIds: newBadges.map((b) => b.id),
+            mysteryBoxDrop: !!mysteryBox,
+            mysteryBoxType: mysteryBox?.rewardType || null,
+            freezeAwarded,
+            leechWordIds,
+            incorrectWords,
+            expiresAt,
+          });
+        } catch (err) {
+          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+          logger.warn("Failed to persist session summary (non-critical)", {
+            error: err.message,
+            sessionId,
+          });
+        }
+      }
     }
 
     // Get next question (if any)
@@ -418,7 +489,61 @@ export class QuizSessionService {
    * @throws {Error} If session not found or user not authorized
    */
   async getSessionSummary(sessionId, userId) {
-    // Fetch session with authorization (composite lookup)
+    // Flow 5: Try to read from database first (faster, already calculated)
+    if (this.summaryRepository) {
+      try {
+        const summary = await this.summaryRepository.findBySessionIdAndUserId(sessionId, userId);
+        if (summary) {
+          // Fetch current streak and available freezes (dynamic data)
+          let currentStreak = 0;
+          let availableFreezes = 0;
+
+          if (this.streakService) {
+            try {
+              const streakData = await this.streakService.getStreak(userId);
+              currentStreak = streakData.currentStreak || 0;
+              availableFreezes = streakData.freezeCount || 0;
+            } catch (error) {
+              console.warn("[QuizSessionService] Failed to fetch streak data:", error.message);
+            }
+          }
+
+          // Map database summary to API response format
+          return {
+            sessionId: summary.sessionId,
+            accuracyRate: summary.accuracyRate,
+            correctCount: summary.correctCount,
+            incorrectCount: summary.incorrectCount,
+            totalQuestions: summary.totalQuestions,
+            incorrectWords: summary.incorrectWords,
+            leechWords: summary.incorrectWords.filter((w) => w.isLeech),
+            leechCount: summary.leechWordIds.length,
+            leechWordIds: summary.leechWordIds,
+            xpEarned: summary.xpEarned,
+            newBadges: [], // Badges already in user's collection, don't repeat
+            mysteryBox: summary.mysteryBoxDrop
+              ? {
+                  rewardType: summary.mysteryBoxType,
+                  rewardValue: null, // Not stored in summary
+                  opened: null, // Not tracked
+                }
+              : null,
+            currentStreak,
+            availableFreezes,
+            completedAt: summary.completedAt.toISOString(),
+            expiresAt: summary.expiresAt.toISOString(),
+          };
+        }
+      } catch (err) {
+        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+        logger.warn("Failed to read summary from database, falling back to recalculation", {
+          error: err.message,
+          sessionId,
+        });
+      }
+    }
+
+    // Fallback: Recalculate summary from session (for old sessions or if DB read fails)
     const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId, {
       includeAnswers: true,
       includeQuestions: true,

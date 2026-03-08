@@ -21,6 +21,7 @@ model User {
   sessions     Session[]
   progress     Progress[]
   customLists  VocabularyList[]
+  quizSessions QuizSession[]
 
   @@index([email])
 }
@@ -155,4 +156,53 @@ model QuizResult {
 
   @@index([userId, wordId])
   @@index([userId, answeredAt])
+}
+
+model QuizSession {
+  id            String    @id @default(cuid())
+  userId        String
+  questions     Json      // Array of question objects with wordId, questionType, correctAnswer
+  answers       Json      @default("[]")
+  currentIndex  Int       @default(0)
+  status        String    @default("ACTIVE") // "ACTIVE" | "COMPLETE" | "EXPIRED"
+  startedAt     DateTime  @default(now())
+  expiresAt     DateTime  // 1 hour from start
+  completedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([expiresAt])
+}
+
+model QuizSessionSummary {
+  id                String   @id @default(uuid())
+  userId            String
+  sessionId         String   @unique
+  completedAt       DateTime
+  
+  // Session Metrics
+  totalQuestions    Int
+  correctCount      Int
+  incorrectCount    Int
+  accuracyRate      Float    // 0-100
+  
+  // Gamification
+  xpEarned          Int
+  newBadgeIds       String[] // JSON array
+  mysteryBoxDrop    Boolean
+  mysteryBoxType    String?  // 'xp_boost' | 'freeze' | 'cosmetic'
+  freezeAwarded     Boolean
+  
+  // Content
+  leechWordIds      String[] // JSON array: word IDs with lapseCount >= 5
+  incorrectWords    Json     // Array of IncorrectWordDetail objects
+  
+  // Expiration & Cleanup
+  createdAt         DateTime @default(now())
+  expiresAt         DateTime // For 7-day TTL matching localStorage
+  
+  @@index([userId, completedAt])
+  @@index([userId, expiresAt])
+  @@unique([userId, sessionId])
 }
