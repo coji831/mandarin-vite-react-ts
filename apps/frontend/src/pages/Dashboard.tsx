@@ -68,11 +68,15 @@ function Dashboard() {
         setBadges(allBadges);
 
         // Check for new badges (Story 15.9 AC: Badge celebration modal)
-        const lastSeenBadges = localStorage.getItem("last_seen_badges");
-        const lastSeenIds = lastSeenBadges ? JSON.parse(lastSeenBadges) : [];
+        // Story 15.11 Flow 2.6: Use "last_celebrated_badges" to avoid double-celebration
+        // Dashboard serves as fallback for users who missed quiz celebration
+        const lastCelebratedBadges = localStorage.getItem("last_celebrated_badges");
+        const lastCelebratedIds = lastCelebratedBadges ? JSON.parse(lastCelebratedBadges) : [];
         const currentEarnedIds = badgeResponse.earned.map((b) => b.id);
 
-        const newlyEarned = badgeResponse.earned.find((badge) => !lastSeenIds.includes(badge.id));
+        const newlyEarned = badgeResponse.earned.find(
+          (badge) => !lastCelebratedIds.includes(badge.id),
+        );
         if (newlyEarned) {
           setNewBadge({
             id: newlyEarned.id,
@@ -82,10 +86,10 @@ function Dashboard() {
             earnedDate: newlyEarned.earnedDate ? new Date(newlyEarned.earnedDate) : undefined,
           });
           setShowBadgeCelebration(true);
-          localStorage.setItem("last_seen_badges", JSON.stringify(currentEarnedIds));
-        } else if (lastSeenIds.length === 0 && currentEarnedIds.length > 0) {
+          localStorage.setItem("last_celebrated_badges", JSON.stringify(currentEarnedIds));
+        } else if (lastCelebratedIds.length === 0 && currentEarnedIds.length > 0) {
           // First load: set without showing modal
-          localStorage.setItem("last_seen_badges", JSON.stringify(currentEarnedIds));
+          localStorage.setItem("last_celebrated_badges", JSON.stringify(currentEarnedIds));
         }
       } catch (err) {
         console.error("Failed to load dashboard data:", err);

@@ -4,6 +4,7 @@
  *
  * Story 15.11 Phase 8: Backend-centric quiz session architecture
  * These types map to backend API contracts for quiz session management.
+ * Aligned with type audit: story-15-11-type-audit.md
  *
  * Endpoints covered:
  * - POST /api/v1/quiz/session/start
@@ -11,15 +12,8 @@
  * - GET /api/v1/quiz/session/:sessionId/summary
  */
 
-/**
- * Badge awarded for streak milestone
- */
-export type Badge = {
-  id: string;
-  name: string;
-  streakRequired: number;
-  icon: string;
-};
+import { QuizAnswer } from "./QuizTypes";
+import { Badge } from "../../gamification/types/GamificationTypes";
 
 /**
  * Mystery box reward (5% drop chance on streak milestones)
@@ -65,6 +59,7 @@ export type QuizSessionStartResponse = {
   currentIndex?: number; // Present if resuming
   expiresAt: string; // ISO 8601 datetime
   isResume: boolean; // True if resuming existing session
+  answers?: QuizAnswer[]; // Previous answers (only present when isResume = true)
   // Daily quiz variant fields (populated when alreadyCompleted = true)
   alreadyCompleted?: boolean; // True if user already completed quiz today
   summary?: QuizSessionSummary; // Pre-calculated session metrics (variant only)
@@ -151,9 +146,12 @@ export type QuizSessionSummary = {
   sessionId: string;
   accuracyRate: number; // 0-100 percentage
   correctCount: number;
+  incorrectCount: number; // Backend provides (derived field)
   totalQuestions: number; // Backend property name (not totalAnswered)
   incorrectWords: IncorrectWordDetail[];
   leechWords: LeechWordDetail[];
+  leechCount: number; // Backend provides (derived field)
+  leechWordIds: string[]; // Backend provides (derived field)
   // Gamification data (from completed session)
   xpEarned: number; // Backend property name (not totalXP)
   newBadges: Badge[];

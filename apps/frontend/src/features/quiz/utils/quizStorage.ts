@@ -29,7 +29,7 @@
  * }
  */
 
-import type { QuizAnswer } from "../types/QuizTypes";
+import type { QuizAnswer, QuizSessionSummary } from "../types";
 
 // ============================================================================
 // Types
@@ -69,42 +69,35 @@ const EXPIRATION_DAYS = 7;
 
 /**
  * Save quiz results to localStorage
- * @param answers - Array of quiz answers from completed session
+ * Story 15.11: Accept backend-calculated summary instead of doing client-side calculations
+ *
+ * @param answers - Array of quiz answers from completed session (for fallback word data)
+ * @param summary - Backend-calculated session summary with all metrics
  */
-export function saveQuizResult(answers: QuizAnswer[]): void {
+export function saveQuizResult(answers: QuizAnswer[], summary: QuizSessionSummary): void {
   const now = new Date();
   const expiresAt = new Date(now.getTime() + EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
 
-  const incorrectAnswers = answers.filter((a) => !a.correct);
-  const correctCount = answers.filter((a) => a.correct).length;
-  const totalWords = answers.length;
-  const accuracyRate = totalWords > 0 ? Math.round((correctCount / totalWords) * 100) : 0;
-
-  // Extract incorrect words with full details
-  const incorrectWords: StoredIncorrectWord[] = incorrectAnswers
-    .map((answer) => ({
-      wordId: answer.wordId,
-      word: answer.word || "",
-      pinyin: answer.pinyin || "",
-      english: answer.english || "",
-      userAnswer: answer.userAnswer,
-      questionType: answer.questionType,
-    }))
-    .filter((w) => w.word); // Only include words with chinese character
-
-  // Identify leeches (lapseCount >= 5)
-  const leechWords = answers.filter((a) => (a.lapseCount || 0) >= 5).map((a) => a.wordId);
+  // Use backend-provided incorrect words data
+  const incorrectWords: StoredIncorrectWord[] = summary.incorrectWords.map((word) => ({
+    wordId: word.wordId,
+    word: word.hanzi,
+    pinyin: word.pinyin,
+    english: word.english,
+    userAnswer: word.userAnswer,
+    questionType: word.questionType,
+  }));
 
   const result: StoredQuizResult = {
-    sessionId: `quiz-${now.getTime()}`,
-    completedAt: now.toISOString(),
+    sessionId: summary.sessionId,
+    completedAt: summary.completedAt,
     expiresAt: expiresAt.toISOString(),
-    totalWords,
-    correctCount,
-    incorrectCount: incorrectAnswers.length,
-    accuracyRate,
+    totalWords: summary.totalQuestions, // Type audit aligned: totalQuestions not totalAnswered
+    correctCount: summary.correctCount,
+    incorrectCount: summary.incorrectCount,
+    accuracyRate: summary.accuracyRate, // Backend-calculated (0-100)
     incorrectWords,
-    leechWords,
+    leechWords: summary.leechWordIds, // Backend-calculated (lapseCount >= 5)
   };
 
   try {

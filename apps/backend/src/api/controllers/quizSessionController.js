@@ -145,6 +145,7 @@ export class QuizSessionController {
       // Submit answer
       const result = await this.quizSessionService.submitAnswer(
         sessionId,
+        req.userId, // Authorization: verify user owns session
         questionId,
         userAnswer,
         timeSpentMs,
@@ -157,11 +158,15 @@ export class QuizSessionController {
         sessionComplete: result.sessionComplete,
       });
 
+      // Response aligned with type audit (flat structure, no nested feedback object)
       res.status(200).json({
         correct: result.correct,
         correctAnswer: result.correctAnswer,
-        feedback: result.feedback,
+        nextReviewDate: result.nextReviewDate,
+        lapseCount: result.lapseCount,
+        isLeech: result.isLeech,
         gamification: result.gamification,
+        aiFeedback: result.aiFeedback,
         nextQuestion: result.nextQuestion,
         sessionComplete: result.sessionComplete,
         progress: result.progress,
@@ -174,7 +179,7 @@ export class QuizSessionController {
       });
 
       // Handle specific errors
-      if (error.message === "Session not found") {
+      if (error.message === "Session not found" || error.statusCode === 404) {
         return res.status(404).json({
           error: "Not Found",
           code: "SESSION_NOT_FOUND",
@@ -240,7 +245,7 @@ export class QuizSessionController {
         });
       }
 
-      const session = await this.quizSessionService.getSession(sessionId);
+      const session = await this.quizSessionService.getSession(sessionId, req.userId);
 
       logger.info("Quiz session fetched", { sessionId, status: session.status });
 
@@ -252,7 +257,7 @@ export class QuizSessionController {
         stack: error.stack,
       });
 
-      if (error.message === "Session not found") {
+      if (error.message === "Session not found" || error.statusCode === 404) {
         return res.status(404).json({
           error: "Not Found",
           code: "SESSION_NOT_FOUND",
@@ -311,13 +316,14 @@ export class QuizSessionController {
   /**
    * Get session summary with calculated statistics
    * GET /api/v1/quiz/session/:sessionId/summary
-   * Story 15.11: Move business logic to backend - return pre-calculated metrics
+   * Story 15.11: Move business logic to backend - return pre-calculated metrics with authorization
    */
   async getSessionSummary(req, res) {
     try {
       const { sessionId } = req.params;
+      const userId = req.userId; // Injected by auth middleware
 
-      logger.info("Fetching session summary", { sessionId });
+      logger.info("Fetching session summary", { sessionId, userId });
 
       if (!sessionId) {
         return res.status(400).json({
@@ -327,12 +333,13 @@ export class QuizSessionController {
         });
       }
 
-      const summary = await this.quizSessionService.getSessionSummary(sessionId);
+      const summary = await this.quizSessionService.getSessionSummary(sessionId, userId);
 
       logger.info("Session summary fetched", {
         sessionId,
+        userId,
         accuracy: summary.accuracyRate,
-        totalXP: summary.totalXP,
+        xpEarned: summary.xpEarned,
       });
 
       res.status(200).json(summary);
@@ -340,6 +347,7 @@ export class QuizSessionController {
       logger.error("Error fetching session summary", {
         error: error.message,
         sessionId: req.params.sessionId,
+        userId: req.userId,
         stack: error.stack,
       });
 

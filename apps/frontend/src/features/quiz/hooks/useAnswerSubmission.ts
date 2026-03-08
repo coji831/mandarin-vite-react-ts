@@ -1,0 +1,139 @@
+/**
+ * @file apps/frontend/src/features/quiz/hooks/useAnswerSubmission.ts
+ * @description Hook for orchestrating quiz answer submission flow
+ *
+ * Story 15.11 Part B Phase 4: Extracted answer submission logic from QuizContext
+ * Centralizes answer submission orchestration: API call → state update → gamification → AI feedback.
+ *
+ * Responsibilities:
+ * - Submit answer to backend quiz session
+ * - Update quiz state with answer result
+ * - Capture gamification rewards (via useGamificationCapture)
+ * - Handle AI feedback from backend
+ * - Error handling for submission failures
+ *
+ * Used by: QuizContext for handleAnswer action
+ *
+ * @see docs/issue-implementation/epic-15-learning-retention/story-15-11-spaced-repetition-refactoring.md
+ */
+
+import { useCallback, MutableRefObject } from "react";
+import { quizApi } from "../services/quizService";
+import { useGamificationCapture } from "./useGamificationCapture";
+import type { QuizAction } from "../reducers/quizReducer";
+import type { QuizQuestion } from "../types";
+
+// ============================================================================
+// Hook Parameters
+// ============================================================================
+
+interface UseAnswerSubmissionParams {
+  sessionId: string | null;
+  currentQuestion: QuizQuestion | null;
+  questionStartTime: MutableRefObject<number>;
+  dispatch: React.Dispatch<QuizAction>;
+}
+
+// ============================================================================
+// Hook
+// ============================================================================
+
+/**
+ * Hook for orchestrating quiz answer submission
+ *
+ * Encapsulates the full submission flow:
+ * 1. Clear previous feedback state
+ * 2. Submit answer to backend session
+ * 3. Dispatch answer result to state
+ * 4. Capture gamification rewards
+ * 5. Handle AI feedback from backend
+ *
+ * @param params Session ID, current question, question start time ref, dispatch
+ * @returns Object with submitAnswer method
+ */
+export function useAnswerSubmission({
+  sessionId,
+  currentQuestion,
+  questionStartTime,
+  dispatch,
+}: UseAnswerSubmissionParams) {
+  // Use gamification capture hook for processing rewards
+  const { captureGamificationData } = useGamificationCapture(dispatch);
+
+  /**
+   * Submit user answer to backend session for validation
+   *
+   * Flow:
+   * - Validates session ID exists
+   * - Clears previous AI feedback state
+   * - Submits answer to backend with timing data
+   * - Dispatches answer result (correct/incorrect, next review date, etc.)
+   * - Captures gamification rewards (XP, badges, mystery box, freeze)
+   * - Sets AI feedback if provided by backend
+   *
+   * @param userAnswer User's submitted answer (pinyin or character)
+   */
+  const submitAnswer = useCallback(
+    async (userAnswer: string) => {
+      if (!sessionId) {
+        console.error("No session ID - cannot submit answer");
+        return;
+      }
+
+      if (!currentQuestion) {
+        console.error("No current question - cannot submit answer");
+        return;
+      }
+
+      const timeSpentMs = Date.now() - questionStartTime.current;
+
+      // Clear previous AI feedback state (Story 15.11 Phase 9)
+      dispatch({ type: "SET_AI_FEEDBACK", feedback: null });
+      dispatch({ type: "SET_FEEDBACK_LOADING", loading: false });
+
+      try {
+        // Submit answer to backend session for validation
+        const result = await quizApi.submitAnswer(sessionId, {
+          questionId: currentQuestion.id || `${currentQuestion.wordId}-${currentQuestion.mode}`,
+          userAnswer,
+          timeSpentMs,
+        });
+
+        // Dispatch answer result to state (optimistic UI)
+        dispatch({
+          type: "SUBMIT_ANSWER",
+          answer: {
+            wordId: currentQuestion.wordId,
+            word: currentQuestion.word,
+            pinyin: currentQuestion.pinyin,
+            english: currentQuestion.english,
+            questionType: currentQuestion.mode,
+            userAnswer,
+            correct: result.correct,
+            timestamp: new Date(),
+            nextReview: result.nextReviewDate, // Flat property (type audit aligned)
+            lapseCount: result.lapseCount, // Flat property (type audit aligned)
+          },
+        });
+
+        // Capture gamification data (XP, badges, mystery box, freeze)
+        captureGamificationData(result);
+
+        // Story 15.11 Phase 9: AI feedback comes from backend automatically
+        // Backend auto-generates feedback for incorrect answers with 3-second timeout
+        if (result.aiFeedback) {
+          dispatch({ type: "SET_AI_FEEDBACK", feedback: result.aiFeedback.explanation });
+        }
+      } catch (err) {
+        console.error("Failed to submit answer:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to submit answer";
+        dispatch({ type: "SET_ERROR", error: errorMessage });
+      }
+    },
+    [sessionId, currentQuestion, questionStartTime, dispatch, captureGamificationData],
+  );
+
+  return {
+    submitAnswer,
+  };
+}

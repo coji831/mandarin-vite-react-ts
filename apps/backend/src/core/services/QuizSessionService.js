@@ -28,12 +28,14 @@ export class QuizSessionService {
     gamificationService,
     vocabularyRepository,
     aiFeedbackService = null,
+    streakService = null,
   ) {
     this.sessionRepository = sessionRepository;
     this.learningService = learningService; // LearningService for quiz-based learning
     this.gamificationService = gamificationService;
     this.vocabularyRepository = vocabularyRepository;
     this.aiFeedbackService = aiFeedbackService; // AI Feedback service for automatic error explanations
+    this.streakService = streakService; // StreakService for streak tracking
   }
 
   // ============================================================================
@@ -54,7 +56,7 @@ export class QuizSessionService {
     const completedSession = await this.sessionRepository.findMostRecentCompleted(userId);
     if (completedSession && new Date() < new Date(completedSession.expiresAt)) {
       // User already completed quiz today, return summary instead
-      const summary = await this.getSessionSummary(completedSession.id);
+      const summary = await this.getSessionSummary(completedSession.id, userId);
       return {
         alreadyCompleted: true,
         sessionId: completedSession.id,
@@ -69,6 +71,19 @@ export class QuizSessionService {
     if (existingSession) {
       // Return existing session (client can resume or abandon)
       const sessionEntity = new QuizSession(existingSession);
+
+      // Transform existing answers to frontend format
+      const answers = (existingSession.answers || []).map((answer) => ({
+        wordId: answer.wordId,
+        questionType: answer.questionType,
+        userAnswer: answer.userAnswer,
+        correct: answer.correct,
+        timestamp: answer.timestamp,
+        nextReview: answer.nextReviewDate,
+        lapseCount: answer.lapseCount,
+        isLeech: answer.isLeech,
+      }));
+
       return {
         alreadyCompleted: false,
         sessionId: sessionEntity.id,
@@ -76,6 +91,7 @@ export class QuizSessionService {
         currentIndex: sessionEntity.currentIndex,
         expiresAt: sessionEntity.expiresAt,
         isResume: true,
+        answers, // Include previous answers for resume
       };
     }
 
@@ -120,19 +136,22 @@ export class QuizSessionService {
 
   /**
    * Submit an answer for validation and update progress
-   * Story 15.11 Phase 8: Server-side answer validation
+   * Story 15.11 Phase 8: Server-side answer validation with authorization
    *
    * @param {string} sessionId - Session ID
+   * @param {string} userId - User ID for authorization
    * @param {string} questionId - Question identifier (format: wordId_questionType)
    * @param {string} userAnswer - User's answer
    * @param {number} timeSpentMs - Time spent on question in milliseconds
    * @returns {Promise<object>} Result with { correct, correctAnswer, feedback, gamification, nextQuestion }
    */
-  async submitAnswer(sessionId, questionId, userAnswer, timeSpentMs) {
-    // Fetch session
-    const session = await this.sessionRepository.findById(sessionId);
+  async submitAnswer(sessionId, userId, questionId, userAnswer, timeSpentMs) {
+    // Get session with authorization (repository composite lookup)
+    const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId);
     if (!session) {
-      throw new Error("Session not found");
+      const error = new Error("Session not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     // Validate session status
@@ -195,17 +214,6 @@ export class QuizSessionService {
       timeSpentMs,
     });
 
-    // Update gamification (only if correct)
-    let gamificationUpdate = null;
-    if (isCorrect) {
-      gamificationUpdate = await this.gamificationService.processQuizAnswer({
-        userId: session.userId,
-        wordId: question.wordId,
-        correct: isCorrect,
-        timeSpentMs,
-      });
-    }
-
     // Generate AI feedback automatically for incorrect answers (Story 15.11 Phase 9)
     // Non-blocking with 3-second timeout to avoid delaying quiz flow
     let aiFeedback = null;
@@ -233,27 +241,105 @@ export class QuizSessionService {
       }
     }
 
+    // Process gamification ONLY on session completion (Story 15.11 - completion-gated rewards)
+    // This incentivizes finishing the quiz and prevents partial reward collection
+    let gamificationData = null;
+    if (isComplete) {
+      // Calculate session stats
+      const correctCount = updatedAnswers.filter((a) => a.correct).length;
+      const accuracyRate = (correctCount / session.questions.length) * 100;
+
+      // Get current streak
+      let currentStreak = 0;
+      if (this.streakService) {
+        try {
+          const streak = await this.streakService.getStreak(session.userId);
+          currentStreak = streak.currentStreak || 0;
+        } catch (err) {
+          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+          logger.warn("Failed to get current streak (non-critical)", {
+            error: err.message,
+            userId: session.userId,
+          });
+        }
+      }
+
+      // Calculate XP (base + streak bonus)
+      const xpEarned = this.gamificationService.calculateXP(isCorrect, currentStreak);
+
+      // Check and award badges based on streak milestones
+      let newBadges = [];
+      try {
+        const longestStreak = currentStreak; // Use current as longest for now
+        newBadges = await this.gamificationService.checkAndAwardBadges(
+          session.userId,
+          longestStreak,
+        );
+      } catch (err) {
+        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+        logger.warn("Failed to award badges (non-critical)", {
+          error: err.message,
+          userId: session.userId,
+        });
+      }
+
+      // Roll mystery box (5% chance on 7-day milestones)
+      const mysteryBox = this.gamificationService.checkMysteryBoxDrop(currentStreak);
+
+      // Update streak (48h grace period, increment or reset)
+      // Story 15.11 Flow 2 Step 5e: Update Streak
+      if (this.streakService) {
+        try {
+          await this.streakService.updateStreak(session.userId);
+        } catch (err) {
+          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+          logger.warn("Failed to update streak (non-critical)", {
+            error: err.message,
+            userId: session.userId,
+          });
+        }
+      }
+
+      // Check freeze award (10 consecutive perfect sessions)
+      // Story 15.11 Flow 2 Step 5f: Check Freeze Award
+      let freezeAwarded = false;
+      if (accuracyRate === 100 && this.streakService) {
+        try {
+          freezeAwarded = await this.streakService.checkAndAwardFreeze(session.userId);
+        } catch (err) {
+          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
+          logger.warn("Failed to check freeze award (non-critical)", {
+            error: err.message,
+            userId: session.userId,
+          });
+        }
+      }
+
+      gamificationData = {
+        xpEarned,
+        newBadges,
+        mysteryBox,
+        freezeAwarded,
+        currentStreak,
+      };
+    }
+
     // Get next question (if any)
     const nextQuestion = !isComplete
       ? QuizSession.sanitizeQuestionsForClient([session.questions[newIndex]])[0]
       : null;
 
+    // Return response with flat structure (aligned with type audit)
     return {
       correct: isCorrect,
       correctAnswer: this._getCorrectAnswer(question),
-      feedback: {
-        nextReview: progressUpdate.nextReviewDate,
-        lapseCount: progressUpdate.lapseCount,
-        isLeech: progressUpdate.isLeech,
-      },
-      gamification: gamificationUpdate
-        ? {
-            xpEarned: gamificationUpdate.xpEarned || 0,
-            newBadges: gamificationUpdate.newBadges || [],
-            mysteryBox: gamificationUpdate.mysteryBox || null,
-            freezeAwarded: gamificationUpdate.freezeAwarded || false,
-          }
-        : null,
+      // Flat progress properties (not nested in feedback object)
+      nextReviewDate: progressUpdate.nextReviewDate,
+      lapseCount: progressUpdate.lapseCount,
+      isLeech: progressUpdate.isLeech,
+      // Gamification (only if session complete)
+      gamification: gamificationData,
+      // AI feedback (only if incorrect)
       aiFeedback: aiFeedback
         ? {
             explanation: aiFeedback.explanation,
@@ -272,12 +358,16 @@ export class QuizSessionService {
   /**
    * Get session details (for resume or review)
    * @param {string} sessionId - Session ID
+   * @param {string} userId - User ID for authorization
    * @returns {Promise<object>} Session details
    */
-  async getSession(sessionId) {
-    const session = await this.sessionRepository.findById(sessionId);
+  async getSession(sessionId, userId) {
+    // Get session with authorization (repository composite lookup)
+    const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId);
     if (!session) {
-      throw new Error("Session not found");
+      const error = new Error("Session not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     return {
@@ -318,20 +408,49 @@ export class QuizSessionService {
    * @returns {Promise<object>} Session summary with accuracy, XP, leech words, etc.
    * @throws {Error} If session not found
    */
-  async getSessionSummary(sessionId) {
-    // Fetch session with all related data
-    const session = await this.sessionRepository.findById(sessionId, {
+  /**
+   * Get session summary with gamification data
+   * Story 15.11 Phase 8: Backend-calculated metrics with authorization
+   *
+   * @param {string} sessionId - Session ID
+   * @param {string} userId - User ID for authorization
+   * @returns {Promise<object>} Session summary with all gamification data
+   * @throws {Error} If session not found or user not authorized
+   */
+  async getSessionSummary(sessionId, userId) {
+    // Fetch session with authorization (composite lookup)
+    const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId, {
       includeAnswers: true,
       includeQuestions: true,
       includeWords: true,
     });
 
     if (!session) {
-      throw new Error(`Session not found: ${sessionId}`);
+      const error = new Error("Session not found");
+      error.statusCode = 404;
+      throw error;
     }
 
-    // Use domain service to calculate summary
-    const summary = calculateSessionSummary(session);
+    // Fetch current streak and available freezes from StreakService
+    let currentStreak = 0;
+    let availableFreezes = 0;
+
+    if (this.streakService) {
+      try {
+        const streakData = await this.streakService.getStreak(userId);
+        currentStreak = streakData.currentStreak || 0;
+        availableFreezes = streakData.freezeCount || 0;
+      } catch (error) {
+        // Non-critical: continue with default values if streak fetch fails
+        console.warn("[QuizSessionService] Failed to fetch streak data:", error.message);
+      }
+    }
+
+    // Use domain service to calculate summary with gamification data
+    const summary = calculateSessionSummary(session, {
+      currentStreak,
+      availableFreezes,
+    });
 
     return summary;
   }

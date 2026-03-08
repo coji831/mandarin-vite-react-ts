@@ -25,15 +25,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuizState, useQuizActions } from "../../contexts";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
+import { BadgeCelebrationModal } from "../../../gamification/components/BadgeCelebrationModal";
 import { formatRelativeTime } from "../../utils/dateFormatting";
 import { getLastQuizResult, clearQuizResult } from "../../utils/quizStorage";
-import {
-  StatsGrid,
-  ResultsTable,
-  BadgesDisplay,
-  LeechWarning,
-  NextQuizCountdown,
-} from "../results";
+import { StatsGrid, ResultsTable, LeechWarning, NextQuizCountdown } from "../results";
 import { Button } from "../../../../components";
 import type { QuizSessionSummary } from "../../types";
 import "./ResultsLayout.css";
@@ -68,13 +63,16 @@ function ResultsLayout({
 
   // Story 15.11: Use backend-calculated metrics from session summary
   const correctCount = sessionSummary?.correctCount ?? answers.filter((a) => a.correct).length;
-  const totalCount = sessionSummary?.totalAnswered ?? answers.length;
+  const totalCount = sessionSummary?.totalQuestions ?? answers.length;
   const accuracy = sessionSummary?.accuracyRate ?? 0;
-  const xpEarned = sessionSummary?.totalXP ?? totalXP ?? 0;
+  const xpEarned = sessionSummary?.xpEarned ?? totalXP ?? 0;
   const leeches = sessionSummary?.leechWords ?? [];
 
   // Story 15.9: Mystery box modal state
   const [showMysteryBox, setShowMysteryBox] = useState(!!mysteryBox);
+
+  // Story 15.11 Flow 2.6: Badge celebration modal state
+  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
   // Story 15.11: Get last quiz result for Review Mistakes feature
   const [lastResult, setLastResult] = useState(getLastQuizResult());
@@ -83,6 +81,13 @@ function ResultsLayout({
     // Refresh last result when component mounts
     setLastResult(getLastQuizResult());
   }, []);
+
+  // Story 15.11 Flow 2.6: Auto-open badge celebration modal when new badges earned
+  useEffect(() => {
+    if (newBadges && newBadges.length > 0 && !isDailyComplete) {
+      setShowBadgeCelebration(true);
+    }
+  }, [newBadges, isDailyComplete]);
 
   // Story 15.11: Handler for Review Mistakes button
   const handleReviewMistakes = () => {
@@ -112,6 +117,18 @@ function ResultsLayout({
     setCountdownExpired(true);
   };
 
+  // Story 15.11 Flow 2.6: Handler for badge celebration modal close
+  const handleCloseBadgeCelebration = () => {
+    // Mark badges as celebrated in localStorage to prevent Dashboard double-celebration
+    if (newBadges && newBadges.length > 0) {
+      const celebratedIds = JSON.parse(localStorage.getItem("last_celebrated_badges") || "[]");
+      const newIds = newBadges.map((b) => b.id);
+      const updatedIds = [...new Set([...celebratedIds, ...newIds])];
+      localStorage.setItem("last_celebrated_badges", JSON.stringify(updatedIds));
+    }
+    setShowBadgeCelebration(false);
+  };
+
   return (
     <div className="quizCompleteContainer flex-col-center text-center">
       {/* Daily Complete Banner */}
@@ -135,9 +152,6 @@ function ResultsLayout({
         accuracy={accuracy}
         xpEarned={xpEarned}
       />
-
-      {/* Story 15.9: New Badges Earned */}
-      {newBadges && <BadgesDisplay badges={newBadges} />}
 
       {/* Story 15.9: Freeze Awarded Notification */}
       {freezeAwarded && <div className="freezeAlert">❄️ You earned 1 Streak Freeze!</div>}
@@ -171,6 +185,15 @@ function ResultsLayout({
           mysteryBox={mysteryBox}
           isOpen={showMysteryBox}
           onClose={() => setShowMysteryBox(false)}
+        />
+      )}
+
+      {/* Story 15.11 Flow 2.6: Badge Celebration Modal */}
+      {newBadges && newBadges.length > 0 && (
+        <BadgeCelebrationModal
+          badges={newBadges}
+          isOpen={showBadgeCelebration}
+          onClose={handleCloseBadgeCelebration}
         />
       )}
     </div>

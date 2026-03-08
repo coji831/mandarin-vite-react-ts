@@ -4,9 +4,6 @@
  * Story 15.3: Streak & Gamification Backend APIs
  */
 
-import { BadgeRepository } from "../../infrastructure/repositories/BadgeRepository.js";
-import { StreakRepository } from "../../infrastructure/repositories/StreakRepository.js";
-
 /**
  * Badge milestone definitions
  * Awards based on longestStreak (not currentStreak) to prevent badge loss on streak reset
@@ -31,11 +28,17 @@ const MYSTERY_BOX_REWARDS = [
 /**
  * GamificationService
  * Manages badge awards, XP calculation, and mystery box drops
+ * 
+ * SOLID: Dependency Inversion Principle - depends on abstractions (interfaces)
+ * All dependencies must be injected via constructor (no default instantiation)
  */
 export class GamificationService {
-  constructor(badgeRepository = null, streakRepository = null) {
-    this.badgeRepository = badgeRepository || new BadgeRepository();
-    this.streakRepository = streakRepository || new StreakRepository();
+  constructor(badgeRepository, streakRepository) {
+    if (!badgeRepository || !streakRepository) {
+      throw new Error('GamificationService requires badgeRepository and streakRepository');
+    }
+    this.badgeRepository = badgeRepository;
+    this.streakRepository = streakRepository;
   }
 
   /**

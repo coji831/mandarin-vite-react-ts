@@ -4,17 +4,20 @@
  * Story 15.3: Streak & Gamification Backend APIs
  */
 
-import { StreakRepository } from "../../infrastructure/repositories/StreakRepository.js";
-import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
-
 /**
  * StreakService
  * Manages study streaks with 48-hour grace period and freeze protection
+ * 
+ * SOLID: Dependency Inversion Principle - depends on abstractions (interfaces)
+ * All dependencies must be injected via constructor (no default instantiation)
  */
 export class StreakService {
-  constructor(streakRepository = null, quizResultRepository = null) {
-    this.streakRepository = streakRepository || new StreakRepository();
-    this.quizResultRepository = quizResultRepository || new QuizResultRepository();
+  constructor(streakRepository, quizResultRepository) {
+    if (!streakRepository || !quizResultRepository) {
+      throw new Error('StreakService requires streakRepository and quizResultRepository');
+    }
+    this.streakRepository = streakRepository;
+    this.quizResultRepository = quizResultRepository;
   }
 
   /**
