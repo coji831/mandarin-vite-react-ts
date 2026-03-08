@@ -264,8 +264,8 @@ export class QuizSessionService {
         }
       }
 
-      // Calculate XP (base + streak bonus)
-      const xpEarned = this.gamificationService.calculateXP(isCorrect, currentStreak);
+      // Calculate XP (base + streak bonus) for ALL correct answers
+      const xpEarned = this.gamificationService.calculateXP(correctCount, currentStreak);
 
       // Check and award badges based on streak milestones
       let newBadges = [];
@@ -283,8 +283,8 @@ export class QuizSessionService {
         });
       }
 
-      // Roll mystery box (5% chance on 7-day milestones)
-      const mysteryBox = this.gamificationService.checkMysteryBoxDrop(currentStreak);
+      // Roll mystery box (accuracy-based rates: 3%/5%/8%/10%)
+      const mysteryBox = this.gamificationService.checkMysteryBoxDrop(accuracyRate);
 
       // Update streak (48h grace period, increment or reset)
       // Story 15.11 Flow 2 Step 5e: Update Streak

@@ -11,10 +11,13 @@
 import {
   LEECH_THRESHOLD,
   XP_PER_CORRECT_ANSWER,
+  STREAK_BONUS_THRESHOLD,
+  STREAK_BONUS_XP,
   PERCENTAGE_MULTIPLIER,
   isLeech,
   calculateXP,
   calculateAccuracy,
+  getMysteryBoxDropRate,
 } from "../constants/BusinessRules.js";
 
 /**
@@ -46,7 +49,7 @@ export function calculateSessionSummary(session, options = {}) {
   const accuracyRate = calculateAccuracy(correctCount, totalQuestions);
 
   // Get gamification data from session (already saved during completion)
-  const xpEarned = session.xpEarned || calculateXP(correctCount); // Type audit: xpEarned not totalXP
+  const xpEarned = session.xpEarned || calculateXP(correctCount, currentStreak); // Type audit: xpEarned not totalXP
   const newBadges = session.newBadges || [];
   const mysteryBox = session.mysteryBox || null;
 

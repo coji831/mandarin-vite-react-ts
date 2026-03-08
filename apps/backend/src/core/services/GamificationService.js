@@ -28,14 +28,14 @@ const MYSTERY_BOX_REWARDS = [
 /**
  * GamificationService
  * Manages badge awards, XP calculation, and mystery box drops
- * 
+ *
  * SOLID: Dependency Inversion Principle - depends on abstractions (interfaces)
  * All dependencies must be injected via constructor (no default instantiation)
  */
 export class GamificationService {
   constructor(badgeRepository, streakRepository) {
     if (!badgeRepository || !streakRepository) {
-      throw new Error('GamificationService requires badgeRepository and streakRepository');
+      throw new Error("GamificationService requires badgeRepository and streakRepository");
     }
     this.badgeRepository = badgeRepository;
     this.streakRepository = streakRepository;
@@ -101,46 +101,49 @@ export class GamificationService {
   }
 
   /**
-   * Calculate XP earned for quiz answer
-   * Formula: base 10 (correct only) + 5 bonus (streak >= 7 days)
+   * Calculate XP earned for quiz session
+   * Formula: base XP (correctCount * 10) + streak bonus (correctCount * 5 if streak >= 7)
    *
-   * @param {boolean} correct - Whether answer was correct
+   * @param {number} correctCount - Number of correct answers in session
    * @param {number} currentStreak - User's current streak value
-   * @returns {number} XP earned
+   * @returns {number} Total XP earned
    */
-  calculateXP(correct, currentStreak) {
-    if (!correct) {
-      return 0; // No XP for incorrect answers
-    }
-
-    const baseXP = 10;
-    const streakBonus = currentStreak >= 7 ? 5 : 0;
-
+  calculateXP(correctCount, currentStreak) {
+    const baseXP = correctCount * 10;
+    const streakBonus = currentStreak >= 7 ? correctCount * 5 : 0;
     return baseXP + streakBonus;
   }
 
   /**
-   * Check if mystery box should drop (5% chance on 7-day milestone)
-   * Mystery boxes only drop on streak milestones: 7,  14, 21, 28, ...
+   * Check if mystery box should drop based on accuracy-based rates
+   * Drop rates: <50%=3%, 50-79%=5%, 80-94%=8%, 95-100%=10%
+   * Rolls on EVERY quiz completion (not milestone-based)
    *
-   * @param {number} currentStreak - User's current streak value
+   * @param {number} accuracyRate - Quiz accuracy (0-100)
    * @returns {object|null} Reward object or null if no drop
    */
-  checkMysteryBoxDrop(currentStreak) {
-    // Only check on 7-day milestones
-    if (currentStreak % 7 !== 0) {
-      return null;
+  checkMysteryBoxDrop(accuracyRate) {
+    // Get drop rate based on accuracy
+    let dropRate;
+    if (accuracyRate >= 95) {
+      dropRate = 0.1; // 95-100%: 10% chance
+    } else if (accuracyRate >= 80) {
+      dropRate = 0.08; // 80-94%: 8% chance
+    } else if (accuracyRate >= 50) {
+      dropRate = 0.05; // 50-79%: 5% chance
+    } else {
+      dropRate = 0.03; // <50%: 3% chance
     }
 
-    // 5% drop rate
+    // Roll for drop
     const roll = Math.random();
-    if (roll < 0.05) {
+    if (roll < dropRate) {
       // Random reward from pool
       const reward = MYSTERY_BOX_REWARDS[Math.floor(Math.random() * MYSTERY_BOX_REWARDS.length)];
       return {
         ...reward,
         droppedAt: new Date(),
-        milestone: currentStreak,
+        accuracyRate,
       };
     }
 

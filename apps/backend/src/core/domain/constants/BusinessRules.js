@@ -14,9 +14,30 @@
 export const LEECH_THRESHOLD = 5;
 
 /**
- * XP points awarded per correct answer
+ * XP points awarded per correct answer (base value)
  */
 export const XP_PER_CORRECT_ANSWER = 10;
+
+/**
+ * Streak threshold for XP bonus eligibility
+ * Users with streaks >= this value get bonus XP per correct answer
+ */
+export const STREAK_BONUS_THRESHOLD = 7; // days
+
+/**
+ * Bonus XP awarded per correct answer when streak >= STREAK_BONUS_THRESHOLD
+ */
+export const STREAK_BONUS_XP = 5;
+
+/**
+ * Mystery box drop rates based on quiz accuracy
+ */
+export const MYSTERY_BOX_RATES = {
+  POOR: { threshold: 50, rate: 0.03 }, // <50%: 3% chance
+  FAIR: { threshold: 80, rate: 0.05 }, // 50-79%: 5% chance
+  GOOD: { threshold: 95, rate: 0.08 }, // 80-94%: 8% chance
+  PERFECT: { threshold: 100, rate: 0.1 }, // 95-100%: 10% chance
+};
 
 /**
  * Session expiration time in milliseconds (1 hour)
@@ -51,12 +72,16 @@ export function isLeech(lapseCount) {
 }
 
 /**
- * Helper function to calculate XP for correct answers
+ * Helper function to calculate XP for correct answers with streak bonus
+ * Formula: base XP (correctCount * 10) + streak bonus (correctCount * 5 if streak >= 7)
  * @param {number} correctCount - Number of correct answers
+ * @param {number} currentStreak - User's current streak value (default: 0)
  * @returns {number} Total XP earned
  */
-export function calculateXP(correctCount) {
-  return correctCount * XP_PER_CORRECT_ANSWER;
+export function calculateXP(correctCount, currentStreak = 0) {
+  const baseXP = correctCount * XP_PER_CORRECT_ANSWER;
+  const streakBonus = currentStreak >= STREAK_BONUS_THRESHOLD ? correctCount * STREAK_BONUS_XP : 0;
+  return baseXP + streakBonus;
 }
 
 /**
@@ -68,6 +93,24 @@ export function calculateXP(correctCount) {
 export function calculateAccuracy(correctCount, totalCount) {
   if (totalCount === 0) return 0;
   return (correctCount / totalCount) * PERCENTAGE_MULTIPLIER;
+}
+
+/**
+ * Helper function to determine mystery box drop rate based on accuracy
+ * Tiered rates: <50%=3%, 50-79%=5%, 80-94%=8%, 95-100%=10%
+ * @param {number} accuracyRate - Quiz accuracy (0-100)
+ * @returns {number} Drop rate (0.0-1.0)
+ */
+export function getMysteryBoxDropRate(accuracyRate) {
+  if (accuracyRate >= MYSTERY_BOX_RATES.PERFECT.threshold) {
+    return MYSTERY_BOX_RATES.PERFECT.rate;
+  } else if (accuracyRate >= MYSTERY_BOX_RATES.GOOD.threshold) {
+    return MYSTERY_BOX_RATES.GOOD.rate;
+  } else if (accuracyRate >= MYSTERY_BOX_RATES.FAIR.threshold) {
+    return MYSTERY_BOX_RATES.FAIR.rate;
+  } else {
+    return MYSTERY_BOX_RATES.POOR.rate;
+  }
 }
 
 /**
