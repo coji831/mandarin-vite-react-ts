@@ -32,14 +32,8 @@ export function ExamLayout() {
     answers,
   } = useQuizState();
 
-  const {
-    toggleHint,
-    setAnswerValue,
-    handleSubmitAnswer,
-    handleAnswer,
-    handleNext,
-    getCorrectAnswer,
-  } = useQuizActions();
+  const { toggleHint, setAnswerValue, handleSubmitAnswer, handleAnswer, handleNext } =
+    useQuizActions();
 
   if (!currentQuestion) {
     return null;
@@ -94,7 +88,7 @@ export function ExamLayout() {
               feedbackLoading={feedbackLoading}
               aiFeedback={aiFeedback}
               userAnswer={lastAnswer.userAnswer}
-              correctAnswer={getCorrectAnswer(currentQuestion)}
+              correctAnswer={lastAnswer.correctAnswer ?? ""}
               onNext={handleNext}
             />
           )}

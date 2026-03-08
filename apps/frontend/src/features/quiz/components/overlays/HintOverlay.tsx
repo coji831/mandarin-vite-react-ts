@@ -9,7 +9,7 @@
  * - Dismissible via overlay click or close button
  */
 
-import { QuestionMode } from "../../types/QuizTypes";
+import { QuestionMode } from "../../types";
 import "./HintOverlay.css";
 
 type HintOverlayProps = {

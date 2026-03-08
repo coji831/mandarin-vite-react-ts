@@ -5,14 +5,16 @@
  */
 
 import express from "express";
-import { QuizSessionController } from "../controllers/QuizSessionController.js";
+import { QuizSessionController } from "../controllers/quizSessionController.js";
 import { QuizSessionService } from "../../core/services/QuizSessionService.js";
 import { QuizSessionRepository } from "../../infrastructure/repositories/QuizSessionRepository.js";
+import { QuizSessionSummaryRepository } from "../../infrastructure/repositories/QuizSessionSummaryRepository.js";
 import { LearningService } from "../../core/services/LearningService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
 import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
 import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
 import { GamificationService } from "../../core/services/GamificationService.js";
+import { StreakService } from "../../core/services/StreakService.js";
 import { StreakRepository } from "../../infrastructure/repositories/StreakRepository.js";
 import { BadgeRepository } from "../../infrastructure/repositories/BadgeRepository.js";
 import { CachedAIFeedbackService } from "../../core/services/CachedAIFeedbackService.js";
@@ -24,6 +26,7 @@ const router = express.Router();
 
 // Initialize dependencies with proper injection
 const quizSessionRepository = new QuizSessionRepository();
+const quizSessionSummaryRepository = new QuizSessionSummaryRepository();
 const progressRepository = new ProgressRepository();
 const quizResultRepository = new QuizResultRepository();
 const vocabularyRepository = new VocabularyRepository();
@@ -38,6 +41,7 @@ const learningService = new LearningService(
 );
 
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
+const streakService = new StreakService(streakRepository, quizResultRepository);
 
 // AI Feedback Service for automatic error explanations (Story 15.11 Phase 9)
 const cacheService = getCacheService();
@@ -49,6 +53,8 @@ const quizSessionService = new QuizSessionService(
   gamificationService,
   vocabularyRepository,
   aiFeedbackService, // 5th parameter - automatic AI feedback for incorrect answers
+  streakService, // 6th parameter - streak tracking for gamification
+  quizSessionSummaryRepository, // 7th parameter - Flow 5 database persistence
 );
 
 const quizSessionController = new QuizSessionController(quizSessionService);

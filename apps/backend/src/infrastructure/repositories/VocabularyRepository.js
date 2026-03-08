@@ -2,7 +2,7 @@
  * @file apps/backend/src/infrastructure/repositories/VocabularyRepository.js
  * @description Infrastructure implementation that retrieves vocabulary from database and GCS
  * Clean architecture: implements IVocabularyRepository interface
- * 
+ *
  * Story 15-2: Enhanced to use normalized database schema (VocabularyWord, Category, VocabularyList)
  */
 
@@ -39,13 +39,13 @@ export class VocabularyRepository {
       where: { id: wordId },
       include: {
         categories: {
-          include: { category: true }
+          include: { category: true },
         },
         lists: {
           include: { list: { select: { name: true, difficulty: true } } },
-          take: 3  // Limit to avoid excessive data
-        }
-      }
+          take: 3, // Limit to avoid excessive data
+        },
+      },
     });
   }
 
@@ -55,14 +55,14 @@ export class VocabularyRepository {
    */
   async findByIds(wordIds) {
     if (!wordIds || wordIds.length === 0) return [];
-    
+
     return await prisma.vocabularyWord.findMany({
       where: { id: { in: wordIds } },
       include: {
         categories: {
-          include: { category: { select: { name: true } } }
-        }
-      }
+          include: { category: { select: { name: true } } },
+        },
+      },
     });
   }
 
@@ -73,13 +73,13 @@ export class VocabularyRepository {
     // Try database first
     const dbLists = await prisma.vocabularyList.findMany({
       where: { isPublic: true },
-      orderBy: { name: 'asc' }
+      orderBy: { name: "asc" },
     });
-    
+
     if (dbLists.length > 0) {
       return dbLists;
     }
-    
+
     // Fallback to GCS for migration
     return await this._findAllListsFromGCS();
   }
@@ -111,13 +111,13 @@ export class VocabularyRepository {
   async findListById(listId) {
     // Try database first
     const dbList = await prisma.vocabularyList.findUnique({
-      where: { id: listId }
+      where: { id: listId },
     });
-    
+
     if (dbList) {
       return dbList;
     }
-    
+
     // Fallback to GCS
     const lists = await this._findAllListsFromGCS();
     return lists.find((l) => l.id === listId) || null;
@@ -137,23 +137,23 @@ export class VocabularyRepository {
             word: {
               include: {
                 categories: {
-                  include: { category: true }
-                }
-              }
-            }
+                  include: { category: true },
+                },
+              },
+            },
           },
-          orderBy: { sortOrder: 'asc' }
-        }
-      }
+          orderBy: { sortOrder: "asc" },
+        },
+      },
     });
 
     if (listWithWords) {
-      return listWithWords.words.map(wl => ({
+      return listWithWords.words.map((wl) => ({
         ...wl.word,
-        sortOrder: wl.sortOrder
+        sortOrder: wl.sortOrder,
       }));
     }
-    
+
     // Fallback to GCS CSV for migration
     return await this._findWordsForListFromGCS(listId);
   }
@@ -184,46 +184,52 @@ export class VocabularyRepository {
     const whereClause = {
       AND: [
         // Text search
-        query ? {
-          OR: [
-            { pinyin: { contains: query, mode: 'insensitive' } },
-            { simplified: { contains: query } },
-            { traditional: { contains: query } },
-            { english: { contains: query, mode: 'insensitive' } }
-          ]
-        } : {},
-        
+        query
+          ? {
+              OR: [
+                { pinyin: { contains: query, mode: "insensitive" } },
+                { simplified: { contains: query } },
+                { traditional: { contains: query } },
+                { english: { contains: query, mode: "insensitive" } },
+              ],
+            }
+          : {},
+
         // Category filter
-        filters.categories?.length ? {
-          categories: {
-            some: {
-              category: { name: { in: filters.categories } }
+        filters.categories?.length
+          ? {
+              categories: {
+                some: {
+                  category: { name: { in: filters.categories } },
+                },
+              },
             }
-          }
-        } : {},
-        
+          : {},
+
         // List filter
-        filters.lists?.length ? {
-          lists: {
-            some: {
-              list: { id: { in: filters.lists } }
+        filters.lists?.length
+          ? {
+              lists: {
+                some: {
+                  list: { id: { in: filters.lists } },
+                },
+              },
             }
-          }
-        } : {}
-      ]
+          : {},
+      ],
     };
 
     return await prisma.vocabularyWord.findMany({
       where: whereClause,
       include: {
         categories: { include: { category: true } },
-        lists: { 
+        lists: {
           include: { list: { select: { name: true, difficulty: true } } },
-          take: 2
-        }
+          take: 2,
+        },
       },
       take: filters.limit || 50,
-      skip: filters.offset || 0
+      skip: filters.offset || 0,
     });
   }
 
@@ -235,12 +241,12 @@ export class VocabularyRepository {
       where: { name: categoryName },
       include: {
         words: {
-          include: { word: true }
-        }
-      }
+          include: { word: true },
+        },
+      },
     });
 
-    return category?.words.map(wc => wc.word) || [];
+    return category?.words.map((wc) => wc.word) || [];
   }
 
   /**
@@ -248,7 +254,7 @@ export class VocabularyRepository {
    */
   async findAllCategories() {
     return await prisma.category.findMany({
-      orderBy: { displayOrder: 'asc' }
+      orderBy: { displayOrder: "asc" },
     });
   }
 
@@ -275,7 +281,26 @@ export class VocabularyRepository {
 
     return lists;
   }
+
+  /**
+   * Find unlearned vocabulary words (words not in learned set)
+   * @param {number[]} learnedWordIds - Array of already learned word IDs
+   * @param {number} limit - Maximum number of words to return
+   * @returns {Promise<Array>} Array of unlearned vocabulary words
+   */
+  async findUnlearnedWords(learnedWordIds, limit = 10) {
+    const words = await prisma.vocabularyWord.findMany({
+      where: {
+        id: {
+          notIn: learnedWordIds,
+        },
+      },
+      take: limit,
+      orderBy: { id: "asc" },
+    });
+
+    return words;
+  }
 }
 
 export default VocabularyRepository;
-

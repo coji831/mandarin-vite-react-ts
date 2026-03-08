@@ -5,15 +5,14 @@
  * Story 15.8: Updated tests for stats grid and XP display
  * Story 15.9: Added tests for gamification rewards (mystery box, badges, freeze)
  * Epic 19: State Refactor - Updated to use context mocking (zero props)
+ * Story 15.11 Flow 2.6: Added BadgeCelebrationModal mocking
  */
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ReactNode } from "react";
 import { ResultsLayout } from "../layouts/ResultsLayout";
-import { QuizAnswer } from "../../types/QuizTypes";
-import type { MysteryBox } from "../../hooks/useQuizAPI";
-import type { Badge } from "../../../gamification/types/GamificationTypes";
+import { QuizAnswer, MysteryBox, Badge } from "../../types";
 
 // Mock context
 const mockUseQuizState = vi.fn();
@@ -22,6 +21,20 @@ const mockUseQuizActions = vi.fn();
 vi.mock("../../contexts", () => ({
   useQuizState: () => mockUseQuizState(),
   useQuizActions: () => mockUseQuizActions(),
+}));
+
+// Mock BadgeCelebrationModal to avoid confetti animation in tests
+vi.mock("../../../gamification/components/BadgeCelebrationModal", () => ({
+  BadgeCelebrationModal: ({ badges, isOpen, onClose }: any) => {
+    if (!isOpen || !badges || badges.length === 0) return null;
+    return (
+      <div data-testid="badge-celebration-modal">
+        <div>Badge Celebration Modal</div>
+        <div>{badges[0].name}</div>
+        <button onClick={onClose}>Close</button>
+      </div>
+    );
+  },
 }));
 
 describe("ResultsLayout", () => {
@@ -258,9 +271,9 @@ describe("ResultsLayout", () => {
 
       render(<ResultsLayout />);
 
-      expect(screen.getByText(/New Badges Earned/i)).toBeInTheDocument();
+      // Story 15.11 Flow 2.6: Badge celebration modal should open
+      expect(screen.getByTestId("badge-celebration-modal")).toBeInTheDocument();
       expect(screen.getByText("Bronze Flame")).toBeInTheDocument();
-      expect(screen.getByText("🔥")).toBeInTheDocument();
     });
 
     it("displays multiple new badges", () => {
@@ -289,8 +302,9 @@ describe("ResultsLayout", () => {
 
       render(<ResultsLayout />);
 
+      // Story 15.11 Flow 2.6: Modal displays first badge
+      expect(screen.getByTestId("badge-celebration-modal")).toBeInTheDocument();
       expect(screen.getByText("Bronze Flame")).toBeInTheDocument();
-      expect(screen.getByText("Silver Flame")).toBeInTheDocument();
     });
 
     it("does not display badges section when no badges earned", () => {
@@ -303,7 +317,7 @@ describe("ResultsLayout", () => {
       });
 
       render(<ResultsLayout />);
-      expect(screen.queryByText(/New Badges Earned/i)).not.toBeInTheDocument();
+      expect(screen.queryByTestId("badge-celebration-modal")).not.toBeInTheDocument();
     });
 
     it("displays freeze awarded notification", () => {

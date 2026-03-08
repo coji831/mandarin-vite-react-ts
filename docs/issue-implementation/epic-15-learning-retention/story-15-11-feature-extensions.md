@@ -26,6 +26,8 @@ Implement multi-meaning word support, pinyin IME-style conversion, quiz result r
 
 ### 1. Multi-Meaning Word Parsing
 
+> **Status: Deferred** — `validation.ts` was removed during Story 15.11 Phase 8 backend refactor. Multi-meaning parsing will be revisited in a follow-up story when the quiz validation layer is re-added.
+
 ```typescript
 // apps/frontend/src/features/quiz/utils/validation.ts
 
@@ -188,6 +190,8 @@ export function QuizCard({ question, mode, onAnswer }: QuizCardProps) {
 
 ### 3. Pinyin IME-Style Auto-Conversion
 
+> **Status: Deferred** — `pinyinConverter.ts` was removed during Story 15.11 Phase 8 backend refactor. Tone number to tone mark auto-conversion will be revisited in a follow-up story.
+
 ```typescript
 // apps/frontend/src/features/quiz/utils/pinyinConverter.ts
 
@@ -270,6 +274,8 @@ export function TypeAnswerInput({ question, onAnswer }: Props) {
 ```
 
 ### 4. Quiz Result Retention with Redo/Refresh
+
+> **Status: Deferred** — `quizStorage.ts` and the "Review Mistakes" button were removed during Story 15.11 Phase 8. Quiz result retention is now handled server-side via `quiz_results` table. The Redo/Refresh feature will be revisited in a follow-up story using the session summary endpoint.
 
 ```tsx
 // DailyReviewQuiz.tsx - Store results in localStorage

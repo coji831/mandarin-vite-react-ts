@@ -12,6 +12,8 @@ import conversationRouter from "./conversationRoutes.js";
 import ttsRouter from "./ttsRoutes.js";
 import vocabularyRouter from "./vocabularyRoutes.js";
 import healthRouter from "./healthRoutes.js";
+import quizSessionRouter from "./quizSession.js";
+import learningRouter from "./learning.js";
 
 const router = express.Router();
 
@@ -29,6 +31,12 @@ router.use(gamificationRouter);
 
 // AI Feedback routes (v1) - Story 15.4
 router.use(aiFeedbackRouter);
+
+// Learning routes (v1) - Story 15.11 Phase 8: Quiz-based learning endpoints
+router.use(learningRouter);
+
+// Quiz Session routes (v1) - Story 15.11 Phase 8: Session-based quiz endpoints
+router.use(quizSessionRouter);
 
 // Conversation routes
 router.use(conversationRouter);

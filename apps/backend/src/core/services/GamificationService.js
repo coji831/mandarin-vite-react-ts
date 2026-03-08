@@ -20,9 +20,14 @@ const BADGE_MILESTONES = [
  * Dropped at 5% rate on streak milestones (7-day multiples)
  */
 const MYSTERY_BOX_REWARDS = [
-  { type: "xp", amount: 50, name: "Bonus XP", icon: "⭐" },
-  { type: "freeze", amount: 1, name: "Streak Freeze", icon: "❄️" },
-  { type: "badge", id: "golden_flame_rare", name: "Golden Flame (Rare)", icon: "✨" },
+  { rewardType: "xp_boost", rewardValue: 50, name: "Bonus XP", icon: "⭐" },
+  { rewardType: "freeze", rewardValue: 1, name: "Streak Freeze", icon: "❄️" },
+  {
+    rewardType: "cosmetic",
+    rewardValue: "golden_flame_rare",
+    name: "Golden Flame (Rare)",
+    icon: "✨",
+  },
 ];
 
 /**

@@ -15,6 +15,9 @@
 import { QuizAnswer } from "./QuizTypes";
 import { Badge } from "../../gamification/types/GamificationTypes";
 
+// Re-export Badge so types/index.ts barrel can expose it from this module
+export type { Badge } from "../../gamification/types/GamificationTypes";
+
 /**
  * Mystery box reward (5% drop chance on streak milestones)
  * Aligned with backend API: POST /api/v1/gamification/mystery-box/:id/open

@@ -8,7 +8,7 @@
  * Story 15.5: Core Quiz UI Components
  * Story 15.10: Question display only (answer grid in parent)
  */
-import { QuestionMode } from "../../types/QuizTypes";
+import { QuestionMode } from "../../types";
 import "./QuestionSection.css";
 
 interface QuestionSectionProps {
@@ -32,7 +32,7 @@ function QuestionSection({ question, mode, onToggleHint }: QuestionSectionProps)
         return (
           <div className="question flex-col-center text-center">
             <h2>{question.word}</h2>
-            <p className="pinyin">({question.pinyin})</p>
+            {question.pinyin && <p className="pinyin">({question.pinyin})</p>}
             <p>What does this mean?</p>
           </div>
         );
@@ -46,8 +46,8 @@ function QuestionSection({ question, mode, onToggleHint }: QuestionSectionProps)
       case "type_character":
         return (
           <div className="question flex-col-center text-center">
-            <p className="pinyin">{question.pinyin}</p>
-            <p>{question.english}</p>
+            {question.pinyin && <p className="pinyin">{question.pinyin}</p>}
+            {question.english && <p>{question.english}</p>}
             <p>Type the Chinese character:</p>
           </div>
         );

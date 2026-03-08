@@ -731,7 +731,7 @@ All existing flashcard API calls continue to work without modification:
 Words with `lapseCount >= 5` are flagged as "leeches" (difficult vocabulary requiring targeted review). Leech tracking is exposed via:
 
 - `POST /api/progress/test-result` response includes `isLeech: boolean`
-- `GET /api/progress/leeches` endpoint (Story 15.2) returns high-difficulty words
+- `GET /api/v1/learning/leeches` endpoint (Story 15.2) returns high-difficulty words
 
 ---
 
@@ -1201,7 +1201,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-### GET /api/v1/progress/leeches
+### GET /api/v1/learning/leeches
 
 Get vocabulary words with high lapse counts (struggling vocabulary requiring targeted review). Returns words where `lapseCount >= threshold`.
 
@@ -1251,11 +1251,11 @@ Get vocabulary words with high lapse counts (struggling vocabulary requiring tar
 ```bash
 # Get default leeches (lapseCount >= 5)
 curl -H "Authorization: Bearer $TOKEN" \
-  https://api.example.com/api/v1/progress/leeches
+  https://api.example.com/api/v1/learning/leeches
 
 # Get severely struggling words (lapseCount >= 10)
 curl -H "Authorization: Bearer $TOKEN" \
-  https://api.example.com/api/v1/progress/leeches?minLapseCount=10
+  https://api.example.com/api/v1/learning/leeches?minLapseCount=10
 ```
 
 ---

@@ -129,6 +129,201 @@ This epic is divided into 12 user stories using **UI/API separation principle** 
 - Story 15.11 adds extensibility hooks without implementing full features (YAGNI principle)
 - Story 15.12 ensures production-ready code with comprehensive documentation
 
+## Business Rules
+
+This section maps core learning principles and gamification mechanics to their technical implementations across the epic.
+
+### 1. Spaced Repetition Algorithm (Story 15.1, 15.2, 15.11)
+
+**Rule:** Words are scheduled for review using exponential backoff spaced repetition.
+
+**Formula (Story 15.11 - Exponential Backoff):**
+
+```
+newDelay = correct ? min(365, currentDelay * 2) : 1
+```
+
+**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
+
+**Performance Multipliers:**
+
+- **Quiz correct answer:** Double the interval (exponential backoff), capped at 365 days
+- **Quiz incorrect answer:** Reset to 1 day (immediate review)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/core/services/ProgressService.js` → `calculateNextReview(currentDelay, correct)`
+- Database: `progress.nextReview`, `progress.currentDelay` columns, updated after each quiz answer
+- API: `POST /api/progress/record-quiz-result` adjusts nextReview based on correctness
+- **Bug Fix (Story 15.11)**: Fixed critical bug where delay compounding wasn't working (was passing 0 instead of currentDelay)
+
+**Business Rationale:** Active recall (quizzes) provides objective validation; exponential backoff efficiently spaces well-mastered words (up to yearly reviews) while quickly re-exposing challenging words. Increased max from 30 to 365 days for long-term retention.
+
+---
+
+### 2. Interleaving Practice (Story 15.6)
+
+**Rule:** Question types are randomized per word (not blocked), creating "desirable difficulty" that improves long-term retention by 20-30%.
+
+**Algorithm:**
+
+- For each word: randomly select from `['multiple_choice', 'type_pinyin', 'type_character']`
+- Shuffle occurs per word (e.g., Word A → MC, Word B → type pinyin, Word A again tomorrow → type character)
+- NOT blocked practice (e.g., all MC first, then all pinyin)
+
+**Implementation:**
+
+- Frontend: `apps/frontend/src/features/quiz/utils/interleaving.ts` → `createInterleavedQuestions()`
+- State: `apps/frontend/src/features/quiz/reducers/quizReducer.ts` → stores question sequence
+- Component: `apps/frontend/src/features/quiz/pages/QuizPage.tsx` → renders mode-specific inputs
+
+**Business Rationale:** Cognitive science research (Rohrer & Taylor 2007) shows interleaving forces learners to discriminate between concepts, strengthening memory retrieval vs. blocked practice which feels easier but produces weaker retention.
+
+---
+
+### 3. Streak Tracking & Reset Logic (Story 15.3)
+
+**Rule:** Study streaks motivate daily active usage through loss aversion mechanics.
+
+**Mechanics:**
+
+- **Increment:** Streak increases by 1 on first quiz activity of the day (midnight-to-midnight UTC)
+- **Reset:** Streak resets to 0 after 48 hours of inactivity (not 24h, to allow one missed day)
+- **Freeze Currency:** Earn 1 freeze per 10 consecutive perfect quizzes; spend to protect streak for 24h
+- **Badges:** Awarded at 7, 30, 100-day milestones (one-time, non-repeating)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/StreakService.ts` → `updateStreak()`, `checkStreakReset()`
+- Database: `study_streaks` table with `currentStreak`, `longestStreak`, `lastActivityDate`, `streakFreezes`
+- API: `GET /api/progress/streak`, `POST /api/progress/test-result` (auto-increments streak)
+- Frontend: `apps/frontend/src/features/gamification/components/StreakDisplay.tsx`
+
+**Business Rationale:** 48-hour window balances motivational urgency with user forgiveness; streak freezes reduce frustration from unavoidable missed days (travel, illness).
+
+---
+
+### 4. Leech Detection & Focus Words (Story 15.2)
+
+**Rule:** Words with 5+ consecutive incorrect answers are flagged as "leeches" to identify struggling vocabulary requiring extra attention.
+
+**Algorithm:**
+
+- Track `lapseCount` (increments on incorrect, resets to 0 on correct)
+- Flag word as leech when `lapseCount >= 5`
+- Reset lapse count on first correct answer (celebrate mastery)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/ProgressService.ts` → `updateLapseCount()`
+- Database: `progress.lapseCount` column (integer, default 0)
+- API: `GET /api/progress/leeches` returns flagged words
+- Frontend: `apps/frontend/src/features/quiz/components/results/LeechWarning.tsx` (displays as "Focus Words")
+
+**Business Rationale:** Positive framing ("Focus Words" not "Leeches") avoids demotivation while surfacing words that need mnemonic strategies or simplified review; prevents learners from wasting time on impossible words.
+
+---
+
+### 5. XP & Mystery Box Rewards (Story 15.3)
+
+**Rule:** Variable reward schedules (unpredictable bonuses) drive engagement via operant conditioning principles.
+
+**Mechanics:**
+
+- **Base XP:** +10 XP per correct answer (immediate feedback)
+- **Streak Bonus:** +5 XP per correct answer when streak >= 7 days
+- **Mystery Box:** 5% drop rate after completing quiz session (random cosmetic rewards)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/GamificationService.ts` → `calculateXP()`, `rollMysteryBox()`
+- API: `POST /api/progress/test-result` returns `xpEarned` field
+- Frontend: `apps/frontend/src/features/quiz/components/results/StatsGrid.tsx` (displays XP)
+- Frontend: `apps/frontend/src/features/gamification/components/MysteryBoxAnimation.tsx` (5% trigger)
+
+**Business Rationale:** Fixed rewards (XP) provide consistent validation; variable rewards (mystery boxes) create anticipation and excitement per behavioral psychology research (Skinner 1953).
+
+---
+
+### 6. AI-Powered Error Feedback (Story 15.4)
+
+**Rule:** Personalized explanations for incorrect answers address the #1 user complaint: "Why was I wrong?"
+
+**Mechanics:**
+
+- **Trigger:** Generated only for incorrect quiz answers (not correct answers or skips)
+- **Generation:** Gemini API analyzes user answer vs. correct answer, provides contextual explanation
+- **Caching:** Redis stores common errors with 24h TTL (~70% cache hit rate reduces API costs)
+- **Timeout:** 3-second timeout with fallback to generic template if API slow/unavailable
+- **Display:** Async loading (doesn't block quiz progression; loads in background panel)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/AIFeedbackService.ts` → `generateFeedback()`
+- Caching: Redis key format: `quiz:feedback:{wordId}:{userAnswer}` (hash-based)
+- API: `POST /api/quiz/feedback` returns `{ explanation, similarWords, cached }`
+- Frontend: `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` → async fetch
+- Component: `apps/frontend/src/features/quiz/components/exams/FeedbackSection.tsx`
+
+**Business Rationale:** Generic error messages ("Incorrect, the answer is X") don't explain confusion; AI feedback identifies mistake type (tone confusion, similar character mix-up) and provides learning strategy, accelerating understanding vs. repeated trial-and-error.
+
+---
+
+### 7. Multiple Choice Distractor Generation (Story 15.5, 15.6)
+
+**Rule:** Multiple choice questions must include plausible distractors (wrong answers that seem reasonable) to prevent guessing.
+
+**Algorithm:**
+
+- For **Chinese → English**: Select 3 incorrect English translations from vocabulary database (random sampling)
+- For **Pinyin → Chinese**: Select 3 characters with similar pronunciation or tone variations (e.g., mā vs má vs mǎ vs mà for horse)
+- For **English → Chinese**: Select 3 characters with similar meaning categories (e.g., food words if correct answer is food word)
+- **Shuffle:** Randomize correct answer position (not always option A)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/utils/distractorGenerator.ts` → `generateDistractors()`
+- API: `GET /api/progress/due` returns words with pre-generated options
+- Frontend: `apps/frontend/src/features/quiz/components/inputs/MultipleChoiceInput.tsx` → renders options
+
+**Business Rationale:** Weak distractors (obviously wrong answers) allow learners to guess correctly without actually knowing the answer, invalidating assessment; plausible distractors force genuine recall.
+
+---
+
+### 8. Quiz Results Retention (Story 15.11)
+
+**Rule:** Quiz results persist to the backend `quiz_results` table, enabling result review and spaced repetition calculations without relying on localStorage.
+
+**Mechanics:**
+
+- **Storage:** Each quiz answer saved to `quiz_results` table via `POST /api/v1/learning/result`
+- **Data:** Store `{ userId, wordId, correct, questionType, timeSpentMs, createdAt }`
+- **In-Session Summary:** The session summary screen uses `sessionSummary` from QuizContext for immediate post-quiz display
+- **Retrieval:** Summary data returned by `GET /api/v1/quiz/session/:sessionId/summary`
+
+**Implementation:**
+
+- Service: `apps/backend/src/core/services/LearningService.js` → `recordQuizResult()` persists each answer
+- Context: `apps/frontend/src/features/quiz/contexts/QuizContext.tsx` → `sessionSummary` state holds in-session results
+- Endpoint: `GET /api/v1/quiz/session/:sessionId/summary` → returns full session results
+
+**Business Rationale:** Backend-persisted results enable cross-device access, analytics, and permanent audit trail. The `quiz_results` table supports leech detection (lapseCount) and spaced repetition adjustments.
+
+---
+
+### Cross-Story Rule Dependencies
+
+| Business Rule          | Primary Story | Dependent Stories  | Technical Components                     |
+| ---------------------- | ------------- | ------------------ | ---------------------------------------- |
+| Spaced Repetition      | 15.1, 15.2    | All (foundation)   | ProgressService, progress table          |
+| Interleaving           | 15.6          | 15.5, 15.8         | interleaving.ts, quizReducer             |
+| Streak Tracking        | 15.3          | 15.9 (display)     | StreakService, study_streaks table       |
+| Leech Detection        | 15.2          | 15.9 (display)     | ProgressService.updateLapseCount()       |
+| XP/Rewards             | 15.3          | 15.9 (display)     | GamificationService, MysteryBoxAnimation |
+| AI Feedback            | 15.4          | 15.9 (integration) | AIFeedbackService, Redis, Gemini API     |
+| Distractors            | 15.5, 15.6    | 15.2 (backend gen) | distractorGenerator.ts                   |
+| Quiz Results Retention | 15.11         | 15.10 (UI polish)  | quiz_results table, LearningService      |
+
 ## Acceptance Criteria
 
 - [ ] Backend API returns words due for review based on `nextReviewDate` field

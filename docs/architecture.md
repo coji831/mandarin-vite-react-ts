@@ -171,47 +171,39 @@ Controller → Service (business logic) → Repository (database)
 
 ## Progress & Spaced Repetition System
 
-**Pattern:** Unified algorithm with dual-mode support (flashcard + quiz)
+**Pattern:** Quiz-based exponential backoff algorithm
 
 **Core Formula:**
 
 ```
-nextReviewDays = 1 + (30 - 1) × performanceMultiplier
+newDelay = correct ? min(365, currentDelay * 2) : 1
 ```
+
+**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
 
 **Performance Multipliers:**
 
-- **Flashcard Review**: `confidence²` (0.0 to 1.0 scale, subjective self-rating)
-- **Quiz Correct**: `1.0` (maximum spacing, 30 days)
-- **Quiz Incorrect**: `0.0` (reset to 1 day for immediate review)
-
-**Feature Detection:** System automatically determines which algorithm to use based on most recent activity type (quiz results take precedence over flashcard reviews when both exist).
+- **Quiz Correct**: Double the interval (exponential backoff), capped at 365 days
+- **Quiz Incorrect**: Reset to 1 day (immediate review)
 
 **Progress Tracking:**
 
-- **Study Metrics**: `studyCount`, `correctCount`, `confidence`, `nextReview` (existing fields)
-- **Quiz Metrics**: `lapseCount` (consecutive failures), `currentDelay` (spacing interval in days)
+- **Study Metrics**: `studyCount`, `correctCount`, `nextReview`, `currentDelay`
+- **Quiz Metrics**: `lapseCount` (consecutive failures for leech detection)
 - **Audit Trail**: `quiz_results` table logs every quiz answer with timestamp, question type, time spent
 
 **Leech Detection:**
 
 - Words with `lapseCount >= 5` flagged as "leeches" (high-difficulty vocabulary)
-- Accessible via `GET /api/v1/progress/leeches` endpoint
+- Accessible via `GET /api/v1/learning/leeches` endpoint
 - Sorted by struggle intensity (highest lapseCount first)
 - Enables targeted review for 15% of words causing 50% of failures (Pareto principle)
 
 **Key Endpoints:**
 
-- `GET /api/v1/progress/due` - Fetch words requiring review (based on `nextReview <= date`)
-- `POST /api/v1/progress/test-result` - Save quiz answer, adjust spaced repetition
-- `GET /api/v1/progress/leeches` - Fetch struggling vocabulary for targeted practice
-- `PUT /api/v1/progress/:wordId` - Update flashcard confidence (legacy endpoint, still supported)
-
-**Backward Compatibility:**
-
-- Existing flashcard API calls continue using `confidence²` multiplier
-- No retroactive changes to existing progress records
-- Gradual migration enabled (users can use flashcards, quizzes, or both)
+- `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
+- `POST /api/v1/learning/result` - Save quiz answer, adjust spaced repetition
+- `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
 
 **See detailed documentation:**
 

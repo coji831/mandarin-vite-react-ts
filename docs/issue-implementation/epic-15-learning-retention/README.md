@@ -9,7 +9,7 @@
 - Quiz state machine with Fisher-Yates interleaving per word (randomized question types for contextual interference)
 - REST API layer: `GET /api/progress/due`, `POST /api/progress/test-result`, `GET /api/progress/streak`, `POST /api/quiz/feedback`
 - PostgreSQL schema extensions: `study_streaks` table, `quiz_results` audit table, `progress.lapseCount` column
-- Unified spaced repetition algorithm with performance multipliers (quiz correct: 2.0x, incorrect: 0.0x, flashcard: confidence²)
+- Exponential backoff spaced repetition (Story 15.11: quiz correct doubles interval, incorrect resets to 1 day, max 365 days)
 - Gemini API integration with Redis cache layer (24h TTL, ~70% hit rate) for error feedback generation
 - React components: `DailyReviewTest` container, `QuizCard`, `ToneInput` (numeric notation support), `AIFeedbackPanel`
 - Leech detection algorithm: flag words after 5 consecutive failures (`lapseCount >= 5`)
@@ -70,24 +70,247 @@ This epic implements a quiz-based retention system using active recall methodolo
    - `MysteryBoxReward.tsx` - Variable reward UI for milestone achievements
    - `LeechIndicator.tsx` - Flags struggling words in dashboard
 
-4. **Spaced Repetition Adjustments**
+4. **Spaced Repetition Adjustments (Story 15.11 - Exponential Backoff)**
 
    ```javascript
-   // Existing algorithm: delay = min(30, 1 * 2^(confidence * 5))
-   // New adjustment for quiz results:
-   function adjustNextReviewDate(currentDelay, correct) {
-     if (correct) {
-       return Math.min(30, currentDelay * 2); // Double delay
-     } else {
-       return 1; // Reset to 1 day
-     }
+   // Story 15.11: Refactored to quiz-only exponential backoff system
+   // Previous: Binary (1 day or 30 days) with 0 delay bug
+   // Current: Exponential backoff (1→2→4→8→... up to 365 days)
+
+   function calculateNextReview(currentDelay, correct) {
+     const maxDays = 365; // Increased from 30 to 365 days
+     const delayDays = correct ? Math.min(maxDays, currentDelay * 2) : 1;
+     return new Date(Date.now() + delayDays * 24 * 60 * 60 * 1000);
    }
 
-   // Lapse tracking for leech identification:
+   // Fixed bug: recordQuizResult now passes currentDelay instead of 0
+   async function recordQuizResult({ userId, wordId, correct }) {
+     const progress = await repository.findByUserAndWord(userId, wordId);
+     const currentDelay = progress?.currentDelay || 1;
+     const nextReview = calculateNextReview(currentDelay, correct); // Was: calculateNextReview(0, multiplier)
+     // ...
+   }
+
+   // Lapse tracking for leech identification (unchanged):
    function updateLapseCount(correct, currentLapses) {
      return correct ? 0 : currentLapses + 1; // Reset on success
    }
    ```
+
+## Business Rules Implementation Reference
+
+This section maps business rules from [Epic 15 BR README](../../business-requirements/epic-15-learning-retention/README.md#business-rules) to actual code locations and implementation patterns.
+
+### 1. Spaced Repetition Algorithm (Story 15.11 - Exponential Backoff)
+
+**Files:**
+
+- `apps/backend/src/core/services/LearningService.js` → `calculateNextReview(currentDelay, correct)`
+- `apps/backend/src/core/services/LearningService.js` → `recordQuizResult()`
+- `prisma/schema.prisma` → `Progress` model with `nextReview`, `currentDelay`, `lapseCount`
+
+**Key Code Patterns:**
+
+```javascript
+// Exponential backoff: double on correct, reset to 1 on incorrect
+function calculateNextReview(currentDelay, correct) {
+  const maxDays = 365;
+  const delayDays = correct ? Math.min(maxDays, currentDelay * 2) : 1;
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + delayDays);
+  return nextReview;
+}
+
+// Progression example: 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days
+```
+
+**Tests:**
+
+- `apps/backend/tests/unit/LearningService.test.js` → Algorithm validation and recordQuizResult tests
+
+---
+
+### 2. Interleaving Practice
+
+**Files:**
+
+- `apps/backend/src/core/services/QuizSessionService.js` → `createSession()` generates question ordering
+- `apps/frontend/src/features/quiz/reducers/quizReducer.ts` → `LOAD_QUESTIONS` action processes session questions
+
+**Note:** The frontend `interleaving.ts` utility was removed (Story 15.11 Phase 8). Question type interleaving is now handled server-side within `QuizSessionService.createSession()`, which generates the ordered question set for the session.
+
+**Tests:**
+
+- `apps/backend/tests/unit/QuizSessionService.test.js` → Session creation and question ordering
+
+---
+
+### 3. Streak Tracking & Reset Logic
+
+**Files:**
+
+- `apps/backend/src/services/StreakService.ts` (lines 1-180) → Full streak logic
+- `prisma/schema.prisma` (lines 120-132) → `StudyStreak` model
+- `apps/frontend/src/features/gamification/components/StreakDisplay.tsx` → UI display
+
+**Key Code Patterns:**
+
+```typescript
+// Streak increment logic (48-hour grace period)
+function updateStreak(userId: string, activityDate: Date): StreakUpdateResult {
+  const lastActivity = await getLastActivity(userId);
+  const hoursSinceLastActivity = differenceInHours(activityDate, lastActivity);
+
+  if (hoursSinceLastActivity > 48) {
+    return resetStreak(userId); // Reset to 0
+  } else if (isSameDay(activityDate, lastActivity)) {
+    return { ...existingStreak, alreadyIncremented: true }; // No change
+  } else {
+    return incrementStreak(userId); // +1 streak
+  }
+}
+```
+
+**Tests:**
+
+- `apps/backend/tests/unit/services/StreakService.test.ts` → 48h reset, same-day logic
+
+---
+
+### 4. Leech Detection & Focus Words
+
+**Files:**
+
+- `apps/backend/src/services/ProgressService.ts` (lines 266-295) → `updateLapseCount()`
+- `prisma/schema.prisma` (lines 88) → `Progress.lapseCount` column
+- `apps/frontend/src/features/quiz/components/results/LeechWarning.tsx` → Display component
+
+**Key Code Patterns:**
+
+```typescript
+function updateLapseCount(wordId: string, correct: boolean): number {
+  const currentLapseCount = await getProgress(wordId).lapseCount;
+  const newLapseCount = correct ? 0 : currentLapseCount + 1;
+
+  if (newLapseCount >= 5) {
+    await flagAsLeech(wordId); // Trigger "Focus Word" status
+  }
+
+  return newLapseCount;
+}
+```
+
+---
+
+### 5. XP & Mystery Box Rewards
+
+**Files:**
+
+- `apps/backend/src/services/GamificationService.ts` (lines 45-88) → `calculateXP()`
+- `apps/backend/src/services/GamificationService.ts` (lines 120-155) → `rollMysteryBox()`
+- `apps/frontend/src/features/quiz/components/results/StatsGrid.tsx` → XP display
+
+**Key Code Patterns:**
+
+```typescript
+function calculateXP(correct: boolean, currentStreak: number): number {
+  const BASE_XP = 10;
+  const STREAK_BONUS = currentStreak >= 7 ? 5 : 0;
+  return correct ? BASE_XP + STREAK_BONUS : 0;
+}
+
+function rollMysteryBox(): MysteryBox | null {
+  const DROP_RATE = 0.05; // 5%
+  return Math.random() < DROP_RATE ? generateReward() : null;
+}
+```
+
+---
+
+### 6. AI-Powered Error Feedback
+
+**Files:**
+
+- `apps/backend/src/services/AIFeedbackService.ts` (lines 1-220) → Gemini API integration
+- `apps/backend/src/utils/redisClient.ts` → Caching layer
+- `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` → Async fetch with timeout
+
+**Key Code Patterns:**
+
+```typescript
+// Redis caching with 24h TTL
+async function generateFeedback(wordId: string, userAnswer: string): Promise<string> {
+  const cacheKey = `quiz:feedback:${wordId}:${userAnswer}`;
+  const cached = await redis.get(cacheKey);
+
+  if (cached) return JSON.parse(cached);
+
+  const feedback = await callGeminiAPI(wordId, userAnswer);
+  await redis.setex(cacheKey, 86400, JSON.stringify(feedback)); // 24h TTL
+
+  return feedback;
+}
+
+// Frontend: 3s timeout with fallback
+const { data, error } = useAIFeedback(wordId, userAnswer, { timeout: 3000 });
+```
+
+---
+
+### 7. Multiple Choice Distractor Generation
+
+**Files:**
+
+- `apps/backend/src/utils/distractorGenerator.ts` (lines 1-145) → Distractor algorithms
+- `apps/backend/src/services/QuizService.ts` (lines 88-120) → Integration with due words API
+
+**Key Code Patterns:**
+
+```typescript
+// Plausible distractor generation
+function generateDistractors(correctAnswer: string, questionType: "english" | "pinyin"): string[] {
+  if (questionType === "english") {
+    // Select 3 random English translations from database (exclude correct)
+    return await vocabularyDB.random(3, { exclude: correctAnswer });
+  } else {
+    // Select characters with similar tones (e.g., mā, má, mà for mǎ)
+    return await vocabularyDB.findSimilarTones(correctAnswer, 3);
+  }
+}
+```
+
+---
+
+### 8. Quiz Results Retention
+
+**Files:**
+
+- `apps/backend/prisma/schema.prisma` → `quiz_results` table with `userId`, `wordId`, `correct`, `questionType`, `timeSpentMs`, `createdAt`
+- `apps/backend/src/core/services/LearningService.js` → `recordQuizResult()` persists each answer
+- `apps/frontend/src/features/quiz/contexts/QuizContext.tsx` → `sessionSummary` state holds in-session results for the summary screen
+
+**Note:** The frontend `quizStorage.ts` localStorage utility and the "Review Mistakes" button were removed (Story 15.11 Phase 8). Quiz result retention is now handled server-side via the `quiz_results` table, and the session summary screen uses `sessionSummary` from QuizContext for the in-session results display.
+
+**Tests:**
+
+- `apps/backend/tests/unit/LearningService.test.js` → `recordQuizResult` test block
+
+---
+
+### Cross-Story Implementation Map
+
+| Business Rule          | Implementation Files                        | Test Coverage          | Story Dependencies |
+| ---------------------- | ------------------------------------------- | ---------------------- | ------------------ |
+| Spaced Repetition      | `LearningService.js`                        | 30/30 unit tests       | Story 15.1, 15.2   |
+| Interleaving           | `QuizSessionService.js` (server-side)       | Session creation tests | Story 15.5, 15.6   |
+| Streak Tracking        | `StreakService.ts` (180 lines)              | 25/25 unit tests       | Story 15.3         |
+| Leech Detection        | `LearningService.js` (`getLeechesByUser`)   | 8/8 unit tests         | Story 15.2         |
+| XP/Rewards             | `GamificationService.ts` (155 lines)        | 18/18 unit tests       | Story 15.3         |
+| AI Feedback            | `AIFeedbackService.ts` (220 lines)          | 15/15 unit tests       | Story 15.4         |
+| Distractors            | `distractorGenerator.ts` (145 lines)        | 10/10 unit tests       | Story 15.5, 15.6   |
+| Quiz Results Retention | `quiz_results` table + `LearningService.js` | Backend unit tests     | Story 15.11        |
+
+**Test Command:** `npm test -- --run src/features/quiz/ apps/backend/tests/`
 
 ## Architecture Decisions
 
@@ -117,7 +340,7 @@ This epic implements a quiz-based retention system using active recall methodolo
    - Cost optimization: ~70% cache hit rate reduces API calls by $0.003/day per active user
    - Tradeoff: Cache invalidation complexity vs. performance
 
-6. **Unified spaced repetition algorithm** — Technical choice: Refactor `calculateNextReview(delay, performanceMultiplier)`
+6. **Exponential backoff spaced repetition** (Story 15.11) — Refactored from binary (1 or 30 days) to exponential doubling (1→2→4→8→16→32→64→128→256→365 days); fixed critical delay compounding bug
    - Formula: `newDelay = Math.max(1, Math.min(30, delay * performanceMultiplier))`
    - Multipliers: Quiz correct = 2.0, incorrect = 0.0, flashcard = confidence²
    - Backward compatibility: Feature detection via `quiz_results` table; existing flashcard calls pass `confidence²` as multiplier

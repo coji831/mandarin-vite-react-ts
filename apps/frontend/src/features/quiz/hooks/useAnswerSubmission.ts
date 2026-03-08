@@ -113,6 +113,7 @@ export function useAnswerSubmission({
             timestamp: new Date(),
             nextReview: result.nextReviewDate, // Flat property (type audit aligned)
             lapseCount: result.lapseCount, // Flat property (type audit aligned)
+            correctAnswer: result.correctAnswer, // For feedback display in ExamLayout
           },
         });
 

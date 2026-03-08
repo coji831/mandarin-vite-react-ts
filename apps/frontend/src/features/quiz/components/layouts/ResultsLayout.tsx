@@ -27,7 +27,6 @@ import { useQuizState, useQuizActions } from "../../contexts";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { BadgeCelebrationModal } from "../../../gamification/components/BadgeCelebrationModal";
 import { formatRelativeTime } from "../../utils/dateFormatting";
-import { getLastQuizResult, clearQuizResult } from "../../utils/quizStorage";
 import { StatsGrid, ResultsTable, LeechWarning, NextQuizCountdown } from "../results";
 import { Button } from "../../../../components";
 import type { QuizSessionSummary } from "../../types";
@@ -74,14 +73,6 @@ function ResultsLayout({
   // Story 15.11 Flow 2.6: Badge celebration modal state
   const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
-  // Story 15.11: Get last quiz result for Review Mistakes feature
-  const [lastResult, setLastResult] = useState(getLastQuizResult());
-
-  useEffect(() => {
-    // Refresh last result when component mounts
-    setLastResult(getLastQuizResult());
-  }, []);
-
   // Story 15.11 Flow 2.6: Auto-open badge celebration modal when new badges earned
   useEffect(() => {
     if (newBadges && newBadges.length > 0 && !isDailyComplete) {
@@ -89,21 +80,12 @@ function ResultsLayout({
     }
   }, [newBadges, isDailyComplete]);
 
-  // Story 15.11: Handler for Review Mistakes button
-  const handleReviewMistakes = () => {
-    if (!lastResult || lastResult.incorrectWords.length === 0) return;
-
-    const wordIds = lastResult.incorrectWords.map((w) => w.wordId).join(",");
-    navigate(`/learn/quiz?wordIds=${wordIds}&mode=review`);
-  };
-
   // Story 15.11: Handler for New Quiz button
   const handleNewQuiz = () => {
-    clearQuizResult();
     handleRetry(); // This already reloads due words
   };
 
-  const hasIncorrectWords = lastResult && lastResult.incorrectWords.length > 0;
+  const hasIncorrectWords = (sessionSummary?.incorrectWords?.length ?? 0) > 0;
   const [countdownExpired, setCountdownExpired] = useState(false);
 
   // Format date helper (Story 15.10: Now using relative time)
@@ -163,11 +145,6 @@ function ResultsLayout({
 
       {/* Story 15.11: Action buttons for next steps */}
       <div className="quizActions flex-row-center" style={{ gap: "1rem", marginTop: "1.5rem" }}>
-        {hasIncorrectWords && (
-          <Button variant="secondary" onClick={handleReviewMistakes}>
-            Review Mistakes ({lastResult.incorrectWords.length})
-          </Button>
-        )}
         {isDailyComplete ? (
           <Button variant="primary" disabled={!countdownExpired} onClick={handleNewQuiz}>
             {countdownExpired ? "New Quiz" : "Next Quiz"}

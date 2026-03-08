@@ -54,7 +54,6 @@ import {
 } from "react";
 import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
 import { QuizQuestion, QuizAnswer, MysteryBox, Badge, QuizSessionSummary } from "../types";
-import { saveQuizResult } from "../utils/quizStorage";
 import { useGamificationCapture } from "../hooks/useGamificationCapture";
 import { useAnswerSubmission } from "../hooks/useAnswerSubmission";
 import { useQuizSession } from "../hooks/useQuizSession";
@@ -190,13 +189,6 @@ export function QuizProvider({ children }: QuizProviderProps) {
     true, // autoFetch when sessionId available
   );
 
-  // Save quiz results to localStorage when summary is available
-  useEffect(() => {
-    if (state.phase === "COMPLETE" && sessionSummary && state.answers.length > 0) {
-      saveQuizResult(state.answers, sessionSummary);
-    }
-  }, [state.phase, sessionSummary, state.answers]);
-
   // ============================================================================
   // Actions
   // ============================================================================
@@ -253,7 +245,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     mysteryBox: state.mysteryBox,
     newBadges: state.newBadges,
     freezeAwarded: state.freezeAwarded,
-    sessionSummary,
+    sessionSummary: sessionSummary ?? state.sessionSummary,
     expiresAt: state.expiresAt,
     noDueWordsMessage: state.noDueWordsMessage,
   };

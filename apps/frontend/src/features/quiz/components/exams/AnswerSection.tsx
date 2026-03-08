@@ -10,7 +10,7 @@
  * Includes submit button for typing modes.
  */
 
-import { QuestionMode } from "../../types/QuizTypes";
+import { QuestionMode } from "../../types";
 import { MultipleChoiceInput, PinyinToneInput, ChineseCharacterInput } from "../inputs";
 import "./AnswerSection.css";
 import { Button } from "../../../../components";

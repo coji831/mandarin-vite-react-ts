@@ -56,6 +56,33 @@ export class QuizSessionRepository {
   }
 
   /**
+   * Find quiz session by ID and userId (composite lookup for authorization)
+   * @param {string} sessionId - Session ID
+   * @param {string} userId - User ID
+   * @param {object} options - Query options (same as findById)
+   * @returns {Promise<object|null>} Quiz session or null if not found or unauthorized
+   */
+  async findByIdAndUserId(sessionId, userId, options = {}) {
+    const session = await prisma.quizSession.findFirst({
+      where: {
+        id: sessionId,
+        userId: userId,
+      },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    // Parse JSON fields (note: options like includeAnswers are ignored since we always include them)
+    return {
+      ...session,
+      questions: JSON.parse(session.questions),
+      answers: JSON.parse(session.answers),
+    };
+  }
+
+  /**
    * Find active quiz session for user (if any)
    * Used to check if user has an incomplete session
    * @param {string} userId - User ID

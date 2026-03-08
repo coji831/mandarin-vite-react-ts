@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import { quizReducer, initialState, QuizState, QuizAction } from "../quizReducer";
-import { QuizQuestion, QuizAnswer } from "../../types/QuizTypes";
+import { QuizQuestion, QuizAnswer } from "../../types";
 
 describe("quizReducer", () => {
   it("initializes quiz with questions", () => {
@@ -21,13 +21,64 @@ describe("quizReducer", () => {
       },
     ];
 
-    const action: QuizAction = { type: "INITIALIZE_QUIZ", questions };
+    const action: QuizAction = { type: "INITIALIZE_QUIZ", questions, sessionId: "session1" };
     const newState = quizReducer(initialState, action);
 
     expect(newState.phase).toBe("QUESTION");
     expect(newState.questions).toEqual(questions);
     expect(newState.currentIndex).toBe(0);
     expect(newState.answers).toEqual([]);
+    expect(newState.sessionId).toBe("session1");
+  });
+
+  it("resumes quiz with previous answers and current index", () => {
+    const questions: QuizQuestion[] = [
+      {
+        wordId: "1",
+        word: "你好",
+        pinyin: "nǐhǎo",
+        english: "hello",
+        mode: "multiple_choice",
+        options: ["hello", "thank you", "goodbye", "yes"],
+      },
+      {
+        wordId: "2",
+        word: "谢谢",
+        pinyin: "xièxie",
+        english: "thank you",
+        mode: "type_pinyin",
+      },
+    ];
+
+    const previousAnswers: QuizAnswer[] = [
+      {
+        wordId: "1",
+        questionType: "multiple_choice",
+        userAnswer: "hello",
+        correct: true,
+        timestamp: new Date("2026-03-08T10:00:00Z"),
+        nextReview: "2026-03-10T10:00:00Z",
+        lapseCount: 0,
+        isLeech: false,
+      },
+    ];
+
+    const action: QuizAction = {
+      type: "RESUME_QUIZ",
+      questions,
+      sessionId: "session1",
+      currentIndex: 1,
+      answers: previousAnswers,
+    };
+    const newState = quizReducer(initialState, action);
+
+    expect(newState.phase).toBe("QUESTION");
+    expect(newState.questions).toEqual(questions);
+    expect(newState.currentIndex).toBe(1); // Resume from second question
+    expect(newState.answers).toEqual(previousAnswers); // Restore previous answers
+    expect(newState.sessionId).toBe("session1");
+    expect(newState.totalXP).toBe(0); // Gamification not yet awarded
+    expect(newState.error).toBeUndefined(); // No errors
   });
 
   it("submits answer and transitions to ANSWER_FEEDBACK", () => {

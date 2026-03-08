@@ -72,7 +72,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
         dispatch({
           type: "SHOW_DAILY_COMPLETE_RESULTS",
           sessionId: response.sessionId,
-          summary: response.summary,
+          summary: response.summary!,
           expiresAt: response.expiresAt,
         });
         return;
@@ -98,14 +98,29 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       // Transform backend questions to frontend format
       const questions = transformSessionToQuestions(response.questions);
 
-      // Initialize quiz state with session data
-      dispatch({
-        type: "INITIALIZE_QUIZ",
-        questions,
-        sessionId: response.sessionId,
-      });
+      // Check if resuming existing session
+      if (response.isResume && response.currentIndex !== undefined && response.answers) {
+        // Resume quiz from last position with previous answers
+        dispatch({
+          type: "RESUME_QUIZ",
+          questions,
+          sessionId: response.sessionId,
+          currentIndex: response.currentIndex,
+          answers: response.answers.map((answer) => ({
+            ...answer,
+            timestamp: new Date(answer.timestamp), // Convert ISO string to Date
+          })),
+        });
+      } else {
+        // Initialize new quiz from beginning
+        dispatch({
+          type: "INITIALIZE_QUIZ",
+          questions,
+          sessionId: response.sessionId,
+        });
+      }
 
-      // Reset question timer for first question
+      // Reset question timer for first/current question
       questionStartTime.current = Date.now();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to start quiz session";

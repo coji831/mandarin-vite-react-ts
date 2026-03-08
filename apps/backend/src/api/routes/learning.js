@@ -46,4 +46,30 @@ router.get(
   asyncHandler(learningController.getLeeches.bind(learningController)),
 );
 
+/**
+ * Get words due for review (stateless - does not require an active session)
+ * GET /v1/learning/due?date=YYYY-MM-DD&limit=10
+ * Query params:
+ *   - date: Target date for review (default: today)
+ *   - limit: Max words to return (1-50, default 10)
+ * Response: { words: Array<EnrichedWord> }
+ */
+router.get(
+  "/v1/learning/due",
+  authenticateToken,
+  asyncHandler(learningController.getDueWords.bind(learningController)),
+);
+
+/**
+ * Save quiz answer and update spaced repetition (stateless)
+ * POST /v1/learning/result
+ * Body: { wordId, correct, questionType, timeSpentMs? }
+ * Response: { nextReviewDate, lapseCount, isLeech }
+ */
+router.post(
+  "/v1/learning/result",
+  authenticateToken,
+  asyncHandler(learningController.saveResult.bind(learningController)),
+);
+
 export default router;

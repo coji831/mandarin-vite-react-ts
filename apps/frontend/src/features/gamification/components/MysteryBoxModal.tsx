@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useState } from "react";
-import type { MysteryBox } from "../../quiz/hooks/useQuizAPI";
+import type { MysteryBox } from "../../quiz/types";
 import "./MysteryBoxModal.css";
 
 export { MysteryBoxModal };

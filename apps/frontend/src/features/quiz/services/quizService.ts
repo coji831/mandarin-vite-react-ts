@@ -116,14 +116,14 @@ export const quizApi = {
   async getSessionSummary(sessionId: string): Promise<QuizSessionSummary> {
     try {
       const response = await apiClient.get<QuizSessionSummary>(
-        `/api/v1/quiz/session/${sessionId}/summary`,
+        `/api${ROUTE_PATTERNS.quizSessionSummary(sessionId)}`,
       );
 
       // Validate response
       if (
         response.data === undefined ||
         typeof response.data.accuracyRate !== "number" ||
-        typeof response.data.totalXP !== "number"
+        typeof response.data.xpEarned !== "number"
       ) {
         throw new Error("Invalid response format from server");
       }

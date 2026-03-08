@@ -2,6 +2,7 @@
  * LeechWidget Component
  * Story 15.9: Gamification & AI Integration
  * Story 15.10: Updated terminology to "Struggling Words"
+ * Story 15.11 Phase 7: Refactored to use leechApi service layer for clean architecture
  *
  * Displays "Struggling Words" - vocabulary with lapseCount >= 5.
  * Only shown when user has 3+ leeches (business rule).
@@ -15,25 +16,10 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiClient } from "services";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { leechApi, type LeechWord } from "../services";
 import "./LeechWidget.css";
 
 export { LeechWidget };
-
-type LeechWord = {
-  id: string;
-  simplified: string;
-  pinyin: string;
-  english: string;
-  lapseCount: number;
-  studyCount: number;
-};
-
-type LeechResponse = {
-  count: number;
-  leeches: LeechWord[];
-};
 
 function LeechWidget() {
   const [leeches, setLeeches] = useState<LeechWord[]>([]);
@@ -57,13 +43,13 @@ function LeechWidget() {
 
     const fetchLeeches = async () => {
       try {
-        const response = await apiClient.get<LeechResponse>(ROUTE_PATTERNS.progressLeeches, {
-          params: { minLapseCount: 5 },
+        const response = await leechApi.getLeeches({
+          minLapseCount: 5,
+          limit: 5,
         });
 
-        setTotalCount(response.data.count);
-        // Show up to 5 leeches
-        setLeeches(response.data.leeches.slice(0, 5));
+        setTotalCount(response.count);
+        setLeeches(response.leeches);
       } catch (err) {
         console.error("Failed to fetch leeches:", err);
       } finally {

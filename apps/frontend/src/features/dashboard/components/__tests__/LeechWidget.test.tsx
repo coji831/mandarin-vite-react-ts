@@ -1,6 +1,8 @@
 /**
  * Tests for LeechWidget component
  * Story 15.9: Gamification & AI Integration
+ * Story 15.10: Updated terminology to "Struggling Words"
+ * Story 15.11 Phase 7: Updated to use leechApi service layer
  *
  * Tests LeechWidget rendering and behavior with:
  * - Leech fetching and display
@@ -94,7 +96,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     expect(screen.getByText("你好")).toBeInTheDocument();
@@ -112,7 +114,7 @@ describe("LeechWidget", () => {
 
     renderWithRouter(<LeechWidget />);
 
-    expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
   });
 
   it("should not render when dismissed today", async () => {
@@ -122,7 +124,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
     });
   });
 
@@ -135,7 +137,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
   });
 
@@ -145,14 +147,14 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     const closeButton = screen.getByRole("button", { name: /dismiss/i });
     fireEvent.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
     });
 
     // Check localStorage
@@ -166,7 +168,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     // Check for lapse count badges
@@ -204,7 +206,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     // Should show first 5 only
@@ -225,7 +227,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
     });
   });
 
@@ -240,7 +242,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     expect(screen.getByText(/3 words need attention/i)).toBeInTheDocument();
@@ -254,7 +256,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
     });
 
     expect(consoleError).toHaveBeenCalled();
@@ -269,7 +271,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.queryByText("Focus Words")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Struggling Words/)).not.toBeInTheDocument();
     });
 
     expect(consoleError).toHaveBeenCalled();
@@ -282,7 +284,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     const reviewButton = screen.getByRole("button", { name: /review now/i });
@@ -299,7 +301,7 @@ describe("LeechWidget", () => {
     renderWithRouter(<LeechWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Focus Words")).toBeInTheDocument();
+      expect(screen.getByText(/Struggling Words/)).toBeInTheDocument();
     });
 
     expect(screen.getByText("hello")).toBeInTheDocument();

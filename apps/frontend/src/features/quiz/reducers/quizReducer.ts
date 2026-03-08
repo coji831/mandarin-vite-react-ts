@@ -46,6 +46,13 @@ export interface QuizState {
 
 export type QuizAction =
   | { type: "INITIALIZE_QUIZ"; questions: QuizQuestion[]; sessionId: string }
+  | {
+      type: "RESUME_QUIZ";
+      questions: QuizQuestion[];
+      sessionId: string;
+      currentIndex: number;
+      answers: QuizAnswer[];
+    }
   | { type: "SUBMIT_ANSWER"; answer: QuizAnswer }
   | { type: "UPDATE_ANSWER_METADATA"; wordId: string; nextReview: string; lapseCount: number } // Story 15.8: Merge backend response
   | { type: "ADD_XP_EARNED"; xp: number } // Story 15.9: Accumulate XP from backend
@@ -114,6 +121,27 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         feedbackLoading: false,
       };
 
+    case "RESUME_QUIZ":
+      return {
+        ...state,
+        phase: "QUESTION",
+        questions: action.questions,
+        sessionId: action.sessionId,
+        currentIndex: action.currentIndex, // Resume from last position
+        answers: action.answers, // Restore previous answers
+        error: undefined, // Clear any previous errors
+        // Reset gamification data (not awarded until completion)
+        totalXP: 0,
+        mysteryBox: undefined,
+        newBadges: [],
+        freezeAwarded: false,
+        // Reset UI state
+        answerValue: "",
+        showHint: false,
+        aiFeedback: null,
+        feedbackLoading: false,
+      };
+
     case "SUBMIT_ANSWER":
       return {
         ...state,
@@ -160,6 +188,12 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       };
 
     // Story 15.9: Track if freeze was awarded
+    case "SET_FREEZE_AWARDED":
+      return {
+        ...state,
+        freezeAwarded: action.awarded,
+      };
+
     // Story 15.11 Phase 8: UI state management actions
     case "SET_SESSION_ID":
       return {

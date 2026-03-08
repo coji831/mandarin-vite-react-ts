@@ -8,3 +8,4 @@ export { StatsGrid } from "./StatsGrid";
 export { ResultsTable } from "./ResultsTable";
 export { BadgesDisplay } from "./BadgesDisplay";
 export { LeechWarning } from "./LeechWarning";
+export { NextQuizCountdown } from "./NextQuizCountdown";

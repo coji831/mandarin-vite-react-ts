@@ -8,7 +8,7 @@
  * Includes conditional styling for incorrect answers and leech warnings.
  */
 
-import { QuizAnswer } from "../../types/QuizTypes";
+import { QuizAnswer } from "../../types";
 import "./ResultsTable.css";
 
 type ResultsTableProps = {
@@ -48,6 +48,9 @@ export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
           <tbody>
             {answers.map((answer, idx) => {
               const expectedAnswer = getExpectedAnswer(answer);
+              // Story 15.11: Backend provides isLeech flag
+              const isLeech = answer.isLeech ?? false;
+
               return (
                 <tr
                   key={idx}
@@ -64,13 +67,11 @@ export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
                   </td>
                   <td className="nextReviewCell">{formatDate(answer.nextReview)}</td>
                   <td
-                    className={`lapseCountCell ${
-                      (answer.lapseCount || 0) >= 5 ? "leechWarning" : ""
-                    }`}
+                    className={`lapseCountCell ${isLeech ? "leechWarning" : ""}`}
                     title="Times missed in a row"
                   >
                     {answer.lapseCount || 0}
-                    {(answer.lapseCount || 0) >= 5 && " 🔴"}
+                    {isLeech && " 🔴"}
                   </td>
                 </tr>
               );

@@ -50,6 +50,23 @@
   font-weight: 600;
 }
 
+/* Daily Complete Banner (Story 15.11: One quiz per day) */
+.daily-complete-banner {
+  width: 100%;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+  border: 2px solid #667eea30;
+  border-radius: var(--radius-lg);
+}
+
+.daily-complete-message {
+  margin: var(--space-md) 0;
+  color: var(--text-secondary);
+  font-size: var(--font-md);
+  line-height: 1.6;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .quizCompleteContainer {

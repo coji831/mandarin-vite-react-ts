@@ -13,7 +13,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MysteryBoxModal } from "../MysteryBoxModal";
-import type { MysteryBox } from "../../../quiz/hooks/useQuizAPI";
+import type { MysteryBox } from "../../../quiz/types";
 
 describe("MysteryBoxModal", () => {
   const mockOnClose = vi.fn();
