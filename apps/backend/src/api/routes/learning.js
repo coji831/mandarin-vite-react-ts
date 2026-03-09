@@ -8,7 +8,6 @@ import express from "express";
 import { LearningController } from "../controllers/learningController.js";
 import { LearningService } from "../../core/services/LearningService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
-import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
 import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
@@ -17,13 +16,12 @@ const router = express.Router();
 
 // Initialize dependencies with proper injection
 const progressRepository = new ProgressRepository();
-const quizResultRepository = new QuizResultRepository();
 const vocabularyRepository = new VocabularyRepository();
 
 // LearningService handles quiz-based learning with spaced repetition
 const learningService = new LearningService(
   progressRepository,
-  quizResultRepository,
+  null, // quizResultRepository removed — not needed by LearningService
   vocabularyRepository,
 );
 

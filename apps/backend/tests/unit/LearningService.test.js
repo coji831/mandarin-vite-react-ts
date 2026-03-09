@@ -96,7 +96,6 @@ describe("LearningService", () => {
         currentDelay: 10,
         confidence: 0.6,
       });
-      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
 
       const result = await learningService.recordQuizResult({
         userId: "user1",
@@ -114,15 +113,6 @@ describe("LearningService", () => {
         lapseCount: 0, // Reset on correct
         currentDelay: 10, // 5 * 2 = 10 days (exponential backoff)
         confidence: 0.6, // Preserved
-      });
-
-      // Check quiz result created
-      expect(mockQuizResultRepository.create).toHaveBeenCalledWith({
-        userId: "user1",
-        wordId: "word1",
-        correct: true,
-        questionType: "type_pinyin",
-        timeSpentMs: 3500,
       });
 
       // Check return value
@@ -153,7 +143,6 @@ describe("LearningService", () => {
         currentDelay: 1,
         confidence: 0.6,
       });
-      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
 
       const result = await learningService.recordQuizResult({
         userId: "user1",
@@ -198,7 +187,6 @@ describe("LearningService", () => {
         currentDelay: 1,
         confidence: 0.3,
       });
-      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
 
       const result = await learningService.recordQuizResult({
         userId: "user1",
@@ -224,7 +212,6 @@ describe("LearningService", () => {
         currentDelay: 2,
         confidence: 0,
       });
-      mockQuizResultRepository.create.mockResolvedValue({ id: "qr1" });
 
       const result = await learningService.recordQuizResult({
         userId: "user1",

@@ -104,15 +104,6 @@ export class LearningService {
       confidence: currentProgress?.confidence || 0, // Preserve legacy flashcard data
     });
 
-    // Insert quiz result audit record
-    await this.quizResultRepository.create({
-      userId,
-      wordId,
-      correct,
-      questionType,
-      timeSpentMs,
-    });
-
     // Return result summary (use database values to ensure consistency)
     return {
       nextReviewDate: updatedProgress.nextReview,

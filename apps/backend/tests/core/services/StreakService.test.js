@@ -9,7 +9,7 @@ import StreakService from "../../../src/core/services/StreakService.js";
 describe("StreakService", () => {
   let streakService;
   let mockStreakRepo;
-  let mockQuizResultRepo;
+  let mockAnswerRepo;
 
   beforeEach(() => {
     // Mock StreakRepository
@@ -21,12 +21,12 @@ describe("StreakService", () => {
       updateLongestIfNeeded: vi.fn(),
     };
 
-    // Mock QuizResultRepository
-    mockQuizResultRepo = {
-      findRecent: vi.fn(),
+    // Mock QuizSessionAnswerRepository
+    mockAnswerRepo = {
+      findRecentByUser: vi.fn(),
     };
 
-    streakService = new StreakService(mockStreakRepo, mockQuizResultRepo);
+    streakService = new StreakService(mockStreakRepo, mockAnswerRepo);
   });
 
   describe("updateStreak", () => {
@@ -337,7 +337,7 @@ describe("StreakService", () => {
         correct: true,
         answeredAt: new Date(Date.now() - i * 60000), // 1 minute apart
       }));
-      mockQuizResultRepo.findRecent.mockResolvedValue(perfectQuizzes);
+      mockAnswerRepo.findRecentByUser.mockResolvedValue(perfectQuizzes);
 
       mockStreakRepo.findByUser.mockResolvedValue({
         userId,
@@ -375,7 +375,7 @@ describe("StreakService", () => {
         correct: true,
         answeredAt: new Date(Date.now() - i * 60000),
       }));
-      mockQuizResultRepo.findRecent.mockResolvedValue(quizzes);
+      mockAnswerRepo.findRecentByUser.mockResolvedValue(quizzes);
 
       const result = await streakService.checkAndAwardFreeze(userId);
 
@@ -392,7 +392,7 @@ describe("StreakService", () => {
         correct: i !== 5, // Quiz #5 is incorrect
         answeredAt: new Date(Date.now() - i * 60000),
       }));
-      mockQuizResultRepo.findRecent.mockResolvedValue(quizzes);
+      mockAnswerRepo.findRecentByUser.mockResolvedValue(quizzes);
 
       const result = await streakService.checkAndAwardFreeze(userId);
 
@@ -408,7 +408,7 @@ describe("StreakService", () => {
         correct: true,
         answeredAt: new Date(Date.now() - i * 60000),
       }));
-      mockQuizResultRepo.findRecent.mockResolvedValue(perfectQuizzes);
+      mockAnswerRepo.findRecentByUser.mockResolvedValue(perfectQuizzes);
 
       mockStreakRepo.findByUser.mockResolvedValue({
         userId,
@@ -432,7 +432,7 @@ describe("StreakService", () => {
         correct: true,
         answeredAt: new Date(Date.now() - i * 60000),
       }));
-      mockQuizResultRepo.findRecent.mockResolvedValue(perfectQuizzes);
+      mockAnswerRepo.findRecentByUser.mockResolvedValue(perfectQuizzes);
 
       mockStreakRepo.findByUser.mockResolvedValue(null);
 
@@ -445,7 +445,7 @@ describe("StreakService", () => {
     it("should handle repository errors gracefully", async () => {
       const userId = "user123";
 
-      mockQuizResultRepo.findRecent.mockRejectedValue(new Error("Database error"));
+      mockAnswerRepo.findRecentByUser.mockRejectedValue(new Error("Database error"));
 
       await expect(streakService.checkAndAwardFreeze(userId)).rejects.toThrow("Database error");
     });

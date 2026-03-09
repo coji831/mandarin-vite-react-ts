@@ -57,6 +57,18 @@ export class QuizSessionController {
       // Create or resume session
       const session = await this.quizSessionService.createSession(userId, targetDate, maxWords);
 
+      // Daily quiz already completed — return previous results
+      if (session.alreadyCompleted) {
+        logger.info("Quiz already completed today", { userId, sessionId: session.sessionId });
+        return res.status(200).json({
+          alreadyCompleted: true,
+          sessionId: session.sessionId,
+          summary: session.summary,
+          expiresAt: session.expiresAt,
+          questions: [],
+        });
+      }
+
       // Flow 1.2: Handle no due words (all caught up)
       if (session.noDueWords) {
         return res.status(200).json({

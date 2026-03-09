@@ -131,6 +131,24 @@ export type IncorrectWordDetail = {
 };
 
 /**
+ * Per-answer detail from QuizSessionAnswer table (Option 2 refactor)
+ * Includes both correct and incorrect answers for the full ResultsTable
+ */
+export type SessionAnswerDetail = {
+  wordId: string;
+  hanzi: string;
+  pinyin: string;
+  english: string;
+  questionType: "multiple_choice" | "type_pinyin" | "type_character" | string;
+  userAnswer: string;
+  correct: boolean;
+  correctAnswer: string;
+  lapseCount: number;
+  isLeech: boolean;
+  nextReview: string | null;
+};
+
+/**
  * Leech word detail in session summary
  */
 export type LeechWordDetail = {
@@ -153,6 +171,7 @@ export type QuizSessionSummary = {
   incorrectCount: number; // Backend provides (derived field)
   totalQuestions: number; // Backend property name (not totalAnswered)
   incorrectWords: IncorrectWordDetail[];
+  allAnswers: SessionAnswerDetail[]; // All answers (correct + incorrect) for full ResultsTable
   leechWords: LeechWordDetail[];
   leechCount: number; // Backend provides (derived field)
   leechWordIds: string[]; // Backend provides (derived field)

@@ -7,17 +7,17 @@
 /**
  * StreakService
  * Manages study streaks with 48-hour grace period and freeze protection
- * 
+ *
  * SOLID: Dependency Inversion Principle - depends on abstractions (interfaces)
  * All dependencies must be injected via constructor (no default instantiation)
  */
 export class StreakService {
-  constructor(streakRepository, quizResultRepository) {
-    if (!streakRepository || !quizResultRepository) {
-      throw new Error('StreakService requires streakRepository and quizResultRepository');
+  constructor(streakRepository, answerRepository) {
+    if (!streakRepository || !answerRepository) {
+      throw new Error("StreakService requires streakRepository and answerRepository");
     }
     this.streakRepository = streakRepository;
-    this.quizResultRepository = quizResultRepository;
+    this.answerRepository = answerRepository;
   }
 
   /**
@@ -142,11 +142,11 @@ export class StreakService {
    * @returns {Promise<boolean>} True if freeze was awarded
    */
   async checkAndAwardFreeze(userId) {
-    // Fetch last 10 quiz results (ordered by answeredAt descending)
-    const recentResults = await this.quizResultRepository.findRecent(userId, 10);
+    // Fetch last 10 answers across sessions (ordered by answeredAt descending)
+    const recentResults = await this.answerRepository.findRecentByUser(userId, 10);
 
     if (recentResults.length < 10) {
-      return false; // Not enough quizzes yet
+      return false; // Not enough answers yet
     }
 
     // Check if all 10 are correct

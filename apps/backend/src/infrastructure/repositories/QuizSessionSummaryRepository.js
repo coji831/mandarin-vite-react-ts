@@ -44,8 +44,6 @@ export class QuizSessionSummaryRepository {
       mysteryBoxDrop,
       mysteryBoxType,
       freezeAwarded,
-      leechWordIds,
-      incorrectWords,
       expiresAt,
     } = data;
 
@@ -63,8 +61,6 @@ export class QuizSessionSummaryRepository {
         mysteryBoxDrop,
         mysteryBoxType,
         freezeAwarded,
-        leechWordIds,
-        incorrectWords: JSON.stringify(incorrectWords),
         expiresAt,
       },
     });
@@ -84,11 +80,7 @@ export class QuizSessionSummaryRepository {
       return null;
     }
 
-    // Parse JSON field
-    return {
-      ...summary,
-      incorrectWords: JSON.parse(summary.incorrectWords),
-    };
+    return summary;
   }
 
   /**
@@ -109,11 +101,7 @@ export class QuizSessionSummaryRepository {
       return null;
     }
 
-    // Parse JSON field
-    return {
-      ...summary,
-      incorrectWords: JSON.parse(summary.incorrectWords),
-    };
+    return summary;
   }
 
   /**

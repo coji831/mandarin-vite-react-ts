@@ -9,9 +9,9 @@ import { QuizSessionController } from "../controllers/quizSessionController.js";
 import { QuizSessionService } from "../../core/services/QuizSessionService.js";
 import { QuizSessionRepository } from "../../infrastructure/repositories/QuizSessionRepository.js";
 import { QuizSessionSummaryRepository } from "../../infrastructure/repositories/QuizSessionSummaryRepository.js";
+import { QuizSessionAnswerRepository } from "../../infrastructure/repositories/QuizSessionAnswerRepository.js";
 import { LearningService } from "../../core/services/LearningService.js";
 import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
-import { QuizResultRepository } from "../../infrastructure/repositories/QuizResultRepository.js";
 import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
 import { GamificationService } from "../../core/services/GamificationService.js";
 import { StreakService } from "../../core/services/StreakService.js";
@@ -27,8 +27,8 @@ const router = express.Router();
 // Initialize dependencies with proper injection
 const quizSessionRepository = new QuizSessionRepository();
 const quizSessionSummaryRepository = new QuizSessionSummaryRepository();
+const quizSessionAnswerRepository = new QuizSessionAnswerRepository();
 const progressRepository = new ProgressRepository();
-const quizResultRepository = new QuizResultRepository();
 const vocabularyRepository = new VocabularyRepository();
 const streakRepository = new StreakRepository();
 const badgeRepository = new BadgeRepository();
@@ -36,12 +36,12 @@ const badgeRepository = new BadgeRepository();
 // LearningService handles quiz-based learning with spaced repetition
 const learningService = new LearningService(
   progressRepository,
-  quizResultRepository,
+  null, // quizResultRepository removed — answer audit handled by QuizSessionAnswerRepository
   vocabularyRepository,
 );
 
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
-const streakService = new StreakService(streakRepository, quizResultRepository);
+const streakService = new StreakService(streakRepository, quizSessionAnswerRepository);
 
 // AI Feedback Service for automatic error explanations (Story 15.11 Phase 9)
 const cacheService = getCacheService();
@@ -52,9 +52,10 @@ const quizSessionService = new QuizSessionService(
   learningService,
   gamificationService,
   vocabularyRepository,
-  aiFeedbackService, // 5th parameter - automatic AI feedback for incorrect answers
-  streakService, // 6th parameter - streak tracking for gamification
-  quizSessionSummaryRepository, // 7th parameter - Flow 5 database persistence
+  aiFeedbackService, // 5th: automatic AI feedback for incorrect answers
+  streakService, // 6th: streak tracking for gamification
+  quizSessionSummaryRepository, // 7th: Flow 5 summary persistence
+  quizSessionAnswerRepository, // 8th: per-answer row storage (Option 2 refactor)
 );
 
 const quizSessionController = new QuizSessionController(quizSessionService);

@@ -15,10 +15,7 @@
  */
 
 import { QuizSession } from "../domain/entities/QuizSession.js";
-import {
-  calculateSessionSummary,
-  calculateIsLeech,
-} from "../domain/services/SessionSummaryCalculator.js";
+import { calculateAccuracy } from "../domain/constants/BusinessRules.js";
 import { getEndOfDay } from "../domain/constants/BusinessRules.js";
 
 export class QuizSessionService {
@@ -30,14 +27,16 @@ export class QuizSessionService {
     aiFeedbackService = null,
     streakService = null,
     summaryRepository = null,
+    answerRepository = null,
   ) {
     this.sessionRepository = sessionRepository;
-    this.learningService = learningService; // LearningService for quiz-based learning
+    this.learningService = learningService;
     this.gamificationService = gamificationService;
     this.vocabularyRepository = vocabularyRepository;
-    this.aiFeedbackService = aiFeedbackService; // AI Feedback service for automatic error explanations
-    this.streakService = streakService; // StreakService for streak tracking
-    this.summaryRepository = summaryRepository; // QuizSessionSummaryRepository for Flow 5 database persistence
+    this.aiFeedbackService = aiFeedbackService;
+    this.streakService = streakService;
+    this.summaryRepository = summaryRepository;
+    this.answerRepository = answerRepository;
   }
 
   // ============================================================================
@@ -87,17 +86,21 @@ export class QuizSessionService {
       // Return existing session (client can resume or abandon)
       const sessionEntity = new QuizSession(existingSession);
 
-      // Transform existing answers to frontend format
-      const answers = (existingSession.answers || []).map((answer) => ({
-        wordId: answer.wordId,
-        questionType: answer.questionType,
-        userAnswer: answer.userAnswer,
-        correct: answer.correct,
-        timestamp: answer.timestamp,
-        nextReview: answer.nextReviewDate,
-        lapseCount: answer.lapseCount,
-        isLeech: answer.isLeech,
-      }));
+      // Load previous answers from QuizSessionAnswer table
+      let answers = [];
+      if (this.answerRepository) {
+        const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
+        answers = dbAnswers.map((a) => ({
+          wordId: a.wordId,
+          questionType: a.questionType,
+          userAnswer: a.userAnswer,
+          correct: a.correct,
+          timestamp: a.answeredAt,
+          nextReview: a.nextReviewDate?.toISOString() || null,
+          lapseCount: a.lapseCount,
+          isLeech: a.isLeech,
+        }));
+      }
 
       return {
         alreadyCompleted: false,
@@ -186,10 +189,15 @@ export class QuizSessionService {
       throw new Error("Question not found in session");
     }
 
-    // Check if already answered
-    const existingAnswer = session.answers.find((a) => a.questionId === questionId);
-    if (existingAnswer) {
-      throw new Error("Question already answered");
+    // Check if already answered (DB lookup via QuizSessionAnswer)
+    if (this.answerRepository) {
+      const existingAnswer = await this.answerRepository.findBySessionAndQuestion(
+        sessionId,
+        questionId,
+      );
+      if (existingAnswer) {
+        throw new Error("Question already answered");
+      }
     }
 
     // Validate answer
@@ -204,27 +212,33 @@ export class QuizSessionService {
       timeSpentMs,
     });
 
-    // Record answer in session WITH progress fields (for persistence)
-    const updatedAnswers = [
-      ...session.answers,
-      {
-        questionId,
+    // Create answer record in QuizSessionAnswer table
+    if (this.answerRepository) {
+      await this.answerRepository.create({
+        sessionId,
+        userId: session.userId,
         wordId: question.wordId,
+        questionId,
+        questionIndex: session.currentIndex,
+        questionType: question.questionType,
         userAnswer,
+        correctAnswer: this._getCorrectAnswer(question),
         correct: isCorrect,
         timeSpentMs,
-        answeredAt: new Date().toISOString(),
         lapseCount: progressUpdate.lapseCount,
         isLeech: progressUpdate.isLeech,
-      },
-    ];
+        nextReviewDate: progressUpdate.nextReviewDate,
+        hanzi: question.word.simplified,
+        pinyin: question.word.pinyin,
+        english: question.word.english,
+      });
+    }
 
     const newIndex = session.currentIndex + 1;
     const isComplete = newIndex >= session.questions.length;
 
-    // Update session - set midnight expiration when complete (daily quiz reset)
+    // Update session state (no answers JSON — stored in QuizSessionAnswer table)
     await this.sessionRepository.update(sessionId, {
-      answers: updatedAnswers,
       currentIndex: newIndex,
       status: isComplete ? "COMPLETE" : "ACTIVE",
       completedAt: isComplete ? new Date() : undefined,
@@ -258,12 +272,16 @@ export class QuizSessionService {
       }
     }
 
-    // Process gamification ONLY on session completion (Story 15.11 - completion-gated rewards)
-    // This incentivizes finishing the quiz and prevents partial reward collection
+    // Process gamification ONLY on session completion
     let gamificationData = null;
     if (isComplete) {
+      // Load all session answers from DB for completion calculations
+      const allAnswers = this.answerRepository
+        ? await this.answerRepository.findBySession(sessionId)
+        : [];
+
       // Calculate session stats
-      const correctCount = updatedAnswers.filter((a) => a.correct).length;
+      const correctCount = allAnswers.filter((a) => a.correct).length;
       const accuracyRate = (correctCount / session.questions.length) * 100;
 
       // Get current streak
@@ -347,43 +365,21 @@ export class QuizSessionService {
           const expiresAt = new Date();
           expiresAt.setDate(expiresAt.getDate() + 7); // 7-day TTL
 
-          // Build incorrect words detail array (use stored progress fields)
-          const incorrectWords = updatedAnswers
-            .filter((a) => !a.correct)
-            .map((answer) => {
-              const q = session.questions.find((q) => q.id === answer.questionId);
-              return {
-                wordId: answer.wordId,
-                hanzi: q.word.simplified,
-                pinyin: q.word.pinyin,
-                english: q.word.english,
-                userAnswer: answer.userAnswer,
-                correctAnswer: this._getCorrectAnswer(q),
-                questionType: answer.questionType,
-                lapseCount: answer.lapseCount || 0,
-                isLeech: answer.isLeech || false,
-              };
-            });
-
-          // Extract leech word IDs (lapseCount >= 5)
-          const leechWordIds = incorrectWords.filter((w) => w.isLeech).map((w) => w.wordId);
-
           await this.summaryRepository.create({
             userId: session.userId,
             sessionId,
             completedAt,
             totalQuestions: session.questions.length,
             correctCount,
-            incorrectCount: updatedAnswers.length - correctCount,
+            incorrectCount: allAnswers.length - correctCount,
             accuracyRate,
             xpEarned,
             newBadgeIds: newBadges.map((b) => b.id),
             mysteryBoxDrop: !!mysteryBox,
             mysteryBoxType: mysteryBox?.rewardType || null,
             freezeAwarded,
-            leechWordIds,
-            incorrectWords,
             expiresAt,
+            // incorrectWords and leechWordIds removed — derived from QuizSessionAnswer at query time
           });
         } catch (err) {
           const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
@@ -446,7 +442,7 @@ export class QuizSessionService {
       status: session.status,
       currentIndex: session.currentIndex,
       totalQuestions: session.questions.length,
-      questionsAnswered: session.answers.length,
+      questionsAnswered: session.currentIndex,
       questions: QuizSession.sanitizeQuestionsForClient(session.questions),
       expiresAt: session.expiresAt,
       completedAt: session.completedAt,
@@ -508,24 +504,48 @@ export class QuizSessionService {
             }
           }
 
-          // Map database summary to API response format
+          // Load all per-answer rows from QuizSessionAnswer table
+          const dbAnswers = this.answerRepository
+            ? await this.answerRepository.findBySession(sessionId)
+            : [];
+
+          const allAnswers = dbAnswers.map((a) => ({
+            wordId: a.wordId,
+            hanzi: a.hanzi,
+            pinyin: a.pinyin,
+            english: a.english,
+            questionType: a.questionType,
+            userAnswer: a.userAnswer,
+            correct: a.correct,
+            correctAnswer: a.correctAnswer,
+            lapseCount: a.lapseCount,
+            isLeech: a.isLeech,
+            nextReview: a.nextReviewDate?.toISOString() || null,
+          }));
+
+          const incorrectWords = allAnswers.filter((a) => !a.correct);
+          const leechWordIds = [
+            ...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId)),
+          ];
+
           return {
             sessionId: summary.sessionId,
             accuracyRate: summary.accuracyRate,
             correctCount: summary.correctCount,
             incorrectCount: summary.incorrectCount,
             totalQuestions: summary.totalQuestions,
-            incorrectWords: summary.incorrectWords,
-            leechWords: summary.incorrectWords.filter((w) => w.isLeech),
-            leechCount: summary.leechWordIds.length,
-            leechWordIds: summary.leechWordIds,
+            allAnswers,
+            incorrectWords,
+            leechWords: incorrectWords.filter((w) => w.isLeech),
+            leechCount: leechWordIds.length,
+            leechWordIds,
             xpEarned: summary.xpEarned,
-            newBadges: [], // Badges already in user's collection, don't repeat
+            newBadges: [],
             mysteryBox: summary.mysteryBoxDrop
               ? {
                   rewardType: summary.mysteryBoxType,
-                  rewardValue: null, // Not stored in summary
-                  opened: null, // Not tracked
+                  rewardValue: null,
+                  opened: null,
                 }
               : null,
             currentStreak,
@@ -543,7 +563,7 @@ export class QuizSessionService {
       }
     }
 
-    // Fallback: Recalculate summary from session (for old sessions or if DB read fails)
+    // Fallback: Calculate from session questions + QuizSessionAnswer rows
     const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId, {
       includeAnswers: true,
       includeQuestions: true,
@@ -556,7 +576,7 @@ export class QuizSessionService {
       throw error;
     }
 
-    // Fetch current streak and available freezes from StreakService
+    // Fetch current streak and available freezes
     let currentStreak = 0;
     let availableFreezes = 0;
 
@@ -566,18 +586,57 @@ export class QuizSessionService {
         currentStreak = streakData.currentStreak || 0;
         availableFreezes = streakData.freezeCount || 0;
       } catch (error) {
-        // Non-critical: continue with default values if streak fetch fails
         console.warn("[QuizSessionService] Failed to fetch streak data:", error.message);
       }
     }
 
-    // Use domain service to calculate summary with gamification data
-    const summary = calculateSessionSummary(session, {
+    // Load answer rows (empty for sessions before migration)
+    const dbAnswers = this.answerRepository
+      ? await this.answerRepository.findBySession(sessionId)
+      : [];
+
+    const allAnswers = dbAnswers.map((a) => ({
+      wordId: a.wordId,
+      hanzi: a.hanzi,
+      pinyin: a.pinyin,
+      english: a.english,
+      questionType: a.questionType,
+      userAnswer: a.userAnswer,
+      correct: a.correct,
+      correctAnswer: a.correctAnswer,
+      lapseCount: a.lapseCount,
+      isLeech: a.isLeech,
+      nextReview: a.nextReviewDate?.toISOString() || null,
+    }));
+
+    const correctCount = allAnswers.filter((a) => a.correct).length;
+    const incorrectCount = allAnswers.filter((a) => !a.correct).length;
+    const totalQuestions = session.questions.length;
+    const accuracyRate =
+      totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 10000) / 100 : 0;
+
+    const incorrectWords = allAnswers.filter((a) => !a.correct);
+    const leechWordIds = [...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId))];
+
+    return {
+      sessionId,
+      accuracyRate,
+      correctCount,
+      incorrectCount,
+      totalQuestions,
+      allAnswers,
+      incorrectWords,
+      leechWords: incorrectWords.filter((w) => w.isLeech),
+      leechCount: leechWordIds.length,
+      leechWordIds,
+      xpEarned: 0, // Not available without QuizSessionSummary
+      newBadges: [],
+      mysteryBox: null,
       currentStreak,
       availableFreezes,
-    });
-
-    return summary;
+      completedAt: session.completedAt?.toISOString() || new Date().toISOString(),
+      expiresAt: session.expiresAt?.toISOString() || new Date().toISOString(),
+    };
   }
 
   // ============================================================================

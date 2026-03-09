@@ -23,8 +23,7 @@ export class QuizSessionRepository {
     return prisma.quizSession.create({
       data: {
         userId,
-        questions: JSON.stringify(questions),
-        answers: JSON.stringify([]),
+        questions,
         currentIndex: 0,
         status: "ACTIVE",
         startedAt: new Date(),
@@ -47,11 +46,9 @@ export class QuizSessionRepository {
       return null;
     }
 
-    // Parse JSON fields
     return {
       ...session,
-      questions: JSON.parse(session.questions),
-      answers: JSON.parse(session.answers),
+      questions: session.questions,
     };
   }
 
@@ -74,11 +71,9 @@ export class QuizSessionRepository {
       return null;
     }
 
-    // Parse JSON fields (note: options like includeAnswers are ignored since we always include them)
     return {
       ...session,
-      questions: JSON.parse(session.questions),
-      answers: JSON.parse(session.answers),
+      questions: session.questions,
     };
   }
 
@@ -106,11 +101,9 @@ export class QuizSessionRepository {
       return null;
     }
 
-    // Parse JSON fields
     return {
       ...session,
-      questions: JSON.parse(session.questions),
-      answers: JSON.parse(session.answers),
+      questions: session.questions,
     };
   }
 
@@ -135,11 +128,9 @@ export class QuizSessionRepository {
       return null;
     }
 
-    // Parse JSON fields
     return {
       ...session,
-      questions: JSON.parse(session.questions),
-      answers: JSON.parse(session.answers),
+      questions: session.questions,
     };
   }
 
@@ -157,9 +148,6 @@ export class QuizSessionRepository {
   async update(sessionId, data) {
     const updateData = {};
 
-    if (data.answers !== undefined) {
-      updateData.answers = JSON.stringify(data.answers);
-    }
     if (data.currentIndex !== undefined) {
       updateData.currentIndex = data.currentIndex;
     }
@@ -178,11 +166,9 @@ export class QuizSessionRepository {
       data: updateData,
     });
 
-    // Parse JSON fields
     return {
       ...session,
-      questions: JSON.parse(session.questions),
-      answers: JSON.parse(session.answers),
+      questions: session.questions,
     };
   }
 

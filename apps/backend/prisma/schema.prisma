@@ -1,6 +1,3 @@
-// This is your Prisma schema file
-// Learn more: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,18 +7,18 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
+  id           String           @id @default(uuid())
+  email        String           @unique
   passwordHash String
   displayName  String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   deletedAt    DateTime?
-
-  sessions     Session[]
-  progress     Progress[]
-  customLists  VocabularyList[]
-  quizSessions QuizSession[]
+  progress            Progress[]
+  quizSessions        QuizSession[]
+  quizSessionSummaries QuizSessionSummary[]
+  sessions            Session[]
+  customLists         VocabularyList[]
 
   @@index([email])
 }
@@ -32,8 +29,7 @@ model Session {
   refreshToken String   @unique
   expiresAt    DateTime
   createdAt    DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([refreshToken])
@@ -47,12 +43,11 @@ model Progress {
   correctCount Int      @default(0)
   confidence   Float    @default(0)
   nextReview   DateTime @default(now())
-  lapseCount   Int      @default(0)
-  currentDelay Int?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentDelay Int?
+  lapseCount   Int      @default(0)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, wordId])
   @@index([userId])
@@ -62,18 +57,17 @@ model Progress {
 }
 
 model VocabularyWord {
-  id              String   @id
+  id              String         @id
   traditional     String
   simplified      String
   pinyin          String
   english         String
   exampleSentence String?
   audioUrl        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now()) @updatedAt
-
-  categories WordCategory[]
-  lists      WordList[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @default(now()) @updatedAt
+  categories      WordCategory[]
+  lists           WordList[]
 
   @@index([pinyin])
   @@index([simplified])
@@ -85,24 +79,22 @@ model Category {
   description  String?
   icon         String?
   displayOrder Int?
-
-  words WordCategory[]
+  words        WordCategory[]
 
   @@index([name])
 }
 
 model VocabularyList {
-  id          String   @id
+  id          String     @id
   name        String
   description String?
   difficulty  String?
-  isPublic    Boolean  @default(true)
+  isPublic    Boolean    @default(true)
   createdBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  words   WordList[]
-  creator User?      @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  creator     User?      @relation(fields: [createdBy], references: [id])
+  words       WordList[]
 
   @@index([difficulty])
   @@index([createdBy])
@@ -111,9 +103,8 @@ model VocabularyList {
 model WordCategory {
   wordId     String
   categoryId String
-
-  word     VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  category Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  word       VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
 
   @@id([wordId, categoryId])
   @@index([categoryId])
@@ -123,10 +114,9 @@ model WordList {
   wordId    String
   listId    String
   sortOrder Int?
-  addedAt   DateTime @default(now())
-
-  word VocabularyWord  @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  list VocabularyList  @relation(fields: [listId], references: [id], onDelete: Cascade)
+  addedAt   DateTime       @default(now())
+  list      VocabularyList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  word      VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
 
   @@id([wordId, listId])
   @@index([listId, sortOrder])
@@ -145,64 +135,70 @@ model StudyStreak {
   @@index([userId])
 }
 
-model QuizResult {
-  id           String   @id @default(uuid())
-  userId       String
-  wordId       String
-  correct      Boolean
-  questionType String
-  timeSpentMs  Int?
-  answeredAt   DateTime @default(now())
 
-  @@index([userId, wordId])
-  @@index([userId, answeredAt])
-}
 
 model QuizSession {
-  id            String    @id @default(cuid())
-  userId        String
-  questions     Json      // Array of question objects with wordId, questionType, correctAnswer
-  answers       Json      @default("[]")
-  currentIndex  Int       @default(0)
-  status        String    @default("ACTIVE") // "ACTIVE" | "COMPLETE" | "EXPIRED"
-  startedAt     DateTime  @default(now())
-  expiresAt     DateTime  // 1 hour from start
-  completedAt   DateTime?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  userId         String
+  questions      Json
+  currentIndex   Int       @default(0)
+  status         String    @default("ACTIVE")
+  startedAt      DateTime  @default(now())
+  expiresAt      DateTime
+  completedAt    DateTime?
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  summary        QuizSessionSummary?
+  sessionAnswers QuizSessionAnswer[]
 
   @@index([userId, status])
   @@index([expiresAt])
 }
 
+model QuizSessionAnswer {
+  id             String   @id @default(cuid())
+  sessionId      String
+  userId         String
+  wordId         String
+  questionId     String
+  questionIndex  Int
+  questionType   String
+  userAnswer     String
+  correctAnswer  String
+  correct        Boolean
+  timeSpentMs    Int?
+  lapseCount     Int      @default(0)
+  isLeech        Boolean  @default(false)
+  nextReviewDate DateTime?
+  hanzi          String
+  pinyin         String
+  english        String
+  answeredAt     DateTime @default(now())
+  session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, questionId])
+  @@index([sessionId])
+  @@index([userId, answeredAt])
+}
+
 model QuizSessionSummary {
-  id                String   @id @default(uuid())
-  userId            String
-  sessionId         String   @unique
-  completedAt       DateTime
-  
-  // Session Metrics
-  totalQuestions    Int
-  correctCount      Int
-  incorrectCount    Int
-  accuracyRate      Float    // 0-100
-  
-  // Gamification
-  xpEarned          Int
-  newBadgeIds       String[] // JSON array
-  mysteryBoxDrop    Boolean
-  mysteryBoxType    String?  // 'xp_boost' | 'freeze' | 'cosmetic'
-  freezeAwarded     Boolean
-  
-  // Content
-  leechWordIds      String[] // JSON array: word IDs with lapseCount >= 5
-  incorrectWords    Json     // Array of IncorrectWordDetail objects
-  
-  // Expiration & Cleanup
-  createdAt         DateTime @default(now())
-  expiresAt         DateTime // For 7-day TTL matching localStorage
-  
-  @@index([userId, completedAt])
+  id             String   @id @default(cuid())
+  userId         String
+  sessionId      String   @unique
+  completedAt    DateTime
+  totalQuestions Int
+  correctCount   Int
+  incorrectCount Int
+  accuracyRate   Float
+  xpEarned       Int
+  newBadgeIds    String[]
+  mysteryBoxDrop Boolean  @default(false)
+  mysteryBoxType String?
+  freezeAwarded  Boolean  @default(false)
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, expiresAt])
-  @@unique([userId, sessionId])
+  @@index([sessionId])
 }

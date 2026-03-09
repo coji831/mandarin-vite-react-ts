@@ -30,6 +30,7 @@ import { formatRelativeTime } from "../../utils/dateFormatting";
 import { StatsGrid, ResultsTable, LeechWarning, NextQuizCountdown } from "../results";
 import { Button } from "../../../../components";
 import type { QuizSessionSummary } from "../../types";
+import type { QuestionMode } from "../../types";
 import "./ResultsLayout.css";
 
 export { ResultsLayout };
@@ -60,6 +61,39 @@ function ResultsLayout({
   // Use prop summary for daily complete, context summary for regular complete
   const sessionSummary = isDailyComplete ? propSummary : contextSummary;
 
+  // Use allAnswers when available (Option 2 refactor: all correct + incorrect answers)
+  // Falls back to incorrectWords mapping for backward compat, then to context answers
+  const displayAnswers = sessionSummary?.allAnswers?.length
+    ? sessionSummary.allAnswers.map((a) => ({
+        wordId: a.wordId,
+        word: a.hanzi,
+        pinyin: a.pinyin,
+        english: a.english,
+        questionType: a.questionType as QuestionMode,
+        userAnswer: a.userAnswer,
+        correct: a.correct,
+        timestamp: new Date(sessionSummary.completedAt),
+        correctAnswer: a.correctAnswer,
+        lapseCount: a.lapseCount,
+        isLeech: a.isLeech,
+        nextReview: a.nextReview ?? undefined,
+      }))
+    : isDailyComplete && sessionSummary?.incorrectWords
+      ? sessionSummary.incorrectWords.map((w) => ({
+          wordId: w.wordId,
+          word: w.hanzi,
+          pinyin: w.pinyin,
+          english: w.english,
+          questionType: w.questionType,
+          userAnswer: w.userAnswer,
+          correct: false,
+          timestamp: new Date(sessionSummary.completedAt),
+          correctAnswer: w.correctAnswer,
+          lapseCount: w.lapseCount,
+          isLeech: w.isLeech,
+        }))
+      : answers;
+
   // Story 15.11: Use backend-calculated metrics from session summary
   const correctCount = sessionSummary?.correctCount ?? answers.filter((a) => a.correct).length;
   const totalCount = sessionSummary?.totalQuestions ?? answers.length;
@@ -85,7 +119,9 @@ function ResultsLayout({
     handleRetry(); // This already reloads due words
   };
 
-  const hasIncorrectWords = (sessionSummary?.incorrectWords?.length ?? 0) > 0;
+  const hasIncorrectWords = sessionSummary?.allAnswers
+    ? sessionSummary.allAnswers.some((a) => !a.correct)
+    : (sessionSummary?.incorrectWords?.length ?? 0) > 0;
   const [countdownExpired, setCountdownExpired] = useState(false);
 
   // Format date helper (Story 15.10: Now using relative time)
@@ -141,7 +177,7 @@ function ResultsLayout({
       <LeechWarning leechCount={leeches.length} />
 
       {/* Detailed Results Table (Story 15.10: Removed Status column, added red borders) */}
-      <ResultsTable answers={answers} formatDate={formatDate} />
+      <ResultsTable answers={displayAnswers} formatDate={formatDate} />
 
       {/* Story 15.11: Action buttons for next steps */}
       <div className="quizActions flex-row-center" style={{ gap: "1rem", marginTop: "1.5rem" }}>

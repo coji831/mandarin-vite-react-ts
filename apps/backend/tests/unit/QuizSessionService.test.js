@@ -16,6 +16,7 @@ describe("QuizSessionService", () => {
   let mockAIFeedbackService;
   let mockStreakService;
   let mockSummaryRepository;
+  let mockAnswerRepository;
 
   beforeEach(() => {
     // Create mock repositories and services
@@ -62,6 +63,13 @@ describe("QuizSessionService", () => {
       deleteExpired: vi.fn(),
     };
 
+    mockAnswerRepository = {
+      create: vi.fn().mockResolvedValue({}),
+      findBySession: vi.fn().mockResolvedValue([]),
+      findBySessionAndQuestion: vi.fn().mockResolvedValue(null),
+      findRecentByUser: vi.fn().mockResolvedValue([]),
+    };
+
     quizSessionService = new QuizSessionService(
       mockSessionRepository,
       mockLearningService,
@@ -70,6 +78,7 @@ describe("QuizSessionService", () => {
       mockAIFeedbackService, // 5th parameter - AI feedback service
       mockStreakService, // 6th parameter - streak service
       mockSummaryRepository, // 7th parameter - summary persistence (Flow 5)
+      mockAnswerRepository, // 8th parameter - per-answer row storage (Option 2)
     );
 
     vi.clearAllMocks();
@@ -188,18 +197,6 @@ describe("QuizSessionService", () => {
             correctAnswer: "xie4 xie4",
           },
         ],
-        answers: [
-          {
-            wordId: "word1",
-            questionType: "multiple_choice",
-            userAnswer: "hello",
-            correct: true,
-            timestamp: new Date("2026-03-08T10:00:00Z"),
-            nextReviewDate: "2026-03-10T10:00:00Z",
-            lapseCount: 0,
-            isLeech: false,
-          },
-        ],
         currentIndex: 1,
         status: "ACTIVE",
         expiresAt: new Date(Date.now() + 3600000),
@@ -207,6 +204,18 @@ describe("QuizSessionService", () => {
 
       mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
       mockSessionRepository.findActiveByUser.mockResolvedValue(mockExistingSession);
+      mockAnswerRepository.findBySession.mockResolvedValue([
+        {
+          wordId: "word1",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correct: true,
+          answeredAt: new Date("2026-03-08T10:00:00Z"),
+          nextReviewDate: new Date("2026-03-10T10:00:00Z"),
+          lapseCount: 0,
+          isLeech: false,
+        },
+      ]);
 
       const result = await quizSessionService.createSession("user1");
 
@@ -222,7 +231,7 @@ describe("QuizSessionService", () => {
         userAnswer: "hello",
         correct: true,
         timestamp: new Date("2026-03-08T10:00:00Z"),
-        nextReview: "2026-03-10T10:00:00Z",
+        nextReview: "2026-03-10T10:00:00.000Z",
         lapseCount: 0,
         isLeech: false,
       });
@@ -272,12 +281,11 @@ describe("QuizSessionService", () => {
 
       await quizSessionService.createSession("user1");
 
-      // Should have 3 questions (one per type)
-      expect(capturedQuestions).toHaveLength(3);
+      // Service generates 1 question per word (random type)
+      expect(capturedQuestions).toHaveLength(1);
       const questionTypes = capturedQuestions.map((q) => q.questionType);
-      expect(questionTypes).toContain("multiple_choice");
-      expect(questionTypes).toContain("type_pinyin");
-      expect(questionTypes).toContain("type_character");
+      const validTypes = ["multiple_choice", "type_pinyin", "type_character"];
+      expect(validTypes).toContain(questionTypes[0]);
     });
 
     it("should not include correct answers in client response", async () => {
@@ -507,6 +515,37 @@ describe("QuizSessionService", () => {
       mockGamificationService.checkMysteryBoxDrop.mockReturnValue(null);
       mockStreakService.updateStreak.mockResolvedValue({ currentStreak: 8, freezeAwarded: false });
       mockStreakService.checkAndAwardFreeze.mockResolvedValue(true); // 100% accuracy awards freeze
+      // Return all 2 answers (both correct) so accuracyRate = 100 and freeze check is triggered
+      mockAnswerRepository.findBySession.mockResolvedValue([
+        {
+          correct: true,
+          wordId: "word1",
+          questionType: "type_pinyin",
+          userAnswer: "nǐ hǎo",
+          correctAnswer: "nǐ hǎo",
+          lapseCount: 0,
+          isLeech: false,
+          hanzi: "你好",
+          pinyin: "nǐ hǎo",
+          english: "hello",
+          nextReviewDate: null,
+          answeredAt: new Date(),
+        },
+        {
+          correct: true,
+          wordId: "word1",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correctAnswer: "hello",
+          lapseCount: 0,
+          isLeech: false,
+          hanzi: "你好",
+          pinyin: "nǐ hǎo",
+          english: "hello",
+          nextReviewDate: null,
+          answeredAt: new Date(),
+        },
+      ]);
 
       const result = await quizSessionService.submitAnswer(
         "session1",
@@ -559,20 +598,8 @@ describe("QuizSessionService", () => {
     });
 
     it("should throw error if question already answered", async () => {
-      const sessionWithAnswer = {
-        ...mockSession,
-        answers: [
-          {
-            questionId: "word1_type_pinyin",
-            wordId: "word1",
-            userAnswer: "nǐ hǎo",
-            correct: true,
-            timeSpentMs: 5000,
-            answeredAt: new Date().toISOString(),
-          },
-        ],
-      };
-      mockSessionRepository.findByIdAndUserId.mockResolvedValue(sessionWithAnswer);
+      mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
+      mockAnswerRepository.findBySessionAndQuestion.mockResolvedValue({ id: "existing-answer" });
 
       await expect(
         quizSessionService.submitAnswer("session1", "user1", "word1_type_pinyin", "answer", 1000),
@@ -1020,26 +1047,48 @@ describe("QuizSessionService", () => {
             },
           },
         ],
-        answers: [
-          {
-            questionId: "q1",
-            correct: true,
-            userAnswer: "hello",
-            correctAnswer: "hello",
-          },
-        ],
         xpEarned: 20,
         newBadges: [{ id: "badge1", name: "Week Warrior" }],
         mysteryBox: { id: "box1", type: "xp_boost" },
-        completedAt: new Date("2026-03-08T12:00:00Z").toISOString(),
-        expiresAt: new Date("2026-03-09T00:00:00Z").toISOString(),
+        completedAt: new Date("2026-03-08T12:00:00Z"),
+        expiresAt: new Date("2026-03-09T00:00:00Z"),
       };
 
+      // Mock DB summary path (primary path) with stored gamification data
+      mockSummaryRepository.findBySessionIdAndUserId.mockResolvedValue({
+        sessionId: "session1",
+        accuracyRate: 100,
+        correctCount: 1,
+        incorrectCount: 0,
+        totalQuestions: 1,
+        xpEarned: 20,
+        newBadgeIds: ["badge1"],
+        mysteryBoxDrop: true,
+        mysteryBoxType: "xp_boost",
+        freezeAwarded: false,
+        completedAt: new Date("2026-03-08T12:00:00Z"),
+        expiresAt: new Date("2026-03-09T00:00:00Z"),
+      });
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockStreakService.getStreak.mockResolvedValue({
         currentStreak: 7,
         freezeCount: 2,
       });
+      mockAnswerRepository.findBySession.mockResolvedValue([
+        {
+          wordId: "word1",
+          hanzi: "你好",
+          pinyin: "nǐhǎo",
+          english: "hello",
+          questionType: "multiple_choice",
+          userAnswer: "hello",
+          correct: true,
+          correctAnswer: "hello",
+          lapseCount: 0,
+          isLeech: false,
+          nextReviewDate: null,
+        },
+      ]);
 
       const result = await quizSessionService.getSessionSummary("session1", "user1");
 
@@ -1048,8 +1097,8 @@ describe("QuizSessionService", () => {
       expect(result.totalQuestions).toBe(1);
       expect(result.accuracyRate).toBe(100);
       expect(result.xpEarned).toBe(20);
-      expect(result.newBadges).toHaveLength(1);
-      expect(result.mysteryBox).toEqual({ id: "box1", type: "xp_boost" });
+      expect(result.newBadges).toEqual([]); // DB path: badge objects not stored, just IDs
+      expect(result.mysteryBox).toMatchObject({ rewardType: "xp_boost" }); // New format from DB
       expect(result.currentStreak).toBe(7);
       expect(result.availableFreezes).toBe(2);
       expect(result.expiresAt).toBeDefined();
@@ -1077,9 +1126,8 @@ describe("QuizSessionService", () => {
         id: "session1",
         userId: "user1",
         questions: [],
-        answers: [],
-        completedAt: new Date().toISOString(),
-        expiresAt: new Date().toISOString(),
+        completedAt: new Date(),
+        expiresAt: new Date(),
       };
 
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
@@ -1123,16 +1171,6 @@ describe("QuizSessionService", () => {
             english: `meaning${i}`,
           },
         })),
-        answers: Array.from({ length: 9 }, (_, i) => ({
-          questionId: `word${i}_type_pinyin`,
-          wordId: `word${i}`,
-          userAnswer: "wrong",
-          correct: false,
-          timeSpentMs: 5000,
-          answeredAt: new Date().toISOString(),
-          lapseCount: i + 1, // Incrementing lapseCount (1-9)
-          isLeech: i + 1 >= 5, // Words 4-8 are leeches (lapseCount >= 5)
-        })),
       };
 
       // Mock finding the session
@@ -1144,6 +1182,23 @@ describe("QuizSessionService", () => {
         lapseCount: 10,
         isLeech: true,
       });
+
+      // Mock findBySession to return 10 wrong answers for stats calculation
+      const allAnswerRows = Array.from({ length: 10 }, (_, i) => ({
+        wordId: `word${i}`,
+        questionType: "type_pinyin",
+        userAnswer: "wrong",
+        correct: false,
+        lapseCount: i + 1,
+        isLeech: i + 1 >= 5,
+        hanzi: `汉字${i}`,
+        pinyin: undefined,
+        english: `meaning${i}`,
+        correctAnswer: undefined,
+        nextReviewDate: null,
+        answeredAt: new Date(),
+      }));
+      mockAnswerRepository.findBySession.mockResolvedValue(allAnswerRows);
 
       // Mock gamification
       mockGamificationService.calculateXP.mockResolvedValue(100);
@@ -1175,44 +1230,23 @@ describe("QuizSessionService", () => {
       // Verify session complete
       expect(result.sessionComplete).toBe(true);
 
-      // Verify summaryRepository.create was called
+      // Verify answerRepository.create was called with correct lapseCount
+      expect(mockAnswerRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wordId: "word9",
+          sessionId: "session1",
+          correct: false,
+          lapseCount: 10,
+          isLeech: true,
+        }),
+      );
+
+      // Verify summaryRepository.create was called with computed stats
       expect(mockSummaryRepository.create).toHaveBeenCalledTimes(1);
-
-      // Extract the persisted data
       const persistedData = mockSummaryRepository.create.mock.calls[0][0];
-
-      // Verify incorrectWords array has correct lapseCount values
-      expect(persistedData.incorrectWords).toHaveLength(10);
-
-      // Check first incorrect word (from previous answers)
-      expect(persistedData.incorrectWords[0]).toMatchObject({
-        wordId: "word0",
-        lapseCount: 1,
-        isLeech: false,
-      });
-
-      // Check word with lapseCount >= 5 (leech)
-      expect(persistedData.incorrectWords[4]).toMatchObject({
-        wordId: "word4",
-        lapseCount: 5,
-        isLeech: true,
-      });
-
-      // Check last incorrect word (current answer with lapseCount 10)
-      expect(persistedData.incorrectWords[9]).toMatchObject({
-        wordId: "word9",
-        lapseCount: 10,
-        isLeech: true,
-      });
-
-      // Verify leechWordIds contains correct words (lapseCount >= 5)
-      expect(persistedData.leechWordIds).toHaveLength(6); // Words 4-9 (lapseCount 5-10)
-      expect(persistedData.leechWordIds).toContain("word4");
-      expect(persistedData.leechWordIds).toContain("word5");
-      expect(persistedData.leechWordIds).toContain("word6");
-      expect(persistedData.leechWordIds).toContain("word7");
-      expect(persistedData.leechWordIds).toContain("word8");
-      expect(persistedData.leechWordIds).toContain("word9");
+      expect(persistedData.totalQuestions).toBe(10);
+      expect(persistedData.correctCount).toBe(0);
+      expect(persistedData.incorrectCount).toBe(10);
     });
 
     it("should not persist results when session not complete", async () => {
@@ -1232,7 +1266,6 @@ describe("QuizSessionService", () => {
             english: `meaning${i}`,
           },
         })),
-        answers: [],
       };
 
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
