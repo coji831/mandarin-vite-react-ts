@@ -92,7 +92,7 @@ export class QuizSessionService {
         const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
         answers = dbAnswers.map((a) => ({
           wordId: a.wordId,
-          questionType: a.questionType,
+          questionType: a.question.questionType,
           userAnswer: a.userAnswer,
           correct: a.correct,
           timestamp: a.answeredAt,
@@ -146,7 +146,7 @@ export class QuizSessionService {
     return {
       alreadyCompleted: false,
       sessionId: session.id,
-      questions: QuizSession.sanitizeQuestionsForClient(questions),
+      questions: QuizSession.sanitizeQuestionsForClient(session.questions),
       expiresAt: session.expiresAt,
       isResume: false,
     };
@@ -219,18 +219,12 @@ export class QuizSessionService {
         userId: session.userId,
         wordId: question.wordId,
         questionId,
-        questionIndex: session.currentIndex,
-        questionType: question.questionType,
         userAnswer,
-        correctAnswer: this._getCorrectAnswer(question),
         correct: isCorrect,
         timeSpentMs,
         lapseCount: progressUpdate.lapseCount,
         isLeech: progressUpdate.isLeech,
         nextReviewDate: progressUpdate.nextReviewDate,
-        hanzi: question.word.simplified,
-        pinyin: question.word.pinyin,
-        english: question.word.english,
       });
     }
 
@@ -511,13 +505,13 @@ export class QuizSessionService {
 
           const allAnswers = dbAnswers.map((a) => ({
             wordId: a.wordId,
-            hanzi: a.hanzi,
-            pinyin: a.pinyin,
-            english: a.english,
-            questionType: a.questionType,
+            hanzi: a.question.hanzi,
+            pinyin: a.question.pinyin,
+            english: a.question.english,
+            questionType: a.question.questionType,
             userAnswer: a.userAnswer,
             correct: a.correct,
-            correctAnswer: a.correctAnswer,
+            correctAnswer: a.question.correctAnswer,
             lapseCount: a.lapseCount,
             isLeech: a.isLeech,
             nextReview: a.nextReviewDate?.toISOString() || null,
@@ -597,13 +591,13 @@ export class QuizSessionService {
 
     const allAnswers = dbAnswers.map((a) => ({
       wordId: a.wordId,
-      hanzi: a.hanzi,
-      pinyin: a.pinyin,
-      english: a.english,
-      questionType: a.questionType,
+      hanzi: a.question.hanzi,
+      pinyin: a.question.pinyin,
+      english: a.question.english,
+      questionType: a.question.questionType,
       userAnswer: a.userAnswer,
       correct: a.correct,
-      correctAnswer: a.correctAnswer,
+      correctAnswer: a.question.correctAnswer,
       lapseCount: a.lapseCount,
       isLeech: a.isLeech,
       nextReview: a.nextReviewDate?.toISOString() || null,

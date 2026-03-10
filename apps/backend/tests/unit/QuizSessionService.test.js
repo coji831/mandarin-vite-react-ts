@@ -207,7 +207,7 @@ describe("QuizSessionService", () => {
       mockAnswerRepository.findBySession.mockResolvedValue([
         {
           wordId: "word1",
-          questionType: "multiple_choice",
+          question: { questionType: "multiple_choice" },
           userAnswer: "hello",
           correct: true,
           answeredAt: new Date("2026-03-08T10:00:00Z"),
@@ -264,13 +264,27 @@ describe("QuizSessionService", () => {
       mockSessionRepository.findActiveByUser.mockResolvedValue(null);
       mockLearningService.getDueWords.mockResolvedValue(mockDueWords);
 
-      let capturedQuestions;
+      let capturedCreateData;
       mockSessionRepository.create.mockImplementation(async (data) => {
-        capturedQuestions = data.questions;
+        capturedCreateData = data;
+        // Simulate DB return: map the raw questions array to the shape _mapSession produces
+        const questionsArray = data.questions.map((q, i) => ({
+          id: `mock-q-id-${i}`,
+          wordId: q.wordId,
+          questionType: q.questionType,
+          correctAnswer: q.correctAnswer,
+          word: {
+            id: q.wordId,
+            simplified: q.word.simplified,
+            traditional: q.word.traditional,
+            pinyin: q.word.pinyin,
+            english: q.word.english,
+          },
+        }));
         return {
           id: "session1",
           userId: "user1",
-          questions: data.questions,
+          questions: questionsArray,
           answers: [],
           currentIndex: 0,
           status: "ACTIVE",
@@ -282,6 +296,7 @@ describe("QuizSessionService", () => {
       await quizSessionService.createSession("user1");
 
       // Service generates 1 question per word (random type)
+      const capturedQuestions = capturedCreateData.questions;
       expect(capturedQuestions).toHaveLength(1);
       const questionTypes = capturedQuestions.map((q) => q.questionType);
       const validTypes = ["multiple_choice", "type_pinyin", "type_character"];
@@ -520,30 +535,34 @@ describe("QuizSessionService", () => {
         {
           correct: true,
           wordId: "word1",
-          questionType: "type_pinyin",
           userAnswer: "nǐ hǎo",
-          correctAnswer: "nǐ hǎo",
           lapseCount: 0,
           isLeech: false,
-          hanzi: "你好",
-          pinyin: "nǐ hǎo",
-          english: "hello",
           nextReviewDate: null,
           answeredAt: new Date(),
+          question: {
+            questionType: "type_pinyin",
+            correctAnswer: "nǐ hǎo",
+            hanzi: "你好",
+            pinyin: "nǐ hǎo",
+            english: "hello",
+          },
         },
         {
           correct: true,
           wordId: "word1",
-          questionType: "multiple_choice",
           userAnswer: "hello",
-          correctAnswer: "hello",
           lapseCount: 0,
           isLeech: false,
-          hanzi: "你好",
-          pinyin: "nǐ hǎo",
-          english: "hello",
           nextReviewDate: null,
           answeredAt: new Date(),
+          question: {
+            questionType: "multiple_choice",
+            correctAnswer: "hello",
+            hanzi: "你好",
+            pinyin: "nǐ hǎo",
+            english: "hello",
+          },
         },
       ]);
 
@@ -1077,16 +1096,18 @@ describe("QuizSessionService", () => {
       mockAnswerRepository.findBySession.mockResolvedValue([
         {
           wordId: "word1",
-          hanzi: "你好",
-          pinyin: "nǐhǎo",
-          english: "hello",
-          questionType: "multiple_choice",
           userAnswer: "hello",
           correct: true,
-          correctAnswer: "hello",
           lapseCount: 0,
           isLeech: false,
           nextReviewDate: null,
+          question: {
+            hanzi: "你好",
+            pinyin: "nǐhǎo",
+            english: "hello",
+            questionType: "multiple_choice",
+            correctAnswer: "hello",
+          },
         },
       ]);
 
@@ -1186,17 +1207,19 @@ describe("QuizSessionService", () => {
       // Mock findBySession to return 10 wrong answers for stats calculation
       const allAnswerRows = Array.from({ length: 10 }, (_, i) => ({
         wordId: `word${i}`,
-        questionType: "type_pinyin",
         userAnswer: "wrong",
         correct: false,
         lapseCount: i + 1,
         isLeech: i + 1 >= 5,
-        hanzi: `汉字${i}`,
-        pinyin: undefined,
-        english: `meaning${i}`,
-        correctAnswer: undefined,
         nextReviewDate: null,
         answeredAt: new Date(),
+        question: {
+          questionType: "type_pinyin",
+          hanzi: `汉字${i}`,
+          pinyin: undefined,
+          english: `meaning${i}`,
+          correctAnswer: undefined,
+        },
       }));
       mockAnswerRepository.findBySession.mockResolvedValue(allAnswerRows);
 
@@ -1230,7 +1253,7 @@ describe("QuizSessionService", () => {
       // Verify session complete
       expect(result.sessionComplete).toBe(true);
 
-      // Verify answerRepository.create was called with correct lapseCount
+      // Verify answerRepository.create was called with correct lapseCount (no snapshot cols)
       expect(mockAnswerRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
           wordId: "word9",
@@ -1240,6 +1263,13 @@ describe("QuizSessionService", () => {
           isLeech: true,
         }),
       );
+      // Ensure snapshot columns are NOT passed to answerRepository.create
+      const createCall = mockAnswerRepository.create.mock.calls[0][0];
+      expect(createCall).not.toHaveProperty("hanzi");
+      expect(createCall).not.toHaveProperty("pinyin");
+      expect(createCall).not.toHaveProperty("english");
+      expect(createCall).not.toHaveProperty("correctAnswer");
+      expect(createCall).not.toHaveProperty("questionType");
 
       // Verify summaryRepository.create was called with computed stats
       expect(mockSummaryRepository.create).toHaveBeenCalledTimes(1);

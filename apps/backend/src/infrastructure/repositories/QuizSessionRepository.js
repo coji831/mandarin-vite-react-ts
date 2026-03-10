@@ -20,16 +20,35 @@ export class QuizSessionRepository {
   async create(data) {
     const { userId, questions, expiresAt } = data;
 
-    return prisma.quizSession.create({
+    const session = await prisma.quizSession.create({
       data: {
         userId,
-        questions,
         currentIndex: 0,
         status: "ACTIVE",
         startedAt: new Date(),
         expiresAt,
+        questions: {
+          createMany: {
+            data: questions.map((q, i) => ({
+              wordId: q.wordId,
+              questionIndex: i,
+              questionType: q.questionType,
+              correctAnswer: q.correctAnswer,
+              options: q.options ?? null,
+              hanzi: q.word.simplified,
+              pinyin: q.word.pinyin,
+              english: q.word.english,
+              traditional: q.word.traditional ?? q.word.simplified,
+            })),
+          },
+        },
+      },
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
       },
     });
+
+    return this._mapSession(session);
   }
 
   /**
@@ -40,16 +59,16 @@ export class QuizSessionRepository {
   async findById(sessionId) {
     const session = await prisma.quizSession.findUnique({
       where: { id: sessionId },
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
+      },
     });
 
     if (!session) {
       return null;
     }
 
-    return {
-      ...session,
-      questions: session.questions,
-    };
+    return this._mapSession(session);
   }
 
   /**
@@ -65,16 +84,16 @@ export class QuizSessionRepository {
         id: sessionId,
         userId: userId,
       },
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
+      },
     });
 
     if (!session) {
       return null;
     }
 
-    return {
-      ...session,
-      questions: session.questions,
-    };
+    return this._mapSession(session);
   }
 
   /**
@@ -95,16 +114,16 @@ export class QuizSessionRepository {
       orderBy: {
         startedAt: "desc",
       },
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
+      },
     });
 
     if (!session) {
       return null;
     }
 
-    return {
-      ...session,
-      questions: session.questions,
-    };
+    return this._mapSession(session);
   }
 
   /**
@@ -122,16 +141,16 @@ export class QuizSessionRepository {
       orderBy: {
         completedAt: "desc",
       },
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
+      },
     });
 
     if (!session) {
       return null;
     }
 
-    return {
-      ...session,
-      questions: session.questions,
-    };
+    return this._mapSession(session);
   }
 
   /**
@@ -164,12 +183,12 @@ export class QuizSessionRepository {
     const session = await prisma.quizSession.update({
       where: { id: sessionId },
       data: updateData,
+      include: {
+        questions: { orderBy: { questionIndex: "asc" } },
+      },
     });
 
-    return {
-      ...session,
-      questions: session.questions,
-    };
+    return this._mapSession(session);
   }
 
   /**
@@ -235,6 +254,41 @@ export class QuizSessionRepository {
       completed,
       expired,
       active,
+    };
+  }
+
+  // ── Private helpers ────────────────────────────────────────────────────────
+
+  /**
+   * Map a DB session row (with included questions) to the shape expected by services.
+   * Converts QuizSessionQuestion rows into the legacy question shape so no service
+   * code needs to change.
+   */
+  _mapSession(session) {
+    return {
+      ...session,
+      questions: (session.questions ?? []).map((q) => this._mapQuestion(q)),
+    };
+  }
+
+  /**
+   * Map a QuizSessionQuestion DB row to the question shape used by services/domain:
+   * { id, wordId, questionType, word: { id, simplified, traditional, pinyin, english }, correctAnswer, options? }
+   */
+  _mapQuestion(q) {
+    return {
+      id: q.id,
+      wordId: q.wordId,
+      questionType: q.questionType,
+      correctAnswer: q.correctAnswer,
+      word: {
+        id: q.wordId,
+        simplified: q.hanzi,
+        traditional: q.traditional,
+        pinyin: q.pinyin,
+        english: q.english,
+      },
+      ...(q.options != null && { options: q.options }),
     };
   }
 }

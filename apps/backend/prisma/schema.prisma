@@ -140,7 +140,6 @@ model StudyStreak {
 model QuizSession {
   id             String    @id @default(cuid())
   userId         String
-  questions      Json
   currentIndex   Int       @default(0)
   status         String    @default("ACTIVE")
   startedAt      DateTime  @default(now())
@@ -149,33 +148,48 @@ model QuizSession {
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   summary        QuizSessionSummary?
   sessionAnswers QuizSessionAnswer[]
+  questions      QuizSessionQuestion[]
 
   @@index([userId, status])
   @@index([expiresAt])
 }
 
+model QuizSessionQuestion {
+  id            String   @id @default(cuid())
+  sessionId     String
+  wordId        String
+  questionIndex Int
+  questionType  String
+  correctAnswer String
+  options       Json?
+  hanzi         String
+  pinyin        String
+  english       String
+  traditional   String
+  session       QuizSession        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  answer        QuizSessionAnswer?
+
+  @@unique([sessionId, questionIndex])
+  @@index([sessionId])
+  @@index([wordId])
+}
+
 model QuizSessionAnswer {
   id             String   @id @default(cuid())
   sessionId      String
+  questionId     String   @unique
   userId         String
   wordId         String
-  questionId     String
-  questionIndex  Int
-  questionType   String
   userAnswer     String
-  correctAnswer  String
   correct        Boolean
   timeSpentMs    Int?
   lapseCount     Int      @default(0)
   isLeech        Boolean  @default(false)
   nextReviewDate DateTime?
-  hanzi          String
-  pinyin         String
-  english        String
   answeredAt     DateTime @default(now())
-  session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session        QuizSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question       QuizSessionQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  @@unique([sessionId, questionId])
   @@index([sessionId])
   @@index([userId, answeredAt])
 }
