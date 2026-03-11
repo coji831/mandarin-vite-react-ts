@@ -47,16 +47,16 @@ const streakService = new StreakService(streakRepository, quizSessionAnswerRepos
 const cacheService = getCacheService();
 const aiFeedbackService = new CachedAIFeedbackService(vocabularyRepository, cacheService);
 
-const quizSessionService = new QuizSessionService(
-  quizSessionRepository,
+const quizSessionService = new QuizSessionService({
+  sessionRepository: quizSessionRepository,
   learningService,
   gamificationService,
   vocabularyRepository,
-  aiFeedbackService, // 5th: automatic AI feedback for incorrect answers
-  streakService, // 6th: streak tracking for gamification
-  quizSessionSummaryRepository, // 7th: Flow 5 summary persistence
-  quizSessionAnswerRepository, // 8th: per-answer row storage (Option 2 refactor)
-);
+  aiFeedbackService, // automatic AI feedback for incorrect answers
+  streakService, // streak tracking for gamification
+  summaryRepository: quizSessionSummaryRepository, // Flow 5 summary persistence
+  answerRepository: quizSessionAnswerRepository, // per-answer row storage
+});
 
 const quizSessionController = new QuizSessionController(quizSessionService);
 

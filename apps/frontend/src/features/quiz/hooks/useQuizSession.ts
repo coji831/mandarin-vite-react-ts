@@ -19,7 +19,7 @@
 
 import { useCallback, MutableRefObject } from "react";
 import { quizApi } from "../services/quizService";
-import { transformSessionToQuestions } from "../services/quizTransformers";
+import { transformSessionToQuestions } from "../utils/quizTransformers";
 import type { QuizAction } from "../reducers/quizReducer";
 
 // ============================================================================
@@ -70,7 +70,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       // Check if user already completed quiz today (daily quiz limit)
       if (response.alreadyCompleted) {
         dispatch({
-          type: "SHOW_DAILY_COMPLETE_RESULTS",
+          type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS",
           sessionId: response.sessionId,
           summary: response.summary!,
           expiresAt: response.expiresAt,
@@ -81,7 +81,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       // Flow 1.2: Check if no due words (all caught up)
       if (response.noDueWords) {
         dispatch({
-          type: "SHOW_NO_DUE_WORDS",
+          type: "QUIZ/SHOW_NO_DUE_WORDS",
           message: response.message || "You're all caught up! Come back later for more practice.",
         });
         return;
@@ -89,7 +89,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
 
       if (response.questions.length === 0) {
         dispatch({
-          type: "SET_ERROR",
+          type: "QUIZ/SET_ERROR",
           error: "No words due for review today. Great job staying on track!",
         });
         return;
@@ -102,7 +102,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       if (response.isResume && response.currentIndex !== undefined && response.answers) {
         // Resume quiz from last position with previous answers
         dispatch({
-          type: "RESUME_QUIZ",
+          type: "QUIZ/RESUME",
           questions,
           sessionId: response.sessionId,
           currentIndex: response.currentIndex,
@@ -114,7 +114,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       } else {
         // Initialize new quiz from beginning
         dispatch({
-          type: "INITIALIZE_QUIZ",
+          type: "QUIZ/INITIALIZE",
           questions,
           sessionId: response.sessionId,
         });
@@ -124,7 +124,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       questionStartTime.current = Date.now();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to start quiz session";
-      dispatch({ type: "SET_ERROR", error: errorMessage });
+      dispatch({ type: "QUIZ/SET_ERROR", error: errorMessage });
     }
   }, [dispatch, questionStartTime]);
 

@@ -13,7 +13,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MysteryBoxModal } from "../MysteryBoxModal";
-import type { MysteryBox } from "../../../quiz/types";
+import type { MysteryBox } from "../../types/GamificationTypes";
 
 describe("MysteryBoxModal", () => {
   const mockOnClose = vi.fn();
@@ -24,12 +24,10 @@ describe("MysteryBoxModal", () => {
 
   it("should not render when isOpen is false", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
     render(<MysteryBoxModal isOpen={false} mysteryBox={mysteryBox} onClose={mockOnClose} />);
@@ -39,12 +37,10 @@ describe("MysteryBoxModal", () => {
 
   it("should render when isOpen is true", async () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
@@ -60,15 +56,13 @@ describe("MysteryBoxModal", () => {
 
   it("should display XP reward correctly", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
     expect(screen.getByText("⭐")).toBeInTheDocument();
     expect(screen.getByText("Bonus XP")).toBeInTheDocument();
@@ -77,65 +71,57 @@ describe("MysteryBoxModal", () => {
 
   it("should display freeze reward correctly", () => {
     const mysteryBox: MysteryBox = {
-      type: "freeze",
-      amount: 1,
+      rewardType: "freeze",
+      rewardValue: 1,
       name: "Streak Freeze",
       icon: "❄️",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 14,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
     expect(screen.getByText("❄️")).toBeInTheDocument();
     expect(screen.getByText("Streak Freeze")).toBeInTheDocument();
     expect(screen.getByText(/1/)).toBeInTheDocument();
   });
 
-  it("should display badge reward correctly", () => {
+  it("should display cosmetic reward correctly", () => {
     const mysteryBox: MysteryBox = {
-      type: "badge",
-      id: "golden_flame_rare",
+      rewardType: "cosmetic",
+      rewardValue: "golden_flame_rare",
       name: "Golden Flame (Rare)",
       icon: "✨",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 21,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
     expect(screen.getByText("✨")).toBeInTheDocument();
     expect(screen.getByText("Golden Flame (Rare)")).toBeInTheDocument();
   });
 
-  it("should display milestone information", () => {
+  it("should display reward information", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
-    expect(screen.getByText(/7-day milestone/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+50 XP Boost/i)).toBeInTheDocument();
   });
 
   it("should call onClose when close button clicked", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByRole("button", { name: /claim/i });
+    const closeButton = screen.getByRole("button", { name: /Awesome/i });
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -143,18 +129,16 @@ describe("MysteryBoxModal", () => {
 
   it("should call onClose when overlay clicked", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
     // Click overlay (parent element of modal content)
-    const overlay = screen.getByText(/Mystery Box!/i).closest(".modalOverlay");
+    const overlay = screen.getByText(/Mystery Box!/i).closest(".mystery-box-overlay");
     if (overlay) {
       fireEvent.click(overlay);
       expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -162,14 +146,14 @@ describe("MysteryBoxModal", () => {
   });
 
   it("should handle null mysteryBox gracefully", () => {
-    render(<MysteryBoxModal show={true} mysteryBox={null} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={null} onClose={mockOnClose} />);
 
     // Should not crash, but should not render content
     expect(screen.queryByText(/Mystery Box!/i)).not.toBeInTheDocument();
   });
 
   it("should handle undefined mysteryBox gracefully", () => {
-    render(<MysteryBoxModal show={true} mysteryBox={undefined} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={undefined} onClose={mockOnClose} />);
 
     // Should not crash, but should not render content
     expect(screen.queryByText(/Mystery Box!/i)).not.toBeInTheDocument();
@@ -177,50 +161,44 @@ describe("MysteryBoxModal", () => {
 
   it("should display celebration animation classes", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
     const { container } = render(
-      <MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />,
+      <MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />,
     );
 
     // Check for animation classes (fade-in, bounce, etc.)
-    const modalContent = container.querySelector(".modalContent");
+    const modalContent = container.querySelector(".mystery-box-content");
     expect(modalContent).toBeInTheDocument();
   });
 
-  it("should handle large milestone numbers", () => {
+  it("should handle large reward values", () => {
     const mysteryBox: MysteryBox = {
-      type: "freeze",
-      amount: 1,
+      rewardType: "freeze",
+      rewardValue: 3,
       name: "Streak Freeze",
       icon: "❄️",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 365,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
-    expect(screen.getByText(/365-day milestone/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 Streak Freezes!/i)).toBeInTheDocument();
   });
 
-  it("should display congratulations message", () => {
+  it("should display celebration message", () => {
     const mysteryBox: MysteryBox = {
-      type: "xp",
-      amount: 50,
+      rewardType: "xp_boost",
+      rewardValue: 50,
       name: "Bonus XP",
       icon: "⭐",
-      droppedAt: "2026-02-15T10:00:00.000Z",
-      milestone: 7,
     };
 
-    render(<MysteryBoxModal show={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
-    expect(screen.getByText(/Congratulations/i)).toBeInTheDocument();
+    expect(screen.getByText(/Mystery Box!/i)).toBeInTheDocument();
   });
 });

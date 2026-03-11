@@ -15,12 +15,7 @@ describe("QuestionSection", () => {
       const options = ["hello", "goodbye", "thank you", "please"];
 
       render(
-        <QuestionDisplay
-          question={question}
-          mode="multiple_choice"
-          options={options}
-          onAnswer={mockOnAnswer}
-        />,
+        <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
       expect(screen.getByText("你好")).toBeTruthy();
@@ -37,12 +32,7 @@ describe("QuestionSection", () => {
       const options = ["hello", "goodbye", "thank you", "please"];
 
       render(
-        <QuestionSection
-          question={question}
-          mode="multiple_choice"
-          options={options}
-          onAnswer={mockOnAnswer}
-        />,
+        <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
       const thirdOption = screen.getByText("thank you");
@@ -57,12 +47,7 @@ describe("QuestionSection", () => {
       const options = ["hello", "goodbye", "thanks", "please"];
 
       render(
-        <QuestionSection
-          question={question}
-          mode="multiple_choice"
-          options={options}
-          onAnswer={mockOnAnswer}
-        />,
+        <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
       // Story 15.10: Mode indicator now has icon + text in separate elements
@@ -76,7 +61,7 @@ describe("QuestionSection", () => {
       const mockOnAnswer = vi.fn();
       const question = { word: "你好", english: "hello" };
 
-      render(<QuestionSection question={question} mode="type_pinyin" onAnswer={mockOnAnswer} />);
+      render(<QuestionSection question={question} mode="type_pinyin" onToggleHint={() => {}} />);
 
       expect(screen.getByText("你好")).toBeTruthy();
       expect(screen.getByText(/type the pinyin/i)).toBeTruthy();
@@ -90,7 +75,7 @@ describe("QuestionSection", () => {
       const mockOnAnswer = vi.fn();
       const question = { word: "你好" };
 
-      render(<QuestionSection question={question} mode="type_pinyin" onAnswer={mockOnAnswer} />);
+      render(<QuestionSection question={question} mode="type_pinyin" onToggleHint={() => {}} />);
 
       // Story 15.10: Mode indicator now has icon + text in separate elements
       expect(screen.getByText("Type Pinyin")).toBeTruthy();
@@ -103,7 +88,7 @@ describe("QuestionSection", () => {
       const mockOnAnswer = vi.fn();
       const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
 
-      render(<QuestionSection question={question} mode="type_character" onAnswer={mockOnAnswer} />);
+      render(<QuestionSection question={question} mode="type_character" onToggleHint={() => {}} />);
 
       expect(screen.getByText(/nǐhǎo/)).toBeTruthy();
       expect(screen.getByText("hello")).toBeTruthy();
@@ -121,7 +106,7 @@ describe("QuestionSection", () => {
       const mockOnAnswer = vi.fn();
       const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
 
-      render(<QuestionSection question={question} mode="type_character" onAnswer={mockOnAnswer} />);
+      render(<QuestionSection question={question} mode="type_character" onToggleHint={() => {}} />);
 
       // Story 15.10: Mode indicator now has icon + text in separate elements
       expect(screen.getByText("Type Character")).toBeTruthy();
@@ -136,12 +121,7 @@ describe("QuestionSection", () => {
       const options = ["hello", "goodbye", "thanks", "please"];
 
       render(
-        <QuestionSection
-          question={question}
-          mode="multiple_choice"
-          options={options}
-          onAnswer={mockOnAnswer}
-        />,
+        <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
       const buttons = screen.getAllByRole("button");

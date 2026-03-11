@@ -1,7 +1,23 @@
 /**
  * BadgeDisplay Component
- * Displays earned and locked badges with modal details
- * Story 15.7: Gamification & AI Feedback Display UI
+ *
+ * Displays earned and locked achievement badges with interactive details modal.
+ * Features:
+ * - Grid layout for badge collection display
+ * - Click to view full badge details (name, description, unlock condition)
+ * - Modal with Escape key dismissal
+ * - Visual distinction between earned (colored) and locked (grayscale) badges
+ *
+ * Architecture:
+ * - Part of gamification feature (Story 15.7)
+ * - Used in results layout to display learner achievements
+ * - Manages local UI state for selected badge modal
+ * - Intended to motivate users by showing progress toward unlocks
+ *
+ * Related Stories:
+ * - Story 15.7: Gamification & AI Feedback Display UI (badges component)
+ * - Story 15.9: Mystery Box rewards (badges unlock alongside other power-ups)
+ * - Story 15.11: Quiz completion triggers badge unlock checks
  */
 
 import { useState, useEffect } from "react";

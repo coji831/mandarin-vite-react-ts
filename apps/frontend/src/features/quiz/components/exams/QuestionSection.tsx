@@ -18,8 +18,6 @@ interface QuestionSectionProps {
     english?: string;
   };
   mode: QuestionMode;
-  options?: string[]; // Not used anymore (handled by parent)
-  onAnswer: (answer: string) => void; // Not used anymore (handled by parent)
   onToggleHint?: () => void;
 }
 

@@ -65,7 +65,7 @@ export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
                     <div className="userAnswerText">{answer.userAnswer}</div>
                     {!answer.correct && <div className="correctAnswerHint">→ {expectedAnswer}</div>}
                   </td>
-                  <td className="nextReviewCell">{formatDate(answer.nextReview)}</td>
+                  <td className="nextReviewCell">{formatDate(answer.nextReviewDate)}</td>
                   <td
                     className={`lapseCountCell ${isLeech ? "leechWarning" : ""}`}
                     title="Times missed in a row"

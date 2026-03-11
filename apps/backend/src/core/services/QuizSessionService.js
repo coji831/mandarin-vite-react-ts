@@ -8,10 +8,21 @@
  * - Validate answers server-side (prevents client-side cheating)
  * - Update progress and gamification after each answer
  * - Manage session lifecycle (expiration, completion)
- * 
+ *
  * Clean Architecture: Application Layer Service
  * Orchestrates domain entities and infrastructure
-
+ *
+ * Dependencies injected via options object (Node.js idiom for 3+ deps):
+ * - sessionRepository    IQuizSessionRepository
+ * - learningService      LearningService
+ * - gamificationService  GamificationService
+ * - vocabularyRepository IVocabularyRepository
+ * - aiFeedbackService    CachedAIFeedbackService (optional)
+ * - streakService        StreakService (optional)
+ * - summaryRepository    IQuizSessionSummaryRepository (optional)
+ * - answerRepository     IQuizSessionAnswerRepository (optional)
+ *
+ * Docs: docs/architecture.md § Core Layer — Services
  */
 
 import { QuizSession } from "../domain/entities/QuizSession.js";
@@ -19,7 +30,18 @@ import { calculateAccuracy } from "../domain/constants/BusinessRules.js";
 import { getEndOfDay } from "../domain/constants/BusinessRules.js";
 
 export class QuizSessionService {
-  constructor(
+  /**
+   * @param {object} deps - Injected dependencies
+   * @param {object} deps.sessionRepository    - IQuizSessionRepository implementation
+   * @param {object} deps.learningService      - LearningService instance
+   * @param {object} deps.gamificationService  - GamificationService instance
+   * @param {object} deps.vocabularyRepository - IVocabularyRepository implementation
+   * @param {object} [deps.aiFeedbackService]  - CachedAIFeedbackService (optional)
+   * @param {object} [deps.streakService]      - StreakService (optional)
+   * @param {object} [deps.summaryRepository]  - IQuizSessionSummaryRepository (optional)
+   * @param {object} [deps.answerRepository]   - IQuizSessionAnswerRepository (optional)
+   */
+  constructor({
     sessionRepository,
     learningService,
     gamificationService,
@@ -28,7 +50,7 @@ export class QuizSessionService {
     streakService = null,
     summaryRepository = null,
     answerRepository = null,
-  ) {
+  }) {
     this.sessionRepository = sessionRepository;
     this.learningService = learningService;
     this.gamificationService = gamificationService;
@@ -71,6 +93,22 @@ export class QuizSessionService {
     if (completedSession && new Date() < new Date(completedSession.expiresAt)) {
       // User already completed quiz today, return summary instead
       const summary = await this.getSessionSummary(completedSession.id, userId);
+
+      // Handle missing summary gracefully
+      if (!summary) {
+        logger.warn("Summary not found for completed session", {
+          sessionId: completedSession.id,
+          userId,
+        });
+        return {
+          alreadyCompleted: true,
+          sessionId: completedSession.id,
+          summary: null,
+          expiresAt: completedSession.expiresAt,
+          questions: [],
+        };
+      }
+
       return {
         alreadyCompleted: true,
         sessionId: completedSession.id,
@@ -96,7 +134,7 @@ export class QuizSessionService {
           userAnswer: a.userAnswer,
           correct: a.correct,
           timestamp: a.answeredAt,
-          nextReview: a.nextReviewDate?.toISOString() || null,
+          nextReviewDate: a.nextReviewDate?.toISOString() || null,
           lapseCount: a.lapseCount,
           isLeech: a.isLeech,
         }));
@@ -514,7 +552,7 @@ export class QuizSessionService {
             correctAnswer: a.question.correctAnswer,
             lapseCount: a.lapseCount,
             isLeech: a.isLeech,
-            nextReview: a.nextReviewDate?.toISOString() || null,
+            nextReviewDate: a.nextReviewDate?.toISOString() || null,
           }));
 
           const incorrectWords = allAnswers.filter((a) => !a.correct);
@@ -600,7 +638,7 @@ export class QuizSessionService {
       correctAnswer: a.question.correctAnswer,
       lapseCount: a.lapseCount,
       isLeech: a.isLeech,
-      nextReview: a.nextReviewDate?.toISOString() || null,
+      nextReviewDate: a.nextReviewDate?.toISOString() || null,
     }));
 
     const correctCount = allAnswers.filter((a) => a.correct).length;

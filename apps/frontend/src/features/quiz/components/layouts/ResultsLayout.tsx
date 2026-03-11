@@ -6,7 +6,8 @@
  * Story 15.9: Integrated backend XP, mystery box, and badge rewards
  * Story 15.10: UI polish - relative time, updated wording, red borders for incorrect
  * Epic 19: State Refactor - Reads from context (zero props)
- * Story 15.11: Added daily quiz complete view with countdown timer
+ * Story 15.11: Added daily quiz complete view with countdown timer;
+ *   banner-only initial view with View Results toggle to avoid CLS
  *
  * Layout orchestrator for quiz completion phase.
  * Displays quiz results with accuracy metrics and gamification rewards.
@@ -22,12 +23,11 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuizState, useQuizActions } from "../../contexts";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { BadgeCelebrationModal } from "../../../gamification/components/BadgeCelebrationModal";
 import { formatRelativeTime } from "../../utils/dateFormatting";
-import { StatsGrid, ResultsTable, LeechWarning, NextQuizCountdown } from "../results";
+import { StatsGrid, ResultsTable, DailyCompleteBanner } from "../results";
 import { Button } from "../../../../components";
 import type { QuizSessionSummary } from "../../types";
 import type { QuestionMode } from "../../types";
@@ -56,7 +56,6 @@ function ResultsLayout({
     sessionSummary: contextSummary,
   } = useQuizState();
   const { handleRetry } = useQuizActions();
-  const navigate = useNavigate();
 
   // Use prop summary for daily complete, context summary for regular complete
   const sessionSummary = isDailyComplete ? propSummary : contextSummary;
@@ -76,7 +75,7 @@ function ResultsLayout({
         correctAnswer: a.correctAnswer,
         lapseCount: a.lapseCount,
         isLeech: a.isLeech,
-        nextReview: a.nextReview ?? undefined,
+        nextReviewDate: a.nextReviewDate ?? undefined,
       }))
     : isDailyComplete && sessionSummary?.incorrectWords
       ? sessionSummary.incorrectWords.map((w) => ({
@@ -119,10 +118,11 @@ function ResultsLayout({
     handleRetry(); // This already reloads due words
   };
 
-  const hasIncorrectWords = sessionSummary?.allAnswers
-    ? sessionSummary.allAnswers.some((a) => !a.correct)
-    : (sessionSummary?.incorrectWords?.length ?? 0) > 0;
-  const [countdownExpired, setCountdownExpired] = useState(false);
+  // Initialize synchronously so button label/disabled never flash on first render.
+  // Expired if expiresAt is absent (no restriction) or already past.
+  const [countdownExpired, setCountdownExpired] = useState<boolean>(
+    () => !expiresAt || new Date(expiresAt) <= new Date(),
+  );
 
   // Format date helper (Story 15.10: Now using relative time)
   const formatDate = (isoDate?: string) => {
@@ -149,16 +149,9 @@ function ResultsLayout({
 
   return (
     <div className="quizCompleteContainer flex-col-center text-center">
-      {/* Daily Complete Banner */}
+      {/* Daily complete: thin banner strip always shown above results */}
       {isDailyComplete && (
-        <div className="daily-complete-banner">
-          <h2 className="completeTitle">Today's Quiz Complete! ✅</h2>
-          <p className="daily-complete-message">
-            You've finished today's quiz. Review your results below or come back tomorrow for a new
-            quiz!
-          </p>
-          <NextQuizCountdown expiresAt={expiresAt || null} onExpire={handleCountdownExpire} />
-        </div>
+        <DailyCompleteBanner expiresAt={expiresAt} onExpire={handleCountdownExpire} />
       )}
 
       {/* Regular Complete Title */}
@@ -169,27 +162,20 @@ function ResultsLayout({
         totalCount={totalCount}
         accuracy={accuracy}
         xpEarned={xpEarned}
+        leechCount={leeches.length}
       />
 
       {/* Story 15.9: Freeze Awarded Notification */}
       {freezeAwarded && <div className="freezeAlert">❄️ You earned 1 Streak Freeze!</div>}
 
-      <LeechWarning leechCount={leeches.length} />
-
       {/* Detailed Results Table (Story 15.10: Removed Status column, added red borders) */}
       <ResultsTable answers={displayAnswers} formatDate={formatDate} />
 
-      {/* Story 15.11: Action buttons for next steps */}
+      {/* Action buttons */}
       <div className="quizActions flex-row-center" style={{ gap: "1rem", marginTop: "1.5rem" }}>
-        {isDailyComplete ? (
-          <Button variant="primary" disabled={!countdownExpired} onClick={handleNewQuiz}>
-            {countdownExpired ? "New Quiz" : "Next Quiz"}
-          </Button>
-        ) : (
-          <Button variant="primary" onClick={handleNewQuiz}>
-            New Quiz
-          </Button>
-        )}
+        <Button variant="primary" onClick={handleNewQuiz}>
+          {isDailyComplete && !countdownExpired ? "Retry" : "New Quiz"}
+        </Button>
       </div>
 
       {/* Story 15.9: Mystery Box Modal */}

@@ -52,8 +52,6 @@ export function ExamLayout() {
           <QuestionSection
             question={currentQuestion}
             mode={currentQuestion.mode}
-            options={currentQuestion.options}
-            onAnswer={handleAnswer}
             onToggleHint={toggleHint}
           />
         </div>

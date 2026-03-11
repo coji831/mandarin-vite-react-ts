@@ -15,23 +15,6 @@
 import { QuizAnswer } from "./QuizTypes";
 import { Badge } from "../../gamification/types/GamificationTypes";
 
-// Re-export Badge so types/index.ts barrel can expose it from this module
-export type { Badge } from "../../gamification/types/GamificationTypes";
-
-/**
- * Mystery box reward (5% drop chance on streak milestones)
- * Aligned with backend API: POST /api/v1/gamification/mystery-box/:id/open
- */
-export type MysteryBox = {
-  id?: string; // Mystery box ID
-  rewardType: "xp_boost" | "freeze" | "cosmetic"; // Backend enum values
-  rewardValue: number | string; // Numeric for XP/freeze, string for cosmetic ID
-  opened?: boolean; // True if already opened
-  // UI display fields (frontend-only)
-  name?: string;
-  icon?: string;
-};
-
 /**
  * Quiz question from backend session (sanitized, no correct answer)
  */
@@ -145,7 +128,7 @@ export type SessionAnswerDetail = {
   correctAnswer: string;
   lapseCount: number;
   isLeech: boolean;
-  nextReview: string | null;
+  nextReviewDate: string | null;
 };
 
 /**

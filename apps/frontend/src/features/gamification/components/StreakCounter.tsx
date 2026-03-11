@@ -1,7 +1,22 @@
 /**
  * StreakCounter Component
- * Displays current streak with visual state indicators (active, at risk, broken)
- * Story 15.7: Gamification & AI Feedback Display UI
+ *
+ * Displays user's current streak with visual state indicators.
+ * Three states:
+ * - Active: Last activity within 24 hours (green theme)
+ * - At Risk: Last activity 24-48 hours ago (yellow theme, warns user)
+ * - Broken: No activity for 48+ hours (gray theme)
+ *
+ * Architecture:
+ * - Part of gamification header UI, shown in dashboard and quiz results
+ * - Calculates status dynamically based on lastActivityDate timestamp
+ * - Used by spaced repetition system to track learning consistency
+ * - Connected to freeze power-up (temporarily pauses streak decay)
+ *
+ * Related Stories:
+ * - Story 15.7: Gamification & AI Feedback Display UI
+ * - Story 15.15: Spaced Repetition Integration (uses for scheduling)
+ * - Story 15.9: Mystery Box freeze reward (prevents streak break)
  */
 
 import type { StreakData } from "../types/GamificationTypes";

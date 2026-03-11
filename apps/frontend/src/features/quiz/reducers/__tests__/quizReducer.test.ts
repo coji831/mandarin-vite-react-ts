@@ -21,7 +21,7 @@ describe("quizReducer", () => {
       },
     ];
 
-    const action: QuizAction = { type: "INITIALIZE_QUIZ", questions, sessionId: "session1" };
+    const action: QuizAction = { type: "QUIZ/INITIALIZE", questions, sessionId: "session1" };
     const newState = quizReducer(initialState, action);
 
     expect(newState.phase).toBe("QUESTION");
@@ -57,14 +57,14 @@ describe("quizReducer", () => {
         userAnswer: "hello",
         correct: true,
         timestamp: new Date("2026-03-08T10:00:00Z"),
-        nextReview: "2026-03-10T10:00:00Z",
+        nextReviewDate: "2026-03-10T10:00:00Z",
         lapseCount: 0,
         isLeech: false,
       },
     ];
 
     const action: QuizAction = {
-      type: "RESUME_QUIZ",
+      type: "QUIZ/RESUME",
       questions,
       sessionId: "session1",
       currentIndex: 1,
@@ -106,7 +106,7 @@ describe("quizReducer", () => {
       timestamp: new Date(),
     };
 
-    const action: QuizAction = { type: "SUBMIT_ANSWER", answer };
+    const action: QuizAction = { type: "QUIZ/SUBMIT_ANSWER", answer };
     const newState = quizReducer(state, action);
 
     expect(newState.phase).toBe("ANSWER_FEEDBACK");
@@ -143,14 +143,14 @@ describe("quizReducer", () => {
     };
 
     const action: QuizAction = {
-      type: "UPDATE_ANSWER_METADATA",
+      type: "QUIZ/UPDATE_ANSWER_METADATA",
       wordId: "1",
-      nextReview: "2026-02-21T10:00:00Z",
+      nextReviewDate: "2026-02-21T10:00:00Z",
       lapseCount: 0,
     };
     const newState = quizReducer(state, action);
 
-    expect(newState.answers[0].nextReview).toBe("2026-02-21T10:00:00Z");
+    expect(newState.answers[0].nextReviewDate).toBe("2026-02-21T10:00:00Z");
     expect(newState.answers[0].lapseCount).toBe(0);
     expect(newState.answers[0].word).toBe("你好");
     expect(newState.answers[0].pinyin).toBe("nǐhǎo");
@@ -188,7 +188,7 @@ describe("quizReducer", () => {
       ],
     };
 
-    const action: QuizAction = { type: "NEXT_QUESTION" };
+    const action: QuizAction = { type: "QUIZ/NEXT_QUESTION" };
     const newState = quizReducer(state, action);
 
     expect(newState.phase).toBe("QUESTION");
@@ -220,14 +220,14 @@ describe("quizReducer", () => {
       ],
     };
 
-    const action: QuizAction = { type: "NEXT_QUESTION" };
+    const action: QuizAction = { type: "QUIZ/NEXT_QUESTION" };
     const newState = quizReducer(state, action);
 
     expect(newState.phase).toBe("COMPLETE");
     expect(newState.currentIndex).toBe(1);
   });
 
-  it("handles COMPLETE_QUIZ action", () => {
+  it("handles QUIZ/COMPLETE action", () => {
     const state: QuizState = {
       phase: "ANSWER_FEEDBACK",
       questions: [],
@@ -235,7 +235,7 @@ describe("quizReducer", () => {
       answers: [],
     };
 
-    const action: QuizAction = { type: "COMPLETE_QUIZ" };
+    const action: QuizAction = { type: "QUIZ/COMPLETE" };
     const newState = quizReducer(state, action);
 
     expect(newState.phase).toBe("COMPLETE");
@@ -265,7 +265,7 @@ describe("quizReducer", () => {
         answers: [],
       };
 
-      const action: QuizAction = { type: "SET_ERROR", error: "Failed to fetch words" };
+      const action: QuizAction = { type: "QUIZ/SET_ERROR", error: "Failed to fetch words" };
       const newState = quizReducer(state, action);
 
       expect(newState.phase).toBe("ERROR");
@@ -292,7 +292,7 @@ describe("quizReducer", () => {
         },
       ];
 
-      const action: QuizAction = { type: "INITIALIZE_QUIZ", questions };
+      const action: QuizAction = { type: "QUIZ/INITIALIZE", questions };
       const newState = quizReducer(state, action);
 
       expect(newState.phase).toBe("QUESTION");
@@ -324,7 +324,7 @@ describe("quizReducer", () => {
         ],
       };
 
-      const action: QuizAction = { type: "RESET_QUIZ" };
+      const action: QuizAction = { type: "QUIZ/RESET" };
       const newState = quizReducer(state, action);
 
       expect(newState).toEqual(initialState);
@@ -339,7 +339,7 @@ describe("quizReducer", () => {
         error: "Network error",
       };
 
-      const action: QuizAction = { type: "COMPLETE_QUIZ" };
+      const action: QuizAction = { type: "QUIZ/COMPLETE" };
       const newState = quizReducer(state, action);
 
       // Should update phase but preserve error

@@ -5,7 +5,6 @@
 
 // Modern Quiz Session API types
 export type {
-  Badge,
   MysteryBox,
   QuizSessionQuestion,
   QuizSessionStartResponse,

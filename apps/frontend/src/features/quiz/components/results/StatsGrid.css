@@ -12,7 +12,7 @@
 }
 
 .statCard {
-  padding: var(--space-md) var(--space-sm);
+  padding: var(--space-sm) var(--space-sm);
   background: var(--surface-light-5);
   border-radius: var(--radius-lg);
   border: 1px solid var(--surface-light-10);
@@ -22,13 +22,13 @@
 .statLabel {
   font-size: var(--font-xs);
   color: var(--text-tertiary);
-  margin-bottom: var(--space-xs);
+  margin-bottom: 2px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .statValue {
-  font-size: var(--font-2xl);
+  font-size: var(--font-xl);
   color: var(--text-primary);
   font-weight: 700;
 }

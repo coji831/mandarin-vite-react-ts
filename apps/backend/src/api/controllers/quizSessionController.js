@@ -9,6 +9,11 @@ import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("QuizSessionController");
 
+// Quiz session constants
+const MAX_QUIZ_WORDS = 50;
+const MIN_QUIZ_WORDS = 1;
+const DEFAULT_QUIZ_WORDS = 10;
+
 /**
  * QuizSessionController class with dependency injection
  * Story 15.11 Phase 8: Session-based quiz endpoints only (legacy moved to LearningController)
@@ -35,22 +40,22 @@ export class QuizSessionController {
 
       // Parse parameters
       const targetDate = date ? new Date(date) : new Date();
-      const maxWords = limit ? parseInt(limit, 10) : 10;
+      const maxWords = limit ? parseInt(limit, 10) : DEFAULT_QUIZ_WORDS;
 
       // Validate parameters
       if (isNaN(targetDate.getTime())) {
         return res.status(400).json({
           error: "Bad Request",
-          code: "INVALID_DATE",
+          code: "QUIZ_INVALID_DATE",
           message: "Invalid date format. Use YYYY-MM-DD",
         });
       }
 
-      if (isNaN(maxWords) || maxWords < 1 || maxWords > 50) {
+      if (isNaN(maxWords) || maxWords < MIN_QUIZ_WORDS || maxWords > MAX_QUIZ_WORDS) {
         return res.status(400).json({
           error: "Bad Request",
-          code: "INVALID_LIMIT",
-          message: "Limit must be between 1 and 50",
+          code: "QUIZ_LIMIT_OUT_OF_RANGE",
+          message: `Limit must be between ${MIN_QUIZ_WORDS} and ${MAX_QUIZ_WORDS}`,
         });
       }
 
@@ -92,6 +97,7 @@ export class QuizSessionController {
         currentIndex: session.currentIndex || 0,
         expiresAt: session.expiresAt,
         isResume: session.isResume || false,
+        answers: session.answers || [],
       });
     } catch (error) {
       logger.error("Error starting quiz session", {
@@ -100,7 +106,31 @@ export class QuizSessionController {
         stack: error.stack,
       });
 
-      // Return generic 500 error (no more special handling for "No words due")
+      // Handle specific errors with appropriate status codes
+      if (error.message === "Session not found" || error.statusCode === 404) {
+        return res.status(404).json({
+          error: "Not Found",
+          code: "SESSION_NOT_FOUND",
+          message: "Quiz session not found",
+        });
+      }
+
+      if (error.message === "Session expired") {
+        return res.status(410).json({
+          error: "Gone",
+          code: "SESSION_EXPIRED",
+          message: "Quiz session has expired",
+        });
+      }
+
+      if (error.message.includes("User") && error.message.includes("not found")) {
+        return res.status(404).json({
+          error: "Not Found",
+          code: "USER_NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
       res.status(500).json({
         error: "Internal Server Error",
         code: "START_SESSION_FAILED",
@@ -125,7 +155,7 @@ export class QuizSessionController {
       if (!sessionId) {
         return res.status(400).json({
           error: "Bad Request",
-          code: "MISSING_SESSION_ID",
+          code: "SESSION_ID_REQUIRED",
           message: "Session ID is required",
         });
       }
@@ -133,7 +163,7 @@ export class QuizSessionController {
       if (!questionId) {
         return res.status(400).json({
           error: "Bad Request",
-          code: "MISSING_QUESTION_ID",
+          code: "QUESTION_ID_REQUIRED",
           message: "Question ID is required",
         });
       }

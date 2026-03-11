@@ -88,8 +88,8 @@ export function useAnswerSubmission({
       const timeSpentMs = Date.now() - questionStartTime.current;
 
       // Clear previous AI feedback state (Story 15.11 Phase 9)
-      dispatch({ type: "SET_AI_FEEDBACK", feedback: null });
-      dispatch({ type: "SET_FEEDBACK_LOADING", loading: false });
+      dispatch({ type: "QUIZ/SET_AI_FEEDBACK", feedback: null });
+      dispatch({ type: "QUIZ/SET_FEEDBACK_LOADING", loading: false });
 
       try {
         // Submit answer to backend session for validation
@@ -101,7 +101,7 @@ export function useAnswerSubmission({
 
         // Dispatch answer result to state (optimistic UI)
         dispatch({
-          type: "SUBMIT_ANSWER",
+          type: "QUIZ/SUBMIT_ANSWER",
           answer: {
             wordId: currentQuestion.wordId,
             word: currentQuestion.word,
@@ -111,7 +111,7 @@ export function useAnswerSubmission({
             userAnswer,
             correct: result.correct,
             timestamp: new Date(),
-            nextReview: result.nextReviewDate, // Flat property (type audit aligned)
+            nextReviewDate: result.nextReviewDate, // ISO 8601 datetime (backend property name)
             lapseCount: result.lapseCount, // Flat property (type audit aligned)
             correctAnswer: result.correctAnswer, // For feedback display in ExamLayout
           },
@@ -123,12 +123,12 @@ export function useAnswerSubmission({
         // Story 15.11 Phase 9: AI feedback comes from backend automatically
         // Backend auto-generates feedback for incorrect answers with 3-second timeout
         if (result.aiFeedback) {
-          dispatch({ type: "SET_AI_FEEDBACK", feedback: result.aiFeedback.explanation });
+          dispatch({ type: "QUIZ/SET_AI_FEEDBACK", feedback: result.aiFeedback.explanation });
         }
       } catch (err) {
         console.error("Failed to submit answer:", err);
         const errorMessage = err instanceof Error ? err.message : "Failed to submit answer";
-        dispatch({ type: "SET_ERROR", error: errorMessage });
+        dispatch({ type: "QUIZ/SET_ERROR", error: errorMessage });
       }
     },
     [sessionId, currentQuestion, questionStartTime, dispatch, captureGamificationData],

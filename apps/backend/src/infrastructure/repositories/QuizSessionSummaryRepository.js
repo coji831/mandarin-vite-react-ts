@@ -1,10 +1,17 @@
 /**
- * QuizSessionSummaryRepository
- * Prisma-based repository for quiz session summary persistence
- * Story 15.11 Flow 5: Database storage for quiz results (replacing localStorage)
+ * @file QuizSessionSummaryRepository.js
+ * @description Prisma-based repository for quiz session summary persistence
  *
- * Manages session summary lifecycle: creation, retrieval, and expiration cleanup
- * Supports 7-day TTL for review mistakes feature
+ * Clean Architecture: Infrastructure Layer - Data Access
+ * Encapsulates summary persistence and retrieval logic
+ *
+ * Responsibilities:
+ * - Persist quiz session results with aggregate metrics
+ * - Support 7-day TTL for review mistakes feature
+ * - Query summaries for leaderboards and user analytics
+ * - Map Prisma models to domain summary objects
+ *
+ * Story 15.11 Flow 5 - Database storage for quiz results (replacing localStorage)
  */
 
 import { prisma } from "../database/client.js";
@@ -44,6 +51,7 @@ export class QuizSessionSummaryRepository {
       mysteryBoxDrop,
       mysteryBoxType,
       freezeAwarded,
+      leechWordIds,
       expiresAt,
     } = data;
 
@@ -61,6 +69,7 @@ export class QuizSessionSummaryRepository {
         mysteryBoxDrop,
         mysteryBoxType,
         freezeAwarded,
+        leechWordIds,
         expiresAt,
       },
     });

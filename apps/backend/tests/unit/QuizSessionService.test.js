@@ -70,16 +70,16 @@ describe("QuizSessionService", () => {
       findRecentByUser: vi.fn().mockResolvedValue([]),
     };
 
-    quizSessionService = new QuizSessionService(
-      mockSessionRepository,
-      mockLearningService,
-      mockGamificationService,
-      mockVocabularyRepository,
-      mockAIFeedbackService, // 5th parameter - AI feedback service
-      mockStreakService, // 6th parameter - streak service
-      mockSummaryRepository, // 7th parameter - summary persistence (Flow 5)
-      mockAnswerRepository, // 8th parameter - per-answer row storage (Option 2)
-    );
+    quizSessionService = new QuizSessionService({
+      sessionRepository: mockSessionRepository,
+      learningService: mockLearningService,
+      gamificationService: mockGamificationService,
+      vocabularyRepository: mockVocabularyRepository,
+      aiFeedbackService: mockAIFeedbackService,
+      streakService: mockStreakService,
+      summaryRepository: mockSummaryRepository,
+      answerRepository: mockAnswerRepository,
+    });
 
     vi.clearAllMocks();
   });
@@ -231,7 +231,7 @@ describe("QuizSessionService", () => {
         userAnswer: "hello",
         correct: true,
         timestamp: new Date("2026-03-08T10:00:00Z"),
-        nextReview: "2026-03-10T10:00:00.000Z",
+        nextReviewDate: "2026-03-10T10:00:00.000Z",
         lapseCount: 0,
         isLeech: false,
       });
@@ -815,13 +815,13 @@ describe("QuizSessionService", () => {
 
     it("should handle missing AI feedback service gracefully", async () => {
       // Create service without AI feedback service
-      const serviceWithoutAI = new QuizSessionService(
-        mockSessionRepository,
-        mockLearningService,
-        mockGamificationService,
-        mockVocabularyRepository,
-        null, // No AI feedback service
-      );
+      const serviceWithoutAI = new QuizSessionService({
+        sessionRepository: mockSessionRepository,
+        learningService: mockLearningService,
+        gamificationService: mockGamificationService,
+        vocabularyRepository: mockVocabularyRepository,
+        aiFeedbackService: null, // No AI feedback service
+      });
 
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockSessionRepository.update.mockResolvedValue({
@@ -1154,14 +1154,14 @@ describe("QuizSessionService", () => {
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
 
       // Create service without streak service
-      const serviceWithoutStreak = new QuizSessionService(
-        mockSessionRepository,
-        mockLearningService,
-        mockGamificationService,
-        mockVocabularyRepository,
-        mockAIFeedbackService,
-        null, // No streak service
-      );
+      const serviceWithoutStreak = new QuizSessionService({
+        sessionRepository: mockSessionRepository,
+        learningService: mockLearningService,
+        gamificationService: mockGamificationService,
+        vocabularyRepository: mockVocabularyRepository,
+        aiFeedbackService: mockAIFeedbackService,
+        streakService: null, // No streak service
+      });
 
       const result = await serviceWithoutStreak.getSessionSummary("session1", "user1");
 

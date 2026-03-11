@@ -29,6 +29,13 @@
   animation: swing 2s ease-in-out infinite;
 }
 
+/* Compact inline variant used inside DailyCompleteBanner compact strip */
+.countdown-inline {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
 .countdown-content {
   display: flex;
   flex-direction: column;

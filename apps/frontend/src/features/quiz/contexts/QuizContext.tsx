@@ -53,7 +53,8 @@ import {
   ReactNode,
 } from "react";
 import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
-import { QuizQuestion, QuizAnswer, MysteryBox, Badge, QuizSessionSummary } from "../types";
+import { QuizQuestion, QuizAnswer, QuizSessionSummary } from "../types";
+import type { Badge, MysteryBox } from "../../gamification/types/GamificationTypes";
 import { useGamificationCapture } from "../hooks/useGamificationCapture";
 import { useAnswerSubmission } from "../hooks/useAnswerSubmission";
 import { useQuizSession } from "../hooks/useQuizSession";
@@ -198,12 +199,12 @@ export function QuizProvider({ children }: QuizProviderProps) {
   // ============================================================================
 
   const handleNext = useCallback(() => {
-    dispatch({ type: "NEXT_QUESTION" });
+    dispatch({ type: "QUIZ/NEXT_QUESTION" });
     questionStartTime.current = Date.now();
   }, []);
 
   const handleRetry = useCallback(() => {
-    dispatch({ type: "RESET_QUIZ" });
+    dispatch({ type: "QUIZ/RESET" });
     startSession();
   }, [startSession]);
 
@@ -218,15 +219,15 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const handleSubmitAnswer = useCallback(() => {
     if (state.answerValue.trim().length === 0) return;
     handleAnswer(state.answerValue.trim().toLowerCase());
-    dispatch({ type: "SET_ANSWER_VALUE", value: "" });
+    dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value: "" });
   }, [state.answerValue, handleAnswer]);
 
   const setAnswerValue = useCallback((value: string) => {
-    dispatch({ type: "SET_ANSWER_VALUE", value });
+    dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value });
   }, []);
 
   const toggleHint = useCallback(() => {
-    dispatch({ type: "SET_SHOW_HINT", show: !state.showHint });
+    dispatch({ type: "QUIZ/SET_SHOW_HINT", show: !state.showHint });
   }, [state.showHint]);
 
   // ============================================================================

@@ -18,7 +18,7 @@
 import { useCallback } from "react";
 import type { QuizAction } from "../reducers/quizReducer";
 import type { QuizAnswerResponse } from "../types";
-import { transformApiBadgesToDomain } from "../services/quizTransformers";
+import { transformApiBadgesToDomain } from "../utils/quizTransformers";
 
 // ============================================================================
 // Hook
@@ -50,23 +50,23 @@ export function useGamificationCapture(dispatch: React.Dispatch<QuizAction>) {
 
       // Capture XP earned (base: 10, bonus: +5 if streak ≥ 7 days)
       if (result.gamification.xpEarned) {
-        dispatch({ type: "ADD_XP_EARNED", xp: result.gamification.xpEarned });
+        dispatch({ type: "QUIZ/ADD_XP_EARNED", xp: result.gamification.xpEarned });
       }
 
       // Capture mystery box (5% chance on 7-day multiples)
       if (result.gamification.mysteryBox) {
-        dispatch({ type: "SET_MYSTERY_BOX", mysteryBox: result.gamification.mysteryBox });
+        dispatch({ type: "QUIZ/SET_MYSTERY_BOX", mysteryBox: result.gamification.mysteryBox });
       }
 
       // Capture newly unlocked badges (streak milestones)
       if (result.gamification.newBadges && result.gamification.newBadges.length > 0) {
         const convertedBadges = transformApiBadgesToDomain(result.gamification.newBadges);
-        dispatch({ type: "ADD_NEW_BADGES", badges: convertedBadges });
+        dispatch({ type: "QUIZ/ADD_NEW_BADGES", badges: convertedBadges });
       }
 
       // Capture freeze award (10 consecutive perfect quizzes)
       if (result.gamification.freezeAwarded) {
-        dispatch({ type: "SET_FREEZE_AWARDED", awarded: result.gamification.freezeAwarded });
+        dispatch({ type: "QUIZ/SET_FREEZE_AWARDED", awarded: result.gamification.freezeAwarded });
       }
     },
     [dispatch],

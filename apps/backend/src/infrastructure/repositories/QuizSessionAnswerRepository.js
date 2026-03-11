@@ -1,12 +1,22 @@
 /**
- * QuizSessionAnswerRepository
- * Prisma-based repository for per-answer records within a quiz session.
+ * @file QuizSessionAnswerRepository.js
+ * @description Prisma-based repository for per-answer records within a quiz session
+ *
+ * Clean Architecture: Infrastructure Layer - Data Access
+ * Encapsulates answer persistence and retrieval logic
+ *
+ * Responsibilities:
+ * - Record individual quiz answers with correctness and spaced repetition data
+ * - Retrieve answers for session review and metrics calculation
+ * - Support cascade deletion via session FK
  *
  * DB Refactor (Option D): QuizSessionAnswer no longer stores word snapshot fields.
- * Word context (hanzi, pinyin, english, correctAnswer, questionType) is now read
+ * Word context (hanzi, pinyin, english, correctAnswer, questionType) is read
  * from the related QuizSessionQuestion row via the question FK.
- * - questionId is a FK to QuizSessionQuestion (was a plain string)
+ * - questionId is a FK to QuizSessionQuestion
  * - findBySession includes { question: true } for downstream mapping
+ *
+ * Story 15.11 Phase 8 - Backend-centric quiz session architecture
  */
 
 import { prisma } from "../database/client.js";

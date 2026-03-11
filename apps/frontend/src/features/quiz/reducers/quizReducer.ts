@@ -9,7 +9,8 @@
  * LOADING → QUESTION → ANSWER_FEEDBACK → COMPLETE | ERROR
  */
 
-import { QuizQuestion, QuizAnswer, MysteryBox, Badge, QuizSessionSummary } from "../types";
+import { QuizQuestion, QuizAnswer, QuizSessionSummary } from "../types";
+import type { Badge, MysteryBox } from "../../gamification/types/GamificationTypes";
 
 export type QuizPhase =
   | "LOADING"
@@ -45,37 +46,42 @@ export interface QuizState {
 }
 
 export type QuizAction =
-  | { type: "INITIALIZE_QUIZ"; questions: QuizQuestion[]; sessionId: string }
+  | { type: "QUIZ/INITIALIZE"; questions: QuizQuestion[]; sessionId: string }
   | {
-      type: "RESUME_QUIZ";
+      type: "QUIZ/RESUME";
       questions: QuizQuestion[];
       sessionId: string;
       currentIndex: number;
       answers: QuizAnswer[];
     }
-  | { type: "SUBMIT_ANSWER"; answer: QuizAnswer }
-  | { type: "UPDATE_ANSWER_METADATA"; wordId: string; nextReview: string; lapseCount: number } // Story 15.8: Merge backend response
-  | { type: "ADD_XP_EARNED"; xp: number } // Story 15.9: Accumulate XP from backend
-  | { type: "SET_MYSTERY_BOX"; mysteryBox: MysteryBox } // Story 15.9: Store mystery box reward
-  | { type: "ADD_NEW_BADGES"; badges: Badge[] } // Story 15.9: Collect newly earned badges
-  | { type: "SET_FREEZE_AWARDED"; awarded: boolean } // Story 15.9: Track if freeze was awarded
-  | { type: "SET_SESSION_ID"; sessionId: string } // Story 15.11 Phase 8: Store session ID
-  | { type: "SET_ANSWER_VALUE"; value: string } // Story 15.11 Phase 8: Update answer input
-  | { type: "SET_SHOW_HINT"; show: boolean } // Story 15.11 Phase 8: Toggle hint visibility
-  | { type: "SET_AI_FEEDBACK"; feedback: string | null } // Story 15.11 Phase 8: Set AI feedback
-  | { type: "SET_FEEDBACK_LOADING"; loading: boolean } // Story 15.11 Phase 8: Set feedback loading state
-  | { type: "CLEAR_UI_STATE" } // Story 15.11 Phase 8: Clear UI state between questions
+  | { type: "QUIZ/SUBMIT_ANSWER"; answer: QuizAnswer }
   | {
-      type: "SHOW_DAILY_COMPLETE_RESULTS";
+      type: "QUIZ/UPDATE_ANSWER_METADATA";
+      wordId: string;
+      nextReviewDate: string;
+      lapseCount: number;
+    } // Story 15.8: Merge backend response
+  | { type: "QUIZ/ADD_XP_EARNED"; xp: number } // Story 15.9: Accumulate XP from backend
+  | { type: "QUIZ/SET_MYSTERY_BOX"; mysteryBox: MysteryBox } // Story 15.9: Store mystery box reward
+  | { type: "QUIZ/ADD_NEW_BADGES"; badges: Badge[] } // Story 15.9: Collect newly earned badges
+  | { type: "QUIZ/SET_FREEZE_AWARDED"; awarded: boolean } // Story 15.9: Track if freeze was awarded
+  | { type: "QUIZ/SET_SESSION_ID"; sessionId: string } // Story 15.11 Phase 8: Store session ID
+  | { type: "QUIZ/SET_ANSWER_VALUE"; value: string } // Story 15.11 Phase 8: Update answer input
+  | { type: "QUIZ/SET_SHOW_HINT"; show: boolean } // Story 15.11 Phase 8: Toggle hint visibility
+  | { type: "QUIZ/SET_AI_FEEDBACK"; feedback: string | null } // Story 15.11 Phase 8: Set AI feedback
+  | { type: "QUIZ/SET_FEEDBACK_LOADING"; loading: boolean } // Story 15.11 Phase 8: Set feedback loading state
+  | { type: "QUIZ/CLEAR_UI_STATE" } // Story 15.11 Phase 8: Clear UI state between questions
+  | {
+      type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS";
       sessionId: string;
       summary: QuizSessionSummary;
       expiresAt: string;
     } // Daily quiz already completed
-  | { type: "SHOW_NO_DUE_WORDS"; message: string } // Flow 1.2: No due words (all caught up)
-  | { type: "NEXT_QUESTION" }
-  | { type: "COMPLETE_QUIZ" }
-  | { type: "SET_ERROR"; error: string } // Story 15.8: Set error state
-  | { type: "RESET_QUIZ" }; // Story 15.8: Reset to LOADING state
+  | { type: "QUIZ/SHOW_NO_DUE_WORDS"; message: string } // Flow 1.2: No due words (all caught up)
+  | { type: "QUIZ/NEXT_QUESTION" }
+  | { type: "QUIZ/COMPLETE" }
+  | { type: "QUIZ/SET_ERROR"; error: string } // Story 15.8: Set error state
+  | { type: "QUIZ/RESET" }; // Story 15.8: Reset to LOADING state
 
 export const initialState: QuizState = {
   phase: "LOADING",
@@ -100,7 +106,7 @@ export const initialState: QuizState = {
 
 export function quizReducer(state: QuizState, action: QuizAction): QuizState {
   switch (action.type) {
-    case "INITIALIZE_QUIZ":
+    case "QUIZ/INITIALIZE":
       return {
         ...state,
         phase: "QUESTION",
@@ -121,7 +127,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         feedbackLoading: false,
       };
 
-    case "RESUME_QUIZ":
+    case "QUIZ/RESUME":
       return {
         ...state,
         phase: "QUESTION",
@@ -142,20 +148,20 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         feedbackLoading: false,
       };
 
-    case "SUBMIT_ANSWER":
+    case "QUIZ/SUBMIT_ANSWER":
       return {
         ...state,
         phase: "ANSWER_FEEDBACK",
         answers: [...state.answers, action.answer],
       };
 
-    case "UPDATE_ANSWER_METADATA": {
-      // Merge backend response (nextReview, lapseCount) into last answer
+    case "QUIZ/UPDATE_ANSWER_METADATA": {
+      // Merge backend response (nextReviewDate, lapseCount) into last answer
       const updatedAnswers = state.answers.map((answer, index) =>
         index === state.answers.length - 1 && answer.wordId === action.wordId
           ? {
               ...answer,
-              nextReview: action.nextReview,
+              nextReviewDate: action.nextReviewDate,
               lapseCount: action.lapseCount,
             }
           : answer,
@@ -167,65 +173,65 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
     }
 
     // Story 15.9: Accumulate XP from backend responses
-    case "ADD_XP_EARNED":
+    case "QUIZ/ADD_XP_EARNED":
       return {
         ...state,
         totalXP: state.totalXP + action.xp,
       };
 
     // Story 15.9: Store mystery box reward (only one per quiz)
-    case "SET_MYSTERY_BOX":
+    case "QUIZ/SET_MYSTERY_BOX":
       return {
         ...state,
         mysteryBox: action.mysteryBox,
       };
 
     // Story 15.9: Collect newly earned badges
-    case "ADD_NEW_BADGES":
+    case "QUIZ/ADD_NEW_BADGES":
       return {
         ...state,
         newBadges: [...state.newBadges, ...action.badges],
       };
 
     // Story 15.9: Track if freeze was awarded
-    case "SET_FREEZE_AWARDED":
+    case "QUIZ/SET_FREEZE_AWARDED":
       return {
         ...state,
         freezeAwarded: action.awarded,
       };
 
     // Story 15.11 Phase 8: UI state management actions
-    case "SET_SESSION_ID":
+    case "QUIZ/SET_SESSION_ID":
       return {
         ...state,
         sessionId: action.sessionId,
       };
 
-    case "SET_ANSWER_VALUE":
+    case "QUIZ/SET_ANSWER_VALUE":
       return {
         ...state,
         answerValue: action.value,
       };
 
-    case "SET_SHOW_HINT":
+    case "QUIZ/SET_SHOW_HINT":
       return {
         ...state,
         showHint: action.show,
       };
 
-    case "SET_AI_FEEDBACK":
+    case "QUIZ/SET_AI_FEEDBACK":
       return {
         ...state,
         aiFeedback: action.feedback,
       };
 
-    case "SET_FEEDBACK_LOADING":
+    case "QUIZ/SET_FEEDBACK_LOADING":
       return {
         ...state,
         feedbackLoading: action.loading,
       };
 
-    case "CLEAR_UI_STATE":
+    case "QUIZ/CLEAR_UI_STATE":
       return {
         ...state,
         answerValue: "",
@@ -234,7 +240,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         feedbackLoading: false,
       };
 
-    case "SHOW_DAILY_COMPLETE_RESULTS":
+    case "QUIZ/SHOW_DAILY_COMPLETE_RESULTS":
       return {
         ...state,
         phase: "DAILY_COMPLETE",
@@ -247,7 +253,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         answers: [],
       };
 
-    case "SHOW_NO_DUE_WORDS":
+    case "QUIZ/SHOW_NO_DUE_WORDS":
       return {
         ...state,
         phase: "NO_DUE_WORDS",
@@ -257,7 +263,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         error: undefined,
       };
 
-    case "NEXT_QUESTION": {
+    case "QUIZ/NEXT_QUESTION": {
       const nextIndex = state.currentIndex + 1;
       if (nextIndex >= state.questions.length) {
         return { ...state, phase: "COMPLETE", currentIndex: nextIndex };
@@ -274,17 +280,17 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       };
     }
 
-    case "COMPLETE_QUIZ":
+    case "QUIZ/COMPLETE":
       return { ...state, phase: "COMPLETE" };
 
-    case "SET_ERROR":
+    case "QUIZ/SET_ERROR":
       return {
         ...state,
         phase: "ERROR",
         error: action.error,
       };
 
-    case "RESET_QUIZ":
+    case "QUIZ/RESET":
       return {
         ...initialState,
       };

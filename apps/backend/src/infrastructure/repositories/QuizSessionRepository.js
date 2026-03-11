@@ -1,9 +1,17 @@
 /**
- * QuizSessionRepository
- * Prisma-based repository for quiz session management
- * Story 15.11 Phase 8: Backend-centric quiz session architecture
+ * @file QuizSessionRepository.js
+ * @description Prisma-based repository for quiz session persistence
  *
- * Manages quiz session lifecycle: creation, retrieval, updates, and expiration cleanup
+ * Clean Architecture: Infrastructure Layer - Data Access
+ * Encapsulates Prisma queries and session data mapping
+ *
+ * Responsibilities:
+ * - Persist quiz sessions with questions and answers
+ * - Fetch sessions for resumption or review
+ * - Clean up expired sessions (TTL)
+ * - Map Prisma models to domain entities
+ *
+ * Story 15.11 Phase 8 - Backend-centric quiz session architecture
  */
 
 import { prisma } from "../database/client.js";
@@ -75,10 +83,9 @@ export class QuizSessionRepository {
    * Find quiz session by ID and userId (composite lookup for authorization)
    * @param {string} sessionId - Session ID
    * @param {string} userId - User ID
-   * @param {object} options - Query options (same as findById)
    * @returns {Promise<object|null>} Quiz session or null if not found or unauthorized
    */
-  async findByIdAndUserId(sessionId, userId, options = {}) {
+  async findByIdAndUserId(sessionId, userId) {
     const session = await prisma.quizSession.findFirst({
       where: {
         id: sessionId,
@@ -136,7 +143,7 @@ export class QuizSessionRepository {
     const session = await prisma.quizSession.findFirst({
       where: {
         userId,
-        status: "COMPLETE",
+        status: "COMPLETED",
       },
       orderBy: {
         completedAt: "desc",

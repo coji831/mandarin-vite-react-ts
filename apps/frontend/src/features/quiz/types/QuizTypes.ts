@@ -28,7 +28,7 @@ export type QuizAnswer = {
   word?: string; // Chinese character
   pinyin?: string;
   english?: string;
-  nextReview?: string; // ISO date string for next review
+  nextReviewDate?: string; // ISO date string for next review
   lapseCount?: number; // Consecutive failures
   currentDelay?: number; // Days until next review
   isLeech?: boolean; // Backend-determined leech flag (lapseCount >= threshold)

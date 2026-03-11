@@ -1,7 +1,18 @@
 /**
  * XPProgressBar Component
- * Displays current XP level with visual progress bar
- * Story 15.7: Gamification & AI Feedback Display UI
+ *
+ * Displays user's current XP level with a visual progress bar showing progress
+ * toward the next level. Includes level number and XP within level (0-100).
+ *
+ * Architecture:
+ * - Part of gamification header UI, appears in daily complete banner and quiz results
+ * - Uses utility functions to calculate level and progress (exponential growth)
+ * - Styled with CSS Grid for responsive layout
+ *
+ * Related Stories:
+ * - Story 15.7: Gamification & AI Feedback Display UI
+ * - Story 15.9: Mystery Box rewards (draws from same earning mechanism)
+ * - Story 15.11: Quiz session completion triggers XP updates
  */
 
 import { calculateLevel, getXPWithinLevel } from "../utils";

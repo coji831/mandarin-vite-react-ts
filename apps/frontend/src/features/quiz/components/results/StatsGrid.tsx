@@ -7,6 +7,7 @@
  * Pure presentational component for accuracy, XP, and correct answer metrics.
  */
 
+import { LeechWarning } from "./LeechWarning";
 import "./StatsGrid.css";
 
 type StatsGridProps = {
@@ -14,27 +15,37 @@ type StatsGridProps = {
   totalCount: number;
   accuracy: number;
   xpEarned: number;
+  leechCount?: number;
 };
 
-export function StatsGrid({ correctCount, totalCount, accuracy, xpEarned }: StatsGridProps) {
+export function StatsGrid({
+  correctCount,
+  totalCount,
+  accuracy,
+  xpEarned,
+  leechCount = 0,
+}: StatsGridProps) {
   return (
-    <div className="statsGrid w-full grid-3-col">
-      <div className="statCard flex-col">
-        <span className="statLabel">Accuracy</span>
-        <span className="statValue">{accuracy}%</span>
-      </div>
+    <div className="w-full">
+      <div className="statsGrid w-full grid-3-col">
+        <div className="statCard flex-col">
+          <span className="statLabel">Accuracy</span>
+          <span className="statValue">{accuracy}%</span>
+        </div>
 
-      <div className="statCard flex-col">
-        <span className="statLabel">XP Earned</span>
-        <span className="statValue xpValue">+{xpEarned}</span>
-      </div>
+        <div className="statCard flex-col">
+          <span className="statLabel">XP Earned</span>
+          <span className="statValue xpValue">+{xpEarned}</span>
+        </div>
 
-      <div className="statCard flex-col">
-        <span className="statLabel">Correct Answers</span>
-        <span className="statValue">
-          {correctCount} / {totalCount}
-        </span>
+        <div className="statCard flex-col">
+          <span className="statLabel">Correct Answers</span>
+          <span className="statValue">
+            {correctCount} / {totalCount}
+          </span>
+        </div>
       </div>
+      <LeechWarning leechCount={leechCount} />
     </div>
   );
 }

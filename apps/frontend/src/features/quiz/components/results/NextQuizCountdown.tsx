@@ -15,63 +15,79 @@ import "./NextQuizCountdown.css";
 interface NextQuizCountdownProps {
   expiresAt: string | null; // ISO 8601 timestamp (midnight)
   onExpire?: () => void; // Callback when countdown reaches zero
+  compact?: boolean; // Inline text-only variant (no card styling)
 }
 
-export function NextQuizCountdown({ expiresAt, onExpire }: NextQuizCountdownProps) {
-  const [timeRemaining, setTimeRemaining] = useState<string>("");
-  const [isExpired, setIsExpired] = useState(false);
+function calcTimeRemaining(expiresAt: string): string {
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  if (diff <= 0) return "Ready!";
+  const h = Math.floor(diff / 3_600_000);
+  const m = Math.floor((diff % 3_600_000) / 60_000);
+  const s = Math.floor((diff % 60_000) / 1_000);
+  return h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+
+export function NextQuizCountdown({ expiresAt, onExpire, compact }: NextQuizCountdownProps) {
+  // Initialized synchronously — no empty-string first render (prevents CLS)
+  const [timeRemaining, setTimeRemaining] = useState<string>(() =>
+    expiresAt ? calcTimeRemaining(expiresAt) : "",
+  );
+  const [isExpired, setIsExpired] = useState<boolean>(
+    () => !!expiresAt && new Date(expiresAt) <= new Date(),
+  );
 
   useEffect(() => {
-    if (!expiresAt) {
-      return;
-    }
+    if (!expiresAt) return;
 
-    const calculateTimeRemaining = () => {
-      const now = new Date().getTime();
-      const expireTime = new Date(expiresAt).getTime();
-      const diff = expireTime - now;
-
-      if (diff <= 0) {
+    const tick = () => {
+      const result = calcTimeRemaining(expiresAt);
+      if (result === "Ready!") {
         setIsExpired(true);
         setTimeRemaining("Ready!");
-        if (onExpire && !isExpired) {
-          onExpire();
-        }
-        return "expired";
+        onExpire?.();
+        return true; // expired
       }
-
-      // Calculate hours, minutes, seconds
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      // Format based on time remaining
-      if (hours > 0) {
-        setTimeRemaining(`${hours}h ${minutes}m`);
-      } else if (minutes > 0) {
-        setTimeRemaining(`${minutes}m ${seconds}s`);
-      } else {
-        setTimeRemaining(`${seconds}s`);
-      }
-
-      return "active";
+      setTimeRemaining(result);
+      return false;
     };
 
-    // Initial calculation
-    const status = calculateTimeRemaining();
-    if (status === "expired") {
-      return;
-    }
+    // Already expired on mount — no interval needed
+    if (tick()) return;
 
-    // Update interval based on time remaining
-    const updateInterval = timeRemaining.includes("h") ? 60000 : 1000; // 1 minute for hours, 1 second otherwise
-    const interval = setInterval(calculateTimeRemaining, updateInterval);
+    // Interval cadence based on live remaining time (avoids stale-closure bug)
+    const getInterval = () =>
+      new Date(expiresAt).getTime() - Date.now() > 3_600_000 ? 60_000 : 1_000;
 
-    return () => clearInterval(interval);
-  }, [expiresAt, onExpire, isExpired, timeRemaining]);
+    let interval = setInterval(() => {
+      const done = tick();
+      if (done) {
+        clearInterval(interval);
+      }
+    }, getInterval());
 
-  if (!expiresAt) {
-    return null;
+    // Recalculate cadence when crossing the 1-hour boundary
+    const cadenceCheck = setInterval(() => {
+      clearInterval(interval);
+      interval = setInterval(() => {
+        const done = tick();
+        if (done) clearInterval(interval);
+      }, getInterval());
+    }, 60_000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(cadenceCheck);
+    };
+  }, [expiresAt, onExpire]);
+
+  if (!expiresAt) return null;
+
+  if (compact) {
+    return (
+      <span className="countdown-inline">
+        {isExpired ? "🎉 New quiz available!" : `⏰ Next quiz in: ${timeRemaining}`}
+      </span>
+    );
   }
 
   return (

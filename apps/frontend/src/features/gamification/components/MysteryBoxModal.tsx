@@ -12,13 +12,13 @@
  */
 
 import { useEffect, useState } from "react";
-import type { MysteryBox } from "../../quiz/types";
+import type { MysteryBox } from "../types/GamificationTypes";
 import "./MysteryBoxModal.css";
 
 export { MysteryBoxModal };
 
 type MysteryBoxModalProps = {
-  mysteryBox: MysteryBox;
+  mysteryBox: MysteryBox | null | undefined;
   isOpen: boolean;
   onClose: () => void;
 };
@@ -39,13 +39,13 @@ function MysteryBoxModal({ mysteryBox, isOpen, onClose }: MysteryBoxModalProps) 
   if (!isOpen || !mysteryBox) return null;
 
   const getRewardText = () => {
-    switch (mysteryBox.type) {
-      case "xp":
-        return `+${mysteryBox.amount} XP Boost!`;
+    switch (mysteryBox.rewardType) {
+      case "xp_boost":
+        return `+${mysteryBox.rewardValue} XP Boost!`;
       case "freeze":
-        return `${mysteryBox.amount} Streak Freeze${(mysteryBox.amount || 0) > 1 ? "s" : ""}!`;
-      case "badge":
-        return `New Badge: ${mysteryBox.name}!`;
+        return `${mysteryBox.rewardValue} Streak Freeze${Number(mysteryBox.rewardValue) > 1 ? "s" : ""}!`;
+      case "cosmetic":
+        return `New Achievement: ${mysteryBox.name}!`;
       default:
         return mysteryBox.name;
     }

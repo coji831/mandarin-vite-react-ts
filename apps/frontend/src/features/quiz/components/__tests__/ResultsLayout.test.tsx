@@ -12,7 +12,8 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ReactNode } from "react";
 import { ResultsLayout } from "../layouts/ResultsLayout";
-import { QuizAnswer, MysteryBox, Badge } from "../../types";
+import { QuizAnswer, Badge } from "../../types";
+import type { MysteryBox } from "../../../gamification/types/GamificationTypes";
 
 // Mock context
 const mockUseQuizState = vi.fn();
