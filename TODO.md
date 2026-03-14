@@ -23,6 +23,20 @@ Sections
 
 ## Todo (near-term)
 
+### Story 15.11 — Quiz Feature Extensions (incomplete AC items)
+
+- [ ] **[Item 10] Multi-meaning word support** — Words like 行 (xíng/háng) and 花 (huā flower/spend) fail validation for the alternate reading. Need `parseWordEntry()` in `validation.ts` to extract all acceptable answers from CSV (semicolons, pipes, parenthetical annotations). Validation should accept ANY matching variant. See story BR AC: "Multi-Meaning/Reading Support".
+
+- [ ] **[Item 19] Results page for multi-meaning words** — `ResultsTable.tsx` shows only one expected answer per row. Needs to display which variant user answered + all acceptable forms when word has alternatives. Depends on Item 10.
+
+- [ ] **[Item 23] "Review Mistakes" button on results page** — `ResultsLayout.tsx` has a "New Quiz" path via `handleRetry()` but no way to retry only the incorrect questions. Add a "Review Mistakes" button that starts a new session using only the `wordId`s where `correct: false` from `sessionSummary.allAnswers`.
+
+- [ ] **[Item 26] Execute /mandarin → /learning folder rename** — `apps/frontend/src/features/learning/` is an empty directory placeholder. Actual rename of `mandarin/` with all import updates (~120 imports across ~45 files) and route constant changes deferred. Requires a coordinated zero-downtime migration.
+
+- [ ] **[Item 14] Quiz filter provider (HSK/topic/interest)** — `QuizFilterProvider` interface not created. Needed by Epic 17 (Knowledge Hub) to support filtering quiz questions by HSK level, topic, or user interests. Define interface with default no-op implementation only.
+
+- [ ] **[Item 27] FeedbackProvider abstraction** — No strategy pattern for AI vs pre-generated feedback. Currently hardcoded to call the AI endpoint. Define `FeedbackProvider` interface + `AIFeedbackProvider` and `DatabaseFeedbackProvider` stubs to enable future cost-reduction (Epic 17).
+
 ## Backlog
 
 - [ ] **(A7) Move AI prompt/conversation utils out of `utils/`** — `promptUtils.js` and `conversationUtils.js` contain AI-domain logic sitting in a generic `utils/` folder. Move to `core/domain/` or `infrastructure/external/`. Blocked by: need to audit all callers (ConversationService, CachedAIFeedbackService, ConversationController). See TODOs in `apps/backend/src/utils/promptUtils.js` and `apps/backend/src/utils/conversationUtils.js`.

@@ -2,31 +2,37 @@
 
 ## Technical Scope
 
-Implement multi-meaning word support, pinyin IME-style conversion, quiz result retention, UI component migration, and architectural hooks for future quiz enhan cements. Addresses note.md items: 10, 11, 13, 14, 15, 19, 23, 26, 27.
+Partially implemented feature extensions for the quiz system. Addresses note.md items: 10, 11, 13, 14, 15, 19, 23, 26, 27.
 
-**Files Modified:**
+**Verified Implemented (from commits 83145ef–d4d3ae9):**
 
-- `apps/frontend/src/features/quiz/utils/validation.ts` - Multi-meaning parsing, character variation handling
-- `apps/frontend/src/features/quiz/utils/pinyinConverter.ts` - Tone number to tone mark conversion (new)
-- `apps/frontend/src/features/quiz/components/QuizCard.tsx` - Display acceptable answers
-- `apps/frontend/src/features/quiz/components/TypeAnswerInput.tsx` - Pinyin auto-conversion, migrate to common Input
-- `apps/frontend/src/features/quiz/components/ToneInput.tsx` - Pinyin auto-conversion, migrate to common Input
-- `apps/frontend/src/features/quiz/components/QuizComplete.tsx` - Multi-meaning results display, redo/refresh buttons
-- `apps/frontend/src/features/quiz/containers/DailyReviewQuiz.tsx` - Result retention, restart logic
-- `apps/frontend/src/features/quiz/components/QuizProgressBar.tsx` - Migrate to common ProgressBar
-- `apps/frontend/src/features/quiz/providers/QuizFilterProvider.tsx` - Filter interface (new)
-- `apps/frontend/src/features/quiz/providers/DistractorGenerator.ts` - Generator interface (new)
-- `apps/frontend/src/features/quiz/providers/FeedbackProvider.tsx` - Feedback abstraction (new)
-- `apps/frontend/src/components/ui/Button.tsx` - Add quiz-specific variants
-- `apps/frontend/src/components/ui/Input.tsx` - Add pinyin conversion support
-- `apps/frontend/src/components/ui/ProgressBar.tsx` - Add step indicator support
-- `docs/migrations/mandarin-to-learning-rename.md` - Folder rename plan (new)
+- `apps/frontend/src/features/quiz/utils/pinyinConverter.ts` — tone number → tone mark conversion (`convertToneMarks`, `removeToneMarks`)
+- `apps/frontend/src/features/quiz/components/inputs/PinyinToneInput.tsx` — real-time pinyin conversion with live preview tooltip (wraps common `Input`)
+- `apps/frontend/src/features/quiz/utils/__tests__/pinyinConverter.test.ts` — unit tests for converter
+- `apps/frontend/src/components/Button/Button.tsx` — common Button component (primary/secondary variants)
+- `apps/frontend/src/components/Input/Input.tsx` — common Input component
+- `apps/frontend/src/features/quiz/components/exams/FeedbackSection.tsx` — uses common `Button`
+- `apps/frontend/src/features/quiz/components/exams/AnswerSection.tsx` — uses common `Button`
+- `apps/backend/src/core/services/QuizSessionService.js` — `_generateInterleavedQuestions()` generates MC questions with random distractors from other due words; Fisher-Yates shuffle
+- `apps/frontend/src/features/learning/` — empty directory structure created (rename not executed)
+
+**Deferred Items:**
+
+- Multi-meaning word parsing / validation (`validation.ts`) → follow-up story
+- Display of multiple acceptable answers in quiz cards → follow-up story
+- Multi-meaning results page adaptations → follow-up story (item 19)
+- localStorage or "Review Mistakes" retry flow → server-side results retained instead
+- Quiz filter provider interface (HSK/topic/interest) → Epic 17
+- Tone/character-similar distractor generation interface → Epic 17
+- FeedbackProvider abstraction (AI vs pre-generated) → Epic 17
+- Full `/mandarin` → `/learning` folder rename execution → separate migration story
+- Migration planning document → separate migration story
 
 ## Implementation Details
 
 ### 1. Multi-Meaning Word Parsing
 
-> **Status: Deferred** — `validation.ts` was removed during Story 15.11 Phase 8 backend refactor. Multi-meaning parsing will be revisited in a follow-up story when the quiz validation layer is re-added.
+> **Status: Not Implemented** — Multi-meaning parsing was designed but not built. No `validation.ts` file exists in the quiz feature. Will be addressed in a follow-up story.
 
 ```typescript
 // apps/frontend/src/features/quiz/utils/validation.ts
@@ -190,7 +196,7 @@ export function QuizCard({ question, mode, onAnswer }: QuizCardProps) {
 
 ### 3. Pinyin IME-Style Auto-Conversion
 
-> **Status: Deferred** — `pinyinConverter.ts` was removed during Story 15.11 Phase 8 backend refactor. Tone number to tone mark auto-conversion will be revisited in a follow-up story.
+> **Status: Implemented** — `pinyinConverter.ts` is fully built and integrated. `PinyinToneInput.tsx` wraps the common `Input` component and shows a live preview of the converted tone marks.
 
 ```typescript
 // apps/frontend/src/features/quiz/utils/pinyinConverter.ts
@@ -275,7 +281,7 @@ export function TypeAnswerInput({ question, onAnswer }: Props) {
 
 ### 4. Quiz Result Retention with Redo/Refresh
 
-> **Status: Deferred** — `quizStorage.ts` and the "Review Mistakes" button were removed during Story 15.11 Phase 8. Quiz result retention is now handled server-side via `quiz_results` table. The Redo/Refresh feature will be revisited in a follow-up story using the session summary endpoint.
+> **Status: Partially Implemented** — Quiz results are persisted server-side via `QuizSession`/`QuizSessionAnswer` tables and surfaced through the session summary endpoint. A "New Quiz" action is available via `DailyCompleteBanner.onStartNewQuiz`. The "Review Mistakes" button (filter to incorrect-only questions) was not implemented and remains a follow-up story item.
 
 ```tsx
 // DailyReviewQuiz.tsx - Store results in localStorage

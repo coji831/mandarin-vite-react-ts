@@ -43,8 +43,8 @@ Story 15.10 polished the core UX, but several functional limitations remain: mul
 
 ### Pinyin Input Enhancement (2 AC)
 
-- [ ] Pinyin input auto-converts tone numbers to tone marks ("ma3" → "mǎ" in real-time)
-- [ ] Conversion follows IME vowel priority rules (a > e > o, special cases: iu/ui)
+- [x] Pinyin input auto-converts tone numbers to tone marks ("ma3" → "mǎ" in real-time)
+- [x] Conversion follows IME vowel priority rules (a > e > o, special cases: iu/ui)
 
 ### Quiz Result Retention (2 AC)
 
@@ -53,16 +53,16 @@ Story 15.10 polished the core UX, but several functional limitations remain: mul
 
 ### UI Component Migration (3 AC)
 
-- [ ] Quiz buttons migrated to `@/components/ui/Button` (primary, secondary, hint variants)
+- [x] Quiz `Button` and `Input` common components created and integrated into `FeedbackSection`, `AnswerSection`, and `PinyinToneInput` (partial migration — hint variant and QuizProgressBar not done)
 - [ ] Quiz inputs migrated to `@/components/ui/Input` (with pinyin conversion support)
 - [ ] QuizProgressBar migrated to `@/components/ui/ProgressBar` (with step indicators)
 
 ### Future Architecture Hooks (4 AC)
 
+- [x] `/learning` folder directory structure created (actual rename execution deferred)
 - [ ] QuizFilterProvider interface created (HSK level, topic, interest filters - no UI implementation)
 - [ ] DistractorGenerator interface defined (algorithm hook points, no implementation)
 - [ ] FeedbackProvider abstraction added (supports AI or pre-generated feedback sources)
-- [ ] Folder rename plan documented (`/mandarin` → `/learning`, import map prepared)
 
 ## Business Rules
 
@@ -89,7 +89,7 @@ Story 15.10 polished the core UX, but several functional limitations remain: mul
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: In Progress
 - **PR**: N/A
 - **Merge Date**: N/A
-- **Last Update**: February 17, 2026
+- **Last Update**: March 15, 2026
