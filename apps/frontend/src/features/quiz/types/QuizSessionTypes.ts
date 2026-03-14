@@ -13,7 +13,7 @@
  */
 
 import { QuizAnswer } from "./QuizTypes";
-import { Badge } from "../../gamification/types/GamificationTypes";
+import { Badge, MysteryBox } from "../../gamification/types/GamificationTypes";
 
 /**
  * Quiz question from backend session (sanitized, no correct answer)
@@ -35,10 +35,9 @@ export type QuizSessionQuestion = {
 /**
  * Response from POST /api/v1/quiz/session/start
  *
- * Supports three response variants:
+ * Supports two response variants:
  * - Standard: New or resumed session with questions
  * - Daily Complete: Already completed quiz today (alreadyCompleted = true)
- * - No Due Words: All caught up (noDueWords = true)
  */
 export type QuizSessionStartResponse = {
   sessionId: string;
@@ -50,9 +49,9 @@ export type QuizSessionStartResponse = {
   // Daily quiz variant fields (populated when alreadyCompleted = true)
   alreadyCompleted?: boolean; // True if user already completed quiz today
   summary?: QuizSessionSummary; // Pre-calculated session metrics (variant only)
-  // No due words variant (populated when noDueWords = true)
-  noDueWords?: boolean; // True when all vocabulary is up-to-date
-  message?: string; // Celebration message for no due words
+  // No due words variant (Flow 1.5)
+  noDueWords?: boolean; // True when no words due today (backend may return review fallback)
+  message?: string; // User-friendly message (e.g. "All caught up! Here are some review words.")
 };
 
 /**
@@ -162,6 +161,7 @@ export type QuizSessionSummary = {
   xpEarned: number; // Backend property name (not totalXP)
   newBadges: Badge[];
   mysteryBox: MysteryBox | null;
+  freezeAwarded: boolean;
   currentStreak: number;
   availableFreezes: number;
   completedAt: string; // ISO 8601 datetime

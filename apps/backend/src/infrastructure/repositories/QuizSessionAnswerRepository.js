@@ -84,12 +84,11 @@ export class QuizSessionAnswerRepository {
 
   /**
    * Find a specific answer by questionId (for duplicate-answer check)
-   * questionId is @unique on QuizSessionAnswer, so no sessionId needed.
-   * @param {string} sessionId  - kept for API compatibility (not used in query)
+   * questionId is @unique on QuizSessionAnswer.
    * @param {string} questionId - FK to QuizSessionQuestion.id
    * @returns {Promise<object|null>}
    */
-  async findBySessionAndQuestion(sessionId, questionId) {
+  async findByQuestionId(questionId) {
     return prisma.quizSessionAnswer.findUnique({
       where: { questionId },
     });

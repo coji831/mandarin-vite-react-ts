@@ -14,12 +14,17 @@
  * - Identify struggling words (leeches) based on lapse count
  */
 
-import { isLeech, LEECH_THRESHOLD } from "../domain/constants/BusinessRules.js";
+import {
+  isLeech,
+  LEECH_THRESHOLD,
+  SRS_MAX_INTERVAL_DAYS,
+  SRS_LAPSE_RESET_DAYS,
+  NEW_WORDS_RATIO,
+} from "../domain/constants/BusinessRules.js";
 
 export class LearningService {
-  constructor(progressRepository, quizResultRepository, vocabularyRepository) {
+  constructor(progressRepository, vocabularyRepository) {
     this.progressRepository = progressRepository; // IProgressRepository
-    this.quizResultRepository = quizResultRepository; // IQuizResultRepository
     this.vocabularyRepository = vocabularyRepository; // IVocabularyRepository
   }
 
@@ -42,10 +47,10 @@ export class LearningService {
    * @returns {Date} - Next review date
    */
   calculateNextReview(currentDelay, correct) {
-    const maxDays = 365; // One year maximum for well-mastered words
-
-    // Exponential backoff: double on success, reset to 1 on failure
-    const delayDays = correct ? Math.min(maxDays, currentDelay * 2) : 1;
+    // Exponential backoff: double on success, reset to 1 day on failure
+    const delayDays = correct
+      ? Math.min(SRS_MAX_INTERVAL_DAYS, currentDelay * 2)
+      : SRS_LAPSE_RESET_DAYS;
 
     const nextReview = new Date();
     nextReview.setDate(nextReview.getDate() + delayDays);
@@ -186,6 +191,60 @@ export class LearningService {
       .filter(Boolean);
   }
 
+  /**
+   * Get vocabulary words due for review without 70/30 backfill (pure scheduled words only)
+   *
+   * @param {string} userId - User ID
+   * @param {Date} [date] - Target date (defaults to today)
+   * @param {number} [limit=10] - Maximum words to return
+   * @returns {Promise<Array>} Enriched due words
+   */
+  async getDueWordsOnly(userId, date = new Date(), limit = 10) {
+    const progressRecords = await this.progressRepository.findDueByUserAndDate(userId, date, limit);
+    return this._enrichProgressWithVocabulary(progressRecords);
+  }
+
+  /**
+   * Get new (unlearned) words for use in a quiz session
+   * Creates initial progress records for each new word (due immediately)
+   *
+   * @param {string} userId - User ID
+   * @param {number} count - Number of new words to get
+   * @returns {Promise<Array>} Enriched new words
+   */
+  async getNewWords(userId, count) {
+    if (count <= 0) return [];
+    const progressRecords = await this._backfillWithNewWords(userId, count);
+    return this._enrichProgressWithVocabulary(progressRecords);
+  }
+
+  /**
+   * Get review fallback words (words with future nextReview, not due today)
+   * Used to fill quiz sessions when insufficient due or new words are available
+   *
+   * @param {string} userId - User ID
+   * @param {number} limit - Maximum words to return
+   * @param {Set<string>} [excludeWordIds] - Word IDs to exclude (already in session)
+   * @returns {Promise<Array>} Enriched review fallback words
+   */
+  async getReviewFallbackWords(userId, limit, excludeWordIds = new Set()) {
+    try {
+      const allProgress = await this.progressRepository.findByUser(userId);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const reviewableProgress = allProgress
+        .filter(
+          (p) => p.nextReview && new Date(p.nextReview) > today && !excludeWordIds.has(p.wordId),
+        )
+        .slice(0, limit);
+
+      return this._enrichProgressWithVocabulary(reviewableProgress);
+    } catch (_) {
+      return [];
+    }
+  }
+
   // ============================================================================
   // Private Helper Methods
   // ============================================================================
@@ -202,7 +261,7 @@ export class LearningService {
       return 0;
     }
 
-    const targetNewWords = Math.ceil(limit * 0.3); // 30% of limit
+    const targetNewWords = Math.ceil(limit * NEW_WORDS_RATIO); // NEW_WORDS_RATIO % of limit
     const availableSlots = limit - currentCount;
     return Math.min(targetNewWords, availableSlots);
   }

@@ -6,13 +6,13 @@
  */
 
 import { createLogger } from "../../utils/logger.js";
+import {
+  QUIZ_WORDS_DEFAULT,
+  QUIZ_WORDS_MIN,
+  QUIZ_WORDS_MAX,
+} from "../../core/domain/constants/BusinessRules.js";
 
 const logger = createLogger("QuizSessionController");
-
-// Quiz session constants
-const MAX_QUIZ_WORDS = 50;
-const MIN_QUIZ_WORDS = 1;
-const DEFAULT_QUIZ_WORDS = 10;
 
 /**
  * QuizSessionController class with dependency injection
@@ -40,7 +40,7 @@ export class QuizSessionController {
 
       // Parse parameters
       const targetDate = date ? new Date(date) : new Date();
-      const maxWords = limit ? parseInt(limit, 10) : DEFAULT_QUIZ_WORDS;
+      const maxWords = limit ? parseInt(limit, 10) : QUIZ_WORDS_DEFAULT;
 
       // Validate parameters
       if (isNaN(targetDate.getTime())) {
@@ -51,11 +51,11 @@ export class QuizSessionController {
         });
       }
 
-      if (isNaN(maxWords) || maxWords < MIN_QUIZ_WORDS || maxWords > MAX_QUIZ_WORDS) {
+      if (isNaN(maxWords) || maxWords < QUIZ_WORDS_MIN || maxWords > QUIZ_WORDS_MAX) {
         return res.status(400).json({
           error: "Bad Request",
           code: "QUIZ_LIMIT_OUT_OF_RANGE",
-          message: `Limit must be between ${MIN_QUIZ_WORDS} and ${MAX_QUIZ_WORDS}`,
+          message: `Limit must be between ${QUIZ_WORDS_MIN} and ${QUIZ_WORDS_MAX}`,
         });
       }
 
@@ -106,31 +106,6 @@ export class QuizSessionController {
         stack: error.stack,
       });
 
-      // Handle specific errors with appropriate status codes
-      if (error.message === "Session not found" || error.statusCode === 404) {
-        return res.status(404).json({
-          error: "Not Found",
-          code: "SESSION_NOT_FOUND",
-          message: "Quiz session not found",
-        });
-      }
-
-      if (error.message === "Session expired") {
-        return res.status(410).json({
-          error: "Gone",
-          code: "SESSION_EXPIRED",
-          message: "Quiz session has expired",
-        });
-      }
-
-      if (error.message.includes("User") && error.message.includes("not found")) {
-        return res.status(404).json({
-          error: "Not Found",
-          code: "USER_NOT_FOUND",
-          message: "User not found",
-        });
-      }
-
       res.status(500).json({
         error: "Internal Server Error",
         code: "START_SESSION_FAILED",
@@ -151,15 +126,6 @@ export class QuizSessionController {
 
       logger.info("Submitting quiz answer", { sessionId, questionId });
 
-      // Validate required fields
-      if (!sessionId) {
-        return res.status(400).json({
-          error: "Bad Request",
-          code: "SESSION_ID_REQUIRED",
-          message: "Session ID is required",
-        });
-      }
-
       if (!questionId) {
         return res.status(400).json({
           error: "Bad Request",
@@ -176,11 +142,16 @@ export class QuizSessionController {
         });
       }
 
-      if (!timeSpentMs || typeof timeSpentMs !== "number" || timeSpentMs < 0) {
+      if (
+        timeSpentMs === undefined ||
+        timeSpentMs === null ||
+        typeof timeSpentMs !== "number" ||
+        timeSpentMs < 0
+      ) {
         return res.status(400).json({
           error: "Bad Request",
           code: "INVALID_TIME_SPENT",
-          message: "timeSpentMs must be a positive number",
+          message: "timeSpentMs must be a non-negative number",
         });
       }
 
@@ -221,7 +192,7 @@ export class QuizSessionController {
       });
 
       // Handle specific errors
-      if (error.message === "Session not found" || error.statusCode === 404) {
+      if (error.code === "SESSION_NOT_FOUND") {
         return res.status(404).json({
           error: "Not Found",
           code: "SESSION_NOT_FOUND",
@@ -229,7 +200,7 @@ export class QuizSessionController {
         });
       }
 
-      if (error.message === "Session expired") {
+      if (error.code === "SESSION_EXPIRED") {
         return res.status(410).json({
           error: "Gone",
           code: "SESSION_EXPIRED",
@@ -237,7 +208,7 @@ export class QuizSessionController {
         });
       }
 
-      if (error.message.includes("Session is")) {
+      if (error.code === "INVALID_SESSION_STATUS") {
         return res.status(400).json({
           error: "Bad Request",
           code: "INVALID_SESSION_STATUS",
@@ -245,7 +216,7 @@ export class QuizSessionController {
         });
       }
 
-      if (error.message === "Question not found in session") {
+      if (error.code === "INVALID_QUESTION_ID") {
         return res.status(400).json({
           error: "Bad Request",
           code: "INVALID_QUESTION_ID",
@@ -253,7 +224,7 @@ export class QuizSessionController {
         });
       }
 
-      if (error.message === "Question already answered") {
+      if (error.code === "ALREADY_ANSWERED") {
         return res.status(409).json({
           error: "Conflict",
           code: "ALREADY_ANSWERED",
@@ -279,14 +250,6 @@ export class QuizSessionController {
 
       logger.info("Fetching quiz session", { sessionId });
 
-      if (!sessionId) {
-        return res.status(400).json({
-          error: "Bad Request",
-          code: "MISSING_SESSION_ID",
-          message: "Session ID is required",
-        });
-      }
-
       const session = await this.quizSessionService.getSession(sessionId, req.userId);
 
       logger.info("Quiz session fetched", { sessionId, status: session.status });
@@ -299,7 +262,7 @@ export class QuizSessionController {
         stack: error.stack,
       });
 
-      if (error.message === "Session not found" || error.statusCode === 404) {
+      if (error.code === "SESSION_NOT_FOUND") {
         return res.status(404).json({
           error: "Not Found",
           code: "SESSION_NOT_FOUND",
@@ -316,46 +279,6 @@ export class QuizSessionController {
   }
 
   /**
-   * Abandon current session
-   * DELETE /api/v1/quiz/session/current
-   */
-  async abandonSession(req, res) {
-    try {
-      const userId = req.userId;
-
-      logger.info("Abandoning quiz session", { userId });
-
-      const abandoned = await this.quizSessionService.abandonSession(userId);
-
-      if (!abandoned) {
-        return res.status(404).json({
-          error: "Not Found",
-          code: "NO_ACTIVE_SESSION",
-          message: "No active session to abandon",
-        });
-      }
-
-      logger.info("Quiz session abandoned", { userId });
-
-      res.status(200).json({
-        message: "Session abandoned successfully",
-      });
-    } catch (error) {
-      logger.error("Error abandoning quiz session", {
-        error: error.message,
-        userId: req.userId,
-        stack: error.stack,
-      });
-
-      res.status(500).json({
-        error: "Internal Server Error",
-        code: "ABANDON_SESSION_FAILED",
-        message: "Failed to abandon session",
-      });
-    }
-  }
-
-  /**
    * Get session summary with calculated statistics
    * GET /api/v1/quiz/session/:sessionId/summary
    * Story 15.11: Move business logic to backend - return pre-calculated metrics with authorization
@@ -366,14 +289,6 @@ export class QuizSessionController {
       const userId = req.userId; // Injected by auth middleware
 
       logger.info("Fetching session summary", { sessionId, userId });
-
-      if (!sessionId) {
-        return res.status(400).json({
-          error: "Bad Request",
-          code: "MISSING_SESSION_ID",
-          message: "Session ID is required",
-        });
-      }
 
       const summary = await this.quizSessionService.getSessionSummary(sessionId, userId);
 
@@ -393,7 +308,7 @@ export class QuizSessionController {
         stack: error.stack,
       });
 
-      if (error.message && error.message.includes("Session not found")) {
+      if (error.code === "SESSION_NOT_FOUND") {
         return res.status(404).json({
           error: "Not Found",
           code: "SESSION_NOT_FOUND",

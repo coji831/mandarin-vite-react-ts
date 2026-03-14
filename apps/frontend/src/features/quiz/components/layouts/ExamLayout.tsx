@@ -28,7 +28,6 @@ export function ExamLayout() {
     showHint,
     answerValue,
     aiFeedback,
-    feedbackLoading,
     answers,
   } = useQuizState();
 
@@ -83,7 +82,6 @@ export function ExamLayout() {
           {phase === "ANSWER_FEEDBACK" && lastAnswer && (
             <FeedbackSection
               isCorrect={lastAnswer.correct}
-              feedbackLoading={feedbackLoading}
               aiFeedback={aiFeedback}
               userAnswer={lastAnswer.userAnswer}
               correctAnswer={lastAnswer.correctAnswer ?? ""}

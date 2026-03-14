@@ -44,6 +44,7 @@ describe("QuizSessionService", () => {
 
     mockVocabularyRepository = {
       findByIds: vi.fn(),
+      findById: vi.fn(),
     };
 
     mockAIFeedbackService = {
@@ -66,7 +67,7 @@ describe("QuizSessionService", () => {
     mockAnswerRepository = {
       create: vi.fn().mockResolvedValue({}),
       findBySession: vi.fn().mockResolvedValue([]),
-      findBySessionAndQuestion: vi.fn().mockResolvedValue(null),
+      findByQuestionId: vi.fn().mockResolvedValue(null),
       findRecentByUser: vi.fn().mockResolvedValue([]),
     };
 
@@ -618,7 +619,7 @@ describe("QuizSessionService", () => {
 
     it("should throw error if question already answered", async () => {
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
-      mockAnswerRepository.findBySessionAndQuestion.mockResolvedValue({ id: "existing-answer" });
+      mockAnswerRepository.findByQuestionId.mockResolvedValue({ id: "existing-answer" });
 
       await expect(
         quizSessionService.submitAnswer("session1", "user1", "word1_type_pinyin", "answer", 1000),
@@ -652,7 +653,7 @@ describe("QuizSessionService", () => {
     // AI Feedback Generation Tests (Story 15.11 Phase 9)
     // ============================================================================
 
-    it("should generate AI feedback automatically for incorrect answers", async () => {
+    it("should generate simple feedback automatically for incorrect answers", async () => {
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockSessionRepository.update.mockResolvedValue({
         ...mockSession,
@@ -673,10 +674,11 @@ describe("QuizSessionService", () => {
         lapseCount: 1,
         isLeech: false,
       });
-      mockAIFeedbackService.generateFeedback.mockResolvedValue({
-        explanation:
-          "You confused tone 4 with tone 2. The correct answer requires tone 3 on both syllables.",
-        errorType: "tone",
+      mockVocabularyRepository.findById.mockResolvedValue({
+        id: "word1",
+        simplified: "你好",
+        pinyin: "nǐ hǎo",
+        english: "hello",
       });
 
       const result = await quizSessionService.submitAnswer(
@@ -689,15 +691,8 @@ describe("QuizSessionService", () => {
 
       expect(result.correct).toBe(false);
       expect(result.aiFeedback).toEqual({
-        explanation:
-          "You confused tone 4 with tone 2. The correct answer requires tone 3 on both syllables.",
-        errorType: "tone",
-      });
-      expect(mockAIFeedbackService.generateFeedback).toHaveBeenCalledWith({
-        wordId: "word1",
-        userAnswer: "wrong answer",
-        correctAnswer: "nǐ hǎo",
-        questionType: "type_pinyin",
+        explanation: "the answer is nǐ hǎo",
+        errorType: "feedback",
       });
     });
 
@@ -733,10 +728,9 @@ describe("QuizSessionService", () => {
 
       expect(result.correct).toBe(true);
       expect(result.aiFeedback).toBeNull();
-      expect(mockAIFeedbackService.generateFeedback).not.toHaveBeenCalled();
     });
 
-    it("should timeout AI feedback after 3 seconds and return null feedback", async () => {
+    it("should generate simple feedback for incorrect answers", async () => {
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockSessionRepository.update.mockResolvedValue({
         ...mockSession,
@@ -757,13 +751,12 @@ describe("QuizSessionService", () => {
         lapseCount: 1,
         isLeech: false,
       });
-      // Simulate slow AI feedback (>3 seconds)
-      mockAIFeedbackService.generateFeedback.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({ explanation: "Late feedback" }), 5000),
-          ),
-      );
+      mockVocabularyRepository.findById.mockResolvedValue({
+        id: "word1",
+        simplified: "你好",
+        pinyin: "nǐ hǎo",
+        english: "hello",
+      });
 
       const result = await quizSessionService.submitAnswer(
         "session1",
@@ -774,10 +767,13 @@ describe("QuizSessionService", () => {
       );
 
       expect(result.correct).toBe(false);
-      expect(result.aiFeedback).toBeNull(); // Timed out after 3 seconds
+      expect(result.aiFeedback).toEqual({
+        explanation: "the answer is nǐ hǎo",
+        errorType: "feedback",
+      });
     });
 
-    it("should continue without AI feedback if service fails", async () => {
+    it("should continue without AI feedback if vocabulary lookup fails", async () => {
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockSessionRepository.update.mockResolvedValue({
         ...mockSession,
@@ -798,7 +794,9 @@ describe("QuizSessionService", () => {
         lapseCount: 1,
         isLeech: false,
       });
-      mockAIFeedbackService.generateFeedback.mockRejectedValue(new Error("AI service unavailable"));
+      mockVocabularyRepository.findById.mockRejectedValue(
+        new Error("Vocabulary service unavailable"),
+      );
 
       const result = await quizSessionService.submitAnswer(
         "session1",

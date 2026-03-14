@@ -69,7 +69,21 @@ export class StreakService {
     const hoursSinceLastActivity = (now - lastActivity) / (1000 * 60 * 60);
 
     if (hoursSinceLastActivity <= 48) {
-      // Within grace period: increment streak
+      // Within grace period: only increment if this is a new calendar day
+      const lastActivityDay = lastActivity.toISOString().split("T")[0];
+      const nowDay = now.toISOString().split("T")[0];
+
+      if (lastActivityDay === nowDay) {
+        // Same day: update lastActivityDate but do not increment streak
+        return await this.streakRepository.upsert(userId, {
+          currentStreak: streak.currentStreak,
+          longestStreak: streak.longestStreak,
+          lastActivityDate: now,
+          freezeCount: streak.freezeCount,
+        });
+      }
+
+      // New calendar day within grace period: increment streak
       const newStreak = streak.currentStreak + 1;
       const newLongest = Math.max(newStreak, streak.longestStreak);
 

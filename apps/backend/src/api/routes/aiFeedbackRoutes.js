@@ -6,24 +6,11 @@
 
 import express from "express";
 import { rateLimit } from "express-rate-limit";
-import { AIFeedbackController } from "../controllers/AIFeedbackController.js";
-import { CachedAIFeedbackService } from "../../core/services/CachedAIFeedbackService.js";
-import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
-import { getCacheService } from "../../infrastructure/cache/index.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
-import { registerCacheMetrics } from "../middleware/cacheMetrics.js";
+import { aiFeedbackController } from "../../container.js";
 
 const router = express.Router();
-
-// Initialize dependencies (matches TTS/Conversation architecture)
-const cacheService = getCacheService();
-const vocabularyRepo = new VocabularyRepository();
-const feedbackService = new CachedAIFeedbackService(vocabularyRepo, cacheService);
-const controller = new AIFeedbackController(feedbackService);
-
-// Register cache metrics for monitoring
-registerCacheMetrics("AIFeedback", () => feedbackService.getMetrics());
 
 // Rate limiter for AI feedback (10 requests per minute per user)
 const feedbackLimiter = rateLimit({
@@ -46,7 +33,7 @@ router.post(
   "/v1/quiz/feedback",
   authenticateToken,
   feedbackLimiter,
-  asyncHandler(controller.generateAIFeedback.bind(controller)),
+  asyncHandler(aiFeedbackController.generateAIFeedback.bind(aiFeedbackController)),
 );
 
 export default router;

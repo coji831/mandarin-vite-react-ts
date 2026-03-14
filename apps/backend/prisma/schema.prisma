@@ -205,8 +205,8 @@ model QuizSessionSummary {
   accuracyRate   Float
   xpEarned       Int
   newBadgeIds    String[]
-  mysteryBoxDrop Boolean  @default(false)
-  mysteryBoxType String?
+  mysteryBoxDrop      Boolean  @default(false)
+  mysteryBoxType      String?
   freezeAwarded  Boolean  @default(false)
   expiresAt      DateTime
   createdAt      DateTime @default(now())

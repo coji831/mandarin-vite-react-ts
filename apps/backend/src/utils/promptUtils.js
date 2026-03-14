@@ -1,4 +1,7 @@
 // Utility functions for prompt creation and related helpers
+// TODO(A7): Move prompt-building logic to core/domain/ or infrastructure/external/.
+// These functions are AI-domain logic and don't belong in a generic utils/ folder.
+// Blocked by: need to audit all callers (ConversationService, CachedAIFeedbackService).
 
 /**
  * Build a full conversation prompt for Gemini API

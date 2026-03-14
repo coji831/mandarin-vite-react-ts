@@ -5,7 +5,6 @@
  * Matches TTS/Conversation service architecture (class-based with DI).
  */
 
-import { generateText } from "../../infrastructure/external/GeminiClient.js";
 import { cacheMetrics } from "../../utils/CacheMetrics.js";
 import { createLogger } from "../../utils/logger.js";
 
@@ -19,10 +18,12 @@ export class CachedAIFeedbackService {
   /**
    * @param {Object} vocabularyRepo - VocabularyRepository instance
    * @param {import('../../infrastructure/cache/CacheService.js').CacheService} cacheService - Cache service instance
+   * @param {import('../interfaces/IAIClient.js').IAIClient} aiClient - AI client instance (e.g. GeminiClient)
    */
-  constructor(vocabularyRepo, cacheService) {
+  constructor(vocabularyRepo, cacheService, aiClient) {
     this.vocabularyRepo = vocabularyRepo;
     this.cacheService = cacheService;
+    this.aiClient = aiClient;
     this.metrics = {
       hits: 0,
       misses: 0,
@@ -126,7 +127,7 @@ export class CachedAIFeedbackService {
     logger.info(`Prompt length: ${prompt.length} characters`);
 
     try {
-      const response = await generateText(prompt, {
+      const response = await this.aiClient.generateText(prompt, {
         temperature: 0.7,
         maxTokens: 200,
       });
@@ -166,14 +167,6 @@ export class CachedAIFeedbackService {
     } catch (error) {
       logger.error(`generateAIFeedback error: ${error.message}`);
       throw error; // Re-throw to be caught by outer try-catch
-    }
-    {
-      logger.warn(`Failed to parse Gemini JSON response, using raw text`);
-      const errorType = classifyErrorType(userAnswer, correctAnswer, word);
-      return {
-        explanation: response.trim().substring(0, 300), // Limit length
-        errorType,
-      };
     }
   }
 

@@ -4,18 +4,23 @@
  */
 
 import express from "express";
-import authRouter from "./auth.js";
-import progressRouter from "./progress.js";
+import authRouter from "./authRoutes.js";
+import progressRouter from "./progressRoutes.js";
 import gamificationRouter from "./gamificationRoutes.js";
 import aiFeedbackRouter from "./aiFeedbackRoutes.js";
 import conversationRouter from "./conversationRoutes.js";
 import ttsRouter from "./ttsRoutes.js";
 import vocabularyRouter from "./vocabularyRoutes.js";
 import healthRouter from "./healthRoutes.js";
-import quizSessionRouter from "./quizSession.js";
-import learningRouter from "./learning.js";
+import quizSessionRouter from "./quizSessionRoutes.js";
+import learningRouter from "./learningRoutes.js";
 
 const router = express.Router();
+
+// TODO(A10): Apply /v1 prefix once here (router.use('/v1', xRouter)) instead of repeating it
+// in every route file. Blocked by: ROUTE_PATTERNS in @mandarin/shared-constants already bake in
+// /v1/ and are shared with the frontend — stripping the prefix from routes would require a
+// coordinated change across both packages to avoid breaking the API contract.
 
 // Health check routes
 router.use(healthRouter);

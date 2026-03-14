@@ -69,28 +69,27 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
 
       // Check if user already completed quiz today (daily quiz limit)
       if (response.alreadyCompleted) {
+        if (!response.summary) {
+          dispatch({
+            type: "QUIZ/SET_ERROR",
+            error: "Daily completion data unavailable. Please refresh.",
+          });
+          return;
+        }
         dispatch({
           type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS",
           sessionId: response.sessionId,
-          summary: response.summary!,
+          summary: response.summary,
           expiresAt: response.expiresAt,
         });
         return;
       }
 
-      // Flow 1.2: Check if no due words (all caught up)
-      if (response.noDueWords) {
-        dispatch({
-          type: "QUIZ/SHOW_NO_DUE_WORDS",
-          message: response.message || "You're all caught up! Come back later for more practice.",
-        });
-        return;
-      }
-
+      // Guard: empty question list — no vocabulary at all (Flow 1.5 fallback exhausted)
       if (response.questions.length === 0) {
         dispatch({
           type: "QUIZ/SET_ERROR",
-          error: "No words due for review today. Great job staying on track!",
+          error: response.message ?? "No words available right now. Check back later!",
         });
         return;
       }
@@ -105,6 +104,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
           type: "QUIZ/RESUME",
           questions,
           sessionId: response.sessionId,
+          expiresAt: response.expiresAt,
           currentIndex: response.currentIndex,
           answers: response.answers.map((answer) => ({
             ...answer,
@@ -117,6 +117,7 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
           type: "QUIZ/INITIALIZE",
           questions,
           sessionId: response.sessionId,
+          expiresAt: response.expiresAt,
         });
       }
 

@@ -38,7 +38,7 @@
  * @typedef {Object} IQuizSessionAnswerRepository
  * @property {function(object): Promise<QuizSessionAnswerData>}           create                   - Record a new per-question answer
  * @property {function(string): Promise<QuizSessionAnswerData[]>}         findBySession            - All answers for a session, ordered by question index (joins QuizSessionQuestion)
- * @property {function(string, string): Promise<QuizSessionAnswerData|null>} findBySessionAndQuestion - Lookup by questionId for duplicate-answer guard (@unique constraint)
+ * @property {function(string): Promise<QuizSessionAnswerData|null>} findByQuestionId - Lookup by questionId for duplicate-answer guard (@unique constraint)
  * @property {function(string, number=): Promise<QuizSessionAnswerData[]>} findRecentByUser        - N most recent answers for a user across all sessions (streak freeze check)
  */
 

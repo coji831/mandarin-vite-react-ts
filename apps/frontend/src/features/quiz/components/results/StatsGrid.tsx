@@ -30,7 +30,12 @@ export function StatsGrid({
       <div className="statsGrid w-full grid-3-col">
         <div className="statCard flex-col">
           <span className="statLabel">Accuracy</span>
-          <span className="statValue">{accuracy}%</span>
+          <span className="statValue">
+            {Number(accuracy)
+              .toFixed(2)
+              .replace(/\.?0+$/, "")}
+            %
+          </span>
         </div>
 
         <div className="statCard flex-col">

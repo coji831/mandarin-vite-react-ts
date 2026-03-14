@@ -32,7 +32,21 @@ vi.mock("../../../gamification/components/BadgeCelebrationModal", () => ({
       <div data-testid="badge-celebration-modal">
         <div>Badge Celebration Modal</div>
         <div>{badges[0].name}</div>
+        <div>{badges[0].description}</div>
         <button onClick={onClose}>Close</button>
+      </div>
+    );
+  },
+}));
+
+// Mock MysteryBoxModal to avoid animation in tests
+vi.mock("../../../gamification/components/MysteryBoxModal", () => ({
+  MysteryBoxModal: ({ mysteryBox, isOpen }: any) => {
+    if (!isOpen || !mysteryBox) return null;
+    return (
+      <div data-testid="mystery-box-modal">
+        <div>Mystery Box</div>
+        <div>{mysteryBox.name}</div>
       </div>
     );
   },
@@ -102,21 +116,6 @@ describe("ResultsLayout", () => {
     render(<ResultsLayout />);
     expect(screen.getByText("XP Earned")).toBeInTheDocument();
     expect(screen.getByText("+20")).toBeInTheDocument(); // 2 correct * 10 XP
-  });
-
-  it("renders review again button", () => {
-    render(<ResultsLayout />);
-    const reviewButton = screen.getByRole("button", { name: /Review Again/i });
-    expect(reviewButton).toBeInTheDocument();
-  });
-
-  it("calls handleRetry callback when button clicked", () => {
-    render(<ResultsLayout />);
-
-    const reviewButton = screen.getByRole("button", { name: /Review Again/i });
-    fireEvent.click(reviewButton);
-
-    expect(mockHandleRetry).toHaveBeenCalledTimes(1);
   });
 
   it("handles empty answers array", () => {
@@ -366,7 +365,7 @@ describe("ResultsLayout", () => {
       });
 
       render(<ResultsLayout />);
-      expect(screen.getByText(/Mystery Box/i)).toBeInTheDocument();
+      expect(screen.getByTestId("mystery-box-modal")).toBeInTheDocument();
     });
 
     it("does not display mystery box modal when not provided", () => {
@@ -379,7 +378,7 @@ describe("ResultsLayout", () => {
       });
 
       render(<ResultsLayout />);
-      expect(screen.queryByText(/Mystery Box/i)).not.toBeInTheDocument();
+      expect(screen.queryByTestId("mystery-box-modal")).not.toBeInTheDocument();
     });
 
     it("displays all gamification rewards together", () => {
@@ -413,9 +412,9 @@ describe("ResultsLayout", () => {
 
       // All rewards should be displayed
       expect(screen.getByText("+25")).toBeInTheDocument(); // XP
-      expect(screen.getByText(/New Badges Earned/i)).toBeInTheDocument(); // Badge section
+      expect(screen.getByTestId("badge-celebration-modal")).toBeInTheDocument(); // Badge modal
       expect(screen.getByText(/You earned 1 Streak Freeze/i)).toBeInTheDocument(); // Freeze
-      expect(screen.getByText(/Mystery Box/i)).toBeInTheDocument(); // Mystery box
+      expect(screen.getByTestId("mystery-box-modal")).toBeInTheDocument(); // Mystery box
     });
 
     it("handles leeches display (lapseCount >= 5)", () => {
@@ -447,7 +446,7 @@ describe("ResultsLayout", () => {
       });
 
       render(<ResultsLayout />);
-      expect(screen.getByText(/2 words need attention/i)).toBeInTheDocument();
+      expect(screen.getByText(/2 struggling words detected/i)).toBeInTheDocument();
     });
 
     it("does not display leech alert when no leeches", () => {
@@ -471,7 +470,7 @@ describe("ResultsLayout", () => {
       });
 
       render(<ResultsLayout />);
-      expect(screen.queryByText(/words need attention/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/struggling/i)).not.toBeInTheDocument();
     });
 
     it("displays badge descriptions in new badges section", () => {

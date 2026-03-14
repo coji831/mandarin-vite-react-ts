@@ -10,25 +10,16 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import config from "./config/index.js";
 import { swaggerSpec } from "./api/docs/openapi.js";
-import { getCacheService } from "./infrastructure/cache/index.js";
+import { cacheService } from "./container.js";
 import { createLogger } from "./utils/logger.js";
 import { errorHandler } from "./api/middleware/errorHandler.js";
+import routes from "./api/routes/index.js";
 
 // Load environment variables
 dotenv.config();
 
 const logger = createLogger("Server");
 const app = express();
-
-// Initialize cache service
-const cacheService = getCacheService();
-logger.info("Cache service initialized", {
-  type: cacheService.constructor.name,
-  enabled: cacheService.constructor.name !== "NoOpCacheService",
-});
-
-// Import routes after cache service is initialized
-import routes from "./api/routes/index.js";
 
 // CORS must be first — before body parsers — so error responses also carry CORS headers
 // CORS configuration with explicit origin whitelist

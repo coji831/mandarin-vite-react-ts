@@ -25,6 +25,10 @@ Sections
 
 ## Backlog
 
+- [ ] **(A7) Move AI prompt/conversation utils out of `utils/`** — `promptUtils.js` and `conversationUtils.js` contain AI-domain logic sitting in a generic `utils/` folder. Move to `core/domain/` or `infrastructure/external/`. Blocked by: need to audit all callers (ConversationService, CachedAIFeedbackService, ConversationController). See TODOs in `apps/backend/src/utils/promptUtils.js` and `apps/backend/src/utils/conversationUtils.js`.
+
+- [ ] **(A10) Apply `/v1` prefix at mount level in `routes/index.js`** — currently each route file hardcodes `/v1/` in its path strings. Should be applied once via `router.use('/v1', xRouter)`. Blocked by: `ROUTE_PATTERNS` in `@mandarin/shared-constants` already bake in `/v1/` and are shared with the frontend — requires a coordinated change across both packages. See TODO in `apps/backend/src/api/routes/index.js`.
+
 - [ ] Standardize API response structure - Document and enforce consistent response format across all backend endpoints (currently returns data directly; consider standardizing with or without wrapper like `{ success, data }`)
 
 - [ ] Refactor services to direct export pattern - Remove Service wrapper classes, export audioApi/conversationApi objects like progressService (Epic 14 follow-up)

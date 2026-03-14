@@ -11,13 +11,12 @@
  * - Pure orchestrator pattern (delegates to hooks and services)
  * - useQuizSession: Session initialization and lifecycle
  * - useAnswerSubmission: Answer submission orchestration
- * - useGamificationCapture: Reward processing (XP, badges, mystery box)
  * - quizTransformers: Data transformation (backend ↔ frontend formats)
  *
  * State includes:
  * - Quiz flow state (phase, questions, currentIndex, answers, sessionId)
- * - UI state (answerValue, showHint, aiFeedback, feedbackLoading)
- * - Gamification data (totalXP, mysteryBox, newBadges, freezeAwarded)
+ * - UI state (answerValue, showHint, aiFeedback)
+ * - Session summary (backend-calculated metrics for results display)
  *
  * Actions include:
  * - handleAnswer: Submit answer to backend session for validation
@@ -37,10 +36,8 @@
  * - Reduced from 350 → 246 lines (30% reduction)
  * - Extracted session logic to useQuizSession hook
  * - Extracted answer submission to useAnswerSubmission hook
- * - Extracted gamification to useGamificationCapture hook
  * - Extracted transformers to quizTransformers service
- * - Removed AI feedback orchestration (now backend auto-generates)
- * - AI feedback comes from backend with 3-second timeout built-in
+ * - AI feedback comes from backend with answer response (synchronous)
  */
 
 import {
@@ -54,8 +51,6 @@ import {
 } from "react";
 import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
 import { QuizQuestion, QuizAnswer, QuizSessionSummary } from "../types";
-import type { Badge, MysteryBox } from "../../gamification/types/GamificationTypes";
-import { useGamificationCapture } from "../hooks/useGamificationCapture";
 import { useAnswerSubmission } from "../hooks/useAnswerSubmission";
 import { useQuizSession } from "../hooks/useQuizSession";
 import { useSessionSummary } from "../hooks/useSessionSummary";
@@ -82,18 +77,12 @@ interface QuizStateContext {
 
   // AI feedback state (from reducer)
   aiFeedback: string | null;
-  feedbackLoading: boolean;
-
-  // Gamification data
-  totalXP: number;
-  mysteryBox?: MysteryBox;
-  newBadges: Badge[];
-  freezeAwarded: boolean;
 
   // Session summary (backend-calculated metrics)
   sessionSummary: QuizSessionSummary | null;
+  summaryLoading: boolean;
   expiresAt: string | null;
-  noDueWordsMessage?: string;
+  isFreshCompletion: boolean;
 }
 
 interface QuizActionsContext {
@@ -156,10 +145,6 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ? state.questions[state.currentIndex]
       : null;
 
-  // Gamification capture hook (Story 15.11 Part B Phase 3)
-  // Hook invoked for side effects (captures gamification data in reducer)
-  useGamificationCapture(dispatch);
-
   // Answer submission hook (Story 15.11 Part B Phase 4)
   const { submitAnswer } = useAnswerSubmission({
     sessionId: state.sessionId,
@@ -189,10 +174,20 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
   // Story 15.11: Fetch session summary from backend when quiz completes
   // Backend provides pre-calculated metrics (accuracy, XP, leech detection)
-  const { summary: sessionSummary } = useSessionSummary(
-    state.phase === "COMPLETE" && state.sessionId ? state.sessionId : null,
-    true, // autoFetch when sessionId available
+  // Fetch summary when all questions are answered (phase returns to LOADING after last Next)
+  const { quizSessionSummary, isSummaryLoading } = useSessionSummary(
+    state.phase === "LOADING" && state.sessionId && state.questions.length > 0
+      ? state.sessionId
+      : null,
+    true,
   );
+
+  // Transition to RESULTS once summary is ready
+  useEffect(() => {
+    if (state.phase === "LOADING" && !isSummaryLoading && quizSessionSummary) {
+      dispatch({ type: "QUIZ/COMPLETE" });
+    }
+  }, [state.phase, isSummaryLoading, quizSessionSummary]);
 
   // ============================================================================
   // Actions
@@ -204,6 +199,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, []);
 
   const handleRetry = useCallback(() => {
+    sessionStarted.current = false;
     dispatch({ type: "QUIZ/RESET" });
     startSession();
   }, [startSession]);
@@ -218,9 +214,9 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
   const handleSubmitAnswer = useCallback(() => {
     if (state.answerValue.trim().length === 0) return;
-    handleAnswer(state.answerValue.trim().toLowerCase());
+    submitAnswer(state.answerValue.trim().toLowerCase());
     dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value: "" });
-  }, [state.answerValue, handleAnswer]);
+  }, [state.answerValue, submitAnswer]);
 
   const setAnswerValue = useCallback((value: string) => {
     dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value });
@@ -245,14 +241,10 @@ export function QuizProvider({ children }: QuizProviderProps) {
     answerValue: state.answerValue,
     showHint: state.showHint,
     aiFeedback: state.aiFeedback,
-    feedbackLoading: state.feedbackLoading,
-    totalXP: state.totalXP,
-    mysteryBox: state.mysteryBox,
-    newBadges: state.newBadges,
-    freezeAwarded: state.freezeAwarded,
-    sessionSummary: sessionSummary ?? state.sessionSummary,
+    sessionSummary: quizSessionSummary ?? state.sessionSummary,
+    summaryLoading: isSummaryLoading,
     expiresAt: state.expiresAt,
-    noDueWordsMessage: state.noDueWordsMessage,
+    isFreshCompletion: state.isFreshCompletion,
   };
 
   const actionsValue: QuizActionsContext = {

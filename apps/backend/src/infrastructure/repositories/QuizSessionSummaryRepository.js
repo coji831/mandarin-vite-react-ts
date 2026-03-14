@@ -32,8 +32,6 @@ export class QuizSessionSummaryRepository {
    * @param {boolean} data.mysteryBoxDrop - Whether mystery box was awarded
    * @param {string|null} data.mysteryBoxType - Mystery box type ('xp_boost' | 'freeze' | 'cosmetic')
    * @param {boolean} data.freezeAwarded - Whether freeze was awarded
-   * @param {string[]} data.leechWordIds - IDs of leech words (lapseCount >= 5)
-   * @param {Array} data.incorrectWords - Array of IncorrectWordDetail objects
    * @param {Date} data.expiresAt - Expiration timestamp (completedAt + 7 days)
    * @returns {Promise<object>} Created quiz session summary
    */
@@ -51,7 +49,6 @@ export class QuizSessionSummaryRepository {
       mysteryBoxDrop,
       mysteryBoxType,
       freezeAwarded,
-      leechWordIds,
       expiresAt,
     } = data;
 
@@ -69,7 +66,6 @@ export class QuizSessionSummaryRepository {
         mysteryBoxDrop,
         mysteryBoxType,
         freezeAwarded,
-        leechWordIds,
         expiresAt,
       },
     });
@@ -111,38 +107,5 @@ export class QuizSessionSummaryRepository {
     }
 
     return summary;
-  }
-
-  /**
-   * Delete expired summaries for a specific user
-   * Called on new quiz start to cleanup old results (7-day TTL)
-   * @param {string} userId - User ID
-   * @returns {Promise<number>} Number of deleted summaries
-   */
-  async deleteExpired(userId) {
-    const result = await prisma.quizSessionSummary.deleteMany({
-      where: {
-        userId,
-        expiresAt: {
-          lt: new Date(), // Expired (expiresAt < now)
-        },
-      },
-    });
-
-    return result.count;
-  }
-
-  /**
-   * Delete all summaries for a specific user
-   * Used for testing or account cleanup
-   * @param {string} userId - User ID
-   * @returns {Promise<number>} Number of deleted summaries
-   */
-  async deleteAllForUser(userId) {
-    const result = await prisma.quizSessionSummary.deleteMany({
-      where: { userId },
-    });
-
-    return result.count;
   }
 }

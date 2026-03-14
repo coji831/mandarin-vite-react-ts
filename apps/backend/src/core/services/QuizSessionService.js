@@ -26,8 +26,14 @@
  */
 
 import { QuizSession } from "../domain/entities/QuizSession.js";
-import { calculateAccuracy } from "../domain/constants/BusinessRules.js";
-import { getEndOfDay } from "../domain/constants/BusinessRules.js";
+import {
+  calculateAccuracy,
+  getEndOfDay,
+  RESULT_EXPIRATION_DAYS,
+  QUIZ_WORDS_DEFAULT,
+  PERFECT_ACCURACY,
+} from "../domain/constants/BusinessRules.js";
+import { createLogger } from "../../utils/logger.js";
 
 export class QuizSessionService {
   /**
@@ -59,6 +65,7 @@ export class QuizSessionService {
     this.streakService = streakService;
     this.summaryRepository = summaryRepository;
     this.answerRepository = answerRepository;
+    this.logger = createLogger("QuizSessionService");
   }
 
   // ============================================================================
@@ -71,103 +78,103 @@ export class QuizSessionService {
    *
    * @param {string} userId - User ID
    * @param {Date} [date] - Target date for due words (defaults to today)
-   * @param {number} [limit=10] - Maximum number of words to include
+   * @param {number} [limit] - Maximum number of words to include
    * @returns {Promise<object>} Created session with { sessionId, questions (without answers), expiresAt }
    */
-  async createSession(userId, date = new Date(), limit = 10) {
-    // Flow 5: Cleanup expired quiz session summaries on new quiz start (7-day TTL)
-    if (this.summaryRepository) {
+  async createSession(userId, date = new Date(), limit = QUIZ_WORDS_DEFAULT) {
+    // Single-session model: find the one existing session for this user (any status)
+    const existingSession = await this.sessionRepository.findLatestByUserId(userId);
+
+    if (existingSession) {
+      const now = new Date();
+
+      // Branch A: Active session still within 1-hour TTL → resume
+      if (existingSession.status === "ACTIVE" && now < new Date(existingSession.expiresAt)) {
+        const sessionEntity = new QuizSession(existingSession);
+
+        let answers = [];
+        if (this.answerRepository) {
+          const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
+          answers = dbAnswers.map((a) => ({
+            wordId: a.wordId,
+            questionType: a.question.questionType,
+            userAnswer: a.userAnswer,
+            correct: a.correct,
+            timestamp: a.answeredAt,
+            nextReviewDate: a.nextReviewDate?.toISOString() || null,
+            lapseCount: a.lapseCount,
+            isLeech: a.isLeech,
+          }));
+        }
+
+        return {
+          alreadyCompleted: false,
+          sessionId: sessionEntity.id,
+          questions: sessionEntity.getSanitizedQuestions(),
+          currentIndex: sessionEntity.currentIndex,
+          expiresAt: sessionEntity.expiresAt,
+          isResume: true,
+          answers,
+        };
+      }
+
+      // Branch B: Completed session still within daily window (expiresAt = midnight)
+      if (existingSession.status === "COMPLETE" && now < new Date(existingSession.expiresAt)) {
+        const summary = await this.getSessionSummary(existingSession.id, userId);
+
+        if (!summary) {
+          this.logger.warn("Summary not found for completed session", {
+            sessionId: existingSession.id,
+            userId,
+          });
+          return {
+            alreadyCompleted: true,
+            sessionId: existingSession.id,
+            summary: null,
+            expiresAt: existingSession.expiresAt,
+            questions: [],
+          };
+        }
+
+        return {
+          alreadyCompleted: true,
+          sessionId: existingSession.id,
+          summary,
+          expiresAt: existingSession.expiresAt,
+          questions: [],
+        };
+      }
+
+      // Previous session is expired or past daily window → delete it
+      // Cascade deletes: QuizSessionQuestion, QuizSessionAnswer, QuizSessionSummary
       try {
-        await this.summaryRepository.deleteExpired(userId);
+        await this.sessionRepository.deleteAllForUser(userId);
+        this.logger.info("Deleted previous session data for new quiz (single-session model)", {
+          userId,
+          previousStatus: existingSession.status,
+        });
       } catch (err) {
-        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-        logger.warn("Failed to cleanup expired summaries (non-critical)", {
+        this.logger.warn("Failed to delete previous session (proceeding anyway)", {
           error: err.message,
           userId,
         });
       }
     }
 
-    // Check for non-expired completed session (daily quiz limit)
-    const completedSession = await this.sessionRepository.findMostRecentCompleted(userId);
-    if (completedSession && new Date() < new Date(completedSession.expiresAt)) {
-      // User already completed quiz today, return summary instead
-      const summary = await this.getSessionSummary(completedSession.id, userId);
+    // Build word list (4-tier strategy — always produces words when vocabulary exists)
+    const dueWords = await this._buildWordList(userId, date, limit);
 
-      // Handle missing summary gracefully
-      if (!summary) {
-        logger.warn("Summary not found for completed session", {
-          sessionId: completedSession.id,
-          userId,
-        });
-        return {
-          alreadyCompleted: true,
-          sessionId: completedSession.id,
-          summary: null,
-          expiresAt: completedSession.expiresAt,
-          questions: [],
-        };
-      }
-
-      return {
-        alreadyCompleted: true,
-        sessionId: completedSession.id,
-        summary,
-        expiresAt: completedSession.expiresAt,
-        questions: [], // No new questions when already completed
-      };
-    }
-
-    // Check for existing active session
-    const existingSession = await this.sessionRepository.findActiveByUser(userId);
-    if (existingSession) {
-      // Return existing session (client can resume or abandon)
-      const sessionEntity = new QuizSession(existingSession);
-
-      // Load previous answers from QuizSessionAnswer table
-      let answers = [];
-      if (this.answerRepository) {
-        const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
-        answers = dbAnswers.map((a) => ({
-          wordId: a.wordId,
-          questionType: a.question.questionType,
-          userAnswer: a.userAnswer,
-          correct: a.correct,
-          timestamp: a.answeredAt,
-          nextReviewDate: a.nextReviewDate?.toISOString() || null,
-          lapseCount: a.lapseCount,
-          isLeech: a.isLeech,
-        }));
-      }
-
-      return {
-        alreadyCompleted: false,
-        sessionId: sessionEntity.id,
-        questions: sessionEntity.getSanitizedQuestions(),
-        currentIndex: sessionEntity.currentIndex,
-        expiresAt: sessionEntity.expiresAt,
-        isResume: true,
-        answers, // Include previous answers for resume
-      };
-    }
-
-    // Fetch due words from learning service
-    const dueWords = await this.learningService.getDueWords(userId, date, limit);
-
-    // Flow 1.2: No due words available (all caught up)
+    // Edge case: user has no vocabulary added yet (all 4 tiers empty)
     if (dueWords.length === 0) {
       return {
         alreadyCompleted: false,
         noDueWords: true,
-        sessionId: null,
         questions: [],
-        expiresAt: null,
-        isResume: false,
-        message: "You're all caught up! Come back later for more practice.",
+        message: "No vocabulary available for review. Add vocabulary to start practicing.",
       };
     }
 
-    // Generate interleaved questions (3 types per word, shuffled)
+    // Generate questions (1 random type per word)
     const questions = this._generateInterleavedQuestions(dueWords);
 
     // Create session (expires in 1 hour)
@@ -180,7 +187,6 @@ export class QuizSessionService {
       expiresAt,
     });
 
-    // Return sanitized questions (without correct answers)
     return {
       alreadyCompleted: false,
       sessionId: session.id,
@@ -207,34 +213,40 @@ export class QuizSessionService {
     if (!session) {
       const error = new Error("Session not found");
       error.statusCode = 404;
+      error.code = "SESSION_NOT_FOUND";
       throw error;
     }
 
     // Validate session status
     if (session.status !== "ACTIVE") {
-      throw new Error(`Session is ${session.status.toLowerCase()}`);
+      const statusError = new Error(`Session is ${session.status.toLowerCase()}`);
+      statusError.code = "INVALID_SESSION_STATUS";
+      throw statusError;
     }
 
     // Check expiration
     if (new Date() > new Date(session.expiresAt)) {
       await this.sessionRepository.update(sessionId, { status: "EXPIRED" });
-      throw new Error("Session expired");
+      const expiredError = new Error("Session expired");
+      expiredError.code = "SESSION_EXPIRED";
+      throw expiredError;
     }
 
     // Find question in session
     const question = session.questions.find((q) => q.id === questionId);
     if (!question) {
-      throw new Error("Question not found in session");
+      const notFoundError = new Error("Question not found in session");
+      notFoundError.code = "INVALID_QUESTION_ID";
+      throw notFoundError;
     }
 
     // Check if already answered (DB lookup via QuizSessionAnswer)
     if (this.answerRepository) {
-      const existingAnswer = await this.answerRepository.findBySessionAndQuestion(
-        sessionId,
-        questionId,
-      );
+      const existingAnswer = await this.answerRepository.findByQuestionId(questionId);
       if (existingAnswer) {
-        throw new Error("Question already answered");
+        const answeredError = new Error("Question already answered");
+        answeredError.code = "ALREADY_ANSWERED";
+        throw answeredError;
       }
     }
 
@@ -277,151 +289,20 @@ export class QuizSessionService {
       expiresAt: isComplete ? getEndOfDay() : undefined,
     });
 
-    // Generate AI feedback automatically for incorrect answers (Story 15.11 Phase 9)
-    // Non-blocking with 3-second timeout to avoid delaying quiz flow
-    let aiFeedback = null;
-    if (!isCorrect && this.aiFeedbackService) {
-      try {
-        const feedbackPromise = this.aiFeedbackService.generateFeedback({
-          wordId: question.wordId,
-          userAnswer,
-          correctAnswer: this._getCorrectAnswer(question),
-          questionType: question.questionType,
-        });
-
-        // Wait max 3 seconds for AI feedback (don't block response)
-        aiFeedback = await Promise.race([
-          feedbackPromise,
-          new Promise((resolve) => setTimeout(() => resolve(null), 3000)),
-        ]);
-      } catch (err) {
-        // AI feedback generation is non-critical - log and continue
-        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-        logger.warn("AI feedback generation failed (non-critical)", {
-          error: err.message,
-          wordId: question.wordId,
-        });
-      }
-    }
+    // Generate simple feedback for incorrect answers
+    // Uses _getCorrectAnswerForType — single source of truth for questionType → answer mapping
+    const aiFeedback =
+      !isCorrect && question.word
+        ? {
+            explanation: `the answer is ${this._getCorrectAnswerForType(question.word, question.questionType)}`,
+            errorType: "feedback",
+          }
+        : null;
 
     // Process gamification ONLY on session completion
-    let gamificationData = null;
-    if (isComplete) {
-      // Load all session answers from DB for completion calculations
-      const allAnswers = this.answerRepository
-        ? await this.answerRepository.findBySession(sessionId)
-        : [];
-
-      // Calculate session stats
-      const correctCount = allAnswers.filter((a) => a.correct).length;
-      const accuracyRate = (correctCount / session.questions.length) * 100;
-
-      // Get current streak
-      let currentStreak = 0;
-      if (this.streakService) {
-        try {
-          const streak = await this.streakService.getStreak(session.userId);
-          currentStreak = streak.currentStreak || 0;
-        } catch (err) {
-          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-          logger.warn("Failed to get current streak (non-critical)", {
-            error: err.message,
-            userId: session.userId,
-          });
-        }
-      }
-
-      // Calculate XP (base + streak bonus) for ALL correct answers
-      const xpEarned = this.gamificationService.calculateXP(correctCount, currentStreak);
-
-      // Check and award badges based on streak milestones
-      let newBadges = [];
-      try {
-        const longestStreak = currentStreak; // Use current as longest for now
-        newBadges = await this.gamificationService.checkAndAwardBadges(
-          session.userId,
-          longestStreak,
-        );
-      } catch (err) {
-        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-        logger.warn("Failed to award badges (non-critical)", {
-          error: err.message,
-          userId: session.userId,
-        });
-      }
-
-      // Roll mystery box (accuracy-based rates: 3%/5%/8%/10%)
-      const mysteryBox = this.gamificationService.checkMysteryBoxDrop(accuracyRate);
-
-      // Update streak (48h grace period, increment or reset)
-      // Story 15.11 Flow 2 Step 5e: Update Streak
-      if (this.streakService) {
-        try {
-          await this.streakService.updateStreak(session.userId);
-        } catch (err) {
-          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-          logger.warn("Failed to update streak (non-critical)", {
-            error: err.message,
-            userId: session.userId,
-          });
-        }
-      }
-
-      // Check freeze award (10 consecutive perfect sessions)
-      // Story 15.11 Flow 2 Step 5f: Check Freeze Award
-      let freezeAwarded = false;
-      if (accuracyRate === 100 && this.streakService) {
-        try {
-          freezeAwarded = await this.streakService.checkAndAwardFreeze(session.userId);
-        } catch (err) {
-          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-          logger.warn("Failed to check freeze award (non-critical)", {
-            error: err.message,
-            userId: session.userId,
-          });
-        }
-      }
-
-      gamificationData = {
-        xpEarned,
-        newBadges,
-        mysteryBox,
-        freezeAwarded,
-        currentStreak,
-      };
-
-      // Flow 5: Persist session summary to database (7-day TTL for review mistakes)
-      if (this.summaryRepository) {
-        try {
-          const completedAt = new Date();
-          const expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 7); // 7-day TTL
-
-          await this.summaryRepository.create({
-            userId: session.userId,
-            sessionId,
-            completedAt,
-            totalQuestions: session.questions.length,
-            correctCount,
-            incorrectCount: allAnswers.length - correctCount,
-            accuracyRate,
-            xpEarned,
-            newBadgeIds: newBadges.map((b) => b.id),
-            mysteryBoxDrop: !!mysteryBox,
-            mysteryBoxType: mysteryBox?.rewardType || null,
-            freezeAwarded,
-            expiresAt,
-            // incorrectWords and leechWordIds removed — derived from QuizSessionAnswer at query time
-          });
-        } catch (err) {
-          const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-          logger.warn("Failed to persist session summary (non-critical)", {
-            error: err.message,
-            sessionId,
-          });
-        }
-      }
-    }
+    const gamificationData = isComplete
+      ? await this._processSessionCompletion(sessionId, session)
+      : null;
 
     // Get next question (if any)
     const nextQuestion = !isComplete
@@ -431,20 +312,14 @@ export class QuizSessionService {
     // Return response with flat structure (aligned with type audit)
     return {
       correct: isCorrect,
-      correctAnswer: this._getCorrectAnswer(question),
+      correctAnswer: question.correctAnswer,
       // Flat progress properties (not nested in feedback object)
       nextReviewDate: progressUpdate.nextReviewDate,
       lapseCount: progressUpdate.lapseCount,
       isLeech: progressUpdate.isLeech,
       // Gamification (only if session complete)
       gamification: gamificationData,
-      // AI feedback (only if incorrect)
-      aiFeedback: aiFeedback
-        ? {
-            explanation: aiFeedback.explanation,
-            errorType: aiFeedback.errorType,
-          }
-        : null,
+      aiFeedback,
       nextQuestion,
       sessionComplete: isComplete,
       progress: {
@@ -466,6 +341,7 @@ export class QuizSessionService {
     if (!session) {
       const error = new Error("Session not found");
       error.statusCode = 404;
+      error.code = "SESSION_NOT_FOUND";
       throw error;
     }
 
@@ -500,14 +376,6 @@ export class QuizSessionService {
   }
 
   /**
-   * Get session summary with calculated statistics
-   * Story 15.11: Move business logic to backend - session metrics calculation
-   *
-   * @param {string} sessionId - Session ID
-   * @returns {Promise<object>} Session summary with accuracy, XP, leech words, etc.
-   * @throws {Error} If session not found
-   */
-  /**
    * Get session summary with gamification data
    * Story 15.11 Phase 8: Backend-calculated metrics with authorization
    *
@@ -522,38 +390,14 @@ export class QuizSessionService {
       try {
         const summary = await this.summaryRepository.findBySessionIdAndUserId(sessionId, userId);
         if (summary) {
-          // Fetch current streak and available freezes (dynamic data)
-          let currentStreak = 0;
-          let availableFreezes = 0;
-
-          if (this.streakService) {
-            try {
-              const streakData = await this.streakService.getStreak(userId);
-              currentStreak = streakData.currentStreak || 0;
-              availableFreezes = streakData.freezeCount || 0;
-            } catch (error) {
-              console.warn("[QuizSessionService] Failed to fetch streak data:", error.message);
-            }
-          }
+          const { currentStreak, availableFreezes } = await this._fetchStreakData(userId);
 
           // Load all per-answer rows from QuizSessionAnswer table
           const dbAnswers = this.answerRepository
             ? await this.answerRepository.findBySession(sessionId)
             : [];
 
-          const allAnswers = dbAnswers.map((a) => ({
-            wordId: a.wordId,
-            hanzi: a.question.hanzi,
-            pinyin: a.question.pinyin,
-            english: a.question.english,
-            questionType: a.question.questionType,
-            userAnswer: a.userAnswer,
-            correct: a.correct,
-            correctAnswer: a.question.correctAnswer,
-            lapseCount: a.lapseCount,
-            isLeech: a.isLeech,
-            nextReviewDate: a.nextReviewDate?.toISOString() || null,
-          }));
+          const allAnswers = dbAnswers.map((a) => this._mapAnswerRow(a));
 
           const incorrectWords = allAnswers.filter((a) => !a.correct);
           const leechWordIds = [
@@ -572,7 +416,10 @@ export class QuizSessionService {
             leechCount: leechWordIds.length,
             leechWordIds,
             xpEarned: summary.xpEarned,
-            newBadges: [],
+            newBadges:
+              summary.newBadgeIds?.length > 0
+                ? this.gamificationService.getBadgesByIds(summary.newBadgeIds)
+                : [],
             mysteryBox: summary.mysteryBoxDrop
               ? {
                   rewardType: summary.mysteryBoxType,
@@ -582,13 +429,13 @@ export class QuizSessionService {
               : null,
             currentStreak,
             availableFreezes,
+            freezeAwarded: summary.freezeAwarded,
             completedAt: summary.completedAt.toISOString(),
             expiresAt: summary.expiresAt.toISOString(),
           };
         }
       } catch (err) {
-        const logger = (await import("../../utils/logger.js")).createLogger("QuizSessionService");
-        logger.warn("Failed to read summary from database, falling back to recalculation", {
+        this.logger.warn("Failed to read summary from database, falling back to recalculation", {
           error: err.message,
           sessionId,
         });
@@ -605,47 +452,23 @@ export class QuizSessionService {
     if (!session) {
       const error = new Error("Session not found");
       error.statusCode = 404;
+      error.code = "SESSION_NOT_FOUND";
       throw error;
     }
 
-    // Fetch current streak and available freezes
-    let currentStreak = 0;
-    let availableFreezes = 0;
-
-    if (this.streakService) {
-      try {
-        const streakData = await this.streakService.getStreak(userId);
-        currentStreak = streakData.currentStreak || 0;
-        availableFreezes = streakData.freezeCount || 0;
-      } catch (error) {
-        console.warn("[QuizSessionService] Failed to fetch streak data:", error.message);
-      }
-    }
+    const { currentStreak, availableFreezes } = await this._fetchStreakData(userId);
 
     // Load answer rows (empty for sessions before migration)
     const dbAnswers = this.answerRepository
       ? await this.answerRepository.findBySession(sessionId)
       : [];
 
-    const allAnswers = dbAnswers.map((a) => ({
-      wordId: a.wordId,
-      hanzi: a.question.hanzi,
-      pinyin: a.question.pinyin,
-      english: a.question.english,
-      questionType: a.question.questionType,
-      userAnswer: a.userAnswer,
-      correct: a.correct,
-      correctAnswer: a.question.correctAnswer,
-      lapseCount: a.lapseCount,
-      isLeech: a.isLeech,
-      nextReviewDate: a.nextReviewDate?.toISOString() || null,
-    }));
+    const allAnswers = dbAnswers.map((a) => this._mapAnswerRow(a));
 
     const correctCount = allAnswers.filter((a) => a.correct).length;
     const incorrectCount = allAnswers.filter((a) => !a.correct).length;
     const totalQuestions = session.questions.length;
-    const accuracyRate =
-      totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 10000) / 100 : 0;
+    const accuracyRate = calculateAccuracy(correctCount, totalQuestions);
 
     const incorrectWords = allAnswers.filter((a) => !a.correct);
     const leechWordIds = [...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId))];
@@ -666,6 +489,7 @@ export class QuizSessionService {
       mysteryBox: null,
       currentStreak,
       availableFreezes,
+      freezeAwarded: false,
       completedAt: session.completedAt?.toISOString() || new Date().toISOString(),
       expiresAt: session.expiresAt?.toISOString() || new Date().toISOString(),
     };
@@ -676,11 +500,201 @@ export class QuizSessionService {
   // ============================================================================
 
   /**
-   * Generate interleaved questions (3 types per word, shuffled)
-   * Fisher-Yates shuffle per word for consistent randomization
+   * Map a QuizSessionAnswer DB row to the standard answer shape used across the service
+   * @private
+   * @param {object} a - Raw DB answer row with included question relation
+   * @returns {object} Normalized answer shape
+   */
+  _mapAnswerRow(a) {
+    return {
+      wordId: a.wordId,
+      hanzi: a.question.hanzi,
+      pinyin: a.question.pinyin,
+      english: a.question.english,
+      questionType: a.question.questionType,
+      userAnswer: a.userAnswer,
+      correct: a.correct,
+      correctAnswer: a.question.correctAnswer,
+      lapseCount: a.lapseCount,
+      isLeech: a.isLeech,
+      nextReviewDate: a.nextReviewDate?.toISOString() || null,
+    };
+  }
+
+  /**
+   * Fetch live streak data for a user; returns zero-defaults on failure or missing service
+   * @private
+   * @param {string} userId - User ID
+   * @returns {Promise<{ currentStreak: number, availableFreezes: number }>}
+   */
+  async _fetchStreakData(userId) {
+    if (!this.streakService) return { currentStreak: 0, availableFreezes: 0 };
+    try {
+      const streakData = await this.streakService.getStreak(userId);
+      return {
+        currentStreak: streakData.currentStreak || 0,
+        availableFreezes: streakData.freezeCount || 0,
+      };
+    } catch (err) {
+      this.logger.warn("Failed to fetch streak data", { error: err.message, userId });
+      return { currentStreak: 0, availableFreezes: 0 };
+    }
+  }
+
+  /**
+   * Process gamification pipeline on session completion:
+   * update streak → calculate XP (BusinessRules.calculateXP) → award badges →
+   * roll mystery box (BusinessRules.getMysteryBoxDropRate) → check freeze → persist summary
+   * @private
+   * @param {string} sessionId - Session ID
+   * @param {object} session   - Session data (questions, userId)
+   * @returns {Promise<object>} Gamification result for the response
+   */
+  async _processSessionCompletion(sessionId, session) {
+    const allAnswers = this.answerRepository
+      ? await this.answerRepository.findBySession(sessionId)
+      : [];
+
+    const correctCount = allAnswers.filter((a) => a.correct).length;
+    // calculateAccuracy from BusinessRules: (correctCount / total) * PERCENTAGE_MULTIPLIER
+    const accuracyRate = calculateAccuracy(correctCount, session.questions.length);
+
+    // Update streak FIRST — XP and badge calculations must use post-session streak values
+    let updatedStreak = { currentStreak: 0, longestStreak: 0 };
+    if (this.streakService) {
+      try {
+        const result = await this.streakService.updateStreak(session.userId);
+        updatedStreak = {
+          currentStreak: result.currentStreak || 0,
+          longestStreak: result.longestStreak || 0,
+        };
+      } catch (err) {
+        this.logger.warn("Failed to update streak (non-critical)", {
+          error: err.message,
+          userId: session.userId,
+        });
+      }
+    }
+
+    // calculateXP delegates to BusinessRules.calculateXP (base + streak bonus)
+    const xpEarned = this.gamificationService.calculateXP(
+      correctCount,
+      updatedStreak.currentStreak,
+    );
+
+    // Award badges using longestStreak (badges survive streak resets)
+    let newBadges = [];
+    try {
+      newBadges = await this.gamificationService.checkAndAwardBadges(
+        session.userId,
+        updatedStreak.longestStreak,
+      );
+    } catch (err) {
+      this.logger.warn("Failed to award badges (non-critical)", {
+        error: err.message,
+        userId: session.userId,
+      });
+    }
+
+    // checkMysteryBoxDrop uses BusinessRules.getMysteryBoxDropRate
+    const mysteryBox = this.gamificationService.checkMysteryBoxDrop(accuracyRate);
+
+    let freezeAwarded = false;
+    if (accuracyRate === PERFECT_ACCURACY && this.streakService) {
+      try {
+        freezeAwarded = await this.streakService.checkAndAwardFreeze(session.userId);
+      } catch (err) {
+        this.logger.warn("Failed to check freeze award (non-critical)", {
+          error: err.message,
+          userId: session.userId,
+        });
+      }
+    }
+
+    if (this.summaryRepository) {
+      try {
+        const completedAt = new Date();
+        const expiresAt = new Date();
+        // RESULT_EXPIRATION_DAYS from BusinessRules (default 7)
+        expiresAt.setDate(expiresAt.getDate() + RESULT_EXPIRATION_DAYS);
+
+        await this.summaryRepository.create({
+          userId: session.userId,
+          sessionId,
+          completedAt,
+          totalQuestions: session.questions.length,
+          correctCount,
+          incorrectCount: allAnswers.length - correctCount,
+          accuracyRate,
+          xpEarned,
+          newBadgeIds: newBadges.map((b) => b.id),
+          mysteryBoxDrop: !!mysteryBox,
+          mysteryBoxType: mysteryBox?.rewardType || null,
+          freezeAwarded,
+          expiresAt,
+        });
+      } catch (err) {
+        this.logger.warn("Failed to persist session summary (non-critical)", {
+          error: err.message,
+          sessionId,
+        });
+      }
+    }
+
+    return {
+      xpEarned,
+      newBadges,
+      mysteryBox,
+      freezeAwarded,
+      currentStreak: updatedStreak.currentStreak,
+    };
+  }
+
+  /**
+   * Build a quiz word list using 4-tier strategy (always produces words for a session)
+   *
+   * Tier 1: Scheduled due words (nextReview <= today)
+   * Tier 2: New unlearned words (fill remaining slots)
+   * Tier 3: Review fallback words (future due, for when nothing else is available)
+   *
+   * @private
+   * @param {string} userId - User ID
+   * @param {Date} date - Target date for due words
+   * @param {number} limit - Maximum words to return
+   * @returns {Promise<Array>} Enriched word list
+   */
+  async _buildWordList(userId, date, limit) {
+    const words = [];
+
+    // Tier 1: Scheduled due words
+    const dueWords = await this.learningService.getDueWordsOnly(userId, date, limit);
+    words.push(...dueWords);
+
+    // Tier 2: Fill with new unlearned words
+    if (words.length < limit) {
+      const newWords = await this.learningService.getNewWords(userId, limit - words.length);
+      words.push(...newWords);
+    }
+
+    // Tier 3: Fill with review fallback (words with future nextReview)
+    if (words.length < limit) {
+      const existingIds = new Set(words.map((w) => w.id));
+      const reviewWords = await this.learningService.getReviewFallbackWords(
+        userId,
+        limit - words.length,
+        existingIds,
+      );
+      words.push(...reviewWords);
+    }
+
+    return words;
+  }
+
+  /**
+   * Generate one random question type per word with shuffled multiple-choice options
    * @private
    * @param {Array} words - Due words array
-   * @returns {Array} Interleaved questions
+   * @returns {Array} Questions array
    */
   _generateInterleavedQuestions(words) {
     const questionTypes = ["multiple_choice", "type_pinyin", "type_character"];
@@ -690,31 +704,41 @@ export class QuizSessionService {
       const questionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
 
       // Generate MC options: 1 correct + 3 distractors from other words
+      // Filter out same-index and same-english to prevent duplicate options
       let options;
       if (questionType === "multiple_choice") {
-        const distractors = words
-          .filter((_, i) => i !== index)
-          .sort(() => Math.random() - 0.5)
+        const distractors = this._shuffle(
+          words.filter((w, i) => i !== index && w.english !== word.english),
+        )
           .slice(0, 3)
           .map((w) => w.english);
-        options = [...distractors, word.english].sort(() => Math.random() - 0.5);
+        options = this._shuffle([...distractors, word.english]);
       }
 
       return {
         id: `${word.id}_${questionType}`,
         wordId: word.id,
         questionType,
-        word: {
-          id: word.id,
-          simplified: word.simplified,
-          traditional: word.traditional,
-          pinyin: word.pinyin,
-          english: word.english,
-        },
+        word: word,
         correctAnswer: this._getCorrectAnswerForType(word, questionType),
         ...(options && { options }),
       };
     });
+  }
+
+  /**
+   * Fisher-Yates shuffle — unbiased, O(n) array shuffle
+   * @private
+   * @param {Array} array - Array to shuffle (not mutated)
+   * @returns {Array} New shuffled array
+   */
+  _shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   /**
@@ -735,16 +759,6 @@ export class QuizSessionService {
       default:
         throw new Error(`Unknown question type: ${questionType}`);
     }
-  }
-
-  /**
-   * Get correct answer from question object
-   * @private
-   * @param {object} question - Question object
-   * @returns {string} Correct answer
-   */
-  _getCorrectAnswer(question) {
-    return question.correctAnswer;
   }
 
   /**

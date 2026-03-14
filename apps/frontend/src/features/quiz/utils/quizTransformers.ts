@@ -7,11 +7,9 @@
  *
  * Functions:
  * - transformSessionToQuestions: Maps backend QuizSessionQuestion to frontend QuizQuestion
- * - transformApiBadgesToDomain: Maps API badge format to domain Badge with descriptions
  */
 
 import type { QuizSessionQuestion, QuizQuestion } from "../types";
-import type { Badge } from "../../gamification/types/GamificationTypes";
 
 // ============================================================================
 // Question Transformers
@@ -48,45 +46,6 @@ export function transformSessionToQuestions(questions: QuizSessionQuestion[]): Q
       pinyin: q.word.pinyin,
       english: q.word.english,
       options: q.options, // Present for multiple_choice questions
-    };
-  });
-}
-
-// ============================================================================
-// Gamification Transformers
-// ============================================================================
-
-/**
- * Transform API badge format to domain Badge format
- *
- * API badges contain streakRequired but no description or earnedDate.
- * Domain badges need full metadata for display in UI components.
- *
- * Validation:
- * - Throws error if required fields missing (id, name, streakRequired)
- * - Sets earnedDate to current time if provided from API, otherwise uses now()
- *
- * @param apiBadges Array of Badge from API response (minimal metadata)
- * @returns Array of Badge for domain layer (full metadata)
- * @throws Error if badge structure invalid
- */
-export function transformApiBadgesToDomain(apiBadges: Badge[]): Badge[] {
-  return apiBadges.map((apiBadge, idx) => {
-    // Validate required fields
-    if (!apiBadge.id || !apiBadge.name || apiBadge.streakRequired === undefined) {
-      throw new Error(
-        `Invalid badge structure at index ${idx}: missing required fields (id, name, streakRequired)`,
-      );
-    }
-
-    return {
-      id: apiBadge.id,
-      name: apiBadge.name,
-      description: `Maintain a ${apiBadge.streakRequired}-day streak`,
-      icon: apiBadge.icon,
-      streakRequired: apiBadge.streakRequired,
-      // Use API earnedDate if provided, otherwise assume just earned (now)
-      earnedDate: apiBadge.earnedDate ? new Date(apiBadge.earnedDate) : new Date(),
     };
   });
 }

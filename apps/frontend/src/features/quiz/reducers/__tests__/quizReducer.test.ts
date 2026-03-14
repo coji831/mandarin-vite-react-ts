@@ -114,48 +114,6 @@ describe("quizReducer", () => {
     expect(newState.answers[0]).toEqual(answer);
   });
 
-  it("updates answer metadata with backend response", () => {
-    const state: QuizState = {
-      phase: "ANSWER_FEEDBACK",
-      questions: [
-        {
-          wordId: "1",
-          word: "你好",
-          pinyin: "nǐhǎo",
-          english: "hello",
-          mode: "multiple_choice",
-          options: ["hello", "thank you", "goodbye", "yes"],
-        },
-      ],
-      currentIndex: 0,
-      answers: [
-        {
-          wordId: "1",
-          word: "你好",
-          pinyin: "nǐhǎo",
-          english: "hello",
-          questionType: "multiple_choice",
-          userAnswer: "hello",
-          correct: true,
-          timestamp: new Date(),
-        },
-      ],
-    };
-
-    const action: QuizAction = {
-      type: "QUIZ/UPDATE_ANSWER_METADATA",
-      wordId: "1",
-      nextReviewDate: "2026-02-21T10:00:00Z",
-      lapseCount: 0,
-    };
-    const newState = quizReducer(state, action);
-
-    expect(newState.answers[0].nextReviewDate).toBe("2026-02-21T10:00:00Z");
-    expect(newState.answers[0].lapseCount).toBe(0);
-    expect(newState.answers[0].word).toBe("你好");
-    expect(newState.answers[0].pinyin).toBe("nǐhǎo");
-  });
-
   it("advances to next question", () => {
     const state: QuizState = {
       phase: "ANSWER_FEEDBACK",
@@ -223,7 +181,7 @@ describe("quizReducer", () => {
     const action: QuizAction = { type: "QUIZ/NEXT_QUESTION" };
     const newState = quizReducer(state, action);
 
-    expect(newState.phase).toBe("COMPLETE");
+    expect(newState.phase).toBe("RESULTS");
     expect(newState.currentIndex).toBe(1);
   });
 
@@ -238,7 +196,7 @@ describe("quizReducer", () => {
     const action: QuizAction = { type: "QUIZ/COMPLETE" };
     const newState = quizReducer(state, action);
 
-    expect(newState.phase).toBe("COMPLETE");
+    expect(newState.phase).toBe("RESULTS");
   });
 
   it("returns unchanged state for unknown action", () => {
@@ -301,7 +259,7 @@ describe("quizReducer", () => {
 
     it("resets quiz with RESET_QUIZ action", () => {
       const state: QuizState = {
-        phase: "COMPLETE",
+        phase: "RESULTS",
         questions: [
           {
             wordId: "1",
@@ -343,7 +301,7 @@ describe("quizReducer", () => {
       const newState = quizReducer(state, action);
 
       // Should update phase but preserve error
-      expect(newState.phase).toBe("COMPLETE");
+      expect(newState.phase).toBe("RESULTS");
       expect(newState.error).toBe("Network error");
     });
   });

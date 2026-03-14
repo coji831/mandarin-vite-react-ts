@@ -53,24 +53,6 @@ export class QuizSession {
   }
 
   /**
-   * Advance to next question
-   * Business rule: Cannot advance past last question
-   */
-  advanceToNext() {
-    if (this.currentIndex < this.questions.length) {
-      this.currentIndex++;
-    }
-  }
-
-  /**
-   * Mark session as completed
-   */
-  markCompleted() {
-    this.status = "COMPLETED";
-    this.completedAt = new Date();
-  }
-
-  /**
    * Sanitize questions for client response (Security)
    *
    * Business rules:

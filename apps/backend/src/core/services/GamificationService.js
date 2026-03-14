@@ -4,6 +4,8 @@
  * Story 15.3: Streak & Gamification Backend APIs
  */
 
+import { calculateXP as calcXP, getMysteryBoxDropRate } from "../domain/constants/BusinessRules.js";
+
 /**
  * Badge milestone definitions
  * Awards based on longestStreak (not currentStreak) to prevent badge loss on streak reset
@@ -107,38 +109,25 @@ export class GamificationService {
 
   /**
    * Calculate XP earned for quiz session
-   * Formula: base XP (correctCount * 10) + streak bonus (correctCount * 5 if streak >= 7)
+   * Delegates to BusinessRules.calculateXP for single source of truth
    *
    * @param {number} correctCount - Number of correct answers in session
    * @param {number} currentStreak - User's current streak value
    * @returns {number} Total XP earned
    */
   calculateXP(correctCount, currentStreak) {
-    const baseXP = correctCount * 10;
-    const streakBonus = currentStreak >= 7 ? correctCount * 5 : 0;
-    return baseXP + streakBonus;
+    return calcXP(correctCount, currentStreak);
   }
 
   /**
    * Check if mystery box should drop based on accuracy-based rates
-   * Drop rates: <50%=3%, 50-79%=5%, 80-94%=8%, 95-100%=10%
-   * Rolls on EVERY quiz completion (not milestone-based)
+   * Delegates to BusinessRules.getMysteryBoxDropRate for single source of truth
    *
    * @param {number} accuracyRate - Quiz accuracy (0-100)
    * @returns {object|null} Reward object or null if no drop
    */
   checkMysteryBoxDrop(accuracyRate) {
-    // Get drop rate based on accuracy
-    let dropRate;
-    if (accuracyRate >= 95) {
-      dropRate = 0.1; // 95-100%: 10% chance
-    } else if (accuracyRate >= 80) {
-      dropRate = 0.08; // 80-94%: 8% chance
-    } else if (accuracyRate >= 50) {
-      dropRate = 0.05; // 50-79%: 5% chance
-    } else {
-      dropRate = 0.03; // <50%: 3% chance
-    }
+    const dropRate = getMysteryBoxDropRate(accuracyRate);
 
     // Roll for drop
     const roll = Math.random();
@@ -153,6 +142,15 @@ export class GamificationService {
     }
 
     return null; // No drop this time
+  }
+
+  /**
+   * Get badge objects by their IDs (for reconstructing newBadges in session summary)
+   * @param {string[]} badgeIds - Array of badge IDs
+   * @returns {array} Badge objects matching the given IDs
+   */
+  getBadgesByIds(badgeIds) {
+    return BADGE_MILESTONES.filter((badge) => badgeIds.includes(badge.id));
   }
 
   /**

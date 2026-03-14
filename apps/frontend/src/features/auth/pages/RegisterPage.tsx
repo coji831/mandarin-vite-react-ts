@@ -4,14 +4,13 @@
 
 import { useNavigate } from "react-router-dom";
 import { RegisterForm } from "../components/RegisterForm";
-import { learn_page } from "../../../constants/paths";
+import { dashboard_page } from "../../../constants/paths";
 
 export function RegisterPage() {
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    // Redirect to learn page after successful registration
-    navigate(learn_page);
+    navigate(dashboard_page);
   };
 
   const handleSwitchToLogin = () => {

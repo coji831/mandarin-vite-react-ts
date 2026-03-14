@@ -18,7 +18,7 @@ import "./MysteryBoxModal.css";
 export { MysteryBoxModal };
 
 type MysteryBoxModalProps = {
-  mysteryBox: MysteryBox | null | undefined;
+  mysteryBox?: MysteryBox;
   isOpen: boolean;
   onClose: () => void;
 };

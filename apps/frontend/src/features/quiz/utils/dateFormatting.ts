@@ -57,3 +57,12 @@ export function formatRelativeTime(date: Date | string): string {
     year: "numeric",
   });
 }
+
+/**
+ * Format a nullable ISO date string as relative time, with "N/A" fallback.
+ * Used in ResultsTable to display next review dates.
+ */
+export function formatNextReviewDate(isoDate?: string | null): string {
+  if (!isoDate) return "N/A";
+  return formatRelativeTime(isoDate);
+}

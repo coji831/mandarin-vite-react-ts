@@ -19,7 +19,7 @@
 export { QuestionSection, AnswerSection, FeedbackSection } from "./exams";
 
 // State screens (simple full-screen states)
-export { LoadingScreen, ErrorScreen, EmptyStateScreen } from "./states";
+export { LoadingScreen, ErrorScreen } from "./states";
 
 // Layout orchestrators (complex phase coordinators)
 export { ExamLayout, ResultsLayout } from "./layouts";

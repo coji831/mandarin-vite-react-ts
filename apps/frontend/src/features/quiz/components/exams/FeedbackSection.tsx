@@ -15,7 +15,6 @@ import "./FeedbackSection.css";
 
 type FeedbackSectionProps = {
   isCorrect: boolean;
-  feedbackLoading: boolean;
   aiFeedback: string | null;
   userAnswer: string;
   correctAnswer: string;
@@ -24,7 +23,6 @@ type FeedbackSectionProps = {
 
 export function FeedbackSection({
   isCorrect,
-  feedbackLoading,
   aiFeedback,
   userAnswer,
   correctAnswer,
@@ -42,8 +40,8 @@ export function FeedbackSection({
             {isCorrect ? "✓ Correct!" : "✗ Incorrect"}
           </p>
 
-          {/* Story 15.10 AC #11: Answer comparison for incorrect answers */}
-          {!isCorrect && userAnswer && correctAnswer && feedbackLoading && (
+          {/* Answer comparison for incorrect answers (hidden when AI feedback is available) */}
+          {!isCorrect && userAnswer && correctAnswer && !aiFeedback && (
             <div className="answerComparison flex-center text-center">
               <span className="userAnswerWrong">
                 <del>{userAnswer}</del>
@@ -56,10 +54,7 @@ export function FeedbackSection({
           {/* AI-generated feedback for incorrect answers */}
           {!isCorrect && (
             <div className="aiFeedbackSection w-full flex-col-center">
-              {feedbackLoading && (
-                <p className="aiFeedbackLoading animate-pulse">💭 Generating feedback...</p>
-              )}
-              {aiFeedback && !feedbackLoading && (
+              {aiFeedback && (
                 <div className="aiFeedbackBox">
                   <p className="aiFeedbackLabel">💡 Tip:</p>
                   <p className="aiFeedbackText">{aiFeedback}</p>
@@ -71,7 +66,7 @@ export function FeedbackSection({
       </div>
 
       <div className="answerActionBar">
-        <Button variant="primary" onClick={onNext} loading={feedbackLoading}>
+        <Button variant="primary" onClick={onNext}>
           Next →
         </Button>
       </div>

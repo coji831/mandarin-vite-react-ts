@@ -134,30 +134,34 @@ export class QuizSessionRepository {
   }
 
   /**
-   * Find most recent completed quiz session for user
-   * Used for daily quiz status check (one quiz per day until midnight expiration)
+   * Find the most recent session for a user regardless of status
+   * Used for the "single-session model" — check existing session before creating new
    * @param {string} userId - User ID
-   * @returns {Promise<object|null>} Most recent completed session or null
+   * @returns {Promise<object|null>} Most recent session or null
    */
-  async findMostRecentCompleted(userId) {
+  async findLatestByUserId(userId) {
     const session = await prisma.quizSession.findFirst({
-      where: {
-        userId,
-        status: "COMPLETED",
-      },
-      orderBy: {
-        completedAt: "desc",
-      },
+      where: { userId },
+      orderBy: { startedAt: "desc" },
       include: {
         questions: { orderBy: { questionIndex: "asc" } },
       },
     });
 
-    if (!session) {
-      return null;
-    }
+    return session ? this._mapSession(session) : null;
+  }
 
-    return this._mapSession(session);
+  /**
+   * Delete all sessions for a user (cascades: questions, answers, summary)
+   * Used on new quiz start to enforce single-session model
+   * @param {string} userId - User ID
+   * @returns {Promise<number>} Number of deleted sessions
+   */
+  async deleteAllForUser(userId) {
+    const result = await prisma.quizSession.deleteMany({
+      where: { userId },
+    });
+    return result.count;
   }
 
   /**
@@ -196,72 +200,6 @@ export class QuizSessionRepository {
     });
 
     return this._mapSession(session);
-  }
-
-  /**
-   * Mark expired sessions as EXPIRED
-   * Called periodically (e.g., via cron job or lazy cleanup)
-   * @returns {Promise<number>} Number of sessions expired
-   */
-  async expireOldSessions() {
-    const result = await prisma.quizSession.updateMany({
-      where: {
-        status: "ACTIVE",
-        expiresAt: {
-          lt: new Date(),
-        },
-      },
-      data: {
-        status: "EXPIRED",
-      },
-    });
-
-    return result.count;
-  }
-
-  /**
-   * Delete old completed/expired sessions (cleanup)
-   * Story 15.11 Phase 8: Prevent session table bloat
-   * @param {number} daysOld - Delete sessions older than this many days
-   * @returns {Promise<number>} Number of sessions deleted
-   */
-  async deleteOldSessions(daysOld = 7) {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
-
-    const result = await prisma.quizSession.deleteMany({
-      where: {
-        status: {
-          in: ["COMPLETE", "EXPIRED"],
-        },
-        startedAt: {
-          lt: cutoffDate,
-        },
-      },
-    });
-
-    return result.count;
-  }
-
-  /**
-   * Get session statistics for a user (analytics)
-   * @param {string} userId - User ID
-   * @returns {Promise<object>} Session statistics
-   */
-  async getSessionStats(userId) {
-    const [total, completed, expired, active] = await Promise.all([
-      prisma.quizSession.count({ where: { userId } }),
-      prisma.quizSession.count({ where: { userId, status: "COMPLETE" } }),
-      prisma.quizSession.count({ where: { userId, status: "EXPIRED" } }),
-      prisma.quizSession.count({ where: { userId, status: "ACTIVE" } }),
-    ]);
-
-    return {
-      total,
-      completed,
-      expired,
-      active,
-    };
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────

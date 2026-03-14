@@ -63,6 +63,33 @@ export const PERCENTAGE_MULTIPLIER = 100;
 export const STREAK_GRACE_PERIOD_HOURS = 48;
 
 /**
+ * Quiz session word count limits
+ * Bounds and default for the ?limit= query parameter on session start
+ */
+export const QUIZ_WORDS_DEFAULT = 5;
+export const QUIZ_WORDS_MIN = 1;
+export const QUIZ_WORDS_MAX = 50;
+
+/**
+ * Spaced repetition (SRS) algorithm constants
+ * Exponential backoff: correct → double interval (capped), incorrect → reset to 1 day
+ */
+export const SRS_MAX_INTERVAL_DAYS = 365;
+export const SRS_LAPSE_RESET_DAYS = 1;
+
+/**
+ * Ratio of new (unseen) words injected into a quiz session via the 70/30 strategy
+ * 30% new words, 70% scheduled reviews
+ */
+export const NEW_WORDS_RATIO = 0.3;
+
+/**
+ * Accuracy threshold (%) that qualifies as a perfect quiz
+ * Used to gate streak-freeze awards
+ */
+export const PERFECT_ACCURACY = 100;
+
+/**
  * Helper function to check if a lapse count indicates a leech word
  * @param {number} lapseCount - Number of incorrect attempts
  * @returns {boolean} True if word is a leech

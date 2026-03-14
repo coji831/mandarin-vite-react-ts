@@ -8,21 +8,21 @@
  * Includes conditional styling for incorrect answers and leech warnings.
  */
 
-import { QuizAnswer } from "../../types";
+import { SessionAnswerDetail } from "../../types/QuizSessionTypes";
+import { formatNextReviewDate } from "../../utils/dateFormatting";
 import "./ResultsTable.css";
 
 type ResultsTableProps = {
-  answers: QuizAnswer[];
-  formatDate: (isoDate?: string) => string;
+  answers: SessionAnswerDetail[];
 };
 
-export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
-  const getExpectedAnswer = (answer: QuizAnswer): string => {
+export function ResultsTable({ answers }: ResultsTableProps) {
+  const getExpectedAnswer = (answer: SessionAnswerDetail): string => {
     switch (answer.questionType) {
       case "type_pinyin":
         return answer.pinyin || "?";
       case "type_character":
-        return answer.word || "?";
+        return answer.hanzi || "?";
       case "multiple_choice":
         return answer.english || "?";
       default:
@@ -57,7 +57,7 @@ export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
                   className={`resultsRow resultsTableBodyRow ${!answer.correct ? "incorrect" : ""}`}
                 >
                   <td className="wordCell">
-                    {answer.word || answer.wordId} ({answer.pinyin || "?"})
+                    {answer.hanzi || answer.wordId} ({answer.pinyin || "?"})
                     <br />
                     <span className="wordEnglish">{answer.english || ""}</span>
                   </td>
@@ -65,7 +65,7 @@ export function ResultsTable({ answers, formatDate }: ResultsTableProps) {
                     <div className="userAnswerText">{answer.userAnswer}</div>
                     {!answer.correct && <div className="correctAnswerHint">→ {expectedAnswer}</div>}
                   </td>
-                  <td className="nextReviewCell">{formatDate(answer.nextReviewDate)}</td>
+                  <td className="nextReviewCell">{formatNextReviewDate(answer.nextReviewDate)}</td>
                   <td
                     className={`lapseCountCell ${isLeech ? "leechWarning" : ""}`}
                     title="Times missed in a row"

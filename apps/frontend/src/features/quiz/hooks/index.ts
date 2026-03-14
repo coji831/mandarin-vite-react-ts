@@ -5,8 +5,6 @@
  * Story 15.11: Added Session Summary hook
  */
 
-export { useGenerateFeedback } from "./useAIFeedback";
 export { useSessionSummary } from "./useSessionSummary";
 
-export type { FeedbackRequest, FeedbackResponse } from "./useAIFeedback";
 export type { UseSessionSummaryReturn } from "./useSessionSummary";

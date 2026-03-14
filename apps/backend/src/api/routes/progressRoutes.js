@@ -5,42 +5,12 @@
  */
 
 import express from "express";
-import { ProgressController } from "../controllers/progressController.js";
-import { GamificationController } from "../controllers/GamificationController.js";
-import { ProgressService } from "../../core/services/ProgressService.js";
-import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
-import { QuizSessionAnswerRepository } from "../../infrastructure/repositories/QuizSessionAnswerRepository.js";
-import { VocabularyRepository } from "../../infrastructure/repositories/VocabularyRepository.js";
-import { StreakService } from "../../core/services/StreakService.js";
-import { GamificationService } from "../../core/services/GamificationService.js";
-import { StreakRepository } from "../../infrastructure/repositories/StreakRepository.js";
-import { BadgeRepository } from "../../infrastructure/repositories/BadgeRepository.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { progressController, gamificationController } from "../../container.js";
 
 const router = express.Router();
-
-// Initialize dependencies with proper injection
-// Story 15.3: Inject StreakService and GamificationService for gamification features
-// Story 15.11 Phase 8: ProgressService simplified - only handles basic progress CRUD
-const progressRepository = new ProgressRepository();
-const quizSessionAnswerRepository = new QuizSessionAnswerRepository();
-const streakRepository = new StreakRepository();
-const badgeRepository = new BadgeRepository();
-
-const progressService = new ProgressService(progressRepository);
-const streakService = new StreakService(streakRepository, quizSessionAnswerRepository);
-const gamificationService = new GamificationService(badgeRepository, streakRepository);
-
-const progressController = new ProgressController(
-  progressService,
-  streakService,
-  gamificationService,
-);
-
-// Story 15.3: Instantiate GamificationController for streak routes
-const gamificationController = new GamificationController(streakService, gamificationService);
 
 // All progress routes require authentication
 // Note: These are relative paths - main app mounts them under /api

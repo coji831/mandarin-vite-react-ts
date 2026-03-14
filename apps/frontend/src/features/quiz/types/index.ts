@@ -5,7 +5,6 @@
 
 // Modern Quiz Session API types
 export type {
-  MysteryBox,
   QuizSessionQuestion,
   QuizSessionStartResponse,
   QuizAnswerRequest,
@@ -13,7 +12,10 @@ export type {
   IncorrectWordDetail,
   LeechWordDetail,
   QuizSessionSummary,
+  SessionAnswerDetail,
 } from "./QuizSessionTypes";
+
+export type { MysteryBox } from "../../gamification/types/GamificationTypes";
 
 // UI component types
 export type { QuestionMode, QuizQuestion, QuizAnswer } from "./QuizTypes";

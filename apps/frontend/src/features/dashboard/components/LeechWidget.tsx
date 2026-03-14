@@ -67,7 +67,7 @@ function LeechWidget() {
   };
 
   const handleReviewClick = () => {
-    navigate("/quiz/daily-review");
+    navigate("/learn/quiz");
   };
 
   // Business Rule: Only show if 3+ leeches

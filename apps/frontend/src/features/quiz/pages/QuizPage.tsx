@@ -8,7 +8,7 @@
  *
  * Manages quiz session lifecycle:
  * - Wraps quiz in QuizProvider context
- * - Routes between phases: LOADING → QUESTION/ANSWER_FEEDBACK → COMPLETE/ERROR
+ * - Routes between phases: LOADING → QUESTION/ANSWER_FEEDBACK → RESULTS/ERROR
  * - Pure phase routing based on quiz state
  * - All business logic delegated to QuizContext
  *
@@ -17,18 +17,11 @@
  * - ERROR: Shows error screen with retry option
  * - QUESTION: Shows exam layout with question + answer section
  * - ANSWER_FEEDBACK: Shows feedback section with AI explanation
- * - COMPLETE: Shows results layout with stats, badges, XP
- * - DAILY_COMPLETE: Shows previous results when quiz already completed today
+ * - RESULTS: Shows results layout with stats, badges, XP and countdown timer
  */
 
 import { QuizProvider, useQuizState, useQuizActions } from "../contexts";
-import {
-  ExamLayout,
-  ResultsLayout,
-  ErrorScreen,
-  LoadingScreen,
-  EmptyStateScreen,
-} from "../components";
+import { ExamLayout, ResultsLayout, ErrorScreen, LoadingScreen } from "../components";
 import "./QuizPage.css";
 
 export function QuizPage() {
@@ -44,7 +37,7 @@ export function QuizPage() {
 }
 
 function QuizRouter() {
-  const { phase, error, sessionSummary, expiresAt, noDueWordsMessage } = useQuizState();
+  const { phase, error } = useQuizState();
   const { handleRetry } = useQuizActions();
 
   switch (phase) {
@@ -58,15 +51,7 @@ function QuizRouter() {
     case "ANSWER_FEEDBACK":
       return <ExamLayout />;
 
-    case "DAILY_COMPLETE":
-      return (
-        <ResultsLayout isDailyComplete={true} summary={sessionSummary} expiresAt={expiresAt} />
-      );
-
-    case "NO_DUE_WORDS":
-      return <EmptyStateScreen message={noDueWordsMessage} />;
-
-    case "COMPLETE":
+    case "RESULTS":
       return <ResultsLayout />;
 
     default:

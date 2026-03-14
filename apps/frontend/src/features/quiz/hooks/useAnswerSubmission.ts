@@ -8,7 +8,6 @@
  * Responsibilities:
  * - Submit answer to backend quiz session
  * - Update quiz state with answer result
- * - Capture gamification rewards (via useGamificationCapture)
  * - Handle AI feedback from backend
  * - Error handling for submission failures
  *
@@ -19,7 +18,6 @@
 
 import { useCallback, MutableRefObject } from "react";
 import { quizApi } from "../services/quizService";
-import { useGamificationCapture } from "./useGamificationCapture";
 import type { QuizAction } from "../reducers/quizReducer";
 import type { QuizQuestion } from "../types";
 
@@ -42,11 +40,9 @@ interface UseAnswerSubmissionParams {
  * Hook for orchestrating quiz answer submission
  *
  * Encapsulates the full submission flow:
- * 1. Clear previous feedback state
- * 2. Submit answer to backend session
- * 3. Dispatch answer result to state
- * 4. Capture gamification rewards
- * 5. Handle AI feedback from backend
+ * 1. Submit answer to backend session
+ * 2. Dispatch answer result to state
+ * 3. Handle AI feedback from backend
  *
  * @param params Session ID, current question, question start time ref, dispatch
  * @returns Object with submitAnswer method
@@ -57,9 +53,6 @@ export function useAnswerSubmission({
   questionStartTime,
   dispatch,
 }: UseAnswerSubmissionParams) {
-  // Use gamification capture hook for processing rewards
-  const { captureGamificationData } = useGamificationCapture(dispatch);
-
   /**
    * Submit user answer to backend session for validation
    *
@@ -87,10 +80,6 @@ export function useAnswerSubmission({
 
       const timeSpentMs = Date.now() - questionStartTime.current;
 
-      // Clear previous AI feedback state (Story 15.11 Phase 9)
-      dispatch({ type: "QUIZ/SET_AI_FEEDBACK", feedback: null });
-      dispatch({ type: "QUIZ/SET_FEEDBACK_LOADING", loading: false });
-
       try {
         // Submit answer to backend session for validation
         const result = await quizApi.submitAnswer(sessionId, {
@@ -111,14 +100,12 @@ export function useAnswerSubmission({
             userAnswer,
             correct: result.correct,
             timestamp: new Date(),
-            nextReviewDate: result.nextReviewDate, // ISO 8601 datetime (backend property name)
-            lapseCount: result.lapseCount, // Flat property (type audit aligned)
-            correctAnswer: result.correctAnswer, // For feedback display in ExamLayout
+            nextReviewDate: result.nextReviewDate,
+            lapseCount: result.lapseCount,
+            isLeech: result.isLeech,
+            correctAnswer: result.correctAnswer,
           },
         });
-
-        // Capture gamification data (XP, badges, mystery box, freeze)
-        captureGamificationData(result);
 
         // Story 15.11 Phase 9: AI feedback comes from backend automatically
         // Backend auto-generates feedback for incorrect answers with 3-second timeout
@@ -131,7 +118,7 @@ export function useAnswerSubmission({
         dispatch({ type: "QUIZ/SET_ERROR", error: errorMessage });
       }
     },
-    [sessionId, currentQuestion, questionStartTime, dispatch, captureGamificationData],
+    [sessionId, currentQuestion, questionStartTime, dispatch],
   );
 
   return {

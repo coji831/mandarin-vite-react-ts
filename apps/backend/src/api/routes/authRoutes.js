@@ -5,23 +5,12 @@
 
 import express from "express";
 import { rateLimit } from "express-rate-limit";
-import AuthController from "../controllers/authController.js";
-import { AuthService } from "../../core/services/AuthService.js";
-import { AuthRepository } from "../../infrastructure/repositories/AuthRepository.js";
-import { JwtService } from "../../infrastructure/security/JwtService.js";
-import { PasswordService } from "../../infrastructure/security/PasswordService.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { authController } from "../../container.js";
 
 const router = express.Router();
-
-// Initialize dependencies
-const authRepository = new AuthRepository();
-const jwtService = new JwtService();
-const passwordService = new PasswordService();
-const authService = new AuthService(authRepository, jwtService, passwordService);
-const authController = new AuthController(authService);
 
 // Rate limiter for auth endpoints (prevent brute force attacks)
 const authLimiter = rateLimit({

@@ -17,8 +17,8 @@ import { quizApi } from "../services/quizService";
 import type { QuizSessionSummary } from "../types";
 
 export type UseSessionSummaryReturn = {
-  summary: QuizSessionSummary | null;
-  isLoading: boolean;
+  quizSessionSummary: QuizSessionSummary | null;
+  isSummaryLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
 };
@@ -32,16 +32,16 @@ export type UseSessionSummaryReturn = {
  *
  * @example
  * ```tsx
- * const { summary, isLoading, error } = useSessionSummary(sessionId);
+ * const { quizSessionSummary, isSummaryLoading, error } = useSessionSummary(sessionId);
  *
- * if (isLoading) return <Spinner />;
+ * if (isSummaryLoading) return <Spinner />;
  * if (error) return <ErrorMessage error={error} />;
  *
  * return (
  *   <div>
- *     <p>Accuracy: {summary.accuracyRate}%</p>
- *     <p>Total XP: {summary.totalXP}</p>
- *     <p>Leech Words: {summary.leechCount}</p>
+ *     <p>Accuracy: {quizSessionSummary.accuracyRate}%</p>
+ *     <p>Total XP: {quizSessionSummary.totalXP}</p>
+ *     <p>Leech Words: {quizSessionSummary.leechCount}</p>
  *   </div>
  * );
  * ```
@@ -50,8 +50,8 @@ export function useSessionSummary(
   sessionId: string | null,
   autoFetch: boolean = true,
 ): UseSessionSummaryReturn {
-  const [summary, setSummary] = useState<QuizSessionSummary | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [quizSessionSummary, setSummary] = useState<QuizSessionSummary | null>(null);
+  const [isSummaryLoading, setIsSummaryLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchSummary = useCallback(async () => {
@@ -60,7 +60,7 @@ export function useSessionSummary(
       return;
     }
 
-    setIsLoading(true);
+    setIsSummaryLoading(true);
     setError(null);
 
     try {
@@ -71,7 +71,7 @@ export function useSessionSummary(
       setError(error);
       console.error("[useSessionSummary] Error fetching summary:", error);
     } finally {
-      setIsLoading(false);
+      setIsSummaryLoading(false);
     }
   }, [sessionId]);
 
@@ -82,8 +82,8 @@ export function useSessionSummary(
   }, [autoFetch, sessionId, fetchSummary]);
 
   return {
-    summary,
-    isLoading,
+    quizSessionSummary,
+    isSummaryLoading,
     error,
     refetch: fetchSummary,
   };

@@ -1,3 +1,7 @@
+// TODO(A7): Move conversation domain utilities to core/domain/ or infrastructure/external/.
+// This file contains domain logic (conversation response shaping) placed in a generic utils/ folder.
+// Blocked by: need to audit all callers (ConversationController, ConversationService).
+
 /**
  * Create conversation response metadata
  * @param {Object} conversation - Conversation object
