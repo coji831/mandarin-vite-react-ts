@@ -68,7 +68,6 @@ const mockBadgeResponse: BadgeResponse = {
 
 const mockFreezeResponse: FreezeResponse = {
   message: "Freeze spent successfully",
-  currentStreak: 7,
   freezeCount: 2,
   lastActivityDate: "2026-02-14T08:00:00.000Z",
 };
@@ -339,7 +338,6 @@ describe("useSpendFreeze", () => {
 
     expect(data).toEqual(mockFreezeResponse);
     expect(data.message).toBe("Freeze spent successfully");
-    expect(data.currentStreak).toBe(7);
     expect(data.freezeCount).toBe(2);
     expect(result.current.error).toBe(null);
   });

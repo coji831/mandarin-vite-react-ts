@@ -15,8 +15,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import MockAdapter from "axios-mock-adapter";
-import { apiClient } from "../services/axiosClient";
-import { Dashboard } from "./Dashboard";
+import { apiClient } from "../../services/axiosClient";
+import { Dashboard } from "../Dashboard";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 // ============================================================================
@@ -328,7 +328,7 @@ describe("Dashboard Integration", () => {
   it("should integrate with LeechWidget", async () => {
     mock.onGet(ROUTE_PATTERNS.progressStreak).reply(200, mockStreakResponse);
     mock.onGet(ROUTE_PATTERNS.gamificationBadges).reply(200, mockBadgeResponse);
-    mock.onGet(ROUTE_PATTERNS.progressLeeches).reply(200, {
+    mock.onGet(ROUTE_PATTERNS.learningLeeches).reply(200, {
       count: 5,
       leeches: [
         {

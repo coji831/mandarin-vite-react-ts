@@ -7,17 +7,17 @@
 **Key Points:**
 
 - Quiz state machine with Fisher-Yates interleaving per word (randomized question types for contextual interference)
-- REST API layer: `GET /api/progress/due`, `POST /api/progress/test-result`, `GET /api/progress/streak`, `POST /api/quiz/feedback`
-- PostgreSQL schema extensions: `study_streaks` table, `quiz_results` audit table, `progress.lapseCount` column
+- REST API layer: `POST /api/v1/quiz/session/start`, `POST /api/v1/quiz/session/:sessionId/answer`, `GET /api/v1/quiz/session/:sessionId/summary`; supplementary: `GET /api/v1/learning/due`, `POST /api/v1/learning/result`
+- PostgreSQL schema extensions: `study_streaks` table, `QuizSession`/`QuizSessionAnswer`/`QuizSessionSummary` tables, `progress.lapseCount` column
 - Exponential backoff spaced repetition (Story 15.11: quiz correct doubles interval, incorrect resets to 1 day, max 365 days)
 - Gemini API integration with Redis cache layer (24h TTL, ~70% hit rate) for error feedback generation
-- React components: `DailyReviewTest` container, `QuizCard`, `ToneInput` (numeric notation support), `AIFeedbackPanel`
+- React components: `QuizPage` container, `QuestionSection`, `PinyinToneInput`/`ChineseCharacterInput` (numeric tone notation), `AIFeedbackPanel`
 - Leech detection algorithm: flag words after 5 consecutive failures (`lapseCount >= 5`)
 - Backward compatibility layer ensures flashcard/quiz coexistence without algorithm conflicts
 
 **Status:** In Progress
 
-**Last Update:** February 17, 2026
+**Last Update:** March 15, 2026
 
 ## Technical Overview
 
@@ -26,49 +26,29 @@ This epic implements a quiz-based retention system using active recall methodolo
 **Key Technical Components:**
 
 1. **Backend Quiz API** (Express + Prisma)
-   - `GET /api/progress/due?date=YYYY-MM-DD` - Fetch words where `nextReviewDate <= date`
-   - `POST /api/progress/test-result` - Save quiz answer, adjust spaced repetition
-   - `GET /api/progress/streak` - Fetch current/longest streak
-   - `POST /api/quiz/feedback` - Generate AI explanation for incorrect answer (Gemini API)
-   - `GET /api/progress/leeches` - Fetch flagged struggling words (5+ consecutive failures)
+   - `POST /api/v1/quiz/session/start` - Start or resume a quiz session (returns 10 questions)
+   - `POST /api/v1/quiz/session/:sessionId/answer` - Submit answer, receive feedback + AI explanation if incorrect
+   - `GET /api/v1/quiz/session/:sessionId/summary` - Retrieve completed session metrics (XP, accuracy, badges)
+   - `GET /api/v1/learning/leeches` - Fetch flagged struggling words (5+ lapses)
+   - `GET /api/v1/learning/due` / `POST /api/v1/learning/result` - Stateless supplementary endpoints
+   - `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges` - Gamification
 
-2. **Database Schema Extensions** (PostgreSQL)
-
-   ```sql
-   CREATE TABLE study_streaks (
-     id SERIAL PRIMARY KEY,
-     user_id INTEGER REFERENCES users(id),
-     current_streak INTEGER DEFAULT 0,
-     longest_streak INTEGER DEFAULT 0,
-     streak_freezes INTEGER DEFAULT 0,
-     last_activity_date DATE,
-     created_at TIMESTAMP DEFAULT NOW(),
-     updated_at TIMESTAMP DEFAULT NOW()
-   );
-
-   CREATE TABLE quiz_results (
-     id SERIAL PRIMARY KEY,
-     user_id INTEGER REFERENCES users(id),
-     word_id VARCHAR(255),
-     correct BOOLEAN,
-     time_spent_ms INTEGER,
-     question_type VARCHAR(50), -- 'multiple_choice', 'type_pinyin', 'type_character'
-     created_at TIMESTAMP DEFAULT NOW()
-   );
-
-   ALTER TABLE progress ADD COLUMN lapse_count INTEGER DEFAULT 0;
-   ```
+2. **Database Schema** (PostgreSQL via Prisma)
+   - `study_streaks` table: streak tracking with freeze currency
+   - `QuizSession` / `QuizSessionQuestion` / `QuizSessionAnswer` / `QuizSessionSummary` tables: session-based quiz state
+   - `progress.lapseCount`: consecutive failure counter for leech detection
+   - `user_badges`, `GamificationEvent`: badge awards and XP tracking
 
 3. **Frontend Quiz Components** (React + TypeScript)
-   - `DailyReviewTest.tsx` - Container managing quiz state and API calls
-   - `QuizCard.tsx` - Question display with multiple choice UI
-   - `TypeAnswerInput.tsx` - Input validation for pinyin/character modes
-   - `ToneInput.tsx` - Tone mark input with numeric notation support (ma3 → mǎ)
-   - `QuizProgressBar.tsx` - Visual progress indicator (X/Y completed)
-   - `StreakCounter.tsx` - Animated streak display with flame icon
-   - `AIFeedbackPanel.tsx` - Displays LLM-generated error explanations
-   - `MysteryBoxReward.tsx` - Variable reward UI for milestone achievements
-   - `LeechIndicator.tsx` - Flags struggling words in dashboard
+   - `QuizPage.tsx` - Container managing quiz session lifecycle
+   - `QuestionSection.tsx` - Question display (mode icon + hint + word content)
+   - `AnswerSection.tsx` - Answer input (multiple choice buttons, PinyinToneInput, ChineseCharacterInput)
+   - `PinyinToneInput.tsx` - Tone mark input with numeric notation support (ma3 → mǎ)
+   - `ProgressBar.tsx` - Visual progress indicator (X/Y completed)
+   - `StreakCounter.tsx` - Animated streak display
+   - `AIFeedbackPanel.tsx` - Displays AI-generated error explanations
+   - `MysteryBoxModal.tsx` - Variable reward UI for milestone achievements
+   - `LeechWidget.tsx` - Dashboard widget flagging struggling words
 
 4. **Spaced Repetition Adjustments (Story 15.11 - Exponential Backoff)**
 

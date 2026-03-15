@@ -190,7 +190,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 - **Study Metrics**: `studyCount`, `correctCount`, `nextReview`, `currentDelay`
 - **Quiz Metrics**: `lapseCount` (consecutive failures for leech detection)
-- **Audit Trail**: `quiz_results` table logs every quiz answer with timestamp, question type, time spent
+- **Session Records**: `QuizSessionAnswer` table logs every quiz answer with timestamp, question type, correctness, and time spent
 
 **Leech Detection:**
 
@@ -199,10 +199,16 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - Sorted by struggle intensity (highest lapseCount first)
 - Enables targeted review for 15% of words causing 50% of failures (Pareto principle)
 
-**Key Endpoints:**
+**Quiz Session Endpoints (Primary):**
+
+- `POST /api/v1/quiz/session/start` - Start or resume a session (returns 10 questions, handles daily check)
+- `POST /api/v1/quiz/session/:sessionId/answer` - Submit answer, receive feedback + AI explanation if incorrect
+- `GET /api/v1/quiz/session/:sessionId/summary` - Retrieve completed session metrics (XP, accuracy, badges)
+
+**Learning Endpoints (Stateless / Supplementary):**
 
 - `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
-- `POST /api/v1/learning/result` - Save quiz answer, adjust spaced repetition
+- `POST /api/v1/learning/result` - Save quiz answer directly, adjust spaced repetition
 - `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
 
 **See detailed documentation:**
@@ -231,7 +237,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/infrastructure/database/client.js`)
 - **Configuration**: `DATABASE_URL`
-- **Key Tables**: `users`, `progress`, `refresh_tokens`, `quiz_results`, `study_streaks`, `user_badges`
+- **Key Tables**: `users`, `progress`, `refresh_tokens`, `QuizSession`, `QuizSessionAnswer`, `QuizSessionSummary`, `study_streaks`, `user_badges`
 
 **Gamification System:**
 
@@ -244,12 +250,13 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 **AI Feedback System:**
 
 - **Purpose**: Personalized error explanations for incorrect quiz answers using Gemini API
+- **Delivery**: Auto-generated inline with answer submission (`POST /api/v1/quiz/session/:sessionId/answer`); only returned when incorrect
 - **Error Classification**: Tone errors (mā vs mǎ), character confusion (妈 vs 马), meaning mix-ups
 - **Caching**: Redis 24-hour TTL, cache key per word+answer combination, ~70-80% cost reduction
 - **Timeout Protection**: 3-second limit with graceful fallback to generic messages
 - **Rate Limiting**: 10 requests/minute per user to prevent API abuse
 - **Security**: Input sanitization (XSS prevention), JWT authentication required
-- **API Endpoint**: `POST /api/v1/quiz/feedback`
+- **Standalone Endpoint**: `POST /api/v1/quiz/feedback` (available for direct AI feedback requests)
 
 ## Deployment Architecture
 

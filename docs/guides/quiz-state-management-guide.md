@@ -45,7 +45,7 @@ The quiz state machine manages the flow of a daily review quiz session from init
 ### Phase Definitions
 
 ```typescript
-type QuizPhase = 'LOADING' | 'QUESTION' | 'ANSWER_FEEDBACK' | 'COMPLETE';
+type QuizPhase = "LOADING" | "QUESTION" | "ANSWER_FEEDBACK" | "COMPLETE";
 ```
 
 **Phase Transition Flow:**
@@ -63,6 +63,7 @@ COMPLETE_QUIZ → COMPLETE (show summary screen)
 ```
 
 **Invalid Transitions Prevented:**
+
 - Cannot submit answer during LOADING (button disabled)
 - Cannot advance to next question from COMPLETE (quiz ended)
 - Cannot go back to previous question (enforces forward momentum)
@@ -76,7 +77,7 @@ COMPLETE_QUIZ → COMPLETE (show summary screen)
 ```typescript
 // apps/frontend/src/features/quiz/types/QuizTypes.ts
 
-export type QuestionMode = 'multiple_choice' | 'type_pinyin' | 'type_character';
+export type QuestionMode = "multiple_choice" | "type_pinyin" | "type_character";
 
 export interface QuizQuestion {
   wordId: string;
@@ -110,12 +111,12 @@ export interface QuizState {
 // apps/frontend/src/features/quiz/reducers/quizReducer.ts
 
 type QuizAction =
-  | { type: 'INITIALIZE_QUIZ'; questions: QuizQuestion[] }
-  | { type: 'SUBMIT_ANSWER'; answer: QuizAnswer }
-  | { type: 'NEXT_QUESTION' }
-  | { type: 'COMPLETE_QUIZ' }
-  | { type: 'RESTORE_SESSION'; session: QuizState }
-  | { type: 'ERROR'; message: string };
+  | { type: "INITIALIZE_QUIZ"; questions: QuizQuestion[] }
+  | { type: "SUBMIT_ANSWER"; answer: QuizAnswer }
+  | { type: "NEXT_QUESTION" }
+  | { type: "COMPLETE_QUIZ" }
+  | { type: "RESTORE_SESSION"; session: QuizState }
+  | { type: "ERROR"; message: string };
 ```
 
 ---
@@ -126,62 +127,62 @@ type QuizAction =
 // apps/frontend/src/features/quiz/reducers/quizReducer.ts
 
 const initialState: QuizState = {
-  phase: 'LOADING',
+  phase: "LOADING",
   questions: [],
   currentIndex: 0,
-  answers: []
+  answers: [],
 };
 
 export function quizReducer(state: QuizState, action: QuizAction): QuizState {
   switch (action.type) {
-    case 'INITIALIZE_QUIZ':
+    case "INITIALIZE_QUIZ":
       return {
         ...state,
-        phase: 'QUESTION',
+        phase: "QUESTION",
         questions: action.questions,
         currentIndex: 0,
         answers: [],
-        error: undefined
+        error: undefined,
       };
-    
-    case 'SUBMIT_ANSWER':
+
+    case "SUBMIT_ANSWER":
       return {
         ...state,
-        phase: 'ANSWER_FEEDBACK',
-        answers: [...state.answers, action.answer]
+        phase: "ANSWER_FEEDBACK",
+        answers: [...state.answers, action.answer],
       };
-    
-    case 'NEXT_QUESTION':
+
+    case "NEXT_QUESTION":
       const nextIndex = state.currentIndex + 1;
-      
+
       // Check if quiz complete
       if (nextIndex >= state.questions.length) {
-        return { ...state, phase: 'COMPLETE', currentIndex: nextIndex };
+        return { ...state, phase: "COMPLETE", currentIndex: nextIndex };
       }
-      
+
       // Advance to next question
       return {
         ...state,
-        phase: 'QUESTION',
-        currentIndex: nextIndex
+        phase: "QUESTION",
+        currentIndex: nextIndex,
       };
-    
-    case 'COMPLETE_QUIZ':
-      return { ...state, phase: 'COMPLETE' };
-    
-    case 'RESTORE_SESSION':
+
+    case "COMPLETE_QUIZ":
+      return { ...state, phase: "COMPLETE" };
+
+    case "RESTORE_SESSION":
       return {
         ...action.session,
-        phase: 'QUESTION' // Always resume in QUESTION phase
+        phase: "QUESTION", // Always resume in QUESTION phase
       };
-    
-    case 'ERROR':
+
+    case "ERROR":
       return {
         ...state,
-        phase: 'LOADING', // Reset to LOADING on error (allows retry)
-        error: action.message
+        phase: "LOADING", // Reset to LOADING on error (allows retry)
+        error: action.message,
       };
-    
+
     default:
       return state;
   }
@@ -206,28 +207,28 @@ Interleaving randomizes question types per word to create "desirable difficulty"
 ```typescript
 // apps/frontend/src/features/quiz/utils/interleaving.ts
 
-import { QuizQuestion, QuestionMode } from '../types/QuizTypes';
+import { QuizQuestion, QuestionMode } from "../types/QuizTypes";
 
-const QUESTION_MODES: QuestionMode[] = ['multiple_choice', 'type_pinyin', 'type_character'];
+const QUESTION_MODES: QuestionMode[] = ["multiple_choice", "type_pinyin", "type_character"];
 
 /**
  * Generate interleaved questions (randomize mode per word)
- * 
+ *
  * @param words - Array of due words from backend
  * @returns Array of QuizQuestion with randomized modes
  */
 export function createInterleavedQuestions(words: any[]): QuizQuestion[] {
-  return words.map(word => {
+  return words.map((word) => {
     // Random mode selection for this specific word
     const randomMode = QUESTION_MODES[Math.floor(Math.random() * QUESTION_MODES.length)];
-    
+
     return {
       wordId: word.id,
       word: word.chinese,
       pinyin: word.pinyin,
       english: word.english,
       mode: randomMode,
-      options: randomMode === 'multiple_choice' ? generateDistractors(word, words) : undefined
+      options: randomMode === "multiple_choice" ? generateDistractors(word, words) : undefined,
     };
   });
 }
@@ -237,14 +238,14 @@ export function createInterleavedQuestions(words: any[]): QuizQuestion[] {
  */
 function generateDistractors(correctWord: any, allWords: any[]): string[] {
   // Filter out correct word
-  const candidates = allWords.filter(w => w.id !== correctWord.id);
-  
+  const candidates = allWords.filter((w) => w.id !== correctWord.id);
+
   // Shuffle and take 3 random wrong answers
   const wrongAnswers = candidates
     .sort(() => Math.random() - 0.5)
     .slice(0, 3)
-    .map(w => w.english);
-  
+    .map((w) => w.english);
+
   // Combine with correct answer and shuffle again
   const allOptions = [...wrongAnswers, correctWord.english];
   return allOptions.sort(() => Math.random() - 0.5);
@@ -266,7 +267,7 @@ Quiz sessions persist to survive accidental page refreshes. Uses 24-hour TTL to 
 ```typescript
 // apps/frontend/src/features/quiz/utils/persistence.ts
 
-const QUIZ_SESSION_KEY = 'quiz_session';
+const QUIZ_SESSION_KEY = "quiz_session";
 const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 export interface QuizSession {
@@ -279,16 +280,16 @@ export interface QuizSession {
 /**
  * Save quiz session to localStorage
  */
-export function saveQuizSession(session: Omit<QuizSession, 'timestamp'>) {
+export function saveQuizSession(session: Omit<QuizSession, "timestamp">) {
   const sessionWithTimestamp: QuizSession = {
     ...session,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
-  
+
   try {
     localStorage.setItem(QUIZ_SESSION_KEY, JSON.stringify(sessionWithTimestamp));
   } catch (error) {
-    console.error('Failed to save quiz session:', error);
+    console.error("Failed to save quiz session:", error);
     // Silent fail (quiz continues, just won't persist)
   }
 }
@@ -303,17 +304,17 @@ export function loadQuizSession(): QuizSession | null {
 
   try {
     const session: QuizSession = JSON.parse(saved);
-    
+
     // Check TTL
     const age = Date.now() - session.timestamp;
     if (age > SESSION_TTL) {
       clearQuizSession(); // Auto-cleanup expired session
       return null;
     }
-    
+
     return session;
   } catch (error) {
-    console.error('Error loading quiz session:', error);
+    console.error("Error loading quiz session:", error);
     clearQuizSession(); // Cleanup corrupted data
     return null;
   }
@@ -336,6 +337,14 @@ export function clearQuizSession() {
 ---
 
 ## Step 5: Container Component Integration
+
+> **Note (Story 15.11 Update):** The pattern below illustrates the reducer integration concept. The actual implementation uses the session-based architecture introduced in Story 15.11:
+>
+> - **Session hook**: `useQuizSession()` + `useAnswerSubmission()` instead of `useQuizAPI()`
+> - **Current component names**: `QuestionSection` (was `QuizCard`), `ProgressBar` (was `QuizProgressBar`), `PinyinToneInput`/`ChineseCharacterInput` (were `TypeAnswerInput`)
+> - **API**: `POST /api/v1/quiz/session/start` and `POST /api/v1/quiz/session/:id/answer`
+>
+> The architectural patterns (reducer, dispatch, phases) described here remain accurate.
 
 Bring it all together in the `DailyReviewTest` container component.
 
@@ -378,7 +387,7 @@ export const DailyReviewTest: React.FC = () => {
         dispatch({ type: 'ERROR', message: 'No words due for review today. Great job!' });
         return;
       }
-      
+
       const questions = createInterleavedQuestions(dueWords);
       dispatch({ type: 'INITIALIZE_QUIZ', questions });
       setStartTime(new Date());
@@ -401,7 +410,7 @@ export const DailyReviewTest: React.FC = () => {
       correct,
       timestamp: new Date()
     };
-    
+
     dispatch({ type: 'SUBMIT_ANSWER', answer: answerData });
 
     // Save to backend asynchronously (non-blocking)
@@ -434,7 +443,7 @@ export const DailyReviewTest: React.FC = () => {
   // Validate user answer based on question mode
   const validateAnswer = (userAnswer: string, question: QuizQuestion): boolean => {
     const normalized = userAnswer.toLowerCase().trim();
-    
+
     switch (question.mode) {
       case 'multiple_choice':
         return normalized === question.english.toLowerCase();
@@ -474,7 +483,7 @@ export const DailyReviewTest: React.FC = () => {
   if (state.phase === 'COMPLETE') {
     const correctCount = state.answers.filter(a => a.correct).length;
     const accuracy = Math.round((correctCount / state.answers.length) * 100);
-    
+
     return (
       <div className="quiz-complete">
         <h2>🎉 Quiz Complete!</h2>
@@ -492,18 +501,18 @@ export const DailyReviewTest: React.FC = () => {
 
   return (
     <div className="quiz-container">
-      <QuizProgressBar 
-        current={state.currentIndex + 1} 
-        total={state.questions.length} 
+      <QuizProgressBar
+        current={state.currentIndex + 1}
+        total={state.questions.length}
       />
-      
+
       <QuizCard
         question={currentQuestion}
         mode={currentQuestion.mode}
         options={currentQuestion.options}
         onAnswer={handleAnswer}
       />
-      
+
       {/* Type answer input for non-multiple-choice modes */}
       {currentQuestion.mode !== 'multiple_choice' && (
         <TypeAnswerInput
@@ -512,7 +521,7 @@ export const DailyReviewTest: React.FC = () => {
           onAnswer={handleAnswer}
         />
       )}
-      
+
       {/* Show feedback in ANSWER_FEEDBACK phase */}
       {state.phase === 'ANSWER_FEEDBACK' && (
         <div className={`feedback ${state.answers[state.answers.length - 1].correct ? 'correct' : 'incorrect'}`}>

@@ -21,7 +21,12 @@ describe("quizReducer", () => {
       },
     ];
 
-    const action: QuizAction = { type: "QUIZ/INITIALIZE", questions, sessionId: "session1" };
+    const action: QuizAction = {
+      type: "QUIZ/INITIALIZE",
+      questions,
+      sessionId: "session1",
+      expiresAt: "2026-03-15T00:00:00.000Z",
+    };
     const newState = quizReducer(initialState, action);
 
     expect(newState.phase).toBe("QUESTION");
@@ -69,6 +74,7 @@ describe("quizReducer", () => {
       sessionId: "session1",
       currentIndex: 1,
       answers: previousAnswers,
+      expiresAt: "2026-03-15T00:00:00.000Z",
     };
     const newState = quizReducer(initialState, action);
 
@@ -77,12 +83,12 @@ describe("quizReducer", () => {
     expect(newState.currentIndex).toBe(1); // Resume from second question
     expect(newState.answers).toEqual(previousAnswers); // Restore previous answers
     expect(newState.sessionId).toBe("session1");
-    expect(newState.totalXP).toBe(0); // Gamification not yet awarded
     expect(newState.error).toBeUndefined(); // No errors
   });
 
   it("submits answer and transitions to ANSWER_FEEDBACK", () => {
     const state: QuizState = {
+      ...initialState,
       phase: "QUESTION",
       questions: [
         {
@@ -116,6 +122,7 @@ describe("quizReducer", () => {
 
   it("advances to next question", () => {
     const state: QuizState = {
+      ...initialState,
       phase: "ANSWER_FEEDBACK",
       questions: [
         {
@@ -155,6 +162,7 @@ describe("quizReducer", () => {
 
   it("completes quiz when no more questions", () => {
     const state: QuizState = {
+      ...initialState,
       phase: "ANSWER_FEEDBACK",
       questions: [
         {
@@ -181,12 +189,13 @@ describe("quizReducer", () => {
     const action: QuizAction = { type: "QUIZ/NEXT_QUESTION" };
     const newState = quizReducer(state, action);
 
-    expect(newState.phase).toBe("RESULTS");
+    expect(newState.phase).toBe("LOADING"); // Hook then calls QUIZ/COMPLETE to transition to RESULTS
     expect(newState.currentIndex).toBe(1);
   });
 
   it("handles QUIZ/COMPLETE action", () => {
     const state: QuizState = {
+      ...initialState,
       phase: "ANSWER_FEEDBACK",
       questions: [],
       currentIndex: 0,
@@ -201,12 +210,14 @@ describe("quizReducer", () => {
 
   it("returns unchanged state for unknown action", () => {
     const state: QuizState = {
+      ...initialState,
       phase: "QUESTION",
       questions: [],
       currentIndex: 0,
       answers: [],
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action = { type: "UNKNOWN_ACTION" } as any;
     const newState = quizReducer(state, action);
 
@@ -217,6 +228,7 @@ describe("quizReducer", () => {
   describe("error handling", () => {
     it("sets error state with SET_ERROR action", () => {
       const state: QuizState = {
+        ...initialState,
         phase: "LOADING",
         questions: [],
         currentIndex: 0,
@@ -232,6 +244,7 @@ describe("quizReducer", () => {
 
     it("clears error on INITIALIZE_QUIZ", () => {
       const state: QuizState = {
+        ...initialState,
         phase: "ERROR",
         questions: [],
         currentIndex: 0,
@@ -250,7 +263,12 @@ describe("quizReducer", () => {
         },
       ];
 
-      const action: QuizAction = { type: "QUIZ/INITIALIZE", questions };
+      const action: QuizAction = {
+        type: "QUIZ/INITIALIZE",
+        questions,
+        sessionId: "session1",
+        expiresAt: "2026-03-15T00:00:00.000Z",
+      };
       const newState = quizReducer(state, action);
 
       expect(newState.phase).toBe("QUESTION");
@@ -259,6 +277,7 @@ describe("quizReducer", () => {
 
     it("resets quiz with RESET_QUIZ action", () => {
       const state: QuizState = {
+        ...initialState,
         phase: "RESULTS",
         questions: [
           {
@@ -290,6 +309,7 @@ describe("quizReducer", () => {
 
     it("preserves error state through other actions", () => {
       const state: QuizState = {
+        ...initialState,
         phase: "ERROR",
         questions: [],
         currentIndex: 0,

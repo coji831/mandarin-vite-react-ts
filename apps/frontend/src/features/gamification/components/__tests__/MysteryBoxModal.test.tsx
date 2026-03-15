@@ -146,7 +146,7 @@ describe("MysteryBoxModal", () => {
   });
 
   it("should handle null mysteryBox gracefully", () => {
-    render(<MysteryBoxModal isOpen={true} mysteryBox={null} onClose={mockOnClose} />);
+    render(<MysteryBoxModal isOpen={true} mysteryBox={undefined} onClose={mockOnClose} />);
 
     // Should not crash, but should not render content
     expect(screen.queryByText(/Mystery Box!/i)).not.toBeInTheDocument();

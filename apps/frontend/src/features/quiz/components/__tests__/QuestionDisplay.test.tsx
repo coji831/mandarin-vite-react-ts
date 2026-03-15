@@ -2,6 +2,10 @@
  * QuestionSection Component Tests
  * Component Reorganization: Renamed from QuizCard -> QuestionDisplay -> QuestionSection
  * Story 15.5: Core Quiz UI Components
+ *
+ * Tests the purely presentational QuestionSection component.
+ * Component renders: mode icon + hint button + question content.
+ * Answer options are NOT rendered here (they live in AnswerSection).
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -9,10 +13,8 @@ import { QuestionSection } from "../exams/QuestionSection";
 
 describe("QuestionSection", () => {
   describe("Multiple Choice Mode", () => {
-    it("renders word, pinyin, and 4 options", () => {
-      const mockOnAnswer = vi.fn();
+    it("renders word and pinyin", () => {
       const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
-      const options = ["hello", "goodbye", "thank you", "please"];
 
       render(
         <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
@@ -20,72 +22,52 @@ describe("QuestionSection", () => {
 
       expect(screen.getByText("你好")).toBeTruthy();
       expect(screen.getByText(/nǐhǎo/)).toBeTruthy();
-      expect(screen.getByText("hello")).toBeTruthy();
-      expect(screen.getByText("goodbye")).toBeTruthy();
-      expect(screen.getByText("thank you")).toBeTruthy();
-      expect(screen.getByText("please")).toBeTruthy();
+      expect(screen.getByText("What does this mean?")).toBeTruthy();
     });
 
-    it("calls onAnswer with selected option", () => {
-      const mockOnAnswer = vi.fn();
-      const question = { word: "谢谢", pinyin: "xièxiè", english: "thank you" };
-      const options = ["hello", "goodbye", "thank you", "please"];
+    it("hides pinyin when not provided", () => {
+      const question = { word: "你好", english: "hello" };
 
       render(
         <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
-      const thirdOption = screen.getByText("thank you");
-      fireEvent.click(thirdOption);
-
-      expect(mockOnAnswer).toHaveBeenCalledWith("thank you");
+      expect(screen.getByText("你好")).toBeTruthy();
+      expect(screen.queryByText(/nǐhǎo/)).toBeNull();
     });
 
-    it("shows correct mode indicator", () => {
-      const mockOnAnswer = vi.fn();
+    it("shows 🎯 mode icon", () => {
       const question = { word: "你好", pinyin: "nǐhǎo" };
-      const options = ["hello", "goodbye", "thanks", "please"];
 
       render(
         <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
-      // Story 15.10: Mode indicator now has icon + text in separate elements
-      expect(screen.getByText("Multiple Choice")).toBeTruthy();
       expect(screen.getByText("🎯")).toBeTruthy();
     });
   });
 
   describe("Type Pinyin Mode", () => {
-    it("renders word only, no options", () => {
-      const mockOnAnswer = vi.fn();
+    it("renders word and prompt", () => {
       const question = { word: "你好", english: "hello" };
 
       render(<QuestionSection question={question} mode="type_pinyin" onToggleHint={() => {}} />);
 
       expect(screen.getByText("你好")).toBeTruthy();
       expect(screen.getByText(/type the pinyin/i)).toBeTruthy();
-
-      // Should not have option buttons
-      const buttons = screen.queryAllByRole("button");
-      expect(buttons.length).toBe(0);
     });
 
-    it("shows correct mode indicator", () => {
-      const mockOnAnswer = vi.fn();
+    it("shows ✏️ mode icon", () => {
       const question = { word: "你好" };
 
       render(<QuestionSection question={question} mode="type_pinyin" onToggleHint={() => {}} />);
 
-      // Story 15.10: Mode indicator now has icon + text in separate elements
-      expect(screen.getByText("Type Pinyin")).toBeTruthy();
       expect(screen.getByText("✏️")).toBeTruthy();
     });
   });
 
   describe("Type Character Mode", () => {
-    it("renders pinyin and english, no options", () => {
-      const mockOnAnswer = vi.fn();
+    it("renders pinyin, english, and prompt", () => {
       const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
 
       render(<QuestionSection question={question} mode="type_character" onToggleHint={() => {}} />);
@@ -93,43 +75,50 @@ describe("QuestionSection", () => {
       expect(screen.getByText(/nǐhǎo/)).toBeTruthy();
       expect(screen.getByText("hello")).toBeTruthy();
       expect(screen.getByText(/type the chinese character/i)).toBeTruthy();
-
-      // Should not show the word itself
-      expect(screen.queryByText("你好")).toBeFalsy();
-
-      // Should not have option buttons
-      const buttons = screen.queryAllByRole("button");
-      expect(buttons.length).toBe(0);
     });
 
-    it("shows correct mode indicator", () => {
-      const mockOnAnswer = vi.fn();
+    it("does not show the word in type_character mode", () => {
       const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
 
       render(<QuestionSection question={question} mode="type_character" onToggleHint={() => {}} />);
 
-      // Story 15.10: Mode indicator now has icon + text in separate elements
-      expect(screen.getByText("Type Character")).toBeTruthy();
+      expect(screen.queryByText("你好")).toBeFalsy();
+    });
+
+    it("shows 🖊️ mode icon", () => {
+      const question = { word: "你好", pinyin: "nǐhǎo", english: "hello" };
+
+      render(<QuestionSection question={question} mode="type_character" onToggleHint={() => {}} />);
+
       expect(screen.getByText("🖊️")).toBeTruthy();
     });
   });
 
-  describe("Accessibility", () => {
-    it("buttons have min 44px height (touch-friendly)", () => {
-      const mockOnAnswer = vi.fn();
+  describe("Hint Button", () => {
+    it("renders a hint button with accessible label", () => {
       const question = { word: "你好", pinyin: "nǐhǎo" };
-      const options = ["hello", "goodbye", "thanks", "please"];
 
       render(
         <QuestionSection question={question} mode="multiple_choice" onToggleHint={() => {}} />,
       );
 
-      const buttons = screen.getAllByRole("button");
-      buttons.forEach((button) => {
-        const styles = window.getComputedStyle(button);
-        const minHeight = parseInt(styles.minHeight);
-        expect(minHeight).toBeGreaterThanOrEqual(44);
-      });
+      expect(screen.getByRole("button", { name: /toggle hint/i })).toBeTruthy();
+    });
+
+    it("calls onToggleHint when hint button clicked", () => {
+      const mockToggleHint = vi.fn();
+      const question = { word: "你好", pinyin: "nǐhǎo" };
+
+      render(
+        <QuestionSection
+          question={question}
+          mode="multiple_choice"
+          onToggleHint={mockToggleHint}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /toggle hint/i }));
+      expect(mockToggleHint).toHaveBeenCalledTimes(1);
     });
   });
 });

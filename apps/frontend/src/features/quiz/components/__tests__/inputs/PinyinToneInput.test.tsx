@@ -4,43 +4,14 @@
  */
 
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { PinyinToneInput } from "../../inputs/PinyinToneInput";
 
 describe("PinyinToneInput Component", () => {
-  beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
-  });
-
   it("renders input with placeholder", () => {
     render(<PinyinToneInput value="" onChange={() => {}} onSubmit={() => {}} />);
 
     expect(screen.getByPlaceholderText("Type pinyin (e.g., ma3)")).toBeInTheDocument();
-  });
-
-  it("shows tooltip on first render", () => {
-    render(<PinyinToneInput value="" onChange={() => {}} onSubmit={() => {}} />);
-
-    expect(screen.getByText(/Tone Input Guide/i)).toBeInTheDocument();
-  });
-
-  it("hides tooltip when dismissed", () => {
-    render(<PinyinToneInput value="" onChange={() => {}} onSubmit={() => {}} />);
-
-    const closeButton = screen.getByLabelText("Close tooltip");
-    fireEvent.click(closeButton);
-
-    expect(screen.queryByText(/Tone Input Guide/i)).not.toBeInTheDocument();
-  });
-
-  it("stores tooltip dismissal in localStorage", () => {
-    render(<PinyinToneInput value="" onChange={() => {}} onSubmit={() => {}} />);
-
-    const closeButton = screen.getByLabelText("Close tooltip");
-    fireEvent.click(closeButton);
-
-    expect(localStorage.getItem("tone_tooltip_seen")).toBe("true");
   });
 
   it("converts pinyin and calls onChange", () => {

@@ -108,6 +108,7 @@ const QuizActionsCtx = createContext<QuizActionsContext | undefined>(undefined);
 // Custom Hooks
 // ============================================================================
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useQuizState(): QuizStateContext {
   const context = useContext(QuizStateCtx);
   if (!context) {
@@ -116,6 +117,7 @@ export function useQuizState(): QuizStateContext {
   return context;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useQuizActions(): QuizActionsContext {
   const context = useContext(QuizActionsCtx);
   if (!context) {
