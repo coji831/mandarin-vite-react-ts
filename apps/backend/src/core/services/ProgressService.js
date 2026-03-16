@@ -1,7 +1,12 @@
 /**
  * ProgressService (Core Layer)
- * Business logic for vocabulary progress tracking with spaced repetition.
+ * Business logic for vocabulary progress tracking and statistics.
  * Framework-agnostic service that depends on IProgressRepository interface.
+ *
+ * Story 15.11 Phase 8: Simplified to focus on progress CRUD and statistics
+ * - Basic progress tracking for flashcards and manual updates
+ * - Progress statistics and analytics
+ * - Quiz-based learning moved to LearningService
  */
 
 export class ProgressService {
@@ -9,19 +14,69 @@ export class ProgressService {
     this.repository = repository; // IProgressRepository
   }
 
-  /**
-   * Calculate next review date based on confidence level using spaced repetition
-   * @param {number} confidence - Confidence score (0.0 - 1.0)
-   * @returns {Date} - Next review date
-   */
-  calculateNextReview(confidence) {
-    const minDays = 1;
-    const maxDays = 30;
-    const days = minDays + (maxDays - minDays) * Math.pow(confidence, 2);
+  // ============================================================================
+  // Basic Progress CRUD Operations
+  // ============================================================================
 
-    const nextReview = new Date();
-    nextReview.setDate(nextReview.getDate() + Math.round(days));
-    return nextReview;
+  async getProgressForUser(userId) {
+    return this.repository.findByUser(userId);
+  }
+
+  async getProgressForWord(userId, wordId) {
+    return this.repository.findByUserAndWord(userId, wordId);
+  }
+
+  async updateProgress(userId, wordId, data) {
+    const { studyCount, correctCount, confidence } = data;
+
+    return this.repository.upsert(userId, wordId, {
+      ...(studyCount !== undefined && { studyCount }),
+      ...(correctCount !== undefined && { correctCount }),
+      ...(confidence !== undefined && { confidence }),
+    });
+  }
+
+  async deleteProgress(userId, wordId) {
+    return await this.repository.deleteByUserAndWord(userId, wordId);
+  }
+
+  async batchUpdateProgress(userId, updates) {
+    const operations = updates.map((update) => {
+      const { wordId, studyCount, correctCount, confidence } = update;
+
+      return this.repository.upsert(userId, wordId, {
+        ...(studyCount !== undefined && { studyCount }),
+        ...(correctCount !== undefined && { correctCount }),
+        ...(confidence !== undefined && { confidence }),
+      });
+    });
+
+    return Promise.all(operations);
+  }
+
+  // ============================================================================
+  // Statistics & Analytics
+  // ============================================================================
+
+  async getProgressStats(userId) {
+    const allProgress = await this.repository.findByUser(userId);
+    const now = new Date();
+    const totalWords = allProgress.length;
+    const studiedWords = allProgress.filter((p) => p.studyCount > 0).length;
+    const masteredWords = allProgress.filter((p) => p.confidence >= 0.8).length;
+    const totalStudyCount = allProgress.reduce((sum, p) => sum + p.studyCount, 0);
+    const averageConfidence =
+      totalWords > 0 ? allProgress.reduce((sum, p) => sum + p.confidence, 0) / totalWords : 0;
+    const wordsToReviewToday = allProgress.filter((p) => new Date(p.nextReview) <= now).length;
+
+    return {
+      totalWords,
+      studiedWords,
+      masteredWords,
+      totalStudyCount,
+      averageConfidence,
+      wordsToReviewToday,
+    };
   }
 
   /**
@@ -42,68 +97,6 @@ export class ProgressService {
       masteredCount: masteredWords.length,
       totalWords: wordIds.length,
       progressPercent: Math.round((masteredWords.length / wordIds.length) * 100),
-    };
-  }
-
-  async getProgressForUser(userId) {
-    return this.repository.findByUser(userId);
-  }
-
-  async getProgressForWord(userId, wordId) {
-    return this.repository.findByUserAndWord(userId, wordId);
-  }
-
-  async updateProgress(userId, wordId, data) {
-    const { studyCount, correctCount, confidence } = data;
-    const nextReview = confidence !== undefined ? this.calculateNextReview(confidence) : undefined;
-
-    return this.repository.upsert(userId, wordId, {
-      ...(studyCount !== undefined && { studyCount }),
-      ...(correctCount !== undefined && { correctCount }),
-      ...(confidence !== undefined && { confidence }),
-      ...(nextReview && { nextReview }),
-    });
-  }
-
-  async deleteProgress(userId, wordId) {
-    return await this.repository.deleteByUserAndWord(userId, wordId);
-  }
-
-  async batchUpdateProgress(userId, updates) {
-    const operations = updates.map((update) => {
-      const { wordId, studyCount, correctCount, confidence } = update;
-      const nextReview =
-        confidence !== undefined ? this.calculateNextReview(confidence) : undefined;
-
-      return this.repository.upsert(userId, wordId, {
-        ...(studyCount !== undefined && { studyCount }),
-        ...(correctCount !== undefined && { correctCount }),
-        ...(confidence !== undefined && { confidence }),
-        ...(nextReview && { nextReview }),
-      });
-    });
-
-    return Promise.all(operations);
-  }
-
-  async getProgressStats(userId) {
-    const allProgress = await this.repository.findByUser(userId);
-    const now = new Date();
-    const totalWords = allProgress.length;
-    const studiedWords = allProgress.filter((p) => p.studyCount > 0).length;
-    const masteredWords = allProgress.filter((p) => p.confidence >= 0.8).length;
-    const totalStudyCount = allProgress.reduce((sum, p) => sum + p.studyCount, 0);
-    const averageConfidence =
-      totalWords > 0 ? allProgress.reduce((sum, p) => sum + p.confidence, 0) / totalWords : 0;
-    const wordsToReviewToday = allProgress.filter((p) => new Date(p.nextReview) <= now).length;
-
-    return {
-      totalWords,
-      studiedWords,
-      masteredWords,
-      totalStudyCount,
-      averageConfidence,
-      wordsToReviewToday,
     };
   }
 }

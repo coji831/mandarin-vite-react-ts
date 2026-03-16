@@ -36,6 +36,8 @@ describe("progressApi (Story 14.4)", () => {
           lastReviewedAt: "2026-01-15T00:00:00Z",
           createdAt: "2025-12-01T00:00:00Z",
           updatedAt: "2026-01-15T00:00:00Z",
+          lapseCount: 0,
+          currentDelay: null,
         },
         {
           wordId: "word2",
@@ -48,6 +50,8 @@ describe("progressApi (Story 14.4)", () => {
           lastReviewedAt: "2026-01-20T00:00:00Z",
           createdAt: "2026-01-05T00:00:00Z",
           updatedAt: "2026-01-20T00:00:00Z",
+          lapseCount: 0,
+          currentDelay: null,
         },
       ];
 
@@ -91,12 +95,11 @@ describe("progressApi (Story 14.4)", () => {
         lastReviewedAt: "2026-01-15T00:00:00Z",
         createdAt: "2025-12-01T00:00:00Z",
         updatedAt: "2026-01-15T00:00:00Z",
+        lapseCount: 0,
+        currentDelay: null,
       };
 
-      mock.onGet("/v1/progress/word1").reply(200, {
-        success: true,
-        data: mockProgress,
-      });
+      mock.onGet("/v1/progress/word1").reply(200, mockProgress);
 
       const result = await progressApi.getWordProgress("word1");
 
@@ -134,6 +137,8 @@ describe("progressApi (Story 14.4)", () => {
         lastReviewedAt: "2026-02-02T00:00:00Z",
         createdAt: "2025-12-01T00:00:00Z",
         updatedAt: "2026-02-02T00:00:00Z",
+        lapseCount: 0,
+        currentDelay: null,
       };
 
       mock.onPut("/v1/progress/word1").reply(200, updatedProgress);
@@ -172,6 +177,8 @@ describe("progressApi (Story 14.4)", () => {
           lastReviewedAt: "2026-02-02T00:00:00Z",
           createdAt: "2025-12-01T00:00:00Z",
           updatedAt: "2026-02-02T00:00:00Z",
+          lapseCount: 0,
+          currentDelay: null,
         },
         {
           wordId: "word2",
@@ -184,16 +191,14 @@ describe("progressApi (Story 14.4)", () => {
           lastReviewedAt: "2026-02-02T00:00:00Z",
           createdAt: "2026-01-05T00:00:00Z",
           updatedAt: "2026-02-02T00:00:00Z",
+          lapseCount: 0,
+          currentDelay: null,
         },
       ];
 
       mock.onPost("/v1/progress/batch").reply(200, {
-        success: true,
-        data: {
-          updated: 2,
-          failed: 0,
-          results: mockResults,
-        },
+        updated: 2,
+        results: mockResults,
       });
 
       const updates = {
@@ -276,12 +281,11 @@ describe("progressApi (Story 14.4)", () => {
         lastReviewedAt: "2026-01-15T00:00:00Z",
         createdAt: "2025-12-01T00:00:00Z",
         updatedAt: "2026-01-15T00:00:00Z",
+        lapseCount: 0,
+        currentDelay: null,
       };
 
-      mock.onGet("/v1/progress/word1").reply(200, {
-        success: true,
-        data: mockProgress,
-      });
+      mock.onGet("/v1/progress/word1").reply(200, mockProgress);
 
       const result = await progressApi.getWordProgress("word1");
 

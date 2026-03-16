@@ -14,9 +14,13 @@ const logger = createLogger("ProgressController");
 export class ProgressController {
   /**
    * @param {object} progressService - ProgressService instance
+   * @param {object} streakService - StreakService instance (Story 15.3)
+   * @param {object} gamificationService - GamificationService instance (Story 15.3)
    */
-  constructor(progressService) {
+  constructor(progressService, streakService = null, gamificationService = null) {
     this.progressService = progressService;
+    this.streakService = streakService;
+    this.gamificationService = gamificationService;
   }
 
   /**

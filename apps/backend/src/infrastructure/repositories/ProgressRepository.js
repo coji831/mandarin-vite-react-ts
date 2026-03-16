@@ -35,13 +35,15 @@ export class ProgressRepository {
 
   /**
    * Create or update progress for a word
+   * Story 15.1: Updated to support lapseCount and currentDelay fields
+   *
    * @param {string} userId - User ID
    * @param {string} wordId - Word ID
-   * @param {object} data - Progress data { studyCount?, correctCount?, confidence?, nextReview? }
+   * @param {object} data - Progress data { studyCount?, correctCount?, confidence?, nextReview?, lapseCount?, currentDelay? }
    * @returns {Promise<object>} Updated progress record
    */
   async upsert(userId, wordId, data) {
-    const { studyCount, correctCount, confidence, nextReview } = data;
+    const { studyCount, correctCount, confidence, nextReview, lapseCount, currentDelay } = data;
 
     return prisma.progress.upsert({
       where: {
@@ -52,6 +54,8 @@ export class ProgressRepository {
         ...(correctCount !== undefined && { correctCount }),
         ...(confidence !== undefined && { confidence }),
         ...(nextReview && { nextReview }),
+        ...(lapseCount !== undefined && { lapseCount }),
+        ...(currentDelay !== undefined && { currentDelay }),
       },
       create: {
         userId,
@@ -60,6 +64,8 @@ export class ProgressRepository {
         correctCount: correctCount || 0,
         confidence: confidence || 0,
         nextReview: nextReview || new Date(),
+        lapseCount: lapseCount || 0,
+        currentDelay: currentDelay || null,
       },
     });
   }
@@ -96,6 +102,54 @@ export class ProgressRepository {
       }
       throw error;
     }
+  }
+
+  /**
+   * Find progress records due for review
+   * Story 15.2: New method for quiz system
+   *
+   * @param {string} userId - User ID
+   * @param {Date} date - Target date (find words where nextReview <= date)
+   * @param {number} [limit=50] - Maximum number of words to return
+   * @returns {Promise<Array>} Progress records ordered by due date (oldest first)
+   */
+  async findDueByUserAndDate(userId, date, limit = 50) {
+    return prisma.progress.findMany({
+      where: {
+        userId,
+        nextReview: {
+          lte: date,
+        },
+      },
+      orderBy: {
+        nextReview: "asc", // Oldest due first (fairness)
+      },
+      take: limit,
+    });
+  }
+
+  /**
+   * Find words user struggles with (high lapse count)
+   * Story 15.2: New method for leech identification
+   *
+   * @param {string} userId - User ID
+   * @param {number} [minLapseCount=5] - Minimum lapse count to qualify as leech
+   * @param {number} [limit=20] - Maximum number of leeches to return
+   * @returns {Promise<Array>} Progress records ordered by lapse count (worst first)
+   */
+  async findLeechesByUser(userId, minLapseCount = 5, limit = 20) {
+    return prisma.progress.findMany({
+      where: {
+        userId,
+        lapseCount: {
+          gte: minLapseCount,
+        },
+      },
+      orderBy: {
+        lapseCount: "desc", // Worst leeches first
+      },
+      take: limit,
+    });
   }
 }
 

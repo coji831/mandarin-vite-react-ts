@@ -1,0 +1,62 @@
+/* XPProgressBar Component Styles */
+
+.xp-progress-bar {
+  background: #232a3a;
+  border: 1px solid #38405a;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.xp-level {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.xp-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.xp-bar-container {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 12px;
+  transition: width 0.3s ease-in-out;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .xp-progress-bar {
+    padding: 12px;
+  }
+
+  .xp-level {
+    font-size: 16px;
+  }
+
+  .xp-text {
+    font-size: 13px;
+  }
+
+  .xp-bar-container {
+    height: 20px;
+  }
+}

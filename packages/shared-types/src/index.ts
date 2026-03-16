@@ -26,6 +26,7 @@ export interface UserProgress {
 // Progress API types (Story 13.4 / Story 14.4 - Enhanced)
 /**
  * Word progress data structure (matches backend schema)
+ * Story 15.1: Added lapseCount and currentDelay for spaced repetition
  */
 export interface WordProgress {
   wordId: string;
@@ -36,6 +37,8 @@ export interface WordProgress {
   learnedAt: string | null; // ISO 8601 datetime
   nextReviewDate: string | null; // ISO 8601 datetime
   lastReviewedAt: string | null; // ISO 8601 datetime
+  lapseCount: number; // Story 15.1: Consecutive incorrect quiz answers
+  currentDelay: number | null; // Story 15.1: Current spacing interval in days
   createdAt: string;
   updatedAt: string;
 }
@@ -83,6 +86,7 @@ export interface ProgressStatsResponse {
 
 /**
  * Request payload for updating word progress
+ * Story 15.1: Added lapseCount and currentDelay fields
  */
 export interface UpdateProgressRequest {
   studyCount?: number;
@@ -91,6 +95,8 @@ export interface UpdateProgressRequest {
   learnedAt?: string | null;
   nextReviewDate?: string | null;
   lastReviewedAt?: string | null;
+  lapseCount?: number;
+  currentDelay?: number | null;
 }
 
 /**
@@ -228,6 +234,53 @@ export interface ConversationAudioRequest {
   conversationId: string;
   turnIndex?: number;
   text?: string;
+}
+
+// Quiz & Spaced Repetition types (Epic 15: Learning Retention)
+/**
+ * Quiz result audit record (Story 15.1)
+ */
+export interface QuizResult {
+  id: string;
+  userId: string;
+  wordId: string;
+  correct: boolean;
+  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  timeSpentMs: number | null;
+  answeredAt: string; // ISO 8601 datetime
+}
+
+/**
+ * Study streak tracking (Story 15.1)
+ */
+export interface StudyStreak {
+  id: string;
+  userId: string;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityDate: string; // ISO 8601 datetime
+  freezeCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Record quiz result request payload (Story 15.1)
+ */
+export interface RecordQuizResultRequest {
+  wordId: string;
+  correct: boolean;
+  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  timeSpentMs?: number;
+}
+
+/**
+ * Record quiz result response (Story 15.1)
+ */
+export interface RecordQuizResultResponse {
+  nextReviewDate: string; // ISO 8601 datetime
+  lapseCount: number;
+  isLeech: boolean;
 }
 
 // API Response types (Story 14.2a - Enhanced)

@@ -67,7 +67,10 @@ mandarin-vite-react-ts/
 
 **Structure:**
 
-- **Features** (`src/features/`): Self-contained modules (mandarin, auth, etc.)
+- **Features** (`src/features/`): Self-contained modules
+  - **Mandarin**: Vocabulary learning, quiz system, conversations
+  - **Gamification**: Streaks, badges, XP progress, achievement display
+  - **Auth**: User authentication and session management
 - **Shared Components** (`src/components/`): Reusable UI primitives
 - **Routing** (`src/router/`): React Router configuration
 - **Services** (per-feature): API clients, backend integration
@@ -166,6 +169,53 @@ Controller → Service (business logic) → Repository (database)
 - Auth system: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#authentication)
 - Environment setup: [docs/guides/environment-setup-guide.md](./guides/environment-setup-guide.md)
 
+## Progress & Spaced Repetition System
+
+**Pattern:** Quiz-based exponential backoff algorithm
+
+**Core Formula:**
+
+```
+newDelay = correct ? min(365, currentDelay * 2) : 1
+```
+
+**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
+
+**Performance Multipliers:**
+
+- **Quiz Correct**: Double the interval (exponential backoff), capped at 365 days
+- **Quiz Incorrect**: Reset to 1 day (immediate review)
+
+**Progress Tracking:**
+
+- **Study Metrics**: `studyCount`, `correctCount`, `nextReview`, `currentDelay`
+- **Quiz Metrics**: `lapseCount` (consecutive failures for leech detection)
+- **Session Records**: `QuizSessionAnswer` table logs every quiz answer with timestamp, question type, correctness, and time spent
+
+**Leech Detection:**
+
+- Words with `lapseCount >= 5` flagged as "leeches" (high-difficulty vocabulary)
+- Accessible via `GET /api/v1/learning/leeches` endpoint
+- Sorted by struggle intensity (highest lapseCount first)
+- Enables targeted review for 15% of words causing 50% of failures (Pareto principle)
+
+**Quiz Session Endpoints (Primary):**
+
+- `POST /api/v1/quiz/session/start` - Start or resume a session (returns 10 questions, handles daily check)
+- `POST /api/v1/quiz/session/:sessionId/answer` - Submit answer, receive feedback + AI explanation if incorrect
+- `GET /api/v1/quiz/session/:sessionId/summary` - Retrieve completed session metrics (XP, accuracy, badges)
+
+**Learning Endpoints (Stateless / Supplementary):**
+
+- `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
+- `POST /api/v1/learning/result` - Save quiz answer directly, adjust spaced repetition
+- `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
+
+**See detailed documentation:**
+
+- Spaced repetition guide: [docs/guides/spaced-repetition-integration-guide.md](./guides/spaced-repetition-integration-guide.md)
+- API specification: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#progress-tracking-endpoints)
+
 ## External Services
 
 **Google Cloud Platform:**
@@ -184,9 +234,29 @@ Controller → Service (business logic) → Repository (database)
 
 **Supabase PostgreSQL:**
 
-- **Purpose**: User accounts, progress tracking, authentication
+- **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/infrastructure/database/client.js`)
 - **Configuration**: `DATABASE_URL`
+- **Key Tables**: `users`, `progress`, `refresh_tokens`, `QuizSession`, `QuizSessionAnswer`, `QuizSessionSummary`, `study_streaks`, `user_badges`
+
+**Gamification System:**
+
+- **Streak Tracking**: 48-hour grace period with freeze currency system (earn per 10 perfect quizzes)
+- **Badge Awards**: 4 milestone tiers (7/30/100/365-day streaks), mystery box exclusive variants
+- **XP System**: +10 base per correct answer, +5 bonus for 7+ day streaks, 500 XP daily cap
+- **Mystery Boxes**: 5% drop rate on 7-day multiples, random rewards (50 XP / 1 freeze / rare badge)
+- **API Endpoints**: `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges`
+
+**AI Feedback System:**
+
+- **Purpose**: Personalized error explanations for incorrect quiz answers using Gemini API
+- **Delivery**: Auto-generated inline with answer submission (`POST /api/v1/quiz/session/:sessionId/answer`); only returned when incorrect
+- **Error Classification**: Tone errors (mā vs mǎ), character confusion (妈 vs 马), meaning mix-ups
+- **Caching**: Redis 24-hour TTL, cache key per word+answer combination, ~70-80% cost reduction
+- **Timeout Protection**: 3-second limit with graceful fallback to generic messages
+- **Rate Limiting**: 10 requests/minute per user to prevent API abuse
+- **Security**: Input sanitization (XSS prevention), JWT authentication required
+- **Standalone Endpoint**: `POST /api/v1/quiz/feedback` (available for direct AI feedback requests)
 
 ## Deployment Architecture
 

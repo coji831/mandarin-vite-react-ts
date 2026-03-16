@@ -6,15 +6,17 @@
 
 **Key Points:**
 
-- Active recall testing improves retention by 50%+ vs. passive flashcard review (cognitive science proven)
-- Daily quiz system with multiple question types (multiple choice, type pinyin, type character)
-- Study streak tracking with badges (7-day, 30-day, 100-day) drives daily active usage
-- Spaced repetition algorithm adjusts review dates based on quiz performance (not just confidence ratings)
-- Gamification with XP points and achievements increases engagement and reduces churn
+- Drives 50%+ retention improvement vs. current passive flashcards (active recall proven by cognitive science)
+- Increases daily active users (DAU) through streak tracking and milestone badges (7/30/100-day)
+- Provides objective learning metrics (accuracy rates, mastery levels) vs. subjective confidence ratings
+- Reduces churn through gamification (XP, badges, mystery rewards) and social engagement features
+- Addresses #1 user complaint ("why was I wrong?") with AI-powered personalized feedback
+- Enables data-driven insights for team analytics and progress reporting
+- Supports multiple difficulty levels (multiple choice → type answers) for diverse learner preferences
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** February 2, 2026
+**Last Update:** March 15, 2026
 
 ## Background
 
@@ -28,6 +30,7 @@ Research shows active recall testing (retrieving information from memory) signif
 - No objective mastery validation
 - No compelling reason to return daily (low DAU/MAU ratio)
 - Passive review less effective than active testing
+- Generic error feedback doesn't explain why mistakes happen or how to improve
 
 **Business Impact:**
 
@@ -39,34 +42,287 @@ This epic addresses these issues by implementing a daily review quiz system with
 
 ## User Stories
 
-This epic consists of the following user stories:
+This epic consists of 12 user stories organized by implementation layer for parallel development:
 
-1. [**Story 15.1: Due Words API & Backend Logic**](./story-15-1-due-words-api.md)
-   - As a **backend developer**, I want to **expose an API endpoint for due words**, so that **the frontend can fetch vocabulary requiring review on a given date**.
+### Backend Stories (API & Database)
 
-2. [**Story 15.2: Quiz UI Components**](./story-15-2-quiz-ui-components.md)
-   - As a **learner**, I want to **complete daily quizzes testing my vocabulary knowledge**, so that **I can validate mastery through active recall rather than passive review**.
+1. [**Story 15.1: Progress System Adaptation**](./story-15-1-progress-system-adaptation.md) **[PREREQUISITE]**
+   - As a **backend developer**, I want to **adapt the existing progress tracking system to support quiz-based testing**, so that **flashcard confidence ratings and quiz results can coexist without conflicts and enable gradual migration**.
 
-3. [**Story 15.3: Study Streak Tracking**](./story-15-3-study-streak-tracking.md)
-   - As a **learner**, I want to **see my study streak counter**, so that **I'm motivated to return daily and maintain my learning momentum**.
+2. [**Story 15.2: Core Quiz Backend Infrastructure**](./story-15-2-core-quiz-backend.md)
+   - As a **backend developer**, I want to **expose API endpoints for due words, test results, and leech tracking**, so that **the frontend can fetch vocabulary requiring review and save quiz answers**.
 
-4. [**Story 15.4: Test Mode Integration**](./story-15-4-test-mode-integration.md)
-   - As a **learner**, I want to **start a daily review quiz from my dashboard**, so that **I can practice due vocabulary and see my accuracy results**.
+3. [**Story 15.3: Streak & Gamification Backend APIs**](./story-15-3-streak-gamification-backend.md)
+   - As a **backend developer**, I want to **implement streak tracking, badge awards, and XP calculation APIs**, so that **gamification features can drive user engagement**.
 
-5. [**Story 15.5: Gamification (Badges & XP)**](./story-15-5-gamification-badges-xp.md)
-   - As a **learner**, I want to **earn badges and XP points for completing quizzes**, so that **I feel rewarded for consistent study and can track my achievements**.
+4. [**Story 15.4: AI Feedback Backend Service**](./story-15-4-ai-feedback-backend.md)
+   - As a **backend developer**, I want to **integrate Gemini API for error explanations with Redis caching**, so that **users receive personalized feedback on incorrect answers**.
+
+### Frontend Stories (UI Components)
+
+5. [**Story 15.5: Core Quiz UI Components**](./story-15-5-core-quiz-ui-components.md)
+   - As a **frontend developer**, I want to **build reusable quiz components (QuizCard, ToneInput, TypeAnswerInput)**, so that **learners can interact with multiple question types**.
+
+6. [**Story 15.6: Quiz Container & State Management**](./story-15-6-quiz-container-state.md)
+   - As a **frontend developer**, I want to **implement quiz state machine with interleaving logic**, so that **learners experience optimized question presentation for retention**.
+
+7. [**Story 15.7: Gamification & Feedback Display UI**](./story-15-7-gamification-feedback-display-ui.md)
+   - As a **frontend developer**, I want to **build display components for streaks, badges, XP, and AI feedback**, so that **learners see their achievements and receive contextual error explanations**.
+
+### Integration Stories (Connect Frontend to Backend)
+
+8. [**Story 15.8: Core Quiz Backend Integration**](./story-15-8-core-quiz-integration.md)
+   - As a **learner**, I want to **start a daily review quiz from my dashboard**, so that **I can practice due vocabulary and see my accuracy results with real-time backend sync**.
+
+9. [**Story 15.9: Gamification & AI Integration**](./story-15-9-gamification-ai-integration.md)
+   - As a **learner**, I want to **earn badges, XP, and streak rewards with AI-powered feedback**, so that **I feel rewarded for consistent study and understand my mistakes**.
+
+### Polish & Closure Stories
+
+10. [**Story 15.10: Quiz UX Polish & Results Enhancement**](./story-15-10-quiz-ux-polish.md)
+
+- As a **learner**, I want to **experience a polished quiz with stable layouts, clear instructions, and enhanced results display**, so that **the quiz feels professional and provides actionable feedback without visual jarring**.
+
+11. [**Story 15.11: Feature Extensions & Future Adaptability**](./story-15-11-feature-extensions.md)
+
+- As a **developer**, I want to **implement advanced quiz features and add architectural hooks for future enhancements**, so that **the quiz system handles multi-meaning words, provides better input methods, and supports planned expansions**.
+
+12. [**Story 15.12: Documentation Finalization & Code Quality**](./story-15-12-documentation-finalization.md)
+
+- As a **development team**, I want to **finalize Epic 15 with clean code, accurate documentation, and verified business rules**, so that **the codebase is maintainable and ready for production deployment**.
 
 ## Story Breakdown Logic
 
-This epic is divided into stories based on vertical slice approach:
+This epic is divided into 12 user stories using **UI/API separation principle** to enable parallel development and minimize coupling:
 
-- **Story 15.1** establishes backend infrastructure (API endpoints, database schema, spaced repetition adjustments)
-- **Story 15.2** builds UI components for quiz interaction (multiple choice, type answer, progress bar)
-- **Story 15.3** adds persistence layer for streak tracking (database + backend API)
-- **Story 15.4** integrates quiz components with backend APIs (end-to-end flow)
-- **Story 15.5** adds gamification layer (badges, XP) to enhance engagement
+**Backend Group (Stories 15.1-15.4):**
 
-Each story delivers incremental value while building toward the complete retention system.
+- **Story 15.1** (Prerequisite): Adapts existing progress system to support quiz-based testing **without breaking flashcard functionality**; enables gradual migration via feature detection and backward compatibility
+- **Story 15.2**: Implements core quiz APIs (due words, test results, leech tracking)
+- **Story 15.3**: Implements gamification backend (streaks, badges, XP, mystery boxes)
+- **Story 15.4**: Implements AI feedback service (Gemini API + Redis caching)
+
+**Frontend Group (Stories 15.5-15.7):**
+
+- **Story 15.5**: Builds pure UI components (QuizCard, ToneInput, TypeAnswerInput) with zero API calls
+- **Story 15.6**: Implements quiz state machine and interleaving logic (container components)
+- **Story 15.7**: Builds gamification display components (streaks, badges, XP, AI feedback)
+
+**Integration Group (Stories 15.8-15.9):**
+
+- **Story 15.8**: Connects quiz UI to backend APIs (fetch due words, save results, analytics)
+- **Story 15.9**: Connects gamification UI to backend APIs (streaks, rewards, AI feedback)
+
+**Polish & Closure Group (Stories 15.10-15.12):**
+
+- **Story 15.10**: UX polish addressing layout stability, guidance features, results enhancements (19 UX improvements from user feedback)
+- **Story 15.11**: Feature extensions (multi-meaning support, pinyin conversion, quiz retention, UI component migration) and future architecture hooks (filters, distractors, feedback providers)
+- **Story 15.12**: Documentation finalization, ESLint cleanup, type safety audits, business rule verification
+
+**Benefits of This Structure:**
+
+- Backend team and frontend team can work in parallel (40% faster delivery)
+- Zero file overlap until integration stories (fewer merge conflicts)
+- Pure UI components are reusable across features
+- Each story has clear, focused acceptance criteria
+- Story 15.1 ensures independent operation (quiz system won't break existing flashcard users)
+- Story 15.11 adds extensibility hooks without implementing full features (YAGNI principle)
+- Story 15.12 ensures production-ready code with comprehensive documentation
+
+## Business Rules
+
+This section maps core learning principles and gamification mechanics to their technical implementations across the epic.
+
+### 1. Spaced Repetition Algorithm (Story 15.1, 15.2, 15.11)
+
+**Rule:** Words are scheduled for review using exponential backoff spaced repetition.
+
+**Formula (Story 15.11 - Exponential Backoff):**
+
+```
+newDelay = correct ? min(365, currentDelay * 2) : 1
+```
+
+**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
+
+**Performance Multipliers:**
+
+- **Quiz correct answer:** Double the interval (exponential backoff), capped at 365 days
+- **Quiz incorrect answer:** Reset to 1 day (immediate review)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/core/services/ProgressService.js` → `calculateNextReview(currentDelay, correct)`
+- Database: `progress.nextReview`, `progress.currentDelay` columns, updated after each quiz answer
+- API: `POST /api/progress/record-quiz-result` adjusts nextReview based on correctness
+- **Bug Fix (Story 15.11)**: Fixed critical bug where delay compounding wasn't working (was passing 0 instead of currentDelay)
+
+**Business Rationale:** Active recall (quizzes) provides objective validation; exponential backoff efficiently spaces well-mastered words (up to yearly reviews) while quickly re-exposing challenging words. Increased max from 30 to 365 days for long-term retention.
+
+---
+
+### 2. Interleaving Practice (Story 15.6)
+
+**Rule:** Question types are randomized per word (not blocked), creating "desirable difficulty" that improves long-term retention by 20-30%.
+
+**Algorithm:**
+
+- For each word: randomly select from `['multiple_choice', 'type_pinyin', 'type_character']`
+- Shuffle occurs per word (e.g., Word A → MC, Word B → type pinyin, Word A again tomorrow → type character)
+- NOT blocked practice (e.g., all MC first, then all pinyin)
+
+**Implementation:**
+
+- Frontend: `apps/frontend/src/features/quiz/utils/interleaving.ts` → `createInterleavedQuestions()`
+- State: `apps/frontend/src/features/quiz/reducers/quizReducer.ts` → stores question sequence
+- Component: `apps/frontend/src/features/quiz/pages/QuizPage.tsx` → renders mode-specific inputs
+
+**Business Rationale:** Cognitive science research (Rohrer & Taylor 2007) shows interleaving forces learners to discriminate between concepts, strengthening memory retrieval vs. blocked practice which feels easier but produces weaker retention.
+
+---
+
+### 3. Streak Tracking & Reset Logic (Story 15.3)
+
+**Rule:** Study streaks motivate daily active usage through loss aversion mechanics.
+
+**Mechanics:**
+
+- **Increment:** Streak increases by 1 on first quiz activity of the day (midnight-to-midnight UTC)
+- **Reset:** Streak resets to 0 after 48 hours of inactivity (not 24h, to allow one missed day)
+- **Freeze Currency:** Earn 1 freeze per 10 consecutive perfect quizzes; spend to protect streak for 24h
+- **Badges:** Awarded at 7, 30, 100-day milestones (one-time, non-repeating)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/StreakService.ts` → `updateStreak()`, `checkStreakReset()`
+- Database: `study_streaks` table with `currentStreak`, `longestStreak`, `lastActivityDate`, `streakFreezes`
+- API: `GET /api/progress/streak`, `POST /api/progress/test-result` (auto-increments streak)
+- Frontend: `apps/frontend/src/features/gamification/components/StreakDisplay.tsx`
+
+**Business Rationale:** 48-hour window balances motivational urgency with user forgiveness; streak freezes reduce frustration from unavoidable missed days (travel, illness).
+
+---
+
+### 4. Leech Detection & Focus Words (Story 15.2)
+
+**Rule:** Words with 5+ consecutive incorrect answers are flagged as "leeches" to identify struggling vocabulary requiring extra attention.
+
+**Algorithm:**
+
+- Track `lapseCount` (increments on incorrect, resets to 0 on correct)
+- Flag word as leech when `lapseCount >= 5`
+- Reset lapse count on first correct answer (celebrate mastery)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/ProgressService.ts` → `updateLapseCount()`
+- Database: `progress.lapseCount` column (integer, default 0)
+- API: `GET /api/progress/leeches` returns flagged words
+- Frontend: `apps/frontend/src/features/quiz/components/results/LeechWarning.tsx` (displays as "Focus Words")
+
+**Business Rationale:** Positive framing ("Focus Words" not "Leeches") avoids demotivation while surfacing words that need mnemonic strategies or simplified review; prevents learners from wasting time on impossible words.
+
+---
+
+### 5. XP & Mystery Box Rewards (Story 15.3)
+
+**Rule:** Variable reward schedules (unpredictable bonuses) drive engagement via operant conditioning principles.
+
+**Mechanics:**
+
+- **Base XP:** +10 XP per correct answer (immediate feedback)
+- **Streak Bonus:** +5 XP per correct answer when streak >= 7 days
+- **Mystery Box:** 5% drop rate after completing quiz session (random cosmetic rewards)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/GamificationService.ts` → `calculateXP()`, `rollMysteryBox()`
+- API: `POST /api/progress/test-result` returns `xpEarned` field
+- Frontend: `apps/frontend/src/features/quiz/components/results/StatsGrid.tsx` (displays XP)
+- Frontend: `apps/frontend/src/features/gamification/components/MysteryBoxAnimation.tsx` (5% trigger)
+
+**Business Rationale:** Fixed rewards (XP) provide consistent validation; variable rewards (mystery boxes) create anticipation and excitement per behavioral psychology research (Skinner 1953).
+
+---
+
+### 6. AI-Powered Error Feedback (Story 15.4)
+
+**Rule:** Personalized explanations for incorrect answers address the #1 user complaint: "Why was I wrong?"
+
+**Mechanics:**
+
+- **Trigger:** Generated only for incorrect quiz answers (not correct answers or skips)
+- **Generation:** Gemini API analyzes user answer vs. correct answer, provides contextual explanation
+- **Caching:** Redis stores common errors with 24h TTL (~70% cache hit rate reduces API costs)
+- **Timeout:** 3-second timeout with fallback to generic template if API slow/unavailable
+- **Display:** Async loading (doesn't block quiz progression; loads in background panel)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/services/AIFeedbackService.ts` → `generateFeedback()`
+- Caching: Redis key format: `quiz:feedback:{wordId}:{userAnswer}` (hash-based)
+- API: `POST /api/quiz/feedback` returns `{ explanation, similarWords, cached }`
+- Frontend: `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` → async fetch
+- Component: `apps/frontend/src/features/quiz/components/exams/FeedbackSection.tsx`
+
+**Business Rationale:** Generic error messages ("Incorrect, the answer is X") don't explain confusion; AI feedback identifies mistake type (tone confusion, similar character mix-up) and provides learning strategy, accelerating understanding vs. repeated trial-and-error.
+
+---
+
+### 7. Multiple Choice Distractor Generation (Story 15.5, 15.6)
+
+**Rule:** Multiple choice questions must include plausible distractors (wrong answers that seem reasonable) to prevent guessing.
+
+**Algorithm:**
+
+- For **Chinese → English**: Select 3 incorrect English translations from vocabulary database (random sampling)
+- For **Pinyin → Chinese**: Select 3 characters with similar pronunciation or tone variations (e.g., mā vs má vs mǎ vs mà for horse)
+- For **English → Chinese**: Select 3 characters with similar meaning categories (e.g., food words if correct answer is food word)
+- **Shuffle:** Randomize correct answer position (not always option A)
+
+**Implementation:**
+
+- Backend: `apps/backend/src/utils/distractorGenerator.ts` → `generateDistractors()`
+- API: `GET /api/progress/due` returns words with pre-generated options
+- Frontend: `apps/frontend/src/features/quiz/components/inputs/MultipleChoiceInput.tsx` → renders options
+
+**Business Rationale:** Weak distractors (obviously wrong answers) allow learners to guess correctly without actually knowing the answer, invalidating assessment; plausible distractors force genuine recall.
+
+---
+
+### 8. Quiz Results Retention (Story 15.11)
+
+**Rule:** Quiz results persist to the backend `quiz_results` table, enabling result review and spaced repetition calculations without relying on localStorage.
+
+**Mechanics:**
+
+- **Storage:** Each quiz answer saved to `quiz_results` table via `POST /api/v1/learning/result`
+- **Data:** Store `{ userId, wordId, correct, questionType, timeSpentMs, createdAt }`
+- **In-Session Summary:** The session summary screen uses `sessionSummary` from QuizContext for immediate post-quiz display
+- **Retrieval:** Summary data returned by `GET /api/v1/quiz/session/:sessionId/summary`
+
+**Implementation:**
+
+- Service: `apps/backend/src/core/services/LearningService.js` → `recordQuizResult()` persists each answer
+- Context: `apps/frontend/src/features/quiz/contexts/QuizContext.tsx` → `sessionSummary` state holds in-session results
+- Endpoint: `GET /api/v1/quiz/session/:sessionId/summary` → returns full session results
+
+**Business Rationale:** Backend-persisted results enable cross-device access, analytics, and permanent audit trail. The `quiz_results` table supports leech detection (lapseCount) and spaced repetition adjustments.
+
+---
+
+### Cross-Story Rule Dependencies
+
+| Business Rule          | Primary Story | Dependent Stories  | Technical Components                     |
+| ---------------------- | ------------- | ------------------ | ---------------------------------------- |
+| Spaced Repetition      | 15.1, 15.2    | All (foundation)   | ProgressService, progress table          |
+| Interleaving           | 15.6          | 15.5, 15.8         | interleaving.ts, quizReducer             |
+| Streak Tracking        | 15.3          | 15.9 (display)     | StreakService, study_streaks table       |
+| Leech Detection        | 15.2          | 15.9 (display)     | ProgressService.updateLapseCount()       |
+| XP/Rewards             | 15.3          | 15.9 (display)     | GamificationService, MysteryBoxAnimation |
+| AI Feedback            | 15.4          | 15.9 (integration) | AIFeedbackService, Redis, Gemini API     |
+| Distractors            | 15.5, 15.6    | 15.2 (backend gen) | distractorGenerator.ts                   |
+| Quiz Results Retention | 15.11         | 15.10 (UI polish)  | quiz_results table, LearningService      |
 
 ## Acceptance Criteria
 
@@ -84,50 +340,57 @@ Each story delivers incremental value while building toward the complete retenti
 - [ ] "Review Again" option available for incorrect answers
 - [ ] Mobile-responsive quiz UI (optimized for phone usage)
 - [ ] Quiz performance metrics logged for analytics (accuracy rate, time per question)
+- [ ] Question types interleaved per word (randomized, not blocked by type)
+- [ ] Tone input supports numeric notation (ma3 → mǎ) and validates tone mark rules (a>o>e>i/u)
+- [ ] Streak freeze currency system (earn 1 per 10 perfect quizzes, spend to protect streak)
+- [ ] Error feedback explains confusion with AI-generated context (phonetic vs semantic errors)
+- [ ] Mystery boxes drop random rewards after milestone quizzes (5% drop rate)
+- [ ] Leech tracking flags words after 5 consecutive failures ("struggling words" indicator)
 
 ## Architecture Decisions
 
 - **Decision: Active recall testing over passive flashcard review** (Quiz-first approach)
-  - **Rationale**: Cognitive science proven method for retention; objective mastery validation vs. subjective confidence ratings
-  - **Alternatives considered**: Enhanced flashcard UI, passive review with timers
-  - **Implications**: Requires quiz UI development; more complex than flashcards; higher user engagement potential
+  - **Rationale**: Cognitive science proves active recall improves retention by 50%+; provides objective mastery metrics vs. subjective ratings; drives higher engagement
+  - **Alternatives considered**: Enhanced flashcards, passive review timers
+  - **Implications**: Increases user retention (DAU/MAU improvement); enables team analytics; higher development effort
 
-- **Decision: Backend-tracked streaks over localStorage** (PostgreSQL storage)
-  - **Rationale**: Cross-device persistence; data integrity for team features; enables analytics
-  - **Alternatives considered**: localStorage with sync, hybrid approach
-  - **Implications**: Requires database schema changes; API endpoints for streak CRUD; slightly higher backend load
+- **Decision: Backend-tracked streaks** (PostgreSQL storage)
+  - **Rationale**: Cross-device persistence essential for mobile users; supports future social features; enables retention analytics
+  - **Alternatives considered**: localStorage only, hybrid sync
+  - **Implications**: Reliable streak tracking across devices; slight backend load increase
 
-- **Decision: Immediate progress updates vs. batch save** (Optimistic UI + instant save)
-  - **Rationale**: Better UX (no lost data if browser crashes); enables real-time leaderboards for team features
-  - **Alternatives considered**: Save on quiz completion only, periodic autosave
-  - **Implications**: Higher API call volume; requires robust error handling; enables real-time features
+- **Decision: Multiple question types** (3 modes: multiple choice, type pinyin, type character)
+  - **Rationale**: Accommodates learner preferences; prevents boredom; flexibility drives engagement
+  - **Alternatives considered**: Single difficulty mode
+  - **Implications**: Broader user appeal; more UI development
 
-- **Decision: Multiple question types vs. single mode** (3 modes: multiple choice, type pinyin, type character)
-  - **Rationale**: Accommodates different difficulty preferences; prevents boredom; tests different recall depths
-  - **Alternatives considered**: Multiple choice only (easiest), type answer only (hardest)
-  - **Implications**: More UI complexity; requires input validation for type modes; flexible learning paths
+- **Decision: Interleaved practice** (Randomized question types per word)
+  - **Rationale**: Research shows 20-30% retention improvement long-term despite initial difficulty perception
+  - **Alternatives considered**: Blocked practice (easier short-term)
+  - **Implications**: Superior learning outcomes; may confuse users initially (mitigate with onboarding)
+
+- **Decision: AI-powered feedback** (Gemini explanations for errors)
+  - **Rationale**: Addresses #1 user complaint ("why was I wrong?"); accelerates learning vs. generic messages
+  - **Alternatives considered**: Static templates, community tips
+  - **Implications**: Competitive differentiator; adds API cost (mitigated with caching)
+
+- **Decision: Unified spaced repetition algorithm** (Performance multiplier approach)
+  - **Rationale**: CRITICAL - prevents flashcard/quiz systems from conflicting and destroying review schedules; protects existing 100k+ progress records
+  - **Alternatives considered**: Separate systems (REJECTED - data corruption), replace flashcards (REJECTED - breaks existing users)
+  - **Implications**: Enables gradual migration; backward compatible; requires prerequisite refactor (Story 15.1)
 
 ## Implementation Plan
 
-1. Design database schema for study streaks (`studyStreaks` table with `userId`, `currentStreak`, `longestStreak`, `lastActivityDate`)
-2. Add `GET /api/progress/due` endpoint to return words where `nextReviewDate <= today`
-3. Add `POST /api/progress/test-result` endpoint to update progress based on quiz answers
-4. Add `GET /api/progress/streak` endpoint to return current/longest streak
-5. Implement spaced repetition adjustment logic for test results (correct = increase delay, incorrect = reset to 1 day)
-6. Create `DailyReviewTest.tsx` container component with quiz state management
-7. Create `QuizCard.tsx` component with multiple choice mode UI
-8. Create `TypeAnswerInput.tsx` component for pinyin/character input modes
-9. Create `QuizProgressBar.tsx` component showing X/Y completed
-10. Create `StreakCounter.tsx` component displaying current streak with flame icon
-11. Integrate quiz components with backend APIs (fetch due words, save results)
-12. Add quiz summary screen with accuracy, XP earned, streak status
-13. Implement badge system (define milestones, award logic, display UI)
-14. Add XP calculation (+10 base, +5 bonus for streaks)
-15. Add "Review Again" flow for incorrect answers
-16. Mobile-optimize quiz UI (touch-friendly buttons, keyboard handling)
-17. Add analytics logging (quiz completion rate, accuracy, time per question)
-18. Write unit tests for quiz logic and API integration
-19. Update documentation (`docs/architecture.md`, feature design docs)
+1. **Story 15.1 - Progress System Adaptation (Prerequisite)**: Refactor progress tracking to support unified spaced repetition algorithm; add database schema for quiz results, streaks, and leech tracking; ensure backward compatibility with flashcard system
+2. **Story 15.2 - Core Quiz Backend APIs**: Implement REST endpoints for due words query, test result saving, and leech retrieval
+3. **Story 15.3 - Gamification Backend**: Build streak tracking, badge award system, XP calculation, and mystery box reward APIs
+4. **Story 15.4 - AI Feedback Service**: Integrate Gemini API for error explanations with Redis caching layer
+5. **Story 15.5 - Quiz UI Components**: Build reusable components (QuizCard, ToneInput, TypeAnswerInput) with zero backend coupling
+6. **Story 15.6 - Quiz State Management**: Implement quiz container with interleaving logic and progress tracking UI
+7. **Story 15.7 - Gamification UI**: Build display components for streaks, badges, XP, and AI feedback panels
+8. **Story 15.8 - Core Quiz Integration**: Connect quiz UI to backend APIs with analytics logging
+9. **Story 15.9 - Gamification Integration**: Connect rewards and AI feedback UI to backend services; mobile optimization
+10. **Testing & Documentation**: Comprehensive unit/integration tests; update architecture and API documentation
 
 ## Risks & Mitigations
 
@@ -147,6 +410,14 @@ Each story delivers incremental value while building toward the complete retenti
   - **Mitigation**: Make badges/XP optional (hide in settings); focus on learning metrics (accuracy, retention rate); avoid excessive animations
   - **Rollback**: Remove XP system; keep badges minimal (streak only)
 
+- **Risk: AI feedback latency delays quiz flow** — Severity: Medium
+  - **Mitigation**: Cache common error explanations (Redis, 24h TTL); show feedback asynchronously (answer → next question → feedback loads in background); set 3s timeout with fallback to static message
+  - **Rollback**: Disable AI feedback; use pre-written error templates only
+
+- **Risk: Leech tracking demotivates users seeing "struggling" label** — Severity: Low
+  - **Mitigation**: Use positive framing ("Focus words" instead of "leeches"); provide actionable tips (mnemonic generator link); celebrate when leech is mastered
+  - **Rollback**: Remove leech UI indicator; keep backend tracking for analytics only
+
 - **Risk: Quiz UI performance degrades on mobile** — Severity: Medium
   - **Mitigation**: Lazy load quiz components; optimize re-renders with React.memo; test on low-end devices
   - **Rollback**: Simplify UI (remove animations); reduce simultaneous DOM elements
@@ -164,10 +435,35 @@ Each story delivers incremental value while building toward the complete retenti
 **Related Documentation:**
 
 - [Epic 15 Implementation](../../issue-implementation/epic-15-learning-retention/README.md)
-- [Story 15.1 BR](./story-15-1-due-words-api.md)
-- [Story 15.2 BR](./story-15-2-quiz-ui-components.md)
-- [Story 15.3 BR](./story-15-3-study-streak-tracking.md)
-- [Story 15.4 BR](./story-15-4-test-mode-integration.md)
-- [Story 15.5 BR](./story-15-5-gamification-badges-xp.md)
+- [Story 15.1 BR: Progress System Adaptation](./story-15-1-progress-system-adaptation.md) **[PREREQUISITE]**
+- [Story 15.2 BR: Core Quiz Backend Infrastructure](./story-15-2-core-quiz-backend.md)
+- [Story 15.3 BR: Streak & Gamification Backend APIs](./story-15-3-streak-gamification-backend.md)
+- [Story 15.4 BR: AI Feedback Backend Service](./story-15-4-ai-feedback-backend.md)
+- [Story 15.5 BR: Core Quiz UI Components](./story-15-5-core-quiz-ui-components.md)
+- [Story 15.6 BR: Quiz Container & State Management](./story-15-6-quiz-container-state.md)
+- [Story 15.7 BR: Gamification & Feedback Display UI](./story-15-7-gamification-feedback-display-ui.md)
+- [Story 15.8 BR: Core Quiz Backend Integration](./story-15-8-core-quiz-integration.md)
+- [Story 15.9 BR: Gamification & AI Integration](./story-15-9-gamification-ai-integration.md)
+- [Story 15.10 Implementation: Quiz UX Polish & Results Enhancement](./story-15-10-quiz-ux-polish.md)
+- [Story 15.11 Implementation: Feature Extensions & Future Adaptability](./story-15-11-feature-extensions.md)
+- [Story 15.12 Implementation: Documentation Finalization & Code Quality](./story-15-12-documentation-finalization.md)
+- [Enhancements from Research](./enhancements-from-research.md) (research mapping)
 - [Architecture Overview](../../architecture.md)
 - [Epic 14: API Modernization](../epic-14-api-modernization/README.md) (dependency)
+
+**Knowledge Base Articles:**
+
+- [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md) - Full research document (cognitive science, FSRS, gamification theory)
+- [Cognitive Science of Active Recall](../../knowledge-base/cognitive-science-active-recall.md) - Testing effect, desirable difficulty, interleaving
+- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - FSRS vs SM-2 comparison, DSR model
+- [Gamification Psychology](../../knowledge-base/gamification-psychology-learning.md) - Loss aversion, variable rewards, ethical design
+- [Chinese Character Structure](../../knowledge-base/chinese-character-structure.md) - Radicals, phonetic components, decomposition
+
+**Implementation Guides:**
+
+- [Quiz State Management Guide](../../guides/quiz-state-management-guide.md) - React reducer patterns, interleaving logic
+- [Gemini API Integration Guide](../../guides/gemini-api-integration-guide.md) - AI feedback setup, rate limiting, caching
+- [Tone Input Component Guide](../../guides/tone-input-component-guide.md) - Tone mark conversion, validation rules
+- [Spaced Repetition Integration Guide](../../guides/spaced-repetition-integration-guide.md) - Unified algorithm, backward compatibility
+- [Redis Caching for Quiz Features](../../guides/redis-caching-quiz-guide.md) - Cache strategies for AI feedback and due words
+- [Troubleshooting Quiz Features](../../guides/troubleshooting-quiz-features.md) - Common issues and solutions

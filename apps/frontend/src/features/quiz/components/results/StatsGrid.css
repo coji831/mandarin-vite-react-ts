@@ -1,0 +1,50 @@
+/**
+ * QuizStatsGrid Component Styles
+ * Story 15.10: Quiz UX Polish - CSS Cleanup
+ *
+ * Stats grid layout - optimized to use .card-dark utility from globals.css
+ */
+
+.statsGrid {
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  /* Uses .w-full and .grid-3-col utilities */
+}
+
+.statCard {
+  padding: var(--space-sm) var(--space-sm);
+  background: var(--surface-light-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--surface-light-10);
+  /* Uses .flex-col utility */
+}
+
+.statLabel {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: var(--font-xl);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.xpValue {
+  color: var(--color-xp);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statValue {
+    font-size: var(--font-xl);
+  }
+}

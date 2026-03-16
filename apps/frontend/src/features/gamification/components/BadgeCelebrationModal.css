@@ -1,0 +1,181 @@
+/**
+ * BadgeCelebrationModal Styles
+ * Story 15.11: Business Logic Flows - Badge Award Celebration (Flow 2.6)
+ *
+ * Celebration modal with confetti animation, purple gradient background,
+ * and bounce effects. Styles copied from Dashboard.css for consistency.
+ */
+
+/* Modal Overlay */
+.modal-overlay.badge-celebration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Modal Content */
+.modal-content.celebration {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 16px;
+  text-align: center;
+  padding: 2.5rem 2rem;
+  color: white;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Confetti Container */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+/* Confetti Pieces */
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(calc(100vh + 10px)) rotate(360deg);
+  }
+}
+
+/* Badge Icon */
+.badge-celebration-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Typography */
+.badge-celebration-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.badge-celebration-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.badge-celebration-description {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.badge-celebration-multiple {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0 0 1.5rem 0;
+  font-style: italic;
+}
+
+/* Celebrate Button */
+.modal-button.celebrate {
+  background: white;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 250px;
+  margin-top: 0.5rem;
+}
+
+.modal-button.celebrate:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.modal-button.celebrate:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .modal-content.celebration {
+    padding: 2rem 1.5rem;
+  }
+
+  .badge-celebration-icon {
+    font-size: 4rem;
+  }
+
+  .badge-celebration-title {
+    font-size: 1.25rem;
+  }
+
+  .badge-celebration-name {
+    font-size: 1.5rem;
+  }
+
+  .badge-celebration-description {
+    font-size: 0.9rem;
+  }
+}

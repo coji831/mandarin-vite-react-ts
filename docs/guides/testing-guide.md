@@ -613,6 +613,29 @@ jest.mock("../services/api", () => ({
 }));
 ```
 
+**5. Read Implementation Before Writing Tests (Backend)**
+
+For backend API testing, always review the actual implementation before writing test assertions:
+
+```typescript
+// ❌ Bad: Assumption-based test
+expect(service.getDueWords).toHaveBeenCalledWith("user1", "2025-01-15", 20);
+
+// ✅ Good: After reading implementation, discovered controller passes Date objects
+expect(service.getDueWords).toHaveBeenCalledWith("user1", expect.any(Date));
+```
+
+**Common Backend Testing Pitfalls:**
+
+- **Schema verification**: Always check Prisma schema (`apps/backend/prisma/schema.prisma`) before writing service tests. Field names/types in tests must match database schema exactly (e.g., `correct: Boolean` not `correctCount: number`)
+- **Date handling**: Controllers may parse strings to Date objects before passing to services
+- **Response shapes**: Services may return ORM objects (e.g., `id`) instead of aliased fields (e.g., `wordId`)
+- **Nested relations**: Prisma includes nested objects; mock data must match schema structure
+- **Graceful degradation**: Services may return partial data instead of throwing errors when dependencies unavailable
+- **Naming conventions**: Database enums use underscores (`multiple_choice`), not hyphens (`multiple-choice`)
+
+**Best Practice**: Check Prisma schema first → read implementation → write tests. Spend 15 minutes upfront reading → saves 30+ minutes debugging failed tests
+
 ## Troubleshooting
 
 **"Not wrapped in act(...)"**

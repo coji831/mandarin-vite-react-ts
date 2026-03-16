@@ -46,7 +46,9 @@ apps/backend/src/
 - ✅ **Clean Architecture**: Layered design (api/core/infrastructure)
 - ✅ **OpenAPI 3.1**: Interactive Swagger UI at `/api-docs`
 - ✅ **Vocabulary API**: Fetch lists/words from GCS, search/filter
-- ✅ **Progress Tracking**: User progress with spaced repetition
+- ✅ **Progress Tracking**: User progress with unified spaced repetition (flashcard + quiz modes)
+- ✅ **Quiz System**: Due words, test results, leech tracking with performance-based spacing
+- ✅ **Gamification**: Study streaks, milestone badges, XP calculation, mystery box rewards
 - ✅ **Conversation Generation**: AI-powered dialogues via Gemini API
 - ✅ **Text-to-Speech**: Google Cloud TTS with caching
 - ✅ **Redis Caching**: Automatic caching for TTS and conversations

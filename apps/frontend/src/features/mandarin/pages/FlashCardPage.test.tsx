@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { describe, it, expect, vi } from "vitest";
 // Mock VocabularyDataService and fetchWordsForList
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -15,7 +15,7 @@ vi.mock("../services/vocabularyDataService", () => {
         Promise.resolve([
           { wordId: "1", chinese: "你", pinyin: "nǐ", english: "you" },
           { wordId: "2", chinese: "好", pinyin: "hǎo", english: "good" },
-        ])
+        ]),
       ), // Default: returns valid array
     })),
   };
@@ -44,12 +44,12 @@ describe("FlashCardPage", () => {
     };
     render(
       <ProgressStateContext.Provider value={mockState}>
-        <MemoryRouter initialEntries={["/mandarin/flashcards/list-1"]}>
+        <MemoryRouter initialEntries={["/learn/flashcards/list-1"]}>
           <Routes>
-            <Route path="/mandarin/flashcards/:listId" element={<FlashCardPage />} />
+            <Route path="/learn/flashcards/:listId" element={<FlashCardPage />} />
           </Routes>
         </MemoryRouter>
-      </ProgressStateContext.Provider>
+      </ProgressStateContext.Provider>,
     );
     expect(screen.getByText(/List Not Found or Empty/i)).not.toBeNull();
   });

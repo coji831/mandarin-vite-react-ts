@@ -86,6 +86,7 @@ Follow this sequence whenever implementing or updating a story (smallest deliver
 
 - Story BR: mark progressed AC (leave unchecked until fully validated).
 - Story implementation doc: record decisions, data shape changes, performance notes.
+- **Add Technical Challenges & Solutions section**: Document any non-trivial problems encountered during implementation (debugging >1 hour, architectural decisions, test alignment issues, schema mismatches, error handling patterns). Include problem statement, root cause, solution with code examples, and lessons learned.
 - Epic docs: only update if cross-cutting decisions or shared architecture changed.
 - Update Last Update date fields accordingly.
 
@@ -160,6 +161,13 @@ Add tests for new logic before declaring story complete.
 - Do NOT add extra, duplicate, or non-template sections (such as "Status") unless they are explicitly present in the template file.
 - When updating or creating docs, always cross-check with the latest template to ensure full compliance.
 
+**High-Level Documentation Guidelines:**
+
+- High-level docs (`docs/architecture.md`, `docs/README.md`, root `README.md`) should NOT reference specific story or epic numbers.
+- Use descriptive feature names instead (e.g., "Gamification System" not "Story 15.3").
+- Keep high-level docs focused on current system state, not implementation history.
+- Story/epic references belong in BR and implementation docs only.
+
 Epic creation checklist:
 
 - Create BR README and implementation README using only the sections defined in their templates.
@@ -173,6 +181,40 @@ Story creation checklist:
 
 Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
 Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
+
+**Technical Challenges Documentation:**
+
+When completing story implementation, add a "Technical Challenges & Solutions" section to the implementation doc with:
+
+- **Challenge title**: Descriptive name (e.g., "Race Condition in Streak Updates")
+- **Problem**: What went wrong or what obstacle was encountered
+- **Root Cause**: Why the problem occurred (schema mismatch, wrong assumptions, etc.)
+- **Solution**: How it was resolved (include code examples if relevant)
+- **Impact/Benefits**: What improved or what was learned
+- **Alternatives Considered**: Other approaches evaluated (optional)
+
+**When to document a challenge:**
+
+- Debugging took >1 hour to resolve
+- Test failures required significant refactoring
+- Schema/API misalignment discovered
+- Architectural pattern clarified through implementation
+- Error handling strategy decided
+- Performance issue identified and fixed
+
+**Format example:**
+
+```markdown
+### Challenge 2: Test Schema Misalignment
+
+**Problem:** Tests assumed QuizResult had correctCount/incorrectCount fields, but schema only has correct: Boolean.
+
+**Root Cause:** Tests written before verifying Prisma schema.
+
+**Solution:** Updated all test fixtures to use correct: Boolean field instead.
+
+**Lesson:** Always verify database schema before writing service tests.
+```
 
 ## 📚 Knowledge Base Update Protocol
 
@@ -192,7 +234,6 @@ Update KB after resolving non-trivial technical struggles (3+ hours debugging, i
 **Content Distribution: Guides vs Knowledge Base:**
 
 - **Guides** (`docs/guides/`): Project-specific, action-focused, step-by-step setup/configuration
-
   - Example: "How to configure Vite proxy for cookie forwarding in THIS project"
   - Format: Numbered steps, code snippets, file paths, commands
   - Audience: Contributors setting up or maintaining THIS codebase
@@ -207,20 +248,17 @@ Update KB after resolving non-trivial technical struggles (3+ hours debugging, i
 1. **Identify Reusable Content** — Review implementation doc "Technical Challenges & Solutions" section for patterns applicable beyond this story.
 
 2. **Determine Target Location:**
-
    - Quick reference / project setup → Update relevant guide in `docs/guides/`
    - Deep technical concept / architectural pattern → Update/create KB article in `docs/knowledge-base/`
    - Both? Add quick reference to guide with "Learn more: [KB Article]" link
 
 3. **Extract & Organize:**
-
    - Remove verbose postmortem/lesson sections from story implementation doc
    - Distribute actionable patterns to guides (concise, directive format)
    - Distribute conceptual explanations to KB (detailed, educational format)
    - Keep story implementation doc focused on WHAT was built, not WHY/HOW in detail
 
 4. **Cross-Link:**
-
    - Story implementation doc: Add "Related Documentation" or "Technical Guidance" section with links to updated guides/KB
    - Guide: Add "Learn more" links to KB articles for deeper understanding
    - KB README: Update index with new/enhanced articles
@@ -248,6 +286,7 @@ Update KB after resolving non-trivial technical struggles (3+ hours debugging, i
 ## 🛠️ Code Change Checklist
 
 - Refer: `code-conventions.md` + `solid-principles.md`.
+- **Update file-level comments**: When modifying a file, update the header comment to reflect new functionality, changed exports, or updated purpose (use File Summary Template).
 - Update design docs if feature logic or architecture changes.
 - Update architecture (`docs/architecture.md`) if cross‑cutting changes.
 - Update API specs (`api/api-spec.md`, `local-backend/docs/api-spec.md`) if endpoints/contracts change.
@@ -268,10 +307,27 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
 1. Confirm all AC items checked in BR. If not:
    - Split remaining into new story OR
    - Defer with explicit "Deferred" subsection.
-2. Update `Status: Completed` in BR + implementation docs.
-3. Update `Last Update` date in both.
-4. Ensure PR number is referenced in both docs.
-5. Commit BR + implementation changes together.
+2. **Verify and update high-level docs** (`docs/architecture.md`, `README.md`, `docs/README.md`, `apps/*/README.md`):
+   - Add new features/capabilities using descriptive names (NOT story/epic numbers).
+   - Update system overview to reflect current state.
+   - Ensure feature descriptions are accurate and complete.
+3. **Check for knowledge base and guideline updates**:
+   - Review "Technical Challenges & Solutions" section in implementation doc.
+   - Extract reusable patterns to `docs/knowledge-base/` (concepts, architectural patterns, deep dives).
+   - Update project guides in `docs/guides/` (setup steps, configuration, troubleshooting).
+   - Update `docs/guides/code-conventions.md` if new patterns emerged (naming, error handling, testing).
+   - Add cross-links between story doc, guides, and KB articles.
+   - See "Knowledge Base Update Protocol" section for detailed extraction workflow.
+4. **Run all feature tests before closing**:
+   - Execute full test suite for the affected feature: `npm test -- --run src/features/<feature>/`
+   - Verify 100% pass rate (no failures, no skipped tests except explicitly documented).
+   - If tests fail, fix issues before proceeding with closure.
+   - Document final test count and pass rate in implementation doc.
+   - For epic closure, run tests for ALL features touched by epic stories.
+5. Update `Status: Completed` in BR + implementation docs.
+6. Update `Last Update` date in both.
+7. Ensure PR number is referenced in both docs.
+8. Commit BR + implementation changes together.
 
 ## 🧷 Quality Gates (Before Merge / Close)
 

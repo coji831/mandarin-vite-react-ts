@@ -1,35 +1,94 @@
 /**
  * @file apps/backend/src/infrastructure/repositories/VocabularyRepository.js
- * @description Infrastructure implementation that retrieves vocabulary lists and CSVs from GCS
+ * @description Infrastructure implementation that retrieves vocabulary from database and GCS
  * Clean architecture: implements IVocabularyRepository interface
+ *
+ * Story 15-2: Enhanced to use normalized database schema (VocabularyWord, Category, VocabularyList)
  */
 
 import * as gcsClient from "../external/GCSClient.js";
 import { vocabularyConfig } from "../../config/vocabulary.js";
 import { parseCsvText } from "../parsers/CsvParser.js";
+import { prisma } from "../database/client.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("VocabularyRepository");
 
 /**
  * VocabularyRepository
- * Infrastructure implementation that retrieves vocabulary lists and CSVs from GCS.
+ * Infrastructure implementation that retrieves vocabulary from database and GCS.
  *
  * Notes:
- * - Uses a simple in-memory cache for `vocabularyLists.json`. For multi-node
- *   deployments, consider moving this cache to Redis (shared cache).
- * - Expected `vocabularyLists.json` shape:
- *   [{ id, name, description, difficulty, tags, csvFile }, ...]
+ * - Primary source: PostgreSQL database (normalized schema)
+ * - Fallback/migration source: CSV files from GCS
+ * - Uses simple in-memory cache for vocabularyLists.json
  */
 export class VocabularyRepository {
   constructor() {
-    // in-memory cache of the lists file
+    // in-memory cache of the lists file (for CSV migration)
     this._listsCache = null;
     this._cacheTs = 0;
   }
 
   /**
-   * findAllLists
-   * Fetch the `vocabularyLists.json` from GCS and cache it.
+   * Find word by ID (for progress enrichment)
+   * Story 15-2: Primary method for quiz system
+   */
+  async findById(wordId) {
+    return await prisma.vocabularyWord.findUnique({
+      where: { id: wordId },
+      include: {
+        categories: {
+          include: { category: true },
+        },
+        lists: {
+          include: { list: { select: { name: true, difficulty: true } } },
+          take: 3, // Limit to avoid excessive data
+        },
+      },
+    });
+  }
+
+  /**
+   * Find multiple words by IDs (batch operation)
+   * Story 15-2: Optimized for due words enrichment
+   */
+  async findByIds(wordIds) {
+    if (!wordIds || wordIds.length === 0) return [];
+
+    return await prisma.vocabularyWord.findMany({
+      where: { id: { in: wordIds } },
+      include: {
+        categories: {
+          include: { category: { select: { name: true } } },
+        },
+      },
+    });
+  }
+
+  /**
+   * Find all vocabulary lists (database)
    */
   async findAllLists() {
+    // Try database first
+    const dbLists = await prisma.vocabularyList.findMany({
+      where: { isPublic: true },
+      orderBy: { name: "asc" },
+    });
+
+    if (dbLists.length > 0) {
+      return dbLists;
+    }
+
+    // Fallback to GCS for migration
+    return await this._findAllListsFromGCS();
+  }
+
+  /**
+   * Find all lists from GCS (legacy/migration method)
+   * @private
+   */
+  async _findAllListsFromGCS() {
     // simple in-memory TTL cache
     const now = Date.now();
     if (this._listsCache && now - this._cacheTs < vocabularyConfig.cacheTTL * 1000) {
@@ -47,20 +106,63 @@ export class VocabularyRepository {
   }
 
   /**
-   * findListById
-   * Convenience method that searches the cached lists for a single list.
+   * Find list by ID
    */
   async findListById(listId) {
-    const lists = await this.findAllLists();
+    // Try database first
+    const dbList = await prisma.vocabularyList.findUnique({
+      where: { id: listId },
+    });
+
+    if (dbList) {
+      return dbList;
+    }
+
+    // Fallback to GCS
+    const lists = await this._findAllListsFromGCS();
     return lists.find((l) => l.id === listId) || null;
   }
 
   /**
-   * findWordsForList
-   * Fetch and parse the CSV associated with a list from GCS.
-   * The CSV filename is taken from `list.csvFile` or falls back to `<listId>.csv`.
+   * Find words for a list (replaces CSV loading)
+   * Story 15-2: Uses normalized database schema
    */
   async findWordsForList(listId) {
+    // Try database first
+    const listWithWords = await prisma.vocabularyList.findUnique({
+      where: { id: listId },
+      include: {
+        words: {
+          include: {
+            word: {
+              include: {
+                categories: {
+                  include: { category: true },
+                },
+              },
+            },
+          },
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+    });
+
+    if (listWithWords) {
+      return listWithWords.words.map((wl) => ({
+        ...wl.word,
+        sortOrder: wl.sortOrder,
+      }));
+    }
+
+    // Fallback to GCS CSV for migration
+    return await this._findWordsForListFromGCS(listId);
+  }
+
+  /**
+   * Find words for list from GCS CSV (legacy/migration method)
+   * @private
+   */
+  async _findWordsForListFromGCS(listId) {
     const list = await this.findListById(listId);
     if (!list) return [];
 
@@ -75,9 +177,89 @@ export class VocabularyRepository {
   }
 
   /**
-   * searchLists
-   * Basic filtering by query, difficulty, and tags. Keep simple for now;
-   * consider full-text search or an indexed search service if needs grow.
+   * Search words across vocabulary
+   * Story 15-2: Database-powered search
+   */
+  async searchWords(query, filters = {}) {
+    const whereClause = {
+      AND: [
+        // Text search
+        query
+          ? {
+              OR: [
+                { pinyin: { contains: query, mode: "insensitive" } },
+                { simplified: { contains: query } },
+                { traditional: { contains: query } },
+                { english: { contains: query, mode: "insensitive" } },
+              ],
+            }
+          : {},
+
+        // Category filter
+        filters.categories?.length
+          ? {
+              categories: {
+                some: {
+                  category: { name: { in: filters.categories } },
+                },
+              },
+            }
+          : {},
+
+        // List filter
+        filters.lists?.length
+          ? {
+              lists: {
+                some: {
+                  list: { id: { in: filters.lists } },
+                },
+              },
+            }
+          : {},
+      ],
+    };
+
+    return await prisma.vocabularyWord.findMany({
+      where: whereClause,
+      include: {
+        categories: { include: { category: true } },
+        lists: {
+          include: { list: { select: { name: true, difficulty: true } } },
+          take: 2,
+        },
+      },
+      take: filters.limit || 50,
+      skip: filters.offset || 0,
+    });
+  }
+
+  /**
+   * Find words by category
+   */
+  async findWordsByCategory(categoryName) {
+    const category = await prisma.category.findUnique({
+      where: { name: categoryName },
+      include: {
+        words: {
+          include: { word: true },
+        },
+      },
+    });
+
+    return category?.words.map((wc) => wc.word) || [];
+  }
+
+  /**
+   * Get all categories
+   */
+  async findAllCategories() {
+    return await prisma.category.findMany({
+      orderBy: { displayOrder: "asc" },
+    });
+  }
+
+  /**
+   * Legacy search method - keep for backward compatibility
    */
   async searchLists(query, filters = {}) {
     let lists = await this.findAllLists();
@@ -98,6 +280,26 @@ export class VocabularyRepository {
     }
 
     return lists;
+  }
+
+  /**
+   * Find unlearned vocabulary words (words not in learned set)
+   * @param {number[]} learnedWordIds - Array of already learned word IDs
+   * @param {number} limit - Maximum number of words to return
+   * @returns {Promise<Array>} Array of unlearned vocabulary words
+   */
+  async findUnlearnedWords(learnedWordIds, limit = 10) {
+    const words = await prisma.vocabularyWord.findMany({
+      where: {
+        id: {
+          notIn: learnedWordIds,
+        },
+      },
+      take: limit,
+      orderBy: { id: "asc" },
+    });
+
+    return words;
   }
 }
 

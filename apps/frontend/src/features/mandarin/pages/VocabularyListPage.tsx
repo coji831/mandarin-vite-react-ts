@@ -55,7 +55,7 @@ function VocabularyListPage() {
               console.warn(`Failed to load words for list ${list.id}:`, error);
               wordIdsMap[list.id] = [];
             }
-          })
+          }),
         );
         setListWordIds(wordIdsMap);
       } catch (error) {
@@ -72,18 +72,18 @@ function VocabularyListPage() {
   // Filtering logic
   const filteredLists: VocabularyList[] = useMemo(
     () => getFilteredVocabularyLists(lists, search, selectedDifficulties, selectedTags)(),
-    [lists, search, selectedDifficulties, selectedTags]
+    [lists, search, selectedDifficulties, selectedTags],
   );
 
   // Handlers for filter chip selection
   const updateDifficultySelection = (difficulty: string) => {
     setSelectedDifficulties((prev) =>
-      prev.includes(difficulty) ? prev.filter((x) => x !== difficulty) : [...prev, difficulty]
+      prev.includes(difficulty) ? prev.filter((x) => x !== difficulty) : [...prev, difficulty],
     );
   };
   const updateTagSelection = (tag: string) =>
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag],
     );
 
   // Clear all filters
@@ -94,8 +94,14 @@ function VocabularyListPage() {
   };
 
   return (
-    <div>
-      <div className="search-filter-bar">
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>
+      {/* Story 15.10: Reorganized filter layout for better UX */}
+      <div className="vocab-page-header">
+        <h1 className="vocab-page-title">Vocabulary Lists</h1>
+        <p className="vocab-page-subtitle">Browse and select vocabulary lists to study</p>
+      </div>
+
+      <div className="search-section">
         <input
           type="search"
           placeholder="Search vocabulary lists..."
@@ -104,31 +110,44 @@ function VocabularyListPage() {
           className="search-box"
           aria-label="Search vocabulary lists"
         />
-        <div className="filter-group">
-          <span className="filter-label">Difficulty:</span>
-          {allDifficulties.map((d) => (
-            <FilterChip
-              key={d}
-              label={d}
-              selected={selectedDifficulties.includes(d)}
-              onClick={() => updateDifficultySelection(d)}
-            />
-          ))}
+      </div>
+
+      <div className="filter-section">
+        <div className="filter-row">
+          <div className="filter-group">
+            <span className="filter-label">Difficulty:</span>
+            <div className="filter-chips">
+              {allDifficulties.map((d) => (
+                <FilterChip
+                  key={d}
+                  label={d}
+                  selected={selectedDifficulties.includes(d)}
+                  onClick={() => updateDifficultySelection(d)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="filter-group">
-          <span className="filter-label">Tags:</span>
-          {allTags.map((t) => (
-            <FilterChip
-              key={t}
-              label={t}
-              selected={selectedTags.includes(t)}
-              onClick={() => updateTagSelection(t)}
-            />
-          ))}
+
+        <div className="filter-row">
+          <div className="filter-group">
+            <span className="filter-label">Tags:</span>
+            <div className="filter-chips">
+              {allTags.map((t) => (
+                <FilterChip
+                  key={t}
+                  label={t}
+                  selected={selectedTags.includes(t)}
+                  onClick={() => updateTagSelection(t)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
+
         {(search || selectedDifficulties.length > 0 || selectedTags.length > 0) && (
-          <button className="clear-all" onClick={clearAll} type="button">
-            Clear All
+          <button className="clear-all-button" onClick={clearAll} type="button">
+            ✕ Clear All Filters
           </button>
         )}
       </div>
@@ -149,7 +168,7 @@ function VocabularyListPage() {
               <VocabularyCard
                 key={list.name}
                 list={list}
-                onSelect={() => navigate(`/mandarin/flashcards/${list.id}`)}
+                onSelect={() => navigate(`/learn/flashcards/${list.id}`)}
                 wordIds={listWordIds[list.id]}
               />
             );

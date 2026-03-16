@@ -1,6 +1,8 @@
 /**
  * @file apps/backend/tests/unit/ProgressService.test.js
- * @description Unit tests for ProgressService
+ * @description Unit tests for ProgressService (basic CRUD operations and stats)
+ * Story 15.11 Phase 8: Quiz-based methods (recordQuizResult, getDueWords, getLeechesByUser,
+ * calculateNextReview) migrated to LearningService.test.js
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -33,34 +35,6 @@ describe("ProgressService", () => {
 
     progressService = new ProgressService(mockRepository);
     vi.clearAllMocks();
-  });
-
-  describe("calculateNextReview", () => {
-    it("should return 1 day for 0% confidence", () => {
-      const result = progressService.calculateNextReview(0);
-      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
-      expect(daysDiff).toBe(1);
-    });
-
-    it("should return ~30 days for 100% confidence", () => {
-      const result = progressService.calculateNextReview(1);
-      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
-      expect(daysDiff).toBe(30);
-    });
-
-    it("should return ~8 days for 50% confidence", () => {
-      const result = progressService.calculateNextReview(0.5);
-      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
-      expect(daysDiff).toBeGreaterThanOrEqual(7);
-      expect(daysDiff).toBeLessThanOrEqual(9);
-    });
-
-    it("should return ~19 days for 80% confidence (mastered)", () => {
-      const result = progressService.calculateNextReview(0.8);
-      const daysDiff = Math.round((result - new Date()) / (1000 * 60 * 60 * 24));
-      expect(daysDiff).toBeGreaterThanOrEqual(18);
-      expect(daysDiff).toBeLessThanOrEqual(20);
-    });
   });
 
   describe("getProgressForUser", () => {
@@ -154,19 +128,7 @@ describe("ProgressService", () => {
       expect(result).toEqual(mockCreated);
     });
 
-    it("should calculate nextReview when confidence is provided", async () => {
-      mockRepository.upsert.mockResolvedValue({ id: "1" });
-
-      await progressService.updateProgress("user1", "word1", {
-        confidence: 0.8,
-      });
-
-      const call = mockRepository.upsert.mock.calls[0];
-      // Third argument is the data object
-      expect(call[2].nextReview).toBeInstanceOf(Date);
-    });
-
-    it("should not recalculate nextReview if confidence not provided", async () => {
+    it("should not recalculate nextReview if currentDelay or correct not provided", async () => {
       mockRepository.upsert.mockResolvedValue({ id: "1" });
 
       await progressService.updateProgress("user1", "word1", {
@@ -272,4 +234,7 @@ describe("ProgressService", () => {
       });
     });
   });
+
+  // recordQuizResult, getDueWords, getLeechesByUser, and calculateNextReview tests
+  // have been migrated to LearningService.test.js (Story 15.11 Phase 8 extraction)
 });

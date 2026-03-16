@@ -38,8 +38,8 @@ describe("Sidebar", () => {
     const mockState: RootState = {
       progress: {
         wordsById: {
-          "1": { wordId: "1", confidence: 1, lastReviewed: new Date().toISOString() },
-          "3": { wordId: "3", confidence: 1, lastReviewed: new Date().toISOString() },
+          "1": { wordId: "1", confidence: 1 },
+          "3": { wordId: "3", confidence: 1 },
         },
         wordIds: ["1", "3"],
       },

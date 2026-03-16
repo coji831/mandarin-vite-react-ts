@@ -8,6 +8,10 @@ PinyinPal is an interactive web application designed to help new learners master
 
 - **Interactive Flashcards:** Practice vocabulary with pinyin, characters, and English definitions with audio playback.
 - **Vocabulary Lists:** Browse HSK-level vocabulary organized by difficulty with card-based interface.
+- **Quiz System:** Daily review quizzes with spaced repetition algorithm for optimal retention.
+- **Progress Tracking:** Unified spaced repetition supporting both flashcard confidence ratings and quiz results.
+- **Gamification:** Study streaks with 48-hour grace period, milestone badges (7/30/100/365 days), XP rewards, and mystery boxes.
+- **Leech Detection:** Automatic identification of struggling vocabulary (5+ consecutive failures) for targeted practice.
 - **AI-Generated Conversations:** Context-aware conversation generation with word usage examples and audio playback.
 - **Audio & TTS Integration:** Robust service layer with Google Cloud TTS backend and browser TTS fallback for reliability.
 - **Multi-User Support:** Per-user progress tracking with database persistence and cross-device synchronization via backend API.
@@ -39,7 +43,7 @@ PinyinPal is an interactive web application designed to help new learners master
   - Caching: Upstash Redis (production) with graceful fallback
   - Database: Supabase (PostgreSQL with connection pooling)
   - Storage: Google Cloud Storage (TTS audio and conversation caching)
-  - APIs: Google Cloud TTS, Gemini AI for conversation generation
+  - APIs: Google Cloud TTS, Gemini AI for conversation generation and AI-powered quiz feedback
 
 ## 🚀 Installation & Getting Started
 

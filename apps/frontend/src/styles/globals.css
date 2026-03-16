@@ -1,0 +1,518 @@
+/**
+ * Global Design System
+ * Story 15.10: Quiz UX Polish - Global CSS Integration
+ *
+ * Centralized design tokens for colors, spacing, typography, and effects.
+ * Imported in index.css to be available throughout the application.
+ */
+
+/* ===== Universal Reset ===== */
+
+/* Modern box-sizing reset - eliminates need for explicit declarations */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* ===== Semantic Colors ===== */
+
+  /* Primary - Purple Gradient */
+  --color-primary: #667eea;
+  --color-primary-dark: #764ba2;
+  --color-primary-light: #a5b4fc;
+  --color-primary-bg: rgba(102, 126, 234, 0.2);
+  --color-primary-bg-light: rgba(102, 126, 234, 0.1);
+  --color-primary-bg-medium: rgba(102, 126, 234, 0.15);
+  --color-primary-border: rgba(102, 126, 234, 0.3);
+  --color-primary-border-strong: rgba(102, 126, 234, 0.4);
+  --color-primary-border-hover: rgba(102, 126, 234, 0.6);
+
+  /* Success - Green */
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-success-border: rgba(16, 185, 129, 0.3);
+
+  /* Error - Red */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.15);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+
+  /* Warning - Gold/Orange */
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.15);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  /* Info - Cyan */
+  --color-info: #66dcff;
+  --color-info-bg: rgba(102, 220, 255, 0.15);
+  --color-info-border: rgba(102, 220, 255, 0.3);
+
+  /* Info - Blue (for character-level feedback) */
+  --color-info-blue: #3b82f6;
+  --color-info-blue-bg: rgba(59, 130, 246, 0.15);
+  --color-info-blue-border: rgba(59, 130, 246, 0.3);
+
+  /* Info - Purple (for meaning-level feedback) */
+  --color-info-purple: #a855f7;
+  --color-info-purple-bg: rgba(168, 85, 247, 0.15);
+  --color-info-purple-border: rgba(168, 85, 247, 0.3);
+
+  /* Neutral - Grey (for generic feedback) */
+  --color-neutral-grey: #9ca3af;
+  --color-neutral-grey-bg: rgba(107, 114, 128, 0.15);
+  --color-neutral-grey-border: rgba(107, 114, 128, 0.3);
+
+  /* XP/Achievement */
+  --color-xp: #fbbf24;
+
+  /* ===== Surface Colors ===== */
+
+  /* Dark theme surfaces */
+  --surface-dark: #232a3a;
+  --surface-dark-alt: #1a1d2e;
+  --surface-dark-alt-2: #1e293b;
+  --surface-overlay: rgba(35, 42, 58, 0.3);
+  --surface-hover: rgba(55, 65, 81, 0.5);
+  --surface-border: #38405a;
+
+  /* Light surfaces (for semi-transparent overlays) */
+  --surface-light-3: rgba(255, 255, 255, 0.03);
+  --surface-light-5: rgba(255, 255, 255, 0.05);
+  --surface-light-8: rgba(255, 255, 255, 0.08);
+  --surface-light-10: rgba(255, 255, 255, 0.1);
+  --surface-light-20: rgba(255, 255, 255, 0.2);
+
+  /* Modal/overlay backgrounds */
+  --overlay-dark: rgba(0, 0, 0, 0.7);
+
+  /* ===== Text Colors ===== */
+
+  /* White text with opacity scale (6 levels) */
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-tertiary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --text-subtle: rgba(255, 255, 255, 0.2);
+  --text-ghost: rgba(255, 255, 255, 0.05);
+
+  /* ===== Spacing Scale ===== */
+
+  /* rem-based spacing tokens (8px base = 0.5rem) */
+  --space-xs: 0.5rem; /* 8px */
+  --space-sm: 0.75rem; /* 12px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 2.5rem; /* 40px */
+
+  /* ===== Border Radius ===== */
+
+  /* Standardized to 4 sizes */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 20px;
+
+  /* ===== Shadows ===== */
+
+  /* 3-level elevation system */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(102, 126, 234, 0.3);
+  --shadow-lg: 0 6px 16px rgba(102, 126, 234, 0.4);
+
+  /* ===== Transitions ===== */
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+
+  /* ===== Typography ===== */
+
+  /* Font sizes */
+  --font-xs: 0.75rem; /* 12px */
+  --font-sm: 0.875rem; /* 14px */
+  --font-md: 1rem; /* 16px */
+  --font-lg: 1.125rem; /* 18px */
+  --font-xl: 1.25rem; /* 20px */
+  --font-2xl: 1.5rem; /* 24px */
+  --font-3xl: 1.75rem; /* 28px */
+  --font-4xl: 2rem; /* 32px */
+  --font-5xl: 2.5rem; /* 40px */
+
+  /* ===== Gradients ===== */
+
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+/* ===== Utility Classes ===== */
+
+/* Hover lift effect for interactive elements */
+.hover-lift {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-lift:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-lift:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Disabled state for form elements */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Standardized dark card surface */
+.card-dark {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-dark-hover {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.card-dark-hover:hover {
+  background: var(--surface-hover);
+  border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-md);
+}
+
+/* Primary gradient (for backgrounds) */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+/* ===== Form Elements ===== */
+
+/* Generic input field styling */
+.input-base {
+  background: var(--surface-light-5);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.input-base::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===== Alert/Feedback Containers ===== */
+
+.alert-success {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.alert-error {
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.alert-warning {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.alert-info {
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+/* ===== Interactive Elements ===== */
+
+/* Primary button (gradient background with hover lift) */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-size: var(--font-md);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Close button for modals/popups */
+.btn-close {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-xl);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn-close:hover {
+  background: var(--surface-light-10);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+/* Fullscreen overlay/backdrop */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ===== Progress Bar Utilities ===== */
+
+.progress-container {
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.progress-text {
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+}
+
+.progress-bar {
+  height: 10px;
+  background-color: var(--surface-light-10);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-success);
+  transition: width 0.3s ease-in-out;
+  border-radius: 6px;
+}
+
+/* Celebration state for 100% completion */
+.progress-fill[style*="100%"] {
+  background: var(--gradient-success);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* ===== Hover Effects ===== */
+
+/* Small lift on hover */
+.hover-lift-sm {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-lift-sm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Medium lift on hover */
+.hover-lift-md {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-lift-md:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Scale on hover */
+.hover-scale {
+  transition: transform var(--transition-fast);
+}
+
+.hover-scale:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+/* ===== Card Variants ===== */
+
+/* Interactive card with hover state */
+.card-interactive {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.card-interactive:hover {
+  background: var(--surface-hover);
+  border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ===== Animations ===== */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse-opacity 1.5s ease-in-out infinite;
+}
+
+.skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    var(--surface-light-5) 0%,
+    var(--surface-light-10) 50%,
+    var(--surface-light-5) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* ===== Layout Utilities ===== */
+
+/* Flexbox utilities */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid utilities */
+.grid-2-col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+}
+
+.grid-3-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+}
+
+/* Size utilities */
+.w-full {
+  width: 100%;
+}
+
+/* Text utilities */
+.text-center {
+  text-align: center;
+}
+
+/* Transition utility */
+.transition-all {
+  transition: all var(--transition-fast);
+}

@@ -46,82 +46,11 @@ async function main() {
 
   console.log("✅ Created test users");
 
-  // Seed vocabulary words
-  const vocabularyWords = [
-    {
-      traditional: "你好",
-      simplified: "你好",
-      pinyin: "nǐ hǎo",
-      english: "hello",
-      level: "HSK1",
-      category: "Greetings",
-    },
-    {
-      traditional: "謝謝",
-      simplified: "谢谢",
-      pinyin: "xiè xiè",
-      english: "thank you",
-      level: "HSK1",
-      category: "Greetings",
-    },
-    {
-      traditional: "再見",
-      simplified: "再见",
-      pinyin: "zài jiàn",
-      english: "goodbye",
-      level: "HSK1",
-      category: "Greetings",
-    },
-    {
-      traditional: "是",
-      simplified: "是",
-      pinyin: "shì",
-      english: "to be",
-      level: "HSK1",
-      category: "Verbs",
-    },
-    {
-      traditional: "不",
-      simplified: "不",
-      pinyin: "bù",
-      english: "no / not",
-      level: "HSK1",
-      category: "Grammar",
-    },
-  ];
+  // Skip vocabulary creation - 500 words already migrated from CSV
+  // Check if vocabulary exists
+  const vocabCount = await prisma.vocabularyWord.count();
+  console.log(`📚 Found ${vocabCount} vocabulary words in database`);
 
-  // Create vocabulary words (PostgreSQL supports skipDuplicates in createMany)
-  await prisma.vocabularyWord.createMany({
-    data: vocabularyWords,
-    skipDuplicates: true,
-  });
-
-  console.log(`✅ Created ${vocabularyWords.length} vocabulary words`);
-
-  // Create sample progress for test user
-  const words = await prisma.vocabularyWord.findMany({ take: 3 });
-
-  for (const word of words) {
-    await prisma.progress.upsert({
-      where: {
-        userId_wordId: {
-          userId: testUser.id,
-          wordId: word.id,
-        },
-      },
-      update: {},
-      create: {
-        userId: testUser.id,
-        wordId: word.id,
-        studyCount: 1,
-        correctCount: 0,
-        confidence: 0.5,
-        nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-      },
-    });
-  }
-
-  console.log("✅ Created sample progress records");
   console.log("🎉 Database seed completed successfully!");
 }
 

@@ -1,22 +1,16 @@
 /**
  * @file apps/backend/src/api/routes/progress.js
  * @description Progress tracking routes (mounted under /api in index.js)
+ * Story 15.11 Phase 8: Quiz endpoints moved to /v1/quiz/* (see quizSession.js)
  */
 
 import express from "express";
-import { ProgressController } from "../controllers/progressController.js";
-import { ProgressService } from "../../core/services/ProgressService.js";
-import { ProgressRepository } from "../../infrastructure/repositories/ProgressRepository.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { progressController, gamificationController } from "../../container.js";
 
 const router = express.Router();
-
-// Initialize dependencies (ProgressRepository uses shared Prisma client from models/index.js)
-const progressRepository = new ProgressRepository();
-const progressService = new ProgressService(progressRepository);
-const progressController = new ProgressController(progressService);
 
 // All progress routes require authentication
 // Note: These are relative paths - main app mounts them under /api
@@ -34,6 +28,22 @@ router.get(
   asyncHandler(progressController.getProgressStats.bind(progressController)),
 );
 
+// Story 15.3: Streak endpoints (must come BEFORE /:wordId to avoid "streak" being captured as wordId)
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1streak
+router.get(
+  ROUTE_PATTERNS.progressStreak,
+  authenticateToken,
+  asyncHandler(gamificationController.getStreak),
+);
+
+// OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1streak~1freeze
+router.post(
+  ROUTE_PATTERNS.progressStreakFreeze,
+  authenticateToken,
+  asyncHandler(gamificationController.spendFreeze),
+);
+
+// IMPORTANT: /:wordId routes must come LAST to avoid capturing specific endpoints
 // OpenAPI spec: see docs/openapi.yaml#/paths/~1v1~1progress~1{wordId}
 router.get(
   ROUTE_PATTERNS.progressWord(":wordId"),
