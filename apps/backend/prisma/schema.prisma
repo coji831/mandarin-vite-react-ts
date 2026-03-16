@@ -198,7 +198,6 @@ model QuizSessionSummary {
   id             String   @id @default(cuid())
   userId         String
   sessionId      String   @unique
-  completedAt    DateTime
   totalQuestions Int
   correctCount   Int
   incorrectCount Int
@@ -208,11 +207,9 @@ model QuizSessionSummary {
   mysteryBoxDrop      Boolean  @default(false)
   mysteryBoxType      String?
   freezeAwarded  Boolean  @default(false)
-  expiresAt      DateTime
-  createdAt      DateTime @default(now())
   session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, expiresAt])
+  @@index([userId])
   @@index([sessionId])
 }

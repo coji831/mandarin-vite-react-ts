@@ -26,10 +26,10 @@ import type { QuizAction } from "../reducers/quizReducer";
 // Hook Parameters
 // ============================================================================
 
-interface UseQuizSessionParams {
+type UseQuizSessionParams = {
   dispatch: React.Dispatch<QuizAction>;
   questionStartTime: MutableRefObject<number>;
-}
+};
 
 // ============================================================================
 // Hook
@@ -69,17 +69,9 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
 
       // Check if user already completed quiz today (daily quiz limit)
       if (response.alreadyCompleted) {
-        if (!response.summary) {
-          dispatch({
-            type: "QUIZ/SET_ERROR",
-            error: "Daily completion data unavailable. Please refresh.",
-          });
-          return;
-        }
         dispatch({
           type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS",
           sessionId: response.sessionId,
-          summary: response.summary,
           expiresAt: response.expiresAt,
         });
         return;

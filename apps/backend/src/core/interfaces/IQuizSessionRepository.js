@@ -21,7 +21,7 @@
  * @property {number} currentIndex - Index of the current unanswered question
  * @property {string} status - Lifecycle status (ACTIVE | COMPLETE | EXPIRED)
  * @property {Date}   startedAt - Session creation timestamp
- * @property {Date}   expiresAt - Inactivity expiration timestamp
+ * @property {Date}   expiresAt - Daily window expiration — midnight end-of-day, set at session creation (single source of truth)
  * @property {Date|null} completedAt - Completion timestamp (null while active)
  */
 
@@ -32,7 +32,7 @@
  * @property {function(string, string): Promise<QuizSessionData|null>} findByIdAndUserId    - Find session by ID + userId (authorization composite lookup)
  * @property {function(string): Promise<QuizSessionData|null>}      findLatestByUserId      - Find the most recent session for a user (any status) — single-session model
  * @property {function(string): Promise<QuizSessionData|null>}      findActiveByUser        - Find non-expired ACTIVE session for a user
- * @property {function(string, object): Promise<QuizSessionData>}   update                  - Update mutable session fields (status, currentIndex, timestamps)
+ * @property {function(string, object): Promise<QuizSessionData>}   update                  - Update mutable session fields (status, currentIndex, completedAt); expiresAt is immutable after creation
  * @property {function(string): Promise<number>}                    deleteAllForUser        - Delete all sessions for a user (cascade: questions, answers, summary); single-session cleanup
  */
 

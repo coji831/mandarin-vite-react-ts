@@ -5,6 +5,8 @@
  * Story 15.11: Added Session Summary hook
  */
 
+export { useAnswerSubmission } from "./useAnswerSubmission";
+export { useQuizSession } from "./useQuizSession";
 export { useSessionSummary } from "./useSessionSummary";
 
 export type { UseSessionSummaryReturn } from "./useSessionSummary";

@@ -48,7 +48,6 @@ export type QuizSessionStartResponse = {
   answers?: QuizAnswer[]; // Previous answers (only present when isResume = true)
   // Daily quiz variant fields (populated when alreadyCompleted = true)
   alreadyCompleted?: boolean; // True if user already completed quiz today
-  summary?: QuizSessionSummary; // Pre-calculated session metrics (variant only)
   // No due words variant (Flow 1.5)
   noDueWords?: boolean; // True when no words due today (backend may return review fallback)
   message?: string; // User-friendly message (e.g. "All caught up! Here are some review words.")
@@ -164,6 +163,4 @@ export type QuizSessionSummary = {
   freezeAwarded: boolean;
   currentStreak: number;
   availableFreezes: number;
-  completedAt: string; // ISO 8601 datetime
-  expiresAt: string; // Session expiration (for daily quiz)
 };

@@ -9,7 +9,7 @@
  * LOADING → QUESTION → ANSWER_FEEDBACK → RESULTS | ERROR
  */
 
-import { QuizQuestion, QuizAnswer, QuizSessionSummary } from "../types";
+import { QuizQuestion, QuizAnswer } from "../types";
 
 export type QuizPhase = "LOADING" | "QUESTION" | "ANSWER_FEEDBACK" | "RESULTS" | "ERROR";
 
@@ -20,13 +20,12 @@ export interface QuizState {
   answers: QuizAnswer[];
   error?: string; // Story 15.8: Error message for fetch failures
   // Story 15.11 Phase 8: UI state consolidation
-  sessionId: string | null; // Backend quiz session ID
+  sessionId?: string; // Backend quiz session ID
   answerValue: string; // Current answer input value
   showHint: boolean; // Whether hint is visible
-  aiFeedback: string | null; // AI-generated feedback for last answer
+  aiFeedback?: string; // AI-generated feedback for last answer
   // Daily quiz status
-  sessionSummary: QuizSessionSummary | null; // Backend-calculated session summary (for daily complete)
-  expiresAt: string | null; // Midnight expiration timestamp for daily quiz reset
+  expiresAt?: string; // Midnight expiration timestamp for daily quiz reset
   isFreshCompletion: boolean; // True only when quiz was just completed (not when resuming/viewing)
 }
 
@@ -43,13 +42,8 @@ export type QuizAction =
   | { type: "QUIZ/SUBMIT_ANSWER"; answer: QuizAnswer }
   | { type: "QUIZ/SET_ANSWER_VALUE"; value: string } // Story 15.11 Phase 8: Update answer input
   | { type: "QUIZ/SET_SHOW_HINT"; show: boolean } // Story 15.11 Phase 8: Toggle hint visibility
-  | { type: "QUIZ/SET_AI_FEEDBACK"; feedback: string | null } // Story 15.11 Phase 8: Set AI feedback
-  | {
-      type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS";
-      sessionId: string;
-      summary: QuizSessionSummary;
-      expiresAt: string;
-    } // Daily quiz already completed
+  | { type: "QUIZ/SET_AI_FEEDBACK"; feedback: string | undefined } // Story 15.11 Phase 8: Set AI feedback
+  | { type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS"; sessionId: string; expiresAt: string } // Daily quiz already completed
   | { type: "QUIZ/NEXT_QUESTION" }
   | { type: "QUIZ/COMPLETE" }
   | { type: "QUIZ/SET_ERROR"; error: string } // Story 15.8: Set error state
@@ -62,13 +56,12 @@ export const initialState: QuizState = {
   answers: [],
   error: undefined,
   // Story 15.11 Phase 8: UI state defaults
-  sessionId: null,
+  sessionId: undefined,
   answerValue: "",
   showHint: false,
-  aiFeedback: null,
+  aiFeedback: undefined,
   // Daily quiz status
-  sessionSummary: null,
-  expiresAt: null,
+  expiresAt: undefined,
   isFreshCompletion: false,
 };
 
@@ -87,7 +80,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         // Reset UI state
         answerValue: "",
         showHint: false,
-        aiFeedback: null,
+        aiFeedback: undefined,
       };
 
     case "QUIZ/RESUME":
@@ -103,7 +96,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         // Reset UI state
         answerValue: "",
         showHint: false,
-        aiFeedback: null,
+        aiFeedback: undefined,
       };
 
     case "QUIZ/SUBMIT_ANSWER":
@@ -136,9 +129,8 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         ...state,
         phase: "RESULTS",
         sessionId: action.sessionId,
-        sessionSummary: action.summary,
         expiresAt: action.expiresAt,
-        currentIndex: action.summary.totalQuestions,
+        currentIndex: 0,
         // Clear questions since we're showing previous results
         questions: [],
         answers: [],
@@ -157,7 +149,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         // Clear UI state for next question
         answerValue: "",
         showHint: false,
-        aiFeedback: null,
+        aiFeedback: undefined,
       };
     }
 

@@ -23,12 +23,13 @@ describe("QuizSessionService", () => {
     mockSessionRepository = {
       create: vi.fn(),
       findById: vi.fn(),
-      findByIdAndUserId: vi.fn(), // Added for composite lookup
-      findActiveByUser: vi.fn(),
-      findMostRecentCompleted: vi.fn(),
+      findByIdAndUserId: vi.fn(),
+      findLatestByUserId: vi.fn(), // Single-session model: replaces findMostRecentCompleted + findActiveByUser
+      findActiveByUser: vi.fn(), // Still used by abandonSession
       update: vi.fn(),
       expireOldSessions: vi.fn(),
       deleteOldSessions: vi.fn(),
+      deleteAllForUser: vi.fn(),
     };
 
     mockLearningService = {
@@ -40,6 +41,7 @@ describe("QuizSessionService", () => {
       calculateXP: vi.fn(),
       checkAndAwardBadges: vi.fn(),
       checkMysteryBoxDrop: vi.fn(),
+      getBadgesByIds: vi.fn().mockReturnValue([]),
     };
 
     mockVocabularyRepository = {
@@ -108,8 +110,7 @@ describe("QuizSessionService", () => {
         },
       ];
 
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
-      mockSessionRepository.findActiveByUser.mockResolvedValue(null);
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(null);
       mockLearningService.getDueWords.mockResolvedValue(mockDueWords);
       mockSessionRepository.create.mockResolvedValue({
         id: "session1",
@@ -124,8 +125,7 @@ describe("QuizSessionService", () => {
 
       const result = await quizSessionService.createSession("user1");
 
-      expect(mockSessionRepository.findMostRecentCompleted).toHaveBeenCalledWith("user1");
-      expect(mockSessionRepository.findActiveByUser).toHaveBeenCalledWith("user1");
+      expect(mockSessionRepository.findLatestByUserId).toHaveBeenCalledWith("user1");
       expect(mockLearningService.getDueWords).toHaveBeenCalledWith("user1", expect.any(Date), 10);
       expect(mockSessionRepository.create).toHaveBeenCalled();
       expect(result).toHaveProperty("sessionId");
@@ -161,20 +161,16 @@ describe("QuizSessionService", () => {
         ],
       };
 
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(mockCompletedSession);
-      mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockCompletedSession); // For getSessionSummary call
-      mockStreakService.getStreak.mockResolvedValue({ currentStreak: 0, freezeCount: 0 }); // For getSessionSummary
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(mockCompletedSession);
 
       const result = await quizSessionService.createSession("user1");
 
-      expect(mockSessionRepository.findMostRecentCompleted).toHaveBeenCalledWith("user1");
+      expect(mockSessionRepository.findLatestByUserId).toHaveBeenCalledWith("user1");
       expect(result.alreadyCompleted).toBe(true);
       expect(result.sessionId).toBe("completed-session-1");
-      expect(result.summary).toBeDefined();
+      expect(result.summary).toBeUndefined();
       expect(result.expiresAt).toBe(mockCompletedSession.expiresAt);
       expect(result.questions).toEqual([]);
-      // Should not check for active session or fetch due words
-      expect(mockSessionRepository.findActiveByUser).not.toHaveBeenCalled();
       expect(mockLearningService.getDueWords).not.toHaveBeenCalled();
     });
 
@@ -203,8 +199,7 @@ describe("QuizSessionService", () => {
         expiresAt: new Date(Date.now() + 3600000),
       };
 
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
-      mockSessionRepository.findActiveByUser.mockResolvedValue(mockExistingSession);
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(mockExistingSession);
       mockAnswerRepository.findBySession.mockResolvedValue([
         {
           wordId: "word1",
@@ -220,7 +215,7 @@ describe("QuizSessionService", () => {
 
       const result = await quizSessionService.createSession("user1");
 
-      expect(mockSessionRepository.findActiveByUser).toHaveBeenCalledWith("user1");
+      expect(mockSessionRepository.findLatestByUserId).toHaveBeenCalledWith("user1");
       expect(mockLearningService.getDueWords).not.toHaveBeenCalled();
       expect(result.sessionId).toBe("session1");
       expect(result.isResume).toBe(true);
@@ -239,8 +234,7 @@ describe("QuizSessionService", () => {
     });
 
     it("should return noDueWords response if no words due for review", async () => {
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
-      mockSessionRepository.findActiveByUser.mockResolvedValue(null);
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(null);
       mockLearningService.getDueWords.mockResolvedValue([]);
 
       const result = await quizSessionService.createSession("user1");
@@ -261,8 +255,7 @@ describe("QuizSessionService", () => {
         },
       ];
 
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
-      mockSessionRepository.findActiveByUser.mockResolvedValue(null);
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(null);
       mockLearningService.getDueWords.mockResolvedValue(mockDueWords);
 
       let capturedCreateData;
@@ -315,8 +308,7 @@ describe("QuizSessionService", () => {
         },
       ];
 
-      mockSessionRepository.findMostRecentCompleted.mockResolvedValue(null);
-      mockSessionRepository.findActiveByUser.mockResolvedValue(null);
+      mockSessionRepository.findLatestByUserId.mockResolvedValue(null);
       mockLearningService.getDueWords.mockResolvedValue(mockDueWords);
       mockSessionRepository.create.mockResolvedValue({
         id: "session1",
@@ -1083,8 +1075,6 @@ describe("QuizSessionService", () => {
         mysteryBoxDrop: true,
         mysteryBoxType: "xp_boost",
         freezeAwarded: false,
-        completedAt: new Date("2026-03-08T12:00:00Z"),
-        expiresAt: new Date("2026-03-09T00:00:00Z"),
       });
       mockSessionRepository.findByIdAndUserId.mockResolvedValue(mockSession);
       mockStreakService.getStreak.mockResolvedValue({

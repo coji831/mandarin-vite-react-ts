@@ -15,7 +15,7 @@ import "./FeedbackSection.css";
 
 type FeedbackSectionProps = {
   isCorrect: boolean;
-  aiFeedback: string | null;
+  aiFeedback?: string;
   userAnswer: string;
   correctAnswer: string;
   onNext: () => void;

@@ -29,7 +29,6 @@ import { QuizSession } from "../domain/entities/QuizSession.js";
 import {
   calculateAccuracy,
   getEndOfDay,
-  RESULT_EXPIRATION_DAYS,
   QUIZ_WORDS_DEFAULT,
   PERFECT_ACCURACY,
 } from "../domain/constants/BusinessRules.js";
@@ -82,118 +81,31 @@ export class QuizSessionService {
    * @returns {Promise<object>} Created session with { sessionId, questions (without answers), expiresAt }
    */
   async createSession(userId, date = new Date(), limit = QUIZ_WORDS_DEFAULT) {
-    // Single-session model: find the one existing session for this user (any status)
     const existingSession = await this.sessionRepository.findLatestByUserId(userId);
 
-    if (existingSession) {
-      const now = new Date();
+    if (!existingSession) return this._createNewSession(userId, date, limit);
 
-      // Branch A: Active session still within 1-hour TTL → resume
-      if (existingSession.status === "ACTIVE" && now < new Date(existingSession.expiresAt)) {
-        const sessionEntity = new QuizSession(existingSession);
+    const now = new Date();
 
-        let answers = [];
-        if (this.answerRepository) {
-          const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
-          answers = dbAnswers.map((a) => ({
-            wordId: a.wordId,
-            questionType: a.question.questionType,
-            userAnswer: a.userAnswer,
-            correct: a.correct,
-            timestamp: a.answeredAt,
-            nextReviewDate: a.nextReviewDate?.toISOString() || null,
-            lapseCount: a.lapseCount,
-            isLeech: a.isLeech,
-          }));
-        }
-
-        return {
-          alreadyCompleted: false,
-          sessionId: sessionEntity.id,
-          questions: sessionEntity.getSanitizedQuestions(),
-          currentIndex: sessionEntity.currentIndex,
-          expiresAt: sessionEntity.expiresAt,
-          isResume: true,
-          answers,
-        };
-      }
-
-      // Branch B: Completed session still within daily window (expiresAt = midnight)
-      if (existingSession.status === "COMPLETE" && now < new Date(existingSession.expiresAt)) {
-        const summary = await this.getSessionSummary(existingSession.id, userId);
-
-        if (!summary) {
-          this.logger.warn("Summary not found for completed session", {
-            sessionId: existingSession.id,
-            userId,
-          });
-          return {
-            alreadyCompleted: true,
-            sessionId: existingSession.id,
-            summary: null,
-            expiresAt: existingSession.expiresAt,
-            questions: [],
-          };
-        }
-
-        return {
-          alreadyCompleted: true,
-          sessionId: existingSession.id,
-          summary,
-          expiresAt: existingSession.expiresAt,
-          questions: [],
-        };
-      }
-
-      // Previous session is expired or past daily window → delete it
-      // Cascade deletes: QuizSessionQuestion, QuizSessionAnswer, QuizSessionSummary
-      try {
-        await this.sessionRepository.deleteAllForUser(userId);
-        this.logger.info("Deleted previous session data for new quiz (single-session model)", {
-          userId,
-          previousStatus: existingSession.status,
-        });
-      } catch (err) {
-        this.logger.warn("Failed to delete previous session (proceeding anyway)", {
-          error: err.message,
-          userId,
-        });
-      }
+    // Branch A: Active session within daily window (expiresAt = midnight) → resume
+    if (existingSession.status === "ACTIVE" && now < new Date(existingSession.expiresAt)) {
+      return this._resumeActiveSession(existingSession);
     }
 
-    // Build word list (4-tier strategy — always produces words when vocabulary exists)
-    const dueWords = await this._buildWordList(userId, date, limit);
-
-    // Edge case: user has no vocabulary added yet (all 4 tiers empty)
-    if (dueWords.length === 0) {
+    // Branch B: Completed session still within daily window (expiresAt = midnight)
+    // Summary is not bundled here — frontend fetches it via GET /session/:id/summary when needed
+    if (existingSession.status === "COMPLETE" && now < new Date(existingSession.expiresAt)) {
       return {
-        alreadyCompleted: false,
-        noDueWords: true,
+        alreadyCompleted: true,
+        sessionId: existingSession.id,
+        expiresAt: existingSession.expiresAt,
         questions: [],
-        message: "No vocabulary available for review. Add vocabulary to start practicing.",
       };
     }
 
-    // Generate questions (1 random type per word)
-    const questions = this._generateInterleavedQuestions(dueWords);
-
-    // Create session (expires in 1 hour)
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
-
-    const session = await this.sessionRepository.create({
-      userId,
-      questions,
-      expiresAt,
-    });
-
-    return {
-      alreadyCompleted: false,
-      sessionId: session.id,
-      questions: QuizSession.sanitizeQuestionsForClient(session.questions),
-      expiresAt: session.expiresAt,
-      isResume: false,
-    };
+    // Expired or past daily window → delete and create fresh
+    await this._deleteExpiredSession(userId, existingSession.status);
+    return this._createNewSession(userId, date, limit);
   }
 
   /**
@@ -208,52 +120,12 @@ export class QuizSessionService {
    * @returns {Promise<object>} Result with { correct, correctAnswer, feedback, gamification, nextQuestion }
    */
   async submitAnswer(sessionId, userId, questionId, userAnswer, timeSpentMs) {
-    // Get session with authorization (repository composite lookup)
-    const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId);
-    if (!session) {
-      const error = new Error("Session not found");
-      error.statusCode = 404;
-      error.code = "SESSION_NOT_FOUND";
-      throw error;
-    }
+    const session = await this._authorizeSession(sessionId, userId);
+    const question = await this._loadQuestion(session, sessionId, questionId);
 
-    // Validate session status
-    if (session.status !== "ACTIVE") {
-      const statusError = new Error(`Session is ${session.status.toLowerCase()}`);
-      statusError.code = "INVALID_SESSION_STATUS";
-      throw statusError;
-    }
-
-    // Check expiration
-    if (new Date() > new Date(session.expiresAt)) {
-      await this.sessionRepository.update(sessionId, { status: "EXPIRED" });
-      const expiredError = new Error("Session expired");
-      expiredError.code = "SESSION_EXPIRED";
-      throw expiredError;
-    }
-
-    // Find question in session
-    const question = session.questions.find((q) => q.id === questionId);
-    if (!question) {
-      const notFoundError = new Error("Question not found in session");
-      notFoundError.code = "INVALID_QUESTION_ID";
-      throw notFoundError;
-    }
-
-    // Check if already answered (DB lookup via QuizSessionAnswer)
-    if (this.answerRepository) {
-      const existingAnswer = await this.answerRepository.findByQuestionId(questionId);
-      if (existingAnswer) {
-        const answeredError = new Error("Question already answered");
-        answeredError.code = "ALREADY_ANSWERED";
-        throw answeredError;
-      }
-    }
-
-    // Validate answer
     const isCorrect = this._validateAnswer(userAnswer, question);
 
-    // Update progress FIRST (spaced repetition) - need lapseCount for answer record
+    // Update progress FIRST (spaced repetition) — lapseCount needed for answer record
     const progressUpdate = await this.learningService.recordQuizResult({
       userId: session.userId,
       wordId: question.wordId,
@@ -262,34 +134,25 @@ export class QuizSessionService {
       timeSpentMs,
     });
 
-    // Create answer record in QuizSessionAnswer table
-    if (this.answerRepository) {
-      await this.answerRepository.create({
-        sessionId,
-        userId: session.userId,
-        wordId: question.wordId,
-        questionId,
-        userAnswer,
-        correct: isCorrect,
-        timeSpentMs,
-        lapseCount: progressUpdate.lapseCount,
-        isLeech: progressUpdate.isLeech,
-        nextReviewDate: progressUpdate.nextReviewDate,
-      });
-    }
+    await this._persistAnswerRecord(
+      sessionId,
+      session,
+      question,
+      userAnswer,
+      isCorrect,
+      timeSpentMs,
+      progressUpdate,
+    );
 
     const newIndex = session.currentIndex + 1;
     const isComplete = newIndex >= session.questions.length;
 
-    // Update session state (no answers JSON — stored in QuizSessionAnswer table)
     await this.sessionRepository.update(sessionId, {
       currentIndex: newIndex,
       status: isComplete ? "COMPLETE" : "ACTIVE",
       completedAt: isComplete ? new Date() : undefined,
-      expiresAt: isComplete ? getEndOfDay() : undefined,
     });
 
-    // Generate simple feedback for incorrect answers
     // Uses _getCorrectAnswerForType — single source of truth for questionType → answer mapping
     const aiFeedback =
       !isCorrect && question.word
@@ -298,34 +161,24 @@ export class QuizSessionService {
             errorType: "feedback",
           }
         : null;
-
-    // Process gamification ONLY on session completion
     const gamificationData = isComplete
       ? await this._processSessionCompletion(sessionId, session)
       : null;
-
-    // Get next question (if any)
     const nextQuestion = !isComplete
       ? QuizSession.sanitizeQuestionsForClient([session.questions[newIndex]])[0]
       : null;
 
-    // Return response with flat structure (aligned with type audit)
     return {
       correct: isCorrect,
       correctAnswer: question.correctAnswer,
-      // Flat progress properties (not nested in feedback object)
       nextReviewDate: progressUpdate.nextReviewDate,
       lapseCount: progressUpdate.lapseCount,
       isLeech: progressUpdate.isLeech,
-      // Gamification (only if session complete)
       gamification: gamificationData,
       aiFeedback,
       nextQuestion,
       sessionComplete: isComplete,
-      progress: {
-        current: newIndex,
-        total: session.questions.length,
-      },
+      progress: { current: newIndex, total: session.questions.length },
     };
   }
 
@@ -385,64 +238,259 @@ export class QuizSessionService {
    * @throws {Error} If session not found or user not authorized
    */
   async getSessionSummary(sessionId, userId) {
-    // Flow 5: Try to read from database first (faster, already calculated)
-    if (this.summaryRepository) {
-      try {
-        const summary = await this.summaryRepository.findBySessionIdAndUserId(sessionId, userId);
-        if (summary) {
-          const { currentStreak, availableFreezes } = await this._fetchStreakData(userId);
+    if (!this.summaryRepository) return this._calculateSummaryFromAnswers(sessionId, userId);
 
-          // Load all per-answer rows from QuizSessionAnswer table
-          const dbAnswers = this.answerRepository
-            ? await this.answerRepository.findBySession(sessionId)
-            : [];
+    try {
+      const summary = await this.summaryRepository.findBySessionIdAndUserId(sessionId, userId);
+      if (!summary) return this._calculateSummaryFromAnswers(sessionId, userId);
+      return await this._buildSummaryFromRecord(summary, sessionId, userId);
+    } catch (err) {
+      this.logger.warn("Failed to read summary from database, falling back to recalculation", {
+        error: err.message,
+        sessionId,
+      });
+      return this._calculateSummaryFromAnswers(sessionId, userId);
+    }
+  }
 
-          const allAnswers = dbAnswers.map((a) => this._mapAnswerRow(a));
+  // ============================================================================
+  // Private Helper Methods
+  // ============================================================================
 
-          const incorrectWords = allAnswers.filter((a) => !a.correct);
-          const leechWordIds = [
-            ...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId)),
-          ];
+  /**
+   * Verify the session belongs to the user and is in a submittable state
+   * @private
+   * @param {string} sessionId - Session ID
+   * @param {string} userId    - User ID for authorization
+   * @returns {Promise<object>} Authorized session record
+   */
+  async _authorizeSession(sessionId, userId) {
+    const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (!session) {
+      const error = new Error("Session not found");
+      error.statusCode = 404;
+      error.code = "SESSION_NOT_FOUND";
+      throw error;
+    }
 
-          return {
-            sessionId: summary.sessionId,
-            accuracyRate: summary.accuracyRate,
-            correctCount: summary.correctCount,
-            incorrectCount: summary.incorrectCount,
-            totalQuestions: summary.totalQuestions,
-            allAnswers,
-            incorrectWords,
-            leechWords: incorrectWords.filter((w) => w.isLeech),
-            leechCount: leechWordIds.length,
-            leechWordIds,
-            xpEarned: summary.xpEarned,
-            newBadges:
-              summary.newBadgeIds?.length > 0
-                ? this.gamificationService.getBadgesByIds(summary.newBadgeIds)
-                : [],
-            mysteryBox: summary.mysteryBoxDrop
-              ? {
-                  rewardType: summary.mysteryBoxType,
-                  rewardValue: null,
-                  opened: null,
-                }
-              : null,
-            currentStreak,
-            availableFreezes,
-            freezeAwarded: summary.freezeAwarded,
-            completedAt: summary.completedAt.toISOString(),
-            expiresAt: summary.expiresAt.toISOString(),
-          };
-        }
-      } catch (err) {
-        this.logger.warn("Failed to read summary from database, falling back to recalculation", {
-          error: err.message,
-          sessionId,
-        });
+    if (session.status !== "ACTIVE") {
+      const error = new Error(`Session is ${session.status.toLowerCase()}`);
+      error.code = "INVALID_SESSION_STATUS";
+      throw error;
+    }
+
+    if (new Date() > new Date(session.expiresAt)) {
+      await this.sessionRepository.update(sessionId, { status: "EXPIRED" });
+      const error = new Error("Session expired");
+      error.code = "SESSION_EXPIRED";
+      throw error;
+    }
+
+    return session;
+  }
+
+  /**
+   * Find the question within the session and assert it has not been answered yet
+   * @private
+   * @param {object} session    - Authorized session record
+   * @param {string} sessionId  - Session ID (for answerRepository lookup)
+   * @param {string} questionId - Question ID to locate
+   * @returns {Promise<object>} Question record
+   */
+  async _loadQuestion(session, sessionId, questionId) {
+    const question = session.questions.find((q) => q.id === questionId);
+    if (!question) {
+      const error = new Error("Question not found in session");
+      error.code = "INVALID_QUESTION_ID";
+      throw error;
+    }
+
+    if (this.answerRepository) {
+      const existingAnswer = await this.answerRepository.findByQuestionId(questionId);
+      if (existingAnswer) {
+        const error = new Error("Question already answered");
+        error.code = "ALREADY_ANSWERED";
+        throw error;
       }
     }
 
-    // Fallback: Calculate from session questions + QuizSessionAnswer rows
+    return question;
+  }
+
+  /**
+   * Persist a QuizSessionAnswer record; no-op when answerRepository is not injected
+   * @private
+   */
+  async _persistAnswerRecord(
+    sessionId,
+    session,
+    question,
+    userAnswer,
+    isCorrect,
+    timeSpentMs,
+    progressUpdate,
+  ) {
+    if (!this.answerRepository) return;
+    await this.answerRepository.create({
+      sessionId,
+      userId: session.userId,
+      wordId: question.wordId,
+      questionId: question.id,
+      userAnswer,
+      correct: isCorrect,
+      timeSpentMs,
+      lapseCount: progressUpdate.lapseCount,
+      isLeech: progressUpdate.isLeech,
+      nextReviewDate: progressUpdate.nextReviewDate,
+    });
+  }
+
+  /**
+   * Resume an active session: reload persisted answers and return sanitized questions
+   * @private
+   * @param {object} existingSession - Raw session record from repository
+   * @returns {Promise<object>} Resume response
+   */
+  async _resumeActiveSession(existingSession) {
+    let answers = [];
+    if (this.answerRepository) {
+      const dbAnswers = await this.answerRepository.findBySession(existingSession.id);
+      answers = dbAnswers.map((a) => ({
+        wordId: a.wordId,
+        questionType: a.question.questionType,
+        userAnswer: a.userAnswer,
+        correct: a.correct,
+        timestamp: a.answeredAt,
+        nextReviewDate: a.nextReviewDate?.toISOString() || null,
+        lapseCount: a.lapseCount,
+        isLeech: a.isLeech,
+      }));
+    }
+
+    const sessionEntity = new QuizSession(existingSession);
+
+    return {
+      alreadyCompleted: false,
+      sessionId: sessionEntity.id,
+      questions: sessionEntity.getSanitizedQuestions(),
+      currentIndex: sessionEntity.currentIndex,
+      expiresAt: sessionEntity.expiresAt,
+      isResume: true,
+      answers,
+    };
+  }
+
+  /**
+   * Delete an expired or stale session; logs but does not throw on failure
+   * @private
+   * @param {string} userId - User ID
+   * @param {string} previousStatus - Status of the session being deleted (for logging)
+   */
+  async _deleteExpiredSession(userId, previousStatus) {
+    try {
+      await this.sessionRepository.deleteAllForUser(userId);
+      this.logger.info("Deleted previous session data for new quiz (single-session model)", {
+        userId,
+        previousStatus,
+      });
+    } catch (err) {
+      this.logger.warn("Failed to delete previous session (proceeding anyway)", {
+        error: err.message,
+        userId,
+      });
+    }
+  }
+
+  /**
+   * Build a word list, generate questions, persist and return a brand-new session
+   * @private
+   * @param {string} userId - User ID
+   * @param {Date}   date  - Target date for due words
+   * @param {number} limit - Maximum number of words
+   * @returns {Promise<object>} New session response
+   */
+  async _createNewSession(userId, date, limit) {
+    const dueWords = await this._buildWordList(userId, date, limit);
+
+    if (dueWords.length === 0) {
+      return {
+        alreadyCompleted: false,
+        noDueWords: true,
+        questions: [],
+        message: "No vocabulary available for review. Add vocabulary to start practicing.",
+      };
+    }
+
+    const questions = this._generateInterleavedQuestions(dueWords);
+    const expiresAt = getEndOfDay();
+
+    const session = await this.sessionRepository.create({ userId, questions, expiresAt });
+
+    return {
+      alreadyCompleted: false,
+      sessionId: session.id,
+      questions: QuizSession.sanitizeQuestionsForClient(session.questions),
+      expiresAt: session.expiresAt,
+      isResume: false,
+    };
+  }
+
+  /**
+   * Build a summary response object from a persisted QuizSessionSummary record (fast path)
+   * @private
+   * @param {object} summary  - Persisted summary record from summaryRepository
+   * @param {string} sessionId - Session ID
+   * @param {string} userId   - User ID
+   * @returns {Promise<object>} Formatted summary response
+   */
+  async _buildSummaryFromRecord(summary, sessionId, userId) {
+    const { currentStreak, availableFreezes } = await this._fetchStreakData(userId);
+
+    const dbAnswers = this.answerRepository
+      ? await this.answerRepository.findBySession(sessionId)
+      : [];
+
+    const allAnswers = dbAnswers.map((a) => this._mapAnswerRow(a));
+    const incorrectWords = allAnswers.filter((a) => !a.correct);
+    const leechWordIds = [...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId))];
+    const newBadges =
+      summary.newBadgeIds?.length === 0
+        ? []
+        : this.gamificationService.getBadgesByIds(summary.newBadgeIds);
+    const mysteryBox = !summary.mysteryBoxDrop
+      ? null
+      : { rewardType: summary.mysteryBoxType, rewardValue: null, opened: null };
+
+    return {
+      sessionId: summary.sessionId,
+      accuracyRate: summary.accuracyRate,
+      correctCount: summary.correctCount,
+      incorrectCount: summary.incorrectCount,
+      totalQuestions: summary.totalQuestions,
+      allAnswers,
+      incorrectWords,
+      leechWords: incorrectWords.filter((w) => w.isLeech),
+      leechCount: leechWordIds.length,
+      leechWordIds,
+      xpEarned: summary.xpEarned,
+      newBadges,
+      mysteryBox,
+      currentStreak,
+      availableFreezes,
+      freezeAwarded: summary.freezeAwarded,
+    };
+  }
+
+  /**
+   * Calculate summary by re-aggregating QuizSessionAnswer rows (fallback path)
+   * Used when no persisted QuizSessionSummary record exists
+   * @private
+   * @param {string} sessionId - Session ID
+   * @param {string} userId   - User ID for authorization
+   * @returns {Promise<object>} Calculated summary response
+   * @throws {Error} If session not found or user not authorized
+   */
+  async _calculateSummaryFromAnswers(sessionId, userId) {
     const session = await this.sessionRepository.findByIdAndUserId(sessionId, userId, {
       includeAnswers: true,
       includeQuestions: true,
@@ -458,18 +506,15 @@ export class QuizSessionService {
 
     const { currentStreak, availableFreezes } = await this._fetchStreakData(userId);
 
-    // Load answer rows (empty for sessions before migration)
     const dbAnswers = this.answerRepository
       ? await this.answerRepository.findBySession(sessionId)
       : [];
 
     const allAnswers = dbAnswers.map((a) => this._mapAnswerRow(a));
-
     const correctCount = allAnswers.filter((a) => a.correct).length;
     const incorrectCount = allAnswers.filter((a) => !a.correct).length;
     const totalQuestions = session.questions.length;
     const accuracyRate = calculateAccuracy(correctCount, totalQuestions);
-
     const incorrectWords = allAnswers.filter((a) => !a.correct);
     const leechWordIds = [...new Set(allAnswers.filter((a) => a.isLeech).map((a) => a.wordId))];
 
@@ -490,14 +535,8 @@ export class QuizSessionService {
       currentStreak,
       availableFreezes,
       freezeAwarded: false,
-      completedAt: session.completedAt?.toISOString() || new Date().toISOString(),
-      expiresAt: session.expiresAt?.toISOString() || new Date().toISOString(),
     };
   }
-
-  // ============================================================================
-  // Private Helper Methods
-  // ============================================================================
 
   /**
    * Map a QuizSessionAnswer DB row to the standard answer shape used across the service
@@ -613,15 +652,9 @@ export class QuizSessionService {
 
     if (this.summaryRepository) {
       try {
-        const completedAt = new Date();
-        const expiresAt = new Date();
-        // RESULT_EXPIRATION_DAYS from BusinessRules (default 7)
-        expiresAt.setDate(expiresAt.getDate() + RESULT_EXPIRATION_DAYS);
-
         await this.summaryRepository.create({
           userId: session.userId,
           sessionId,
-          completedAt,
           totalQuestions: session.questions.length,
           correctCount,
           incorrectCount: allAnswers.length - correctCount,
@@ -631,7 +664,6 @@ export class QuizSessionService {
           mysteryBoxDrop: !!mysteryBox,
           mysteryBoxType: mysteryBox?.rewardType || null,
           freezeAwarded,
-          expiresAt,
         });
       } catch (err) {
         this.logger.warn("Failed to persist session summary (non-critical)", {

@@ -25,12 +25,12 @@ import type { QuizQuestion } from "../types";
 // Hook Parameters
 // ============================================================================
 
-interface UseAnswerSubmissionParams {
-  sessionId: string | null;
-  currentQuestion: QuizQuestion | null;
+type UseAnswerSubmissionParams = {
+  sessionId?: string;
+  currentQuestion?: QuizQuestion;
   questionStartTime: MutableRefObject<number>;
   dispatch: React.Dispatch<QuizAction>;
-}
+};
 
 // ============================================================================
 // Hook

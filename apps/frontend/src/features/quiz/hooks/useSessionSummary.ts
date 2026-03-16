@@ -17,7 +17,7 @@ import { quizApi } from "../services/quizService";
 import type { QuizSessionSummary } from "../types";
 
 export type UseSessionSummaryReturn = {
-  quizSessionSummary: QuizSessionSummary | null;
+  quizSessionSummary?: QuizSessionSummary;
   isSummaryLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
@@ -50,7 +50,7 @@ export function useSessionSummary(
   sessionId: string | null,
   autoFetch: boolean = true,
 ): UseSessionSummaryReturn {
-  const [quizSessionSummary, setSummary] = useState<QuizSessionSummary | null>(null);
+  const [quizSessionSummary, setSummary] = useState<QuizSessionSummary>();
   const [isSummaryLoading, setIsSummaryLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 

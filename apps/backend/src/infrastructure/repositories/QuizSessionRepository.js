@@ -22,7 +22,7 @@ export class QuizSessionRepository {
    * @param {object} data - Session data
    * @param {string} data.userId - User ID
    * @param {Array} data.questions - Array of question objects with wordId, questionType, correctAnswer
-   * @param {Date} data.expiresAt - Session expiration timestamp (typically 1 hour from start)
+   * @param {Date} data.expiresAt - Session expiration timestamp (midnight end-of-day, set at creation)
    * @returns {Promise<object>} Created quiz session
    */
   async create(data) {
@@ -172,7 +172,6 @@ export class QuizSessionRepository {
    * @param {number} [data.currentIndex] - Updated question index
    * @param {string} [data.status] - Updated status (ACTIVE | COMPLETE | EXPIRED)
    * @param {Date} [data.completedAt] - Completion timestamp
-   * @param {Date} [data.expiresAt] - Expiration timestamp (for daily reset)
    * @returns {Promise<object>} Updated quiz session
    */
   async update(sessionId, data) {
@@ -186,9 +185,6 @@ export class QuizSessionRepository {
     }
     if (data.completedAt !== undefined) {
       updateData.completedAt = data.completedAt;
-    }
-    if (data.expiresAt !== undefined) {
-      updateData.expiresAt = data.expiresAt;
     }
 
     const session = await prisma.quizSession.update({

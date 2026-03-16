@@ -42,50 +42,48 @@
 
 import {
   createContext,
+  ReactNode,
+  useCallback,
   useContext,
+  useEffect,
   useReducer,
   useRef,
-  useEffect,
-  useCallback,
-  ReactNode,
 } from "react";
-import { initialState, quizReducer, QuizPhase } from "../reducers/quizReducer";
-import { QuizQuestion, QuizAnswer, QuizSessionSummary } from "../types";
-import { useAnswerSubmission } from "../hooks/useAnswerSubmission";
-import { useQuizSession } from "../hooks/useQuizSession";
-import { useSessionSummary } from "../hooks/useSessionSummary";
+import { useAnswerSubmission, useQuizSession, useSessionSummary } from "../hooks";
+import { initialState, QuizPhase, quizReducer } from "../reducers/quizReducer";
+import { QuizAnswer, QuizQuestion, QuizSessionSummary } from "../types";
 
 // ============================================================================
 // Context Types
 // ============================================================================
 
-interface QuizStateContext {
+type QuizStateContext = {
   // Core quiz state
   phase: QuizPhase;
   questions: QuizQuestion[];
   currentIndex: number;
   answers: QuizAnswer[];
   error?: string;
-  sessionId: string | null;
+  sessionId?: string;
 
   // Derived state
-  currentQuestion: QuizQuestion | null;
+  currentQuestion?: QuizQuestion;
 
   // UI state (from reducer)
   answerValue: string;
   showHint: boolean;
 
   // AI feedback state (from reducer)
-  aiFeedback: string | null;
+  aiFeedback?: string;
 
   // Session summary (backend-calculated metrics)
-  sessionSummary: QuizSessionSummary | null;
-  summaryLoading: boolean;
-  expiresAt: string | null;
+  quizSessionSummary?: QuizSessionSummary;
+  isSummaryLoading: boolean;
+  expiresAt?: string;
   isFreshCompletion: boolean;
-}
+};
 
-interface QuizActionsContext {
+type QuizActionsContext = {
   // Answer handlers
   handleAnswer: (userAnswer: string) => Promise<void>;
   handleSubmitAnswer: () => void;
@@ -95,7 +93,7 @@ interface QuizActionsContext {
   // UI actions
   setAnswerValue: (value: string) => void;
   toggleHint: () => void;
-}
+};
 
 // ============================================================================
 // Context Creation
@@ -130,24 +128,35 @@ export function useQuizActions(): QuizActionsContext {
 // Provider Component
 // ============================================================================
 
-interface QuizProviderProps {
+type QuizProviderProps = {
   children: ReactNode;
-}
+};
 
 export function QuizProvider({ children }: QuizProviderProps) {
-  // Core state (reducer) - now includes UI state
+  // ============================================================================
+  // Refs
+  // ============================================================================
+
+  const questionStartTime = useRef<number>(0);
+  // Ref guard prevents double-invocation in React 18 StrictMode (mount → unmount → remount)
+  const sessionStarted = useRef(false);
+
+  // ============================================================================
+  // State
+  // ============================================================================
+
   const [state, dispatch] = useReducer(quizReducer, initialState);
 
-  // Refs
-  const questionStartTime = useRef<number>(0);
-
-  // Derived state (computed once for hooks)
+  // Derived value — computed here because useAnswerSubmission depends on it
   const currentQuestion =
     state.questions.length > 0 && state.currentIndex < state.questions.length
       ? state.questions[state.currentIndex]
-      : null;
+      : undefined;
 
-  // Answer submission hook (Story 15.11 Part B Phase 4)
+  // ============================================================================
+  // Custom Hooks
+  // ============================================================================
+
   const { submitAnswer } = useAnswerSubmission({
     sessionId: state.sessionId,
     currentQuestion,
@@ -155,44 +164,19 @@ export function QuizProvider({ children }: QuizProviderProps) {
     dispatch,
   });
 
-  // Quiz session hook (Story 15.11 Part B Phase 5)
   const { startSession } = useQuizSession({
     dispatch,
     questionStartTime,
   });
 
-  // ============================================================================
-  // Effects
-  // ============================================================================
-
-  // Start quiz session on mount (Story 15.11 Part B Phase 5: delegated to useQuizSession hook)
-  // Ref guard prevents double-invocation in React 18 StrictMode (mount → unmount → remount)
-  const sessionStarted = useRef(false);
-  useEffect(() => {
-    if (sessionStarted.current) return;
-    sessionStarted.current = true;
-    startSession();
-  }, [startSession]);
-
-  // Story 15.11: Fetch session summary from backend when quiz completes
-  // Backend provides pre-calculated metrics (accuracy, XP, leech detection)
-  // Fetch summary when all questions are answered (phase returns to LOADING after last Next)
+  // Unified path: both fresh completion and already-completed resume fetch summary the same way
   const { quizSessionSummary, isSummaryLoading } = useSessionSummary(
-    state.phase === "LOADING" && state.sessionId && state.questions.length > 0
-      ? state.sessionId
-      : null,
+    state.phase === "RESULTS" && state.sessionId ? state.sessionId : null,
     true,
   );
 
-  // Transition to RESULTS once summary is ready
-  useEffect(() => {
-    if (state.phase === "LOADING" && !isSummaryLoading && quizSessionSummary) {
-      dispatch({ type: "QUIZ/COMPLETE" });
-    }
-  }, [state.phase, isSummaryLoading, quizSessionSummary]);
-
   // ============================================================================
-  // Actions
+  // Callbacks
   // ============================================================================
 
   const handleNext = useCallback(() => {
@@ -206,7 +190,6 @@ export function QuizProvider({ children }: QuizProviderProps) {
     startSession();
   }, [startSession]);
 
-  // Story 15.11 Part B Phase 4: Delegate to useAnswerSubmission hook
   const handleAnswer = useCallback(
     async (userAnswer: string) => {
       await submitAnswer(userAnswer);
@@ -229,24 +212,33 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, [state.showHint]);
 
   // ============================================================================
-  // Context Values
+  // Effects
+  // ============================================================================
+
+  // Start quiz session on mount
+  useEffect(() => {
+    if (sessionStarted.current) return;
+    sessionStarted.current = true;
+    startSession();
+  }, [startSession]);
+
+  // Immediately transition LOADING → RESULTS once all questions are answered
+  // Summary fetches independently in the RESULTS phase via useSessionSummary above
+  useEffect(() => {
+    if (state.phase === "LOADING" && state.sessionId && state.questions.length > 0) {
+      dispatch({ type: "QUIZ/COMPLETE" });
+    }
+  }, [state.phase, state.sessionId, state.questions.length]);
+
+  // ============================================================================
+  // Context Values (local calculations — assembled last)
   // ============================================================================
 
   const stateValue: QuizStateContext = {
-    phase: state.phase,
-    questions: state.questions,
-    currentIndex: state.currentIndex,
-    answers: state.answers,
-    error: state.error,
-    sessionId: state.sessionId,
+    ...state,
     currentQuestion,
-    answerValue: state.answerValue,
-    showHint: state.showHint,
-    aiFeedback: state.aiFeedback,
-    sessionSummary: quizSessionSummary ?? state.sessionSummary,
-    summaryLoading: isSummaryLoading,
-    expiresAt: state.expiresAt,
-    isFreshCompletion: state.isFreshCompletion,
+    quizSessionSummary,
+    isSummaryLoading,
   };
 
   const actionsValue: QuizActionsContext = {

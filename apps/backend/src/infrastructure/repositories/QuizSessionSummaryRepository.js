@@ -20,9 +20,7 @@ export class QuizSessionSummaryRepository {
   /**
    * Create a new quiz session summary
    * @param {object} data - Summary data
-   * @param {string} data.userId - User ID
    * @param {string} data.sessionId - Quiz session ID
-   * @param {Date} data.completedAt - Completion timestamp
    * @param {number} data.totalQuestions - Total questions in quiz
    * @param {number} data.correctCount - Number of correct answers
    * @param {number} data.incorrectCount - Number of incorrect answers
@@ -32,14 +30,12 @@ export class QuizSessionSummaryRepository {
    * @param {boolean} data.mysteryBoxDrop - Whether mystery box was awarded
    * @param {string|null} data.mysteryBoxType - Mystery box type ('xp_boost' | 'freeze' | 'cosmetic')
    * @param {boolean} data.freezeAwarded - Whether freeze was awarded
-   * @param {Date} data.expiresAt - Expiration timestamp (completedAt + 7 days)
    * @returns {Promise<object>} Created quiz session summary
    */
   async create(data) {
     const {
       userId,
       sessionId,
-      completedAt,
       totalQuestions,
       correctCount,
       incorrectCount,
@@ -49,14 +45,12 @@ export class QuizSessionSummaryRepository {
       mysteryBoxDrop,
       mysteryBoxType,
       freezeAwarded,
-      expiresAt,
     } = data;
 
     return prisma.quizSessionSummary.create({
       data: {
         userId,
         sessionId,
-        completedAt,
         totalQuestions,
         correctCount,
         incorrectCount,
@@ -66,7 +60,6 @@ export class QuizSessionSummaryRepository {
         mysteryBoxDrop,
         mysteryBoxType,
         freezeAwarded,
-        expiresAt,
       },
     });
   }

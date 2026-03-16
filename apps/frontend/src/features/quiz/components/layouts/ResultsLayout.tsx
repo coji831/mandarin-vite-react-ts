@@ -33,33 +33,38 @@ export { ResultsLayout };
 
 function ResultsLayout() {
   // Read all state from context
-  const { sessionSummary, expiresAt, isFreshCompletion } = useQuizState();
+  const { quizSessionSummary, expiresAt, isFreshCompletion } = useQuizState();
   const { handleRetry } = useQuizActions();
 
   // Story 15.9: Mystery box modal state
-  const [showMysteryBox, setShowMysteryBox] = useState(!!sessionSummary?.mysteryBox);
+  const [showMysteryBox, setShowMysteryBox] = useState(!!quizSessionSummary?.mysteryBox);
 
   // Story 15.11 Flow 2.6: Badge celebration modal state
   const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
   // Story 15.11 Flow 2.6: Auto-open badge celebration modal only on fresh completion
   useEffect(() => {
-    if (isFreshCompletion && sessionSummary?.newBadges && sessionSummary.newBadges.length > 0) {
+    if (
+      isFreshCompletion &&
+      quizSessionSummary?.newBadges &&
+      quizSessionSummary.newBadges.length > 0
+    ) {
       setShowBadgeCelebration(true);
     }
-  }, [isFreshCompletion, sessionSummary]);
+  }, [isFreshCompletion, quizSessionSummary]);
 
   // Guard: summary guaranteed non-null when phase === RESULTS, but TypeScript doesn't know that
-  if (!sessionSummary) return null;
+  if (!quizSessionSummary) return null;
 
-  const { mysteryBox, newBadges } = sessionSummary;
+  const { mysteryBox, newBadges } = quizSessionSummary;
 
-  // Backend-calculated metrics from session summary
-  const correctCount = sessionSummary.correctCount;
-  const totalCount = sessionSummary.totalQuestions;
-  const accuracy = sessionSummary.accuracyRate;
-  const xpEarned = sessionSummary.xpEarned;
-  const leechCount = sessionSummary.leechWords?.length ?? 0;
+  const statsProps = {
+    correctCount: quizSessionSummary.correctCount,
+    totalCount: quizSessionSummary.totalQuestions,
+    accuracy: quizSessionSummary.accuracyRate,
+    xpEarned: quizSessionSummary.xpEarned,
+    leechCount: quizSessionSummary.leechWords?.length ?? 0,
+  };
 
   // Story 15.11: Handler for New Quiz button
   const handleNewQuiz = () => {
@@ -84,21 +89,15 @@ function ResultsLayout() {
 
       <h2 className="completeTitle">Quiz Complete! 🎉</h2>
 
-      <StatsGrid
-        correctCount={correctCount}
-        totalCount={totalCount}
-        accuracy={accuracy}
-        xpEarned={xpEarned}
-        leechCount={leechCount}
-      />
+      <StatsGrid {...statsProps} />
 
       {/* Story 15.9: Freeze Awarded Notification */}
-      {sessionSummary.freezeAwarded && (
+      {quizSessionSummary.freezeAwarded && (
         <div className="freezeAlert">❄️ You earned 1 Streak Freeze!</div>
       )}
 
       {/* Detailed Results Table (Story 15.10: Removed Status column, added red borders) */}
-      <ResultsTable answers={sessionSummary.allAnswers} />
+      <ResultsTable answers={quizSessionSummary.allAnswers} />
 
       {/* Story 15.9: Mystery Box Modal */}
       {mysteryBox && (
