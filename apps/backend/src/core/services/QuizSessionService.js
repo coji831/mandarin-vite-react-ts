@@ -808,14 +808,27 @@ export class QuizSessionService {
     const normalizedUser = this._normalizeAnswer(userAnswer, questionType);
     const normalizedCorrect = this._normalizeAnswer(correctAnswer, questionType);
 
-    // Handle multi-answer support (semicolon or comma separated)
-    if (
-      typeof normalizedCorrect === "string" &&
-      (normalizedCorrect.includes(";") || normalizedCorrect.includes(","))
-    ) {
-      const acceptableAnswers = normalizedCorrect.split(/[;,]/).map((ans) => ans.trim());
-      return acceptableAnswers.some((acceptable) =>
-        this._answersMatch(normalizedUser, acceptable, questionType),
+    // Handle multi-answer support (semicolon, comma, or pipe separated)
+    if (typeof normalizedCorrect === "string" && /[;,，；|｜]/.test(normalizedCorrect)) {
+      const acceptableAnswers = normalizedCorrect
+        .split(/[;,，；|｜]/)
+        .map((ans) => ans.trim())
+        .filter(Boolean);
+
+      // If the user selected a combined option (e.g. "go back; return"),
+      // split the user's answer as well and accept if any segment matches
+      const userSegments =
+        typeof normalizedUser === "string" && /[;,，；|｜]/.test(normalizedUser)
+          ? normalizedUser
+              .split(/[;,，；|｜]/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [normalizedUser];
+
+      return userSegments.some((segment) =>
+        acceptableAnswers.some((acceptable) =>
+          this._answersMatch(segment, acceptable, questionType),
+        ),
       );
     }
 

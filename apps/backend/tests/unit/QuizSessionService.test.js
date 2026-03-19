@@ -901,6 +901,21 @@ describe("QuizSessionService", () => {
       expect(quizSessionService._validateAnswer("to travel", question)).toBe(true);
     });
 
+    it("should accept combined selection containing separators", () => {
+      const question = {
+        id: "word_combined",
+        wordId: "word_combined",
+        questionType: "multiple_choice",
+        correctAnswer: "go back; return",
+      };
+
+      // User selected the combined option exactly as presented
+      expect(quizSessionService._validateAnswer("go back; return", question)).toBe(true);
+      // Individual tokens should still be accepted
+      expect(quizSessionService._validateAnswer("go back", question)).toBe(true);
+      expect(quizSessionService._validateAnswer("return", question)).toBe(true);
+    });
+
     it("should validate multi-answer support with comma", () => {
       const question = {
         id: "word1_multiple_choice",
@@ -911,6 +926,28 @@ describe("QuizSessionService", () => {
 
       expect(quizSessionService._validateAnswer("flower", question)).toBe(true);
       expect(quizSessionService._validateAnswer("to spend", question)).toBe(true);
+    });
+
+    it("should validate multi-answer support with pipe delimiter (ASCII and fullwidth)", () => {
+      const questionAscii = {
+        id: "word_pipe_ascii",
+        wordId: "word_pipe_ascii",
+        questionType: "multiple_choice",
+        correctAnswer: "father|dad",
+      };
+
+      expect(quizSessionService._validateAnswer("father", questionAscii)).toBe(true);
+      expect(quizSessionService._validateAnswer("dad", questionAscii)).toBe(true);
+
+      const questionFull = {
+        id: "word_pipe_fullwidth",
+        wordId: "word_pipe_fullwidth",
+        questionType: "multiple_choice",
+        correctAnswer: "爸爸｜爸",
+      };
+
+      expect(quizSessionService._validateAnswer("爸爸", questionFull)).toBe(true);
+      expect(quizSessionService._validateAnswer("爸", questionFull)).toBe(true);
     });
 
     it("should reject incorrect answers", () => {
