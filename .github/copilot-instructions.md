@@ -48,6 +48,24 @@ Testing: `npm test` (Jest + RTL) for unit/component tests.
 Deployment: Frontend deploys to Vercel; Backend deploys to Railway (via Procfile).
 Data Update: modify CSV under `public/data/vocabulary/`; parse via `csvLoader.ts`.
 
+### 🤖 SOLAR-Ralph Operating Overlay
+
+When work is executed through the repo's SOLAR-Ralph files, treat the current workflow above as the governing delivery path and the SOLAR files as the execution overlay.
+
+- Orchestration contract: `AGENTS.md`
+- Restart-safe ledger: `.ai_ledger.md`
+- Lifecycle hooks: `.github/hooks/hooks.json`
+- Path-specific instructions: `apps/frontend/.instructions.md`, `apps/backend/.instructions.md`
+- Operator guides: `docs/guides/solar-ralph-workflow.md`, `docs/guides/agent-operations-guide.md`, `docs/guides/memory-governance-guide.md`
+
+Working rules:
+
+- Keep active execution state in `.ai_ledger.md`.
+- Keep concise persistent facts in `/memories/repo/`.
+- Keep durable guidance in `docs/`.
+- Use bounded recursive repair loops with explicit completion promises instead of open-ended retry.
+- Route frontend, backend, security, review, and documentation work through their matching specialist roles when the SOLAR overlay is active.
+
 ### 🧪 Story-Level Development Workflow
 
 Follow this sequence whenever implementing or updating a story (smallest deliverable linked to an epic):
@@ -279,8 +297,8 @@ Update KB after resolving non-trivial technical struggles (3+ hours debugging, i
 **Example Extraction:**
 
 - Story 13.3 encountered cookie forwarding issues (5+ hours debugging)
-- **Guide Update**: [Vite Configuration Guide](docs/guides/vite-configuration-guide.md) — Added "Cookie-based auth through dev proxy" section with exact config
-- **KB Update**: [Frontend Development Server](docs/knowledge-base/frontend-development-server.md) — Added deep dive on proxy mechanics, why headers aren't forwarded by default, security implications
+- **Guide Update**: [Vite Configuration Guide](../docs/guides/vite-configuration-guide.md) — Added "Cookie-based auth through dev proxy" section with exact config
+- **KB Update**: [Frontend Development Server](../docs/knowledge-base/frontend-development-server.md) — Added deep dive on proxy mechanics, why headers aren't forwarded by default, security implications
 - **Story Doc**: Removed postmortem, added links to both guide and KB in "Technical Challenges" section
 
 ## 🛠️ Code Change Checklist
@@ -350,7 +368,7 @@ All AC either complete or documented exception.
 
 ### Trigger Phrase
 
-When you see "refer #file:automation" or "refer the automation folder" in a user request, activate strict automation protocol mode.
+When you see `refer #file:automation` or `refer the automation folder` in a user request, activate strict automation protocol mode.
 
 ### Mandatory Behavior
 
@@ -404,6 +422,9 @@ SOLID Principles: `docs/guides/solid-principles.md`
 Git Workflow: `docs/guides/git-convention.md`
 Business Requirements Format: `docs/guides/business-requirements-format-guide.md`
 Automation Protocols: `docs/automation/structured-ai-prompts.md`
+SOLAR Workflow Guide: `docs/guides/solar-ralph-workflow.md`
+Agent Operations Guide: `docs/guides/agent-operations-guide.md`
+Memory Governance Guide: `docs/guides/memory-governance-guide.md`
 Architecture: `docs/architecture.md`
 
 ---

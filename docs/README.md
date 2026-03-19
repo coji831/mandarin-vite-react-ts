@@ -11,6 +11,10 @@
 ### Workflow & Process Guides
 
 - [guides/workflow.md](guides/workflow.md) – Human-friendly workflow checklist
+- [guides/solar-ralph-rollout-plan.md](guides/solar-ralph-rollout-plan.md) – Track the phased SOLAR-Ralph rollout for this repository
+- [guides/solar-ralph-workflow.md](guides/solar-ralph-workflow.md) – Map SOLAR-Ralph execution onto the repository workflow
+- [guides/agent-operations-guide.md](guides/agent-operations-guide.md) – Operate the Orchestration Governor, specialists, skills, and loop rules
+- [guides/memory-governance-guide.md](guides/memory-governance-guide.md) – Decide what belongs in the ledger, repo memory, or permanent docs
 - [guides/branch-strategy.md](guides/branch-strategy.md) – Git branch strategy and conventions
 - [guides/contribution-guide.md](guides/contribution-guide.md) – How to contribute to the project
 
@@ -33,6 +37,10 @@
   - Automation Protocol (trigger: "refer #file:automation")
   - Quality Gates & Cross-Doc Alignment
 - [automation/structured-ai-prompts.md](automation/structured-ai-prompts.md) – Structured prompt catalog with examples
+- [knowledge-base/agent-orchestration-patterns.md](knowledge-base/agent-orchestration-patterns.md) – Why the repository uses a hub-and-spoke agent model
+- [knowledge-base/adversarial-auditing-patterns.md](knowledge-base/adversarial-auditing-patterns.md) – Why reviewer and security backpressure exist
+- [knowledge-base/recursive-refinement-patterns.md](knowledge-base/recursive-refinement-patterns.md) – Why recursive remediation is bounded
+- [knowledge-base/agent-memory-governance.md](knowledge-base/agent-memory-governance.md) – Why ledger, memory, and docs are separated
 
 ### Templates
 

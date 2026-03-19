@@ -14,6 +14,18 @@ Every AI prompt should follow this general structure:
 [CONSTRAINTS]: <any limitations or requirements>
 ```
 
+For SOLAR-Ralph loop work, extend the structure with these optional fields:
+
+```
+[TASK]: <specific task description>
+[CONTEXT]: <file path or epic/story reference>
+[PARAMETERS]: <specific parameters needed>
+[LEDGER]: <how .ai_ledger.md should be updated>
+[PROMISE]: <completion promise or escalation condition>
+[OUTPUT]: <expected output format>
+[CONSTRAINTS]: <any limitations or requirements>
+```
+
 ## Task Categories and Examples
 
 ### 1. Code Review Tasks
@@ -173,3 +185,18 @@ Ready-to-use structured prompts for full epic/story workflows. Each prompt refer
 ```
 
 Use these prompts as starting points; adapt the context paths and parameters for your specific epic/story.
+
+## SOLAR-Ralph Prompt Example
+
+```
+[TASK]: Execute the next bounded work package for a story
+[CONTEXT]: AGENTS.md, .ai_ledger.md, docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md
+[PARAMETERS]:
+  - Lane: frontend | backend | review | docs
+  - Max iterations: 3
+  - Verification scope: narrowest relevant checks only
+[LEDGER]: Update active work package, verification state, blockers, and handoff outcome in .ai_ledger.md
+[PROMISE]: End with one of <promise>WORK_PACKAGE_COMPLETE</promise>, <promise>WORK_PACKAGE_BLOCKED</promise>, or <promise>ESCALATION_REQUIRED</promise>
+[OUTPUT]: Files changed, checks run, findings, and the final promise or blocker
+[CONSTRAINTS]: Do not expand scope beyond the current work package; escalate instead of looping endlessly
+```
