@@ -38,10 +38,24 @@ Map the request to exactly one pipeline. Then execute that pipeline's stage sequ
 7. **Never skip the Review stage** — auditor findings must be resolved with one repair loop before advancing to Close.
 8. At Close: write the completion promise to the ledger and set `Session-Type: chat`.
 
+## Step Supervision
+
+After each delegated stage returns output, evaluate the reasoning path before accepting it and advancing the pipeline. Do not skip this — it is the primary guard against compounding errors.
+
+1. **Structural check** — Does the output contain all required sections for this stage?
+   - Bug Investigation must include: failure location, root cause classification, evidence, recommended next agent.
+   - Design output must include: problem framing, work packages, risks.
+   - Review output must include: findings by severity, code gaming check, residual risk.
+2. **Logic path check** — Does the stated conclusion follow from the evidence? Reject and re-delegate if the reasoning is circular or the conclusion is unsupported.
+3. **Scope check** — Did the agent stay within its assigned scope? (e.g., Bug Investigation Specialist must not have implemented a fix; Design Architect must not have written code.)
+4. **Gaming check** — Do any implementation changes include test modifications without a corresponding source fix? If a review auditor flagged `CRITICAL` gaming, block pipeline advancement until the specialist revises.
+
+If any check fails: re-delegate with specific correction instructions. Advance the pipeline stage only after all 4 checks pass.
+
 ## Output Format
 
 - Objective
-- Active work packages
-- Delegations
+- Active pipeline and current stage
+- Delegations and step supervision results
 - Risks or blockers
 - Completion decision

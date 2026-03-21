@@ -44,6 +44,14 @@ Memory never overrides source-of-truth documentation. If memory and docs disagre
 - `/memories/repo/*.md`: concise durable facts verified from the current codebase
 - Repo docs: durable guidance, workflow rules, templates, and architectural decisions
 
+## Session-Type Reference
+
+| Session-Type  | Stop Hook Behaviour                | When to Use                                                                                           |
+| ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `chat`        | Allows clean exit                  | Governor planning, single delegation, knowledge queries                                               |
+| `loop`        | Blocks exit, enforces continuation | `/ralph-loop` autonomous execution                                                                    |
+| `manual-test` | Silent — no blocking, no message   | Human is interacting with the app; agent observes and reports findings without enforcing continuation |
+
 ## Execution Mode
 
 Chat mode (`@orchestration-governor`): planning only — produces a plan and waits. Use for questions, single lookups, and scoping.
@@ -109,6 +117,10 @@ Governor
       └─ No findings → stage 5
 └─ 5. Security Auditor  [conditional: only if auth/JWT/CORS/cookies touched]
 └─ 6. Close  [Session-Type: chat, WORK_PACKAGE_COMPLETE]
+      Log-Backpressure Gate: before writing WORK_PACKAGE_COMPLETE, the agent MUST run the
+      original reproduction script from stage 1 and confirm it no longer produces the error.
+      Provide the passing log/output as evidence in the Completion Notes section of the ledger.
+      A bug fix is NOT complete until the reproduction script passes.
 ```
 
 ---
@@ -163,6 +175,16 @@ No work package is complete until these are satisfied when relevant:
 - `.ai_ledger.md` reflects the current state
 
 Verification findings must be summarized under the ledger sections for verification failures, review findings, and next actions.
+
+When recording a failure in `.ai_ledger.md`, agents MUST include all three fields — a bare "test failed" entry is not acceptable:
+
+```
+- Verification Step: <what was checked>
+- Failure: <what failed and the error output summary>
+- Root Cause Hint: <why it failed + semantic direction for the fix>
+```
+
+The Root Cause Hint is the "semantic gradient" for the next iteration. It must state a direction — not just what broke, but which concept, abstraction, or data path to investigate next. This prevents repeated identical failures with no new hypothesis.
 
 ## Recursive Refinement Contract
 

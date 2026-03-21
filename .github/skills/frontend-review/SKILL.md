@@ -17,7 +17,8 @@ user-invocable: false
 1. Inspect changed frontend files and tests.
 2. Challenge accessibility, state transitions, rendering assumptions, and integration risk.
 3. Identify missing tests or brittle assertions.
-4. Return findings with severity and required follow-up.
+4. **Code Gaming Detection (ARA)** — Check for: test modifications that bypass the real bug, deleted/skipped tests, unjustified mocks, or logic correct only in test context. Classify each finding using the ARA severity scale (CRITICAL / HIGH / MEDIUM / LOW).
+5. Return findings with severity and required follow-up.
 
 ## Output
 

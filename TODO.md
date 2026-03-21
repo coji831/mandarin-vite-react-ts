@@ -23,6 +23,8 @@ Sections
 
 ## Todo (near-term)
 
+- [ ] **Google Gemini** - Migrate from Gemini 2.0 Flash and Gemini 2.0 Flash Lite to Gemini 3.1 Flash Lite Preview
+
 ### Story 15.11 — Quiz Feature Extensions (incomplete AC items)
 
 - [ ] **[Item 10] Multi-meaning word support** — Words like 行 (xíng/háng) and 花 (huā flower/spend) fail validation for the alternate reading. Need `parseWordEntry()` in `validation.ts` to extract all acceptable answers from CSV (semicolons, pipes, parenthetical annotations). Validation should accept ANY matching variant. See story BR AC: "Multi-Meaning/Reading Support".

@@ -17,9 +17,15 @@ user-invocable: false
 
 1. Read `AGENTS.md`, `.github/copilot-instructions.md`, and `apps/backend/.instructions.md`.
 2. Identify the affected backend layer and contract surface.
-3. Implement the smallest coherent backend change.
-4. Update focused tests.
-5. Record schema, contract, or rollout risks in `.ai_ledger.md`.
+3. **Responder** — Implement the smallest coherent backend change as a first draft.
+4. **Evaluator** — Self-critique the draft before finalizing:
+   - Does it follow conventions in `docs/guides/code-conventions.md`?
+   - Does it preserve all existing API contracts (no breaking changes without an explicit flag)?
+   - Are all new service or repository functions covered by a targeted test?
+   - Does it introduce any unsafe validation, auth, or secret handling?
+5. **Revisor** — Apply corrections from the Evaluator step before writing the final code.
+6. Update focused tests.
+7. Record schema, contract, or rollout risks in `.ai_ledger.md`.
 
 ## Output
 
