@@ -8,6 +8,13 @@ model: "GPT-5 mini (copilot)"
 [MAX_ITERATIONS]: ${input:maxIterations:Maximum loop iterations before escalation (default: 5)}
 [COMPLETION_PROMISE]: WORK_PACKAGE_COMPLETE
 
+## Specification-First Check
+
+Before starting the loop, check `.ai_ledger.md` Current Objective for a `VerificationTarget:` field.
+
+- **If present**: Read the JSON file at that path. All loop iterations must drive toward the `successCriteria` defined there. The loop exits only when every criterion's `verificationCommand` produces output matching `expectedOutput`. Use this file as the authoritative definition of done — do not accept partial completion.
+- **If absent**: Proceed with the standard loop contract below.
+
 ## Loop Contract
 
 You are running a bounded SOLAR-Ralph autonomous loop. Follow this cycle until the completion promise is satisfied or max iterations is reached:

@@ -35,6 +35,7 @@ Memory never overrides source-of-truth documentation. If memory and docs disagre
 - Backend Implementation Specialist: owns API, service, data, and integration changes
 - Backend Review Auditor: challenges backend correctness, data integrity, and contract safety
 - Backend Test Specialist: owns backend and integration tests
+- Cache and External Integration Specialist: owns Redis cache layers, external HTTP clients, TTL policies, and retry/circuit-breaker patterns in the backend
 - Security Auditor: challenges auth, validation, secret handling, and high-risk flows
 - Docs Curator: keeps rollout, implementation, and knowledge artifacts aligned
 
@@ -149,18 +150,19 @@ Governor
 
 These rules fire based on task signal, NOT on governor judgment. No exceptions.
 
-| Signal                                                   | Required Agent                      | When                            |
-| -------------------------------------------------------- | ----------------------------------- | ------------------------------- |
-| New story, epic, or feature                              | Design Planning Architect           | BEFORE any implementation       |
-| Bug with unknown root cause                              | Bug Investigation Specialist        | BEFORE any fix attempt          |
-| Complex or architectural root cause (from investigation) | Design Planning Architect           | AFTER investigation, BEFORE fix |
-| Frontend code changes                                    | Frontend Implementation Specialist  | Always                          |
-| Backend code changes                                     | Backend Implementation Specialist   | Always                          |
-| Frontend changes complete                                | Frontend Review Auditor             | BEFORE closure                  |
-| Backend changes complete                                 | Backend Review Auditor              | BEFORE closure                  |
-| Auth, JWT, cookies, CORS, secrets, permissions touched   | Security Auditor                    | BEFORE closure                  |
-| New logic or component                                   | Frontend or Backend Test Specialist | Always                          |
-| Doc or template changes                                  | Docs Curator                        | BEFORE closure                  |
+| Signal                                                   | Required Agent                            | When                            |
+| -------------------------------------------------------- | ----------------------------------------- | ------------------------------- |
+| New story, epic, or feature                              | Design Planning Architect                 | BEFORE any implementation       |
+| Bug with unknown root cause                              | Bug Investigation Specialist              | BEFORE any fix attempt          |
+| Complex or architectural root cause (from investigation) | Design Planning Architect                 | AFTER investigation, BEFORE fix |
+| Frontend code changes                                    | Frontend Implementation Specialist        | Always                          |
+| Backend code changes                                     | Backend Implementation Specialist         | Always                          |
+| Frontend changes complete                                | Frontend Review Auditor                   | BEFORE closure                  |
+| Backend changes complete                                 | Backend Review Auditor                    | BEFORE closure                  |
+| Auth, JWT, cookies, CORS, secrets, permissions touched   | Security Auditor                          | BEFORE closure                  |
+| Redis, external HTTP client, TTL, retry, or cache work   | Cache and External Integration Specialist | Always                          |
+| New logic or component                                   | Frontend or Backend Test Specialist       | Always                          |
+| Doc or template changes                                  | Docs Curator                              | BEFORE closure                  |
 
 High-intelligence agents (Design Planning Architect, Security Auditor) are invoked at well-defined entry points only — NOT for repeated iteration steps. This prevents cost spikes while ensuring they run where judgment matters.
 

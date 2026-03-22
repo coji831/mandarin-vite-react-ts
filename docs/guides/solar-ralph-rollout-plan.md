@@ -153,20 +153,61 @@ Model assignment is based on **frequency of invocation** to minimize total cost.
 
 **Invalid (confirmed failing):** Array form `["model-a", "model-b"]`, `"GPT-5 (copilot)"`, `"GPT-5.2 (copilot)"`
 
+## Phase 2: Enhancements (from SOLAR-Ralph-phase-2-feedback.md)
+
+These items were addressed or formally evaluated based on the Phase 2 feedback review.
+
+### Quality of Agent
+
+- [x] **A5 Step-Level Process Supervision** — Already implemented in Phase 1 (see Phase 1 Post-Baseline Enhancements). Governor evaluates structural, logic-path, scope, and gaming checks after every delegated stage.
+- [x] **A7 Semantic Gradient Refinement** — Already implemented in Phase 1 (A4). `.ai_ledger.md` and `AGENTS.md` mandate `Root Cause Hint` with concrete semantic direction; "gutter" language confirmed consistent with Verbal Reinforcement Learning framing.
+- [ ] **A6 ARA 2.0 (Proxy Sovereignty / Hacker-Auditor Pairs)** — Deferred to Phase 3. Existing ARA 4-pattern detector covers core gaming; Proxy Sovereignty framing and explicit Hacker-Auditor pair prompt pattern not yet added to review auditor agents.
+  > **Future:** Update `frontend-review-auditor.agent.md` and `backend-review-auditor.agent.md` to add a "Hacker-Auditor" role section that explicitly hunts for over-mocked dependencies masking architectural failures.
+- [ ] **A8 Exploration Toolset for Investigators** — Deferred to Phase 3. `bug-investigation-specialist.agent.md` has `tools: [read, search, execute]` but no dedicated standalone Exploration SKILL.md with standardized grep/find/code-search step procedures.
+  > **Future:** Create `.github/skills/exploration/SKILL.md` with step-by-step grep, find, and semantic-code-search procedures for the Bug Investigation Specialist.
+
+### Minimize Cost
+
+- [x] **B5 Bypass Approvals / Autopilot** — `.vscode/settings.json` configured with `"github.copilot.chat.agent.enabled": true`. Bypass approvals (`terminal.allowAutoExecute`) documented as a commented-out opt-in line ready to uncomment per developer preference. Pipeline 2 guidance references the setting.
+- [ ] **B6 Parallel Execution via Isolated Worktrees** — Deferred to Phase 3. Requires parallel agent invocation support in the Copilot agent runtime. No `.ralph-worktrees/` topology implemented.
+  > **Future:** When Copilot supports parallel agent fan-out, update Pipeline 4 (Feature) in `AGENTS.md` to route independent sub-tasks to isolated worktrees under `.ralph-worktrees/`.
+- [ ] **B7 Heuristic Context Rotation (Stream Parser)** — Deferred to Phase 3. No reliable token-count hook API available. No `stream-parser.sh` byte-counting threshold mechanism implemented.
+  > **Future:** Once a reliable byte/token-count hook is available, implement a threshold-based ledger save-and-restart contract at 80% capacity.
+- [~] **B8 JIT Skill Loading via Argument-Hint** — Partial. `story-execution`, `recursive-remediation`, `memory-curation`, and `doc-sync` skills have `argumentHint` properties. Governor does not yet enforce JIT loading as a pipeline-stage requirement; all skills remain available contextually.
+  > **Future:** Update the Governor Approach to explicitly call `/skill <name>` only for the current pipeline stage, deferring other skills.
+
+### Code Quality
+
+- [x] **C5 Chrome DevTools MCP Integration** — `.vscode/mcp.json` configured with 4 MCP servers: `@playwright/mcp` covers `browser_console_messages` and `browser_network_requests`; `@modelcontextprotocol/server-puppeteer` covers `puppeteer_evaluate` for CDP/JS inspection; `mcp-fetch-server` for stateless API contract testing; `@modelcontextprotocol/server-github` for issue/PR/CI status. `browser-reproduction/SKILL.md` and `external-integration-operations/SKILL.md` in place.
+- [~] **C6 Verification-as-Code (VaC) Artifacts** — Partial. `verification-artifacts/` directory created with `README.md` (conventions, naming rules, retention policy) and `.gitkeep`. Design Planning Architect spec-first mode writes `verification-artifacts/target-<slug>.json`; `ralph-loop.prompt.md` enforces `VerificationTarget:` criteria. Per-stage tamper-evident signed artifact emission not yet automated.
+  > **Future:** Define a `verification-artifacts/emit-artifact.js` helper and update each pipeline stage in `AGENTS.md` to call it with stage outputs.
+- [ ] **C7 Gutter Detection and Escalation** — Deferred to Phase 3. `AGENTS.md` has a textual guardrail ("escalate if same failure repeats without a new hypothesis"). `hooks.json` Stop hook has no automated same-error-3x circular-failure detection.
+  > **Future:** Add a gutter-detection node script to the Stop hook that tracks failure hashes in `.ai_ledger.md` and forces escalation when 3 identical failures are recorded.
+- [x] **C8 Path-Specific Instruction Globbing** — `apps/frontend/.instructions.md` (`applyTo: "apps/frontend/**/*.{ts,tsx,css,scss,md}"`) and `apps/backend/.instructions.md` both exist with scoped `applyTo` patterns preventing instruction leakage.
+- non-file **C9 Hybrid Persistence Strategy** — Local `/memories/repo/` active and in use. GitHub-hosted Copilot Memory requires manual admin toggle (org/repo settings → GitHub Copilot → Memory). Manual setup guide in the Non-File Follow-Up Work section below.
+
+---
+
 ## Phase 2: Defer
 
 ### Browser & Runtime Debug Integration (MCP)
 
 These require MCP server setup and external tooling configuration. See `SOLAR-Ralph-phase-1-feedback.md` Section 4 for full rationale.
 
-- [ ] `.vscode/mcp.json` — MCP integration configuration. Base file enabling all MCP servers below.
-- [ ] Chrome DevTools MCP — `list-console_messages`, `list_network_requests`, `evaluate_script` tools for live browser inspection.
-- [ ] Browser-Reproduction Skill — `.github/skills/browser-reproduction/SKILL.md` using `npx @playwright/mcp`; navigates URL, fills forms, returns Behavior Report with console errors.
-- [ ] Real-Time Log Monitoring — MCP Chrome Spy server for live console event stream during manual testing.
+- [x] `.vscode/mcp.json` — MCP integration configuration. Base file enabling all MCP servers below.
+- [x] Chrome DevTools MCP — `evaluate_script` covered by Puppeteer MCP (`puppeteer_evaluate`); `list-console_messages` and `list_network_requests` covered by Playwright MCP (`browser_console_messages`, `browser_network_requests`). Both servers configured in `.vscode/mcp.json`.
+- [x] Browser-Reproduction Skill — `.github/skills/browser-reproduction/SKILL.md` using `npx @playwright/mcp`; navigates URL, fills forms, returns Behavior Report with console errors.
+
+- [ ] Real-Time Log Monitoring — MCP Chrome Spy server for live console event stream during manual testing. No validated public npm package confirmed; Playwright MCP `browser_console_messages` covers accumulated console output for most use cases.
+  > **Future Consideration**: Not yet critical due to manual test frequency and existing Playwright MCP coverage, but valuable for high-frequency debugging sessions.
 - [ ] Integrated Browser Debugging — VS Code `editor-browser` debug type (v1.112+); breakpoints and variable inspection in integrated browser.
+  > **Future Consideration**: Not yet critical due to expected low frequency of deep debugging sessions and existing Playwright MCP coverage, but a powerful tool for complex frontend issues.
 - [ ] Observability MCP Servers — Datadog/New Relic/Dynatrace 2026 MCP servers for live trace/log queries against staging or production.
+  > **Future Consideration**: Valuable for post-deployment monitoring and debugging, but deferred until after core SOLAR behaviors are stable and cost predictable.
 
 ### Cost Optimization (Deferred from Feedback)
+
+> **Future Consideration**: These optimizations add complexity and operational overhead that may not be justified until the system scales or incurs significant cost.
 
 - [ ] Context Rotation Thresholds — No clean hook API for token count in Phase 1. Script to monitor token usage and force context-clear restart at 80% capacity.
 - [ ] Topology-Specific Execution (DAG) — Governor analyzes task dependency graph; parallel fan-out for low-coupling tasks, sequential for high-coupling. Requires parallel agent invocation support.
@@ -174,24 +215,26 @@ These require MCP server setup and external tooling configuration. See `SOLAR-Ra
 
 ### Code Quality (Deferred from Feedback)
 
-- [ ] Specification-First / Reverse Mode — Design Planning Architect produces a Verification Target JSON artifact; ralph-loop runs until terminal output matches it exactly.
-- [ ] `verification-artifacts/README.md` — Verification artifact conventions and retention rules.
-- [ ] `verification-artifacts/.gitkeep` — Artifact directory placeholder.
+- [x] Specification-First / Reverse Mode — Design Planning Architect produces a `verification-artifacts/target-<slug>.json` artifact in spec-first mode; `ralph-loop.prompt.md` reads `VerificationTarget:` from ledger and enforces all `successCriteria` before emitting completion promise.
+- [x] `verification-artifacts/README.md` — Verification artifact conventions and retention rules.
+- [x] `verification-artifacts/.gitkeep` — Artifact directory placeholder.
 
 ### External Integration and Platform Overhead
 
-- [ ] `docs/guides/mcp-operations-guide.md` — MCP operational guidance.
-- [ ] `docs/knowledge-base/mcp-integration-patterns.md` — MCP rationale and patterns.
-- [ ] `docs/knowledge-base/connected-agent-topologies.md` — Cross-team or enterprise agent topology guidance.
+- [x] `docs/guides/mcp-operations-guide.md` — MCP operational guidance. Updated to document Playwright, GitHub, Puppeteer, and Fetch servers.
+- [x] `docs/knowledge-base/mcp-integration-patterns.md` — MCP rationale and patterns. Covers when to use each server type, integration patterns for all 4 servers, and custom-hosting decision guide.
+- [x] `docs/knowledge-base/connected-agent-topologies.md` — Cross-team or enterprise agent topology guidance.
 
 ### Additional Agents and Skills
 
-- [ ] `.github/skills/external-integration-operations/SKILL.md` — External platform operations procedure.
-- [ ] `.github/skills/release-governance/SKILL.md` — Release-readiness governance procedure.
-- [ ] `.github/agents/release-readiness-specialist.agent.md` — Release-readiness specialist.
-- [ ] `.github/agents/cache-external-integration-specialist.agent.md` — Cache and external integration specialist.
+- [x] `.github/skills/external-integration-operations/SKILL.md` — Fetch MCP (API contract testing) and Puppeteer MCP (DOM/storage inspection) procedures with Integration Verification Report output contract.
+- [x] `.github/skills/release-governance/SKILL.md` — Release-readiness governance procedure.
+- [x] `.github/agents/release-readiness-specialist.agent.md` — Release-readiness specialist.
+- [x] `.github/agents/cache-external-integration-specialist.agent.md` — Cache and external integration specialist. Covers Redis key patterns, TTL policies, external HTTP client contracts, and retry/circuit-breaker patterns.
 
 ### Finer-Grained Instruction Layers
+
+> **Future Consideration** — Feature-level instruction files add value only after feature folders grow complex enough that the top-level `.instructions.md` produces inconsistent agent behavior. Defer until at least 3 features have divergent enough conventions to warrant dedicated files.
 
 - [ ] `apps/frontend/src/features/**/.instructions.md` — Feature-level frontend instructions where needed.
 - [ ] `apps/backend/src/**/.instructions.md` — Feature-level or layer-level backend instructions where needed.
@@ -206,9 +249,10 @@ These require MCP server setup and external tooling configuration. See `SOLAR-Ra
 These items are important for long-term parity with the research, but they are not solved by file creation alone.
 
 - [ ] Enable and curate GitHub-hosted Copilot Memory in repository or organization settings.
-- [ ] Define MCP secret governance for `COPILOT_MCP_*` variables if MCP is enabled later.
-- [ ] Decide whether connected agents or external Copilot Studio topology is needed after the first pilot.
-- [ ] Enable Autopilot / Bypass Approvals flag in VS Code settings for Pipeline 2 (Simple Fix) — allows autonomous terminal command execution without manual Allow clicks.
+  > **Manual Setup Guide:** Go to GitHub → Organization (or Repository) Settings → GitHub Copilot → Policies → ensure "Copilot in GitHub" is enabled. To enable Memory, navigate to Settings → Copilot → Features and toggle on "Copilot Memory" (organization admin required for org-level; repository admin for repo-level). In VS Code, open Copilot Chat and use `@copilot /memory list` to view stored memories and `/memory delete` to remove stale entries. Repository-scoped memories are already seeded in `/memories/repo/` — these are consumed by agents directly without requiring GitHub-hosted Memory to be enabled.
+- [x] Define MCP secret governance for `COPILOT_MCP_*` variables — documented in `docs/guides/mcp-operations-guide.md` under "COPILOT*MCP*\* Naming Convention and Governance". Naming convention, scope rules, and addition workflow all defined.
+- [x] Decide whether connected agents or external Copilot Studio topology is needed after the first pilot — decision recorded in `docs/knowledge-base/connected-agent-topologies.md` under "This Repository's Decision Record". Current decision: hub-and-spoke maintained; Copilot Studio and cross-repo agents deferred with explicit revisit criteria.
+- [x] Enable Autopilot / Bypass Approvals flag in VS Code settings for Pipeline 2 (Simple Fix) — `.vscode/settings.json` updated with `"github.copilot.chat.agent.enabled": true` and the bypass setting documented as a commented-out line ready to uncomment per developer preference.
 
 ## Approval Notes
 
