@@ -61,13 +61,15 @@ Establish a repo-native agent framework that includes all five SOLAR pillars in 
 
 ### Persistent Repo Memory
 
-- [x] `/memories/repo/commands.md` — Verified commands and execution entry points.
-- [x] `/memories/repo/architecture.md` — Concise architecture facts for reuse across sessions.
-- [x] `/memories/repo/workflow-facts.md` — Workflow and documentation rules.
-- [x] `/memories/repo/frontend-facts.md` — Frontend-specific verified facts.
-- [x] `/memories/repo/backend-facts.md` — Backend-specific verified facts.
-- [x] `/memories/repo/security-facts.md` — Security-sensitive constraints and facts.
-- [x] `/memories/repo/verification-facts.md` — Verification gates, commands, and review facts.
+> **Template note:** These files are committed to the repo as git-tracked markdown files under `memories/repo/`. Fill in the `[FILL IN]` placeholders with your repo's actual values before running SOLAR-Ralph for the first time.
+
+- [x] `memories/repo/commands.md` — Verified commands and execution entry points.
+- [x] `memories/repo/architecture.md` — Concise architecture facts for reuse across sessions.
+- [x] `memories/repo/workflow-facts.md` — Workflow and documentation rules.
+- [x] `memories/repo/frontend-facts.md` — Frontend-specific verified facts.
+- [x] `memories/repo/backend-facts.md` — Backend-specific verified facts.
+- [x] `memories/repo/security-facts.md` — Security-sensitive constraints and facts.
+- [x] `memories/repo/verification-facts.md` — Verification gates, commands, and review facts.
 
 ### Operator Guides
 
