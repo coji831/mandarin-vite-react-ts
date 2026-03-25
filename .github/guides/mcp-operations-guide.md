@@ -1,6 +1,6 @@
 # MCP Operations Guide
 
-**Purpose:** Reference guide for configuring, starting, and using Model Context Protocol (MCP) servers in the SOLAR-Ralph workflow for `mandarin-vite-react-ts`.
+**Purpose:** Reference guide for configuring, starting, and using Model Context Protocol (MCP) servers in the SOLAR-Ralph workflow.
 
 ---
 
@@ -72,8 +72,8 @@ Available tools:
 Example invocation from a skill:
 
 ```
-fetch({ url: "http://localhost:3001/api/health", method: "GET" })
-fetch({ url: "http://localhost:3001/api/quiz", method: "POST", body: "{...}" })
+fetch({ url: "http://localhost:<port>/api/health", method: "GET" })
+fetch({ url: "http://localhost:<port>/api/<resource>", method: "POST", body: "{...}" })
 ```
 
 **No secrets required** — makes requests using the agent's ambient network access. Do not use against external production endpoints without explicit authorization.
@@ -162,7 +162,7 @@ All environment variables injected into MCP servers follow the `COPILOT_MCP_<SER
 Skills reference MCP tools by name. Example from `browser-reproduction/SKILL.md`:
 
 ```
-browser_navigate({ url: "http://localhost:5173/<route>" })
+browser_navigate({ url: "http://localhost:<frontend-port>/<route>" })
 ```
 
 The agent calls the Playwright MCP server's `browser_navigate` tool transparently.
