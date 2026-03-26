@@ -3,21 +3,21 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "node .github/hooks/user-prompt-submit.js",
+        "command": "node .github/hooks/user-prompt-submit.cjs",
         "timeout": 10
       }
     ],
     "PostToolUse": [
       {
         "type": "command",
-        "command": "node .github/hooks/post-tool-use.js",
+        "command": "node .github/hooks/post-tool-use.cjs",
         "timeout": 20
       }
     ],
     "Stop": [
       {
         "type": "command",
-        "command": "node .github/hooks/stop.js",
+        "command": "node .github/hooks/stop.cjs",
         "timeout": 10
       }
     ]
