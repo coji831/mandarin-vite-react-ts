@@ -1,6 +1,7 @@
 const fs = require("fs");
+const path = require("path");
 
-const ledgerPath = ".ai_ledger.md";
+const ledgerPath = path.resolve(__dirname, "../../.ai_ledger.md");
 const ledger = fs.existsSync(ledgerPath)
   ? fs.readFileSync(ledgerPath, "utf8")
   : "";

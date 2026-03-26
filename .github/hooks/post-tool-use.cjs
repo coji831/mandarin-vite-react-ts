@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 const fs = require("fs");
+const path = require("path");
 
 let data = "";
 process.stdin.on("data", (chunk) => (data += chunk));
@@ -21,7 +22,7 @@ process.stdin.on("end", () => {
       return;
     }
 
-    const ledgerPath = ".ai_ledger.md";
+    const ledgerPath = path.resolve(__dirname, "../../.ai_ledger.md");
     const ledger = fs.existsSync(ledgerPath)
       ? fs.readFileSync(ledgerPath, "utf8")
       : "";
@@ -58,14 +59,7 @@ process.stdin.on("end", () => {
         "Code modified in loop. Update .ai_ledger.md with step outcome and run narrowest verification.";
       console.log(JSON.stringify({ continue: true, systemMessage: message }));
     } else {
-      console.log(
-        JSON.stringify({
-          continue: true,
-          systemMessage:
-            "Code modified. If a SOLAR task is active: update .ai_ledger.md with this step " +
-            "outcome and run the narrowest verification before proceeding.",
-        }),
-      );
+      console.log(JSON.stringify({ continue: true }));
     }
   } catch (e) {
     console.log(JSON.stringify({ continue: true }));
