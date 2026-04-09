@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "review-result.schema.json",
+  "title": "Review Auditor Result Handoff",
+  "description": "Typed handoff payload produced by review auditors (Backend Review Auditor, Frontend Review Auditor) when handing review verdict and findings to the Orchestration Governor. Compliance is instruction-enforced, not constrained-decoding enforced.",
+  "type": "object",
+  "required": [
+    "type",
+    "producedBy",
+    "producedAt",
+    "workPackage",
+    "verdict",
+    "findingsBySeverity",
+    "codingGamingCheck",
+    "residualRisk",
+    "recommendedNextAgent"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "review_result",
+      "description": "Payload type discriminator. Must always be 'review_result'."
+    },
+    "producedBy": {
+      "type": "string",
+      "description": "Name of the review auditor that produced this payload (e.g., 'Backend Review Auditor', 'Frontend Review Auditor')."
+    },
+    "producedAt": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date string (YYYY-MM-DD) when this payload was produced."
+    },
+    "workPackage": {
+      "type": "string",
+      "description": "Identifier matching the work unit that was reviewed.",
+      "minLength": 3
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["pass", "fail", "conditional-pass"],
+      "description": "'pass': no blocking findings; 'fail': critical or high findings require repair before pipeline advancement; 'conditional-pass': low/medium findings noted but pipeline may advance with documented acceptance."
+    },
+    "findingsBySeverity": {
+      "type": "object",
+      "description": "Findings grouped by severity. Empty array per level means no findings at that level.",
+      "required": ["critical", "high", "medium", "low"],
+      "properties": {
+        "critical": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Critical findings that block pipeline advancement until fixed."
+        },
+        "high": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "High-severity findings that should be fixed before close."
+        },
+        "medium": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Medium-severity findings that should be addressed or accepted with documentation."
+        },
+        "low": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Low-severity observations or style notes."
+        }
+      },
+      "additionalProperties": false
+    },
+    "codingGamingCheck": {
+      "type": "string",
+      "enum": ["clean", "findings"],
+      "description": "'clean': no test modifications found without corresponding source fixes; 'findings': test gaming detected — requires governor escalation before pipeline advancement."
+    },
+    "residualRisk": {
+      "type": "string",
+      "description": "Description of any known residual risk accepted in this review. Use 'none' if no residual risk."
+    },
+    "recommendedNextAgent": {
+      "type": "string",
+      "description": "Name of the next agent to delegate to: 'governor' if review passed, 'Implementation Specialist' or domain-specific specialist if findings require repair."
+    }
+  },
+  "additionalProperties": false
+}

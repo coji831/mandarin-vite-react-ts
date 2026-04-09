@@ -1,0 +1,127 @@
+{
+  "solar": {
+    "active": true,
+    "mode": "simple",
+    "description": "SOLAR-Ralph system configuration"
+  },
+  "modes": {
+    "simple": {
+      "description": "Standard chat - hooks passive, no loop enforcement",
+      "enforceCompletion": false,
+      "typeCheckOnWrite": false
+    },
+    "loop": {
+      "description": "Autonomous loop - hooks enforce continuation until complete",
+      "enforceCompletion": true,
+      "typeCheckOnWrite": true
+    },
+    "plan": {
+      "description": "Planning mode - validation warnings only, no blocking",
+      "enforceCompletion": false,
+      "typeCheckOnWrite": false
+    },
+    "manual-test": {
+      "description": "Manual testing - all hooks silent",
+      "enforceCompletion": false,
+      "typeCheckOnWrite": false
+    },
+    "bootstrap": {
+      "description": "Bootstrap mode - all governance disabled, SOLAR setup utilities only",
+      "enforceCompletion": false,
+      "typeCheckOnWrite": false,
+      "ignoreGlobalInstructions": true
+    },
+    "router": {
+      "description": "Router pipeline - single-agent dispatch, no loop, no planner",
+      "enforceCompletion": false,
+      "typeCheckOnWrite": false
+    }
+  },
+  "hooks": {
+    "enabled": true,
+    "userPromptSubmit": {
+      "enabled": true,
+      "activeModes": ["loop"],
+      "blockOnPendingTask": true
+    },
+    "postToolUse": {
+      "enabled": true,
+      "activeModes": ["loop"],
+      "logErrorsToLearnings": true,
+      "typeCheck": {
+        "enabled": true,
+        "command": "npx tsc --noEmit",
+        "timeout": 10000
+      }
+    },
+    "stop": {
+      "enabled": true,
+      "activeModes": ["loop"],
+      "enforceLoopContinuation": true
+    },
+    "sessionStart": {
+      "injectLearnings": true
+    },
+    "subagentAnnounce": {
+      "enabled": true,
+      "activeModes": ["simple", "loop", "plan"]
+    },
+    "preToolUse": {
+      "watchModeEnabled": false,
+      "watchModeToolPatterns": ["run_in_terminal", "delete", "bulk_replace", "migrate"],
+      "requireDesignBeforeImpl": false,
+      "routerBypassAgents": [
+        "Explore",
+        "Implementation Specialist",
+        "Backend Implementation Specialist",
+        "Frontend Implementation Specialist",
+        "Security Auditor",
+        "Docs Curator",
+        "Backend Test Specialist",
+        "Frontend Test Specialist"
+      ]
+    }
+  },
+  "handoffs": {
+    "typedPayloadsEnabled": true,
+    "schemasPath": ".github/solar-system/schemas/"
+  },
+  "lifecycle": {
+    "resumptionFilesReadOrder": [
+      ".github/.ai_ledger.md",
+      ".github/AGENTS.md",
+      ".github/instructions/solar.instructions.md",
+      "/memories/session/checkpoint.md"
+    ]
+  },
+  "inquiry": {
+    "minimumFilesExamined": 3
+  },
+  "selfImprovement": {
+    "enabled": true,
+    "learningsPath": ".github/solar-system/.learnings/"
+  },
+  "context": {
+    "ledgerCompactionThreshold": 10,
+    "artifactHandleEnabled": true,
+    "artifactSizeThresholdLines": 200,
+    "effort": {
+      "default": "medium",
+      "loopMode": "high"
+    }
+  },
+  "sessionTypes": {
+    "chat": "simple",
+    "loop": "loop",
+    "manual-test": "manual-test",
+    "plan": "plan",
+    "bootstrap": "bootstrap"
+  },
+  "logging": {
+    "sessionLog": {
+      "enabled": true,
+      "path": ".github/solar-system/logs/",
+      "maxFiles": 20
+    }
+  }
+}

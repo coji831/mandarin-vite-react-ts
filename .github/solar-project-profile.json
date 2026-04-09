@@ -1,0 +1,294 @@
+{
+  "scanVersion": "3.0",
+  "scanDate": "2026-04-09T00:00:00Z",
+  "scanStrategy": "point-in-time + over-scan (5-pass protocol)",
+  "projectType": "web-fullstack",
+  "projectName": "mandarin-monorepo",
+  "confidence": "high",
+  "fallbacksTriggered": [],
+  "domains": [
+    {
+      "name": "frontend",
+      "path": "apps/frontend",
+      "stack": "React 19 + TypeScript + Vite",
+      "testCmd": "npm run test --workspace=@mandarin/frontend",
+      "buildCmd": "npm run build --workspace=@mandarin/frontend",
+      "devCmd": "npm run dev --workspace=@mandarin/frontend",
+      "instructionsFile": ".github/instructions/frontend.instructions.md"
+    },
+    {
+      "name": "backend",
+      "path": "apps/backend",
+      "stack": "Express 5 + Node.js + Prisma + PostgreSQL + Redis",
+      "testCmd": "npm run test --workspace=@mandarin/backend",
+      "buildCmd": "npm run build --workspace=@mandarin/backend",
+      "devCmd": "npm run dev --workspace=@mandarin/backend",
+      "startCmd": "npm run start --workspace=@mandarin/backend",
+      "instructionsFile": ".github/instructions/backend.instructions.md"
+    },
+    {
+      "name": "shared-types",
+      "path": "packages/shared-types",
+      "stack": "TypeScript",
+      "testCmd": "npm test --workspace=@mandarin/shared-types",
+      "instructionsFile": "packages/shared-types/.instructions.md"
+    },
+    {
+      "name": "shared-constants",
+      "path": "packages/shared-constants",
+      "stack": "TypeScript",
+      "testCmd": "npm test --workspace=@mandarin/shared-constants",
+      "instructionsFile": "packages/shared-constants/.instructions.md"
+    }
+  ],
+  "conventions": {
+    "detected": true,
+    "confidence": "high",
+    "sources": [
+      "docs/guides/code-conventions.md",
+      "docs/guides/git-convention.md",
+      ".github/copilot-instructions.md"
+    ],
+    "commitFormat": "Conventional Commits (feat|fix|docs|style|refactor|test|chore)",
+    "commitScopes": ["epic-X", "story-X-Y", "component", "hook", "api", "docs"],
+    "branchStrategy": "Epic-based (one branch per epic: epic-X-name)",
+    "prFormat": "[EPIC-X] Story X.Y: Description",
+    "codeStyle": "TypeScript, functional components, type over interface, ES modules",
+    "stateManagement": "Context API + useReducer, normalized state, granular selectors"
+  },
+  "instructions": {
+    "files": [
+      "architecture",
+      "frontend",
+      "backend",
+      "security",
+      "workflow",
+      "verification",
+      "conventions"
+    ],
+    "seedConfidence": "high",
+    "instructionConfidence": {
+      "architecture": "high",
+      "frontend": "high",
+      "backend": "high",
+      "security": "high",
+      "workflow": "high",
+      "verification": "high",
+      "conventions": "high"
+    },
+    "existingCount": 8,
+    "allExistingFiles": [
+      ".github/instructions/architecture.instructions.md",
+      ".github/instructions/backend.instructions.md",
+      ".github/instructions/conventions.instructions.md",
+      ".github/instructions/frontend.instructions.md",
+      ".github/instructions/security.instructions.md",
+      ".github/instructions/solar.instructions.md",
+      ".github/instructions/verification.instructions.md",
+      ".github/instructions/workflow.instructions.md"
+    ]
+  },
+  "workflows": {
+    "existingWorkflows": [
+      {
+        "name": "dev",
+        "command": "npm run dev",
+        "source": "root package.json",
+        "description": "Start frontend + backend concurrently"
+      },
+      {
+        "name": "dev:frontend",
+        "command": "npm run dev --workspace=@mandarin/frontend",
+        "source": "root package.json",
+        "description": "Start frontend dev server (Vite on port 5173)"
+      },
+      {
+        "name": "dev:backend",
+        "command": "npm run dev --workspace=@mandarin/backend",
+        "source": "root package.json",
+        "description": "Start backend dev server (Node watching on port 3001)"
+      },
+      {
+        "name": "test",
+        "command": "npm test",
+        "source": "root package.json",
+        "description": "Run all tests (Vitest)"
+      },
+      {
+        "name": "build",
+        "command": "npm run build",
+        "source": "root package.json",
+        "description": "Build frontend and backend"
+      },
+      {
+        "name": "db:migrate",
+        "command": "npm run db:migrate --workspace=@mandarin/backend",
+        "source": "backend package.json",
+        "description": "Create and apply database migration"
+      },
+      {
+        "name": "db:seed",
+        "command": "npm run db:seed --workspace=@mandarin/backend",
+        "source": "backend package.json",
+        "description": "Seed database with test data"
+      }
+    ],
+    "inferred": [
+      {
+        "name": "story-execution",
+        "type": "story-execution",
+        "source": ".github/copilot-instructions.md, docs/guides/workflow.md",
+        "confidence": "high"
+      },
+      {
+        "name": "branching-strategy",
+        "type": "branching-strategy",
+        "source": "docs/guides/git-convention.md, .github/copilot-instructions.md",
+        "confidence": "high"
+      },
+      {
+        "name": "testing-workflow",
+        "type": "testing",
+        "source": "docs/guides/testing-guide.md, docs/guides/workflow.md",
+        "confidence": "high"
+      },
+      {
+        "name": "feature-implementation",
+        "type": "implementation",
+        "source": "apps/frontend/README.md, .github/copilot-instructions.md",
+        "confidence": "high"
+      },
+      {
+        "name": "deployment",
+        "type": "deployment",
+        "source": "docs/architecture.md",
+        "confidence": "medium",
+        "description": "INFERRED: Frontend to Vercel, Backend to Railway, per architecture.md"
+      }
+    ],
+    "scaffolded": []
+  },
+  "testing": {
+    "frontend": {
+      "framework": "Vitest",
+      "library": "React Testing Library",
+      "coverage": "true",
+      "command": "npm run test --workspace=@mandarin/frontend"
+    },
+    "backend": {
+      "framework": "Vitest",
+      "mocking": "vi.fn() with testcontainers for DB",
+      "coverage": "true",
+      "command": "npm run test --workspace=@mandarin/backend"
+    }
+  },
+  "ciSystem": "none-detected",
+  "existingGates": [],
+  "detectedRules": ["conventional-commits", "template-compliance", "epic-based-branching"],
+  "deployment": {
+    "frontend": {
+      "platform": "Vercel",
+      "trigger": "main branch",
+      "buildCmd": "npm run build --workspace=@mandarin/frontend"
+    },
+    "backend": {
+      "platform": "Railway",
+      "trigger": "main branch",
+      "processType": "web",
+      "startCmd": "node src/index.js"
+    }
+  },
+  "database": {
+    "orm": "Prisma",
+    "dbType": "PostgreSQL",
+    "provider": "Supabase (production), local PostgreSQL (development)",
+    "connectionString": "DATABASE_URL env var",
+    "migrationsPath": "apps/backend/prisma/migrations"
+  },
+  "cache": {
+    "type": "Redis",
+    "client": "ioredis",
+    "failBehavior": "fail-open (degrades to API calls on cache failure)",
+    "ttlStrategy": "24-hour default for TTS/conversation cache",
+    "production": "Upstash Redis",
+    "development": "local Redis or ioredis-mock"
+  },
+  "authentication": {
+    "method": "JWT with httpOnly cookies",
+    "passwordHashing": "bcrypt",
+    "tokenRotation": "refresh token rotation",
+    "backends": {
+      "google_cloud_tts": "service account JSON",
+      "gemini_api": "API key",
+      "google_cloud_storage": "service account JSON"
+    }
+  },
+  "agentRoster": [
+    "Orchestration-Governor",
+    "Design-Planning-Architect",
+    "Frontend-Specialist",
+    "Backend-Specialist",
+    "Docs-Curator",
+    "Bug-Investigation-Specialist"
+  ],
+  "memory": {
+    "repo": [
+      "architecture.md",
+      "backend-facts.md",
+      "commands.md",
+      "frontend-facts.md",
+      "security-facts.md",
+      "verification-facts.md",
+      "workflow-facts.md"
+    ],
+    "templates": [
+      "business-requirements-template.md",
+      "epic-implementation-template.md",
+      "story-business-requirements-template.md",
+      "story-implementation-template.md",
+      "file-summary-template.md",
+      "commit-message-template.md"
+    ]
+  },
+  "documentation": {
+    "architecture": "docs/architecture.md",
+    "guides": [
+      "docs/guides/code-conventions.md",
+      "docs/guides/git-convention.md",
+      "docs/guides/testing-guide.md",
+      "docs/guides/workflow.md",
+      "docs/guides/backend-setup-guide.md",
+      "docs/guides/environment-setup-guide.md"
+    ],
+    "knowledge_base": "docs/knowledge-base/",
+    "templates": "docs/templates/",
+    "api_spec": "local-backend/docs/api-spec.md (optional)"
+  },
+  "environmentVariables": {
+    "frontend": ["VITE_API_URL"],
+    "backend": [
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "JWT_REFRESH_SECRET",
+      "REDIS_URL",
+      "GOOGLE_TTS_CREDENTIALS_RAW",
+      "GOOGLE_CLOUD_STORAGE_BUCKET",
+      "GEMINI_API_KEY",
+      "NODE_ENV",
+      "API_PORT"
+    ]
+  },
+  "notes": {
+    "monorepoStructure": "npm workspaces with apps/* and packages/* folders",
+    "rootScripts": "npm scripts delegate to workspace scripts",
+    "stateManagement": "Frontend uses split Context API with normalized state and granular selectors",
+    "cleanArchitecture": "Backend follows layered architecture: Controllers → Services → Repositories → Infrastructure",
+    "performance": "Frontend optimizations include memoization, lazy loading, and localStorage persistence",
+    "regressionRisk": "Backend migration to .NET is deferred; Express remains stable",
+    "knownDefers": [
+      "Epic 19: State refactor (Zustand migration deferred)",
+      "Epic 18: .NET backend migration (deferred)",
+      "Feature flag: Conversation generation (partial completion)"
+    ]
+  }
+}
