@@ -44,6 +44,15 @@
       "activeModes": ["loop"],
       "blockOnPendingTask": true
     },
+    "onReviewFail": {
+      "enabled": true,
+      "description": "Auto-trigger /ralph-loop when any review step (Auditor) returns FAIL status",
+      "activeModes": ["simple", "loop"],
+      "actionOnFail": "autoInvokeLoop",
+      "loopAgent": "recursive-remediation",
+      "maxIterations": 3,
+      "escalateAfterIterations": 3
+    },
     "postToolUse": {
       "enabled": true,
       "activeModes": ["loop"],
