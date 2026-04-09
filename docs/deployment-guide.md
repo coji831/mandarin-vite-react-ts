@@ -3,9 +3,11 @@
 This guide documents deployment checklist and manual steps required to enable the Example Caching feature in production.
 
 1) Secrets & HMAC Key
-- Create secret `EXAMPLES_CACHE_HMAC_KEY` in Secret Manager (production) and set rotation cadence (90 days recommended).
-- Optionally create `EXAMPLES_CACHE_HMAC_KEY_PREVIOUS` to support dual-key reads during key rotation.
-- Grant CI/CD and the examples service's runtime identity `Secret Manager Secret Accessor` role to allow reading the secret.
+- **Secret Manager Setup (Ops Prerequisite):** Create secret `EXAMPLES_CACHE_HMAC_KEY` in Google Secret Manager (production) and set rotation cadence (90 days recommended).
+- **Environment Variable Injection (Required Before App Start):** The app reads `EXAMPLES_CACHE_HMAC_KEY` from environment variables at startup time. Before deploying, use ops tooling (Cloud Run integration, deployment script, or K8s Secret) to inject the Secret Manager secret value into the environment variable.
+- **If the environment variable is missing at startup, HmacManager will throw an error and fail initialization** (fail-fast behavior; intended for early detection).
+- Optionally create `EXAMPLES_CACHE_HMAC_KEY_PREVIOUS` in Secret Manager, then inject into env for dual-key reads during key rotation.
+- Grant CI/CD and the examples service's runtime identity `Secret Manager Secret Accessor` role to allow reading the secret (ops should configure this for the deployment pipeline).
 
 2) GCS Service Account & Bucket
 - Create service account: `examples-service@<project>.iam.gserviceaccount.com`.
@@ -46,3 +48,15 @@ ACL SETUSER examples_service on ><strong-password> ~examples:* +GET +SET +DEL +P
 Security notes:
 - Never put `EXAMPLES_CACHE_HMAC_KEY` in source control. Use Secret Manager or k8s Secrets.
 - Audit dataset access should be restricted to a small group of trusted identities.
+
+## Follow-Up Operational Considerations (Tracked in Story Issues)
+
+The following operational risks have been identified for future optimization (not blocking deployment):
+
+1. **Lock TTL and Long-Running Generation:** If example generation exceeds the 5-second lock TTL, additional concurrent requests may bypass the lock (thundering herd). Monitor generation times in production; if >5s observed, consider extending TTL or adding telemetry to warn on lock expiry.
+
+2. **GCS Write Reliability:** GCS writes assume atomicity, but network failures mid-write could leave partial objects. A post-write verification step or explicit error handling for write failures is recommended in a follow-up optimization.
+
+3. **Real Integration Testing:** Current tests use mocked GCS/Redis; add manual or optional integration tests with a real GCS bucket and Redis instance as an ops validation step.
+
+4. **Redis Memory & Eviction:** Ensure Redis instance has sufficient memory and a suitable eviction policy; under heavy load, locks may be evicted prematurely, leading to lock contention.
