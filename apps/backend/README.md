@@ -101,6 +101,18 @@ GOOGLE_TTS_CREDENTIALS_RAW={"type":"service_account",...}
 GEMINI_API_CREDENTIALS_RAW={"type":"service_account",...}
 ```
 
+### Example Caching (Story 16.3)
+
+Add the following secrets to enable the examples caching behavior. These should be stored in Secret Manager and never committed to source control.
+
+```env
+# HMAC key used to derive cache object names for examples (read from Secret Manager)
+EXAMPLES_CACHE_HMAC_KEY=[REDACTED]
+
+# Optional previous key during rotation
+EXAMPLES_CACHE_HMAC_KEY_PREVIOUS=[REDACTED]
+```
+
 ### Optional Configuration
 
 ````env
