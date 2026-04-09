@@ -14,7 +14,7 @@ export default defineConfig({
     environment: "node",
 
     // Test file patterns
-    include: ["tests/**/*.test.js"],
+    include: ["tests/**/*.test.js", "tests/**/*.test.ts"],
 
     // Coverage configuration
     coverage: {
