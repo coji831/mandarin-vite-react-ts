@@ -1,4 +1,5 @@
-import axios from "axios";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { apiClient } from "services";
 
 // Small silent WAV fallback (very short, valid WAV)
 const SILENT_WAV =
@@ -6,7 +7,11 @@ const SILENT_WAV =
 
 export async function getAudioUrl(cacheKey: string): Promise<string> {
   try {
-    const res = await axios.get(`/api/examples/audio?cacheKey=${encodeURIComponent(cacheKey)}`);
+    const res = await apiClient.get(
+      ROUTE_PATTERNS.examples +
+        ROUTE_PATTERNS.examplesAudio +
+        `?cacheKey=${encodeURIComponent(cacheKey)}`,
+    );
     const url = res.data?.audio_url;
     if (url) return url;
     return SILENT_WAV;

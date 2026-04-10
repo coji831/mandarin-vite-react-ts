@@ -8,6 +8,9 @@ export declare const ROUTE_PATTERNS: {
   readonly health: string;
   readonly ttsAudio: string;
   readonly vocabulary: string;
+  readonly examples: string;
+  readonly examplesSingleLine: string;
+  readonly examplesAudio: string;
   readonly conversations: string;
   readonly conversationTextGenerate: string;
   readonly conversationAudioGenerate: string;

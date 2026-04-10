@@ -82,19 +82,41 @@ Follow this sequence whenever implementing or updating a story (smallest deliver
 - Start local backend (if API integration touched): `npm run start-backend`.
 - Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
 
-6. Update Documentation
+6. Update Documentation (MANDATORY DELEGATION + REVIEW)
 
+**CRITICAL GOVERNANCE RULE:** Governor MUST NOT directly edit BR or implementation documentation files. Docs Curator must be delegated for all documentation structure & content updates.
+
+**Two-Phase Documentation Update Process:**
+
+**Phase A: Design & Planning (if doc structure/scope changes)**
+
+- Design Architect designs documentation structure + content plan
+- User reviews + approves design
+- **MANDATORY:** Docs Curator reviews approved design for feasibility + template compliance
+- **MANDATORY:** Docs Curator writes files based on approved design (Governor does not write)
+- Files staged for review step before commit
+
+**Phase B: Implementation Code Phase (during story development)**
+
+- Developer records decisions, data shape changes, performance notes in story implementation doc
+- Add Technical Challenges & Solutions section: Document any non-trivial problems encountered during implementation (debugging >1 hour, architectural decisions, test alignment issues, schema mismatches, error handling patterns). Include problem statement, root cause, solution with code examples, and lessons learned.
 - Story BR: mark progressed AC (leave unchecked until fully validated).
-- Story implementation doc: record decisions, data shape changes, performance notes.
-- **Add Technical Challenges & Solutions section**: Document any non-trivial problems encountered during implementation (debugging >1 hour, architectural decisions, test alignment issues, schema mismatches, error handling patterns). Include problem statement, root cause, solution with code examples, and lessons learned.
 - Epic docs: only update if cross-cutting decisions or shared architecture changed.
 - Update Last Update date fields accordingly.
+- **MANDATORY:** Run documentation changes through review or audit before commit (see Step 7 Pre-Commit Gate)
 
 7. Pre-Commit Gate
 
 - Run tests: `npm test` (or targeted pattern) → must pass.
 - Type check & lint if configured (`tsc --noEmit`, ESLint task) – ensure clean.
 - Verify Quality Gates & Cross‑Doc Alignment checklists.
+- **Documentation Review:** If any BR or implementation docs were changed, a Docs Curator or review auditor MUST have validated the changes for:
+  - Template compliance (no sections added/removed without template update)
+  - Cross-linking integrity (BR ↔ Impl ↔ Epic links work bidirectionally)
+  - AC clarity (acceptance criteria are testable and unambiguous)
+  - Technical accuracy (no contradictions with code changes)
+  - Status field consistency (Status, Last Update dates synchronized across docs)
+  - Do NOT commit documentation changes without this review.
 - If instructed to "wait before commit": stage changes but defer commit; add a note in the story implementation doc explaining the hold reason.
 
 8. Commit (When Allowed)
@@ -311,6 +333,7 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
    - Add new features/capabilities using descriptive names (NOT story/epic numbers).
    - Update system overview to reflect current state.
    - Ensure feature descriptions are accurate and complete.
+   - **MANDATORY:** If high-level docs are updated, a Docs Curator or design reviewer must validate changes for accuracy and consistency before closure commit.
 3. **Check for knowledge base and guideline updates**:
    - Review "Technical Challenges & Solutions" section in implementation doc.
    - Extract reusable patterns to `docs/knowledge-base/` (concepts, architectural patterns, deep dives).
@@ -318,6 +341,7 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
    - Update `docs/guides/code-conventions.md` if new patterns emerged (naming, error handling, testing).
    - Add cross-links between story doc, guides, and KB articles.
    - See "Knowledge Base Update Protocol" section for detailed extraction workflow.
+   - **MANDATORY:** KB and guide updates must be reviewed for accuracy before closure commit.
 4. **Run all feature tests before closing**:
    - Execute full test suite for the affected feature: `npm test -- --run src/features/<feature>/`
    - Verify 100% pass rate (no failures, no skipped tests except explicitly documented).
@@ -327,7 +351,12 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
 5. Update `Status: Completed` in BR + implementation docs.
 6. Update `Last Update` date in both.
 7. Ensure PR number is referenced in both docs.
-8. Commit BR + implementation changes together.
+8. **Documentation Final Review:** Before closure commit, verify that all documentation changes (BR, implementation, architecture, KB, guides) have been reviewed by Docs Curator or designated auditor for:
+   - Template compliance
+   - Cross-linking correctness
+   - Technical accuracy
+   - Status/date field synchronization
+9. Commit BR + implementation changes together.
 
 ## 🧷 Quality Gates (Before Merge / Close)
 

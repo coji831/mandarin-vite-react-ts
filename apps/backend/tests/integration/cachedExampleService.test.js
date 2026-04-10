@@ -10,10 +10,21 @@ describe("CachedExampleService integration (with mocked deps)", () => {
 
   beforeEach(() => {
     exampleServiceMock = { generateExamples: vi.fn().mockResolvedValue({ examples: ["gen"] }) };
-    redisLockMock = { acquire: vi.fn().mockResolvedValue(true), release: vi.fn().mockResolvedValue(true) };
-    gcsServiceMock = { get: vi.fn().mockResolvedValue(null), set: vi.fn().mockResolvedValue(undefined) };
+    redisLockMock = {
+      acquire: vi.fn().mockResolvedValue(true),
+      release: vi.fn().mockResolvedValue(true),
+    };
+    gcsServiceMock = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn().mockResolvedValue(undefined),
+    };
     hmacManagerMock = { deriveKey: vi.fn().mockReturnValue("hk-123") };
-    sut = new CachedExampleService(exampleServiceMock, redisLockMock, gcsServiceMock, hmacManagerMock);
+    sut = new CachedExampleService(
+      exampleServiceMock,
+      redisLockMock,
+      gcsServiceMock,
+      hmacManagerMock,
+    );
   });
 
   it("returns cached value when GCS has data (cache hit)", async () => {

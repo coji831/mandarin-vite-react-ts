@@ -53,6 +53,21 @@
       "maxIterations": 3,
       "escalateAfterIterations": 3
     },
+    "requireUserApprovalBeforeCommit": {
+      "enabled": true,
+      "description": "Wait for explicit user approval before committing changes to main branch",
+      "activeModes": ["simple", "loop"],
+      "stage": "Feature-Stage-6",
+      "presenter": "Governor",
+      "summaryItems": [
+        "work_packages_completed",
+        "test_results",
+        "review_approvals",
+        "files_changed",
+        "commit_message_preview"
+      ],
+      "escalationReason": "User can reject approval and request rework; on approval, Governor commits immediately"
+    },
     "postToolUse": {
       "enabled": true,
       "activeModes": ["loop"],

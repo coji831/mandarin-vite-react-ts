@@ -15,7 +15,11 @@ Governor
       └─ No findings → stage 4
 └─ 4. Security Auditor  [conditional: only if auth/JWT/CORS/cookies touched]
 └─ 5. Docs Curator
-└─ 6. Close  [Session-Type: chat, WORK_PACKAGE_COMPLETE]
+└─ 6. User Approval & Commit  [Session-Type: chat]
+      └─ Governor presents summary, waits for user approval
+      └─ On approval: Governor commits changes
+      └─ On rejection: Return to previous stage for rework
+└─ 7. Close  [Session-Type: chat, WORK_PACKAGE_COMPLETE]
 ```
 
 ## Stage Completion Criteria
@@ -47,7 +51,19 @@ Governor
 - Architecture doc updated if cross-cutting changes made
 - API spec updated if endpoint contracts changed
 
-**Stage 6 — Close:**
+**Stage 6 — User Approval & Commit:**
+
+- Governor presents a final summary to the user with:
+  - Work packages completed
+  - All tests passing
+  - All reviews approved
+  - Files changed (git status)
+- User approval required before proceeding
+- On approval: commit staged changes with conventional commit message
+- On rejection: rollback and return to appropriate earlier stage (3, 4, or 5)
+- Commit must include reference to work package/story number and PR/issue link if applicable
+
+**Stage 7 — Close:**
 
 - All Acceptance Criteria verified
 - No unresolved verification failures

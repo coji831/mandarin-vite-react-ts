@@ -1,4 +1,5 @@
-import axios from "axios";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { apiClient } from "services";
 
 export interface Example {
   chinese: string;
@@ -11,7 +12,10 @@ export async function fetchExamples(
   hskLevel: number,
   language: string,
 ): Promise<Example[]> {
-  const response = await axios.post("/api/examples", { word, hskLevel, language });
+  const response = await apiClient.post(
+    ROUTE_PATTERNS.examples + ROUTE_PATTERNS.examplesSingleLine,
+    { word, hskLevel, language },
+  );
   return response.data?.data ?? [];
 }
 

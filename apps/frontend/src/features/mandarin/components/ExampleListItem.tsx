@@ -41,7 +41,7 @@ export function ExampleListItem({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handlePlay();
