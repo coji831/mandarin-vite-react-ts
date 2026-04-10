@@ -38,7 +38,7 @@ A compact examples panel increases scanability, helps beginners compare usage co
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: 
+- **PR**:
 - **Merge Date**: 2026-04-09
 - **Key Commit**: dbae07c
 - **Last Update**: 2026-04-09

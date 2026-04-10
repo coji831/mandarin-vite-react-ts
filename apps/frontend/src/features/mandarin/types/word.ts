@@ -6,6 +6,7 @@ export type WordBasic = {
   chinese: string;
   pinyin: string;
   english: string;
+  hskLevel?: number;
 };
 
 /**

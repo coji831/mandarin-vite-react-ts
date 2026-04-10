@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 // Load canonical HSK 1-3 list at startup (per Story 16.1 requirement)
 const HSK_JSON_PATH = path.resolve(
   __dirname,
-  "../../../..",
+  "../../../../..",
   "packages",
   "shared-constants",
   "hsk-1-3.json",
@@ -37,13 +37,20 @@ const hskSet = loadHskSet();
 function tokenizeChinese(text) {
   if (!text) return [];
 
-  // For now, use synchronous require if available (backward compatible with Node.js)
-  // In ES modules, dynamic require is not available, so we'll use the fallback
+  // Chinese punctuation and whitespace pattern
+  const PUNCTUATION_PATTERN =
+    /[\u3000-\u303f\uff00-\uffef。，、；：？！·…—～「」『』（）【】《》\s]/g;
+
+  // Remove punctuation first
+  const cleaned = text.replace(PUNCTUATION_PATTERN, "");
+  if (!cleaned) return [];
+
+  // Try nodejieba tokenization if available
   try {
     const nodejieba = require("nodejieba");
     if (nodejieba && typeof nodejieba.cut === "function") {
       return nodejieba
-        .cut(text)
+        .cut(cleaned)
         .map((t) => t.trim())
         .filter(Boolean);
     }
@@ -52,7 +59,7 @@ function tokenizeChinese(text) {
   }
 
   // Conservative fallback: split into characters (suitable for short HSK words)
-  return Array.from(text)
+  return Array.from(cleaned)
     .map((c) => c.trim())
     .filter(Boolean);
 }
@@ -63,13 +70,32 @@ export function isTokenAllowed(token, targetWord) {
   return hskSet.has(token);
 }
 
+/**
+ * Attempt to reconstruct target word from character tokens.
+ * Example: tokens=['包','子'], targetWord='包子' -> true
+ */
+function reconstructTargetWord(tokens, targetWord) {
+  if (!Array.isArray(tokens) || tokens.length === 0) return false;
+  const reconstructed = tokens.join("");
+  return reconstructed === targetWord;
+}
+
 export function validateChineseTokens(chinese, targetWord) {
   const tokens = tokenizeChinese(chinese);
   const invalid = tokens.filter((t) => !isTokenAllowed(t, targetWord));
-  if (invalid.length > 0) {
-    return { valid: false, invalidTokens: invalid };
+
+  // All tokens valid individually
+  if (invalid.length === 0) {
+    return { valid: true };
   }
-  return { valid: true };
+
+  // Fallback: if joining the token sequence exactly equals the target, accept it
+  if (reconstructTargetWord(tokens, targetWord)) {
+    return { valid: true };
+  }
+
+  // Validation failed
+  return { valid: false, invalidTokens: invalid };
 }
 
 export function getHskSet() {

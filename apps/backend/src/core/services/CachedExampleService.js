@@ -50,7 +50,12 @@ export class CachedExampleService {
       const cached = await this.gcsService.get(objectPath);
       if (cached !== null) {
         const latency = Date.now() - startedAt;
-        const audit = { ...auditBase, cache_hit: true, generation_latency_ms: latency, status: "ok" };
+        const audit = {
+          ...auditBase,
+          cache_hit: true,
+          generation_latency_ms: latency,
+          status: "ok",
+        };
         logger.cacheHit(objectPath);
         logger.info("cache_audit", audit);
         return cached;
@@ -77,7 +82,13 @@ export class CachedExampleService {
       try {
         const result = await this.exampleService.generateExamples(word, hskLevel, language);
         const latency = Date.now() - startGen;
-        const audit = { ...auditBase, cache_hit: false, generation_latency_ms: latency, status: "ok", note: "lock_miss_fallback" };
+        const audit = {
+          ...auditBase,
+          cache_hit: false,
+          generation_latency_ms: latency,
+          status: "ok",
+          note: "lock_miss_fallback",
+        };
         logger.info("generation_audit", audit);
         return result;
       } catch (err) {
@@ -91,7 +102,13 @@ export class CachedExampleService {
       const recheck = await this.gcsService.get(objectPath);
       if (recheck !== null) {
         const latency = Date.now() - startedAt;
-        const audit = { ...auditBase, cache_hit: true, generation_latency_ms: latency, status: "ok", note: "post_lock_hit" };
+        const audit = {
+          ...auditBase,
+          cache_hit: true,
+          generation_latency_ms: latency,
+          status: "ok",
+          note: "post_lock_hit",
+        };
         logger.cacheHit(objectPath);
         logger.info("cache_audit", audit);
         return recheck;
@@ -120,7 +137,12 @@ export class CachedExampleService {
       }
 
       const genLatency = Date.now() - genStart;
-      const audit = { ...auditBase, cache_hit: false, generation_latency_ms: genLatency, status: "ok" };
+      const audit = {
+        ...auditBase,
+        cache_hit: false,
+        generation_latency_ms: genLatency,
+        status: "ok",
+      };
       logger.info("generation_audit", audit);
       return generated;
     } catch (err) {

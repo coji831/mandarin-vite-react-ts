@@ -34,7 +34,12 @@ export class HmacManager {
       h.update(source);
       const digest = h.digest("hex");
       // Debug log with non-sensitive metadata only
-      this.logger.debug("HMAC derived for inputs", { wordLength: (word || "").length, hskLevel, language, keyVersion });
+      this.logger.debug("HMAC derived for inputs", {
+        wordLength: (word || "").length,
+        hskLevel,
+        language,
+        keyVersion,
+      });
       return digest;
     } catch (err) {
       // Should never happen - treat as fatal

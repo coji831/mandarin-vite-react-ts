@@ -1,0 +1,386 @@
+{
+  "design_id": "story-16-3-docs-design",
+  "created_at": "2026-04-09T00:00:00Z",
+  "created_by": "Design Planning Architect",
+  "phase": "pre-implementation",
+  "status": "Ready for Docs Curator",
+  "summary": "Documentation reorganization and expansion for Story 16.3 (Example Caching & Performance). Four work packages: BR AC reorganization, implementation doc expansion (Clean Arch + Deployment + Performance), architecture.md caching patterns section, and cross-link validation.",
+
+  "files_to_update": [
+    {
+      "path": "docs/business-requirements/epic-16-word-examples/story-16-3-example-caching-performance.md",
+      "type": "BR",
+      "priority": "P0",
+      "effort_hours": 2,
+      "sections_affected": ["Acceptance Criteria", "Business Rules", "Related Issues"],
+      "key_changes": [
+        "Reorganize AC into 10 clear, testable items (currently 5 scattered)",
+        "Add Business Rule: HMAC key rotation every 90 days with dual-key reads",
+        "Clarify which AC are behavioral (testable) vs. deployment (task)",
+        "Verify bidirectional cross-links to Epic 16 README and Implementation doc"
+      ],
+      "questions_resolved": [
+        "Q: Should HMAC rotation be AC? A: Yes, make it a Business Rule + AC item",
+        "Q: Is 'monitoring' too vague? A: Yes, be specific: 'Prometheus counter increments on hit'",
+        "Q: Does BR need Clean Arch discussion? A: No, defer to Implementation doc"
+      ],
+      "estimated_content_change": "15% — reorganize, add architectural requirements"
+    },
+    {
+      "path": "docs/issue-implementation/epic-16-word-examples/story-16-3-example-caching-performance.md",
+      "type": "Implementation",
+      "priority": "P0",
+      "effort_hours": 6,
+      "new_sections": [
+        {
+          "title": "Clean Architecture: Wrapper Pattern Rationale",
+          "subsections": [
+            "Why ExampleService should focus on business logic only",
+            "Why CachedExampleService wrapper handles cache orchestration",
+            "Precedent: CachedConversationService (Epic 8)",
+            "Impact on testability and .NET migration"
+          ],
+          "length_lines": 50,
+          "includes_code": true,
+          "code_examples": [
+            "ExampleService class skeleton (business logic only)",
+            "CachedExampleService wrapper (cache orchestration)"
+          ]
+        },
+        {
+          "title": "Deployment Checklist",
+          "subsections": [
+            "HMAC Key Rotation (Secret Manager + dual-key reads)",
+            "Prometheus Setup (recording rules + alerts)",
+            "Redis Security (TLS + ACL)",
+            "GCS Configuration (lifecycle, audit logging)",
+            "Load Testing (100 concurrent requests, hit rate capture)"
+          ],
+          "format": "checkbox list",
+          "length_lines": 80,
+          "includes_code": true,
+          "code_examples": [
+            "Terraform resources (service account, bucket, IAM)",
+            "Redis ACL command",
+            "Dual-key read pattern"
+          ]
+        },
+        {
+          "title": "Performance & Cost Targets",
+          "subsections": [
+            "Cache hit rate targets by date",
+            "Latency bounds (cache hit vs. cache miss)",
+            "Storage projections",
+            "Cost savings estimates"
+          ],
+          "format": "metrics table",
+          "length_lines": 30
+        },
+        {
+          "title": "Technical Challenges & Solutions",
+          "subsections": [
+            "Challenge 1: Cold cache hit rate on launch",
+            "Challenge 2: Duplicate Gemini calls under load",
+            "Challenge 3: HMAC key rotation during deployment",
+            "Challenge 4: Cache invalidation strategy"
+          ],
+          "length_lines": 150,
+          "includes_code": true,
+          "code_examples": [
+            "Cache warm-up job logic",
+            "Single-flight lock acquisition + polling",
+            "Dual-key read with rekey operation",
+            "Version token pattern for invalidation"
+          ]
+        },
+        {
+          "title": "Future Work & Standardization",
+          "subsections": [
+            "CacheableGenerationFactory design sketch",
+            "When to retrofit Epic 8",
+            "Onboarding plan for Stories 17-19"
+          ],
+          "length_lines": 60,
+          "includes_code": true,
+          "code_examples": [
+            "Factory class skeleton",
+            "Usage example for decorated generator function"
+          ]
+        }
+      ],
+      "existing_sections_to_update": [
+        {
+          "title": "Technical Scope",
+          "change": "Expand with file counts (6 new files, 3 test files, 2 configs)"
+        },
+        {
+          "title": "Implementation Details",
+          "change": "Verify 3 critical code examples are present and current"
+        }
+      ],
+      "code_examples_required": [
+        {
+          "name": "HMAC Key Computation",
+          "description": "With secret rotation and version token",
+          "language": "javascript"
+        },
+        {
+          "name": "Redis Lock Acquisition",
+          "description": "With unique lock token and TTL",
+          "language": "javascript"
+        },
+        {
+          "name": "GCS Write with Validation",
+          "description": "Validate structure before persistence",
+          "language": "javascript"
+        }
+      ],
+      "estimated_content_change": "30% expansion — add 4 new sections + detailed deployment checklist"
+    },
+    {
+      "path": "docs/architecture.md",
+      "type": "Architecture",
+      "priority": "P1",
+      "effort_hours": 4,
+      "action": "Add new section after Backend Architecture, before Frontend Architecture",
+      "new_section": {
+        "title": "Caching Patterns for Expensive Operations",
+        "length_words": "2500–3500 (1–1.5 pages)",
+        "subsections": [
+          "When to Cache (decision criteria with ✅/❌ checklist)",
+          "Recommended Pattern: Hybrid (Lock + Persistent)",
+          "Pattern Components (Redis, GCS, HMAC, Prometheus)",
+          "Design Decisions & Tradeoffs (2 detailed tables)",
+          "Implementation Examples (Story 16.3, Epic 8)",
+          "Future Standardization (CacheableGenerationFactory)"
+        ],
+        "includes_diagrams": true,
+        "includes_code": false,
+        "includes_tables": true,
+        "tables_count": 3,
+        "cross_links": [
+          "Links down to Story 16.3 BR/Impl docs",
+          "Links down to Epic 8 implementation",
+          "Referenced from new docs: Story 16.3, Stories 17-19"
+        ],
+        "guidelines": [
+          "Avoid story/epic numbers in high-level guidance",
+          "Use descriptive pattern names (Hybrid Lock + Cache vs. Story 16.3)",
+          "Provide decision framework for future APIs",
+          "Link to implementation details without prescribing"
+        ]
+      },
+      "estimated_content_change": "New section; no changes to existing content"
+    },
+    {
+      "path": "docs/business-requirements/epic-16-word-examples/README.md",
+      "type": "Epic BR",
+      "priority": "P2",
+      "effort_hours": 0.5,
+      "action": "Verify bidirectional cross-links",
+      "validation_checklist": [
+        "Epic BR links to Story 16.3 BR?",
+        "Story 16.3 BR links back to Epic BR?",
+        "Link text is consistent and descriptive?"
+      ]
+    },
+    {
+      "path": "docs/issue-implementation/epic-16-word-examples/README.md",
+      "type": "Epic Implementation",
+      "priority": "P2",
+      "effort_hours": 0.5,
+      "action": "Verify bidirectional cross-links",
+      "validation_checklist": [
+        "Epic Impl links to Story 16.3 Impl?",
+        "Story 16.3 Impl links back to Epic Impl?",
+        "Link text is consistent and descriptive?"
+      ]
+    }
+  ],
+
+  "work_packages": [
+    {
+      "id": "WP1",
+      "name": "Story 16.3 BR Reorganization",
+      "priority": "P0",
+      "effort_hours": 2,
+      "deliverables": [
+        "10 clear, testable AC items (vs. current 5)",
+        "AC items split into behavioral (testable) vs. deployment tasks",
+        "Business Rules section updated with HMAC rotation",
+        "Bidirectional cross-links verified"
+      ],
+      "acceptance_criteria": [
+        "All AC items are testable/verifiable in code or tests",
+        "No vague statements (e.g., 'monitoring is set up')",
+        "Cross-links to Epic 16 README and Implementation doc"
+      ]
+    },
+    {
+      "id": "WP2",
+      "name": "Story 16.3 Implementation Expansion",
+      "priority": "P0",
+      "effort_hours": 6,
+      "deliverables": [
+        "Clean Architecture section explaining wrapper pattern",
+        "Deployment Checklist with HMAC/Prometheus/Redis/GCS/load testing",
+        "Performance & Cost Targets table with concrete metrics",
+        "Technical Challenges & Solutions (4 challenges with code examples)",
+        "Future Work section on CacheableGenerationFactory + Epic 8 retrofit"
+      ],
+      "acceptance_criteria": [
+        "3 critical code examples are present and syntactically correct",
+        "Deployment Checklist is exhaustive (checkbox items)",
+        "Performance metrics are concrete (%, ms, $, GB)",
+        "Technical Challenges include code patterns for each solution"
+      ]
+    },
+    {
+      "id": "WP3",
+      "name": "Architecture.md Caching Patterns Section",
+      "priority": "P1",
+      "effort_hours": 4,
+      "deliverables": [
+        "New section: Caching Patterns for Expensive Operations (250–350 lines)",
+        "Decision criteria table (When to Cache vs. When Not to Cache)",
+        "Architecture diagram (textual or reference to visual)",
+        "3 design decision tables (hybrid vs. single, pattern components, tradeoffs)",
+        "Implementation examples (Story 16.3, Epic 8)",
+        "Standardization guidance (CacheableGenerationFactory sketch)"
+      ],
+      "acceptance_criteria": [
+        "Section avoids story/epic number references",
+        "Guidance is generalizable to future APIs (Stories 17-19)",
+        "Cross-links to implementation docs are present",
+        "Decision framework helps developers answer 'should I cache this API?'"
+      ]
+    },
+    {
+      "id": "WP4",
+      "name": "Cross-Document Linking & Status Alignment",
+      "priority": "P2",
+      "effort_hours": 1,
+      "deliverables": [
+        "Bidirectional cross-links verified (BR ↔ Impl, Epic ↔ Stories)",
+        "Status and Last Update fields synchronized",
+        "Architecture.md links to Story 16.3 and Epic 8 docs",
+        "Story 16.3 docs link back to Architecture.md caching section"
+      ],
+      "acceptance_criteria": [
+        "All links are relative markdown paths (no absolute URLs)",
+        "Status field is identical in BR and Implementation",
+        "Last Update date is identical in BR and Implementation",
+        "No broken links (test with markdown link checker if available)"
+      ]
+    }
+  ],
+
+  "key_design_decisions": [
+    {
+      "decision": "BR should NOT surface Clean Architecture wrapper pattern",
+      "rationale": "BR is for stakeholders; implementation patterns belong in Implementation doc. BR states WHAT (caching + security + monitoring), not HOW.",
+      "impact": "Clean Arch discussion is Implementation doc section, not BR. Architecture.md explains why it matters for portability."
+    },
+    {
+      "decision": "Exactly 3 core code examples in Implementation doc",
+      "rationale": "Avoid overwhelming with examples. Three critical patterns: HMAC computation, Redis lock acquisition, GCS write with validation.",
+      "impact": "Full service implementation shown separately; examples focus on patterns that differentiate this approach."
+    },
+    {
+      "decision": "Prometheus metrics are AC items; dashboard creation is deployment task",
+      "rationale": "Metric emission is behavioral (testable in code); dashboard is operational (deployment concern).",
+      "impact": "AC items focus on 'Prometheus counter increments' (verifiable). Deployment Checklist has 'Grafana dashboard created' (operational)."
+    },
+    {
+      "decision": "Architecture.md has one comprehensive caching section, not decision trees",
+      "rationale": "Provide framework for future APIs to decide 'should I cache?' without over-prescribing.",
+      "impact": "Section includes decision criteria table (When to Cache) but not per-API decision trees. Keeps architecture doc lean."
+    },
+    {
+      "decision": "Architecture.md should link to specific code files (gcsCacheService.js, CachedConversationService.js)",
+      "rationale": "Developers benefit from seeing where patterns live. Use relative paths and future tense to avoid prescriptiveness.",
+      "impact": "Links point developers to implementation examples without mandating they be used for all cases."
+    }
+  ],
+
+  "cross_document_alignment": {
+    "br_to_impl_links": [
+      {
+        "from": "BR: Description",
+        "to": "Impl: Technical Scope",
+        "status": "✅ verified"
+      },
+      {
+        "from": "BR: Acceptance Criteria",
+        "to": "Impl: Deployment Checklist",
+        "status": "⚠️ needs mapping"
+      },
+      {
+        "from": "BR: Business Rules",
+        "to": "Impl: Clean Architecture section",
+        "status": "⚠️ needs mapping"
+      }
+    ],
+    "epic_to_stories": [
+      {
+        "from": "Epic 16 BR",
+        "to": "Story 16.3 BR",
+        "status": "✅ verified"
+      },
+      {
+        "from": "Epic 16 Impl",
+        "to": "Story 16.3 Impl",
+        "status": "✅ verified"
+      }
+    ],
+    "architecture_references": [
+      {
+        "from": "Architecture.md (new caching section)",
+        "to": "Story 16.3 (examples implementation)",
+        "status": "✅ planned"
+      },
+      {
+        "from": "Architecture.md (new caching section)",
+        "to": "Epic 8 (conversation implementation)",
+        "status": "✅ planned"
+      },
+      {
+        "from": "Story 16.3 Impl",
+        "to": "Architecture.md (caching patterns)",
+        "status": "✅ planned"
+      }
+    ]
+  },
+
+  "curator_handoff_instructions": [
+    "1. Read full documentation design spec (story-16-3-docs-design.md) to understand all 4 work packages",
+    "2. Open the three files to update side-by-side: BR, Impl, Architecture",
+    "3. Work through packages sequentially (WP1 → WP2 → WP3 → WP4)",
+    "4. For each code example added, verify it can be copy-pasted and run",
+    "5. Test all markdown links (should resolve without broken URLs)",
+    "6. Validate Status and Last Update fields match across BR and Impl",
+    "7. Before commit: run final QA checklist (design spec section 'Success Criteria')",
+    "8. Merge all three file updates together (to maintain cross-document consistency)"
+  ],
+
+  "estimated_total_effort": {
+    "analysis_hours": 0,
+    "implementation_hours": 13,
+    "qc_hours": 1,
+    "total_hours": 14,
+    "calendar_days": "4–5 days (split across team if needed)"
+  },
+
+  "quality_gates": [
+    "✅ All AC items in BR are testable/verifiable (no vague statements)",
+    "✅ Implementation doc includes all 5 required sections (Clean Arch, Deployment, Performance, Challenges, Future Work)",
+    "✅ All 3 code examples are syntactically valid (template can be copy-pasted)",
+    "✅ Architecture.md caching section avoids story/epic numbers (uses descriptive names)",
+    "✅ All cross-links are bidirectional and working",
+    "✅ Status and Last Update fields are identical in BR and Impl",
+    "✅ No non-template sections added (strict template compliance)",
+    "✅ Template structure is preserved (all required sections intact)"
+  ],
+
+  "success_criteria": "Documentation is complete when Docs Curator can implement all work packages without asking clarifying questions, all QA gates pass, and Appendix A (answers to key design questions) is understood."
+}

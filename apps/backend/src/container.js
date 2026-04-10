@@ -96,7 +96,12 @@ const rawExampleService = new ExampleService(examplesGcsService);
 const redisClientInstance = redisClient?.getClient ? redisClient.getClient() : null;
 const redisLockManager = new RedisLockManager(redisClientInstance);
 const hmacManager = new HmacManager();
-const cachedExampleService = new CachedExampleService(rawExampleService, redisLockManager, examplesGcsService, hmacManager);
+const cachedExampleService = new CachedExampleService(
+  rawExampleService,
+  redisLockManager,
+  examplesGcsService,
+  hmacManager,
+);
 
 // Export exampleService for routes/controllers to consume transparently
 export const exampleService = cachedExampleService;
