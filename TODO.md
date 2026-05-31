@@ -23,6 +23,16 @@ Sections
 
 ## Todo (near-term)
 
+### Story 16 — Example Caching & Service Alignment: Infrastructure Verification
+
+- [ ] **[GCP Setup] Verify Google Cloud credentials and Terraform infrastructure** — Create GCS bucket `mandarin-vocab-example-data`, confirm GOOGLE_TTS_CREDENTIALS_RAW service account has Storage Object Creator/Viewer roles. Optional: apply Terraform from `terraform/gcs/examples-bucket.tf` to automate bucket creation, lifecycle policies (30-day auto-delete), service account IAM, and Cloud Audit Logs sink. Manual bucket creation (without Terraform) is sufficient for local testing. Link: [Terraform GCS Example](terraform/gcs/examples-bucket.tf), [Deployment Guide](docs/deployment-guide.md). Priority: Critical (blocks example caching from persisting to GCS).
+
+### Maintenance: Caching Configuration & Service Alignment
+
+- [ ] **[Action 2] Standardize CachedAIFeedbackService TTL** — Replace hardcoded `86400` in `apps/backend/src/core/services/CachedAIFeedbackService.js` with `cacheConfig.ttl.feedback`. Add `CACHE_TTL_FEEDBACK` env var to `.env.local` and `.env.example`. Update `apps/backend/src/config/redis.js` to parse feedback TTL. Update unit tests accordingly. Effort: 1–2 hours. Priority: Important.
+
+- [ ] **[Action 4] Monitor & Add Single-Flight Locks to CachedConversationService** — Currently no `RedisLockManager` in conversation caching, which could cause thundering herd on expensive Gemini generation. Add optional lock mechanism (same pattern as `CachedExampleService`) and integration tests. Requires: monitoring metrics first to confirm expensive re-generation happens. Effort: 4–8 hours (code + tests). Priority: Optional (implement only if metrics warrant).
+
 ### Story 15.11 — Quiz Feature Extensions (incomplete AC items)
 
 - [ ] **[Item 10] Multi-meaning word support** — Words like 行 (xíng/háng) and 花 (huā flower/spend) fail validation for the alternate reading. Need `parseWordEntry()` in `validation.ts` to extract all acceptable answers from CSV (semicolons, pipes, parenthetical annotations). Validation should accept ANY matching variant. See story BR AC: "Multi-Meaning/Reading Support".
@@ -38,6 +48,8 @@ Sections
 - [ ] **[Item 27] FeedbackProvider abstraction** — No strategy pattern for AI vs pre-generated feedback. Currently hardcoded to call the AI endpoint. Define `FeedbackProvider` interface + `AIFeedbackProvider` and `DatabaseFeedbackProvider` stubs to enable future cost-reduction (Epic 17).
 
 ## Backlog
+
+- [ ] **(Story 16.3 Tech Debt) HSK Validation Architectural Fix** — Example generation validation was made advisory-only (non-fatal) to unblock multi-character word examples (e.g., "包子"). Root cause: when tokenization falls back to character-level splitting, multi-char target words fail validation because individual characters don't match the multi-char word. Proper fix requires: (1) ensure nodejieba or word-list tokenizer works reliably, (2) implement multi-char word reconstruction logic for character fallback, (3) populate full HSK 1-3 vocabulary (500+ words in hsk-1-3.json), (4) add test coverage for multi-char words. Effort: ~2 hours. Files: `apps/backend/src/services/exampleService.js` (line ~106), `apps/backend/src/services/examples/hskValidator.js`, `packages/shared-constants/hsk-1-3.json`. Priority: Medium (examples work now, validation stricter later).
 
 - [ ] **(A7) Move AI prompt/conversation utils out of `utils/`** — `promptUtils.js` and `conversationUtils.js` contain AI-domain logic sitting in a generic `utils/` folder. Move to `core/domain/` or `infrastructure/external/`. Blocked by: need to audit all callers (ConversationService, CachedAIFeedbackService, ConversationController). See TODOs in `apps/backend/src/utils/promptUtils.js` and `apps/backend/src/utils/conversationUtils.js`.
 

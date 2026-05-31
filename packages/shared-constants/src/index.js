@@ -34,6 +34,9 @@ export const ROUTE_PATTERNS = {
   authLogout: "/v1/auth/logout",
   authMe: "/v1/auth/me",
   vocabulary: "/v1/vocabulary",
+  examples: "/v1/examples",
+  examplesSingleLine: "/single-line",
+  examplesAudio: "/audio",
 };
 
 // HSK Levels

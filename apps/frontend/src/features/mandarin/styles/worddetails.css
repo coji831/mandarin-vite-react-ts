@@ -1,0 +1,34 @@
+/* Toggle button styling for WordDetails — token based */
+.toggle-button {
+  background-color: var(--color-primary, #646cff);
+  color: var(--text-light, #ffffff);
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-sm, 0.875rem);
+  font-weight: 500;
+  transition: background-color var(--transition-fast, 0.2s);
+}
+
+.toggle-button:hover {
+  background-color: var(--color-primary-dark, #535bf2);
+}
+
+.toggle-button:focus {
+  outline: 2px solid var(--color-primary, #646cff);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .toggle-button {
+    background-color: var(--color-primary, #646cff);
+    color: var(--text-primary, #fff);
+  }
+}
+
+/* Container spacing for WordDetails */
+.word-details {
+  margin-top: var(--space-md, 1.25rem);
+  text-align: left;
+}

@@ -9,16 +9,16 @@ import { useState } from "react";
 
 import { WordBasic } from "../types";
 import { ConversationBox } from "./ConversationBox";
+import { WordExamplesPanel } from "./WordExamplesPanel";
+import "../styles/worddetails.css";
 
 export { WordDetails };
 
 type WordDetailsProps = WordBasic & { wordId: string };
 
-function WordDetails({ wordId, chinese, pinyin, english }: Readonly<WordDetailsProps>) {
-  const [showExample, setShowExample] = useState(false);
-
+function WordDetails({ wordId, chinese, pinyin, english, hskLevel }: Readonly<WordDetailsProps>) {
   return (
-    <div style={{ marginTop: "20px", textAlign: "left" }}>
+    <div className="word-details">
       <p>
         <strong>Pinyin:</strong> {pinyin}
       </p>
@@ -26,27 +26,16 @@ function WordDetails({ wordId, chinese, pinyin, english }: Readonly<WordDetailsP
         <strong>Meaning:</strong> {english}
       </p>
 
-      {/* Explicit Example Generation Button */}
       {wordId && chinese && (
-        <div>
-          <button
-            style={{
-              background: "#646cff",
-              color: "#fff",
-              borderRadius: 6,
-              border: "none",
-              padding: "6px 16px",
-              marginBottom: 10,
-              cursor: "pointer",
-            }}
-            onClick={() => setShowExample((show) => !show)}
-          >
-            {showExample ? "Hide Example" : "View Example"}
-          </button>
-          {showExample && (
-            <ConversationBox wordId={wordId} word={chinese} onClose={() => setShowExample(false)} />
-          )}
-        </div>
+        <>
+          {/* The detail panel now will always show examples */}
+          <WordExamplesPanel
+            wordId={wordId}
+            word={chinese}
+            hskLevel={hskLevel ?? 1}
+            language="en"
+          />
+        </>
       )}
     </div>
   );

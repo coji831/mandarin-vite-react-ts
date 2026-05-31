@@ -41,6 +41,14 @@ import * as geminiClient from "./infrastructure/external/GeminiClient.js";
 import * as gcsClient from "./infrastructure/external/GCSClient.js";
 import * as ttsClientModule from "./infrastructure/external/GoogleTTSClient.js";
 
+// Examples infrastructure & services
+import ExampleService from "./services/exampleService.js";
+import GcsCacheService from "./services/gcsCacheService.js";
+import { redisClient } from "./infrastructure/cache/RedisClient.js";
+import RedisLockManager from "./infrastructure/cache/RedisLockManager.js";
+import HmacManager from "./infrastructure/security/HmacManager.js";
+import CachedExampleService from "./core/services/CachedExampleService.js";
+
 // Adapter wrapping the module-level TTS functions to the ITTSClient interface
 const rawTtsService = {
   async synthesizeSpeech(text, options) {
@@ -78,6 +86,25 @@ const aiFeedbackService = new CachedAIFeedbackService(
 const conversationService = new ConversationService(geminiClient, ttsClientModule, gcsClient);
 const cachedConversationService = new CachedConversationService(conversationService, cacheService);
 const cachedTtsService = new CachedTTSService(rawTtsService, cacheService);
+
+// --- Examples service registration (cached wrapper)
+// Create a GCS-backed cache service instance for examples
+const examplesGcsService = new GcsCacheService();
+// Underlying example service (uses same GCS service by default)
+const rawExampleService = new ExampleService(examplesGcsService);
+// Redis client instance (may be null if not configured)
+const redisClientInstance = redisClient?.getClient ? redisClient.getClient() : null;
+const redisLockManager = new RedisLockManager(redisClientInstance);
+const hmacManager = new HmacManager();
+const cachedExampleService = new CachedExampleService(
+  rawExampleService,
+  redisLockManager,
+  examplesGcsService,
+  hmacManager,
+);
+
+// Export exampleService for routes/controllers to consume transparently
+export const exampleService = cachedExampleService;
 const quizSessionService = new QuizSessionService({
   sessionRepository: quizSessionRepository,
   learningService,

@@ -11,6 +11,7 @@ export default defineConfig({
   publicDir: path.resolve(__dirname, "public"),
   resolve: {
     alias: {
+      features: path.resolve(__dirname, "src/features"),
       src: path.resolve(__dirname, "src"),
       utils: path.resolve(__dirname, "src/utils"),
       config: path.resolve(__dirname, "src/config"),

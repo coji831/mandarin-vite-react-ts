@@ -85,6 +85,23 @@ mandarin-vite-react-ts/
 
 - Mandarin feature design: [apps/frontend/src/features/mandarin/docs/design.md](../apps/frontend/src/features/mandarin/docs/design.md)
 
+#### Custom Data Fetching Hook
+
+Story 16.2 introduced a custom React hook (`useExamples`) that mimics SWR behavior without external dependencies:
+
+- **In-memory dedup:** Concurrent requests for the same (word, hskLevel, language) share a single promise for 60 seconds
+- **sessionStorage cache:** Successful responses cached as JSON; on re-fetch, `sessionStorage` is checked before network
+- **Cache invalidation:** 60-second TTL on the in-memory promise; explicit invalidation available via hook API
+- **Hook API:** `const { data, isLoading, error, cacheHit } = useExamples(word, hskLevel, language)`
+- **Use Case:** Word examples panel; reduces API calls for frequently viewed words
+- **Rationale:** SWR not available in dependencies; custom hook pattern aligns with project architecture
+
+**Integration Point:** Story 16.3 will integrate a real TTS audio endpoint (`GET /api/examples/audio`); no hook changes are required for that integration.
+
+### Accessibility
+
+**WCAG 2.1 AA Compliance:** Story 16.2 implements WCAG 2.1 AA patterns (ARIA labels, keyboard navigation, 44px+ touch targets, semantic HTML). See WordExamplesPanel for an example component pattern.
+
 ## Data Flow & Integration
 
 **Client → Server:**
@@ -337,3 +354,20 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 ---
 
 **Last Updated:** January 29, 2026
+
+### Frontend: WordExamplesPanel Component (Story 16.2)
+
+- **Location:** `apps/frontend/src/features/word/components/WordExamplesPanel.tsx`
+- **Purpose:** Display 3–5 examples inline with on-demand TTS playback
+- **Data Flow:**
+  `      useExamples (custom hook)
+          ↓ [in-memory 60s dedupe + sessionStorage cache]
+          ↓ POST /api/examples (Story 16.1)
+   WordExamplesPanel (render list)
+          ↓ [user clicks Play]
+          ↓ GET /api/examples/audio (mocked, Story 16.3 integrates real)
+   audioService.playAudio()
+   `
+- **Performance:** Cached payloads <500ms (sessionStorage hit); skeleton UX reduces perceived latency
+- **Accessibility:** ARIA labels, keyboard focus, `role=list/listitem`
+- **Analytics:** Tracks `examples_shown`, `example_played` (stub service, ready for real backend)

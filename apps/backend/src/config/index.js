@@ -57,8 +57,8 @@ export const config = {
   // Google Cloud Credentials
   googleTtsCredentials: parseJsonEnv("GOOGLE_TTS_CREDENTIALS_RAW"),
   geminiCredentials: parseJsonEnv("GEMINI_API_CREDENTIALS_RAW"),
-  // Use TTS credentials for GCS (they should have storage permissions) or explicit GCS credentials if set
-  gcsCredentials: parseJsonEnv("GCS_CREDENTIALS_RAW") || parseJsonEnv("GOOGLE_TTS_CREDENTIALS_RAW"),
+  // Use Gemini credentials for GCS
+  gcsCredentials: parseJsonEnv("GEMINI_API_CREDENTIALS_RAW"),
 
   // GCS
   gcsBucket: process.env.GCS_BUCKET_NAME,

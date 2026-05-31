@@ -9,6 +9,7 @@ import progressRouter from "./progressRoutes.js";
 import gamificationRouter from "./gamificationRoutes.js";
 import aiFeedbackRouter from "./aiFeedbackRoutes.js";
 import conversationRouter from "./conversationRoutes.js";
+import examplesRoute from "./examplesRoute.js";
 import ttsRouter from "./ttsRoutes.js";
 import vocabularyRouter from "./vocabularyRoutes.js";
 import healthRouter from "./healthRoutes.js";
@@ -51,5 +52,7 @@ router.use(ttsRouter);
 
 // Vocabulary routes (v1)
 router.use(vocabularyRouter);
+// Examples routes (v1)
+router.use(examplesRoute);
 
 export default router;

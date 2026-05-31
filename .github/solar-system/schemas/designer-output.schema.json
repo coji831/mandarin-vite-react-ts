@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "designer-output.schema.json",
+  "title": "Design Planning Architect Output",
+  "description": "Required fields for output produced by the Design Planning Architect before any implementation agent is invoked. Compliance is instruction-enforced, not constrained-decoding enforced.",
+  "type": "object",
+  "required": [
+    "workPackage",
+    "createdBy",
+    "createdAt",
+    "inquiryChecklist",
+    "problemFraming",
+    "constraintsAndAssumptions",
+    "proposedWorkPackages",
+    "risksAndTradeoffs",
+    "recommendedNextDelegation"
+  ],
+  "properties": {
+    "workPackage": {
+      "type": "string",
+      "description": "Short kebab-case identifier or human-readable name for this design unit",
+      "minLength": 3
+    },
+    "createdBy": {
+      "type": "string",
+      "const": "Design Planning Architect",
+      "description": "Must always be 'Design Planning Architect'"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date string (YYYY-MM-DD) when this plan was produced"
+    },
+    "inquiryChecklist": {
+      "type": "object",
+      "description": "Minimum inquiry criteria that must all be satisfied before plan is considered approved",
+      "required": ["filesExamined", "ambiguitiesResolved", "planApproved"],
+      "properties": {
+        "filesExamined": {
+          "type": "array",
+          "description": "List of file paths read during codebase research phase. Minimum length defined by inquiry.minimumFilesExamined in solar.config.json.",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "ambiguitiesResolved": {
+          "type": "array",
+          "description": "List of requirement ambiguities that were resolved prior to plan approval. Empty array is valid only if no ambiguities existed.",
+          "items": {
+            "type": "object",
+            "required": ["question", "resolution"],
+            "properties": {
+              "question": { "type": "string" },
+              "resolution": { "type": "string" }
+            }
+          }
+        },
+        "planApproved": {
+          "type": "boolean",
+          "description": "True when the governor or user has acknowledged this plan. Set to false while plan is still draft.",
+          "const": true
+        }
+      }
+    },
+    "problemFraming": {
+      "type": "string",
+      "description": "Clear statement of the problem being solved and its scope boundary",
+      "minLength": 10
+    },
+    "constraintsAndAssumptions": {
+      "type": "array",
+      "description": "Explicit constraints (things that cannot change) and assumptions (things believed to be true but not verified)",
+      "items": {
+        "type": "object",
+        "required": ["type", "statement"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["constraint", "assumption"]
+          },
+          "statement": { "type": "string" }
+        }
+      }
+    },
+    "proposedWorkPackages": {
+      "type": "array",
+      "description": "Ordered list of bounded work items to delegate to implementation agents",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "targetAgent", "filesToModify"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Short identifier, e.g. WP-01",
+            "pattern": "^WP-[0-9]+"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this package implements",
+            "minLength": 5
+          },
+          "targetAgent": {
+            "type": "string",
+            "description": "Name of the specialist agent that should receive this package"
+          },
+          "filesToModify": {
+            "type": "array",
+            "description": "Paths of files to be created or modified",
+            "items": { "type": "string" }
+          },
+          "testStrategy": {
+            "type": "string",
+            "description": "Brief test coverage plan for this package"
+          },
+          "verificationTarget": {
+            "type": "string",
+            "description": "Path to a verification-artifacts/target-*.json file if spec-first mode was used"
+          }
+        }
+      }
+    },
+    "risksAndTradeoffs": {
+      "type": "array",
+      "description": "Identified risks and architectural tradeoffs with their mitigations",
+      "items": {
+        "type": "object",
+        "required": ["risk", "severity", "mitigation"],
+        "properties": {
+          "risk": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "recommendedNextDelegation": {
+      "type": "string",
+      "description": "Agent name the governor should delegate to first after plan approval",
+      "minLength": 3
+    }
+  },
+  "additionalProperties": false
+}

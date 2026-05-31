@@ -369,7 +369,7 @@ Generate or retrieve cached conversation text for a vocabulary word.
 
 **Response (200 OK):**
 
-```json
+````json
 {
   "id": "word-123-abc456",
   "wordId": "word-123",
@@ -398,7 +398,56 @@ Generate or retrieve cached conversation text for a vocabulary word.
     "processedAt": "2025-11-16T12:00:05.000Z"
   }
 }
-```
+
+      ---
+
+      ## Single-Line Example Endpoint (Story 16.1)
+
+      Generate a single-line Chinese example for a vocabulary `word` using only HSK 1-3 vocabulary.
+
+      ### POST /v1/examples/single-line
+
+      **Behavior**:
+      - Validate input server-side before any model calls (reject control chars / injection patterns).
+      - Check cache key `examples/<sha256(word|hskLevel|language|v1)>.json` and return cached object when present.
+      - Call Gemini via `generateStructured` when cache miss. Validate model output and retry once on validation failure.
+      - Cache successful, validated outputs to GCS using the deterministic cache key (no plain-text in object name).
+
+      **Request Body:**
+
+      ```json
+      {
+        "word": "饭",
+        "hskLevel": 1,
+        "language": "zh-CN"
+      }
+      ```
+
+      **Successful Response (200 OK):**
+
+      ```json
+      {
+        "data": {
+          "chinese": "我吃饭",
+          "pinyin": "wǒ chī fàn",
+          "english": "I eat"
+        }
+      }
+      ```
+
+      **Errors:**
+      - `400 VALIDATION_ERROR`: Missing or invalid inputs (control characters, unsupported hskLevel, prompt-injection detected).
+      - `502 INVALID_GENERATION`: Model produced invalid or unsafe output even after a retry.
+      - `503 SERVICE_UNAVAILABLE`: External AI service unavailable (opaque to client; server logs contain details).
+
+      **Cache Key Format:** `examples/<sha256(word|hskLevel|language|v1)>.json` (deterministic, no cleartext in object name)
+
+      **Notes:**
+      - HSK 1-3 canonical list loaded from `packages/shared-constants/hsk-1-3.json` at service startup.
+      - Generated outputs are strictly validated: presence of `chinese`, `pinyin`, and `english`; no HTML/script tags; Chinese tokens must be in HSK 1-3 or the target word itself.
+      - All Gemini/internal errors are logged in full to server logs; client-facing responses are intentionally opaque to avoid leaking secrets or internals.
+
+````
 
 > **Note:** Each turn now includes `chinese`, `pinyin`, `english`, and `audioUrl` fields. Audio is referenced by URL per turn.
 
