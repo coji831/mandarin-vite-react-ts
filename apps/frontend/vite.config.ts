@@ -14,8 +14,9 @@ export default defineConfig({
       features: path.resolve(__dirname, "src/features"),
       src: path.resolve(__dirname, "src"),
       utils: path.resolve(__dirname, "src/utils"),
-      config: path.resolve(__dirname, "src/config"),
-      services: path.resolve(__dirname, "src/services"),
+      config: path.resolve(__dirname, "src/shared/config"),
+      shared: path.resolve(__dirname, "src/shared"),
+      services: path.resolve(__dirname, "src/shared/api"),
     },
   },
   server: {

@@ -17,7 +17,19 @@
 
     /* Linting */
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "features": ["features"],
+      "features/*": ["features/*"],
+      "shared": ["shared"],
+      "shared/*": ["shared/*"],
+      "utils": ["utils"],
+      "utils/*": ["utils/*"],
+      "config": ["shared/config"],
+      "config/*": ["shared/config/*"],
+      "services": ["shared/api"],
+      "services/*": ["shared/api/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["src/**/__tests__", "src/**/*.test.ts", "src/**/*.test.tsx"]

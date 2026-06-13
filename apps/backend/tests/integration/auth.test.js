@@ -4,8 +4,8 @@
  */
 
 import { describe, test, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { AuthService } from "../../src/core/services/AuthService.js";
-import { AuthRepository } from "../../src/infrastructure/repositories/AuthRepository.js";
+import { AuthService } from "../../src/modules/auth/services/AuthService.js";
+import { AuthRepository } from "../../src/modules/auth/repositories/AuthRepository.js";
 import { JwtService } from "../../src/infrastructure/security/JwtService.js";
 import { PasswordService } from "../../src/infrastructure/security/PasswordService.js";
 import { prisma } from "../../src/infrastructure/database/client.js";
