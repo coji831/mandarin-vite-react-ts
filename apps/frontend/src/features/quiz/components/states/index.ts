@@ -3,5 +3,5 @@
  * Component Reorganization: Grouped simple state screens
  */
 
-export { LoadingScreen } from "./LoadingScreen";
-export { ErrorScreen } from "./ErrorScreen";
+export { LoadingScreen } from "../../../../shared/components/LoadingScreen/LoadingScreen";
+export { ErrorScreen } from "../../../../shared/components/ErrorScreen/ErrorScreen";

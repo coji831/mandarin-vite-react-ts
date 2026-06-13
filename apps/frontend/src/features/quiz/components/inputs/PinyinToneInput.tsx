@@ -15,7 +15,7 @@
  */
 
 import { KeyboardEvent, useState } from "react";
-import { Input } from "../../../../components";
+import { Input } from "../../../../shared/components";
 import { convertToneMarks } from "../../utils/pinyinConverter";
 import "./PinyinToneInput.css";
 

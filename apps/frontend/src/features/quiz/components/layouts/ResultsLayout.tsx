@@ -23,7 +23,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { useQuizState, useQuizActions } from "../../contexts";
+import { useQuizState, useQuizActions } from "../../context";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { BadgeCelebrationModal } from "../../../gamification/components/BadgeCelebrationModal";
 import { StatsGrid, ResultsTable, DailyCompleteBanner } from "../results";

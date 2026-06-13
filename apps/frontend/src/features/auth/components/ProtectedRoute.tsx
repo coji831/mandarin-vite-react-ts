@@ -4,7 +4,7 @@
  */
 
 import { Navigate } from "react-router-dom";
-import { auth_page } from "../../../constants/paths";
+import { login_page } from "../../../shared/constants/paths";
 import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
@@ -30,7 +30,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={auth_page} replace />;
+    return <Navigate to={login_page} replace />;
   }
 
   return <>{children}</>;

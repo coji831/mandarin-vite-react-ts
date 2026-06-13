@@ -38,6 +38,12 @@ Forms styled to match app theme:
 - Dark mode backgrounds: `#1a1a1a`, `#232a3a`
 - Success: `#4caf50`
 - Error: `#f44336`
+
+## References
+
+- [API Client Patterns](../../../../../docs/guides/conventions/api-client.md) — Service layer and auth flow conventions
+- [Frontend Conventions](../../../../../docs/guides/conventions/frontend.md) — Coding standards and patterns
+- [Backend Auth API Spec](../../../../backend/docs/api/auth.md) — Authentication endpoint specifications
 - Info/secondary: `#b3c7ff`
 
 ## Routes
@@ -45,3 +51,5 @@ Forms styled to match app theme:
 - `/auth` - Combined auth page (login/register tabs)
 - `/auth/login` - Direct login page
 - `/auth/register` - Direct register page
+
+> **API patterns:** See [API Client Patterns](../../../../../docs/guides/conventions/api-client.md) for auth service conventions and token refresh handling.

@@ -10,8 +10,8 @@
  * - Close functionality
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MysteryBoxModal } from "../MysteryBoxModal";
 import type { MysteryBox } from "../../types/GamificationTypes";
 
@@ -20,6 +20,12 @@ describe("MysteryBoxModal", () => {
 
   beforeEach(() => {
     mockOnClose.mockClear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it("should not render when isOpen is false", () => {
@@ -35,7 +41,7 @@ describe("MysteryBoxModal", () => {
     expect(screen.queryByText(/Mystery Box!/i)).not.toBeInTheDocument();
   });
 
-  it("should render when isOpen is true", async () => {
+  it("should render when isOpen is true", () => {
     const mysteryBox: MysteryBox = {
       rewardType: "xp_boost",
       rewardValue: 50,
@@ -45,13 +51,12 @@ describe("MysteryBoxModal", () => {
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
-    // Wait for reveal (1s delay)
-    await waitFor(
-      () => {
-        expect(screen.getByText(/Mystery Box!/i)).toBeInTheDocument();
-      },
-      { timeout: 1500 },
-    );
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+
+    expect(screen.getByText(/Mystery Box!/i)).toBeInTheDocument();
   });
 
   it("should display XP reward correctly", () => {
@@ -63,6 +68,11 @@ describe("MysteryBoxModal", () => {
     };
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
 
     expect(screen.getByText("⭐")).toBeInTheDocument();
     expect(screen.getByText("Bonus XP")).toBeInTheDocument();
@@ -79,6 +89,11 @@ describe("MysteryBoxModal", () => {
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+
     expect(screen.getByText("❄️")).toBeInTheDocument();
     expect(screen.getByText("Streak Freeze")).toBeInTheDocument();
     expect(screen.getByText(/1/)).toBeInTheDocument();
@@ -94,6 +109,11 @@ describe("MysteryBoxModal", () => {
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+
     expect(screen.getByText("✨")).toBeInTheDocument();
     expect(screen.getByText("Golden Flame (Rare)")).toBeInTheDocument();
   });
@@ -108,6 +128,11 @@ describe("MysteryBoxModal", () => {
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+
     expect(screen.getByText(/\+50 XP Boost/i)).toBeInTheDocument();
   });
 
@@ -120,6 +145,11 @@ describe("MysteryBoxModal", () => {
     };
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
 
     const closeButton = screen.getByRole("button", { name: /Awesome/i });
     fireEvent.click(closeButton);
@@ -136,6 +166,11 @@ describe("MysteryBoxModal", () => {
     };
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
 
     // Click overlay (parent element of modal content)
     const overlay = screen.getByText(/Mystery Box!/i).closest(".mystery-box-overlay");
@@ -186,6 +221,11 @@ describe("MysteryBoxModal", () => {
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
 
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+
     expect(screen.getByText(/3 Streak Freezes!/i)).toBeInTheDocument();
   });
 
@@ -198,6 +238,11 @@ describe("MysteryBoxModal", () => {
     };
 
     render(<MysteryBoxModal isOpen={true} mysteryBox={mysteryBox} onClose={mockOnClose} />);
+
+    // Advance timers to trigger reveal (1s delay)
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
 
     expect(screen.getByText(/Mystery Box!/i)).toBeInTheDocument();
   });

@@ -10,7 +10,7 @@
  * - Provides Next button to continue
  */
 
-import { Button } from "../../../../components";
+import { Button } from "../../../../shared/components";
 import "./FeedbackSection.css";
 
 type FeedbackSectionProps = {

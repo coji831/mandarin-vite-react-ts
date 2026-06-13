@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import { BadgeCelebrationModal } from "../BadgeCelebrationModal";
 import type { Badge } from "../../types/GamificationTypes";
 
@@ -54,31 +54,29 @@ describe("BadgeCelebrationModal", () => {
     expect(screen.queryByText("🎉 New Badge Earned!")).not.toBeInTheDocument();
   });
 
-  it("auto-dismisses after 5 seconds", async () => {
+  it("auto-dismisses after 5 seconds", () => {
     render(<BadgeCelebrationModal badges={[mockBadge]} isOpen={true} onClose={mockOnClose} />);
 
     expect(mockOnClose).not.toHaveBeenCalled();
 
     // Fast-forward time by 5 seconds
-    vi.advanceTimersByTime(5000);
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    act(() => {
+      vi.advanceTimersByTime(5000);
     });
+
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it("manual dismiss via button click", async () => {
+  it("manual dismiss via button click", () => {
     render(<BadgeCelebrationModal badges={[mockBadge]} isOpen={true} onClose={mockOnClose} />);
 
     const button = screen.getByRole("button", { name: /Awesome! 🎉/i });
     fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
-    });
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it("manual dismiss via overlay click", async () => {
+  it("manual dismiss via overlay click", () => {
     render(<BadgeCelebrationModal badges={[mockBadge]} isOpen={true} onClose={mockOnClose} />);
 
     const overlay = screen.getByText("🎉 New Badge Earned!").closest(".modal-overlay");
@@ -86,31 +84,29 @@ describe("BadgeCelebrationModal", () => {
 
     if (overlay) {
       fireEvent.click(overlay);
-      await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalledTimes(1);
-      });
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
     }
   });
 
-  it("clears auto-dismiss timer on manual dismiss", async () => {
+  it("clears auto-dismiss timer on manual dismiss", () => {
     render(<BadgeCelebrationModal badges={[mockBadge]} isOpen={true} onClose={mockOnClose} />);
 
     // Click button after 2 seconds (before auto-dismiss)
-    vi.advanceTimersByTime(2000);
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
 
     const button = screen.getByRole("button", { name: /Awesome! 🎉/i });
     fireEvent.click(button);
 
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
-    });
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
 
     // Advance time to 5 seconds total - onClose should NOT be called again
-    vi.advanceTimersByTime(3000);
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledTimes(1); // Still only 1 call
+    act(() => {
+      vi.advanceTimersByTime(3000);
     });
+
+    expect(mockOnClose).toHaveBeenCalledTimes(1); // Still only 1 call
   });
 
   it("handles multiple badges gracefully (shows first badge)", () => {

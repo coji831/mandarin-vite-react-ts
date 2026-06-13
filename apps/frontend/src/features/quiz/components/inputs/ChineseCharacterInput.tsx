@@ -20,7 +20,7 @@
  */
 
 import { KeyboardEvent } from "react";
-import { Input } from "../../../../components";
+import { Input } from "../../../../shared/components";
 import "./ChineseCharacterInput.css";
 
 type ChineseCharacterInputProps = {

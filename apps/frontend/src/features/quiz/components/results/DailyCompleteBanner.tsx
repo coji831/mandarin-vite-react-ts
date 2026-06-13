@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { NextQuizCountdown } from "./NextQuizCountdown";
-import { Button } from "../../../../components";
+import { Button } from "../../../../shared/components";
 import "./DailyCompleteBanner.css";
 
 export { DailyCompleteBanner };

@@ -22,6 +22,25 @@ export default tseslint.config(
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "**/features/*/components/**",
+                "**/features/*/hooks/**",
+                "**/features/*/services/**",
+                "**/features/*/types/**",
+                "**/features/*/utils/**",
+                "**/features/*/context/**",
+                "**/features/*/reducers/**",
+              ],
+              message: "Import from the feature's barrel (index.ts) instead of internal paths.",
+            },
+          ],
+        },
+      ],
     },
-  }
+  },
 );

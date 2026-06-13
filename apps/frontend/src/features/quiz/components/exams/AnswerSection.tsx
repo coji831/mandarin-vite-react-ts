@@ -13,7 +13,7 @@
 import { QuestionMode } from "../../types";
 import { MultipleChoiceInput, PinyinToneInput, ChineseCharacterInput } from "../inputs";
 import "./AnswerSection.css";
-import { Button } from "../../../../components";
+import { Button } from "../../../../shared/components";
 
 type AnswerSectionProps = {
   mode: QuestionMode;

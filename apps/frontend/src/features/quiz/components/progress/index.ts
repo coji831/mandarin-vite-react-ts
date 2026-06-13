@@ -3,4 +3,4 @@
  * Component Reorganization: Grouped progress indicator components
  */
 
-export { ProgressBar } from "./ProgressBar";
+export { ProgressBar } from "../../../../shared/components/ProgressBar/ProgressBar";

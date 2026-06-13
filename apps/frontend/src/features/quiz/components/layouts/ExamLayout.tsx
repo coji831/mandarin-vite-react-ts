@@ -15,7 +15,7 @@
  * All state and actions read from QuizContext - zero props drilling.
  */
 
-import { useQuizState, useQuizActions } from "../../contexts";
+import { useQuizState, useQuizActions } from "../../context";
 import { QuestionSection, ProgressBar, HintOverlay, AnswerSection, FeedbackSection } from "../";
 import "./ExamLayout.css";
 

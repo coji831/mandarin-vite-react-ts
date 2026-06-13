@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ProgressBar } from "../progress/ProgressBar";
+import { ProgressBar } from "../../../../shared/components/ProgressBar/ProgressBar";
 
 describe("ProgressBar", () => {
   it("renders current and total count", () => {

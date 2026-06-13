@@ -10,7 +10,7 @@
  * - removeToneMarks("nǐhǎo") → "nihao"
  */
 
-import { toneMap, toneMapKeys } from "../../../constants/toneMap";
+import { toneMap, toneMapKeys } from "../../../shared/constants/toneMap";
 
 /**
  * Converts pinyin with numeric tone notation to Unicode tone marks

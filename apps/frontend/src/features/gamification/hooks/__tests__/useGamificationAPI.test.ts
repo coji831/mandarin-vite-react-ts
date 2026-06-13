@@ -11,7 +11,7 @@
 
 import { renderHook, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
-import { apiClient } from "../../../../services/axiosClient";
+import { apiClient } from "../../../../shared/api/axiosClient";
 import {
   StreakResponse,
   BadgeResponse,

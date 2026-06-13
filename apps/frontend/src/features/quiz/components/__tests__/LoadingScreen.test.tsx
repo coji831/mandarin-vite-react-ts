@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { LoadingScreen } from "../states/LoadingScreen";
+import { LoadingScreen } from "../../../../shared/components/LoadingScreen/LoadingScreen";
 
 describe("LoadingScreen", () => {
   it("renders loading message", () => {
