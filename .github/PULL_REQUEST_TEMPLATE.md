@@ -16,6 +16,6 @@
 
 ## Related Links
 
-- [Onboarding Guide](../docs/guides/onboarding.md)
-- [Contribution Guide](../docs/guides/contribution-guide.md)
-- [Review Checklist](../docs/guides/review-checklist.md)
+- [Project Overview](../docs/guides/getting-started/project-overview.md)
+- [Documentation Home](../docs/README.md)
+- [Review Checklist](../docs/guides/operations/review.md)
