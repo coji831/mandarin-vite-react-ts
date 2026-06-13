@@ -34,3 +34,6 @@ terraform/.terraform/
 # SOLAR-Ralph session activity logs (per-session diagnostic files, not auditable records)
 .github/solar-system/logs/*.json
 .github/solar-system/logs/.current-session
+
+# CodeGraph data files
+.codegraph/
