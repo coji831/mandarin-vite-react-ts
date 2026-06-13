@@ -11,9 +11,11 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
+    "dev": "node --watch src/app/index.js",
+    "start": "node src/app/index.js",
     "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest --config vitest.integration.config.js",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
@@ -52,7 +54,6 @@
     "node-fetch": "^3.3.2",
     "pg": "^8.16.3",
     "prisma": "^7.1.0",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0"
   },

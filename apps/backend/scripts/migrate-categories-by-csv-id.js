@@ -17,7 +17,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import prisma from "../src/infrastructure/database/client.js";
+import prisma from "../src/shared/infrastructure/database/client.js";
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), "../../.env.local") });

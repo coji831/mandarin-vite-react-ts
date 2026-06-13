@@ -16,8 +16,8 @@ import pkg from "pg";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { createLogger } from "../src/utils/logger.js";
-import { parseCsvText } from "../src/infrastructure/parsers/CsvParser.js";
+import { createLogger } from "../src/shared/utils/logger.js";
+import { parseCsvText } from "../src/shared/infrastructure/parsers/CsvParser.js";
 
 const { Pool } = pkg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
