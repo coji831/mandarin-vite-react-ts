@@ -123,6 +123,7 @@
 
 | Article                                                                               | Description                                       |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [Adult Mandarin Learning Roadmap](knowledge-base/adult-mandarin-learning-roadmap.md)  | Pedagogical framework and curriculum sequence     |
 | [Spaced Repetition Algorithms](knowledge-base/spaced-repetition-algorithms.md)        | SRS algorithm deep dive                           |
 | [Vocabulary Retention Research](knowledge-base/vocabulary-retention-research.md)      | Research on vocabulary acquisition and retention  |
 | [Gamification Psychology](knowledge-base/gamification-psychology-learning.md)         | Psychological principles behind gamified learning |
