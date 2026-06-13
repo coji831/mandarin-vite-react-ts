@@ -1,4 +1,4 @@
-# Epic 19: State Management Refactor (Deferred)
+﻿# Epic 19: State Management Refactor (Deferred)
 
 ## Epic Summary
 
@@ -9,7 +9,7 @@
 - Current Context + Reducer pattern working well with clean architecture and normalized state
 - Migration only justified if: performance issues (>100ms state updates), team requests DevTools, or cross-slice dependencies unmanageable
 - Zustand chosen over Redux Toolkit (simpler API, less boilerplate, similar DX to Context)
-- Incremental migration one slice at a time (`ui` → `user` → `lists`) minimizes risk
+- Incremental migration one slice at a time (`ui` â†’ `user` â†’ `lists`) minimizes risk
 - Reducer logic (pure functions) portable to Zustand stores with minimal changes
 
 **Status:** **Deferred** (No current pain points)
@@ -18,15 +18,15 @@
 
 ## Background
 
-The current frontend state management uses Context API + Reducers with three slices: `lists`, `user`, `ui`. This architecture follows best practices documented in `docs/guides/code-conventions.md`:
+The current frontend state management uses Context API + Reducers with three slices: `lists`, `user`, `ui`. This architecture follows best practices documented in `docs/guides/conventions/frontend.md`:
 
 **Current Strengths:**
 
-- ✅ Clean separation of concerns (domain-prefixed action types)
-- ✅ Normalized state (`itemsById` + `itemIds` pairs)
-- ✅ Immutable updates via spread operators
-- ✅ Selectors with fallbacks prevent undefined errors
-- ✅ Reducer tests isolated and maintainable
+- âœ… Clean separation of concerns (domain-prefixed action types)
+- âœ… Normalized state (`itemsById` + `itemIds` pairs)
+- âœ… Immutable updates via spread operators
+- âœ… Selectors with fallbacks prevent undefined errors
+- âœ… Reducer tests isolated and maintainable
 
 **Why This Epic is DEFERRED:**
 
@@ -61,16 +61,16 @@ Choose **Zustand** over Redux Toolkit:
 
 This epic consists of the following user stories:
 
-1. [**Story 19.1: Zustand Migration Assessment**](./story-19-1-zustand-assessment.md)
+1. **Story 19.1: Zustand Migration Assessment** *(not yet created)*
    - As a **frontend developer**, I want to **evaluate Zustand vs. current Context pattern with concrete metrics**, so that **migration decision is data-driven**.
 
-2. [**Story 19.2: Migrate `ui` Slice to Zustand**](./story-19-2-migrate-ui-slice.md)
+2. **Story 19.2: Migrate `ui` Slice to Zustand** *(not yet created)*
    - As a **frontend developer**, I want to **migrate the simplest slice (`ui`) to Zustand first**, so that **team learns pattern with minimal risk**.
 
-3. [**Story 19.3: Migrate `user` Slice to Zustand**](./story-19-3-migrate-user-slice.md)
+3. **Story 19.3: Migrate `user` Slice to Zustand** *(not yet created)*
    - As a **frontend developer**, I want to **migrate `user` slice to Zustand**, so that **authentication state benefits from DevTools debugging**.
 
-4. [**Story 19.4: Migrate `lists` Slice to Zustand**](./story-19-4-migrate-lists-slice.md)
+4. **Story 19.4: Migrate `lists` Slice to Zustand** *(not yet created)*
    - As a **frontend developer**, I want to **migrate the largest slice (`lists`) to Zustand**, so that **vocabulary state benefits from performance optimizations**.
 
 ## Story Breakdown Logic
@@ -94,7 +94,7 @@ Each story maintains existing API surface (components don't change), allowing ro
 - [ ] Redux DevTools extension connected and functional
 - [ ] Performance benchmarks show no regression (state updates <100ms)
 - [ ] All existing tests updated and passing
-- [ ] `docs/guides/code-conventions.md` updated with Zustand patterns
+- [ ] `docs/guides/conventions/frontend.md` updated with Zustand patterns
 - [ ] Team trained on Zustand usage (pair programming or workshop)
 
 ## Architecture Decisions
@@ -139,29 +139,29 @@ Each story maintains existing API surface (components don't change), allowing ro
    - Load testing: Verify no performance regression
    - DevTools testing: Verify time-travel debugging works
    - Team training: Pair programming session on Zustand patterns
-   - Documentation review: `code-conventions.md` updated
+   - Documentation review: `conventions/frontend.md` updated
 
 ## Risks & Mitigations
 
 **[ONLY IF TRIGGERED]**
 
-- **Risk: Migration introduces bugs in critical user flows** — Severity: High
+- **Risk: Migration introduces bugs in critical user flows** â€” Severity: High
   - **Mitigation**: Incremental migration per slice; comprehensive testing per story; feature flags to disable Zustand per slice
   - **Rollback**: Revert slice-by-slice (keep both Context and Zustand code until all slices stable)
 
-- **Risk: Performance degrades vs. Context** — Severity: Medium
+- **Risk: Performance degrades vs. Context** â€” Severity: Medium
   - **Mitigation**: Benchmark before/after with React Profiler; use Zustand shallow comparison for optimal re-renders
   - **Rollback**: If Zustand slower, revert to Context (unlikely based on Zustand benchmarks)
 
-- **Risk: Team unfamiliar with Zustand patterns** — Severity: Low
-  - **Mitigation**: Pair programming during first slice migration; document patterns in `code-conventions.md`; Zustand docs are excellent
+- **Risk: Team unfamiliar with Zustand patterns** â€” Severity: Low
+  - **Mitigation**: Pair programming during first slice migration; document patterns in `conventions/frontend.md`; Zustand docs are excellent
   - **Rollback**: N/A (training issue, not technical)
 
-- **Risk: Migration blocks other feature work** — Severity: High
+- **Risk: Migration blocks other feature work** â€” Severity: High
   - **Mitigation**: Schedule during low-priority period (after Epic 14-17 complete); allocate dedicated sprint; no parallel feature work
   - **Rollback**: Pause migration if urgent feature requested; resume later
 
-- **Risk: DevTools don't justify migration effort** — Severity: Medium
+- **Risk: DevTools don't justify migration effort** â€” Severity: Medium
   - **Mitigation**: Validate DevTools usage in Story 19.1 assessment; only proceed if concrete debugging value demonstrated
   - **Rollback**: Keep Context if assessment shows no clear benefit
 
@@ -171,24 +171,24 @@ Each story maintains existing API surface (components don't change), allowing ro
 
 | Trigger                      | Threshold              | Current Status        | Proceed? |
 | ---------------------------- | ---------------------- | --------------------- | -------- |
-| **Performance**              | State updates >100ms   | TBD (profile in 19.1) | ❓       |
-| **DevTools Requests**        | 3+ developers          | 0 requests            | ❌       |
-| **Cross-Slice Dependencies** | 2+ action dependencies | 0 dependencies        | ❌       |
-| **Team Consensus**           | 100% agreement         | Not surveyed          | ❓       |
-| **State Complexity**         | >500 lines per reducer | ~300 lines max        | ❌       |
+| **Performance**              | State updates >100ms   | TBD (profile in 19.1) | â“       |
+| **DevTools Requests**        | 3+ developers          | 0 requests            | âŒ       |
+| **Cross-Slice Dependencies** | 2+ action dependencies | 0 dependencies        | âŒ       |
+| **Team Consensus**           | 100% agreement         | Not surveyed          | â“       |
+| **State Complexity**         | >500 lines per reducer | ~300 lines max        | âŒ       |
 
-**Decision**: If **2+ triggers** met → Proceed with migration. Otherwise → **Keep Context, defer Epic 19 indefinitely**.
+**Decision**: If **2+ triggers** met â†’ Proceed with migration. Otherwise â†’ **Keep Context, defer Epic 19 indefinitely**.
 
 ---
 
 **Related Documentation:**
 
 - [Epic 19 Implementation](../../issue-implementation/epic-19-state-refactor/README.md)
-- [Story 19.1 BR](./story-19-1-zustand-assessment.md)
-- [Story 19.2 BR](./story-19-2-migrate-ui-slice.md)
-- [Story 19.3 BR](./story-19-3-migrate-user-slice.md)
-- [Story 19.4 BR](./story-19-4-migrate-lists-slice.md)
-- [Code Conventions](../../guides/code-conventions.md)
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- [Code Conventions](../../guides/conventions/frontend.md)
 - [Architecture Overview](../../architecture.md)
 
 ---
@@ -208,10 +208,11 @@ Each story maintains existing API surface (components don't change), allowing ro
 
 ## Implementation notes
 
-**⚠️ DEFERRED - Do not implement unless decision gate triggers met**
+**âš ï¸ DEFERRED - Do not implement unless decision gate triggers met**
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- **Conventions**: Follow `docs/guides/conventions/frontend.md` and `docs/guides/solid-principles.md`
 - **Assessment first**: Must complete Story 19.1 assessment and validate 2+ triggers before proceeding
-- **Incremental migration**: One slice at a time (ui → user → lists); keep both patterns until all slices stable
+- **Incremental migration**: One slice at a time (ui â†’ user â†’ lists); keep both patterns until all slices stable
 - **Rollback safety**: Maintain Context provider code for 30 days post-migration per slice
 - **Team training**: Allocate 4 hours for Zustand workshop before starting Story 19.2
+

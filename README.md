@@ -19,93 +19,38 @@ PinyinPal is an interactive web application designed to help new learners master
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** **React** with **TypeScript**
-- **Build Tool:** **Vite**
-- **Routing:** **React Router** with nested routes
-- **State Management:** Reducer-based architecture with Context API
-  - Split contexts for performance optimization
-  - Normalized state with granular selectors
-  - Composed sub-reducers (lists, user, ui)
-- **Testing:** **Jest** with React Testing Library
-- **Styling:** CSS with modular organization
-- **Service Layer:** Unified, type-safe service interfaces for audio, conversation, and data management
-- **Backend:** Node.js/Express deployed to Railway with:
-  - PostgreSQL database (Supabase)
-  - JWT authentication with httpOnly cookies and refresh token rotation
-  - Multi-user support with per-user progress tracking and database persistence
-  - Redis caching layer (Upstash) for TTS and conversation responses
-  - Google Cloud TTS and Gemini API integration
-  - Clean architecture (Controllers/Services/Repositories)
-  - RESTful API architecture
-- **Infrastructure:**
-  - Frontend: Vercel (React + Vite, deployed from main branch)
-  - Backend: Railway (Express + PostgreSQL + Redis)
-  - Caching: Upstash Redis (production) with graceful fallback
-  - Database: Supabase (PostgreSQL with connection pooling)
-  - Storage: Google Cloud Storage (TTS audio and conversation caching)
-  - APIs: Google Cloud TTS, Gemini AI for conversation generation and AI-powered quiz feedback
+| Layer          | Technology                            |
+| -------------- | ------------------------------------- |
+| **Frontend**   | React + TypeScript (Vite)             |
+| **Backend**    | Node.js + Express                     |
+| **Database**   | PostgreSQL (Supabase) + Prisma        |
+| **Cache**      | Redis (Upstash)                       |
+| **Auth**       | JWT with httpOnly cookies             |
+| **APIs**       | Google Cloud TTS, Gemini AI           |
+| **Deployment** | Vercel (frontend) + Railway (backend) |
 
-## 🚀 Installation & Getting Started
+> **Detailed breakdown:** See [Project Overview](docs/guides/getting-started/project-overview.md#tech-stack)
 
-This project uses **npm workspaces** for monorepo management. Follow these steps to get started:
-
-### Prerequisites
-
-- Node.js 20+
-- npm 10+
-
-### Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/coji831/mandarin-vite-react-ts.git
-   ```
-2. **Navigate to the project directory:**
-   ```bash
-   cd mandarin-vite-react-ts
-   ```
-3. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-   This installs dependencies for all workspaces (frontend, backend, and shared packages).
-
-### Development
-
-**Run both frontend and backend concurrently:**
+## 🚀 Quick Start
 
 ```bash
-npm run dev
+git clone https://github.com/coji831/mandarin-vite-react-ts.git
+cd mandarin-vite-react-ts
+npm install
+npm run dev    # Frontend: http://localhost:5173  Backend: http://localhost:3001
 ```
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3001`
+> **Full setup guide:** See [Project Overview → Quick Start](docs/guides/getting-started/project-overview.md) for environment configuration, database setup, and troubleshooting.
 
-**Or run them separately:**
+### Useful Commands
 
-```bash
-# Frontend only
-npm run dev:frontend
-
-# Backend only
-npm run dev:backend
-```
-
-### Build
-
-```bash
-# Build all workspaces
-npm run build
-
-# Build frontend only (for production)
-npm run build:frontend
-```
-
-### Testing
-
-```bash
-npm run test
-```
+| Command                | Description              |
+| ---------------------- | ------------------------ |
+| `npm run dev`          | Start frontend + backend |
+| `npm run dev:frontend` | Frontend only            |
+| `npm run dev:backend`  | Backend only             |
+| `npm run build`        | Build all workspaces     |
+| `npm test`             | Run tests                |
 
 ## 🗺️ Future Vision & Roadmap
 
@@ -129,55 +74,33 @@ This project uses a **monorepo structure** with npm workspaces:
 ```
 mandarin-vite-react-ts/
 ├── apps/
-│   ├── frontend/                    # React + Vite frontend application
-│   │   ├── src/
-│   │   │   ├── features/            # Feature modules (mandarin learning)
-│   │   │   ├── pages/               # Page components
-│   │   │   ├── components/          # Reusable UI components
-│   │   │   ├── router/              # React Router configuration
-│   │   │   ├── services/            # API service layer
-│   │   │   └── types/               # TypeScript type definitions
-│   │   ├── public/data/             # Static vocabulary CSVs and examples
-│   │   ├── vite.config.ts           # Vite configuration
-│   │   └── package.json             # Frontend dependencies
-│   └── backend/                     # Node.js + Express backend API
-│       ├── src/
-│       │   ├── api/                 # HTTP layer (controllers, routes, middleware)
-│       │   ├── core/                # Business logic (services, repositories)
-│       │   ├── config/              # Environment configuration
-│       │   └── utils/               # Shared utilities
-│       ├── prisma/                  # Database schema and migrations
-│       ├── tests/                   # Integration and unit tests
-│       ├── Procfile                 # Railway deployment config
-│       └── package.json             # Backend dependencies
+│   ├── frontend/          # React + Vite (port 5173)
+│   └── backend/           # Express API (port 3001)
 ├── packages/
-│   ├── shared-types/                # Shared TypeScript types
-│   └── shared-constants/            # Shared constants (API routes, etc.)
-├── docs/
-│   ├── architecture.md              # System architecture overview
-│   ├── guides/                      # Setup and development guides
-│   ├── knowledge-base/              # Transferable technical concepts
-│   ├── business-requirements/       # Epic and story specifications
-│   └── issue-implementation/        # Technical implementation details
-├── terraform/                       # Infrastructure as code (future)
-├── .env.local                       # Environment variables (gitignored)
-├── .env.example                     # Environment template (committed)
-└── package.json                     # Root workspace configuration
+│   ├── shared-types/      # Shared TypeScript types
+│   └── shared-constants/  # Shared constants
+├── docs/                  # Architecture, guides, KB, BRs
+└── terraform/             # Infrastructure as Code
 ```
 
 ### Workspaces
 
-- **@mandarin/frontend** - React application with Vite (`apps/frontend/`)
-- **@mandarin/backend** - Express API server deployed to Railway (`apps/backend/`)
-- **@mandarin/shared-types** - Shared TypeScript type definitions (`packages/shared-types/`)
-- **@mandarin/shared-constants** - Shared constants and configuration (`packages/shared-constants/`)
+| Package                      | Location                     | Purpose                     |
+| ---------------------------- | ---------------------------- | --------------------------- |
+| `@mandarin/frontend`         | `apps/frontend/`             | React + Vite SPA            |
+| `@mandarin/backend`          | `apps/backend/`              | Express API server          |
+| `@mandarin/shared-types`     | `packages/shared-types/`     | TypeScript type definitions |
+| `@mandarin/shared-constants` | `packages/shared-constants/` | Shared constants            |
+
+> **Detailed structure:** See [Project Overview → Monorepo Layout](docs/guides/getting-started/project-overview.md#monorepo-layout) for full directory tree.
 
 ## 📚 Documentation
 
 - [System Overview](docs/architecture.md)
-- [Coding Standards](docs/conventions.md)
-- [Design Decisions](docs/issues/)
-- [Development & Documentation Workflow](docs/workflow.md)
+- [Code Conventions](docs/guides/references/code-conventions.md)
+- [Backend Conventions](docs/guides/conventions/backend.md)
+- [Frontend Conventions](docs/guides/conventions/frontend.md)
+- [Development & Documentation Workflow](docs/guides/operations/workflow.md)
 - [Business Requirements (Epics, Stories, PRs)](docs/business-requirements/README.md)
 - [Technical Implementation Details](docs/issue-implementation/README.md)
 - Feature Design
@@ -187,41 +110,22 @@ mandarin-vite-react-ts/
 
 This project uses a **single `.env.local` file at the project root** for both frontend and backend configuration.
 
-**Setup:**
-
-1. Copy the example file:
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-2. Fill in required values (see `.env.example` for detailed instructions):
-   - `DATABASE_URL` - PostgreSQL connection string
-   - `JWT_SECRET` and `JWT_REFRESH_SECRET` - Generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
-   - `REDIS_URL` - Redis connection (optional for development, caching falls back gracefully)
-   - `GOOGLE_TTS_CREDENTIALS_RAW` - Google Cloud service account JSON
-   - `VITE_API_URL` - Backend API URL (http://localhost:3001 for development)
-
-**First-time Database Setup:**
-
-After configuring environment variables, initialize the database:
-
 ```bash
-npx prisma migrate dev
+cp .env.example .env.local
 ```
 
-For detailed configuration instructions, see [Environment Setup Guide](docs/guides/environment-setup-guide.md).
+> **Full variable reference:** See [Environment Setup Guide](docs/guides/getting-started/environment-setup.md) for all required and optional variables, including database, auth, Redis, and Google Cloud configuration.
 
 ## 🤝 Contributing
 
 We welcome contributions! Please follow these guidelines:
 
-1. **Code Conventions:** Follow patterns in [Code Conventions Guide](docs/guides/code-conventions.md)
-2. **Git Workflow:** Use Conventional Commits as described in [Git Convention Guide](docs/guides/git-convention.md)
+1. **Code Conventions:** Follow patterns in [Code Conventions Guide](docs/guides/conventions/backend.md)
+2. **Git Workflow:** Use Conventional Commits as described in [Git Convention Guide](docs/guides/conventions/git.md)
 3. **Documentation:** Update relevant docs when making changes
 4. **Testing:** Add tests for new features and bug fixes
 
-For detailed workflow, see [Workflow Guide](docs/guides/workflow.md).
+For detailed workflow, see [Workflow Guide](docs/guides/operations/workflow.md).
 
 ## 🚀 Deployment
 
@@ -247,7 +151,7 @@ npm install -g @railway/cli
 railway up
 ```
 
-For detailed deployment instructions, see [Backend Setup Guide](docs/guides/backend-setup-guide.md).
+For detailed deployment instructions, see [Backend Development Guide](docs/guides/setup/backend-development.md).
 
 ## 📄 License
 

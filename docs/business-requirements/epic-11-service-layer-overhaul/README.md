@@ -1,4 +1,4 @@
-# Epic 11: Service Layer Overhaul for Data & Audio
+﻿# Epic 11: Service Layer Overhaul for Data & Audio
 
 ## Epic Summary
 
@@ -24,21 +24,21 @@ Current data and audio fetching logic is scattered and tightly coupled to specif
 
 This epic consists of the following user stories:
 
-1. [Story 11.1: Design Unified Service Layer Interfaces](./story-11.1-design-service-interfaces.md)
+1. [Story 11.1: Design Unified Service Layer Interfaces](./story-11-1-design-service-interfaces.md)
    - As a developer, I want clear interfaces and base classes for all data/audio services, so that future changes and backend swaps are easy and safe.
-2. [Story 11.2: Implement Vocabulary Data Service](./story-11.2-vocab-data-service.md)
+2. [Story 11.2: Implement Vocabulary Data Service](./story-11-2-vocab-data-service.md)
    - As a developer, I want all vocabulary data fetching to go through a dedicated service, so that fallback and backend swap logic is centralized.
-3. [Story 11.3: Implement Audio (TTS) Service](./story-11.3-audio-service.md)
+3. [Story 11.3: Implement Audio (TTS) Service](./story-11-3-audio-service.md)
    - As a developer, I want all TTS/audio fetching to go through a dedicated service, so that fallback and backend swap logic is centralized.
-4. [Story 11.4: Refactor Components to Use Services](./story-11.4-refactor-components.md)
+4. [Story 11.4: Refactor Components to Use Services](./story-11-4-refactor-components.md)
    - As a developer, I want all components to use the new service layer, so that UI code is decoupled from backend details.
-5. [Story 11.5: Implement and Document Backend Swap & Fallback](./story-11.5-backend-swap-fallback.md)
+5. [Story 11.5: Implement and Document Backend Swap & Fallback](./story-11-5-backend-swap-fallback.md)
    - As a developer, I want robust backend swap and fallback logic, so that the app is reliable and maintainable.
 
 ## Story Breakdown Logic
 
-- Stories 11.1–11.3 focus on designing and implementing the core service layer and its interfaces (Planned)
-- Stories 11.4–11.5 focus on refactoring usage and ensuring robust fallback and backend swap (Planned)
+- Stories 11.1â€“11.3 focus on designing and implementing the core service layer and its interfaces (Planned)
+- Stories 11.4â€“11.5 focus on refactoring usage and ensuring robust fallback and backend swap (Planned)
 
 Stories are divided to separate interface design, service implementation, and UI refactor, allowing for incremental delivery and easier review/testing.
 
@@ -70,16 +70,16 @@ Stories are divided to separate interface design, service implementation, and UI
 
 ## Risks & mitigations
 
-- Risk: Breaking changes in component data flow — Severity: Medium
+- Risk: Breaking changes in component data flow â€” Severity: Medium
   - Mitigation: Incremental refactor, comprehensive tests
   - Rollback: Revert to previous component/service usage
-- Risk: Fallback logic complexity — Severity: Medium
+- Risk: Fallback logic complexity â€” Severity: Medium
   - Mitigation: Clear interface contracts, staged implementation
   - Rollback: Disable fallback, use primary backend only
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - Operational notes: All new services must be documented and tested
 - Links: reference implementation templates at `docs/templates/epic-implementation-template.md`
 
@@ -88,3 +88,4 @@ Stories are divided to separate interface design, service implementation, and UI
 _Epic Owner: TBD_
 _Epic ID: 11_
 _Links: [Implementation Doc](../../issue-implementation/epic-11-service-layer-overhaul/README.md)_
+

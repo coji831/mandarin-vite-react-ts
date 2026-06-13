@@ -385,9 +385,9 @@ Based on integration tests + load test config:
 
 - Business Requirements: [story-13-5-redis-caching.md](../../business-requirements/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
 - Epic Implementation: [epic-13 README](./README.md)
-- Comprehensive Guide: [redis-caching-guide.md](../../guides/redis-caching-guide.md)
-- API Specification: [api-spec.md](../../apps/backend/docs/api-spec.md)
-- Backend README: [apps/backend/README.md](../../apps/backend/README.md)
+- Comprehensive Guide: [Redis Setup Guide](../../guides/setup/redis.md)
+- API Specification: [api-spec.md](../../../apps/backend/docs/api-spec.md)
+- Backend README: [apps/backend/README.md](../../../apps/backend/README.md)
 
 ## Implementation Timeline
 

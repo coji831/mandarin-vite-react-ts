@@ -339,4 +339,4 @@ function generateCacheKey(text: string, voiceConfig: VoiceConfig): string {
 
 - [Google Cloud Services](./integration-google-cloud.md) — What to cache (TTS, AI)
 - [Backend Architecture](./backend-architecture.md) — Where to add caching layer
-- [Redis Caching Guide](../guides/redis-caching-guide.md) — Project-specific Railway Redis setup
+- [Redis Setup Guide](../guides/setup/redis.md) — Project-specific Railway Redis setup

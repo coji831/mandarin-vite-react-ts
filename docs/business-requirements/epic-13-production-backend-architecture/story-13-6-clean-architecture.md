@@ -16,7 +16,7 @@ Refactoring to clean architecture separates business logic from framework code, 
 - [x] Services in core/ contain zero Express/framework dependencies (pure JavaScript)
 - [x] OpenAPI 3.1 spec generated from code and accessible at /api-docs
 - [x] Swagger UI rendered at /api-docs for interactive API testing
-- [x] Migration guide documented in docs/guides/dotnet-migration.md
+- [x] Migration guide documented in docs/archive/dotnet-migration.md (archived - future planning)
 - [x] All service unit tests pass with >90% coverage
 - [x] Code review checklist completed (separation of concerns verified)
 
@@ -30,7 +30,7 @@ Refactoring to clean architecture separates business logic from framework code, 
 ## Related Issues
 
 - [Epic 13: Production Backend Architecture](./README.md) (Parent epic)
-- [Epic 14: .NET Backend Migration](../../epic-14-dotnet-backend-migration/README.md) (Future epic this prepares for)
+- [Epic 14: .NET Backend Migration](../epic-14-api-modernization/README.md) (Future epic this prepares for)
 - [Story 13.5: Redis Caching Layer](./story-13-5-redis-caching.md) (Can run in parallel)
 
 ## Implementation Status

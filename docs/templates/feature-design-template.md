@@ -1,5 +1,7 @@
 # Feature Design Template
 
+**Last Updated:** June 2, 2026
+
 ## Feature Name
 
 ## Overview

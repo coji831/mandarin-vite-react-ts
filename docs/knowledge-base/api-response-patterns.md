@@ -486,8 +486,8 @@ axios.interceptors.response.use(
 
 **Project-Specific Guides:**
 
-- [Code Conventions - Backend Response Structure](../guides/code-conventions.md#backend-response-structure)
-- [Testing Guide - Aligning Mocks](../guides/testing-guide.md#aligning-mocks-with-backend-behavior)
+- [API Client Conventions - Direct Response Pattern](../guides/conventions/api-client.md#direct-response-pattern)
+- [API Client Conventions - Testing API Calls](../guides/conventions/api-client.md#testing-api-calls)
 
 **Knowledge Base:**
 

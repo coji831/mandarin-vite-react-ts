@@ -58,4 +58,4 @@ Solution: Added ARIA attributes, ensured keyboard navigation, and verified color
 ## Documentation
 
 - Feature design doc updated for UI/UX changes
-- See business requirements: [story-12-4-toggle-pinyin-english.md](../../../business-requirements/epic-12-conversation-ui-enhancements/story-12-4-toggle-pinyin-english.md)
+- See business requirements: [story-12-4-toggle-pinyin-english.md](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-4-toggle-pinyin-english.md)

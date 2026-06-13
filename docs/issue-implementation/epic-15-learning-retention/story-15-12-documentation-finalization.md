@@ -428,9 +428,9 @@ POST /api/v1/progress/test-result
 
 ### Related Stories
 
-- [Story 15.2: Core Quiz Backend Infrastructure](../business-requirements/epic-15-learning-retention/story-15-2-core-quiz-backend.md)
-- [Story 15.6: Quiz Container & State Management](../business-requirements/epic-15-learning-retention/story-15-6-quiz-container-state.md)
-- [Story 15.8: Core Quiz Backend Integration](../business-requirements/epic-15-learning-retention/story-15-8-core-quiz-integration.md)
+- [Story 15.2: Core Quiz Backend Infrastructure](../../business-requirements/epic-15-learning-retention/story-15-2-core-quiz-backend.md)
+- [Story 15.6: Quiz Container & State Management](../../business-requirements/epic-15-learning-retention/story-15-6-quiz-container-state.md)
+- [Story 15.8: Core Quiz Backend Integration](../../business-requirements/epic-15-learning-retention/story-15-8-core-quiz-integration.md)
 ```
 
 ### 7. Business Rules Verification
@@ -571,5 +571,5 @@ const XP_REWARDS = {
 - [Story 15.12 BR](../../business-requirements/epic-15-learning-retention/story-15-12-documentation-finalization.md)
 - [Story 15.11 Implementation](./story-15-11-feature-extensions.md) (Prerequisite: completes feature work)
 - [Epic 15 Implementation](./README.md)
-- [Code Conventions Guide](../../guides/code-conventions.md)
-- [Testing Guide](../../guides/testing-guide.md)
+- [Code Conventions Guide](../../guides/conventions/frontend.md)
+- [Testing Guide](../../guides/testing/frontend.md)

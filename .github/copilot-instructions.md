@@ -1,5 +1,7 @@
 # Copilot Instructions for AI Coding Agents
 
+**Last Updated:** June 2, 2026
+
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`. Follow these rules to stay aligned, produce high‑quality changes, and keep documentation in sync.
 
 ## ⚡ TL;DR Quick Start
@@ -12,7 +14,7 @@ Epic BR: use `docs/templates/epic-business-requirements-template.md`
 Story BR: use `docs/templates/story-business-requirements-template.md`
 Epic Implementation: `docs/templates/epic-implementation-template.md`
 Story Implementation: `docs/templates/story-implementation-template.md`
-Code change: follow `docs/guides/code-conventions.md` + `docs/guides/solid-principles.md`
+Code change: follow `docs/guides/references/code-conventions.md` + `docs/knowledge-base/solid-principles.md`
 Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
 
 ## 📚 Table of Contents
@@ -139,7 +141,7 @@ If any step is blocked (missing requirements, unclear AC, external dependency): 
 
 ## 📦 Templates Index
 
-Business Requirements Format Guide: `docs/guides/business-requirements-format-guide.md`
+Documentation Patterns (KB): `docs/knowledge-base/documentation-patterns.md`
 Epic BR Template: `docs/templates/epic-business-requirements-template.md`
 Story BR Template: `docs/templates/story-business-requirements-template.md`
 Epic Implementation Template: `docs/templates/epic-implementation-template.md`
@@ -165,7 +167,7 @@ Actions: exposed via `use<name>Actions()` hook; verb-based camelCase.
 Selectors: always `use<name>State(s => s.slice?.value ?? fallback)`; never select entire root state.
 Immutability: use spreads; no direct mutation.
 Normalized data: maintain `itemsById` + `itemIds` pairs.
-Types: explicit definitions in `src/feature/<feature>/types/`.
+Types: explicit definitions in `src/features/<feature>/types/`.
 
 ## 🧪 Testing Rules
 
@@ -321,7 +323,7 @@ Update KB after resolving non-trivial technical struggles (3+ hours debugging, i
 
 Branch naming: `epic-<num>-<slug>` primary; optional `feature/<short>` or `fix/<short>`.
 Conventional Commits: `<type>(<scope>): <description>`; scopes: `epic-11`, `story-11-2`, `component`, `hook`, `api`, `docs`.
-Always consult: `docs/guides/git-convention.md` + `docs/templates/commit-message-template.md`.
+Always consult: `docs/guides/conventions/git.md` + `docs/templates/commit-message-template.md`.
 Feature flags: document flag names & purpose in epic BR + implementation README when used.
 
 ## ✅ Closing Epics & Stories
@@ -338,7 +340,7 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
    - Review "Technical Challenges & Solutions" section in implementation doc.
    - Extract reusable patterns to `docs/knowledge-base/` (concepts, architectural patterns, deep dives).
    - Update project guides in `docs/guides/` (setup steps, configuration, troubleshooting).
-   - Update `docs/guides/code-conventions.md` if new patterns emerged (naming, error handling, testing).
+   - Update `docs/guides/references/code-conventions.md` if new patterns emerged (naming, error handling, testing).
    - Add cross-links between story doc, guides, and KB articles.
    - See "Knowledge Base Update Protocol" section for detailed extraction workflow.
    - **MANDATORY:** KB and guide updates must be reviewed for accuracy before closure commit.
@@ -387,8 +389,8 @@ When you see "refer #file:automation" or "refer the automation folder" in a user
 2. Follow the Story-Level Development Workflow section above sequentially.
 3. Use templates from `docs/templates/` exactly—preserve heading names and order verbatim.
 4. When creating docs: populate placeholders with realistic content; do not remove or rearrange headings.
-5. When producing code: enforce `docs/guides/code-conventions.md` + `docs/guides/solid-principles.md`; include inline comments referencing doc sections.
-6. When producing git artifacts: follow `docs/guides/git-convention.md` for branch names, commit message format (Conventional Commits), and PR titles/descriptions.
+5. When producing code: enforce `docs/guides/references/code-conventions.md` + `docs/knowledge-base/solid-principles.md`; include inline comments referencing doc sections.
+6. When producing git artifacts: follow `docs/guides/conventions/git.md` for branch names, commit message format (Conventional Commits), and PR titles/descriptions.
 7. For ambiguous requirements, missing templates, or critical missing files: STOP and return a short list of missing items plus 2 proposed options.
 8. Do not run git commands, write files, or push to repository unless explicitly instructed after review.
 
@@ -428,10 +430,10 @@ Use this format for all AI interactions (detailed examples in `docs/automation/s
 
 ## 🛠️ Resources
 
-Code Conventions: `docs/guides/code-conventions.md`
-SOLID Principles: `docs/guides/solid-principles.md`
-Git Workflow: `docs/guides/git-convention.md`
-Business Requirements Format: `docs/guides/business-requirements-format-guide.md`
+Code Conventions: `docs/guides/references/code-conventions.md`
+SOLID Principles: `docs/knowledge-base/solid-principles.md`
+Git Workflow: `docs/guides/conventions/git.md`
+Documentation Patterns (KB): `docs/knowledge-base/documentation-patterns.md`
 Automation Protocols: `docs/automation/structured-ai-prompts.md`
 Architecture: `docs/architecture.md`
 

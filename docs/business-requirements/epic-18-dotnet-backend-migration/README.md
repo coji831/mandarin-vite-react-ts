@@ -168,7 +168,7 @@ Migration order prioritizes learning (Progress is most complex), then risk mitig
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` (adapt for C# naming conventions: PascalCase for public members, camelCase for private)
+- **Conventions**: Follow `docs/guides/conventions/backend.md` (adapt for C# naming conventions: PascalCase for public members, camelCase for private)
 - **SOLID Principles**: Apply `docs/guides/solid-principles.md` — dependency injection is native in ASP.NET Core, use interfaces for Services/Repositories
 - **Testing**: Use xUnit (standard .NET testing framework), Moq for mocking, FluentAssertions for readable assertions
 - **Database**: EF Core migrations (`dotnet ef migrations add`, `dotnet ef database update`), use `AsNoTracking()` for read-only queries
@@ -203,6 +203,6 @@ Migration order prioritizes learning (Progress is most complex), then risk mitig
 - [Epic 18 Implementation](../../issue-implementation/epic-18-dotnet-backend-migration/README.md)
 - [Architecture Overview](../../architecture.md)
 - [Epic 13: Production Backend Architecture](../epic-13-production-backend-architecture/README.md)
-- [Code Conventions](../../guides/code-conventions.md)
-- [SOLID Principles](../../guides/solid-principles.md)
-- [Git Convention Guide](../../guides/git-convention.md)
+- [Code Conventions](../../guides/conventions/backend.md)
+- [SOLID Principles](../../knowledge-base/solid-principles.md)
+- [Git Convention Guide](../../guides/conventions/git.md)

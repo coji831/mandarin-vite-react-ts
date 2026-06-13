@@ -1,5 +1,7 @@
 # Commit Message Template
 
+**Last Updated:** June 2, 2026
+
 All commits must follow the Conventional Commits format:
 
 ```

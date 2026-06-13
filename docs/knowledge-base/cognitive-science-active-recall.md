@@ -1,5 +1,7 @@
 # Cognitive Science of Active Recall
 
+**Last Updated:** June 2, 2026
+
 **Summary**: Exploration of how active recall (retrieval practice) strengthens memory formation, and why it dramatically outperforms passive review for long-term retention.
 
 **Key Concepts**: Testing effect, desirable difficulty, interleaving, discrimination learning, category induction

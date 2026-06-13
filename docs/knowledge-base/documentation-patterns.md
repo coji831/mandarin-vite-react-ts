@@ -8,7 +8,7 @@ If you only read one: For diagram and formatting examples (Mermaid, collapsible 
 
 This guide explains how different documentation formats in this project work together to provide complete coverage of both business and technical aspects.
 
-> **Note**: For guidelines on creating concise, visual documentation, refer to the [Document Streamlining Guide](./doc-authoring-patterns.md).
+> **Note**: For guidelines on creating concise, visual documentation, refer to the [Documentation Patterns guide](./documentation-patterns.md).
 
 ## Document Relationship Map
 
@@ -45,7 +45,7 @@ The Business Requirements and Technical Implementation documents work together a
 
 ### Business Requirements Format
 
-The [Business Requirements Format](./templates/business-requirements-format.md) is the single source of truth for all business requirements documents. Always use the template in `docs/templates/`.
+The [Business Requirements Format](../templates/epic-business-requirements-template.md) is the single source of truth for all business requirements documents. Always use the template in `docs/templates/`.
 
 #### Required Sections
 
@@ -68,7 +68,7 @@ The [Business Requirements Format](./templates/business-requirements-format.md) 
 
 ### Technical Implementation Format
 
-The [Issue Implementation Format](./issue-implementation/issue-implementation-format.md) should contain:
+The Issue Implementation Format (see `docs/templates/epic-implementation-template.md`) should contain:
 
 #### Required Sections
 
@@ -91,20 +91,17 @@ The [Issue Implementation Format](./issue-implementation/issue-implementation-fo
 ## Documentation Workflow
 
 1. **Select Appropriate Template**:
-
    - Determine epic size (small: 1-2 stories, large: 3+ stories)
-   - Choose template based on [Template Selection Guide](./business-requirements/business-requirements-format.md#template-selection-guide)
+   - Choose template based on the template complexity (see `docs/templates/` for available templates)
    - Consider business complexity and implementation needs
 
 2. **Start with Business Requirements**:
-
    - Define the epic and stories from a business perspective
    - Focus on user needs and business value
    - Create GitHub issues based on these requirements
    - Ensure all required sections are completed
 
 3. **Develop Technical Implementation**:
-
    - Reference business requirements
    - Document technical decisions and implementation details
    - Provide code patterns and architecture information
@@ -122,14 +119,18 @@ When referencing between documents:
 
 - **From Business Requirements to Technical Implementation**:
 
-  ```markdown
-  For technical details, see [Technical Implementation](../issue-implementation/epic-1-name/README.md)
+  For technical details, see [Technical Implementation](../issue-implementation/epic-13-production-backend-architecture/README.md)
+
+  ```
+
   ```
 
 - **From Technical Implementation to Business Requirements**:
 
-  ```markdown
-  For business context and user stories, see [Business Requirements](../business-requirements/epic-1-name/README.md)
+  For business context and user stories, see [Business Requirements](../business-requirements/epic-13-production-backend-architecture/README.md)
+
+  ```
+
   ```
 
 - **Story to Epic References**:
@@ -139,8 +140,11 @@ When referencing between documents:
   ```
 
 - **Issue Reference Format**:
-  ```markdown
-  #123 / [**Issue Title**](./relative-path-to-template.md)
+
+  #123 / [**Issue Title**](../templates/story-implementation-template.md)
+
+  ```
+
   ```
 
 ## Epic Size Considerations

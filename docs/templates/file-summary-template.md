@@ -1,5 +1,7 @@
 # File Summary Template
 
+**Last Updated:** June 2, 2026
+
 ## File Name
 
 - `src/path/to/file.tsx`

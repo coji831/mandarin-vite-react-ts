@@ -61,7 +61,7 @@ Client → [Service Layer] → [Backend/API or Fallback]
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - Operational notes: All new services must be documented and tested
 - Links: reference implementation templates at `docs/templates/epic-implementation-template.md`
 
@@ -69,4 +69,4 @@ Client → [Service Layer] → [Backend/API or Fallback]
 
 _Epic Owner: TBD_
 _Epic ID: 11_
-_Links: [Business Requirements](../../../business-requirements/epic-11-service-layer-overhaul/README.md)_
+_Links: [Business Requirements](../../business-requirements/epic-11-service-layer-overhaul/README.md)_

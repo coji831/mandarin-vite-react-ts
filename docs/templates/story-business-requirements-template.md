@@ -1,4 +1,6 @@
-# Template For Story Business Requirements
+﻿# Template For Story Business Requirements
+
+**Last Updated:** June 2, 2026
 
 # Story [EPIC_NUMBER.STORY_NUMBER]: [Story_Title]
 
@@ -28,8 +30,8 @@
 
 ## Related Issues
 
-- #[ISSUE-NUMBER] / [**Related Story Title**](./story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md) ([Relationship type])
-- #[ISSUE-NUMBER] / [**Related Story Title**](./story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md) ([Relationship type])
+- #[ISSUE-NUMBER] / **Related Story Title** *(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)* ([Relationship type])
+- #[ISSUE-NUMBER] / **Related Story Title** *(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)* ([Relationship type])
 
 ## Implementation Status
 
@@ -37,3 +39,4 @@
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
 - **Key Commit**: [commit-hash] ([Brief commit description])
+

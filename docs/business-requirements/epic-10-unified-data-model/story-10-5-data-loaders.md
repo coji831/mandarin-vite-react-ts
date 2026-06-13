@@ -25,7 +25,7 @@ Normalized data loaders ensure reliable state initialization, reduce bugs, and s
 ## Related Issues
 
 - #10.2 / [**Refactor Type Definitions**](./story-10-2-type-definitions.md) (depends on)
-- #10.4 / [**Update Selectors**](./story-10-4-selectors.md) (depends on)
+- #10.4 / [**Update Selectors**](./story-10-4-update-selectors.md) (depends on)
 
 ## Implementation Status
 

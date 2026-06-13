@@ -1,9 +1,9 @@
-# Story 15.11 - Type Alignment Audit Report
+﻿# Story 15.11 - Type Alignment Audit Report
 
 **Date**: February 27, 2026 | **Last Updated**: March 7, 2026  
 **Status**: Comprehensive Type Mapping Complete  
 **Purpose**: Ensure type property alignment between frontend and backend API contracts  
-**Architecture Context**: [Business Logic Flows](./story-15-11-business-logic-flows.md) - 3-layer synchronous architecture (Controllers → Services → Repositories)
+**Architecture Context**: [Business Logic Flows](./story-15-11-business-logic-flows.md) - 3-layer synchronous architecture (Controllers â†’ Services â†’ Repositories)
 
 ---
 
@@ -13,10 +13,10 @@ This audit maps all API types from [Business Logic Flows](./story-15-11-business
 
 **Key Findings**:
 
-- ✅ All date fields consistently use ISO 8601 strings (backend → frontend)
-- ✅ Property names align across frontend/backend boundaries
-- ⚠️ One minor issue: `QuizAnswer.timestamp` uses client-side `Date` (acceptable - not from API)
-- ✅ Express auto-serializes backend `Date` objects to ISO strings (transparent to frontend)
+- âœ… All date fields consistently use ISO 8601 strings (backend â†’ frontend)
+- âœ… Property names align across frontend/backend boundaries
+- âš ï¸ One minor issue: `QuizAnswer.timestamp` uses client-side `Date` (acceptable - not from API)
+- âœ… Express auto-serializes backend `Date` objects to ISO strings (transparent to frontend)
 
 **Architecture Note**: Story 15.11 uses backend-centralized business logic with 3-layer synchronous pattern. All API contracts documented below match implementation.
 
@@ -30,14 +30,14 @@ This section maps all API types from [Business Logic Flows](./story-15-11-busine
 
 | Flow                         | API Endpoint                                     | Request Type        | Response Type                        | Status     |
 | ---------------------------- | ------------------------------------------------ | ------------------- | ------------------------------------ | ---------- |
-| 1. Start Quiz Session        | `POST /api/v1/quiz/session/start`                | Query params        | `QuizSessionStartResponse`           | ✅ Aligned |
-| 1.1. Check Daily Quiz Status | `POST /api/v1/quiz/session/start`                | Query params        | `QuizSessionStartResponse` (variant) | ✅ Aligned |
-| 1.2. No Due Words            | `POST /api/v1/quiz/session/start`                | Query params        | Empty questions array                | ✅ Aligned |
-| 2. Submit Quiz Answer        | `POST /api/v1/quiz/session/:sessionId/answer`    | `QuizAnswerRequest` | `QuizAnswerResponse`                 | ✅ Aligned |
-| 2.3. Get Session Summary     | `GET /api/v1/quiz/session/:sessionId/summary`    | Path param          | `QuizSessionSummary`                 | ✅ Aligned |
-| 2.5. Mystery Box Opening     | `POST /api/v1/gamification/mystery-box/:id/open` | Path param          | `MysteryBoxReward`                   | ✅ Aligned |
-| Legacy: Get Due Words        | `GET /api/v1/learning/due`                       | Query params        | `DueWordsResponse`                   | ✅ Aligned |
-| Legacy: Save Test Result     | `POST /api/v1/learning/result`                   | `TestResultRequest` | `TestResultResponse`                 | ✅ Aligned |
+| 1. Start Quiz Session        | `POST /api/v1/quiz/session/start`                | Query params        | `QuizSessionStartResponse`           | âœ… Aligned |
+| 1.1. Check Daily Quiz Status | `POST /api/v1/quiz/session/start`                | Query params        | `QuizSessionStartResponse` (variant) | âœ… Aligned |
+| 1.2. No Due Words            | `POST /api/v1/quiz/session/start`                | Query params        | Empty questions array                | âœ… Aligned |
+| 2. Submit Quiz Answer        | `POST /api/v1/quiz/session/:sessionId/answer`    | `QuizAnswerRequest` | `QuizAnswerResponse`                 | âœ… Aligned |
+| 2.3. Get Session Summary     | `GET /api/v1/quiz/session/:sessionId/summary`    | Path param          | `QuizSessionSummary`                 | âœ… Aligned |
+| 2.5. Mystery Box Opening     | `POST /api/v1/gamification/mystery-box/:id/open` | Path param          | `MysteryBoxReward`                   | âœ… Aligned |
+| Legacy: Get Due Words        | `GET /api/v1/learning/due`                       | Query params        | `DueWordsResponse`                   | âœ… Aligned |
+| Legacy: Save Test Result     | `POST /api/v1/learning/result`                   | `TestResultRequest` | `TestResultResponse`                 | âœ… Aligned |
 
 ---
 
@@ -106,26 +106,26 @@ export type QuizSessionQuestion = {
 
 | Property       | Backend Type            | Frontend Type           | Match | Notes                |
 | -------------- | ----------------------- | ----------------------- | ----- | -------------------- |
-| `sessionId`    | `string`                | `string`                | ✅    | UUID format          |
-| `questions`    | `QuizSessionQuestion[]` | `QuizSessionQuestion[]` | ✅    | Array of questions   |
-| `expiresAt`    | `string` (ISO 8601)     | `string`                | ✅    | Date serialization   |
-| `isResume`     | `boolean`               | `boolean`               | ✅    | Session state flag   |
-| `currentIndex` | `number`                | `number?`               | ✅    | Optional on frontend |
+| `sessionId`    | `string`                | `string`                | âœ…    | UUID format          |
+| `questions`    | `QuizSessionQuestion[]` | `QuizSessionQuestion[]` | âœ…    | Array of questions   |
+| `expiresAt`    | `string` (ISO 8601)     | `string`                | âœ…    | Date serialization   |
+| `isResume`     | `boolean`               | `boolean`               | âœ…    | Session state flag   |
+| `currentIndex` | `number`                | `number?`               | âœ…    | Optional on frontend |
 
 **Nested Type**: `QuizSessionQuestion`
 
 | Property           | Backend Type                                             | Frontend Type | Match | Notes                       |
 | ------------------ | -------------------------------------------------------- | ------------- | ----- | --------------------------- |
-| `id`               | `string`                                                 | `string`      | ✅    | Question ID                 |
-| `wordId`           | `string`                                                 | `string`      | ✅    | Word reference              |
-| `questionType`     | `'multiple_choice' \| 'type_pinyin' \| 'type_character'` | Same          | ✅    | Union type                  |
-| `word.id`          | `string`                                                 | `string`      | ✅    | Word ID                     |
-| `word.simplified`  | `string`                                                 | `string`      | ✅    | Chinese simplified          |
-| `word.traditional` | `string`                                                 | `string`      | ✅    | Chinese traditional         |
-| `word.pinyin`      | `string?`                                                | `string?`     | ✅    | Omitted for type_pinyin     |
-| `word.english`     | `string?`                                                | `string?`     | ✅    | Omitted for multiple_choice |
+| `id`               | `string`                                                 | `string`      | âœ…    | Question ID                 |
+| `wordId`           | `string`                                                 | `string`      | âœ…    | Word reference              |
+| `questionType`     | `'multiple_choice' \| 'type_pinyin' \| 'type_character'` | Same          | âœ…    | Union type                  |
+| `word.id`          | `string`                                                 | `string`      | âœ…    | Word ID                     |
+| `word.simplified`  | `string`                                                 | `string`      | âœ…    | Chinese simplified          |
+| `word.traditional` | `string`                                                 | `string`      | âœ…    | Chinese traditional         |
+| `word.pinyin`      | `string?`                                                | `string?`     | âœ…    | Omitted for type_pinyin     |
+| `word.english`     | `string?`                                                | `string?`     | âœ…    | Omitted for multiple_choice |
 
-**Status**: ✅ **Fully Aligned**
+**Status**: âœ… **Fully Aligned**
 
 ---
 
@@ -166,13 +166,13 @@ From [business-logic-flows.md Section 1.1](./story-15-11-business-logic-flows.md
 
 | Property           | Backend Type         | Frontend Type        | Match | Notes              |
 | ------------------ | -------------------- | -------------------- | ----- | ------------------ |
-| `alreadyCompleted` | `boolean`            | Used in condition    | ✅    | Flow control flag  |
-| `sessionId`        | `string`             | `string`             | ✅    | Existing session   |
-| `summary`          | `QuizSessionSummary` | `QuizSessionSummary` | ✅    | See Flow 2.3       |
-| `expiresAt`        | `string` (ISO 8601)  | `string`             | ✅    | Midnight timestamp |
-| `questions`        | `[]` (empty)         | Not used             | ✅    | Empty state        |
+| `alreadyCompleted` | `boolean`            | Used in condition    | âœ…    | Flow control flag  |
+| `sessionId`        | `string`             | `string`             | âœ…    | Existing session   |
+| `summary`          | `QuizSessionSummary` | `QuizSessionSummary` | âœ…    | See Flow 2.3       |
+| `expiresAt`        | `string` (ISO 8601)  | `string`             | âœ…    | Midnight timestamp |
+| `questions`        | `[]` (empty)         | Not used             | âœ…    | Empty state        |
 
-**Status**: ✅ **Fully Aligned**
+**Status**: âœ… **Fully Aligned**
 
 ---
 
@@ -203,7 +203,7 @@ export type QuizAnswerRequest = {
 };
 ```
 
-**Alignment**: ✅ **Exact Match**
+**Alignment**: âœ… **Exact Match**
 
 #### Response Type
 
@@ -279,30 +279,30 @@ export type QuizAnswerResponse = {
 
 | Property                     | Backend Type         | Frontend Type                 | Match | Notes                     |
 | ---------------------------- | -------------------- | ----------------------------- | ----- | ------------------------- |
-| `correct`                    | `boolean`            | `boolean`                     | ✅    | Answer validation         |
-| `correctAnswer`              | `string`             | `string`                      | ✅    | Correct answer text       |
+| `correct`                    | `boolean`            | `boolean`                     | âœ…    | Answer validation         |
+| `correctAnswer`              | `string`             | `string`                      | âœ…    | Correct answer text       |
 | Progress Group               |                      |                               |       |
-| `nextReviewDate`             | `string` (ISO 8601)  | `feedback.nextReview: string` | ⚠️    | **Property name differs** |
-| `lapseCount`                 | `number`             | `feedback.lapseCount: number` | ✅    | Nested in feedback        |
-| `isLeech`                    | `boolean`            | `feedback.isLeech: boolean`   | ✅    | Nested in feedback        |
+| `nextReviewDate`             | `string` (ISO 8601)  | `feedback.nextReview: string` | âš ï¸    | **Property name differs** |
+| `lapseCount`                 | `number`             | `feedback.lapseCount: number` | âœ…    | Nested in feedback        |
+| `isLeech`                    | `boolean`            | `feedback.isLeech: boolean`   | âœ…    | Nested in feedback        |
 | AI Feedback Group            |                      |                               |       |
-| `aiFeedback`                 | `object \| null`     | `object \| null`              | ✅    | Nullable object           |
-| `aiFeedback.explanation`     | `string`             | `string`                      | ✅    | Explanation text          |
-| `aiFeedback.errorType`       | Union type           | Union type                    | ✅    | Error classification      |
+| `aiFeedback`                 | `object \| null`     | `object \| null`              | âœ…    | Nullable object           |
+| `aiFeedback.explanation`     | `string`             | `string`                      | âœ…    | Explanation text          |
+| `aiFeedback.errorType`       | Union type           | Union type                    | âœ…    | Error classification      |
 | Session State                |                      |                               |       |
-| `sessionComplete`            | `boolean`            | `boolean`                     | ✅    | Completion flag           |
-| `nextQuestion`               | `Question \| null`   | `QuizSessionQuestion \| null` | ✅    | Next question             |
-| `progress.current`           | `number`             | `number`                      | ✅    | Questions answered        |
-| `progress.total`             | `number`             | `number`                      | ✅    | Total questions           |
+| `sessionComplete`            | `boolean`            | `boolean`                     | âœ…    | Completion flag           |
+| `nextQuestion`               | `Question \| null`   | `QuizSessionQuestion \| null` | âœ…    | Next question             |
+| `progress.current`           | `number`             | `number`                      | âœ…    | Questions answered        |
+| `progress.total`             | `number`             | `number`                      | âœ…    | Total questions           |
 | Gamification                 |                      |                               |       |
-| `gamification`               | `object \| null`     | `object \| null`              | ✅    | Only if complete          |
-| `gamification.xpEarned`      | `number`             | `number`                      | ✅    | XP points                 |
-| `gamification.newBadges`     | `Badge[]`            | `Badge[]`                     | ✅    | Badge array               |
-| `gamification.mysteryBox`    | `MysteryBox \| null` | `MysteryBox`                  | ⚠️    | **Nullability differs**   |
-| `gamification.freezeAwarded` | `boolean`            | `boolean`                     | ✅    | Freeze flag               |
-| `gamification.currentStreak` | `number`             | Not present                   | ⚠️    | **Missing in frontend**   |
+| `gamification`               | `object \| null`     | `object \| null`              | âœ…    | Only if complete          |
+| `gamification.xpEarned`      | `number`             | `number`                      | âœ…    | XP points                 |
+| `gamification.newBadges`     | `Badge[]`            | `Badge[]`                     | âœ…    | Badge array               |
+| `gamification.mysteryBox`    | `MysteryBox \| null` | `MysteryBox`                  | âš ï¸    | **Nullability differs**   |
+| `gamification.freezeAwarded` | `boolean`            | `boolean`                     | âœ…    | Freeze flag               |
+| `gamification.currentStreak` | `number`             | Not present                   | âš ï¸    | **Missing in frontend**   |
 
-**Status**: ⚠️ **Minor Misalignments**
+**Status**: âš ï¸ **Minor Misalignments**
 
 **Issues Found**:
 
@@ -382,25 +382,25 @@ export type LeechWordDetail = {
 
 | Property           | Backend Type         | Frontend Type            | Match | Notes                      |
 | ------------------ | -------------------- | ------------------------ | ----- | -------------------------- |
-| `sessionId`        | `string`             | `string`                 | ✅    | Session ID                 |
-| `correctCount`     | `number`             | `number`                 | ✅    | Correct answers            |
-| `totalQuestions`   | `number`             | `totalAnswered: number`  | ⚠️    | **Property name differs**  |
-| `accuracyRate`     | `number`             | `number`                 | ✅    | 0-100 percentage           |
-| `incorrectWords`   | `Word[]`             | `IncorrectWordDetail[]`  | ⚠️    | **Type structure differs** |
-| `leechWords`       | `Word[]`             | `LeechWordDetail[]`      | ⚠️    | **Type structure differs** |
+| `sessionId`        | `string`             | `string`                 | âœ…    | Session ID                 |
+| `correctCount`     | `number`             | `number`                 | âœ…    | Correct answers            |
+| `totalQuestions`   | `number`             | `totalAnswered: number`  | âš ï¸    | **Property name differs**  |
+| `accuracyRate`     | `number`             | `number`                 | âœ…    | 0-100 percentage           |
+| `incorrectWords`   | `Word[]`             | `IncorrectWordDetail[]`  | âš ï¸    | **Type structure differs** |
+| `leechWords`       | `Word[]`             | `LeechWordDetail[]`      | âš ï¸    | **Type structure differs** |
 | Gamification       |                      |                          |       |
-| `xpEarned`         | `number`             | `totalXP: number`        | ⚠️    | **Property name differs**  |
-| `newBadges`        | `Badge[]`            | Not present              | ⚠️    | **Missing in frontend**    |
-| `mysteryBox`       | `MysteryBox \| null` | Not present              | ⚠️    | **Missing in frontend**    |
-| `currentStreak`    | `number`             | Not present              | ⚠️    | **Missing in frontend**    |
-| `availableFreezes` | `number`             | Not present              | ⚠️    | **Missing in frontend**    |
+| `xpEarned`         | `number`             | `totalXP: number`        | âš ï¸    | **Property name differs**  |
+| `newBadges`        | `Badge[]`            | Not present              | âš ï¸    | **Missing in frontend**    |
+| `mysteryBox`       | `MysteryBox \| null` | Not present              | âš ï¸    | **Missing in frontend**    |
+| `currentStreak`    | `number`             | Not present              | âš ï¸    | **Missing in frontend**    |
+| `availableFreezes` | `number`             | Not present              | âš ï¸    | **Missing in frontend**    |
 | Frontend Only      |                      |                          |       |
-| N/A                | N/A                  | `incorrectCount: number` | ℹ️    | Derived field              |
-| N/A                | N/A                  | `leechCount: number`     | ℹ️    | Derived field              |
-| N/A                | N/A                  | `leechWordIds: string[]` | ℹ️    | Derived field              |
-| N/A                | N/A                  | `completedAt: string`    | ⚠️    | **Missing in backend**     |
+| N/A                | N/A                  | `incorrectCount: number` | â„¹ï¸    | Derived field              |
+| N/A                | N/A                  | `leechCount: number`     | â„¹ï¸    | Derived field              |
+| N/A                | N/A                  | `leechWordIds: string[]` | â„¹ï¸    | Derived field              |
+| N/A                | N/A                  | `completedAt: string`    | âš ï¸    | **Missing in backend**     |
 
-**Status**: ⚠️ **Significant Misalignments**
+**Status**: âš ï¸ **Significant Misalignments**
 
 **Issues Found**:
 
@@ -445,14 +445,14 @@ export type MysteryBox = {
 
 | Property      | Backend Type                           | Frontend Type                       | Match | Notes                   |
 | ------------- | -------------------------------------- | ----------------------------------- | ----- | ----------------------- |
-| `rewardType`  | `'xp_boost' \| 'freeze' \| 'cosmetic'` | `type: 'xp' \| 'freeze' \| 'badge'` | ⚠️    | **Value mismatch**      |
-| `rewardValue` | `number \| string`                     | `amount?: number`                   | ⚠️    | **Type & name differ**  |
-| `opened`      | `boolean`                              | Not present                         | ⚠️    | **Missing in frontend** |
+| `rewardType`  | `'xp_boost' \| 'freeze' \| 'cosmetic'` | `type: 'xp' \| 'freeze' \| 'badge'` | âš ï¸    | **Value mismatch**      |
+| `rewardValue` | `number \| string`                     | `amount?: number`                   | âš ï¸    | **Type & name differ**  |
+| `opened`      | `boolean`                              | Not present                         | âš ï¸    | **Missing in frontend** |
 | Frontend Only |                                        |                                     |       |
-| N/A           | N/A                                    | `name: string`                      | ℹ️    | UI display field        |
-| N/A           | N/A                                    | `icon: string`                      | ℹ️    | UI display field        |
+| N/A           | N/A                                    | `name: string`                      | â„¹ï¸    | UI display field        |
+| N/A           | N/A                                    | `icon: string`                      | â„¹ï¸    | UI display field        |
 
-**Status**: ⚠️ **Significant Misalignments**
+**Status**: âš ï¸ **Significant Misalignments**
 
 **Issues Found**:
 
@@ -499,18 +499,18 @@ export type DueWordsResponse = {
 
 | Property         | Type                | Notes                 |
 | ---------------- | ------------------- | --------------------- |
-| `nextReview`     | `string` (ISO 8601) | ✅ Date serialization |
-| `currentDelay`   | `number \| null`    | ✅ Nullable number    |
-| All other fields | Strings/numbers     | ✅ Aligned            |
+| `nextReview`     | `string` (ISO 8601) | âœ… Date serialization |
+| `currentDelay`   | `number \| null`    | âœ… Nullable number    |
+| All other fields | Strings/numbers     | âœ… Aligned            |
 
-**Status**: ✅ **Fully Aligned**
+**Status**: âœ… **Fully Aligned**
 
 ---
 
 ## TypeScript Compilation Check
 
 **Command**: `npx tsc --noEmit`  
-**Result**: ✅ No type errors found  
+**Result**: âœ… No type errors found  
 **Reason**: Frontend types correctly expect ISO strings; Express auto-serialization bridges the gap
 
 ---
@@ -523,25 +523,25 @@ This audit documents **all** API types referenced in [business-logic-flows.md](.
 
 | Type Name                  | Business Logic Flow                                                                                                      | Documented in Type Audit                                         | Status      |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | ----------- |
-| `QuizSessionStartResponse` | [Section 1](./story-15-11-business-logic-flows.md#1-start-quiz-session-story-1511-phase-8)                               | [Flow 1](#flow-1-start-quiz-session)                             | ✅ Complete |
-| `QuizSessionQuestion`      | [Section 1](./story-15-11-business-logic-flows.md#1-start-quiz-session-story-1511-phase-8)                               | [Flow 1](#flow-1-start-quiz-session)                             | ✅ Complete |
-| `QuizAnswerRequest`        | [Section 2](./story-15-11-business-logic-flows.md#2-submit-quiz-answer-with-integrated-ai-feedback-story-1511-phase-8-9) | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | ✅ Complete |
-| `QuizAnswerResponse`       | [Section 2.1](./story-15-11-business-logic-flows.md#21-backend-response-format-complete-answer-submission)               | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | ✅ Complete |
-| `QuizSessionSummary`       | [Section 2.3](./story-15-11-business-logic-flows.md#23-get-session-summary-flow-backend-centralized-metrics)             | [Flow 2.3](#flow-23-get-session-summary)                         | ✅ Complete |
-| `MysteryBoxReward`         | [Section 2.5](./story-15-11-business-logic-flows.md#25-mystery-box-opening-flow)                                         | [Flow 2.5](#flow-25-mystery-box-opening)                         | ✅ Complete |
-| `Badge`                    | Referenced in multiple flows                                                                                             | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | ✅ Complete |
-| `MysteryBox`               | Referenced in multiple flows                                                                                             | [Flow 2.5](#flow-25-mystery-box-opening)                         | ✅ Complete |
-| `DueWord`                  | Legacy API                                                                                                               | [Legacy Flow](#legacy-flow-get-due-words)                        | ✅ Complete |
-| `DueWordsResponse`         | Legacy API                                                                                                               | [Legacy Flow](#legacy-flow-get-due-words)                        | ✅ Complete |
-| `TestResultRequest`        | Legacy API                                                                                                               | Referenced in business-logic-flows.md                            | ✅ Complete |
-| `TestResultResponse`       | Legacy API                                                                                                               | Referenced in business-logic-flows.md                            | ✅ Complete |
+| `QuizSessionStartResponse` | [Section 1](./story-15-11-business-logic-flows.md#1-start-quiz-session-story-1511-phase-8)                               | [Flow 1](#flow-1-start-quiz-session)                             | âœ… Complete |
+| `QuizSessionQuestion`      | [Section 1](./story-15-11-business-logic-flows.md#1-start-quiz-session-story-1511-phase-8)                               | [Flow 1](#flow-1-start-quiz-session)                             | âœ… Complete |
+| `QuizAnswerRequest`        | [Section 2](./story-15-11-business-logic-flows.md#2-submit-quiz-answer-with-integrated-ai-feedback-story-1511-phase-8-9) | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | âœ… Complete |
+| `QuizAnswerResponse`       | [Section 2.1](./story-15-11-business-logic-flows.md#21-backend-response-format-complete-answer-submission)               | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | âœ… Complete |
+| `QuizSessionSummary`       | [Section 2.3](./story-15-11-business-logic-flows.md#23-get-session-summary-flow-backend-centralized-metrics)             | [Flow 2.3](#flow-23-get-session-summary)                         | âœ… Complete |
+| `MysteryBoxReward`         | [Section 2.5](./story-15-11-business-logic-flows.md#25-mystery-box-opening-flow)                                         | [Flow 2.5](#flow-25-mystery-box-opening)                         | âœ… Complete |
+| `Badge`                    | Referenced in multiple flows                                                                                             | [Flow 2](#flow-2-submit-quiz-answer-with-integrated-ai-feedback) | âœ… Complete |
+| `MysteryBox`               | Referenced in multiple flows                                                                                             | [Flow 2.5](#flow-25-mystery-box-opening)                         | âœ… Complete |
+| `DueWord`                  | Legacy API                                                                                                               | [Legacy Flow](#legacy-flow-get-due-words)                        | âœ… Complete |
+| `DueWordsResponse`         | Legacy API                                                                                                               | [Legacy Flow](#legacy-flow-get-due-words)                        | âœ… Complete |
+| `TestResultRequest`        | Legacy API                                                                                                               | Referenced in business-logic-flows.md                            | âœ… Complete |
+| `TestResultResponse`       | Legacy API                                                                                                               | Referenced in business-logic-flows.md                            | âœ… Complete |
 
 **Coverage**: 12/12 types (100%)  
-**Status**: ✅ **All types from business-logic-flows.md are documented with full property-by-property alignment checks**
+**Status**: âœ… **All types from business-logic-flows.md are documented with full property-by-property alignment checks**
 
 ### Validation Result
 
-✅ **CONFIRMED**: All type definitions in [business-logic-flows.md](./story-15-11-business-logic-flows.md) can be replaced with references to this type audit document.
+âœ… **CONFIRMED**: All type definitions in [business-logic-flows.md](./story-15-11-business-logic-flows.md) can be replaced with references to this type audit document.
 
 **Recommendation**: Update business-logic-flows.md to:
 
@@ -553,7 +553,7 @@ This audit documents **all** API types referenced in [business-logic-flows.md](.
 
 ## Alignment Summary
 
-### ✅ Fully Aligned Types
+### âœ… Fully Aligned Types
 
 1. **QuizSessionStartResponse** (Flow 1)
    - All property names and types match
@@ -568,10 +568,10 @@ This audit documents **all** API types referenced in [business-logic-flows.md](.
    - All fields aligned
    - Date serialization correct
 
-### ⚠️ Misaligned Types (Require Updates)
+### âš ï¸ Misaligned Types (Require Updates)
 
 1. **QuizAnswerResponse** (Flow 2)
-   - Property name: `nextReviewDate` → `feedback.nextReview`
+   - Property name: `nextReviewDate` â†’ `feedback.nextReview`
    - Missing: `gamification.currentStreak`
    - Nullability: `mysteryBox` inconsistent
 
@@ -585,7 +585,7 @@ This audit documents **all** API types referenced in [business-logic-flows.md](.
    - Property names: `rewardType` vs `type`, `rewardValue` vs `amount`
    - Missing: `opened` field
 
-### ℹ️ Minor Issues (Acceptable)
+### â„¹ï¸ Minor Issues (Acceptable)
 
 1. **QuizAnswer.timestamp** (Frontend only)
    - Uses `Date` type (client-side timestamp, not from API)
@@ -610,16 +610,16 @@ export type QuizAnswerResponse = {
   correct: boolean;
   correctAnswer: string;
   feedback: {
-    nextReview: string; // ❌ Should be nextReviewDate
+    nextReview: string; // âŒ Should be nextReviewDate
     lapseCount: number;
     isLeech: boolean;
   };
   gamification: {
     xpEarned: number;
     newBadges: Badge[];
-    mysteryBox: MysteryBox; // ❌ Should be MysteryBox | null
+    mysteryBox: MysteryBox; // âŒ Should be MysteryBox | null
     freezeAwarded: boolean;
-    // ❌ Missing: currentStreak
+    // âŒ Missing: currentStreak
   } | null;
   // ... rest
 };
@@ -631,15 +631,15 @@ export type QuizAnswerResponse = {
 export type QuizAnswerResponse = {
   correct: boolean;
   correctAnswer: string;
-  nextReviewDate: string; // ✅ Match backend property name
+  nextReviewDate: string; // âœ… Match backend property name
   lapseCount: number;
   isLeech: boolean;
   gamification: {
     xpEarned: number;
     newBadges: Badge[];
-    mysteryBox: MysteryBox | null; // ✅ Correct nullability
+    mysteryBox: MysteryBox | null; // âœ… Correct nullability
     freezeAwarded: boolean;
-    currentStreak: number; // ✅ Add missing field
+    currentStreak: number; // âœ… Add missing field
   } | null;
   aiFeedback: {
     explanation: string;
@@ -668,8 +668,8 @@ export type QuizSessionSummary = {
   accuracyRate: number;
   correctCount: number;
   incorrectCount: number;
-  totalAnswered: number; // ❌ Should be totalQuestions
-  totalXP: number; // ❌ Should be xpEarned
+  totalAnswered: number; // âŒ Should be totalQuestions
+  totalXP: number; // âŒ Should be xpEarned
   leechCount: number;
   leechWordIds: string[];
   leechWords: LeechWordDetail[];
@@ -686,12 +686,12 @@ export type QuizSessionSummary = {
   accuracyRate: number;
   correctCount: number;
   incorrectCount: number; // Keep (derived field acceptable)
-  totalQuestions: number; // ✅ Match backend name
-  xpEarned: number; // ✅ Match backend name
-  newBadges: Badge[]; // ✅ Add missing field
-  mysteryBox: MysteryBox | null; // ✅ Add missing field
-  currentStreak: number; // ✅ Add missing field
-  availableFreezes: number; // ✅ Add missing field
+  totalQuestions: number; // âœ… Match backend name
+  xpEarned: number; // âœ… Match backend name
+  newBadges: Badge[]; // âœ… Add missing field
+  mysteryBox: MysteryBox | null; // âœ… Add missing field
+  currentStreak: number; // âœ… Add missing field
+  availableFreezes: number; // âœ… Add missing field
   leechCount: number;
   leechWordIds: string[];
   leechWords: LeechWordDetail[];
@@ -700,7 +700,7 @@ export type QuizSessionSummary = {
 };
 ```
 
-**Impact**: Update all frontend code referencing `totalAnswered` → `totalQuestions`, `totalXP` → `xpEarned`.
+**Impact**: Update all frontend code referencing `totalAnswered` â†’ `totalQuestions`, `totalXP` â†’ `xpEarned`.
 
 #### 1.3. Fix MysteryBox Type Alignment
 
@@ -710,8 +710,8 @@ export type QuizSessionSummary = {
 
 ```typescript
 export type MysteryBox = {
-  type: "xp" | "freeze" | "badge"; // ❌ Should match backend
-  amount?: number; // ❌ Should be rewardValue
+  type: "xp" | "freeze" | "badge"; // âŒ Should match backend
+  amount?: number; // âŒ Should be rewardValue
   name: string;
   icon: string;
 } | null;
@@ -721,9 +721,9 @@ export type MysteryBox = {
 
 ```typescript
 export type MysteryBoxReward = {
-  rewardType: "xp_boost" | "freeze" | "cosmetic"; // ✅ Match backend
-  rewardValue: number | string; // ✅ Match backend (number for xp/freeze, string for cosmetic)
-  opened: boolean; // ✅ Add missing field
+  rewardType: "xp_boost" | "freeze" | "cosmetic"; // âœ… Match backend
+  rewardValue: number | string; // âœ… Match backend (number for xp/freeze, string for cosmetic)
+  opened: boolean; // âœ… Add missing field
   name: string; // Keep for UI
   icon: string; // Keep for UI
 };
@@ -738,7 +738,7 @@ export type MysteryBox = MysteryBoxReward | null;
 /**
  * Frontend representation of MysteryBox
  * Maps to backend MysteryBoxReward:
- * - type: Maps to rewardType ('xp' → 'xp_boost', 'badge' → 'cosmetic')
+ * - type: Maps to rewardType ('xp' â†’ 'xp_boost', 'badge' â†’ 'cosmetic')
  * - amount: Maps to rewardValue (number only, transform string to number)
  */
 export type MysteryBox = {
@@ -814,20 +814,20 @@ export interface QuizAnswerResponse {
 
 ### Runtime Impact
 
-**Current State**: ✅ No runtime errors  
+**Current State**: âœ… No runtime errors  
 **Reason**: TypeScript structural typing + Express serialization bridge the gaps
 
-**Post-Alignment**: ✅ Improved type safety and developer experience
+**Post-Alignment**: âœ… Improved type safety and developer experience
 
 ### Build Impact
 
-**Current**: ✅ `npm run build` succeeds  
-**Post-Update**: ✅ Will continue to succeed (compatible changes)
+**Current**: âœ… `npm run build` succeeds  
+**Post-Update**: âœ… Will continue to succeed (compatible changes)
 
 ### Developer Experience
 
-**Current**: ⚠️ Confusing property name differences (`nextReview` vs `nextReviewDate`)  
-**Post-Alignment**: ✅ Consistent naming improves code readability
+**Current**: âš ï¸ Confusing property name differences (`nextReview` vs `nextReviewDate`)  
+**Post-Alignment**: âœ… Consistent naming improves code readability
 
 ---
 
@@ -847,15 +847,15 @@ export interface QuizAnswerResponse {
 
 ### Immediate (Before Story 15.11 Completion)
 
-1. ✅ **Align QuizAnswerResponse** - Update property names (`nextReviewDate`, `currentStreak`)
-2. ✅ **Align QuizSessionSummary** - Update property names (`totalQuestions`, `xpEarned`) + add missing fields
-3. ✅ **Align MysteryBox** - Match enum values and property names with backend
+1. âœ… **Align QuizAnswerResponse** - Update property names (`nextReviewDate`, `currentStreak`)
+2. âœ… **Align QuizSessionSummary** - Update property names (`totalQuestions`, `xpEarned`) + add missing fields
+3. âœ… **Align MysteryBox** - Match enum values and property names with backend
 
 ### Future (Epic 18: .NET Backend Migration)
 
-1. 📝 **Migrate to TypeScript backend** - Full compile-time type safety
-2. 📝 **Create shared types package** - Single source of truth for API contracts
-3. 📝 **Generate types from OpenAPI** - Auto-sync frontend/backend types
+1. ðŸ“ **Migrate to TypeScript backend** - Full compile-time type safety
+2. ðŸ“ **Create shared types package** - Single source of truth for API contracts
+3. ðŸ“ **Generate types from OpenAPI** - Auto-sync frontend/backend types
 
 ---
 
@@ -870,10 +870,10 @@ export interface QuizAnswerResponse {
 
 **Frontend (TypeScript)**:
 
-- [apps/frontend/src/features/quiz/services/quizService.ts](apps/frontend/src/features/quiz/services/quizService.ts) - API type definitions
-- [apps/frontend/src/features/quiz/types/QuizTypes.ts](apps/frontend/src/features/quiz/types/QuizTypes.ts) - UI component types
-- [apps/frontend/src/features/quiz/hooks/useQuizSession.ts](apps/frontend/src/features/quiz/hooks/useQuizSession.ts) - Session hook
-- [apps/frontend/src/features/quiz/hooks/useAnswerSubmission.ts](apps/frontend/src/features/quiz/hooks/useAnswerSubmission.ts) - Answer submission hook
+- `apps/frontend/src/features/quiz/services/quizService.ts` - API type definitions
+- `apps/frontend/src/features/quiz/types/QuizTypes.ts` - UI component types
+- `apps/frontend/src/features/quiz/hooks/useQuizSession.ts` - Session hook
+- `apps/frontend/src/features/quiz/hooks/useAnswerSubmission.ts` - Answer submission hook
 
 **Architecture Documentation**:
 
@@ -885,3 +885,4 @@ export interface QuizAnswerResponse {
 - Express JSON serialization: https://expressjs.com/en/api.html#res.json
 - ISO 8601 standard: https://www.iso.org/iso-8601-date-and-time-format.html
 - TypeScript structural typing: https://www.typescriptlang.org/docs/handbook/type-compatibility.html
+

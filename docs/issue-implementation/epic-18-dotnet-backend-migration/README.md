@@ -1,4 +1,4 @@
-# Epic 18: .NET Backend Migration & Service Consolidation
+﻿# Epic 18: .NET Backend Migration & Service Consolidation
 
 ## Epic Summary
 
@@ -6,11 +6,11 @@
 
 **Key Points:**
 
-- ASP.NET Core 8 Web API with clean architecture (Controllers → Services → Repositories → Infrastructure)
+- ASP.NET Core 8 Web API with clean architecture (Controllers â†’ Services â†’ Repositories â†’ Infrastructure)
 - Entity Framework Core 8 connects to existing PostgreSQL database (shared with Node.js during migration)
 - JWT authentication compatible with Node.js tokens (same secret, HS256 algorithm) for seamless cutover
-- Service-by-service migration: Progress (learning) → TTS (Google SDK) → Conversation (Gemini) → Auth (ASP.NET Identity)
-- Blue-green deployment with traffic routing (10% → 50% → 100%) and automated rollback on error spikes
+- Service-by-service migration: Progress (learning) â†’ TTS (Google SDK) â†’ Conversation (Gemini) â†’ Auth (ASP.NET Identity)
+- Blue-green deployment with traffic routing (10% â†’ 50% â†’ 100%) and automated rollback on error spikes
 
 **Status:** Planned
 
@@ -31,27 +31,27 @@ This epic executes a gradual migration from Node.js backend to ASP.NET Core 8, p
 
 ```
 apps/backend/
-├── src/
-│   ├── controllers/          # HTTP layer
-│   ├── core/
-│   │   └── services/         # Business logic (framework-agnostic)
-│   ├── repositories/         # Data access
-│   └── routes/               # Express routes
-├── services/                 # External integrations (TTS, Gemini)
-└── prisma/                   # Database ORM
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ controllers/          # HTTP layer
+â”‚   â”œâ”€â”€ core/
+â”‚   â”‚   â””â”€â”€ services/         # Business logic (framework-agnostic)
+â”‚   â”œâ”€â”€ repositories/         # Data access
+â”‚   â””â”€â”€ routes/               # Express routes
+â”œâ”€â”€ services/                 # External integrations (TTS, Gemini)
+â””â”€â”€ prisma/                   # Database ORM
 ```
 
 **Target .NET Architecture:**
 
 ```
 apps/backend-dotnet/          # New ASP.NET Core 8 project
-├── Controllers/              # HTTP layer (ASP.NET Core MVC)
-├── Services/                 # Business logic (C# interfaces + impl)
-├── Repositories/             # Data access (EF Core)
-├── Models/                   # EF Core entities
-├── Infrastructure/           # External integrations (Google SDK)
-├── Middleware/               # JWT validation, error handling
-└── Program.cs                # Startup configuration
+â”œâ”€â”€ Controllers/              # HTTP layer (ASP.NET Core MVC)
+â”œâ”€â”€ Services/                 # Business logic (C# interfaces + impl)
+â”œâ”€â”€ Repositories/             # Data access (EF Core)
+â”œâ”€â”€ Models/                   # EF Core entities
+â”œâ”€â”€ Infrastructure/           # External integrations (Google SDK)
+â”œâ”€â”€ Middleware/               # JWT validation, error handling
+â””â”€â”€ Program.cs                # Startup configuration
 ```
 
 **Key Technical Challenges:**
@@ -64,17 +64,17 @@ apps/backend-dotnet/          # New ASP.NET Core 8 project
 
 ## Architecture Decisions
 
-1. **ASP.NET Core 8 over .NET Framework 4.8** — Cross-platform, modern async patterns, active development, free hosting options (Azure/Railway/Render); runs on Linux containers
+1. **ASP.NET Core 8 over .NET Framework 4.8** â€” Cross-platform, modern async patterns, active development, free hosting options (Azure/Railway/Render); runs on Linux containers
 
-2. **Entity Framework Core 8 over Dapper** — Easier learning curve (similar to Prisma ORM), type-safe LINQ queries, migrations management; tradeoff: 10-20% slower than Dapper (acceptable for current scale)
+2. **Entity Framework Core 8 over Dapper** â€” Easier learning curve (similar to Prisma ORM), type-safe LINQ queries, migrations management; tradeoff: 10-20% slower than Dapper (acceptable for current scale)
 
-3. **Clean Architecture pattern** — Controllers → Services → Repositories mirrors Node.js Epic 13 structure; business logic in Services layer portable to other frameworks
+3. **Clean Architecture pattern** â€” Controllers â†’ Services â†’ Repositories mirrors Node.js Epic 13 structure; business logic in Services layer portable to other frameworks
 
-4. **Service-by-service migration** — Lower risk than big bang rewrite; validates approach incrementally; allows per-service rollback; both backends run in parallel 4-8 weeks
+4. **Service-by-service migration** â€” Lower risk than big bang rewrite; validates approach incrementally; allows per-service rollback; both backends run in parallel 4-8 weeks
 
-5. **ASP.NET Identity vs Custom JWT (TBD)** — Decision deferred to Story 18.8; Identity provides full user management framework, Custom JWT lightweight but requires manual implementation
+5. **ASP.NET Identity vs Custom JWT (TBD)** â€” Decision deferred to Story 18.8; Identity provides full user management framework, Custom JWT lightweight but requires manual implementation
 
-6. **Blue-green deployment strategy** — Both backends deployed simultaneously; traffic routed via environment variable or load balancer; instant rollback on error spikes
+6. **Blue-green deployment strategy** â€” Both backends deployed simultaneously; traffic routed via environment variable or load balancer; instant rollback on error spikes
 
 ## Technical Implementation
 
@@ -82,15 +82,15 @@ apps/backend-dotnet/          # New ASP.NET Core 8 project
 
 ```
 Frontend (React + Axios)
-    ↓
+    â†“
 API Gateway / Environment Variable (USE_DOTNET_BACKEND=true/false)
-    ↓
-┌──────────────────────────────┬────────────────────────────┐
-│   Node.js Backend (Current)  │   .NET Backend (Target)    │
-│   Express + Prisma           │   ASP.NET Core + EF Core   │
-│   Port 3001                  │   Port 5000                │
-└──────────────────────────────┴────────────────────────────┘
-                    ↓
+    â†“
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚   Node.js Backend (Current)  â”‚   .NET Backend (Target)    â”‚
+â”‚   Express + Prisma           â”‚   ASP.NET Core + EF Core   â”‚
+â”‚   Port 3001                  â”‚   Port 5000                â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                    â†“
             PostgreSQL Database
             (Shared during migration)
 ```
@@ -100,44 +100,44 @@ API Gateway / Environment Variable (USE_DOTNET_BACKEND=true/false)
 ```
 Phase 1: Foundation (Stories 18.1-18.4)
     Create ASP.NET Core project
-    ↓
+    â†“
     Configure EF Core with scaffold-dbcontext (reverse engineer from PostgreSQL)
-    ↓
+    â†“
     Implement JWT validation middleware (same secret as Node.js)
-    ↓
-    Implement Progress Service in C# (ProgressController → ProgressService → ProgressRepository)
-    ↓
+    â†“
+    Implement Progress Service in C# (ProgressController â†’ ProgressService â†’ ProgressRepository)
+    â†“
     Unit tests + integration tests
-    ↓
+    â†“
     Deploy to staging, smoke tests
 
 Phase 2: Production Cutover (Story 18.5)
     Deploy .NET Progress Service to production
-    ↓
+    â†“
     Route 10% traffic to .NET (environment variable or load balancer)
-    ↓
+    â†“
     Monitor 24 hours (error rate, latency, throughput)
-    ↓
+    â†“
     Increase to 50% if stable
-    ↓
+    â†“
     Increase to 100% if stable
-    ↓
+    â†“
     Deprecate Node.js Progress Service
 
 Phase 3: Additional Services (Stories 18.6-18.8)
     Repeat Phase 1-2 for TTS Service
-    ↓
+    â†“
     Repeat Phase 1-2 for Conversation Service
-    ↓
+    â†“
     Repeat Phase 1-2 for Auth Service (most complex, last)
 
 Phase 4: Node.js Sunset (Story 18.9)
     100% traffic to .NET backend
-    ↓
+    â†“
     Archive Node.js code (git tag: nodejs-final-v1.0)
-    ↓
+    â†“
     Remove Node.js deployment from Railway/Render
-    ↓
+    â†“
     Update frontend to remove USE_DOTNET_BACKEND flag
 ```
 
@@ -172,25 +172,25 @@ Phase 4: Node.js Sunset (Story 18.9)
 
 ```
 ASP.NET Core Web API (Program.cs)
-    ↓
+    â†“
 Middleware Pipeline:
     - Exception Handler Middleware (global error handling)
     - JWT Authentication Middleware (validates httpOnly cookie)
     - CORS Middleware (allow frontend origin)
-    ↓
+    â†“
 Controllers (ProgressController, TTSController, ConversationController, AuthController)
-    ↓
+    â†“
 Services (IProgressService, ITTSService, IConversationService, IAuthService)
     - Business logic (spaced repetition, conversation validation)
     - Framework-agnostic (pure C#)
-    ↓
+    â†“
 Repositories (IProgressRepository, IUserRepository)
     - EF Core DbContext
     - LINQ queries + async/await
-    ↓
+    â†“
 PostgreSQL Database
     - Same schema as Node.js (Prisma migrations)
-    ↓
+    â†“
 External Infrastructure:
     - Google Cloud TTS (Google.Cloud.TextToSpeech NuGet package)
     - Google Cloud Storage (Google.Cloud.Storage NuGet package)
@@ -222,46 +222,46 @@ External Infrastructure:
 
 ```
 apps/backend-dotnet/
-├── Controllers/
-│   ├── ProgressController.cs
-│   ├── TTSController.cs
-│   ├── ConversationController.cs
-│   └── AuthController.cs
-├── Services/
-│   ├── IProgressService.cs
-│   ├── ProgressService.cs
-│   ├── ITTSService.cs
-│   ├── TTSService.cs
-│   ├── IConversationService.cs
-│   ├── ConversationService.cs
-│   ├── IAuthService.cs
-│   └── AuthService.cs
-├── Repositories/
-│   ├── IProgressRepository.cs
-│   ├── ProgressRepository.cs
-│   ├── IUserRepository.cs
-│   └── UserRepository.cs
-├── Models/
-│   ├── User.cs
-│   ├── Progress.cs
-│   └── StudyStreak.cs
-├── Infrastructure/
-│   ├── GoogleCloudTTSClient.cs
-│   ├── GoogleCloudStorageClient.cs
-│   └── GeminiApiClient.cs
-├── Middleware/
-│   ├── ExceptionHandlerMiddleware.cs
-│   └── JwtValidationMiddleware.cs
-├── DTOs/
-│   ├── ProgressDto.cs
-│   ├── ReviewDto.cs
-│   └── UserDto.cs
-├── Data/
-│   └── AppDbContext.cs
-├── Program.cs
-├── appsettings.json
-├── appsettings.Development.json
-└── backend-dotnet.csproj
+â”œâ”€â”€ Controllers/
+â”‚   â”œâ”€â”€ ProgressController.cs
+â”‚   â”œâ”€â”€ TTSController.cs
+â”‚   â”œâ”€â”€ ConversationController.cs
+â”‚   â””â”€â”€ AuthController.cs
+â”œâ”€â”€ Services/
+â”‚   â”œâ”€â”€ IProgressService.cs
+â”‚   â”œâ”€â”€ ProgressService.cs
+â”‚   â”œâ”€â”€ ITTSService.cs
+â”‚   â”œâ”€â”€ TTSService.cs
+â”‚   â”œâ”€â”€ IConversationService.cs
+â”‚   â”œâ”€â”€ ConversationService.cs
+â”‚   â”œâ”€â”€ IAuthService.cs
+â”‚   â””â”€â”€ AuthService.cs
+â”œâ”€â”€ Repositories/
+â”‚   â”œâ”€â”€ IProgressRepository.cs
+â”‚   â”œâ”€â”€ ProgressRepository.cs
+â”‚   â”œâ”€â”€ IUserRepository.cs
+â”‚   â””â”€â”€ UserRepository.cs
+â”œâ”€â”€ Models/
+â”‚   â”œâ”€â”€ User.cs
+â”‚   â”œâ”€â”€ Progress.cs
+â”‚   â””â”€â”€ StudyStreak.cs
+â”œâ”€â”€ Infrastructure/
+â”‚   â”œâ”€â”€ GoogleCloudTTSClient.cs
+â”‚   â”œâ”€â”€ GoogleCloudStorageClient.cs
+â”‚   â””â”€â”€ GeminiApiClient.cs
+â”œâ”€â”€ Middleware/
+â”‚   â”œâ”€â”€ ExceptionHandlerMiddleware.cs
+â”‚   â””â”€â”€ JwtValidationMiddleware.cs
+â”œâ”€â”€ DTOs/
+â”‚   â”œâ”€â”€ ProgressDto.cs
+â”‚   â”œâ”€â”€ ReviewDto.cs
+â”‚   â””â”€â”€ UserDto.cs
+â”œâ”€â”€ Data/
+â”‚   â””â”€â”€ AppDbContext.cs
+â”œâ”€â”€ Program.cs
+â”œâ”€â”€ appsettings.json
+â”œâ”€â”€ appsettings.Development.json
+â””â”€â”€ backend-dotnet.csproj
 ```
 
 ### Testing Strategy
@@ -358,15 +358,15 @@ apps/backend-dotnet/
 **Phase 2: Production Validation (Week 3)**
 
 - **Story 18.5**: Deploy Progress Service to production
-  - 10% traffic for 24 hours → monitor metrics
-  - 50% traffic for 24 hours → monitor metrics
-  - 100% traffic for 48 hours → deprecate Node.js Progress Service
+  - 10% traffic for 24 hours â†’ monitor metrics
+  - 50% traffic for 24 hours â†’ monitor metrics
+  - 100% traffic for 48 hours â†’ deprecate Node.js Progress Service
 
 **Phase 3: Additional Services (Weeks 4-5)**
 
 - **Story 18.6**: Migrate TTS Service (Google Cloud TTS C# SDK)
 - **Story 18.7**: Migrate Conversation Service (HttpClient to Gemini API)
-- Follow same cutover process (10% → 50% → 100%)
+- Follow same cutover process (10% â†’ 50% â†’ 100%)
 
 **Phase 4: Auth & Sunset (Weeks 6-7)**
 
@@ -393,7 +393,6 @@ apps/backend-dotnet/
 
 - Update `docs/architecture.md` with .NET backend architecture diagram
 - Create `docs/guides/dotnet-conventions.md` for C# coding standards
-- Update `docs/guides/backend-setup-guide.md` with .NET development setup
 - Create `docs/deployment/dotnet-deployment.md` for production deployment
 - Update API spec: `apps/backend-dotnet/docs/api-spec.md`
 
@@ -521,19 +520,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 **Related Documentation:**
 
 - [Epic 18 BR](../../business-requirements/epic-18-dotnet-backend-migration/README.md)
-- [Story 18.1 Implementation](./story-18-1-aspnet-core-setup.md)
-- [Story 18.2 Implementation](./story-18-2-ef-core-database.md)
-- [Story 18.3 Implementation](./story-18-3-jwt-authentication.md)
-- [Story 18.4 Implementation](./story-18-4-progress-service-migration.md)
-- [Story 18.5 Implementation](./story-18-5-progress-service-cutover.md)
-- [Story 18.6 Implementation](./story-18-6-tts-service-migration.md)
-- [Story 18.7 Implementation](./story-18-7-conversation-service-migration.md)
-- [Story 18.8 Implementation](./story-18-8-auth-service-migration.md)
-- [Story 18.9 Implementation](./story-18-9-nodejs-sunset.md)
+- Story 18.1 Implementation *(not yet created)*
+- Story 18.2 Implementation *(not yet created)*
+- Story 18.3 Implementation *(not yet created)*
+- Story 18.4 Implementation *(not yet created)*
+- Story 18.5 Implementation *(not yet created)*
+- Story 18.6 Implementation *(not yet created)*
+- Story 18.7 Implementation *(not yet created)*
+- Story 18.8 Implementation *(not yet created)*
+- Story 18.9 Implementation *(not yet created)*
 - [Architecture Overview](../../architecture.md)
 - [Epic 13: Production Backend Architecture](../epic-13-production-backend-architecture/README.md)
-- [Code Conventions](../../guides/code-conventions.md)
-- [.NET Migration Guide](../../guides/dotnet-migration.md)
+- [Code Conventions](../../guides/conventions/backend.md)
+- [.NET Migration Guide (Archived)](../../archive/dotnet-migration.md)
 
 ---
 
@@ -574,3 +573,4 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - [ ] Team understands EF Core migrations and LINQ queries
 - [ ] Team can debug .NET performance issues with profiler
 - [ ] Team confident in ASP.NET Core deployment pipeline
+

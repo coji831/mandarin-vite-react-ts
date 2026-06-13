@@ -154,7 +154,7 @@ Each story builds upon the previous, ensuring incremental delivery with testable
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md` for all code
+- **Conventions**: Follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md` for all code
 - **Testing**: Write integration tests for all API endpoints using supertest (minimum: happy path + 1 error case per endpoint)
 - **Database**: Use Prisma migrations for schema changes (`npx prisma migrate dev`), never modify database schema manually
 - **Environment**: Separate .env files for development, staging, production (use .env.example as template)

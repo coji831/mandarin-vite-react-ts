@@ -371,4 +371,4 @@ User authentication, API access control, mobile apps, production web apps requir
 **Related Guides:**
 
 - [Backend Architecture](./backend-architecture.md) — Auth middleware integration
-- [Database & ORM](./backend-database.md) — User model design
+- [Database & ORM](./backend-database-postgres.md) — User model design

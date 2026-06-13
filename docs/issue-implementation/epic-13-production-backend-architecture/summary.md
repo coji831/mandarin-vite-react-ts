@@ -52,21 +52,21 @@ To maintain the workspace as a single source of truth, the following updates are
 
 ### 1. Business & Implementation Docs
 
-- [x] **[Story 13.6 README](docs/issue-implementation/epic-13-production-backend-architecture/story-13-6-clean-architecture.md)**: Verified - Implementation results reflect Option B (standalone YAML).
-- [x] **Acceptance Criteria**: Confirmed - [Epic 13 README](docs/business-requirements/epic-13-production-backend-architecture/README.md) has all items checked, including Toggle Mastery API.
+- [x] **[Story 13.6 README](story-13-6-clean-architecture.md)**: Verified - Implementation results reflect Option B (standalone YAML).
+- [x] **Acceptance Criteria**: Confirmed - [Epic 13 README](../../business-requirements/epic-13-production-backend-architecture/README.md) has all items checked, including Toggle Mastery API.
 
 ### 2. Guides & Knowledge Base (KB)
 
-- [ ] **Shared Constants Guide**: Document the requirement for maintaining **`index.js`** as the source of truth and **`index.d.ts`** for types. _(No dedicated guide exists yet - consider adding to [Code Conventions](docs/guides/code-conventions.md))_
-- [x] **[Testing & ESM Guide](docs/guides/testing-guide.md)**: Added technical discovery regarding **ESM manual mocks** vs `jest.fn()`.
-- [x] **[Deployment / Troubleshooting Guide](docs/guides/troubleshooting.md)**: Added entry for **Linux Case-Sensitivity** (`ERR_MODULE_NOT_FOUND`) and the `git rm --cached` fix.
-- [x] **[Vite Configuration Guide](docs/guides/vite-configuration-guide.md)**: Added warning that Vite proxies can "mask" missing `VITE_API_URL` variables.
+- [ ] **Shared Constants Guide**: Document the requirement for maintaining **`index.js`** as the source of truth and **`index.d.ts`** for types. _(No dedicated guide exists yet - consider adding to [Code Conventions](../../guides/conventions/backend.md))_
+- [x] **[Testing & ESM Guide](../../guides/testing/backend.md)**: Added technical discovery regarding **ESM manual mocks** vs `jest.fn()`.
+- [x] **[Deployment / Troubleshooting Guide](../../guides/operations/troubleshooting.md)**: Added entry for **Linux Case-Sensitivity** (`ERR_MODULE_NOT_FOUND`) and the `git rm --cached` fix.
+- [x] **[Vite Configuration Guide](../../guides/setup/vite.md)**: Added warning that Vite proxies can "mask" missing `VITE_API_URL` variables.
 
 ### 3. High-Level Docs
 
-- [x] **[Architecture Overview](docs/architecture.md)**: Updated "Backend Architecture" section to reflect ESM-compliant JavaScript imports (using `.js` extensions) and shared constants structure.
-- [x] **Unified API Spec**: OpenAPI YAML ([openapi.yaml](apps/backend/src/api/docs/openapi.yaml)) is now the primary source of truth, accessible via Swagger UI at `/api-docs`.
-- [x] **[Environment Setup](docs/guides/environment-setup-guide.md)**: Explicitly listed `VITE_API_URL` as mandatory with warning about proxy masking.
+- [x] **[Architecture Overview](../../architecture.md)**: Updated "Backend Architecture" section to reflect ESM-compliant JavaScript imports (using `.js` extensions) and shared constants structure.
+- [x] **Unified API Spec**: OpenAPI YAML ([openapi.yaml](../../../apps/backend/src/api/docs/openapi.yaml)) is now the primary source of truth, accessible via Swagger UI at `/api-docs`.
+- [x] **[Environment Setup](../../guides/getting-started/environment-setup.md)**: Explicitly listed `VITE_API_URL` as mandatory with warning about proxy masking.
 
 **Status**: Completed  
 **Last Update**: 2026-01-23  

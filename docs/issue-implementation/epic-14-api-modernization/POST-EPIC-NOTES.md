@@ -261,8 +261,8 @@ New knowledge base articles created to capture transferable lessons:
 
 **Updated Documentation:**
 
-- [Code Conventions](../../guides/code-conventions.md) - Added "Backend Response Structure" and "Error Handling Standards" sections
-- [Testing Guide](../../guides/testing-guide.md) - Added "Aligning Mocks with Backend Behavior" subsection
+- [Code Conventions](../../guides/conventions/frontend.md) - Added "Backend Response Structure" and "Error Handling Standards" sections
+- [Testing Guide](../../guides/testing/frontend.md) - Added "Aligning Mocks with Backend Behavior" subsection
 - [Story 14.4-14.6 Implementation Docs](.) - Added Challenge 2 documenting the bug discovery
 
 ---
@@ -316,5 +316,5 @@ New knowledge base articles created to capture transferable lessons:
 
 **Guides:**
 
-- [Code Conventions](../../guides/code-conventions.md)
-- [Testing Guide](../../guides/testing-guide.md)
+- [Code Conventions](../../guides/conventions/frontend.md)
+- [Testing Guide](../../guides/testing/frontend.md)

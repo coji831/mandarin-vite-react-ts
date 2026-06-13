@@ -1,5 +1,7 @@
 # PostgreSQL Setup & Migrations
 
+**Last Updated:** June 2, 2026
+
 **When Adopted:** Epic 13
 
 ## Why
@@ -551,4 +553,4 @@ it("should return raw progress when vocabularyRepository missing", async () => {
 
 ---
 
-See also: [Cloud Database Providers](./backend-database-cloud.md), [SQLite for Local Dev](./backend-database-sqlite.md), [Supabase Setup Guide](../guides/supabase-setup-guide.md)
+See also: [Cloud Database Providers](./backend-database-cloud.md), [SQLite for Local Dev](./backend-database-sqlite.md), [Supabase Setup Guide](../guides/references/supabase-setup-guide.md)

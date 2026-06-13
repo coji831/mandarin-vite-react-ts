@@ -638,7 +638,7 @@ Interleaving should produce:
 - [Enhancements from Research](../../business-requirements/epic-15-learning-retention/enhancements-from-research.md) - Feature mapping
 - [Epic 15 BR README](../../business-requirements/epic-15-learning-retention/README.md) - Business requirements
 - [Epic 15 Implementation README](./README.md) - Technical overview
-- [Story 15.11 Final Implementation](./story-15-11-code-quality-final.md) - Code quality summary
+- [Story 15.11 Type Audit](./story-15-11-type-audit.md) - Code quality summary
 
 ---
 

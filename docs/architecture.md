@@ -3,6 +3,20 @@
 > **Purpose:** High-level system design decisions, architectural patterns, and technology choices.  
 > **For Implementation Details:** See feature-specific docs in `apps/backend/docs/` and `apps/frontend/src/features/*/docs/`.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Monorepo Structure](#monorepo-structure)
+- [Backend Architecture](#backend-architecture)
+- [Frontend Architecture](#frontend-architecture)
+- [Data Flow & Integration](#data-flow--integration)
+- [Caching Strategy](#caching-strategy)
+- [Authentication & Multi-User](#authentication--multi-user)
+- [Progress & Spaced Repetition System](#progress--spaced-repetition-system)
+- [External Services](#external-services)
+
+---
+
 ## Overview
 
 PinyinPal is a **full-stack Mandarin learning platform** built with:
@@ -36,15 +50,15 @@ mandarin-vite-react-ts/
 
 ## Backend Architecture
 
-**Pattern:** Clean Architecture with 3 layers
+**Pattern:** Clean Architecture Modular Monolith
 
-**Layer Separation:**
+**Layer Separation (Modular Monolith):**
 
-- **API Layer** (`src/api/`): Controllers, routes, middleware (HTTP concerns)
-- **Core Layer** (`src/core/`): Services, business logic (framework-agnostic)
-- **Infrastructure Layer** (`src/infrastructure/`): Repositories, external clients, caching
+- **App Layer** (`src/app/`): Entry point, DI container (`container.js`), route registration (`routes.js`)
+- **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access)
+- **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database), `middleware/`, `utils/`, `config/`
 
-**Dependency Rule:** Outer layers depend on inner (API → Core → Infrastructure, never reverse)
+**Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
 
 **Key Design Decisions:**
 
@@ -68,22 +82,35 @@ mandarin-vite-react-ts/
 **Structure:**
 
 - **Features** (`src/features/`): Self-contained modules
-  - **Mandarin**: Vocabulary learning, quiz system, conversations
-  - **Gamification**: Streaks, badges, XP progress, achievement display
-  - **Auth**: User authentication and session management
-- **Shared Components** (`src/components/`): Reusable UI primitives
-- **Routing** (`src/router/`): React Router configuration
-- **Services** (per-feature): API clients, backend integration
+  - **Auth**: User authentication and session management (LoginForm, RegisterForm, AuthContext)
+  - **Dashboard**: Learning statistics and activity overview (LeechWidget, leechService)
+  - **Gamification**: Streaks, badges, XP progress, mystery box rewards
+  - **Quiz**: Quiz system with multiple question types and progress tracking
+  - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
+- **Pages** (`src/pages/`): Route-level page orchestrators
+- **Router** (`src/router/`): React Router configuration
+- **Shared Layer** (`src/shared/`): Cross-cutting concerns
+  - **api/**: HTTP client (axiosClient, aliased as `services`)
+  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.)
+  - **config/**: Application configuration (API_CONFIG)
+  - **constants/**: Path constants, tone maps
+  - **layouts/**: AppLayout, LearnLayout, Root
 
 **State Management:**
 
-- **Pattern**: React Context + useReducer (split context for performance)
+- **Pattern**: React Context + useReducer with split contexts and reducer composition
+- **Provider Hierarchy**:
+  ```
+  BrowserRouter → AuthProvider (auth) → AppLayout → LearnLayout → ProgressProvider (quiz) + UserIdentityProvider (quiz)
+  ```
 - **Persistence**: Backend API (PostgreSQL) for progress, localStorage for device identity
 - **Architecture**: Reducer composition with normalized state shape
 
 **See detailed documentation:**
 
-- Mandarin feature design: [apps/frontend/src/features/mandarin/docs/design.md](../apps/frontend/src/features/mandarin/docs/design.md)
+- Frontend structure: [apps/frontend/README.md](../apps/frontend/README.md)
+- Feature modules: [apps/frontend/src/features/README.md](../apps/frontend/src/features/README.md)
+- Frontend development guide: [Frontend Development Guide](./guides/setup/frontend-development.md)
 
 #### Custom Data Fetching Hook
 
@@ -127,8 +154,8 @@ Controller → Service (business logic) → Repository (database)
 
 **See detailed integration:**
 
-- Vite proxy config: [docs/guides/vite-configuration-guide.md](./guides/vite-configuration-guide.md)
-- Backend setup: [docs/guides/backend-setup-guide.md](./guides/backend-setup-guide.md)
+- Vite proxy config: [Vite Setup Guide](./guides/setup/vite.md)
+- Backend setup: [Backend Development Guide](./guides/setup/backend-development.md)
 
 ## Caching Strategy
 
@@ -137,11 +164,13 @@ Controller → Service (business logic) → Repository (database)
 **Cached Resources:**
 
 - **TTS Audio**: 24-hour TTL, SHA256-keyed, Base64-encoded binary storage
-- **Conversations**: 1-hour TTL, SHA256-keyed, JSON structure with audio URLs
+- **AI Feedback**: 24-hour TTL, keyed per word+answer combination
+- **Due Words**: 5-minute TTL per user
+- **Quiz Sessions**: 24-hour TTL per user
 
 **Performance:**
 
-- **Hit Rate**: 75% (TTS), 66% (Conversations) after warmup
+- **Hit Rate**: 75% (TTS) after warmup
 - **Latency**: <20ms (cache hit) vs 1.5-5s (API call + generation)
 - **Cost Savings**: >50% reduction in Google Cloud API costs
 
@@ -149,11 +178,11 @@ Controller → Service (business logic) → Repository (database)
 
 - Redis failures return `null` (treated as cache miss)
 - Requests always complete, using live API if cache unavailable
-- Monitoring via `/api/health` endpoint exposes hit/miss metrics
+- Monitoring via `/api/v1/health` endpoint exposes hit/miss metrics
 
 **See detailed implementation:**
 
-- Redis caching guide: [docs/guides/redis-caching-guide.md](./guides/redis-caching-guide.md)
+- Redis caching guide: [Caching Patterns Guide](./guides/operations/caching-patterns.md)
 
 ## Authentication & Multi-User
 
@@ -184,7 +213,7 @@ Controller → Service (business logic) → Repository (database)
 **See detailed implementation:**
 
 - Auth system: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#authentication)
-- Environment setup: [docs/guides/environment-setup-guide.md](./guides/environment-setup-guide.md)
+- Environment setup: [Environment Setup Guide](./guides/getting-started/environment-setup.md)
 
 ## Progress & Spaced Repetition System
 
@@ -230,29 +259,29 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **See detailed documentation:**
 
-- Spaced repetition guide: [docs/guides/spaced-repetition-integration-guide.md](./guides/spaced-repetition-integration-guide.md)
+- Spaced repetition algorithm: [docs/knowledge-base/spaced-repetition-algorithms.md](./knowledge-base/spaced-repetition-algorithms.md)
 - API specification: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#progress-tracking-endpoints)
 
 ## External Services
 
 **Google Cloud Platform:**
 
-| Service             | Purpose                         | Client Location                                  | Configuration                |
-| ------------------- | ------------------------------- | ------------------------------------------------ | ---------------------------- |
-| Text-to-Speech      | Audio generation for vocabulary | `src/infrastructure/external/GoogleTTSClient.js` | `GOOGLE_TTS_CREDENTIALS_RAW` |
-| Cloud Storage (GCS) | Audio/conversation file storage | `src/infrastructure/external/GCSClient.js`       | `GCS_BUCKET_NAME`            |
-| Gemini AI           | Conversation generation         | `src/infrastructure/external/GeminiClient.js`    | `GEMINI_API_CREDENTIALS_RAW` |
+| Service             | Purpose                         | Client Location                                         | Configuration                |
+| ------------------- | ------------------------------- | ------------------------------------------------------- | ---------------------------- |
+| Text-to-Speech      | Audio generation for vocabulary | `src/shared/infrastructure/external/GoogleTTSClient.js` | `GOOGLE_TTS_CREDENTIALS_RAW` |
+| Cloud Storage (GCS) | Audio/file storage              | `src/shared/infrastructure/external/GCSClient.js`       | `GCS_BUCKET_NAME`            |
+| Gemini AI           | AI feedback & examples          | `src/shared/infrastructure/external/GeminiClient.js`    | `GEMINI_API_CREDENTIALS_RAW` |
 
 **Upstash Redis:**
 
-- **Purpose**: API response caching (TTS, conversations)
-- **Client**: `src/infrastructure/cache/RedisCacheService.js`
+- **Purpose**: API response caching (TTS, AI feedback, quiz sessions, due words)
+- **Client**: `src/shared/infrastructure/cache/CacheService.js`
 - **Configuration**: `REDIS_URL` (auto-injected by Railway)
 
 **Supabase PostgreSQL:**
 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
-- **Client**: Prisma ORM (`src/infrastructure/database/client.js`)
+- **Client**: Prisma ORM (`src/shared/infrastructure/database/client.js`)
 - **Configuration**: `DATABASE_URL`
 - **Key Tables**: `users`, `progress`, `refresh_tokens`, `QuizSession`, `QuizSessionAnswer`, `QuizSessionSummary`, `study_streaks`, `user_badges`
 
@@ -300,8 +329,8 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **See deployment guides:**
 
-- Backend: [docs/guides/backend-setup-guide.md](./guides/backend-setup-guide.md#deployment)
-- Environment variables: [docs/guides/environment-setup-guide.md](./guides/environment-setup-guide.md)
+- Backend: [Backend Development Guide](./guides/setup/backend-development.md#deployment)
+- Environment variables: [Environment Setup Guide](./guides/getting-started/environment-setup.md)
 
 ## Testing Strategy
 
@@ -317,7 +346,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - **Hook Tests**: Custom hooks with `renderHook` utility
 - **Integration Tests**: Feature flows with mocked backend
 
-**See testing guide:** [docs/guides/testing-guide.md](./guides/testing-guide.md)
+**See testing guides:** [Frontend Testing](./guides/testing/frontend.md) | [Backend Testing](./guides/testing/backend.md)
 
 ## Key Architecture Patterns
 
@@ -349,7 +378,8 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - **Business Requirements**: [docs/business-requirements/](./business-requirements/)
 - **Development Guides**: [docs/guides/](./guides/)
 - **Knowledge Base**: [docs/knowledge-base/](./knowledge-base/)
-- **Code Conventions**: [docs/guides/code-conventions.md](./guides/code-conventions.md)
+
+- **Code Conventions**: [Backend Conventions](./guides/conventions/backend.md)
 
 ---
 
@@ -360,14 +390,13 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - **Location:** `apps/frontend/src/features/word/components/WordExamplesPanel.tsx`
 - **Purpose:** Display 3–5 examples inline with on-demand TTS playback
 - **Data Flow:**
-  `      useExamples (custom hook)
-          ↓ [in-memory 60s dedupe + sessionStorage cache]
-          ↓ POST /api/examples (Story 16.1)
-   WordExamplesPanel (render list)
-          ↓ [user clicks Play]
-          ↓ GET /api/examples/audio (mocked, Story 16.3 integrates real)
-   audioService.playAudio()
-   `
+  `     useExamples (custom hook)
+       ↓ [in-memory 60s dedupe + sessionStorage cache]
+       ↓ POST /api/examples (Story 16.1)
+WordExamplesPanel (render list)
+       ↓ [user clicks Play]
+       ↓ GET /api/examples/audio (mocked, Story 16.3 integrates real)
+audioService.playAudio()`
 - **Performance:** Cached payloads <500ms (sessionStorage hit); skeleton UX reduces perceived latency
 - **Accessibility:** ARIA labels, keyboard focus, `role=list/listitem`
 - **Analytics:** Tracks `examples_shown`, `example_played` (stub service, ready for real backend)

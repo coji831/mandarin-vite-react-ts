@@ -818,11 +818,9 @@ try {
 
 ## Related Documentation
 
-**Project-Specific Guides:**
-
-- [Code Conventions - Error Handling Standards](../guides/code-conventions.md#error-handling-standards)
-- [Backend Setup Guide - Error Middleware](../guides/backend-setup-guide.md)
-- [Testing Guide - Testing Error Handling](../guides/testing-guide.md#testing-error-handling)
+- [API Client Conventions - Error Handling](../guides/conventions/api-client.md#error-handling)
+- [API Client Conventions - Error Boundaries & Recovery](../guides/conventions/api-client.md#error-boundaries-recovery)
+- [Backend Testing Guide](../guides/testing/backend.md)
 
 **Knowledge Base:**
 

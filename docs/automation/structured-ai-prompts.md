@@ -1,5 +1,7 @@
 # Structured AI Prompts Guide
 
+**Last Updated:** June 2, 2026
+
 This guide provides a systematic approach to creating effective AI prompts for this project. Using structured prompts ensures consistent, predictable results and makes collaboration more efficient.
 
 ## Prompt Structure Template
@@ -90,8 +92,8 @@ Always reference relevant guides and templates in your prompts:
 
 1. For business requirements: `docs/templates/epic-business-requirements-template.md` / `story-business-requirements-template.md`
 2. For implementation docs: `docs/templates/epic-implementation-template.md` / `story-implementation-template.md`
-3. For code conventions: `docs/guides/code-conventions.md`
-4. For SOLID principles: `docs/guides/solid-principles.md`
+3. For code conventions: `docs/guides/conventions/backend.md`
+4. For SOLID principles: `docs/knowledge-base/solid-principles.md`
 5. For workflow guidance: `.github/copilot-instructions.md`
 
 ## Epic Workflow Prompts
@@ -119,8 +121,8 @@ Ready-to-use structured prompts for full epic/story workflows. Each prompt refer
 [CONTEXT]: docs/issue-implementation/epic-8-example-new-feature/
 [PARAMETERS]:
   - Implementation template: docs/templates/epic-implementation-template.md
-  - Coding conventions: docs/guides/code-conventions.md
-  - SOLID guidance: docs/guides/solid-principles.md
+  - Coding conventions: docs/guides/conventions/backend.md
+  - SOLID guidance: docs/knowledge-base/solid-principles.md
   - Target files: e.g., src/features/<feature>/pages/NewPage.tsx, src/features/<feature>/components/*
   - Tests: Jest + React Testing Library, include smoke test and one behavior test
 [OUTPUT]: File patches (or full files) for code, tests, and updated docs; include comments referencing doc sections
@@ -151,7 +153,7 @@ Ready-to-use structured prompts for full epic/story workflows. Each prompt refer
 [TASK]: Prepare branch, commit message, and PR draft
 [CONTEXT]: Epic: docs/business-requirements/epic-8-example-new-feature/
 [PARAMETERS]:
-  - Branch name: epic-8-example-new-feature (follow docs/guides/git-convention.md)
+  - Branch name: epic-8-example-new-feature (follow docs/guides/conventions/git.md)
   - Commit message template: docs/templates/commit-message-template.md
   - PR title format: [EPIC-8] Story 8.1: Brief description
   - PR description: follow .github/PULL_REQUEST_TEMPLATE.md and include links to docs

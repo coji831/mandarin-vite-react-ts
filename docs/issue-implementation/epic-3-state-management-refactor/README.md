@@ -53,8 +53,9 @@
 
 - [React Context API Documentation](https://reactjs.org/docs/context.html)
 - [React Hooks Documentation](https://reactjs.org/docs/hooks-intro.html)
-- [Epic 2 Implementation](/docs/issue-implementation/epic-2-vocabulary-learning-flow/README.md)
-- [Team Discussion on State Management Approaches](link-to-discussion-thread)
+
+- [Epic 2 Implementation](../epic-2-vocabulary-learning-flow/README.md)
+- Team Discussion on State Management Approaches (internal)
 
 ## Results and Benefits
 
@@ -83,22 +84,18 @@
 ## Architecture Decisions
 
 1. **Custom Hook Pattern**: Create a `useMandarinProgress` hook to encapsulate all progress tracking logic
-
    - Rationale: Separates data management from UI rendering
    - Alternative considered: Higher-order components (rejected due to complexity and composition issues)
 
 2. **Context API**: Use React Context to make state and actions available throughout the component tree
-
    - Rationale: Native React solution that eliminates prop drilling
    - Alternative considered: Redux (rejected as overly complex for current requirements)
 
 3. **Separation of Concerns**: Clearly separate UI state from data/progress state
-
    - Rationale: Improves maintainability and testability
    - Alternative considered: Single state management approach (rejected due to coupling issues)
 
 4. **Zero Behavior Changes**: Refactoring should not change any user-facing behavior
-
    - Rationale: Ensures refactoring doesn't introduce regressions
    - Implementation: Comprehensive test coverage before and after changes
 
@@ -119,30 +116,29 @@
 The following key components were added or modified as part of this refactoring. For detailed implementation code, please refer to the individual story implementation documents.
 
 1. **useMandarinProgress**: New custom hook for progress tracking logic
-
    - Extracts all state and state management functions from Mandarin.tsx
    - Handles vocabulary selection, progress tracking, and section management
    - Located at `src/features/mandarin/hooks/useMandarinProgress.ts`
-   - _See [Story 3-1](./story-3-1-create-custom-progress-tracking-hook.md) for detailed implementation_
+
+   - _See [Story 3-1](./story-3-1-move-progress-logic-to-hook.md) for detailed implementation_
 
 2. **MandarinContext**: New context provider for state management
-
    - Wraps the custom hook in a React Context provider
    - Provides a consumer hook (useMandarin) for components
    - Located at `src/features/mandarin/context/MandarinContext.tsx`
-   - _See [Story 3-2](./story-3-2-implement-context-provider.md) for detailed implementation_
+
+   - _See [Story 3-2](./story-3-2-add-types-and-localstorage-to-hook.md) for detailed implementation_
 
 3. **Mandarin.tsx**: Simplified main component using hooks and context
-
    - Reduced to only handling page navigation logic
    - Wraps children with MandarinProvider
    - Located at `src/features/mandarin/pages/Mandarin.tsx`
-   - _See [Story 3-3](./story-3-3-refactor-components.md) for detailed implementation_
 
-4. **Component Updates**: Various components updated to consume context directly
-   - Components now import useMandarin() instead of receiving props
-   - Simplified props interfaces with fewer dependencies
-   - _See [Story 3-3](./story-3-3-refactor-components.md) for detailed implementation_
+   - _See [Story 3-3](./story-3-3-create-context-and-provider.md) for detailed implementation_
+   4. **Component Updates**: Various components updated to consume context directly
+      - Components now import useMandarin() instead of receiving props
+      - Simplified props interfaces with fewer dependencies
+      - _See [Story 3-3](./story-3-3-create-context-and-provider.md) for detailed implementation_
 
 ## Implementation Stories
 

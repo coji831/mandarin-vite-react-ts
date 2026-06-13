@@ -24,7 +24,7 @@ This document tracks the technical implementation for Epic 12: Conversation UI E
 
 ## Implementation Notes
 
-- All UI changes follow code conventions in `docs/guides/code-conventions.md`.
+- All UI changes follow code conventions in `docs/guides/conventions/frontend.md`.
 - State management changes follow `docs/guides/solid-principles.md` and state rules in `.github/copilot-instructions.md`.
 - API changes (if any) are documented in `api/docs/api-spec.md` and/or `local-backend/docs/api-spec.md`.
 

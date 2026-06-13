@@ -87,6 +87,6 @@ This epic is divided into stories based on the following approach:
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/frontend.md` and `docs/guides/solid-principles.md`
 - Operational notes: coordinate changes across state, components, and loaders for smooth migration
 - Links: reference implementation templates at `docs/templates/epic-implementation-template.md`

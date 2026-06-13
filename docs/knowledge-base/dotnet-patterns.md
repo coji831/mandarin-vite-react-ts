@@ -25,4 +25,4 @@ This guide will be populated after Epic 14 (.NET Backend Migration) is complete.
 **Related Guides:**
 
 - [Backend Architecture](./backend-architecture.md) — Clean Architecture applies to .NET too
-- [Database & ORM](./backend-database.md) — Compare with EF Core
+- [Database & ORM](./backend-database-postgres.md) — Compare with EF Core

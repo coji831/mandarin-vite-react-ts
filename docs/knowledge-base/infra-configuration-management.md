@@ -688,7 +688,7 @@ In Story 13.6, Prisma failed to connect during login because `DATABASE_URL` wasn
 
 ## Related Patterns
 
-- **Secret Management**: [Deployment Security](./infra-deployment.md#secrets)
+- **Secret Management**: [Deployment & Infrastructure - Environment Variables](./infra-deployment.md#environment-variables)
 - **Database Configuration**: [Backend Database Patterns](./backend-database-cloud.md)
 - **Frontend Build Config**: [Frontend Development Server](./frontend-development-server.md)
 

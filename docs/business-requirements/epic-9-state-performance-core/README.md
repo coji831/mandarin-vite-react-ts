@@ -94,7 +94,7 @@ Rationale: Group low-risk infra changes first (types, reducer) to make subsequen
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`.
+- Conventions: follow `docs/guides/conventions/frontend.md` and `docs/guides/solid-principles.md`.
 - Operational notes: Prefer staged rollouts and feature-branch deployments for verification in staging; convert consumers incrementally to the new hooks.
 - Links: Use templates in `docs/templates/` for PR and design files. Reference the consolidated epic docs in `docs/business-requirements/`.
 - Implementation details and the verified missing-scope checklist live in the implementation README: `docs/issue-implementation/epic-9-state-performance-core/README.md` (see the "Missing scope (source scan)" section there). Reviewers should confirm PRs include the relevant files listed in that section; implementers may optionally extract the list into a separate implementation file in their PR if desired, but it is not required by this epic.

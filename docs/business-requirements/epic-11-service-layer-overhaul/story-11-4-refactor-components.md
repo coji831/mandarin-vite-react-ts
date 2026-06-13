@@ -1,4 +1,4 @@
-# Story 11.4: Refactor Components to Use Services
+﻿# Story 11.4: Refactor Components to Use Services
 
 ## Description
 
@@ -24,8 +24,8 @@ Refactoring all components to use the new service layer ensures maintainability,
 ## Related Issues
 
 - [Epic 11](./README.md) (parent epic)
-- [Story 11.2](./story-11.2-vocab-data-service.md) (vocab data service)
-- [Story 11.3](./story-11.3-audio-service.md) (audio service)
+- [Story 11.2](./story-11-2-vocab-data-service.md) (vocab data service)
+- [Story 11.3](./story-11-3-audio-service.md) (audio service)
 
 ## Implementation Status
 
@@ -37,3 +37,4 @@ Refactoring all components to use the new service layer ensures maintainability,
 ---
 
 _Last updated: 2025-11-10_
+

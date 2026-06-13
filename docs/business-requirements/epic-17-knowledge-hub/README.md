@@ -1,4 +1,4 @@
-# Epic 17: Basic Knowledge Resources
+﻿# Epic 17: Basic Knowledge Resources
 
 ## Epic Summary
 
@@ -22,11 +22,11 @@ The current platform focuses exclusively on vocabulary learning through flashcar
 
 **Current Gaps:**
 
-- **No character composition explanations**: Users see 明 but don't know it's 日+月 (sun + moon)
+- **No character composition explanations**: Users see æ˜Ž but don't know it's æ—¥+æœˆ (sun + moon)
 - **No pinyin reference**: Beginners struggle with initials, finals, tone marks without guide
 - **No stroke order visualization**: Users can't learn proper handwriting technique
 - **No grammar pattern library**: Users lack sentence structure templates for production
-- **No idiom context**: Users encounter 马马虎虎 but don't know cultural meaning
+- **No idiom context**: Users encounter é©¬é©¬è™Žè™Ž but don't know cultural meaning
 
 **User Pain Points:**
 
@@ -37,9 +37,9 @@ The current platform focuses exclusively on vocabulary learning through flashcar
 
 **Business Impact:**
 
-- Incomplete learning experience → users seek external resources (lower engagement)
-- No SEO content → missed organic traffic from educational searches
-- Competitors offer comprehensive reference sections → perceived feature gap
+- Incomplete learning experience â†’ users seek external resources (lower engagement)
+- No SEO content â†’ missed organic traffic from educational searches
+- Competitors offer comprehensive reference sections â†’ perceived feature gap
 
 **Market Research:**
 
@@ -53,22 +53,22 @@ This epic addresses these gaps by creating a comprehensive Knowledge Hub with st
 
 This epic consists of the following user stories:
 
-1. [**Story 17.1: Knowledge Hub Structure**](./story-17-1-knowledge-hub-structure.md)
+1. **Story 17.1: Knowledge Hub Structure** *(not yet created)*
    - As a **frontend developer**, I want to **scaffold the Knowledge Hub feature folder and navigation**, so that **reference materials are organized and accessible from the main menu**.
 
-2. [**Story 17.2: Character Composition (Radicals)**](./story-17-2-character-composition-radicals.md)
+2. **Story 17.2: Character Composition (Radicals)** *(not yet created)*
    - As a **learner**, I want to **see how Chinese characters are composed from radicals**, so that **I understand character meanings and can remember them more easily**.
 
-3. [**Story 17.3: Pinyin System Guide**](./story-17-3-pinyin-system-guide.md)
+3. **Story 17.3: Pinyin System Guide** *(not yet created)*
    - As a **learner**, I want to **access an interactive pinyin reference with tone examples**, so that **I can master correct pronunciation and tone distinctions**.
 
-4. [**Story 17.4: Stroke Order Animations**](./story-17-4-stroke-order-animations.md)
+4. **Story 17.4: Stroke Order Animations** *(not yet created)*
    - As a **learner**, I want to **watch animated stroke order demonstrations**, so that **I can learn proper handwriting technique for common characters**.
 
-5. [**Story 17.5: Grammar Patterns Library**](./story-17-5-grammar-patterns-library.md)
+5. **Story 17.5: Grammar Patterns Library** *(not yet created)*
    - As a **learner**, I want to **reference common sentence patterns with examples**, so that **I can construct grammatically correct sentences in Mandarin**.
 
-6. [**Story 17.6: Idiom (Chengyu) Database**](./story-17-6-idiom-chengyu-database.md)
+6. **Story 17.6: Idiom (Chengyu) Database** *(not yet created)*
    - As a **learner**, I want to **explore common Chinese idioms with etymologies**, so that **I understand cultural context and figurative meanings beyond literal translations**.
 
 ## Story Breakdown Logic
@@ -86,10 +86,10 @@ Each story delivers standalone value and can be deployed independently.
 - [ ] Knowledge Hub accessible from main navigation menu
 - [ ] `/knowledge` route renders Knowledge Hub landing page
 - [ ] Radical database covers all 214 Kangxi radicals with English meanings
-- [ ] Radical breakdown interactive (click radical → see other characters using it)
+- [ ] Radical breakdown interactive (click radical â†’ see other characters using it)
 - [ ] Pinyin guide includes interactive tone chart with audio examples
-- [ ] Tone chart plays audio for each of 4 tones + neutral tone (ma¹ ma² ma³ ma⁴ ma)
-- [ ] Tone change rules documented (3rd tone sandhi, 一/不 tone changes)
+- [ ] Tone chart plays audio for each of 4 tones + neutral tone (maÂ¹ maÂ² maÂ³ maâ´ ma)
+- [ ] Tone change rules documented (3rd tone sandhi, ä¸€/ä¸ tone changes)
 - [ ] Stroke order animations cover 100 most common HSK 1-2 characters
 - [ ] Stroke animations have playback controls (play, pause, loop, speed)
 - [ ] Grammar pattern library includes 20 common structures with 3+ examples each
@@ -132,7 +132,7 @@ Each story delivers standalone value and can be deployed independently.
 7. Create `RadicalBreakdown.tsx` component with interactive character decomposition
 8. Create `pinyin-guide.json` with initials, finals, tone rules
 9. Create `ToneChart.tsx` interactive component with audio playback
-10. Record or generate TTS for tone examples (ma¹ ma² ma³ ma⁴ ma)
+10. Record or generate TTS for tone examples (maÂ¹ maÂ² maÂ³ maâ´ ma)
 11. Source stroke order SVGs from Wikimedia Commons (CC-licensed)
 12. Create `StrokeAnimation.tsx` component with playback controls
 13. Curate 20 grammar patterns from open textbooks (cite sources)
@@ -148,29 +148,29 @@ Each story delivers standalone value and can be deployed independently.
 
 ## Risks & Mitigations
 
-- **Risk: Content curation takes longer than development (10+ hours)** — Severity: Medium
+- **Risk: Content curation takes longer than development (10+ hours)** â€” Severity: Medium
   - **Mitigation**: Start with 50% content (10 patterns, 25 idioms); iterate based on usage; crowdsource community contributions
   - **Rollback**: Launch with partial content; add "Coming Soon" placeholders
 
-- **Risk: SVG animations load slowly on mobile devices** — Severity: Medium
+- **Risk: SVG animations load slowly on mobile devices** â€” Severity: Medium
   - **Mitigation**: Lazy load animations (render only when in viewport); compress SVG files with SVGO; limit animations to 50 strokes max
   - **Rollback**: Replace SVGs with static images; remove animation feature
 
-- **Risk: Attribution requirements create legal issues** — Severity: Low
+- **Risk: Attribution requirements create legal issues** â€” Severity: Low
   - **Mitigation**: Document all sources in `docs/knowledge-base/content-sources.md`; include attribution in UI; use only CC-BY or public domain content
   - **Rollback**: Remove content without clear licensing; replace with proprietary content
 
-- **Risk: Users don't discover Knowledge Hub (low traffic)** — Severity: Medium
+- **Risk: Users don't discover Knowledge Hub (low traffic)** â€” Severity: Medium
   - **Mitigation**: Add prominent navigation link; contextual links from flashcards ("Learn about radicals"); onboarding tour highlighting Knowledge Hub
   - **Rollback**: Integrate knowledge inline into vocabulary views
 
-- **Risk: Content becomes outdated (grammar rules change, broken links)** — Severity: Low
+- **Risk: Content becomes outdated (grammar rules change, broken links)** â€” Severity: Low
   - **Mitigation**: Annual content review process; user reporting feature for errors; version control for content files
   - **Rollback**: Archive outdated content; link to external authoritative sources
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- **Conventions**: Follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - **Content sources**: Document all sources and licenses in `docs/knowledge-base/content-sources.md`; ensure CC-BY or public domain only
 - **Static content**: Store JSON files in `public/data/knowledge/` (no backend API needed)
 - **SVG animations**: Compress with SVGO tool; lazy load with Intersection Observer
@@ -182,10 +182,11 @@ Each story delivers standalone value and can be deployed independently.
 **Related Documentation:**
 
 - [Epic 17 Implementation](../../issue-implementation/epic-17-knowledge-hub/README.md)
-- [Story 17.1 BR](./story-17-1-knowledge-hub-structure.md)
-- [Story 17.2 BR](./story-17-2-character-composition-radicals.md)
-- [Story 17.3 BR](./story-17-3-pinyin-system-guide.md)
-- [Story 17.4 BR](./story-17-4-stroke-order-animations.md)
-- [Story 17.5 BR](./story-17-5-grammar-patterns-library.md)
-- [Story 17.6 BR](./story-17-6-idiom-chengyu-database.md)
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
+- Story BR *(not yet created)*
 - [Architecture Overview](../../architecture.md)
+

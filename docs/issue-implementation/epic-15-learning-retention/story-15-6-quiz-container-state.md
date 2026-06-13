@@ -1,4 +1,4 @@
-# Implementation 15-6: Quiz Container & State Management
+﻿# Implementation 15-6: Quiz Container & State Management
 
 ## Technical Scope
 
@@ -14,7 +14,7 @@ Implement quiz state machine and interleaving logic using React reducer pattern.
 
 **State Machine Phases:**
 
-- LOADING → QUESTION → ANSWER_FEEDBACK → NEXT | COMPLETE
+- LOADING â†’ QUESTION â†’ ANSWER_FEEDBACK â†’ NEXT | COMPLETE
 
 **Interleaving Algorithm:**
 
@@ -144,9 +144,9 @@ import { QuizProgressBar } from '../components/QuizProgressBar';
 import { createInterleavedQuestions } from '../utils/interleaving';
 
 const MOCK_DUE_WORDS = [
-  { id: '1', chinese: '你好', pinyin: 'nǐhǎo', english: 'hello' },
-  { id: '2', chinese: '谢谢', pinyin: 'xièxie', english: 'thank you' },
-  { id: '3', chinese: '再见', pinyin: 'zàijiàn', english: 'goodbye' }
+  { id: '1', chinese: 'ä½ å¥½', pinyin: 'nÇhÇŽo', english: 'hello' },
+  { id: '2', chinese: 'è°¢è°¢', pinyin: 'xiÃ¨xie', english: 'thank you' },
+  { id: '3', chinese: 'å†è§', pinyin: 'zÃ ijiÃ n', english: 'goodbye' }
 ];
 
 export const DailyReviewTest: React.FC = () => {
@@ -228,7 +228,7 @@ export const DailyReviewTest: React.FC = () => {
 
       {state.phase === 'ANSWER_FEEDBACK' && (
         <div className="feedback">
-          {state.answers[state.answers.length - 1].correct ? '✅ Correct!' : '❌ Incorrect'}
+          {state.answers[state.answers.length - 1].correct ? 'âœ… Correct!' : 'âŒ Incorrect'}
         </div>
       )}
     </div>
@@ -267,17 +267,17 @@ export const QuizProgressBar: React.FC<QuizProgressBarProps> = ({ current, total
 
 ```
 DailyReviewTest Container
-    ↓
+    â†“
 Initialize: createInterleavedQuestions(MOCK_WORDS)
-    ↓
+    â†“
 State machine: quizReducer manages phases
-    ↓
+    â†“
 Render: QuizCard (Story 15.5) + TypeAnswerInput (Story 15.5)
-    ↓
-User answers → validate → dispatch SUBMIT_ANSWER → show feedback
-    ↓
-Auto-advance after 1.5s → dispatch NEXT_QUESTION
-    ↓
+    â†“
+User answers â†’ validate â†’ dispatch SUBMIT_ANSWER â†’ show feedback
+    â†“
+Auto-advance after 1.5s â†’ dispatch NEXT_QUESTION
+    â†“
 Complete: show summary with accuracy
 ```
 
@@ -327,10 +327,10 @@ function QuizComplete({ answers }: QuizCompleteProps) {
 
 **Solution**: Converted all quiz components to regular CSS:
 
-- Renamed: `.module.css` → `.css`
+- Renamed: `.module.css` â†’ `.css`
 - Updated imports: `import './Component.css'`
-- Changed class references: `className={styles.x}` → `className="x"`
-- Updated tests: `[class*="className"]` → `.className`
+- Changed class references: `className={styles.x}` â†’ `className="x"`
+- Updated tests: `[class*="className"]` â†’ `.className`
 
 **Impact**:
 
@@ -447,7 +447,7 @@ return words.map((word) => {
 - [Story 15.6 BR](../../business-requirements/epic-15-learning-retention/story-15-6-quiz-container-state.md)
 - [Story 15.5 Implementation](./story-15-5-core-quiz-ui-components.md)
 - [Epic 15 Implementation](./README.md)
-- [Refactoring Review](./REFACTORING-REVIEW-15-6.md)
+- Refactoring Review *(archived document)*
 
 ---
 
@@ -481,28 +481,28 @@ quiz/
 
 ```typescript
 // quizReducer.test.ts
-✓ INITIALIZE_QUIZ transitions to QUESTION phase
-✓ SUBMIT_ANSWER stores answer, transitions to ANSWER_FEEDBACK
-✓ NEXT_QUESTION increments index or completes quiz
-✓ COMPLETE_QUIZ sets phase to COMPLETE
-✓ Unknown actions return unchanged state
-✓ Phase transitions enforce state machine rules
+âœ“ INITIALIZE_QUIZ transitions to QUESTION phase
+âœ“ SUBMIT_ANSWER stores answer, transitions to ANSWER_FEEDBACK
+âœ“ NEXT_QUESTION increments index or completes quiz
+âœ“ COMPLETE_QUIZ sets phase to COMPLETE
+âœ“ Unknown actions return unchanged state
+âœ“ Phase transitions enforce state machine rules
 ```
 
 **Interleaving Tests** (10 tests - 100% coverage):
 
 ```typescript
 // interleaving.test.ts
-✓ Creates questions for all input words
-✓ Assigns independent random mode per word
-✓ Generates 4 options for multiple choice (3 wrong + 1 correct)
-✓ Shuffles correct answer position
-✓ Per-word randomization (not blocked practice)
-✓ Handles single word edge case
-✓ Handles insufficient distractors
-✓ Mode distribution across all types
-✓ Distractor uniqueness
-✓ Option array shuffling
+âœ“ Creates questions for all input words
+âœ“ Assigns independent random mode per word
+âœ“ Generates 4 options for multiple choice (3 wrong + 1 correct)
+âœ“ Shuffles correct answer position
+âœ“ Per-word randomization (not blocked practice)
+âœ“ Handles single word edge case
+âœ“ Handles insufficient distractors
+âœ“ Mode distribution across all types
+âœ“ Distractor uniqueness
+âœ“ Option array shuffling
 ```
 
 ### Component Test Patterns
@@ -511,12 +511,12 @@ quiz/
 
 ```typescript
 // QuizComplete.test.tsx
-✓ Renders completion message
-✓ Displays correct count and total
-✓ Calculates accuracy percentage correctly
-✓ Renders retry button with correct handler
-✓ Handles empty answers array (0% accuracy)
-✓ Handles perfect score (100% accuracy)
+âœ“ Renders completion message
+âœ“ Displays correct count and total
+âœ“ Calculates accuracy percentage correctly
+âœ“ Renders retry button with correct handler
+âœ“ Handles empty answers array (0% accuracy)
+âœ“ Handles perfect score (100% accuracy)
 
 // Key pattern: Test props-driven rendering (presentational component)
 ```
@@ -525,11 +525,11 @@ quiz/
 
 ```typescript
 // QuizProgressBar.test.tsx
-✓ Renders current/total text
-✓ Calculates percentage: (current / total) * 100
-✓ Handles 0% edge case
-✓ Handles 100% edge case
-✓ Applies correct CSS classes
+âœ“ Renders current/total text
+âœ“ Calculates percentage: (current / total) * 100
+âœ“ Handles 0% edge case
+âœ“ Handles 100% edge case
+âœ“ Applies correct CSS classes
 ```
 
 ### Integration Test Strategy
@@ -538,11 +538,11 @@ quiz/
 
 ```typescript
 // DailyReviewQuiz.test.tsx
-✓ Initializes with first question after mount
-✓ Displays progress bar with correct count (1 / 4)
-✓ Shows feedback after answering
-✓ Verifies quiz structure (no premature completion UI)
-✓ Has all required UI elements present
+âœ“ Initializes with first question after mount
+âœ“ Displays progress bar with correct count (1 / 4)
+âœ“ Shows feedback after answering
+âœ“ Verifies quiz structure (no premature completion UI)
+âœ“ Has all required UI elements present
 
 // Strategy: Mock child components to isolate container logic
 // Reducer tests already verify state machine correctness
@@ -590,7 +590,7 @@ import "@testing-library/jest-dom";
 ## Implementation Status
 
 **Completed**: February 13, 2026  
-**Status**: ✅ Completed  
+**Status**: âœ… Completed  
 **Last Update**: February 13, 2026
 
 **Metrics**:
@@ -605,13 +605,14 @@ import "@testing-library/jest-dom";
 **Refactoring Summary** (February 13, 2026):
 
 - Reorganized test structure (feature-based folders)
-- Converted React.FC → named functions
-- Changed interfaces → types
-- Removed CSS Modules (→ regular CSS)
+- Converted React.FC â†’ named functions
+- Changed interfaces â†’ types
+- Removed CSS Modules (â†’ regular CSS)
 - Applied barrel file imports
-- Renamed DailyReviewTest → DailyReviewQuiz
+- Renamed DailyReviewTest â†’ DailyReviewQuiz
 - Extracted QuizLoading component (17 lines + 10 CSS + 3 tests)
 - Fixed QuizComplete state bug (critical - was returning 0/0 always)
 - Extracted all inline styles to CSS files (46 + 30 lines)
 
-See [REFACTORING-REVIEW-15-6.md](./REFACTORING-REVIEW-15-6.md) for detailed refactoring documentation.
+See `REFACTORING-REVIEW-15-6.md` *(archived document)* for detailed refactoring documentation.
+

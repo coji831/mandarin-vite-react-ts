@@ -8,7 +8,7 @@ This plan focuses on the work required to keep the legacy `useProgressData` beha
 - Keep the old in-memory data types where practical (notably `masteredProgress: { [listId: string]: Set<string> }`).
 - Enforce TypeScript typing for the new compatibility slice and serialization helpers.
 - Implement a compatibility layer in the provider and hooks so migration is non-breaking.
-- Follow the project's code conventions (see `docs/guides/code-conventions.md`) for naming, typing, file layout and patterns.
+- Follow the project's code conventions (see `docs/guides/conventions/backend.md`) for naming, typing, file layout and patterns.
 
 ## Implementation checklist (high level)
 
@@ -126,7 +126,7 @@ Phase C — Optional mirroring & cleanup (higher risk)
 - Keep all new code strictly typed and import types from centralized files.
 - Avoid changing consumer code in this migration — keep all changes internal to provider/hooks/reducers.
 
-- Code conventions: All new files and edits must follow the rules in `docs/guides/code-conventions.md` (TypeScript usage, naming, explicit types, no `any`, hook and filename conventions, etc.).
+- Code conventions: All new files and edits must follow the rules in `docs/guides/conventions/backend.md` (TypeScript usage, naming, explicit types, no `any`, hook and filename conventions, etc.).
 
 ---
 

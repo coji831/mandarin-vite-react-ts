@@ -1,5 +1,7 @@
 # Gamification Psychology in Learning Applications
 
+**Last Updated:** June 2, 2026
+
 **Summary**: Exploration of behavioral economics and psychological principles behind gamification in educational software, with focus on ethical implementation that sustains motivation without manipulation.
 
 **Key Concepts**: Loss aversion, variable rewards, dopamine loops, intrinsic vs extrinsic motivation, Octalysis framework

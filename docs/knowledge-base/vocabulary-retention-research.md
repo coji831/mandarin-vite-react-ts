@@ -1,5 +1,7 @@
 # **Integrated Design Strategies for Mandarin Vocabulary Retention: A Multi-Modal UX Framework**
 
+**Last Updated:** June 2, 2026
+
 The mastery of Mandarin Chinese represents one of the most significant cognitive undertakings for language learners, primarily due to the intricate relationship between phonemic tonality, logographic character structures, and the sheer volume of lexical items required for functional fluency. In the contemporary landscape of computer-assisted language learning (CALL), the transition from passive recognition to active production is the primary bottleneck for sustained proficiency. The development of a retention-focused exam feature necessitates a multidisciplinary approach, synthesizing principles from cognitive psychology, computational linguistics, and behavioral economics. By prioritizing active recall, leveraging high-precision spaced repetition algorithms like the Free Spaced Repetition Scheduler (FSRS), and implementing ethically grounded gamification frameworks, designers can construct an ecosystem that not only accelerates acquisition but also mitigates the attrition commonly associated with the long-term study of Sinitic languages.1
 
 ## **Cognitive Foundations of Active Recall and Desirable Difficulty**

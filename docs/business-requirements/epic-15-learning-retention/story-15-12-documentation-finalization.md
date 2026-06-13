@@ -51,7 +51,7 @@ Epic 15 has delivered a complete learning retention system across 11 stories, bu
 
 ## Business Rules
 
-1. **Code Quality Standards**: All Epic 15 code must pass ESLint with 0 warnings before marking story complete; unused imports/variables removed via IDE refactoring; duplicate logic extracted to shared utilities (`src/utils/` or feature-level `utils/`); follow `docs/guides/code-conventions.md` strictly.
+1. **Code Quality Standards**: All Epic 15 code must pass ESLint with 0 warnings before marking story complete; unused imports/variables removed via IDE refactoring; duplicate logic extracted to shared utilities (`src/utils/` or feature-level `utils/`); follow `docs/guides/conventions/frontend.md` strictly.
 
 2. **Documentation Accuracy Requirements**: Story BRs must reflect actual implementation (no "planned" features marked complete); AC checked only if fully implemented and tested; implementation docs must include all technical challenges encountered (>1 hour debugging, architectural decisions); no placeholder or "TBD" content in final docs.
 

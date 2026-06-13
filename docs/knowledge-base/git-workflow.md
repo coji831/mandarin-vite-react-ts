@@ -11,7 +11,7 @@ This project follows **Conventional Commits** and a feature-branch workflow.
 
 **Key Files:**
 
-- [Git Convention Guide](../guides/git-convention.md) - Full reference
+- [Git Convention Guide](../guides/conventions/git.md) - Full reference
 - [Commit Message Template](../templates/commit-message-template.md) - Examples
 
 ---
@@ -414,12 +414,10 @@ git lg                           # Pretty log
 ## Next Steps
 
 - [Commit Message Template](../templates/commit-message-template.md) - More examples
-- [Git Convention Guide](../guides/git-convention.md) - Full reference
-- [Business Requirements Format](../guides/business-requirements-format-guide.md) - Epic/story structure
+- [Git Convention Guide](../guides/conventions/git.md) - Full reference
+- [Documentation Patterns](./documentation-patterns.md) - Epic/story structure
 
 ---
 
-**Related Guides:**
-
-- [Testing Setup](./testing-setup.md) - Run tests before committing
-- [Linting Setup](./linting-setup.md) - Check code quality
+- [Testing Setup](../guides/testing/frontend.md) - Run tests before committing
+- [Linting Setup](../guides/setup/linting.md) - Check code quality

@@ -1,4 +1,4 @@
-# Epic 19: State Management Refactor (Deferred)
+﻿# Epic 19: State Management Refactor (Deferred)
 
 ## Epic Summary
 
@@ -8,7 +8,7 @@
 
 - Current Context + Reducer architecture following best practices with no significant issues
 - Zustand migration provides DevTools, simpler API, but requires rewriting 500+ lines of state logic
-- Incremental migration strategy (`ui` → `user` → `lists`) minimizes risk but blocks feature work during migration window
+- Incremental migration strategy (`ui` â†’ `user` â†’ `lists`) minimizes risk but blocks feature work during migration window
 - Decision gate in Story 19.1 validates triggers met before proceeding with actual migration
 - Reducer logic (pure functions) highly portable to Zustand stores (95% code reusable with minor syntax changes)
 
@@ -67,13 +67,13 @@ export const useListsStore = create(
 
 **[CONDITIONAL - Only relevant if migration triggered]**
 
-1. **Zustand over Redux Toolkit** — Simpler API (no slices/thunks), smaller bundle (~1KB vs. 15KB), excellent TypeScript inference; tradeoff: less ecosystem maturity than Redux
+1. **Zustand over Redux Toolkit** â€” Simpler API (no slices/thunks), smaller bundle (~1KB vs. 15KB), excellent TypeScript inference; tradeoff: less ecosystem maturity than Redux
 
-2. **Slice-by-slice migration** — Lower risk (rollback per slice), validates approach incrementally; tradeoff: both patterns coexist for 2-3 weeks during migration
+2. **Slice-by-slice migration** â€” Lower risk (rollback per slice), validates approach incrementally; tradeoff: both patterns coexist for 2-3 weeks during migration
 
-3. **Maintain API surface** — Components use same hooks (`useListsState`, `useListsActions`); Zustand stores export compatible selectors; tradeoff: wrapper layer adds slight overhead
+3. **Maintain API surface** â€” Components use same hooks (`useListsState`, `useListsActions`); Zustand stores export compatible selectors; tradeoff: wrapper layer adds slight overhead
 
-4. **DevTools middleware** — Enable Redux DevTools extension for time-travel debugging; tradeoff: 2KB bundle increase, minimal performance overhead
+4. **DevTools middleware** â€” Enable Redux DevTools extension for time-travel debugging; tradeoff: 2KB bundle increase, minimal performance overhead
 
 ## Technical Implementation
 
@@ -83,14 +83,14 @@ export const useListsStore = create(
 
 ```
 Context + Reducer (Current)
-    ListsContext.tsx → listsReducer.ts → Components
-    UserContext.tsx → userReducer.ts → Components
-    UIContext.tsx → uiReducer.ts → Components
+    ListsContext.tsx â†’ listsReducer.ts â†’ Components
+    UserContext.tsx â†’ userReducer.ts â†’ Components
+    UIContext.tsx â†’ uiReducer.ts â†’ Components
 
 Zustand (Target)
-    listsStore.ts (DevTools middleware) → Components
-    userStore.ts (DevTools middleware) → Components
-    uiStore.ts (DevTools middleware) → Components
+    listsStore.ts (DevTools middleware) â†’ Components
+    userStore.ts (DevTools middleware) â†’ Components
+    uiStore.ts (DevTools middleware) â†’ Components
 ```
 
 **Migration Flow (per slice):**
@@ -108,7 +108,7 @@ Zustand (Target)
 
 ### API Endpoints
 
-**No backend changes** — State management refactor is frontend-only.
+**No backend changes** â€” State management refactor is frontend-only.
 
 ### Component Relationships
 
@@ -231,7 +231,7 @@ App.tsx
 
 ### Documentation Updates
 
-- Update `docs/guides/code-conventions.md` with Zustand patterns
+- Update `docs/guides/conventions/frontend.md` with Zustand patterns
 - Update `docs/architecture.md` with state management section
 - Create migration guide: `docs/guides/zustand-migration-guide.md`
 
@@ -270,18 +270,18 @@ export const useListsStore = create(
 );
 ```
 
-**Reduction:** ~30% less boilerplate (48 lines → 15 lines)
+**Reduction:** ~30% less boilerplate (48 lines â†’ 15 lines)
 
 ---
 
 **Related Documentation:**
 
 - [Epic 19 BR](../../business-requirements/epic-19-state-refactor/README.md)
-- [Story 19.1 Implementation](./story-19-1-zustand-assessment.md)
-- [Story 19.2 Implementation](./story-19-2-migrate-ui-slice.md)
-- [Story 19.3 Implementation](./story-19-3-migrate-user-slice.md)
-- [Story 19.4 Implementation](./story-19-4-migrate-lists-slice.md)
-- [Code Conventions](../../guides/code-conventions.md)
+- Story 19.1 Implementation *(not yet created)*
+- Story 19.2 Implementation *(not yet created)*
+- Story 19.3 Implementation *(not yet created)*
+- Story 19.4 Implementation *(not yet created)*
+- [Code Conventions](../../guides/conventions/frontend.md)
 - [Architecture Overview](../../architecture.md)
 
 ---
@@ -302,3 +302,4 @@ export const useListsStore = create(
 - Q4 2026 (December): Annual architecture review
 
 **Contact:** Tech lead before starting Story 19.1 assessment.
+

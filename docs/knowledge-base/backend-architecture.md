@@ -64,15 +64,21 @@ app.post("/api/progress", async (req, res) => {
 ### Folder Structure
 
 ```
-backend/
-├── controllers/       # HTTP handlers (Express routes)
-│   └── progressController.ts
-├── services/          # Business logic
-│   └── progressService.ts
-├── repositories/      # Database access
-│   └── progressRepository.ts
-└── types/
-    └── dto.ts         # Data Transfer Objects
+src/
+├── app/                    # Entry point, DI container, routes
+│   ├── index.js
+│   ├── container.js
+│   └── routes.js
+├── modules/<name>/         # Per-module: api/, services/, repositories/
+│   ├── api/                #   controllers + routes
+│   ├── services/           #   business logic
+│   ├── repositories/       #   data access
+│   └── __tests__/          #   unit/integration tests
+└── shared/                 # Cross-cutting concerns
+    ├── config/index.js
+    ├── infrastructure/     #   external clients, cache, Redis, security
+    ├── middleware/          #   asyncHandler, auth, cache, errorHandler
+    └── utils/              #   logger, errorFactory, hashUtils
 ```
 
 ### Key Lessons
@@ -529,6 +535,6 @@ app.use(cors({ ... }));  // Automatically handles preflight
 
 **Related Guides:**
 
-- [Database & ORM](./backend-database.md) — Prisma repository pattern
+- [Database & ORM](./backend-database-postgres.md) — Prisma repository pattern
 - [Authentication](./backend-authentication.md) — Auth middleware
 - [Frontend Development Server](./frontend-development-server.md) — Dev proxy patterns

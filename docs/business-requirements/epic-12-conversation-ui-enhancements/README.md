@@ -108,5 +108,5 @@ Stories are divided to first address technical debt and backend compatibility, t
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/frontend.md` and `docs/guides/solid-principles.md`
 - Operational notes: Structure backend code for easy migration to Vercel APIs; follow Google/industry UI/UX patterns for turn-based conversation

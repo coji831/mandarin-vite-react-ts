@@ -1,6 +1,6 @@
-# Story 2-3: Divide List into Sections
+﻿# Story 2-3: Divide List into Sections
 
-Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
+Part of [Epic 2: Vocabulary Learning Flow](./README.md)
 
 ## Description
 
@@ -24,3 +24,4 @@ As a language learner, I want to divide a large vocabulary list into smaller, ma
 ## Status
 
 Completed
+

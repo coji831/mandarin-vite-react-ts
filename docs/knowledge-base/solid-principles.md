@@ -1,8 +1,10 @@
 # SOLID Principles for React and TypeScript
 
+**Last Updated:** June 2, 2026
+
 This guide explains how to apply SOLID principles to React and TypeScript code in our project, with practical examples and patterns.
 
-> **Project Example**: See how our `csvLoader.ts` utility implements SOLID principles in [csvLoader-solid-example.md](./csvLoader-solid-example.md)
+> **Project Example**: See how our `csvLoader.ts` utility implements SOLID principles in `csvLoader-solid-example.md` (example file, not yet created)
 
 ## Overview of SOLID Principles
 
@@ -84,7 +86,7 @@ function useUser(userId: string) {
       // Update logic here
       // ...
     },
-    [userId]
+    [userId],
   );
 
   return { user, loading, error, updateUser };
@@ -110,12 +112,10 @@ function UserProfile({ userId }: { userId: string }) {
 ### Key SRP Patterns for React
 
 1. **Extract API calls into custom hooks**
-
    - Keep data fetching and manipulation separate from rendering
    - Create reusable hooks like `useUser`, `useVocabularyList`, etc.
 
 2. **Separate container and presentational components**
-
    - Container components handle data and logic
    - Presentational components handle rendering only
 
@@ -184,12 +184,10 @@ function NotificationList({ notifications }: { notifications: Notification[] }) 
 ### Key OCP Patterns for React
 
 1. **Component Maps**
-
    - Use objects to map types to components
    - Allows adding new variants without modifying existing code
 
 2. **Render Props and Higher-Order Components**
-
    - Pass rendering logic as props
    - Wrap components to extend functionality
 
@@ -270,12 +268,10 @@ function ImprovedButton({
 ### Key LSP Patterns for React
 
 1. **Proper Prop Typing**
-
    - Make optional props truly optional with `?`
    - Avoid props that might be ignored in subtypes
 
 2. **Composition over Inheritance**
-
    - Favor component composition over class inheritance
    - Use higher-order components or hooks for shared behavior
 
@@ -356,12 +352,10 @@ function UserProfile({
 ### Key ISP Patterns for React
 
 1. **Small, Focused Prop Interfaces**
-
    - Create specific interfaces for different aspects of functionality
    - Combine interfaces with intersection types when needed
 
 2. **Component Composition**
-
    - Break large components into smaller, focused components
    - Each component should have a single responsibility
 
@@ -470,12 +464,10 @@ function UserList() {
 ### Key DIP Patterns for React
 
 1. **Service Abstractions**
-
    - Create service objects for API calls
    - Use dependency injection to provide services to components
 
 2. **Custom Hook Abstractions**
-
    - Create hooks that encapsulate implementation details
    - Components depend on hook interfaces, not implementations
 
@@ -505,6 +497,142 @@ function UserList() {
 3. Be explicit about optional vs. required props
 
 ## Code Review Checklist for SOLID Principles
+
+## Backend: SOLID in the Modular Monolith
+
+The backend is organized as a modular monolith (`src/modules/`). Each module picks its own architectural pattern, but all modules follow SOLID principles relative to their boundaries.
+
+### S — Single Responsibility
+
+A module owns one bounded context. A service within a module handles one concern.
+
+```javascript
+// ✅ GOOD — QuizSessionService only handles session lifecycle
+class QuizSessionService {
+  constructor({ sessionRepository, learningService }) {
+    /* ... */
+  }
+  async createSession(userId, date) {
+    /* ... */
+  }
+  async submitAnswer(sessionId, answer) {
+    /* ... */
+  }
+}
+
+// ❌ BAD — mixing session logic with unrelated concerns
+class QuizSessionService {
+  async createSession(userId) {
+    /* ... */
+  }
+  async sendWelcomeEmail(userId) {
+    /* ... */
+  } // belongs in auth/notifications
+  async generateBadge(userId) {
+    /* ... */
+  } // belongs in gamification
+}
+```
+
+### O — Open/Closed
+
+Modules are open for extension (via their public API) but closed for modification. Add new features by creating new services within the module, not by modifying existing ones.
+
+```javascript
+// ✅ GOOD — new summarization strategy added as a new service
+class DetailedSummaryService extends SummaryService {
+  /* override */
+}
+
+// ❌ BAD — modifying the existing service to add branching
+class SummaryService {
+  getSummary(type) {
+    if (type === "brief") {
+      /* ... */
+    }
+    if (type === "detailed") {
+      /* ... */
+    } // each new type modifies this file
+  }
+}
+```
+
+### L — Liskov Substitution
+
+Repository implementations must satisfy their interface contracts. The container should be able to swap `RedisCacheService` with `NoOpCacheService` without any service breaking.
+
+```javascript
+// ✅ GOOD — both implement ICacheService contract
+class RedisCacheService {
+  async get(key) {
+    /* redis get */
+  }
+  async set(key, val, ttl) {
+    /* redis set */
+  }
+}
+class NoOpCacheService {
+  async get(key) {
+    return null;
+  }
+  async set(key, val, ttl) {
+    /* no-op */
+  }
+}
+```
+
+### I — Interface Segregation
+
+Module public APIs (`index.js`) should export only what consumers need. Don't export everything "just in case."
+
+```javascript
+// ✅ GOOD — quiz module exports only orchestrator + progress
+export { QuizSessionService } from "./use-cases/QuizSessionService.js";
+export { ProgressService } from "./use-cases/ProgressService.js";
+
+// ❌ BAD — exporting internal details
+export { QuizSessionRepository } from "./repositories/QuizSessionRepository.js";
+export { Question } from "./domain/entities/Question.js";
+export { calculateAccuracy } from "./utils/scoring.js";
+```
+
+### D — Dependency Inversion
+
+High-level modules (use-cases, services) depend on abstractions (JSDoc `@typedef` interfaces), not concrete implementations. Concrete implementations (repositories, cache) are injected via the constructor.
+
+```javascript
+// ✅ GOOD — depends on interface, receives concrete via DI
+class QuizSessionService {
+  /**
+   * @param {Object} deps
+   * @param {IQuizSessionRepository} deps.sessionRepository
+   */
+  constructor({ sessionRepository }) {
+    this.sessionRepository = sessionRepository;
+  }
+}
+
+// ❌ BAD — depends directly on infrastructure
+import { PrismaClient } from "@prisma/client";
+class QuizSessionService {
+  constructor() {
+    this.prisma = new PrismaClient(); // direct coupling to Prisma
+  }
+}
+```
+
+### Cross-Module DIP
+
+Modules communicate through public interfaces (`index.js`). One module never depends on another module's internals.
+
+```javascript
+// ✅ GOOD — quiz imports word via its public API
+import { WordService } from "../../word/index.js";
+
+// ❌ BAD — quiz reaches into word's internals
+import { WordRepository } from "../../word/repositories/WordRepository.js";
+import { Word } from "../../word/domain/Word.js";
+```
 
 - [ ] **Single Responsibility**: Does each component or hook have a clear, single purpose?
 - [ ] **Open/Closed**: Can the code be extended without modification?

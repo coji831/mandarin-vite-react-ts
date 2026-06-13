@@ -186,7 +186,7 @@ If critical issues discovered:
 
 ### Code Conventions Guide
 
-Add to `docs/guides/code-conventions.md`:
+Add to `docs/guides/conventions/frontend.md`:
 
 ````markdown
 ### API Client Usage
@@ -270,11 +270,11 @@ Frontend only sends credentials to trusted domains (configured in `api.ts`):
 
 ## Technical Guidance
 
-**Testing Patterns**: See [Testing Guide - HTTP Client Testing](../../guides/testing-guide.md#http-client-testing-axios-mock-adapter) for axios-mock-adapter setup and error testing patterns.
+**Testing Patterns**: See [Testing Guide - HTTP Client Testing](../../guides/testing/frontend.md#http-client-testing-axios-mock-adapter) for axios-mock-adapter setup and error testing patterns.
 
 **Error Normalization Pattern**: Implemented in interceptor to distinguish HTTP errors (use response message) from network errors (use axios error message). See error interceptor implementation for fallback logic.
 
-**Security Pattern**: Conditional `withCredentials` based on domain whitelist. See [Code Conventions - API Client](../../guides/code-conventions.md#api-client-conventions-story-142a) for when to override.
+**Security Pattern**: Conditional `withCredentials` based on domain whitelist. See [Code Conventions - API Client](../../guides/conventions/frontend.md#api-client-conventions-story-142a) for when to override.
 
 **Monorepo Shared Types**: `@mandarin/shared-types/api` provides `ApiResponse<T>`, `ApiError`, `NormalizedError` for type-safe API contracts across frontend/backend.
 
@@ -284,7 +284,7 @@ Frontend only sends credentials to trusted domains (configured in `api.ts`):
 - [Epic 14 Implementation](./README.md)
 - [Story 14.2 BR](../../business-requirements/epic-14-api-modernization/story-14-2-centralized-api-config.md)
 - [Story 14.2 Implementation](./story-14-3-axios-interceptors.md) (Next)
-- [Code Conventions Guide](../../guides/code-conventions.md)
+- [Code Conventions Guide](../../guides/conventions/frontend.md)
 
 ```
 

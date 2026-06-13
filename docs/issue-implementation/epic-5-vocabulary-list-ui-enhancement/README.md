@@ -189,7 +189,7 @@ N/A (all data is local or static for this epic)
 - [Story 5.4](../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-4-visual-enhancements-responsive-design.md)
 - [React performance optimization](https://reactjs.org/docs/optimizing-performance.html)
 - [CSS Grid guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)
-- [Current VocabularyListPage](../../../src/features/mandarin/pages/VocabularyListPage.tsx)
+- Current VocabularyListPage: `apps/frontend/src/features/mandarin/pages/VocabularyListPage.tsx`
 
 ## Completion Checklist
 

@@ -262,7 +262,7 @@ React Components
 ### Documentation Updates
 
 - Update `docs/architecture.md` with API client architecture
-- Update `docs/guides/code-conventions.md` with Axios patterns
+- Update `docs/guides/conventions/frontend.md` with Axios patterns
 - Add examples to `docs/guides/api-client-guide.md` (new)
 
 ---
@@ -277,4 +277,4 @@ React Components
 - [Story 14.5 Implementation](./story-14-5-conversation-service-migration.md)
 - [Story 14.6 Implementation](./story-14-6-audio-service-migration.md)
 - [Architecture Overview](../../architecture.md)
-- [Code Conventions](../../guides/code-conventions.md)
+- [Code Conventions](../../guides/conventions/frontend.md)

@@ -528,7 +528,7 @@ If critical issues found post-merge:
 
 ### Code Conventions Guide
 
-Update `docs/guides/code-conventions.md`:
+Update `docs/guides/conventions/frontend.md`:
 
 ````markdown
 ### Progress Service Migration Example
@@ -588,5 +588,5 @@ Update `docs/architecture.md`:
 - [Epic 14 Implementation](./README.md)
 - [Story 14.4 BR](../../business-requirements/epic-14-api-modernization/story-14-4-progress-service-migration.md)
 - [Story 14.3 Implementation](./story-14-3-axios-interceptors.md) (Previous)
-- [Code Conventions Guide](../../guides/code-conventions.md)
+- [Code Conventions Guide](../../guides/conventions/frontend.md)
 - [Architecture Overview](../../architecture.md)

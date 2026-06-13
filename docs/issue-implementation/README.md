@@ -1,17 +1,8 @@
-# Issue Implementation
-
-This folder contains implementation details, completed epics, and user stories for the project.
-
-## Guides
-
-- [Onboarding Guide](../guides/onboarding.md)
-- [Contribution Guide](../guides/contribution-guide.md)
-- [Workflow Checklist](../guides/workflow.md)
-- [Project Conventions Guide](../guides/conventions.md)
-- [SOLID Principles for React](../guides/solid-principles.md)
-- [Implementation Format Guide](../guides/implementation-format.md)
-- [Document Streamlining Guide](../guides/doc-authoring-patterns.md)
-- [Branch Strategy Guide](../guides/branch-strategy.md)
+- [Workflow Checklist](../guides/operations/workflow.md)
+- [Git Conventions & Branch Strategy](../guides/conventions/git.md)
+- [SOLID Principles](../knowledge-base/solid-principles.md)
+- [Frontend Conventions](../guides/conventions/frontend.md)
+- [Backend Conventions](../guides/conventions/backend.md)
 
 ## Templates
 

@@ -1,4 +1,4 @@
-# Epic 15 Enhancements from Research
+﻿# Epic 15 Enhancements from Research
 
 **Source**: [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md) (full research document)
 
@@ -18,12 +18,12 @@ For deeper understanding of the concepts behind these implementations:
 
 For step-by-step implementation instructions:
 
-- [Quiz State Management Guide](../../guides/quiz-state-management-guide.md) - React reducer patterns, interleaving logic, localStorage persistence
-- [Gemini API Integration Guide](../../guides/gemini-api-integration-guide.md) - AI feedback setup, rate limiting, caching strategies
-- [Tone Input Component Guide](../../guides/tone-input-component-guide.md) - Tone mark conversion, validation rules, mobile UX
-- [Spaced Repetition Integration Guide](../../guides/spaced-repetition-integration-guide.md) - Unified algorithm, backward compatibility, feature detection
-- [Redis Caching for Quiz Features](../../guides/redis-caching-quiz-guide.md) - Cache key strategies, TTL patterns, invalidation
-- [Troubleshooting Quiz Features](../../guides/troubleshooting-quiz-features.md) - Common issues and solutions
+- [State Management Patterns](../../guides/conventions/state-management.md) - React reducer patterns, interleaving logic, localStorage persistence
+- [Gemini API Integration Guide](../../guides/integrations/gemini-api.md) - AI feedback setup, rate limiting, caching strategies
+- [Frontend Conventions](../../guides/conventions/frontend.md) - Tone mark conversion, validation rules, mobile UX
+- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - Algorithm theory and implementation patterns
+- [Redis Setup Guide](../../guides/setup/redis.md) - Cache key strategies, TTL patterns, invalidation
+- [Troubleshooting Guide](../../guides/operations/troubleshooting.md) - Common issues and solutions
 
 ## Integrated Now (Category 1)
 
@@ -38,14 +38,14 @@ These enhancements have been integrated into the Epic 15 design and will be impl
 
 ### 2. Tone Input Mechanics
 
-- **Research**: Specific tone mark rules (a > o > e > i/u), numeric notation (ma3 → mǎ), long-press mobile input
+- **Research**: Specific tone mark rules (a > o > e > i/u), numeric notation (ma3 â†’ mÇŽ), long-press mobile input
 - **Implementation**: Story 15.2 - `ToneInput.tsx` component with validation
 - **Technical**: Validates tone placement rules, supports numeric suffix conversion
-- **AC Added**: "Tone input supports numeric notation (ma3 → mǎ) and validates tone mark rules (a>o>e>i/u)"
+- **AC Added**: "Tone input supports numeric notation (ma3 â†’ mÇŽ) and validates tone mark rules (a>o>e>i/u)"
 
 ### 3. Streak Freeze Currency
 
-- **Research**: Ethical gamification—loss aversion with achievement rewards; prevents streak anxiety
+- **Research**: Ethical gamificationâ€”loss aversion with achievement rewards; prevents streak anxiety
 - **Implementation**: Story 15.3 - Earn 1 freeze per 10 perfect quizzes, spend to protect streak
 - **Technical**: Database field `streak_freezes` in study_streaks table
 - **AC Added**: "Streak freeze currency system (earn 1 per 10 perfect quizzes, spend to protect streak)"
@@ -56,7 +56,7 @@ These enhancements have been integrated into the Epic 15 design and will be impl
 - **Implementation**: Story 15.4 - Gemini API generates contextual error explanations
 - **Technical**: `POST /api/quiz/feedback` endpoint with Redis caching (24h TTL)
 - **AC Added**: "Error feedback explains confusion with AI-generated context (phonetic vs semantic errors)"
-- **🤖 AI Integration**: LLM-powered (core feature enhancement)
+- **ðŸ¤– AI Integration**: LLM-powered (core feature enhancement)
 
 ### 5. Variable Rewards (Mystery Boxes)
 
@@ -83,34 +83,34 @@ These advanced techniques require separate epic development due to complexity or
 - **Research**: ML-powered FSRS v6 algorithm with DSR model (Difficulty, Stability, Retrievability); 20-30% fewer reviews for same retention
 - **Why Separate**: Requires mathematical modeling, ML parameter optimization (21 parameters), backend algorithm refactor
 - **Dependencies**: Epic 15 (current spaced repetition must exist first)
-- **🤖 AI Integration**: ML-powered (core algorithm)
+- **ðŸ¤– AI Integration**: ML-powered (core algorithm)
 
 ### Epic: Handwriting Recognition System
 
 - **Research**: Canvas-based input (40x40mm optimal), stroke-order validation, CNN for 30K+ characters; highest retention value
 - **Why Separate**: Requires ML model integration (Apple-style CNN or OpenAI Vision API), significant R&D for stroke recognition, mobile optimization critical
 - **Dependencies**: Epic 15 (quiz infrastructure must exist)
-- **🤖 AI Integration**: CNN deep learning (core feature)
+- **ðŸ¤– AI Integration**: CNN deep learning (core feature)
 
 ### Epic: Radical-Based Learning
 
 - **Research**: Radical decomposition for discrimination learning; semantic radical + phonetic component awareness
 - **Why Separate**: Requires 214 Kangxi radical database, character breakdown logic, integration with Knowledge Hub
 - **Dependencies**: Epic 15 (quiz system), Epic 17 (Knowledge Hub for radical database)
-- **🤖 AI Integration**: Optional LLM for radical etymology + mnemonics (enhancement layer)
+- **ðŸ¤– AI Integration**: Optional LLM for radical etymology + mnemonics (enhancement layer)
 
 ### Epic: Progress Visualization Dashboard
 
 - **Research**: Mastery heatmaps (red/green zones) for self-efficacy; retention curves; weak area identification
 - **Why Separate**: Requires data aggregation service, charting library (Chart.js/D3), UI/UX design work
 - **Dependencies**: Epic 15 (quiz data must exist for visualization)
-- **🤖 AI Integration**: None (algorithmic data visualization)
+- **ðŸ¤– AI Integration**: None (algorithmic data visualization)
 
 ---
 
 ## Research Reference
 
-**Document**: [Vocabulary-Retention-Feature-Design.md](./Vocabulary-Retention-Feature-Design.md)
+**Document**: `Vocabulary-Retention-Feature-Design.md` (archived planning document)
 
 **Key Sections Referenced**:
 

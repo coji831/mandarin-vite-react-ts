@@ -1,4 +1,4 @@
-# Story 11.1: Design Unified Service Layer Interfaces
+﻿# Story 11.1: Design Unified Service Layer Interfaces
 
 ## Description
 
@@ -24,8 +24,8 @@ Establishing clear interfaces and base classes for all data/audio services ensur
 ## Related Issues
 
 - [Epic 11](./README.md) (parent epic)
-- [Story 11.2](./story-11.2-vocab-data-service.md) (implementation of vocabulary data service)
-- [Story 11.3](./story-11.3-audio-service.md) (implementation of audio service)
+- [Story 11.2](./story-11-2-vocab-data-service.md) (implementation of vocabulary data service)
+- [Story 11.3](./story-11-3-audio-service.md) (implementation of audio service)
 
 ## Implementation Status
 
@@ -37,3 +37,4 @@ Establishing clear interfaces and base classes for all data/audio services ensur
 ---
 
 _Last updated: 2025-11-10_
+

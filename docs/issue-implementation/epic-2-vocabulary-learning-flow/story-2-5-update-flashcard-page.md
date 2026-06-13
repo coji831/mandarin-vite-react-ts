@@ -1,6 +1,6 @@
-# Story 2-5: Update Flashcard Page to Support Selected Section
+﻿# Story 2-5: Update Flashcard Page to Support Selected Section
 
-Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
+Part of [Epic 2: Vocabulary Learning Flow](./README.md)
 
 ## Description
 
@@ -24,3 +24,4 @@ As a language learner, I want the flashcard page to display only words from my s
 ## Status
 
 Completed
+

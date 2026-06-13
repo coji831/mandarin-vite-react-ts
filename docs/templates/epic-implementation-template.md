@@ -1,5 +1,7 @@
 # Template For Epic Implementation
 
+**Last Updated:** June 2, 2026
+
 # Epic [EPIC-NUMBER]: [Epic-Title]
 
 ## Epic Summary

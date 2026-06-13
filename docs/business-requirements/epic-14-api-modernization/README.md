@@ -124,7 +124,7 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 11. Update error handling to surface user-friendly messages
 12. Add unit tests for interceptor logic
 13. Remove deprecated `authFetch` wrapper
-14. Update documentation (`docs/architecture.md`, `docs/guides/code-conventions.md`)
+14. Update documentation (`docs/architecture.md`, `docs/guides/conventions/frontend.md`)
 
 ## Risks & Mitigations
 
@@ -141,12 +141,12 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
   - **Rollback**: Revert to untyped responses (`any`) for problematic endpoints
 
 - **Risk: Team unfamiliar with Axios patterns** — Severity: Low
-  - **Mitigation**: Document common patterns in `docs/guides/code-conventions.md`; pair programming during initial stories
+  - **Mitigation**: Document common patterns in `docs/guides/conventions/frontend.md`; pair programming during initial stories
   - **Rollback**: N/A (training issue, not technical)
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- **Conventions**: Follow `docs/guides/conventions/frontend.md` and `docs/guides/solid-principles.md`
 - **Axios patterns**: Use async/await, proper error handling with try/catch, TypeScript types for all responses
 - **Testing**: Write unit tests for interceptors before migrating services
 - **Migration**: One service at a time to minimize risk; verify tests pass after each migration
@@ -162,5 +162,5 @@ Each story builds upon the previous, allowing iterative testing and rollback if 
 - [Story 14.4 BR](./story-14-4-progress-service-migration.md)
 - [Story 14.5 BR](./story-14-5-conversation-service-migration.md)
 - [Story 14.6 BR](./story-14-6-audio-service-migration.md)
-- [Code Conventions Guide](../../guides/code-conventions.md)
+- [Code Conventions Guide](../../guides/conventions/frontend.md)
 - [Architecture Overview](../../architecture.md)

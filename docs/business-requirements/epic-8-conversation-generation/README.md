@@ -139,7 +139,7 @@ Implementation strategy follows three clear phases to keep work small, reviewabl
 
 ## Implementation notes
 
-- Conventions: follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - Operational notes: Audio generation is idempotent and on-demand; use feature flags for scaffolder vs generator mode
 - Links: reference implementation templates at `docs/templates/epic-implementation-template.md`
 

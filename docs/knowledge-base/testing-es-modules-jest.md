@@ -300,5 +300,5 @@ export default {
 
 **Related Guides:**
 
-- [Testing Guide](../guides/testing-guide.md) — Project-specific test setup
+- [Testing Guide](../guides/testing/frontend.md) — Project-specific test setup
 - [Backend Architecture](./backend-architecture.md) — Testable service patterns

@@ -291,7 +291,7 @@ WordDetailView.tsx
 
 - Document example generation in `docs/architecture.md`
 - Add API endpoint to `apps/backend/docs/api-spec.md`
-- Document UI patterns in `docs/guides/code-conventions.md`
+- Document UI patterns in `docs/guides/conventions/frontend.md`
 - Add user guide: `docs/guides/word-examples-guide.md`
 
 ---

@@ -1,16 +1,16 @@
 # Business Requirements
 
+**Last Updated:** June 2, 2026
+
 This folder contains business requirements, epics, user stories, and project planning documents for the project.
 
 ## Guides
 
-- [Onboarding Guide](../guides/onboarding.md)
-- [Contribution Guide](../guides/contribution-guide.md)
-- [Workflow Checklist](../guides/workflow.md)
-- [Project Conventions Guide](../guides/conventions.md)
-- [Business Requirements Format Guide](../guides/business-requirements-format.md)
-- [Document Streamlining Guide](../guides/doc-authoring-patterns.md)
-- [Branch Strategy Guide](../guides/branch-strategy.md)
+- [Workflow Checklist](../guides/operations/workflow.md)
+- [Git Conventions & Branch Strategy](../guides/conventions/git.md)
+- [Frontend Conventions](../guides/conventions/frontend.md)
+- [Backend Conventions](../guides/conventions/backend.md)
+- [Knowledge Base](../knowledge-base/README.md)
 
 ## Templates
 

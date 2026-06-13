@@ -24,7 +24,7 @@ This foundational story eliminates configuration duplication and establishes the
 - [x] Axios instance uses `API_CONFIG.baseURL`, `timeout`, and `withCredentials: true`
 - [x] Axios instance exports both default export and named `apiClient`
 - [x] No breaking changes to existing services (they continue using `authFetch`/`ApiClient`)
-- [x] Documentation updated: Add Axios client usage example to `docs/guides/code-conventions.md`
+- [x] Documentation updated: Add Axios client usage example to `docs/guides/conventions/frontend.md`
 
 ## Business Rules
 

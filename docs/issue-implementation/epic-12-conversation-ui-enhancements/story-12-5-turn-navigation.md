@@ -36,7 +36,7 @@
 ## Documentation
 
 - Feature design doc updated for navigation/highlighting.
-- See business requirements: [story-12-5-turn-navigation.md](../../../business-requirements/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
+- See business requirements: [story-12-5-turn-navigation.md](../../business-requirements/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
 
 ---
 

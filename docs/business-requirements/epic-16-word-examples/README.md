@@ -147,7 +147,7 @@ Each story delivers incremental value and can be tested independently.
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- **Conventions**: Follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - **API integration**: Reuse existing Gemini API setup from `apps/backend/services/conversationService.js`
 - **Caching strategy**: Follow same GCS caching pattern as conversations (hash-based keys, 30-day lifecycle)
 - **HSK vocabulary validation**: May require HSK level database or API; document if external dependency needed

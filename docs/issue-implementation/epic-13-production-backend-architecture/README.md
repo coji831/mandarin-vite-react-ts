@@ -42,20 +42,13 @@ This epic transforms the current dual-backend system (local-backend + api/) into
 - **Backend**: Node.js 20+ with TypeScript + Express 5+
 - **Database**: PostgreSQL 15+ with Prisma ORM 5+
 - **Cache**: Redis 7+ (Upstash free tier)
-- **Auth**: JWT (jsonwebtoken) + bcrypt
-- **Testing**: Jest + Supertest (integration tests)
-- **Docs**: OpenAPI 3.1 (Swagger UI)
-- **Deployment**: Vercel (serverless functions)
-
-**Knowledge Base References:**
-
-- [PostgreSQL Setup & Migrations](../../../knowledge-base/backend-database-postgres.md)
-- [SQLite for Local Development](../../../knowledge-base/backend-database-sqlite.md)
-- [Cloud Database Providers](../../../knowledge-base/backend-database-cloud.md)
-- [Backend Architecture](../../../knowledge-base/backend-architecture.md)
-- [Backend Advanced Patterns](../../../knowledge-base/backend-advanced-patterns.md)
-- [Authentication](../../../knowledge-base/backend-authentication.md)
-- [Caching Strategies](../../../knowledge-base/integration-caching.md)
+- [PostgreSQL Setup & Migrations](../../knowledge-base/backend-database-postgres.md)
+- [SQLite for Local Development](../../knowledge-base/backend-database-sqlite.md)
+- [Cloud Database Providers](../../knowledge-base/backend-database-cloud.md)
+- [Backend Architecture](../../knowledge-base/backend-architecture.md)
+- [Backend Advanced Patterns](../../knowledge-base/backend-advanced-patterns.md)
+- [Authentication](../../knowledge-base/backend-authentication.md)
+- [Caching Strategies](../../knowledge-base/integration-caching.md)
 
 ## Architecture Decisions
 

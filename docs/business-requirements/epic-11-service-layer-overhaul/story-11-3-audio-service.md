@@ -1,4 +1,4 @@
-# Story 11.3: Implement Audio (TTS) Service
+﻿# Story 11.3: Implement Audio (TTS) Service
 
 ## Description
 
@@ -24,8 +24,8 @@ Centralizing TTS/audio fetching in a dedicated service enables robust fallback l
 ## Related Issues
 
 - [Epic 11](./README.md) (parent epic)
-- [Story 11.1](./story-11.1-design-service-interfaces.md) (service interface design)
-- [Story 11.2](./story-11.2-vocab-data-service.md) (vocab data service)
+- [Story 11.1](./story-11-1-design-service-interfaces.md) (service interface design)
+- [Story 11.2](./story-11-2-vocab-data-service.md) (vocab data service)
 
 ## Implementation Status
 
@@ -37,3 +37,4 @@ Centralizing TTS/audio fetching in a dedicated service enables robust fallback l
 ---
 
 _Last updated: 2025-11-10_
+

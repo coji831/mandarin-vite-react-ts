@@ -1,5 +1,7 @@
 # Chinese Character Structure and Radical Systems
 
+**Last Updated:** June 2, 2026
+
 **Summary**: Deep dive into the compositional structure of Chinese characters, focusing on the 214 Kangxi radicals, phonetic components, and decomposition strategies for learning and retention.
 
 **Key Concepts**: Radicals, semantic components, phonetic components, character decomposition, compound characters

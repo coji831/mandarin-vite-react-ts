@@ -1,5 +1,7 @@
 # Template For Epic Implementation
 
+**Last Updated:** June 2, 2026
+
 # Implementation [epic-number]-[story-number]: [Story-Title]
 
 > Template note: headings include markers like `[Required]` and `[Optional]` to indicate guidance. When creating published/read docs, remove those bracketed tokens from the headings.

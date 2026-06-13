@@ -1,5 +1,7 @@
 # Spaced Repetition Algorithms
 
+**Last Updated:** June 2, 2026
+
 **Summary**: Technical deep dive into spaced repetition scheduling algorithms, comparing SM-2 (traditional) vs FSRS (modern machine-learning approach), with implementation considerations.
 
 **Key Concepts**: Memory stability, retrievability, forgetting curves, optimal intervals, DSR model

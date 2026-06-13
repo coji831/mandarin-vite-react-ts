@@ -182,7 +182,7 @@ router.get("/progress", requireAuth, (req, res) =>
 ```
 
 ````markdown
-// docs/guides/dotnet-migration.md
+// docs/archive/dotnet-migration.md (archived)
 
 # .NET Migration Guide
 

@@ -385,9 +385,6 @@ grep -r "jest" apps/frontend/src
 - [Vitest Configuration](https://vitest.dev/config/)
 - [Migrating from Jest](https://vitest.dev/guide/migration.html)
 - [Testing Library with Vitest](https://testing-library.com/docs/react-testing-library/setup#vitest)
-
-### Project Documentation
-
-- [Testing Guide](../../../guides/testing-guide.md) — Frontend Vitest setup, Jest to Vitest migration patterns
-- [Vitest Monorepo Version Conflicts](../../../knowledge-base/vitest-monorepo-version-conflicts.md) — Diagnosing Vite version conflicts, Vitest 4.x upgrade
-- [ES Modules Testing](../../../knowledge-base/testing-es-modules-vitest.md) — Vitest ESM patterns, manual mocks
+- [Testing Guide](../../guides/testing/frontend.md) — Frontend Vitest setup, Jest to Vitest migration patterns
+- [Vitest Monorepo Version Conflicts](../../knowledge-base/vitest-monorepo-version-conflicts.md) — Diagnosing Vite version conflicts, Vitest 4.x upgrade
+- [ES Modules Testing](../../knowledge-base/testing-es-modules-vitest.md) — Vitest ESM patterns, manual mocks

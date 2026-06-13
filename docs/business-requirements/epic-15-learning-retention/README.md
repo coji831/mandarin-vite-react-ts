@@ -1,4 +1,4 @@
-# Epic 15: Learning Retention System
+﻿# Epic 15: Learning Retention System
 
 ## Epic Summary
 
@@ -12,7 +12,7 @@
 - Reduces churn through gamification (XP, badges, mystery rewards) and social engagement features
 - Addresses #1 user complaint ("why was I wrong?") with AI-powered personalized feedback
 - Enables data-driven insights for team analytics and progress reporting
-- Supports multiple difficulty levels (multiple choice → type answers) for diverse learner preferences
+- Supports multiple difficulty levels (multiple choice â†’ type answers) for diverse learner preferences
 
 **Status:** In Progress
 
@@ -20,7 +20,7 @@
 
 ## Background
 
-The current system supports passive vocabulary review via flashcards with manual confidence ratings. While spaced repetition calculates optimal review dates, users lack active recall practice—the most effective method for long-term retention.
+The current system supports passive vocabulary review via flashcards with manual confidence ratings. While spaced repetition calculates optimal review dates, users lack active recall practiceâ€”the most effective method for long-term retention.
 
 Research shows active recall testing (retrieving information from memory) significantly outperforms passive review for retention. Additionally, gamification elements like streaks and badges drive daily active usage, a critical SaaS retention metric.
 
@@ -143,7 +143,7 @@ This section maps core learning principles and gamification mechanics to their t
 newDelay = correct ? min(365, currentDelay * 2) : 1
 ```
 
-**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
+**Progression:** 1 â†’ 2 â†’ 4 â†’ 8 â†’ 16 â†’ 32 â†’ 64 â†’ 128 â†’ 256 â†’ 365 days (max)
 
 **Performance Multipliers:**
 
@@ -152,7 +152,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Backend: `apps/backend/src/core/services/ProgressService.js` → `calculateNextReview(currentDelay, correct)`
+- Backend: `apps/backend/src/core/services/ProgressService.js` â†’ `calculateNextReview(currentDelay, correct)`
 - Database: `progress.nextReview`, `progress.currentDelay` columns, updated after each quiz answer
 - API: `POST /api/progress/record-quiz-result` adjusts nextReview based on correctness
 - **Bug Fix (Story 15.11)**: Fixed critical bug where delay compounding wasn't working (was passing 0 instead of currentDelay)
@@ -168,14 +168,14 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 **Algorithm:**
 
 - For each word: randomly select from `['multiple_choice', 'type_pinyin', 'type_character']`
-- Shuffle occurs per word (e.g., Word A → MC, Word B → type pinyin, Word A again tomorrow → type character)
+- Shuffle occurs per word (e.g., Word A â†’ MC, Word B â†’ type pinyin, Word A again tomorrow â†’ type character)
 - NOT blocked practice (e.g., all MC first, then all pinyin)
 
 **Implementation:**
 
-- Frontend: `apps/frontend/src/features/quiz/utils/interleaving.ts` → `createInterleavedQuestions()`
-- State: `apps/frontend/src/features/quiz/reducers/quizReducer.ts` → stores question sequence
-- Component: `apps/frontend/src/features/quiz/pages/QuizPage.tsx` → renders mode-specific inputs
+- Frontend: `apps/frontend/src/features/quiz/utils/interleaving.ts` â†’ `createInterleavedQuestions()`
+- State: `apps/frontend/src/features/quiz/reducers/quizReducer.ts` â†’ stores question sequence
+- Component: `apps/frontend/src/features/quiz/pages/QuizPage.tsx` â†’ renders mode-specific inputs
 
 **Business Rationale:** Cognitive science research (Rohrer & Taylor 2007) shows interleaving forces learners to discriminate between concepts, strengthening memory retrieval vs. blocked practice which feels easier but produces weaker retention.
 
@@ -194,7 +194,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Backend: `apps/backend/src/services/StreakService.ts` → `updateStreak()`, `checkStreakReset()`
+- Backend: `apps/backend/src/services/StreakService.ts` â†’ `updateStreak()`, `checkStreakReset()`
 - Database: `study_streaks` table with `currentStreak`, `longestStreak`, `lastActivityDate`, `streakFreezes`
 - API: `GET /api/progress/streak`, `POST /api/progress/test-result` (auto-increments streak)
 - Frontend: `apps/frontend/src/features/gamification/components/StreakDisplay.tsx`
@@ -215,7 +215,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Backend: `apps/backend/src/services/ProgressService.ts` → `updateLapseCount()`
+- Backend: `apps/backend/src/services/ProgressService.ts` â†’ `updateLapseCount()`
 - Database: `progress.lapseCount` column (integer, default 0)
 - API: `GET /api/progress/leeches` returns flagged words
 - Frontend: `apps/frontend/src/features/quiz/components/results/LeechWarning.tsx` (displays as "Focus Words")
@@ -236,7 +236,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Backend: `apps/backend/src/services/GamificationService.ts` → `calculateXP()`, `rollMysteryBox()`
+- Backend: `apps/backend/src/services/GamificationService.ts` â†’ `calculateXP()`, `rollMysteryBox()`
 - API: `POST /api/progress/test-result` returns `xpEarned` field
 - Frontend: `apps/frontend/src/features/quiz/components/results/StatsGrid.tsx` (displays XP)
 - Frontend: `apps/frontend/src/features/gamification/components/MysteryBoxAnimation.tsx` (5% trigger)
@@ -259,10 +259,10 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Backend: `apps/backend/src/services/AIFeedbackService.ts` → `generateFeedback()`
+- Backend: `apps/backend/src/services/AIFeedbackService.ts` â†’ `generateFeedback()`
 - Caching: Redis key format: `quiz:feedback:{wordId}:{userAnswer}` (hash-based)
 - API: `POST /api/quiz/feedback` returns `{ explanation, similarWords, cached }`
-- Frontend: `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` → async fetch
+- Frontend: `apps/frontend/src/features/quiz/hooks/useAIFeedback.ts` â†’ async fetch
 - Component: `apps/frontend/src/features/quiz/components/exams/FeedbackSection.tsx`
 
 **Business Rationale:** Generic error messages ("Incorrect, the answer is X") don't explain confusion; AI feedback identifies mistake type (tone confusion, similar character mix-up) and provides learning strategy, accelerating understanding vs. repeated trial-and-error.
@@ -275,16 +275,16 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Algorithm:**
 
-- For **Chinese → English**: Select 3 incorrect English translations from vocabulary database (random sampling)
-- For **Pinyin → Chinese**: Select 3 characters with similar pronunciation or tone variations (e.g., mā vs má vs mǎ vs mà for horse)
-- For **English → Chinese**: Select 3 characters with similar meaning categories (e.g., food words if correct answer is food word)
+- For **Chinese â†’ English**: Select 3 incorrect English translations from vocabulary database (random sampling)
+- For **Pinyin â†’ Chinese**: Select 3 characters with similar pronunciation or tone variations (e.g., mÄ vs mÃ¡ vs mÇŽ vs mÃ  for horse)
+- For **English â†’ Chinese**: Select 3 characters with similar meaning categories (e.g., food words if correct answer is food word)
 - **Shuffle:** Randomize correct answer position (not always option A)
 
 **Implementation:**
 
-- Backend: `apps/backend/src/utils/distractorGenerator.ts` → `generateDistractors()`
+- Backend: `apps/backend/src/utils/distractorGenerator.ts` â†’ `generateDistractors()`
 - API: `GET /api/progress/due` returns words with pre-generated options
-- Frontend: `apps/frontend/src/features/quiz/components/inputs/MultipleChoiceInput.tsx` → renders options
+- Frontend: `apps/frontend/src/features/quiz/components/inputs/MultipleChoiceInput.tsx` â†’ renders options
 
 **Business Rationale:** Weak distractors (obviously wrong answers) allow learners to guess correctly without actually knowing the answer, invalidating assessment; plausible distractors force genuine recall.
 
@@ -303,9 +303,9 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation:**
 
-- Service: `apps/backend/src/core/services/LearningService.js` → `recordQuizResult()` persists each answer
-- Context: `apps/frontend/src/features/quiz/contexts/QuizContext.tsx` → `sessionSummary` state holds in-session results
-- Endpoint: `GET /api/v1/quiz/session/:sessionId/summary` → returns full session results
+- Service: `apps/backend/src/core/services/LearningService.js` â†’ `recordQuizResult()` persists each answer
+- Context: `apps/frontend/src/features/quiz/contexts/QuizContext.tsx` â†’ `sessionSummary` state holds in-session results
+- Endpoint: `GET /api/v1/quiz/session/:sessionId/summary` â†’ returns full session results
 
 **Business Rationale:** Backend-persisted results enable cross-device access, analytics, and permanent audit trail. The `quiz_results` table supports leech detection (lapseCount) and spaced repetition adjustments.
 
@@ -341,7 +341,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - [ ] Mobile-responsive quiz UI (optimized for phone usage)
 - [ ] Quiz performance metrics logged for analytics (accuracy rate, time per question)
 - [ ] Question types interleaved per word (randomized, not blocked by type)
-- [ ] Tone input supports numeric notation (ma3 → mǎ) and validates tone mark rules (a>o>e>i/u)
+- [ ] Tone input supports numeric notation (ma3 â†’ mÇŽ) and validates tone mark rules (a>o>e>i/u)
 - [ ] Streak freeze currency system (earn 1 per 10 perfect quizzes, spend to protect streak)
 - [ ] Error feedback explains confusion with AI-generated context (phonetic vs semantic errors)
 - [ ] Mystery boxes drop random rewards after milestone quizzes (5% drop rate)
@@ -394,37 +394,37 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 ## Risks & Mitigations
 
-- **Risk: Users find quizzes too difficult and abandon feature** — Severity: High
+- **Risk: Users find quizzes too difficult and abandon feature** â€” Severity: High
   - **Mitigation**: Start with multiple choice mode (easiest); add skip button; show progress bar to indicate completion proximity; celebrate small wins (XP for every answer, not just correct)
   - **Rollback**: Make quiz optional (not replacing flashcards); add difficulty settings; reduce quiz length
 
-- **Risk: Backend load increases significantly with per-answer API calls** — Severity: Medium
+- **Risk: Backend load increases significantly with per-answer API calls** â€” Severity: Medium
   - **Mitigation**: Implement request batching (save multiple answers in one call); add Redis caching for due words query; monitor API latency and scale if needed
   - **Rollback**: Switch to save-on-completion mode; reduce quiz length to 10 words max
 
-- **Risk: Streak resets demotivate users (perceived unfairness)** — Severity: Medium
+- **Risk: Streak resets demotivate users (perceived unfairness)** â€” Severity: Medium
   - **Mitigation**: 48-hour grace period (not 24h); visual warnings when streak at risk; option to "freeze" streak (premium feature)
   - **Rollback**: Increase grace period to 72h; remove streak resets entirely (continuous counter)
 
-- **Risk: Gamification feels gimmicky for serious learners** — Severity: Low
+- **Risk: Gamification feels gimmicky for serious learners** â€” Severity: Low
   - **Mitigation**: Make badges/XP optional (hide in settings); focus on learning metrics (accuracy, retention rate); avoid excessive animations
   - **Rollback**: Remove XP system; keep badges minimal (streak only)
 
-- **Risk: AI feedback latency delays quiz flow** — Severity: Medium
-  - **Mitigation**: Cache common error explanations (Redis, 24h TTL); show feedback asynchronously (answer → next question → feedback loads in background); set 3s timeout with fallback to static message
+- **Risk: AI feedback latency delays quiz flow** â€” Severity: Medium
+  - **Mitigation**: Cache common error explanations (Redis, 24h TTL); show feedback asynchronously (answer â†’ next question â†’ feedback loads in background); set 3s timeout with fallback to static message
   - **Rollback**: Disable AI feedback; use pre-written error templates only
 
-- **Risk: Leech tracking demotivates users seeing "struggling" label** — Severity: Low
+- **Risk: Leech tracking demotivates users seeing "struggling" label** â€” Severity: Low
   - **Mitigation**: Use positive framing ("Focus words" instead of "leeches"); provide actionable tips (mnemonic generator link); celebrate when leech is mastered
   - **Rollback**: Remove leech UI indicator; keep backend tracking for analytics only
 
-- **Risk: Quiz UI performance degrades on mobile** — Severity: Medium
+- **Risk: Quiz UI performance degrades on mobile** â€” Severity: Medium
   - **Mitigation**: Lazy load quiz components; optimize re-renders with React.memo; test on low-end devices
   - **Rollback**: Simplify UI (remove animations); reduce simultaneous DOM elements
 
 ## Implementation notes
 
-- **Conventions**: Follow `docs/guides/code-conventions.md` and `docs/guides/solid-principles.md`
+- **Conventions**: Follow `docs/guides/conventions/backend.md` and `docs/guides/solid-principles.md`
 - **Database migrations**: Use Prisma migrations for new tables (studyStreaks); backup database before production deployment
 - **Spaced repetition**: Extend existing algorithm in `apps/backend/src/core/services/ProgressService.js`
 - **Testing**: Comprehensive unit tests for quiz logic and spaced repetition adjustments; integration tests for API flows
@@ -461,9 +461,10 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Implementation Guides:**
 
-- [Quiz State Management Guide](../../guides/quiz-state-management-guide.md) - React reducer patterns, interleaving logic
-- [Gemini API Integration Guide](../../guides/gemini-api-integration-guide.md) - AI feedback setup, rate limiting, caching
-- [Tone Input Component Guide](../../guides/tone-input-component-guide.md) - Tone mark conversion, validation rules
-- [Spaced Repetition Integration Guide](../../guides/spaced-repetition-integration-guide.md) - Unified algorithm, backward compatibility
-- [Redis Caching for Quiz Features](../../guides/redis-caching-quiz-guide.md) - Cache strategies for AI feedback and due words
-- [Troubleshooting Quiz Features](../../guides/troubleshooting-quiz-features.md) - Common issues and solutions
+- [State Management Patterns](../../guides/conventions/state-management.md) - React reducer patterns, interleaving logic
+- [Gemini API Integration Guide](../../guides/integrations/gemini-api.md) - AI feedback setup, rate limiting, caching
+- [Frontend Conventions](../../guides/conventions/frontend.md) - Tone mark conversion, validation rules
+- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - Algorithm theory and research basis
+- [Redis Setup Guide](../../guides/setup/redis.md) - Cache strategies for AI feedback and due words
+- [Troubleshooting Guide](../../guides/operations/troubleshooting.md) - Common issues and solutions
+

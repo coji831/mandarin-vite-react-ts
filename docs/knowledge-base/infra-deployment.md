@@ -220,7 +220,7 @@ app.use(
     origin: config.frontendUrl, // Loaded from FRONTEND_URL
     credentials: true, // Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
+  }),
 );
 ```
 
@@ -404,6 +404,5 @@ res.clearCookie("refreshToken", REFRESH_TOKEN_COOKIE_OPTIONS);
 
 - [Google Cloud Services](./integration-google-cloud.md) — API keys to secure
 - [Backend Authentication](./backend-authentication.md) — JWT secrets, httpOnly cookies
-- [Caching Strategies](./integration-caching.md) — Redis connection URLs
-- [Vite Setup](./vite-setup.md) — Dev proxy cookie forwarding
-- [Troubleshooting](./troubleshooting.md) — Cookie & CORS issues
+- [Vite Setup](../guides/setup/vite.md) — Dev proxy cookie forwarding
+- [Troubleshooting](../guides/operations/troubleshooting.md) — Cookie & CORS issues

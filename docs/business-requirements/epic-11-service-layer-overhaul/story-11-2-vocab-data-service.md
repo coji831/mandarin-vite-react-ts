@@ -1,4 +1,4 @@
-# Story 11.2: Implement Vocabulary Data Service
+﻿# Story 11.2: Implement Vocabulary Data Service
 
 ## Description
 
@@ -24,8 +24,8 @@ Centralizing vocabulary data fetching in a dedicated service enables robust fall
 ## Related Issues
 
 - [Epic 11](./README.md) (parent epic)
-- [Story 11.1](./story-11.1-design-service-interfaces.md) (service interface design)
-- [Story 11.3](./story-11.3-audio-service.md) (audio service)
+- [Story 11.1](./story-11-1-design-service-interfaces.md) (service interface design)
+- [Story 11.3](./story-11-3-audio-service.md) (audio service)
 
 ## Implementation Status
 
@@ -37,3 +37,4 @@ Centralizing vocabulary data fetching in a dedicated service enables robust fall
 ---
 
 _Last updated: 2025-11-10_
+

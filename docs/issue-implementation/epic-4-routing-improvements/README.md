@@ -151,8 +151,8 @@ export function Router() {
 
 ## References
 
-- [Epic 4: Mandarin Feature Routing Improvements (Business Requirements)](../business-requirements/epic-4-routing-improvements-template/README.md)
+- [Epic 4: Mandarin Feature Routing Improvements (Business Requirements)](../../business-requirements/epic-4-routing-improvements-template/README.md)
 - [Story 4-3: Convert Basic Pages](./story-4-3-convert-basic-pages.md)
 - [Mandarin Feature Architecture](../../architecture.md)
 - [React Router Documentation](https://reactrouter.com/)
-- [Epic 3: State Management Refactor](../business-requirements/epic-3-state-management-refactor-template/README.md)
+- [Epic 3: State Management Refactor](../../business-requirements/epic-3-state-management-refactor-template/README.md)

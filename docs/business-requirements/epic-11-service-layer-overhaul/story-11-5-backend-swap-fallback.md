@@ -1,4 +1,4 @@
-# Story 11.5: Implement and Document Backend Swap & Fallback
+﻿# Story 11.5: Implement and Document Backend Swap & Fallback
 
 ## Description
 
@@ -25,8 +25,8 @@ Providing robust backend swap and fallback logic ensures the app is resilient to
 ## Related Issues
 
 - [Epic 11](./README.md) (parent epic)
-- [Story 11.2](./story-11.2-vocab-data-service.md) (vocab data service)
-- [Story 11.3](./story-11.3-audio-service.md) (audio service)
+- [Story 11.2](./story-11-2-vocab-data-service.md) (vocab data service)
+- [Story 11.3](./story-11-3-audio-service.md) (audio service)
 
 ## Implementation Status
 
@@ -38,3 +38,4 @@ Providing robust backend swap and fallback logic ensures the app is resilient to
 ---
 
 _Last updated: 2025-11-10_
+

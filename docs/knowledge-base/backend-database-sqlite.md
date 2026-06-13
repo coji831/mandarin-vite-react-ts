@@ -1,5 +1,7 @@
 # SQLite for Local Development
 
+**Last Updated:** June 2, 2026
+
 **When Adopted:** Epic 13
 
 ## Why

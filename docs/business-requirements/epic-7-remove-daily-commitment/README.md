@@ -26,23 +26,16 @@ The current flow requires learners to set a daily commitment and then study by a
 This epic consists of the following user stories (reordered and reindexed for a gated, verifiable workflow):
 
 1. #7-1 / [**Add stable listId to vocabulary manifests & normalize wordId**](./story-7-1-add-listid.md)
-
    - As a developer, I want each vocabulary list manifest to include a stable `id` (aka `listId`) and for `csvLoader` to normalize `wordId` to a string so routing and progress lookups are reliable.
-
-2. #7-2 / [**Open flashcards directly after list selection**](./story-7-2-open-flashcards-directly.md)
-
+2. #7-2 / [**Open flashcards directly after list selection**](./story-7-3-open-flashcards-directly.md)
    - As a learner, I want to select a vocabulary list and immediately start studying so I don't have to set a daily commitment first.
-
-3. #7-3 / [**Add flashcards route and ensure FlashCardPage receives listId**](./story-7-3-add-flashcards-route.md)
-
+3. #7-3 / [**Add flashcards route and ensure FlashCardPage receives listId**](./story-7-2-add-flashcards-route.md)
    - As a developer, I want a route `/mandarin/flashcards/:listId` so the FlashCard page can be deep-linked per-list.
 
 4. #7-4 / [**Update MandarinRoutes to remove old routes and add new**](./story-7-4-update-routes.md)
-
    - As a developer, I want the router updated so `/mandarin/flashcards/:listId` exists and old commit/section routes are removed.
 
 5. #7-5 / [**Refactor useMandarinProgress API**](./story-7-5-refactor-progress-hook.md)
-
    - As a developer, I want `useMandarinProgress` to expose list-focused APIs (`selectVocabularyList`, `loadProgressForList`, `markWordLearned`) and remove `selectedSectionId`.
 
 6. #7-6 / [**FlashCardPage: load list by listId and render deck**](./story-7-6-flashcard-load-list.md)
@@ -95,19 +88,16 @@ Write Acceptance Criteria as a Markdown task-list. Add as many items as needed a
 ## Architecture Decisions
 
 - Decision: Introduce a stable `listId` field in each vocabulary manifest (choice: add `id` string).
-
   - Rationale: routing, deep links, and per-list persisted progress require a stable identifier independent of filenames or array indices.
   - Alternatives considered: derive id from filename (fragile), runtime-generated UUIDs (unstable across installs).
   - Implications: manifests must be updated and indexed code migrated to use `listId`.
 
 - Decision: Persist per-list progress as a map `ListProgress.progress: Record<string, ProgressEntry>`.
-
   - Rationale: O(1) lookups and simpler updates by `wordId`.
   - Alternatives considered: keep section arrays or numeric indices (fragile).
   - Implications: provide a read adapter during migration and update write flows.
 
 - Decision: Run migration on first app load with a local backup key and metadata.
-
   - Rationale: automated migration reduces manual steps and allows progressive rollout.
   - Implications: must provide rollback instructions and log/report migration outcomes.
 
@@ -129,17 +119,14 @@ Provide a short, ordered list of implementation step titles that reflect the gat
 ## Risks & mitigations
 
 - Risk: Migration corruption or data loss during sections→progress transformation — Severity: High
-
   - Mitigation: Create local backup before any destructive writes, validate migration output, provide rollback instructions
   - Rollback: Restore from backup key and revert to previous app version
 
 - Risk: Deep-link breakage when changing from section-based to list-based routing — Severity: Medium
-
   - Mitigation: Implement compatibility redirects for old URLs during transition period
   - Rollback: Revert routing changes and restore section-based navigation
 
 - Risk: Performance degradation from loading full vocabulary lists instead of sections — Severity: Low
-
   - Mitigation: Implement lazy loading and virtualization for large lists
   - Rollback: Re-enable section-based chunking if performance issues persist
 

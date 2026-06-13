@@ -1,5 +1,7 @@
 # Centralized Conventional Templates & Format Files
 
+**Last Updated:** June 2, 2026
+
 This folder contains the single source of truth for all documentation templates and format files used in this project.
 
 ## Purpose
@@ -24,15 +26,13 @@ This folder contains the single source of truth for all documentation templates 
 
 ## Related Guides
 
-- [Business Requirements Format Guide](../guides/business-requirements-format-guide.md)
-- [Implementation Format Guide](../guides/implementation-format.md)
-- [Project Conventions Guide](../guides/conventions.md)
-- [SOLID Principles for React Guide](../guides/solid-principles.md)
-- [Onboarding Guide](../guides/onboarding.md)
-- [Contribution Guide](../guides/contribution-guide.md)
-- [Workflow Checklist](../guides/workflow.md)
-- [Branch Strategy Guide](../guides/branch-strategy.md)
-- [Document Streamlining Guide](../guides/doc-authoring-patterns.md)
+- [Documentation Patterns (Business Requirements)](../knowledge-base/documentation-patterns.md#business-requirements-format)
+
+- [Workflow Checklist](../guides/operations/workflow.md)
+- [Git Conventions & Branch Strategy](../guides/conventions/git.md)
+- [Frontend Conventions](../guides/conventions/frontend.md)
+- [Backend Conventions](../guides/conventions/backend.md)
+- [SOLID Principles](../knowledge-base/solid-principles.md)
 
 ## AI & Workflow Resources
 

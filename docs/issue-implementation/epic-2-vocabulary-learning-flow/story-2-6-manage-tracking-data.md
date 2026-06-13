@@ -1,6 +1,6 @@
-# Story 2-6: Manage Tracking Data in localStorage
+﻿# Story 2-6: Manage Tracking Data in localStorage
 
-Part of [Epic 2: Vocabulary Learning Flow](../epic-2-vocabulary-learning-flow.md)
+Part of [Epic 2: Vocabulary Learning Flow](./README.md)
 
 ## Description
 
@@ -24,3 +24,4 @@ As a language learner, I want my learning progress to be saved between sessions,
 ## Status
 
 Completed
+

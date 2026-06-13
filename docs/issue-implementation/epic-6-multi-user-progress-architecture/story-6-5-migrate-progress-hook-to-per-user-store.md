@@ -64,4 +64,4 @@ Completed (2025-10-03)
 
 ### References
 
-- [Business Requirements Story 6.6](../../business-requirements/epic-6-multi-user-progress-architecture/story-6-6-migrate-progress-hook-to-per-user-store.md)
+- [Business Requirements Story 6.5](../../business-requirements/epic-6-multi-user-progress-architecture/story-6-5-migrate-progress-hook-to-per-user-store.md)

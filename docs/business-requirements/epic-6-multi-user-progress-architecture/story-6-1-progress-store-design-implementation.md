@@ -164,7 +164,7 @@ export function getWordProgress(userId: string, wordId: string): WordProgress | 
 export function updateWordProgress(
   userId: string,
   wordId: string,
-  update: Partial<WordProgress>
+  update: Partial<WordProgress>,
 ): WordProgress {
   const progress = getUserProgress(userId);
 
@@ -197,7 +197,7 @@ export function getListProgress(userId: string, listId: string): ListProgress | 
 export function updateListProgress(
   userId: string,
   listId: string,
-  update: Partial<ListProgress>
+  update: Partial<ListProgress>,
 ): ListProgress {
   const progress = getUserProgress(userId);
 
@@ -226,7 +226,7 @@ export function updateSectionProgress(
   userId: string,
   listId: string,
   sectionId: string,
-  update: Partial<SectionProgress>
+  update: Partial<SectionProgress>,
 ): SectionProgress {
   const progress = getUserProgress(userId);
 
@@ -347,7 +347,6 @@ export function migrateFromLegacyFormat(): void {
 ### Testing Strategy
 
 1. **Unit Tests**:
-
    - Test creating and retrieving user identity
    - Test CRUD operations for word progress
    - Test CRUD operations for list and section progress
@@ -362,7 +361,7 @@ export function migrateFromLegacyFormat(): void {
 
 - Parent Epic: [Epic 6: Multi-User Progress Architecture](../README.md)
 - Depends on: None
-- Required for: [Story 6.2: Provider Separation and Context Refactoring](./story-6-2-provider-separation.md)
+- Required for: [Story 6.2: Provider Separation and Context Refactoring](./story-6-2-provider-separation-context-refactor.md)
 
 ## Notes
 

@@ -1,4 +1,4 @@
-# Epic 17: Basic Knowledge Resources
+﻿# Epic 17: Basic Knowledge Resources
 
 ## Epic Summary
 
@@ -24,11 +24,11 @@ This epic creates a standalone Knowledge Hub feature with static educational con
 
 ```
 Static Content (JSON)
-    ↓
+    â†“
 Frontend Loader Utility
-    ↓
+    â†“
 React Components (interactive UI)
-    ↓
+    â†“
 User
 ```
 
@@ -49,13 +49,13 @@ User
 
 ## Architecture Decisions
 
-1. **Static JSON vs. backend API** — JSON files reduce complexity, eliminate API latency, enable offline support; tradeoff: content updates require deployment vs. dynamic CMS
+1. **Static JSON vs. backend API** â€” JSON files reduce complexity, eliminate API latency, enable offline support; tradeoff: content updates require deployment vs. dynamic CMS
 
-2. **SVG animations vs. video files** — SVGs are scalable, smaller file size (~10KB vs. 500KB video), customizable playback speed; tradeoff: requires SVG sourcing/creation vs. recording videos
+2. **SVG animations vs. video files** â€” SVGs are scalable, smaller file size (~10KB vs. 500KB video), customizable playback speed; tradeoff: requires SVG sourcing/creation vs. recording videos
 
-3. **Open-source content with attribution vs. proprietary curation** — Reduces content creation effort from 40+ hours to 10 hours; builds community trust; tradeoff: limited differentiation vs. competitors
+3. **Open-source content with attribution vs. proprietary curation** â€” Reduces content creation effort from 40+ hours to 10 hours; builds community trust; tradeoff: limited differentiation vs. competitors
 
-4. **Standalone knowledge section vs. integrated tooltips** — Enables deep-linking for SEO, browsing behavior separate from learning flow; tradeoff: requires navigation vs. contextual inline tips
+4. **Standalone knowledge section vs. integrated tooltips** â€” Enables deep-linking for SEO, browsing behavior separate from learning flow; tradeoff: requires navigation vs. contextual inline tips
 
 ## Technical Implementation
 
@@ -63,43 +63,43 @@ User
 
 ```
 React Router
-    ↓
-/knowledge → KnowledgeHub.tsx (landing page)
-    ├─ /knowledge/radicals → RadicalSection.tsx
-    │   └─ RadicalBreakdown.tsx (interactive)
-    ├─ /knowledge/pinyin → PinyinSection.tsx
-    │   └─ ToneChart.tsx (audio playback)
-    ├─ /knowledge/strokes → StrokeSection.tsx
-    │   └─ StrokeAnimation.tsx (SVG + controls)
-    ├─ /knowledge/grammar → GrammarSection.tsx
-    │   └─ PatternCard.tsx (searchable)
-    └─ /knowledge/idioms → IdiomSection.tsx
-        └─ IdiomCard.tsx (etymology)
+    â†“
+/knowledge â†’ KnowledgeHub.tsx (landing page)
+    â”œâ”€ /knowledge/radicals â†’ RadicalSection.tsx
+    â”‚   â””â”€ RadicalBreakdown.tsx (interactive)
+    â”œâ”€ /knowledge/pinyin â†’ PinyinSection.tsx
+    â”‚   â””â”€ ToneChart.tsx (audio playback)
+    â”œâ”€ /knowledge/strokes â†’ StrokeSection.tsx
+    â”‚   â””â”€ StrokeAnimation.tsx (SVG + controls)
+    â”œâ”€ /knowledge/grammar â†’ GrammarSection.tsx
+    â”‚   â””â”€ PatternCard.tsx (searchable)
+    â””â”€ /knowledge/idioms â†’ IdiomSection.tsx
+        â””â”€ IdiomCard.tsx (etymology)
 ```
 
 **Data Flow:**
 
 ```
 User navigates to /knowledge/radicals
-    ↓
+    â†“
 RadicalSection.tsx mounts
-    ↓
-useEffect → fetch('/data/knowledge/radicals.json')
-    ↓
-Parse JSON → setState(radicals)
-    ↓
+    â†“
+useEffect â†’ fetch('/data/knowledge/radicals.json')
+    â†“
+Parse JSON â†’ setState(radicals)
+    â†“
 Render RadicalBreakdown components
-    ↓
-[User clicks radical 日]
-    ↓
-Filter characters containing 日
-    ↓
-Display related characters (明, 时, 早, etc.)
+    â†“
+[User clicks radical æ—¥]
+    â†“
+Filter characters containing æ—¥
+    â†“
+Display related characters (æ˜Ž, æ—¶, æ—©, etc.)
 ```
 
 ### API Endpoints
 
-**No backend APIs required** — All content served statically from `public/data/knowledge/`.
+**No backend APIs required** â€” All content served statically from `public/data/knowledge/`.
 
 **Audio Generation** (reuse existing TTS service):
 
@@ -109,53 +109,53 @@ Display related characters (明, 时, 早, etc.)
 
 ```
 KnowledgeHub.tsx (landing)
-    ├─ SectionCard (×6)
-    │   ├─ Icon
-    │   ├─ Title
-    │   └─ Description
-    └─ KnowledgeNav.tsx (sidebar)
+    â”œâ”€ SectionCard (Ã—6)
+    â”‚   â”œâ”€ Icon
+    â”‚   â”œâ”€ Title
+    â”‚   â””â”€ Description
+    â””â”€ KnowledgeNav.tsx (sidebar)
 
 RadicalSection.tsx
-    ├─ SearchBar (filter by meaning/pinyin)
-    ├─ RadicalGrid.tsx
-    │   └─ RadicalCard.tsx (×214)
-    │       ├─ Character (large)
-    │       ├─ Pinyin
-    │       ├─ Meaning
-    │       └─ Stroke Count
-    └─ RadicalDetailModal.tsx
-        ├─ Radical info
-        └─ Related characters list
+    â”œâ”€ SearchBar (filter by meaning/pinyin)
+    â”œâ”€ RadicalGrid.tsx
+    â”‚   â””â”€ RadicalCard.tsx (Ã—214)
+    â”‚       â”œâ”€ Character (large)
+    â”‚       â”œâ”€ Pinyin
+    â”‚       â”œâ”€ Meaning
+    â”‚       â””â”€ Stroke Count
+    â””â”€ RadicalDetailModal.tsx
+        â”œâ”€ Radical info
+        â””â”€ Related characters list
 
 ToneChart.tsx
-    ├─ ToneRow (×5: tone 1-4 + neutral)
-    │   ├─ Pinyin (mā má mǎ mà ma)
-    │   ├─ Audio button
-    │   └─ Tone curve visualization
-    └─ ToneRulesPanel.tsx (sandhi rules)
+    â”œâ”€ ToneRow (Ã—5: tone 1-4 + neutral)
+    â”‚   â”œâ”€ Pinyin (mÄ mÃ¡ mÇŽ mÃ  ma)
+    â”‚   â”œâ”€ Audio button
+    â”‚   â””â”€ Tone curve visualization
+    â””â”€ ToneRulesPanel.tsx (sandhi rules)
 
 StrokeAnimation.tsx
-    ├─ SVG canvas (stroke paths)
-    ├─ PlaybackControls
-    │   ├─ Play/Pause button
-    │   ├─ Loop toggle
-    │   └─ Speed slider (0.5x, 1x, 2x)
-    └─ StrokeCounter (stroke X of Y)
+    â”œâ”€ SVG canvas (stroke paths)
+    â”œâ”€ PlaybackControls
+    â”‚   â”œâ”€ Play/Pause button
+    â”‚   â”œâ”€ Loop toggle
+    â”‚   â””â”€ Speed slider (0.5x, 1x, 2x)
+    â””â”€ StrokeCounter (stroke X of Y)
 
 PatternCard.tsx
-    ├─ Pattern title ("Subject + 是 + Noun")
-    ├─ HSK level badge
-    ├─ ExampleList (×3)
-    │   └─ ExampleRow (Chinese, Pinyin, English)
-    └─ UsageNotes (when to use this pattern)
+    â”œâ”€ Pattern title ("Subject + æ˜¯ + Noun")
+    â”œâ”€ HSK level badge
+    â”œâ”€ ExampleList (Ã—3)
+    â”‚   â””â”€ ExampleRow (Chinese, Pinyin, English)
+    â””â”€ UsageNotes (when to use this pattern)
 
 IdiomCard.tsx
-    ├─ Idiom (四字成语)
-    ├─ Pinyin
-    ├─ Literal meaning
-    ├─ Figurative meaning
-    ├─ Audio button
-    └─ Etymology (expandable)
+    â”œâ”€ Idiom (å››å­—æˆè¯­)
+    â”œâ”€ Pinyin
+    â”œâ”€ Literal meaning
+    â”œâ”€ Figurative meaning
+    â”œâ”€ Audio button
+    â””â”€ Etymology (expandable)
 ```
 
 ### Dependencies
@@ -269,11 +269,11 @@ IdiomCard.tsx
 [
   {
     "id": 1,
-    "radical": "一",
-    "pinyin": "yī",
+    "radical": "ä¸€",
+    "pinyin": "yÄ«",
     "strokes": 1,
     "meaning": "one",
-    "examples": ["一", "二", "三", "天"]
+    "examples": ["ä¸€", "äºŒ", "ä¸‰", "å¤©"]
   }
 ]
 ```
@@ -284,16 +284,16 @@ IdiomCard.tsx
 [
   {
     "id": 1,
-    "pattern": "Subject + 是 + Noun",
+    "pattern": "Subject + æ˜¯ + Noun",
     "hskLevel": 1,
     "examples": [
       {
-        "chinese": "我是学生",
-        "pinyin": "Wǒ shì xuéshēng",
+        "chinese": "æˆ‘æ˜¯å­¦ç”Ÿ",
+        "pinyin": "WÇ’ shÃ¬ xuÃ©shÄ“ng",
         "english": "I am a student"
       }
     ],
-    "notes": "Use 是 to link a subject with a noun (identity or classification)."
+    "notes": "Use æ˜¯ to link a subject with a noun (identity or classification)."
   }
 ]
 ```
@@ -304,8 +304,8 @@ IdiomCard.tsx
 [
   {
     "id": 1,
-    "idiom": "马马虎虎",
-    "pinyin": "mǎmǎhǔhǔ",
+    "idiom": "é©¬é©¬è™Žè™Ž",
+    "pinyin": "mÇŽmÇŽhÇ”hÇ”",
     "literal": "horse horse tiger tiger",
     "figurative": "so-so, careless, not bad",
     "etymology": "Origin unclear, possibly from folk tales about confusing horses with tigers.",
@@ -319,11 +319,12 @@ IdiomCard.tsx
 **Related Documentation:**
 
 - [Epic 17 BR](../../business-requirements/epic-17-knowledge-hub/README.md)
-- [Story 17.1 Implementation](./story-17-1-knowledge-hub-structure.md)
-- [Story 17.2 Implementation](./story-17-2-character-composition-radicals.md)
-- [Story 17.3 Implementation](./story-17-3-pinyin-system-guide.md)
-- [Story 17.4 Implementation](./story-17-4-stroke-order-animations.md)
-- [Story 17.5 Implementation](./story-17-5-grammar-patterns-library.md)
-- [Story 17.6 Implementation](./story-17-6-idiom-chengyu-database.md)
+- Story 17.1 Implementation *(not yet created)*
+- Story 17.2 Implementation *(not yet created)*
+- Story 17.3 Implementation *(not yet created)*
+- Story 17.4 Implementation *(not yet created)*
+- Story 17.5 Implementation *(not yet created)*
+- Story 17.6 Implementation *(not yet created)*
 - [Architecture Overview](../../architecture.md)
-- [Content Sources](../../knowledge-base/content-sources.md)
+- [Knowledge Base](../../knowledge-base/README.md)
+

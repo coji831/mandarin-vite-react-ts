@@ -27,7 +27,7 @@ The current UI displays all turns at once, with limited or no highlighting of th
 - Current turn highlighted in ConversationTurns with .current class and aria-current.
 - Accessibility verified (keyboard, ARIA).
 - Unit/component tests added and passing.
-- See implementation: [story-12-5-turn-navigation.md](../../../issue-implementation/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
+- See implementation: [story-12-5-turn-navigation.md](../../issue-implementation/epic-12-conversation-ui-enhancements/story-12-5-turn-navigation.md)
 
 ## Risks & Mitigations
 

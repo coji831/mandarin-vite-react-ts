@@ -35,8 +35,7 @@ Status: Completed (2025-10-03)
 - Old single-user localStorage keys have been fully removed from the main app logic.
 - Progress persists correctly per user/device across reloads and logins.
 - Code and documentation have been reviewed and updated per project guides.
-
-See [Implementation Details](../../issue-implementation/epic-6-multi-user-progress-architecture/story-6-6-migrate-progress-hook-to-per-user-store.md) for technical notes and testing.
+  See [Implementation Details](../../issue-implementation/epic-6-multi-user-progress-architecture/story-6-5-migrate-progress-hook-to-per-user-store.md) for technical notes and testing.
 
 ---
 

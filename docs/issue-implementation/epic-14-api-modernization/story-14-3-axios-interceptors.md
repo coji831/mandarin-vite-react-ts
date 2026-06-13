@@ -242,7 +242,7 @@ Added 5 tests to `axiosClient.test.ts` (23 total, 100% passing):
 
 ## Related Documentation
 
-- [Code Conventions - API Client](../../guides/code-conventions.md#api-client-conventions-story-142a): Typed error handling patterns
+- [Code Conventions - API Client](../../guides/conventions/frontend.md#api-client-conventions-story-142a): Typed error handling patterns
 - [Story 14.2a Implementation](story-14-2-centralized-api-config.md): Foundation (shared types, secure config)
   }
   },
@@ -323,7 +323,7 @@ Other error? → Normalize error → Throw NormalizedError
 - Circular dependency avoidance
 - Token expiry detection with buffer
 
-**Testing Interceptors**: See [Testing Guide - HTTP Client Testing](../../guides/testing-guide.md#http-client-testing-axios-mock-adapter) for:
+**Testing Interceptors**: See [Testing Guide - HTTP Client Testing](../../guides/testing/frontend.md#http-client-testing-axios-mock-adapter) for:
 - axios-mock-adapter limitations (network errors, timeouts, status 0)
 - Testing error normalization vs retry execution
 - Token refresh flow testing patterns
@@ -339,5 +339,5 @@ Other error? → Normalize error → Throw NormalizedError
 - [Epic 14 BR](../../business-requirements/epic-14-api-modernization/README.md)
 - [Story 14.3 BR](../../business-requirements/epic-14-api-modernization/story-14-3-axios-interceptors.md)
 - [Story 14.2a Implementation](story-14-2-centralized-api-config.md) (Foundation)
-- [Code Conventions - API Client](../../guides/code-conventions.md#api-client-conventions-story-142a)
+- [Code Conventions - API Client](../../guides/conventions/frontend.md#api-client-conventions-story-142a)
 ```

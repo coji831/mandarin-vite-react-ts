@@ -27,15 +27,18 @@ function migrateV1ToV2(v1: ProgressV1): ProgressV2 {
     version: 2,
     data: {
       // Transform sections -> progress map
-      progress: v1.data.sections.reduce((acc, section) => {
-        section.words.forEach((word) => {
-          acc[word.wordId] = {
-            masteryLevel: word.learned ? 1.0 : 0.0,
-            lastReviewed: section.lastReviewed,
-          };
-        });
-        return acc;
-      }, {} as Record<string, WordProgress>),
+      progress: v1.data.sections.reduce(
+        (acc, section) => {
+          section.words.forEach((word) => {
+            acc[word.wordId] = {
+              masteryLevel: word.learned ? 1.0 : 0.0,
+              lastReviewed: section.lastReviewed,
+            };
+          });
+          return acc;
+        },
+        {} as Record<string, WordProgress>,
+      ),
     },
     migratedAt: new Date().toISOString(),
   };
@@ -438,4 +441,4 @@ Breaking changes to state structure, performance optimization
 **Related Guides:**
 
 - [State Management](./frontend-state-management.md) — Normalized state
-- [Backend Database](./backend-database.md) — Server-side migrations
+- [Backend Database](./backend-database-postgres.md) — Server-side migrations
