@@ -14,14 +14,23 @@ export default defineConfig({
     environment: "node",
 
     // Test file patterns
-    include: ["tests/**/*.test.js", "tests/**/*.test.ts"],
+    // Integration tests live in tests/integration/ and are excluded by default.
+    // Run with: vitest --config vitest.integration.config.js
+    include: [
+      "tests/**/*.test.js",
+      "tests/**/*.test.ts",
+      "!tests/integration/**",
+      "src/modules/**/__tests__/**/*.test.js",
+      "src/shared/infrastructure/**/__tests__/**/*.test.js",
+      "src/shared/**/__tests__/**/*.test.js",
+    ],
 
     // Coverage configuration
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
       include: ["src/**/*.js"],
-      exclude: ["node_modules/", "tests/", "src/index.js"],
+      exclude: ["node_modules/", "tests/", "src/app/index.js"],
     },
 
     // Setup files
