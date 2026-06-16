@@ -16,9 +16,9 @@
 - **Content Browser** — Build shared `ContentBrowser` component with mixed-card grid, type badges, search, filters, pagination. Replaces `VocabularyListPage`.
 - Estimated at **~9 days total** (2d restructure + 4d Zustand migration + 2d backend extraction + 1d cleanup).
 
-**Status:** In Progress
+**Status:** Completed
 
-**Last Update:** June 16, 2026 (Stories 17.1-17.6 completed)
+**Last Update:** June 16, 2026 (All stories completed)
 
 ## Background
 
@@ -100,23 +100,23 @@ The progress extraction (17.2-17.3) must happen before or alongside the Zustand 
 
 ## Acceptance Criteria
 
-- [ ] `uiReducer.ts` and `userReducer.ts` moved from `features/quiz/reducers/` to `shared/store/` — all imports updated, existing tests pass unchanged
-- [ ] `listReducer` removed from quiz's `rootReducer.ts` — vocabulary feature fully owns its own state, no cross-feature reducer composition
-- [ ] New `features/progress/` directory created with Zustand store (`progressStore.ts`), `useRecordActivity()` hook, `progressService.ts`, types, and barrel export (`index.ts`)
-- [ ] `useRecordActivity()` hook exposes a clean API: `{ feature, wordId, correct, data }` — usable by quiz, reading, and radicals without importing progress internals
-- [ ] New `modules/progress/` directory on backend with `ProgressController`, `ProgressService`, `ProgressRepository`, `StreakService`, `StreakRepository` — all files moved from `modules/quiz/` with preserved functionality
-- [ ] Generic `POST /api/progress/event` endpoint deployed — accepts `{ type, feature, data }` and routes to correct handler. Old quiz progress endpoints kept as deprecated wrappers.
-- [ ] `quizReducer` migrated to Zustand store at `features/quiz/stores/quizSessionStore.ts` — all quiz page flows work identically
-- [ ] `listReducer` migrated to Zustand store at `features/vocabulary/stores/listStore.ts` — all vocabulary flows work identically
-- [ ] `uiReducer` migrated to Zustand store at `shared/store/uiStore.ts` — shared UI state accessible across features
-- [ ] `userReducer` migrated to Zustand store at `shared/store/userStore.ts` — shared user state accessible across features
-- [ ] `progressReducer` removed, `features/progress/stores/progressStore.ts` is the single source of truth
-- [ ] `rootReducer.ts` and `ProgressContext.tsx` removed — no longer needed after Zustand migration
-- [ ] `UserIdentityContext.tsx` removed — user identity handled by Zustand store
-- [ ] `ProgressProvider` removed from `LearnLayout.tsx` — Zustand stores need no providers
-- [ ] ESLint `no-restricted-imports` rule added preventing direct `features/*/stores/*` cross-feature imports
-- [ ] All existing reducer tests adapted to test Zustand stores — same coverage, simpler test setup
-- [ ] Barrel exports (`index.ts`) updated for all affected features
+- [x] `uiReducer.ts` and `userReducer.ts` moved from `features/quiz/reducers/` to `shared/store/` — all imports updated, existing tests pass unchanged
+- [x] `listReducer` removed from quiz's `rootReducer.ts` — vocabulary feature fully owns its own state, no cross-feature reducer composition
+- [x] New `features/progress/` directory created with Zustand store (`progressStore.ts`), `useRecordActivity()` hook, `progressService.ts`, types, and barrel export (`index.ts`)
+- [x] `useRecordActivity()` hook exposes a clean API: `{ feature, wordId, correct, data }` — usable by quiz, reading, and radicals without importing progress internals
+- [x] New `modules/progress/` directory on backend with `ProgressController`, `ProgressService`, `ProgressRepository`, `StreakService`, `StreakRepository` — all files moved from `modules/quiz/` with preserved functionality
+- [x] Generic `POST /api/progress/event` endpoint deployed — accepts `{ type, feature, data }` and routes to correct handler. Old quiz progress endpoints kept as deprecated wrappers.
+- [x] `quizReducer` migrated to Zustand store at `features/quiz/stores/quizSessionStore.ts` — all quiz page flows work identically
+- [x] `listReducer` migrated to Zustand store at `features/vocabulary/stores/listStore.ts` — all vocabulary flows work identically
+- [x] `uiReducer` migrated to Zustand store at `shared/store/uiStore.ts` — shared UI state accessible across features
+- [x] `userReducer` migrated to Zustand store at `shared/store/userStore.ts` — shared user state accessible across features
+- [x] `progressReducer` removed, `features/progress/stores/progressStore.ts` is the single source of truth
+- [x] `rootReducer.ts` and `ProgressContext.tsx` removed — no longer needed after Zustand migration
+- [x] `UserIdentityContext.tsx` removed — user identity handled by Zustand store
+- [x] `ProgressProvider` removed from `LearnLayout.tsx` — Zustand stores need no providers
+- [x] ESLint `no-restricted-imports` rule added preventing direct `features/*/stores/*` cross-feature imports
+- [x] All existing reducer tests adapted to test Zustand stores — same coverage, simpler test setup
+- [x] Barrel exports (`index.ts`) updated for all affected features
 - [x] Shared `ContentBrowser` component built at `src/shared/components/ContentBrowser/` with: `ContentCard` (polymorphic by contentType), `ContentGrid` (responsive grid + pagination), `SearchBar`, `FilterDropdown` (HSK level + phase), `TabBar` (content type tabs)
 - [x] Content Browser shows type badges (🔤 Foundations, 📘 Radicals, 🔊 Phonetic, 📖 Readers, 📕 Grammar, 🏮 Chengyu) per card
 - [x] Locked content cards shown with 🔒 badge (phase-gated)

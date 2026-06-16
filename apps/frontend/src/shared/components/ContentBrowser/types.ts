@@ -12,7 +12,7 @@
  * - CONTENT_TABS: Default tab configurations
  */
 
-export type ContentType = "vocabulary" | "radical" | "phonetic" | "reader" | "grammar" | "chengyu";
+export type ContentType = "foundations" | "radical" | "phonetic" | "reader" | "grammar" | "chengyu";
 
 export interface ContentItem {
   id: string;
@@ -41,11 +41,12 @@ export type TabDefinition = {
   id: ContentType | "all";
   label: string;
   icon: string;
+  isLocked?: boolean;
 };
 
 export const CONTENT_TABS: TabDefinition[] = [
   { id: "all", label: "All", icon: "📋" },
-  { id: "vocabulary", label: "Foundations", icon: "🔤" },
+  { id: "foundations", label: "Foundations", icon: "🔤" },
   { id: "radical", label: "Radicals", icon: "📘" },
   { id: "phonetic", label: "Phonetic", icon: "🔊" },
   { id: "reader", label: "Readers", icon: "📖" },

@@ -31,8 +31,8 @@ Benefits:
 - [x] ESLint rule added: no direct imports from `features/*/stores/*` — must use barrel exports
 - [x] ESLint rule added: no direct imports from `shared/store/*` — must use barrel exports
 - [x] `npm test` passes for all affected features
-- [ ] All `/learn/*` routes load and function correctly without providers
-- [ ] `npm run lint` passes with new ESLint rules
+- [x] All `/learn/*` routes load and function correctly without providers
+- [x] `npm run lint` passes with new ESLint rules
 
 ## Business Rules
 

@@ -9,10 +9,11 @@
  * - Highlights the active tab
  * - Uses URL search params to preserve tab selection
  * - Falls back to props if no URL params available
+ * - Locked tabs are dimmed and disabled with a lock icon
  *
  * Usage:
  * ```tsx
- * <TabBar activeTab={tab} onTabChange={setTab} tabs={CONTENT_TABS} />
+ * <TabBar activeTab={tab} onTabChange={setTab} tabs={visibleTabs} />
  * ```
  */
 
@@ -21,6 +22,19 @@ import { CONTENT_TABS } from "./types";
 import type { TabDefinition } from "./types";
 
 export { TabBar };
+
+const PHASE_ACCESS: Record<string, number> = {
+  foundations: 1,
+  radical: 2,
+  grammar: 2,
+  phonetic: 3,
+  reader: 3,
+  chengyu: 4,
+};
+
+function getLockPhase(tabId: string): number | null {
+  return PHASE_ACCESS[tabId] ?? null;
+}
 
 function TabBar({
   activeTab,
@@ -46,19 +60,29 @@ function TabBar({
 
   return (
     <nav className="tab-bar" role="tablist" aria-label="Content type tabs">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          role="tab"
-          type="button"
-          className={`tab-bar__tab ${activeTab === tab.id ? "tab-bar__tab--active" : ""}`}
-          aria-selected={activeTab === tab.id}
-          onClick={() => handleTabClick(tab.id)}
-        >
-          <span aria-hidden="true">{tab.icon}</span>
-          <span>{tab.label}</span>
-        </button>
-      ))}
+      {tabs.map((tab) => {
+        const lockPhase = tab.isLocked ? getLockPhase(tab.id) : null;
+        return (
+          <button
+            key={tab.id}
+            role="tab"
+            type="button"
+            className={`tab-bar__tab ${activeTab === tab.id ? "tab-bar__tab--active" : ""} ${tab.isLocked ? "tab-bar__tab--locked" : ""}`}
+            aria-selected={activeTab === tab.id}
+            disabled={tab.isLocked}
+            onClick={() => !tab.isLocked && handleTabClick(tab.id)}
+            title={lockPhase ? `Complete Phase ${lockPhase} to unlock` : undefined}
+          >
+            <span aria-hidden="true">{tab.icon}</span>
+            <span>{tab.label}</span>
+            {tab.isLocked && (
+              <span className="tab-bar__lock-icon" aria-label="locked">
+                🔒
+              </span>
+            )}
+          </button>
+        );
+      })}
     </nav>
   );
 }

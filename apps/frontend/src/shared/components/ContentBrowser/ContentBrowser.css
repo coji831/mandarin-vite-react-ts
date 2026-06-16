@@ -32,11 +32,22 @@
   font-size: 0.9rem;
 }
 
+/* ─── Toolbar (Search + Filters combined) ─── */
 .content-browser__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.content-browser__search-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  align-items: flex-end;
+  align-items: center;
+  background: #1a1d2e;
+  border: 1px solid #38405a;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
 }
 
 /* ─── Tab Bar ─── */
@@ -80,23 +91,36 @@
   font-weight: 600;
 }
 
-/* ─── Search Bar ─── */
+.tab-bar__tab--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.tab-bar__tab--locked:hover {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tab-bar__lock-icon {
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+/* ─── Search Bar (inside the combined container) ─── */
 .search-bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex: 1;
   min-width: 200px;
-  max-width: 400px;
-  background: #1a1d2e;
-  border: 1px solid #38405a;
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  transition: border-color 0.2s;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .search-bar:focus-within {
-  border-color: #667eea;
+  border-color: transparent;
 }
 
 .search-bar__icon {
@@ -117,11 +141,12 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* ─── Filter Dropdown ─── */
+/* ─── Filter Dropdown (inside the combined container) ─── */
 .filter-dropdown {
   display: flex;
   gap: 0.75rem;
   align-items: flex-end;
+  margin-left: auto;
 }
 
 .filter-dropdown__group {
@@ -326,9 +351,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   padding: 3rem;
   color: rgba(255, 255, 255, 0.5);
+  min-height: 200px;
 }
 
 .content-grid__spinner {
@@ -354,6 +381,10 @@
   background: #1a1d2e;
   border-radius: 8px;
   border: 1px dashed #38405a;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ─── Mobile Responsive ─── */

@@ -34,9 +34,11 @@ export { ContentBrowser };
 function ContentBrowser({
   contentSource,
   defaultTab = "all",
+  userPhase = 1,
 }: {
   contentSource: ContentSource;
   defaultTab?: string;
+  userPhase?: number;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -57,6 +59,27 @@ function ContentBrowser({
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Phase-gated tab visibility (wireframe Section 1.4)
+  const visibleTabs = useMemo(() => {
+    const phaseAccess: Record<string, number> = {
+      foundations: 1,
+      radical: 2,
+      grammar: 2,
+      phonetic: 3,
+      reader: 3,
+      chengyu: 4,
+    };
+
+    return CONTENT_TABS.map((tab) => {
+      if (tab.id === "all") return { ...tab, isLocked: false };
+      const requiredPhase = phaseAccess[tab.id];
+      return {
+        ...tab,
+        isLocked: requiredPhase ? userPhase < requiredPhase : false,
+      };
+    });
+  }, [userPhase]);
 
   // Sync state to URL params
   const syncUrlParams = useCallback(
@@ -171,20 +194,22 @@ function ContentBrowser({
 
   return (
     <div className="content-browser">
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} tabs={CONTENT_TABS} />
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} tabs={visibleTabs} />
 
       <div className="content-browser__toolbar">
-        <SearchBar
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search by Chinese, pinyin, or English..."
-        />
-        <FilterDropdown
-          selectedHskLevel={hskLevel}
-          onHskLevelChange={handleHskLevelChange}
-          selectedPhase={phase}
-          onPhaseChange={handlePhaseChange}
-        />
+        <div className="content-browser__search-filter">
+          <SearchBar
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search by Chinese, pinyin, or English..."
+          />
+          <FilterDropdown
+            selectedHskLevel={hskLevel}
+            onHskLevelChange={handleHskLevelChange}
+            selectedPhase={phase}
+            onPhaseChange={handlePhaseChange}
+          />
+        </div>
       </div>
 
       <ContentGrid

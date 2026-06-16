@@ -22,7 +22,7 @@ import type { ContentItem } from "./types";
 export { ContentCard };
 
 const TYPE_ICONS: Record<string, string> = {
-  vocabulary: "🔤",
+  foundations: "🔤",
   radical: "📘",
   phonetic: "🔊",
   reader: "📖",
@@ -50,6 +50,14 @@ function ContentCard({
       handleClick();
     }
   };
+
+  // TODO: Add type-specific card layouts per wireframe Section 8.1
+  //   - vocabulary: show HSK level, pinyin, translation (current default)
+  //   - radical: show stroke count, Top20 marker
+  //   - phonetic: show cluster group, character list
+  //   - reader: show progress badge, Read button
+  //   - grammar: show pattern description
+  //   - chengyu: show story teaser
 
   return (
     <div

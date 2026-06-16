@@ -1,36 +1,31 @@
 /**
- * LearnRoutes.tsx (formerly MandarinRoutes.tsx)
+ * LearnRoutes.tsx
  *
  * Defines the routing for the Learn section (/learn/* routes):
- * - Uses LearnLayout for shared layout and nested routes with sub-navbar
- * - Index route renders ContentBrowserPage (replaces old VocabularyListPage)
- * - /flashcards/:listId: FlashCardPage (vocabulary feature)
- * - /quiz: QuizPage (quiz feature)
- * - /review: ReviewPage (placeholder)
- * - /basic: Basic (reference guide)
+ * - Uses LearnLayout for shared layout
+ * - Index route renders ContentBrowserPage (the main content browser)
+ * - Phase-gated content routes will be added by subsequent epics
+ * - Old routes (flashcards, quiz, review, basic) moved to /practices/*
  *
  * Story 17.7: Replaced VocabularyListPage with ContentBrowser at index route.
- * Phase 3 restructure: Moved from features/mandarin/router/ to src/router/
- * Follows project conventions in docs/guides/conventions/frontend.md
+ * B1: Removed old routes (flashcards, quiz, review, basic).
+ * B2: Added redirects for removed routes.
  */
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import { Basic } from "features/vocabulary";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { FlashCardPage } from "../pages/FlashCardPage";
-import { ReviewPage } from "../pages/ReviewPage";
-import { ContentBrowserPage } from "../pages/ContentBrowserPage";
-import { QuizPage } from "../pages/QuizPage";
+import ContentBrowserPage from "../pages/ContentBrowserPage";
 
 export function LearnRoutes() {
   return (
     <Routes>
       <Route element={<LearnLayout />}>
         <Route index element={<ContentBrowserPage />} />
-        <Route path="flashcards/:listId" element={<FlashCardPage />} />
-        <Route path="quiz" element={<QuizPage />} />
-        <Route path="review" element={<ReviewPage />} />
-        <Route path="basic" element={<Basic />} />
+        {/* Redirect old routes to their new locations */}
+        <Route path="flashcards/*" element={<Navigate to="/learn" replace />} />
+        <Route path="quiz" element={<Navigate to="/practices/quiz" replace />} />
+        <Route path="review" element={<Navigate to="/practices/review" replace />} />
+        <Route path="basic" element={<Navigate to="/learn" replace />} />
       </Route>
     </Routes>
   );

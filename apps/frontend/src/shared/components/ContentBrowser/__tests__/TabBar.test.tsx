@@ -25,7 +25,7 @@ describe("TabBar", () => {
   it("highlights the active tab", () => {
     render(
       <BrowserRouter>
-        <TabBar activeTab="vocabulary" onTabChange={() => {}} />
+        <TabBar activeTab="foundations" onTabChange={() => {}} />
       </BrowserRouter>,
     );
 
@@ -42,7 +42,7 @@ describe("TabBar", () => {
     );
 
     fireEvent.click(screen.getByText("Foundations"));
-    expect(handleTabChange).toHaveBeenCalledWith("vocabulary");
+    expect(handleTabChange).toHaveBeenCalledWith("foundations");
   });
 
   it("renders custom tabs when provided", () => {

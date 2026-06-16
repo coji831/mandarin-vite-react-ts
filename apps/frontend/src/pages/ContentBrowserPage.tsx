@@ -14,13 +14,16 @@
 import { ContentBrowser } from "../shared/components/ContentBrowser";
 import type { ContentSource } from "../shared/components/ContentBrowser";
 
-export { ContentBrowserPage };
-
 // Temporary empty content source — will be replaced by real implementations
 const emptyContentSource: ContentSource = {
   getItems: async () => ({ items: [], total: 0 }),
 };
 
-function ContentBrowserPage() {
-  return <ContentBrowser contentSource={emptyContentSource} defaultTab="vocabulary" />;
+export default function ContentBrowserPage() {
+  // TODO: Read actual user phase from progress store
+  const userPhase = 1;
+
+  return (
+    <ContentBrowser contentSource={emptyContentSource} defaultTab="all" userPhase={userPhase} />
+  );
 }
