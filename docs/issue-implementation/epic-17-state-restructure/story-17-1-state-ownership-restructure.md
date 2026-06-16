@@ -151,16 +151,41 @@ After:
 
 ## Technical Challenges & Solutions
 
-```
-Problem: RootReducer imports listReducer from vocabulary feature
-Solution: Remove listReducer from rootReducer composition. Vocabulary feature now
-fully owns its state. Any consumer that needs vocab lists reads from vocabulary's
-own state management.
-```
+### Challenge 1: Test Mock States Referencing `vocabLists`
+
+**Problem:** Four test files across quiz, vocabulary, and pages features constructed mock `RootState` objects containing a `vocabLists` property. After removing `vocabLists` from `RootState`, these tests failed TypeScript compilation.
+
+**Root Cause:** The mock states were written to match the old 4-slice `RootState` shape. The type definition change propagated to all consumers constructing `RootState` values.
+
+**Solution:** Removed `vocabLists: { itemsById: {}, itemIds: [] }` from mock state objects in all four test files. Since no component logic actually read from `vocabLists` in these tests, no behavioral changes were needed — only type-level fixes.
+
+**Files affected:**
+- `features/quiz/context/__tests__/useProgressContext.test.tsx` — also removed unused `AppUserState` import
+- `pages/__tests__/FlashCardPage.test.tsx`
+- `features/vocabulary/components/__tests__/VocabularyCard.test.tsx`
+- `features/vocabulary/components/__tests__/Sidebar.test.tsx` (two mock states)
+
+**Lesson:** When refactoring state shapes, always run `tsc --noEmit` first to catch all consumer type mismatches before test execution.
+
+### Challenge 2: Shared Import Path Resolution
+
+**Problem:** Moving `uiReducer.ts` to `shared/store/uiStore.prelude.ts` required updating its relative import path for `WordBasic` and `UiState` types, since the file moved from `features/quiz/reducers/` to `shared/store/`.
+
+**Root Cause:** The original file imported types from sibling modules using relative paths (`../types`, `../../vocabulary/types/Word`). After relocation, these paths no longer resolved.
+
+**Solution:** Updated import paths to:
+- `../../features/vocabulary/types/Word` (was `../../vocabulary/types/Word`)
+- `../../features/quiz/types` (was `../types`)
+
+The `userStore.prelude.ts` required no import changes since `UserState` is defined inline.
 
 ## Testing Implementation
 
-- Existing `uiReducer.test.ts` and `userReducer.test.ts` — move test files alongside the moved reducers to `shared/store/`
-- Update test import paths to reflect new locations
-- Update `rootReducer.test.ts` — remove vocabLists test assertions
-- All tests should pass with zero behavioral changes
+- **Test files moved:** `uiReducer.test.ts` → `shared/store/__tests__/uiStore.prelude.test.ts`, `userReducer.test.ts` → `shared/store/__tests__/userStore.prelude.test.ts`
+- **Test imports updated:** Both test files updated to import from `../uiStore.prelude` and `../userStore.prelude` respectively
+- **Mock state cleanup:** `vocabLists` property removed from 4 test files (5 mock state objects)
+- **Verification results:**
+  - 30/30 test files passed
+  - 255/255 tests passed
+  - `tsc --noEmit`: zero type errors
+- **No test logic changed** — only import paths and mock state shapes updated

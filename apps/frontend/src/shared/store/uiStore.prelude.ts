@@ -1,13 +1,12 @@
 /**
- * uiReducer.ts
+ * uiStore.prelude.ts
  *
- * Small reducer for UI flags related to progress (loading states, timestamps).
- *
- * Moved from features/mandarin/reducers/ to features/quiz/reducers/ (Phase 2 restructure)
+ * PRELUDE — temporary file before Zustand migration (Story 17.5).
+ * Moved from features/quiz/reducers/uiReducer.ts (Story 17.1).
  */
 
-import { WordBasic } from "../../vocabulary/types/Word";
-import { UiState } from "../types";
+import { WordBasic } from "../../features/vocabulary/types/Word";
+import { UiState } from "../../features/quiz/types";
 
 export const uiInitialState: UiState = {
   isLoading: false,

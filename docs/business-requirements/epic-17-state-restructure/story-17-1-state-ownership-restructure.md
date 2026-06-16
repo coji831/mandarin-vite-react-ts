@@ -19,18 +19,18 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] `uiReducer.ts` moved from `features/quiz/reducers/` to `shared/store/uiStore.prelude.ts` (placeholder for Zustand migration) — all imports updated
-- [ ] `userReducer.ts` moved from `features/quiz/reducers/` to `shared/store/userStore.prelude.ts` (placeholder for Zustand migration) — all imports updated
-- [ ] `shared/store/index.ts` created — barrel re-exporting both reducers, their initial states, action types
-- [ ] `listReducer` removed from quiz's `rootReducer.ts` — vocabulary feature fully owns its own state
-- [ ] `rootReducer.ts` simplified: only composes `progress` + `user` + `ui` slices (no more `vocabLists`)
-- [ ] `ProgressContext.tsx` updated to use simplified `rootReducer` (3 slices instead of 4)
-- [ ] `ProgressState` context type updated — `vocabLists` removed from `RootState`
-- [ ] All hooks that consumed `RootState` from ProgressContext updated — references to `vocabLists` removed
-- [ ] Vocabulary feature consumers that relied on `vocabLists` from ProgressContext switch to direct vocabulary feature state
-- [ ] All existing reducer tests pass unchanged
-- [ ] `npm test` passes across the affected features
-- [ ] Barrel exports (`index.ts` for quiz, vocabulary, and shared) updated
+- [x] `uiReducer.ts` moved from `features/quiz/reducers/` to `shared/store/uiStore.prelude.ts` (placeholder for Zustand migration) — all imports updated
+- [x] `userReducer.ts` moved from `features/quiz/reducers/` to `shared/store/userStore.prelude.ts` (placeholder for Zustand migration) — all imports updated
+- [x] `shared/store/index.ts` created — barrel re-exporting both reducers, their initial states, action types
+- [x] `listReducer` removed from quiz's `rootReducer.ts` — vocabulary feature fully owns its own state
+- [x] `rootReducer.ts` simplified: only composes `progress` + `user` + `ui` slices (no more `vocabLists`)
+- [x] `ProgressContext.tsx` updated to use simplified `rootReducer` (3 slices instead of 4)
+- [x] `ProgressState` context type updated — `vocabLists` removed from `RootState`
+- [x] All hooks that consumed `RootState` from ProgressContext updated — references to `vocabLists` removed
+- [x] Vocabulary feature consumers that relied on `vocabLists` from ProgressContext switch to direct vocabulary feature state
+- [x] All existing reducer tests pass unchanged
+- [x] `npm test` passes across the affected features
+- [x] Barrel exports (`index.ts` for quiz, vocabulary, and shared) updated
 
 ## Business Rules
 
@@ -45,7 +45,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `(pending commit)`

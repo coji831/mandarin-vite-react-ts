@@ -1,23 +1,25 @@
-import { ListState } from "../../vocabulary/types/State";
-import { ListAction, listsInitialState, listsReducer } from "../../vocabulary/reducers/listReducer";
 import { ProgressAction, progressInitialState, progressReducer } from "./progressReducer";
 import { ProgressState } from "../types";
-import { UiAction, uiInitialState, uiReducer } from "./uiReducer";
-import { UiState } from "../types";
-import { UserAction, userInitialState, userReducer, UserState } from "./userReducer";
+import { UiAction, uiInitialState, uiReducer } from "../../../shared/store/uiStore.prelude";
+import { UiState } from "../../../shared/store/uiStore.prelude";
+import {
+  UserAction,
+  userInitialState,
+  userReducer,
+  UserState,
+} from "../../../shared/store/userStore.prelude";
 
-export type RootAction = ListAction | ProgressAction | UserAction | UiAction;
+export type RootAction = ProgressAction | UserAction | UiAction;
 
-// New RootState composes the lists (progress) slice with the user and ui slices.
+// RootState composes the progress, user, and ui slices.
+// Story 17.1: Removed vocabLists (moved to vocabulary feature).
 export type RootState = {
-  vocabLists: ListState;
   progress: ProgressState;
   user: UserState;
   ui: UiState;
 };
 
 export const initialState: RootState = {
-  vocabLists: listsInitialState,
   progress: progressInitialState,
   user: userInitialState,
   ui: uiInitialState,
@@ -25,7 +27,6 @@ export const initialState: RootState = {
 
 export function rootReducer(state: RootState = initialState, action: RootAction): RootState {
   return {
-    vocabLists: listsReducer(state.vocabLists, action as ListAction),
     progress: progressReducer(state.progress, action as ProgressAction),
     user: userReducer(state.user, action as UserAction),
     ui: uiReducer(state.ui, action as UiAction),
@@ -34,8 +35,6 @@ export function rootReducer(state: RootState = initialState, action: RootAction)
 
 // Export sub-reducers for targeted unit tests and future composition
 export {
-  listsInitialState,
-  listsReducer,
   progressInitialState,
   progressReducer,
   uiInitialState,

@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 
 import type { WordBasic } from "../../../vocabulary/types/Word";
 import { ProgressDispatchContext, ProgressStateContext } from "..";
-import { UserState as AppUserState, RootState } from "../../reducers";
+import { RootState } from "../../reducers";
 import { RootAction } from "../../reducers/rootReducer";
 import { useProgressActions } from "../../hooks/useProgressActions";
 import { useProgressState } from "../../hooks/useProgressState";
@@ -87,7 +87,6 @@ describe("list-focused progress API (formerly useMandarinProgress)", () => {
         isLoading: false,
         error: "",
       },
-      vocabLists: { itemsById: {}, itemIds: [] },
     };
 
     render(

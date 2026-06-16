@@ -8,7 +8,6 @@ describe("VocabularyCard", () => {
     progress: { wordsById: progressData, wordIds: Object.keys(progressData) },
     user: { userId: null, preferences: {} },
     ui: { selectedList: null, selectedWords: [], isLoading: false, error: "" },
-    vocabLists: { itemsById: {}, itemIds: [] },
   });
 
   it("shows 'Not started' when progress is 0 and masteredCount is 0", () => {

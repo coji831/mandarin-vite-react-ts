@@ -1,5 +1,11 @@
-import { userReducer, userInitialState } from "../userReducer";
-import type { UserAction } from "../userReducer";
+/**
+ * userStore.prelude.test.ts
+ *
+ * Tests for userStore.prelude (moved from features/quiz/reducers/__tests__/userReducer.test.ts, Story 17.1).
+ */
+
+import { userReducer, userInitialState } from "../userStore.prelude";
+import type { UserAction } from "../userStore.prelude";
 
 describe("userReducer", () => {
   it("sets user id", () => {

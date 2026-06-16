@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026
+**Last Update:** June 16, 2026 (Story 17.1 completed)
 
 ---
 
@@ -14,7 +14,7 @@ This epic fundamentally restructures frontend state management and backend modul
 
 **Key Technical Components:**
 
-1. **State Ownership Restructure (Story 17.1)**
+1. **State Ownership Restructure (Story 17.1)** ✅
    - Move `uiReducer.ts` and `userReducer.ts` from `features/quiz/reducers/` to `shared/store/`
    - Decouple `listReducer` from quiz's `rootReducer.ts` — vocabulary owns its own state
    - Update all imports across the codebase (hooks, types, barrel exports)

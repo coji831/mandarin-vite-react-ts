@@ -40,7 +40,6 @@ describe("FlashCardPage", () => {
         isLoading: false,
         error: "",
       },
-      vocabLists: { itemsById: {}, itemIds: [] },
     };
     render(
       <ProgressStateContext.Provider value={mockState}>

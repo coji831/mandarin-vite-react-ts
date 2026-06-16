@@ -24,17 +24,8 @@ export {
 export type { UseSessionSummaryReturn } from "./hooks";
 
 // Reducers
-export {
-  rootReducer,
-  initialState,
-  progressReducer,
-  progressInitialState,
-  uiReducer,
-  uiInitialState,
-  userReducer,
-  userInitialState,
-} from "./reducers";
-export type { RootState, RootAction, ProgressAction, UiAction, UserAction } from "./reducers";
+export { rootReducer, initialState, progressReducer, progressInitialState } from "./reducers";
+export type { RootState, RootAction, ProgressAction } from "./reducers";
 
 // Services
 export { progressApi } from "./services";

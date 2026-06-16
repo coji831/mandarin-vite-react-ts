@@ -1,9 +1,8 @@
 /**
- * userReducer.ts
+ * userStore.prelude.ts
  *
- * Contains user-related state (identity, preferences) used by the progress domain.
- *
- * Moved from features/mandarin/reducers/ to features/quiz/reducers/ (Phase 2 restructure)
+ * PRELUDE — temporary file before Zustand migration (Story 17.5).
+ * Moved from features/quiz/reducers/userReducer.ts (Story 17.1).
  */
 export type UserState = {
   userId?: string | null;

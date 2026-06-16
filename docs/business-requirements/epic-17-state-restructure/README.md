@@ -18,7 +18,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026
+**Last Update:** June 16, 2026 (Story 17.1 completed)
 
 ## Background
 
@@ -65,7 +65,7 @@ This epic restructures state ownership, extracts cross-cutting concerns, migrate
 
 This epic consists of the following user stories:
 
-1. **Story 17.1: State Ownership Restructure** _(link to `story-17-1-state-ownership-restructure.md`)_
+1. **Story 17.1: State Ownership Restructure** _(link to `story-17-1-state-ownership-restructure.md`)_ ✅
    - As a developer, I want to move ui/user slices to shared/store and decouple listReducer from quiz rootReducer, so that cross-feature state coupling is eliminated.
 
 2. **Story 17.2: Extract Progress Feature (Frontend)** _(link to `story-17-2-extract-progress-feature-frontend.md`)_
