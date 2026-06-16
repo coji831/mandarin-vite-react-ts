@@ -1,8 +1,8 @@
 /**
  * userStore.prelude.ts
  *
- * PRELUDE — temporary file before Zustand migration (Story 17.5).
- * Moved from features/quiz/reducers/userReducer.ts (Story 17.1).
+ * DEPRECATED: Will be removed in Story 17.6.
+ * Use userStore.ts (Zustand) instead.
  */
 export type UserState = {
   userId?: string | null;

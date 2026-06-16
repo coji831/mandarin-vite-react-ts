@@ -19,9 +19,3 @@ export function UserIdentityProvider({ children }: UserIdentityProviderProps) {
     </UserIdentityContext.Provider>
   );
 }
-
-// export function useUserIdentityContext() {
-//   const ctx = useContext(UserIdentityContext);
-//   if (!ctx) throw new Error("useUserIdentityContext must be used within a UserIdentityProvider");
-//   return ctx;
-// }

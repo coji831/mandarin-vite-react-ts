@@ -1,5 +1,4 @@
-import { ProgressAction, progressInitialState, progressReducer } from "./progressReducer";
-import { ProgressState } from "../types";
+import { ProgressState, ProgressAction } from "./progressReducer";
 import { UiAction, uiInitialState, uiReducer } from "../../../shared/store/uiStore.prelude";
 import { UiState } from "../../../shared/store/uiStore.prelude";
 import {
@@ -11,8 +10,8 @@ import {
 
 export type RootAction = ProgressAction | UserAction | UiAction;
 
-// RootState composes the progress, user, and ui slices.
-// Story 17.1: Removed vocabLists (moved to vocabulary feature).
+// RootState includes progress for backward compat with existing consumers.
+// Story 17.5: Progress is managed by Zustand progressStore but type kept here for compat.
 export type RootState = {
   progress: ProgressState;
   user: UserState;
@@ -20,23 +19,21 @@ export type RootState = {
 };
 
 export const initialState: RootState = {
-  progress: progressInitialState,
+  progress: { wordsById: {}, wordIds: [] },
   user: userInitialState,
   ui: uiInitialState,
 };
 
 export function rootReducer(state: RootState = initialState, action: RootAction): RootState {
   return {
-    progress: progressReducer(state.progress, action as ProgressAction),
+    progress: state.progress, // Pass through — managed by Zustand
     user: userReducer(state.user, action as UserAction),
     ui: uiReducer(state.ui, action as UiAction),
   };
 }
 
-// Export sub-reducers for targeted unit tests and future composition
+// Export sub-reducers for backward compat
 export {
-  progressInitialState,
-  progressReducer,
   uiInitialState,
   uiReducer,
   userInitialState,

@@ -1,18 +1,13 @@
 /**
  * useProgressDispatch.ts
  *
- * Provides access to the Progress reducer dispatch function from `ProgressDispatchContext`.
- * Keep usage minimal and prefer action creator wrappers when possible for better discoverability.
- *
- * Moved from features/mandarin/hooks/ to features/quiz/hooks/ (Phase 2 restructure)
+ * Story 17.5: Returns a noop function. Dispatch is no longer used —
+ * components should call Zustand store actions directly.
+ * Will be removed in Story 17.6.
  */
-import { useContext } from "react";
 
-import { ProgressDispatchContext } from "../context";
-import { RootAction } from "../reducers/rootReducer";
-
-export function useProgressDispatch(): React.Dispatch<RootAction> {
-  const dispatch = useContext(ProgressDispatchContext);
-  if (!dispatch) throw new Error("useProgressDispatch must be used within ProgressProvider");
-  return dispatch;
+export function useProgressDispatch(): React.Dispatch<any> {
+  // Dispatch is no-op — Zustand stores manage state directly
+  const noop: React.Dispatch<any> = () => {};
+  return noop;
 }

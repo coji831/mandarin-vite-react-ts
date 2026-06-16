@@ -1,27 +1,34 @@
 /**
  * uiStore.prelude.ts
  *
- * PRELUDE — temporary file before Zustand migration (Story 17.5).
- * Moved from features/quiz/reducers/uiReducer.ts (Story 17.1).
+ * DEPRECATED: Will be removed in Story 17.6.
+ * Use uiStore.ts (Zustand) instead.
  */
-
-import { WordBasic } from "../../features/vocabulary/types/Word";
-import { UiState } from "../../features/quiz/types";
+export type UiState = {
+  isLoading: boolean;
+  lastUpdated: string | null;
+  selectedList: string | null;
+  selectedWords: unknown[];
+  error: string | undefined;
+  initialized: boolean;
+};
 
 export const uiInitialState: UiState = {
   isLoading: false,
   lastUpdated: null,
   selectedList: null,
   selectedWords: [],
-  error: "",
+  error: undefined,
+  initialized: false,
 };
 
 export type UiAction =
   | { type: "UI/SET_LOADING"; payload: { isLoading: boolean } }
   | { type: "UI/SET_UPDATED"; payload: { when: string } }
   | { type: "UI/SET_SELECTED_LIST"; payload: { listId: string | null } }
-  | { type: "UI/SET_SELECTED_WORDS"; payload: { words: WordBasic[] } }
-  | { type: "UI/SET_ERROR"; payload: { error?: string } };
+  | { type: "UI/SET_SELECTED_WORDS"; payload: { words: unknown[] } }
+  | { type: "UI/SET_ERROR"; payload: { error?: string } }
+  | { type: "UI/SET_INITIALIZED"; payload: { initialized: boolean } };
 
 export function uiReducer(state: UiState = uiInitialState, action: UiAction): UiState {
   switch (action.type) {
@@ -34,7 +41,9 @@ export function uiReducer(state: UiState = uiInitialState, action: UiAction): Ui
     case "UI/SET_SELECTED_WORDS":
       return { ...state, selectedWords: action.payload.words };
     case "UI/SET_ERROR":
-      return { ...state, error: action.payload.error ?? "" };
+      return { ...state, error: action.payload.error };
+    case "UI/SET_INITIALIZED":
+      return { ...state, initialized: action.payload.initialized };
     default:
       return state;
   }
