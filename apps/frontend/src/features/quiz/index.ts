@@ -27,5 +27,9 @@ export type { UseSessionSummaryReturn } from "./hooks";
 export { rootReducer, initialState, progressReducer, progressInitialState } from "./reducers";
 export type { RootState, RootAction, ProgressAction } from "./reducers";
 
+// Stores
+export { useQuizSessionStore } from "./stores";
+export type { QuizSessionState, QuizPhase } from "./stores";
+
 // Types
 export type { UserState, UiState } from "./types";

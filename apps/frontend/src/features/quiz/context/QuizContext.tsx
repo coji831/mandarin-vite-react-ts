@@ -48,11 +48,11 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useReducer,
   useRef,
 } from "react";
 import { useAnswerSubmission, useQuizSession, useSessionSummary } from "../hooks";
-import { initialState, QuizPhase, quizReducer } from "../reducers/quizReducer";
+import { useQuizSessionStore } from "../stores/quizSessionStore";
+import type { QuizPhase } from "../stores/quizSessionStore";
 import { QuizAnswer, QuizQuestion, QuizSessionSummary } from "../types";
 
 // ============================================================================
@@ -147,7 +147,19 @@ export function QuizProvider({ children }: QuizProviderProps) {
   // State
   // ============================================================================
 
-  const [state, dispatch] = useReducer(quizReducer, initialState);
+  const state = useQuizSessionStore((s) => ({
+    phase: s.phase,
+    questions: s.questions,
+    currentIndex: s.currentIndex,
+    answers: s.answers,
+    error: s.error,
+    sessionId: s.sessionId,
+    answerValue: s.answerValue,
+    showHint: s.showHint,
+    aiFeedback: s.aiFeedback,
+    expiresAt: s.expiresAt,
+    isFreshCompletion: s.isFreshCompletion,
+  }));
 
   // Derived value — computed here because useAnswerSubmission depends on it
   const currentQuestion =
@@ -163,11 +175,9 @@ export function QuizProvider({ children }: QuizProviderProps) {
     sessionId: state.sessionId,
     currentQuestion,
     questionStartTime,
-    dispatch,
   });
 
   const { startSession } = useQuizSession({
-    dispatch,
     questionStartTime,
   });
 
@@ -182,13 +192,13 @@ export function QuizProvider({ children }: QuizProviderProps) {
   // ============================================================================
 
   const handleNext = useCallback(() => {
-    dispatch({ type: "QUIZ/NEXT_QUESTION" });
+    useQuizSessionStore.getState().nextQuestion();
     questionStartTime.current = Date.now();
   }, []);
 
   const handleRetry = useCallback(() => {
     sessionStarted.current = false;
-    dispatch({ type: "QUIZ/RESET" });
+    useQuizSessionStore.getState().resetSession();
     startSession();
   }, [startSession]);
 
@@ -202,15 +212,15 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const handleSubmitAnswer = useCallback(() => {
     if (state.answerValue.trim().length === 0) return;
     submitAnswer(state.answerValue.trim().toLowerCase());
-    dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value: "" });
+    useQuizSessionStore.getState().setAnswerValue("");
   }, [state.answerValue, submitAnswer]);
 
   const setAnswerValue = useCallback((value: string) => {
-    dispatch({ type: "QUIZ/SET_ANSWER_VALUE", value });
+    useQuizSessionStore.getState().setAnswerValue(value);
   }, []);
 
   const toggleHint = useCallback(() => {
-    dispatch({ type: "QUIZ/SET_SHOW_HINT", show: !state.showHint });
+    useQuizSessionStore.getState().toggleHint(!state.showHint);
   }, [state.showHint]);
 
   // ============================================================================
@@ -228,7 +238,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   // Summary fetches independently in the RESULTS phase via useSessionSummary above
   useEffect(() => {
     if (state.phase === "LOADING" && state.sessionId && state.questions.length > 0) {
-      dispatch({ type: "QUIZ/COMPLETE" });
+      useQuizSessionStore.getState().completeSession();
     }
   }, [state.phase, state.sessionId, state.questions.length]);
 

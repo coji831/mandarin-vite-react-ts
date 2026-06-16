@@ -20,14 +20,13 @@
 import { useCallback, MutableRefObject } from "react";
 import { quizApi } from "../services/quizService";
 import { transformSessionToQuestions } from "../utils/quizTransformers";
-import type { QuizAction } from "../reducers/quizReducer";
+import { useQuizSessionStore } from "../stores/quizSessionStore";
 
 // ============================================================================
 // Hook Parameters
 // ============================================================================
 
 type UseQuizSessionParams = {
-  dispatch: React.Dispatch<QuizAction>;
   questionStartTime: MutableRefObject<number>;
 };
 
@@ -48,7 +47,7 @@ type UseQuizSessionParams = {
  * @param params Dispatch function and question start time ref
  * @returns Object with startSession method
  */
-export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionParams) {
+export function useQuizSession({ questionStartTime }: UseQuizSessionParams) {
   /**
    * Start a new quiz session or resume existing session
    *
@@ -64,25 +63,20 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
    * - API failure: Dispatches error to state
    */
   const startSession = useCallback(async () => {
+    const store = useQuizSessionStore.getState();
+
     try {
       const response = await quizApi.startQuizSession();
 
       // Check if user already completed quiz today (daily quiz limit)
       if (response.alreadyCompleted) {
-        dispatch({
-          type: "QUIZ/SHOW_DAILY_COMPLETE_RESULTS",
-          sessionId: response.sessionId,
-          expiresAt: response.expiresAt,
-        });
+        store.showDailyCompleteResults(response.sessionId, response.expiresAt);
         return;
       }
 
       // Guard: empty question list — no vocabulary at all (Flow 1.5 fallback exhausted)
       if (response.questions.length === 0) {
-        dispatch({
-          type: "QUIZ/SET_ERROR",
-          error: response.message ?? "No words available right now. Check back later!",
-        });
+        store.setError(response.message ?? "No words available right now. Check back later!");
         return;
       }
 
@@ -92,34 +86,28 @@ export function useQuizSession({ dispatch, questionStartTime }: UseQuizSessionPa
       // Check if resuming existing session
       if (response.isResume && response.currentIndex !== undefined && response.answers) {
         // Resume quiz from last position with previous answers
-        dispatch({
-          type: "QUIZ/RESUME",
+        store.resumeSession(
           questions,
-          sessionId: response.sessionId,
-          expiresAt: response.expiresAt,
-          currentIndex: response.currentIndex,
-          answers: response.answers.map((answer) => ({
+          response.sessionId,
+          response.currentIndex,
+          response.answers.map((answer) => ({
             ...answer,
             timestamp: new Date(answer.timestamp), // Convert ISO string to Date
           })),
-        });
+          response.expiresAt,
+        );
       } else {
         // Initialize new quiz from beginning
-        dispatch({
-          type: "QUIZ/INITIALIZE",
-          questions,
-          sessionId: response.sessionId,
-          expiresAt: response.expiresAt,
-        });
+        store.initializeSession(questions, response.sessionId, response.expiresAt);
       }
 
       // Reset question timer for first/current question
       questionStartTime.current = Date.now();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to start quiz session";
-      dispatch({ type: "QUIZ/SET_ERROR", error: errorMessage });
+      useQuizSessionStore.getState().setError(errorMessage);
     }
-  }, [dispatch, questionStartTime]);
+  }, [questionStartTime]);
 
   return {
     startSession,
