@@ -223,23 +223,35 @@ After:
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Components subscribe to entire context state, causing unnecessary re-renders
-Solution: Zustand's selector-based subscriptions let each component subscribe to only
-the state slices it needs. This is a performance improvement over Context.
+### Challenge 1: Replacing `useReducer` Dispatch in Hooks
 
-Problem: QuizContext currently wraps the quiz page and provides actions like handleAnswer
-that orchestrate multiple steps
-Solution: Keep the orchestration logic in hooks (useQuizSession, useAnswerSubmission) but
-have them read/write to Zustand store instead of Context. The hooks are then importable
-without any Context provider.
-```
+**Problem:** `useQuizSession` and `useAnswerSubmission` both accepted a `dispatch: React.Dispatch<QuizAction>` parameter and called dispatch directly with action objects. After migrating to Zustand, dispatch no longer exists — the hooks need to call Zustand store actions instead.
+
+**Root Cause:** The hooks were designed around the useReducer pattern where a single dispatch function handles all state transitions via discriminated union types.
+
+**Solution:** Removed the `dispatch` parameter from both hooks and replaced all `dispatch({ type: "..." })` calls with `useQuizSessionStore.getState().actionName(...)`. This keeps the hooks readable and avoids any provider dependency.
+
+**Lesson:** When migrating from useReducer to Zustand, hooks that previously received dispatch should import the store directly rather than receiving it as a parameter.
+
+### Challenge 2: Maintaining Backward-Compatible QuizContext API
+
+**Problem:** `QuizContext.tsx` exposes `QuizStateContext` and `QuizActionsContext` types that are consumed by `QuizPage`, `ExamLayout`, and `ResultsLayout`. These components must continue to work without changes.
+
+**Root Cause:** The context types define the public API contract for the quiz feature, shared across multiple components.
+
+**Solution:** Replaced the internal `useReducer(quizReducer, initialState)` with `useQuizSessionStore(...)` selector hooks. The context providers still expose exactly the same shape — `QuizStateContext` (phase, questions, answers, etc.) and `QuizActionsContext` (handleAnswer, handleNext, etc.). External consumers don't know the implementation changed.
+
+### Challenge 3: Selector Performance
+
+**Problem:** Reading all state from the Zustand store in a single selector (as QuizContext needs) could cause unnecessary re-renders.
+
+**Solution:** QuizContext subscribes to all state in a single `useQuizSessionStore((s) => ({...}))` call. This is acceptable because QuizContext is the bridge layer — individual components that want fine-grained subscriptions can bypass context and use the store directly in future stories.
 
 ## Testing Implementation
 
-- Adapt `quizReducer.test.ts` → `quizSessionStore.test.ts`: Test store actions directly
-- Adapt `listReducer.test.ts` → `listStore.test.ts`: Test store actions directly
-- Store tests are simpler — no `useReducer` wrapper, no context:
+- Created `features/quiz/stores/__tests__/quizSessionStore.test.ts` with 12 test cases
+- Tests cover: initializeSession, resumeSession, submitAnswer, nextQuestion (with more questions and as last question), completeSession, setError, resetSession, setAnswerValue, toggleHint, setAiFeedback, showDailyCompleteResults
+- Store tests are simpler than reducer tests — no `useReducer` wrapper, no context:
 
   ```typescript
   import { useQuizSessionStore } from "../stores/quizSessionStore";
@@ -248,9 +260,11 @@ without any Context provider.
     useQuizSessionStore.setState(useQuizSessionStore.getInitialState());
   });
 
-  it("should initialize session", () => {
-    const { initializeSession } = useQuizSessionStore.getState();
-    initializeSession(mockQuestions, "session-1");
-    expect(useQuizSessionStore.getState().phase).toBe("QUESTION");
+  it("initializes session with questions", () => {
+    useQuizSessionStore.getState().initializeSession(mockQuestions, "session-1", "...");
+    const state = useQuizSessionStore.getState();
+    expect(state.phase).toBe("QUESTION");
   });
   ```
+
+- Full test suite: **32 test files, 271 tests passed**

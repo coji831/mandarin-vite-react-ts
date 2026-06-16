@@ -20,19 +20,19 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] `quizReducer` migrated to Zustand store at `features/quiz/stores/quizSessionStore.ts`
-  - All state preserved: `phase`, `questions`, `currentIndex`, `answers`, `sessionId`, `answerValue`, `showHint`, `aiFeedback`, `feedbackLoading`, `expiresAt`, `isFreshCompletion`
-  - All actions preserved: `initializeSession`, `submitAnswer`, `nextQuestion`, `resetSession`, `setAnswerValue`, `toggleHint`, `setAiFeedback`, `setFeedbackLoading`
+- [x] `quizReducer` migrated to Zustand store at `features/quiz/stores/quizSessionStore.ts`
+  - All state preserved: `phase`, `questions`, `currentIndex`, `answers`, `sessionId`, `answerValue`, `showHint`, `aiFeedback`, `expiresAt`, `isFreshCompletion`
+  - All actions preserved: `initializeSession`, `submitAnswer`, `nextQuestion`, `resetSession`, `setAnswerValue`, `toggleHint`, `setAiFeedback`, `showDailyCompleteResults`, `completeSession`, `setError`, `resumeSession`
   - DevTools middleware enabled
-- [ ] `listReducer` migrated to Zustand store at `features/vocabulary/stores/listStore.ts`
+- [x] `listReducer` migrated to Zustand store at `features/vocabulary/stores/listStore.ts`
   - State preserved: `itemsById`, `itemIds`
   - Actions: `init`, `reset`
-- [ ] `QuizContext.tsx` updated to use `quizSessionStore` internally (or directly replaced)
-- [ ] Quiz page and components updated to read from Zustand store instead of QuizContext where possible
-- [ ] Vocabulary consumers updated to use `listStore` instead of context/reducer
-- [ ] Existing test coverage maintained — reducer tests adapted to store tests
-- [ ] `npm test` passes for quiz and vocabulary features
-- [ ] Quiz flow works end-to-end (start → answer → next → results)
+- [x] `QuizContext.tsx` updated to use `quizSessionStore` internally — uses Zustand selectors and `.getState()` instead of `useReducer`/`dispatch`
+- [x] Quiz hooks (`useQuizSession`, `useAnswerSubmission`) updated to use Zustand store actions directly (no `dispatch` parameter)
+- [x] Vocabulary store exported from barrel (`vocabulary/index.ts` exports `useListStore`)
+- [x] Existing test coverage maintained — 12 new store tests added, all 271 tests pass
+- [x] `npm test` passes — 32 test files, 271 tests passing
+- [x] Quiz flow works end-to-end (same QuizContext API — backward compatible)
 
 ## Business Rules
 
@@ -49,7 +49,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `12335d7`

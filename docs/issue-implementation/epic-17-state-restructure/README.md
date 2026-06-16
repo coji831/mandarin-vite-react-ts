@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-                    **Last Update:** June 16, 2026 (Stories 17.1-17.3 completed)
+                    **Last Update:** June 16, 2026 (Stories 17.1-17.4 completed)
 
 ---
 
@@ -39,7 +39,7 @@ This epic fundamentally restructures frontend state management and backend modul
    - Event routing: backend routes events to correct handler based on `type` (e.g., `record-answer` → ProgressService, `update-streak` → StreakService)
    - Old quiz progress endpoints kept as deprecated wrappers that call the same ProgressService
 
-4. **Zustand Migration — Quiz & Vocabulary (Story 17.4)**
+4. **Zustand Migration — Quiz & Vocabulary (Story 17.4)** ✅
    - `quizReducer` → `features/quiz/stores/quizSessionStore.ts` — state machine (phases: LOADING → QUESTION → ANSWER_FEEDBACK → RESULTS → ERROR)
    - `listReducer` → `features/vocabulary/stores/listStore.ts` — vocabulary list state
    - Migrate action types, reducer logic, and selectors to Zustand's `set`/`get` API
