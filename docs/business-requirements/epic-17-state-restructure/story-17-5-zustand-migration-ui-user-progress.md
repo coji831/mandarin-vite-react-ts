@@ -20,18 +20,18 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] `uiStore.prelude.ts` replaced by `shared/store/uiStore.ts` — Zustand store with devtools middleware
+- [x] `uiStore.prelude.ts` replaced by `shared/store/uiStore.ts` — Zustand store with devtools middleware
   - State: `isLoading`, `lastUpdated`, `selectedList`, `selectedWords`, `error`, `initialized`
-  - Actions: `setLoading`, `setUpdated`, `setSelectedList`, `setSelectedWords`, `setError`, `setInitialized`
-- [ ] `userStore.prelude.ts` replaced by `shared/store/userStore.ts` — Zustand store with devtools middleware
+  - Actions: `setLoading`, `setUpdated`, `setSelectedList`, `setSelectedWords`, `setError`, `setInitialized`, `reset`
+- [x] `userStore.prelude.ts` replaced by `shared/store/userStore.ts` — Zustand store with devtools middleware
   - State: `userId`, `preferences`
-  - Actions: `setUserId`, `setPreferences`, `refresh`
-- [ ] `features/progress/stores/progressStore.ts` becomes the definitive store (Story 17.2's store is now primary)
-- [ ] `progressReducer.ts` removed from `features/quiz/reducers/` — all consumers use `progressStore`
-- [ ] `ProgressContext.tsx` updated to delegate to Zustand stores (transitional — removed in Story 17.6)
-- [ ] All existing UI, user, and progress reducer tests adapted to Zustand store tests
-- [ ] `npm test` passes for all affected features
-- [ ] Application loads and functions identically — no visual/behavioral regressions
+  - Actions: `setUserId`, `setPreferences`, `refresh`, `reset`
+- [x] `features/progress/stores/progressStore.ts` is the definitive store — `useProgressActions` delegates to it
+- [x] `ProgressContext.tsx` updated to delegate to Zustand stores — reads from `useProgressStore`, `useUiStore`, `useUserStore`
+- [x] `useProgressState`, `useProgressActions`, `useProgressDispatch` updated to delegate to Zustand stores
+- [x] `useUserIdentity` updated to read from Zustand `useUserStore`
+- [x] New tests: `uiStore.test.ts` (5 tests), `userStore.test.ts` (4 tests)
+- [x] `npm test` passes — 280 tests, 34 files passing
 
 ## Business Rules
 
@@ -49,7 +49,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `5a49475`

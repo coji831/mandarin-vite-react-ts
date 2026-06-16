@@ -33,9 +33,4 @@ export function rootReducer(state: RootState = initialState, action: RootAction)
 }
 
 // Export sub-reducers for backward compat
-export {
-  uiInitialState,
-  uiReducer,
-  userInitialState,
-  userReducer,
-};
+export { uiInitialState, uiReducer, userInitialState, userReducer };

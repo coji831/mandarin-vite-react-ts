@@ -18,7 +18,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026 (Stories 17.1-17.4 completed)
+**Last Update:** June 16, 2026 (Stories 17.1-17.5 completed)
 
 ## Background
 
@@ -77,7 +77,7 @@ This epic consists of the following user stories:
 4. **Story 17.4: Zustand Migration (Quiz + Vocabulary)** _(link to `story-17-4-zustand-migration-quiz-vocabulary.md`)_ ✅
    - As a developer, I want to migrate quizReducer and listReducer to Zustand stores in their respective features, so that quiz and vocabulary state management have less boilerplate and DevTools support.
 
-5. **Story 17.5: Zustand Migration (UI + User + Progress)** _(link to `story-17-5-zustand-migration-ui-user-progress.md`)_
+5. **Story 17.5: Zustand Migration (UI + User + Progress)** _(link to `story-17-5-zustand-migration-ui-user-progress.md`)_ ✅
    - As a developer, I want to migrate uiReducer, userReducer, and the new progress store to Zustand, so that all state management is consistent across the application.
 
 6. **Story 17.6: Provider Cleanup & Boundary Enforcement** _(link to `story-17-6-provider-cleanup-boundary-enforcement.md`)_

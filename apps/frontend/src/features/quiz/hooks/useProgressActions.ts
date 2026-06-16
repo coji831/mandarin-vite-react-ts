@@ -16,12 +16,9 @@ export function useProgressActions() {
   return useMemo(
     () => ({
       // Legacy-compatible setters — delegate to Zustand
-      setSelectedList: (listId: string | null) =>
-        useUiStore.getState().setSelectedList(listId),
-      setSelectedWords: (words: WordBasic[]) =>
-        useUiStore.getState().setSelectedWords(words),
-      setLoading: (isLoading: boolean) =>
-        useUiStore.getState().setLoading(isLoading),
+      setSelectedList: (listId: string | null) => useUiStore.getState().setSelectedList(listId),
+      setSelectedWords: (words: WordBasic[]) => useUiStore.getState().setSelectedWords(words),
+      setLoading: (isLoading: boolean) => useUiStore.getState().setLoading(isLoading),
       setError: (error?: string) => useUiStore.getState().setError(error),
 
       // Mark word learned: optimistic update + API sync
@@ -90,7 +87,9 @@ export function useProgressActions() {
       },
 
       resetProgress: () => useProgressStore.getState().reset(),
-      init: () => { /* no-op — progress store initializes on first load */ },
+      init: () => {
+        /* no-op — progress store initializes on first load */
+      },
     }),
     [],
   );

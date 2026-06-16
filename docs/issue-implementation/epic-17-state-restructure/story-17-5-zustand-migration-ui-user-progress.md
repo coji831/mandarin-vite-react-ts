@@ -184,7 +184,8 @@ Zustand stores can have async initialize actions that components call in useEffe
 
 ## Testing Implementation
 
-- Adapt `uiReducer.test.ts` → `uiStore.test.ts`
-- Adapt `userReducer.test.ts` → `userStore.test.ts`
-- Update `progressStore.test.ts` if needed
+- Created `shared/store/__tests__/uiStore.test.ts` — 5 tests covering setLoading, setSelectedList, setError, reset, setInitialized
+- Created `shared/store/__tests__/userStore.test.ts` — 4 tests covering setUserId, setPreferences, reset, refresh
 - All tests use direct store API (`getState().action()`, `getState().state`) — no context wrapping
+- Prelude tests kept for backward compat (reducer tests still pass)
+- Full suite: **34 test files, 280 tests passed**

@@ -42,14 +42,7 @@
  * Phase 3 restructure: Moved from contexts/ (plural) to context/ (singular)
  */
 
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useRef } from "react";
 import { useAnswerSubmission, useQuizSession, useSessionSummary } from "../hooks";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import type { QuizPhase } from "../stores/quizSessionStore";

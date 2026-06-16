@@ -24,7 +24,9 @@ describe("quizSessionStore", () => {
       },
     ];
 
-    useQuizSessionStore.getState().initializeSession(questions, "session1", "2026-03-15T00:00:00.000Z");
+    useQuizSessionStore
+      .getState()
+      .initializeSession(questions, "session1", "2026-03-15T00:00:00.000Z");
     const state = useQuizSessionStore.getState();
 
     expect(state.phase).toBe("QUESTION");
@@ -70,13 +72,9 @@ describe("quizSessionStore", () => {
       },
     ];
 
-    useQuizSessionStore.getState().resumeSession(
-      questions,
-      "session1",
-      1,
-      previousAnswers,
-      "2026-03-15T00:00:00.000Z",
-    );
+    useQuizSessionStore
+      .getState()
+      .resumeSession(questions, "session1", 1, previousAnswers, "2026-03-15T00:00:00.000Z");
     const state = useQuizSessionStore.getState();
 
     expect(state.phase).toBe("QUESTION");
@@ -258,7 +256,9 @@ describe("quizSessionStore", () => {
 
   it("sets AI feedback", () => {
     useQuizSessionStore.getState().setAiFeedback("Good try! The correct answer was 你好.");
-    expect(useQuizSessionStore.getState().aiFeedback).toBe("Good try! The correct answer was 你好.");
+    expect(useQuizSessionStore.getState().aiFeedback).toBe(
+      "Good try! The correct answer was 你好.",
+    );
 
     useQuizSessionStore.getState().setAiFeedback(undefined);
     expect(useQuizSessionStore.getState().aiFeedback).toBeUndefined();

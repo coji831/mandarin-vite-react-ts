@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-                    **Last Update:** June 16, 2026 (Stories 17.1-17.4 completed)
+                    **Last Update:** June 16, 2026 (Stories 17.1-17.5 completed)
 
 ---
 
@@ -45,7 +45,7 @@ This epic fundamentally restructures frontend state management and backend modul
    - Migrate action types, reducer logic, and selectors to Zustand's `set`/`get` API
    - Add `zustand/devtools` middleware for Redux DevTools support
 
-5. **Zustand Migration — UI, User & Progress (Story 17.5)**
+5. **Zustand Migration — UI, User & Progress (Story 17.5)** ✅
    - `uiReducer` → `shared/store/uiStore.ts` — loading flags, error, selected list
    - `userReducer` → `shared/store/userStore.ts` — userId, preferences
    - `progressReducer` → `features/progress/stores/progressStore.ts` (replaces Story 17.2's initial store)
