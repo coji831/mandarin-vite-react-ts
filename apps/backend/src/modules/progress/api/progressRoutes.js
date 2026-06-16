@@ -1,11 +1,7 @@
 /**
- * @file apps/backend/src/modules/quiz/api/progressRoutes.js
+ * @file apps/backend/src/modules/progress/api/progressRoutes.js
  * @description Progress tracking routes (mounted under /api in index.js)
  * Story 15.11 Phase 8: Quiz endpoints moved to /v1/quiz/* (see quizSessionRoutes.js)
- *
- * DEPRECATED: These routes delegate to ProgressController from modules/progress/.
- * Will be removed after migration to modules/progress/ is complete.
- * Use /api/progress routes from modules/progress/ for new development.
  */
 
 import express from "express";
