@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-                    **Last Update:** June 16, 2026 (Stories 17.1-17.5 completed)
+                    **Last Update:** June 16, 2026 (Stories 17.1-17.6 completed)
 
 ---
 
@@ -51,12 +51,12 @@ This epic fundamentally restructures frontend state management and backend modul
    - `progressReducer` → `features/progress/stores/progressStore.ts` (replaces Story 17.2's initial store)
    - All stores get devtools middleware, selectors, and action creators
 
-6. **Provider Cleanup & Boundary Enforcement (Story 17.6)**
-   - Remove `ProgressProvider` from `LearnLayout.tsx` — Zustand stores are provider-less
-   - Remove `rootReducer.ts`, `ProgressContext.tsx`, `UserIdentityContext.tsx`
-   - Remove `QuizProvider` wrapping in quiz page — replace with direct Zustand store usage
-   - Add ESLint rule: `"no-restricted-imports": ["error", { "patterns": [{ "group": ["features/*/stores/*"], "message": "Cross-feature store imports are forbidden. Use public hooks from the feature's index.ts instead." }] }]`
-   - Also enforce: no importing from `shared/store/*` directly except via barrel
+6. **Provider Cleanup & Boundary Enforcement (Story 17.6)** ✅
+   - `ProgressProvider`, `UserIdentityProvider`, `QuizProvider` all removed — flat provider tree
+   - `rootReducer.ts`, `ProgressContext.tsx`, `UserIdentityContext.tsx`, `QuizContext.tsx` deleted
+   - All 5 reducer files deleted (quizReducer, progressReducer, listReducer, prelude files)
+   - ESLint rules added: no cross-feature `stores/*` imports, no direct `shared/store/*` imports
+   - `useQuizEngine.ts` replaces QuizProvider initialization logic
 
 7. **Content Browser Infrastructure (Story 17.7)**
    - Build `src/shared/components/ContentBrowser/` with:

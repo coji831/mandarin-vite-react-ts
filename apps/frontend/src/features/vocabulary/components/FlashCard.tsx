@@ -13,7 +13,7 @@
 import { useMemo, useState } from "react";
 
 import { useProgressActions, useProgressState } from "../../quiz/hooks";
-import { RootState } from "../../quiz/reducers";
+import type { RootState } from "../../quiz/hooks/useProgressState";
 import { WordBasic } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";

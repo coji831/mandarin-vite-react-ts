@@ -11,7 +11,7 @@ import React from "react";
 
 import { useProgressState } from "../../quiz/hooks";
 import { Card } from "../types";
-import { RootState } from "../../quiz/reducers/rootReducer";
+import type { RootState } from "../../quiz/hooks/useProgressState";
 
 export { Sidebar };
 

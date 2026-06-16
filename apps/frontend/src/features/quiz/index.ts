@@ -1,15 +1,11 @@
 /**
  * Quiz feature barrel export
  * Phase 2 restructure: Added progress contexts, hooks, reducers, services, types, utils from mandarin
+ * Story 17.6: Removed context and reducer exports (provider cleanup)
  */
 
 // Components
 export { ExamLayout, ResultsLayout, ErrorScreen, LoadingScreen } from "./components";
-export { QuizProvider, useQuizState, useQuizActions } from "./context";
-
-// Contexts
-export { ProgressProvider, ProgressStateContext, ProgressDispatchContext } from "./context";
-export { UserIdentityProvider } from "./context";
 
 // Hooks
 export {
@@ -22,10 +18,6 @@ export {
   useSessionSummary,
 } from "./hooks";
 export type { UseSessionSummaryReturn } from "./hooks";
-
-// Reducers
-export { rootReducer, initialState, progressReducer, progressInitialState } from "./reducers";
-export type { RootState, RootAction, ProgressAction } from "./reducers";
 
 // Stores
 export { useQuizSessionStore } from "./stores";

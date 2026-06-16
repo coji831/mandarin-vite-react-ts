@@ -38,6 +38,17 @@ export default tseslint.config(
               ],
               message: "Import from the feature's barrel (index.ts) instead of internal paths.",
             },
+            // NEW: Prevent cross-feature store imports — use barrel exports
+            {
+              group: ["**/features/*/stores/**"],
+              message:
+                "Cross-feature store imports are forbidden. Import from the feature's barrel (index.ts) instead.",
+            },
+            // NEW: Prevent direct shared/store imports — use barrel
+            {
+              group: ["**/shared/store/**"],
+              message: "Import from shared/store/index.ts instead of internal paths.",
+            },
           ],
         },
       ],

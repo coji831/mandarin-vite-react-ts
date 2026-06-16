@@ -156,14 +156,33 @@ After — Flat tree:
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Components may still reference deleted context exports
-Solution: Do a comprehensive grep for all context/reducer imports before deleting files.
-Update or remove each reference. Run full test suite to catch any missed references.
-```
+### Challenge 1: QuizContext Deletion — Replacing Provider Logic
+
+**Problem:** `QuizContext.tsx` contained both the `QuizProvider` wrapper component AND the `useQuizState`/`useQuizActions` hooks used by `ExamLayout` and `ResultsLayout`. Simply deleting the file would break these components.
+
+**Root Cause:** The provider did more than just provide context — it initialized `useQuizSession`, `useAnswerSubmission`, and `useSessionSummary` hooks, created action handlers, and managed the `sessionStarted` ref guard and the LOADING→RESULTS transition effect.
+
+**Solution:** Created `features/quiz/hooks/useQuizEngine.ts` — a dedicated initialization hook that QuizPage calls instead of wrapping in `QuizProvider`. The engine handles: (1) startSession on mount with ref guard, (2) retry via `resetSession()` → effect detects LOADING phase → calls `startSession()`, (3) LOADING→RESULTS transition when all questions answered. Exported `quizRetry` module-level object so `ResultsLayout` and `ErrorScreen` can trigger retries without context.
+
+`ExamLayout` was refactored to read from `useQuizSessionStore` directly and create its own `useAnswerSubmission` hook. `ResultsLayout` reads from the store directly and creates its own `useSessionSummary` hook.
+
+**Lesson:** When deleting a context provider, ensure all initialization side effects are preserved elsewhere.
+
+### Challenge 2: Test Files Referencing Deleted Context
+
+**Problem:** Tests in `VocabularyCard.test.tsx`, `Sidebar.test.tsx`, and `FlashCardPage.test.tsx` used `ProgressStateContext.Provider` to inject mock state. Deleting `ProgressContext.tsx` broke these tests.
+
+**Root Cause:** The existing test pattern relied on React Context for dependency injection, which is no longer available.
+
+**Solution:** Mocked `useProgressState` hook via `vi.mock` in each test file. The mock returns a function that applies the selector to a controlled mock state, preserving the same test assertions without the context wrapper.
+
+**Lesson:** Tests that depend on deleted context files need to switch to mocking the consuming hooks instead.
 
 ## Testing Implementation
 
-- Update tests that mocked Context providers to mock Zustand stores instead
-- Remove tests for deleted context/reducer files
-- Verify all store tests pass
+- Updated `VocabularyCard.test.tsx`, `Sidebar.test.tsx`, `FlashCardPage.test.tsx` to mock `useProgressState` instead of using `ProgressStateContext.Provider`
+- Deleted `useProgressContext.test.tsx` (tested deleted context file)
+- Deleted `quizReducer.test.ts` and `progressReducer.test.ts` (tested deleted reducer files)
+- Deleted `uiStore.prelude.test.ts` and `userStore.prelude.test.ts` (tested deleted prelude files)
+- All other store tests (Zustand) remain unchanged and pass
+- **Final test results: 29 test files, 259 tests — all passing**

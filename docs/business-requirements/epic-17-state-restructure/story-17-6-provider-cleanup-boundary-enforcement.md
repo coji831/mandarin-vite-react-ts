@@ -20,17 +20,17 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] `ProgressProvider` removed from `LearnLayout.tsx` — `/learn/*` routes no longer wrapped
-- [ ] `UserIdentityProvider` removed from `LearnLayout.tsx` — identity handled by Zustand `userStore`
-- [ ] `QuizProvider` removed from `QuizPage.tsx` — quiz state uses `quizSessionStore` directly
-- [ ] `ProgressContext.tsx` deleted — no longer referenced anywhere
-- [ ] `UserIdentityContext.tsx` deleted — no longer referenced anywhere
-- [ ] `QuizContext.tsx` deleted — no longer referenced anywhere
-- [ ] `rootReducer.ts` deleted — no longer referenced anywhere
-- [ ] All reducer files deleted: `quizReducer.ts`, `progressReducer.ts`, `uiReducer.ts` (if still present), `userReducer.ts` (if still present), `listReducer.ts`
-- [ ] ESLint rule added: no direct imports from `features/*/stores/*` — must use barrel exports
-- [ ] ESLint rule added: no direct imports from `shared/store/*` — must use barrel exports
-- [ ] `npm test` passes for all affected features
+- [x] `ProgressProvider` removed from `LearnLayout.tsx` — `/learn/*` routes no longer wrapped
+- [x] `UserIdentityProvider` removed from `LearnLayout.tsx` — identity handled by Zustand `userStore`
+- [x] `QuizProvider` removed from `QuizPage.tsx` — quiz state uses `quizSessionStore` directly
+- [x] `ProgressContext.tsx` deleted — no longer referenced anywhere
+- [x] `UserIdentityContext.tsx` deleted — no longer referenced anywhere
+- [x] `QuizContext.tsx` deleted — no longer referenced anywhere
+- [x] `rootReducer.ts` deleted — no longer referenced anywhere
+- [x] All reducer files deleted: `quizReducer.ts`, `progressReducer.ts`, `listReducer.ts`
+- [x] ESLint rule added: no direct imports from `features/*/stores/*` — must use barrel exports
+- [x] ESLint rule added: no direct imports from `shared/store/*` — must use barrel exports
+- [x] `npm test` passes for all affected features
 - [ ] All `/learn/*` routes load and function correctly without providers
 - [ ] `npm run lint` passes with new ESLint rules
 
@@ -48,7 +48,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Key Commit**: TBD

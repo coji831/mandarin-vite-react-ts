@@ -18,7 +18,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026 (Stories 17.1-17.5 completed)
+**Last Update:** June 16, 2026 (Stories 17.1-17.6 completed)
 
 ## Background
 
@@ -80,7 +80,7 @@ This epic consists of the following user stories:
 5. **Story 17.5: Zustand Migration (UI + User + Progress)** _(link to `story-17-5-zustand-migration-ui-user-progress.md`)_ ✅
    - As a developer, I want to migrate uiReducer, userReducer, and the new progress store to Zustand, so that all state management is consistent across the application.
 
-6. **Story 17.6: Provider Cleanup & Boundary Enforcement** _(link to `story-17-6-provider-cleanup-boundary-enforcement.md`)_
+6. **Story 17.6: Provider Cleanup & Boundary Enforcement** _(link to `story-17-6-provider-cleanup-boundary-enforcement.md`)_ ✅
    - As a developer, I want to remove monolithic ProgressProvider from LearnLayout, clean up dead provider nesting, and add ESLint rules, so that the modular monolith pattern is enforced automatically.
 
 7. **Story 17.7: Content Browser Infrastructure** _(link to `story-17-7-content-browser-infrastructure.md`)_

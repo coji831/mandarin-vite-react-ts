@@ -1,7 +1,6 @@
 import { VocabularyList } from "../types";
 import { WordProgress } from "../../quiz/types";
-import type { RootState } from "../../quiz/reducers";
-import { selectWordsById } from "../../quiz/reducers/progressReducer";
+import type { RootState } from "../../quiz/hooks/useProgressState";
 import { useProgressState } from "../../quiz/hooks";
 import "./VocabularyCard.css";
 
@@ -13,9 +12,7 @@ interface VocabularyCardProps {
 
 export function VocabularyCard({ list, onSelect, wordIds }: VocabularyCardProps) {
   // Story 13.4: Get progress data using selector (avoids direct state access)
-  const progressData = useProgressState((s: RootState) =>
-    selectWordsById(s.progress ?? { wordsById: {}, wordIds: [] }),
-  );
+  const progressData = useProgressState((s: RootState) => s.progress?.wordsById ?? {});
 
   // Calculate progress from backend data
   const calculatedProgress = calculateListProgress(list, progressData, wordIds);

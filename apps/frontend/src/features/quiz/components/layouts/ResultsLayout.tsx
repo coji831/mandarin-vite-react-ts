@@ -8,10 +8,11 @@
  * Epic 19: State Refactor - Reads from context (zero props)
  * Story 15.11: Added daily quiz complete view with countdown timer;
  *   banner-only initial view with View Results toggle to avoid CLS
+ * Story 17.6: Reads from Zustand store directly (QuizContext removed).
  *
  * Layout orchestrator for quiz completion phase.
  * Displays quiz results with accuracy metrics and gamification rewards.
- * All state read from QuizContext - zero props drilling.
+ * All state read from Zustand store - zero props drilling.
  * Composes multiple result subcomponents:
  * - Stats grid (accuracy, XP, correct count)
  * - Badges section (newly earned badges)
@@ -23,7 +24,9 @@
  */
 
 import { useState, useEffect } from "react";
-import { useQuizState, useQuizActions } from "../../context";
+import { useQuizSessionStore } from "../../stores/quizSessionStore";
+import { useSessionSummary } from "../../hooks/useSessionSummary";
+import { quizRetry } from "../../hooks/useQuizEngine";
 import { MysteryBoxModal } from "../../../gamification/components/MysteryBoxModal";
 import { BadgeCelebrationModal } from "../../../gamification/components/BadgeCelebrationModal";
 import { StatsGrid, ResultsTable, DailyCompleteBanner } from "../results";
@@ -32,9 +35,13 @@ import "./ResultsLayout.css";
 export { ResultsLayout };
 
 function ResultsLayout() {
-  // Read all state from context
-  const { quizSessionSummary, expiresAt, isFreshCompletion } = useQuizState();
-  const { handleRetry } = useQuizActions();
+  // Read all state from Zustand store
+  const sessionId = useQuizSessionStore((s) => s.sessionId);
+  const expiresAt = useQuizSessionStore((s) => s.expiresAt);
+  const isFreshCompletion = useQuizSessionStore((s) => s.isFreshCompletion);
+
+  // Fetch session summary (was previously initialized in QuizContext)
+  const { quizSessionSummary, isSummaryLoading } = useSessionSummary(sessionId ?? null, true);
 
   // Story 15.9: Mystery box modal state
   const [showMysteryBox, setShowMysteryBox] = useState(!!quizSessionSummary?.mysteryBox);
@@ -68,7 +75,7 @@ function ResultsLayout() {
 
   // Story 15.11: Handler for New Quiz button
   const handleNewQuiz = () => {
-    handleRetry(); // This already reloads due words
+    quizRetry.handleRetry(); // This already reloads due words
   };
 
   // Story 15.11 Flow 2.6: Handler for badge celebration modal close
