@@ -160,6 +160,7 @@ After:
 **Solution:** Removed `vocabLists: { itemsById: {}, itemIds: [] }` from mock state objects in all four test files. Since no component logic actually read from `vocabLists` in these tests, no behavioral changes were needed — only type-level fixes.
 
 **Files affected:**
+
 - `features/quiz/context/__tests__/useProgressContext.test.tsx` — also removed unused `AppUserState` import
 - `pages/__tests__/FlashCardPage.test.tsx`
 - `features/vocabulary/components/__tests__/VocabularyCard.test.tsx`
@@ -174,6 +175,7 @@ After:
 **Root Cause:** The original file imported types from sibling modules using relative paths (`../types`, `../../vocabulary/types/Word`). After relocation, these paths no longer resolved.
 
 **Solution:** Updated import paths to:
+
 - `../../features/vocabulary/types/Word` (was `../../vocabulary/types/Word`)
 - `../../features/quiz/types` (was `../types`)
 
