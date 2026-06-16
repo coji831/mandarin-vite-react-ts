@@ -20,24 +20,24 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] `ContentCard` component built — polymorphic by `contentType` prop, renders type badge + card content
-- [ ] `ContentGrid` component built — responsive CSS grid (auto-fill, min 280px) with pagination (10/20/50 per page)
-- [ ] `SearchBar` component built — debounced text input (300ms), filters cards by Chinese/pinyin/english match
-- [ ] `FilterDropdown` component built — HSK level selector (1-6 + All) + Phase selector (1-4 + All)
-- [ ] `TabBar` component built — horizontal tabs: All, 🔤 Foundations, 📘 Radicals, 🔊 Phonetic, 📖 Readers, 📕 Grammar, 🏮 Chengyu
-- [ ] Type badges per card:
+- [x] `ContentCard` component built — polymorphic by `contentType` prop, renders type badge + card content
+- [x] `ContentGrid` component built — responsive CSS grid (auto-fill, min 280px) with pagination (10/20/50 per page)
+- [x] `SearchBar` component built — debounced text input (300ms), filters cards by Chinese/pinyin/english match
+- [x] `FilterDropdown` component built — HSK level selector (1-6 + All) + Phase selector (1-4 + All)
+- [x] `TabBar` component built — horizontal tabs: All, 🔤 Foundations, 📘 Radicals, 🔊 Phonetic, 📖 Readers, 📕 Grammar, 🏮 Chengyu
+- [x] Type badges per card:
   - 🔤 Foundations (HSK 1 vocabulary)
   - 📘 Radicals
   - 🔊 Phonetic components
   - 📖 Readers (graded reading passages)
   - 📕 Grammar points
   - 🏮 Chengyu (idioms)
-- [ ] Locked content cards shown with 🔒 badge — cards from phases the user hasn't unlocked are visible but marked locked
-- [ ] `ContentBrowser/index.ts` barrel exports all components
-- [ ] Vocabulary list page updated to use `ContentBrowser` with vocabulary tab active
-- [ ] `VocabularyListPage` removed — route `/learn/vocabulary-list` redirects to `/learn`
-- [ ] All existing vocabulary browsing functionality preserved
-- [ ] `npm test` passes
+- [x] Locked content cards shown with 🔒 badge — cards from phases the user hasn't unlocked are visible but marked locked
+- [x] `ContentBrowser/index.ts` barrel exports all components
+- [x] Vocabulary list page updated to use `ContentBrowser` with vocabulary tab active
+- [x] `VocabularyListPage` removed — route `/learn/vocabulary-list` redirects to `/learn`
+- [x] All existing vocabulary browsing functionality preserved
+- [x] `npm test` passes
 
 ## Business Rules
 
@@ -54,7 +54,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Merge Date**: June 16, 2026
+- **Key Commit**: (to be filled after commit)

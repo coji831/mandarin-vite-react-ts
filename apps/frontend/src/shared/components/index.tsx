@@ -5,3 +5,4 @@ export * from "./LoadingScreen/LoadingScreen";
 export * from "./ErrorScreen/ErrorScreen";
 export * from "./ProgressBar/ProgressBar";
 export * from "./FilterChip/FilterChip";
+export * from "./ContentBrowser";

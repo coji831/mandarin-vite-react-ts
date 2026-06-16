@@ -4,6 +4,7 @@
  * Layout for the Learn section (/learn/* routes).
  * Story 17.6: Removed ProgressProvider and UserIdentityProvider wrappers.
  * Zustand stores are used directly — no providers needed.
+ * Story 17.7: Changed Vocabulary link from /learn/vocabulary-list to /learn.
  *
  * Provides:
  * - Sub-navbar with Vocabulary, Quiz, Review, Basics links
@@ -25,12 +26,8 @@ function LearnLayout() {
       {/* Learn Sub-Navbar */}
       <nav className="learn-subnav">
         <Link
-          to="/learn/vocabulary-list"
-          className={`subnav-link ${
-            location.pathname === "/learn/vocabulary-list" || location.pathname === "/learn"
-              ? "active"
-              : ""
-          }`}
+          to="/learn"
+          className={`subnav-link ${location.pathname === "/learn" ? "active" : ""}`}
         >
           📚 Vocabulary
         </Link>

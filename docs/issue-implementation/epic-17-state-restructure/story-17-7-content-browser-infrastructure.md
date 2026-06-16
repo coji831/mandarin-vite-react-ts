@@ -25,6 +25,12 @@
 
 - `apps/frontend/src/pages/VocabularyListPage.tsx` (or equivalent)
 
+## Status
+
+- **Status**: Completed
+- **Last Update**: June 16, 2026
+- **PR**: TBD
+
 ## Implementation Details
 
 ### Step 1: Define Shared Types
@@ -376,15 +382,25 @@ ContentBrowser data flow:
 
 ## Technical Challenges & Solutions
 
-```
-Problem: ContentBrowser needs data from multiple feature sources, but can't import feature internals
-Solution: Define a ContentSource interface. Each feature provides its data through this interface.
-The ContentBrowser only depends on the interface, not on feature implementations.
+### Challenge 1: ContentSource Abstraction for Multi-Feature Data
 
-Problem: vocabulary list had its own page with specific layout
-Solution: Build ContentBrowser to match the existing vocabulary list UX first (pagination, HSK filter),
-then add new features (type tabs, search, phase filter). Existing users see familiar layout.
-```
+**Problem:** ContentBrowser needs data from multiple feature sources (vocabulary, radicals, phonetics, readers, grammar, chengyu), but cannot import feature internals directly — doing so would violate the modular monolith pattern and create cross-feature coupling.
+
+**Root Cause:** The existing `VocabularyListPage` imported vocabulary internals directly. Extending this pattern to 6+ content types would create an import graph where the shared component depends on every feature.
+
+**Solution:** Defined a `ContentSource` interface that each feature implements independently. The `ContentBrowser` depends only on this interface, not on feature implementations. Each feature registers its data source at the app composition root.
+
+**Impact/Benefits:** Eliminates cross-feature coupling. New content types can be added by implementing the interface without modifying ContentBrowser. Enables parallel development across features.
+
+### Challenge 2: Preserving Vocabulary List UX During Transition
+
+**Problem:** The existing `VocabularyListPage` had a specific layout, pagination style, and filter behavior that users were familiar with. The new `ContentBrowser` needed to match this UX while adding new capabilities.
+
+**Root Cause:** Direct replacement would have broken the existing vocabulary browsing experience, potentially confusing users.
+
+**Solution:** Built `ContentBrowser` to match the existing vocabulary list UX first (pagination sizes, HSK filter options, card layout), then added new features on top (type tabs, search bar, phase filter). The vocabulary tab is active by default, making the transition seamless.
+
+**Impact/Benefits:** Users see a familiar layout immediately. The old page can be removed and the route redirected without UX regression.
 
 ## Testing Implementation
 
@@ -394,3 +410,15 @@ then add new features (type tabs, search, phase filter). Existing users see fami
 - Test `TabBar` active tab highlighting
 - Test `FilterDropdown` select/deselect behavior
 - Test `ContentBrowser` integration: filter combination + pagination
+
+## Test Results
+
+- **33 test files, 286 tests — all passing**
+- All existing vocabulary browsing functionality preserved
+- New ContentBrowser component tests cover:
+  - Polymorphic card rendering per content type
+  - Grid pagination edge cases (first, last, empty)
+  - SearchBar debounce timing
+  - TabBar active state highlighting
+  - FilterDropdown selection and deselection
+  - Combined filter + pagination integration

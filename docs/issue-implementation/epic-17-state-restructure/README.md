@@ -2,9 +2,9 @@
 
 **BR Reference:** `docs/business-requirements/epic-17-state-restructure/README.md`
 
-**Status:** In Progress
+**Status:** Completed
 
-                    **Last Update:** June 16, 2026 (Stories 17.1-17.6 completed)
+                    **Last Update:** June 16, 2026 (Stories 17.1-17.7 completed)
 
 ---
 
@@ -58,7 +58,7 @@ This epic fundamentally restructures frontend state management and backend modul
    - ESLint rules added: no cross-feature `stores/*` imports, no direct `shared/store/*` imports
    - `useQuizEngine.ts` replaces QuizProvider initialization logic
 
-7. **Content Browser Infrastructure (Story 17.7)**
+7. **Content Browser Infrastructure (Story 17.7)** ✅
    - Build `src/shared/components/ContentBrowser/` with:
      - `ContentCard` — polymorphic card component rendering different content types via `contentType` prop
      - `ContentGrid` — responsive CSS grid (auto-fill, min 280px) with pagination

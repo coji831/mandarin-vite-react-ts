@@ -83,7 +83,7 @@ This epic consists of the following user stories:
 6. **Story 17.6: Provider Cleanup & Boundary Enforcement** _(link to `story-17-6-provider-cleanup-boundary-enforcement.md`)_ ✅
    - As a developer, I want to remove monolithic ProgressProvider from LearnLayout, clean up dead provider nesting, and add ESLint rules, so that the modular monolith pattern is enforced automatically.
 
-7. **Story 17.7: Content Browser Infrastructure** _(link to `story-17-7-content-browser-infrastructure.md`)_
+7. **Story 17.7: Content Browser Infrastructure** _(link to `story-17-7-content-browser-infrastructure.md`)_ ✅
    - As a **developer**, I want to **build the shared Content Browser component — a unified mixed-card grid with type badges, search bar, filter dropdowns, and tab-based filtering**, so that **all Phase 1-4 content types share a consistent browsing interface**. Replaces the existing VocabularyListPage.
 
 ## Story Breakdown Logic
@@ -117,11 +117,11 @@ The progress extraction (17.2-17.3) must happen before or alongside the Zustand 
 - [ ] ESLint `no-restricted-imports` rule added preventing direct `features/*/stores/*` cross-feature imports
 - [ ] All existing reducer tests adapted to test Zustand stores — same coverage, simpler test setup
 - [ ] Barrel exports (`index.ts`) updated for all affected features
-- [ ] Shared `ContentBrowser` component built at `src/shared/components/ContentBrowser/` with: `ContentCard` (polymorphic by contentType), `ContentGrid` (responsive grid + pagination), `SearchBar`, `FilterDropdown` (HSK level + phase), `TabBar` (content type tabs)
-- [ ] Content Browser shows type badges (🔤 Foundations, 📘 Radicals, 🔊 Phonetic, 📖 Readers, 📕 Grammar, 🏮 Chengyu) per card
-- [ ] Locked content cards shown with 🔒 badge (phase-gated)
-- [ ] `VocabularyListPage` removed — `/learn/vocabulary-list` route redirects to `/learn`
-- [ ] `npm test` passes with 100% success rate across affected features
+- [x] Shared `ContentBrowser` component built at `src/shared/components/ContentBrowser/` with: `ContentCard` (polymorphic by contentType), `ContentGrid` (responsive grid + pagination), `SearchBar`, `FilterDropdown` (HSK level + phase), `TabBar` (content type tabs)
+- [x] Content Browser shows type badges (🔤 Foundations, 📘 Radicals, 🔊 Phonetic, 📖 Readers, 📕 Grammar, 🏮 Chengyu) per card
+- [x] Locked content cards shown with 🔒 badge (phase-gated)
+- [x] `VocabularyListPage` removed — `/learn/vocabulary-list` route redirects to `/learn`
+- [x] `npm test` passes with 100% success rate across affected features
 
 ## Architecture Decisions
 
