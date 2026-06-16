@@ -238,16 +238,53 @@ After (transitional):
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Dual state sources during transition — progressReducer (Context) + progressStore (Zustand)
-Solution: Keep progressReducer operational during transition. Features that have been migrated
-use the Zustand store directly. Unmigrated consumers continue to use ProgressContext. Both
-sources call the same backend API, so data stays consistent. Remove Context in Story 17.6.
-```
+### Challenge 1: Dual State Sources During Transition
+
+**Problem:** During the transitional period, two state sources exist simultaneously — the old `progressReducer` (Context, in quiz) and the new `progressStore` (Zustand, in progress feature). Components using `ProgressContext` won't see updates made to the Zustand store and vice versa.
+
+**Root Cause:** The migration is phased: Story 17.2 creates the new store but existing quiz consumers still use the old Context + reducer pattern. Inconsistent state would occur if both sources were written to independently.
+
+**Solution:** Keep `progressReducer` operational during transition. Features that have been migrated use the Zustand store directly. Unmigrated consumers continue to use `ProgressContext`. Both sources call the same backend API, so data stays consistent via server-side reconciliation. The `useRecordActivity()` hook writes to the Zustand store optimistically, while `useProgressActions()` continues writing to the old Context reducer. Dual writes are avoided by design — each consumer uses exactly one source.
+
+**Resolution timeline:** Story 17.5 removes `progressReducer`, Story 17.6 removes `ProgressContext`.
+
+### Challenge 2: Quiz Barrel Export Cleanup
+
+**Problem:** The quiz feature's barrel (`features/quiz/index.ts`) exported `progressApi` and four progress types (`UserProgress`, `UserProgressListEntry`, `WordProgress`, `ProgressState`). Removing these exports without checking all external consumers could cause import resolution failures.
+
+**Root Cause:** The quiz barrel acted as a de facto progress module API. Multiple consumers (FlashCardPage, NavBar, Sidebar, etc.) imported progress-related items from `features/quiz/`.
+
+**Solution:** 
+- Retained the internal files (`quiz/services/progressService.ts`, `quiz/types/Progress.ts`) for backward compat
+- Removed only the barrel re-exports — external consumers must now import from `features/progress/`
+- Verified all existing imports still resolve (internal quiz code imports directly, not through barrel)
+- Quiz's `progressReducer.ts` intentionally kept as transitional (removed in Story 17.5)
+
+### Challenge 3: Zustand Dependency Installation
+
+**Problem:** `zustand` was not installed in the project. Installing it required running `npm install` in the frontend workspace.
+
+**Solution:** Installed via `npm install zustand` in `apps/frontend/`. Verified import resolves correctly via `import { create } from "zustand"` and `import { devtools } from "zustand/middleware"`.
 
 ## Testing Implementation
 
-- Create `features/progress/stores/__tests__/progressStore.test.ts` — test store actions directly
-- Create `features/progress/hooks/__tests__/useRecordActivity.test.ts` — test hook with mocked API
-- Verify existing `progressReducer.test.ts` still passes (transitional)
-- Store tests are simpler than reducer tests — no context wrapping needed
+### New Tests Created
+
+**File:** `features/progress/stores/__tests__/progressStore.test.ts`
+
+4 tests covering:
+1. **Initial state** — verifies empty `wordsById` and `wordIds`
+2. **Optimistic update** — `updateWordProgress` correctly merges partial data
+3. **Batch update** — `batchUpdate` handles multiple word records atomically
+4. **Reset** — `reset` returns store to initial empty state
+
+### Verification Results
+
+| Metric | Result |
+|--------|--------|
+| Test files | **31/31 passed** (+1 new: progressStore.test.ts) |
+| Tests | **259/259 passed** (+4 new store tests) |
+| Regressions | None — all existing quiz tests unchanged |
+| `tsc --noEmit` | Zero type errors |
+
+Store tests are simpler than reducer tests — no context wrapping needed (Zustand stores are provider-less).

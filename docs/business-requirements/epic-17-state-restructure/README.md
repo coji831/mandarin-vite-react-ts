@@ -18,7 +18,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026 (Story 17.1 completed)
+**Last Update:** June 16, 2026 (Stories 17.1-17.2 completed)
 
 ## Background
 
@@ -68,7 +68,7 @@ This epic consists of the following user stories:
 1. **Story 17.1: State Ownership Restructure** _(link to `story-17-1-state-ownership-restructure.md`)_ ✅
    - As a developer, I want to move ui/user slices to shared/store and decouple listReducer from quiz rootReducer, so that cross-feature state coupling is eliminated.
 
-2. **Story 17.2: Extract Progress Feature (Frontend)** _(link to `story-17-2-extract-progress-feature-frontend.md`)_
+2. **Story 17.2: Extract Progress Feature (Frontend)** _(link to `story-17-2-extract-progress-feature-frontend.md`)_ ✅
    - As a developer, I want to extract progress tracking from features/quiz into its own features/progress/ with a Zustand store and public `useRecordActivity()` hook, so that quiz, reading, and radicals can all record progress without cross-feature imports.
 
 3. **Story 17.3: Extract Progress Module (Backend)** _(link to `story-17-3-extract-progress-module-backend.md`)_

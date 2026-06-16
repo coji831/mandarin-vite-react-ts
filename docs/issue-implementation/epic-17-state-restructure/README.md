@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 16, 2026 (Story 17.1 completed)
+**Last Update:** June 16, 2026 (Stories 17.1-17.2 completed)
 
 ---
 
@@ -20,7 +20,7 @@ This epic fundamentally restructures frontend state management and backend modul
    - Update all imports across the codebase (hooks, types, barrel exports)
    - No logic changes — pure file relocation and import updates
 
-2. **Frontend Progress Extraction (Story 17.2)**
+2. **Frontend Progress Extraction (Story 17.2)** ✅
    - Create `features/progress/` with Zustand store (`progressStore.ts`), public `useRecordActivity()` hook, `progressService.ts` (API client), types, and barrel export
    - Extract progress logic from `features/quiz/` (progressReducer, progressService, progressHelpers)
    - The store uses Zustand with middleware for devtools. State shape mirrors existing `ProgressState`:

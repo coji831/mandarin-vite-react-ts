@@ -21,5 +21,4 @@ export type { MysteryBox } from "../../gamification/types/GamificationTypes";
 export type { QuestionMode, QuizQuestion, QuizAnswer } from "./QuizTypes";
 
 // Phase 2 restructure: Progress and State types moved from mandarin
-export type { UserProgress, UserProgressListEntry, WordProgress, ProgressState } from "./Progress";
 export type { UserState, UiState } from "./State";

@@ -5,4 +5,3 @@
  */
 
 export * from "./quizService";
-export * from "./progressService";

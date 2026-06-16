@@ -27,15 +27,5 @@ export type { UseSessionSummaryReturn } from "./hooks";
 export { rootReducer, initialState, progressReducer, progressInitialState } from "./reducers";
 export type { RootState, RootAction, ProgressAction } from "./reducers";
 
-// Services
-export { progressApi } from "./services";
-
 // Types
-export type {
-  UserProgress,
-  UserProgressListEntry,
-  WordProgress,
-  ProgressState,
-  UserState,
-  UiState,
-} from "./types";
+export type { UserState, UiState } from "./types";
