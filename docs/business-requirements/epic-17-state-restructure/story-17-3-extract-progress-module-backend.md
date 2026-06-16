@@ -20,23 +20,23 @@ Benefits:
 
 ## Acceptance Criteria
 
-- [ ] New `modules/progress/` directory created with Clean Architecture structure: `api/`, `domain/`, `repositories/`, `use-cases/`
-- [ ] `ProgressController.js` moved from `modules/quiz/api/` to `modules/progress/api/` — all handlers preserved
-- [ ] `progressRoutes.js` moved from `modules/quiz/api/` to `modules/progress/api/` — all routes preserved
-- [ ] `ProgressService.js` moved from `modules/quiz/use-cases/` to `modules/progress/use-cases/`
-- [ ] `StreakService.js` moved from `modules/quiz/use-cases/` to `modules/progress/use-cases/`
-- [ ] `ProgressRepository.js` moved from `modules/quiz/repositories/` to `modules/progress/repositories/`
-- [ ] `StreakRepository.js` moved from `modules/quiz/repositories/` to `modules/progress/repositories/`
-- [ ] Domain entities moved: `Progress.js`, `StudyStreak.js` from `modules/quiz/domain/entities/` to `modules/progress/domain/entities/`
-- [ ] Domain interfaces moved: `IProgressRepository.js` from `modules/quiz/domain/interfaces/` to `modules/progress/domain/interfaces/`
-- [ ] New `POST /api/progress/event` endpoint created — accepts `{ type, feature, data }` and routes to correct handler
-- [ ] Old quiz progress endpoints kept as deprecated wrappers — delegate to the same ProgressService
-- [ ] `modules/progress/index.js` exports `ProgressService` and `StreakService`
-- [ ] `container.js` updated to instantiate `modules/progress/` dependencies
-- [ ] Route registration updated to mount `modules/progress/` routes under `/api`
-- [ ] Quiz module's `index.js` no longer exports `ProgressService` (consumers import from progress module)
-- [ ] All existing progress API tests pass unchanged
-- [ ] Backend starts and all progress endpoints respond correctly
+- [x] New `modules/progress/` directory created with Clean Architecture structure: `api/`, `domain/`, `repositories/`, `use-cases/`
+- [x] `ProgressController.js` moved from `modules/quiz/api/` to `modules/progress/api/` — all handlers preserved
+- [x] `progressRoutes.js` moved from `modules/quiz/api/` to `modules/progress/api/` — all routes preserved
+- [x] `ProgressService.js` moved from `modules/quiz/use-cases/` to `modules/progress/use-cases/`
+- [x] `StreakService.js` moved from `modules/quiz/use-cases/` to `modules/progress/use-cases/`
+- [x] `ProgressRepository.js` moved from `modules/quiz/repositories/` to `modules/progress/repositories/`
+- [x] `StreakRepository.js` moved from `modules/quiz/repositories/` to `modules/progress/repositories/`
+- [x] Domain entities moved: `Progress.js`, `StudyStreak.js` from `modules/quiz/domain/entities/` to `modules/progress/domain/entities/`
+- [x] Domain interfaces moved: `IProgressRepository.js` from `modules/quiz/domain/interfaces/` to `modules/progress/domain/interfaces/`
+- [x] New `POST /api/progress/event` endpoint created — accepts `{ type, feature, data }` and routes to correct handler
+- [x] Old quiz progress endpoints kept as deprecated wrappers — delegate to the same ProgressService
+- [x] `modules/progress/index.js` exports `ProgressService` and `StreakService`
+- [x] `container.js` updated to instantiate `modules/progress/` dependencies
+- [x] Route registration updated to mount `modules/progress/` routes under `/api`
+- [x] Quiz module's `index.js` no longer exports `ProgressService` (consumers import from progress module)
+- [x] All existing progress API tests pass unchanged
+- [x] Backend starts and all progress endpoints respond correctly
 
 ## Business Rules
 
@@ -52,7 +52,7 @@ Benefits:
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `f97b8a8`

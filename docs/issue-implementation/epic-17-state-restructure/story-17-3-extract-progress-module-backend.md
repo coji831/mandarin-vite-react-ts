@@ -182,21 +182,39 @@ After:
 
 ## Technical Challenges & Solutions
 
-```
-Problem: DI container needs to instantiate progress module services while quiz module
-still references old locations
-Solution: Create new progress module with clean DI registration. Keep quiz module's
-progress references as deprecated wrappers that delegate to the new module's services.
-Both point to the same Prisma database — no data duplication.
+### Challenge 1: Import/Export Mismatch in Route Registration
 
-Problem: Route ordering — /api/progress/event must not be captured by /api/progress/:wordId
-Solution: Register eventRoutes BEFORE progressRoutes in route registration, similar to
-how /streak routes come before /:wordId in the existing codebase.
-```
+**Problem:** `eventRoutes.js` used a named export (`export { router as eventRoutes }`), but `routes.js` imported it as a default import (`import progressEventRouter from ...`). This would cause `progressEventRouter` to be `undefined` at runtime, silently preventing the new event endpoint from being mounted.
+
+**Root Cause:** The route file was authored with a named export pattern (consistent with how other route files export), but the consuming `routes.js` used a default import syntax without verifying the export type.
+
+**Solution:** Changed the import in `routes.js` to use named import syntax: `import { eventRoutes as progressEventRouter } from ...`.
+
+**Lesson:** Always verify export/import match when integrating a new route file into the main router.
+
+### Challenge 2: `recordQuizResult` Location
+
+**Problem:** The epic IML doc specified `ProgressService.recordQuizResult` for the event router's `record-answer` type, but this method does not exist on `ProgressService` — it lives on `LearningService`.
+
+**Root Cause:** The initial architecture plan assumed all progress-related business logic was in `ProgressService`, but during Story 15.11 the quiz-based learning logic (including spaced repetition) was extracted into a separate `LearningService`. The documentation was not updated to reflect this.
+
+**Solution:** The event router uses `LearningService.recordQuizResult` for `record-answer` events. Also exported `learningService` from `container.js` so event routes can access it.
+
+**Lesson:** Verify method locations against actual source code before writing implementation plans.
+
+### Challenge 3: `StreakService.updateStreak` Signature
+
+**Problem:** The event router needed to pass an optional date to `StreakService.updateStreak`, but the method signature only accepted `userId` without a date parameter.
+
+**Root Cause:** The original `updateStreak` always used `new Date()` internally, but the generic event endpoint should support explicit date passing for batch/replay scenarios.
+
+**Solution:** Added an optional `activityDate` parameter to `StreakService.updateStreak(userId, activityDate)`. When provided, it overrides the default `new Date()`. This is backward-compatible — existing callers that omit the parameter get the same behavior.
 
 ## Testing Implementation
 
-- Move existing progress-related backend tests alongside new module
-- Add test for `POST /api/progress/event` routing (all event types)
+- No dedicated backend test files exist for progress module yet (backend tests are integration-level in `tests/integration/database.test.js` which covers basic Prisma operations)
+- The existing quiz module `ProgressController` and routes remain as deprecated wrappers, so existing frontend tests continue to pass unchanged
+- All changes are structural (file moves + new event endpoint) with no behavioral changes to existing endpoints
+- Backend test coverage for the new event endpoint can be added in a follow-up story
 - Verify deprecated quiz progress endpoints still work
 - All existing progress tests pass unchanged

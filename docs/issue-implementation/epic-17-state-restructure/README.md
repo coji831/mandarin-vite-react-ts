@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-                    **Last Update:** June 16, 2026 (Stories 17.1-17.2 completed)
+                    **Last Update:** June 16, 2026 (Stories 17.1-17.3 completed)
 
 ---
 
@@ -32,7 +32,7 @@ This epic fundamentally restructures frontend state management and backend modul
      ```
    - `useRecordActivity()` hook: `(params: { feature: string; wordId: string; correct: boolean; data?: Record<string, unknown> }) => Promise<void>`
 
-3. **Backend Progress Module Extraction (Story 17.3)**
+3. **Backend Progress Module Extraction (Story 17.3)** ✅
    - Create `modules/progress/` following Clean Architecture: `api/` (controllers, routes), `domain/` (entities, interfaces), `repositories/`, `use-cases/` (services)
    - Move from `modules/quiz/`: `ProgressController.js`, `progressRoutes.js`, `ProgressService.js`, `ProgressRepository.js`, `StreakService.js`, `StreakRepository.js`, `StreakRepository.js`
    - New generic endpoint: `POST /api/progress/event { type: string; feature: string; data: object }`
