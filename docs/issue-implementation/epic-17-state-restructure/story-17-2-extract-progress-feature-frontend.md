@@ -254,7 +254,8 @@ After (transitional):
 
 **Root Cause:** The quiz barrel acted as a de facto progress module API. Multiple consumers (FlashCardPage, NavBar, Sidebar, etc.) imported progress-related items from `features/quiz/`.
 
-**Solution:** 
+**Solution:**
+
 - Retained the internal files (`quiz/services/progressService.ts`, `quiz/types/Progress.ts`) for backward compat
 - Removed only the barrel re-exports — external consumers must now import from `features/progress/`
 - Verified all existing imports still resolve (internal quiz code imports directly, not through barrel)
@@ -273,6 +274,7 @@ After (transitional):
 **File:** `features/progress/stores/__tests__/progressStore.test.ts`
 
 4 tests covering:
+
 1. **Initial state** — verifies empty `wordsById` and `wordIds`
 2. **Optimistic update** — `updateWordProgress` correctly merges partial data
 3. **Batch update** — `batchUpdate` handles multiple word records atomically
@@ -280,11 +282,11 @@ After (transitional):
 
 ### Verification Results
 
-| Metric | Result |
-|--------|--------|
-| Test files | **31/31 passed** (+1 new: progressStore.test.ts) |
-| Tests | **259/259 passed** (+4 new store tests) |
-| Regressions | None — all existing quiz tests unchanged |
-| `tsc --noEmit` | Zero type errors |
+| Metric         | Result                                           |
+| -------------- | ------------------------------------------------ |
+| Test files     | **31/31 passed** (+1 new: progressStore.test.ts) |
+| Tests          | **259/259 passed** (+4 new store tests)          |
+| Regressions    | None — all existing quiz tests unchanged         |
+| `tsc --noEmit` | Zero type errors                                 |
 
 Store tests are simpler than reducer tests — no context wrapping needed (Zustand stores are provider-less).

@@ -29,7 +29,7 @@ Benefits:
 - [x] Types moved: `WordProgress`, `ProgressState`, `UserProgress` from `features/quiz/types/` to `features/progress/types/`
 - [x] `features/progress/index.ts` barrel exports: store hooks, `useRecordActivity`, `progressService`, types
 - [~] Quiz feature updated to delegate progress recording to `useRecordActivity()` instead of dispatching to progressReducer directly
-  - *Deferred to Story 17.5: quiz internal delegation during Zustand migration phase*
+  - _Deferred to Story 17.5: quiz internal delegation during Zustand migration phase_
 - [x] `npm test` passes for all affected test files
 - [x] Zustand dependency installed (`npm install zustand` in `apps/frontend/`)
 
@@ -51,4 +51,4 @@ Benefits:
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: `(pending commit)`
+- **Key Commit**: `c978178`
