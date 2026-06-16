@@ -1,12 +1,12 @@
 # Adult Mandarin Learning Roadmap
 
-**Last Updated:** June 14, 2026
+**Last Updated:** June 16, 2026
 
-**Summary**: Pedagogical framework for adult Chinese learners, outlining the optimal 3-phase progression (Pinyin → Radicals → Vocabulary), why adults should not learn like children, and three empirically-backed shortcuts to accelerate retention.
+**Summary**: Pedagogical framework for adult Chinese learners, outlining the optimal 4-phase progression (Blueprint → Core 300 → Network → Advanced), why adults should not learn like children, and three empirically-backed shortcuts to accelerate retention.
 
 **Key Concepts**: Adult language acquisition, pedagogical sequencing, mnemonic methods, spaced repetition, recognition-only learning, stroke order rules
 
-**Applicability**: Learning content design for Mandarin apps, curriculum planning, feature prioritization, onboarding flow design, content epic sequencing
+**Applicability**: Learning content design for Mandarin apps, curriculum planning, feature prioritization, onboarding flow design, content epic sequencing (Epics 18-24)
 
 **Related KB Articles:**
 
@@ -32,10 +32,11 @@ Children learning Mandarin have two massive advantages that adult learners almos
 ## The Three-Phase Progression
 
 ```
-[ Phase 1: The Blueprint ] ──> [ Phase 2: The Core 100 ] ──> [ Phase 3: Vocabulary Explosion ]
-  • Master Pinyin                • Learn top 100 Radicals       • Focus on HSK Word Frequency
-  • Learn 8 Basic Strokes        • Combine into high-frequency   • Read Graded Readers (Context)
-  • Learn Stroke Order Rules       characters via Mnemonics     • Deconstruct with Radical Trees
+[ Phase 1: The Blueprint ] ──> [ Phase 2: The Core 300 ] ──> [ Phase 3: The Network ] ──> [ Phase 4: Advanced Fluidity ]
+  • Master Pinyin                • Learn top 100 Radicals       • Read Graded Readers        • Traditional Characters
+  • Learn 8 Basic Strokes        • Combine into high-frequency   • Deconstruct with Radical   • Chengyu (Idiom) Narratives
+  • Learn Stroke Order Rules       characters via Mnemonics       Trees & Phonetic Clusters  • Advanced Syntax (把/被)
+  • Audio-to-Type Loop           • IME Simulator (recognition)  • Contextual Comprehension   • Native Media (future)
 ```
 
 ### Phase 1: The Blueprint (Weeks 1–2)
@@ -55,7 +56,7 @@ Children learning Mandarin have two massive advantages that adult learners almos
 
 Once these rules are internalized, the correct stroke order can be guessed for approximately 95% of characters.
 
-### Phase 2: The Core 100 (Weeks 3–6)
+### Phase 2: The Core 300 (Weeks 3–6)
 
 **Goal**: Learn the most productive radicals as "Lego bricks" for character composition, then combine them into high-frequency characters.
 
@@ -71,13 +72,29 @@ Once these rules are internalized, the correct stroke order can be guessed for a
 
 **High-Frequency Characters**: Once radicals are familiar, learn HSK 1 vocabulary. Each new character is anchored by its constituent radicals — the learner recognizes known pieces rather than memorizing arbitrary strokes.
 
-### Phase 3: Vocabulary Explosion (Months 2+)
+### Phase 3: The Network (Months 2+)
 
 **Goal**: Scale from dozens to hundreds of characters through pattern recognition and contextual reading.
 
 **Radical Trees**: Pick a known radical and branch out to learn all HSK characters containing it. Example: 心 (heart) → 想 (think), 怕 (fear), 慢 (slow originally "heart" related), 情 (emotion), 懂 (understand), 忙 (busy). This builds pattern recognition for phonetic components as well.
 
-**Graded Readers**: Extended passages constrained to a specific HSK vocabulary level. Unlike isolated flashcards, graded readers provide sentence context, narrative structure, and repeated exposure — all critical for transfer from recognition to automaticity.
+**Phonetic Clusters**: Characters grouped by shared phonetic element (e.g., 青 family: 请, 情, 清, 晴, 静). Teaches pronunciation pattern recognition — if you know one character, you can guess how others sound.
+
+**Graded Readers**: Extended passages constrained to a specific HSK vocabulary level (95% known / 5% new). Unlike isolated flashcards, graded readers provide sentence context, narrative structure, and repeated exposure — all critical for transfer from recognition to automaticity.
+
+**Learning loop**: Contextual Comprehension Quiz — read passage → answer multi-choice questions → identify new target words.
+
+### Phase 4: Advanced Fluidity (Months 6+, Future Milestone)
+
+**Goal**: Transition from textbook environments to cultural, native, and advanced communication frameworks.
+
+**Traditional Character Toggle**: Global UI switch between Simplified and Traditional characters. Helps learners read Taiwanese/Hong Kong media and understand character etymology.
+
+**Chengyu (Idiom) Narratives**: 4-character idioms taught through storytelling — 70% historical context story, 30% linguistic application. Cultural depth alongside language learning.
+
+**Advanced Syntax**: Complex structures like 把 (bǎ) disposal construction and 被 (bèi) passive voice.
+
+**No gate quiz**: Phase 4 is open-ended self-directed study after completing Phases 1-3.
 
 ---
 
@@ -99,7 +116,7 @@ Traditional learning relies on rote repetition — writing a character 50 times 
 
 **Origin**: James Heisig's "Remembering the Hanzi" method (Heisig & Richardson, 2009), adapted from his earlier "Remembering the Kanji" series. The method teaches 3,000 characters by component decomposition + imaginative memory.
 
-**AI Enhancement**: The existing knowledge base article on [Chinese Character Structure](./chinese-character-structure.md) includes a design for AI-powered personalized mnemonics (LLM-generated stories tailored to individual learner interests), which could be implemented as a future feature.
+**AI Enhancement**: Mnemonic stories are **auto-saved** when generated — no explicit save action needed. Users can edit or regenerate later. Stories are embedded in the Radical Detail Card and Character Detail Hub (no standalone page). The existing knowledge base article on [Chinese Character Structure](./chinese-character-structure.md) includes a design for AI-powered personalized mnemonics (LLM-generated stories tailored to individual learner interests).
 
 **When to use**: Phase 2, when learning the first 500 characters. Works best for characters with clear component structure (~90% of modern Chinese characters are form-sound compounds).
 
@@ -109,7 +126,7 @@ Traditional learning relies on rote repetition — writing a character 50 times 
 
 **Problem**: Handwriting practice is the most time-consuming part of traditional study, but if the goal is reading literacy (not calligraphy), handwriting provides diminishing returns.
 
-**Solution**: Skip handwriting practice entirely for the first 1,000+ characters. Focus exclusively on reading recognition. When typing Chinese on a phone or computer, users input pinyin and select the correct character from candidates — this requires **recognition** (choosing the right character), not **recall** (drawing from memory).
+**Solution**: Skip handwriting practice entirely for the first 1,000+ characters. Focus exclusively on reading recognition. When typing Chinese on a phone or computer, users input pinyin using the **browser's native IME** (no custom component) and select the correct character from candidates — this requires **recognition** (choosing the right character), not **recall** (drawing from memory).
 
 **Estimated impact**: Learners report significantly faster reading progress by focusing cognitive effort on recognition rather than production. Some estimates suggest 2-3x faster progression through the same vocabulary set, though this is learner-reported and not formally measured.
 

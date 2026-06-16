@@ -23,6 +23,10 @@ Sections
 
 ## Todo (near-term)
 
+### Learning Roadmap (Epics 18-23)
+
+- [ ] **Onboarding tutorial (deferred)** — Design and implement a first-time onboarding flow for new learners. Not a blocker for UI design. See `verification-artifacts/learning-roadmap-usecases.md` Decision #1.
+
 ### Story 16 — Example Caching & Service Alignment: Infrastructure Verification
 
 - [ ] **[GCP Setup] Verify Google Cloud credentials and Terraform infrastructure** — Create GCS bucket `mandarin-vocab-example-data`, confirm GOOGLE_TTS_CREDENTIALS_RAW service account has Storage Object Creator/Viewer roles. Optional: apply Terraform from `terraform/gcs/examples-bucket.tf` to automate bucket creation, lifecycle policies (30-day auto-delete), service account IAM, and Cloud Audit Logs sink. Manual bucket creation (without Terraform) is sufficient for local testing. Link: [Terraform GCS Example](terraform/gcs/examples-bucket.tf), [Deployment Guide](docs/deployment-guide.md). Priority: Critical (blocks example caching from persisting to GCS).

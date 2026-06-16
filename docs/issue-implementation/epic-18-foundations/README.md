@@ -1,201 +1,68 @@
-﻿# Epic 17: Basic Knowledge Resources
+﻿# Epic 18: Foundations — Implementation
 
-## Epic Summary
+**BR Reference:** `docs/business-requirements/epic-18-foundations/README.md`
 
-**Goal:** Build comprehensive reference section with character radicals, pinyin system, stroke animations, grammar patterns, and idioms using static JSON content and interactive React components.
-
-**Key Points:**
-
-- Static JSON files in `public/data/knowledge/` eliminate backend dependencies and API calls
-- Radical database (214 Kangxi radicals) sourced from Unicode Han Database with interactive breakdown UI
-- SVG stroke order animations from Wikimedia Commons with playback controls (play/pause/loop/speed)
-- Grammar pattern library (20 structures) with HSK level tagging and searchable by keyword
-- Idiom database (50 entries) with etymology stories and audio pronunciation via TTS
-
-**Status:** Planned
-
-**Last Update:** February 2, 2026
-
-## Technical Overview
-
-This epic creates a standalone Knowledge Hub feature with static educational content delivered via JSON files and interactive React components. Content is frontend-only (no backend API required) to minimize complexity and maximize performance.
-
-**Architecture Pattern:**
-
-```
-Static Content (JSON)
-    â†“
-Frontend Loader Utility
-    â†“
-React Components (interactive UI)
-    â†“
-User
-```
-
-**Content Sources:**
-
-- **Radicals**: Unicode Han Database (public domain)
-- **Stroke Order SVGs**: Wikimedia Commons (CC-BY-SA licensed)
-- **Grammar Patterns**: Open textbooks with citations (fair use)
-- **Idioms**: Public domain collections + original curation
-- **Audio**: Google Cloud TTS (existing service)
-
-**Scope:**
-
-- 6 knowledge sections (radicals, pinyin, strokes, grammar, idioms, tones)
-- ~300 content items total (214 radicals + 100 stroke animations + 20 patterns + 50 idioms)
-- Mobile-responsive UI with touch-friendly interactions
-- SEO-optimized landing pages for organic traffic
+---
 
 ## Architecture Decisions
 
-1. **Static JSON vs. backend API** â€” JSON files reduce complexity, eliminate API latency, enable offline support; tradeoff: content updates require deployment vs. dynamic CMS
+| Decision                       | Choice                                               | Rationale                                                                 |
+| ------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Pinyin data**                | Static JSON in `public/data/foundations/pinyin.json` | No backend needed. 21 initials + 39 finals + tone combinations are fixed. |
+| **Stroke animations**          | Hanzi Writer npm library (MIT)                       | 9000+ chars, built-in playback, SVG-based. No backend.                    |
+| **Audio**                      | Reuse existing AudioService/Google Cloud TTS         | Already implemented for vocabulary.                                       |
+| **Character Detail Hub**       | React portal overlay component                       | Slides up from any context. No route change. Zustand store for state.     |
+| **Hub progressive disclosure** | Phase gate check in Hub component                    | Sections appear/disappear based on `user_phase_gates` API response.       |
+| **Quiz storage**               | Backend API (`POST /api/progress/quiz`)              | Phase gate data must persist (Decision #6).                               |
 
-2. **SVG animations vs. video files** â€” SVGs are scalable, smaller file size (~10KB vs. 500KB video), customizable playback speed; tradeoff: requires SVG sourcing/creation vs. recording videos
+---
 
-3. **Open-source content with attribution vs. proprietary curation** â€” Reduces content creation effort from 40+ hours to 10 hours; builds community trust; tradeoff: limited differentiation vs. competitors
+## Stories
 
-4. **Standalone knowledge section vs. integrated tooltips** â€” Enables deep-linking for SEO, browsing behavior separate from learning flow; tradeoff: requires navigation vs. contextual inline tips
+### Story 17.1: Knowledge Hub Structure
 
-## Technical Implementation
+**Files:** `src/features/knowledge-hub/`, router, `paths.ts`
 
-### Architecture
+**AC:** Routes for all 4-phase tabs. Phase-gated TabBar. 5-item global nav updated.
 
-```
-React Router
-    â†“
-/knowledge â†’ KnowledgeHub.tsx (landing page)
-    â”œâ”€ /knowledge/radicals â†’ RadicalSection.tsx
-    â”‚   â””â”€ RadicalBreakdown.tsx (interactive)
-    â”œâ”€ /knowledge/pinyin â†’ PinyinSection.tsx
-    â”‚   â””â”€ ToneChart.tsx (audio playback)
-    â”œâ”€ /knowledge/strokes â†’ StrokeSection.tsx
-    â”‚   â””â”€ StrokeAnimation.tsx (SVG + controls)
-    â”œâ”€ /knowledge/grammar â†’ GrammarSection.tsx
-    â”‚   â””â”€ PatternCard.tsx (searchable)
-    â””â”€ /knowledge/idioms â†’ IdiomSection.tsx
-        â””â”€ IdiomCard.tsx (etymology)
-```
+### Story 17.2: Pinyin System Guide
 
-**Data Flow:**
+**Files:** `FoundationsPage.tsx`, `PinyinTab.tsx`, `TonesTab.tsx`
 
-```
-User navigates to /knowledge/radicals
-    â†“
-RadicalSection.tsx mounts
-    â†“
-useEffect â†’ fetch('/data/knowledge/radicals.json')
-    â†“
-Parse JSON â†’ setState(radicals)
-    â†“
-Render RadicalBreakdown components
-    â†“
-[User clicks radical æ—¥]
-    â†“
-Filter characters containing æ—¥
-    â†“
-Display related characters (æ˜Ž, æ—¶, æ—©, etc.)
-```
+**AC:** Clickable initials grid (21) + finals grid (39). Tone-colored display (ˉred ˊorange ˇgreen ˋblue ·gray). Tone pair drills. Tone change rules (一, 不, 3rd tone sandhi).
 
-### API Endpoints
+**Data:** `public/data/foundations/pinyin.json`
 
-**No backend APIs required** â€” All content served statically from `public/data/knowledge/`.
+### Story 17.3: Stroke Order Reference + Animations
 
-**Audio Generation** (reuse existing TTS service):
+**Files:** `StrokeReferenceTab.tsx`, `StrokeAnimTab.tsx`
 
-- `POST /api/audio/generate` for tone examples and idiom pronunciation
+**AC:** 8 basic strokes grid (点横竖撇捺提折钩). 4 stroke order rules with examples. Character search → Hanzi Writer SVG animation. Play/pause/step/speed controls.
 
-### Component Relationships
+### Story 17.4: Character Detail Hub
 
-```
-KnowledgeHub.tsx (landing)
-    â”œâ”€ SectionCard (Ã—6)
-    â”‚   â”œâ”€ Icon
-    â”‚   â”œâ”€ Title
-    â”‚   â””â”€ Description
-    â””â”€ KnowledgeNav.tsx (sidebar)
+**Files:** `src/shared/components/CharacterDetailHub.tsx`, `src/shared/store/hubStore.ts`
 
-RadicalSection.tsx
-    â”œâ”€ SearchBar (filter by meaning/pinyin)
-    â”œâ”€ RadicalGrid.tsx
-    â”‚   â””â”€ RadicalCard.tsx (Ã—214)
-    â”‚       â”œâ”€ Character (large)
-    â”‚       â”œâ”€ Pinyin
-    â”‚       â”œâ”€ Meaning
-    â”‚       â””â”€ Stroke Count
-    â””â”€ RadicalDetailModal.tsx
-        â”œâ”€ Radical info
-        â””â”€ Related characters list
+**AC:** Slide-up overlay. Hero-center layout (64-72px character, stroke anim inline). Info orbiting (radicals left, examples right, mnemonic bottom, related below). Phase-gated sections. Inline popover variant for readers. Save to Review / Mark Learned. Esc to close.
 
-ToneChart.tsx
-    â”œâ”€ ToneRow (Ã—5: tone 1-4 + neutral)
-    â”‚   â”œâ”€ Pinyin (mÄ mÃ¡ mÇŽ mÃ  ma)
-    â”‚   â”œâ”€ Audio button
-    â”‚   â””â”€ Tone curve visualization
-    â””â”€ ToneRulesPanel.tsx (sandhi rules)
+**Replaces:** Existing `FlashCardPage` — redirect `/learn/flashcards/*` → `/learn/foundations`
 
-StrokeAnimation.tsx
-    â”œâ”€ SVG canvas (stroke paths)
-    â”œâ”€ PlaybackControls
-    â”‚   â”œâ”€ Play/Pause button
-    â”‚   â”œâ”€ Loop toggle
-    â”‚   â””â”€ Speed slider (0.5x, 1x, 2x)
-    â””â”€ StrokeCounter (stroke X of Y)
+### Story 17.5: Audio-to-Type Quiz
 
-PatternCard.tsx
-    â”œâ”€ Pattern title ("Subject + æ˜¯ + Noun")
-    â”œâ”€ HSK level badge
-    â”œâ”€ ExampleList (Ã—3)
-    â”‚   â””â”€ ExampleRow (Chinese, Pinyin, English)
-    â””â”€ UsageNotes (when to use this pattern)
+**Files:** `Phase1QuizPage.tsx`
 
-IdiomCard.tsx
-    â”œâ”€ Idiom (å››å­—æˆè¯­)
-    â”œâ”€ Pinyin
-    â”œâ”€ Literal meaning
-    â”œâ”€ Figurative meaning
-    â”œâ”€ Audio button
-    â””â”€ Etymology (expandable)
-```
+**AC:** 20 randomized questions. Hear audio → type pinyin in text input → select tone marker (1-4 buttons). Instant feedback (correct/incorrect + play again). Progress bar with 90% pass target. Score ≥90% unlocks Phase 2. Results by category (Pinyin, Tones, Pairs, Rules).
 
-### Dependencies
+---
 
-**New Files:**
+## Risks
 
-- `src/features/knowledge/` folder structure
-- `public/data/knowledge/radicals.json`
-- `public/data/knowledge/pinyin-guide.json`
-- `public/data/knowledge/stroke-order/` (SVG files)
-- `public/data/knowledge/grammar-patterns.json`
-- `public/data/knowledge/idioms.json`
-
-**New Dependencies:**
-
-- None (uses existing React, React Router, TTS service)
-
-**Content Licensing:**
-
-- Unicode Han Database: Public domain
-- Wikimedia Commons SVGs: CC-BY-SA 3.0 (attribution required)
-- Grammar examples: Fair use (educational content with citations)
-
-### Testing Strategy
-
-**Unit Tests:**
-
-- `RadicalBreakdown.test.tsx` - Test filtering and related character lookup
-- `ToneChart.test.tsx` - Test audio playback triggers
-- `StrokeAnimation.test.tsx` - Test playback controls (play/pause/speed)
-
-**Integration Tests:**
-
-- `knowledge-hub-routing.test.tsx` - Test all knowledge routes render correctly
-- `content-loading.test.ts` - Test JSON files load and parse correctly
-
-**Content Validation:**
-
-- Script to validate JSON schemas (all required fields present)
-- Script to check SVG file integrity (valid XML, proper dimensions)
+| Risk                                       | Mitigation                                            |
+| ------------------------------------------ | ----------------------------------------------------- |
+| Hanzi Writer performance for complex chars | SVG caching, limit simultaneous animations            |
+| Hub slow on first open                     | Lazy-load component, preload decomposition data       |
+| FlashCardPage removal breaks features      | Audit all imports before removal. Add route redirect. |
+| Audio-to-Type quiz audio loading           | Preload TTS audio for common pinyin combinations      |
 
 **Manual Testing:**
 
@@ -319,12 +186,11 @@ IdiomCard.tsx
 **Related Documentation:**
 
 - [Epic 17 BR](../../business-requirements/epic-17-knowledge-hub/README.md)
-- Story 17.1 Implementation *(not yet created)*
-- Story 17.2 Implementation *(not yet created)*
-- Story 17.3 Implementation *(not yet created)*
-- Story 17.4 Implementation *(not yet created)*
-- Story 17.5 Implementation *(not yet created)*
-- Story 17.6 Implementation *(not yet created)*
+- Story 17.1 Implementation _(not yet created)_
+- Story 17.2 Implementation _(not yet created)_
+- Story 17.3 Implementation _(not yet created)_
+- Story 17.4 Implementation _(not yet created)_
+- Story 17.5 Implementation _(not yet created)_
+- Story 17.6 Implementation _(not yet created)_
 - [Architecture Overview](../../architecture.md)
 - [Knowledge Base](../../knowledge-base/README.md)
-

@@ -6,16 +6,20 @@
 
 **Key Points:**
 
-- 20+ common grammar patterns (e.g., Subject + 是 + Noun, 把 construction, 比 comparison)
+- **Spans Phases 2-4** with gated content visibility:
+  - **Phase 2**: Basic structures (SVO, Time placement, 吗 questions)
+  - **Phase 3**: Advanced particles (了 le, 过 guò, conjunctions 因为...所以)
+  - **Phase 4**: Complex syntax (把 bǎ disposal, 被 bèi passive)
+- 20+ common grammar patterns across all phases
 - 3+ example sentences per pattern with Chinese, pinyin, and English
 - HSK level tagging for each pattern
 - Searchable by English keyword or HSK level
 - Static JSON content in `public/data/` — no backend API dependencies
-- Supplementary content — builds on foundational knowledge from Epics 17-18
+- Each example word clickable → opens Character Detail Hub
 
 **Status:** Planned
 
-**Last Update:** June 14, 2026
+**Last Update:** June 16, 2026
 
 ## Background
 

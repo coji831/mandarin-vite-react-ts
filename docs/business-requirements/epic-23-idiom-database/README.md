@@ -1,20 +1,22 @@
-# Epic 23: Idiom (Chengyu) Database
+# Epic 23: Chengyu (Idiom) Narratives
 
 ## Epic Summary
 
-**Goal:** Provide a browsable database of common Chinese idioms (chengyu) with literal meanings, figurative meanings, etymology/origin stories, and audio pronunciation.
+**Goal:** Provide a narrative-driven library of common Chinese idioms (chengyu) where learning happens through storytelling — 70% historical/cultural context, 30% linguistic application.
 
 **Key Points:**
 
 - 50+ common idioms (chengyu) with literal and figurative English translations
-- Etymology/origin stories explaining cultural context and historical background
+- **Narrative-driven format** — each idiom presented as a story: historical context → literal meaning → figurative meaning → modern usage example
+- Theme and era filters (e.g., Self-deception, Spring & Autumn period, Love stories)
 - Pinyin pronunciation and TTS audio for each idiom (reuse existing AudioService)
 - Static JSON content in public/data/ — no backend API dependencies
-- Supplementary content — builds on foundational knowledge
+- **Phase 4 content** — requires Simplified Chinese foundation from Phases 1-3
+- No progress tracking — pure reference and cultural learning
 
 **Status:** Planned
 
-**Last Update:** June 14, 2026
+**Last Update:** June 16, 2026
 
 ## Background
 

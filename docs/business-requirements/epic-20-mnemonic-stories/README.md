@@ -8,14 +8,16 @@
 
 - AI-generated mnemonic stories using Gemini API (reuse `CachedAIFeedbackService` pattern from Epic 15)
 - Each mnemonic decomposes character into radicals + tells a memorable story (e.g., 怕 = heart radical 忄 + white 白 → "blood leaves heart, face turns white")
+- **Auto-save** — no explicit save action. Story saves automatically when generated. User can edit or regenerate later.
+- **No standalone mnemonics page** — embedded in Radical Detail Card ("Generate Story" button) and Character Detail Hub (mnemonic section)
 - Redis caching for generated mnemonics (same TTL pattern as Epic 15 AI feedback)
 - Character decomposition data from Make Me a Hanzi (MIT license, 9000+ characters with etymology)
-- Display inline with word detail or dedicated mnemonic panel
 - Knowledge Base article already has prompt design and user personalization strategy
+- **Phase 2 content** — gated behind radical unlocking
 
 **Status:** Planned
 
-**Last Update:** June 14, 2026
+**Last Update:** June 16, 2026
 
 ## Background
 
@@ -27,7 +29,7 @@ This epic consists of the following user stories:
    - As a backend developer, I want to implement Gemini API integration for mnemonic story generation with Redis caching, so that learners receive AI-generated mnemonics on demand.
 
 2. **Story 19.2: Mnemonic Display UI** _(link to `story-19-2-mnemonic-display-ui.md`)_
-   - As a learner, I want to see mnemonic stories alongside characters in word detail view, so that I can use storytelling to remember characters.
+   - As a **learner**, I want to **see mnemonic stories embedded in the Radical Detail Card and Character Detail Hub**, so that **I can use storytelling to remember characters without navigating to a separate page**.
 
 3. **Story 19.3: Character Decomposition Data** _(link to `story-19-3-character-decomposition-data.md`)_
    - As a developer, I want to import Make Me a Hanzi decomposition and etymology data, so that mnemonic generation has accurate radical breakdowns to work from.

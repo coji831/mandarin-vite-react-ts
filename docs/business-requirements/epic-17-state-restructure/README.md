@@ -17,7 +17,7 @@
 
 **Status:** Planned
 
-**Last Update:** June 14, 2026
+**Last Update:** June 16, 2026
 
 ## Background
 
@@ -42,6 +42,8 @@ This epic consists of the following user stories:
 
 6. **Story 17.6: Provider Cleanup & Boundary Enforcement** _(link to `story-17-6-provider-cleanup-boundary-enforcement.md`)_
    - As a developer, I want to remove monolithic ProgressProvider from LearnLayout, clean up dead provider nesting, and add ESLint rules, so that the modular monolith pattern is enforced automatically.
+7. **Story 17.7: Content Browser Infrastructure** _(link to `story-17-7-content-browser-infrastructure.md`)_
+   - As a **developer**, I want to **build the shared Content Browser component — a unified mixed-card grid with type badges, search bar, filter dropdowns, and tab-based filtering**, so that **all Phase 1-4 content types share a consistent browsing interface**. Replaces the existing VocabularyListPage.
 
 ## Story Breakdown Logic
 
@@ -51,8 +53,9 @@ This epic is divided into stories based on the following approach:
 - **Stories 17.2-17.3** extract progress from quiz on frontend and backend (architectural fix — progress is cross-cutting, not quiz-specific)
 - **Stories 17.4-17.5** migrate to Zustand slice by slice (quiz+vocabulary first, then UI+user+progress)
 - **Story 17.6** cleans up providers and hardens boundaries with ESLint
+- **Story 17.7** builds the shared Content Browser component replacing VocabularyListPage — provides the base card grid, search, and filtering infrastructure that all Phase 1-4 content tabs consume
 
-The progress extraction (17.2-17.3) must happen before or alongside the Zustand migration (17.4-17.5), because the progress store target location differs from where progressReducer currently lives.
+The progress extraction (17.2-17.3) must happen before or alongside the Zustand migration (17.4-17.5), because the progress store target location differs from where progressReducer currently lives. Story 17.7 can be done in parallel with 17.4-17.6 as it touches different files.
 
 ## Acceptance Criteria
 
