@@ -9,7 +9,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useProgressState } from "../../quiz/hooks";
-import type { RootState } from "../../quiz/reducers/rootReducer";
+import type { RootState } from "../../quiz/hooks/useProgressState";
 
 export { NavBar };
 

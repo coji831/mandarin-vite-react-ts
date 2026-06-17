@@ -36,21 +36,35 @@ function AppLayout() {
           {isAuthenticated && (
             <div className="navbar-links">
               <Link to="/" className={`navbar-link ${location.pathname === "/" ? "active" : ""}`}>
-                Dashboard
+                🏠 Dashboard
               </Link>
 
               <Link
                 to="/learn"
                 className={`navbar-link ${location.pathname.startsWith("/learn") ? "active" : ""}`}
               >
-                Learn
+                📚 Learn
+              </Link>
+
+              <Link
+                to="/practices"
+                className={`navbar-link ${location.pathname.startsWith("/practices") ? "active" : ""}`}
+              >
+                🎯 Practices
+              </Link>
+
+              <Link
+                to="/library"
+                className={`navbar-link ${location.pathname.startsWith("/library") ? "active" : ""}`}
+              >
+                📖 Library
               </Link>
 
               <Link
                 to="/progress"
                 className={`navbar-link ${location.pathname.startsWith("/progress") ? "active" : ""}`}
               >
-                Progress
+                📊 Progress
               </Link>
             </div>
           )}

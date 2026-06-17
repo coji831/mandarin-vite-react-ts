@@ -3,9 +3,13 @@ import { vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { Card } from "features/vocabulary/types";
-import { ProgressStateContext } from "../../../quiz/context";
-import { RootState } from "../../../quiz/reducers";
 import { Sidebar } from "../Sidebar";
+
+// Mock useProgressState to return controllable data
+const mockUseProgressState = vi.fn();
+vi.mock("../../../quiz/hooks/useProgressState", () => ({
+  useProgressState: (selector: any) => selector(mockUseProgressState()),
+}));
 
 describe("Sidebar", () => {
   const words: Card[] = [
@@ -31,11 +35,15 @@ describe("Sidebar", () => {
       mastered: true,
     },
   ];
-  const masteredWordIds = new Set(["1", "3"]);
   const mockListId = "test-list";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows full list and highlights mastered words", () => {
     // Provide progress data with mastered words (wordId "1" and "3")
-    const mockState: RootState = {
+    mockUseProgressState.mockReturnValue({
       progress: {
         wordsById: {
           "1": { wordId: "1", confidence: 1 },
@@ -50,19 +58,17 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
-      vocabLists: { itemsById: {}, itemIds: [] },
-    };
+    });
+
     render(
-      <ProgressStateContext.Provider value={mockState}>
-        <Sidebar
-          currentCardIndex={0}
-          search=""
-          setSearch={() => {}}
-          filteredWords={words}
-          handleSidebarClick={() => {}}
-          onBackToList={() => {}}
-        />
-      </ProgressStateContext.Provider>,
+      <Sidebar
+        currentCardIndex={0}
+        search=""
+        setSearch={() => {}}
+        filteredWords={words}
+        handleSidebarClick={() => {}}
+        onBackToList={() => {}}
+      />,
     );
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
@@ -75,7 +81,7 @@ describe("Sidebar", () => {
 
   it("focuses flashcard deck on sidebar item click", () => {
     const handleSidebarClick = vi.fn();
-    const mockState2: RootState = {
+    mockUseProgressState.mockReturnValue({
       progress: { wordsById: {}, wordIds: [] },
       user: { userId: null, preferences: {} },
       ui: {
@@ -84,19 +90,17 @@ describe("Sidebar", () => {
         isLoading: false,
         error: "",
       },
-      vocabLists: { itemsById: {}, itemIds: [] },
-    };
+    });
+
     render(
-      <ProgressStateContext.Provider value={mockState2}>
-        <Sidebar
-          currentCardIndex={0}
-          search=""
-          setSearch={() => {}}
-          filteredWords={words}
-          handleSidebarClick={handleSidebarClick}
-          onBackToList={() => {}}
-        />
-      </ProgressStateContext.Provider>,
+      <Sidebar
+        currentCardIndex={0}
+        search=""
+        setSearch={() => {}}
+        filteredWords={words}
+        handleSidebarClick={handleSidebarClick}
+        onBackToList={() => {}}
+      />,
     );
     fireEvent.click(screen.getByText("好"));
     expect(handleSidebarClick).toHaveBeenCalled();

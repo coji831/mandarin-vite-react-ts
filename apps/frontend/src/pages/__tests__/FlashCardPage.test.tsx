@@ -4,8 +4,6 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { FlashCardPage } from "../FlashCardPage";
-import { ProgressStateContext } from "../../features/quiz";
-import type { RootState } from "../../features/quiz";
 
 // Mock the VocabularyDataService to control its behavior in tests
 vi.mock("../../features/vocabulary/services/vocabularyDataService", () => {
@@ -29,27 +27,24 @@ vi.mock("../../features/quiz/hooks/useProgressActions", () => ({
   }),
 }));
 
-describe("FlashCardPage", () => {
-  it("shows not found state when words are not loaded", () => {
-    const mockState: RootState = {
+// Mock useProgressState to return empty progress data
+vi.mock("../../features/quiz/hooks/useProgressState", () => ({
+  useProgressState: (selector: any) =>
+    selector({
       progress: { wordsById: {}, wordIds: [] },
       user: { userId: null, preferences: {} },
-      ui: {
-        selectedList: null,
-        selectedWords: [],
-        isLoading: false,
-        error: "",
-      },
-      vocabLists: { itemsById: {}, itemIds: [] },
-    };
+      ui: { selectedList: null, selectedWords: [], isLoading: false, error: "" },
+    }),
+}));
+
+describe("FlashCardPage", () => {
+  it("shows not found state when words are not loaded", () => {
     render(
-      <ProgressStateContext.Provider value={mockState}>
-        <MemoryRouter initialEntries={["/learn/flashcards/list-1"]}>
-          <Routes>
-            <Route path="/learn/flashcards/:listId" element={<FlashCardPage />} />
-          </Routes>
-        </MemoryRouter>
-      </ProgressStateContext.Provider>,
+      <MemoryRouter initialEntries={["/learn/flashcards/list-1"]}>
+        <Routes>
+          <Route path="/learn/flashcards/:listId" element={<FlashCardPage />} />
+        </Routes>
+      </MemoryRouter>,
     );
     expect(screen.getByText(/List Not Found or Empty/i)).not.toBeNull();
   });

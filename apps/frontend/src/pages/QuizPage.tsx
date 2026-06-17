@@ -6,12 +6,12 @@
  * Story 15.9: Gamification & AI feedback integration
  * Story 15.11: Aligned with Epic 4 feature-based routing pattern
  * Phase 4 restructure: Moved from features/quiz/pages/ to pages/ orchestrator layer
+ * Story 17.6: Removed QuizProvider — quiz state uses quizSessionStore directly
  *
  * Manages quiz session lifecycle:
- * - Wraps quiz in QuizProvider context
+ * - Initializes quiz session via useQuizEngine
  * - Routes between phases: LOADING → QUESTION/ANSWER_FEEDBACK → RESULTS/ERROR
- * - Pure phase routing based on quiz state
- * - All business logic delegated to QuizContext
+ * - Pure phase routing based on Zustand store state
  *
  * Phase Routing:
  * - LOADING: Shows loading spinner while fetching due words
@@ -22,38 +22,39 @@
  */
 
 import {
-  QuizProvider,
-  useQuizState,
-  useQuizActions,
+  useQuizSessionStore,
   ExamLayout,
   ResultsLayout,
   ErrorScreen,
   LoadingScreen,
 } from "features/quiz";
+import { useQuizEngine, quizRetry } from "features/quiz/hooks/useQuizEngine";
 import "./QuizPage.css";
 
 export function QuizPage() {
+  useQuizEngine();
+
   return (
-    <QuizProvider>
-      <div className="dailyReviewContainer flex-center">
-        <div className="quizContentWrapper flex-col">
-          <QuizRouter />
-        </div>
+    <div className="dailyReviewContainer flex-center">
+      <div className="quizContentWrapper flex-col">
+        <QuizRouter />
       </div>
-    </QuizProvider>
+    </div>
   );
 }
 
 function QuizRouter() {
-  const { phase, error } = useQuizState();
-  const { handleRetry } = useQuizActions();
+  const phase = useQuizSessionStore((s) => s.phase);
+  const error = useQuizSessionStore((s) => s.error);
 
   switch (phase) {
     case "LOADING":
       return <LoadingScreen />;
 
     case "ERROR":
-      return <ErrorScreen error={error || "An unknown error occurred"} onRetry={handleRetry} />;
+      return (
+        <ErrorScreen error={error || "An unknown error occurred"} onRetry={quizRetry.handleRetry} />
+      );
 
     case "QUESTION":
     case "ANSWER_FEEDBACK":

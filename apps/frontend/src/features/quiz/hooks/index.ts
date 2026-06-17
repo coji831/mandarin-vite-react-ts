@@ -12,6 +12,7 @@ export { useSessionSummary } from "./useSessionSummary";
 export { useProgressActions } from "./useProgressActions";
 export { useProgressDispatch } from "./useProgressDispatch";
 export { useProgressState } from "./useProgressState";
+export type { RootState } from "./useProgressState";
 export { useUserIdentity } from "./useUserIdentity";
 
 export type { UseSessionSummaryReturn } from "./useSessionSummary";

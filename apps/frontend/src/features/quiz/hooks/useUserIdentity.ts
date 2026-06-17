@@ -1,32 +1,31 @@
 /**
  * useUserIdentity
  *
- * Custom React hook to manage the current user's identity.
- * - Initializes identity from localStorage (via getUserIdentity).
- * - On mount, updates lastActive and refreshes identity.
- * - Provides a manual refresh function (e.g., after login or user switch).
- *
- * Returns: [identity, refresh]
- *   - identity: UserIdentity object
- *   - refresh: function to manually reload identity from localStorage
- *
- * Moved from features/mandarin/hooks/ to features/quiz/hooks/ (Phase 2 restructure)
+ * Story 17.5: Reads from Zustand userStore. Falls back to localStorage.
+ * Will be removed in Story 17.6 — use useUserStore directly.
  */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
+import { useUserStore } from "../../../shared/store/userStore";
 import { getUserIdentity, updateUserActivity, UserIdentity } from "../utils";
 
 export function useUserIdentity(): [UserIdentity, () => void] {
-  const [identity, setIdentity] = useState<UserIdentity>(() => getUserIdentity());
+  const userId = useUserStore((s) => s.userId);
+  const refresh = useUserStore((s) => s.refresh);
 
-  // Optionally update lastActive on mount
   useEffect(() => {
     updateUserActivity();
-    setIdentity(getUserIdentity());
-  }, []);
+    const identity = getUserIdentity();
+    if (identity?.userId && !userId) {
+      useUserStore.getState().setUserId(identity.userId);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Manual refresh (e.g., after login or switch)
-  const refresh = () => setIdentity(getUserIdentity());
-
-  return [identity, refresh];
+  return [
+    {
+      userId: userId ?? getUserIdentity()?.userId ?? "",
+      lastActive: getUserIdentity()?.lastActive ?? Date.now(),
+    },
+    () => useUserStore.getState().refresh(),
+  ];
 }

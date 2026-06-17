@@ -63,7 +63,7 @@ export class AudioService implements IAudioService {
         audio.onended = () => resolve();
         audio.onerror = (e) => reject(e);
         // Start playback (may reject due to autoplay policies)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
         await audio.play();
       } catch (err) {
         console.error("[AudioService] playAudio failed", err);

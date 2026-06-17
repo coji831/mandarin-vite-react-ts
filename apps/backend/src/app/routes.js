@@ -5,7 +5,8 @@
 
 import express from "express";
 import authRouter from "../modules/auth/api/authRoutes.js";
-import progressRouter from "../modules/quiz/api/progressRoutes.js";
+import progressRouter from "../modules/progress/api/progressRoutes.js";
+import { eventRoutes as progressEventRouter } from "../modules/progress/api/eventRoutes.js";
 import wordRouter from "../modules/word/api/wordRoutes.js";
 import gamificationRouter from "../modules/gamification/api/gamificationRoutes.js";
 import aiFeedbackRouter from "../modules/quiz/api/aiFeedbackRoutes.js";
@@ -31,6 +32,9 @@ router.use(authRouter);
 
 // Progress routes (v1)
 router.use(progressRouter);
+
+// Progress event routes (v1) - Story 17.3
+router.use(progressEventRouter);
 
 // Gamification routes (v1) - Story 15.3
 router.use(gamificationRouter);

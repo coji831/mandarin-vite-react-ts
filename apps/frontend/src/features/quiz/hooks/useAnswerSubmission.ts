@@ -18,7 +18,7 @@
 
 import { useCallback, MutableRefObject } from "react";
 import { quizApi } from "../services/quizService";
-import type { QuizAction } from "../reducers/quizReducer";
+import { useQuizSessionStore } from "../stores/quizSessionStore";
 import type { QuizQuestion } from "../types";
 
 // ============================================================================
@@ -29,7 +29,6 @@ type UseAnswerSubmissionParams = {
   sessionId?: string;
   currentQuestion?: QuizQuestion;
   questionStartTime: MutableRefObject<number>;
-  dispatch: React.Dispatch<QuizAction>;
 };
 
 // ============================================================================
@@ -51,7 +50,6 @@ export function useAnswerSubmission({
   sessionId,
   currentQuestion,
   questionStartTime,
-  dispatch,
 }: UseAnswerSubmissionParams) {
   /**
    * Submit user answer to backend session for validation
@@ -80,6 +78,8 @@ export function useAnswerSubmission({
 
       const timeSpentMs = Date.now() - questionStartTime.current;
 
+      const store = useQuizSessionStore.getState();
+
       try {
         // Submit answer to backend session for validation
         const result = await quizApi.submitAnswer(sessionId, {
@@ -89,36 +89,33 @@ export function useAnswerSubmission({
         });
 
         // Dispatch answer result to state (optimistic UI)
-        dispatch({
-          type: "QUIZ/SUBMIT_ANSWER",
-          answer: {
-            wordId: currentQuestion.wordId,
-            word: currentQuestion.word,
-            pinyin: currentQuestion.pinyin,
-            english: currentQuestion.english,
-            questionType: currentQuestion.mode,
-            userAnswer,
-            correct: result.correct,
-            timestamp: new Date(),
-            nextReviewDate: result.nextReviewDate,
-            lapseCount: result.lapseCount,
-            isLeech: result.isLeech,
-            correctAnswer: result.correctAnswer,
-          },
+        store.submitAnswer({
+          wordId: currentQuestion.wordId,
+          word: currentQuestion.word,
+          pinyin: currentQuestion.pinyin,
+          english: currentQuestion.english,
+          questionType: currentQuestion.mode,
+          userAnswer,
+          correct: result.correct,
+          timestamp: new Date(),
+          nextReviewDate: result.nextReviewDate,
+          lapseCount: result.lapseCount,
+          isLeech: result.isLeech,
+          correctAnswer: result.correctAnswer,
         });
 
         // Story 15.11 Phase 9: AI feedback comes from backend automatically
         // Backend auto-generates feedback for incorrect answers with 3-second timeout
         if (result.aiFeedback) {
-          dispatch({ type: "QUIZ/SET_AI_FEEDBACK", feedback: result.aiFeedback.explanation });
+          store.setAiFeedback(result.aiFeedback.explanation);
         }
       } catch (err) {
         console.error("Failed to submit answer:", err);
         const errorMessage = err instanceof Error ? err.message : "Failed to submit answer";
-        dispatch({ type: "QUIZ/SET_ERROR", error: errorMessage });
+        useQuizSessionStore.getState().setError(errorMessage);
       }
     },
-    [sessionId, currentQuestion, questionStartTime, dispatch],
+    [sessionId, currentQuestion, questionStartTime],
   );
 
   return {

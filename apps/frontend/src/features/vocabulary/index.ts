@@ -36,8 +36,8 @@ export type {
   ListState,
 } from "./types";
 
-export { listsReducer, listsInitialState } from "./reducers";
-export type { ListAction } from "./reducers";
+// Stores
+export { useListStore } from "./stores";
 
 export {
   loadCsvVocab,
