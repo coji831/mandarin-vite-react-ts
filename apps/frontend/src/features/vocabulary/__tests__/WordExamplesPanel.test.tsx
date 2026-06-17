@@ -68,7 +68,6 @@ describe("WordExamplesPanel", () => {
       });
       this.pause = vi.fn();
     } as any;
-    // @ts-ignore - set global Audio
     global.Audio = MockAudio;
 
     render(<WordExamplesPanel wordId="test-word-id" word="饭" hskLevel={1} language="en" />);
@@ -101,7 +100,6 @@ describe("WordExamplesPanel", () => {
       });
       this.pause = vi.fn();
     } as any;
-    // @ts-ignore
     global.Audio = MockAudio;
     vi.spyOn(analyticsService, "trackExamplesShown").mockImplementation(() => {});
     vi.spyOn(analyticsService, "trackExamplePlayed").mockImplementation(() => {});

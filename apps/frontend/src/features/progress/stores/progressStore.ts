@@ -5,7 +5,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { WordProgress } from "../types";
-import * as progressApi from "../services/progressService";
+import { progressApi } from "../services/progressService";
 
 interface ProgressStoreState {
   wordsById: Record<string, WordProgress>;

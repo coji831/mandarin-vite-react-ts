@@ -22,7 +22,10 @@ export function useUserIdentity(): [UserIdentity, () => void] {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return [
-    { userId: userId || getUserIdentity()?.userId || null },
+    {
+      userId: userId ?? getUserIdentity()?.userId ?? "",
+      lastActive: getUserIdentity()?.lastActive ?? Date.now(),
+    },
     () => useUserStore.getState().refresh(),
   ];
 }

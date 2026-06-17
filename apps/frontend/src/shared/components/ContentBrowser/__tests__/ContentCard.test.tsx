@@ -11,7 +11,7 @@ import type { ContentItem } from "../types";
 describe("ContentCard", () => {
   const baseItem: ContentItem = {
     id: "test-1",
-    contentType: "vocabulary",
+    contentType: "foundations",
     title: "你好",
     subtitle: "nǐ hǎo",
     translation: "Hello",

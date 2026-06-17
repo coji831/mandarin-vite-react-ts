@@ -12,6 +12,7 @@ import { useMemo } from "react";
 import { useProgressStore } from "../../progress/stores/progressStore";
 import { useUiStore } from "../../../shared/store/uiStore";
 import { useUserStore } from "../../../shared/store/userStore";
+import type { WordBasic } from "../../vocabulary/types/Word";
 
 // RootState shape maintained for backward compat with existing selectors
 export type RootState = {
@@ -21,7 +22,7 @@ export type RootState = {
     isLoading: boolean;
     lastUpdated: string | null;
     selectedList: string | null;
-    selectedWords: unknown[];
+    selectedWords: WordBasic[];
     error: string | undefined;
     initialized: boolean;
   };

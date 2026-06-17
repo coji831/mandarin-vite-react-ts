@@ -12,7 +12,7 @@ describe("ContentGrid", () => {
   const createItems = (count: number): ContentItem[] =>
     Array.from({ length: count }, (_, i) => ({
       id: `item-${i + 1}`,
-      contentType: "vocabulary" as const,
+      contentType: "foundations" as const,
       title: `Word ${i + 1}`,
       subtitle: `pinyin ${i + 1}`,
       translation: `Translation ${i + 1}`,
