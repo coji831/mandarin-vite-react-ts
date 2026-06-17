@@ -1,7 +1,7 @@
 ﻿# Epic 18: Foundations — Implementation
 
 **BR Reference:** `docs/business-requirements/epic-18-foundations/README.md`
-**Last Updated:** June 17, 2026
+**Last Updated:** June 18, 2026
 
 ---
 
@@ -20,9 +20,9 @@
 - Route redirect from old `/learn/flashcards` → `/learn/foundations` for backward compatibility
 - Updated 5-item global navigation (Dashboard, Learn, Practices, Library, Progress)
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** June 17, 2026
+**Last Update:** June 18, 2026
 
 ## Technical Overview
 

@@ -1,11 +1,18 @@
-// Vocabulary feature — all word-related UI (vocabulary browsing, flashcards,
+/**
+ * @deprecated Vocabulary feature is being replaced by the Foundations + Learning Roadmap
+ * system (Epics 18+). New code should use the foundations feature and future learning
+ * modules (Radicals, Grammar, Phonetic Clusters, Graded Readers, Chengyu) instead.
+ *
+ * Kept for backward compatibility during migration. Remove in a future cleanup pass
+ * once all external references to this barrel are verified as removed.
+ */
+
+// Vocabulary feature — all word-related UI (vocabulary browsing,
 // conversations, examples, audio playback)
 export { AddForm } from "./components/AddForm";
 export { Basic } from "./components/Basic";
 export { ExampleListItem } from "./components/ExampleListItem";
 export { FilterChip } from "../../shared/components/FilterChip/FilterChip";
-export { FlashCard } from "./components/FlashCard";
-export { NavBar } from "./components/NavBar";
 export { PlaybackControls } from "./components/PlaybackControls";
 export { PlayButton } from "./components/PlayButton";
 export { Sidebar } from "./components/Sidebar";

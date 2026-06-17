@@ -1,6 +1,6 @@
 # Story 18.1: Foundations Page Structure
 
-**Last Updated:** June 17, 2026
+**Last Updated:** June 18, 2026
 
 ## Description
 
@@ -14,16 +14,16 @@ This story establishes the foundational UI infrastructure for Phase 1 learning. 
 
 ## Acceptance Criteria
 
-- [ ] Foundations page renders at `/learn/foundations` with 4 sub-tabs: Pinyin, Tones, Strokes, Animations (verify: navigate to route, all 4 tabs visible and clickable)
-- [ ] TabBar component is reused from `shared/components/ContentBrowser/TabBar.tsx` (verify: imported, not reimplemented)
-- [ ] Clicking each tab switches content without page reload (verify: tab-switching is instant, URL hash updates)
-- [ ] Phase-gated LearnLayout shows Foundations as active for Phase 1 users, all other Learn tabs (Radicals, Grammar, etc.) locked with 🔒 badge and tooltip (verify: Phase 1 user sees correct tab state)
-- [ ] Progress bar at bottom of page shows "X of 4 sections completed" using FoundationProgress backend data (verify: bar renders, count updates after completing sections)
-- [ ] Global navigation updated to 5 items: Dashboard (/), Learn (/learn/_), Practices (/practices/_), Library (/library), Progress (/progress) (verify: all 5 nav items present with correct routes and icons)
-- [ ] Existing `/learn/flashcards` route redirects to `/learn/foundations` with a console deprecation warning (verify: navigation to old route → 302 redirect)
-- [ ] Page is mobile-responsive: 4-tab layout collapses to scrollable tab bar on viewports <640px (verify: mobile emulation shows scrollable tabs)
-- [ ] Foundations feature folder scaffolded with empty tab placeholder components (verify: folder structure matches project convention)
-- [ ] Backend `/api/v1/progression/foundation-progress` endpoint returns 4 auto-initialized records on first GET for new user (verify: fresh user → GET returns 4 records with completed=false)
+- [x] Foundations page renders at `/learn/foundations` with 4 sub-tabs: Pinyin, Tones, Strokes, Animations (verify: navigate to route, all 4 tabs visible and clickable)
+- [ ] TabBar component is reused from `shared/components/ContentBrowser/TabBar.tsx` (verify: imported, not reimplemented) — **(Inline tab bar used instead — see Deviations section)**
+- [x] Clicking each tab switches content without page reload (verify: tab-switching is instant, URL hash updates)
+- [x] Phase-gated LearnLayout shows Foundations as active for Phase 1 users, all other Learn tabs (Radicals, Grammar, etc.) locked with 🔒 badge and tooltip (verify: Phase 1 user sees correct tab state)
+- [x] Progress bar at bottom of page shows "X of 4 sections completed" using FoundationProgress backend data (verify: bar renders, count updates after completing sections)
+- [x] Global navigation updated to 5 items: Dashboard (/), Learn (/learn/_), Practices (/practices/_), Library (/library), Progress (/progress) (verify: all 5 nav items present with correct routes and icons)
+- [x] Existing `/learn/flashcards` route redirects to `/learn/foundations` with a console deprecation warning (verify: navigation to old route → 302 redirect)
+- [x] Page is mobile-responsive: 4-tab layout collapses to scrollable tab bar on viewports <640px (verify: mobile emulation shows scrollable tabs)
+- [x] Foundations feature folder scaffolded with empty tab placeholder components (verify: folder structure matches project convention)
+- [x] Backend `/api/v1/progression/foundation-progress` endpoint returns 4 auto-initialized records on first GET for new user (verify: fresh user → GET returns 4 records with completed=false)
 
 ## Business Rules
 
@@ -31,6 +31,14 @@ This story establishes the foundational UI infrastructure for Phase 1 learning. 
 2. Progress is tracked per-section via FoundationProgress backend API, not localStorage
 3. The 4-tab structure must match the FOUNDATION_SECTIONS constant in `packages/shared-constants/src/foundations.ts`
 4. Tab order must be: Pinyin → Tones → Strokes → Animations (pedagogical sequence)
+
+## Deviations from Original Specification
+
+- **AC #2 — TabBar component reuse**: The original specification required reusing `shared/components/ContentBrowser/TabBar.tsx`. However, the ContentBrowser TabBar has different architectural assumptions (URL search params for state, `CONTENT_TABS` type definitions for content filtering) that don't match the Foundations page's local-state tab switching. An inline tab bar was built directly in `FoundationsPage.tsx` using `<div>` elements with `role="tab"` to avoid:
+  - Type incompatibility between ContentBrowser's `TabDefinition` and Foundations' `FoundationSectionId`
+  - Unnecessary coupling to URL search params for sub-tab state
+  - Global `button` CSS reset interference
+  - This pattern can be extracted to a shared `SectionTabs` component if used by another feature.
 
 ## Related Issues
 
@@ -41,7 +49,7 @@ This story establishes the foundational UI infrastructure for Phase 1 learning. 
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
+- **Status**: Completed
+- **PR**: Branch: epic-18-foundations (will PR from this branch)
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: b7bbd3c (feat(epic-18): implement Story 18.1 Foundations Page Structure)

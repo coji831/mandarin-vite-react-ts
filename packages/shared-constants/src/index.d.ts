@@ -35,6 +35,12 @@ export declare const ROUTE_PATTERNS: {
   readonly authRefresh: string;
   readonly authLogout: string;
   readonly authMe: string;
+  readonly progressionFoundationProgress: string;
+  readonly progressionFoundationProgressSection: (sectionId: string) => string;
+  readonly progressionPhaseGate: string;
+  readonly progressionQuizAttempts: string;
+  readonly progressionQuizAttemptAnswer: (id: string) => string;
+  readonly progressionQuizAttemptComplete: (id: string) => string;
 };
 
 // HSK Levels
@@ -45,6 +51,11 @@ export declare const LANGUAGE_CODES: {
   readonly CHINESE: string;
   readonly ENGLISH: string;
 };
+
+// Foundations
+export declare const FOUNDATION_SECTIONS: readonly ["pinyin", "tones", "strokes", "animations"];
+export type FoundationSectionId = (typeof FOUNDATION_SECTIONS)[number];
+export declare const FOUNDATION_SECTION_LABELS: Record<FoundationSectionId, string>;
 
 // Voice Configuration
 export declare const TTS_VOICES: {

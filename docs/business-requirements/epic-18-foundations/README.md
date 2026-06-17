@@ -15,9 +15,9 @@
 - New backend Prisma models (FoundationProgress, QuizAttempt, PhaseGate) + API endpoints for progress persistence and phase gating
 - Phase 1 of the 4-phase learning roadmap (Epics 18–23); must be delivered before character/vocabulary content (Epics 19+)
 
-**Status:** Planned
+**Status:** In Progress
 
-**Last Update:** June 17, 2026
+**Last Update:** June 18, 2026
 
 ## Background
 
@@ -38,8 +38,9 @@ Business value: Reduced churn for new users, structured progression increases co
 
 This epic consists of the following user stories:
 
-1. **Story 18.1: Foundations Page Structure** ([story-18-1-foundations-page-structure.md](story-18-1-foundations-page-structure.md))
+1. **Story 18.1: Foundations Page Structure** ✅ ([story-18-1-foundations-page-structure.md](story-18-1-foundations-page-structure.md))
    - As a **learner**, I want to **access the Foundations page from the Learn section with 4 organized sub-tabs (Pinyin, Tones, Strokes, Animations)**, so that **I can navigate between reference materials in a structured way**.
+   - **Status:** Completed
 
 2. **Story 18.2: Pinyin System Guide** ([story-18-2-pinyin-system-guide.md](story-18-2-pinyin-system-guide.md))
    - As a **new learner**, I want to **explore an interactive pinyin chart with clickable initials and finals, hear their pronunciation via TTS, and see tone-colored pinyin**, so that **I can learn correct pronunciation and understand how syllables are constructed**.

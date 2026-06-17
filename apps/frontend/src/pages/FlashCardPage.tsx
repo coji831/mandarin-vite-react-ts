@@ -1,81 +1,11 @@
 /**
- * FlashCardPage route component
+ * @deprecated FlashCardPage is deprecated since Story 18.1.
+ * The /learn/flashcards/* route now redirects to /learn/foundations.
+ * The route redirect is configured in LearnRoutes.tsx.
  *
- * Features:
- *   - Standalone page for flashcards, uses route param for listId
- *   - Loads vocabulary list metadata from /data/vocabulary/vocabularyLists.json
- *   - Loads vocabulary words from CSV, transforms to Word type via transformVocabWord
- *   - Uses ProgressContext for all state and navigation
- *   - Renders FlashCard component for the selected vocabulary list
- *   - Handles return to vocabulary list using React Router
- *   - All navigation is context- and router-based, no legacy state-driven navigation remains
- *   - Types and utilities imported from mandarin/types and mandarin/utils
- * Related: Story 7-6 Flashcard Page List-Based Navigation
- * Last updated: 2025-10-09
+ * This file is kept for reference. Remove in a future cleanup pass
+ * once all external references to FlashCardPage are verified as removed.
+ *
+ * @see LearnRoutes.tsx for the redirect implementation.
+ * @see FoundationsPage for the replacement.
  */
-
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { FlashCard, VocabularyDataService } from "../features/vocabulary";
-import { useProgressActions, useProgressState } from "../features/quiz";
-
-export { FlashCardPage };
-
-function FlashCardPage() {
-  const { listId } = useParams<{ listId: string }>();
-  const navigate = useNavigate();
-  const { selectedWords, isLoading } = useProgressState((s) => s.ui);
-  const { setSelectedList, setSelectedWords } = useProgressActions();
-
-  // On mount: fetch vocabularyLists.json, find file for listId, load CSV, set selectedWords
-  useEffect(() => {
-    async function fetchAndLoadWords() {
-      if (!listId) return;
-      setSelectedList(listId);
-      try {
-        const vocabService = new VocabularyDataService();
-        const words = await vocabService.fetchWordsForList(listId);
-        if (Array.isArray(words) && words.length > 0 && words[0].wordId) {
-          setSelectedWords(words);
-        } else {
-          console.error("Loaded words are empty or invalid:", words);
-          setSelectedWords([]);
-        }
-      } catch (err) {
-        console.error("Error loading vocabulary words:", err);
-        setSelectedWords([]);
-      }
-    }
-    fetchAndLoadWords();
-  }, [listId, setSelectedList, setSelectedWords]);
-
-  // Show loading state while fetching
-  if (isLoading || !selectedWords) {
-    return (
-      <div style={{ padding: 40, textAlign: "center" }}>
-        <h2>Loading vocabulary list...</h2>
-        <div className="spinner" style={{ margin: "24px auto" }} />
-      </div>
-    );
-  }
-
-  // Validate selectedWords
-  if (!selectedWords || selectedWords.length === 0) {
-    return (
-      <div>
-        <h2>List Not Found or Empty</h2>
-        <button onClick={() => navigate("/learn/vocabulary-list")}>Back to Vocabulary List</button>
-      </div>
-    );
-  }
-
-  // Render FlashCard deck in CSV order
-  // selectedWords is now WordBasic[]
-  return (
-    <FlashCard
-      words={selectedWords}
-      listId={listId || ""}
-      onBackToList={() => navigate("/learn/vocabulary-list")}
-    />
-  );
-}

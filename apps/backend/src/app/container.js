@@ -21,6 +21,7 @@ import { StreakRepository } from "../modules/progress/repositories/StreakReposit
 import { VocabularyRepository } from "../modules/vocabulary/repositories/VocabularyRepository.js";
 import { WordRepository } from "../modules/word/repositories/WordRepository.js";
 import { VocabularyListRepository } from "../modules/vocabulary/repositories/VocabularyListRepository.js";
+import { ProgressionRepository } from "../modules/progression/repositories/ProgressionRepository.js";
 
 const authRepository = new AuthRepository();
 const badgeRepository = new BadgeRepository();
@@ -32,6 +33,7 @@ const streakRepository = new StreakRepository();
 const vocabularyRepository = new VocabularyRepository();
 const wordRepository = new WordRepository();
 const vocabularyListRepository = new VocabularyListRepository();
+const progressionRepository = new ProgressionRepository();
 
 // ── Infrastructure: Security ──────────────────────────────────────────────
 import { JwtService } from "../shared/infrastructure/security/JwtService.js";
@@ -79,6 +81,7 @@ import { StreakService } from "../modules/progress/use-cases/StreakService.js";
 import { VocabularyService } from "../modules/vocabulary/services/VocabularyService.js";
 import { WordService } from "../modules/word/index.js";
 import { VocabularyListService } from "../modules/vocabulary/services/VocabularyListService.js";
+import { ProgressionService } from "../modules/progression/index.js";
 const authService = new AuthService(authRepository, jwtService, passwordService);
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
 export const streakService = new StreakService(streakRepository, quizSessionAnswerRepository);
@@ -87,6 +90,7 @@ export const progressService = new ProgressService(progressRepository);
 const vocabularyService = new VocabularyService(vocabularyRepository);
 const wordService = new WordService(wordRepository);
 const vocabularyListService = new VocabularyListService(vocabularyListRepository);
+const progressionService = new ProgressionService(progressionRepository);
 // ── Cache Middleware ───────────────────────────────────────────────────────
 import { withCache, withGcsCache } from "../shared/middleware/cacheMiddleware.js";
 
@@ -182,6 +186,7 @@ import TtsController from "../modules/tts/api/TtsController.js";
 import { ExamplesController } from "../modules/examples/api/ExamplesController.js";
 import { VocabularyController } from "../modules/vocabulary/api/VocabularyController.js";
 import { WordController } from "../modules/word/api/WordController.js";
+import { ProgressionController } from "../modules/progression/api/ProgressionController.js";
 export const authController = new AuthController(authService);
 export const aiFeedbackController = new AIFeedbackController(cachedAIFeedback);
 // A6 fix: single instance with both streakService + gamificationService (was split across two route files)
@@ -204,4 +209,5 @@ export const quizSessionController = new QuizSessionController(quizSessionServic
 export const ttsController = new TtsController(cachedTts, gcsClient);
 export const vocabularyController = new VocabularyController(vocabularyService, progressService);
 export const wordController = new WordController(wordService);
+export const progressionController = new ProgressionController(progressionService);
 export const exampleController = new ExamplesController(exampleService);

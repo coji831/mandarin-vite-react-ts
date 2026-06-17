@@ -16,6 +16,7 @@ import vocabularyRouter from "../modules/vocabulary/api/vocabularyRoutes.js";
 import healthRouter from "../modules/health/api/healthRoutes.js";
 import quizSessionRouter from "../modules/quiz/api/quizSessionRoutes.js";
 import learningRouter from "../modules/quiz/api/learningRoutes.js";
+import progressionRouter from "../modules/progression/api/progressionRoutes.js";
 
 const router = express.Router();
 
@@ -58,5 +59,8 @@ router.use(wordRouter);
 router.use(vocabularyRouter);
 // Examples routes (v1)
 router.use(examplesRoute);
+
+// Progression routes (v1) - Story 18.1
+router.use(progressionRouter);
 
 export default router;

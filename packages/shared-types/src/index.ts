@@ -3,6 +3,21 @@
  * Exports common types used across frontend and backend
  */
 
+// Foundations types (Story 18.1)
+export interface FoundationProgress {
+  sectionId: string;
+  completed: boolean;
+  completedAt: string | null;
+}
+
+export interface PhaseGate {
+  currentPhase: number;
+  phase1Passed: boolean;
+  phase2Passed: boolean;
+  phase3Passed: boolean;
+  phase4Unlocked: boolean;
+}
+
 // Vocabulary types
 export interface VocabularyItem {
   id: string;
@@ -245,7 +260,7 @@ export interface QuizResult {
   userId: string;
   wordId: string;
   correct: boolean;
-  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  questionType: "multiple_choice" | "type_pinyin" | "type_character";
   timeSpentMs: number | null;
   answeredAt: string; // ISO 8601 datetime
 }
@@ -270,7 +285,7 @@ export interface StudyStreak {
 export interface RecordQuizResultRequest {
   wordId: string;
   correct: boolean;
-  questionType: 'multiple_choice' | 'type_pinyin' | 'type_character';
+  questionType: "multiple_choice" | "type_pinyin" | "type_character";
   timeSpentMs?: number;
 }
 

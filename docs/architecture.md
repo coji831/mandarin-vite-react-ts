@@ -56,6 +56,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI container (`container.js`), route registration (`routes.js`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access)
+  - Current modules: `auth`, `gamification`, `progress`, `quiz`, `progression`, `tts`, `learning`, `examples`
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
@@ -84,17 +85,21 @@ mandarin-vite-react-ts/
 - **Features** (`src/features/`): Self-contained modules
   - **Auth**: User authentication and session management (LoginForm, RegisterForm, AuthContext)
   - **Dashboard**: Learning statistics and activity overview (LeechWidget, leechService)
+  - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
   - **Gamification**: Streaks, badges, XP progress, mystery box rewards
   - **Quiz**: Quiz system with multiple question types and progress tracking
   - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
 - **Pages** (`src/pages/`): Route-level page orchestrators
+  - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
 - **Router** (`src/router/`): React Router configuration
+  - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
   - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.)
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **layouts/**: AppLayout, LearnLayout, Root
+  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access)
+  - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
 **State Management:**
 
@@ -256,6 +261,12 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
 - `POST /api/v1/learning/result` - Save quiz answer directly, adjust spaced repetition
 - `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
+
+**Progression System:**
+
+- **Phase Gating**: Users progress through 4 learning phases (Phase 1: Foundations, Phase 2: Characters, Phase 3: Readers, Phase 4: Mastery). Each phase has a gate quiz requirement to unlock the next. Phase gate state is stored server-side in PostgreSQL and cached in sessionStorage with a 5-minute TTL.
+- **Foundation Progress**: Tracked per-section (Pinyin, Tones, Strokes, Animations) via the `progression` backend module. Records auto-initialize on first GET for new users. Section IDs are defined in `packages/shared-constants/` for cross-cutting validation.
+- **API module**: `apps/backend/src/modules/progression/` — handles phase gating, foundation completion tracking, and quiz attempts.
 
 **See detailed documentation:**
 

@@ -37,6 +37,13 @@ export const ROUTE_PATTERNS = {
   examples: "/v1/examples",
   examplesSingleLine: "/single-line",
   examplesAudio: "/audio",
+  progressionFoundationProgress: "/v1/progression/foundation-progress",
+  progressionFoundationProgressSection: (sectionId) =>
+    `/v1/progression/foundation-progress/${sectionId}`,
+  progressionPhaseGate: "/v1/progression/phase-gate",
+  progressionQuizAttempts: "/v1/progression/quiz-attempts",
+  progressionQuizAttemptAnswer: (id) => `/v1/progression/quiz-attempts/${id}/answers`,
+  progressionQuizAttemptComplete: (id) => `/v1/progression/quiz-attempts/${id}/complete`,
 };
 
 // HSK Levels
@@ -47,6 +54,9 @@ export const LANGUAGE_CODES = {
   CHINESE: "zh-CN",
   ENGLISH: "en-US",
 };
+
+// Foundations
+export { FOUNDATION_SECTIONS, FOUNDATION_SECTION_LABELS } from "./foundations.js";
 
 // Voice Configuration
 export const TTS_VOICES = {

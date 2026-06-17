@@ -122,6 +122,34 @@ model WordList {
   @@index([listId, sortOrder])
 }
 
+model FoundationProgress {
+  id            String   @id @default(uuid())
+  userId        String
+  sectionId     String   // "pinyin" | "tones" | "strokes" | "animations"
+  completed     Boolean  @default(false)
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, sectionId])
+  @@index([userId])
+}
+
+model PhaseGate {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  currentPhase        Int      @default(1)
+  phase1Passed        Boolean  @default(false)
+  phase2Passed        Boolean  @default(false)
+  phase3Passed        Boolean  @default(false)
+  phase4Unlocked      Boolean  @default(false)
+  gateCriteria        String?  // "quiz" | "retention" | "both"
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+}
+
 model StudyStreak {
   id               String   @id @default(uuid())
   userId           String   @unique
