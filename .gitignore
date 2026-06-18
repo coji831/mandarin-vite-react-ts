@@ -37,3 +37,9 @@ terraform/.terraform/
 
 # CodeGraph data files
 .codegraph/
+
+# Agent definitions (local development only)
+.github/agents/
+
+# Verification artifacts (design docs, not source code)
+verification-artifacts/

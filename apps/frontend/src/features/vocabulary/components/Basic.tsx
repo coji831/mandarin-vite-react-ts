@@ -6,7 +6,7 @@
  * - Pure presentational; does not manage state or persistence.
  * - Used as a reference/learning resource page.
  */
-import { useAudioPlayback } from "../hooks";
+import { useAudioPlayback } from "shared/hooks";
 export { Basic };
 
 // LearningPage component for tones, pronouns, and pinyin tone marks

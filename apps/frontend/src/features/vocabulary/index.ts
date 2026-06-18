@@ -20,7 +20,7 @@ export { VocabularyCard } from "./components/VocabularyCard";
 export { WordDetails } from "./components/WordDetails";
 export { WordExamplesPanel } from "./components/WordExamplesPanel";
 
-export { useAudioPlayback } from "./hooks/useAudioPlayback";
+export { useAudioPlayback } from "shared/hooks";
 export { default as useExamples } from "./hooks/useExamples";
 
 export { AudioService, VocabularyDataService, DefaultVocabularyBackend } from "./services";

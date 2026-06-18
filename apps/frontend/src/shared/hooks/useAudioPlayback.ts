@@ -15,8 +15,8 @@
 import { useRef, useState } from "react";
 
 import { API_CONFIG } from "config";
-import { AudioService } from "../services";
-import type { WordAudio, WordAudioRequest } from "../types";
+import { AudioService } from "../../features/vocabulary/services";
+import type { WordAudio, WordAudioRequest } from "../../features/vocabulary/types";
 
 export function useAudioPlayback() {
   const [audioData, setAudioData] = useState<WordAudio | { audioUrl?: string } | null>(null);

@@ -47,4 +47,6 @@
 .foundations-tab-content {
   padding: 1.5rem;
   min-height: 300px;
+  display: flex;
+  justify-content: center;
 }

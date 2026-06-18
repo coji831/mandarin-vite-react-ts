@@ -1,0 +1,309 @@
+/**
+ * @file PinyinTab.css
+ * @description Styles for the interactive pinyin chart (Story 18.2)
+ * Dark theme matching existing FoundationsPage.css conventions.
+ */
+
+/* ─── Tab Container ─── */
+
+.pinyin-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 800px;
+}
+
+.pinyin-tab-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+/* ─── Sections ─── */
+
+.pinyin-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.pinyin-section-heading {
+  color: #ccc;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pinyin-section-subtitle {
+  color: #777;
+  font-size: 0.75rem;
+  margin: 0 0 0.4rem;
+}
+
+/* ─── PinyinCell shared button ─── */
+
+.pinyin-cell-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: #2a2a3e;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: #ddd;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.1s;
+  font-family: inherit;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.pinyin-cell-button:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #4a4a7e;
+}
+
+.pinyin-cell-button:active {
+  transform: scale(0.96);
+}
+
+.pinyin-cell--selected {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: #818cf8;
+  color: #fff;
+  font-weight: 600;
+}
+
+.pinyin-cell--selected:hover {
+  background: rgba(99, 102, 241, 0.35);
+}
+
+.pinyin-cell-pinyin {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.pinyin-cell-ipa {
+  font-size: 0.7rem;
+  color: #999;
+  font-style: italic;
+}
+
+.pinyin-cell--selected .pinyin-cell-ipa {
+  color: #b0b0ff;
+}
+
+/* ─── Initials Grid ─── */
+
+.pinyin-initials-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* ─── Finals Grid ─── */
+
+.pinyin-finals-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pinyin-finals-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pinyin-finals-group-label {
+  color: #aaa;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #2a2a3e;
+}
+
+.pinyin-finals-group-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* ─── Combination Display ─── */
+
+.pinyin-combination-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 8px;
+}
+
+.pinyin-combination-heading {
+  color: #ccc;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+.pinyin-combination-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.pinyin-tone-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pinyin-tone-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Tone Cell ─── */
+
+.pinyin-tone-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 52px;
+  background: #2a2a3e;
+  border: 1px solid #3a3a5e;
+  border-radius: 8px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.pinyin-tone-cell:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: #4a4a7e;
+}
+
+.pinyin-tone-cell-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.pinyin-tone-vowel {
+  transition: color 0.1s;
+}
+
+/* ─── Play Button ─── */
+
+.pinyin-tone-play-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ccc;
+  font-size: 0.65rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.pinyin-tone-play-btn:hover {
+  background: rgba(99, 102, 241, 0.5);
+  color: #fff;
+}
+
+/* ─── Tone Cell Loading Text ─── */
+
+.pinyin-tone-loading {
+  font-size: 0.65rem;
+  color: #888;
+  font-style: italic;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}
+
+/* ─── Empty / Hint States ─── */
+
+.pinyin-combination-empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: #999;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 8px;
+}
+
+.pinyin-combination-empty strong {
+  color: #ccc;
+}
+
+.pinyin-combination-hint {
+  text-align: center;
+  padding: 1.5rem;
+  color: #777;
+  font-style: italic;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .pinyin-initial-cell {
+    flex: 0 0 calc((100% - 4 * 0.5rem) / 5);
+  }
+
+  .pinyin-finals-group-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pinyin-tone-cell {
+    width: 64px;
+    height: 50px;
+  }
+
+  .pinyin-tone-cell-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .pinyin-initials-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pinyin-finals-group-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pinyin-combination-row {
+    gap: 0.5rem;
+  }
+}

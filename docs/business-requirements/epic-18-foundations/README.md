@@ -42,8 +42,9 @@ This epic consists of the following user stories:
    - As a **learner**, I want to **access the Foundations page from the Learn section with 4 organized sub-tabs (Pinyin, Tones, Strokes, Animations)**, so that **I can navigate between reference materials in a structured way**.
    - **Status:** Completed
 
-2. **Story 18.2: Pinyin System Guide** ([story-18-2-pinyin-system-guide.md](story-18-2-pinyin-system-guide.md))
+2. **Story 18.2: Pinyin System Guide** ✅ ([story-18-2-pinyin-system-guide.md](story-18-2-pinyin-system-guide.md))
    - As a **new learner**, I want to **explore an interactive pinyin chart with clickable initials and finals, hear their pronunciation via TTS, and see tone-colored pinyin**, so that **I can learn correct pronunciation and understand how syllables are constructed**.
+   - **Status:** Completed
 
 3. **Story 18.3: Tones Reference & Practice** ([story-18-3-tones-reference-practice.md](story-18-3-tones-reference-practice.md))
    - As a **new learner**, I want to **study tone contours, practice tone pair drills, and learn tone change rules (3rd tone sandhi, 一/不)**, so that **I can distinguish and produce the four tones correctly**.
