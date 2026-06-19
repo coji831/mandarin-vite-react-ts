@@ -1,16 +1,16 @@
 /**
  * @file StrokeReferenceTab.tsx
- * @description Placeholder tab for Stroke Reference content
- * Story 18.1: Foundations Page Structure
- *
- * Full implementation deferred to Story 18.3.
+ * @description Stroke Reference page — pure layout orchestration
+ * Story 18.4: Stroke Order Reference & Animations
  */
+
+import { StrokeReferenceContent } from "features/foundations/components";
+import "./StrokeReferenceTab.css";
 
 export function StrokeReferenceTab() {
   return (
-    <div className="tab-placeholder">
-      <h2>Stroke Reference</h2>
-      <p>Coming soon</p>
+    <div className="stroke-ref-tab">
+      <StrokeReferenceContent />
     </div>
   );
 }

@@ -1,16 +1,28 @@
 /**
  * @file StrokeAnimationTab.tsx
- * @description Placeholder tab for Stroke Animations content
- * Story 18.1: Foundations Page Structure
+ * @description Stroke Animations page — orchestrates controlled components
+ * Story 18.4: Stroke Order Reference & Animations
  *
- * Hanzi Writer integration deferred to Story 18.4.
+ * Owns: character state (lifted for sibling communication)
+ * Composes: CharacterSearchBar, AnimationPanel, SuggestionPanel
  */
 
+import { useState } from "react";
+import {
+  CharacterSearchBar,
+  AnimationPanel,
+  SuggestionPanel,
+} from "features/foundations/components";
+import "./StrokeAnimationTab.css";
+
 export function StrokeAnimationTab() {
+  const [character, setCharacter] = useState<string>("水");
+
   return (
-    <div className="tab-placeholder">
-      <h2>Stroke Animations</h2>
-      <p>Coming soon</p>
+    <div className="stroke-anim-tab">
+      <CharacterSearchBar onCharacterSelect={setCharacter} />
+      <AnimationPanel character={character} />
+      <SuggestionPanel onSelect={setCharacter} currentCharacter={character} />
     </div>
   );
 }

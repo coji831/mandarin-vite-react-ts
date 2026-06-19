@@ -1,0 +1,95 @@
+{
+  "strokes": [
+    {
+      "id": "dot",
+      "glyph": "丶",
+      "pinyin": "diǎn",
+      "meaning": "Dot",
+      "order": 1
+    },
+    {
+      "id": "horizontal",
+      "glyph": "一",
+      "pinyin": "héng",
+      "meaning": "Horizontal",
+      "order": 2
+    },
+    {
+      "id": "vertical",
+      "glyph": "丨",
+      "pinyin": "shù",
+      "meaning": "Vertical",
+      "order": 3
+    },
+    {
+      "id": "left-falling",
+      "glyph": "丿",
+      "pinyin": "piě",
+      "meaning": "Left-falling",
+      "order": 4
+    },
+    {
+      "id": "right-falling",
+      "glyph": "㇏",
+      "pinyin": "nà",
+      "meaning": "Right-falling",
+      "order": 5
+    },
+    {
+      "id": "rise",
+      "glyph": "㇀",
+      "pinyin": "tí",
+      "meaning": "Rise",
+      "order": 6
+    },
+    {
+      "id": "bend",
+      "glyph": "㇍",
+      "pinyin": "zhé",
+      "meaning": "Bend",
+      "order": 7
+    },
+    {
+      "id": "hook",
+      "glyph": "㇠",
+      "pinyin": "gōu",
+      "meaning": "Hook",
+      "order": 8
+    }
+  ],
+  "strokeOrderRules": [
+    {
+      "id": "top-to-bottom",
+      "number": 1,
+      "name": "Top → Bottom",
+      "rule": "top stroke first",
+      "example": "三",
+      "description": "Write strokes from top to bottom"
+    },
+    {
+      "id": "left-to-right",
+      "number": 2,
+      "name": "Left → Right",
+      "rule": "left stroke first",
+      "example": "川",
+      "description": "Write strokes from left to right"
+    },
+    {
+      "id": "outside-inside",
+      "number": 3,
+      "name": "Outside → Inside",
+      "rule": "frame before contents",
+      "example": "日",
+      "description": "Write the outer frame first, then fill the inside"
+    },
+    {
+      "id": "close-last",
+      "number": 4,
+      "name": "Close frame last",
+      "rule": "fill then close",
+      "example": "回",
+      "description": "Write the frame, fill the contents, then close the bottom"
+    }
+  ],
+  "suggestedCharacters": ["一", "丨", "人", "大", "口", "水", "火", "木", "日", "月"]
+}

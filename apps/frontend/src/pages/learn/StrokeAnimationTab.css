@@ -1,0 +1,353 @@
+/**
+ * @file StrokeAnimationTab.css
+ * @description Styles for the Stroke Animations tab
+ * Story 18.4: Stroke Order Reference & Animations
+ * Dark theme matching FoundationsPage conventions.
+ */
+
+.stroke-anim-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+.stroke-anim-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.stroke-anim-heading {
+  color: #ccc;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.stroke-anim-subtitle {
+  color: #777;
+  font-size: 0.7rem;
+  margin: 0 0 0.35rem;
+}
+
+/* Search */
+.stroke-anim-search {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+}
+
+.stroke-anim-search-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.stroke-anim-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ddd;
+  font-size: 0.85rem;
+  outline: none;
+  padding: 0.2rem 0;
+}
+
+.stroke-anim-input::placeholder {
+  color: #666;
+}
+
+.stroke-anim-search-btn {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.3);
+  color: #818cf8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.stroke-anim-search-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+.stroke-anim-search-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Animation card */
+.stroke-anim-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.stroke-anim-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stroke-anim-character {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+
+.stroke-anim-info {
+  font-size: 0.7rem;
+  color: #777;
+  font-style: italic;
+}
+
+/* Canvas container — wraps the actual canvas + overlays */
+.stroke-anim-canvas-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+/* Actual hanzi-writer canvas — always in DOM */
+.stroke-anim-canvas {
+  width: 200px;
+  height: 200px;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.stroke-anim-canvas-active {
+  /* fully visible */
+}
+
+.stroke-anim-canvas-hidden {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.stroke-anim-canvas-active:hover {
+  border-color: #5a5a8e;
+}
+
+/* Overlay — sits on top of canvas when showing placeholder/error */
+.stroke-anim-canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.stroke-anim-canvas-error {
+  /* Inherits overlay positioning */
+}
+
+.stroke-anim-canvas-char {
+  font-size: 3rem;
+  color: #555;
+  opacity: 0.5;
+}
+
+.stroke-anim-error-text {
+  font-size: 0.75rem;
+  color: #f87171;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+/* Controls */
+.stroke-anim-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.anim-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #888;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.anim-control-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.4);
+  color: #ddd;
+}
+
+.anim-control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.anim-speed-control {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+}
+
+.anim-speed-label {
+  font-size: 0.65rem;
+  color: #888;
+}
+
+.anim-speed-slider {
+  width: 60px;
+  height: 4px;
+  accent-color: #818cf8;
+}
+
+.anim-speed-value {
+  font-size: 0.65rem;
+  color: #aaa;
+  min-width: 20px;
+  text-align: right;
+}
+
+/* Stroke breakdown */
+.stroke-anim-breakdown {
+  font-size: 0.7rem;
+  color: #888;
+  text-align: center;
+}
+
+.stroke-anim-breakdown-label {
+  color: #777;
+}
+
+.stroke-anim-breakdown-value {
+  color: #aaa;
+  font-family: monospace;
+}
+
+/* Rule info */
+.stroke-anim-rules {
+  font-size: 0.7rem;
+  color: #888;
+  text-align: center;
+}
+
+.stroke-anim-rules-label {
+  color: #777;
+}
+
+.stroke-anim-rules-value {
+  color: #818cf8;
+  font-style: italic;
+}
+
+/* Suggested characters */
+.stroke-anim-suggested {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+}
+
+.stroke-anim-suggested-label {
+  font-size: 0.7rem;
+  color: #888;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stroke-anim-suggested-list {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.stroke-anim-suggested-btn {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  background: transparent;
+  color: #ccc;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  min-width: 28px;
+  text-align: center;
+}
+
+.stroke-anim-suggested-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: #818cf8;
+  color: #fff;
+}
+
+.stroke-anim-suggested-btn--active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: #818cf8;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Stroke breakdown paths */
+.stroke-breakdown-paths {
+  display: flex;
+  gap: 0.15rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.stroke-breakdown-svg {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #3a3a5e;
+  border-radius: 2px;
+  background: #1e1e2e;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.stroke-breakdown-svg:hover {
+  border-color: #818cf8;
+}
+
+.stroke-breakdown-svg--active {
+  border-color: #818cf8;
+  background: rgba(99, 102, 241, 0.15);
+}

@@ -15,3 +15,4 @@ export {
 } from "./pinyinUtils";
 export { loadPinyinAudioMap, getPinyinAudioText } from "./pinyinAudioMap";
 export { parseSpokenPinyinForAudio } from "./toneUtils";
+export { determineStrokeRules } from "./strokeUtils";

@@ -2,6 +2,12 @@
 
 > Template note: headings include markers like `[Required]` and `[Optional]` to indicate guidance. When creating published/read docs, remove those bracketed tokens from the headings.
 
+## Status
+
+- **Status**: Completed
+- **Last Updated**: June 19, 2026
+- **PR**: TBD
+
 ## Technical Scope
 
 Build the Stroke Reference tab (8 basic strokes + 4 rules) and Stroke Animations tab (Hanzi Writer character search with full playback controls).
@@ -115,16 +121,47 @@ Library: hanzi-writer (npm, lazy-loaded with React.lazy)
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Hanzi Writer creates DOM elements directly inside the container div, which conflicts
-with React's virtual DOM management.
-Solution: Use a ref-based container and manage the hanzi-writer instance lifecycle outside
-of React's render cycle. useEffect handles setup/teardown. The container div has no React children.
+### Challenge 1: Hanzi Writer CDN Data Loading
 
-Problem: hanzi-writer library is ~200KB — loading it on initial page load is wasteful.
-Solution: Code-split the StrokeAnimTab using React.lazy() so hanzi-writer only loads when
-user navigates to the Animations tab, not on initial Foundations page load.
-```
+**Problem**: Hanzi Writer v3.x fetches character stroke data from `cdn.jsdelivr.net` via XHR. When the CDN is unreachable, the XHR returns `status === 0` and the library calls neither the success nor error callback — the initialization hangs forever.
+
+**Root Cause**: The default XHR handler has a missing error path for `xhr.status === 0`.
+
+**Solution**: Provided a custom `charDataLoader` using `fetch()` with a proper error path. Also added `onLoadCharDataError` callback for loading status.
+
+**Impact**: Reliable initialization with clear error messages on network failure.
+
+### Challenge 2: React DOM Conflict with Hanzi Writer
+
+**Problem**: Hanzi Writer creates SVG elements directly inside a container div via refs. If the same div also has React children, React's reconciliation tries to `removeChild` nodes that Hanzi Writer already modified, causing `NotFoundError`.
+
+**Root Cause**: Mixed ownership — React and external library both managing the same DOM subtree.
+
+**Solution**: Separated the canvas container into a pure ref-managed div with no React children. Placeholder/error states are rendered as absolute-positioned overlays on top, not as children of the canvas div.
+
+**Impact**: Zero DOM conflicts between React and Hanzi Writer.
+
+### Challenge 3: Auto-Play Conflicts with Step Operations
+
+**Problem**: The `onLoadCharDataSuccess` callback unconditionally called `animateCharacter()` on every data load. When `handleStepBack` called `writer.setCharacter()` (which re-triggers data loading), the auto-play overrode the step-back's intermediate stroke count, resetting `currentStroke` to `totalStrokes` and breaking step forward.
+
+**Root Cause**: `setCharacter()` reuses the same LoadingManager and fires `onLoadCharDataSuccess`.
+
+**Solution**: Added `shouldAutoPlayRef` flag — `true` on initial load, `false` during step operations, restored after the manual animation chain completes.
+
+**Impact**: Auto-play works on initial character load; step forward/back work independently.
+
+### Challenge 4: Architecture Refactoring (Modulith Pattern)
+
+**Problem**: Page components accumulated hanzi-writer lifecycle logic, control handlers, and state management, violating the modulith separation of concerns.
+
+**Solution**: Three-phase refactoring:
+
+1. Extracted all hanzi-writer logic into `useHanziWriter` hook
+2. Decomposed monolithic workspace into controlled components (`CharacterSearchBar`, `AnimationPanel`, `SuggestionPanel`)
+3. Pages now own only lifted state (`character`) and compose components as pure layout orchestrators
+
+**Impact**: Clean modulith boundaries. `features/` owns all logic, `pages/` owns only composition.
 
 ## Testing Implementation
 

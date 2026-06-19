@@ -50,8 +50,9 @@ This epic consists of the following user stories:
    - As a **new learner**, I want to **study tone contours, practice tone pair drills, and learn tone change rules (3rd tone sandhi, 一/不)**, so that **I can distinguish and produce the four tones correctly**.
    - **Status:** Completed
 
-4. **Story 18.4: Stroke Order Reference & Animations** ([story-18-4-stroke-order-reference-animations.md](story-18-4-stroke-order-reference-animations.md))
+4. **Story 18.4: Stroke Order Reference & Animations** ✅ ([story-18-4-stroke-order-reference-animations.md](story-18-4-stroke-order-reference-animations.md))
    - As a **new learner**, I want to **reference the 8 basic strokes and 4 stroke order rules, and watch animated stroke order demonstrations for any character**, so that **I can learn proper handwriting technique**.
+   - **Status:** Completed
 
 5. **Story 18.5: Character Detail Hub (Phase 1 Minimal)** ([story-18-5-character-detail-hub.md](story-18-5-character-detail-hub.md))
    - As a **learner**, I want to **tap any character to see a minimal slide-up overlay with pinyin, audio, and stroke animation**, so that **I can learn character details without navigating away from my current context**.

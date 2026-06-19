@@ -77,6 +77,40 @@ export interface TonePairDrill {
   pattern: string;
 }
 
+// ─── Stroke Types (Story 18.4) ───
+
+/**
+ * BasicStroke: A single Chinese calligraphy stroke
+ */
+export interface BasicStroke {
+  id: string;
+  glyph: string;
+  pinyin: string;
+  meaning: string;
+  order: number;
+}
+
+/**
+ * StrokeOrderRule: One of the four basic stroke order rules
+ */
+export interface StrokeOrderRule {
+  id: string;
+  number: number;
+  name: string;
+  rule: string;
+  example: string;
+  description: string;
+}
+
+/**
+ * StrokeData: The top-level shape of the strokes.json data file
+ */
+export interface StrokeData {
+  strokes: BasicStroke[];
+  strokeOrderRules: StrokeOrderRule[];
+  suggestedCharacters: string[];
+}
+
 /**
  * ToneRuleExample: A single example within a tone change rule
  */
