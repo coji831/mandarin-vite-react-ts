@@ -48,7 +48,7 @@ The Character Detail Hub is the central information access pattern for the entir
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: June 19, 2026
-- **Key Commit**: `b07cee5`
+- **Key Commit**: `b79c105`
 
 ## Implementation Notes
 
