@@ -20,9 +20,9 @@
 - Route redirect from old `/learn/flashcards` → `/learn/foundations` for backward compatibility
 - Updated 5-item global navigation (Dashboard, Learn, Practices, Library, Progress)
 
-**Status:** In Progress
+**Status:** In Progress (Story 18.5 Completed)
 
-**Last Update:** June 18, 2026
+**Last Update:** June 19, 2026
 
 ## Technical Overview
 

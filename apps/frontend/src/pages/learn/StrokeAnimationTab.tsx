@@ -8,20 +8,23 @@
  */
 
 import { useState } from "react";
+
 import {
   CharacterSearchBar,
   AnimationPanel,
   SuggestionPanel,
 } from "features/foundations/components";
+import { useCharacterHub } from "shared/hooks";
 import "./StrokeAnimationTab.css";
 
 export function StrokeAnimationTab() {
   const [character, setCharacter] = useState<string>("水");
+  const { openHub } = useCharacterHub();
 
   return (
     <div className="stroke-anim-tab">
       <CharacterSearchBar onCharacterSelect={setCharacter} />
-      <AnimationPanel character={character} />
+      <AnimationPanel character={character} onCharacterClick={(char) => openHub(char)} />
       <SuggestionPanel onSelect={setCharacter} currentCharacter={character} />
     </div>
   );

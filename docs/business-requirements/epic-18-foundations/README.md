@@ -54,8 +54,9 @@ This epic consists of the following user stories:
    - As a **new learner**, I want to **reference the 8 basic strokes and 4 stroke order rules, and watch animated stroke order demonstrations for any character**, so that **I can learn proper handwriting technique**.
    - **Status:** Completed
 
-5. **Story 18.5: Character Detail Hub (Phase 1 Minimal)** ([story-18-5-character-detail-hub.md](story-18-5-character-detail-hub.md))
+5. **Story 18.5: Character Detail Hub (Phase 1 Minimal)** ✅ ([story-18-5-character-detail-hub.md](story-18-5-character-detail-hub.md))
    - As a **learner**, I want to **tap any character to see a minimal slide-up overlay with pinyin, audio, and stroke animation**, so that **I can learn character details without navigating away from my current context**.
+   - **Status:** Completed
 
 6. **Story 18.6: Audio-to-Type Quiz (Phase 1 Gate)** ([story-18-6-audio-to-type-quiz.md](story-18-6-audio-to-type-quiz.md))
    - As a **learner**, I want to **take an audio-to-type quiz that tests pinyin typing and tone selection**, so that **I can demonstrate Phase 1 mastery and unlock Phase 2 content**.

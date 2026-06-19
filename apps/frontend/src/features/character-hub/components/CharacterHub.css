@@ -1,0 +1,291 @@
+/* CharacterHub.css — Character Detail Hub overlay styles */
+/* Story 18.5: Character Detail Hub (Phase 1 Minimal) */
+/* Layout per wireframe Section 2.4: character-hero card + info + actions */
+
+/* ── Animations ──────────────────────────────────────────── */
+
+@keyframes hub-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hub-slide-up {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Backdrop ────────────────────────────────────────────── */
+
+.hub-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hub-fade-in 0.2s ease-out;
+}
+
+/* ── Panel ───────────────────────────────────────────────── */
+
+.hub-panel {
+  position: relative;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 12px;
+  padding: 2rem 1.5rem 1.5rem;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: hub-slide-up 0.25s ease-out;
+}
+
+/* ── Close Button ────────────────────────────────────────── */
+
+.hub-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  color: #aaa;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0.25rem;
+  z-index: 1;
+  transition: color 0.15s;
+}
+
+.hub-close-btn:hover {
+  color: #e0e0e0;
+}
+
+/* ── Character Card ──────────────────────────────────────── */
+/* Per wireframe: centered card containing character hero + stroke canvas + controls + audio */
+
+.hub-character-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: #1e1e2e;
+  border: 1px solid #3a3a5e;
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+/* Character hero — stroke animation canvas (matches hanzi-writer 200x200) */
+.hub-character-canvas {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Canvas inner div — ref target for hanzi-writer */
+.hub-character-canvas-inner {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.hub-character-canvas-ready {
+  z-index: 1;
+}
+
+.hub-character-canvas-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Overlay for loading/error state */
+.hub-character-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 30, 46, 0.8);
+  border-radius: 8px;
+}
+
+.hub-character-canvas-error {
+  color: #f87171;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.hub-character-hanzi {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Stroke info text (e.g., "Stroke 6 of 6") */
+.hub-stroke-info {
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+}
+
+/* Controls row: ◀ ▶ ▶ | 🔊 */
+.hub-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.hub-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: #aaa;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.hub-ctrl-btn:hover:not(:disabled) {
+  background: #2e2e50;
+  border-color: #5a5a8a;
+  color: #e0e0e0;
+}
+
+.hub-ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hub-ctrl-play {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: #4a4a7a;
+  color: #818cf8;
+}
+
+.hub-ctrl-play:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.35);
+}
+
+.hub-ctrl-divider {
+  width: 1px;
+  height: 24px;
+  background: #3a3a5e;
+  margin: 0 0.35rem;
+}
+
+/* Audio button (circular, inside the controls row) */
+.hub-audio-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid #4a4a7a;
+  border-radius: 50%;
+  color: #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.hub-audio-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.35);
+  color: #e0e0e0;
+}
+
+.hub-audio-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Pinyin shown inside the card below the character */
+.hub-card-pinyin {
+  font-size: 1.25rem;
+  color: #818cf8;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+/* ── Info Line ────────────────────────────────────────────── */
+/* Per wireframe: "mother · HSK 1 · Noun" below the card */
+
+.hub-info-line {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #aaa;
+}
+
+.hub-info-char {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.hub-info-pinyin {
+  color: #818cf8;
+  margin-left: 0.25rem;
+}
+
+.hub-info-sep {
+  margin: 0 0.5rem;
+  color: #555;
+}
+
+.hub-info-meaning {
+  color: #999;
+}
+
+/* ── Actions ──────────────────────────────────────────────── */
+/* Per Phase 1 wireframe: single "Save to Review" button */
+
+.hub-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .hub-panel {
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+    align-self: flex-end;
+    max-height: 85vh;
+  }
+
+  .hub-character-canvas {
+    width: 180px;
+    height: 180px;
+  }
+}

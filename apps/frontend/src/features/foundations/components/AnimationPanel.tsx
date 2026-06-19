@@ -13,11 +13,12 @@ import { AnimationControls } from "./AnimationControls";
 import { StrokeBreakdown } from "./StrokeBreakdown";
 import { StrokeRulesDisplay } from "./StrokeRulesDisplay";
 
-export interface AnimationPanelProps {
+type AnimationPanelProps = {
   character: string;
-}
+  onCharacterClick?: (character: string) => void;
+};
 
-export function AnimationPanel({ character }: AnimationPanelProps) {
+export function AnimationPanel({ character, onCharacterClick }: AnimationPanelProps) {
   const {
     canvasRef,
     isReady,
@@ -33,7 +34,6 @@ export function AnimationPanel({ character }: AnimationPanelProps) {
     handleStepBack,
     handleStepForward,
     handleSpeedChange,
-    handleCharacterClick,
     handleStrokeSelect,
   } = useHanziWriter(character);
 
@@ -58,7 +58,7 @@ export function AnimationPanel({ character }: AnimationPanelProps) {
           isReady={isReady}
           error={error}
           character={character}
-          onClick={handleCharacterClick}
+          onClick={() => onCharacterClick?.(character)}
         />
 
         {/* Controls */}

@@ -8,7 +8,9 @@
  * Phase 2: Navigation redesign - replaces Root.tsx with modern two-level nav system
  */
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../../features/auth";
+
+import { useAuth } from "features/auth";
+import { CharacterHub } from "features/character-hub/components";
 import "./AppLayout.css";
 
 export { AppLayout };
@@ -89,6 +91,7 @@ function AppLayout() {
       <main className="app-content">
         <Outlet />
       </main>
+      <CharacterHub />
     </div>
   );
 }

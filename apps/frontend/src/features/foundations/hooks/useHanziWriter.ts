@@ -8,13 +8,14 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
+
 import type { StrokeData } from "features/foundations/types";
-import { determineStrokeRules } from "features/foundations/utils/strokeUtils";
+import { determineStrokeRules } from "features/foundations/utils";
 
 // Module-level cache for strokes.json (for suggested characters + stroke breakdown)
 let cachedStrokeData: StrokeData | null = null;
 
-export interface UseHanziWriterReturn {
+type UseHanziWriterReturn = {
   /** Ref to attach to the canvas container div */
   canvasRef: React.RefObject<HTMLDivElement>;
   /** Whether the writer is ready for interaction */
@@ -45,11 +46,9 @@ export interface UseHanziWriterReturn {
   handleStepForward: () => void;
   /** Change animation speed */
   handleSpeedChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  /** Click handler for character canvas (placeholder for Story 18.5) */
-  handleCharacterClick: () => void;
   /** Jump to a specific stroke index (1-based) */
   handleStrokeSelect: (index: number) => void;
-}
+};
 
 /**
  * Hook that manages hanzi-writer lifecycle, state, and controls.
@@ -294,11 +293,6 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
     // Speed is applied via _options before the next animateCharacter/animateStroke call
   }, []);
 
-  // Stub: Will open Character Detail Hub in Story 18.5
-  const handleCharacterClick = useCallback(() => {
-    console.log(`[Story 18.5] Character Detail Hub would open for: ${character}`);
-  }, [character]);
-
   /**
    * Jumps the animation to a specific stroke index (1-based).
    * Resets the display and re-animates strokes 0..target-1 so the user
@@ -356,7 +350,6 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
     handleStepBack,
     handleStepForward,
     handleSpeedChange,
-    handleCharacterClick,
     handleStrokeSelect,
   };
 }
