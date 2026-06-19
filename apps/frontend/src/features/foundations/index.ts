@@ -2,6 +2,7 @@
  * Foundations feature — character foundations learning path
  * Story 18.1: Foundations Page Structure
  * Story 18.2: Pinyin System Guide
+ * Story 18.3: Tones Reference & Practice
  *
  * Provides the foundations page with Pinyin, Tones, Strokes, and Animations tabs.
  * Phase-gated as the first content area in Phase 1.
@@ -13,6 +14,9 @@ export { FinalsGrid } from "./components/FinalsGrid";
 export { CombinationDisplay } from "./components/CombinationDisplay";
 export { ToneCell } from "./components/ToneCell";
 export { PinyinCell } from "./components/PinyinCell";
+export { ToneContourCard } from "./components/ToneContourCard";
+export { TonePairDrills } from "./components/TonePairDrills";
+export { ToneChangeRules } from "./components/ToneChangeRules";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
 export { foundationsService } from "./services/foundationsService";
 export {
@@ -23,4 +27,14 @@ export {
   getToneVowelIndex,
 } from "./utils/pinyinUtils";
 export type { FoundationProgress, PhaseGate } from "./types";
-export type { PinyinInitial, PinyinFinal, PinyinCombination, PinyinData } from "./types";
+export type {
+  PinyinInitial,
+  PinyinFinal,
+  PinyinCombination,
+  PinyinData,
+  ToneDefinition,
+  TonePairDrill,
+  ToneRuleExample,
+  ToneRule,
+  ToneData,
+} from "./types";

@@ -17,7 +17,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 18, 2026
+**Last Update:** June 19, 2026
 
 ## Background
 
@@ -46,8 +46,9 @@ This epic consists of the following user stories:
    - As a **new learner**, I want to **explore an interactive pinyin chart with clickable initials and finals, hear their pronunciation via TTS, and see tone-colored pinyin**, so that **I can learn correct pronunciation and understand how syllables are constructed**.
    - **Status:** Completed
 
-3. **Story 18.3: Tones Reference & Practice** ([story-18-3-tones-reference-practice.md](story-18-3-tones-reference-practice.md))
+3. **Story 18.3: Tones Reference & Practice** ✅ ([story-18-3-tones-reference-practice.md](story-18-3-tones-reference-practice.md))
    - As a **new learner**, I want to **study tone contours, practice tone pair drills, and learn tone change rules (3rd tone sandhi, 一/不)**, so that **I can distinguish and produce the four tones correctly**.
+   - **Status:** Completed
 
 4. **Story 18.4: Stroke Order Reference & Animations** ([story-18-4-stroke-order-reference-animations.md](story-18-4-stroke-order-reference-animations.md))
    - As a **new learner**, I want to **reference the 8 basic strokes and 4 stroke order rules, and watch animated stroke order demonstrations for any character**, so that **I can learn proper handwriting technique**.

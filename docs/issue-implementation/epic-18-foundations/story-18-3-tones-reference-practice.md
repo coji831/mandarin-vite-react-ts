@@ -2,6 +2,12 @@
 
 > Template note: headings include markers like `[Required]` and `[Optional]` to indicate guidance. When creating published/read docs, remove those bracketed tokens from the headings.
 
+## Status
+
+- **Status**: Completed
+- **Last Updated**: June 19, 2026
+- **PR**: TBD (commit pending user review)
+
 ## Technical Scope
 
 Build the tone reference tab with pitch contour visualization, tone pair drills, and tone change rules section.
@@ -91,12 +97,25 @@ Data: public/data/foundations/tones.json (loaded via fetch)
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Tone change rules need both dictionary pinyin and spoken pinyin to show the
-transformation. Learners need to see what changed.
-Solution: Store both dictionary and spoken values in tones.json. Show them side-by-side
-with the changed syllable highlighted in the spoken version.
-```
+### Challenge 1: TTS Audio for Pinyin Syllables
+
+**Problem**: Browser SpeechSynthesis doesn't read pinyin correctly (pronounces as English letters).
+**Root Cause**: TTS engines expect Chinese characters, not Romanized pinyin.
+**Solution**: Used `getPinyinAudioText()` (same pattern as PinyinTab) to map pinyin → Chinese character before passing to TTS. For multi-character Chinese words, pass directly.
+**Impact**: Consistent audio across all tones content.
+
+### Challenge 2: Layout Alignment with Wireframe
+
+**Problem**: Initial implementation used individual cards per tone/drill/rule, creating dead space and not matching the wireframe's consolidated card design.
+**Root Cause**: Component-first thinking instead of design-first.
+**Solution**: Consolidated to single-card-per-section containers (`.tones-contour-grid`, `.tone-pair-drills`, `.tone-rules` get the card background/border). Individual items are now compact rows without their own borders.
+**Impact**: ~40% visual density improvement, matches Section 4.3 wireframe.
+
+### Challenge 3: Dict/Spoken Pinyin Comparison Layout
+
+**Problem**: Dictionary pinyin and spoken pinyin needed to be shown side-by-side for comparison, but two rows created vertical dead space.
+**Solution**: Merged onto one line with `→` separator. Rule badge moved to front per wireframe sequence.
+**Impact**: Each drill item now fits in one compact row.
 
 ## Testing Implementation
 
@@ -104,3 +123,5 @@ with the changed syllable highlighted in the spoken version.
 - Unit test: TonePairDrills plays audio on click
 - Unit test: ToneChangeRules renders 3 rule cards
 - Unit test: All tone data loads correctly from tones.json
+- **Test results**: 285/286 tests pass (1 pre-existing failure in TabBar.test.tsx - unrelated to tones)
+- **TypeScript**: `tsc --noEmit` clean
