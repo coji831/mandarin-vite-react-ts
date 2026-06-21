@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/progression/repositories/ProgressionRepository.js
  * @description Prisma-based data access for foundation progress and phase gate records
- * Story 18.1: Foundations Page Structure
+ * Stories: 18.1 (Foundations Page Structure)
  *
  * Clean Architecture: Infrastructure Layer - Data Access
  */
@@ -81,6 +81,35 @@ export class ProgressionRepository {
         phase4Unlocked,
         gateCriteria,
       },
+    });
+  }
+
+  /**
+   * Upsert a foundation progress record (create or update).
+   * @param {object} params
+   * @param {string} params.userId
+   * @param {string} params.sectionId
+   * @param {boolean} params.completed
+   * @returns {Promise<object>}
+   */
+  async upsertFoundationProgress({ userId, sectionId, completed }) {
+    return prisma.foundationProgress.upsert({
+      where: { userId_sectionId: { userId, sectionId } },
+      update: { completed, completedAt: completed ? new Date() : null },
+      create: { userId, sectionId, completed, completedAt: completed ? new Date() : null },
+    });
+  }
+
+  /**
+   * Update a phase gate record for a user.
+   * @param {string} userId
+   * @param {object} data
+   * @returns {Promise<object>}
+   */
+  async updatePhaseGate(userId, data) {
+    return prisma.phaseGate.update({
+      where: { userId },
+      data,
     });
   }
 }

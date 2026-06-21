@@ -2,13 +2,14 @@
  * AI Feedback Routes
  * Routes for AI-powered quiz error explanations
  * Dependency wiring follows TTS/Conversation pattern
+ *
+ * Controller injected via middleware in routes.js (req.aiFeedbackController).
  */
 
 import express from "express";
 import { rateLimit } from "express-rate-limit";
 import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
-import { aiFeedbackController } from "../../../app/container.js";
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.post(
   "/v1/quiz/feedback",
   authenticateToken,
   feedbackLimiter,
-  asyncHandler(aiFeedbackController.generateAIFeedback.bind(aiFeedbackController)),
+  asyncHandler((req, res) => req.aiFeedbackController.generateAIFeedback(req, res)),
 );
 
 export default router;

@@ -1,0 +1,30 @@
+/**
+ * @file SuggestedCharacters.css
+ * @description Styles for the SuggestedCharacters and SuggestionPanel components (Story 18.4)
+ */
+
+.stroke-anim-suggested {
+  padding: 0.4rem 0.5rem;
+}
+
+.stroke-anim-suggested-btn {
+  padding: 0.2rem 0.4rem;
+  background: transparent;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  min-width: 28px;
+}
+
+.stroke-anim-suggested-btn:hover {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.stroke-anim-suggested-btn--active {
+  background: var(--color-primary-border);
+  border-color: var(--color-primary);
+  color: #fff;
+}

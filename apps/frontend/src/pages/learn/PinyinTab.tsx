@@ -12,20 +12,25 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useAudioPlayback } from "shared/hooks";
-import { CombinationDisplay, FinalsGrid, InitialsGrid } from "features/foundations";
-import type { PinyinData } from "features/foundations/types";
+import {
+  CombinationDisplay,
+  FinalsGrid,
+  InitialsGrid,
+  foundationsService,
+} from "features/foundations";
+import type { PinyinTonesPool } from "features/foundations";
 import { getCombination, getPinyinAudioText } from "features/foundations/utils";
 import "./PinyinTab.css";
 
 // Module-level cache: data is fetched once and reused across tab switches
-let cachedData: PinyinData | null = null;
+let cachedData: PinyinTonesPool | null = null;
 
 export function PinyinTab() {
-  const [data, setData] = useState<PinyinData | null>(cachedData);
+  const [data, setData] = useState<PinyinTonesPool | null>(cachedData);
   const [selectedInitial, setSelectedInitial] = useState<string | null>(null);
   const [selectedFinal, setSelectedFinal] = useState<string | null>(null);
   const [loadingPinyin, setLoadingPinyin] = useState<string | null>(null);
-  const { playWordAudio, isLoading } = useAudioPlayback();
+  const { playWordAudio } = useAudioPlayback();
   const fetchAttempted = useRef(false);
 
   // Fetch pinyin.json data on mount (once)
@@ -39,11 +44,9 @@ export function PinyinTab() {
 
     const loadData = async () => {
       try {
-        const response = await fetch("/data/foundations/pinyin.json");
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const json: PinyinData = await response.json();
-        cachedData = json;
-        setData(json);
+        const pool = await foundationsService.getPinyinTonesPool();
+        cachedData = pool;
+        setData(pool);
       } catch (err) {
         console.error("Failed to load pinyin data:", err);
       }
@@ -83,17 +86,21 @@ export function PinyinTab() {
 
   if (!data) {
     return (
-      <div className="pinyin-tab pinyin-tab-loading">
+      <div className="pinyin-tab pinyin-tab-loading font-lg flex-center text-muted">
         <p>Loading pinyin data...</p>
       </div>
     );
   }
 
   return (
-    <div className="pinyin-tab">
-      <section className="pinyin-section">
-        <h3 className="pinyin-section-heading">Initials (声母)</h3>
-        <p className="pinyin-section-subtitle">Click an initial to hear its pronunciation</p>
+    <div className="pinyin-tab flex-col gap-sm">
+      <section className="flex-col">
+        <h3 className="pinyin-section-heading font-md text-secondary fw-600 m-0">
+          Initials (声母)
+        </h3>
+        <p className="pinyin-section-subtitle font-xs text-muted">
+          Click an initial to hear its pronunciation
+        </p>
         <InitialsGrid
           initials={data.initials}
           selected={selectedInitial}
@@ -101,15 +108,15 @@ export function PinyinTab() {
         />
       </section>
 
-      <section className="pinyin-section">
-        <h3 className="pinyin-section-heading">Finals (韵母)</h3>
-        <p className="pinyin-section-subtitle">
+      <section className="flex-col">
+        <h3 className="pinyin-section-heading font-md text-secondary fw-600 m-0">Finals (韵母)</h3>
+        <p className="pinyin-section-subtitle font-xs text-muted">
           Click a final to select it, then combine with an initial
         </p>
         <FinalsGrid finals={data.finals} selected={selectedFinal} onSelect={handleFinalSelect} />
       </section>
 
-      <section className="pinyin-section">
+      <section className="flex-col">
         {combination ? (
           <CombinationDisplay
             initial={selectedInitial!}
@@ -119,16 +126,16 @@ export function PinyinTab() {
             loadingPinyin={loadingPinyin}
           />
         ) : selectedInitial && selectedFinal ? (
-          <div className="pinyin-combination-empty">
+          <div className="pinyin-combination-empty p-lg bg-surface-dark-alt border-default radius-md text-tertiary text-center">
             <p>
               No valid combination for{" "}
-              <strong>
+              <strong className="text-secondary">
                 {selectedInitial}+{selectedFinal}
               </strong>
             </p>
           </div>
         ) : (
-          <div className="pinyin-combination-hint">
+          <div className="pinyin-combination-hint p-lg font-italic text-muted text-center">
             <p>Select an initial and a final to see tone combinations</p>
           </div>
         )}

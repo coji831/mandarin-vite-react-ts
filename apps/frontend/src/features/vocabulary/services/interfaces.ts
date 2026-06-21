@@ -3,7 +3,7 @@
 // Story 11.1 (Epic 11: Service Layer Overhaul)
 
 import { VocabularyList, WordAudio, WordAudioRequest, WordBasic } from "../types";
-import { WordProgress } from "../../quiz/types";
+import { WordProgress } from "@mandarin/shared-types";
 
 /**
  * Interface for vocabulary data service operations

@@ -1,0 +1,15 @@
+/**
+ * ReviewComplete.css
+ * Phase 1 Review — Completion summary screen styles.
+ */
+.review-complete {
+  max-width: 500px;
+}
+
+.review-complete__emoji {
+  font-size: var(--font-3xl);
+}
+
+.review-complete__title {
+  font-size: var(--font-xl);
+}

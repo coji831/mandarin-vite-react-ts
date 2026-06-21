@@ -18,16 +18,6 @@ export const ROUTE_PATTERNS = {
   progressStreakFreeze: "/v1/progress/streak/freeze",
   gamificationBadges: "/v1/gamification/badges",
   quizFeedback: "/v1/quiz/feedback",
-  // Session-based quiz endpoints (Phase 8 - Recommended)
-  quizSessionStart: "/v1/quiz/session/start",
-  quizSessionAnswer: (sessionId) => `/v1/quiz/session/${sessionId}/answer`,
-  quizSessionDetails: (sessionId) => `/v1/quiz/session/${sessionId}`,
-  quizSessionSummary: (sessionId) => `/v1/quiz/session/${sessionId}/summary`,
-  quizSessionAbandon: "/v1/quiz/session/current",
-  // Quiz-based learning endpoints (Phase 8 - Stateless learning operations)
-  learningDue: "/v1/learning/due",
-  learningResult: "/v1/learning/result",
-  learningLeeches: "/v1/learning/leeches",
   authRegister: "/v1/auth/register",
   authLogin: "/v1/auth/login",
   authRefresh: "/v1/auth/refresh",
@@ -41,9 +31,16 @@ export const ROUTE_PATTERNS = {
   progressionFoundationProgressSection: (sectionId) =>
     `/v1/progression/foundation-progress/${sectionId}`,
   progressionPhaseGate: "/v1/progression/phase-gate",
-  progressionQuizAttempts: "/v1/progression/quiz-attempts",
-  progressionQuizAttemptAnswer: (id) => `/v1/progression/quiz-attempts/${id}/answers`,
-  progressionQuizAttemptComplete: (id) => `/v1/progression/quiz-attempts/${id}/complete`,
+  quizAttempts: "/v1/quiz/attempts",
+  quizAttemptAnswer: (id) => `/v1/quiz/attempts/${id}/answers`,
+  quizAttemptComplete: (id) => `/v1/quiz/attempts/${id}/complete`,
+  reviewItems: "/v1/review/items",
+  reviewResult: "/v1/review/result",
+  reviewDueCount: "/v1/review/due-count",
+  reviewPoolItems: "/v1/review/pool/items",
+  reviewItemRate: (id) => `/v1/review/items/${id}/rate`,
+  foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
+  quizQuestions: "/v1/quiz/questions",
 };
 
 // HSK Levels

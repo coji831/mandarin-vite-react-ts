@@ -14,9 +14,16 @@ import examplesRoute from "../modules/examples/api/examplesRoutes.js";
 import ttsRouter from "../modules/tts/api/ttsRoutes.js";
 import vocabularyRouter from "../modules/vocabulary/api/vocabularyRoutes.js";
 import healthRouter from "../modules/health/api/healthRoutes.js";
-import quizSessionRouter from "../modules/quiz/api/quizSessionRoutes.js";
-import learningRouter from "../modules/quiz/api/learningRoutes.js";
 import progressionRouter from "../modules/progression/api/progressionRoutes.js";
+import foundationsDataRoutes from "../modules/foundations/api/foundationsDataRoutes.js";
+import quizRouter from "../modules/quiz/api/quizRoutes.js";
+import reviewRouter from "../modules/review/api/reviewRoutes.js";
+import {
+  quizController,
+  reviewController,
+  progressionController,
+  aiFeedbackController,
+} from "./container.js";
 
 const router = express.Router();
 
@@ -41,13 +48,11 @@ router.use(progressEventRouter);
 router.use(gamificationRouter);
 
 // AI Feedback routes (v1) - Story 15.4
+router.use((req, res, next) => {
+  req.aiFeedbackController = aiFeedbackController;
+  next();
+});
 router.use(aiFeedbackRouter);
-
-// Learning routes (v1) - Story 15.11 Phase 8: Quiz-based learning endpoints
-router.use(learningRouter);
-
-// Quiz Session routes (v1) - Story 15.11 Phase 8: Session-based quiz endpoints
-router.use(quizSessionRouter);
 
 // TTS routes
 router.use(ttsRouter);
@@ -60,7 +65,28 @@ router.use(vocabularyRouter);
 // Examples routes (v1)
 router.use(examplesRoute);
 
+// Foundations data routes (v1) - Story 18.6
+router.use(foundationsDataRoutes);
+
 // Progression routes (v1) - Story 18.1
+router.use((req, res, next) => {
+  req.progressionController = progressionController;
+  next();
+});
 router.use(progressionRouter);
+
+// Quiz routes (v1) - Generic strategy-based quiz endpoints
+router.use((req, res, next) => {
+  req.quizController = quizController;
+  next();
+});
+router.use(quizRouter);
+
+// Review routes (v1) - Phase 1: Flip-card SRS review
+router.use((req, res, next) => {
+  req.reviewController = reviewController;
+  next();
+});
+router.use(reviewRouter);
 
 export default router;

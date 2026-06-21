@@ -1,5 +1,5 @@
 import { VocabularyList } from "../types";
-import { WordProgress } from "../../quiz/types";
+import { WordProgress } from "@mandarin/shared-types";
 import type { RootState } from "../../quiz/hooks/useProgressState";
 import { useProgressState } from "../../quiz/hooks";
 import "./VocabularyCard.css";

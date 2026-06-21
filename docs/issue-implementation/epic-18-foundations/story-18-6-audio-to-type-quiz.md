@@ -8,29 +8,34 @@ Build the Audio-to-Type quiz page with 20-question flow, backend API integration
 
 **Files to create (frontend):**
 
-- `apps/frontend/src/features/foundations/components/Phase1QuizPage.tsx` — main quiz page
-- `apps/frontend/src/features/foundations/components/QuizQuestion.tsx` — single question display (audio + inputs)
-- `apps/frontend/src/features/foundations/components/AudioPlayer.tsx` — play/replay audio button
-- `apps/frontend/src/features/foundations/components/PinyinInput.tsx` — text input for pinyin
-- `apps/frontend/src/features/foundations/components/ToneSelector.tsx` — 5 tone buttons
-- `apps/frontend/src/features/foundations/components/FeedbackDisplay.tsx` — correct/incorrect overlay
-- `apps/frontend/src/features/foundations/components/QuizProgressBar.tsx` — score vs target bar
-- `apps/frontend/src/features/foundations/components/QuizResultsScreen.tsx` — pass/fail with breakdown
-- `apps/frontend/src/features/foundations/components/CategoryBreakdown.tsx` — 4-category chart
-- `apps/frontend/src/features/foundations/hooks/useQuizEngine.ts` — quiz state machine
-- `apps/frontend/src/features/foundations/services/quizService.ts` — backend API calls
+- `apps/frontend/src/features/quiz/engine/strategies/AudioToTypeStrategy.ts` — strategy-based question generation + evaluation
+- `apps/frontend/src/features/quiz/stores/quizSessionStore.ts` — Zustand store for session state
+- `apps/frontend/src/features/quiz/services/quizService.ts` — backend API service
+- `apps/frontend/src/features/quiz/hooks/useQuizEngine.ts` — initialization + timer
+- `apps/frontend/src/features/quiz/pages/QuizSessionPage.tsx` — orchestrator page
+- `apps/frontend/src/features/quiz/components/QuizRouter.tsx` — phase-based UI switch
+- `apps/frontend/src/features/quiz/components/QuestionView.tsx` — question display
+- `apps/frontend/src/features/quiz/components/AnswerInput.tsx` — auto-submit wrapper
+- `apps/frontend/src/features/quiz/components/FeedbackView.tsx` — correct/incorrect display
+- `apps/frontend/src/features/quiz/components/AudioPlayer.tsx` — audio playback
+- `apps/frontend/src/features/quiz/components/QuizProgressBar.tsx` — score progress bar
+- `apps/frontend/src/features/quiz/components/Timer.tsx` — countdown display
+- `apps/frontend/src/features/quiz/components/inputs/PinyinToneInput.tsx` — pinyin input + tone buttons
+- `apps/frontend/src/features/quiz/components/results/QuizResults.tsx` — pass/fail results
+- `apps/frontend/src/features/quiz/components/results/CategoryBreakdown.tsx` — per-category scores
+- `apps/frontend/src/features/quiz/components/results/PhaseGateBadge.tsx` — animated pass badge
+- `apps/frontend/src/features/quiz/types/engine.ts`, `session.ts`, `api.ts` — type definitions
+- `apps/frontend/src/features/quiz/index.ts` — barrel exports
 
 **Files to create (backend):**
 
-- `apps/backend/src/modules/progression/api/ProgressionController.js` — HTTP handlers
-- `apps/backend/src/modules/progression/api/progressionRoutes.js` — route definitions
-- `apps/backend/src/modules/progression/services/ProgressionService.js` — business logic
-- `apps/backend/src/modules/progression/repositories/ProgressionRepository.js` — Prisma access
-- `apps/backend/src/modules/progression/domain/entities/FoundationProgress.js`
-- `apps/backend/src/modules/progression/domain/entities/QuizAttempt.js`
-- `apps/backend/src/modules/progression/domain/entities/PhaseGate.js`
-- `apps/backend/src/modules/progression/domain/interfaces/IProgressionRepository.js`
-- `apps/backend/src/modules/progression/index.js` — barrel exports
+- `apps/backend/src/modules/quiz/api/QuizController.js` — HTTP handlers
+- `apps/backend/src/modules/quiz/api/quizRoutes.js` — route definitions
+- `apps/backend/src/modules/quiz/services/QuizService.js` — business logic
+- `apps/backend/src/modules/quiz/repositories/QuizRepository.js` — Prisma access
+- `apps/backend/src/modules/quiz/strategies/index.js` — strategy registry
+- `apps/backend/src/modules/quiz/index.js` — barrel exports
+- `apps/backend/src/shared/infrastructure/data/readStaticReference.js` — pool data reader
 
 **Prisma schema updates:**
 
@@ -39,8 +44,8 @@ Build the Audio-to-Type quiz page with 20-question flow, backend API integration
 **Files to update:**
 
 - `apps/frontend/src/router/PracticesRoutes.tsx` — add quiz type routing
-- `apps/backend/src/app/container.js` — register ProgressionController + ProgressionService
-- `apps/backend/src/app/routes.js` — mount progression routes
+- `apps/backend/src/app/container.js` — register QuizService + QuizController
+- `apps/backend/src/app/routes.js` — mount quiz routes
 
 ## Implementation Details
 
@@ -265,6 +270,8 @@ router.put(
 export default router;
 ```
 
+> **Note:** Actual implementation evolved to use strategy pattern (`QuizStrategy` interface + `AudioToTypeStrategy`) with Zustand store, separated from the progression module into its own quiz module. The quiz engine was extracted to `features/quiz/` (frontend) and `modules/quiz/` (backend) for cleaner module boundaries.
+
 ## Architecture Integration
 
 ```
@@ -290,16 +297,35 @@ Phase1QuizPage
 
 ## Technical Challenges & Solutions
 
-```
-Problem: Quiz questions need both audio and text content. Audio generation via TTS is async
-and may have latency.
-Solution: Pre-generate and cache common pinyin combination audio. On quiz start, preload
-all 20 question audio files. Use loading spinner per question as fallback.
+### Challenge 1: Architecture Evolution — Strategy Pattern
 
-Problem: The quiz needs a question pool with categorized questions (pinyin, tones, pairs, rules).
-Solution: Generate question pool from pinyin.json and tones.json data at quiz start (frontend-side).
-Each question stores its category, audioKey, correctPinyin, correctTone, and distractors.
-```
+**Problem:** The initial design placed all quiz logic in the progression module. As the quiz grew complex (state machine, multiple question types, backend sync), it became clear that quiz and progression were different concerns.
+**Solution:** Extracted quiz into its own `modules/quiz/` (backend) and `features/quiz/` (frontend) with a strategy pattern — `QuizStrategy` interface + `AudioToTypeStrategy` implementation. This allows future quiz types (IME Simulator, Comprehension) to be added by creating new strategy files.
+**Impact:** Cleaner module boundaries, testable in isolation, open/closed principle.
+
+### Challenge 2: Static Data to Backend-Hosted Pool
+
+**Problem:** Questions were hardcoded as `MOCK_QUESTIONS` in the frontend strategy. The data needed to be shared across Learn (reference), Review (SRS), and Quiz (question generation).
+**Solution:** Created `readStaticReference.js` — a shared utility that reads a unified `pinyin-tones-pool.json` from the local filesystem (dev) or GCS (production). All three features consume the same data through backend APIs.
+**Impact:** Single source of truth, environment-agnostic (local file vs cloud storage), in-memory cached.
+
+### Challenge 3: Prisma Schema Drift
+
+**Problem:** The `ReviewItem` model was edited after migration generation, adding `front`, `back`, `category` fields. The database table didn't have these columns, causing 500 errors.
+**Solution:** Ran `npx prisma db push` to sync the database schema with the Prisma schema file.
+**Lesson:** Always run `prisma migrate dev` after schema edits to auto-generate correct migrations.
+
+### Challenge 4: Phase Gate Double-Update
+
+**Problem:** Both the backend `completeQuizAttempt()` and frontend `QuizResults.handlePass()` called `updatePhaseGate()`, causing a double-update that skipped Phase 2.
+**Solution:** Removed the redundant frontend call — the backend already handles phase gate advancement during quiz completion.
+**Impact:** Clean data flow, no duplicate state mutations.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: TBD
+- **Last Updated**: June 21, 2026
 
 ## Testing Implementation
 

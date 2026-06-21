@@ -14,26 +14,24 @@ export const cacheService = await CacheFactory.create("default");
 import { AuthRepository } from "../modules/auth/repositories/AuthRepository.js";
 import { BadgeRepository } from "../modules/gamification/repositories/BadgeRepository.js";
 import { ProgressRepository } from "../modules/progress/repositories/ProgressRepository.js";
-import { QuizSessionAnswerRepository } from "../modules/quiz/repositories/QuizSessionAnswerRepository.js";
-import { QuizSessionRepository } from "../modules/quiz/repositories/QuizSessionRepository.js";
-import { QuizSessionSummaryRepository } from "../modules/quiz/repositories/QuizSessionSummaryRepository.js";
 import { StreakRepository } from "../modules/progress/repositories/StreakRepository.js";
 import { VocabularyRepository } from "../modules/vocabulary/repositories/VocabularyRepository.js";
 import { WordRepository } from "../modules/word/repositories/WordRepository.js";
 import { VocabularyListRepository } from "../modules/vocabulary/repositories/VocabularyListRepository.js";
 import { ProgressionRepository } from "../modules/progression/repositories/ProgressionRepository.js";
+import { ReviewRepository } from "../modules/review/repositories/ReviewRepository.js";
+import { QuizRepository } from "../modules/quiz/repositories/QuizRepository.js";
 
 const authRepository = new AuthRepository();
 const badgeRepository = new BadgeRepository();
 const progressRepository = new ProgressRepository();
-const quizSessionAnswerRepository = new QuizSessionAnswerRepository();
-const quizSessionRepository = new QuizSessionRepository();
-const quizSessionSummaryRepository = new QuizSessionSummaryRepository();
 const streakRepository = new StreakRepository();
 const vocabularyRepository = new VocabularyRepository();
 const wordRepository = new WordRepository();
 const vocabularyListRepository = new VocabularyListRepository();
 const progressionRepository = new ProgressionRepository();
+const reviewRepository = new ReviewRepository();
+const quizRepository = new QuizRepository();
 
 // ── Infrastructure: Security ──────────────────────────────────────────────
 import { JwtService } from "../shared/infrastructure/security/JwtService.js";
@@ -70,13 +68,14 @@ const rawTtsService = {
   },
 };
 
+// ── Foundations Data ──────────────────────────────────────────────
+import { FoundationsDataController } from "../modules/foundations/api/FoundationsDataController.js";
+
 // ── Core: Services ─────────────────────────────────────────────────────────
 import { AuthService } from "../modules/auth/index.js";
 import { AIFeedbackService } from "../modules/quiz/use-cases/AIFeedbackService.js";
 import { GamificationService } from "../modules/gamification/index.js";
-import { LearningService } from "../modules/quiz/use-cases/LearningService.js";
 import { ProgressService } from "../modules/progress/use-cases/ProgressService.js";
-import { QuizSessionOrchestrator } from "../modules/quiz/use-cases/QuizSessionOrchestrator.js";
 import { StreakService } from "../modules/progress/use-cases/StreakService.js";
 import { VocabularyService } from "../modules/vocabulary/services/VocabularyService.js";
 import { WordService } from "../modules/word/index.js";
@@ -84,13 +83,24 @@ import { VocabularyListService } from "../modules/vocabulary/services/Vocabulary
 import { ProgressionService } from "../modules/progression/index.js";
 const authService = new AuthService(authRepository, jwtService, passwordService);
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
-export const streakService = new StreakService(streakRepository, quizSessionAnswerRepository);
-export const learningService = new LearningService(progressRepository, wordRepository);
+export const streakService = new StreakService(streakRepository);
 export const progressService = new ProgressService(progressRepository);
 const vocabularyService = new VocabularyService(vocabularyRepository);
 const wordService = new WordService(wordRepository);
 const vocabularyListService = new VocabularyListService(vocabularyListRepository);
 const progressionService = new ProgressionService(progressionRepository);
+import { QuizService } from "../modules/quiz/services/QuizService.js";
+import { QuizController } from "../modules/quiz/api/QuizController.js";
+const quizService = new QuizService(quizRepository, progressionService);
+export const quizController = new QuizController(quizService);
+
+// ── Review Module ─────────────────────────────────────────────────────────
+import { ReviewService } from "../modules/review/services/ReviewService.js";
+import { ReviewController } from "../modules/review/api/ReviewController.js";
+
+const reviewService = new ReviewService(reviewRepository);
+export const reviewController = new ReviewController(reviewService);
+
 // ── Cache Middleware ───────────────────────────────────────────────────────
 import { withCache, withGcsCache } from "../shared/middleware/cacheMiddleware.js";
 
@@ -149,39 +159,12 @@ export const exampleService = withGcsCache(
   },
 );
 
-// ── Decomposed QuizSession Sub-Services (BE7) ──────────────────────────────
-import { AnswerRecordingService } from "../modules/quiz/use-cases/AnswerRecordingService.js";
-import { SummaryService } from "../modules/quiz/use-cases/SummaryService.js";
-
-const answerRecordingService = new AnswerRecordingService({
-  answerRepository: quizSessionAnswerRepository,
-  learningService,
-  aiFeedbackService: cachedAIFeedback,
-});
-
-const summaryService = new SummaryService({
-  summaryRepository: quizSessionSummaryRepository,
-  streakService,
-  gamificationService,
-  answerRepository: quizSessionAnswerRepository,
-  sessionRepository: quizSessionRepository,
-});
-
-const quizSessionService = new QuizSessionOrchestrator({
-  sessionRepository: quizSessionRepository,
-  learningService,
-  answerRecordingService,
-  summaryService,
-});
-
 // ── API: Controllers ───────────────────────────────────────────────────────
 import { AuthController } from "../modules/auth/api/AuthController.js";
 import { AIFeedbackController } from "../modules/quiz/api/AIFeedbackController.js";
 import { GamificationController } from "../modules/gamification/api/GamificationController.js";
 import { HealthController } from "../modules/health/api/HealthController.js";
-import { LearningController } from "../modules/quiz/api/LearningController.js";
 import { ProgressController } from "../modules/progress/api/ProgressController.js";
-import { QuizSessionController } from "../modules/quiz/api/QuizSessionController.js";
 import TtsController from "../modules/tts/api/TtsController.js";
 import { ExamplesController } from "../modules/examples/api/ExamplesController.js";
 import { VocabularyController } from "../modules/vocabulary/api/VocabularyController.js";
@@ -199,15 +182,14 @@ export const healthController = new HealthController(
   ttsClientModule,
   redisClient.getClient(),
 );
-export const learningController = new LearningController(learningService);
 export const progressController = new ProgressController(
   progressService,
   streakService,
   gamificationService,
 );
-export const quizSessionController = new QuizSessionController(quizSessionService);
 export const ttsController = new TtsController(cachedTts, gcsClient);
 export const vocabularyController = new VocabularyController(vocabularyService, progressService);
 export const wordController = new WordController(wordService);
 export const progressionController = new ProgressionController(progressionService);
 export const exampleController = new ExamplesController(exampleService);
+export const foundationsDataController = new FoundationsDataController();

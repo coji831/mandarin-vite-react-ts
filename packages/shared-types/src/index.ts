@@ -11,11 +11,20 @@ export interface FoundationProgress {
 }
 
 export interface PhaseGate {
+  id: string;
   currentPhase: number;
   phase1Passed: boolean;
   phase2Passed: boolean;
   phase3Passed: boolean;
   phase4Unlocked: boolean;
+  qualificationScore?: number;
+  placedPhase?: number;
+  phase1Retention?: number;
+  phase2Retention?: number;
+  phase3Retention?: number;
+  gateCriteria: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Vocabulary types
@@ -249,6 +258,55 @@ export interface ConversationAudioRequest {
   conversationId: string;
   turnIndex?: number;
   text?: string;
+}
+
+// Quiz types (Story 18.6)
+export interface QuizAttempt {
+  id: string;
+  userId: string;
+  quizType: string;
+  phase?: number;
+  totalScore: number;
+  maxScore: number;
+  passed: boolean;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface QuizAttemptAnswer {
+  id: string;
+  attemptId: string;
+  questionIndex: number;
+  pinyinInput: string;
+  selectedTone: number;
+  correctPinyin: string;
+  correctTone: number;
+  correct: boolean;
+  category: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  audioKey: string;
+  correctPinyin: string;
+  correctTone: number;
+  category: "pinyin" | "tones" | "pairs" | "rules";
+  displayPinyin?: string;
+}
+
+export interface CategoryBreakdown {
+  pinyin: number;
+  tones: number;
+  pairs: number;
+  rules: number;
+}
+
+export interface GateQuizResult {
+  totalScore: number;
+  maxScore: number;
+  passed: boolean;
+  accuracy: number;
+  categoryBreakdown: CategoryBreakdown;
 }
 
 // Quiz & Spaced Repetition types (Epic 15: Learning Retention)

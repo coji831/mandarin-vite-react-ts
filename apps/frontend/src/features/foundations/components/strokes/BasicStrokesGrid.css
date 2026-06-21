@@ -1,0 +1,19 @@
+/**
+ * @file BasicStrokesGrid.css
+ * @description Styles for the BasicStrokesGrid component (Story 18.4)
+ */
+
+.stroke-card {
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  min-width: 60px;
+}
+
+.stroke-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--surface-hover);
+}
+
+.stroke-meaning {
+  font-size: 0.6rem;
+}

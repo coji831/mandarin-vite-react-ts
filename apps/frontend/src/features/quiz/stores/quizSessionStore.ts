@@ -1,165 +1,157 @@
 /**
- * @file apps/frontend/src/features/quiz/stores/quizSessionStore.ts
- * @description Zustand store for quiz session state (Story 17.4)
+ * quizSessionStore.ts
+ * Phase 1 Gate Quiz — Zustand store
  *
- * Migrated from quizReducer to Zustand. Mirrors the exact state shape
- * and actions of the reducer. Backward-compatible with QuizContext wrapper.
+ * Manages the Phase 1 Gate Quiz session state.
+ * Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS
+ *
+ * Story 18.6: Integrated backend API for quiz attempt persistence.
  */
 
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import { QuizQuestion, QuizAnswer } from "../types";
+import type { StrategyType, QuizPhase, QuizSession, GateQuizResult } from "../types";
+import { createInitialSession } from "../types/session";
+import { quizService } from "../services/quizService";
+import { getStrategy } from "../engine/strategies";
 
-export type QuizPhase = "LOADING" | "QUESTION" | "ANSWER_FEEDBACK" | "RESULTS" | "ERROR";
+interface QuizSessionStore extends QuizSession {
+  /** Initialize a new session with the given strategy */
+  initialize: (strategyType: StrategyType) => Promise<void>;
 
-export interface QuizSessionState {
-  phase: QuizPhase;
-  questions: QuizQuestion[];
-  currentIndex: number;
-  answers: QuizAnswer[];
-  error?: string;
-  sessionId?: string;
-  answerValue: string;
-  showHint: boolean;
-  aiFeedback?: string;
-  expiresAt?: string;
-  isFreshCompletion: boolean;
+  /** Submit an answer (pinyin + tone) for the current question */
+  submitAnswer: (pinyin: string, tone: number) => void;
 
-  // Actions
-  initializeSession: (questions: QuizQuestion[], sessionId: string, expiresAt: string) => void;
-  resumeSession: (
-    questions: QuizQuestion[],
-    sessionId: string,
-    currentIndex: number,
-    answers: QuizAnswer[],
-    expiresAt: string,
-  ) => void;
-  submitAnswer: (answer: QuizAnswer) => void;
-  setAnswerValue: (value: string) => void;
-  toggleHint: (show: boolean) => void;
-  setAiFeedback: (feedback: string | undefined) => void;
-  showDailyCompleteResults: (sessionId: string, expiresAt: string) => void;
+  /** Advance to the next question */
   nextQuestion: () => void;
-  completeSession: () => void;
-  setError: (error: string) => void;
-  resetSession: () => void;
+
+  /** Complete the quiz attempt via backend and store the result */
+  completeAttempt: () => Promise<GateQuizResult | null>;
+
+  /** Reset the session */
+  reset: () => void;
+
+  /** Reset + re-initialize (for retry/restart) */
+  retry: () => Promise<void>;
+
+  /** Decrement timer by 1 second */
+  tick: () => void;
 }
 
-const initialStoreState = {
-  phase: "LOADING" as QuizPhase,
-  questions: [] as QuizQuestion[],
-  currentIndex: 0,
-  answers: [] as QuizAnswer[],
-  error: undefined as string | undefined,
-  sessionId: undefined as string | undefined,
-  answerValue: "",
-  showHint: false,
-  aiFeedback: undefined as string | undefined,
-  expiresAt: undefined as string | undefined,
-  isFreshCompletion: false,
-};
+export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
+  ...createInitialSession("audio-to-type"),
 
-export const useQuizSessionStore = create<QuizSessionState>()(
-  devtools(
-    (set) => ({
-      ...initialStoreState,
+  initialize: async (strategyType) => {
+    set({ phase: "LOADING", error: null });
+    try {
+      const questions = await quizService.generateQuestionPool(strategyType);
+      const strategy = getStrategy(strategyType);
+      const timer = strategy ? Math.round(strategy.timeLimitMinutes * 60) : 150;
 
-      initializeSession: (questions, sessionId, expiresAt) =>
-        set({
-          phase: "QUESTION",
-          questions,
-          sessionId,
-          expiresAt,
-          currentIndex: 0,
-          answers: [],
-          error: undefined,
-          answerValue: "",
-          showHint: false,
-          aiFeedback: undefined,
-        }),
+      // Create a backend attempt record (non-blocking — store attemptId for later use)
+      let attemptId: string | null = null;
+      try {
+        const attempt = await quizService.createQuizAttempt(strategyType, strategy?.phase ?? 1);
+        attemptId = attempt.id;
+      } catch (apiErr) {
+        console.warn(
+          "[quizSessionStore] Backend unavailable, proceeding without remote attempt:",
+          apiErr,
+        );
+      }
 
-      resumeSession: (questions, sessionId, currentIndex, answers, expiresAt) =>
-        set({
-          phase: "QUESTION",
-          questions,
-          sessionId,
-          expiresAt,
-          currentIndex,
-          answers,
-          error: undefined,
-          answerValue: "",
-          showHint: false,
-          aiFeedback: undefined,
-        }),
+      set({
+        strategyType,
+        questions,
+        currentIndex: 0,
+        answers: [],
+        score: 0,
+        timer,
+        phase: questions.length > 0 ? "INPUT" : "RESULTS",
+        error: null,
+        attemptId,
+      });
+    } catch (err) {
+      set({
+        phase: "ERROR",
+        error: err instanceof Error ? err.message : "Failed to load questions",
+      });
+    }
+  },
 
-      submitAnswer: (answer) =>
-        set((state) => ({
-          phase: "ANSWER_FEEDBACK",
-          answers: [...state.answers, answer],
-        })),
+  submitAnswer: (pinyin: string, tone: number) => {
+    const { questions, currentIndex, strategyType, attemptId } = get();
+    const question = questions[currentIndex];
+    if (!question) return;
 
-      setAnswerValue: (value) =>
-        set({
-          answerValue: value,
-        }),
+    const strategy = getStrategy(strategyType);
+    if (!strategy) return;
 
-      toggleHint: (show) =>
-        set({
-          showHint: show,
-        }),
+    // Local evaluation
+    const result = strategy.evaluateAnswer(question, pinyin, tone);
 
-      setAiFeedback: (feedback) =>
-        set({
-          aiFeedback: feedback,
-        }),
+    // Persist to backend if we have an attempt ID (fire-and-forget)
+    if (attemptId) {
+      quizService
+        .submitAnswer(attemptId, {
+          questionIndex: currentIndex,
+          pinyinInput: pinyin,
+          selectedTone: tone,
+          correctPinyin: question.correctPinyin,
+          correctTone: question.correctTone,
+          category: question.category,
+        })
+        .catch((apiErr) => {
+          console.warn("[quizSessionStore] Failed to submit answer to backend:", apiErr);
+        });
+    }
 
-      showDailyCompleteResults: (sessionId, expiresAt) =>
-        set({
-          phase: "RESULTS",
-          sessionId,
-          expiresAt,
-          currentIndex: 0,
-          questions: [],
-          answers: [],
-          isFreshCompletion: false,
-        }),
+    set((s) => ({
+      answers: [...s.answers, result],
+      score: s.score + (result.correct ? 1 : 0),
+      phase: "FEEDBACK" as QuizPhase,
+    }));
+  },
 
-      nextQuestion: () =>
-        set((state) => {
-          const nextIndex = state.currentIndex + 1;
-          if (nextIndex >= state.questions.length) {
-            return {
-              phase: "LOADING" as QuizPhase,
-              currentIndex: nextIndex,
-            };
-          }
-          return {
-            phase: "QUESTION" as QuizPhase,
-            currentIndex: nextIndex,
-            answerValue: "",
-            showHint: false,
-            aiFeedback: undefined,
-          };
-        }),
+  completeAttempt: async () => {
+    const { attemptId } = get();
+    if (!attemptId) return null;
+    try {
+      const result = await quizService.completeQuizAttempt(attemptId);
+      set({ completionResult: result });
+      return result;
+    } catch (apiErr) {
+      console.warn("[quizSessionStore] Failed to complete quiz attempt via backend:", apiErr);
+      return null;
+    }
+  },
 
-      completeSession: () =>
-        set({
-          phase: "RESULTS",
-          isFreshCompletion: true,
-        }),
+  nextQuestion: () => {
+    const { currentIndex, questions } = get();
+    if (currentIndex + 1 < questions.length) {
+      set({ currentIndex: currentIndex + 1, phase: "QUESTION" });
+    } else {
+      // Finalize the backend attempt before showing results
+      get().completeAttempt();
+      set({ phase: "RESULTS" });
+    }
+  },
 
-      setError: (error) =>
-        set({
-          phase: "ERROR",
-          error,
-        }),
+  tick: () => {
+    const { timer, phase } = get();
+    if (timer > 0 && phase !== "RESULTS" && phase !== "ERROR") {
+      set({ timer: timer - 1 });
+    }
+  },
 
-      resetSession: () =>
-        set({
-          ...initialStoreState,
-          isFreshCompletion: false,
-        }),
-    }),
-    { name: "quiz-session" },
-  ),
-);
+  reset: () => {
+    set(createInitialSession("audio-to-type"));
+  },
+
+  retry: async () => {
+    const { strategyType } = get();
+    set(createInitialSession("audio-to-type"));
+    // Re-initialize with the same strategy — generates new questions
+    const store = get();
+    await store.initialize(strategyType);
+  },
+}));

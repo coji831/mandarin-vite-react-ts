@@ -7,9 +7,17 @@
  * Exports only what other modules or container.js can consume.
  *
  * Exports:
- * - QuizSessionOrchestrator: Quiz session lifecycle orchestrator
+ * - QuizController: Generic HTTP controller for quiz endpoints
+ * - QuizService: Generic quiz service with strategy delegation
+ * - QuizRepository: Prisma-based data access for quiz attempts
+ * - getStrategy / getRegisteredTypes: Strategy registry helpers
+ * - quizRoutes: Generic quiz routes
  *
- * NOT exported: repositories, controllers, routes, entities, use-cases (internal)
+ * NOT exported: repositories (internal), entities (internal), use-cases (internal)
  */
 
-export { QuizSessionOrchestrator } from "./use-cases/QuizSessionOrchestrator.js";
+export { QuizController } from "./api/QuizController.js";
+export { QuizService } from "./services/QuizService.js";
+export { QuizRepository } from "./repositories/QuizRepository.js";
+export { getStrategy, getRegisteredTypes } from "./strategies/index.js";
+export { default as quizRoutes } from "./api/quizRoutes.js";

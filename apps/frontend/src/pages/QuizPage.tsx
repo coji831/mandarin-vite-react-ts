@@ -7,63 +7,50 @@
  * Story 15.11: Aligned with Epic 4 feature-based routing pattern
  * Phase 4 restructure: Moved from features/quiz/pages/ to pages/ orchestrator layer
  * Story 17.6: Removed QuizProvider — quiz state uses quizSessionStore directly
- *
- * Manages quiz session lifecycle:
- * - Initializes quiz session via useQuizEngine
- * - Routes between phases: LOADING → QUESTION/ANSWER_FEEDBACK → RESULTS/ERROR
- * - Pure phase routing based on Zustand store state
- *
- * Phase Routing:
- * - LOADING: Shows loading spinner while fetching due words
- * - ERROR: Shows error screen with retry option
- * - QUESTION: Shows exam layout with question + answer section
- * - ANSWER_FEEDBACK: Shows feedback section with AI explanation
- * - RESULTS: Shows results layout with stats, badges, XP and countdown timer
+ * Story 18.6: Added audio-to-type quiz support via ?type=audio-to-type query param
+ *              Phase 1 migration: routes to QuizSessionPage for registered strategies
+ * Phase 2 cleanup: Removed old SRS quiz fallback (features/review dependency)
+ *              Shows "select a quiz type" message for unregistered strategies
  */
 
-import {
-  useQuizSessionStore,
-  ExamLayout,
-  ResultsLayout,
-  ErrorScreen,
-  LoadingScreen,
-} from "features/quiz";
-import { useQuizEngine, quizRetry } from "features/quiz/hooks/useQuizEngine";
-import "./QuizPage.css";
+import { useSearchParams } from "react-router-dom";
+import { QuizSessionPage } from "../features/quiz/pages/QuizSessionPage";
+import { QuizDebugPage } from "../features/quiz/pages/QuizDebugPage";
+import { getStrategy } from "../features/quiz/engine/strategies";
 
 export function QuizPage() {
-  useQuizEngine();
+  const [searchParams] = useSearchParams();
+  const quizType = searchParams.get("type");
 
+  // Route to debug page
+  if (quizType === "_debug") {
+    return <QuizDebugPage />;
+  }
+
+  // Route to strategy-based quiz if type matches registry
+  if (quizType && getStrategy(quizType)) {
+    return <QuizSessionPage strategyType={quizType} />;
+  }
+
+  // Fallback — no matching strategy selected
   return (
-    <div className="dailyReviewContainer flex-center">
-      <div className="quizContentWrapper flex-col">
-        <QuizRouter />
-      </div>
+    <div
+      className="flex-col-center"
+      style={{ padding: "var(--space-2xl)", gap: "var(--space-lg)" }}
+    >
+      <h2 style={{ fontSize: "var(--font-xl)", color: "var(--text-primary)", margin: 0 }}>
+        📝 Quiz
+      </h2>
+      <p style={{ color: "var(--text-secondary)", textAlign: "center", maxWidth: 400 }}>
+        Select a quiz type from the practices page to begin.
+      </p>
+      <a
+        href="/practices"
+        className="btn-primary"
+        style={{ textDecoration: "none", padding: "var(--space-md) var(--space-xl)" }}
+      >
+        Back to Practices
+      </a>
     </div>
   );
-}
-
-function QuizRouter() {
-  const phase = useQuizSessionStore((s) => s.phase);
-  const error = useQuizSessionStore((s) => s.error);
-
-  switch (phase) {
-    case "LOADING":
-      return <LoadingScreen />;
-
-    case "ERROR":
-      return (
-        <ErrorScreen error={error || "An unknown error occurred"} onRetry={quizRetry.handleRetry} />
-      );
-
-    case "QUESTION":
-    case "ANSWER_FEEDBACK":
-      return <ExamLayout />;
-
-    case "RESULTS":
-      return <ResultsLayout />;
-
-    default:
-      return null;
-  }
 }

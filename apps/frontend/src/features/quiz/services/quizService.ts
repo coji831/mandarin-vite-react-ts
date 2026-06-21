@@ -1,141 +1,103 @@
 /**
- * @file apps/frontend/src/features/quiz/services/quizService.ts
- * @description API service for quiz and spaced repetition functionality
+ * quizService.ts
+ * Phase 1 Gate Quiz — Quiz service
  *
- * Story 15.11 Phase 7: Created service layer for clean architecture
- * Story 15.11 Phase 8: Added quiz session endpoints for backend-centric architecture
- * Provides abstraction between UI hooks and backend API calls.
- * Enables backend mocking for UI/UX development via service layer.
+ * Provides quiz question generation (local fallback) and
+ * backend API integration for quiz attempts, answers, and phase gates.
+ *
+ * Story 18.6: Added real backend API calls for persistence.
  */
 
+import { apiClient } from "../../../shared/api/axiosClient";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import { apiClient } from "services";
-import type {
-  QuizSessionStartResponse,
-  QuizAnswerRequest,
-  QuizAnswerResponse,
-  QuizSessionSummary,
-} from "../types";
+import type { QuizAttempt, PhaseGate } from "@mandarin/shared-types";
+import type { StrategyType, QuizQuestion, QuizAnswer, GateQuizResult } from "../types";
+import { getStrategy } from "../engine/strategies";
 
-// ============================================================================
-// Quiz API Service
-// ============================================================================
+class QuizService {
+  /**
+   * Generate a question pool using the registered strategy.
+   * Falls back to local strategy-based generation when backend is unavailable.
+   */
+  async generateQuestionPool(strategyType: StrategyType): Promise<QuizQuestion[]> {
+    const strategy = getStrategy(strategyType);
+    if (!strategy) {
+      console.warn(`[quizService] Unknown strategy: ${strategyType}`);
+      return [];
+    }
+    return strategy.generateQuestions();
+  }
 
-/**
- * Quiz API service using Axios with typed responses
- * Provides clean abstraction for quiz and spaced repetition operations
- */
-export const quizApi = {
-  // ============================================================================
-  // Quiz Session Methods (Story 15.11 Phase 8)
-  // ============================================================================
+  // ─── Backend API calls ─────────────────────────────────────────────────
 
   /**
-   * Start a new quiz session (or resume existing)
-   * POST /api/v1/quiz/session/start
-   *
-   * Creates a server-side quiz session with generated questions.
-   * Backend validates answers and manages session state.
-   *
-   * @param date Optional date in YYYY-MM-DD format (defaults to today)
-   * @param limit Optional max words to include (defaults to 10)
-   * @returns QuizSessionStartResponse with sessionId and questions
-   * @throws Error with user-friendly message on failure
+   * Create a new quiz attempt via backend.
    */
-  async startQuizSession(date?: string, limit?: number): Promise<QuizSessionStartResponse> {
-    try {
-      const params: Record<string, string | number> = {};
-      if (date) params.date = date;
-      if (limit) params.limit = limit;
-
-      const response = await apiClient.post<QuizSessionStartResponse>(
-        ROUTE_PATTERNS.quizSessionStart,
-        {},
-        { params },
-      );
-
-      // Validate response shape
-      if (!response.data || !response.data.sessionId || !Array.isArray(response.data.questions)) {
-        throw new Error("Invalid response format from server");
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("[quizApi] Failed to start quiz session:", error);
-      // Re-throw Error instances to preserve specific messages
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error("Failed to start quiz session. Please try again.");
-    }
-  },
+  async createQuizAttempt(quizType: string, phase: number = 1): Promise<QuizAttempt> {
+    const response = await apiClient.post(ROUTE_PATTERNS.quizAttempts, {
+      quizType,
+      phase,
+    });
+    return response.data;
+  }
 
   /**
-   * Submit an answer for validation
-   * POST /api/v1/quiz/session/:sessionId/answer
-   *
-   * Backend validates answer, updates progress, awards gamification.
-   *
-   * @param sessionId Quiz session ID
-   * @param request Answer payload (questionId, userAnswer, timeSpentMs)
-   * @returns QuizAnswerResponse with correct flag, feedback, next question
-   * @throws Error with user-friendly message on failure
+   * Submit an answer for the current question.
    */
-  async submitAnswer(sessionId: string, request: QuizAnswerRequest): Promise<QuizAnswerResponse> {
-    try {
-      const response = await apiClient.post<QuizAnswerResponse>(
-        ROUTE_PATTERNS.quizSessionAnswer(sessionId),
-        request,
-      );
-
-      // Validate response
-      if (response.data === undefined || typeof response.data.correct !== "boolean") {
-        throw new Error("Invalid response format from server");
-      }
-
-      return response.data;
-    } catch (error) {
-      console.error("[quizApi] Failed to submit answer:", error);
-      // Re-throw Error instances to preserve specific messages
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error("Failed to submit answer. Please try again.");
-    }
-  },
+  async submitAnswer(
+    attemptId: string,
+    data: {
+      questionIndex: number;
+      pinyinInput: string;
+      selectedTone: number;
+      correctPinyin: string;
+      correctTone: number;
+      category: string;
+    },
+  ): Promise<QuizAnswer> {
+    const response = await apiClient.post(ROUTE_PATTERNS.quizAttemptAnswer(attemptId), data);
+    return response.data;
+  }
 
   /**
-   * Get session summary with calculated statistics
-   * GET /api/v1/quiz/session/:sessionId/summary
-   * Story 15.11: Backend-calculated metrics (accuracy, XP, leech words)
-   *
-   * @param sessionId Quiz session ID
-   * @returns QuizSessionSummary with pre-calculated metrics
-   * @throws Error with user-friendly message on failure
+   * Complete the quiz attempt and get results.
    */
-  async getSessionSummary(sessionId: string): Promise<QuizSessionSummary> {
-    try {
-      const response = await apiClient.get<QuizSessionSummary>(
-        ROUTE_PATTERNS.quizSessionSummary(sessionId),
-      );
+  async completeQuizAttempt(attemptId: string): Promise<GateQuizResult> {
+    const response = await apiClient.put(ROUTE_PATTERNS.quizAttemptComplete(attemptId));
+    return response.data;
+  }
 
-      // Validate response
-      if (
-        response.data === undefined ||
-        typeof response.data.accuracyRate !== "number" ||
-        typeof response.data.xpEarned !== "number"
-      ) {
-        throw new Error("Invalid response format from server");
-      }
+  /**
+   * Get user's quiz history.
+   */
+  async getQuizAttempts(): Promise<QuizAttempt[]> {
+    const response = await apiClient.get(ROUTE_PATTERNS.quizAttempts);
+    return response.data;
+  }
 
-      return response.data;
-    } catch (error) {
-      console.error("[quizApi] Failed to fetch session summary:", error);
-      // Re-throw Error instances to preserve specific messages
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error("Failed to load session summary. Please try again.");
-    }
-  },
-};
+  /**
+   * Get or create phase gate.
+   */
+  async getPhaseGate(): Promise<PhaseGate> {
+    const response = await apiClient.get(ROUTE_PATTERNS.progressionPhaseGate);
+    return response.data;
+  }
+
+  /**
+   * Update phase gate after passing a quiz.
+   */
+  async updatePhaseGate(
+    phase: number,
+    passed: boolean,
+    gateCriteria: string = "quiz",
+  ): Promise<PhaseGate> {
+    const response = await apiClient.put(ROUTE_PATTERNS.progressionPhaseGate, {
+      phase,
+      passed,
+      gateCriteria,
+    });
+    return response.data;
+  }
+}
+
+export const quizService = new QuizService();

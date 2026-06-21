@@ -6,6 +6,9 @@
  * Imported in index.css to be available throughout the application.
  */
 
+/* Import reusable component patterns */
+@import "./components.css";
+
 /* ===== Universal Reset ===== */
 
 /* Modern box-sizing reset - eliminates need for explicit declarations */
@@ -177,6 +180,7 @@
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
 }
 
 .card-dark-hover {
@@ -184,6 +188,7 @@
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
   transition: all var(--transition-fast);
 }
 
@@ -196,6 +201,44 @@
 /* Primary gradient (for backgrounds) */
 .gradient-primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+/* ===== Padding Utility Classes ===== */
+
+.p-xs {
+  padding: var(--space-xs);
+}
+.p-sm {
+  padding: var(--space-sm);
+}
+.p-md {
+  padding: var(--space-md);
+}
+.p-lg {
+  padding: var(--space-lg);
+}
+.p-xl {
+  padding: var(--space-xl);
+}
+.p-2xl {
+  padding: var(--space-2xl);
+}
+
+.px-md {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.py-md {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+.px-lg {
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+.py-lg {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
 }
 
 /* ===== Form Elements ===== */
@@ -489,6 +532,97 @@
   flex-direction: column;
 }
 
+/* ═══════════════════════════════════════════════
+   Utility: Gap
+   Replaces inline `gap: var(--space-*)` (~25× usage)
+   ═══════════════════════════════════════════════ */
+.gap-xs {
+  gap: var(--space-xs);
+}
+.gap-sm {
+  gap: var(--space-sm);
+}
+.gap-md {
+  gap: var(--space-md);
+}
+.gap-lg {
+  gap: var(--space-lg);
+}
+.gap-xl {
+  gap: var(--space-xl);
+}
+.gap-2xl {
+  gap: var(--space-2xl);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Text Color
+   Replaces inline `color: var(--text-*)` (~15× usage)
+   ═══════════════════════════════════════════════ */
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-success {
+  color: var(--color-success);
+}
+.text-error {
+  color: var(--color-error);
+}
+.text-warning {
+  color: var(--color-warning);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Font Weight
+   Replaces inline `fontWeight: 6**` (~15× usage)
+   ═══════════════════════════════════════════════ */
+.fw-400 {
+  font-weight: 400;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.fw-700 {
+  font-weight: 700;
+}
+.fw-800 {
+  font-weight: 800;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Flex variants
+   Replaces inline `justifyContent: "space-between"` (~5×) + `flexWrap: "wrap"` (~4×)
+   ═══════════════════════════════════════════════ */
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Margin auto
+   Replaces inline `margin: "0 auto"` (~4×)
+   ═══════════════════════════════════════════════ */
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Grid utilities */
 .grid-2-col {
   display: grid;
@@ -515,4 +649,184 @@
 /* Transition utility */
 .transition-all {
   transition: all var(--transition-fast);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Background Colors
+   ═══════════════════════════════════════════════ */
+.bg-surface-dark {
+  background: var(--surface-dark);
+}
+.bg-surface-dark-alt {
+  background: var(--surface-dark-alt);
+}
+.bg-surface-dark-2 {
+  background: var(--surface-dark-alt-2);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Border
+   ═══════════════════════════════════════════════ */
+.border-default {
+  border: 1px solid var(--surface-dark-alt-2);
+}
+.border-none {
+  border: none;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Border Radius
+   ═══════════════════════════════════════════════ */
+.radius-sm {
+  border-radius: var(--radius-sm);
+} /* 4px */
+.radius-md {
+  border-radius: var(--radius-md);
+} /* 8px */
+.radius-lg {
+  border-radius: var(--radius-lg);
+} /* 12px */
+.radius-pill {
+  border-radius: var(--radius-pill);
+} /* 20px */
+.radius-full {
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Font Size (matches --font-* tokens)
+   ═══════════════════════════════════════════════ */
+.font-xs {
+  font-size: var(--font-xs);
+} /* 0.75rem */
+.font-sm {
+  font-size: var(--font-sm);
+} /* 0.875rem */
+.font-md {
+  font-size: var(--font-md);
+} /* 1rem */
+.font-lg {
+  font-size: var(--font-lg);
+} /* 1.125rem */
+.font-xl {
+  font-size: var(--font-xl);
+} /* 1.25rem */
+.font-2xl {
+  font-size: var(--font-2xl);
+} /* 1.5rem */
+.font-3xl {
+  font-size: var(--font-3xl);
+} /* 1.75rem */
+.font-4xl {
+  font-size: var(--font-4xl);
+} /* 2rem */
+.font-5xl {
+  font-size: var(--font-5xl);
+} /* 2.5rem */
+
+/* ═══════════════════════════════════════════════
+   Utility: Font Style
+   ═══════════════════════════════════════════════ */
+.font-italic {
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Additional Padding (vertical/horizontal)
+   ═══════════════════════════════════════════════ */
+.px-xs {
+  padding-left: var(--space-xs);
+  padding-right: var(--space-xs);
+}
+.py-xs {
+  padding-top: var(--space-xs);
+  padding-bottom: var(--space-xs);
+}
+.px-sm {
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+}
+.py-sm {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Line Height
+   ═══════════════════════════════════════════════ */
+.lh-1 {
+  line-height: 1;
+}
+.lh-tight {
+  line-height: 1.2;
+}
+.lh-normal {
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Text Transform
+   ═══════════════════════════════════════════════ */
+.text-uppercase {
+  text-transform: uppercase;
+}
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Opacity
+   ═══════════════════════════════════════════════ */
+.op-60 {
+  opacity: 0.6;
+}
+.op-80 {
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Cursor
+   ═══════════════════════════════════════════════ */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: White-space
+   ═══════════════════════════════════════════════ */
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Flex Shrink / Grow
+   ═══════════════════════════════════════════════ */
+.shrink-0 {
+  flex-shrink: 0;
+}
+.grow-1 {
+  flex-grow: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Text Decoration
+   ═══════════════════════════════════════════════ */
+.line-through {
+  text-decoration: line-through;
+}
+
+/* ═══════════════════════════════════════════════
+   Utility: Misc Helpers
+   ═══════════════════════════════════════════════ */
+.flex {
+  display: flex;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+.m-0 {
+  margin: 0;
 }

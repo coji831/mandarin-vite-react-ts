@@ -1,0 +1,39 @@
+/**
+ * @file PinyinCell.css
+ * @description Styles for the PinyinCell component (Story 18.2)
+ */
+
+.pinyin-cell-button {
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.1s;
+  font-family: inherit;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.pinyin-cell-button:hover {
+  background: var(--color-primary-bg-medium);
+  border-color: var(--surface-hover);
+}
+
+.pinyin-cell-button:active {
+  transform: scale(0.96);
+}
+
+.pinyin-cell--selected {
+  background: var(--color-primary-border);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.pinyin-cell--selected:hover {
+  background: var(--color-primary-border-strong);
+}
+
+.pinyin-cell--selected .pinyin-cell-ipa {
+  color: #b0b0ff;
+}

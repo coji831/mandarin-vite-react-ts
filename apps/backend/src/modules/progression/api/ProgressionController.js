@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/progression/api/ProgressionController.js
  * @description HTTP controller for progression endpoints (foundation progress, phase gates)
- * Story 18.1: Foundations Page Structure
+ * Stories: 18.1 (Foundations Page Structure)
  */
 
 import { createLogger } from "../../../shared/utils/logger.js";
@@ -20,6 +20,8 @@ export class ProgressionController {
     // Bind methods for use as Express route handlers
     this.getFoundationProgress = this.getFoundationProgress.bind(this);
     this.getPhaseGate = this.getPhaseGate.bind(this);
+    this.updatePhaseGate = this.updatePhaseGate.bind(this);
+    this.markSectionCompleted = this.markSectionCompleted.bind(this);
   }
 
   /**
@@ -61,6 +63,51 @@ export class ProgressionController {
     } catch (error) {
       logger.error("Error fetching phase gate", error);
       return res.status(500).json({ error: "Failed to fetch phase gate" });
+    }
+  }
+  /**
+   * PUT /api/v1/progression/phase-gate
+   * Update phase gate progression after a quiz attempt.
+   *
+   * @param {object} req - Express request (expects req.userId + body with phase, passed, gateCriteria)
+   * @param {object} res - Express response
+   * @returns {Promise<void>}
+   */
+  async updatePhaseGate(req, res) {
+    try {
+      const userId = req.userId;
+      const gate = await this.progressionService.updatePhaseGate(userId, req.body);
+      return res.status(200).json(gate);
+    } catch (error) {
+      logger.error("Error updating phase gate", error);
+      return res.status(500).json({ error: "Failed to update phase gate" });
+    }
+  }
+
+  /**
+   * PUT /api/v1/progression/foundation-progress/:sectionId
+   * Mark a foundation section as completed.
+   *
+   * @param {object} req - Express request (expects req.userId, req.params.sectionId)
+   * @param {object} res - Express response
+   * @returns {Promise<void>}
+   */
+  async markSectionCompleted(req, res) {
+    try {
+      const userId = req.userId;
+      const { sectionId } = req.params;
+      const progress = await this.progressionService.upsertFoundationProgress(
+        userId,
+        sectionId,
+        true,
+      );
+      return res.status(200).json(progress);
+    } catch (error) {
+      if (error.message?.startsWith("Invalid sectionId")) {
+        return res.status(400).json({ error: error.message });
+      }
+      logger.error("Error marking section completed", error);
+      return res.status(500).json({ error: "Failed to mark section completed" });
     }
   }
 }

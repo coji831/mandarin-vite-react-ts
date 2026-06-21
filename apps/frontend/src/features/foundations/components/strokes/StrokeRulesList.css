@@ -1,0 +1,15 @@
+/**
+ * @file StrokeRulesList.css
+ * @description Styles for the StrokeRulesList component (Story 18.4)
+ */
+
+.stroke-rule-card {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem;
+}
+
+.stroke-rule-number {
+  color: var(--color-primary);
+}

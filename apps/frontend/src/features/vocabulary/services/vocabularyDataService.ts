@@ -2,7 +2,7 @@
 // VocabularyDataService implementation with fallback and cache support (Epic 11, Story 11.2)
 
 import { VocabularyList, WordBasic } from "../types";
-import { WordProgress } from "../../quiz/types";
+import { WordProgress } from "@mandarin/shared-types";
 import { loadCsvVocab } from "../utils/csvLoader";
 import { BaseService, IVocabularyBackend, IVocabularyDataService } from "./interfaces";
 
@@ -85,6 +85,19 @@ export class VocabularyDataService
 
   async fetchWordProgress(wordId: string): Promise<WordProgress> {
     // Placeholder: implement actual progress fetch logic or fallback
-    return { wordId };
+    return {
+      wordId,
+      userId: "",
+      studyCount: 0,
+      correctCount: 0,
+      confidence: 0,
+      learnedAt: null,
+      nextReviewDate: null,
+      lastReviewedAt: null,
+      lapseCount: 0,
+      currentDelay: null,
+      createdAt: "",
+      updatedAt: "",
+    };
   }
 }

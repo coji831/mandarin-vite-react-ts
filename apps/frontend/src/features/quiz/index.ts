@@ -1,27 +1,41 @@
 /**
- * Quiz feature barrel export
- * Phase 2 restructure: Added progress contexts, hooks, reducers, services, types, utils from mandarin
- * Story 17.6: Removed context and reducer exports (provider cleanup)
+ * index.ts
+ * Phase 1 Gate Quiz — Barrel exports
+ *
+ * Public API surface for the Phase 1 Gate Quiz feature.
+ * External consumers import from this barrel.
  */
 
+// Engine
+export { QuizEngine } from "./engine/QuizEngine";
+export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
+export { audioToTypeStrategy } from "./engine/strategies/AudioToTypeStrategy";
+
+// Types
+export type { QuizStrategy, StrategyType, QuizQuestion, AnswerResult, QuizPhase } from "./types";
+export type { QuizSession } from "./types";
+export { createInitialSession } from "./types";
+
 // Components
-export { ExamLayout, ResultsLayout, ErrorScreen, LoadingScreen } from "./components";
+export { QuizRouter } from "./components/QuizRouter";
+export { QuestionView } from "./components/QuestionView";
+export { AnswerInput } from "./components/AnswerInput";
+export { FeedbackView } from "./components/FeedbackView";
+export { AudioPlayer } from "./components/AudioPlayer";
+export { QuizProgressBar } from "./components/QuizProgressBar";
+export { Timer } from "./components/Timer";
+export { PinyinToneInput } from "./components/inputs/PinyinToneInput";
+export { QuizResults } from "./components/results/QuizResults";
+export { PhaseGateBadge } from "./components/results/PhaseGateBadge";
+
+// Pages
+export { QuizSessionPage } from "./pages/QuizSessionPage";
 
 // Hooks
-export {
-  useProgressState,
-  useProgressActions,
-  useProgressDispatch,
-  useUserIdentity,
-  useQuizSession,
-  useAnswerSubmission,
-  useSessionSummary,
-} from "./hooks";
-export type { UseSessionSummaryReturn } from "./hooks";
+export { useQuizEngine } from "./hooks";
 
 // Stores
 export { useQuizSessionStore } from "./stores";
-export type { QuizSessionState, QuizPhase } from "./stores";
 
-// Types
-export type { UserState, UiState } from "./types";
+// Services
+export { quizService } from "./services/quizService";

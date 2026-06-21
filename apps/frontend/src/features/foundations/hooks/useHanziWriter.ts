@@ -70,6 +70,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
   const [appliedRules, setAppliedRules] = useState<string[]>([]);
 
   const canvasRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const writerRef = useRef<any>(null);
   const characterRef = useRef(character);
   const totalStrokesRef = useRef(0);
@@ -125,6 +126,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
         // Create writer following the official hanzi-writer docs pattern:
         // charDataLoader receives (char, onComplete) and does NOT return anything.
         // onLoadCharDataSuccess / onLoadCharDataError handle loading status.
+        if (!canvasRef.current) return;
         const writer = HanziWriter.create(canvasRef.current, character, {
           width: 200,
           height: 200,
@@ -132,6 +134,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
           showOutline: true,
           showCharacter: false,
           delayBetweenStrokes: 300,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           charDataLoader: (char: string, onComplete: (data: any) => void) => {
             fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1/${char}.json`)
               .then((res) => {
@@ -144,6 +147,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
                 console.warn(`Failed to load stroke data for "${char}" from CDN`);
               });
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onLoadCharDataSuccess: (data: any) => {
             if (cancelled) return;
             const count = data?.strokes?.length ?? 0;
@@ -190,6 +194,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
 
     setupWriter();
 
+    const canvasNode = canvasRef.current;
     return () => {
       cancelled = true;
       if (writerRef.current) {
@@ -197,8 +202,8 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
         writerRef.current = null;
       }
       // Clear the canvas div so the next writer instance starts fresh
-      if (canvasRef.current) {
-        canvasRef.current.innerHTML = "";
+      if (canvasNode) {
+        canvasNode.innerHTML = "";
       }
     };
   }, [character]);

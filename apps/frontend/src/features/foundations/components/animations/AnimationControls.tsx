@@ -1,0 +1,94 @@
+/**
+ * @file components/AnimationControls.tsx
+ * @description Play/pause/step/speed controls for hanzi-writer stroke animation
+ * Story 18.4: Stroke Order Reference & Animations
+ */
+
+import "./AnimationControls.css";
+
+export interface AnimationControlsProps {
+  isReady: boolean;
+  isPlaying: boolean;
+  currentStroke: number;
+  totalStrokes: number;
+  speed: number;
+  onPlay: () => void;
+  onPause: () => void;
+  onStepBack: () => void;
+  onStepForward: () => void;
+  onSpeedChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+/**
+ * Renders playback controls for stroke animation including play/pause,
+ * step forward/back, and a speed slider.
+ */
+export function AnimationControls({
+  isReady,
+  currentStroke,
+  totalStrokes,
+  speed,
+  onPlay,
+  onPause,
+  onStepBack,
+  onStepForward,
+  onSpeedChange,
+}: AnimationControlsProps) {
+  return (
+    <div className="flex-center gap-xs flex-wrap">
+      <button
+        className="anim-control-btn border-none radius-sm text-muted flex-center"
+        onClick={onPlay}
+        disabled={!isReady}
+        title="Play"
+        aria-label="Play"
+      >
+        ▶
+      </button>
+      <button
+        className="anim-control-btn border-none radius-sm text-muted flex-center"
+        onClick={onPause}
+        disabled={!isReady}
+        title="Pause"
+        aria-label="Pause"
+      >
+        ⏸
+      </button>
+      <button
+        className="anim-control-btn border-none radius-sm text-muted flex-center"
+        onClick={onStepBack}
+        disabled={!isReady || currentStroke <= 0}
+        title="Step back"
+        aria-label="Step back one stroke"
+      >
+        ⏪
+      </button>
+      <button
+        className="anim-control-btn border-none radius-sm text-muted flex-center"
+        onClick={onStepForward}
+        disabled={!isReady || currentStroke >= totalStrokes}
+        title="Step forward"
+        aria-label="Step forward one stroke"
+      >
+        ⏩
+      </button>
+      <div className="anim-speed-control flex">
+        <label className="anim-speed-label font-xs text-muted" htmlFor="anim-speed-slider">
+          Speed:
+        </label>
+        <input
+          id="anim-speed-slider"
+          type="range"
+          className="anim-speed-slider"
+          min={0.5}
+          max={3}
+          step={0.5}
+          value={speed}
+          onChange={onSpeedChange}
+          disabled={!isReady}
+        />
+        <span className="anim-speed-value font-xs text-tertiary">{speed}x</span>
+      </div>
+    </div>
+  );
+}

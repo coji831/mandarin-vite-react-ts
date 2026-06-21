@@ -8,17 +8,18 @@
  * Phase-gated as the first content area in Phase 1.
  */
 
-export { FoundationsProgressBar } from "./components/FoundationsProgressBar";
-export { InitialsGrid } from "./components/InitialsGrid";
-export { FinalsGrid } from "./components/FinalsGrid";
-export { CombinationDisplay } from "./components/CombinationDisplay";
-export { ToneCell } from "./components/ToneCell";
-export { PinyinCell } from "./components/PinyinCell";
-export { ToneContourCard } from "./components/ToneContourCard";
-export { TonePairDrills } from "./components/TonePairDrills";
-export { ToneChangeRules } from "./components/ToneChangeRules";
+export { FoundationsProgressBar } from "./components/shared/FoundationsProgressBar";
+export { InitialsGrid } from "./components/pinyin/InitialsGrid";
+export { FinalsGrid } from "./components/pinyin/FinalsGrid";
+export { CombinationDisplay } from "./components/pinyin/CombinationDisplay";
+export { ToneCell } from "./components/pinyin/ToneCell";
+export { PinyinCell } from "./components/pinyin/PinyinCell";
+export { ToneContourCard } from "./components/tones/ToneContourCard";
+export { TonePairDrills } from "./components/tones/TonePairDrills";
+export { ToneChangeRules } from "./components/tones/ToneChangeRules";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
 export { foundationsService } from "./services/foundationsService";
+export { getPinyinAudioText } from "./utils/pinyinAudioMap";
 export {
   TONE_COLORS,
   getCombination,
@@ -26,7 +27,7 @@ export {
   stripToneMarks,
   getToneVowelIndex,
 } from "./utils/pinyinUtils";
-export type { FoundationProgress, PhaseGate } from "./types";
+export type { FoundationProgress, PhaseGate, PinyinTonesPool } from "./types";
 export type {
   PinyinInitial,
   PinyinFinal,

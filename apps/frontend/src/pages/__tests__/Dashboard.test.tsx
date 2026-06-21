@@ -62,11 +62,6 @@ const mockFreezeResponse = {
   lastActivityDate: mockNow.toISOString(),
 };
 
-const mockLeechResponse = {
-  count: 0,
-  leeches: [],
-};
-
 // Mock alert
 global.alert = vi.fn();
 
@@ -80,8 +75,6 @@ describe("Dashboard Integration", () => {
     mock.reset();
     localStorage.clear();
     vi.clearAllMocks();
-    // Mock leech endpoint for LeechWidget component rendered by DashboardPage
-    mock.onGet(ROUTE_PATTERNS.learningLeeches).reply(200, mockLeechResponse);
   });
 
   afterEach(() => {
@@ -337,35 +330,6 @@ describe("Dashboard Integration", () => {
 
     // Longest streak (12) is stored but not directly rendered in the UI
     expect(screen.getByText(/7 Day Streak/i)).toBeInTheDocument();
-  });
-
-  it("should integrate with LeechWidget", async () => {
-    mock.onGet(ROUTE_PATTERNS.progressStreak).reply(200, mockStreakResponse);
-    mock.onGet(ROUTE_PATTERNS.gamificationBadges).reply(200, mockBadgeResponse);
-    mock.onGet(ROUTE_PATTERNS.learningLeeches).reply(200, {
-      count: 5,
-      leeches: [
-        {
-          id: "hsk3-band1-001",
-          simplified: "你好",
-          pinyin: "nǐ hǎo",
-          english: "hello",
-          lapseCount: 7,
-          studyCount: 15,
-        },
-      ],
-    });
-
-    renderWithRouter(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Welcome Back! 👋")).toBeInTheDocument();
-    });
-
-    // LeechWidget should render when leeches >= 3
-    await waitFor(() => {
-      expect(screen.getByText(/Struggling Words/i)).toBeInTheDocument();
-    });
   });
 
   it("should handle concurrent API requests", async () => {

@@ -1,0 +1,32 @@
+/**
+ * @file ToneCell.css
+ * @description Styles for the ToneCell component (Story 18.2)
+ */
+
+.pinyin-tone-cell {
+  position: relative;
+  width: 70px;
+  height: 52px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.pinyin-tone-cell:hover {
+  background: var(--color-primary-bg-light);
+  border-color: var(--surface-hover);
+}
+
+.pinyin-tone-cell-text {
+  letter-spacing: 0.02em;
+}
+
+.pinyin-tone-vowel {
+  transition: color 0.1s;
+}
+
+.pinyin-tone-loading {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}

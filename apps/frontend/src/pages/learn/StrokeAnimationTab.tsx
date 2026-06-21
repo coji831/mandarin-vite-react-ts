@@ -15,14 +15,13 @@ import {
   SuggestionPanel,
 } from "features/foundations/components";
 import { useCharacterHub } from "shared/hooks";
-import "./StrokeAnimationTab.css";
 
 export function StrokeAnimationTab() {
   const [character, setCharacter] = useState<string>("水");
   const { openHub } = useCharacterHub();
 
   return (
-    <div className="stroke-anim-tab">
+    <div className="stroke-anim-tab flex-col gap-xs w-full">
       <CharacterSearchBar onCharacterSelect={setCharacter} />
       <AnimationPanel character={character} onCharacterClick={(char) => openHub(char)} />
       <SuggestionPanel onSelect={setCharacter} currentCharacter={character} />

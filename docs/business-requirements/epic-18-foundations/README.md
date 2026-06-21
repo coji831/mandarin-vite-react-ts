@@ -10,14 +10,15 @@
 - Tone reference with pitch contour visualization, tone pair drills, and tone change rules (3rd tone sandhi, 一 tone changes, 不 tone changes)
 - 8 basic strokes reference (点横竖撇捺提折钩) + 4 stroke order rules (top-bottom, left-right, outside-inside, close-last) with Hanzi Writer animated demonstrations
 - Character Detail Hub — unified slide-up overlay showing character info (pinyin, audio, stroke animation) as a shared cross-cutting component with progressive phase-gated section disclosure
-- Audio-to-Type quiz as Phase 1 gate — hear audio → type pinyin → select tone, ≥90% accuracy to unlock Phase 2
+- Audio-to-Type quiz as Phase 1 gate — hear audio → type pinyin → select tone, covers 2 categories (pinyin recognition + tone identification), ≥90% accuracy to unlock Phase 2
+- Flip-card Review module with simple SRS for Phase 1 content reinforcement (pinyin, tones, strokes)
 - Static JSON content in `apps/frontend/public/data/foundations/` for pinyin, tones, strokes reference data — no backend dependency for content
 - New backend Prisma models (FoundationProgress, QuizAttempt, PhaseGate) + API endpoints for progress persistence and phase gating
 - Phase 1 of the 4-phase learning roadmap (Epics 18–23); must be delivered before character/vocabulary content (Epics 19+)
 
 **Status:** In Progress
 
-**Last Update:** June 19, 2026
+**Last Update:** June 21, 2026
 
 ## Background
 
@@ -58,8 +59,9 @@ This epic consists of the following user stories:
    - As a **learner**, I want to **tap any character to see a minimal slide-up overlay with pinyin, audio, and stroke animation**, so that **I can learn character details without navigating away from my current context**.
    - **Status:** Completed
 
-6. **Story 18.6: Audio-to-Type Quiz (Phase 1 Gate)** ([story-18-6-audio-to-type-quiz.md](story-18-6-audio-to-type-quiz.md))
+6. **Story 18.6: Audio-to-Type Quiz (Phase 1 Gate)** ✅ ([story-18-6-audio-to-type-quiz.md](story-18-6-audio-to-type-quiz.md))
    - As a **learner**, I want to **take an audio-to-type quiz that tests pinyin typing and tone selection**, so that **I can demonstrate Phase 1 mastery and unlock Phase 2 content**.
+   - **Status:** Completed
 
 ## Story Breakdown Logic
 
@@ -69,7 +71,7 @@ This epic is divided into stories based on the following approach:
 - **Stories 18.2–18.3** focus on pinyin and tones reference content — the most critical skill per the learning roadmap ("master pinyin first"). Tones builds on pinyin knowledge.
 - **Story 18.4** focuses on stroke reference + Hanzi Writer animations — a separate learning domain from pinyin/tones, can be built in parallel with 18.2/18.3
 - **Story 18.5** builds the Character Detail Hub — a shared overlay component used by the stroke animations tab and all future content epics. Depends on Story 18.1 for routing infrastructure.
-- **Story 18.6** builds the Phase 1 gate quiz — depends on Stories 18.2–18.3 (quiz uses pinyin/tones content) and 18.1 (quiz page routing). Backend work for QuizAttempt/PhaseGate must be completed first.
+- **Story 18.6** builds the Phase 1 gate quiz covering 2 categories (pinyin recognition + tone identification) — depends on Stories 18.2–18.3 (quiz uses pinyin/tones content) and 18.1 (quiz page routing). Backend work for QuizAttempt/PhaseGate must be completed first.
 
 Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. Story 18.6 depends on 18.2–18.3 content knowledge being available.
 
@@ -93,6 +95,7 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 - [ ] Quiz progress bar shows current score vs 90% pass target (verify: bar updates after each answer)
 - [ ] Score ≥90% displays pass result, "Continue to Phase 2" CTA, category breakdown (verify: pass flow works)
 - [ ] Score <90% displays fail result, retry option (verify: fail flow works)
+- [ ] Review module provides flip-card study for Phase 1 content (pinyin, tones, strokes) with simple SRS interval scheduling (verify: review items are created, SRS intervals expand on correct answers)
 - [ ] Backend FoundationProgress API stores sub-topic completion per user, auto-initializes 4 records (pinyin, tones, strokes, animations) on first GET, validates sectionId against shared constants (verify: GET returns 4 records, PUT with invalid sectionId returns 400)
 - [ ] Backend QuizAttempt API records quiz results (verify: POST quiz attempt → stored, GET returns history)
 - [ ] Backend PhaseGate API updates and returns current phase (verify: passing quiz updates phase_gates.currentPhase to 2)
@@ -127,7 +130,7 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 - **Decision:** New `progression` backend module (not extending existing `progress` module)
   - Rationale: Phase gating, foundation tracking, and quiz attempts are conceptually distinct from word-level SM-2 progress tracking. Separating prevents coupling and keeps modules focused.
   - Alternatives considered: Extend existing progress module (adds complexity to existing code, mixes concerns), Put in auth module (wrong layer)
-  - Implications: New routes at `/v1/progression/foundation-progress`, `/v1/progression/quiz-attempts`, `/v1/progression/phase-gate`. Follows existing module pattern. Registers in `container.js` and `routes.js`.
+  - Implications: New routes at `/v1/progression/foundation-progress`, `/v1/progression/phase-gate`. Quiz attempts extracted to their own quiz module at `/v1/quiz/attempts`. Follows existing module pattern. Registers in `container.js` and `routes.js`.
 
 - **Decision:** Tone change rules stored as static JSON content, rendered as reference cards
   - Rationale: The three tone change rules (3rd sandhi, 一, 不) are fixed linguistic rules with a small, enumerable set of examples. No interactive algorithm needed.
@@ -138,6 +141,11 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
   - Rationale: Both frontend and backend need to agree on what foundation sections exist (pinyin, tones, strokes, animations). Without shared constants, the backend can't validate progress submissions or auto-initialize records for new users. The existing `packages/shared-constants` package already serves this purpose for API routes and HSK levels.
   - Alternatives considered: Frontend-only section list (backend returns 400 on unknown sections with no helpful error), Database enum (requires migration for every content addition), Hardcoded in both places (drift risk)
   - Implications: Adding a new section later requires: add to shared constant + add JSON data file = done. The backend auto-creates records for new sections on next GET request. Use the same pattern for future epic content constants (radical sections, grammar levels, etc.).
+
+- **Decision:** Quiz and Review are separate modules
+  - Rationale: Quiz is a proctored gate assessment with strategy pattern (pass/fail, phase unlocking). Review is self-paced flip-card SRS practice. Different state management, different persistence patterns, different UI flows.
+  - Alternatives considered: Combined quiz+review module (mixed concerns, strategy pattern couldn't apply cleanly), Review as quiz mode (SRS scheduling doesn't fit quiz lifecycle)
+  - Implications: Quiz lives in `modules/quiz/` + `features/quiz/` with strategy engine. Review lives in `modules/review/` + `features/review/` with simple useReview hook. Both share Phase 1 content (pinyin, tones, strokes) drawn from the same data sources.
 
 ## Implementation Plan
 

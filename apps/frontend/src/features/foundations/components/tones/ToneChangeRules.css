@@ -1,0 +1,26 @@
+/**
+ * @file ToneChangeRules.css
+ * @description Styles for the ToneChangeRules component (Story 18.3)
+ */
+
+.tone-rules-empty {
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.tone-rule-example-inline {
+  font-size: 0.6rem;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .tone-rules {
+    padding: 0.35rem;
+  }
+
+  .tone-rule-card {
+    gap: 0.1rem;
+  }
+}

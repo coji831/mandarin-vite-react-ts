@@ -5,14 +5,14 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
-export { BasicStrokesGrid } from "./BasicStrokesGrid";
-export { StrokeRulesList } from "./StrokeRulesList";
-export { AnimationCanvas } from "./AnimationCanvas";
-export { AnimationControls } from "./AnimationControls";
-export { StrokeBreakdown } from "./StrokeBreakdown";
-export { StrokeRulesDisplay } from "./StrokeRulesDisplay";
-export { SuggestedCharacters } from "./SuggestedCharacters";
-export { StrokeReferenceContent } from "./StrokeReferenceContent";
-export { CharacterSearchBar } from "./CharacterSearchBar";
-export { AnimationPanel } from "./AnimationPanel";
-export { SuggestionPanel } from "./SuggestionPanel";
+export { BasicStrokesGrid } from "./strokes/BasicStrokesGrid";
+export { StrokeRulesList } from "./strokes/StrokeRulesList";
+export { AnimationCanvas } from "./animations/AnimationCanvas";
+export { AnimationControls } from "./animations/AnimationControls";
+export { StrokeBreakdown } from "./strokes/StrokeBreakdown";
+export { StrokeRulesDisplay } from "./strokes/StrokeRulesDisplay";
+export { SuggestedCharacters } from "./animations/SuggestedCharacters";
+export { StrokeReferenceContent } from "./strokes/StrokeReferenceContent";
+export { CharacterSearchBar } from "./animations/CharacterSearchBar";
+export { AnimationPanel } from "./animations/AnimationPanel";
+export { SuggestionPanel } from "./animations/SuggestionPanel";

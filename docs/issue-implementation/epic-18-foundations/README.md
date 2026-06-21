@@ -1,7 +1,7 @@
 ﻿# Epic 18: Foundations — Implementation
 
 **BR Reference:** `docs/business-requirements/epic-18-foundations/README.md`
-**Last Updated:** June 19, 2026
+**Last Updated:** June 21, 2026
 
 ---
 
@@ -15,14 +15,14 @@
 - Hanzi Writer npm library for SVG-based stroke order animations with full playback controls
 - Character Detail Hub as a shared React portal overlay — minimal Phase 1 variant with character, pinyin, audio, stroke animation, Save to Review
 - New `progression` backend module with Prisma models FoundationProgress, QuizAttempt, PhaseGate and corresponding REST API endpoints
-- Audio-to-Type quiz with 20 randomized questions, instant feedback, category breakdown, ≥90% pass threshold
+- Audio-to-Type quiz with 20 randomized questions, instant feedback, category breakdown, ≥90% pass threshold — implemented as standalone `features/quiz/` (frontend) and `modules/quiz/` (backend) using strategy pattern (`QuizStrategy` interface + `AudioToTypeStrategy`) for extensibility
 - Reuse of existing AudioService (Google Cloud TTS via backend) for all audio playback with browser TTS fallback
 - Route redirect from old `/learn/flashcards` → `/learn/foundations` for backward compatibility
 - Updated 5-item global navigation (Dashboard, Learn, Practices, Library, Progress)
 
-**Status:** In Progress (Story 18.5 Completed)
+**Status:** In Progress (Story 18.6 Completed)
 
-**Last Update:** June 19, 2026
+**Last Update:** June 21, 2026
 
 ## Technical Overview
 

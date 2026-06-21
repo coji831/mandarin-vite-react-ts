@@ -1,0 +1,10 @@
+/**
+ * @file FinalsGrid.css
+ * @description Styles for the FinalsGrid component (Story 18.2)
+ */
+
+.pinyin-finals-group-label {
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--surface-dark);
+}

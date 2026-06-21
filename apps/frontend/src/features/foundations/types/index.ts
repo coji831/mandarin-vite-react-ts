@@ -10,6 +10,7 @@
  */
 
 export type { FoundationProgress, PhaseGate } from "@mandarin/shared-types";
+export type { PinyinTonesPool } from "./pool";
 
 /**
  * PinyinInitial: A single pinyin initial (声母)

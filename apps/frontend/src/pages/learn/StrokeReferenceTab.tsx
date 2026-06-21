@@ -9,7 +9,7 @@ import "./StrokeReferenceTab.css";
 
 export function StrokeReferenceTab() {
   return (
-    <div className="stroke-ref-tab">
+    <div className="stroke-ref-tab flex-col gap-xs w-full">
       <StrokeReferenceContent />
     </div>
   );

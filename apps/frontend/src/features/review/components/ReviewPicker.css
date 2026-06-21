@@ -1,0 +1,17 @@
+/**
+ * ReviewPicker.css
+ * Phase 1 Review — Content type and source selector styles.
+ */
+.review-picker {
+  max-width: 600px;
+}
+
+.review-picker__card {
+  flex: 1;
+  min-width: 160px;
+}
+
+.review-picker__start-btn {
+  align-self: center;
+  min-width: 200px;
+}

@@ -12,16 +12,21 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useAudioPlayback } from "shared/hooks";
-import { ToneContourCard, TonePairDrills, ToneChangeRules } from "features/foundations";
-import type { ToneData } from "features/foundations/types";
+import {
+  ToneContourCard,
+  TonePairDrills,
+  ToneChangeRules,
+  foundationsService,
+} from "features/foundations";
+import type { PinyinTonesPool } from "features/foundations";
 import { getPinyinAudioText } from "features/foundations/utils";
 import "./TonesTab.css";
 
 // Module-level cache: data is fetched once and reused across tab switches
-let cachedData: ToneData | null = null;
+let cachedData: PinyinTonesPool | null = null;
 
 export function TonesTab() {
-  const [data, setData] = useState<ToneData | null>(cachedData);
+  const [data, setData] = useState<PinyinTonesPool | null>(cachedData);
   const [loadingPinyin, setLoadingPinyin] = useState<string | null>(null);
   const { playWordAudio } = useAudioPlayback();
   const fetchAttempted = useRef(false);
@@ -37,11 +42,9 @@ export function TonesTab() {
 
     const loadData = async () => {
       try {
-        const response = await fetch("/data/foundations/tones.json");
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const json: ToneData = await response.json();
-        cachedData = json;
-        setData(json);
+        const pool = await foundationsService.getPinyinTonesPool();
+        cachedData = pool;
+        setData(pool);
       } catch (err) {
         console.error("Failed to load tones data:", err);
       }
@@ -68,7 +71,7 @@ export function TonesTab() {
 
   if (!data) {
     return (
-      <div className="tones-tab tones-tab-loading">
+      <div className="tones-tab tones-tab-loading font-lg flex-center text-muted">
         <p>Loading tones data...</p>
       </div>
     );
@@ -77,11 +80,13 @@ export function TonesTab() {
   return (
     <div className="tones-tab">
       {/* Tone Reference Section */}
-      <section className="tones-section">
-        <h3 className="tones-section-heading">Tone Contours</h3>
-        <p className="tones-section-subtitle">Click the play button to hear each tone pronounced</p>
-        <div className="tones-contour-grid">
-          {data.tones.map((tone) => (
+      <section className="flex-col">
+        <h3 className="tones-section-heading font-sm text-secondary fw-600 m-0">Tone Contours</h3>
+        <p className="tones-section-subtitle font-xs text-muted">
+          Click the play button to hear each tone pronounced
+        </p>
+        <div className="tones-contour-grid bg-surface-dark-alt border-default radius-md p-xs">
+          {data.toneInfo.map((tone) => (
             <ToneContourCard
               key={tone.number}
               tone={tone}
@@ -93,22 +98,22 @@ export function TonesTab() {
       </section>
 
       {/* Tone Pair Drills Section */}
-      <section className="tones-section">
-        <h3 className="tones-section-heading">Tone Pair Drills</h3>
-        <p className="tones-section-subtitle">
+      <section className="flex-col">
+        <h3 className="tones-section-heading font-sm text-secondary fw-600 m-0">
+          Tone Pair Drills
+        </h3>
+        <p className="tones-section-subtitle font-xs text-muted">
           Practice common 2-syllable combinations — sandhi rules applied in spoken form
         </p>
-        <TonePairDrills
-          drills={data.tonePairDrills}
-          onPlay={handlePlay}
-          loadingPinyin={loadingPinyin}
-        />
+        <TonePairDrills drills={data.tonePairs} onPlay={handlePlay} loadingPinyin={loadingPinyin} />
       </section>
 
       {/* Tone Change Rules Section */}
-      <section className="tones-section">
-        <h3 className="tones-section-heading">Tone Change Rules</h3>
-        <p className="tones-section-subtitle">
+      <section className="flex-col">
+        <h3 className="tones-section-heading font-sm text-secondary fw-600 m-0">
+          Tone Change Rules
+        </h3>
+        <p className="tones-section-subtitle font-xs text-muted">
           Learn how tones shift in context: 3rd tone sandhi, 一 (yī), and 不 (bù)
         </p>
         <ToneChangeRules rules={data.toneRules} onPlay={handlePlay} loadingPinyin={loadingPinyin} />

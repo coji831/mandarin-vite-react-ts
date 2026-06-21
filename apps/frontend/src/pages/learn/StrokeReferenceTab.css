@@ -1,140 +1,15 @@
 /**
  * @file StrokeReferenceTab.css
- * @description Styles for the Stroke Reference tab
+ * @description Styles for the Stroke Reference tab — orchestrator only
  * Story 18.4: Stroke Order Reference & Animations
  * Dark theme matching FoundationsPage conventions.
+ * Component styles are in their own per-component CSS files.
  */
 
-.stroke-ref-tab {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 800px;
-  width: 100%;
-}
-
 .stroke-ref-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 200px;
-  color: #888;
-  font-size: 1.1rem;
-}
-
-.stroke-ref-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.stroke-ref-heading {
-  color: #ccc;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
 }
 
 .stroke-ref-subtitle {
-  color: #777;
-  font-size: 0.7rem;
   margin: 0 0 0.35rem;
-}
-
-/* 8-stroke grid — section card containing individual stroke cards */
-.stroke-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 0.5rem;
-  background: #252540;
-  border: 1px solid #3a3a5e;
-  border-radius: 6px;
-}
-
-.stroke-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.5rem 0.6rem;
-  min-width: 60px;
-  background: #2a2a45;
-  border: 1px solid #3a3a5e;
-  border-radius: 6px;
-}
-
-.stroke-card:hover {
-  background: #2f2f50;
-  border-color: #4a4a7e;
-}
-
-.stroke-glyph {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #e0e0e0;
-  line-height: 1;
-}
-
-.stroke-pinyin {
-  font-size: 0.7rem;
-  color: #aaa;
-  font-weight: 500;
-}
-
-.stroke-meaning {
-  font-size: 0.6rem;
-  color: #777;
-}
-
-/* Stroke rules container */
-.stroke-rules-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  background: #252540;
-  border: 1px solid #3a3a5e;
-  border-radius: 6px;
-  padding: 0.5rem;
-}
-
-.stroke-rule-card {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.35rem;
-}
-
-.stroke-rule-number {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #818cf8;
-  flex-shrink: 0;
-}
-
-.stroke-rule-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #ccc;
-  white-space: nowrap;
-}
-
-.stroke-rule-example {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #e0e0e0;
-  flex-shrink: 0;
-}
-
-.stroke-rule-desc {
-  font-size: 0.7rem;
-  color: #888;
-  font-style: italic;
-}
-
-.stroke-ref-tip {
-  font-size: 0.7rem;
-  color: #777;
-  margin: 0;
-  text-align: center;
-  font-style: italic;
 }

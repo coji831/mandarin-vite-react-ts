@@ -1,0 +1,8 @@
+/**
+ * @file CombinationDisplay.css
+ * @description Styles for the CombinationDisplay component (Story 18.2)
+ */
+
+.pinyin-tone-label {
+  letter-spacing: 0.03em;
+}
