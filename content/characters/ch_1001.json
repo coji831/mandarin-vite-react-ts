@@ -1,0 +1,17 @@
+{
+  "id": "ch_1001",
+  "glyph": "好",
+  "traditional": "好",
+  "stroke_count": 6,
+  "readings": [
+    { "pinyin": "hǎo", "tone": 3, "type": "primary", "core_meaning": "good, well" },
+    { "pinyin": "hào", "tone": 4, "type": "secondary", "core_meaning": "to like, to love" }
+  ],
+  "hsk_level": 1,
+  "metadata": {
+    "frequency_rank": 22,
+    "etymology": "Compound ideograph: 女 (woman) + 子 (child) — a woman with a child is 'good'",
+    "common_words": ["很好", "爱好", "好吃"],
+    "radical_ids": ["rad_0025"]
+  }
+}

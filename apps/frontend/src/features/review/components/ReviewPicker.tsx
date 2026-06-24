@@ -2,8 +2,9 @@
  * ReviewPicker.tsx
  * Phase 1 Review — Content type and source selector.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReviewSource } from "../types";
+import { reviewService } from "../services/reviewService";
 import "./ReviewPicker.css";
 
 interface ContentTypeOption {
@@ -11,7 +12,6 @@ interface ContentTypeOption {
   label: string;
   icon: string;
   description: string;
-  count: number;
 }
 
 const CONTENT_TYPES: ContentTypeOption[] = [
@@ -20,21 +20,12 @@ const CONTENT_TYPES: ContentTypeOption[] = [
     label: "Pinyin",
     icon: "🔤",
     description: "Initials, finals, and combinations",
-    count: 65,
   },
   {
-    type: "tone",
+    type: "tones",
     label: "Tones",
     icon: "🎵",
     description: "Tone identification, pairs, and rules",
-    count: 11,
-  },
-  {
-    type: "stroke",
-    label: "Strokes",
-    icon: "✏️",
-    description: "8 basic strokes and 4 rules",
-    count: 12,
   },
 ];
 
@@ -50,11 +41,33 @@ const SOURCES: { value: ReviewSource; label: string; description: string }[] = [
 
 interface ReviewPickerProps {
   onStart: (source: ReviewSource, type: string) => void;
+  presetType?: string;
 }
 
 export function ReviewPicker({ onStart }: ReviewPickerProps) {
   const [selectedType, setSelectedType] = useState("pinyin");
   const [selectedSource, setSelectedSource] = useState<ReviewSource>("due");
+  const [dueCount, setDueCount] = useState<number | null>(null);
+  const [checkingAvailability, setCheckingAvailability] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const checkAvailability = async () => {
+      setCheckingAvailability(true);
+      try {
+        const result = await reviewService.getDueCount(selectedType);
+        if (!cancelled) setDueCount(result.count ?? 0);
+      } catch {
+        if (!cancelled) setDueCount(null);
+      } finally {
+        if (!cancelled) setCheckingAvailability(false);
+      }
+    };
+    checkAvailability();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedType]);
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
@@ -82,9 +95,7 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
               <span className="review-picker__card-icon font-2xl">{ct.icon}</span>
               <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
               <span className="review-picker__card-desc text-muted font-sm">{ct.description}</span>
-              <span className="review-picker__card-count text-tertiary font-sm">
-                {ct.count} items
-              </span>
+              <span className="review-picker__card-count text-tertiary font-sm">All items</span>
             </button>
           ))}
         </div>
@@ -110,10 +121,13 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
                 value={s.value}
                 checked={selectedSource === s.value}
                 onChange={() => setSelectedSource(s.value)}
+                disabled={s.value === "due" && dueCount === 0}
               />
               <span style={{ fontWeight: selectedSource === s.value ? 600 : 400 }}>{s.label}</span>
               <span className="review-picker__radio-desc text-tertiary font-sm">
-                {s.description}
+                {s.value === "due" && dueCount === 0
+                  ? "No items due — try 'All Foundations'"
+                  : s.description}
               </span>
             </label>
           ))}

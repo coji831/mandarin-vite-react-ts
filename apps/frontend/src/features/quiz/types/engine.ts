@@ -20,6 +20,7 @@ export interface QuizQuestion {
   correctTone: number; // 0-4 (0=neutral)
   category: "pinyin" | "tones" | "pairs" | "rules";
   displayPinyin?: string; // pinyin WITH tone marks
+  character?: string | null; // Chinese character for TTS (e.g., "八")
 }
 
 /** Result of evaluating a user's answer */

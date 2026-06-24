@@ -279,6 +279,12 @@ import { AuthService } from "./services/AuthService";
 - High-level docs in [./](./)
 - Feature docs in `../src/features/<feature>/docs/`
 
+## CSS & Styling Conventions
+
+- **No `rem` values** — All sizing/spacing must use fixed global utility classes (`gap-*`, `p-*`, `font-*`, etc.) from `globals.css`. Only use a local CSS file if the style is truly uncommon, non-repeating, or cannot be expressed with utilities (e.g., `:hover` transitions, unique dimensions, custom animations).
+- **1 component = 1 CSS file** — Each component with distinctive styles gets exactly one co-located `ComponentName.css` file. Shared patterns belong in `src/styles/components.css`. Do not create shared CSS files that serve multiple unrelated components.
+- **Import through barrel files** — Imports must go through the feature's barrel (`index.ts`) when crossing directory boundaries. Direct relative imports between features or across sub-folders are not allowed. Only same-directory imports may be relative.
+
 - Use [docs/business-requirements/](../../business-requirements/) for business requirements and planning
 - Use [docs/issue-implementation/](../../issue-implementation/) for technical implementation docs
 

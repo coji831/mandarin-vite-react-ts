@@ -7,7 +7,7 @@
  * Reuses the existing shared ProgressBar component.
  */
 
-import { ProgressBar } from "../../../../shared/components/ProgressBar/ProgressBar";
+import { ProgressBar } from "shared/components/ProgressBar/ProgressBar";
 import { useFoundationsProgress } from "../../hooks/useFoundationsProgress";
 
 export function FoundationsProgressBar() {

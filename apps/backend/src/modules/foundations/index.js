@@ -2,5 +2,6 @@
  * @file apps/backend/src/modules/foundations/index.js
  * @description Foundations module barrel exports
  */
-export { FoundationsDataController } from "./api/FoundationsDataController.js";
-export { foundationsDataRoutes } from "./api/foundationsDataRoutes.js";
+export { FoundationsController } from "./api/FoundationsController.js";
+export { FoundationsService } from "./services/FoundationsService.js";
+export { default as foundationsRoutes } from "./api/foundationsRoutes.js";

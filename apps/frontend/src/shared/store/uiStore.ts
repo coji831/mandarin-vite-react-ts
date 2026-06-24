@@ -7,7 +7,7 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { WordBasic } from "../../features/vocabulary/types/Word";
+import type { WordBasic } from "../../features/vocabulary";
 
 export interface UiState {
   isLoading: boolean;

@@ -9,8 +9,8 @@ export interface PinyinTonesPool {
   initials: PinyinInitial[];
   finals: PinyinFinal[];
   combinations: PinyinCombination[];
-  toneInfo: ToneInfoEntry[];
-  tonePairs: TonePair[];
+  toneInfo: ToneDefinition[];
+  tonePairs: TonePairDrill[];
   toneRules: ToneRule[];
 }
 
@@ -35,7 +35,7 @@ export interface PinyinCombination {
   tones: string[];
 }
 
-export interface ToneInfoEntry {
+export interface ToneDefinition {
   number: number;
   name: string;
   mark: string;
@@ -46,7 +46,10 @@ export interface ToneInfoEntry {
   color: string;
 }
 
-export interface TonePair {
+/**
+ * TonePairDrill: A 2-syllable tone pair drill with sandhi-aware pinyin
+ */
+export interface TonePairDrill {
   id: string;
   chinese: string;
   dictionaryPinyin: string;

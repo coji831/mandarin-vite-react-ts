@@ -25,7 +25,7 @@ export function QuestionView() {
   return (
     <div className="card-dark flex-col gap-md quiz-question">
       {/* Audio player */}
-      <AudioPlayer audioKey={question.audioKey} />
+      <AudioPlayer audioKey={question.audioKey} character={question.character} />
 
       {/* Listen prompt */}
       <p className="quiz-question__prompt text-tertiary text-center font-sm">

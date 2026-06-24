@@ -7,7 +7,6 @@
  */
 
 // Engine
-export { QuizEngine } from "./engine/QuizEngine";
 export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
 export { audioToTypeStrategy } from "./engine/strategies/AudioToTypeStrategy";
 
@@ -27,9 +26,6 @@ export { Timer } from "./components/Timer";
 export { PinyinToneInput } from "./components/inputs/PinyinToneInput";
 export { QuizResults } from "./components/results/QuizResults";
 export { PhaseGateBadge } from "./components/results/PhaseGateBadge";
-
-// Pages
-export { QuizSessionPage } from "./pages/QuizSessionPage";
 
 // Hooks
 export { useQuizEngine } from "./hooks";

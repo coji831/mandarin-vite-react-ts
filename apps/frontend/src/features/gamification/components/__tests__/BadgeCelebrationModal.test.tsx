@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { BadgeCelebrationModal } from "../BadgeCelebrationModal";
 import type { Badge } from "../../types/GamificationTypes";
 

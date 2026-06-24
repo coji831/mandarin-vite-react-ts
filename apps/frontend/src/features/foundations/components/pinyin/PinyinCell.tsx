@@ -8,6 +8,7 @@
  * duplicate markup. Content-sized width via flex: 0 0 auto.
  */
 
+import React from "react";
 import "./PinyinCell.css";
 
 export interface PinyinCellProps {
@@ -19,7 +20,7 @@ export interface PinyinCellProps {
   onSelect: (id: string) => void;
 }
 
-export function PinyinCell({
+function PinyinCellComponent({
   id,
   label,
   secondary,
@@ -42,3 +43,5 @@ export function PinyinCell({
     </button>
   );
 }
+
+export const PinyinCell = React.memo(PinyinCellComponent);

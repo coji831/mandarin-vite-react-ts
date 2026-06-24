@@ -10,36 +10,25 @@
  */
 
 export type { FoundationProgress, PhaseGate } from "@mandarin/shared-types";
-export type { PinyinTonesPool } from "./pool";
+export type {
+  PinyinTonesPool,
+  PinyinInitial,
+  PinyinFinal,
+  PinyinCombination,
+  ToneDefinition,
+  TonePairDrill,
+  ToneRule,
+  ToneRuleExample,
+} from "./pool";
 
-/**
- * PinyinInitial: A single pinyin initial (声母)
- */
-export interface PinyinInitial {
-  id: string;
-  pinyin: string;
-  ipa: string;
-  description: string;
-}
-
-/**
- * PinyinFinal: A single pinyin final (韵母)
- */
-export interface PinyinFinal {
-  id: string;
-  pinyin: string;
-  type: "simple" | "compound" | "nasal";
-  description: string;
-}
-
-/**
- * PinyinCombination: A valid initial+final combination with all tone forms
- */
-export interface PinyinCombination {
-  initial: string;
-  final: string;
-  tones: string[];
-}
+import type {
+  PinyinInitial,
+  PinyinFinal,
+  PinyinCombination,
+  ToneDefinition,
+  TonePairDrill,
+  ToneRule,
+} from "./pool";
 
 /**
  * PinyinData: The top-level shape of the pinyin.json data file
@@ -52,31 +41,7 @@ export interface PinyinData {
 
 // ─── Tone Types (Story 18.3) ───
 
-/**
- * ToneDefinition: A single Mandarin tone with contour and examples
- */
-export interface ToneDefinition {
-  number: number; // 0-4
-  name: string;
-  mark: string;
-  pinyinExample: string;
-  chineseExample: string;
-  description: string;
-  contour: number[];
-  color: string;
-}
-
-/**
- * TonePairDrill: A 2-syllable tone pair drill with sandhi-aware pinyin
- */
-export interface TonePairDrill {
-  id: string;
-  chinese: string;
-  dictionaryPinyin: string;
-  spokenPinyin: string;
-  rule: string;
-  pattern: string;
-}
+// ToneDefinition, TonePairDrill re-exported from pool.ts
 
 // ─── Stroke Types (Story 18.4) ───
 
@@ -110,25 +75,6 @@ export interface StrokeData {
   strokes: BasicStroke[];
   strokeOrderRules: StrokeOrderRule[];
   suggestedCharacters: string[];
-}
-
-/**
- * ToneRuleExample: A single example within a tone change rule
- */
-export interface ToneRuleExample {
-  chinese: string;
-  dictionary: string;
-  spoken: string;
-}
-
-/**
- * ToneRule: A tone change rule with associated examples
- */
-export interface ToneRule {
-  id: string;
-  title: string;
-  rule: string;
-  examples: ToneRuleExample[];
 }
 
 /**

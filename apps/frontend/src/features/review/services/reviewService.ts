@@ -46,6 +46,16 @@ class ReviewService {
     const response = await apiClient.put(ROUTE_PATTERNS.reviewItemRate(itemId), { rating });
     return response.data;
   }
+
+  /**
+   * Get count of due items for a given type.
+   */
+  async getDueCount(type: string): Promise<{ count: number }> {
+    const response = await apiClient.get(ROUTE_PATTERNS.reviewDueCount, {
+      params: { type },
+    });
+    return response.data;
+  }
 }
 
 export const reviewService = new ReviewService();

@@ -1,7 +1,7 @@
 import { VocabularyList } from "../types";
 import { WordProgress } from "@mandarin/shared-types";
-import type { RootState } from "../../quiz/hooks/useProgressState";
-import { useProgressState } from "../../quiz/hooks";
+import type { RootState } from "../hooks/useProgressState";
+import { useProgressState } from "../hooks";
 import "./VocabularyCard.css";
 
 interface VocabularyCardProps {
@@ -12,7 +12,10 @@ interface VocabularyCardProps {
 
 export function VocabularyCard({ list, onSelect, wordIds }: VocabularyCardProps) {
   // Story 13.4: Get progress data using selector (avoids direct state access)
-  const progressData = useProgressState((s: RootState) => s.progress?.wordsById ?? {});
+  const progressData = useProgressState((s: RootState) => s.progress?.wordsById ?? {}) as Record<
+    string,
+    WordProgress
+  >;
 
   // Calculate progress from backend data
   const calculatedProgress = calculateListProgress(list, progressData, wordIds);

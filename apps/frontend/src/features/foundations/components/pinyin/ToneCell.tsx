@@ -7,7 +7,7 @@
  * Shows a play button overlay on hover and loading spinner during audio generation.
  */
 
-import { type MouseEvent } from "react";
+import React, { type MouseEvent, useMemo } from "react";
 import { TONE_COLORS, extractToneNumber, getToneVowelIndex } from "../../utils/pinyinUtils";
 import "./ToneCell.css";
 
@@ -38,14 +38,14 @@ function splitPinyinAtToneVowel(pinyin: string): {
   };
 }
 
-export function ToneCell({
+function ToneCellComponent({
   pinyin,
   isLoading = false,
   loadingText = "generating...",
   onPlay,
 }: ToneCellProps) {
   const toneNumber = extractToneNumber(pinyin);
-  const { before, vowel, after } = splitPinyinAtToneVowel(pinyin);
+  const { before, vowel, after } = useMemo(() => splitPinyinAtToneVowel(pinyin), [pinyin]);
   const toneColor = TONE_COLORS[toneNumber] ?? TONE_COLORS[0];
 
   const handlePlay = (e: MouseEvent) => {
@@ -76,3 +76,5 @@ export function ToneCell({
     </button>
   );
 }
+
+export const ToneCell = React.memo(ToneCellComponent);

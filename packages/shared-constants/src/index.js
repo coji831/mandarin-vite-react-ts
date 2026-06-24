@@ -40,6 +40,8 @@ export const ROUTE_PATTERNS = {
   reviewPoolItems: "/v1/review/pool/items",
   reviewItemRate: (id) => `/v1/review/items/${id}/rate`,
   foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
+  foundationsPinyinCharacterMap: "/v1/foundations/data/pinyin-character-map",
+  foundationsStrokes: "/v1/foundations/data/strokes",
   quizQuestions: "/v1/quiz/questions",
 };
 

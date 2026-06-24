@@ -10,9 +10,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import type { StrokeData } from "features/foundations/types";
+import { loadStrokeData, getCachedStrokeData } from "features/foundations";
 import "./SuggestedCharacters.css";
-
-let cachedStrokeData: StrokeData | null = null;
 
 export interface SuggestionPanelProps {
   onSelect: (character: string) => void;
@@ -20,30 +19,25 @@ export interface SuggestionPanelProps {
 }
 
 export function SuggestionPanel({ onSelect, currentCharacter }: SuggestionPanelProps) {
-  const [strokeData, setStrokeData] = useState<StrokeData | null>(cachedStrokeData);
+  const [strokeData, setStrokeData] = useState<StrokeData | null>(getCachedStrokeData());
   const fetchAttempted = useRef(false);
 
   useEffect(() => {
-    if (cachedStrokeData) {
-      setStrokeData(cachedStrokeData);
-      return;
-    }
+    if (strokeData) return;
     if (fetchAttempted.current) return;
     fetchAttempted.current = true;
 
     const loadData = async () => {
       try {
-        const response = await fetch("/data/foundations/strokes.json");
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const json: StrokeData = await response.json();
-        cachedStrokeData = json;
+        const json = await loadStrokeData();
         setStrokeData(json);
       } catch (err) {
-        console.error("Failed to load strokes data:", err);
+        // [Foundations] Failed to load strokes data for suggestion panel
+        console.error("[SuggestionPanel] Failed to load strokes data:", err);
       }
     };
     loadData();
-  }, []);
+  }, [strokeData]);
 
   return (
     <section className="flex-col">

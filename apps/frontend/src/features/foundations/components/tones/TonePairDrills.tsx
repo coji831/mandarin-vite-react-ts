@@ -11,6 +11,7 @@
  * - Play button for pronunciation with sandhi applied
  */
 
+import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { TonePairDrill } from "../../types";
 import "./TonePairDrills.css";
@@ -25,7 +26,7 @@ export interface TonePairDrillsProps {
  * Apply tone color to each syllable in a pinyin string.
  * Splits on space and wraps each syllable in a styled span.
  */
-function ColorizedPinyin({ pinyin }: { pinyin: string }) {
+export function ColorizedPinyin({ pinyin }: { pinyin: string }) {
   const syllables = pinyin.split(/\s+/);
 
   return (

@@ -4,6 +4,7 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
+import React from "react";
 import "./StrokeBreakdown.css";
 
 export interface StrokeBreakdownProps {
@@ -19,7 +20,7 @@ export interface StrokeBreakdownProps {
  * `currentStroke` is 1-based (matches the display "Stroke X of Y").
  * `onStrokeSelect` passes a 1-based index for consistency.
  */
-export function StrokeBreakdown({
+export const StrokeBreakdown = React.memo(function StrokeBreakdown({
   totalStrokes,
   strokePaths,
   currentStroke,
@@ -53,4 +54,4 @@ export function StrokeBreakdown({
       )}
     </div>
   );
-}
+});

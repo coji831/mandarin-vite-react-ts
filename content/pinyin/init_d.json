@@ -1,0 +1,14 @@
+{
+  "id": "init_d",
+  "pinyin": "d",
+  "ipa": "/t/",
+  "description": "unaspirated t, like 's**t**op'",
+  "mouth_position": "alveolar",
+  "category": "plosive_unaspirated",
+  "voiced": false,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "d — unaspirated t, like 's**t**op'",
+    "common_issues": ""
+  }
+}

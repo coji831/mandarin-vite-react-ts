@@ -1,7 +1,9 @@
 /**
  * ReviewView.css
  * Phase 1 Review — Main orchestrator component styles.
+ * Container max-width for the review flow.
  */
-.review-view__container {
-  max-width: 600px;
+.review-view {
+  max-width: 520px;
+  width: 100%;
 }

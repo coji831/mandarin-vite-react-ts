@@ -6,7 +6,7 @@ export function trackExamplesShown(cacheHit: boolean): void {
     const arr = JSON.parse(raw);
     arr.push(evt);
     localStorage.setItem("analytics_events", JSON.stringify(arr));
-  } catch (err) {
+  } catch (_err) {
     // ignore storage errors
     console.info("Analytics (fallback):", { cacheHit });
   }
@@ -20,7 +20,7 @@ export function trackExamplePlayed(exampleIndex: number, cacheHit: boolean): voi
     const arr = JSON.parse(raw);
     arr.push(evt);
     localStorage.setItem("analytics_events", JSON.stringify(arr));
-  } catch (err) {
+  } catch (_err) {
     console.info("Analytics (fallback):", { exampleIndex, cacheHit });
   }
 }

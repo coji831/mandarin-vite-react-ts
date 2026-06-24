@@ -19,39 +19,45 @@ import {
   foundationsService,
 } from "features/foundations";
 import type { PinyinTonesPool } from "features/foundations";
-import { getCombination, getPinyinAudioText } from "features/foundations/utils";
+import { getCombination } from "features/foundations/utils";
 import "./PinyinTab.css";
 
-// Module-level cache: data is fetched once and reused across tab switches
-let cachedData: PinyinTonesPool | null = null;
-
 export function PinyinTab() {
-  const [data, setData] = useState<PinyinTonesPool | null>(cachedData);
+  const [data, setData] = useState<PinyinTonesPool | null>(null);
   const [selectedInitial, setSelectedInitial] = useState<string | null>(null);
   const [selectedFinal, setSelectedFinal] = useState<string | null>(null);
   const [loadingPinyin, setLoadingPinyin] = useState<string | null>(null);
+  const [charMap, setCharMap] = useState<Record<string, string>>({});
   const { playWordAudio } = useAudioPlayback();
   const fetchAttempted = useRef(false);
 
-  // Fetch pinyin.json data on mount (once)
+  // Fetch pinyin.json data on mount (once) — cache lives in foundationsService
   useEffect(() => {
-    if (cachedData) {
-      setData(cachedData);
-      return;
-    }
     if (fetchAttempted.current) return;
     fetchAttempted.current = true;
 
     const loadData = async () => {
       try {
         const pool = await foundationsService.getPinyinTonesPool();
-        cachedData = pool;
         setData(pool);
       } catch (err) {
-        console.error("Failed to load pinyin data:", err);
+        console.error("[PinyinTab] Failed to load pinyin data:", err);
       }
     };
     loadData();
+  }, []);
+
+  // Fetch pinyin→character map for TTS audio (avoids per-click API call)
+  useEffect(() => {
+    const loadCharMap = async () => {
+      try {
+        const map = await foundationsService.getPinyinCharacterMap();
+        setCharMap(map);
+      } catch {
+        // Non-critical: audio will still work via browser TTS fallback
+      }
+    };
+    loadCharMap();
   }, []);
 
   // Compute the combination when both initial and final are selected
@@ -65,10 +71,10 @@ export function PinyinTab() {
   const handlePlayTone = async (pinyin: string) => {
     setLoadingPinyin(pinyin);
     try {
-      const audioText = await getPinyinAudioText(pinyin);
+      const audioText = charMap[pinyin] || pinyin;
       await playWordAudio({ chinese: audioText, fallbackToBrowserTTS: true });
     } catch (err) {
-      console.warn(`Audio failed for "${pinyin}"`, err);
+      console.warn(`[PinyinTab] Audio failed for "${pinyin}"`, err);
     } finally {
       setLoadingPinyin(null);
     }

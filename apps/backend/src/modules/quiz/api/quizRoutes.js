@@ -6,35 +6,36 @@
 import express from "express";
 import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
 router.get(
-  "/v1/quiz/questions",
+  ROUTE_PATTERNS.quizQuestions,
   authenticateToken,
   asyncHandler((req, res) => req.quizController.getQuestions(req, res)),
 );
 
 router.post(
-  "/v1/quiz/attempts",
+  ROUTE_PATTERNS.quizAttempts,
   authenticateToken,
   asyncHandler((req, res) => req.quizController.createQuizAttempt(req, res)),
 );
 
 router.post(
-  "/v1/quiz/attempts/:id/answers",
+  ROUTE_PATTERNS.quizAttemptAnswer(":id"),
   authenticateToken,
   asyncHandler((req, res) => req.quizController.submitAnswer(req, res)),
 );
 
 router.put(
-  "/v1/quiz/attempts/:id/complete",
+  ROUTE_PATTERNS.quizAttemptComplete(":id"),
   authenticateToken,
   asyncHandler((req, res) => req.quizController.completeQuizAttempt(req, res)),
 );
 
 router.get(
-  "/v1/quiz/attempts",
+  ROUTE_PATTERNS.quizAttempts,
   authenticateToken,
   asyncHandler((req, res) => req.quizController.getQuizAttempts(req, res)),
 );

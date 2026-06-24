@@ -35,6 +35,10 @@ export function useAudioPlayback() {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       const utter = new window.SpeechSynthesisUtterance(text);
       utter.lang = "zh-CN";
+      // Pick a zh-CN voice explicitly for better pronunciation quality
+      const voices = window.speechSynthesis.getVoices();
+      const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
+      if (zhVoice) utter.voice = zhVoice;
       window.speechSynthesis.speak(utter);
       setError(null);
       setIsPlaying(false);
@@ -96,6 +100,13 @@ export function useAudioPlayback() {
     }
   }
 
+  // Create AudioService once per hook instance
+  const audioServiceRef = useRef<AudioService | null>(null);
+  if (!audioServiceRef.current) {
+    audioServiceRef.current = new AudioService();
+  }
+  const audioService = audioServiceRef.current;
+
   // Word audio
   async function playWordAudio(params: {
     chinese: string;
@@ -103,7 +114,6 @@ export function useAudioPlayback() {
     bitrate?: number;
     fallbackToBrowserTTS?: boolean;
   }) {
-    const audioService = new AudioService();
     await playAudio({
       backendFetch: () => audioService.fetchWordAudio(params as WordAudioRequest),
       fallbackText: params.chinese,
@@ -122,7 +132,6 @@ export function useAudioPlayback() {
     setIsLoading(true);
     setError(null);
     try {
-      const audioService = new AudioService();
       const { audioUrl } = await audioService.fetchTurnAudio({
         wordId: params.wordId,
         turnIndex: params.turnIndex,

@@ -1,0 +1,19 @@
+{
+  "id": "rad_0061",
+  "glyph": "心",
+  "alternate_glyphs": ["忄", "⺗"],
+  "name_pinyin": "xīn",
+  "meaning": "heart",
+  "stroke_count": 4,
+  "is_recommended": true,
+  "kangxi_index": 61,
+  "metadata": {
+    "etymology": "Pictograph of a heart",
+    "frequency_rank": 28,
+    "variants": {
+      "left_side": "忄",
+      "bottom": "⺗"
+    },
+    "is_also_character": true
+  }
+}

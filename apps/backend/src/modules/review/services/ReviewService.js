@@ -2,25 +2,104 @@
  * @file apps/backend/src/modules/review/services/ReviewService.js
  * Review business logic — fetches items from multiple sources,
  * records SRS ratings, and computes next review dates.
+ *
+ * Data sources (Content Registry):
+ *   - Tones: content/tones/tn_*.json
+ *   - Pinyin combos: PinyinCombination (Prisma junction table)
  */
 import { createLogger } from "../../../shared/utils/logger.js";
-import { readStaticReference } from "../../../shared/infrastructure/data/readStaticReference.js";
+import { prisma } from "../../../shared/infrastructure/database/client.js";
+import {
+  readContentDir,
+  stripToneMarks,
+  shuffleArray,
+} from "../../../shared/utils/contentUtils.js";
 
 const logger = createLogger("ReviewService");
 
 // Interval progression: simple doubling capped at 60 days
 const MAX_INTERVAL = 60;
 
-// Phase 1 item types and their display metadata
-const ITEM_TYPE_MAP = {
-  "pinyin-initial": { label: "Pinyin Initials", icon: "🔤" },
-  "pinyin-final": { label: "Pinyin Finals", icon: "🔤" },
-  "pinyin-combination": { label: "Pinyin Combinations", icon: "🔤" },
-  "tone-identification": { label: "Tone Identification", icon: "🎵" },
-  "tone-pair": { label: "Tone Pairs", icon: "🎵" },
-  "tone-rule": { label: "Tone Change Rules", icon: "🎵" },
-  "stroke-reference": { label: "Stroke Reference", icon: "✏️" },
-};
+// ── Extracted item-builders ───────────────────────────────────────────
+
+/**
+ * Build a review item from a tone content object + SRS state.
+ * Returns null if the item is filtered out by the source filter.
+ * @param {Object} tone - Tone data from content/tones/
+ * @param {Object|null} srs - SRS record from ReviewItem (or null)
+ * @param {Date} now - Current timestamp
+ * @param {Date} sevenDaysAgo - 7 days ago for "recent" filter
+ * @param {string} source - "due", "recent", or "all"
+ * @returns {Object|null}
+ */
+function buildToneItem(tone, srs, now, sevenDaysAgo, source) {
+  const toneNumber = String(tone.number);
+  const nextReview = srs?.nextReview ? new Date(srs.nextReview) : now;
+  const lastReviewed = srs?.lastReviewed ? new Date(srs.lastReviewed) : null;
+
+  if (source === "due" && nextReview > now) return null;
+  if (source === "recent" && (!lastReviewed || lastReviewed < sevenDaysAgo)) return null;
+
+  return {
+    id: srs?.id || `tone-${toneNumber}`,
+    itemType: "tone-syllable",
+    itemId: toneNumber,
+    front: `${tone.mark} ${tone.name}`,
+    back: `${tone.example_syllable} (${tone.pitch_description}) — e.g., ${tone.example_character || ""}`,
+    category: "tones",
+    character: tone.example_character || null,
+    studyCount: srs?.studyCount || 0,
+    correctCount: srs?.correctCount || 0,
+    nextReview: nextReview.toISOString(),
+    intervalDays: srs?.intervalDays || 1,
+  };
+}
+
+/**
+ * Build a review item from a pinyin combo + SRS state.
+ * Returns null if filtered out by the source filter.
+ * @param {Object} combo - Pinyin combo from PinyinCombination or fallback
+ * @param {Object|null} srs - SRS record from ReviewItem (or null)
+ * @param {Date} now - Current timestamp
+ * @param {Date} sevenDaysAgo - 7 days ago for "recent" filter
+ * @param {string} source - "due", "recent", or "all"
+ * @param {string} comboKey - e.g. "b-a" for the combo pair
+ * @returns {Object|null}
+ */
+function buildPinyinItem(combo, srs, now, sevenDaysAgo, source, comboKey) {
+  const nextReview = srs?.nextReview ? new Date(srs.nextReview) : now;
+  const lastReviewed = srs?.lastReviewed ? new Date(srs.lastReviewed) : null;
+
+  if (source === "due" && nextReview > now) return null;
+  if (source === "recent" && (!lastReviewed || lastReviewed < sevenDaysAgo)) return null;
+
+  return {
+    id: srs?.id || `pinyin-${comboKey}`,
+    itemType: "pinyin-syllable",
+    itemId: comboKey,
+    front: combo.syllable,
+    back: `${combo.character || combo.syllable} (${combo.syllable}) — ${combo.meaning || "no definition"}`,
+    category: "pinyin",
+    character: combo.character || null,
+    pinyinPlain: stripToneMarks(combo.syllable),
+    correctTone: combo.tone,
+    meaning: combo.meaning || null,
+    studyCount: srs?.studyCount || 0,
+    correctCount: srs?.correctCount || 0,
+    nextReview: nextReview.toISOString(),
+    intervalDays: srs?.intervalDays || 1,
+  };
+}
+
+/**
+ * Get all available pinyin combos from the PinyinCombination junction table.
+ * @returns {Promise<Array>}
+ */
+async function fetchPinyinCombos() {
+  return prisma.pinyinCombination.findMany({
+    where: { character: { not: null } },
+  });
+}
 
 export class ReviewService {
   constructor(reviewRepository) {
@@ -29,20 +108,69 @@ export class ReviewService {
 
   /**
    * Get review items from the specified source.
+   *
+   * Reads ALL available items from content/ files + PinyinCombination (the canonical source),
+   * then LEFT JOINs with ReviewItem table for SRS state. No pre-seeding is performed —
+   * ReviewItem records are created only on recordRating() via upsert.
+   *
+   * Source filters:
+   *   - "due": No ReviewItem record exists (new) OR nextReview <= now
+   *   - "recent": lastReviewed within 7 days
+   *   - "all": Skip filter — return everything
+   *
+   * @param {string} userId
+   * @param {{ source?: string, type?: string, limit?: number }} options
+   * @returns {Promise<Array>} shuffled review items with SRS state
    */
-  async getReviewItems(userId, { source = "due", type = "", limit = 20 }) {
-    const typePrefix = type || ""; // empty = all types
+  async getReviewItems(userId, { source = "due", type = "", limit = 10 }) {
+    const normalizedType = type ? type.replace(/s$/, "") : type;
+    const typePrefix = normalizedType || "";
 
-    switch (source) {
-      case "due":
-        return this.reviewRepository.findDueItems(userId, typePrefix, limit);
-      case "recent":
-        return this.reviewRepository.findRecentItems(userId, typePrefix, limit);
-      case "all":
-        return this.getAllPhase1Items(userId, typePrefix, limit);
-      default:
-        return this.reviewRepository.findDueItems(userId, typePrefix, limit);
+    // Get user's SRS state for all review items
+    const srsItems = await this.reviewRepository.findByUserAndTypes(userId, [
+      "pinyin-syllable",
+      "tone-syllable",
+    ]);
+    const srsByKey = new Map(srsItems.map((r) => [`${r.itemType}:${r.itemId}`, r]));
+
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000);
+
+    // Load content files
+    const includePinyin = !typePrefix || typePrefix === "pinyin";
+    const includeTones = !typePrefix || typePrefix === "tone";
+    const items = [];
+
+    if (includeTones) {
+      const tones = readContentDir("tones");
+      for (const tone of tones) {
+        const key = `tone-syllable:${String(tone.number)}`;
+        const srs = srsByKey.get(key);
+        const item = buildToneItem(tone, srs, now, sevenDaysAgo, source);
+        if (item) items.push(item);
+      }
     }
+
+    if (includePinyin) {
+      const combos = await fetchPinyinCombos();
+      const seenComboKeys = new Set();
+
+      for (const combo of combos) {
+        const initialId = combo.initialId?.replace("init_", "") || combo.initialId;
+        const finalId = combo.finalId?.replace("fin_", "") || combo.finalId;
+        const comboKey = `${initialId}-${finalId}`;
+
+        if (seenComboKeys.has(comboKey)) continue;
+        seenComboKeys.add(comboKey);
+
+        const key = `pinyin-syllable:${comboKey}`;
+        const srs = srsByKey.get(key);
+        const item = buildPinyinItem(combo, srs, now, sevenDaysAgo, source, comboKey);
+        if (item) items.push(item);
+      }
+    }
+
+    return shuffleArray(items).slice(0, limit);
   }
 
   /**
@@ -89,229 +217,33 @@ export class ReviewService {
   }
 
   /**
-   * Get review items generated from the pinyin-tones pool.
-   * Returns items that the user hasn't fully mastered yet.
+   * Get all review items from the pinyin-tones pool.
+   * Delegates to getReviewItems with source "all".
    * @param {string} userId
    * @param {number} limit - max items to return (default 20)
    * @returns {Promise<Array>} review items with SRS data
    */
   async getPoolReviewItems(userId, limit = 20) {
-    const pool = await readStaticReference("foundations/pinyin-tones-pool.json");
-
-    // Get user's existing review items for pinyin/tones
-    const existingItems = await this.reviewRepository.findByUserAndTypes(userId, [
-      "pinyin-syllable",
-      "tone-syllable",
-    ]);
-    const existingKeys = new Set(existingItems.map((r) => `${r.itemType}:${r.itemId}`));
-
-    // Generate new candidates from the pool
-    const candidates = [];
-
-    // Add initials as review items
-    for (const initial of pool.initials) {
-      if (!existingKeys.has(`pinyin-syllable:${initial.id}`)) {
-        candidates.push({
-          itemType: "pinyin-syllable",
-          itemId: initial.id,
-          front: initial.pinyin,
-          back: `${initial.pinyin} — ${initial.description}`,
-          category: "pinyin",
-        });
-      }
-    }
-
-    // Add finals as review items
-    for (const final of pool.finals) {
-      if (!existingKeys.has(`pinyin-syllable:${final.id}`)) {
-        candidates.push({
-          itemType: "pinyin-syllable",
-          itemId: final.id,
-          front: final.pinyin,
-          back: `${final.pinyin} — ${final.description}`,
-          category: "pinyin",
-        });
-      }
-    }
-
-    // Add tone examples as review items
-    for (const tone of pool.toneInfo) {
-      if (!existingKeys.has(`tone-syllable:${tone.number}`)) {
-        candidates.push({
-          itemType: "tone-syllable",
-          itemId: String(tone.number),
-          front: `${tone.mark}${tone.name}`,
-          back: `${tone.pinyinExample} (${tone.description}) — e.g., ${tone.chineseExample}`,
-          category: "tones",
-        });
-      }
-    }
-
-    // Save new candidates to Prisma
-    const newItems = [];
-    for (const candidate of candidates) {
-      const saved = await this.reviewRepository.create({
-        userId,
-        itemType: candidate.itemType,
-        itemId: candidate.itemId,
-        front: candidate.front,
-        back: candidate.back,
-        category: candidate.category,
-        studyCount: 0,
-        correctCount: 0,
-        intervalDays: 1,
-        nextReview: new Date(),
-      });
-      newItems.push(saved);
-    }
-
-    // Return due items (mix of existing + new)
-    const allItems = [...existingItems, ...newItems];
-    const now = new Date();
-    const dueItems = allItems
-      .filter((item) => new Date(item.nextReview) <= now)
-      .sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview))
-      .slice(0, limit);
-
-    return dueItems;
+    return this.getReviewItems(userId, { source: "all", type: "", limit });
   }
 
   /**
-   * Update review item after a study session (SRS algorithm).
-   * Simple interval doubling: again=reset, good=double, easy=triple.
-   * Cap at 60 days.
-   */
-  async rateReviewItem(itemId, rating) {
-    const item = await this.reviewRepository.findById(itemId);
-    if (!item) throw new Error(`Review item not found: ${itemId}`);
-
-    let newInterval;
-    switch (rating) {
-      case "again":
-        newInterval = 1;
-        break;
-      case "good":
-        newInterval = Math.min(item.intervalDays * 2, MAX_INTERVAL);
-        break;
-      case "easy":
-        newInterval = Math.min(item.intervalDays * 3, MAX_INTERVAL);
-        break;
-      default:
-        newInterval = item.intervalDays;
-    }
-
-    const nextReview = new Date();
-    nextReview.setDate(nextReview.getDate() + newInterval);
-
-    return this.reviewRepository.update(itemId, {
-      studyCount: item.studyCount + 1,
-      correctCount: rating === "again" ? item.correctCount : item.correctCount + 1,
-      intervalDays: newInterval,
-      nextReview,
-      lastReviewed: new Date(),
-    });
-  }
-
-  /**
-   * Get all Phase 1 items generated from the shared pinyin-tones pool.
-   * Creates review items in the database if they don't already exist.
+   * Get all Phase 1 review items generated from content files.
+   * Delegates to getReviewItems with source "all".
    * @param {string} userId
    * @param {string} typePrefix - "pinyin", "tone", or empty for all
    * @param {number} limit - max items to return
    * @returns {Promise<Array>} review items
    */
-  async getAllPhase1Items(userId, typePrefix = "", limit = 20) {
-    const pool = await readStaticReference("foundations/pinyin-tones-pool.json");
-
-    // Get user's existing review items for pinyin/tones
-    const existingItems = await this.reviewRepository.findByUserAndTypes(userId, [
-      "pinyin-syllable",
-      "tone-syllable",
-    ]);
-    const existingKeys = new Set(existingItems.map((r) => `${r.itemType}:${r.itemId}`));
-
-    // Determine which categories to include based on typePrefix
-    const includePinyin = !typePrefix || typePrefix === "pinyin";
-    const includeTones = !typePrefix || typePrefix === "tone";
-
-    // Generate new candidates from the pool
-    const candidates = [];
-
-    if (includePinyin) {
-      for (const initial of pool.initials) {
-        if (!existingKeys.has(`pinyin-syllable:${initial.id}`)) {
-          candidates.push({
-            userId,
-            itemType: "pinyin-syllable",
-            itemId: initial.id,
-            front: initial.pinyin,
-            back: `${initial.pinyin} — ${initial.description}`,
-            category: "pinyin",
-            studyCount: 0,
-            correctCount: 0,
-            intervalDays: 1,
-            nextReview: new Date(),
-          });
-        }
-      }
-      for (const fin of pool.finals) {
-        if (!existingKeys.has(`pinyin-syllable:${fin.id}`)) {
-          candidates.push({
-            userId,
-            itemType: "pinyin-syllable",
-            itemId: fin.id,
-            front: fin.pinyin,
-            back: `${fin.pinyin} — ${fin.description}`,
-            category: "pinyin",
-            studyCount: 0,
-            correctCount: 0,
-            intervalDays: 1,
-            nextReview: new Date(),
-          });
-        }
-      }
-    }
-
-    if (includeTones) {
-      for (const tone of pool.toneInfo) {
-        if (!existingKeys.has(`tone-syllable:${tone.number}`)) {
-          candidates.push({
-            userId,
-            itemType: "tone-syllable",
-            itemId: String(tone.number),
-            front: `${tone.mark} ${tone.name}`,
-            back: `${tone.pinyinExample} (${tone.description}) — e.g., ${tone.chineseExample}`,
-            category: "tones",
-            studyCount: 0,
-            correctCount: 0,
-            intervalDays: 1,
-            nextReview: new Date(),
-          });
-        }
-      }
-    }
-
-    // Save new candidates to Prisma
-    const newItems = [];
-    for (const candidate of candidates) {
-      const saved = await this.reviewRepository.create(candidate);
-      newItems.push(saved);
-    }
-
-    // Combine and shuffle
-    const allItems = [...existingItems, ...newItems];
-    for (let i = allItems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allItems[i], allItems[j]] = [allItems[j], allItems[i]];
-    }
-
-    return allItems.slice(0, limit);
+  async getAllPhase1Items(userId, typePrefix = "", limit = 10) {
+    return this.getReviewItems(userId, { source: "all", type: typePrefix, limit });
   }
 
   /**
    * Get count of due items.
    */
   async getDueCount(userId, type = "") {
-    return this.reviewRepository.countDue(userId, type || "");
+    const normalizedType = type ? type.replace(/s$/, "") : type;
+    return this.reviewRepository.countDue(userId, normalizedType || "");
   }
 }

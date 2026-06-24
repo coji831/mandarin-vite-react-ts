@@ -11,6 +11,7 @@
  * ContentBrowser still works at /library for freeroam browsing.
  */
 import { Navigate, Route, Routes } from "react-router-dom";
+import { practices_quiz, practices_review } from "../shared/constants/paths";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
 import { FoundationsPage, ContentPlaceholderPage } from "../pages/learn";
 
@@ -31,8 +32,8 @@ export function LearnRoutes() {
         <Route path="chengyu" element={<ContentPlaceholderPage title="Chengyu" />} />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />
-        <Route path="quiz" element={<Navigate to="/practices/quiz" replace />} />
-        <Route path="review" element={<Navigate to="/practices/review" replace />} />
+        <Route path="quiz" element={<Navigate to={practices_quiz} replace />} />
+        <Route path="review" element={<Navigate to={practices_review} replace />} />
         <Route path="basic" element={<Navigate to="/learn/foundations" replace />} />
       </Route>
     </Routes>

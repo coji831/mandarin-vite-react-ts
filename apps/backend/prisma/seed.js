@@ -13,6 +13,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pkg from "pg";
 import bcrypt from "bcrypt";
+import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 
 const { Pool } = pkg;
 
@@ -50,6 +51,9 @@ async function main() {
   // Check if vocabulary exists
   const vocabCount = await prisma.vocabularyWord.count();
   console.log(`📚 Found ${vocabCount} vocabulary words in database`);
+
+  // Seed pinyin combinations
+  await seedPinyinCombinations(prisma);
 
   console.log("🎉 Database seed completed successfully!");
 }

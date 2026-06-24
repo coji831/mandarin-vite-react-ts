@@ -74,7 +74,7 @@ export function FeedbackView() {
 
       {/* Actions */}
       <div className="quiz-feedback__divider flex-center flex-between gap-md">
-        <AudioPlayer audioKey={question.audioKey} label="Play Again" />
+        <AudioPlayer audioKey={question.audioKey} character={question.character} label="Play Again" />
         <button className="btn-primary quiz-feedback__next-btn" onClick={nextQuestion}>
           Next Question &rarr;
         </button>

@@ -8,4 +8,4 @@
 export { useFoundationsProgress } from "./useFoundationsProgress";
 export { useHanziWriter } from "./useHanziWriter";
 export { useStrokeReferenceData } from "./useStrokeReferenceData";
-export { useCharacterSearch, isValidHanzi } from "./useCharacterSearch";
+export { isValidHanzi } from "./useCharacterSearch";

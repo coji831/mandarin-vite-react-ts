@@ -5,7 +5,7 @@
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 
 export class ReviewRepository {
-  async findDueItems(userId, itemTypePrefix, limit = 20) {
+  async findDueItems(userId, itemTypePrefix, limit = 10) {
     return prisma.reviewItem.findMany({
       where: {
         userId,
@@ -17,7 +17,7 @@ export class ReviewRepository {
     });
   }
 
-  async findRecentItems(userId, itemTypePrefix, limit = 20, days = 7) {
+  async findRecentItems(userId, itemTypePrefix, limit = 10, days = 7) {
     const since = new Date(Date.now() - days * 86400000);
     return prisma.reviewItem.findMany({
       where: {

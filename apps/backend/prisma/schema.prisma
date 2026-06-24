@@ -153,6 +153,26 @@ model PhaseGate {
   @@index([userId])
 }
 
+// ── PinyinCombination: init × fin × tone → syllable + character mapping ──
+// Content source: content/pinyin/init_*.json + content/pinyin/fin_*.json
+// Domain columns: tone (int), syllable (string), character (string?), meaning (string?)
+// This is a junction table for the M:N relationship between pinyin initials,
+// finals, and tones — not a content entity itself.
+model PinyinCombination {
+  id          String  @id        // "init_b-fin_a-1"
+  initialId   String             // "init_b" — matches content/pinyin/init_b.json
+  finalId     String             // "fin_a"  — matches content/pinyin/fin_a.json
+  tone        Int                // 1-5
+  syllable    String             // "bā"
+  character   String?            // "八"
+  meaning     String?            // "eight"
+
+  @@unique([initialId, finalId, tone])
+  @@index([syllable])
+  @@index([initialId])
+  @@index([finalId])
+}
+
 model QuizAttempt {
   id          String   @id @default(uuid())
   userId      String
@@ -198,16 +218,20 @@ model StudyStreak {
 
   @@index([userId])
 }// ── ReviewItem: Phase 1 review tracking (flip-card SRS) ──
-// Tracks study progress for pinyin, tones, and stroke reference items.
+// Tracks study progress for pinyin, tones, stroke reference, and vocabulary items.
 // Uses simple interval doubling (not full SM-2) — Phase 1 is introductory.
 model ReviewItem {
   id            String   @id @default(uuid())
   userId        String
-  itemType      String   // "pinyin-initial" | "pinyin-final" | "pinyin-combination" | "tone-identification" | "tone-pair" | "tone-rule" | "stroke-reference" | "pinyin-syllable" | "tone-syllable"
+  itemType      String   // "pinyin-initial" | "pinyin-final" | "pinyin-combination" | "tone-identification" | "tone-pair" | "tone-rule" | "stroke-reference" | "pinyin-syllable" | "tone-syllable" | "vocabulary"
   itemId        String   // identifier within the type (e.g., "b", "ao", "mā", "3rd+3rd")
   front         String?  // Display text for the front of the flip-card
   back          String?  // Display text for the back of the flip-card (answer)
   category      String?  // Grouping category: "pinyin" | "tones" | "strokes"
+  character     String?  // Chinese character for vocabulary items
+  pinyinPlain   String?  // Pinyin without tone marks
+  correctTone   Int?     // Correct tone number (0-4)
+  meaning       String?  // English meaning
   studyCount    Int      @default(0)
   correctCount  Int      @default(0)
   lastReviewed  DateTime?

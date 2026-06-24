@@ -6,8 +6,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import type { StrokeData } from "../types";
-
-let cachedData: StrokeData | null = null;
+import { loadStrokeData, getCachedStrokeData } from "../utils/strokeDataLoader";
 
 export interface UseStrokeReferenceDataReturn {
   data: StrokeData | null;
@@ -22,32 +21,27 @@ export interface UseStrokeReferenceDataReturn {
  * @returns Data, loading state, and error state
  */
 export function useStrokeReferenceData(): UseStrokeReferenceDataReturn {
-  const [data, setData] = useState<StrokeData | null>(cachedData);
+  const [data, setData] = useState<StrokeData | null>(getCachedStrokeData());
   const [error, setError] = useState<string | null>(null);
   const fetchAttempted = useRef(false);
 
   useEffect(() => {
-    if (cachedData) {
-      setData(cachedData);
-      return;
-    }
+    if (data) return;
     if (fetchAttempted.current) return;
     fetchAttempted.current = true;
 
     const loadData = async () => {
       try {
-        const response = await fetch("/data/foundations/strokes.json");
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const json: StrokeData = await response.json();
-        cachedData = json;
+        const json = await loadStrokeData();
         setData(json);
       } catch (err) {
-        console.error("Failed to load strokes data:", err);
+        // [Foundations] Failed to load stroke reference data
+        console.error("[StrokeReference] Failed to load strokes data:", err);
         setError(err instanceof Error ? err.message : "Failed to load stroke reference");
       }
     };
     loadData();
-  }, []);
+  }, [data]);
 
   return { data, isLoading: !data && !error, error };
 }

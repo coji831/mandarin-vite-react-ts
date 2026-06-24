@@ -50,7 +50,9 @@ describe("VocabularyDataService", () => {
 
   it("fetchWordProgress returns word progress", async () => {
     const progress = await service.fetchWordProgress("1");
-    expect(progress).toEqual({ wordId: "1" });
+    expect(progress).toMatchObject({ wordId: "1" });
+    expect(progress).toHaveProperty("studyCount");
+    expect(progress).toHaveProperty("confidence");
   });
 
   it("supports backend swap via DI", async () => {
@@ -78,6 +80,7 @@ describe("VocabularyDataService", () => {
       Promise.resolve([{ id: "2", name: "Fallback", description: "", file: "" }]),
     );
     service.fallbackService = fallback;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global.fetch as any).mockImplementationOnce(() => Promise.reject("fail"));
     const lists = await service.fetchAllLists();
     expect(lists[0].id).toBe("2");

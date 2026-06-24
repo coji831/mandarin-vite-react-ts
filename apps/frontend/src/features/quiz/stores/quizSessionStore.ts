@@ -19,7 +19,7 @@ interface QuizSessionStore extends QuizSession {
   initialize: (strategyType: StrategyType) => Promise<void>;
 
   /** Submit an answer (pinyin + tone) for the current question */
-  submitAnswer: (pinyin: string, tone: number) => void;
+  submitAnswer: (pinyin: string, tone: number) => Promise<void>;
 
   /** Advance to the next question */
   nextQuestion: () => void;
@@ -53,8 +53,9 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         const attempt = await quizService.createQuizAttempt(strategyType, strategy?.phase ?? 1);
         attemptId = attempt.id;
       } catch (apiErr) {
+        // Backend unavailable — proceed without remote attempt, answers won't be persisted
         console.warn(
-          "[quizSessionStore] Backend unavailable, proceeding without remote attempt:",
+          "[QuizSession] Backend unavailable, proceeding without remote attempt:",
           apiErr,
         );
       }
@@ -78,7 +79,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     }
   },
 
-  submitAnswer: (pinyin: string, tone: number) => {
+  submitAnswer: async (pinyin: string, tone: number) => {
     const { questions, currentIndex, strategyType, attemptId } = get();
     const question = questions[currentIndex];
     if (!question) return;
@@ -86,28 +87,37 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     const strategy = getStrategy(strategyType);
     if (!strategy) return;
 
-    // Local evaluation
-    const result = strategy.evaluateAnswer(question, pinyin, tone);
+    // Step 1: Local evaluation (optimistic UI — shown immediately)
+    const optimisticResult = strategy.evaluateAnswer(question, pinyin, tone);
 
-    // Persist to backend if we have an attempt ID (fire-and-forget)
+    // Step 2: Send to backend for authoritative evaluation
+    let backendVerdict = optimisticResult;
     if (attemptId) {
-      quizService
-        .submitAnswer(attemptId, {
+      try {
+        const backendAnswer = await quizService.submitAnswer(attemptId, {
           questionIndex: currentIndex,
           pinyinInput: pinyin,
           selectedTone: tone,
           correctPinyin: question.correctPinyin,
           correctTone: question.correctTone,
           category: question.category,
-        })
-        .catch((apiErr) => {
-          console.warn("[quizSessionStore] Failed to submit answer to backend:", apiErr);
         });
+        // Use backend's verdict as authoritative
+        if (backendAnswer.correct !== optimisticResult.correct) {
+          backendVerdict = {
+            ...optimisticResult,
+            correct: backendAnswer.correct,
+          };
+        }
+      } catch (apiErr) {
+        // Backend unavailable — keep optimistic UI result
+        console.warn("[QuizSession] Backend answer submission failed, using local eval:", apiErr);
+      }
     }
 
     set((s) => ({
-      answers: [...s.answers, result],
-      score: s.score + (result.correct ? 1 : 0),
+      answers: [...s.answers, backendVerdict],
+      score: s.score + (backendVerdict.correct ? 1 : 0),
       phase: "FEEDBACK" as QuizPhase,
     }));
   },
@@ -120,6 +130,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       set({ completionResult: result });
       return result;
     } catch (apiErr) {
+      // Backend unavailable — still show results locally
       console.warn("[quizSessionStore] Failed to complete quiz attempt via backend:", apiErr);
       return null;
     }

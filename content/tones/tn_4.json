@@ -1,0 +1,21 @@
+{
+  "id": "tn_4",
+  "number": 4,
+  "name": "Fourth Tone",
+  "mark": "ˋ",
+  "contour": [
+    5,
+    4.5,
+    3,
+    1,
+    0
+  ],
+  "pitch_description": "Falling",
+  "example_syllable": "mà",
+  "example_character": "骂",
+  "color": "#2196F3",
+  "metadata": {
+    "pronunciation_guide": "Think of tone 4 pitch contour: Falling.",
+    "common_issues": ""
+  }
+}

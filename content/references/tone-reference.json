@@ -1,0 +1,105 @@
+{
+  "tonePairs": [
+    {
+      "id": "pair-1",
+      "chinese": "你好",
+      "dictionaryPinyin": "nǐ hǎo",
+      "spokenPinyin": "ní hǎo",
+      "rule": "3rd+3rd → 2nd+3rd",
+      "pattern": "3+3"
+    },
+    {
+      "id": "pair-2",
+      "chinese": "很好",
+      "dictionaryPinyin": "hěn hǎo",
+      "spokenPinyin": "hén hǎo",
+      "rule": "3rd+3rd → 2nd+3rd",
+      "pattern": "3+3"
+    },
+    {
+      "id": "pair-3",
+      "chinese": "吃饭",
+      "dictionaryPinyin": "chī fàn",
+      "spokenPinyin": "chī fàn",
+      "rule": "1st+4th",
+      "pattern": "1+4"
+    },
+    {
+      "id": "pair-4",
+      "chinese": "学校",
+      "dictionaryPinyin": "xué xiào",
+      "spokenPinyin": "xué xiào",
+      "rule": "2nd+4th",
+      "pattern": "2+4"
+    },
+    {
+      "id": "pair-5",
+      "chinese": "但是",
+      "dictionaryPinyin": "dàn shì",
+      "spokenPinyin": "dàn shì",
+      "rule": "4th+4th",
+      "pattern": "4+4"
+    },
+    {
+      "id": "pair-6",
+      "chinese": "老师",
+      "dictionaryPinyin": "lǎo shī",
+      "spokenPinyin": "lǎo shī",
+      "rule": "3rd+1st",
+      "pattern": "3+1"
+    }
+  ],
+  "toneRules": [
+    {
+      "id": "rule-3rd-sandhi",
+      "title": "3rd Tone Sandhi",
+      "rule": "When two 3rd tones meet, the first becomes 2nd tone",
+      "examples": [
+        {
+          "chinese": "你好",
+          "dictionary": "nǐ hǎo",
+          "spoken": "ní hǎo"
+        },
+        {
+          "chinese": "很好",
+          "dictionary": "hěn hǎo",
+          "spoken": "hén hǎo"
+        }
+      ]
+    },
+    {
+      "id": "rule-yi",
+      "title": "一 (yī) Tone Change",
+      "rule": "yī becomes yí before a 4th tone; yī becomes yì before 1st/2nd/3rd tone",
+      "examples": [
+        {
+          "chinese": "一个",
+          "dictionary": "yī gè",
+          "spoken": "yí gè"
+        },
+        {
+          "chinese": "一起",
+          "dictionary": "yī qǐ",
+          "spoken": "yì qǐ"
+        }
+      ]
+    },
+    {
+      "id": "rule-bu",
+      "title": "不 (bù) Tone Change",
+      "rule": "bù becomes bú before a 4th tone",
+      "examples": [
+        {
+          "chinese": "不是",
+          "dictionary": "bù shì",
+          "spoken": "bú shì"
+        },
+        {
+          "chinese": "不对",
+          "dictionary": "bù duì",
+          "spoken": "bú duì"
+        }
+      ]
+    }
+  ]
+}

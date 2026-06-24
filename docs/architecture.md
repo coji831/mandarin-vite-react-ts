@@ -40,6 +40,13 @@ mandarin-vite-react-ts/
 │   ├── shared-types/      # Shared TypeScript interfaces
 │   └── shared-constants/  # API routes, HSK levels, regex patterns
 ├── docs/                  # Architecture, guides, business requirements
+├── content/              # Version-controlled content files (one JSON per entity)
+│   ├── manifest.json
+│   ├── characters/
+│   ├── radicals/
+│   ├── words/
+│   ├── grammar/
+│   └── chengyu/
 └── terraform/             # Infrastructure as Code (GCS, IAM)
 ```
 
@@ -136,6 +143,8 @@ Story 16.2 introduced a custom React hook (`useExamples`) that mimics SWR behavi
 
 ## Data Flow & Integration
 
+**Content (static reference data) and User Data (dynamic progress) are separated at the storage layer and joined at query time.** See [Architecture Overview](../docs/architecture.md#content-data-flow) and [Content Registry Architecture](../verification-artifacts/content-registry-architecture.md) for the full design.
+
 **Client → Server:**
 
 ```
@@ -161,6 +170,34 @@ Controller → Service (business logic) → Repository (database)
 
 - Vite proxy config: [Vite Setup Guide](./guides/setup/vite.md)
 - Backend setup: [Backend Development Guide](./guides/setup/backend-development.md)
+
+### Content Data Flow
+
+Static content (characters, words, radicals, etc.) follows a separate path from dynamic user data:
+
+```
+┌───────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  content/*.json   │ ──► │  Seed Script /   │ ──► │  Prisma Content  │
+│  (Git — versioned)│     │  Import Pipeline  │     │  Models (DB)     │
+└───────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                            │
+┌───────────────────┐     ┌──────────────────┐              │
+│  review_log table │ ◄── │  CRUD Progress   │              │
+│  (append-only)    │     │  API             │              │
+└───────────────────┘     └──────────────────┘              │
+                                                            ▼
+                                                   ┌─────────────────┐
+                                                   │  Read Model /   │
+                                                   │  Query API      │
+                                                   └─────────────────┘
+```
+
+**Key principles:**
+
+- Content is authored in individual JSON files under `content/`, one per entity
+- Entity relationships are stored in DB junction tables (CharacterRadical, WordCharacter, etc.)
+- Dynamic user data uses CRUD with an append-only `review_log` side-effect table
+- The Read Model pre-joins content + relationships + progress for query optimization
 
 ## Caching Strategy
 

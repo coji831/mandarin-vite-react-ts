@@ -1,0 +1,15 @@
+{
+  "id": "tn_2",
+  "number": 2,
+  "name": "Second",
+  "mark": "ˊ",
+  "contour": [3, 3.5, 4, 4.5, 5],
+  "pitch_description": "Rising",
+  "example_syllable": "má",
+  "example_character": "麻",
+  "color": "#ffaa00",
+  "metadata": {
+    "pronunciation_guide": "Think of tone 2 pitch contour: Rising.",
+    "common_issues": ""
+  }
+}

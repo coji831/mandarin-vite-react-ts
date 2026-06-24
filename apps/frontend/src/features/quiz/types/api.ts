@@ -19,6 +19,7 @@ export interface ApiQuestion {
   correctTone: number;
   category: string;
   displayPinyin?: string;
+  character?: string | null;
 }
 
 /** Response from the quiz generation endpoint */

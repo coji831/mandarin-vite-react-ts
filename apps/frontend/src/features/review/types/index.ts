@@ -10,4 +10,6 @@ export type {
   ReviewItem,
   RatingResult,
   ContentTypeGroup,
+  ReviewStep,
+  ReviewSessionResult,
 } from "./review";

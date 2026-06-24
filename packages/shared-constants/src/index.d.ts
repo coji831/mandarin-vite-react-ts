@@ -39,6 +39,8 @@ export declare const ROUTE_PATTERNS: {
   readonly reviewPoolItems: string;
   readonly reviewItemRate: (id: string) => string;
   readonly foundationsPinyinTones: string;
+  readonly foundationsPinyinCharacterMap: string;
+  readonly foundationsStrokes: string;
   readonly quizQuestions: string;
 };
 

@@ -15,7 +15,7 @@ import ttsRouter from "../modules/tts/api/ttsRoutes.js";
 import vocabularyRouter from "../modules/vocabulary/api/vocabularyRoutes.js";
 import healthRouter from "../modules/health/api/healthRoutes.js";
 import progressionRouter from "../modules/progression/api/progressionRoutes.js";
-import foundationsDataRoutes from "../modules/foundations/api/foundationsDataRoutes.js";
+import foundationsRoutes from "../modules/foundations/api/foundationsRoutes.js";
 import quizRouter from "../modules/quiz/api/quizRoutes.js";
 import reviewRouter from "../modules/review/api/reviewRoutes.js";
 import {
@@ -23,6 +23,7 @@ import {
   reviewController,
   progressionController,
   aiFeedbackController,
+  foundationsController,
 } from "./container.js";
 
 const router = express.Router();
@@ -66,7 +67,11 @@ router.use(vocabularyRouter);
 router.use(examplesRoute);
 
 // Foundations data routes (v1) - Story 18.6
-router.use(foundationsDataRoutes);
+router.use((req, res, next) => {
+  req.foundationsController = foundationsController;
+  next();
+});
+router.use(foundationsRoutes);
 
 // Progression routes (v1) - Story 18.1
 router.use((req, res, next) => {

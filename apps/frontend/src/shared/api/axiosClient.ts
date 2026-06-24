@@ -118,7 +118,7 @@ apiClient.interceptors.request.use(
       if (isTokenExpired(token)) {
         try {
           token = await refreshAccessToken();
-        } catch (error) {
+        } catch (_error) {
           // If refresh fails, continue without token (will get 401)
           console.warn("[apiClient] Proactive refresh failed, continuing request");
         }
@@ -158,7 +158,7 @@ apiClient.interceptors.response.use(
         const newToken = await refreshAccessToken();
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch (_refreshError) {
         // Refresh failed, user will be logged out via callback
         return Promise.reject(createNormalizedError(error));
       }
@@ -194,6 +194,7 @@ apiClient.interceptors.response.use(
  * Create normalized error structure for consistent error handling
  */
 function createNormalizedError(error: AxiosError): NormalizedError {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const responseMessage = (error.response?.data as any)?.message;
   const axiosMessage = error.message;
   const defaultFallback = "An unexpected error occurred";

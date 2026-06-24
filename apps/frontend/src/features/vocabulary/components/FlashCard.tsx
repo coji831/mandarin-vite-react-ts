@@ -12,8 +12,8 @@
 
 import { useMemo, useState } from "react";
 
-import { useProgressActions, useProgressState } from "../../quiz/hooks";
-import type { RootState } from "../../quiz/hooks/useProgressState";
+import { useProgressActions, useProgressState } from "../hooks";
+import type { RootState } from "../hooks/useProgressState";
 import { WordBasic } from "../types";
 import { PlayButton } from "./PlayButton";
 import { Sidebar } from "./Sidebar";

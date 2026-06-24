@@ -25,6 +25,7 @@ export interface AnimationControlsProps {
  */
 export function AnimationControls({
   isReady,
+  isPlaying,
   currentStroke,
   totalStrokes,
   speed,
@@ -38,17 +39,17 @@ export function AnimationControls({
     <div className="flex-center gap-xs flex-wrap">
       <button
         className="anim-control-btn border-none radius-sm text-muted flex-center"
-        onClick={onPlay}
+        onClick={isPlaying ? onPause : onPlay}
         disabled={!isReady}
-        title="Play"
-        aria-label="Play"
+        title={isPlaying ? "Pause" : "Play"}
+        aria-label={isPlaying ? "Pause" : "Play"}
       >
-        ▶
+        {isPlaying ? "⏸" : "▶"}
       </button>
       <button
         className="anim-control-btn border-none radius-sm text-muted flex-center"
         onClick={onPause}
-        disabled={!isReady}
+        disabled={!isReady || !isPlaying}
         title="Pause"
         aria-label="Pause"
       >

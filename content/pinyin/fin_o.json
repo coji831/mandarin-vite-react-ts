@@ -1,0 +1,16 @@
+{
+  "id": "fin_o",
+  "pinyin": "o",
+  "type": "simple",
+  "category": "simple_final",
+  "tone_variants": {
+    "tone1": "bō",
+    "tone2": "bó",
+    "tone3": "bǒ",
+    "tone4": "bò",
+    "tone0": "bo"
+  },
+  "metadata": {
+    "pronunciation_guide": "o — like '**o**h'"
+  }
+}

@@ -9,6 +9,7 @@
  */
 import { Link, Outlet, useLocation } from "react-router-dom";
 
+import { practices_page } from "../constants/paths";
 import { useAuth } from "features/auth";
 import { CharacterHub } from "features/character-hub/components";
 import "./AppLayout.css";
@@ -49,8 +50,8 @@ function AppLayout() {
               </Link>
 
               <Link
-                to="/practices"
-                className={`navbar-link ${location.pathname.startsWith("/practices") ? "active" : ""}`}
+                to={practices_page}
+                className={`navbar-link ${location.pathname.startsWith(practices_page) ? "active" : ""}`}
               >
                 🎯 Practices
               </Link>

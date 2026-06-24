@@ -13,7 +13,6 @@ export class ReviewController {
     this.recordRating = this.recordRating.bind(this);
     this.getDueCount = this.getDueCount.bind(this);
     this.getPoolReviewItems = this.getPoolReviewItems.bind(this);
-    this.rateReviewItem = this.rateReviewItem.bind(this);
   }
 
   async getReviewItems(req, res) {
@@ -61,27 +60,12 @@ export class ReviewController {
 
   async getPoolReviewItems(req, res) {
     try {
-      const { limit = 20 } = req.query;
+      const { limit = 10 } = req.query;
       const items = await this.reviewService.getPoolReviewItems(req.userId, parseInt(limit, 10));
       return res.json(items);
     } catch (err) {
       logger.error("Failed to get pool review items", err);
       return res.status(500).json({ error: "Failed to get pool review items" });
-    }
-  }
-
-  async rateReviewItem(req, res) {
-    try {
-      const { id } = req.params;
-      const { rating } = req.body;
-      const item = await this.reviewService.rateReviewItem(id, rating);
-      return res.json(item);
-    } catch (err) {
-      if (err.message?.startsWith("Review item not found")) {
-        return res.status(404).json({ error: err.message });
-      }
-      logger.error("Failed to rate review item", err);
-      return res.status(500).json({ error: "Failed to rate review item" });
     }
   }
 }

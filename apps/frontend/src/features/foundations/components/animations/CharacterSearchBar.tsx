@@ -9,17 +9,11 @@
  */
 
 import { useState } from "react";
+import { isValidHanzi } from "features/foundations";
 import "./CharacterSearchBar.css";
 
 export interface CharacterSearchBarProps {
   onCharacterSelect: (character: string) => void;
-}
-
-/**
- * Validate input is a single hanzi character (CJK Unified Ideographs range)
- */
-function isValidHanzi(input: string): boolean {
-  return /^[\u4e00-\u9fff\u3400-\u4dbf]$/.test(input);
 }
 
 export function CharacterSearchBar({ onCharacterSelect }: CharacterSearchBarProps) {

@@ -5,23 +5,24 @@
 import express from "express";
 import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
 
 router.get(
-  "/v1/review/items",
+  ROUTE_PATTERNS.reviewItems,
   authenticateToken,
   asyncHandler((req, res) => req.reviewController.getReviewItems(req, res)),
 );
 
 router.post(
-  "/v1/review/result",
+  ROUTE_PATTERNS.reviewResult,
   authenticateToken,
   asyncHandler((req, res) => req.reviewController.recordRating(req, res)),
 );
 
 router.get(
-  "/v1/review/due-count",
+  ROUTE_PATTERNS.reviewDueCount,
   authenticateToken,
   asyncHandler((req, res) => req.reviewController.getDueCount(req, res)),
 );
@@ -31,19 +32,9 @@ router.get(
  * Get review items generated from the pinyin-tones pool.
  */
 router.get(
-  "/v1/review/pool/items",
+  ROUTE_PATTERNS.reviewPoolItems,
   authenticateToken,
   asyncHandler((req, res) => req.reviewController.getPoolReviewItems(req, res)),
-);
-
-/**
- * PUT /v1/review/items/:id/rate
- * Rate a review item (again/good/easy) to update SRS schedule.
- */
-router.put(
-  "/v1/review/items/:id/rate",
-  authenticateToken,
-  asyncHandler((req, res) => req.reviewController.rateReviewItem(req, res)),
 );
 
 export default router;

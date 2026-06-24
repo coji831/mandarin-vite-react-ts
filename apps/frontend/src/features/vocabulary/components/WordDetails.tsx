@@ -5,8 +5,6 @@
  * - Pure presentational; does not manage state or persistence.
  */
 
-import { useState } from "react";
-
 import { WordBasic } from "../types";
 import { WordExamplesPanel } from "./WordExamplesPanel";
 import "../styles/worddetails.css";

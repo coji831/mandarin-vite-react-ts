@@ -8,18 +8,33 @@
  * Phase-gated as the first content area in Phase 1.
  */
 
-export { FoundationsProgressBar } from "./components/shared/FoundationsProgressBar";
-export { InitialsGrid } from "./components/pinyin/InitialsGrid";
-export { FinalsGrid } from "./components/pinyin/FinalsGrid";
-export { CombinationDisplay } from "./components/pinyin/CombinationDisplay";
-export { ToneCell } from "./components/pinyin/ToneCell";
-export { PinyinCell } from "./components/pinyin/PinyinCell";
-export { ToneContourCard } from "./components/tones/ToneContourCard";
-export { TonePairDrills } from "./components/tones/TonePairDrills";
-export { ToneChangeRules } from "./components/tones/ToneChangeRules";
+// Components (pinyin, tones, strokes, animations — re-exported through component barrel)
+export {
+  InitialsGrid,
+  FinalsGrid,
+  CombinationDisplay,
+  PinyinCell,
+  ToneCell,
+  ToneContourCard,
+  TonePairDrills,
+  ToneChangeRules,
+  FoundationsProgressBar,
+  BasicStrokesGrid,
+  StrokeRulesList,
+  AnimationCanvas,
+  AnimationControls,
+  StrokeBreakdown,
+  StrokeRulesDisplay,
+  StrokeReferenceContent,
+  CharacterSearchBar,
+  AnimationPanel,
+  SuggestionPanel,
+} from "./components";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
+export { isValidHanzi } from "./hooks/useCharacterSearch";
+export { useHanziWriter } from "./hooks/useHanziWriter";
+export { useStrokeReferenceData } from "./hooks/useStrokeReferenceData";
 export { foundationsService } from "./services/foundationsService";
-export { getPinyinAudioText } from "./utils/pinyinAudioMap";
 export {
   TONE_COLORS,
   getCombination,
@@ -27,6 +42,11 @@ export {
   stripToneMarks,
   getToneVowelIndex,
 } from "./utils/pinyinUtils";
+export {
+  loadStrokeData,
+  getCachedStrokeData,
+  clearStrokeDataCache,
+} from "./utils/strokeDataLoader";
 export type { FoundationProgress, PhaseGate, PinyinTonesPool } from "./types";
 export type {
   PinyinInitial,

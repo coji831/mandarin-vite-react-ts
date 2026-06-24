@@ -204,6 +204,54 @@ npx prisma migrate dev --name add_user_email
 # - Regenerates Prisma Client
 ```
 
+### ⚠️ Migration Rule: Never Bypass the Migration System
+
+**The problem:** Editing `schema.prisma` and then running `npx prisma db push` updates the database but **does not create a migration file**. The migration history becomes out of sync — a fresh deployment using `prisma migrate deploy` will miss those schema changes, causing runtime errors.
+
+**The rule:** After every schema edit, always create a migration:
+
+```bash
+npx prisma migrate dev --name <short-description>
+```
+
+**Never** use `prisma db push` as a replacement for migrations. `db push` is only acceptable for:
+- Rapid prototyping during early development (pre-initial migration)
+- Temporary evaluation of schema ideas you plan to discard
+
+**Naming convention:** Use kebab-case with the story/epic reference:
+
+```bash
+# Good: describes the change
+npx prisma migrate dev --name add-review-item-display-fields
+
+# Good: includes story reference for traceability
+npx prisma migrate dev --name story-18-6-add-review-item-fields
+
+# Bad: too vague
+npx prisma migrate dev --name update-schema
+```
+
+**If you accidentally used `db push`** and need to fix the gap:
+
+1. Check what's missing: `npx prisma migrate diff --from-config-datasource --to-schema`
+2. Register the schema as-is without reapplying (if the DB already has the columns):
+   ```bash
+   npx prisma migrate dev --name describe-the-change --skip-generate
+   ```
+   Or if that fails, use `prisma migrate resolve`:
+   ```bash
+   npx prisma migrate resolve --applied <migration-name>
+   ```
+3. Verify: `npx prisma migrate status` should show "Database schema is up to date!"
+
+**Before committing:** Always run:
+```bash
+npx prisma migrate status
+npx prisma db push --dry-run  # confirms no drift
+```
+
+Migration files (`prisma/migrations/*/migration.sql`) **must** be committed to the repository. They are the source of truth for production deployments.
+
 ### Reset Database (Development Only)
 
 ```bash

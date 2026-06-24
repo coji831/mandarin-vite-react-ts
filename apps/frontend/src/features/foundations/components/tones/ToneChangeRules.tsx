@@ -12,6 +12,7 @@
  * and play buttons for each example.
  */
 
+import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { ToneRule } from "../../types";
 import "./ToneChangeRules.css";
@@ -57,7 +58,7 @@ function extractCharacterInfo(title: string): { char: string; pinyin: string } |
   return null;
 }
 
-export function ToneChangeRules({ rules, onPlay, loadingPinyin }: ToneChangeRulesProps) {
+function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRulesProps) {
   if (rules.length === 0) {
     return (
       <div className="tone-rules-empty font-italic bg-surface-dark-alt border-default radius-md text-muted text-center p-md">
@@ -125,3 +126,5 @@ export function ToneChangeRules({ rules, onPlay, loadingPinyin }: ToneChangeRule
     </div>
   );
 }
+
+export const ToneChangeRules = React.memo(ToneChangeRulesComponent);

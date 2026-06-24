@@ -4,8 +4,10 @@
  * to the registered strategy for the given quizType.
  * Cross-module: calls ProgressionService.updatePhaseGate() on pass.
  */
+import { createLogger } from "../../../shared/utils/logger.js";
 import { getStrategy } from "../strategies/index.js";
-import { readStaticReference } from "../../../shared/infrastructure/data/readStaticReference.js";
+
+const logger = createLogger("QuizService");
 
 export class QuizService {
   constructor(quizRepository, progressionService) {
@@ -56,7 +58,7 @@ export class QuizService {
           gateCriteria: "quiz",
         });
       } catch (err) {
-        console.error("[QuizService] Failed to update phase gate:", err);
+        logger.error("Failed to update phase gate", err);
       }
     }
 
@@ -68,74 +70,15 @@ export class QuizService {
   }
 
   /**
-   * Generate questions for a quiz type from the shared pinyin-tones pool.
+   * Generate questions for a quiz type by delegating to the registered strategy.
    * @param {string} quizType - e.g., "audio-to-type"
    * @param {number} count - number of questions to generate (default 20)
    * @returns {Promise<Array>} array of question objects
    */
   async generateQuestions(quizType, count = 20) {
-    if (quizType === "audio-to-type") {
-      return this._generateAudioToTypeQuestions(count);
-    }
-    throw new Error(`Unknown quiz type: ${quizType}`);
-  }
-
-  /**
-   * Generate audio-to-type questions from the pool.
-   * Randomly selects syllable+tone combinations from the shared data.
-   */
-  async _generateAudioToTypeQuestions(count) {
-    const pool = await readStaticReference("foundations/pinyin-tones-pool.json");
-
-    // Build a flat list of all valid syllable+tone combinations
-    const entries = [];
-
-    for (const combo of pool.combinations) {
-      // combo.tones is always [tone1, tone2, tone3, tone4, tone0]
-      combo.tones.forEach((tonedSyllable, toneIndex) => {
-        const tone = toneIndex === 4 ? 0 : toneIndex + 1;
-        entries.push({
-          syllable: tonedSyllable,
-          initial: combo.initial,
-          final: combo.final,
-          tone,
-        });
-      });
-    }
-
-    // Shuffle and pick 'count' entries
-    const shuffled = this._shuffleArray(entries);
-    const selected = shuffled.slice(0, count);
-
-    // Format as question objects matching the QuizQuestion interface
-    return selected.map((entry, index) => ({
-      id: `q-${index + 1}`,
-      audioKey: entry.syllable,
-      correctPinyin: this._stripToneMarks(entry.syllable),
-      correctTone: entry.tone,
-      category: entry.tone === 0 ? "tones" : Math.random() > 0.5 ? "pinyin" : "tones",
-      displayPinyin: entry.syllable,
-    }));
-  }
-
-  /** Strip tone marks from a pinyin syllable to get the base form */
-  _stripToneMarks(syllable) {
-    return syllable
-      .replace(/[āáǎà]/g, "a")
-      .replace(/[ōóǒò]/g, "o")
-      .replace(/[ēéěè]/g, "e")
-      .replace(/[īíǐì]/g, "i")
-      .replace(/[ūúǔù]/g, "u")
-      .replace(/[ǖǘǚǜ]/g, "ü");
-  }
-
-  /** Fisher-Yates shuffle */
-  _shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+    const strategy = getStrategy(quizType);
+    if (!strategy) throw new Error(`Unknown quiz type: ${quizType}`);
+    const pool = await strategy.generateQuestions(/*userId*/);
+    return pool.slice(0, count);
   }
 }

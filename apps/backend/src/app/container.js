@@ -69,17 +69,17 @@ const rawTtsService = {
 };
 
 // ── Foundations Data ──────────────────────────────────────────────
-import { FoundationsDataController } from "../modules/foundations/api/FoundationsDataController.js";
+import { FoundationsController, FoundationsService } from "../modules/foundations/index.js";
+const foundationsService = new FoundationsService();
+export const foundationsController = new FoundationsController(foundationsService);
 
 // ── Core: Services ─────────────────────────────────────────────────────────
 import { AuthService } from "../modules/auth/index.js";
 import { AIFeedbackService } from "../modules/quiz/use-cases/AIFeedbackService.js";
 import { GamificationService } from "../modules/gamification/index.js";
-import { ProgressService } from "../modules/progress/use-cases/ProgressService.js";
-import { StreakService } from "../modules/progress/use-cases/StreakService.js";
-import { VocabularyService } from "../modules/vocabulary/services/VocabularyService.js";
+import { ProgressService, StreakService } from "../modules/progress/index.js";
+import { VocabularyService, VocabularyListService } from "../modules/vocabulary/index.js";
 import { WordService } from "../modules/word/index.js";
-import { VocabularyListService } from "../modules/vocabulary/services/VocabularyListService.js";
 import { ProgressionService } from "../modules/progression/index.js";
 const authService = new AuthService(authRepository, jwtService, passwordService);
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
@@ -89,14 +89,12 @@ const vocabularyService = new VocabularyService(vocabularyRepository);
 const wordService = new WordService(wordRepository);
 const vocabularyListService = new VocabularyListService(vocabularyListRepository);
 const progressionService = new ProgressionService(progressionRepository);
-import { QuizService } from "../modules/quiz/services/QuizService.js";
-import { QuizController } from "../modules/quiz/api/QuizController.js";
+import { QuizService, QuizController } from "../modules/quiz/index.js";
 const quizService = new QuizService(quizRepository, progressionService);
 export const quizController = new QuizController(quizService);
 
 // ── Review Module ─────────────────────────────────────────────────────────
-import { ReviewService } from "../modules/review/services/ReviewService.js";
-import { ReviewController } from "../modules/review/api/ReviewController.js";
+import { ReviewService, ReviewController } from "../modules/review/index.js";
 
 const reviewService = new ReviewService(reviewRepository);
 export const reviewController = new ReviewController(reviewService);
@@ -192,4 +190,3 @@ export const vocabularyController = new VocabularyController(vocabularyService, 
 export const wordController = new WordController(wordService);
 export const progressionController = new ProgressionController(progressionService);
 export const exampleController = new ExamplesController(exampleService);
-export const foundationsDataController = new FoundationsDataController();
