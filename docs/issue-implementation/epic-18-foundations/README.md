@@ -20,9 +20,9 @@
 - Route redirect from old `/learn/flashcards` → `/learn/foundations` for backward compatibility
 - Updated 5-item global navigation (Dashboard, Learn, Practices, Library, Progress)
 
-**Status:** In Progress (Story 18.6 Completed)
+**Status:** Completed
 
-**Last Update:** June 21, 2026
+**Last Update:** June 24, 2026
 
 ## Technical Overview
 
@@ -408,3 +408,56 @@ model PhaseGate {
   "suggestedCharacters": ["一", "丨", "人", "大", "口", "水", "火", "木", "日", "月"]
 }
 ```
+
+---
+
+## Technical Challenges & Solutions
+
+### Challenge 1: CONTENT_DIR Path Resolution
+
+**Problem:** The `CONTENT_DIR` path was one level off when content-reading logic was extracted to a shared utility. The relative path resolved to the wrong directory, causing all content loads to fail silently.
+
+**Root Cause:** When code was moved from within a module directory (`modules/review/`, `modules/foundations/`, etc.) to `src/shared/utils/contentUtils.js`, the relative path depth changed. The original path `../../../../content` needed to be `../../../../../content` to reach the monorepo root `content/` directory from the deeper shared utility location.
+
+**Solution:** Fixed the path constant in `contentUtils.js` to use the correct traversal depth. Also added a startup log to verify the resolved path points to an existing directory.
+
+**Lesson:** When extracting shared utilities that reference monorepo-root paths, always verify the relative path against the new file location. Consider using an absolute-path configuration or environment variable for monorepo root references to avoid this class of bug.
+
+### Challenge 2: Silent Fallback Masking DB Issues
+
+**Problem:** Multiple services (ReviewService, FoundationsService, quiz strategies) had try-catch fallbacks that silently returned empty arrays or default values on error. This masked database connection issues, schema mismatches, and data integrity problems during development — making bugs appear as "no data" rather than obvious errors.
+
+**Root Cause:** Defensive coding pattern that caught all errors and returned empty fallbacks without logging or re-throwing. While intended to prevent 500 errors from reaching users, it prevented developers from detecting issues during development.
+
+**Solution:** Removed all silent fallbacks per architectural decision. Errors now propagate naturally to the controller layer's error handler, which returns appropriate HTTP error responses. Added centralized error logging in the error handler middleware.
+
+**Lesson:** Silent fallbacks in service layers are an anti-pattern. Let errors propagate to a centralized error handler where they can be logged and appropriate responses sent. Use try-catch only at the controller level for user-facing error responses.
+
+### Challenge 3: Review Pre-Seeding Caused Inconsistent Counts
+
+**Problem:** `ensureReviewItemsExist` pre-seeded N review items, but due/recent filtered queries returned varying counts because items had different due dates. Tests that expected exact counts would fail intermittently based on temporal state.
+
+**Root Cause:** Pre-seeding with staggered due dates (some items due "now", others due "later") meant filtered queries (`due ≦ now`) only returned a subset. Tests assumed all seeded items would be returned, leading to flaky assertions.
+
+**Solution:** Refactored to direct `LEFT JOIN` with `PinyinCombination` instead of pre-seeding review items. The join dynamically computes the set of reviewable items based on the user's progress and available content, eliminating the need for pre-seeding entirely. No temporal inconsistency.
+
+**Lesson:** Pre-seeding data to simulate state introduces temporal coupling and flaky tests. Prefer computed/derived state via joins over pre-seeded tables when the data can be derived from existing relationships.
+
+### Challenge 4: Duplicated Utilities Across 3 Services
+
+**Problem:** `stripToneMarks`, `shuffleArray`, and content-reading logic (loading JSON/CSV files from the `content/` directory) were independently duplicated in ReviewService, FoundationsService, and AudioToTypeStrategy. This led to inconsistencies (e.g., different shuffle implementations, different path resolution logic) and made maintenance error-prone.
+
+**Root Cause:** Each service was developed independently without a shared utility layer. The duplication was not caught during code review because each implementation worked in isolation for its specific use case.
+
+**Solution:** Extracted all three utilities to a shared `contentUtils.js` module at `apps/backend/src/shared/utils/contentUtils.js`. All services now import from the shared module. Key functions:
+- `loadContentFile(entityType, filename)` — centralized content file loading with consistent path resolution
+- `stripToneMarks(pinyin)` — single source of truth for tone mark removal
+- `shuffleArray(array)` — Fisher-Yates shuffle with optional seeded random
+
+**Lesson:** Before adding a utility function to a service, check if other services need the same logic. Establish a shared utility layer early. Extract immediately when the second consumer emerges (rule of three: duplicate once, extract on second repetition).
+
+## Related Documentation
+
+- [Epic 18 Foundations Audit](docs/audits/epic-18-foundations-audit.md) — Verification and audit results for Epic 18
+- [Shared Content Utilities](apps/backend/src/shared/utils/contentUtils.js) — Centralized content loading, tone mark stripping, and array shuffling
+- [Content Registry Architecture](verification-artifacts/content-registry-architecture.md) — Architecture proposal for the Content Registry system

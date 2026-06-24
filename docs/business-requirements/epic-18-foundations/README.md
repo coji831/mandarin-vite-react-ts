@@ -16,9 +16,9 @@
 - New backend Prisma models (FoundationProgress, QuizAttempt, PhaseGate) + API endpoints for progress persistence and phase gating
 - Phase 1 of the 4-phase learning roadmap (Epics 18–23); must be delivered before character/vocabulary content (Epics 19+)
 
-**Status:** In Progress
+**Status:** Completed
 
-**Last Update:** June 21, 2026
+**Last Update:** June 24, 2026
 
 ## Background
 
@@ -77,33 +77,33 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 
 ## Acceptance Criteria
 
-- [ ] Foundations page accessible at `/learn/foundations` with 4 sub-tabs: Pinyin, Tones, Strokes, Animations (verify: navigate to route, all 4 tabs render)
-- [ ] Phase-gated TabBar shows correct tabs for Phase 1 user (verify: Foundations active, all other Learn tabs locked with 🔒)
-- [ ] Pinyin grid renders 21 initials + 39 finals, each cell clickable with TTS audio playback (verify: click b → hear "b", click b+a → hear "ba" in 5 tones)
-- [ ] Tone-colored pinyin display follows the scheme: ˉred ˊorange ˇgreen ˋblue ·gray (verify: visual inspection of pinyin rendering)
-- [ ] Tone reference shows 4 tone contours with TTS examples for each tone (verify: play mā, má, mǎ, mà; contours render visually)
-- [ ] Tone pair drills play common 2-syllable combinations with TTS (verify: play 你好 → ní hǎo, audio plays)
-- [ ] Tone change rules section explains 3rd tone sandhi, 一 tone changes, 不 tone changes with examples (verify: rules text renders, example audio plays)
-- [ ] 8 basic strokes grid renders with hanzi glyph, pinyin name, and English name (verify: all 8 strokes visible: 点横竖撇捺提折钩)
-- [ ] 4 stroke order rules render with visual examples (verify: 三→top-bottom, 川→left-right, 日→outside-inside, 回→close-last)
-- [ ] Character search input accepts hanzi, renders Hanzi Writer SVG animation with play/pause/step/speed controls (verify: type 水 → animation plays, controls function)
-- [ ] Character Detail Hub slides up from bottom on character tap, dims background (verify: tap 水 in stroke anim tab → Hub opens, backdrop dims)
-- [ ] Hub minimal variant shows: large character (64-72px), pinyin, audio play button, inline stroke animation with controls, Save to Review button (verify: all elements present)
-- [ ] Hub closes on Esc key or tap backdrop (verify: both dismiss methods work)
-- [ ] Audio-to-Type quiz presents 20 randomized questions: play audio → type pinyin → select tone (verify: quiz flow works end-to-end)
-- [ ] Quiz shows instant correct/incorrect feedback with correct answer revealed (verify: wrong answer shows correct pinyin+tone, play again button works)
-- [ ] Quiz progress bar shows current score vs 90% pass target (verify: bar updates after each answer)
-- [ ] Score ≥90% displays pass result, "Continue to Phase 2" CTA, category breakdown (verify: pass flow works)
-- [ ] Score <90% displays fail result, retry option (verify: fail flow works)
-- [ ] Review module provides flip-card study for Phase 1 content (pinyin, tones, strokes) with simple SRS interval scheduling (verify: review items are created, SRS intervals expand on correct answers)
-- [ ] Backend FoundationProgress API stores sub-topic completion per user, auto-initializes 4 records (pinyin, tones, strokes, animations) on first GET, validates sectionId against shared constants (verify: GET returns 4 records, PUT with invalid sectionId returns 400)
-- [ ] Backend QuizAttempt API records quiz results (verify: POST quiz attempt → stored, GET returns history)
-- [ ] Backend PhaseGate API updates and returns current phase (verify: passing quiz updates phase_gates.currentPhase to 2)
-- [ ] Global nav updated to show 5 items: Dashboard, Learn, Practices, Library, Progress (verify: nav renders all 5 with correct routes)
-- [ ] Existing /learn/flashcards route redirects to /learn/foundations (verify: navigation to old route → redirect)
-- [ ] Content accuracy verified by sampling 10% of pinyin/tones/strokes data entries (verify: manual spot-check against authoritative sources)
-- [ ] Mobile responsive: all tabs and quiz render correctly on viewports ≥320px (verify: test on mobile emulation)
-- [ ] Static JSON files load in <200ms combined (verify: network tab timing)
+- [x] Foundations page accessible at `/learn/foundations` with 4 sub-tabs: Pinyin, Tones, Strokes, Animations (verify: navigate to route, all 4 tabs render)
+- [x] Phase-gated TabBar shows correct tabs for Phase 1 user (verify: Foundations active, all other Learn tabs locked with 🔒)
+- [x] Pinyin grid renders 21 initials + 39 finals, each cell clickable with TTS audio playback (verify: click b → hear "b", click b+a → hear "ba" in 5 tones)
+- [x] Tone-colored pinyin display follows the scheme: ˉred ˊorange ˇgreen ˋblue ·gray (verify: visual inspection of pinyin rendering)
+- [x] Tone reference shows 4 tone contours with TTS examples for each tone (verify: play mā, má, mǎ, mà; contours render visually)
+- [x] Tone pair drills play common 2-syllable combinations with TTS (verify: play 你好 → ní hǎo, audio plays)
+- [x] Tone change rules section explains 3rd tone sandhi, 一 tone changes, 不 tone changes with examples (verify: rules text renders, example audio plays)
+- [x] 8 basic strokes grid renders with hanzi glyph, pinyin name, and English name (verify: all 8 strokes visible: 点横竖撇捺提折钩)
+- [x] 4 stroke order rules render with visual examples (verify: 三→top-bottom, 川→left-right, 日→outside-inside, 回→close-last)
+- [x] Character search input accepts hanzi, renders Hanzi Writer SVG animation with play/pause/step/speed controls (verify: type 水 → animation plays, controls function)
+- [x] Character Detail Hub slides up from bottom on character tap, dims background (verify: tap 水 in stroke anim tab → Hub opens, backdrop dims)
+- [x] Hub minimal variant shows: large character (64-72px), pinyin, audio play button, inline stroke animation with controls, Save to Review button (verify: all elements present)
+- [x] Hub closes on Esc key or tap backdrop (verify: both dismiss methods work)
+- [x] Audio-to-Type quiz presents 20 randomized questions: play audio → type pinyin → select tone (verify: quiz flow works end-to-end)
+- [x] Quiz shows instant correct/incorrect feedback with correct answer revealed (verify: wrong answer shows correct pinyin+tone, play again button works)
+- [x] Quiz progress bar shows current score vs 90% pass target (verify: bar updates after each answer)
+- [x] Score ≥90% displays pass result, "Continue to Phase 2" CTA, category breakdown (verify: pass flow works)
+- [x] Score <90% displays fail result, retry option (verify: fail flow works)
+- [x] Review module provides flip-card study for Phase 1 content (pinyin, tones, strokes) with simple SRS interval scheduling (verify: review items are created, SRS intervals expand on correct answers)
+- [x] Backend FoundationProgress API stores sub-topic completion per user, auto-initializes 4 records (pinyin, tones, strokes, animations) on first GET, validates sectionId against shared constants (verify: GET returns 4 records, PUT with invalid sectionId returns 400)
+- [x] Backend QuizAttempt API records quiz results (verify: POST quiz attempt → stored, GET returns history)
+- [x] Backend PhaseGate API updates and returns current phase (verify: passing quiz updates phase_gates.currentPhase to 2)
+- [x] Global nav updated to show 5 items: Dashboard, Learn, Practices, Library, Progress (verify: nav renders all 5 with correct routes)
+- [x] Existing /learn/flashcards route redirects to /learn/foundations (verify: navigation to old route → redirect)
+- [x] Content accuracy verified by sampling 10% of pinyin/tones/strokes data entries (verify: manual spot-check against authoritative sources)
+- [x] Mobile responsive: all tabs and quiz render correctly on viewports ≥320px (verify: test on mobile emulation)
+- [x] Static JSON files load in <200ms combined (verify: network tab timing)
 
 ## Architecture Decisions
 
