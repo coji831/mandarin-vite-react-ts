@@ -69,6 +69,22 @@ export async function uploadFile(
 }
 
 /**
+ * List files in a GCS bucket matching a prefix.
+ * @param {string} prefix - Path prefix to filter by (e.g. "content/pinyin/")
+ * @param {string} [bucket] - Optional bucket name; falls back to getBucketName()
+ * @returns {Promise<string[]>} Array of file paths
+ */
+export async function listFiles(prefix, bucket) {
+  const resolvedBucket = bucket || getBucketName();
+  const client = getGCSClient();
+  const [files] = await client.bucket(resolvedBucket).getFiles({ prefix });
+  return files
+    .map((f) => f.name)
+    .filter((name) => name.endsWith(".json"))
+    .sort();
+}
+
+/**
  * Get public URL for a GCS file
  * @param {string} filePath - Path to file in bucket
  * @param {string} [bucket] - Optional bucket name; falls back to getBucketName()

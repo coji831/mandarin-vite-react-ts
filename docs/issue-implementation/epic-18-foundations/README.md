@@ -450,6 +450,7 @@ model PhaseGate {
 **Root Cause:** Each service was developed independently without a shared utility layer. The duplication was not caught during code review because each implementation worked in isolation for its specific use case.
 
 **Solution:** Extracted all three utilities to a shared `contentUtils.js` module at `apps/backend/src/shared/utils/contentUtils.js`. All services now import from the shared module. Key functions:
+
 - `loadContentFile(entityType, filename)` — centralized content file loading with consistent path resolution
 - `stripToneMarks(pinyin)` — single source of truth for tone mark removal
 - `shuffleArray(array)` — Fisher-Yates shuffle with optional seeded random
