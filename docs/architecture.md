@@ -94,7 +94,8 @@ mandarin-vite-react-ts/
   - **Dashboard**: Learning statistics and activity overview (LeechWidget, leechService)
   - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
   - **Gamification**: Streaks, badges, XP progress, mystery box rewards
-  - **Quiz**: Quiz system with multiple question types and progress tracking
+  - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
+  - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
   - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
 - **Pages** (`src/pages/`): Route-level page orchestrators
   - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
@@ -102,10 +103,10 @@ mandarin-vite-react-ts/
   - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
-  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.)
+  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.) + `CharacterDetailHub` shared portal overlay for character detail display
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access)
+  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useCharacterHub for CharacterDetailHub overlay)
   - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
 **State Management:**
@@ -116,6 +117,7 @@ mandarin-vite-react-ts/
   BrowserRouter → AuthProvider (auth) → AppLayout → LearnLayout → ProgressProvider (quiz) + UserIdentityProvider (quiz)
   ```
 - **Persistence**: Backend API (PostgreSQL) for progress, localStorage for device identity
+- **Zustand Stores**: `hubStore` for CharacterDetailHub overlay state (isOpen, characterId, position)
 - **Architecture**: Reducer composition with normalized state shape
 
 **See detailed documentation:**
