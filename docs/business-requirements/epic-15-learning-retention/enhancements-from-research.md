@@ -1,6 +1,6 @@
 ﻿# Epic 15 Enhancements from Research
 
-**Source**: [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md) (full research document)
+**Source**: [Vocabulary Retention Research](../../knowledge-base/learning-theory/vocabulary-retention-research.md) (full research document)
 
 This document maps research-based retention techniques to their implementation in Epic 15.
 
@@ -8,11 +8,11 @@ This document maps research-based retention techniques to their implementation i
 
 For deeper understanding of the concepts behind these implementations:
 
-- [Cognitive Science of Active Recall](../../knowledge-base/cognitive-science-active-recall.md) - Testing effect, desirable difficulty, interleaving
-- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - FSRS vs SM-2, optimal interval calculation
-- [Gamification Psychology](../../knowledge-base/gamification-psychology-learning.md) - Loss aversion, variable rewards, ethical design
-- [Chinese Character Structure](../../knowledge-base/chinese-character-structure.md) - Radicals, phonetic components, decomposition
-- [Full Research Document](../../knowledge-base/vocabulary-retention-research.md) - Complete original research
+- [Cognitive Science of Active Recall](../../knowledge-base/learning-theory/cognitive-science-active-recall.md) - Testing effect, desirable difficulty, interleaving
+- [Spaced Repetition Algorithms](../../knowledge-base/learning-theory/spaced-repetition-algorithms.md) - FSRS vs SM-2, optimal interval calculation
+- [Gamification Psychology](../../knowledge-base/learning-theory/gamification-psychology-learning.md) - Loss aversion, variable rewards, ethical design
+- [Chinese Character Structure](../../knowledge-base/learning-theory/chinese-character-structure.md) - Radicals, phonetic components, decomposition
+- [Full Research Document](../../knowledge-base/learning-theory/vocabulary-retention-research.md) - Complete original research
 
 ## Related Implementation Guides
 
@@ -21,7 +21,7 @@ For step-by-step implementation instructions:
 - [State Management Patterns](../../guides/conventions/state-management.md) - React reducer patterns, interleaving logic, localStorage persistence
 - [Gemini API Integration Guide](../../guides/integrations/gemini-api.md) - AI feedback setup, rate limiting, caching strategies
 - [Frontend Conventions](../../guides/conventions/frontend.md) - Tone mark conversion, validation rules, mobile UX
-- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - Algorithm theory and implementation patterns
+- [Spaced Repetition Algorithms](../../knowledge-base/learning-theory/spaced-repetition-algorithms.md) - Algorithm theory and implementation patterns
 - [Redis Setup Guide](../../guides/setup/redis.md) - Cache key strategies, TTL patterns, invalidation
 - [Troubleshooting Guide](../../guides/operations/troubleshooting.md) - Common issues and solutions
 

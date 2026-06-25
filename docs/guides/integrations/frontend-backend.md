@@ -400,9 +400,9 @@ server: {
 
 ### Knowledge Base
 
-- [Backend Architecture: CORS Deep Dive](../knowledge-base/backend-architecture.md#cors-cross-origin-resource-sharing-deep-dive) ΓÇö Preflight requests, credentials handling
-- [Backend Authentication](../knowledge-base/backend-authentication.md) ΓÇö JWT patterns, refresh strategies, security
-- [API Response Patterns](../knowledge-base/api-response-patterns.md) ΓÇö Request/response shape conventions
+- [Backend Architecture: CORS Deep Dive](../knowledge-base/backend/backend-architecture.md#cors-cross-origin-resource-sharing-deep-dive) ΓÇö Preflight requests, credentials handling
+- [Backend Authentication](../knowledge-base/backend/backend-authentication.md) ΓÇö JWT patterns, refresh strategies, security
+- [API Response Patterns](../knowledge-base/backend/api-response-patterns.md) ΓÇö Request/response shape conventions
 
 ### Implementation Files
 

@@ -31,15 +31,9 @@ terraform/.terraform/
 # TypeScript incremental build info
 *.tsbuildinfo
 
-# SOLAR-Ralph session activity logs (per-session diagnostic files, not auditable records)
-.github/solar-system/logs/*.json
-.github/solar-system/logs/.current-session
-
 # CodeGraph data files
 .codegraph/
 
-# Agent definitions (local development only)
-.github/agents/
 
 # Verification artifacts (design docs, not source code)
 verification-artifacts/

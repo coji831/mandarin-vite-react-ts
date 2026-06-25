@@ -453,18 +453,17 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **Knowledge Base Articles:**
 
-- [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md) - Full research document (cognitive science, FSRS, gamification theory)
-- [Cognitive Science of Active Recall](../../knowledge-base/cognitive-science-active-recall.md) - Testing effect, desirable difficulty, interleaving
-- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - FSRS vs SM-2 comparison, DSR model
-- [Gamification Psychology](../../knowledge-base/gamification-psychology-learning.md) - Loss aversion, variable rewards, ethical design
-- [Chinese Character Structure](../../knowledge-base/chinese-character-structure.md) - Radicals, phonetic components, decomposition
+- [Vocabulary Retention Research](../../knowledge-base/learning-theory/vocabulary-retention-research.md) - Full research document (cognitive science, FSRS, gamification theory)
+- [Cognitive Science of Active Recall](../../knowledge-base/learning-theory/cognitive-science-active-recall.md) - Testing effect, desirable difficulty, interleaving
+- [Spaced Repetition Algorithms](../../knowledge-base/learning-theory/spaced-repetition-algorithms.md) - FSRS vs SM-2 comparison, DSR model
+- [Gamification Psychology](../../knowledge-base/learning-theory/gamification-psychology-learning.md) - Loss aversion, variable rewards, ethical design
+- [Chinese Character Structure](../../knowledge-base/learning-theory/chinese-character-structure.md) - Radicals, phonetic components, decomposition
 
 **Implementation Guides:**
 
 - [State Management Patterns](../../guides/conventions/state-management.md) - React reducer patterns, interleaving logic
 - [Gemini API Integration Guide](../../guides/integrations/gemini-api.md) - AI feedback setup, rate limiting, caching
 - [Frontend Conventions](../../guides/conventions/frontend.md) - Tone mark conversion, validation rules
-- [Spaced Repetition Algorithms](../../knowledge-base/spaced-repetition-algorithms.md) - Algorithm theory and research basis
+- [Spaced Repetition Algorithms](../../knowledge-base/learning-theory/spaced-repetition-algorithms.md) - Algorithm theory and research basis
 - [Redis Setup Guide](../../guides/setup/redis.md) - Cache strategies for AI feedback and due words
 - [Troubleshooting Guide](../../guides/operations/troubleshooting.md) - Common issues and solutions
-

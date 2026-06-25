@@ -26,13 +26,13 @@ This folder contains the single source of truth for all documentation templates 
 
 ## Related Guides
 
-- [Documentation Patterns (Business Requirements)](../knowledge-base/documentation-patterns.md#business-requirements-format)
+- [Documentation Patterns (Business Requirements)](../knowledge-base/practices/documentation-patterns.md#business-requirements-format)
 
 - [Workflow Checklist](../guides/operations/workflow.md)
 - [Git Conventions & Branch Strategy](../guides/conventions/git.md)
 - [Frontend Conventions](../guides/conventions/frontend.md)
 - [Backend Conventions](../guides/conventions/backend.md)
-- [SOLID Principles](../knowledge-base/solid-principles.md)
+- [SOLID Principles](../knowledge-base/practices/solid-principles.md)
 
 ## AI & Workflow Resources
 

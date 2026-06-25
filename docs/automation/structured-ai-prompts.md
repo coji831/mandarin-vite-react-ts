@@ -93,7 +93,7 @@ Always reference relevant guides and templates in your prompts:
 1. For business requirements: `docs/templates/epic-business-requirements-template.md` / `story-business-requirements-template.md`
 2. For implementation docs: `docs/templates/epic-implementation-template.md` / `story-implementation-template.md`
 3. For code conventions: `docs/guides/conventions/backend.md`
-4. For SOLID principles: `docs/knowledge-base/solid-principles.md`
+4. For SOLID principles: `docs/knowledge-base/practices/solid-principles.md`
 5. For workflow guidance: `.github/copilot-instructions.md`
 
 ## Epic Workflow Prompts
@@ -122,7 +122,7 @@ Ready-to-use structured prompts for full epic/story workflows. Each prompt refer
 [PARAMETERS]:
   - Implementation template: docs/templates/epic-implementation-template.md
   - Coding conventions: docs/guides/conventions/backend.md
-  - SOLID guidance: docs/knowledge-base/solid-principles.md
+  - SOLID guidance: docs/knowledge-base/practices/solid-principles.md
   - Target files: e.g., src/features/<feature>/pages/NewPage.tsx, src/features/<feature>/components/*
   - Tests: Jest + React Testing Library, include smoke test and one behavior test
 [OUTPUT]: File patches (or full files) for code, tests, and updated docs; include comments referencing doc sections

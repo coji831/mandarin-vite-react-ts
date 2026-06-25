@@ -272,7 +272,7 @@ test("GET /api/v1/progress returns list", async () => {
 
 - Backend setup: [Backend Development Guide](../setup/backend-development.md)
 - Prisma schema: `apps/backend/prisma/schema.prisma`
-- API response patterns: [../knowledge-base/api-response-patterns.md](../../knowledge-base/api-response-patterns.md)
+- API response patterns: [../knowledge-base/backend/api-response-patterns.md](../../knowledge-base/backend/api-response-patterns.md)
 
 ---
 

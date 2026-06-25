@@ -227,7 +227,7 @@ apps/backend/
 4. **Repository Layer** (`src/modules/<name>/repositories/`): Database access, query construction, data mapping
 5. **Shared Infrastructure** (`src/shared/infrastructure/`): External service clients, cache, Redis, security
 
-**Deep Dive:** See [Backend Architecture Patterns](../../knowledge-base/backend-architecture.md) for layered architecture, dependency injection, and design patterns.
+**Deep Dive:** See [Backend Architecture Patterns](../../knowledge-base/backend/backend-architecture.md) for layered architecture, dependency injection, and design patterns.
 
 ---
 
@@ -371,10 +371,10 @@ npm run test:coverage     # Coverage report
 
 ### Knowledge Base
 
-- [Backend Architecture Patterns](../knowledge-base/backend-architecture.md) - Layered architecture, CORS, middleware
-- [Authentication Concepts](../knowledge-base/backend-authentication.md) - OAuth, SSO, session strategies
-- [PostgreSQL Setup & Migrations](../knowledge-base/backend-database-postgres.md) - Connection pooling, migrations
-- [Caching Strategies](../knowledge-base/integration-caching.md) - Redis patterns, cache-aside
+- [Backend Architecture Patterns](../knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware
+- [Authentication Concepts](../knowledge-base/backend/backend-authentication.md) - OAuth, SSO, session strategies
+- [PostgreSQL Setup & Migrations](../knowledge-base/backend/backend-database-postgres.md) - Connection pooling, migrations
+- [Caching Strategies](../knowledge-base/infrastructure/integration-caching.md) - Redis patterns, cache-aside
 
 ---
 

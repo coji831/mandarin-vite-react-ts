@@ -1,8 +1,8 @@
-# Copilot Instructions for AI Coding Agents
+﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** June 2, 2026
+**Last Updated:** June 25, 2026
 
-Operational playbook for AI agents contributing to `mandarin-vite-react-ts`. Follow these rules to stay aligned, produce high‑quality changes, and keep documentation in sync.
+Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
 ## ⚡ TL;DR Quick Start
 
@@ -10,144 +10,66 @@ Install: `npm install`
 Run dev: `npm run dev` (port 5173)
 Run local backend: `npm run start-backend` (port 3001)
 Run tests: `npm test`
+Run design lint: `npx @google/design.md lint DESIGN.md`
+See AGENTS.md for agent roles, behavior rules, and prohibited patterns.
 Epic BR: use `docs/templates/epic-business-requirements-template.md`
 Story BR: use `docs/templates/story-business-requirements-template.md`
 Epic Implementation: `docs/templates/epic-implementation-template.md`
 Story Implementation: `docs/templates/story-implementation-template.md`
-Code change: follow `docs/guides/references/code-conventions.md` + `docs/knowledge-base/solid-principles.md`
+Code change: follow `docs/guides/conventions/frontend.md` (frontend) or `docs/guides/conventions/backend.md` (backend) + `docs/knowledge-base/practices/solid-principles.md`
 Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
-
-## 📚 Table of Contents
-
-1. Architecture Overview
-2. Workflows
-3. Templates Index
-4. Naming & Structure
-5. State Management Rules
-6. Testing Rules
-7. Documentation Standards
-8. Code Change Checklist
-9. Git & Branching
-10. Closing Epics & Stories
-11. Quality Gates
-12. Cross‑Doc Alignment Checklist
-13. Automation Protocol
-14. Resources
 
 ## 🏗️ Architecture Overview
 
 **Frontend**: React + TypeScript via Vite; feature folders in `apps/frontend/src/features/`.
-**State**: Context + reducers; slices: `lists`, `user`, `ui`; persisted via localStorage.
+**State**: Context + reducers + Zustand; slices: `lists`, `user`, `ui`; persisted via localStorage.
 **Backend**: Express + Prisma in `apps/backend/`; deployed to Railway in production, runs locally on port 3001 for development.
-**Data**: CSV/JSON in `public/data/`, loaded by `src/utils/csvLoader.ts`.
-**Routing**: React Router; constants in `src/constants/paths.ts`.
+**Routing**: React Router; constants in `apps/frontend/src/shared/constants/paths.ts`.
 **Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
 
-## 🔄 Workflows
+## 🧩 Component Reuse
 
-Development: install → run dev (starts frontend + backend concurrently) → iterate.
-Testing: `npm test` (Jest + RTL) for unit/component tests.
-Deployment: Frontend deploys to Vercel; Backend deploys to Railway (via Procfile).
-Data Update: modify CSV under `public/data/vocabulary/`; parse via `csvLoader.ts`.
+- ✅ ALWAYS check `src/shared/components/` before creating a new component
+- ✅ Import from `@/shared/components` — they're already re-exported via barrel
+- ✅ Use CSS variables from `apps/frontend/src/styles/globals.css` — never hardcode colors, spacing, or typography
+- ✅ See [DESIGN.md](./DESIGN.md) for the complete design token reference
+- ✅ See [component-decomposition skill](./.github/skills/component-decomposition/SKILL.md) for component breakdown rules
+- ✅ See [frontend-audit skill](./.github/skills/frontend-audit/SKILL.md) for frontend code audit checklist
+- ✅ See [backend-audit skill](./.github/skills/backend-audit/SKILL.md) for backend code audit checklist
+- ❌ NEVER reimplement Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser
 
-### 🧪 Story-Level Development Workflow
+## 🔄 Development Workflow
 
-Follow this sequence whenever implementing or updating a story (smallest deliverable linked to an epic):
+Concise checklist: `Context → Review → Plan → Implement → Test → Run → Docs → Gates → Commit`
 
-1. Review Requirements
+Where **Context** means: before writing code, read the relevant shared components, DESIGN.md tokens, and existing feature structure to understand what's available for reuse.
 
-- Open the story BR file (`docs/business-requirements/epic-<num>-<slug>/story-<epic>.<story>-*.md`) and its epic BR `README.md`.
-- Open corresponding implementation docs (`docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-*.md` + epic implementation `README.md`).
-- Confirm Acceptance Criteria (AC) clarity; note any ambiguous items in a "Questions / Clarifications" subsection (add if missing).
+See [project-workflow.instructions.md](./instructions/project-workflow.instructions.md) for the detailed story-level development workflow, epic/story closing procedures, quality gates, and code change checklist.
 
-2. Plan Changes
+## 📋 Where to Find Rules
 
-- Identify impacted feature folder(s) under `src/features/`.
-- Check design doc (`src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts.
-- If adding public APIs/components/hooks, prepare file header summaries (template: `docs/templates/file-summary-template.md`).
-
-3. Implement Code
-
-- Create/update components, hooks, reducers, types within the feature folder.
-- Maintain state rules (domain-prefixed action types, immutable updates, normalized collections).
-- Keep scope tightly bound to story AC; defer extras into a new follow-up story.
-
-4. Tests (Create / Update)
-
-- Add or adjust unit/component tests to cover happy path + at least one edge case from AC.
-- Ensure new reducers/actions/selectors have isolated tests.
-- Avoid brittle UI assertions (prefer role/text queries via RTL).
-
-5. Run Locally (If Needed)
-
-- Start app: `npm run dev`.
-- Start local backend (if API integration touched): `npm run start-backend`.
-- Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
-
-6. Update Documentation (MANDATORY DELEGATION + REVIEW)
-
-**CRITICAL GOVERNANCE RULE:** Governor MUST NOT directly edit BR or implementation documentation files. Docs Curator must be delegated for all documentation structure & content updates.
-
-**Two-Phase Documentation Update Process:**
-
-**Phase A: Design & Planning (if doc structure/scope changes)**
-
-- Design Architect designs documentation structure + content plan
-- User reviews + approves design
-- **MANDATORY:** Docs Curator reviews approved design for feasibility + template compliance
-- **MANDATORY:** Docs Curator writes files based on approved design (Governor does not write)
-- Files staged for review step before commit
-
-**Phase B: Implementation Code Phase (during story development)**
-
-- Developer records decisions, data shape changes, performance notes in story implementation doc
-- Add Technical Challenges & Solutions section: Document any non-trivial problems encountered during implementation (debugging >1 hour, architectural decisions, test alignment issues, schema mismatches, error handling patterns). Include problem statement, root cause, solution with code examples, and lessons learned.
-- Story BR: mark progressed AC (leave unchecked until fully validated).
-- Epic docs: only update if cross-cutting decisions or shared architecture changed.
-- Update Last Update date fields accordingly.
-- **MANDATORY:** Run documentation changes through review or audit before commit (see Step 7 Pre-Commit Gate)
-
-7. Pre-Commit Gate
-
-- Run tests: `npm test` (or targeted pattern) → must pass.
-- Type check & lint if configured (`tsc --noEmit`, ESLint task) – ensure clean.
-- Verify Quality Gates & Cross‑Doc Alignment checklists.
-- **Documentation Review:** If any BR or implementation docs were changed, a Docs Curator or review auditor MUST have validated the changes for:
-  - Template compliance (no sections added/removed without template update)
-  - Cross-linking integrity (BR ↔ Impl ↔ Epic links work bidirectionally)
-  - AC clarity (acceptance criteria are testable and unambiguous)
-  - Technical accuracy (no contradictions with code changes)
-  - Status field consistency (Status, Last Update dates synchronized across docs)
-  - Do NOT commit documentation changes without this review.
-- If instructed to "wait before commit": stage changes but defer commit; add a note in the story implementation doc explaining the hold reason.
-
-8. Commit (When Allowed)
-
-- Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`.
-- Include scope referencing story (e.g., `feat(story-11-2): add progress sync reducer`).
-- Ensure BR + implementation doc updates are in the same commit for traceability.
-
-Concise Checklist:
-`Review → Plan → Implement → Test → Run → Docs → Gates → Commit`
-
-Edge Cases to Watch:
-
-- Partial AC completion: split remaining work into new story file.
-- Data model shifts: update unified model docs & API specs.
-- Performance regressions: add note + follow-up optimization story.
-- Feature flag introduction: document in epic BR + implementation README.
-
-If any step is blocked (missing requirements, unclear AC, external dependency): pause implementation and record the blocker under a "Pending / Blockers" subsection in both BR and implementation story docs.
+| Topic                        | File                                                                                              | Auto-attaches when...                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Workflow, epics, closing     | [project-workflow.instructions.md](./instructions/project-workflow.instructions.md)               | Description matches task                     |
+| Documentation standards      | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md) | Editing `docs/**/*.md`                       |
+| API client rules             | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)         | Editing frontend `.ts/.tsx`                  |
+| CSS & styling                | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)       | Editing `.css` or frontend `.tsx`            |
+| Barrel files                 | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                       | Editing `index.ts`                           |
+| Store placement              | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                 | Editing store files                          |
+| Testing requirements         | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)             | Editing frontend `.ts/.tsx` or backend `.js` |
+| Prisma schema changes        | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)     | Editing `schema.prisma`                      |
+| External libs (hanzi-writer) | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)         | Editing canvas/animation files               |
+| Input/timer edge cases       | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md) | Editing input/timer/quiz files               |
+| Backend error messages       | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)   | Editing backend controllers/services         |
 
 ## 📦 Templates Index
 
-Documentation Patterns (KB): `docs/knowledge-base/documentation-patterns.md`
-Epic BR Template: `docs/templates/epic-business-requirements-template.md`
-Story BR Template: `docs/templates/story-business-requirements-template.md`
-Epic Implementation Template: `docs/templates/epic-implementation-template.md`
-Story Implementation Template: `docs/templates/story-implementation-template.md`
-Commit Message Template: `docs/templates/commit-message-template.md`
-File Header / Summary Template: `docs/templates/file-summary-template.md`
+Epic BR: `docs/templates/epic-business-requirements-template.md`
+Story BR: `docs/templates/story-business-requirements-template.md`
+Epic Implementation: `docs/templates/epic-implementation-template.md`
+Story Implementation: `docs/templates/story-implementation-template.md`
+Commit Message: `docs/templates/commit-message-template.md`
+File Header Summary: `docs/templates/file-summary-template.md`
 
 ## 🏷️ Naming & Structure
 
@@ -155,288 +77,71 @@ Epic BR: `docs/business-requirements/epic-<num>-<slug>/README.md`
 Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
 Epic Implementation: `docs/issue-implementation/epic-<num>-<slug>/README.md`
 Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
-Feature code: `src/features/<feature>/`
-Reducer files: `src/features/<feature>/reducers/<domain>Reducer.ts`
-Design docs: `src/features/<feature>/docs/design.md`
+Feature code: `apps/frontend/src/features/<feature>/`
+Reducer files: `apps/frontend/src/features/<feature>/reducers/<domain>Reducer.ts`
+Design docs: `apps/frontend/src/features/<feature>/docs/design.md`
 Architecture overview: `docs/architecture.md`
-
-## 🧠 State Management Rules
-
-Reducers: `{domain}Reducer.ts`; action types SCREAMING_SNAKE_CASE with domain prefix.
-Actions: exposed via `use<name>Actions()` hook; verb-based camelCase.
-Selectors: always `use<name>State(s => s.slice?.value ?? fallback)`; never select entire root state.
-Immutability: use spreads; no direct mutation.
-Normalized data: maintain `itemsById` + `itemIds` pairs.
-Types: explicit definitions in `src/features/<feature>/types/`.
-
-## 🧪 Testing Rules
-
-Reducers: isolated action tests.
-Hooks: verify memoization & stable references.
-Components: context mocking for state/actions.
-Stories/Epics: AC reflected in tests where feasible.
-Add tests for new logic before declaring story complete.
-
-## 📝 Documentation Standards
-
-**Strict Template Compliance:**
-
-- All documentation (BR, implementation, etc.) must strictly match the structure and sections of the corresponding template in `docs/templates/`.
-- Do NOT add extra, duplicate, or non-template sections (such as "Status") unless they are explicitly present in the template file.
-- When updating or creating docs, always cross-check with the latest template to ensure full compliance.
-
-**High-Level Documentation Guidelines:**
-
-- High-level docs (`docs/architecture.md`, `docs/README.md`, root `README.md`) should NOT reference specific story or epic numbers.
-- Use descriptive feature names instead (e.g., "Gamification System" not "Story 15.3").
-- Keep high-level docs focused on current system state, not implementation history.
-- Story/epic references belong in BR and implementation docs only.
-
-Epic creation checklist:
-
-- Create BR README and implementation README using only the sections defined in their templates.
-- Scaffold initial story files (BR + implementation) if known, matching template structure exactly.
-- Link epic ↔ implementation ↔ stories bidirectionally.
-
-Story creation checklist:
-
-- Create BR story file and implementation story file using only the sections defined in their templates.
-- Link back to epic BR + implementation README.
-
-Header comments: add/update when new exported component/hook/service or public API surface changes (use File Summary Template).
-Performance or architectural shifts: update `docs/architecture.md` + feature `design.md`.
-
-**Technical Challenges Documentation:**
-
-When completing story implementation, add a "Technical Challenges & Solutions" section to the implementation doc with:
-
-- **Challenge title**: Descriptive name (e.g., "Race Condition in Streak Updates")
-- **Problem**: What went wrong or what obstacle was encountered
-- **Root Cause**: Why the problem occurred (schema mismatch, wrong assumptions, etc.)
-- **Solution**: How it was resolved (include code examples if relevant)
-- **Impact/Benefits**: What improved or what was learned
-- **Alternatives Considered**: Other approaches evaluated (optional)
-
-**When to document a challenge:**
-
-- Debugging took >1 hour to resolve
-- Test failures required significant refactoring
-- Schema/API misalignment discovered
-- Architectural pattern clarified through implementation
-- Error handling strategy decided
-- Performance issue identified and fixed
-
-**Format example:**
-
-```markdown
-### Challenge 2: Test Schema Misalignment
-
-**Problem:** Tests assumed QuizResult had correctCount/incorrectCount fields, but schema only has correct: Boolean.
-
-**Root Cause:** Tests written before verifying Prisma schema.
-
-**Solution:** Updated all test fixtures to use correct: Boolean field instead.
-
-**Lesson:** Always verify database schema before writing service tests.
-```
-
-## 📚 Knowledge Base Update Protocol
-
-**When to Extract Lessons to Knowledge Base:**
-
-Update KB after resolving non-trivial technical struggles (3+ hours debugging, infrastructure integration complexity, architectural patterns discovered, or repeated questions across stories).
-
-**Triggers for KB Updates:**
-
-- Story took 2x+ longer than estimated due to infrastructure/integration complexity
-- Discovered reusable architectural pattern not documented anywhere
-- Solved cross-cutting technical issue (CORS, cookies, proxy, connection pooling, React lifecycle)
-- Found non-obvious configuration requirement (environment setup, tooling quirks)
-- Implemented security pattern (auth flows, input validation, rate limiting)
-- Performance optimization with measurable impact (>20% improvement)
-
-**Content Distribution: Guides vs Knowledge Base:**
-
-- **Guides** (`docs/guides/`): Project-specific, action-focused, step-by-step setup/configuration
-  - Example: "How to configure Vite proxy for cookie forwarding in THIS project"
-  - Format: Numbered steps, code snippets, file paths, commands
-  - Audience: Contributors setting up or maintaining THIS codebase
-
-- **Knowledge Base** (`docs/knowledge-base/`): Transferable concepts, deep dives, architectural patterns
-  - Example: "Why dev proxies don't forward cookies by default + HTTP header mechanics"
-  - Format: Conceptual explanations, diagrams, tradeoff analysis, alternative approaches
-  - Audience: Engineers learning concepts applicable to ANY similar project
-
-**Extraction Workflow (After Completing Story):**
-
-1. **Identify Reusable Content** — Review implementation doc "Technical Challenges & Solutions" section for patterns applicable beyond this story.
-
-2. **Determine Target Location:**
-   - Quick reference / project setup → Update relevant guide in `docs/guides/`
-   - Deep technical concept / architectural pattern → Update/create KB article in `docs/knowledge-base/`
-   - Both? Add quick reference to guide with "Learn more: [KB Article]" link
-
-3. **Extract & Organize:**
-   - Remove verbose postmortem/lesson sections from story implementation doc
-   - Distribute actionable patterns to guides (concise, directive format)
-   - Distribute conceptual explanations to KB (detailed, educational format)
-   - Keep story implementation doc focused on WHAT was built, not WHY/HOW in detail
-
-4. **Cross-Link:**
-   - Story implementation doc: Add "Related Documentation" or "Technical Guidance" section with links to updated guides/KB
-   - Guide: Add "Learn more" links to KB articles for deeper understanding
-   - KB README: Update index with new/enhanced articles
-
-5. **Maintain Template Compliance:**
-   - After extraction, verify story/epic docs still match templates exactly
-   - Remove all non-template sections (postmortems, root cause analysis, etc.)
-   - Keep only template-defined sections
-
-**KB Article Structure Guidelines:**
-
-- Start with one-sentence summary (what concept, why it matters)
-- Include "When to Use" and "When NOT to Use" sections
-- Provide concrete code examples (before/after, good/bad)
-- Explain tradeoffs and alternatives considered
-- Link to related KB articles and external authoritative sources
-
-**Example Extraction:**
-
-- Story 13.3 encountered cookie forwarding issues (5+ hours debugging)
-- **Guide Update**: [Vite Configuration Guide](docs/guides/vite-configuration-guide.md) — Added "Cookie-based auth through dev proxy" section with exact config
-- **KB Update**: [Frontend Development Server](docs/knowledge-base/frontend-development-server.md) — Added deep dive on proxy mechanics, why headers aren't forwarded by default, security implications
-- **Story Doc**: Removed postmortem, added links to both guide and KB in "Technical Challenges" section
-
-## 🛠️ Code Change Checklist
-
-- Refer: `code-conventions.md` + `solid-principles.md`.
-- **Update file-level comments**: When modifying a file, update the header comment to reflect new functionality, changed exports, or updated purpose (use File Summary Template).
-- Update design docs if feature logic or architecture changes.
-- Update architecture (`docs/architecture.md`) if cross‑cutting changes.
-- Update API specs (`api/api-spec.md`, `local-backend/docs/api-spec.md`) if endpoints/contracts change.
-- Add/update file header summary if exported surface changed.
-- Update related epic/story BR + implementation docs for status, rationale, new decisions.
-- Add/update tests (unit/integration) to cover new paths.
-- Consider performance impact; document if complexity changes.
 
 ## 🌿 Git & Branching
 
 Branch naming: `epic-<num>-<slug>` primary; optional `feature/<short>` or `fix/<short>`.
-Conventional Commits: `<type>(<scope>): <description>`; scopes: `epic-11`, `story-11-2`, `component`, `hook`, `api`, `docs`.
+Conventional Commits: `<type>(<scope>): <description>`; scopes: e.g., `epic-N`, `component`, `hook`, `api`, `docs`.
 Always consult: `docs/guides/conventions/git.md` + `docs/templates/commit-message-template.md`.
 Feature flags: document flag names & purpose in epic BR + implementation README when used.
 
-## ✅ Closing Epics & Stories
+## 🛑 Known Pitfalls
 
-1. Confirm all AC items checked in BR. If not:
-   - Split remaining into new story OR
-   - Defer with explicit "Deferred" subsection.
-2. **Verify and update high-level docs** (`docs/architecture.md`, `README.md`, `docs/README.md`, `apps/*/README.md`):
-   - Add new features/capabilities using descriptive names (NOT story/epic numbers).
-   - Update system overview to reflect current state.
-   - Ensure feature descriptions are accurate and complete.
-   - **MANDATORY:** If high-level docs are updated, a Docs Curator or design reviewer must validate changes for accuracy and consistency before closure commit.
-3. **Check for knowledge base and guideline updates**:
-   - Review "Technical Challenges & Solutions" section in implementation doc.
-   - Extract reusable patterns to `docs/knowledge-base/` (concepts, architectural patterns, deep dives).
-   - Update project guides in `docs/guides/` (setup steps, configuration, troubleshooting).
-   - Update `docs/guides/references/code-conventions.md` if new patterns emerged (naming, error handling, testing).
-   - Add cross-links between story doc, guides, and KB articles.
-   - See "Knowledge Base Update Protocol" section for detailed extraction workflow.
-   - **MANDATORY:** KB and guide updates must be reviewed for accuracy before closure commit.
-4. **Run all feature tests before closing**:
-   - Execute full test suite for the affected feature: `npm test -- --run src/features/<feature>/`
-   - Verify 100% pass rate (no failures, no skipped tests except explicitly documented).
-   - If tests fail, fix issues before proceeding with closure.
-   - Document final test count and pass rate in implementation doc.
-   - For epic closure, run tests for ALL features touched by epic stories.
-5. Update `Status: Completed` in BR + implementation docs.
-6. Update `Last Update` date in both.
-7. Ensure PR number is referenced in both docs.
-8. **Documentation Final Review:** Before closure commit, verify that all documentation changes (BR, implementation, architecture, KB, guides) have been reviewed by Docs Curator or designated auditor for:
-   - Template compliance
-   - Cross-linking correctness
-   - Technical accuracy
-   - Status/date field synchronization
-9. Commit BR + implementation changes together.
+Each pitfall category has a dedicated `.instructions.md` file with DO/DON'T examples:
 
-## 🧷 Quality Gates (Before Merge / Close)
+| Category                       | File                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Prisma & Database              | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)     |
+| External libraries & React DOM | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)         |
+| CSS & styling                  | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)       |
+| API client & service layer     | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)         |
+| Barrel files                   | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                       |
+| Store placement                | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                 |
+| Input/timer edge cases         | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md) |
+| Testing requirements           | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)             |
+| Backend error messages         | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)   |
 
-Tests passing (`npm test`).
-Type check clean (`tsc --noEmit`).
-Lint clean (ESLint if configured).
-Docs updated (BR, implementation, design, architecture, API specs as needed).
-File headers updated for public surfaces.
-All AC either complete or documented exception.
+## 📁 Key Files & Directories
 
-## 🔗 Cross‑Doc Alignment Checklist
+### Frontend
 
-- BR ↔ implementation ↔ stories all cross-link.
-- Status & Last Update synchronized.
-- Templates followed (all required sections intact).
-- AC list maps to stories or tests.
-- Architecture/design/API decisions recorded if changed.
+`apps/frontend/src/features/<feature>/` – feature code (components, hooks, services, stores, types)
 
-## 🤖 Automation Protocol
+### Backend Modules
 
-### Trigger Phrase
+`apps/backend/src/modules/<module>/` – self-contained modulith module
+`apps/backend/prisma/schema.prisma` – database schema
 
-When you see "refer #file:automation" or "refer the automation folder" in a user request, activate strict automation protocol mode.
+### Shared & Data
 
-### Mandatory Behavior
+`content/` – pinyin, tones, strokes, and reference data files
+`packages/shared-constants/` – route paths, data file paths, foundation sections
+`packages/shared-types/` – TypeScript types shared across packages
 
-1. Read story/epic BR and implementation docs first (in full).
-2. Follow the Story-Level Development Workflow section above sequentially.
-3. Use templates from `docs/templates/` exactly—preserve heading names and order verbatim.
-4. When creating docs: populate placeholders with realistic content; do not remove or rearrange headings.
-5. When producing code: enforce `docs/guides/references/code-conventions.md` + `docs/knowledge-base/solid-principles.md`; include inline comments referencing doc sections.
-6. When producing git artifacts: follow `docs/guides/conventions/git.md` for branch names, commit message format (Conventional Commits), and PR titles/descriptions.
-7. For ambiguous requirements, missing templates, or critical missing files: STOP and return a short list of missing items plus 2 proposed options.
-8. Do not run git commands, write files, or push to repository unless explicitly instructed after review.
+### Docs
 
-### Output Contract (for "start implement workflow" requests)
+`docs/architecture.md` – system design and architecture overview
+`<feature>/docs/design.md` – feature-level design decisions
 
-Produce artifacts in this order:
+## 📁 Customization Files (Auto-Attached)
 
-1. Short action summary (bulleted).
-2. Implementation plan (list of target files + responsibilities).
-3. Files to create/update: unified git diff patch preferred; if not possible, provide per-file full contents with absolute path headers.
-4. Tests (file paths + full test contents).
-5. Branch name, Conventional Commit message, PR title, and PR description.
-6. Exact Status strings to insert into both business and implementation README files (absolute paths).
-7. Final checklist of ambiguous decisions or blockers (if any).
-
-### Structured AI Prompt Format
-
-Use this format for all AI interactions (detailed examples in `docs/automation/structured-ai-prompts.md`):
-
-```
-[TASK]: <task>
-[CONTEXT]: <file or epic/story>
-[PARAMETERS]: <inputs>
-[OUTPUT]: <format>
-[CONSTRAINTS]: <rules>
-```
-
-## 📁 Key Files & Directories (Quick Index)
-
-`src/features/<feature>/` – core feature
-`public/data/vocabulary/` – CSV vocabulary
-`api/` – serverless functions
-`local-backend/` – Express dev server
-`src/utils/csvLoader.ts` – data loader
-`docs/architecture.md` – system overview
-`**/design.md` – feature design
+This project uses file-scoped `.instructions.md` files that auto-attach when
+you edit matching files, and custom `.agent.md` agents for specialized reviews.
+See `.github/instructions/` and `.github/agents/` for the full list.
 
 ## 🛠️ Resources
 
-Code Conventions: `docs/guides/references/code-conventions.md`
-SOLID Principles: `docs/knowledge-base/solid-principles.md`
+Frontend Conventions: `docs/guides/conventions/frontend.md`
+Backend Conventions: `docs/guides/conventions/backend.md`
+SOLID Principles: `docs/knowledge-base/practices/solid-principles.md`
 Git Workflow: `docs/guides/conventions/git.md`
-Documentation Patterns (KB): `docs/knowledge-base/documentation-patterns.md`
-Automation Protocols: `docs/automation/structured-ai-prompts.md`
+Documentation Patterns: `docs/knowledge-base/practices/documentation-patterns.md`
 Architecture: `docs/architecture.md`
 
 ---
 
-If any section is unclear or missing—ask for clarification before proceeding.
+If any section is unclear or missing — ask for clarification before proceeding.

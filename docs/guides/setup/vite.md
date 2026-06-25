@@ -298,8 +298,8 @@ import { Button } from "@/components/Button";
 - [Backend Testing Guide](../testing/backend.md) - Backend testing setup with Vitest
 - [Architecture Overview](../../architecture.md) - High-level system design
 
-- [Frontend Development Server](../../knowledge-base/frontend-development-server.md) - Proxy mechanics, HMR, HTTPS setup
-- [Infrastructure Configuration](../../knowledge-base/infra-configuration-management.md) - Environment variable best practices
+- [Frontend Development Server](../../knowledge-base/frontend/frontend-development-server.md) - Proxy mechanics, HMR, HTTPS setup
+- [Infrastructure Configuration](../../knowledge-base/infrastructure/infra-configuration-management.md) - Environment variable best practices
 
 ### Related Files
 

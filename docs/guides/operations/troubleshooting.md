@@ -4,58 +4,58 @@
 **Last Updated:** June 3, 2026  
 **Scope:** Consolidates troubleshooting from backend, frontend, database, infrastructure, and testing guides
 
-> **=ƒÆí Tip:** Use `Ctrl+F` to search for your specific error message or keyword.
+> **=ï¿½ï¿½ï¿½ Tip:** Use `Ctrl+F` to search for your specific error message or keyword.
 
 **Severity Legend:**
 
-- =ƒö¦ **Critical** GÇö Blocks development (requires immediate fix)
-- =ƒƒí **Common** GÇö Frequently encountered (most devs hit this)
-- =ƒƒó **Rare** GÇö Edge case or unusual scenario
+- =ï¿½ï¿½ï¿½ **Critical** Gï¿½ï¿½ Blocks development (requires immediate fix)
+- =ï¿½ï¿½ï¿½ **Common** Gï¿½ï¿½ Frequently encountered (most devs hit this)
+- =ï¿½ï¿½ï¿½ **Rare** Gï¿½ï¿½ Edge case or unusual scenario
 
 ---
 
-## =ƒÜÇ Quick Error Lookup (by Keyword)
+## =ï¿½ï¿½ï¿½ Quick Error Lookup (by Keyword)
 
-| Error Message                          | Category                | Severity | Solution                                                                                        |
-| -------------------------------------- | ----------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `ERR_MODULE_NOT_FOUND` (WindowsGåÆLinux) | Backend Deployment      | =ƒö¦       | [Case-Sensitivity Fix](#-err_module_not_found-on-railwaylinux-case-sensitivity)                 |
-| `ENOTFOUND redis.railway.internal`     | Infrastructure/Redis    | =ƒƒí       | [Redis Connection](#error-getaddrinfo-enotfound-redisrailwayinternal)                           |
-| `MaxRetriesPerRequestError`            | Infrastructure/Redis    | =ƒƒí       | [Redis Connection](#error-maxretriesperrequest-error-reached-the-max-retries-per-request-limit) |
-| `Cookies not visible in browser`       | Authentication/Frontend | =ƒƒí       | [Cookie Issues](#-cookies-not-visible-in-browser)                                               |
-| `CORS error` / `credentials`           | Backend Integration     | =ƒƒí       | [CORS Credentials Error](#-cors-credentials-error)                                              |
-| `Port already in use`                  | Infrastructure          | =ƒƒí       | [Port in Use](#-port-already-in-use)                                                            |
-| `Development server won't start`       | Frontend                | =ƒƒí       | [Server Startup](#development-server-wont-start)                                                |
-| `Module not found` (npm/ts)            | Dependencies            | =ƒƒí       | [Module Not Found](#module-not-found)                                                           |
-| `Type 'undefined' is not assignable`   | TypeScript              | =ƒƒí       | [TypeScript Errors](#-type-undefined-is-not-assignable)                                         |
-| `TextEncoder is not defined`           | Testing                 | =ƒƒó       | [Test Setup](#-textencoder-is-not-defined)                                                      |
-| `Cannot find module '@/...'`           | TypeScript/Testing      | =ƒƒí       | [Module Mapping](#-cannot-find-module-)                                                         |
-| `Test timeout`                         | Testing                 | =ƒƒí       | [Test Configuration](#-test-timeout)                                                            |
-| `Out of memory`                        | Build                   | =ƒö¦       | [Build Errors](#-out-of-memory)                                                                 |
-| `Proxy not forwarding`                 | Frontend/Vite           | =ƒƒí       | [Proxy Issues](#proxy-not-forwarding-requests)                                                  |
-| `Changes not appearing`                | Frontend                | =ƒƒí       | [HMR Issues](#changes-not-appearing)                                                            |
-| `Redis connection error`               | Infrastructure/Redis    | =ƒƒí       | [Redis Issues](#-redis-connection-issues)                                                       |
-| `CORS errors persist`                  | Backend                 | =ƒƒí       | [CORS Setup](#cors-errors-persist)                                                              |
-| `JWT authentication failing`           | Backend Auth            | =ƒö¦       | [Auth Issues](#authentication-middleware-not-working)                                           |
-| `Database connection errors`           | Database                | =ƒö¦       | [Database Issues](#database-connection-errors)                                                  |
-
----
-
-## =ƒôï Category Index
-
-- [=ƒÜÇ Quick Diagnostics](#-quick-diagnostics)
-- [=ƒÅùn+Å Backend / Express Errors](#n+Å-backend--express-errors)
-- [=ƒîÉ Frontend / Vite Errors](#-frontend--vite-errors)
-- [=ƒì¬ Authentication & Cookie Issues](#-authentication--cookie-issues)
-- [=ƒùän+Å Database / Prisma Errors](#-database--prisma-errors)
-- [=ƒÜ¿ Infrastructure / Redis Errors](#-infrastructure--redis-errors)
-- [=ƒº¬ Testing Errors](#-testing-errors)
-- [=ƒôª Build & Deployment Errors](#-build--deployment-errors)
-- [G£à Quick Diagnostic Checklists](#-quick-diagnostic-checklists)
-- [=ƒôÜ Reference](#-reference)
+| Error Message                            | Category                | Severity | Solution                                                                                        |
+| ---------------------------------------- | ----------------------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `ERR_MODULE_NOT_FOUND` (WindowsGï¿½ï¿½Linux) | Backend Deployment      | =ï¿½ï¿½ï¿½     | [Case-Sensitivity Fix](#-err_module_not_found-on-railwaylinux-case-sensitivity)                 |
+| `ENOTFOUND redis.railway.internal`       | Infrastructure/Redis    | =ï¿½ï¿½ï¿½     | [Redis Connection](#error-getaddrinfo-enotfound-redisrailwayinternal)                           |
+| `MaxRetriesPerRequestError`              | Infrastructure/Redis    | =ï¿½ï¿½ï¿½     | [Redis Connection](#error-maxretriesperrequest-error-reached-the-max-retries-per-request-limit) |
+| `Cookies not visible in browser`         | Authentication/Frontend | =ï¿½ï¿½ï¿½     | [Cookie Issues](#-cookies-not-visible-in-browser)                                               |
+| `CORS error` / `credentials`             | Backend Integration     | =ï¿½ï¿½ï¿½     | [CORS Credentials Error](#-cors-credentials-error)                                              |
+| `Port already in use`                    | Infrastructure          | =ï¿½ï¿½ï¿½     | [Port in Use](#-port-already-in-use)                                                            |
+| `Development server won't start`         | Frontend                | =ï¿½ï¿½ï¿½     | [Server Startup](#development-server-wont-start)                                                |
+| `Module not found` (npm/ts)              | Dependencies            | =ï¿½ï¿½ï¿½     | [Module Not Found](#module-not-found)                                                           |
+| `Type 'undefined' is not assignable`     | TypeScript              | =ï¿½ï¿½ï¿½     | [TypeScript Errors](#-type-undefined-is-not-assignable)                                         |
+| `TextEncoder is not defined`             | Testing                 | =ï¿½ï¿½ï¿½     | [Test Setup](#-textencoder-is-not-defined)                                                      |
+| `Cannot find module '@/...'`             | TypeScript/Testing      | =ï¿½ï¿½ï¿½     | [Module Mapping](#-cannot-find-module-)                                                         |
+| `Test timeout`                           | Testing                 | =ï¿½ï¿½ï¿½     | [Test Configuration](#-test-timeout)                                                            |
+| `Out of memory`                          | Build                   | =ï¿½ï¿½ï¿½     | [Build Errors](#-out-of-memory)                                                                 |
+| `Proxy not forwarding`                   | Frontend/Vite           | =ï¿½ï¿½ï¿½     | [Proxy Issues](#proxy-not-forwarding-requests)                                                  |
+| `Changes not appearing`                  | Frontend                | =ï¿½ï¿½ï¿½     | [HMR Issues](#changes-not-appearing)                                                            |
+| `Redis connection error`                 | Infrastructure/Redis    | =ï¿½ï¿½ï¿½     | [Redis Issues](#-redis-connection-issues)                                                       |
+| `CORS errors persist`                    | Backend                 | =ï¿½ï¿½ï¿½     | [CORS Setup](#cors-errors-persist)                                                              |
+| `JWT authentication failing`             | Backend Auth            | =ï¿½ï¿½ï¿½     | [Auth Issues](#authentication-middleware-not-working)                                           |
+| `Database connection errors`             | Database                | =ï¿½ï¿½ï¿½     | [Database Issues](#database-connection-errors)                                                  |
 
 ---
 
-## =ƒÜÇ Quick Diagnostics
+## =ï¿½ï¿½ï¿½ Category Index
+
+- [=ï¿½ï¿½ï¿½ Quick Diagnostics](#-quick-diagnostics)
+- [=ï¿½ï¿½ï¿½n+ï¿½ Backend / Express Errors](#n+ï¿½-backend--express-errors)
+- [=ï¿½ï¿½ï¿½ Frontend / Vite Errors](#-frontend--vite-errors)
+- [=ï¿½ï¿½ Authentication & Cookie Issues](#-authentication--cookie-issues)
+- [=ï¿½ï¿½ï¿½n+ï¿½ Database / Prisma Errors](#-database--prisma-errors)
+- [=ï¿½Ü¿ Infrastructure / Redis Errors](#-infrastructure--redis-errors)
+- [=ï¿½ï¿½ï¿½ Testing Errors](#-testing-errors)
+- [=ï¿½ï¿½ï¿½ Build & Deployment Errors](#-build--deployment-errors)
+- [Gï¿½ï¿½ Quick Diagnostic Checklists](#-quick-diagnostic-checklists)
+- [=ï¿½ï¿½ï¿½ Reference](#-reference)
+
+---
+
+## =ï¿½ï¿½ï¿½ Quick Diagnostics
 
 ### Development server won't start
 
@@ -85,7 +85,7 @@ npm install
 
 1. Hard refresh browser: `Ctrl+Shift+R`
 2. Restart dev server: `Ctrl+C` then `npm run dev`
-3. Clear browser cache: DevTools GåÆ Storage GåÆ Clear site data
+3. Clear browser cache: DevTools Gï¿½ï¿½ Storage Gï¿½ï¿½ Clear site data
 
 ### Backend not responding
 
@@ -102,18 +102,18 @@ netstat -ano | findstr :3001
 
 ---
 
-## =ƒÅùn+Å Backend / Express Errors
+## =ï¿½ï¿½ï¿½n+ï¿½ Backend / Express Errors
 
-### =ƒƒí CORS Errors Persist
+### =ï¿½ï¿½ï¿½ CORS Errors Persist
 
 **Symptoms:** Requests blocked by CORS policy, browsers show "Access-Control-Allow-Origin" errors
 
 **Checks:**
 
-1. G£à Verify CORS middleware is **before** routes in Express app
-2. G£à Check for duplicate CORS calls
-3. G£à Confirm `FRONTEND_URL` is set in `.env.local`
-4. G£à Ensure `credentials: true` in both frontend fetch AND backend CORS config
+1. Gï¿½ï¿½ Verify CORS middleware is **before** routes in Express app
+2. Gï¿½ï¿½ Check for duplicate CORS calls
+3. Gï¿½ï¿½ Confirm `FRONTEND_URL` is set in `.env.local`
+4. Gï¿½ï¿½ Ensure `credentials: true` in both frontend fetch AND backend CORS config
 
 **Example Fix:**
 
@@ -144,17 +144,17 @@ fetch("/api/auth/login", {
 });
 ```
 
-### =ƒö¦ Authentication Middleware Not Working
+### =ï¿½ï¿½ï¿½ Authentication Middleware Not Working
 
 **Symptoms:** Requests rejected with 401/403, JWT validation fails
 
 **Checks:**
 
-1. G£à `JWT_SECRET` and `JWT_REFRESH_SECRET` match between sign and verify
-2. G£à Token extraction logic handles Bearer prefix correctly
-3. G£à Prisma client is properly initialized before auth middleware
-4. G£à Token expiration times are reasonable (not immediately expired)
-5. G£à Middleware is applied to protected routes
+1. Gï¿½ï¿½ `JWT_SECRET` and `JWT_REFRESH_SECRET` match between sign and verify
+2. Gï¿½ï¿½ Token extraction logic handles Bearer prefix correctly
+3. Gï¿½ï¿½ Prisma client is properly initialized before auth middleware
+4. Gï¿½ï¿½ Token expiration times are reasonable (not immediately expired)
+5. Gï¿½ï¿½ Middleware is applied to protected routes
 
 **Example Debug:**
 
@@ -179,15 +179,15 @@ function authMiddleware(req, res, next) {
 }
 ```
 
-### =ƒƒí Bcrypt/Native Module Issues
+### =ï¿½ï¿½ï¿½ Bcrypt/Native Module Issues
 
 **Symptoms:** Tests fail with bcrypt, errors like "bcrypt binding not built"
 
 **Checks:**
 
-1. G£à Vitest uses `pool: "forks"` (not threads) - threads can't use native modules
-2. G£à Node.js version 18+
-3. G£à bcrypt is properly installed in package.json
+1. Gï¿½ï¿½ Vitest uses `pool: "forks"` (not threads) - threads can't use native modules
+2. Gï¿½ï¿½ Node.js version 18+
+3. Gï¿½ï¿½ bcrypt is properly installed in package.json
 
 **Fix:**
 
@@ -213,7 +213,7 @@ npm rebuild bcrypt
 
 ---
 
-## =ƒîÉ Frontend / Vite Errors
+## =ï¿½ï¿½ï¿½ Frontend / Vite Errors
 
 ### Proxy not forwarding requests
 
@@ -221,12 +221,12 @@ npm rebuild bcrypt
 
 **Checks:**
 
-1. G£à Requests start with `/api` (e.g., `/api/v1/auth/login`)
-2. G£à Backend is running: `npm run dev:backend` (shows "Backend server running on port 3001")
-3. G£à `changeOrigin: true` in `vite.config.ts`
-4. G£à `target` points to correct backend URL
-5. G£à Check DevTools GåÆ Network tab for proxy errors
-6. G£à Look for "proxy error" logs in terminal where Vite is running
+1. Gï¿½ï¿½ Requests start with `/api` (e.g., `/api/v1/auth/login`)
+2. Gï¿½ï¿½ Backend is running: `npm run dev:backend` (shows "Backend server running on port 3001")
+3. Gï¿½ï¿½ `changeOrigin: true` in `vite.config.ts`
+4. Gï¿½ï¿½ `target` points to correct backend URL
+5. Gï¿½ï¿½ Check DevTools Gï¿½ï¿½ Network tab for proxy errors
+6. Gï¿½ï¿½ Look for "proxy error" logs in terminal where Vite is running
 
 **Debug Steps:**
 
@@ -256,11 +256,11 @@ server: {
 
 **Checks:**
 
-1. G£à Variable has `VITE_` prefix (Vite requirement for frontend)
-2. G£à Dev server restarted after changing `.env.local` (variables embedded at build/startup)
-3. G£à File named `.env.local` in **monorepo root** (not `apps/frontend/`)
-4. G£à `envDir` in `vite.config.ts` points to `"../.."` (monorepo root)
-5. G£à Verify file is loaded: `echo $VITE_API_URL` (Linux/Mac) or `echo %VITE_API_URL%` (Windows PowerShell)
+1. Gï¿½ï¿½ Variable has `VITE_` prefix (Vite requirement for frontend)
+2. Gï¿½ï¿½ Dev server restarted after changing `.env.local` (variables embedded at build/startup)
+3. Gï¿½ï¿½ File named `.env.local` in **monorepo root** (not `apps/frontend/`)
+4. Gï¿½ï¿½ `envDir` in `vite.config.ts` points to `"../.."` (monorepo root)
+5. Gï¿½ï¿½ Verify file is loaded: `echo $VITE_API_URL` (Linux/Mac) or `echo %VITE_API_URL%` (Windows PowerShell)
 
 **Example Fix:**
 
@@ -280,11 +280,11 @@ export default defineConfig({
 
 **Checks:**
 
-1. G£à `VITE_API_URL` is set in Vercel environment variables (not just `.env.local`)
-2. G£à Railway backend URL is accessible: `curl https://backend.railway.app/api/health`
-3. G£à Backend `FRONTEND_URL` includes your Vercel domain (CORS allow-list)
-4. G£à Test with DevTools GåÆ Network to see actual fetch URLs
-5. G£à Remember: **no proxy in production** GåÆ uses direct HTTPS requests
+1. Gï¿½ï¿½ `VITE_API_URL` is set in Vercel environment variables (not just `.env.local`)
+2. Gï¿½ï¿½ Railway backend URL is accessible: `curl https://backend.railway.app/api/health`
+3. Gï¿½ï¿½ Backend `FRONTEND_URL` includes your Vercel domain (CORS allow-list)
+4. Gï¿½ï¿½ Test with DevTools Gï¿½ï¿½ Network to see actual fetch URLs
+5. Gï¿½ï¿½ Remember: **no proxy in production** Gï¿½ï¿½ uses direct HTTPS requests
 
 **Debug:**
 
@@ -301,26 +301,26 @@ const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`);
 
 **Checks:**
 
-1. G£à Run `npm install` from **monorepo root** (not individual app directories)
-2. G£à Start commands from root: `npm run dev` (starts both frontend and backend)
-3. G£à Root `package.json` includes workspace: `"workspaces": ["apps/*", "packages/*"]`
-4. G£à `envDir` in Vite config resolves correctly to repo root
+1. Gï¿½ï¿½ Run `npm install` from **monorepo root** (not individual app directories)
+2. Gï¿½ï¿½ Start commands from root: `npm run dev` (starts both frontend and backend)
+3. Gï¿½ï¿½ Root `package.json` includes workspace: `"workspaces": ["apps/*", "packages/*"]`
+4. Gï¿½ï¿½ `envDir` in Vite config resolves correctly to repo root
 
 ---
 
-## =ƒì¬ Authentication & Cookie Issues
+## =ï¿½ï¿½ Authentication & Cookie Issues
 
-### =ƒö¦ Cookies not visible in browser
+### =ï¿½ï¿½ï¿½ Cookies not visible in browser
 
 **Symptoms:** DevTools shows no cookies, even though response headers have Set-Cookie
 
 **Checks:**
 
-1. G£à Frontend uses `credentials: "include"` in fetch
-2. G£à Proxy forwards `Set-Cookie` headers in response
-3. G£à Backend uses `sameSite: "lax"` (not `"strict"`) in development
-4. G£à Backend CORS has `credentials: true` and specific origin (not wildcard)
-5. G£à Check DevTools GåÆ Application GåÆ Cookies for `refreshToken`
+1. Gï¿½ï¿½ Frontend uses `credentials: "include"` in fetch
+2. Gï¿½ï¿½ Proxy forwards `Set-Cookie` headers in response
+3. Gï¿½ï¿½ Backend uses `sameSite: "lax"` (not `"strict"`) in development
+4. Gï¿½ï¿½ Backend CORS has `credentials: true` and specific origin (not wildcard)
+5. Gï¿½ï¿½ Check DevTools Gï¿½ï¿½ Application Gï¿½ï¿½ Cookies for `refreshToken`
 
 **Fix - Vite Proxy Configuration:**
 
@@ -378,7 +378,7 @@ fetch("/api/auth/login", {
 });
 ```
 
-### =ƒƒí Cookie blocked (SameSite warning)
+### =ï¿½ï¿½ï¿½ Cookie blocked (SameSite warning)
 
 **Symptoms:** Browser console shows SameSite warning, cookies not sent
 
@@ -394,7 +394,7 @@ res.cookie("refreshToken", token, {
 });
 ```
 
-### =ƒƒí Cookies not cleared on logout
+### =ï¿½ï¿½ï¿½ Cookies not cleared on logout
 
 **Symptoms:** Session persists after logout, cookies still in browser
 
@@ -415,7 +415,7 @@ res.cookie("refreshToken", token, cookieOptions);
 res.clearCookie("refreshToken", cookieOptions);
 ```
 
-### =ƒƒí Cookies not sent with requests
+### =ï¿½ï¿½ï¿½ Cookies not sent with requests
 
 **Symptoms:** Server doesn't receive cookies in request, Authorization fails
 
@@ -430,19 +430,19 @@ fetch("/api/protected", {
 
 ---
 
-## =ƒùän+Å Database / Prisma Errors
+## =ï¿½ï¿½ï¿½n+ï¿½ Database / Prisma Errors
 
-### =ƒö¦ Database Connection Errors
+### =ï¿½ï¿½ï¿½ Database Connection Errors
 
 **Symptoms:** `Error: Can't reach database`, migrations fail, backend won't start
 
 **Checks:**
 
-1. G£à `DATABASE_URL` format matches Prisma expectations
-2. G£à PostgreSQL server is running (local or cloud like Supabase)
-3. G£à Connection pooling is enabled if using Railway/Supabase
-4. G£à Migrations have been run: `npx prisma migrate dev`
-5. G£à No firewall blocking the connection
+1. Gï¿½ï¿½ `DATABASE_URL` format matches Prisma expectations
+2. Gï¿½ï¿½ PostgreSQL server is running (local or cloud like Supabase)
+3. Gï¿½ï¿½ Connection pooling is enabled if using Railway/Supabase
+4. Gï¿½ï¿½ Migrations have been run: `npx prisma migrate dev`
+5. Gï¿½ï¿½ No firewall blocking the connection
 
 **Verify Database Connection:**
 
@@ -481,19 +481,19 @@ npx prisma generate # If types are missing
 
 ---
 
-## =ƒÜ¿ Infrastructure / Redis Errors
+## =ï¿½Ü¿ Infrastructure / Redis Errors
 
-### =ƒƒí Redis Connection Issues
+### =ï¿½ï¿½ï¿½ Redis Connection Issues
 
 **Symptoms:** Redis fails to connect, cache layer disabled, performance impact
 
 **Checks:**
 
-1. G£à `REDIS_URL` format is correct: `redis://default:password@host:port`
-2. G£à Redis server is running (Railway or local)
-3. G£à Network connectivity to Redis host (no firewall blocking)
-4. G£à Application should **gracefully continue** without cache (fail-open)
-5. G£à Check health endpoint: `http://localhost:3001/api/health`
+1. Gï¿½ï¿½ `REDIS_URL` format is correct: `redis://default:password@host:port`
+2. Gï¿½ï¿½ Redis server is running (Railway or local)
+3. Gï¿½ï¿½ Network connectivity to Redis host (no firewall blocking)
+4. Gï¿½ï¿½ Application should **gracefully continue** without cache (fail-open)
+5. Gï¿½ï¿½ Check health endpoint: `http://localhost:3001/api/health`
 
 **Debug - Check Redis Status:**
 
@@ -554,7 +554,7 @@ REDIS_URL="redis://default:password@redis.railway.internal:6379"
 CACHE_ENABLED=true
 ```
 
-### =ƒƒí Redis connection error: "Redis is already connecting/connected"
+### =ï¿½ï¿½ï¿½ Redis connection error: "Redis is already connecting/connected"
 
 **Cause:** Multiple attempts to initialize Redis client simultaneously
 
@@ -572,7 +572,7 @@ export function getRedisClient() {
 }
 ```
 
-### =ƒƒí Redis connection refused
+### =ï¿½ï¿½ï¿½ Redis connection refused
 
 **Cause:** Redis server not running or wrong connection details
 
@@ -585,9 +585,9 @@ export function getRedisClient() {
 
 ---
 
-## =ƒº¬ Testing Errors
+## =ï¿½ï¿½ï¿½ Testing Errors
 
-### =ƒƒó "TextEncoder is not defined"
+### =ï¿½ï¿½ï¿½ "TextEncoder is not defined"
 
 **Cause:** Node.js test environment doesn't have TextEncoder (browsers have it)
 
@@ -599,7 +599,7 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 ```
 
-### =ƒƒí "Property does not exist on type"
+### =ï¿½ï¿½ï¿½ "Property does not exist on type"
 
 **Cause:** TypeScript interface missing property or incomplete definition
 
@@ -616,7 +616,7 @@ interface User {
 const age = user?.age ?? 0;
 ```
 
-### =ƒƒí "Cannot find module '@/...'"
+### =ï¿½ï¿½ï¿½ "Cannot find module '@/...'"
 
 **Cause:** Module path alias not configured for tests
 
@@ -653,7 +653,7 @@ export default defineConfig({
 }
 ```
 
-### =ƒƒí "Test timeout"
+### =ï¿½ï¿½ï¿½ "Test timeout"
 
 **Cause:** Test takes longer than default timeout (5 seconds)
 
@@ -675,9 +675,9 @@ test: {
 
 ---
 
-## =ƒôª Build & Deployment Errors
+## =ï¿½ï¿½ï¿½ Build & Deployment Errors
 
-### =ƒö¦ "ERR_MODULE_NOT_FOUND" on Railway/Linux (Case-Sensitivity)
+### =ï¿½ï¿½ï¿½ "ERR_MODULE_NOT_FOUND" on Railway/Linux (Case-Sensitivity)
 
 **Symptom:** Backend works locally on Windows but fails on Railway with error like:
 
@@ -708,11 +708,11 @@ git push
 **Prevention:** Use lowercase for all filenames in backend code:
 
 ```
-G¥î Bad:  VocabularyController.js, UserService.ts
-G£à Good: vocabularyController.js, userService.ts
+Gï¿½ï¿½ Bad:  VocabularyController.js, UserService.ts
+Gï¿½ï¿½ Good: vocabularyController.js, userService.ts
 ```
 
-### =ƒö¦ Out of memory
+### =ï¿½ï¿½ï¿½ Out of memory
 
 **Symptoms:** Build fails with "JavaScript heap out of memory"
 
@@ -727,7 +727,7 @@ npm run build
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 ```
 
-### =ƒƒí Port already in use
+### =ï¿½ï¿½ï¿½ Port already in use
 
 **Symptoms:** Can't start dev server, error says port 5173 or 3001 is already in use
 
@@ -745,50 +745,50 @@ taskkill /PID <PID> /F
 
 ---
 
-## G£à Quick Diagnostic Checklists
+## Gï¿½ï¿½ Quick Diagnostic Checklists
 
-### =ƒì¬ Cookie Authentication Not Working? Check:
+### =ï¿½ï¿½ Cookie Authentication Not Working? Check:
 
-1. G£à Backend sets `Set-Cookie` header in response?
-   - Check: DevTools GåÆ Network GåÆ Response headers
-2. G£à Cookie visible in DevTools?
-   - Check: DevTools GåÆ Application GåÆ Cookies
-3. G£à Request includes `Cookie` header?
-   - Check: DevTools GåÆ Network GåÆ Request headers
-4. G£à Frontend uses `credentials: "include"`?
+1. Gï¿½ï¿½ Backend sets `Set-Cookie` header in response?
+   - Check: DevTools Gï¿½ï¿½ Network Gï¿½ï¿½ Response headers
+2. Gï¿½ï¿½ Cookie visible in DevTools?
+   - Check: DevTools Gï¿½ï¿½ Application Gï¿½ï¿½ Cookies
+3. Gï¿½ï¿½ Request includes `Cookie` header?
+   - Check: DevTools Gï¿½ï¿½ Network Gï¿½ï¿½ Request headers
+4. Gï¿½ï¿½ Frontend uses `credentials: "include"`?
    - Check: API client code
-5. G£à Backend CORS has `credentials: true` + specific origin?
+5. Gï¿½ï¿½ Backend CORS has `credentials: true` + specific origin?
    - Check: Backend Express setup
-6. G£à Vite proxy forwards cookie headers?
+6. Gï¿½ï¿½ Vite proxy forwards cookie headers?
    - Check: vite.config.ts proxy configuration
 
-### =ƒºá State Not Working? Check:
+### =ï¿½ï¿½ï¿½ State Not Working? Check:
 
-- G£à **Infinite re-render:** Move `setState` to useEffect or event handler
-- G£à **State not persisting:** Check localStorage, verify JSON serialization
-- G£à **Context not updating:** Verify reducer is called, check dispatch syntax
-- G£à **Stale state:** Check dependency arrays in useEffect
+- Gï¿½ï¿½ **Infinite re-render:** Move `setState` to useEffect or event handler
+- Gï¿½ï¿½ **State not persisting:** Check localStorage, verify JSON serialization
+- Gï¿½ï¿½ **Context not updating:** Verify reducer is called, check dispatch syntax
+- Gï¿½ï¿½ **Stale state:** Check dependency arrays in useEffect
 
-### =ƒÜÇ Development Server Won't Start? Check:
+### =ï¿½ï¿½ï¿½ Development Server Won't Start? Check:
 
-- G£à Port 5173 is free: `netstat -ano | findstr :5173`
-- G£à Port 3001 is free (backend): `netstat -ano | findstr :3001`
-- G£à Dependencies installed: `npm install` from root
-- G£à Node version 18+: `node --version`
-- G£à All environment variables set: `echo %VITE_API_URL%`
+- Gï¿½ï¿½ Port 5173 is free: `netstat -ano | findstr :5173`
+- Gï¿½ï¿½ Port 3001 is free (backend): `netstat -ano | findstr :3001`
+- Gï¿½ï¿½ Dependencies installed: `npm install` from root
+- Gï¿½ï¿½ Node version 18+: `node --version`
+- Gï¿½ï¿½ All environment variables set: `echo %VITE_API_URL%`
 
-### =ƒô¦ API Requests Failing? Check:
+### =ï¿½ï¿½ï¿½ API Requests Failing? Check:
 
-- G£à Backend is running: `npm run dev:backend`
-- G£à Backend responds: `curl http://localhost:3001/api/health`
-- G£à Request includes `credentials: "include"`
-- G£à VITE_API_URL set correctly
-- G£à No CORS errors in console
-- G£à DevTools GåÆ Network shows actual request/response
+- Gï¿½ï¿½ Backend is running: `npm run dev:backend`
+- Gï¿½ï¿½ Backend responds: `curl http://localhost:3001/api/health`
+- Gï¿½ï¿½ Request includes `credentials: "include"`
+- Gï¿½ï¿½ VITE_API_URL set correctly
+- Gï¿½ï¿½ No CORS errors in console
+- Gï¿½ï¿½ DevTools Gï¿½ï¿½ Network shows actual request/response
 
 ---
 
-## =ƒôÜ Reference
+## =ï¿½ï¿½ï¿½ Reference
 
 ### Project Documentation Links
 
@@ -812,10 +812,10 @@ taskkill /PID <PID> /F
 
 ### Knowledge Base Articles
 
-- [Frontend Development Server](../knowledge-base/frontend-development-server.md) - Proxy mechanics, cookies, HMR
-- [Backend Architecture](../knowledge-base/backend-architecture.md) - Layers, patterns, CORS deep-dive
-- [Authentication Concepts](../knowledge-base/backend-authentication.md) - OAuth, SSO, JWT strategies
-- [Caching Strategies](../knowledge-base/integration-caching.md) - Cache-aside, Redis patterns
+- [Frontend Development Server](../knowledge-base/frontend/frontend-development-server.md) - Proxy mechanics, cookies, HMR
+- [Backend Architecture](../knowledge-base/backend/backend-architecture.md) - Layers, patterns, CORS deep-dive
+- [Authentication Concepts](../knowledge-base/backend/backend-authentication.md) - OAuth, SSO, JWT strategies
+- [Caching Strategies](../knowledge-base/infrastructure/integration-caching.md) - Cache-aside, Redis patterns
 
 ---
 

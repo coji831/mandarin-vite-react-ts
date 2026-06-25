@@ -86,67 +86,67 @@
 
 ### Architecture
 
-| Article                                                                      | Description                                         |
-| ---------------------------------------------------------------------------- | --------------------------------------------------- |
-| [Backend Architecture](knowledge-base/backend-architecture.md)               | Layered architecture, CORS, middleware patterns     |
-| [Backend Shared Kernel Layer](knowledge-base/backend-shared-kernel-layer.md) | Shared code contracts and kernel-layer design       |
-| [Frontend Modular Monolith](knowledge-base/frontend-modular-monolith.md)     | Feature-based monorepo modular architecture         |
-| [SOLID Principles](knowledge-base/solid-principles.md)                       | Applying SOLID to React/TypeScript                  |
-| [API Response Patterns](knowledge-base/api-response-patterns.md)             | Standardized API response format and error handling |
+| Article                                                                              | Description                                         |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| [Backend Architecture](knowledge-base/backend/backend-architecture.md)               | Layered architecture, CORS, middleware patterns     |
+| [Backend Shared Kernel Layer](knowledge-base/backend/backend-shared-kernel-layer.md) | Shared code contracts and kernel-layer design       |
+| [Frontend Modular Monolith](knowledge-base/frontend/frontend-modular-monolith.md)    | Feature-based monorepo modular architecture         |
+| [SOLID Principles](knowledge-base/practices/solid-principles.md)                     | Applying SOLID to React/TypeScript                  |
+| [API Response Patterns](knowledge-base/backend/api-response-patterns.md)             | Standardized API response format and error handling |
 
 ### Frontend
 
-| Article                                                                         | Description                                                                  |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [Frontend React Patterns](knowledge-base/frontend-react-patterns.md)            | React/TypeScript component and hook patterns                                 |
-| [Frontend State Management](knowledge-base/frontend-state-management.md)        | Context API, reducers, normalized state                                      |
-| [Frontend UI Patterns](knowledge-base/frontend-ui-patterns.md)                  | Reusable UI component patterns and conventions                               |
-| [Frontend Development Server](knowledge-base/frontend-development-server.md)    | Dev proxy mechanics, cookie forwarding, CORS                                 |
-| [Frontend Data Migration](knowledge-base/frontend-data-migration.md)            | Data migration strategies and patterns                                       |
-| [Strategy Pattern on the Frontend](knowledge-base/strategy-pattern-frontend.md) | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
+| Article                                                                                  | Description                                                                  |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [Frontend React Patterns](knowledge-base/frontend/frontend-react-patterns.md)            | React/TypeScript component and hook patterns                                 |
+| [Frontend State Management](knowledge-base/frontend/frontend-state-management.md)        | Context API, reducers, normalized state                                      |
+| [Frontend UI Patterns](knowledge-base/frontend/frontend-ui-patterns.md)                  | Reusable UI component patterns and conventions                               |
+| [Frontend Development Server](knowledge-base/frontend/frontend-development-server.md)    | Dev proxy mechanics, cookie forwarding, CORS                                 |
+| [Frontend Data Migration](knowledge-base/frontend/frontend-data-migration.md)            | Data migration strategies and patterns                                       |
+| [Strategy Pattern on the Frontend](knowledge-base/frontend/strategy-pattern-frontend.md) | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
 
 ### Backend
 
-| Article                                                                    | Description                                      |
-| -------------------------------------------------------------------------- | ------------------------------------------------ |
-| [Backend Authentication](knowledge-base/backend-authentication.md)         | JWT auth, refresh tokens, cookie-based sessions  |
-| [Backend Database PostgreSQL](knowledge-base/backend-database-postgres.md) | PostgreSQL setup, connection pooling, migrations |
+| Article                                                                            | Description                                      |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [Backend Authentication](knowledge-base/backend/backend-authentication.md)         | JWT auth, refresh tokens, cookie-based sessions  |
+| [Backend Database PostgreSQL](knowledge-base/backend/backend-database-postgres.md) | PostgreSQL setup, connection pooling, migrations |
 
 ### Testing
 
-| Article                                                                          | Description                                     |
-| -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [Testing ES Modules (Jest)](knowledge-base/testing-es-modules-jest.md)           | Jest ESM configuration and common pitfalls      |
-| [Testing ES Modules (Vitest)](knowledge-base/testing-es-modules-vitest.md)       | Vitest ESM setup and monorepo testing           |
-| [Vitest Monorepo Conflicts](knowledge-base/vitest-monorepo-version-conflicts.md) | Resolving Vitest version conflicts in monorepos |
+| Article                                                                                  | Description                                     |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [Testing ES Modules (Jest)](knowledge-base/testing/testing-es-modules-jest.md)           | Jest ESM configuration and common pitfalls      |
+| [Testing ES Modules (Vitest)](knowledge-base/testing/testing-es-modules-vitest.md)       | Vitest ESM setup and monorepo testing           |
+| [Vitest Monorepo Conflicts](knowledge-base/testing/vitest-monorepo-version-conflicts.md) | Resolving Vitest version conflicts in monorepos |
 
 ### Learning Science
 
-| Article                                                                               | Description                                       |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| [Adult Mandarin Learning Roadmap](knowledge-base/adult-mandarin-learning-roadmap.md)  | Pedagogical framework and curriculum sequence     |
-| [Spaced Repetition Algorithms](knowledge-base/spaced-repetition-algorithms.md)        | SRS algorithm deep dive                           |
-| [Vocabulary Retention Research](knowledge-base/vocabulary-retention-research.md)      | Research on vocabulary acquisition and retention  |
-| [Gamification Psychology](knowledge-base/gamification-psychology-learning.md)         | Psychological principles behind gamified learning |
-| [Cognitive Science: Active Recall](knowledge-base/cognitive-science-active-recall.md) | Active recall as a learning strategy              |
+| Article                                                                                               | Description                                       |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [Adult Mandarin Learning Roadmap](knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md)  | Pedagogical framework and curriculum sequence     |
+| [Spaced Repetition Algorithms](knowledge-base/learning-theory/spaced-repetition-algorithms.md)        | SRS algorithm deep dive                           |
+| [Vocabulary Retention Research](knowledge-base/learning-theory/vocabulary-retention-research.md)      | Research on vocabulary acquisition and retention  |
+| [Gamification Psychology](knowledge-base/learning-theory/gamification-psychology-learning.md)         | Psychological principles behind gamified learning |
+| [Cognitive Science: Active Recall](knowledge-base/learning-theory/cognitive-science-active-recall.md) | Active recall as a learning strategy              |
 
 ### Integration
 
-| Article                                                                | Description                                     |
-| ---------------------------------------------------------------------- | ----------------------------------------------- |
-| [Google Cloud Integration](knowledge-base/integration-google-cloud.md) | Google Cloud services (TTS, Gemini) integration |
-| [Caching Integration](knowledge-base/integration-caching.md)           | Redis caching strategies and patterns           |
+| Article                                                                               | Description                                     |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [Google Cloud Integration](knowledge-base/infrastructure/integration-google-cloud.md) | Google Cloud services (TTS, Gemini) integration |
+| [Caching Integration](knowledge-base/infrastructure/integration-caching.md)           | Redis caching strategies and patterns           |
 
 ### Other
 
-| Article                                                                          | Description                                     |
-| -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [Documentation Patterns](knowledge-base/documentation-patterns.md)               | How business and technical docs work together   |
-| [Planning & Estimation](knowledge-base/planning-estimation-strategies.md)        | Effort estimation and planning strategies       |
-| [TypeScript Error Handling](knowledge-base/typescript-error-handling.md)         | Error handling patterns in TypeScript           |
-| [Git Workflow](knowledge-base/git-workflow.md)                                   | Git branching strategies and workflows          |
-| [Infrastructure Deployment](knowledge-base/infra-deployment.md)                  | Deployment infrastructure and CI/CD patterns    |
-| [Infrastructure Configuration](knowledge-base/infra-configuration-management.md) | Infrastructure-as-code configuration management |
+| Article                                                                                         | Description                                     |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [Documentation Patterns](knowledge-base/practices/documentation-patterns.md)                    | How business and technical docs work together   |
+| [Planning & Estimation](knowledge-base/practices/planning-estimation-strategies.md)             | Effort estimation and planning strategies       |
+| [TypeScript Error Handling](knowledge-base/backend/typescript-error-handling.md)                | Error handling patterns in TypeScript           |
+| [Git Workflow](knowledge-base/practices/git-workflow.md)                                        | Git branching strategies and workflows          |
+| [Infrastructure Deployment](knowledge-base/infrastructure/infra-deployment.md)                  | Deployment infrastructure and CI/CD patterns    |
+| [Infrastructure Configuration](knowledge-base/infrastructure/infra-configuration-management.md) | Infrastructure-as-code configuration management |
 
 ## Project Management
 
@@ -255,7 +255,7 @@ To contribute to documentation:
 - **Dependency Injection**: Services receive dependencies via constructor/factory
 - **Fail-Open Caching**: Redis failures degrade gracefully to API calls
 
-📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend-architecture.md) - Layered architecture, CORS, middleware patterns
+📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware patterns
 
 **Frontend:**
 

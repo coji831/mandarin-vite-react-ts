@@ -316,7 +316,7 @@ Other error? → Normalize error → Throw NormalizedError
 
 ## Technical Guidance
 
-**Interceptor Architecture**: See [Frontend Advanced Patterns - HTTP Client Interceptor Architecture](../../knowledge-base/frontend-advanced-patterns.md#http-client-interceptor-architecture) for:
+**Interceptor Architecture**: See [Frontend Advanced Patterns - HTTP Client Interceptor Architecture](../../knowledge-base/frontend/frontend-advanced-patterns.md#http-client-interceptor-architecture) for:
 - Race condition prevention with singleton promises
 - Proactive vs reactive token refresh patterns
 - Exponential backoff strategies

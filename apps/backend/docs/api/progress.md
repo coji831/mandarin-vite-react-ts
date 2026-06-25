@@ -178,4 +178,4 @@ finalDays = 1 + (30 - 1) * multiplier
 
 **Leech Detection:** Words with `lapseCount >= 5` flagged as leeches. Targets 15% of words causing 50% of failures (Pareto principle).
 
-> **Full details:** See [Spaced Repetition Algorithms](../../../docs/knowledge-base/spaced-repetition-algorithms.md).
+> **Full details:** See [Spaced Repetition Algorithms](../../../docs/knowledge-base/learning-theory/spaced-repetition-algorithms.md).

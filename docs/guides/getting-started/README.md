@@ -68,7 +68,7 @@ Then proceed to:
 
 ### Documentation
 
-- **[Documentation Patterns](../../knowledge-base/documentation-patterns.md)** - Business requirements and implementation doc structure
+- **[Documentation Patterns](../../knowledge-base/practices/documentation-patterns.md)** - Business requirements and implementation doc structure
 
 ---
 

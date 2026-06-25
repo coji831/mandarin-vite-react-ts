@@ -1,6 +1,6 @@
 - [Workflow Checklist](../guides/operations/workflow.md)
 - [Git Conventions & Branch Strategy](../guides/conventions/git.md)
-- [SOLID Principles](../knowledge-base/solid-principles.md)
+- [SOLID Principles](../knowledge-base/practices/solid-principles.md)
 - [Frontend Conventions](../guides/conventions/frontend.md)
 - [Backend Conventions](../guides/conventions/backend.md)
 

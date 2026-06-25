@@ -236,4 +236,4 @@ If cache hit rate is 0% or very low, check for:
 - [Environment Setup](../getting-started/environment-setup.md) — Environment variables reference
 - [API Specification](../../../apps/backend/docs/api-spec.md) — Endpoint documentation with cache behavior
 - [Load Testing Guide](../../../apps/backend/scripts/LOAD_TEST_README.md) — Artillery load test instructions
-- [Integration Caching](../../knowledge-base/integration-caching.md) — Transferable caching concepts and deeper rationale
+- [Integration Caching](../../knowledge-base/infrastructure/integration-caching.md) — Transferable caching concepts and deeper rationale

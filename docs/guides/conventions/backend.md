@@ -2,7 +2,7 @@
 
 **Last Updated:** June 13, 2026
 
-> **Deep Dive:** For Clean Architecture patterns and design principles, see [backend-architecture.md](../knowledge-base/backend-architecture.md)
+> **Deep Dive:** For Clean Architecture patterns and design principles, see [backend-architecture.md](../knowledge-base/backend/backend-architecture.md)
 
 ---
 
@@ -31,7 +31,7 @@
 **Purpose:** Standard for creating and maintaining backend modules in the modular monolith
 **Audience:** Backend developers
 
-> See also: [SOLID Principles](../../knowledge-base/solid-principles.md)
+> See also: [SOLID Principles](../../knowledge-base/practices/solid-principles.md)
 
 ---
 
@@ -435,13 +435,13 @@ describe("POST /api/v1/login", () => {
 
 ## Documentation Reference
 
-| Topic                  | File                                                                 |
-| ---------------------- | -------------------------------------------------------------------- |
-| Architecture deep dive | [backend-architecture.md](../knowledge-base/backend-architecture.md) |
-| Backend development    | [Backend Development Guide](../setup/backend-development.md)         |
-| Database setup         | [Database Setup Guide](../setup/database.md)                         |
-| API patterns           | [API Client Patterns](../conventions/api-client.md)                  |
-| Workflow               | [Workflow Guide](../operations/workflow.md)                          |
+| Topic                  | File                                                                         |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| Architecture deep dive | [backend-architecture.md](../knowledge-base/backend/backend-architecture.md) |
+| Backend development    | [Backend Development Guide](../setup/backend-development.md)                 |
+| Database setup         | [Database Setup Guide](../setup/database.md)                                 |
+| API patterns           | [API Client Patterns](../conventions/api-client.md)                          |
+| Workflow               | [Workflow Guide](../operations/workflow.md)                                  |
 
 ---
 

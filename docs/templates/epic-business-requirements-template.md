@@ -101,5 +101,5 @@ Keep titles concise; add detailed implementation notes, verification steps, and 
 
 [Add coding or operational notes relevant to implementers. Include links to project guides and any conventions or operational patterns to follow. Use placeholders where specific values are required.]
 
-- Conventions: follow `docs/guides/conventions/backend.md` and `docs/knowledge-base/solid-principles.md`
+- Conventions: follow `docs/guides/conventions/backend.md` and `docs/knowledge-base/practices/solid-principles.md`
 ```

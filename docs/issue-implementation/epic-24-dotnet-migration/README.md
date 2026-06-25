@@ -1,4 +1,4 @@
-﻿# Epic 18: .NET Backend Migration & Service Consolidation
+﻿# Epic 24: .NET Backend Migration & Service Consolidation
 
 ## Epic Summary
 
@@ -520,15 +520,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 **Related Documentation:**
 
 - [Epic 18 BR](../../business-requirements/epic-18-dotnet-backend-migration/README.md)
-- Story 18.1 Implementation *(not yet created)*
-- Story 18.2 Implementation *(not yet created)*
-- Story 18.3 Implementation *(not yet created)*
-- Story 18.4 Implementation *(not yet created)*
-- Story 18.5 Implementation *(not yet created)*
-- Story 18.6 Implementation *(not yet created)*
-- Story 18.7 Implementation *(not yet created)*
-- Story 18.8 Implementation *(not yet created)*
-- Story 18.9 Implementation *(not yet created)*
+- Story 18.1 Implementation _(not yet created)_
+- Story 18.2 Implementation _(not yet created)_
+- Story 18.3 Implementation _(not yet created)_
+- Story 18.4 Implementation _(not yet created)_
+- Story 18.5 Implementation _(not yet created)_
+- Story 18.6 Implementation _(not yet created)_
+- Story 18.7 Implementation _(not yet created)_
+- Story 18.8 Implementation _(not yet created)_
+- Story 18.9 Implementation _(not yet created)_
 - [Architecture Overview](../../architecture.md)
 - [Epic 13: Production Backend Architecture](../epic-13-production-backend-architecture/README.md)
 - [Code Conventions](../../guides/conventions/backend.md)
@@ -573,4 +573,3 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - [ ] Team understands EF Core migrations and LINQ queries
 - [ ] Team can debug .NET performance issues with profiler
 - [ ] Team confident in ASP.NET Core deployment pipeline
-

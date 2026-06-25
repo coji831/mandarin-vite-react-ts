@@ -659,7 +659,7 @@ describe('POST /api/progress/test-result', () => {
 - [Epic 15 Implementation](./README.md)
 - [API Specification](../../../apps/backend/docs/api-spec.md)
 - [Testing Guide](../../guides/testing/backend.md) - Backend testing best practices
-- [PostgreSQL KB](../../knowledge-base/backend-database-postgres.md) - Prisma relations patterns
+- [PostgreSQL KB](../../knowledge-base/backend/backend-database-postgres.md) - Prisma relations patterns
 
 ---
 

@@ -245,14 +245,14 @@ Frontend services accessed `response.data.data` assuming backend wrapped respons
 
 New knowledge base articles created to capture transferable lessons:
 
-1. **[API Response Patterns](../../knowledge-base/api-response-patterns.md)**
+1. **[API Response Patterns](../../knowledge-base/backend/api-response-patterns.md)**
    - Wrapper vs. direct response patterns
    - Axios integration and double unwrap pitfalls
    - Test mock alignment strategies
    - Migration best practices
    - ~500 lines of detailed guidance
 
-2. **[TypeScript Error Handling](../../knowledge-base/typescript-error-handling.md)**
+2. **[TypeScript Error Handling](../../knowledge-base/backend/typescript-error-handling.md)**
    - Best practices for `error: unknown` pattern
    - AxiosError type narrowing
    - User-friendly error messaging
@@ -311,8 +311,8 @@ New knowledge base articles created to capture transferable lessons:
 
 **Knowledge Base:**
 
-- [API Response Patterns](../../knowledge-base/api-response-patterns.md)
-- [TypeScript Error Handling](../../knowledge-base/typescript-error-handling.md)
+- [API Response Patterns](../../knowledge-base/backend/api-response-patterns.md)
+- [TypeScript Error Handling](../../knowledge-base/backend/typescript-error-handling.md)
 
 **Guides:**
 

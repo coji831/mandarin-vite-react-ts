@@ -109,6 +109,50 @@ mandarin-vite-react-ts/
   - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useCharacterHub for CharacterDetailHub overlay)
   - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
+### Component Hierarchy
+
+The frontend follows a strict layering for component decomposition:
+
+```mermaid
+flowchart TD
+    P[Page Route] --> FO[Feature Orchestrator]
+    FO --> FC[Feature Components]
+    FC --> SH[Shared UI Components]
+    SH --> PR[Primitives]
+
+    subgraph "src/pages/"
+        P
+    end
+    subgraph "src/features/<feature>/components/"
+        FC
+    end
+    subgraph "src/shared/components/"
+        SH
+    end
+    subgraph "HTML + CSS Variables"
+        PR
+    end
+
+    style P fill:#3b82f6,color:#fff
+    style FO fill:#8b5cf6,color:#fff
+    style FC fill:#10b981,color:#fff
+    style SH fill:#f59e0b,color:#fff
+    style PR fill:#6b7280,color:#fff
+```
+
+**Rules:**
+
+1. **Pages** (`src/pages/`) — Route-level orchestrators, minimal JSX, delegates to features
+2. **Feature components** (`src/features/<feature>/components/`) — Domain-specific compositions of shared UI
+3. **Shared UI** (`src/shared/components/`) — Reusable primitives (Button, Input, Card patterns), never feature-specific
+4. **Primitives** — Raw HTML elements styled with CSS variables from `globals.css`
+
+**Before creating any component:**
+
+1. Check `src/shared/components/index.tsx` — does a shared component already exist?
+2. Check `DESIGN.md` — are there design tokens or component specs to follow?
+3. Can the component be decomposed further? (If it does >2 things, split it)
+
 **State Management:**
 
 - **Pattern**: React Context + useReducer with split contexts and reducer composition
@@ -309,7 +353,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 **See detailed documentation:**
 
-- Spaced repetition algorithm: [docs/knowledge-base/spaced-repetition-algorithms.md](./knowledge-base/spaced-repetition-algorithms.md)
+- Spaced repetition algorithm: [docs/knowledge-base/learning-theory/spaced-repetition-algorithms.md](./knowledge-base/learning-theory/spaced-repetition-algorithms.md)
 - API specification: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#progress-tracking-endpoints)
 
 ## External Services
@@ -407,7 +451,7 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - **Dependency Injection**: Services receive dependencies via constructor/factory
 - **Fail-Open Caching**: Redis failures degrade gracefully to API calls
 
-📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend-architecture.md) - Layered architecture, CORS, middleware patterns
+📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware patterns
 
 **Frontend:**
 
@@ -434,19 +478,3 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 ---
 
 **Last Updated:** January 29, 2026
-
-### Frontend: WordExamplesPanel Component (Story 16.2)
-
-- **Location:** `apps/frontend/src/features/word/components/WordExamplesPanel.tsx`
-- **Purpose:** Display 3–5 examples inline with on-demand TTS playback
-- **Data Flow:**
-  `     useExamples (custom hook)
-       ↓ [in-memory 60s dedupe + sessionStorage cache]
-       ↓ POST /api/examples (Story 16.1)
-WordExamplesPanel (render list)
-       ↓ [user clicks Play]
-       ↓ GET /api/examples/audio (mocked, Story 16.3 integrates real)
-audioService.playAudio()`
-- **Performance:** Cached payloads <500ms (sessionStorage hit); skeleton UX reduces perceived latency
-- **Accessibility:** ARIA labels, keyboard focus, `role=list/listitem`
-- **Analytics:** Tracks `examples_shown`, `example_played` (stub service, ready for real backend)

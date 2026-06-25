@@ -41,7 +41,7 @@ Skip epic/story docs unless the change affects acceptance criteria or architectu
 - [ ] 🔴 **Types:** Define explicit types in feature `types/` directory
 - [ ] 🔴 **Documentation:** Update implementation docs and file-level comments
 
-- [ ] 🟡 **Code Review:** Verify code follows [Frontend Conventions](../conventions/frontend.md) and [SOLID Principles](../../knowledge-base/solid-principles.md)
+- [ ] 🟡 **Code Review:** Verify code follows [Frontend Conventions](../conventions/frontend.md) and [SOLID Principles](../../knowledge-base/practices/solid-principles.md)
 
 ### State Management Implementation Checklist
 

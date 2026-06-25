@@ -164,7 +164,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - Use `.env.local` for both development AND tests
 - Avoid multiple `.env` files that create inconsistencies
 - Keep `.env.example` updated with all required variables
-  **Learn more:** [Configuration Management](../../knowledge-base/infra-configuration-management.md) - Environment strategies, validation, security
+  **Learn more:** [Configuration Management](../../knowledge-base/infrastructure/infra-configuration-management.md) - Environment strategies, validation, security
 
 ## Backend Configuration
 
@@ -285,7 +285,7 @@ GOOGLE_API_KEY=your-google-api-key-here
 
 **Learn more:**
 
-- [Infrastructure Configuration Management](../../knowledge-base/infra-configuration-management.md) - Single source of truth, validation strategies, security best practices
+- [Infrastructure Configuration Management](../../knowledge-base/infrastructure/infra-configuration-management.md) - Single source of truth, validation strategies, security best practices
 
 {
 "compilerOptions": {

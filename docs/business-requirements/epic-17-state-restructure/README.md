@@ -190,5 +190,5 @@ The progress extraction (17.2-17.3) must happen before or alongside the Zustand 
 - **ESLint rule:** `"no-restricted-imports": ["error", { "patterns": [{ "group": ["features/*/stores/*"], "message": "Cross-feature store imports are forbidden. Use public hooks from the feature's index.ts instead." }] }]`
 - **Installation:** Run `npm install zustand` in `apps/frontend/` before story 17.2.
 - **Content Browser data sources:** Each content tab provides its own data through a shared interface (`ContentSource`). The Content Browser consumes data via this interface — it does not import feature internals.
-- **Conventions:** Follow `docs/guides/conventions/code-conventions.md` and `docs/knowledge-base/solid-principles.md`.
+- **Conventions:** Follow `docs/guides/conventions/code-conventions.md` and `docs/knowledge-base/practices/solid-principles.md`.
 - **Docs:** Update `docs/architecture.md` state management section after Zustand migration is complete.

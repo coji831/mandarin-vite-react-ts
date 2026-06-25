@@ -86,8 +86,8 @@ VITE_API_URL=https://your-backend.railway.app
 - **Code Conventions**: [../../docs/guides/conventions/frontend.md](../../docs/guides/conventions/frontend.md)
 - **Vite Configuration**: [../../docs/guides/setup/vite.md](../../docs/guides/setup/vite.md)
 - **Testing Guide**: [../../docs/guides/testing/frontend.md](../../docs/guides/testing/frontend.md)
-- **React Patterns**: [../../docs/knowledge-base/frontend-react-patterns.md](../../docs/knowledge-base/frontend-react-patterns.md)
-- **State Management**: [../../docs/knowledge-base/frontend-state-management.md](../../docs/knowledge-base/frontend-state-management.md)
+- **React Patterns**: [../../docs/knowledge-base/frontend/frontend-react-patterns.md](../../docs/knowledge-base/frontend/frontend-react-patterns.md)
+- **State Management**: [../../docs/knowledge-base/frontend/frontend-state-management.md](../../docs/knowledge-base/frontend/frontend-state-management.md)
 
 ## Troubleshooting
 

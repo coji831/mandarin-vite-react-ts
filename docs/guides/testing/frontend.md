@@ -121,7 +121,7 @@ afterAll(() => server.close());
 
 11. Cross-references
 
-- Backend response contract: [../knowledge-base/api-response-patterns.md](../../knowledge-base/api-response-patterns.md)
+- Backend response contract: [../knowledge-base/backend/api-response-patterns.md](../../knowledge-base/backend/api-response-patterns.md)
 - Frontend test setup: `apps/frontend/src/setupTests.ts`
 
 ---

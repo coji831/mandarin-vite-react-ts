@@ -11,7 +11,7 @@
 > - Troubleshooting: ECONNRESET, "Too many connections", migration failures
 >
 > **Go to:** [Database Setup Guide → Option 3: Supabase](../setup/database.md#option-3-supabase-free-tier)
-> For conceptual deep dive on cloud database providers and connection pooling strategies, see [Cloud Database Providers](../../knowledge-base/backend-database-cloud.md).
+> For conceptual deep dive on cloud database providers and connection pooling strategies, see [Cloud Database Providers](../../knowledge-base/backend/backend-database-cloud.md).
 
 ---
 

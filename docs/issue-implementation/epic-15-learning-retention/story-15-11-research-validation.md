@@ -5,7 +5,7 @@
 
 **Primary Sources**:
 
-- [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md)
+- [Vocabulary Retention Research](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 - [Enhancements from Research](../../business-requirements/epic-15-learning-retention/enhancements-from-research.md)
 
 ---
@@ -35,7 +35,7 @@ All 6 major quiz flows have been validated against vocabulary retention research
 
 #### Research Principles Applied
 
-**✅ Interleaving (Mixed Practice)** - [Research §2.3, Enhancements §1](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Interleaving (Mixed Practice)** - [Research §2.3, Enhancements §1](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -78,7 +78,7 @@ export function createInterleavedQuestions(words: Word[]): QuizQuestion[] {
 
 ---
 
-**✅ Cognitive Load Limit** - [Research §2](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Cognitive Load Limit** - [Research §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Implementation**: `LIMIT 20` words per session
 
@@ -88,7 +88,7 @@ export function createInterleavedQuestions(words: Word[]): QuizQuestion[] {
 
 ---
 
-**✅ Spaced Repetition Scheduling** - [Research §3](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Spaced Repetition Scheduling** - [Research §3](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Implementation**:
 
@@ -114,7 +114,7 @@ ORDER BY nextReviewDate ASC
 
 #### Research Principles Applied
 
-**✅ Active Recall (Testing Effect)** - [Research §2.1](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Active Recall (Testing Effect)** - [Research §2.1](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -141,7 +141,7 @@ ORDER BY nextReviewDate ASC
 
 ---
 
-**✅ Tone Validation** - [Research §4, Enhancements §2](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Tone Validation** - [Research §4, Enhancements §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -170,7 +170,7 @@ function normalizePinyin(input: string): string {
 
 ---
 
-**✅ Spaced Repetition Adjustment** - [Research §3](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Spaced Repetition Adjustment** - [Research §3](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Formula (Original)**:
 
@@ -209,7 +209,7 @@ Where S = Stability, t = elapsed time. Deferred to future epic.
 
 ---
 
-**✅ Leech Detection (5+ Consecutive Failures)** - [Research §6, Enhancements §6](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Leech Detection (5+ Consecutive Failures)** - [Research §6, Enhancements §6](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -238,7 +238,7 @@ function updateLapseCount(wordId, correct) {
 
 #### Research Principles Applied
 
-**✅ Personalized Error Explanations** - [Research §4.4, Enhancements §4](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Personalized Error Explanations** - [Research §4.4, Enhancements §4](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -268,7 +268,7 @@ async function generateFeedback(request) {
 
 ---
 
-**✅ Redis Caching Strategy (70% Hit Rate)** - [Research §4.4](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Redis Caching Strategy (70% Hit Rate)** - [Research §4.4](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Context**: AI API calls are expensive (~$0.003/request). Caching common errors dramatically reduces costs.
 
@@ -286,7 +286,7 @@ if (cached) return JSON.parse(cached); // ~70% hit rate
 
 ---
 
-**✅ Async Non-Blocking Pattern** - [Research §4.4](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Async Non-Blocking Pattern** - [Research §4.4](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -310,7 +310,7 @@ const { data, error } = useAIFeedback(wordId, userAnswer, {
 
 #### Research Principles Applied
 
-**✅ Loss Aversion (48-Hour Grace Period)** - [Research §5.1, Enhancements §3](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Loss Aversion (48-Hour Grace Period)** - [Research §5.1, Enhancements §3](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -341,7 +341,7 @@ function updateStreak(userId, activityDate) {
 
 ---
 
-**✅ Streak Freezes (Ethical Gamification)** - [Research §5.1, Enhancements §3](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Streak Freezes (Ethical Gamification)** - [Research §5.1, Enhancements §3](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -359,7 +359,7 @@ function updateStreak(userId, activityDate) {
 
 ---
 
-**✅ Variable Rewards (Mystery Boxes)** - [Research §5.2, Enhancements §5](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Variable Rewards (Mystery Boxes)** - [Research §5.2, Enhancements §5](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -391,7 +391,7 @@ function rollMysteryBox() {
 
 ---
 
-**✅ Badge Milestones (7, 30, 100 Days)** - [Research §5.1](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Badge Milestones (7, 30, 100 Days)** - [Research §5.1](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -415,7 +415,7 @@ if (MILESTONES.includes(currentStreak) && !user.hasBadge(streak)) {
 
 #### Research Principles Applied
 
-**✅ 5-Failure Threshold** - [Research §6, Enhancements §6](../../knowledge-base/vocabulary-retention-research.md)
+**✅ 5-Failure Threshold** - [Research §6, Enhancements §6](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -435,7 +435,7 @@ if (lapseCount >= LEECH_THRESHOLD) {
 
 ---
 
-**✅ Positive Framing** - [Research §6](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Positive Framing** - [Research §6](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Finding**:
 
@@ -458,7 +458,7 @@ if (lapseCount >= LEECH_THRESHOLD) {
 
 #### Research Principles Applied
 
-**✅ Review Mistakes Feature** - [Implied by Research §2.1 "Active Recall"](../../knowledge-base/vocabulary-retention-research.md)
+**✅ Review Mistakes Feature** - [Implied by Research §2.1 "Active Recall"](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Research Context**: Active recall is most effective when targeting weak areas. Reviewing mistakes creates "high-difficulty" practice sessions.
 
@@ -480,7 +480,7 @@ function saveQuizResult(result) {
 
 ---
 
-**✅ 7-Day Expiration** - [No direct research, but aligns with "freshness" principle](../../knowledge-base/vocabulary-retention-research.md)
+**✅ 7-Day Expiration** - [No direct research, but aligns with "freshness" principle](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Implementation**: `expiresAt = completedAt + 7 days`
 
@@ -494,7 +494,7 @@ function saveQuizResult(result) {
 
 ### 1. FSRS v6 Algorithm (Not Implemented)
 
-**Research Recommendation**: [Research §3, Enhancements §2](../../knowledge-base/vocabulary-retention-research.md)
+**Research Recommendation**: [Research §3, Enhancements §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Expected Impact**:
 
@@ -514,7 +514,7 @@ function saveQuizResult(result) {
 
 ### 2. Handwriting Recognition (Not Implemented)
 
-**Research Recommendation**: [Research §4, Enhancements §2](../../knowledge-base/vocabulary-retention-research.md)
+**Research Recommendation**: [Research §4, Enhancements §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Expected Impact**:
 
@@ -540,7 +540,7 @@ function saveQuizResult(result) {
 
 ### 3. Radical Decomposition (Not Implemented)
 
-**Research Recommendation**: [Research §5, Enhancements §2](../../knowledge-base/vocabulary-retention-research.md)
+**Research Recommendation**: [Research §5, Enhancements §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Expected Impact**:
 
@@ -560,7 +560,7 @@ function saveQuizResult(result) {
 
 ### 4. AI-Generated Mnemonics (Not Implemented)
 
-**Research Recommendation**: [Research §5, Enhancements §2](../../knowledge-base/vocabulary-retention-research.md)
+**Research Recommendation**: [Research §5, Enhancements §2](../../knowledge-base/learning-theory/vocabulary-retention-research.md)
 
 **Expected Impact**:
 
@@ -634,7 +634,7 @@ Interleaving should produce:
 ## Related Documentation
 
 - [Business Logic Flows](./story-15-11-business-logic-flows.md) - Technical implementation details
-- [Vocabulary Retention Research](../../knowledge-base/vocabulary-retention-research.md) - Full research document
+- [Vocabulary Retention Research](../../knowledge-base/learning-theory/vocabulary-retention-research.md) - Full research document
 - [Enhancements from Research](../../business-requirements/epic-15-learning-retention/enhancements-from-research.md) - Feature mapping
 - [Epic 15 BR README](../../business-requirements/epic-15-learning-retention/README.md) - Business requirements
 - [Epic 15 Implementation README](./README.md) - Technical overview

@@ -488,5 +488,4 @@ Integrated gamification components into `Dashboard.tsx` with responsive two-colu
 - [Epic 15 Implementation](./README.md)
 - [Code Conventions](../../guides/conventions/frontend.md)
 
-- [SOLID Principles](../../knowledge-base/solid-principles.md)
-
+- [SOLID Principles](../../knowledge-base/practices/solid-principles.md)

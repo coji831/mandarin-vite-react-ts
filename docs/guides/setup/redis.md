@@ -290,8 +290,8 @@ REDIS_URL=redis://default:password@localhost:6379
 - [Deployment Guide](../operations/deployment.md) — Production deployment with Railway Redis
 - [Backend Development Guide](./backend-development.md) — Backend architecture
 
-- [Infrastructure Configuration Management](../../knowledge-base/infra-configuration-management.md) — Environment strategies, validation
-- [Integration Caching](../../knowledge-base/integration-caching.md) — Transferable caching concepts
+- [Infrastructure Configuration Management](../../knowledge-base/infrastructure/infra-configuration-management.md) — Environment strategies, validation
+- [Integration Caching](../../knowledge-base/infrastructure/integration-caching.md) — Transferable caching concepts
 
 ### Source Files
 

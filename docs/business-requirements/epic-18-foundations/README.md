@@ -182,7 +182,7 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 
 ## Implementation notes
 
-- **Conventions:** Follow `docs/guides/references/code-conventions.md` and `docs/knowledge-base/solid-principles.md` for all code
+- **Conventions:** Follow `docs/guides/references/code-conventions.md` and `docs/knowledge-base/practices/solid-principles.md` for all code
 - **Feature folder:** Create `apps/frontend/src/features/foundations/` with `components/`, `hooks/`, `services/`, `stores/`, `types/`, `utils/`, `index.ts`
 - **Backend module:** Create `apps/backend/src/modules/progression/` following existing module pattern (api/domain/repositories/services/index.js)
 - **Prisma models:** Add FoundationProgress, QuizAttempt, PhaseGate models — see `verification-artifacts/shared-data-model-v3.md` for exact schema

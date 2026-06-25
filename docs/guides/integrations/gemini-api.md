@@ -433,7 +433,7 @@ Cost = 4,500 × $0.00002 = $0.09/month (Gemini Flash tier)
 
 - [Story 15.4 BR](../../business-requirements/epic-15-learning-retention/story-15-4-ai-feedback-backend.md) - AI Feedback Backend requirements
 - [Redis Caching Guide](../setup/redis.md) - General Redis best practices
-- [Gamification Psychology](../../knowledge-base/gamification-psychology-learning.md) - Why feedback matters for retention
+- [Gamification Psychology](../../knowledge-base/learning-theory/gamification-psychology-learning.md) - Why feedback matters for retention
 - [Backend API Spec](../../../apps/backend/docs/api-spec.md) - Full API documentation
 
 ---
