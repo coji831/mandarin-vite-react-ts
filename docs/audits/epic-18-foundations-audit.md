@@ -1,18 +1,18 @@
 # Epic 18 — Foundations, Review & Quiz: Full Audit Report
 
-**Date:** 2026-06-24 | **Auditor:** GitHub Copilot (Solution Architect mode) | **Scope:** Full-stack Epic 18
+**Date:** 2026-06-25 | **Auditor:** GitHub Copilot (Solution Architect mode) | **Scope:** Full-stack Epic 18
 
 ## 1. Executive Summary
 
 Epic 18 encompasses three connected features: **Foundations (Learn)** — pinyin/tones/strokes/animations reference, **Review** — SRS flip-card practice, and **Quiz** — audio-to-type gate assessment. The codebase spans ~70 files across frontend (React/TypeScript), backend (Express/Prisma), content registry (JSON files), and shared packages.
 
-**Overall health: 🟢 Good** — Architecture is clean, data flows are well-structured, and recent migrations have improved maintainability. Key concerns: zero test coverage, incomplete content registry dataset (samples only), a few instances of dead code and barrel bypasses.
+**Overall health: 🟢 Good** — Architecture is clean, data flows are well-structured, and recent migrations have improved maintainability. Key concerns: zero test coverage, incomplete content registry dataset (samples only). Several architectural issues found in initial audit have been resolved (see Section 10).
 
 ### Key Metrics
 
 | Metric                   | Count                                      |
 | ------------------------ | ------------------------------------------ |
-| Frontend feature files   | ~55                                        |
+| Frontend feature files   | ~60                                        |
 | Backend module files     | ~15                                        |
 | Content registry files   | 8                                          |
 | Tests (Epic 18 specific) | **0**                                      |
@@ -66,20 +66,32 @@ foundations/
 ### 2.3 Frontend — Review Feature (`apps/frontend/src/features/review/`)
 
 ```
-review/
+apps/frontend/src/features/review/
 ├── index.ts
 ├── components/
-│   ├── index.ts                       ← Barrel (4 components)
+│   ├── index.ts
 │   ├── ReviewView.tsx                 ← Session orchestrator
 │   ├── ReviewPicker.tsx               ← Type + source picker
-│   ├── ReviewCard.tsx                 ← 3-sided flip card (+ inner helpers: ReviewCardFront, ReviewCardBackTone, ReviewCardBackResult)
+│   ├── ReviewCard.tsx                 ← Step-based card container (strategies determine flow)
+│   ├── ReviewCardPinyinInput.tsx      ← Pinyin typing step (was ReviewCardFront)
+│   ├── ReviewCardToneSelect.tsx       ← Tone selection step (was ReviewCardBackTone)
+│   ├── ReviewCardResult.tsx           ← Result + rating step (was ReviewCardBackResult)
 │   ├── RatingButtons.tsx              ← Again/Good/Easy
 │   └── ReviewComplete.tsx             ← Session summary
+├── engine/
+│   ├── index.ts                       ← Barrel
+│   ├── types.ts                       ← ReviewStrategy interface, ReviewInput, ReviewEvaluation
+│   └── strategies/
+│       ├── index.ts                   ← REVIEW_STRATEGIES registry + getReviewStrategy()
+│       ├── PinyinReviewStrategy.ts    ← Evaluates pinyin input for pinyin-syllable items
+│       └── ToneReviewStrategy.ts      ← Evaluates tone selection for tone-syllable items
 ├── hooks/
-│   └── useReview.ts                   ← State machine (pick→pinyin→tone→result→complete)
+│   ├── index.ts
+│   ├── useReview.ts                   ← Strategy-powered state machine
+│   └── useReviewSources.ts            ← Source availability checker
 ├── services/
 │   ├── index.ts
-│   └── reviewService.ts               ← API client
+│   └── reviewService.ts               ← 3 methods (fetchItems, recordRating, getDueCount)
 └── types/
     ├── index.ts
     └── review.ts                      ← ReviewItem, Rating, ReviewSource, ReviewStep, etc.
@@ -104,15 +116,14 @@ quiz/
 │       ├── CategoryBreakdown.tsx      ← Per-category scores
 │       └── PhaseGateBadge.tsx         ← Pass/fail badge
 ├── engine/
-│   ├── QuizEngine.ts                  ← Class-based state machine (🔴 DEAD CODE — unused)
+│   ├── constants.ts                   ← Shared TONE_DESCRIPTIONS (extracted from strategies)
 │   ├── types.ts                       ← Re-exports
 │   └── strategies/
 │       ├── index.ts                   ← Strategy registry
-│       └── AudioToTypeStrategy.ts     ← Question generation + evaluation
+│       └── AudioToPinyinAndToneStrategy.ts  ← Combined: evaluates BOTH pinyin + tone
 ├── hooks/
 │   ├── index.ts
-│   ├── useQuizEngine.ts               ← Init + timer
-│   └── useProgressState.ts            ← 🔴 CROSS-CONTAMINATION — belongs to vocabulary/progress
+│   └── useQuizEngine.ts               ← Init + timer
 ├── services/
 │   └── quizService.ts                 ← API client + strategy delegation
 ├── stores/
@@ -158,8 +169,8 @@ modules/quiz/
 ├── services/
 │   └── QuizService.js                 ← Strategy delegation + scoring
 ├── strategies/
-│   ├── AudioToTypeStrategy.js         ← Backend question generation from PinyinCombination
-│   └── index.js                       ← Strategy registry
+│   ├── AudioToPinyinAndToneStrategy.js  ← Combined: generates from PinyinCombination, validates both
+│   └── index.js                         ← Strategy registry
 └── use-cases/
     └── AIFeedbackService.js           ← Gemini-based error feedback
 ```
@@ -218,15 +229,18 @@ PhaseGate             ← Global phase progression (currentPhase, phase1Passed, 
 | SuggestionPanel        | Panel     | No      | onSelect, currentCharacter                                       | Suggested chars from stroke data                      |
 | FoundationsProgressBar | Bar       | No      | none (self-loading)                                              | X/4 completed indicator                               |
 
-### 3.2 Review Components (5 total)
+### 3.2 Review Components (8 total)
 
-| Component      | Memo'd | Props                                                                                                 | Purpose                     |
-| -------------- | ------ | ----------------------------------------------------------------------------------------------------- | --------------------------- |
-| ReviewView     | No     | onBack, presetType, presetSource                                                                      | Session orchestrator        |
-| ReviewPicker   | No     | onStart, presetType                                                                                   | 2-step type+source selector |
-| ReviewCard     | No     | item, step, userPinyin, pinyinCorrect, toneCorrect, onSubmitPinyin, onSelectTone, onRate, onPlayAudio | 3-sided flip card           |
-| RatingButtons  | No     | onRate, disabled                                                                                      | Again/Good/Easy             |
-| ReviewComplete | No     | result, totalItems, onReviewAgain, onBack                                                             | Session stats               |
+| Component             | Memo'd | Props                                                                                                 | Purpose                     |
+| --------------------- | ------ | ----------------------------------------------------------------------------------------------------- | --------------------------- |
+| ReviewView            | No     | onBack, presetType, presetSource                                                                      | Session orchestrator        |
+| ReviewPicker          | No     | onStart, presetType                                                                                   | 2-step type+source selector |
+| ReviewCard            | No     | item, step, userPinyin, pinyinCorrect, toneCorrect, onSubmitPinyin, onSelectTone, onRate, onPlayAudio | Step-based card container   |
+| ReviewCardPinyinInput | No     | item, onSubmitPinyin, onPlayAudio                                                                     | Pinyin typing step          |
+| ReviewCardToneSelect  | No     | item, onSelectTone, onPlayAudio                                                                       | Tone selection step         |
+| ReviewCardResult      | No     | item, pinyinCorrect, toneCorrect, onRate                                                              | Result + rating step        |
+| RatingButtons         | No     | onRate, disabled                                                                                      | Again/Good/Easy             |
+| ReviewComplete        | No     | result, totalItems, onReviewAgain, onBack                                                             | Session stats               |
 
 ### 3.3 Quiz Components (12 total)
 
@@ -249,8 +263,8 @@ PhaseGate             ← Global phase progression (currentPhase, phase1Passed, 
 | Service            | Methods                                                                                                | Data Sources                                             |
 | ------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
 | FoundationsService | getPinyinTonesPool(), getPinyinCharacterMap(), getStrokesReference()                                   | content/ files (fs) + PinyinCombination (Prisma)         |
-| ReviewService      | getReviewItems(), recordRating(), getPoolReviewItems(), getAllPhase1Items(), ensureReviewItemsExist()  | content/ files + PinyinCombination + ReviewItem (Prisma) |
-| QuizService        | createQuizAttempt(), submitAnswer(), completeQuizAttempt(), getUserQuizAttempts(), generateQuestions() | QuizRepository + strategy delegation                     |
+| ReviewService      | getReviewItems(), recordRating(), getAllPhase1Items(), ensureReviewItemsExist()                        | content/ files + PinyinCombination + ReviewItem (Prisma) |
+| QuizService        | createQuizAttempt(), submitAnswer(), completeQuizAttempt(), getUserQuizAttempts(), generateQuestions() | QuizRepository + single AudioToPinyinAndToneStrategy     |
 | AIFeedbackService  | generateFeedback(), generateAIFeedback()                                                               | WordRepository + Gemini AI                               |
 
 ---
@@ -349,32 +363,34 @@ PinyinCombination (Prisma)
 
 ```
 1. Navigate to /practices/review
-2. Pick content type (Pinyin 65 / Tones 11 items)
+2. Pick content type (Pinyin 🔤 / Tones 🎵)
 3. Pick source (Due / Recent / All)
-4. ReviewCard step 1: "pinyin" — see character + meaning → type pinyin
-5. ReviewCard step 2: "tone" — see typed pinyin → select tone (1-5)
-6. ReviewCard step 3: "result" — see correct/incorrect → rate (Again/Good/Easy)
+4. Strategy determines first step:
+   - Pinyin items → step "pinyin": see character + meaning → type pinyin → result
+   - Tone items → step "tone": see character + meaning → select tone → result
+5. Result card shows per-type feedback (labeled by strategy.feedbackLabel)
+6. Rate (Again/Good/Easy) → advance to next item
 7. Repeat until all items reviewed
-8. See completion summary (accuracy %, rating breakdown, retention)
+8. See completion summary (conditional: shows pinyin accuracy OR tone accuracy)
 9. "Review Again" or "Back to Practices"
 ```
 
 **Observations:**
 
-- ✅ 3-step active recall is pedagogically sound
-- ✅ SRS rating persists to backend
+- ✅ Strategy-driven flow: each item type has exactly one input step, evaluated by its strategy
+- ✅ Conditional results: ReviewComplete only shows stats relevant to the session type
 - ⚠️ Audio available but not forced — user must click play button
 - ⚠️ Source "all" returns ALL items regardless of due status (defeats SRS purpose)
 
 ### 5.3 Quiz Flow
 
 ```
-1. Navigate to /practices/quiz?type=audio-to-type
+1. Navigate to /practices/quiz?type=audio-to-pinyin-tone
 2. Quiz initializes: fetch questions + create backend attempt
 3. Phase: INPUT → show AudioPlayer + pinyin input + tone buttons
 4. Listen to audio → type pinyin → select tone → 500ms auto-submit
 5. Phase: FEEDBACK → show correct/incorrect + answer comparison
-6. Click "Next Question" → repeat 20 questions
+6. Click "Next Question" → repeat 10 questions
 7. Phase: RESULTS → show score + pass/fail + category breakdown
 8. Pass → "Continue to Phase 2" → /learn
 9. Fail → "Try Again" → re-initialize same quiz
@@ -382,6 +398,7 @@ PinyinCombination (Prisma)
 
 **Observations:**
 
+- ✅ Previously split into two separate quiz types (Audio-to-Pinyin + Audio-to-Tone). Merged into a single combined strategy that evaluates BOTH dimensions per question. Each question scores pinyin AND tone independently — overall correct only if both are right.
 - ✅ Backend is authoritative for answer verdict
 - ✅ Phase gate integration (pass = unlock Phase 2)
 - ⚠️ 500ms debounce may fire before user finishes typing multi-syllable pinyin
@@ -423,17 +440,16 @@ PinyinCombination (Prisma)
 | #   | Issue                        | Location                                               | Description                                                                                                                               |
 | --- | ---------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | H1  | **Zero test coverage**       | All Epic 18 features                                   | No unit/component/integration tests exist for any Epic 18 code. Critical business logic (SRS, quiz evaluation, data merging) is untested. |
-| H2  | **Dead code: QuizEngine.ts** | `apps/frontend/src/features/quiz/engine/QuizEngine.ts` | Class-based state machine is never instantiated. Zustand store handles all quiz lifecycle. Entire file (102 lines) is dead code.          |
+| H2  | **Dead code: QuizEngine.ts** | `apps/frontend/src/features/quiz/engine/QuizEngine.ts` | ✅ **RESOLVED** — File was deleted. Zustand store handles all quiz lifecycle.                                                             |
 
 ### 7.2 🟡 Medium Severity
 
 | #   | Issue                                        | Location                                                             | Description                                                                                                                                                      |
 | --- | -------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | M1  | **Dead hook: useCharacterSearch.ts**         | `apps/frontend/src/features/foundations/hooks/useCharacterSearch.ts` | Hook is exported but no consumer imports it. StrokeAnimationTab manages character state manually. Only `isValidHanzi` utility is used (imported directly).       |
-| M2  | **Cross-contamination: useProgressState.ts** | `apps/frontend/src/features/quiz/hooks/useProgressState.ts`          | Vocabulary/progress hooks living in quiz feature. Should be in `features/vocabulary/` or `features/progress/`.                                                   |
+| M2  | **Cross-contamination: useProgressState.ts** | `apps/frontend/src/features/quiz/hooks/useProgressState.ts`          | ✅ **RESOLVED** — Moved to `features/vocabulary/hooks/`.                                                                                                         |
 | M3  | **~15 console.\* calls**                     | Scattered across all 3 features                                      | No centralized logging. Mix of debug leftovers and intentional fallback warnings. Filterable `[Foundations]` prefix added recently but not consistently applied. |
 | M4  | **Missing React.memo on 29/30 components**   | All Epic 18 components except StrokeBreakdown                        | ReviewCard re-creates inner helpers on every step. TonePairDrills/ToneChangeRules re-compute ColorizedPinyin on every render.                                    |
-| M5  | **ReviewCard inner helpers not extractable** | `apps/frontend/src/features/review/components/ReviewCard.tsx`        | ReviewCardFront, ReviewCardBackTone, ReviewCardBackResult are module-level functions in ReviewCard.tsx — cannot be tested or imported independently.             |
 
 ### 7.3 🟢 Low Severity
 
@@ -445,6 +461,25 @@ PinyinCombination (Prisma)
 | L4  | **Sample data only**            | `content/pinyin/` + `content/tones/`       | Only 4 pinyin files + 2 tone files. Not enough to exercise full quiz/review flows.                              |
 | L5  | **No loading timeout**          | `PinyinTab.tsx`, `TonesTab.tsx`            | If API fails, user sees "Loading..." indefinitely with no timeout or retry.                                     |
 
+### 7.4 ✅ Resolved Issues (2026-06-25)
+
+| #   | Issue                                             | Resolution                                                                                                                      |
+| --- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | **Dead code: QuizEngine.ts** (H2)                 | Deleted — Zustand store handles all quiz lifecycle                                                                              |
+| R2  | **Cross-contamination: useProgressState.ts** (M2) | Moved to `features/vocabulary/hooks/`                                                                                           |
+| R3  | **ReviewCard inner helpers not extractable** (M5) | Extracted to `ReviewCardPinyinInput.tsx`, `ReviewCardToneSelect.tsx`, `ReviewCardResult.tsx` — independently importable         |
+| R4  | **Duplicated constants**                          | `TONE_DESCRIPTIONS` extracted to `quiz/engine/constants.ts`; `TONE_BUTTONS_BASE` extracted to `shared/constants/toneMap.ts`     |
+| R5  | **Quiz strategies artificially split**            | Merged `AudioToPinyin` + `AudioToTone` → single `AudioToPinyinAndToneStrategy` evaluating both dimensions                       |
+| R6  | **Review promoted to strategy pattern**           | Created `review/engine/` with `ReviewStrategy` interface + `PinyinReviewStrategy` + `ToneReviewStrategy` + registry             |
+| R7  | **`apiClient` called without service layer**      | `useGamificationAPI` → uses existing service; `usePhaseGate` → new `phaseGateService.ts`; quiz strategies → use `quizService`   |
+| R8  | **Dead API methods**                              | Removed `getPoolReviewItems` and `rateReviewItem` from `reviewService.ts` — never called                                        |
+| R9  | **Barrel file pollution**                         | Inline types extracted from `foundations/types/`, `auth/types/`, `progress/types/`, `gamification/services/` to dedicated files |
+| R10 | **24 `interface` → `type` conversions**           | All `interface` declarations across 23 files converted to `type` for consistency                                                |
+| R11 | **Review crash on tones**                         | Added missing `await` before `readContentDir("tones")` in `ReviewService.js` — was returning Promise, causing 500 error         |
+| R12 | **Review tone item data contract**                | Added `pinyinPlain` + `correctTone` fields to `buildToneItem()` for correct evaluation                                          |
+| R13 | **Dead `userPinyin` prop in ReviewCardResult**    | Removed from interface and passthrough — was never consumed                                                                     |
+| R14 | **Hardcoded "pinyin" in error/complete paths**    | ReviewView "Try Again" + ReviewComplete "Review Again" now use dynamic `source` + `contentType`                                 |
+
 ---
 
 ## 8. Recommendations
@@ -453,19 +488,17 @@ PinyinCombination (Prisma)
 
 | Order | Action                             | Rationale                                                                          |
 | ----- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| 1     | **Delete QuizEngine.ts**           | 102 lines of dead code — remove to eliminate confusion                             |
-| 2     | **Move useProgressState.ts**       | Migrate to `features/vocabulary/hooks/` — it doesn't belong in quiz                |
-| 3     | **Evaluate useCharacterSearch.ts** | Either adopt into StrokeAnimationTab or delete the hook (keep isValidHanzi export) |
-| 4     | **Expand content files**           | Populate all 21 initials + 37 finals + 5 tones from existing pool data             |
+| 1     | **Evaluate useCharacterSearch.ts** | Either adopt into StrokeAnimationTab or delete the hook (keep isValidHanzi export) |
+| 2     | **Expand content files**           | Populate all 21 initials + 37 finals + 5 tones from existing pool data             |
 
 ### 8.2 Short-Term (During Epic 19)
 
-| Order | Action                                  | Rationale                                                                  |
-| ----- | --------------------------------------- | -------------------------------------------------------------------------- |
-| 5     | **Add tests for critical paths**        | SRS calculation, pool reconstruction, quiz answer evaluation               |
-| 6     | **Extract ReviewCard inner components** | ReviewCardFront/Back/Result → separate files for testability               |
-| 7     | **Standardize error messages**          | Consistent `"Failed to {action} {resource}"` format across all controllers |
-| 8     | **Add loading timeout + retry**         | For all data-fetching components (PinyinTab, TonesTab, StrokeReferenceTab) |
+| Order | Action                              | Rationale                                                                                       |
+| ----- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 3     | **Add tests for critical paths**    | SRS calculation, pool reconstruction, quiz answer evaluation                                    |
+| 4     | **Standardize error messages**      | Consistent `"Failed to {action} {resource}"` format across all controllers                      |
+| 5     | **Add loading timeout + retry**     | For all data-fetching components (PinyinTab, TonesTab, StrokeReferenceTab)                      |
+| 6     | **Add tests for review strategies** | PinyinReviewStrategy and ToneReviewStrategy evaluateAnswer() logic is now isolated and testable |
 
 ### 8.3 Medium-Term
 
@@ -491,8 +524,22 @@ PinyinCombination (Prisma)
 
 ## 10. Change Log
 
-| Date       | Change               | Author             |
-| ---------- | -------------------- | ------------------ |
-| 2026-06-24 | Initial audit report | Solution Architect |
+| Date       | Change                                                                                | Author             |
+| ---------- | ------------------------------------------------------------------------------------- | ------------------ |
+| 2026-06-24 | Initial audit report                                                                  | Solution Architect |
+| 2026-06-25 | Fixed review crash on tones (missing await)                                           | Solution Architect |
+| 2026-06-25 | Fixed tone item data contract (pinyinPlain + correctTone)                             | Solution Architect |
+| 2026-06-25 | Type-aware review step flow (pinyin→result, tone→result)                              | Solution Architect |
+| 2026-06-25 | Renamed review components (Front→PinyinInput, BackTone→ToneSelect, BackResult→Result) | Solution Architect |
+| 2026-06-25 | Promoted review to strategy pattern (review/engine/ + 2 strategies)                   | Solution Architect |
+| 2026-06-25 | Merged quiz strategies into single AudioToPinyinAndTone (evaluates both)              | Solution Architect |
+| 2026-06-25 | Extracted TONE_DESCRIPTIONS to quiz/engine/constants.ts                               | Solution Architect |
+| 2026-06-25 | Extracted TONE_BUTTONS_BASE to shared/constants/toneMap.ts                            | Solution Architect |
+| 2026-06-25 | Removed dead API methods from reviewService.ts                                        | Solution Architect |
+| 2026-06-25 | Routed apiClient calls through service layer (gamification, phaseGate, quiz)          | Solution Architect |
+| 2026-06-25 | Cleaned barrel files (foundations, auth, progress, gamification types)                | Solution Architect |
+| 2026-06-25 | Converted 24 interface declarations to type across 23 files                           | Solution Architect |
+| 2026-06-25 | Removed dead userPinyin prop from ReviewCardResult                                    | Solution Architect |
+| 2026-06-25 | Fixed hardcoded type/source in error + complete paths                                 | Solution Architect |
 
 ---

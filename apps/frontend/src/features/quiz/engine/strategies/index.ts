@@ -7,10 +7,10 @@
  */
 
 import type { QuizStrategy } from "../../types";
-import { audioToTypeStrategy } from "./AudioToTypeStrategy";
+import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy";
 
 export const QUIZ_STRATEGIES: Record<string, QuizStrategy> = {
-  "audio-to-type": audioToTypeStrategy,
+  "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
 };
 
 /** Look up a strategy by type string */

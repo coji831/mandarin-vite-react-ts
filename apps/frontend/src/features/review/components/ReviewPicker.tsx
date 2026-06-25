@@ -2,17 +2,16 @@
  * ReviewPicker.tsx
  * Phase 1 Review — Content type and source selector.
  */
-import { useEffect, useState } from "react";
 import type { ReviewSource } from "../types";
-import { reviewService } from "../services/reviewService";
+import { useReviewSources } from "../hooks/useReviewSources";
 import "./ReviewPicker.css";
 
-interface ContentTypeOption {
+type ContentTypeOption = {
   type: string;
   label: string;
   icon: string;
   description: string;
-}
+};
 
 const CONTENT_TYPES: ContentTypeOption[] = [
   {
@@ -39,35 +38,20 @@ const SOURCES: { value: ReviewSource; label: string; description: string }[] = [
   { value: "all", label: "📚 All Foundations", description: "All Phase 1 content" },
 ];
 
-interface ReviewPickerProps {
+type ReviewPickerProps = {
   onStart: (source: ReviewSource, type: string) => void;
   presetType?: string;
-}
+};
 
 export function ReviewPicker({ onStart }: ReviewPickerProps) {
-  const [selectedType, setSelectedType] = useState("pinyin");
-  const [selectedSource, setSelectedSource] = useState<ReviewSource>("due");
-  const [dueCount, setDueCount] = useState<number | null>(null);
-  const [checkingAvailability, setCheckingAvailability] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    const checkAvailability = async () => {
-      setCheckingAvailability(true);
-      try {
-        const result = await reviewService.getDueCount(selectedType);
-        if (!cancelled) setDueCount(result.count ?? 0);
-      } catch {
-        if (!cancelled) setDueCount(null);
-      } finally {
-        if (!cancelled) setCheckingAvailability(false);
-      }
-    };
-    checkAvailability();
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedType]);
+  const {
+    sourceCounts,
+    checking,
+    selectedType,
+    setSelectedType,
+    selectedSource,
+    setSelectedSource,
+  } = useReviewSources();
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
@@ -106,40 +90,52 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
         <label className="review-picker__step-label text-secondary fw-600 font-md">
           Step 2: Source (optional)
         </label>
-        <div className="flex-col gap-sm">
-          {SOURCES.map((s) => (
-            <label
-              key={s.value}
-              className="review-picker__radio flex gap-sm py-sm px-md radius-md cursor-pointer"
-              style={{
-                background: selectedSource === s.value ? "var(--surface-hover)" : "transparent",
-              }}
-            >
-              <input
-                type="radio"
-                name="source"
-                value={s.value}
-                checked={selectedSource === s.value}
-                onChange={() => setSelectedSource(s.value)}
-                disabled={s.value === "due" && dueCount === 0}
-              />
-              <span style={{ fontWeight: selectedSource === s.value ? 600 : 400 }}>{s.label}</span>
-              <span className="review-picker__radio-desc text-tertiary font-sm">
-                {s.value === "due" && dueCount === 0
-                  ? "No items due — try 'All Foundations'"
-                  : s.description}
-              </span>
-            </label>
-          ))}
-        </div>
+        {checking && (
+          <div className="flex-center gap-sm text-tertiary font-sm p-sm">
+            <span className="spinner" /> Checking available sources...
+          </div>
+        )}
+        {!checking && (
+          <div className="flex-col gap-sm">
+            {SOURCES.map((s) => {
+              const count = sourceCounts[s.value as keyof typeof sourceCounts];
+              const hasItems = count === -1 || count > 0; // "all" always available
+              return (
+                <label
+                  key={s.value}
+                  className={`review-picker__radio flex gap-sm py-sm px-md radius-md ${hasItems ? "cursor-pointer" : "op-60"}`}
+                  style={{
+                    background: selectedSource === s.value ? "var(--surface-hover)" : "transparent",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="source"
+                    value={s.value}
+                    checked={selectedSource === s.value}
+                    onChange={() => setSelectedSource(s.value)}
+                    disabled={!hasItems}
+                  />
+                  <span style={{ fontWeight: selectedSource === s.value ? 600 : 400 }}>
+                    {s.label}
+                  </span>
+                  <span className="review-picker__radio-desc text-tertiary font-sm">
+                    {!hasItems ? "No items available — try another source" : s.description}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <button
-        className="review-picker__start-btn btn-primary btn-lg"
+        className={`review-picker__start-btn btn-primary btn-lg ${checking ? "op-60" : ""}`}
         onClick={() => onStart(selectedSource, selectedType)}
+        disabled={checking}
         type="button"
       >
-        Start Review
+        {checking ? "Checking sources..." : "Start Review"}
       </button>
     </div>
   );

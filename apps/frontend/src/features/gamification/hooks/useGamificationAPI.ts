@@ -25,8 +25,11 @@
  */
 
 import { useCallback, useState } from "react";
-import { apiClient } from "services";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import {
+  fetchStreak as apiFetchStreak,
+  fetchBadges as apiFetchBadges,
+  spendFreeze as apiSpendFreeze,
+} from "../services";
 
 // ============================================================================
 // Types
@@ -97,14 +100,14 @@ export function useFetchStreak() {
     setError(null);
 
     try {
-      const response = await apiClient.get<StreakResponse>(ROUTE_PATTERNS.progressStreak);
+      const data = await apiFetchStreak();
 
       // Validate response shape
-      if (!response.data || typeof response.data.currentStreak !== "number") {
+      if (!data || typeof data.currentStreak !== "number") {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch streak data";
       setError(errorMessage);
@@ -138,18 +141,14 @@ export function useFetchBadges() {
     setError(null);
 
     try {
-      const response = await apiClient.get<BadgeResponse>(ROUTE_PATTERNS.gamificationBadges);
+      const data = await apiFetchBadges();
 
       // Validate response shape
-      if (
-        !response.data ||
-        !Array.isArray(response.data.earned) ||
-        !Array.isArray(response.data.available)
-      ) {
+      if (!data || !Array.isArray(data.earned) || !Array.isArray(data.available)) {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch badges";
       setError(errorMessage);
@@ -188,17 +187,14 @@ export function useSpendFreeze() {
     setError(null);
 
     try {
-      const response = await apiClient.post<FreezeResponse>(
-        ROUTE_PATTERNS.progressStreakFreeze,
-        {},
-      );
+      const data = await apiSpendFreeze();
 
       // Validate response shape
-      if (!response.data || typeof response.data.freezeCount !== "number") {
+      if (!data || typeof data.freezeCount !== "number") {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to spend freeze";
       setError(errorMessage);

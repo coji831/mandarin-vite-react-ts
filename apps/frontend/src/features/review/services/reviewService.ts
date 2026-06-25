@@ -30,24 +30,6 @@ class ReviewService {
   }
 
   /**
-   * Get review items generated from the pinyin-tones pool.
-   */
-  async getPoolReviewItems(limit: number = 20): Promise<ReviewItem[]> {
-    const response = await apiClient.get(ROUTE_PATTERNS.reviewPoolItems, {
-      params: { limit },
-    });
-    return response.data;
-  }
-
-  /**
-   * Rate a review item to update its SRS schedule.
-   */
-  async rateReviewItem(itemId: string, rating: "again" | "good" | "easy"): Promise<ReviewItem> {
-    const response = await apiClient.put(ROUTE_PATTERNS.reviewItemRate(itemId), { rating });
-    return response.data;
-  }
-
-  /**
    * Get count of due items for a given type.
    */
   async getDueCount(type: string): Promise<{ count: number }> {

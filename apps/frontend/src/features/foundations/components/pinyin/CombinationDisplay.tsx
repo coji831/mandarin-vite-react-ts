@@ -50,7 +50,7 @@ export function CombinationDisplay({
         className="pinyin-combination-row flex gap-sm flex-wrap flex-center mx-auto"
         style={{ maxWidth: 450 }}
       >
-        {tones.map((pinyin, index) => (
+        {tones.filter(Boolean).map((pinyin, index) => (
           <div key={pinyin} className="flex-col-center gap-xs">
             <span className="pinyin-tone-label font-xs text-uppercase text-muted">
               {TONE_LABELS[index] ?? index}

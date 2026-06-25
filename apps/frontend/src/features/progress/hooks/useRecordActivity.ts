@@ -6,12 +6,12 @@ import { useCallback } from "react";
 import { useProgressStore } from "../stores/progressStore";
 import { progressApi } from "../services/progressService";
 
-interface RecordActivityParams {
+type RecordActivityParams = {
   feature: string;
   wordId: string;
   correct: boolean;
   data?: Record<string, unknown>;
-}
+};
 
 export function useRecordActivity() {
   const updateWordProgress = useProgressStore((s) => s.updateWordProgress);

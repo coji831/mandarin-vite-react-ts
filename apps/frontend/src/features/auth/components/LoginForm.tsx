@@ -7,10 +7,10 @@ import { useState, FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./AuthForm.css";
 
-interface LoginFormProps {
+type LoginFormProps = {
   onSwitchToRegister?: () => void;
   onSuccess?: () => void;
-}
+};
 
 export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
   const { login } = useAuth();

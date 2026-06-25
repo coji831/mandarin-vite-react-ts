@@ -4,8 +4,7 @@
  * Story 18.1: Phase gating infrastructure
  */
 import { useEffect, useState } from "react";
-import { apiClient } from "../api/axiosClient";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { fetchPhaseGate } from "../services/phaseGateService";
 import type { PhaseGate } from "@mandarin/shared-types";
 
 export function usePhaseGate() {
@@ -13,9 +12,8 @@ export function usePhaseGate() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    apiClient
-      .get(ROUTE_PATTERNS.progressionPhaseGate)
-      .then((response) => setPhaseGate(response.data))
+    fetchPhaseGate()
+      .then(setPhaseGate)
       .catch(() => setPhaseGate(null))
       .finally(() => setIsLoading(false));
   }, []);

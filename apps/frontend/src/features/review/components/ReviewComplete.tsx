@@ -6,12 +6,12 @@
 import type { ReviewSessionResult } from "../types";
 import "./ReviewComplete.css";
 
-interface ReviewCompleteProps {
+type ReviewCompleteProps = {
   result: ReviewSessionResult;
   totalItems: number;
   onReviewAgain: () => void;
   onBack: () => void;
-}
+};
 
 export function ReviewComplete({ result, totalItems, onReviewAgain, onBack }: ReviewCompleteProps) {
   const pinyinPct =
@@ -29,25 +29,30 @@ export function ReviewComplete({ result, totalItems, onReviewAgain, onBack }: Re
       <span className="review-complete__emoji">{"\uD83C\uDF89"}</span>
       <h2 className="review-complete__title text-primary m-0">Review Complete!</h2>
       <p className="review-complete__subtitle text-muted text-center m-0">
-        You reviewed {totalItems} character{totalItems !== 1 ? "s" : ""}.
+        You reviewed {totalItems} item{totalItems !== 1 ? "s" : ""}.
       </p>
 
-      {/* Pinyin accuracy */}
-      <div className="review-complete__stat-card card-dark w-full flex-col gap-sm p-lg">
-        <div className="flex-between">
-          <span className="text-secondary">Pinyin accuracy</span>
-          <span className={pinyinPct >= 70 ? "text-success fw-600" : "text-warning fw-600"}>
-            {result.pinyinCorrect}/{result.pinyinTotal} ({pinyinPct}%)
-          </span>
-        </div>
+      {/* Pinyin accuracy - only shown for pinyin review sessions */}
+      {result.pinyinTotal > 0 && (
+        <div className="review-complete__stat-card card-dark w-full flex-col gap-sm p-lg">
+          <div className="flex-between">
+            <span className="text-secondary">Pinyin accuracy</span>
+            <span className={pinyinPct >= 70 ? "text-success fw-600" : "text-warning fw-600"}>
+              {result.pinyinCorrect}/{result.pinyinTotal} ({pinyinPct}%)
+            </span>
+          </div>
 
-        <div className="flex-between">
-          <span className="text-secondary">Tone accuracy</span>
-          <span className={tonePct >= 70 ? "text-success fw-600" : "text-warning fw-600"}>
-            {result.toneCorrect}/{result.toneTotal} ({tonePct}%)
-          </span>
+          {/* Tone accuracy - only shown for tone review sessions */}
+          {result.toneTotal > 0 && (
+            <div className="flex-between">
+              <span className="text-secondary">Tone accuracy</span>
+              <span className={tonePct >= 70 ? "text-success fw-600" : "text-warning fw-600"}>
+                {result.toneCorrect}/{result.toneTotal} ({tonePct}%)
+              </span>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Rating breakdown */}
       <div className="review-complete__stat-card card-dark w-full flex-col gap-sm p-lg">

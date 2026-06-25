@@ -1,37 +1,27 @@
 /**
- * @file ReviewCardBackTone.tsx
- * @description Step 2 review card — character + meaning + typed pinyin + tone selection
+ * @file ReviewCardToneSelect.tsx
+ * @description Tone selection review card — character + meaning + tone buttons
+ * This is the first (and only input) step for tone-syllable items.
  *
- * Inner helper component extracted from ReviewCard.
- * Shows the user's typed pinyin and 5 tone buttons for selection.
+ * Shows 5 tone buttons (1st/2nd/3rd/4th/neutral) for the user to select from.
  */
 
 import React from "react";
 import type { ReviewItem } from "../types";
+import { TONE_BUTTONS_BASE } from "shared/constants/toneMap";
 import "./ReviewCard.css";
 
-interface ReviewCardBackToneProps {
+type ReviewCardToneSelectProps = {
   item: ReviewItem;
-  userPinyin: string;
   onSelectTone: (tone: number) => void;
   onPlayAudio: (text: string) => void;
-}
+};
 
-/** Tone button configuration matching the PinyinToneInput color scheme. */
-const TONE_BUTTONS = [
-  { tone: 1, mark: "\u02C9", label: "1st", color: "#FF4444" },
-  { tone: 2, mark: "\u02CA", label: "2nd", color: "#FF8C00" },
-  { tone: 3, mark: "\u02C7", label: "3rd", color: "#4CAF50" },
-  { tone: 4, mark: "\u02CB", label: "4th", color: "#2196F3" },
-  { tone: 0, mark: "\u00B7", label: "0", color: "#9E9E9E" },
-];
-
-function ReviewCardBackToneComponent({
+function ReviewCardToneSelectComponent({
   item,
-  userPinyin,
   onSelectTone,
   onPlayAudio,
-}: ReviewCardBackToneProps) {
+}: ReviewCardToneSelectProps) {
   const displayChar = item.character ?? item.front;
 
   return (
@@ -44,9 +34,6 @@ function ReviewCardBackToneComponent({
               ({item.meaning})
             </span>
           )}
-          <span className="review-card__pinyin-hint text-primary fw-600 font-2xl">
-            {userPinyin}
-          </span>
         </div>
 
         <div className="flex-center gap-md">
@@ -63,7 +50,7 @@ function ReviewCardBackToneComponent({
         <div className="flex-col-center gap-md w-full">
           <label className="text-secondary fw-500 font-sm">Select the correct tone:</label>
           <div className="review-card__tone-buttons flex-center gap-sm flex-wrap">
-            {TONE_BUTTONS.map((btn) => (
+            {TONE_BUTTONS_BASE.map((btn) => (
               <button
                 key={btn.tone}
                 className="review-card__tone-btn flex-col-center gap-xs p-sm radius-md cursor-pointer grow-1 transition-all"
@@ -84,4 +71,4 @@ function ReviewCardBackToneComponent({
   );
 }
 
-export const ReviewCardBackTone = React.memo(ReviewCardBackToneComponent);
+export const ReviewCardToneSelect = React.memo(ReviewCardToneSelectComponent);

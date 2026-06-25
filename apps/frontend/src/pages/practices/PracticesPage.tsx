@@ -14,7 +14,7 @@ import { practices_review, practices_quiz } from "../../shared/constants/paths";
 import "./PracticesPage.css";
 
 const QUIZ_PHASES = [
-  { name: "Phase 1: Audio-to-Type (pinyin + tones)", unlocked: true, ready: true },
+  { name: "Phase 1: Foundations Quiz (pinyin + tone)", unlocked: true, ready: true },
   { name: "Phase 2: IME Simulator", unlocked: false, ready: false },
   { name: "Phase 3: Reading Comprehension", unlocked: false, ready: false },
 ] as const;
@@ -45,10 +45,7 @@ export default function PracticesPage() {
             <p className="font-sm text-secondary m-0">• Available after Phase 1</p>
           </div>
 
-          <button
-            className="btn-primary startBtn"
-            onClick={() => navigate(practices_review)}
-          >
+          <button className="btn-primary startBtn" onClick={() => navigate(practices_review)}>
             Start Review
             <span className="startBtnArrow">▸</span>
           </button>
@@ -77,7 +74,10 @@ export default function PracticesPage() {
             ))}
           </div>
 
-          <button className="btn-primary startBtn" onClick={() => navigate(practices_quiz)}>
+          <button
+            className="btn-primary startBtn"
+            onClick={() => navigate(`${practices_quiz}?type=audio-to-pinyin-tone`)}
+          >
             Start Quiz
             <span className="startBtnArrow">▸</span>
           </button>

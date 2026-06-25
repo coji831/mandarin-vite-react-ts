@@ -76,6 +76,16 @@ class QuizService {
   }
 
   /**
+   * Fetch questions by type and count from the backend.
+   */
+  async fetchQuestions(type: string, count: number): Promise<QuizQuestion[]> {
+    const response = await apiClient.get(ROUTE_PATTERNS.quizQuestions, {
+      params: { type, count },
+    });
+    return response.data;
+  }
+
+  /**
    * Get or create phase gate.
    */
   async getPhaseGate(): Promise<PhaseGate> {

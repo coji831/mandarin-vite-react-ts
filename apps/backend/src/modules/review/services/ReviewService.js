@@ -48,6 +48,9 @@ function buildToneItem(tone, srs, now, sevenDaysAgo, source) {
     back: `${tone.example_syllable} (${tone.pitch_description}) — e.g., ${tone.example_character || ""}`,
     category: "tones",
     character: tone.example_character || null,
+    meaning: tone.pitch_description || null,
+    pinyinPlain: stripToneMarks(tone.example_syllable || ""),
+    correctTone: tone.number,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,
     nextReview: nextReview.toISOString(),
@@ -142,7 +145,7 @@ export class ReviewService {
     const items = [];
 
     if (includeTones) {
-      const tones = readContentDir("tones");
+      const tones = await readContentDir("tones");
       for (const tone of tones) {
         const key = `tone-syllable:${String(tone.number)}`;
         const srs = srsByKey.get(key);

@@ -19,9 +19,9 @@ import "./QuizSessionPage.css";
 
 import type { StrategyType } from "../../features/quiz/types";
 
-interface QuizSessionPageProps {
+type QuizSessionPageProps = {
   strategyType: StrategyType;
-}
+};
 
 /** Full quiz session orchestrator with header, content, and progress bar */
 export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
@@ -52,7 +52,8 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
           className="fw-700 text-primary quiz-results__heading"
           style={{ fontSize: "var(--font-lg)" }}
         >
-          📝 Phase 1 Quiz &mdash; Audio-to-Type
+          📝 Phase 1 Quiz &mdash;{" "}
+          {strategyType === "audio-to-tone" ? "Audio-to-Tone" : "Audio-to-Pinyin"}
         </span>
         <Timer />
       </div>

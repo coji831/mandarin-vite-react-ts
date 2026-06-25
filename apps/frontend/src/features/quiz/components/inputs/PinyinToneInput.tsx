@@ -8,24 +8,23 @@
  * Wireframe Section 4.6: steps ① and ②.
  */
 
-interface PinyinToneInputProps {
+type PinyinToneInputProps = {
   pinyin: string;
   tone: number;
   onPinyinChange: (value: string) => void;
   onToneSelect: (tone: number) => void;
   disabled?: boolean;
-}
+};
 
-/** Tone button configuration */
-const TONE_BUTTONS = [
-  { tone: 1, mark: "ˉ", label: "1st", example: "mā", color: "#FF4444" },
-  { tone: 2, mark: "ˊ", label: "2nd", example: "má", color: "#FF8C00" },
-  { tone: 3, mark: "ˇ", label: "3rd", example: "mǎ", color: "#4CAF50" },
-  { tone: 4, mark: "ˋ", label: "4th", example: "mà", color: "#2196F3" },
-  { tone: 0, mark: "·", label: "0", example: "ma", color: "#9E9E9E" },
-];
-
+import { TONE_BUTTONS_BASE } from "../../../../shared/constants/toneMap";
 import "./PinyinToneInput.css";
+
+/** Tone buttons enriched with quiz-specific fields */
+const TONE_BUTTONS = TONE_BUTTONS_BASE.map((btn) => ({
+  ...btn,
+  example: ["mā", "má", "mǎ", "mà", "ma"][btn.tone === 0 ? 4 : btn.tone - 1],
+  color: ["#FF4444", "#FF8C00", "#4CAF50", "#2196F3", "#9E9E9E"][btn.tone === 0 ? 4 : btn.tone - 1],
+}));
 
 /** Combined pinyin text input + tone selector buttons */
 export function PinyinToneInput({

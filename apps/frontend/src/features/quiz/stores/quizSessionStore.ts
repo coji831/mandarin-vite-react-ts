@@ -14,7 +14,7 @@ import { createInitialSession } from "../types/session";
 import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
 
-interface QuizSessionStore extends QuizSession {
+type QuizSessionStore = QuizSession & {
   /** Initialize a new session with the given strategy */
   initialize: (strategyType: StrategyType) => Promise<void>;
 
@@ -35,10 +35,10 @@ interface QuizSessionStore extends QuizSession {
 
   /** Decrement timer by 1 second */
   tick: () => void;
-}
+};
 
 export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
-  ...createInitialSession("audio-to-type"),
+  ...createInitialSession("audio-to-pinyin-tone"),
 
   initialize: async (strategyType) => {
     set({ phase: "LOADING", error: null });
@@ -155,12 +155,13 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   reset: () => {
-    set(createInitialSession("audio-to-type"));
+    const { strategyType } = get();
+    set(createInitialSession(strategyType));
   },
 
   retry: async () => {
     const { strategyType } = get();
-    set(createInitialSession("audio-to-type"));
+    set(createInitialSession(strategyType));
     // Re-initialize with the same strategy — generates new questions
     const store = get();
     await store.initialize(strategyType);

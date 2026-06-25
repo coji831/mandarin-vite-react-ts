@@ -8,14 +8,14 @@
 import { useState, useCallback } from "react";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
 
-interface AudioPlayerProps {
+type AudioPlayerProps = {
   /** Pinyin audio key (e.g., "bā") */
   audioKey: string;
   /** Chinese character for TTS (if available, skips API lookup) */
   character?: string | null;
   /** Custom label for the button */
   label?: string;
-}
+};
 
 /** Audio playback button using shared TTS hook */
 export function AudioPlayer({ audioKey, character, label = "Play Audio" }: AudioPlayerProps) {

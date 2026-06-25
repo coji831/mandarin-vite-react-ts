@@ -54,12 +54,12 @@ export function useProgressState<T>(selector: (state: RootState) => T): T {
 
 // ─── Actions hook ───────────────────────────────────────────────────────
 
-interface ProgressActions {
+type ProgressActions = {
   /** Mark a word as learned / mastered via backend API */
   markWordLearned: (wordId: string) => Promise<void>;
   /** Unmark a word (remove mastered status) via backend API */
   unmarkWordLearned: (wordId: string) => Promise<void>;
-}
+};
 
 /**
  * Hook returning progress actions (markWordLearned / unmarkWordLearned).

@@ -64,7 +64,7 @@ export class QuizController {
 
   async getQuestions(req, res) {
     try {
-      const { type = "audio-to-type", count = 20 } = req.query;
+      const { type = "audio-to-pinyin-tone", count = 20 } = req.query;
       const questions = await this.quizService.generateQuestions(type, parseInt(count, 10));
       res.json(questions);
     } catch (err) {

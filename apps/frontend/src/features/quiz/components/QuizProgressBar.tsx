@@ -6,12 +6,12 @@
  * and pass threshold warning line at 90%.
  */
 
-interface QuizProgressBarProps {
+type QuizProgressBarProps = {
   /** Current score (number of correct answers) */
   current: number;
   /** Total questions */
   total: number;
-}
+};
 
 /** Score progress bar with pass threshold */
 export function QuizProgressBar({ current, total }: QuizProgressBarProps) {

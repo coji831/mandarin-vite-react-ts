@@ -13,11 +13,11 @@ import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
 
-interface ReviewViewProps {
+type ReviewViewProps = {
   onBack: () => void;
   presetType?: string | null;
   presetSource?: string | null;
-}
+};
 
 export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps) {
   const {
@@ -35,6 +35,8 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     toneCorrect,
     sessionResult,
     totalItems,
+    contentType,
+    source,
   } = useReview();
 
   const { playWordAudio } = useAudioPlayback();
@@ -68,7 +70,11 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     return (
       <div className="flex-col-center gap-md">
         <p className="text-error">Error: {error}</p>
-        <button className="btn-primary" onClick={() => startReview("due", "pinyin")} type="button">
+        <button
+          className="btn-primary"
+          onClick={() => startReview(source, contentType)}
+          type="button"
+        >
           Try Again
         </button>
       </div>
@@ -124,7 +130,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
         <ReviewComplete
           result={sessionResult}
           totalItems={totalItems}
-          onReviewAgain={() => startReview("due", "pinyin")}
+          onReviewAgain={() => startReview(source, contentType)}
           onBack={onBack}
         />
       );

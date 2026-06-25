@@ -1,22 +1,20 @@
 /**
- * @file ReviewCardBackResult.tsx
- * @description Step 3 review card — character + meaning + correct pinyin + rating
- *
- * Inner helper component extracted from ReviewCard.
- * Shows per-step correctness (pinyin/tone) and AGA/EASY rating buttons.
+ * @file ReviewCardResult.tsx
+ * @description Step 3 review card — character + meaning + correct answer + rating
+ * Shows correctness feedback using the active review strategy's feedback label.
  */
 
 import React from "react";
 import type { ReviewItem, Rating } from "../types";
+import { getReviewStrategy } from "../engine/strategies";
 import "./ReviewCard.css";
 
-interface ReviewCardBackResultProps {
+type ReviewCardResultProps = {
   item: ReviewItem;
-  userPinyin: string;
   pinyinCorrect: boolean;
   toneCorrect: boolean;
   onRate: (rating: Rating) => void;
-}
+};
 
 const RATINGS: { value: Rating; emoji: string; label: string; desc: string }[] = [
   { value: "again", emoji: "\uD83D\uDD34", label: "Again", desc: "Reset 1d" },
@@ -24,12 +22,12 @@ const RATINGS: { value: Rating; emoji: string; label: string; desc: string }[] =
   { value: "easy", emoji: "\uD83D\uDFE2", label: "Easy", desc: "\u00D73" },
 ];
 
-function ReviewCardBackResultComponent({
+function ReviewCardResultComponent({
   item,
   pinyinCorrect,
   toneCorrect,
   onRate,
-}: ReviewCardBackResultProps) {
+}: ReviewCardResultProps) {
   const displayChar = item.character ?? item.front;
   const correctPinyin = item.front;
 
@@ -46,20 +44,21 @@ function ReviewCardBackResultComponent({
           <span className="review-card__full-answer fw-600 font-2xl">{correctPinyin}</span>
         </div>
 
-        {/* Per-step correctness */}
+        {/* Per-step correctness — uses the active review strategy's feedback label */}
         <div className="review-card__feedback flex-col gap-sm w-full">
-          <div className="flex-between">
-            <span className="text-secondary">Pinyin:</span>
-            <span className={pinyinCorrect ? "text-success fw-600" : "text-error fw-600"}>
-              {pinyinCorrect ? "\u2705 Correct" : "\u274C Incorrect"}
-            </span>
-          </div>
-          <div className="flex-between">
-            <span className="text-secondary">Tone:</span>
-            <span className={toneCorrect ? "text-success fw-600" : "text-error fw-600"}>
-              {toneCorrect ? "\u2705 Correct" : "\u274C Incorrect"}
-            </span>
-          </div>
+          {(() => {
+            const strategy = getReviewStrategy(item.itemType);
+            const label = strategy?.feedbackLabel ?? "Answer";
+            const isCorrect = label === "Pinyin" ? pinyinCorrect : toneCorrect;
+            return (
+              <div className="flex-between">
+                <span className="text-secondary">{label}:</span>
+                <span className={isCorrect ? "text-success fw-600" : "text-error fw-600"}>
+                  {isCorrect ? "\u2705 Correct" : "\u274C Incorrect"}
+                </span>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Rating buttons */}
@@ -87,4 +86,4 @@ function ReviewCardBackResultComponent({
   );
 }
 
-export const ReviewCardBackResult = React.memo(ReviewCardBackResultComponent);
+export const ReviewCardResult = React.memo(ReviewCardResultComponent);

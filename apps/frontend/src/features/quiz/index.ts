@@ -8,7 +8,6 @@
 
 // Engine
 export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
-export { audioToTypeStrategy } from "./engine/strategies/AudioToTypeStrategy";
 
 // Types
 export type { QuizStrategy, StrategyType, QuizQuestion, AnswerResult, QuizPhase } from "./types";

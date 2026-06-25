@@ -10,6 +10,14 @@ export {
 } from "./components";
 export { useFetchStreak, useFetchBadges, useSpendFreeze } from "./hooks";
 export { fetchStreak, fetchBadges, spendFreeze } from "./services";
-export type { StreakData, Badge, XPData, MysteryBox } from "./types/GamificationTypes";
-export type { StreakResponse, BadgeResponse, FreezeResponse, BadgeItem } from "./services";
+export type {
+  StreakData,
+  Badge,
+  XPData,
+  MysteryBox,
+  StreakResponse,
+  BadgeResponse,
+  FreezeResponse,
+  BadgeItem,
+} from "./types";
 export { calculateLevel, getXPWithinLevel } from "./utils";

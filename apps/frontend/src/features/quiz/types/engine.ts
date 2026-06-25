@@ -7,7 +7,7 @@
  */
 
 /** Supported quiz strategy types */
-export type StrategyType = "audio-to-type";
+export type StrategyType = "audio-to-pinyin" | "audio-to-tone" | "audio-to-pinyin-tone";
 
 /** Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS */
 export type QuizPhase = "LOADING" | "QUESTION" | "INPUT" | "FEEDBACK" | "RESULTS" | "ERROR";
@@ -21,6 +21,7 @@ export interface QuizQuestion {
   category: "pinyin" | "tones" | "pairs" | "rules";
   displayPinyin?: string; // pinyin WITH tone marks
   character?: string | null; // Chinese character for TTS (e.g., "八")
+  meaning?: string | null; // English meaning of the character
 }
 
 /** Result of evaluating a user's answer */

@@ -7,9 +7,9 @@ import { Navigate } from "react-router-dom";
 import { login_page } from "../../../shared/constants/paths";
 import { useAuth } from "../context/AuthContext";
 
-interface ProtectedRouteProps {
+type ProtectedRouteProps = {
   children: React.ReactNode;
-}
+};
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();

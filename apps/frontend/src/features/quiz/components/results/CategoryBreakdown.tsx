@@ -9,9 +9,9 @@
 
 import type { AnswerResult } from "../../types/engine";
 
-interface CategoryBreakdownProps {
+type CategoryBreakdownProps = {
   answers: AnswerResult[];
-}
+};
 
 /** Compute per-category scores from the answers array */
 function computeScores(answers: AnswerResult[]) {

@@ -27,6 +27,18 @@ export function QuestionView() {
       {/* Audio player */}
       <AudioPlayer audioKey={question.audioKey} character={question.character} />
 
+      {/* Character + Meaning display */}
+      {question.character && (
+        <div className="quiz-question__character-display flex-col-center gap-xs text-center">
+          <span className="quiz-question__character font-3xl fw-700">{question.character}</span>
+          {question.meaning && (
+            <span className="quiz-question__meaning text-secondary font-md">
+              ({question.meaning})
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Listen prompt */}
       <p className="quiz-question__prompt text-tertiary text-center font-sm">
         Listen to the audio, then:

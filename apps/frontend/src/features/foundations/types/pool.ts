@@ -32,7 +32,7 @@ export interface PinyinFinal {
 export interface PinyinCombination {
   initial: string;
   final: string;
-  tones: string[];
+  tones: (string | null)[];
 }
 
 export interface ToneDefinition {

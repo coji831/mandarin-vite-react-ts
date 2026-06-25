@@ -1,5 +1,5 @@
 /**
- * @file ReviewCardFront.tsx
+ * @file ReviewCardPinyinInput.tsx
  * @description Step 1 review card — character + meaning exposure, audio button, pinyin input
  *
  * Inner helper component extracted from ReviewCard.
@@ -10,13 +10,17 @@ import React, { useState } from "react";
 import type { ReviewItem } from "../types";
 import "./ReviewCard.css";
 
-interface ReviewCardFrontProps {
+type ReviewCardPinyinInputProps = {
   item: ReviewItem;
   onSubmitPinyin: (pinyin: string) => void;
   onPlayAudio: (text: string) => void;
-}
+};
 
-function ReviewCardFrontComponent({ item, onSubmitPinyin, onPlayAudio }: ReviewCardFrontProps) {
+function ReviewCardPinyinInputComponent({
+  item,
+  onSubmitPinyin,
+  onPlayAudio,
+}: ReviewCardPinyinInputProps) {
   const [localPinyin, setLocalPinyin] = useState("");
   const displayChar = item.character ?? item.front;
 
@@ -79,4 +83,4 @@ function ReviewCardFrontComponent({ item, onSubmitPinyin, onPlayAudio }: ReviewC
   );
 }
 
-export const ReviewCardFront = React.memo(ReviewCardFrontComponent);
+export const ReviewCardPinyinInput = React.memo(ReviewCardPinyinInputComponent);

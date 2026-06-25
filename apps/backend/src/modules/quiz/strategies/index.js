@@ -3,11 +3,9 @@
  * Quiz strategy registry.
  * Add new strategies here as they are created.
  */
-import { audioToTypeStrategy } from "./AudioToTypeStrategy.js";
+import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
 
-const REGISTRY = {
-  "audio-to-type": audioToTypeStrategy,
-};
+export { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
 
 /**
  * Get a registered strategy by type name.
@@ -15,7 +13,10 @@ const REGISTRY = {
  * @returns {object|null} The strategy object, or null if not found
  */
 export function getStrategy(type) {
-  return REGISTRY[type] ?? null;
+  const strategies = {
+    "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
+  };
+  return strategies[type] ?? null;
 }
 
 /**
@@ -23,5 +24,7 @@ export function getStrategy(type) {
  * @returns {string[]}
  */
 export function getRegisteredTypes() {
-  return Object.keys(REGISTRY);
+  return Object.keys({
+    "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
+  });
 }

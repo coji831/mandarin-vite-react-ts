@@ -4,11 +4,11 @@ import type { RootState } from "../hooks/useProgressState";
 import { useProgressState } from "../hooks";
 import "./VocabularyCard.css";
 
-interface VocabularyCardProps {
+type VocabularyCardProps = {
   list: VocabularyList;
   onSelect: (list: VocabularyList) => void;
   wordIds?: string[]; // Optional: actual word IDs for this list for accurate progress calculation
-}
+};
 
 export function VocabularyCard({ list, onSelect, wordIds }: VocabularyCardProps) {
   // Story 13.4: Get progress data using selector (avoids direct state access)

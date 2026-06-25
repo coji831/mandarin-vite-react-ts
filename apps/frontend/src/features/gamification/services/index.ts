@@ -9,37 +9,7 @@
 import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
-// ============================================================================
-// Types
-// ============================================================================
-
-export type StreakResponse = {
-  currentStreak: number;
-  longestStreak: number;
-  freezeCount: number;
-  lastActivityDate: string;
-};
-
-export type BadgeItem = {
-  id: string;
-  name: string;
-  streakRequired: number;
-  icon: string;
-  earnedDate?: string;
-  progress?: number;
-  percentComplete?: number;
-};
-
-export type BadgeResponse = {
-  earned: BadgeItem[];
-  available: BadgeItem[];
-};
-
-export type FreezeResponse = {
-  success: boolean;
-  freezeCount: number;
-  message: string;
-};
+export type { StreakResponse, BadgeItem, BadgeResponse, FreezeResponse } from "../types";
 
 // ============================================================================
 // API Functions

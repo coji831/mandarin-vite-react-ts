@@ -1,18 +1,19 @@
 /**
  * ReviewCard.tsx
- * Phase 1 Review — Single flip-card with 3 sides.
- * Manages card-side state internally based on the parent hook's step.
+ * Phase 1 Review — Step-based review card container.
+ * Renders the appropriate step component based on the parent hook's step.
+ * Step flow is determined by the active ReviewStrategy.
  *
- * Sides:
- *  - "front" (step="pinyin"): character + meaning exposure, audio button, pinyin input
- *  - "back-tone" (step="tone"): character + meaning + typed pinyin + 5 tone buttons
- *  - "back-result" (step="result"): character + meaning + correct pinyin + ✅/❌ + A/G/E rating
+ * Steps:
+ *  - "pinyin" (step="pinyin"): character + meaning exposure, audio button, pinyin input → ReviewCardPinyinInput
+ *  - "tone" (step="tone"): character + meaning + tone selection → ReviewCardToneSelect
+ *  - "result" (step="result"): character + meaning + correct answer + ✅/❌ + A/G/E rating → ReviewCardResult
  */
 import React from "react";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
-import { ReviewCardFront } from "./ReviewCardFront";
-import { ReviewCardBackTone } from "./ReviewCardBackTone";
-import { ReviewCardBackResult } from "./ReviewCardBackResult";
+import { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
+import { ReviewCardToneSelect } from "./ReviewCardToneSelect";
+import { ReviewCardResult } from "./ReviewCardResult";
 import type { ReviewItem, Rating } from "../types";
 import "./ReviewCard.css";
 
@@ -51,26 +52,24 @@ function ReviewCardComponent({
 
   if (step === "pinyin") {
     return (
-      <ReviewCardFront item={item} onSubmitPinyin={onSubmitPinyin} onPlayAudio={handlePlayAudio} />
-    );
-  }
-
-  if (step === "tone") {
-    return (
-      <ReviewCardBackTone
+      <ReviewCardPinyinInput
         item={item}
-        userPinyin={userPinyin}
-        onSelectTone={onSelectTone}
+        onSubmitPinyin={onSubmitPinyin}
         onPlayAudio={handlePlayAudio}
       />
     );
   }
 
+  if (step === "tone") {
+    return (
+      <ReviewCardToneSelect item={item} onSelectTone={onSelectTone} onPlayAudio={handlePlayAudio} />
+    );
+  }
+
   if (step === "result") {
     return (
-      <ReviewCardBackResult
+      <ReviewCardResult
         item={item}
-        userPinyin={userPinyin}
         pinyinCorrect={pinyinCorrect}
         toneCorrect={toneCorrect}
         onRate={onRate}

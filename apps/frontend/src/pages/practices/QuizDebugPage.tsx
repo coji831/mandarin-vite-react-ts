@@ -103,7 +103,7 @@ export function QuizDebugPage() {
 
     // Set common baseline state
     const common = {
-      strategyType: "audio-to-type" as const,
+      strategyType: "audio-to-pinyin" as const,
       questions: MOCK_QUESTIONS,
       timer: 150,
     };

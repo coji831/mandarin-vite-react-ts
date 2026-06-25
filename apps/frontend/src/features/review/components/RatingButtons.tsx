@@ -5,10 +5,10 @@
 import type { Rating } from "../types";
 import "./RatingButtons.css";
 
-interface RatingButtonsProps {
+type RatingButtonsProps = {
   onRate: (rating: Rating) => void;
   disabled?: boolean;
-}
+};
 
 const RATINGS: { value: Rating; label: string; color: string; description: string }[] = [
   { value: "again", label: "Again", color: "var(--color-error)", description: "Didn't remember" },

@@ -1,12 +1,13 @@
 /**
  * useReview.ts
- * Phase 1 Review — Three-step active recall flow hook.
- * Manages the pinyin → tone → result → rating machine.
+ * Phase 1 Review — Strategy-powered review flow hook.
+ * Uses ReviewStrategy to determine step flow and evaluate answers.
  * No Zustand, no session management. Uses local useState.
  */
 import { useState, useCallback } from "react";
 import type { ReviewItem, Rating, ReviewSource, ReviewStep, ReviewSessionResult } from "../types";
 import { reviewService } from "../services/reviewService";
+import { getReviewStrategy } from "../engine/strategies";
 
 /** Parse user pinyin input "hao3" into { pinyin: "hao", tone: 3 }. */
 function parsePinyinInput(input: string): { pinyin: string; tone: number } {
@@ -23,7 +24,6 @@ export function useReview() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<ReviewSource>("due");
-  const [contentType, setContentType] = useState("pinyin");
 
   /* ── Per-item state ────────────────────────────── */
   const [userPinyin, setUserPinyin] = useState("");
@@ -50,6 +50,15 @@ export function useReview() {
     setToneCorrect(false);
   }, []);
 
+  const getStrategyForIndex = useCallback(
+    (index: number) => {
+      const item = items[index];
+      if (!item) return undefined;
+      return getReviewStrategy(item.itemType);
+    },
+    [items],
+  );
+
   /* ── Fetch items ────────────────────────────────── */
 
   const fetchItems = useCallback(
@@ -57,6 +66,7 @@ export function useReview() {
       setLoading(true);
       setError(null);
       setCurrentIndex(0);
+      setSource(src);
       resetPerItem();
       setSessionResult({
         totalItems: 0,
@@ -72,7 +82,8 @@ export function useReview() {
         if (data.length === 0) {
           setStep("complete");
         } else {
-          setStep("pinyin");
+          const strategy = getReviewStrategy(data[0].itemType);
+          setStep(strategy?.initialStep ?? "pinyin");
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load review items");
@@ -85,10 +96,8 @@ export function useReview() {
   );
 
   const startReview = useCallback(
-    (src: ReviewSource, type: string) => {
-      setSource(src);
-      setContentType(type);
-      fetchItems(src, type);
+    (src: ReviewSource, _type: string) => {
+      fetchItems(src, _type);
     },
     [fetchItems],
   );
@@ -104,8 +113,11 @@ export function useReview() {
       setUserPinyin(parsed.pinyin);
       setUserTone(parsed.tone);
 
-      const expected = (item.pinyinPlain || item.front || "").toLowerCase();
-      const isCorrect = expected.length > 0 && parsed.pinyin === expected;
+      const strategy = getReviewStrategy(item.itemType);
+      const evaluation = strategy
+        ? strategy.evaluate(item, { type: "pinyin", value: parsed.pinyin })
+        : { correct: false };
+      const isCorrect = evaluation.correct;
       setPinyinCorrect(isCorrect);
 
       setSessionResult((prev) => ({
@@ -114,9 +126,9 @@ export function useReview() {
         pinyinCorrect: prev.pinyinCorrect + (isCorrect ? 1 : 0),
       }));
 
-      setStep("tone");
+      setStep("result");
     },
-    [items, currentIndex, step],
+    [items, currentIndex, step, getReviewStrategy],
   );
 
   /* ── Step 2: Tone selection ─────────────────────── */
@@ -127,9 +139,12 @@ export function useReview() {
       if (!item || step !== "tone") return;
 
       setUserTone(tone);
-      // If correctTone is undefined, the item doesn't have tone data
-      // so we treat it as correct (no penalty for a non-existent tone requirement)
-      const isCorrect = item.correctTone === undefined || tone === item.correctTone;
+
+      const strategy = getReviewStrategy(item.itemType);
+      const evaluation = strategy
+        ? strategy.evaluate(item, { type: "tone", value: tone })
+        : { correct: false };
+      const isCorrect = evaluation.correct;
       setToneCorrect(isCorrect);
 
       setSessionResult((prev) => ({
@@ -140,7 +155,7 @@ export function useReview() {
 
       setStep("result");
     },
-    [items, currentIndex, step],
+    [items, currentIndex, step, getReviewStrategy],
   );
 
   /* ── Step 3: Rating + advance ───────────────────── */
@@ -167,16 +182,18 @@ export function useReview() {
       } else {
         setCurrentIndex((i) => i + 1);
         resetPerItem();
-        setStep("pinyin");
+        const nextStrategy = getStrategyForIndex(currentIndex + 1);
+        setStep(nextStrategy?.initialStep ?? "pinyin");
       }
     },
-    [items, currentIndex, step, resetPerItem],
+    [items, currentIndex, step, resetPerItem, getStrategyForIndex],
   );
 
   /* ── Computed values ────────────────────────────── */
 
   const currentItem = items[currentIndex] ?? null;
   const totalItems = items.length;
+  const contentType = currentItem?.itemType ?? "pinyin";
 
   return {
     /* State */

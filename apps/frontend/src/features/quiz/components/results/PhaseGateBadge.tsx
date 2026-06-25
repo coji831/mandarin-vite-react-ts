@@ -5,9 +5,9 @@
  * Displays an animated badge indicating whether the user passed or failed.
  */
 
-interface PhaseGateBadgeProps {
+type PhaseGateBadgeProps = {
   passed: boolean;
-}
+};
 
 /** Animated gate pass/fail badge */
 export function PhaseGateBadge({ passed }: PhaseGateBadgeProps) {
