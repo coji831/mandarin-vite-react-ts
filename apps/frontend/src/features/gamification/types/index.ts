@@ -30,7 +30,7 @@ export type BadgeResponse = {
 };
 
 export type FreezeResponse = {
-  success: boolean;
   freezeCount: number;
   message: string;
+  lastActivityDate: string;
 };

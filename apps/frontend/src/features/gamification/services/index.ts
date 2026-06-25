@@ -8,8 +8,7 @@
 
 import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-
-export type { StreakResponse, BadgeItem, BadgeResponse, FreezeResponse } from "../types";
+import { BadgeResponse, FreezeResponse, StreakResponse } from "../types";
 
 // ============================================================================
 // API Functions

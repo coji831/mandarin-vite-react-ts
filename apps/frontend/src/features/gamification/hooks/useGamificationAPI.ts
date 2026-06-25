@@ -30,50 +30,7 @@ import {
   fetchBadges as apiFetchBadges,
   spendFreeze as apiSpendFreeze,
 } from "../services";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-/**
- * Streak data with freeze currency
- * Matches backend GET /api/v1/progress/streak response
- */
-export type StreakResponse = {
-  currentStreak: number;
-  longestStreak: number;
-  freezeCount: number;
-  lastActivityDate: string; // ISO 8601 datetime
-};
-
-/**
- * Badge data with earned status
- * Matches backend GET /api/v1/gamification/badges response
- */
-export type BadgeResponse = {
-  earned: BadgeItem[];
-  available: BadgeItem[];
-};
-
-export type BadgeItem = {
-  id: string;
-  name: string;
-  streakRequired: number;
-  icon: string;
-  earnedDate?: string; // ISO 8601 datetime (for earned badges)
-  progress?: number; // Current progress (for available badges)
-  percentComplete?: number; // Progress percentage (for available badges)
-};
-
-/**
- * Freeze spend response
- * Matches backend POST /api/v1/progress/streak/freeze response
- */
-export type FreezeResponse = {
-  message: string;
-  freezeCount: number; // Remaining freezes after spending
-  lastActivityDate: string; // Extended grace period end
-};
+import { BadgeResponse, FreezeResponse, StreakResponse } from "../types";
 
 // ============================================================================
 // Hooks

@@ -14,7 +14,7 @@ import "./CombinationDisplay.css";
 export interface CombinationDisplayProps {
   initial: string;
   final: string;
-  tones: string[];
+  tones: (string | null)[];
   onPlayTone: (pinyin: string) => void;
   loadingPinyin?: string | null;
 }
@@ -55,7 +55,11 @@ export function CombinationDisplay({
             <span className="pinyin-tone-label font-xs text-uppercase text-muted">
               {TONE_LABELS[index] ?? index}
             </span>
-            <ToneCell pinyin={pinyin} isLoading={loadingPinyin === pinyin} onPlay={onPlayTone} />
+            <ToneCell
+              pinyin={pinyin ?? ""}
+              isLoading={loadingPinyin === pinyin}
+              onPlay={onPlayTone}
+            />
           </div>
         ))}
       </div>
