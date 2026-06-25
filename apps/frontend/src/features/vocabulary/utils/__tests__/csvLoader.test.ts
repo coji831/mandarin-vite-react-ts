@@ -30,8 +30,9 @@ describe("csvLoader", () => {
   it("should normalize wordId to string and validate uniqueness", async () => {
     // Simulate a CSV with duplicate and missing wordIds
     const csv = `No,Chinese,Pinyin,English\n1,你好,ni hao,hello\n2,谢谢,xie xie,thanks\n2,再见,zai jian,goodbye\n,请,qing,please`;
-    global.fetch = vi.fn(() =>
-      Promise.resolve({ ok: true, text: () => Promise.resolve(csv) }),
+    global.fetch = vi.fn(
+      () => Promise.resolve({ ok: true, text: () => Promise.resolve(csv) }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as any;
     const result = await loadCsvVocab("test.csv");
     expect(result).toHaveLength(4);

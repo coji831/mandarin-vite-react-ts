@@ -7,7 +7,7 @@ import { devtools } from "zustand/middleware";
 import type { WordProgress } from "../types";
 import { progressApi } from "../services/progressService";
 
-interface ProgressStoreState {
+type ProgressStoreState = {
   wordsById: Record<string, WordProgress>;
   wordIds: string[];
   isLoading: boolean;
@@ -17,7 +17,7 @@ interface ProgressStoreState {
   updateWordProgress: (wordId: string, data: Partial<WordProgress>) => void;
   batchUpdate: (updates: Array<{ wordId: string; data: Partial<WordProgress> }>) => void;
   reset: () => void;
-}
+};
 
 const initialState = {
   wordsById: {} as Record<string, WordProgress>,
@@ -28,7 +28,7 @@ const initialState = {
 
 export const useProgressStore = create<ProgressStoreState>()(
   devtools(
-    (set, get) => ({
+    (set, _get) => ({
       ...initialState,
 
       loadProgress: async () => {
@@ -42,7 +42,7 @@ export const useProgressStore = create<ProgressStoreState>()(
             wordIds.push(record.wordId);
           }
           set({ wordsById, wordIds, isLoading: false });
-        } catch (err) {
+        } catch (_err) {
           set({ error: "Failed to load progress", isLoading: false });
         }
       },

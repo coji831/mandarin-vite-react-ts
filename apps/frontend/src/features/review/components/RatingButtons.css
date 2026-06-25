@@ -1,0 +1,8 @@
+/**
+ * RatingButtons.css
+ * Phase 1 Review — Again/Good/Easy SRS rating button styles.
+ */
+.rating-btn {
+  flex: 1;
+  min-width: 120px;
+}

@@ -6,7 +6,10 @@
 import express from "express";
 import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
-import { progressService, streakService, learningService } from "../../../app/container.js";
+import { createLogger } from "../../../shared/utils/logger.js";
+import { progressService, streakService } from "../../../app/container.js";
+
+const logger = createLogger("eventRoutes");
 
 const router = express.Router();
 
@@ -30,12 +33,10 @@ router.post(
 
     switch (type) {
       case "record-answer":
-        await learningService.recordQuizResult({
-          userId,
-          wordId: data.wordId,
-          correct: data.correct,
-          questionType: data.questionType || feature,
-        });
+        // Deprecated: old SRS word-level tracking removed in Epic 18 cleanup
+        logger.debug(
+          `[eventRoutes] record-answer skipped (deprecated): userId=${userId} wordId=${data.wordId}`,
+        );
         break;
       case "update-streak":
         await streakService.updateStreak(userId, data.date ? new Date(data.date) : new Date());

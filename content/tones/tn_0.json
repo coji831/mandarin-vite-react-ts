@@ -1,0 +1,15 @@
+{
+  "id": "tn_0",
+  "number": 0,
+  "name": "Neutral",
+  "mark": "·",
+  "contour": [],
+  "pitch_description": "Light/unstressed",
+  "example_syllable": "ma",
+  "example_character": "吗",
+  "color": "#9E9E9E",
+  "metadata": {
+    "pronunciation_guide": "Tone 0 (neutral tone): Light and unstressed, with no fixed pitch contour.",
+    "common_issues": ""
+  }
+}

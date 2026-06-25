@@ -12,12 +12,11 @@
  * All dependencies must be injected via constructor (no default instantiation)
  */
 export class StreakService {
-  constructor(streakRepository, answerRepository) {
-    if (!streakRepository || !answerRepository) {
-      throw new Error("StreakService requires streakRepository and answerRepository");
+  constructor(streakRepository) {
+    if (!streakRepository) {
+      throw new Error("StreakService requires streakRepository");
     }
     this.streakRepository = streakRepository;
-    this.answerRepository = answerRepository;
   }
 
   async getStreak(userId) {
@@ -109,36 +108,6 @@ export class StreakService {
       freezeCount: streak.freezeCount - 1,
       lastActivityDate: extendedDate,
     });
-  }
-
-  async checkAndAwardFreeze(userId) {
-    const recentResults = await this.answerRepository.findRecentByUser(userId, 10);
-
-    if (recentResults.length < 10) {
-      return false;
-    }
-
-    const allCorrect = recentResults.every((result) => result.correct === true);
-
-    if (!allCorrect) {
-      return false;
-    }
-
-    const streak = await this.streakRepository.findByUser(userId);
-
-    if (!streak) {
-      return false;
-    }
-
-    if (streak.freezeCount >= 5) {
-      return false;
-    }
-
-    await this.streakRepository.update(userId, {
-      freezeCount: streak.freezeCount + 1,
-    });
-
-    return true;
   }
 }
 

@@ -26,6 +26,7 @@ const app = express();
 const allowedOrigins = [
   config.frontendUrl, // Production frontend (from FRONTEND_URL env var)
   "http://localhost:5173", // Local Vite dev server
+  "http://localhost:5174", // Local Vite dev server (fallback port)
   "http://localhost:3000", // Alternative local port
 ];
 

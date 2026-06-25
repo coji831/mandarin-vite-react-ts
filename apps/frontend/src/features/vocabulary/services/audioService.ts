@@ -41,7 +41,9 @@ export class AudioService implements IAudioService {
   async fetchExampleAudio(cacheKey: string): Promise<{ audio_url: string }> {
     // Delegate to backend implementation
     // Backend returns `{ audio_url: string }` (snake_case)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof (this.backend as any).fetchExampleAudio === "function") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (this.backend as any).fetchExampleAudio(cacheKey);
     }
     // Fallback: return a tiny silent audio to avoid hard errors in UI
@@ -54,21 +56,18 @@ export class AudioService implements IAudioService {
    */
   async playAudio(audioUrl: string): Promise<void> {
     if (typeof window === "undefined") return Promise.resolve();
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const audio = new window.Audio();
-        audio.src = audioUrl;
-        audio.load();
-        // Resolve on ended, reject on error
-        audio.onended = () => resolve();
-        audio.onerror = (e) => reject(e);
-        // Start playback (may reject due to autoplay policies)
-
-        await audio.play();
-      } catch (err) {
+    return new Promise<void>((resolve, reject) => {
+      const audio = new window.Audio();
+      audio.src = audioUrl;
+      audio.load();
+      // Resolve on ended, reject on error
+      audio.onended = () => resolve();
+      audio.onerror = (e) => reject(e);
+      // Start playback (may reject due to autoplay policies)
+      audio.play().catch((err) => {
         console.error("[AudioService] playAudio failed", err);
         reject(err);
-      }
+      });
     });
   }
 }

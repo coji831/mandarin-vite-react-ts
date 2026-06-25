@@ -1,0 +1,15 @@
+{
+  "id": "tn_3",
+  "number": 3,
+  "name": "Third",
+  "mark": "ˇ",
+  "contour": [2, 1, 0.5, 1, 4],
+  "pitch_description": "Falling-rising",
+  "example_syllable": "mǎ",
+  "example_character": "马",
+  "color": "#44aa44",
+  "metadata": {
+    "pronunciation_guide": "Think of tone 3 pitch contour: Falling-rising.",
+    "common_issues": ""
+  }
+}

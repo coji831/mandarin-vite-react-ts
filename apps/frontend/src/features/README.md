@@ -21,13 +21,14 @@ feature-name/
 
 ## Available Features
 
-| Feature          | Description                                                                          | README                             |
-| ---------------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
-| **auth**         | JWT-based authentication with login, register, and token refresh                     | [`auth/README.md`](auth/README.md) |
-| **dashboard**    | User dashboard with learning statistics and leech detection                          | —                                  |
-| **gamification** | Study streaks, badges, XP, mystery box rewards, and achievement display              | —                                  |
-| **quiz**         | Quiz system with multiple question types, progress tracking, and session management  | —                                  |
-| **vocabulary**   | Flashcard-based vocabulary learning with spaced repetition, audio, and word examples | —                                  |
+| Feature          | Description                                                                                                        | README                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| **auth**         | JWT-based authentication with login, register, and token refresh                                                   | [`auth/README.md`](auth/README.md) |
+| **dashboard**    | User dashboard with learning statistics and leech detection                                                        | —                                  |
+| **foundations**  | Learn: pinyin, tones, strokes, animations                                                                          | —                                  |
+| **gamification** | Study streaks, badges, XP, mystery box rewards, and achievement display                                            | —                                  |
+| **quiz**         | Phase-gated audio-to-pinyin-and-tone assessment via Strategy pattern with progress tracking and session management | —                                  |
+| **vocabulary**   | Flashcard-based vocabulary learning with spaced repetition, audio, and word examples                               | —                                  |
 
 ## Documentation
 

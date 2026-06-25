@@ -1,0 +1,163 @@
+/**
+ * Quiz.css — Shared styles for quiz components.
+ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+@keyframes animate-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Progress Bar
+   ═══════════════════════════════════════════════ */
+.quiz-progress__track {
+  position: relative;
+  height: 12px;
+  overflow: visible;
+}
+.quiz-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success) 0%, #34d399 100%);
+  transition: width var(--transition-normal);
+  min-width: 4px;
+}
+.quiz-progress__threshold {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 20px;
+  background: var(--color-warning);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Timer
+   ═══════════════════════════════════════════════ */
+.quiz-timer--warning {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+.quiz-timer--danger {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  animation: pulse 1s ease-in-out infinite;
+}
+.quiz-timer__value {
+  font-family: "Courier New", monospace;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Feedback
+   ═══════════════════════════════════════════════ */
+
+.quiz-feedback__badge {
+  align-self: flex-start;
+}
+.quiz-feedback__badge--correct {
+  background: var(--color-success);
+  color: white;
+}
+.quiz-feedback__badge--incorrect {
+  background: var(--color-error);
+  color: white;
+}
+.quiz-feedback__divider {
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--surface-border);
+}
+.quiz-feedback__next-btn {
+  min-width: 160px;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Question View
+   ═══════════════════════════════════════════════ */
+.quiz-question {
+  min-height: 320px;
+}
+.quiz-question__prompt {
+  margin: -0.5rem 0 0;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Results
+   ═══════════════════════════════════════════════ */
+
+.quiz-results__timer {
+  font-family: "Courier New", monospace;
+}
+.quiz-results__card {
+  min-width: 320px;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Category Breakdown
+   ═══════════════════════════════════════════════ */
+.quiz-breakdown__label {
+  justify-content: space-between;
+}
+.quiz-breakdown__track {
+  height: 8px;
+}
+.quiz-breakdown__fill {
+  height: 100%;
+  transition: width var(--transition-normal);
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Phase Gate Badge
+   ═══════════════════════════════════════════════ */
+.quiz-badge {
+  animation: animate-fade-in 0.5s;
+}
+.quiz-badge--pass {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+.quiz-badge--fail {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Spinner
+   ═══════════════════════════════════════════════ */
+.quiz-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--surface-border);
+  border-top-color: var(--color-primary);
+  animation: spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Audio Button
+   ═══════════════════════════════════════════════ */
+.quiz-audio-btn {
+  display: inline-flex;
+  align-items: center;
+}
+.quiz-audio-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

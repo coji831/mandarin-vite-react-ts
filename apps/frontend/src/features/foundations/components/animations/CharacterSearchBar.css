@@ -1,0 +1,37 @@
+/**
+ * @file CharacterSearchBar.css
+ * @description Styles for the CharacterSearchBar component (Story 18.4)
+ */
+
+.stroke-anim-subtitle {
+  margin: 0 0 0.35rem;
+}
+
+.stroke-anim-search {
+  padding: 0.4rem 0.5rem;
+}
+
+.stroke-anim-input {
+  outline: none;
+  padding: 0.2rem 0;
+}
+
+.stroke-anim-input::placeholder {
+  color: var(--text-muted);
+}
+
+.stroke-anim-search-btn {
+  padding: 0.3rem 0.6rem;
+  background: var(--color-primary-border);
+  color: var(--color-primary);
+  transition: background 0.15s;
+}
+
+.stroke-anim-search-btn:hover:not(:disabled) {
+  background: var(--color-primary-border-hover);
+}
+
+.stroke-anim-search-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

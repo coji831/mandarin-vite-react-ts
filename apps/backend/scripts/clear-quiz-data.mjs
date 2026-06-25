@@ -11,11 +11,9 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 try {
-  await prisma.quizSessionAnswer.deleteMany({});
-  await prisma.quizSessionQuestion.deleteMany({});
-  await prisma.quizSessionSummary.deleteMany({});
-  await prisma.quizSession.deleteMany({});
-  console.log("Cleared quiz tables");
+  // Old SRS quiz models removed in Epic 18 cleanup — this script is preserved
+  // for future use if new quiz models need cleanup
+  console.log("No old quiz tables to clear (removed in Epic 18)");
 } finally {
   await prisma.$disconnect();
   await pool.end();

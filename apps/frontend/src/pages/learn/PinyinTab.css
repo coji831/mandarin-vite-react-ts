@@ -1,0 +1,54 @@
+/**
+ * @file PinyinTab.css
+ * @description Styles for the interactive pinyin chart (Story 18.2)
+ * Dark theme matching existing FoundationsPage.css conventions.
+ */
+
+/* ─── Tab Container ─── */
+
+.pinyin-tab-loading {
+  min-height: 200px;
+}
+
+/* ─── Sections ─── */
+
+.pinyin-section-subtitle {
+  margin: 0 0 0.4rem;
+}
+
+/* ─── Empty / Hint States ─── */
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .pinyin-initial-cell {
+    flex: 0 0 calc((100% - 4 * 0.5rem) / 5);
+  }
+
+  .pinyin-finals-group-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pinyin-tone-cell {
+    width: 64px;
+    height: 50px;
+  }
+
+  .pinyin-tone-cell-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .pinyin-initials-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pinyin-finals-group-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pinyin-combination-row {
+    gap: var(--space-xs);
+  }
+}

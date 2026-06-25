@@ -1,0 +1,16 @@
+{
+  "id": "fin_a",
+  "pinyin": "a",
+  "type": "simple",
+  "category": "simple_final",
+  "tone_variants": {
+    "tone1": "bā",
+    "tone2": "bá",
+    "tone3": "bǎ",
+    "tone4": "bà",
+    "tone0": "ba"
+  },
+  "metadata": {
+    "pronunciation_guide": "a — like '**a**h'"
+  }
+}

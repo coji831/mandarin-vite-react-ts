@@ -1,0 +1,21 @@
+.foundations-tab {
+  background: transparent;
+  color: var(--text-tertiary);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.foundations-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.foundations-tab--active {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+
+.foundations-tab-content {
+  min-height: 300px;
+}

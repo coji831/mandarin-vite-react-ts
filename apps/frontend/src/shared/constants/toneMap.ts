@@ -102,3 +102,12 @@ export const toneMap: Record<string, string> = {
  * Used for efficient pattern matching without runtime sorting
  */
 export const toneMapKeys = Object.keys(toneMap).sort((a, b) => b.length - a.length);
+
+/** Base tone button config shared by quiz and review features */
+export const TONE_BUTTONS_BASE: { tone: number; mark: string; label: string }[] = [
+  { tone: 1, mark: "\u02C9", label: "1st" },
+  { tone: 2, mark: "\u02CA", label: "2nd" },
+  { tone: 3, mark: "\u02C7", label: "3rd" },
+  { tone: 4, mark: "\u02CB", label: "4th" },
+  { tone: 0, mark: "\u00B7", label: "0" },
+];

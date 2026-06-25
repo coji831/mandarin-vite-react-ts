@@ -20,6 +20,20 @@ npm run build
 npm run preview
 ```
 
+## Features
+
+### Foundations
+
+Interactive pinyin system guide with clickable initials/finals grid (21 initials + 39 finals), tone-colored display, and TTS audio playback. Tones reference with pitch contour visualization, pair drills, and sandhi rules (3rd tone, 一, 不). Stroke order reference covering 8 basic strokes and 4 rules with Hanzi Writer SVG animations and character search.
+
+### Review
+
+SRS flip-card practice for pinyin syllables and tone identification. Strategy-driven flow with interval-doubling spaced repetition. Supports source filtering (due, recent, all) and content type selection (pinyin, tone-syllable).
+
+### Quiz
+
+Phase-gated audio-to-pinyin-and-tone assessment using the Strategy pattern. 10-question timed quiz evaluating both pinyin spelling and tone selection. Pass threshold (80%) unlocks Phase 2 content. Category breakdown and instant feedback with correct answer reveal.
+
 ## Available Scripts
 
 | Command                 | Description                      |

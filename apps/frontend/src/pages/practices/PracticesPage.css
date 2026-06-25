@@ -1,0 +1,37 @@
+/**
+ * PracticesPage.css
+ *
+ * Styles for the Practices index page (Wireframe Section 7.5).
+ * Only styles that cannot be expressed with global utility classes:
+ * - Responsive 2-column card grid
+ * - Start button arrow hover animation
+ */
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Arrow shift on hover for start buttons */
+.startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.startBtn:hover .startBtnArrow {
+  transform: translateX(3px);
+}
+
+.startBtnArrow {
+  display: inline-block;
+  transition: transform var(--transition-fast);
+}

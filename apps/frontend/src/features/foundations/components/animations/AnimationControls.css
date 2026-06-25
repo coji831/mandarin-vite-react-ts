@@ -1,0 +1,39 @@
+/**
+ * @file AnimationControls.css
+ * @description Styles for the AnimationControls component (Story 18.4)
+ */
+
+.anim-control-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--surface-light-10);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.anim-control-btn:hover:not(:disabled) {
+  background: var(--color-primary-border-strong);
+  color: var(--text-primary);
+}
+
+.anim-control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.anim-speed-control {
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+}
+
+.anim-speed-slider {
+  width: 60px;
+  height: 4px;
+  accent-color: var(--color-primary);
+}
+
+.anim-speed-value {
+  min-width: 20px;
+  text-align: right;
+}

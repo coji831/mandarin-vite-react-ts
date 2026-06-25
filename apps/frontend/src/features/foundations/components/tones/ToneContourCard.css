@@ -1,0 +1,32 @@
+/**
+ * @file ToneContourCard.css
+ * @description Styles for the ToneContourCard component (Story 18.3)
+ */
+
+.tone-contour-svg {
+  width: 50px;
+  height: 32px;
+}
+
+.tone-contour-info {
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.tone-contour-pinyin {
+  letter-spacing: 0.02em;
+}
+
+.tone-contour-description {
+  font-size: 0.6rem;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .tone-contour-card {
+    flex-wrap: wrap;
+    gap: 0.1rem;
+  }
+}

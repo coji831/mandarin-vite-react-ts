@@ -1,0 +1,14 @@
+{
+  "id": "ch_1002",
+  "glyph": "爱",
+  "traditional": "愛",
+  "stroke_count": 10,
+  "readings": [{ "pinyin": "ài", "tone": 4, "type": "primary", "core_meaning": "love, affection" }],
+  "hsk_level": 1,
+  "metadata": {
+    "frequency_rank": 35,
+    "etymology": "Complex compound: 爫 (hand/foot) + 冖 (cover) + 心 (heart) + 夊 (foot) — emotional movement",
+    "common_words": ["爱情", "爱好", "可爱"],
+    "radical_ids": ["rad_0061"]
+  }
+}

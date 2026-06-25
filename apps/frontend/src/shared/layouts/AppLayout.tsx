@@ -8,7 +8,10 @@
  * Phase 2: Navigation redesign - replaces Root.tsx with modern two-level nav system
  */
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../../features/auth";
+
+import { practices_page } from "../constants/paths";
+import { useAuth } from "features/auth";
+import { CharacterHub } from "features/character-hub/components";
 import "./AppLayout.css";
 
 export { AppLayout };
@@ -47,8 +50,8 @@ function AppLayout() {
               </Link>
 
               <Link
-                to="/practices"
-                className={`navbar-link ${location.pathname.startsWith("/practices") ? "active" : ""}`}
+                to={practices_page}
+                className={`navbar-link ${location.pathname.startsWith(practices_page) ? "active" : ""}`}
               >
                 🎯 Practices
               </Link>
@@ -89,6 +92,7 @@ function AppLayout() {
       <main className="app-content">
         <Outlet />
       </main>
+      <CharacterHub />
     </div>
   );
 }

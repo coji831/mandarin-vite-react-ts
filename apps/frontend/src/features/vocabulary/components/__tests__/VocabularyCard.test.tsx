@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import { VocabularyCard } from "../VocabularyCard";
 
 // Mock useProgressState to return controllable progress data
 const mockUseProgressState = vi.fn();
-vi.mock("../../../quiz/hooks/useProgressState", () => ({
+vi.mock("../../hooks", () => ({
   useProgressState: (selector: any) => selector(mockUseProgressState()),
 }));
 

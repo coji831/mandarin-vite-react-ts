@@ -58,6 +58,7 @@ describe("TabBar", () => {
     );
 
     expect(screen.getByText("Everything")).toBeInTheDocument();
-    expect(screen.getByText("Words")).toBeInTheDocument();
+    expect(screen.getByText("Foundations")).toBeInTheDocument();
+    expect(screen.queryByText("All")).not.toBeInTheDocument(); // Custom tabs override defaults
   });
 });

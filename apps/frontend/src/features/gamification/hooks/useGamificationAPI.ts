@@ -25,52 +25,12 @@
  */
 
 import { useCallback, useState } from "react";
-import { apiClient } from "services";
-import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-/**
- * Streak data with freeze currency
- * Matches backend GET /api/v1/progress/streak response
- */
-export type StreakResponse = {
-  currentStreak: number;
-  longestStreak: number;
-  freezeCount: number;
-  lastActivityDate: string; // ISO 8601 datetime
-};
-
-/**
- * Badge data with earned status
- * Matches backend GET /api/v1/gamification/badges response
- */
-export type BadgeResponse = {
-  earned: BadgeItem[];
-  available: BadgeItem[];
-};
-
-export type BadgeItem = {
-  id: string;
-  name: string;
-  streakRequired: number;
-  icon: string;
-  earnedDate?: string; // ISO 8601 datetime (for earned badges)
-  progress?: number; // Current progress (for available badges)
-  percentComplete?: number; // Progress percentage (for available badges)
-};
-
-/**
- * Freeze spend response
- * Matches backend POST /api/v1/progress/streak/freeze response
- */
-export type FreezeResponse = {
-  message: string;
-  freezeCount: number; // Remaining freezes after spending
-  lastActivityDate: string; // Extended grace period end
-};
+import {
+  fetchStreak as apiFetchStreak,
+  fetchBadges as apiFetchBadges,
+  spendFreeze as apiSpendFreeze,
+} from "../services";
+import { BadgeResponse, FreezeResponse, StreakResponse } from "../types";
 
 // ============================================================================
 // Hooks
@@ -97,14 +57,14 @@ export function useFetchStreak() {
     setError(null);
 
     try {
-      const response = await apiClient.get<StreakResponse>(ROUTE_PATTERNS.progressStreak);
+      const data = await apiFetchStreak();
 
       // Validate response shape
-      if (!response.data || typeof response.data.currentStreak !== "number") {
+      if (!data || typeof data.currentStreak !== "number") {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch streak data";
       setError(errorMessage);
@@ -138,18 +98,14 @@ export function useFetchBadges() {
     setError(null);
 
     try {
-      const response = await apiClient.get<BadgeResponse>(ROUTE_PATTERNS.gamificationBadges);
+      const data = await apiFetchBadges();
 
       // Validate response shape
-      if (
-        !response.data ||
-        !Array.isArray(response.data.earned) ||
-        !Array.isArray(response.data.available)
-      ) {
+      if (!data || !Array.isArray(data.earned) || !Array.isArray(data.available)) {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch badges";
       setError(errorMessage);
@@ -188,17 +144,14 @@ export function useSpendFreeze() {
     setError(null);
 
     try {
-      const response = await apiClient.post<FreezeResponse>(
-        ROUTE_PATTERNS.progressStreakFreeze,
-        {},
-      );
+      const data = await apiSpendFreeze();
 
       // Validate response shape
-      if (!response.data || typeof response.data.freezeCount !== "number") {
+      if (!data || typeof data.freezeCount !== "number") {
         throw new Error("Invalid response format from server");
       }
 
-      return response.data;
+      return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to spend freeze";
       setError(errorMessage);

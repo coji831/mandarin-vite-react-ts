@@ -1,0 +1,14 @@
+{
+  "id": "init_m",
+  "pinyin": "m",
+  "ipa": "/m/",
+  "description": "like '**m**an'",
+  "mouth_position": "bilabial",
+  "category": "nasal",
+  "voiced": true,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "m — like '**m**an'",
+    "common_issues": ""
+  }
+}

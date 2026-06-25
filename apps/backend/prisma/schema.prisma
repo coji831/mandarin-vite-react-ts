@@ -15,8 +15,6 @@ model User {
   updatedAt    DateTime         @updatedAt
   deletedAt    DateTime?
   progress            Progress[]
-  quizSessions        QuizSession[]
-  quizSessionSummaries QuizSessionSummary[]
   sessions            Session[]
   customLists         VocabularyList[]
 
@@ -122,6 +120,92 @@ model WordList {
   @@index([listId, sortOrder])
 }
 
+model FoundationProgress {
+  id            String   @id @default(uuid())
+  userId        String
+  sectionId     String   // "pinyin" | "tones" | "strokes" | "animations"
+  completed     Boolean  @default(false)
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, sectionId])
+  @@index([userId])
+}
+
+model PhaseGate {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  currentPhase        Int      @default(1)
+  phase1Passed        Boolean  @default(false)
+  phase2Passed        Boolean  @default(false)
+  phase3Passed        Boolean  @default(false)
+  phase4Unlocked      Boolean  @default(false)
+  qualificationScore  Int?     // Placement quiz score
+  placedPhase         Int?     // Phase assigned by qualification
+  phase1Retention     Float?   // Retention rate for phase 1
+  phase2Retention     Float?   // Retention rate for phase 2
+  phase3Retention     Float?   // Retention rate for phase 3
+  gateCriteria        String?  // "quiz" | "retention" | "both"
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ── PinyinCombination: init × fin × tone → syllable + character mapping ──
+// Content source: content/pinyin/init_*.json + content/pinyin/fin_*.json
+// Domain columns: tone (int), syllable (string), character (string?), meaning (string?)
+// This is a junction table for the M:N relationship between pinyin initials,
+// finals, and tones — not a content entity itself.
+model PinyinCombination {
+  id          String  @id        // "init_b-fin_a-1"
+  initialId   String             // "init_b" — matches content/pinyin/init_b.json
+  finalId     String             // "fin_a"  — matches content/pinyin/fin_a.json
+  tone        Int                // 1-5
+  syllable    String             // "bā"
+  character   String?            // "八"
+  meaning     String?            // "eight"
+
+  @@unique([initialId, finalId, tone])
+  @@index([syllable])
+  @@index([initialId])
+  @@index([finalId])
+}
+
+model QuizAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  quizType    String   // "audio-to-type"
+  phase       Int?     // 1 | 2 | 3 | 0 (qualification)
+  totalScore  Int      @default(0)
+  maxScore    Int      @default(20)
+  passed      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+
+  answers QuizAttemptAnswer[]
+
+  @@index([userId, quizType])
+  @@index([userId])
+}
+
+model QuizAttemptAnswer {
+  id             String  @id @default(uuid())
+  attemptId      String
+  questionIndex  Int
+  pinyinInput    String
+  selectedTone   Int
+  correctPinyin  String
+  correctTone    Int
+  correct        Boolean
+  category       String
+
+  attempt QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@index([attemptId])
+}
+
 model StudyStreak {
   id               String   @id @default(uuid())
   userId           String   @unique
@@ -133,83 +217,29 @@ model StudyStreak {
   updatedAt        DateTime @updatedAt
 
   @@index([userId])
-}
+}// ── ReviewItem: Phase 1 review tracking (flip-card SRS) ──
+// Tracks study progress for pinyin, tones, stroke reference, and vocabulary items.
+// Uses simple interval doubling (not full SM-2) — Phase 1 is introductory.
+model ReviewItem {
+  id            String   @id @default(uuid())
+  userId        String
+  itemType      String   // "pinyin-initial" | "pinyin-final" | "pinyin-combination" | "tone-identification" | "tone-pair" | "tone-rule" | "stroke-reference" | "pinyin-syllable" | "tone-syllable" | "vocabulary"
+  itemId        String   // identifier within the type (e.g., "b", "ao", "mā", "3rd+3rd")
+  front         String?  // Display text for the front of the flip-card
+  back          String?  // Display text for the back of the flip-card (answer)
+  category      String?  // Grouping category: "pinyin" | "tones" | "strokes"
+  character     String?  // Chinese character for vocabulary items
+  pinyinPlain   String?  // Pinyin without tone marks
+  correctTone   Int?     // Correct tone number (0-4)
+  meaning       String?  // English meaning
+  studyCount    Int      @default(0)
+  correctCount  Int      @default(0)
+  lastReviewed  DateTime?
+  nextReview    DateTime @default(now())
+  intervalDays  Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-
-
-model QuizSession {
-  id             String    @id @default(cuid())
-  userId         String
-  currentIndex   Int       @default(0)
-  status         String    @default("ACTIVE")
-  startedAt      DateTime  @default(now())
-  expiresAt      DateTime
-  completedAt    DateTime?
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  summary        QuizSessionSummary?
-  sessionAnswers QuizSessionAnswer[]
-  questions      QuizSessionQuestion[]
-
-  @@index([userId, status])
-  @@index([expiresAt])
-}
-
-model QuizSessionQuestion {
-  id            String   @id @default(cuid())
-  sessionId     String
-  wordId        String
-  questionIndex Int
-  questionType  String
-  correctAnswer String
-  options       Json?
-  hanzi         String
-  pinyin        String
-  english       String
-  traditional   String
-  session       QuizSession        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  answer        QuizSessionAnswer?
-
-  @@unique([sessionId, questionIndex])
-  @@index([sessionId])
-  @@index([wordId])
-}
-
-model QuizSessionAnswer {
-  id             String   @id @default(cuid())
-  sessionId      String
-  questionId     String   @unique
-  userId         String
-  wordId         String
-  userAnswer     String
-  correct        Boolean
-  timeSpentMs    Int?
-  lapseCount     Int      @default(0)
-  isLeech        Boolean  @default(false)
-  nextReviewDate DateTime?
-  answeredAt     DateTime @default(now())
-  session        QuizSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  question       QuizSessionQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  @@index([sessionId])
-  @@index([userId, answeredAt])
-}
-
-model QuizSessionSummary {
-  id             String   @id @default(cuid())
-  userId         String
-  sessionId      String   @unique
-  totalQuestions Int
-  correctCount   Int
-  incorrectCount Int
-  accuracyRate   Float
-  xpEarned       Int
-  newBadgeIds    String[]
-  mysteryBoxDrop      Boolean  @default(false)
-  mysteryBoxType      String?
-  freezeAwarded  Boolean  @default(false)
-  session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([sessionId])
+  @@unique([userId, itemType, itemId])
+  @@index([userId, nextReview])
 }

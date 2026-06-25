@@ -4,4 +4,3 @@
  */
 
 export { useFetchStreak, useFetchBadges, useSpendFreeze } from "./useGamificationAPI";
-export type { StreakResponse, BadgeResponse, FreezeResponse, BadgeItem } from "../services";

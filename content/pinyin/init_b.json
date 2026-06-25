@@ -1,0 +1,14 @@
+{
+  "id": "init_b",
+  "pinyin": "b",
+  "ipa": "/p/",
+  "description": "unaspirated p, like 's**p**in'",
+  "mouth_position": "bilabial",
+  "category": "plosive_unaspirated",
+  "voiced": false,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "b — unaspirated p, like 's**p**in'",
+    "common_issues": ""
+  }
+}

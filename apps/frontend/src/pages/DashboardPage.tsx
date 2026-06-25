@@ -6,7 +6,6 @@
  * Shows quick stats, action cards, navigation shortcuts, and live gamification data.
  * Features:
  * - Live streak counter and badge display (API-driven)
- * - Leech widget for focus words (shows when 3+ leeches)
  * - Freeze spending with confirmation modal
  * - Badge celebration modal for newly earned badges
  *
@@ -15,7 +14,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { StreakCounter, XPProgressBar, BadgeDisplay } from "../features/gamification";
-import { LeechWidget } from "../features/dashboard";
 import { useFetchStreak, useFetchBadges, useSpendFreeze } from "../features/gamification";
 import type { StreakData, Badge } from "../features/gamification";
 import "./DashboardPage.css";
@@ -146,9 +144,6 @@ function DashboardPage() {
         <h1>Welcome Back! 👋</h1>
         <p>Continue your Mandarin learning journey</p>
       </div>
-
-      {/* Leech Widget - Shows when 3+ leeches */}
-      <LeechWidget />
 
       <div className="dashboard-layout">
         {/* Left Column: Stats & Badges */}

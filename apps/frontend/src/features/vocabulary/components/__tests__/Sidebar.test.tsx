@@ -7,7 +7,8 @@ import { Sidebar } from "../Sidebar";
 
 // Mock useProgressState to return controllable data
 const mockUseProgressState = vi.fn();
-vi.mock("../../../quiz/hooks/useProgressState", () => ({
+vi.mock("../../hooks", () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useProgressState: (selector: any) => selector(mockUseProgressState()),
 }));
 

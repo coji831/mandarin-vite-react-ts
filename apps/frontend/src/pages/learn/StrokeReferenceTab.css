@@ -1,0 +1,15 @@
+/**
+ * @file StrokeReferenceTab.css
+ * @description Styles for the Stroke Reference tab — orchestrator only
+ * Story 18.4: Stroke Order Reference & Animations
+ * Dark theme matching FoundationsPage conventions.
+ * Component styles are in their own per-component CSS files.
+ */
+
+.stroke-ref-loading {
+  min-height: 200px;
+}
+
+.stroke-ref-subtitle {
+  margin: 0 0 0.35rem;
+}

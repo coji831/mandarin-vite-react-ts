@@ -2,25 +2,73 @@
  * LearnLayout component
  *
  * Layout for the Learn section (/learn/* routes).
- * Story 17.6: Removed ProgressProvider and UserIdentityProvider wrappers.
- * Zustand stores are used directly — no providers needed.
- * Story 17.7: Changed Vocabulary link from /learn/vocabulary-list to /learn.
- * Story 17.7: Removed sub-navbar (redundant with ContentBrowser TabBar per wireframe Section 1.1).
+ * Phase-gated tab bar navigates to content type pages.
+ * Locked tabs show 🔒 with tooltip "Complete Phase N to unlock".
  *
- * Provides:
- * - Outlet for nested Learn routes
- *
- * Phase 2: Navigation redesign - replaces MandarinLayout with contextual sub-nav
- * Phase 3: Routes migrated from /mandarin to /learn
+ * Story 18.1: Restored as route navigation tab bar.
+ * ContentBrowser lives at /library for freeroam browsing.
  */
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { usePhaseGate } from "../hooks/usePhaseGate";
 import "./LearnLayout.css";
 
-export { LearnLayout };
+export function LearnLayout() {
+  const location = useLocation();
+  const { phaseGate } = usePhaseGate();
 
-function LearnLayout() {
+  const currentPhase = phaseGate?.currentPhase ?? 1;
+
+  const LEARN_TABS = [
+    {
+      id: "foundations",
+      label: "Foundations",
+      icon: "🔤",
+      path: "/learn/foundations",
+      requiredPhase: 1,
+    },
+    { id: "radicals", label: "Radicals", icon: "📘", path: "/learn/radicals", requiredPhase: 2 },
+    { id: "grammar", label: "Grammar", icon: "📕", path: "/learn/grammar", requiredPhase: 2 },
+    {
+      id: "phonetic",
+      label: "Phonetic",
+      icon: "🔊",
+      path: "/learn/phonetic-clusters",
+      requiredPhase: 3,
+    },
+    { id: "readers", label: "Readers", icon: "📖", path: "/learn/readers", requiredPhase: 3 },
+    { id: "chengyu", label: "Chengyu", icon: "🏮", path: "/learn/chengyu", requiredPhase: 4 },
+  ] as const;
+
   return (
     <div className="learn-layout">
+      <nav className="learn-phase-nav" role="tablist" aria-label="Learn section tabs">
+        {LEARN_TABS.map((tab) => {
+          const isLocked = tab.requiredPhase > currentPhase;
+          const isActive = location.pathname === tab.path;
+
+          return (
+            <Link
+              key={tab.id}
+              to={isLocked ? "#" : tab.path}
+              role="tab"
+              aria-selected={isActive}
+              className={`learn-phase-tab ${isActive ? "learn-phase-tab--active" : ""} ${isLocked ? "learn-phase-tab--locked" : ""}`}
+              onClick={(e) => {
+                if (isLocked) e.preventDefault();
+              }}
+              title={isLocked ? `Complete Phase ${tab.requiredPhase} to unlock` : tab.label}
+            >
+              <span aria-hidden="true">{tab.icon}</span>
+              <span>{tab.label}</span>
+              {isLocked && (
+                <span className="tab-bar__lock-icon" aria-label="locked">
+                  🔒
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
       <div className="learn-content">
         <Outlet />
       </div>

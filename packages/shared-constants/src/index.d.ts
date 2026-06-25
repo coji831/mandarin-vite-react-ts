@@ -22,19 +22,26 @@ export declare const ROUTE_PATTERNS: {
   readonly progressStreakFreeze: string;
   readonly gamificationBadges: string;
   readonly quizFeedback: string;
-  readonly quizSessionStart: string;
-  readonly quizSessionAnswer: (sessionId: string) => string;
-  readonly quizSessionDetails: (sessionId: string) => string;
-  readonly quizSessionSummary: (sessionId: string) => string;
-  readonly quizSessionAbandon: string;
-  readonly learningDue: string;
-  readonly learningResult: string;
-  readonly learningLeeches: string;
   readonly authRegister: string;
   readonly authLogin: string;
   readonly authRefresh: string;
   readonly authLogout: string;
   readonly authMe: string;
+  readonly progressionFoundationProgress: string;
+  readonly progressionFoundationProgressSection: (sectionId: string) => string;
+  readonly progressionPhaseGate: string;
+  readonly quizAttempts: string;
+  readonly quizAttemptAnswer: (id: string) => string;
+  readonly quizAttemptComplete: (id: string) => string;
+  readonly reviewItems: string;
+  readonly reviewResult: string;
+  readonly reviewDueCount: string;
+  readonly reviewPoolItems: string;
+  readonly reviewItemRate: (id: string) => string;
+  readonly foundationsPinyinTones: string;
+  readonly foundationsPinyinCharacterMap: string;
+  readonly foundationsStrokes: string;
+  readonly quizQuestions: string;
 };
 
 // HSK Levels
@@ -45,6 +52,11 @@ export declare const LANGUAGE_CODES: {
   readonly CHINESE: string;
   readonly ENGLISH: string;
 };
+
+// Foundations
+export declare const FOUNDATION_SECTIONS: readonly ["pinyin", "tones", "strokes", "animations"];
+export type FoundationSectionId = (typeof FOUNDATION_SECTIONS)[number];
+export declare const FOUNDATION_SECTION_LABELS: Record<FoundationSectionId, string>;
 
 // Voice Configuration
 export declare const TTS_VOICES: {

@@ -1,0 +1,16 @@
+{
+  "id": "fin_u",
+  "pinyin": "u",
+  "type": "simple",
+  "category": "simple_final",
+  "tone_variants": {
+    "tone1": "ū",
+    "tone2": "ú",
+    "tone3": "ǔ",
+    "tone4": "ù",
+    "tone0": "u"
+  },
+  "metadata": {
+    "pronunciation_guide": "u — like '**oo**' in 'b**oo**t'"
+  }
+}

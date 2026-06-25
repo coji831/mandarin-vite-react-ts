@@ -40,6 +40,13 @@ mandarin-vite-react-ts/
 │   ├── shared-types/      # Shared TypeScript interfaces
 │   └── shared-constants/  # API routes, HSK levels, regex patterns
 ├── docs/                  # Architecture, guides, business requirements
+├── content/              # Version-controlled content files (one JSON per entity)
+│   ├── manifest.json
+│   ├── characters/
+│   ├── radicals/
+│   ├── words/
+│   ├── grammar/
+│   └── chengyu/
 └── terraform/             # Infrastructure as Code (GCS, IAM)
 ```
 
@@ -56,6 +63,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI container (`container.js`), route registration (`routes.js`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access)
+  - Current modules: `auth`, `gamification`, `progress`, `quiz`, `progression`, `tts`, `learning`, `examples`
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
@@ -84,17 +92,22 @@ mandarin-vite-react-ts/
 - **Features** (`src/features/`): Self-contained modules
   - **Auth**: User authentication and session management (LoginForm, RegisterForm, AuthContext)
   - **Dashboard**: Learning statistics and activity overview (LeechWidget, leechService)
+  - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
   - **Gamification**: Streaks, badges, XP progress, mystery box rewards
-  - **Quiz**: Quiz system with multiple question types and progress tracking
+  - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
+  - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
   - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
 - **Pages** (`src/pages/`): Route-level page orchestrators
+  - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
 - **Router** (`src/router/`): React Router configuration
+  - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
-  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.)
+  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.) + `CharacterDetailHub` shared portal overlay for character detail display
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **layouts/**: AppLayout, LearnLayout, Root
+  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useCharacterHub for CharacterDetailHub overlay)
+  - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
 **State Management:**
 
@@ -104,6 +117,7 @@ mandarin-vite-react-ts/
   BrowserRouter → AuthProvider (auth) → AppLayout → LearnLayout → ProgressProvider (quiz) + UserIdentityProvider (quiz)
   ```
 - **Persistence**: Backend API (PostgreSQL) for progress, localStorage for device identity
+- **Zustand Stores**: `hubStore` for CharacterDetailHub overlay state (isOpen, characterId, position)
 - **Architecture**: Reducer composition with normalized state shape
 
 **See detailed documentation:**
@@ -131,6 +145,8 @@ Story 16.2 introduced a custom React hook (`useExamples`) that mimics SWR behavi
 
 ## Data Flow & Integration
 
+**Content (static reference data) and User Data (dynamic progress) are separated at the storage layer and joined at query time.** See [Architecture Overview](../docs/architecture.md#content-data-flow) and [Content Registry Architecture](../verification-artifacts/content-registry-architecture.md) for the full design.
+
 **Client → Server:**
 
 ```
@@ -156,6 +172,34 @@ Controller → Service (business logic) → Repository (database)
 
 - Vite proxy config: [Vite Setup Guide](./guides/setup/vite.md)
 - Backend setup: [Backend Development Guide](./guides/setup/backend-development.md)
+
+### Content Data Flow
+
+Static content (characters, words, radicals, etc.) follows a separate path from dynamic user data:
+
+```
+┌───────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  content/*.json   │ ──► │  Seed Script /   │ ──► │  Prisma Content  │
+│  (Git — versioned)│     │  Import Pipeline  │     │  Models (DB)     │
+└───────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                            │
+┌───────────────────┐     ┌──────────────────┐              │
+│  review_log table │ ◄── │  CRUD Progress   │              │
+│  (append-only)    │     │  API             │              │
+└───────────────────┘     └──────────────────┘              │
+                                                            ▼
+                                                   ┌─────────────────┐
+                                                   │  Read Model /   │
+                                                   │  Query API      │
+                                                   └─────────────────┘
+```
+
+**Key principles:**
+
+- Content is authored in individual JSON files under `content/`, one per entity
+- Entity relationships are stored in DB junction tables (CharacterRadical, WordCharacter, etc.)
+- Dynamic user data uses CRUD with an append-only `review_log` side-effect table
+- The Read Model pre-joins content + relationships + progress for query optimization
 
 ## Caching Strategy
 
@@ -256,6 +300,12 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 - `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
 - `POST /api/v1/learning/result` - Save quiz answer directly, adjust spaced repetition
 - `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
+
+**Progression System:**
+
+- **Phase Gating**: Users progress through 4 learning phases (Phase 1: Foundations, Phase 2: Characters, Phase 3: Readers, Phase 4: Mastery). Each phase has a gate quiz requirement to unlock the next. Phase gate state is stored server-side in PostgreSQL and cached in sessionStorage with a 5-minute TTL.
+- **Foundation Progress**: Tracked per-section (Pinyin, Tones, Strokes, Animations) via the `progression` backend module. Records auto-initialize on first GET for new users. Section IDs are defined in `packages/shared-constants/` for cross-cutting validation.
+- **API module**: `apps/backend/src/modules/progression/` — handles phase gating, foundation completion tracking, and quiz attempts.
 
 **See detailed documentation:**
 

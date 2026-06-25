@@ -1,0 +1,17 @@
+{
+  "id": "ch_0342",
+  "glyph": "没",
+  "traditional": "沒",
+  "stroke_count": 7,
+  "readings": [
+    { "pinyin": "méi", "tone": 2, "type": "primary", "core_meaning": "not, have not" },
+    { "pinyin": "mò", "tone": 4, "type": "literary", "core_meaning": "sink, disappear" }
+  ],
+  "hsk_level": 1,
+  "metadata": {
+    "frequency_rank": 15,
+    "etymology": "Phonetic-semantic compound: 氵 (water) + 叟 (old man)",
+    "common_words": ["没有", "没用", "没关系"],
+    "radical_ids": ["rad_0008"]
+  }
+}

@@ -30,7 +30,7 @@ type WordExamplesPanelProps = {
 };
 
 export function WordExamplesPanel({
-  wordId,
+  wordId: _wordId,
   word,
   hskLevel,
   language = "en",
@@ -47,13 +47,14 @@ export function WordExamplesPanel({
     }
   }, [examples, isLoading, cacheHit]);
 
-  const handlePlayClick = async (index: number, example: Example) => {
+  const handlePlayClick = async (index: number, _example: Example) => {
     setActiveIndex(index);
     setPlayingIndex(index);
     setLoadingIndex(index);
     const svc = new AudioService();
     try {
       const cacheKey = await getCacheKey(word, hskLevel, language);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { audio_url, audioUrl } = (await svc.fetchExampleAudio(cacheKey)) as any;
       let url = audio_url ?? audioUrl ?? "";
       if (!url) throw new Error("No audio URL returned");

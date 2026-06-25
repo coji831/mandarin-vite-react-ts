@@ -74,6 +74,9 @@ export const config = {
   // GCS
   gcsBucket: process.env.GCS_BUCKET_NAME,
 
+  // Reference Data
+  localDataPath: path.resolve(__dirname, "../../../data"),
+
   // TTS Configuration
   tts: {
     voiceDefault: "cmn-CN-Wavenet-B",

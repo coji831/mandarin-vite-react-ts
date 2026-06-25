@@ -1,93 +1,83 @@
 /**
- * PinyinToneInput Component
+ * PinyinToneInput.tsx
+ * Phase 1 Gate Quiz — Combined pinyin + tone input
  *
- * Specialized input for pinyin with automatic tone mark conversion.
- * Converts numeric notation (ma3) to Unicode tone marks (mǎ).
+ * Renders pinyin text input and 5 color-coded tone buttons.
+ * Controlled component with local state managed by parent.
  *
- * Features:
- * - Real-time tone conversion using pinyinConverter utility
- * - Live preview showing converted pinyin
- * - Dismissible tooltip explaining tone notation (shown once)
- * - Wraps shared Input component
- *
- * Story 15.5: Core Quiz UI Components
- * Story 15.10: Added dismissible tooltip, extracted from ToneInput
+ * Wireframe Section 4.6: steps ① and ②.
  */
 
-import { KeyboardEvent, useState } from "react";
-import { Input } from "../../../../shared/components";
-import { convertToneMarks } from "../../utils/pinyinConverter";
-import "./PinyinToneInput.css";
-
 type PinyinToneInputProps = {
-  value: string;
-  onChange: (convertedValue: string) => void;
-  onSubmit: () => void;
+  pinyin: string;
+  tone: number;
+  onPinyinChange: (value: string) => void;
+  onToneSelect: (tone: number) => void;
+  disabled?: boolean;
 };
 
-export function PinyinToneInput({ value, onChange, onSubmit }: PinyinToneInputProps) {
-  // Maintain separate display value (raw input with numbers) and converted value
-  const [displayValue, setDisplayValue] = useState(value);
-  const [showTooltip, setShowTooltip] = useState(false);
+import { TONE_BUTTONS_BASE } from "../../../../shared/constants/toneMap";
+import "./PinyinToneInput.css";
 
-  const handleToggleTooltip = () => {
-    setShowTooltip((prev) => !prev);
-  };
+/** Tone buttons enriched with quiz-specific fields */
+const TONE_BUTTONS = TONE_BUTTONS_BASE.map((btn) => ({
+  ...btn,
+  example: ["mā", "má", "mǎ", "mà", "ma"][btn.tone === 0 ? 4 : btn.tone - 1],
+  color: ["#FF4444", "#FF8C00", "#4CAF50", "#2196F3", "#9E9E9E"][btn.tone === 0 ? 4 : btn.tone - 1],
+}));
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    setDisplayValue(raw);
-
-    // Convert and pass to parent
-    const converted = convertToneMarks(raw);
-    onChange(converted);
-  };
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && value.trim().length > 0) {
-      onSubmit();
-    }
-  };
-
+/** Combined pinyin text input + tone selector buttons */
+export function PinyinToneInput({
+  pinyin,
+  tone,
+  onPinyinChange,
+  onToneSelect,
+  disabled = false,
+}: PinyinToneInputProps) {
   return (
-    <div className="pinyinToneInputContainer">
-      {/* Toggle tooltip explaining tone notation */}
-      {showTooltip && (
-        <div className="toneTooltip">
-          <p className="tooltipTitle">🔊 Tone Input Guide</p>
-          <p className="tooltipText">
-            Type numbers after pinyin for tones:
-            <br />
-            <strong>ma1</strong> → mā | <strong>ma2</strong> → má | <strong>ma3</strong> → mǎ |{" "}
-            <strong>ma4</strong> → mà
-          </p>
+    <div className="flex-col gap-xl">
+      {/* Step 1: Pinyin text input */}
+      <div className="flex-col gap-sm">
+        <label className="pinyin-tone-input__label font-sm fw-500">
+          ① Type the pinyin (without tone):
+        </label>
+        <input
+          className="input-base"
+          type="text"
+          value={pinyin}
+          onChange={(e) => onPinyinChange(e.target.value)}
+          placeholder="e.g., ma"
+          disabled={disabled}
+          autoFocus
+        />
+      </div>
+
+      {/* Step 2: Tone selector buttons */}
+      <div className="flex-col gap-sm">
+        <label className="pinyin-tone-input__label font-sm fw-500">② Select the tone:</label>
+        <div className="flex-center" style={{ gap: "var(--space-sm)" }}>
+          {TONE_BUTTONS.map((btn) => (
+            <button
+              key={btn.tone}
+              className="pinyin-tone-input__btn hover-lift flex-col gap-xs p-sm radius-md cursor-pointer grow-1"
+              style={{
+                border: `2px solid ${tone === btn.tone ? btn.color : "var(--surface-border)"}`,
+                backgroundColor: tone === btn.tone ? `${btn.color}25` : "transparent",
+                color: tone === btn.tone ? btn.color : "var(--text-secondary)",
+                opacity: disabled ? 0.5 : 1,
+              }}
+              onClick={() => onToneSelect(btn.tone)}
+              disabled={disabled}
+              type="button"
+            >
+              <span className="pinyin-tone-input__btn-mark font-lg fw-700 lh-1">
+                {btn.mark}
+                {btn.label}
+              </span>
+              <span className="pinyin-tone-input__btn-example font-sm op-80">{btn.example}</span>
+            </button>
+          ))}
         </div>
-      )}
-
-      <Input
-        value={displayValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyPress}
-        placeholder="Type pinyin (e.g., ma3)"
-        autoComplete="off"
-        autoCorrect="off"
-        spellCheck={false}
-      />
-
-      {/* Live preview showing converted pinyin with help icon */}
-      <div className="preview">
-        <span>
-          Preview: <strong>{convertToneMarks(displayValue)}</strong>
-        </span>
-        <button
-          type="button"
-          onClick={handleToggleTooltip}
-          className="hintIconButton"
-          aria-label="Toggle tone input guide"
-          title="Toggle tone input guide"
-        >
-          💡
-        </button>
       </div>
     </div>
   );

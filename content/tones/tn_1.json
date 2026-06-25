@@ -1,0 +1,21 @@
+{
+  "id": "tn_1",
+  "number": 1,
+  "name": "First Tone",
+  "mark": "ˉ",
+  "contour": [
+    4,
+    4.5,
+    5,
+    5,
+    5
+  ],
+  "pitch_description": "High level",
+  "example_syllable": "mā",
+  "example_character": "妈",
+  "color": "#FF4444",
+  "metadata": {
+    "pronunciation_guide": "Think of tone 1 pitch contour: High level.",
+    "common_issues": ""
+  }
+}

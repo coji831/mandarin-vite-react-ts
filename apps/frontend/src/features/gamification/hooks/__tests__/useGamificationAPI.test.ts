@@ -12,16 +12,14 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import { apiClient } from "../../../../shared/api/axiosClient";
-import {
-  StreakResponse,
-  BadgeResponse,
-  FreezeResponse,
+import { 
   useFetchStreak,
   useFetchBadges,
   useSpendFreeze,
 } from "../useGamificationAPI";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { BadgeResponse, FreezeResponse, StreakResponse } from "features/gamification/types";
 
 // ============================================================================
 // Mock Setup

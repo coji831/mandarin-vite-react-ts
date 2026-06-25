@@ -1,0 +1,16 @@
+{
+  "id": "fin_i",
+  "pinyin": "i",
+  "type": "simple",
+  "category": "simple_final",
+  "tone_variants": {
+    "tone1": "ī",
+    "tone2": "í",
+    "tone3": "ǐ",
+    "tone4": "ì",
+    "tone0": "i"
+  },
+  "metadata": {
+    "pronunciation_guide": "i — like '**ee**' in 's**ee**'"
+  }
+}

@@ -1,25 +1,18 @@
 /**
- * @file apps/frontend/src/features/quiz/types/index.ts
- * @description Centralized type exports for quiz feature
+ * types/index.ts
+ * Phase 1 Gate Quiz — Barrel exports for types
  */
 
-// Modern Quiz Session API types
+export type { QuizStrategy, StrategyType, QuizQuestion, AnswerResult, QuizPhase } from "./engine";
+export type { QuizSession } from "./session";
+export { createInitialSession } from "./session";
 export type {
-  QuizSessionQuestion,
-  QuizSessionStartResponse,
-  QuizAnswerRequest,
-  QuizAnswerResponse,
-  IncorrectWordDetail,
-  LeechWordDetail,
-  QuizSessionSummary,
-  SessionAnswerDetail,
-} from "./QuizSessionTypes";
-
-export type { MysteryBox } from "../../gamification/types/GamificationTypes";
-
-// UI component types
-export type { QuestionMode, QuizQuestion, QuizAnswer } from "./QuizTypes";
-
-// Phase 2 restructure: Progress and State types moved from mandarin
-export type { UserState, UiState } from "./State";
-export type { UserProgress, UserProgressListEntry, WordProgress, ProgressState } from "./Progress";
+  QuizGenerateRequest,
+  ApiQuestion,
+  QuizGenerateResponse,
+  AnswerSubmitRequest,
+  AnswerSubmitResponse,
+  QuizAnswer,
+  GateQuizResult,
+  CategoryBreakdown,
+} from "./api";

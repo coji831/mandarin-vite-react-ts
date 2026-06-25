@@ -1,0 +1,51 @@
+/**
+ * @file TonePairDrills.css
+ * @description Styles for the TonePairDrills component (Story 18.3)
+ */
+
+.tone-pair-drills-empty {
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.tone-pair-drill-spoken-primary {
+  letter-spacing: 0.02em;
+}
+
+.tone-pair-drill-comparison {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.55rem;
+  opacity: 0.7;
+}
+
+.tone-pair-drill-rule {
+  font-size: 0.55rem;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+  margin-right: 0.15rem;
+}
+
+.tone-pair-drill-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.03em;
+}
+
+.tone-pair-drill-spoken-compact {
+  font-size: 0.55rem;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .tone-pair-drills {
+    padding: 0.35rem;
+  }
+
+  .tone-pair-drill-card {
+    flex-wrap: wrap;
+    gap: 0.1rem;
+  }
+}

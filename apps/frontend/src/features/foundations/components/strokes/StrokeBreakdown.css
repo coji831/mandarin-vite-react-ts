@@ -1,0 +1,30 @@
+/**
+ * @file StrokeBreakdown.css
+ * @description Styles for the StrokeBreakdown component (Story 18.4)
+ */
+
+.stroke-anim-breakdown-value {
+  font-family: monospace;
+}
+
+.stroke-breakdown-paths {
+  gap: 0.15rem;
+  margin-top: 0.25rem;
+}
+
+.stroke-breakdown-svg {
+  width: 20px;
+  height: 20px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.stroke-breakdown-svg:hover {
+  border-color: var(--color-primary);
+}
+
+.stroke-breakdown-svg--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg-medium);
+}

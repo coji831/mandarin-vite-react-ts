@@ -9,9 +9,9 @@
  */
 import React from "react";
 
-import { useProgressState } from "../../quiz/hooks";
+import { useProgressState } from "../hooks";
 import { Card } from "../types";
-import type { RootState } from "../../quiz/hooks/useProgressState";
+import type { RootState } from "../hooks/useProgressState";
 
 export { Sidebar };
 

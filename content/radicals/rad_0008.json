@@ -1,0 +1,15 @@
+{
+  "id": "rad_0008",
+  "glyph": "氵",
+  "alternate_glyphs": ["⺡", "氺"],
+  "name_pinyin": "sāndiǎnshuǐ",
+  "meaning": "water radical",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 8,
+  "metadata": {
+    "etymology": "Derived from 水 (shuǐ) — water",
+    "frequency_rank": 12,
+    "notes": "One of the most common radicals. Appears on the left side of characters."
+  }
+}

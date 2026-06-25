@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "created_at": "2026-06-23",
+  "content_types": ["characters", "radicals", "words", "grammar", "chengyu", "pinyin", "tones"],
+  "entity_counts": {
+    "characters": 3,
+    "radicals": 3,
+    "words": 0,
+    "grammar": 0,
+    "chengyu": 0,
+    "pinyin": 10,
+    "tones": 5
+  }
+}

@@ -3,7 +3,7 @@
 
 import { describe, it, expect } from "vitest";
 import { VocabularyList, WordBasic } from "../../types";
-import { WordProgress } from "../../../quiz/types";
+import { WordProgress } from "@mandarin/shared-types";
 import { BaseService, IAudioService, IVocabularyDataService } from "../interfaces";
 
 describe("Service Interfaces", () => {
@@ -19,7 +19,20 @@ describe("Service Interfaces", () => {
         return Promise.resolve([]);
       }
       fetchWordProgress(wordId: string): Promise<WordProgress> {
-        return Promise.resolve({ wordId });
+        return Promise.resolve({
+          wordId,
+          userId: "",
+          studyCount: 0,
+          correctCount: 0,
+          confidence: 0,
+          learnedAt: null,
+          nextReviewDate: null,
+          lastReviewedAt: null,
+          lapseCount: 0,
+          currentDelay: null,
+          createdAt: "",
+          updatedAt: "",
+        });
       }
     }
     const svc = new TestVocabService();

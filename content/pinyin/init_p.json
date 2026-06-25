@@ -1,0 +1,14 @@
+{
+  "id": "init_p",
+  "pinyin": "p",
+  "ipa": "/pʰ/",
+  "description": "aspirated p, like '**p**in' with a strong puff of air",
+  "mouth_position": "bilabial",
+  "category": "plosive_aspirated",
+  "voiced": false,
+  "aspirated": true,
+  "metadata": {
+    "pronunciation_guide": "p — aspirated p, like 'p**in' with a strong puff of air",
+    "common_issues": ""
+  }
+}

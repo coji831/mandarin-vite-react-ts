@@ -1,0 +1,33 @@
+/**
+ * @file apps/frontend/src/styles/components.css
+ * @description Reusable component patterns — globally available.
+ * Imported via globals.css.
+ *
+ * Contains:
+ * - .btn-icon-circle — Small circular icon button (22×22 play buttons)
+ */
+
+/* ═══════════════════════════════════════════════
+   Component: Icon Circle Button
+   Small circular button for play/action icons (22×22).
+   Used by tone contour cards, pair drills, change rules.
+   ═══════════════════════════════════════════════ */
+.btn-icon-circle {
+  width: 22px;
+  height: 22px;
+  background: var(--surface-light-10);
+  color: var(--text-secondary);
+  font-size: 0.6rem;
+  padding: 0;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.btn-icon-circle:hover:not(:disabled) {
+  background: var(--color-primary-border-hover);
+  color: #fff;
+}
+.btn-icon-circle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

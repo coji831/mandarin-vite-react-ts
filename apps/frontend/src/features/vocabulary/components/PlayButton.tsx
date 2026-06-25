@@ -6,7 +6,7 @@
  * - Purely presentational except for internal audio state; does not persist data or manage parent state.
  */
 
-import { useAudioPlayback } from "../hooks/useAudioPlayback";
+import { useAudioPlayback } from "shared/hooks";
 
 export { PlayButton };
 

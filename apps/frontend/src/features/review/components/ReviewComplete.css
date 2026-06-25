@@ -1,0 +1,29 @@
+/**
+ * ReviewComplete.css
+ * Phase 1 Review — Completion summary screen (wireframe Section 7.7).
+ */
+.review-complete {
+  max-width: 520px;
+}
+
+.review-complete__emoji {
+  font-size: var(--font-5xl);
+}
+
+.review-complete__title {
+  font-size: var(--font-3xl);
+}
+
+.review-complete__subtitle {
+  font-size: var(--font-lg);
+}
+
+.review-complete__stat-card {
+  border-left: 3px solid var(--color-primary-border);
+}
+
+.review-complete__divider {
+  height: 1px;
+  background: var(--surface-border);
+  margin: var(--space-xs) 0;
+}

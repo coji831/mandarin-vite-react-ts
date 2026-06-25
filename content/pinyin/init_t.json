@@ -1,0 +1,14 @@
+{
+  "id": "init_t",
+  "pinyin": "t",
+  "ipa": "/tʰ/",
+  "description": "aspirated t, like '**t**op' with a strong puff of air",
+  "mouth_position": "alveolar",
+  "category": "plosive_aspirated",
+  "voiced": false,
+  "aspirated": true,
+  "metadata": {
+    "pronunciation_guide": "t — aspirated t, like '**t**op' with a strong puff of air",
+    "common_issues": ""
+  }
+}

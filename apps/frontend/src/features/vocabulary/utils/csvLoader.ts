@@ -35,8 +35,7 @@ export async function loadCsvVocab(url: string): Promise<VocabWord[]> {
       return [];
     }
 
-    const [header, ...rows] = lines;
-    //console.log(`Header: ${header}`);
+    const [_header, ...rows] = lines;
 
     const seenWordIds = new Set<string>();
     return rows.map((row, idx) => {

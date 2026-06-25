@@ -1,0 +1,16 @@
+{
+  "id": "fin_e",
+  "pinyin": "e",
+  "type": "simple",
+  "category": "simple_final",
+  "tone_variants": {
+    "tone1": "ē",
+    "tone2": "é",
+    "tone3": "ě",
+    "tone4": "è",
+    "tone0": "e"
+  },
+  "metadata": {
+    "pronunciation_guide": "e — like '**u**' in '**u**p' or '**ur**' in 'b**ur**n'"
+  }
+}

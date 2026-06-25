@@ -96,13 +96,14 @@
 
 ### Frontend
 
-| Article                                                                      | Description                                    |
-| ---------------------------------------------------------------------------- | ---------------------------------------------- |
-| [Frontend React Patterns](knowledge-base/frontend-react-patterns.md)         | React/TypeScript component and hook patterns   |
-| [Frontend State Management](knowledge-base/frontend-state-management.md)     | Context API, reducers, normalized state        |
-| [Frontend UI Patterns](knowledge-base/frontend-ui-patterns.md)               | Reusable UI component patterns and conventions |
-| [Frontend Development Server](knowledge-base/frontend-development-server.md) | Dev proxy mechanics, cookie forwarding, CORS   |
-| [Frontend Data Migration](knowledge-base/frontend-data-migration.md)         | Data migration strategies and patterns         |
+| Article                                                                         | Description                                                                  |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [Frontend React Patterns](knowledge-base/frontend-react-patterns.md)            | React/TypeScript component and hook patterns                                 |
+| [Frontend State Management](knowledge-base/frontend-state-management.md)        | Context API, reducers, normalized state                                      |
+| [Frontend UI Patterns](knowledge-base/frontend-ui-patterns.md)                  | Reusable UI component patterns and conventions                               |
+| [Frontend Development Server](knowledge-base/frontend-development-server.md)    | Dev proxy mechanics, cookie forwarding, CORS                                 |
+| [Frontend Data Migration](knowledge-base/frontend-data-migration.md)            | Data migration strategies and patterns                                       |
+| [Strategy Pattern on the Frontend](knowledge-base/strategy-pattern-frontend.md) | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
 
 ### Backend
 
@@ -160,8 +161,10 @@ Feature-specific docs live in feature folders under `apps/frontend/src/features/
 
 - **Auth**: [`apps/frontend/src/features/auth/`](../apps/frontend/src/features/auth/)
 - **Dashboard**: [`apps/frontend/src/features/dashboard/`](../apps/frontend/src/features/dashboard/)
+- **Foundations**: [`apps/frontend/src/features/foundations/`](../apps/frontend/src/features/foundations/)
 - **Gamification**: [`apps/frontend/src/features/gamification/`](../apps/frontend/src/features/gamification/)
 - **Quiz**: [`apps/frontend/src/features/quiz/`](../apps/frontend/src/features/quiz/)
+- **Review**: [`apps/frontend/src/features/review/`](../apps/frontend/src/features/review/)
 - **Vocabulary**: [`apps/frontend/src/features/vocabulary/`](../apps/frontend/src/features/vocabulary/)
 - **Backend API Spec**: [`apps/backend/docs/api/`](../apps/backend/docs/api/)
 - **Backend Design**: [`apps/backend/docs/design.md`](../apps/backend/docs/design.md)

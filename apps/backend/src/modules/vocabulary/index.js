@@ -6,4 +6,5 @@
  * Internals (controllers, repositories, routes) are not exported.
  */
 
+export { VocabularyService } from "./services/VocabularyService.js";
 export { VocabularyListService } from "./services/VocabularyListService.js";

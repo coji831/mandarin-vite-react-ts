@@ -9,12 +9,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-interface ListStoreState {
+type ListStoreState = {
   itemsById: Record<string, unknown>;
   itemIds: string[];
   init: () => void;
   reset: () => void;
-}
+};
 
 export const useListStore = create<ListStoreState>()(
   devtools(

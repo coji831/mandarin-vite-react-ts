@@ -59,7 +59,7 @@ export default function useExamples(
         if (!mounted) return;
         try {
           sessionStorage.setItem(sessionKey, JSON.stringify(result));
-        } catch (e) {
+        } catch (_e) {
           // ignore storage issues
         }
         setData(result);
