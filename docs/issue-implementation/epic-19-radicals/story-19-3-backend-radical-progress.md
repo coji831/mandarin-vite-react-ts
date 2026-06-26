@@ -2,7 +2,7 @@
 
 **Last Updated:** June 26, 2026
 **Status:** Completed
-**Key Commit:** TBD (will be added after commit)
+**Key Commit:** `e40ca8c`
 
 ## Technical Scope
 
@@ -11,30 +11,37 @@ Backend RadicalProgress Prisma model, CRUD API endpoints, ReviewService extensio
 ### Files Modified
 
 **Backend — Database:**
+
 - `apps/backend/prisma/schema.prisma` — Added `RadicalProgress` model with composite unique and index
 
 **Backend — Progression Module:**
+
 - `apps/backend/src/modules/progression/repositories/ProgressionRepository.js` — Added `findRadicalProgressByUser`, `findRadicalProgressByUserAndRadicalId`, `upsertRadicalProgress`
 - `apps/backend/src/modules/progression/services/ProgressionService.js` — Added `getRadicalProgress`, `getRadicalProgressById`, `upsertRadicalProgress` (with radicalId validation via `fs.existsSync`)
 - `apps/backend/src/modules/progression/api/ProgressionController.js` — Added `getRadicalProgress`, `getRadicalProgressById` (404 if not found), `upsertRadicalProgress` (400 for invalid radicalId, ReviewItem side-effect when memorized=true)
 - `apps/backend/src/modules/progression/api/progressionRoutes.js` — Added 3 routes (GET list, GET by id, PUT upsert) all with `authenticateToken` + `asyncHandler`
 
 **Backend — Review Module:**
+
 - `apps/backend/src/modules/review/services/ReviewService.js` — Added `buildRadicalItem()` function, updated `getReviewItems()` to include "radical" in type filter and load radicals from `content/radicals/`
 
 **Backend — DI Container:**
+
 - `apps/backend/src/app/container.js` — Reordered to instantiate `reviewService` before `progressionService`, pass `reviewService` to `ProgressionController`
 
 **Shared Constants:**
+
 - `packages/shared-constants/src/index.js` — Added `progressionRadicalProgress` and `progressionRadicalProgressById` route patterns
 
 **Frontend — Review Engine:**
+
 - `apps/frontend/src/features/review/engine/types.ts` — Added `showMeaning` to `ReviewStrategy` interface
 - `apps/frontend/src/features/review/engine/strategies/index.ts` — Registered `radicalReviewStrategy` in `REVIEW_STRATEGIES`
 - `apps/frontend/src/features/review/engine/strategies/PinyinReviewStrategy.ts` — Added `showMeaning: true`
 - `apps/frontend/src/features/review/engine/strategies/ToneReviewStrategy.ts` — Added `showMeaning: true`
 
 **Frontend — Review Components:**
+
 - `apps/frontend/src/features/review/components/ReviewPicker.tsx` — Added 📘 Radicals content type; improved accessibility (aria-pressed, radiogroup); refactored inline styles to CSS classes; added React.memo
 - `apps/frontend/src/features/review/components/ReviewPicker.css` — Added `.review-picker__card--selected` and `.review-picker__radio--selected` classes
 - `apps/frontend/src/features/review/components/ReviewCard.tsx` — Added `showMeaning` from strategy; added auto-play audio on step change
@@ -47,6 +54,7 @@ Backend RadicalProgress Prisma model, CRUD API endpoints, ReviewService extensio
 - `apps/frontend/src/features/review/types/review.ts` — Added `"radical"` to `ReviewItemType` union; removed deprecated `totalItems` from `ReviewSessionResult`
 
 **Frontend — Shared:**
+
 - `apps/frontend/src/shared/components/LoadingScreen/LoadingScreen.tsx` — Minor cleanup
 
 ### Files Created
@@ -81,11 +89,11 @@ model RadicalProgress {
 
 ### API Endpoints
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/api/v1/progression/radical-progress` | JWT | List user's radical progress |
-| GET | `/api/v1/progression/radical-progress/:radicalId` | JWT | Get single radical progress (404 if none) |
-| PUT | `/api/v1/progression/radical-progress/:radicalId` | JWT | Upsert progress; validates radicalId; triggers ReviewItem side-effect when `memorized=true` |
+| Method | Path                                              | Auth | Description                                                                                 |
+| ------ | ------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------- |
+| GET    | `/api/v1/progression/radical-progress`            | JWT  | List user's radical progress                                                                |
+| GET    | `/api/v1/progression/radical-progress/:radicalId` | JWT  | Get single radical progress (404 if none)                                                   |
+| PUT    | `/api/v1/progression/radical-progress/:radicalId` | JWT  | Upsert progress; validates radicalId; triggers ReviewItem side-effect when `memorized=true` |
 
 ### ReviewService — `buildRadicalItem()`
 
@@ -180,13 +188,13 @@ export const radicalReviewStrategy: ReviewStrategy = {
 
 Total: **45 tests** across 5 test files.
 
-| Test File | Tests | Coverage |
-|-----------|-------|----------|
-| `ProgressionRepository.test.js` | 7 | All 3 repository methods, edge cases (empty, not found, create vs update, reviewedAt) |
-| `ProgressionService.test.js` | 7 | All 3 service methods, default values, invalid radicalId validation |
-| `ProgressionController.test.js` | 13 | All 3 endpoints, 200/404/400/500 responses, side-effect orchestration, resilience |
-| `ReviewService.test.js` | 10 | `buildRadicalItem` shape, all 3 source filters (due/recent/all), new items, missing fields, type filtering |
-| `RadicalReviewStrategy.test.ts` | 8 | Metadata, showMeaning, correct/incorrect evaluation, non-pinyin input, empty pinyinPlain |
+| Test File                       | Tests | Coverage                                                                                                   |
+| ------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------- |
+| `ProgressionRepository.test.js` | 7     | All 3 repository methods, edge cases (empty, not found, create vs update, reviewedAt)                      |
+| `ProgressionService.test.js`    | 7     | All 3 service methods, default values, invalid radicalId validation                                        |
+| `ProgressionController.test.js` | 13    | All 3 endpoints, 200/404/400/500 responses, side-effect orchestration, resilience                          |
+| `ReviewService.test.js`         | 10    | `buildRadicalItem` shape, all 3 source filters (due/recent/all), new items, missing fields, type filtering |
+| `RadicalReviewStrategy.test.ts` | 8     | Metadata, showMeaning, correct/incorrect evaluation, non-pinyin input, empty pinyinPlain                   |
 
 ### Key edge cases tested
 
@@ -208,7 +216,7 @@ Total: **45 tests** across 5 test files.
 - [x] All endpoints require authenticateToken middleware
 - [x] PUT /api/v1/progression/radical-progress/:radicalId creates a ReviewItem side-effect when memorized=true
 - [x] "radical" added to ReviewItemType union in review/types
-- [x] buildRadicalItem() function in ReviewService loads radical data from content/radicals/*.json
+- [x] buildRadicalItem() function in ReviewService loads radical data from content/radicals/\*.json
 - [x] ReviewPicker shows 📘 Radicals content type button alongside existing 🔤 Pinyin and 🎵 Tones
 - [x] Radical review card shows radical glyph → user types pinyin → rates A/G/E (three-step flow)
 - [x] Radical review items respect due/recent/all source filters

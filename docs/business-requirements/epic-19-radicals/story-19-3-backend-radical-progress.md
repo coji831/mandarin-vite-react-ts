@@ -42,7 +42,7 @@ RadicalProgress is the backend foundation for the entire radicals feature. Witho
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `e40ca8c`
