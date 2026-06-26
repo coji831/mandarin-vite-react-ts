@@ -11,6 +11,20 @@
   "metadata": {
     "etymology": "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
     "frequency_rank": 9,
-    "notes": "Common left-side form of the person radical. Appears in characters related to people."
+    "notes": "Common left-side form of the person radical. Appears in characters related to people.",
+    "hsk_characters": [
+      { "glyph": "他", "pinyin": "tā", "meaning": "he/him" },
+      { "glyph": "们", "pinyin": "men", "meaning": "plural marker" },
+      { "glyph": "你", "pinyin": "nǐ", "meaning": "you" },
+      { "glyph": "作", "pinyin": "zuò", "meaning": "make/do" },
+      { "glyph": "体", "pinyin": "tǐ", "meaning": "body" },
+      { "glyph": "住", "pinyin": "zhù", "meaning": "live/reside" },
+      { "glyph": "什", "pinyin": "shén", "meaning": "what" },
+      { "glyph": "候", "pinyin": "hòu", "meaning": "wait/period" },
+      { "glyph": "借", "pinyin": "jiè", "meaning": "borrow/lend" },
+      { "glyph": "假", "pinyin": "jiǎ", "meaning": "false/fake" },
+      { "glyph": "价", "pinyin": "jià", "meaning": "price" },
+      { "glyph": "做", "pinyin": "zuò", "meaning": "do/make" }
+    ]
   }
 }

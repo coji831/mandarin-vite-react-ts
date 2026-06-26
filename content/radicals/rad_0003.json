@@ -11,6 +11,19 @@
   "metadata": {
     "etymology": "Pictograph of a dot or mark",
     "frequency_rank": 3,
-    "notes": "Represents a simple dot stroke. Found in many characters as a component."
+    "notes": "Represents a simple dot stroke. Found in many characters as a component.",
+    "hsk_characters": [
+      { "glyph": "主", "pinyin": "zhǔ", "meaning": "main/owner" },
+      { "glyph": "玉", "pinyin": "yù", "meaning": "jade" },
+      { "glyph": "丹", "pinyin": "dān", "meaning": "red/cinnabar" },
+      { "glyph": "丸", "pinyin": "wán", "meaning": "pill/ball" },
+      { "glyph": "为", "pinyin": "wèi", "meaning": "for/do" },
+      { "glyph": "丽", "pinyin": "lì", "meaning": "beautiful" },
+      { "glyph": "举", "pinyin": "jǔ", "meaning": "lift/raise" },
+      { "glyph": "州", "pinyin": "zhōu", "meaning": "prefecture/state" },
+      { "glyph": "良", "pinyin": "liáng", "meaning": "good/fine" },
+      { "glyph": "求", "pinyin": "qiú", "meaning": "seek/request" },
+      { "glyph": "永", "pinyin": "yǒng", "meaning": "forever" }
+    ]
   }
 }

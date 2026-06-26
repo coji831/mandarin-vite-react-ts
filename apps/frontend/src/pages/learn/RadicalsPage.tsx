@@ -1,15 +1,26 @@
 /**
  * @file pages/learn/RadicalsPage.tsx
- * @description Main radicals browsing page with filter bar and responsive grid
+ * @description Main radicals browsing page with filter bar, responsive grid, and detail card
  * Story 19.1: Radicals Browser Structure
+ * Story 19.2: Radical Detail Card
  */
 
-import { useRadicals, FilterBar, RadicalGrid } from "../../features/radicals";
+import { useState } from "react";
+import { useRadicals, FilterBar, RadicalGrid, RadicalDetailCard, type RadicalData } from "features/radicals";
 import "./RadicalsPage.css";
 
 export function RadicalsPage() {
   const { filteredRadicals, filter, setFilter, resetFilter, isLoading, error, refetch } =
     useRadicals();
+  const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
+
+  const handleRadicalClick = (radical: RadicalData) => {
+    setSelectedRadical(radical);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedRadical(null);
+  };
 
   return (
     <div className="radicals-page flex-col">
@@ -32,8 +43,10 @@ export function RadicalsPage() {
           radicals={filteredRadicals}
           isLoading={isLoading}
           error={error}
+          onRadicalClick={handleRadicalClick}
           onRetry={refetch}
         />
+
         <div className="radicals-page__legend">
           <span className="radical-card__badge" aria-hidden="true">
             ★
@@ -44,6 +57,10 @@ export function RadicalsPage() {
           </span>
         </div>
       </div>
+
+      {selectedRadical && (
+        <RadicalDetailCard radical={selectedRadical} onClose={handleCloseDetail} />
+      )}
     </div>
   );
 }

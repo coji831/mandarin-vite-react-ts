@@ -29,7 +29,7 @@ async function loadAllRadicals(): Promise<RadicalData[]> {
 
 /**
  * Load a single radical by its ID from the cached list.
- * TODO: Will be used by Story 19.2 (Radical Detail Card)
+ * TODO: Use when backend API endpoint is ready — Story 19.2 passes data via props.
  */
 async function loadRadicalById(id: string): Promise<RadicalData> {
   if (cachedRadicals) {

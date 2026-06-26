@@ -10,6 +10,20 @@
   "metadata": {
     "etymology": "Derived from 水 (shuǐ) — water",
     "frequency_rank": 12,
-    "notes": "One of the most common radicals. Appears on the left side of characters."
+    "notes": "One of the most common radicals. Appears on the left side of characters.",
+    "hsk_characters": [
+      { "glyph": "水", "pinyin": "shuǐ", "meaning": "water" },
+      { "glyph": "江", "pinyin": "jiāng", "meaning": "river" },
+      { "glyph": "河", "pinyin": "hé", "meaning": "river" },
+      { "glyph": "湖", "pinyin": "hú", "meaning": "lake" },
+      { "glyph": "海", "pinyin": "hǎi", "meaning": "sea/ocean" },
+      { "glyph": "洗", "pinyin": "xǐ", "meaning": "wash" },
+      { "glyph": "活", "pinyin": "huó", "meaning": "live/alive" },
+      { "glyph": "法", "pinyin": "fǎ", "meaning": "law/method" },
+      { "glyph": "清", "pinyin": "qīng", "meaning": "clear" },
+      { "glyph": "汉", "pinyin": "hàn", "meaning": "Han/Chinese" },
+      { "glyph": "汁", "pinyin": "zhī", "meaning": "juice" },
+      { "glyph": "汗", "pinyin": "hàn", "meaning": "sweat" }
+    ]
   }
 }

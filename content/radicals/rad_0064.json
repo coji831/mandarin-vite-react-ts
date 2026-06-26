@@ -11,6 +11,19 @@
   "metadata": {
     "etymology": "Derived from 手 (shǒu) — hand. The left-side form of the 'hand' radical.",
     "frequency_rank": 5,
-    "notes": "Extremely common left-side radical. Appears in hundreds of characters related to hand actions."
+    "notes": "Extremely common left-side radical. Appears in hundreds of characters related to hand actions.",
+    "hsk_characters": [
+      { "glyph": "打", "pinyin": "dǎ", "meaning": "hit/strike" },
+      { "glyph": "把", "pinyin": "bǎ", "meaning": "hold/grasp" },
+      { "glyph": "找", "pinyin": "zhǎo", "meaning": "look for" },
+      { "glyph": "拉", "pinyin": "lā", "meaning": "pull" },
+      { "glyph": "拍", "pinyin": "pāi", "meaning": "clap" },
+      { "glyph": "报", "pinyin": "bào", "meaning": "report" },
+      { "glyph": "抱", "pinyin": "bào", "meaning": "hug/embrace" },
+      { "glyph": "拨", "pinyin": "bō", "meaning": "dial/poke" },
+      { "glyph": "提", "pinyin": "tí", "meaning": "lift/carry" },
+      { "glyph": "推", "pinyin": "tuī", "meaning": "push" },
+      { "glyph": "接", "pinyin": "jiē", "meaning": "connect/receive" }
+    ]
   }
 }

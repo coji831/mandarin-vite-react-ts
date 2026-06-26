@@ -11,6 +11,19 @@
   "metadata": {
     "etymology": "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
     "frequency_rank": 15,
-    "notes": "Also a standalone character meaning 'again'. Found in characters related to hands or repetition."
+    "notes": "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
+    "hsk_characters": [
+      { "glyph": "又", "pinyin": "yòu", "meaning": "again" },
+      { "glyph": "友", "pinyin": "yǒu", "meaning": "friend" },
+      { "glyph": "取", "pinyin": "qǔ", "meaning": "take/obtain" },
+      { "glyph": "受", "pinyin": "shòu", "meaning": "receive" },
+      { "glyph": "变", "pinyin": "biàn", "meaning": "change" },
+      { "glyph": "双", "pinyin": "shuāng", "meaning": "pair/double" },
+      { "glyph": "反", "pinyin": "fǎn", "meaning": "opposite/reverse" },
+      { "glyph": "发", "pinyin": "fā", "meaning": "send/emit" },
+      { "glyph": "叛", "pinyin": "pàn", "meaning": "betray" },
+      { "glyph": "叙", "pinyin": "xù", "meaning": "narrate" },
+      { "glyph": "叠", "pinyin": "dié", "meaning": "stack/fold" }
+    ]
   }
 }

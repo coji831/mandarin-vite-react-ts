@@ -6,7 +6,14 @@
  * top-20 toggle, and sort controls. Content is loaded from static JSON files.
  */
 
-export { RadicalCard, RadicalGrid, FilterBar } from "./components";
+export {
+  RadicalCard,
+  RadicalGrid,
+  FilterBar,
+  RadicalDetailCard,
+  ExampleCharGrid,
+  ExampleCharCell,
+} from "./components";
 export { useRadicals } from "./hooks";
 export { radicalsService } from "./services";
 export {

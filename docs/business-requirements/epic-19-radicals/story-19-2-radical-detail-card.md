@@ -12,15 +12,15 @@ The Radical Detail Card provides the deep learning experience for each radical �
 
 ## Acceptance Criteria
 
-- [ ] Tapping a radical in the grid opens an expandable detail card below the grid row (verify: tap radical → card slides open below)
-- [ ] Detail card shows: radical glyph (large), pinyin, English meaning, stroke count, alternate glyphs (verify: all fields present)
-- [ ] Example characters grid shows 6-12 HSK characters containing this radical (verify: grid renders with character glyphs)
-- [ ] Each example character is clickable → opens Character Detail Hub (verify: tap character → Hub opens with correct character)
-- [ ] Each example character has audio play button → TTS pronunciation (verify: play button → audio plays via AudioService)
-- [ ] "See all" expand button shows full list of all HSK characters with this radical (verify: expand → full list renders)
-- [ ] Mnemonic "Generate Story" button renders as disabled/placeholder with "Coming in Epic 20" tooltip (verify: button visible but disabled, tooltip shows)
-- [ ] Card closes on tap outside or tap close button (verify: both dismiss methods work)
-- [ ] Card animates with smooth expand/collapse transition (verify: visual animation plays)
+- [x] Tapping a radical in the grid opens an expandable detail card below the grid row (verify: tap radical → card slides open below)
+- [x] Detail card shows: radical glyph (large), pinyin, English meaning, stroke count, alternate glyphs (verify: all fields present)
+- [x] Example characters grid shows 6-12 HSK characters containing this radical (verify: grid renders with character glyphs)
+- [x] Each example character is clickable → opens Character Detail Hub (verify: tap character → Hub opens with correct character)
+- [x] Each example character has audio play button → TTS pronunciation (verify: play button → audio plays via AudioService)
+- [x] "See all" expand button shows full list of all HSK characters with this radical (verify: expand → full list renders)
+- [x] Mnemonic "Generate Story" button renders as disabled/placeholder with "Coming in Epic 20" tooltip (verify: button visible but disabled, tooltip shows)
+- [x] Card closes on tap outside or tap close button (verify: both dismiss methods work)
+- [x] Card animates with smooth expand/collapse transition (verify: visual animation plays)
 
 ## Business Rules
 
@@ -35,7 +35,7 @@ The Radical Detail Card provides the deep learning experience for each radical �
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: (will be set after commit)

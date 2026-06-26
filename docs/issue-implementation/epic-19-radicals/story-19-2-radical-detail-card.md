@@ -105,3 +105,11 @@ Dismiss animation: CSS transition on max-height
 **Problem:** When a user taps a radical link in the Character Detail Hub's radical decomposition section, they need to navigate to that radical's detail in the radicals feature. The Hub is a portal overlay that can open from any context — so the navigation target isn't a simple route change.
 
 **Solution:** The Hub radical section opens the target radical's detail card by dispatching an event to the radicals store. If the user is already on the radicals page, the detail card opens inline. If they're on a different page, the Hub closes first, then navigates to `/learn/radicals?radical=rad_0001` with a query parameter that auto-selects the radical and opens its detail card.
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: TBD
+- **Merge Date**: TBD
+- **Key Commit**: TBD (to be filled after commit)
+- **Completion Date**: June 26, 2026

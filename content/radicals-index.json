@@ -15,7 +15,21 @@
       "metadata": {
         "etymology": "Pictograph of a single horizontal stroke representing the number one",
         "frequency_rank": 1,
-        "notes": "The first radical in the Kangxi system. Also a character meaning 'one'."
+        "notes": "The first radical in the Kangxi system. Also a character meaning 'one'.",
+        "hsk_characters": [
+          { "glyph": "一", "pinyin": "yī", "meaning": "one" },
+          { "glyph": "七", "pinyin": "qī", "meaning": "seven" },
+          { "glyph": "三", "pinyin": "sān", "meaning": "three" },
+          { "glyph": "上", "pinyin": "shàng", "meaning": "above/up" },
+          { "glyph": "下", "pinyin": "xià", "meaning": "below/down" },
+          { "glyph": "不", "pinyin": "bù", "meaning": "not/no" },
+          { "glyph": "世", "pinyin": "shì", "meaning": "world/generation" },
+          { "glyph": "东", "pinyin": "dōng", "meaning": "east" },
+          { "glyph": "丝", "pinyin": "sī", "meaning": "silk" },
+          { "glyph": "两", "pinyin": "liǎng", "meaning": "two/both" },
+          { "glyph": "且", "pinyin": "qiě", "meaning": "moreover" },
+          { "glyph": "丘", "pinyin": "qiū", "meaning": "mound/hill" }
+        ]
       }
     },
     {
@@ -31,7 +45,20 @@
       "metadata": {
         "etymology": "Pictograph of a vertical line or rod",
         "frequency_rank": 2,
-        "notes": "Represents a vertical line. Rarely used alone but common as a component."
+        "notes": "Represents a vertical line. Rarely used alone but common as a component.",
+        "hsk_characters": [
+          { "glyph": "中", "pinyin": "zhōng", "meaning": "middle/center" },
+          { "glyph": "串", "pinyin": "chuàn", "meaning": "string/skewer" },
+          { "glyph": "旧", "pinyin": "jiù", "meaning": "old/former" },
+          { "glyph": "北", "pinyin": "běi", "meaning": "north" },
+          { "glyph": "卡", "pinyin": "kǎ", "meaning": "card/block" },
+          { "glyph": "引", "pinyin": "yǐn", "meaning": "lead/guide" },
+          { "glyph": "丰", "pinyin": "fēng", "meaning": "abundant" },
+          { "glyph": "半", "pinyin": "bàn", "meaning": "half" },
+          { "glyph": "申", "pinyin": "shēn", "meaning": "state/explain" },
+          { "glyph": "畅", "pinyin": "chàng", "meaning": "smooth/unimpeded" },
+          { "glyph": "肃", "pinyin": "sù", "meaning": "solemn" }
+        ]
       }
     },
     {
@@ -47,7 +74,20 @@
       "metadata": {
         "etymology": "Pictograph of a dot or mark",
         "frequency_rank": 3,
-        "notes": "Represents a simple dot stroke. Found in many characters as a component."
+        "notes": "Represents a simple dot stroke. Found in many characters as a component.",
+        "hsk_characters": [
+          { "glyph": "主", "pinyin": "zhǔ", "meaning": "main/owner" },
+          { "glyph": "玉", "pinyin": "yù", "meaning": "jade" },
+          { "glyph": "丹", "pinyin": "dān", "meaning": "red/cinnabar" },
+          { "glyph": "丸", "pinyin": "wán", "meaning": "pill/ball" },
+          { "glyph": "为", "pinyin": "wèi", "meaning": "for/do" },
+          { "glyph": "丽", "pinyin": "lì", "meaning": "beautiful" },
+          { "glyph": "举", "pinyin": "jǔ", "meaning": "lift/raise" },
+          { "glyph": "州", "pinyin": "zhōu", "meaning": "prefecture/state" },
+          { "glyph": "良", "pinyin": "liáng", "meaning": "good/fine" },
+          { "glyph": "求", "pinyin": "qiú", "meaning": "seek/request" },
+          { "glyph": "永", "pinyin": "yǒng", "meaning": "forever" }
+        ]
       }
     },
     {
@@ -62,7 +102,21 @@
       "metadata": {
         "etymology": "Derived from 水 (shuǐ) — water",
         "frequency_rank": 12,
-        "notes": "One of the most common radicals. Appears on the left side of characters."
+        "notes": "One of the most common radicals. Appears on the left side of characters.",
+        "hsk_characters": [
+          { "glyph": "水", "pinyin": "shuǐ", "meaning": "water" },
+          { "glyph": "江", "pinyin": "jiāng", "meaning": "river" },
+          { "glyph": "河", "pinyin": "hé", "meaning": "river" },
+          { "glyph": "湖", "pinyin": "hú", "meaning": "lake" },
+          { "glyph": "海", "pinyin": "hǎi", "meaning": "sea/ocean" },
+          { "glyph": "洗", "pinyin": "xǐ", "meaning": "wash" },
+          { "glyph": "活", "pinyin": "huó", "meaning": "live/alive" },
+          { "glyph": "法", "pinyin": "fǎ", "meaning": "law/method" },
+          { "glyph": "清", "pinyin": "qīng", "meaning": "clear" },
+          { "glyph": "汉", "pinyin": "hàn", "meaning": "Han/Chinese" },
+          { "glyph": "汁", "pinyin": "zhī", "meaning": "juice" },
+          { "glyph": "汗", "pinyin": "hàn", "meaning": "sweat" }
+        ]
       }
     },
     {
@@ -78,7 +132,21 @@
       "metadata": {
         "etymology": "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
         "frequency_rank": 9,
-        "notes": "Common left-side form of the person radical. Appears in characters related to people."
+        "notes": "Common left-side form of the person radical. Appears in characters related to people.",
+        "hsk_characters": [
+          { "glyph": "他", "pinyin": "tā", "meaning": "he/him" },
+          { "glyph": "们", "pinyin": "men", "meaning": "plural marker" },
+          { "glyph": "你", "pinyin": "nǐ", "meaning": "you" },
+          { "glyph": "作", "pinyin": "zuò", "meaning": "make/do" },
+          { "glyph": "体", "pinyin": "tǐ", "meaning": "body" },
+          { "glyph": "住", "pinyin": "zhù", "meaning": "live/reside" },
+          { "glyph": "什", "pinyin": "shén", "meaning": "what" },
+          { "glyph": "候", "pinyin": "hòu", "meaning": "wait/period" },
+          { "glyph": "借", "pinyin": "jiè", "meaning": "borrow/lend" },
+          { "glyph": "假", "pinyin": "jiǎ", "meaning": "false/fake" },
+          { "glyph": "价", "pinyin": "jià", "meaning": "price" },
+          { "glyph": "做", "pinyin": "zuò", "meaning": "do/make" }
+        ]
       }
     },
     {
@@ -94,7 +162,21 @@
       "metadata": {
         "etymology": "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
         "frequency_rank": 10,
-        "notes": "Common right-side form. Appears in characters involving cutting or separating."
+        "notes": "Common right-side form. Appears in characters involving cutting or separating.",
+        "hsk_characters": [
+          { "glyph": "到", "pinyin": "dào", "meaning": "arrive" },
+          { "glyph": "利", "pinyin": "lì", "meaning": "sharp/benefit" },
+          { "glyph": "制", "pinyin": "zhì", "meaning": "control/make" },
+          { "glyph": "刻", "pinyin": "kè", "meaning": "carve/moment" },
+          { "glyph": "划", "pinyin": "huá", "meaning": "scratch/row" },
+          { "glyph": "刑", "pinyin": "xíng", "meaning": "punishment" },
+          { "glyph": "刚", "pinyin": "gāng", "meaning": "just/firm" },
+          { "glyph": "创", "pinyin": "chuàng", "meaning": "create" },
+          { "glyph": "别", "pinyin": "bié", "meaning": "other/separate" },
+          { "glyph": "判", "pinyin": "pàn", "meaning": "judge" },
+          { "glyph": "刺", "pinyin": "cì", "meaning": "stab" },
+          { "glyph": "刮", "pinyin": "guā", "meaning": "scrape" }
+        ]
       }
     },
     {
@@ -110,7 +192,21 @@
       "metadata": {
         "etymology": "Pictograph of a muscular arm showing strength",
         "frequency_rank": 11,
-        "notes": "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort."
+        "notes": "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
+        "hsk_characters": [
+          { "glyph": "力", "pinyin": "lì", "meaning": "power/strength" },
+          { "glyph": "加", "pinyin": "jiā", "meaning": "add" },
+          { "glyph": "助", "pinyin": "zhù", "meaning": "help" },
+          { "glyph": "动", "pinyin": "dòng", "meaning": "move/action" },
+          { "glyph": "劲", "pinyin": "jìn", "meaning": "strong/energy" },
+          { "glyph": "劳", "pinyin": "láo", "meaning": "labor" },
+          { "glyph": "男", "pinyin": "nán", "meaning": "male" },
+          { "glyph": "勇", "pinyin": "yǒng", "meaning": "brave" },
+          { "glyph": "努", "pinyin": "nǔ", "meaning": "exert/strive" },
+          { "glyph": "势", "pinyin": "shì", "meaning": "power/situation" },
+          { "glyph": "勒", "pinyin": "lè", "meaning": "restrain" },
+          { "glyph": "劣", "pinyin": "liè", "meaning": "inferior" }
+        ]
       }
     },
     {
@@ -125,7 +221,21 @@
       "metadata": {
         "etymology": "Pictograph of a white rice grain",
         "frequency_rank": 45,
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "白", "pinyin": "bái", "meaning": "white" },
+          { "glyph": "百", "pinyin": "bǎi", "meaning": "hundred" },
+          { "glyph": "的", "pinyin": "de", "meaning": "possessive particle" },
+          { "glyph": "皇", "pinyin": "huáng", "meaning": "emperor" },
+          { "glyph": "泉", "pinyin": "quán", "meaning": "spring/fountain" },
+          { "glyph": "皂", "pinyin": "zào", "meaning": "soap" },
+          { "glyph": "皓", "pinyin": "hào", "meaning": "bright/white" },
+          { "glyph": "皈", "pinyin": "guī", "meaning": "convert" },
+          { "glyph": "帛", "pinyin": "bó", "meaning": "silk" },
+          { "glyph": "皆", "pinyin": "jiē", "meaning": "all/every" },
+          { "glyph": "碧", "pinyin": "bì", "meaning": "green jade" },
+          { "glyph": "魄", "pinyin": "pò", "meaning": "soul" }
+        ]
       }
     },
     {
@@ -141,7 +251,20 @@
       "metadata": {
         "etymology": "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
         "frequency_rank": 15,
-        "notes": "Also a standalone character meaning 'again'. Found in characters related to hands or repetition."
+        "notes": "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
+        "hsk_characters": [
+          { "glyph": "又", "pinyin": "yòu", "meaning": "again" },
+          { "glyph": "友", "pinyin": "yǒu", "meaning": "friend" },
+          { "glyph": "取", "pinyin": "qǔ", "meaning": "take/obtain" },
+          { "glyph": "受", "pinyin": "shòu", "meaning": "receive" },
+          { "glyph": "变", "pinyin": "biàn", "meaning": "change" },
+          { "glyph": "双", "pinyin": "shuāng", "meaning": "pair/double" },
+          { "glyph": "反", "pinyin": "fǎn", "meaning": "opposite/reverse" },
+          { "glyph": "发", "pinyin": "fā", "meaning": "send/emit" },
+          { "glyph": "叛", "pinyin": "pàn", "meaning": "betray" },
+          { "glyph": "叙", "pinyin": "xù", "meaning": "narrate" },
+          { "glyph": "叠", "pinyin": "dié", "meaning": "stack/fold" }
+        ]
       }
     },
     {
@@ -158,7 +281,21 @@
         "etymology": "Pictograph of an open mouth",
         "frequency_rank": 4,
         "notes": "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "口", "pinyin": "kǒu", "meaning": "mouth" },
+          { "glyph": "吃", "pinyin": "chī", "meaning": "eat" },
+          { "glyph": "喝", "pinyin": "hē", "meaning": "drink" },
+          { "glyph": "唱", "pinyin": "chàng", "meaning": "sing" },
+          { "glyph": "吐", "pinyin": "tǔ", "meaning": "spit/vomit" },
+          { "glyph": "叫", "pinyin": "jiào", "meaning": "call/shout" },
+          { "glyph": "吸", "pinyin": "xī", "meaning": "inhale" },
+          { "glyph": "味", "pinyin": "wèi", "meaning": "taste/flavor" },
+          { "glyph": "告", "pinyin": "gào", "meaning": "tell/inform" },
+          { "glyph": "如", "pinyin": "rú", "meaning": "like/as" },
+          { "glyph": "扣", "pinyin": "kòu", "meaning": "button/deduct" },
+          { "glyph": "召", "pinyin": "zhào", "meaning": "summon" }
+        ]
       }
     },
     {
@@ -175,7 +312,21 @@
         "etymology": "Pictograph of a mound of earth or soil",
         "frequency_rank": 16,
         "notes": "Also a standalone character meaning 'earth' or 'soil'. Found in characters related to ground and locations.",
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "土", "pinyin": "tǔ", "meaning": "earth/soil" },
+          { "glyph": "地", "pinyin": "dì", "meaning": "ground/land" },
+          { "glyph": "场", "pinyin": "chǎng", "meaning": "field/place" },
+          { "glyph": "城", "pinyin": "chéng", "meaning": "city/wall" },
+          { "glyph": "块", "pinyin": "kuài", "meaning": "piece/block" },
+          { "glyph": "垃", "pinyin": "lā", "meaning": "garbage" },
+          { "glyph": "圾", "pinyin": "jī", "meaning": "garbage" },
+          { "glyph": "址", "pinyin": "zhǐ", "meaning": "address/site" },
+          { "glyph": "坝", "pinyin": "bà", "meaning": "dam" },
+          { "glyph": "坦", "pinyin": "tǎn", "meaning": "flat/level" },
+          { "glyph": "培", "pinyin": "péi", "meaning": "cultivate" },
+          { "glyph": "境", "pinyin": "jìng", "meaning": "boundary/environment" }
+        ]
       }
     },
     {
@@ -191,7 +342,19 @@
       "metadata": {
         "etymology": "Pictograph of a foot or leg walking — extended to mean 'go' or 'arrive'",
         "frequency_rank": 30,
-        "notes": "Resembles 夊 (suī) but with different stroke placement. Found in characters related to movement."
+        "notes": "Resembles 夊 (suī) but with different stroke placement. Found in characters related to movement.",
+        "hsk_characters": [
+          { "glyph": "处", "pinyin": "chù", "meaning": "place/location" },
+          { "glyph": "冬", "pinyin": "dōng", "meaning": "winter" },
+          { "glyph": "各", "pinyin": "gè", "meaning": "each" },
+          { "glyph": "备", "pinyin": "bèi", "meaning": "prepare" },
+          { "glyph": "路", "pinyin": "lù", "meaning": "road" },
+          { "glyph": "降", "pinyin": "jiàng", "meaning": "descend" },
+          { "glyph": "夏", "pinyin": "xià", "meaning": "summer" },
+          { "glyph": "略", "pinyin": "lüè", "meaning": "brief/strategy" },
+          { "glyph": "洛", "pinyin": "luò", "meaning": "Luo river" },
+          { "glyph": "络", "pinyin": "luò", "meaning": "network" }
+        ]
       }
     },
     {
@@ -208,7 +371,19 @@
         "etymology": "Pictograph of a person standing with arms outstretched — implying 'big' or 'great'",
         "frequency_rank": 13,
         "notes": "Also a common standalone character meaning 'big' or 'large'. Found in many compound characters.",
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "大", "pinyin": "dà", "meaning": "big/large" },
+          { "glyph": "太", "pinyin": "tài", "meaning": "too/very" },
+          { "glyph": "天", "pinyin": "tiān", "meaning": "sky/day" },
+          { "glyph": "头", "pinyin": "tóu", "meaning": "head" },
+          { "glyph": "奇", "pinyin": "qí", "meaning": "strange/odd" },
+          { "glyph": "夺", "pinyin": "duó", "meaning": "seize" },
+          { "glyph": "奔", "pinyin": "bēn", "meaning": "run quickly" },
+          { "glyph": "套", "pinyin": "tào", "meaning": "cover/set" },
+          { "glyph": "奢", "pinyin": "shē", "meaning": "extravagant" },
+          { "glyph": "达", "pinyin": "dá", "meaning": "reach" }
+        ]
       }
     },
     {
@@ -225,7 +400,21 @@
         "etymology": "Pictograph of a woman kneeling with folded hands",
         "frequency_rank": 8,
         "notes": "Also a standalone character meaning 'woman' or 'female'. Found in characters related to gender and family.",
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "女", "pinyin": "nǚ", "meaning": "woman" },
+          { "glyph": "好", "pinyin": "hǎo", "meaning": "good" },
+          { "glyph": "她", "pinyin": "tā", "meaning": "she/her" },
+          { "glyph": "妈", "pinyin": "mā", "meaning": "mother" },
+          { "glyph": "妹", "pinyin": "mèi", "meaning": "younger sister" },
+          { "glyph": "姐", "pinyin": "jiě", "meaning": "older sister" },
+          { "glyph": "妻", "pinyin": "qī", "meaning": "wife" },
+          { "glyph": "妇", "pinyin": "fù", "meaning": "woman/wife" },
+          { "glyph": "姓", "pinyin": "xìng", "meaning": "surname" },
+          { "glyph": "奶", "pinyin": "nǎi", "meaning": "milk/grandma" },
+          { "glyph": "娘", "pinyin": "niáng", "meaning": "mother/woman" },
+          { "glyph": "姑", "pinyin": "gū", "meaning": "aunt" }
+        ]
       }
     },
     {
@@ -241,7 +430,21 @@
       "metadata": {
         "etymology": "Pictograph of a roof or shelter covering",
         "frequency_rank": 14,
-        "notes": "Always appears as the top component of characters. Found in characters related to buildings and homes."
+        "notes": "Always appears as the top component of characters. Found in characters related to buildings and homes.",
+        "hsk_characters": [
+          { "glyph": "家", "pinyin": "jiā", "meaning": "home/family" },
+          { "glyph": "安", "pinyin": "ān", "meaning": "peaceful" },
+          { "glyph": "字", "pinyin": "zì", "meaning": "character" },
+          { "glyph": "宝", "pinyin": "bǎo", "meaning": "treasure" },
+          { "glyph": "定", "pinyin": "dìng", "meaning": "fixed/determine" },
+          { "glyph": "实", "pinyin": "shí", "meaning": "real/solid" },
+          { "glyph": "容", "pinyin": "róng", "meaning": "contain/appearance" },
+          { "glyph": "客", "pinyin": "kè", "meaning": "guest" },
+          { "glyph": "室", "pinyin": "shì", "meaning": "room" },
+          { "glyph": "宫", "pinyin": "gōng", "meaning": "palace" },
+          { "glyph": "牢", "pinyin": "láo", "meaning": "prison" },
+          { "glyph": "灾", "pinyin": "zāi", "meaning": "disaster" }
+        ]
       }
     },
     {
@@ -258,7 +461,20 @@
         "etymology": "Pictograph of a hand at the wrist — indicating the inch measurement from the pulse point",
         "frequency_rank": 20,
         "notes": "Also a standalone character and unit of measurement. Found in characters related to measurement and time.",
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "寸", "pinyin": "cùn", "meaning": "inch" },
+          { "glyph": "对", "pinyin": "duì", "meaning": "correct/toward" },
+          { "glyph": "导", "pinyin": "dǎo", "meaning": "guide" },
+          { "glyph": "村", "pinyin": "cūn", "meaning": "village" },
+          { "glyph": "付", "pinyin": "fù", "meaning": "pay" },
+          { "glyph": "耐", "pinyin": "nài", "meaning": "endure" },
+          { "glyph": "封", "pinyin": "fēng", "meaning": "seal/envelop" },
+          { "glyph": "射", "pinyin": "shè", "meaning": "shoot" },
+          { "glyph": "专", "pinyin": "zhuān", "meaning": "special" },
+          { "glyph": "尊", "pinyin": "zūn", "meaning": "respect" },
+          { "glyph": "寻", "pinyin": "xún", "meaning": "seek" }
+        ]
       }
     },
     {
@@ -277,7 +493,21 @@
           "left_side": "忄",
           "bottom": "⺗"
         },
-        "is_also_character": true
+        "is_also_character": true,
+        "hsk_characters": [
+          { "glyph": "心", "pinyin": "xīn", "meaning": "heart" },
+          { "glyph": "想", "pinyin": "xiǎng", "meaning": "think" },
+          { "glyph": "思", "pinyin": "sī", "meaning": "think" },
+          { "glyph": "念", "pinyin": "niàn", "meaning": "miss/read aloud" },
+          { "glyph": "忘", "pinyin": "wàng", "meaning": "forget" },
+          { "glyph": "您", "pinyin": "nín", "meaning": "you (respectful)" },
+          { "glyph": "意", "pinyin": "yì", "meaning": "meaning" },
+          { "glyph": "志", "pinyin": "zhì", "meaning": "ambition" },
+          { "glyph": "忍", "pinyin": "rěn", "meaning": "endure" },
+          { "glyph": "忽", "pinyin": "hū", "meaning": "suddenly" },
+          { "glyph": "忠", "pinyin": "zhōng", "meaning": "loyal" },
+          { "glyph": "悲", "pinyin": "bēi", "meaning": "sad" }
+        ]
       }
     },
     {
@@ -293,7 +523,20 @@
       "metadata": {
         "etymology": "Derived from 手 (shǒu) — hand. The left-side form of the 'hand' radical.",
         "frequency_rank": 5,
-        "notes": "Extremely common left-side radical. Appears in hundreds of characters related to hand actions."
+        "notes": "Extremely common left-side radical. Appears in hundreds of characters related to hand actions.",
+        "hsk_characters": [
+          { "glyph": "打", "pinyin": "dǎ", "meaning": "hit/strike" },
+          { "glyph": "把", "pinyin": "bǎ", "meaning": "hold/grasp" },
+          { "glyph": "找", "pinyin": "zhǎo", "meaning": "look for" },
+          { "glyph": "拉", "pinyin": "lā", "meaning": "pull" },
+          { "glyph": "拍", "pinyin": "pāi", "meaning": "clap" },
+          { "glyph": "报", "pinyin": "bào", "meaning": "report" },
+          { "glyph": "抱", "pinyin": "bào", "meaning": "hug/embrace" },
+          { "glyph": "拨", "pinyin": "bō", "meaning": "dial/poke" },
+          { "glyph": "提", "pinyin": "tí", "meaning": "lift/carry" },
+          { "glyph": "推", "pinyin": "tuī", "meaning": "push" },
+          { "glyph": "接", "pinyin": "jiē", "meaning": "connect/receive" }
+        ]
       }
     },
     {
@@ -313,7 +556,21 @@
         "is_also_character": true,
         "variants": {
           "bottom": "灬"
-        }
+        },
+        "hsk_characters": [
+          { "glyph": "火", "pinyin": "huǒ", "meaning": "fire" },
+          { "glyph": "灯", "pinyin": "dēng", "meaning": "lamp/light" },
+          { "glyph": "烧", "pinyin": "shāo", "meaning": "burn" },
+          { "glyph": "炸", "pinyin": "zhà", "meaning": "explode/fry" },
+          { "glyph": "炒", "pinyin": "chǎo", "meaning": "stir-fry" },
+          { "glyph": "烤", "pinyin": "kǎo", "meaning": "roast" },
+          { "glyph": "烟", "pinyin": "yān", "meaning": "smoke" },
+          { "glyph": "煤", "pinyin": "méi", "meaning": "coal" },
+          { "glyph": "炉", "pinyin": "lú", "meaning": "stove" },
+          { "glyph": "炎", "pinyin": "yán", "meaning": "flame" },
+          { "glyph": "灾", "pinyin": "zāi", "meaning": "disaster" },
+          { "glyph": "灭", "pinyin": "miè", "meaning": "extinguish" }
+        ]
       }
     },
     {
@@ -329,7 +586,21 @@
       "metadata": {
         "etymology": "Derived from 玉 (yù) — jade. The side form of the 'jade' radical, identical in appearance to 王 (king).",
         "frequency_rank": 6,
-        "notes": "Visually identical to 王 (wáng — king) but used as the jade radical. Found in characters related to gems and precious objects."
+        "notes": "Visually identical to 王 (wáng — king) but used as the jade radical. Found in characters related to gems and precious objects.",
+        "hsk_characters": [
+          { "glyph": "王", "pinyin": "wáng", "meaning": "king" },
+          { "glyph": "玉", "pinyin": "yù", "meaning": "jade" },
+          { "glyph": "主", "pinyin": "zhǔ", "meaning": "main/owner" },
+          { "glyph": "全", "pinyin": "quán", "meaning": "whole/complete" },
+          { "glyph": "弄", "pinyin": "nòng", "meaning": "do/play with" },
+          { "glyph": "皇", "pinyin": "huáng", "meaning": "emperor" },
+          { "glyph": "理", "pinyin": "lǐ", "meaning": "reason/management" },
+          { "glyph": "现", "pinyin": "xiàn", "meaning": "present/current" },
+          { "glyph": "环", "pinyin": "huán", "meaning": "ring" },
+          { "glyph": "玩", "pinyin": "wán", "meaning": "play" },
+          { "glyph": "球", "pinyin": "qiú", "meaning": "ball" },
+          { "glyph": "班", "pinyin": "bān", "meaning": "class/team" }
+        ]
       }
     }
   ]
