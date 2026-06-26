@@ -29,6 +29,43 @@
 }
 
 /* ═══════════════════════════════════════════════
+   View Toggle (Browse / Trees)
+   ═══════════════════════════════════════════════ */
+
+.radicals-page__view-toggle {
+  border-top: 1px solid var(--surface-border);
+  background: var(--surface-dark);
+  gap: var(--space-sm);
+}
+
+.radicals-page__toggle-btn {
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  padding: var(--space-xs) var(--space-lg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.radicals-page__toggle-btn:hover {
+  background: var(--surface-light-10);
+  color: var(--text-primary);
+  border-color: var(--color-primary-border);
+}
+
+.radicals-page__toggle-btn--active {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-light);
+}
+
+.radicals-page__toggle-btn--active:hover {
+  background: var(--color-primary-bg-medium);
+}
+
+/* ═══════════════════════════════════════════════
    Filter Bar
    ═══════════════════════════════════════════════ */
 

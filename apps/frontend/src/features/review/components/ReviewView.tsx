@@ -8,11 +8,11 @@ import { useCallback, useEffect } from "react";
 import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
-import { LoadingScreen, ErrorScreen } from "@/shared/components";
 import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
+import { ErrorScreen, LoadingScreen } from "shared/components";
 
 type ReviewViewProps = {
   onBack: () => void;

@@ -9,7 +9,7 @@ description: "Use when implementing a story, closing an epic, preparing a commit
 Follow this sequence when implementing or updating a story:
 
 1. **Review Requirements** — Open the story BR file and its epic BR README. Open corresponding implementation docs. Confirm Acceptance Criteria clarity; note ambiguous items in a "Questions / Clarifications" subsection.
-2. **Plan Changes** — Read [`AGENTS.md`](../../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
+2. **Plan Changes** — Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
 3. **Implement Code** — Create/update components, hooks, reducers, types within the feature folder. Maintain state rules (domain-prefixed action types, immutable updates, normalized collections). Keep scope tightly bound to story AC; defer extras into a new follow-up story.
 4. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
 5. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
@@ -27,7 +27,7 @@ Follow this sequence when implementing or updating a story:
 
 ## Code Change Checklist
 
-- Read [`AGENTS.md`](../../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions
+- Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions
 - Refer to `docs/guides/conventions/frontend.md` (frontend) or `docs/guides/conventions/backend.md` (backend) + `docs/knowledge-base/practices/solid-principles.md`
 - Update file-level header comments when public API surface changes (use File Summary Template)
 - Update design docs if feature logic or architecture changes

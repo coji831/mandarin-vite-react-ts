@@ -1,0 +1,41 @@
+/**
+ * @file components/RadicalTreesTab.css
+ * @description Styles for the Radical Trees tab/sub-view
+ * Story 19.4: Radical Trees (Phase 3)
+ *
+ * Only contains rules that cannot be replaced by global utility classes.
+ * Layout and typography use globals.css utility classes directly in JSX.
+ *
+ * Chip picker styles moved to RadicalChipPicker.css
+ * Skeleton/loading styles duplicated in Phase3TreeView.css (renamed)
+ */
+
+.radical-trees-tab {
+  width: 100%;
+}
+
+/* ─── Initial tab loading state ──────────────────────────────────── */
+/* Used by RadicalTreesTab.tsx directly (not Phase3TreeView) */
+
+.radical-trees-tab__loading {
+  min-height: 200px;
+}
+
+.radical-trees-tab__skeleton-tree {
+  width: 100%;
+  height: 60px;
+  background: var(--surface-light-5);
+  border-radius: var(--radius-lg);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  margin-bottom: var(--space-md);
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

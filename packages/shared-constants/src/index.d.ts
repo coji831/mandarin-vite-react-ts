@@ -30,6 +30,8 @@ export declare const ROUTE_PATTERNS: {
   readonly progressionFoundationProgress: string;
   readonly progressionFoundationProgressSection: (sectionId: string) => string;
   readonly progressionPhaseGate: string;
+  readonly progressionRadicalProgress: string;
+  readonly progressionRadicalProgressById: (radicalId: string) => string;
   readonly quizAttempts: string;
   readonly quizAttemptAnswer: (id: string) => string;
   readonly quizAttemptComplete: (id: string) => string;

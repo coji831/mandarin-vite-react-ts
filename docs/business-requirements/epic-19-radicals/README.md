@@ -57,7 +57,7 @@ This epic consists of the following user stories:
 
 4. **Story 19.4: Radical Trees (Phase 3)** ([story-19-4-radical-trees.md](story-19-4-radical-trees.md))
    - As a learner in Phase 3, I want to explore radical trees showing mastered radicals with expandable character lists, so that I can see how radicals compose into characters.
-   - **Status:** Planned
+   - **Status:** ✅ Completed
 
 5. **Story 19.5: Character Hub Radical Section** ([story-19-5-character-hub-radical-section.md](story-19-5-character-hub-radical-section.md))
    - As a learner, I want to see the radical breakdown of any character in the Character Detail Hub, so that I can understand character composition from any context.

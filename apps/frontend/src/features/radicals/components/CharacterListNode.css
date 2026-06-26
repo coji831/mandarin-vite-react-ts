@@ -1,0 +1,57 @@
+/**
+ * @file components/CharacterListNode.css
+ * @description Styles for CharacterListNode — Phase 2 character list
+ * Story 19.4: Radical Trees (Phase 3)
+ */
+
+.character-list-node {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.character-list-node__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-light-5);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.character-list-node__radical-glyph {
+  font-size: var(--font-3xl);
+  color: var(--color-primary-light);
+  line-height: 1;
+}
+
+.character-list-node__radical-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.character-list-node__radical-meaning {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.character-list-node__radical-pinyin {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.character-list-node__count {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.character-list-node__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}

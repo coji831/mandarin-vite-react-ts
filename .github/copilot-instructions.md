@@ -30,12 +30,12 @@ Close epic/story: verify all AC done → update Status & Last Update in BR + imp
 ## 🧩 Component Reuse
 
 - ✅ ALWAYS check `src/shared/components/` before creating a new component
-- ✅ Import from `@/shared/components` — they're already re-exported via barrel
+- ✅ Import from `shared/components` — they're already re-exported via barrel
 - ✅ Use CSS variables from `apps/frontend/src/styles/globals.css` — never hardcode colors, spacing, or typography
-- ✅ See [DESIGN.md](./DESIGN.md) for the complete design token reference
-- ✅ See [component-decomposition skill](./.github/skills/component-decomposition/SKILL.md) for component breakdown rules
-- ✅ See [frontend-audit skill](./.github/skills/frontend-audit/SKILL.md) for frontend code audit checklist
-- ✅ See [backend-audit skill](./.github/skills/backend-audit/SKILL.md) for backend code audit checklist
+- ✅ See [DESIGN.md](../DESIGN.md) for the complete design token reference
+- ✅ See [component-decomposition skill](./skills/component-decomposition/SKILL.md) for component breakdown rules
+- ✅ See [frontend-audit skill](./skills/frontend-audit/SKILL.md) for frontend code audit checklist
+- ✅ See [backend-audit skill](./skills/backend-audit/SKILL.md) for backend code audit checklist
 - ❌ NEVER reimplement Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser
 
 ## 🔄 Development Workflow
