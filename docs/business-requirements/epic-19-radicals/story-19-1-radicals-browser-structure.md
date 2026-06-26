@@ -12,17 +12,17 @@ The radicals browser is the foundational UI for the entire radicals experience. 
 
 ## Acceptance Criteria
 
-- [ ] Radicals page accessible at `/learn/radicals` with filterable grid view (verify: navigate to route, grid renders)
-- [ ] Content loaded from `content/radicals/*.json` files via content registry in `content/manifest.json` (verify: radical data loads, console shows parsed entries)
-- [ ] Grid displays radical glyph, pinyin name, English meaning, and stroke count per card (verify: each card has all 4 fields)
-- [ ] Stroke count filter allows filtering by stroke count (1-17+ strokes) (verify: filter dropdown renders, selection filters grid)
-- [ ] Search input filters radicals by pinyin, meaning, or glyph (verify: type "water" → shows 氵-related radicals)
-- [ ] "Show top 20 only" toggle switches between full dataset and recommended subset (verify: toggle renders, toggling changes visible count)
-- [ ] Top 20 radicals display a visual ★ badge indicator (verify: ★ visible on recommended radicals)
-- [ ] Phase-gated TabBar shows radicals tab active for Phase 2+ users (verify: Phase 2 user sees tabs, Phase 1 user sees lock icon)
-- [ ] Grid loads in <500ms on first visit (verify: network tab timing)
-- [ ] Mobile responsive: grid renders correctly on viewports ≥320px (verify: mobile emulation, cards stack in 2 columns)
-- [ ] Sort options: by stroke count asc/desc, by kangxi index, alphabetically by meaning (verify: sort selector, grid reorders)
+- [x] Radicals page accessible at `/learn/radicals` with filterable grid view (verify: navigate to route, grid renders)
+- [x] Content loaded from `content/radicals/*.json` files via content registry in `content/manifest.json` (verify: radical data loads, console shows parsed entries)
+- [x] Grid displays radical glyph, pinyin name, English meaning, and stroke count per card (verify: each card has all 4 fields)
+- [x] Stroke count filter allows filtering by stroke count (1-17+ strokes) (verify: filter dropdown renders, selection filters grid)
+- [x] Search input filters radicals by pinyin, meaning, or glyph (verify: type "water" → shows 氵-related radicals)
+- [x] "Show top 20 only" toggle switches between full dataset and recommended subset (verify: toggle renders, toggling changes visible count)
+- [x] Top 20 radicals display a visual ★ badge indicator (verify: ★ visible on recommended radicals)
+- [x] Phase-gated TabBar shows radicals tab active for Phase 2+ users (verify: Phase 2 user sees tabs, Phase 1 user sees lock icon)
+- [x] Grid loads in <500ms on first visit (verify: network tab timing)
+- [x] Mobile responsive: grid renders correctly on viewports ≥320px (verify: mobile emulation, cards stack in 2 columns)
+- [x] Sort options: by stroke count asc/desc, by kangxi index, alphabetically by meaning (verify: sort selector, grid reorders)
 
 ## Business Rules
 
@@ -37,7 +37,7 @@ The radicals browser is the foundational UI for the entire radicals experience. 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: 08f8e03

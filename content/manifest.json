@@ -4,11 +4,57 @@
   "content_types": ["characters", "radicals", "words", "grammar", "chengyu", "pinyin", "tones"],
   "entity_counts": {
     "characters": 3,
-    "radicals": 3,
+    "radicals": 20,
     "words": 0,
     "grammar": 0,
     "chengyu": 0,
     "pinyin": 10,
     "tones": 5
+  },
+  "radicals": {
+    "files": [
+      "rad_0001.json",
+      "rad_0002.json",
+      "rad_0003.json",
+      "rad_0008.json",
+      "rad_0009.json",
+      "rad_0018.json",
+      "rad_0019.json",
+      "rad_0025.json",
+      "rad_0029.json",
+      "rad_0030.json",
+      "rad_0032.json",
+      "rad_0034.json",
+      "rad_0037.json",
+      "rad_0038.json",
+      "rad_0040.json",
+      "rad_0041.json",
+      "rad_0061.json",
+      "rad_0064.json",
+      "rad_0086.json",
+      "rad_0096.json"
+    ],
+    "top20": [
+      "rad_0001",
+      "rad_0002",
+      "rad_0003",
+      "rad_0008",
+      "rad_0009",
+      "rad_0018",
+      "rad_0019",
+      "rad_0025",
+      "rad_0029",
+      "rad_0030",
+      "rad_0032",
+      "rad_0034",
+      "rad_0037",
+      "rad_0038",
+      "rad_0040",
+      "rad_0041",
+      "rad_0061",
+      "rad_0064",
+      "rad_0086",
+      "rad_0096"
+    ]
   }
 }

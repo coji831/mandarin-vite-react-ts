@@ -1,0 +1,16 @@
+{
+  "id": "rad_0001",
+  "glyph": "一",
+  "alternate_glyphs": [],
+  "name_pinyin": "yī",
+  "name_chinese": "一",
+  "meaning": "one",
+  "stroke_count": 1,
+  "is_recommended": true,
+  "kangxi_index": 1,
+  "metadata": {
+    "etymology": "Pictograph of a single horizontal stroke representing the number one",
+    "frequency_rank": 1,
+    "notes": "The first radical in the Kangxi system. Also a character meaning 'one'."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "rad_0003",
+  "glyph": "丶",
+  "alternate_glyphs": [],
+  "name_pinyin": "zhǔ",
+  "name_chinese": "丶",
+  "meaning": "dot",
+  "stroke_count": 1,
+  "is_recommended": true,
+  "kangxi_index": 3,
+  "metadata": {
+    "etymology": "Pictograph of a dot or mark",
+    "frequency_rank": 3,
+    "notes": "Represents a simple dot stroke. Found in many characters as a component."
+  }
+}

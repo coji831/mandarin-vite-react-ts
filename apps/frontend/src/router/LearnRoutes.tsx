@@ -13,7 +13,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { practices_quiz, practices_review } from "../shared/constants/paths";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { FoundationsPage, ContentPlaceholderPage } from "../pages/learn";
+import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn";
 
 export function LearnRoutes() {
   return (
@@ -22,7 +22,7 @@ export function LearnRoutes() {
         <Route index element={<Navigate to="/learn/foundations" replace />} />
         <Route path="foundations" element={<FoundationsPage />} />
         {/* Future content type placeholders */}
-        <Route path="radicals" element={<ContentPlaceholderPage title="Radicals" />} />
+        <Route path="radicals" element={<RadicalsPage />} />
         <Route path="grammar" element={<ContentPlaceholderPage title="Grammar" />} />
         <Route
           path="phonetic-clusters"

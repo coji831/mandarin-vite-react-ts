@@ -1,0 +1,266 @@
+/**
+ * @file pages/learn/RadicalsPage.css
+ * @description Styles for the Radicals browsing page
+ * Story 19.1: Radicals Browser Structure
+ */
+
+/* ═══════════════════════════════════════════════
+   Page Layout
+   ═══════════════════════════════════════════════ */
+
+.radicals-page {
+  min-height: 300px;
+}
+
+.radicals-page__header {
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.radicals-page__header h1 {
+  margin: 0 0 var(--space-xs);
+}
+
+.radicals-page__header p {
+  margin: 0;
+}
+
+.radicals-page__content {
+  flex: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   Filter Bar
+   ═══════════════════════════════════════════════ */
+
+.radicals-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: flex-end;
+  background: var(--surface-dark);
+  border-bottom: 1px solid var(--surface-border);
+  padding: var(--space-md);
+}
+
+.radicals-filter-bar__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.radicals-filter-bar__input {
+  min-width: 200px;
+}
+
+/* Toggle switch */
+.radicals-filter-bar__toggle-group {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.radicals-filter-bar__toggle-label {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  white-space: nowrap;
+}
+
+.radicals-filter-bar__toggle {
+  width: 44px;
+  height: 24px;
+  background: var(--surface-light-10);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--transition-fast);
+  border: 1px solid var(--surface-border);
+}
+
+.radicals-filter-bar__toggle--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.radicals-filter-bar__toggle-knob {
+  width: 18px;
+  height: 18px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--transition-fast);
+}
+
+.radicals-filter-bar__toggle--active .radicals-filter-bar__toggle-knob {
+  transform: translateX(20px);
+}
+
+.radicals-filter-bar__label {
+  display: block;
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Reset button */
+.radicals-filter-bar__reset {
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-end;
+}
+
+.radicals-filter-bar__reset:hover {
+  background: var(--surface-light-10);
+  color: var(--text-primary);
+  border-color: var(--color-primary-border);
+}
+
+/* ═══════════════════════════════════════════════
+   Radical Grid
+   ═══════════════════════════════════════════════ */
+
+.radical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
+}
+
+.radical-grid__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.radical-grid__skeleton-card {
+  height: 160px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.radical-grid__loading-text {
+  margin-top: var(--space-md);
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Legend
+   ═══════════════════════════════════════════════ */
+
+.radicals-page__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+  padding: var(--space-xs) 0;
+  color: var(--text-subtle);
+  font-size: var(--font-xs);
+}
+
+.radicals-page__legend .radical-card__badge {
+  position: static;
+  font-size: var(--font-sm);
+}
+
+.radicals-page__title-icon {
+  margin-right: var(--space-xs);
+}
+
+.radicals-page__legend-text {
+  color: var(--text-subtle);
+}
+
+.radicals-filter-bar__toggle-subtle {
+  color: var(--text-subtle);
+}
+
+/* ═══════════════════════════════════════════════
+   Radical Card
+   ═══════════════════════════════════════════════ */
+
+.radical-card {
+  position: relative;
+  padding: var(--space-lg) var(--space-md);
+  gap: var(--space-xs);
+  cursor: pointer;
+  min-height: 160px;
+}
+
+.radical-card:hover {
+  transform: translateY(-2px);
+}
+
+.radical-card__badge {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  color: var(--color-warning);
+  font-size: var(--font-lg);
+  line-height: 1;
+}
+
+.radical-card__glyph {
+  font-size: var(--font-5xl);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.radical-card__pinyin {
+  font-size: var(--font-sm);
+  color: var(--color-primary-light);
+  font-style: italic;
+}
+
+.radical-card__meaning {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.radical-card__strokes {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════
+   Loading & Error & Empty States
+   ═══════════════════════════════════════════════ */
+
+.radical-grid__loading,
+.radical-grid__error,
+.radical-grid__empty {
+  min-height: 200px;
+}
+
+/* ═══════════════════════════════════════════════
+   Screen Reader Only Utility
+   ═══════════════════════════════════════════════ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

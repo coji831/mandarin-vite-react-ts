@@ -1,0 +1,16 @@
+{
+  "id": "rad_0034",
+  "glyph": "夂",
+  "alternate_glyphs": ["⻊"],
+  "name_pinyin": "zhǐ",
+  "name_chinese": "夂",
+  "meaning": "go",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 34,
+  "metadata": {
+    "etymology": "Pictograph of a foot or leg walking — extended to mean 'go' or 'arrive'",
+    "frequency_rank": 30,
+    "notes": "Resembles 夊 (suī) but with different stroke placement. Found in characters related to movement."
+  }
+}

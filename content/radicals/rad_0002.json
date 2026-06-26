@@ -1,0 +1,16 @@
+{
+  "id": "rad_0002",
+  "glyph": "丨",
+  "alternate_glyphs": [],
+  "name_pinyin": "gǔn",
+  "name_chinese": "丨",
+  "meaning": "line",
+  "stroke_count": 1,
+  "is_recommended": true,
+  "kangxi_index": 2,
+  "metadata": {
+    "etymology": "Pictograph of a vertical line or rod",
+    "frequency_rank": 2,
+    "notes": "Represents a vertical line. Rarely used alone but common as a component."
+  }
+}

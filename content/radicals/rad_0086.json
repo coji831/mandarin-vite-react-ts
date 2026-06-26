@@ -1,0 +1,20 @@
+{
+  "id": "rad_0086",
+  "glyph": "火",
+  "alternate_glyphs": ["灬"],
+  "name_pinyin": "huǒ",
+  "name_chinese": "火",
+  "meaning": "fire",
+  "stroke_count": 4,
+  "is_recommended": true,
+  "kangxi_index": 86,
+  "metadata": {
+    "etymology": "Pictograph of flames rising upward",
+    "frequency_rank": 7,
+    "notes": "Also a standalone character meaning 'fire'. Bottom form 灬 appears in characters related to heat and cooking.",
+    "is_also_character": true,
+    "variants": {
+      "bottom": "灬"
+    }
+  }
+}

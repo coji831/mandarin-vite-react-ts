@@ -1,0 +1,359 @@
+/**
+ * @file services/radicalsMockData.ts
+ * @description Mock data for radicals — replace with backend API call when endpoint is ready.
+ * Story 19.1: Radicals Browser Structure
+ *
+ * TODO: Replace with apiClient call to GET /api/v1/radicals when backend endpoint is implemented.
+ * See foundationsService.ts for reference pattern (uses apiClient + module-level cache).
+ */
+
+import type { RadicalData } from "../types";
+
+export const MOCK_RADICALS: RadicalData[] = [
+  {
+    id: "rad_0001",
+    glyph: "一",
+    alternate_glyphs: [],
+    name_pinyin: "yī",
+    name_chinese: "一",
+    meaning: "one",
+    stroke_count: 1,
+    is_recommended: true,
+    kangxi_index: 1,
+    metadata: {
+      etymology: "Pictograph of a single horizontal stroke representing the number one",
+      frequency_rank: 1,
+      notes: "The first radical in the Kangxi system. Also a character meaning 'one'.",
+    },
+  },
+  {
+    id: "rad_0002",
+    glyph: "丨",
+    alternate_glyphs: [],
+    name_pinyin: "gǔn",
+    name_chinese: "丨",
+    meaning: "line",
+    stroke_count: 1,
+    is_recommended: true,
+    kangxi_index: 2,
+    metadata: {
+      etymology: "Pictograph of a vertical line or rod",
+      frequency_rank: 2,
+      notes: "Represents a vertical line. Rarely used alone but common as a component.",
+    },
+  },
+  {
+    id: "rad_0003",
+    glyph: "丶",
+    alternate_glyphs: [],
+    name_pinyin: "zhǔ",
+    name_chinese: "丶",
+    meaning: "dot",
+    stroke_count: 1,
+    is_recommended: true,
+    kangxi_index: 3,
+    metadata: {
+      etymology: "Pictograph of a dot or mark",
+      frequency_rank: 3,
+      notes: "Represents a simple dot stroke. Found in many characters as a component.",
+    },
+  },
+  {
+    id: "rad_0008",
+    glyph: "氵",
+    alternate_glyphs: ["⺡", "氺"],
+    name_pinyin: "sāndiǎnshuǐ",
+    meaning: "water radical",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 8,
+    metadata: {
+      etymology: "Derived from 水 (shuǐ) — water",
+      frequency_rank: 12,
+      notes: "One of the most common radicals. Appears on the left side of characters.",
+    },
+  },
+  {
+    id: "rad_0009",
+    glyph: "亻",
+    alternate_glyphs: ["人"],
+    name_pinyin: "rén",
+    name_chinese: "人",
+    meaning: "man",
+    stroke_count: 2,
+    is_recommended: true,
+    kangxi_index: 9,
+    metadata: {
+      etymology: "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
+      frequency_rank: 9,
+      notes:
+        "Common left-side form of the person radical. Appears in characters related to people.",
+    },
+  },
+  {
+    id: "rad_0018",
+    glyph: "刂",
+    alternate_glyphs: ["刀"],
+    name_pinyin: "dāo",
+    name_chinese: "刀",
+    meaning: "knife",
+    stroke_count: 2,
+    is_recommended: true,
+    kangxi_index: 18,
+    metadata: {
+      etymology: "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
+      frequency_rank: 10,
+      notes: "Common right-side form. Appears in characters involving cutting or separating.",
+    },
+  },
+  {
+    id: "rad_0019",
+    glyph: "力",
+    alternate_glyphs: [],
+    name_pinyin: "lì",
+    name_chinese: "力",
+    meaning: "power",
+    stroke_count: 2,
+    is_recommended: true,
+    kangxi_index: 19,
+    metadata: {
+      etymology: "Pictograph of a muscular arm showing strength",
+      frequency_rank: 11,
+      notes:
+        "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
+    },
+  },
+  {
+    id: "rad_0025",
+    glyph: "白",
+    alternate_glyphs: [],
+    name_pinyin: "bái",
+    meaning: "white",
+    stroke_count: 5,
+    is_recommended: true,
+    kangxi_index: 25,
+    metadata: {
+      etymology: "Pictograph of a white rice grain",
+      frequency_rank: 45,
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0029",
+    glyph: "又",
+    alternate_glyphs: [],
+    name_pinyin: "yòu",
+    name_chinese: "又",
+    meaning: "again",
+    stroke_count: 2,
+    is_recommended: true,
+    kangxi_index: 29,
+    metadata: {
+      etymology: "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
+      frequency_rank: 15,
+      notes:
+        "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
+    },
+  },
+  {
+    id: "rad_0030",
+    glyph: "口",
+    alternate_glyphs: [],
+    name_pinyin: "kǒu",
+    name_chinese: "口",
+    meaning: "mouth",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 30,
+    metadata: {
+      etymology: "Pictograph of an open mouth",
+      frequency_rank: 4,
+      notes:
+        "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0032",
+    glyph: "土",
+    alternate_glyphs: [],
+    name_pinyin: "tǔ",
+    name_chinese: "土",
+    meaning: "earth",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 32,
+    metadata: {
+      etymology: "Pictograph of a mound of earth or soil",
+      frequency_rank: 16,
+      notes:
+        "Also a standalone character meaning 'earth' or 'soil'. Found in characters related to ground and locations.",
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0034",
+    glyph: "夂",
+    alternate_glyphs: ["⻊"],
+    name_pinyin: "zhǐ",
+    name_chinese: "夂",
+    meaning: "go",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 34,
+    metadata: {
+      etymology: "Pictograph of a foot or leg walking — extended to mean 'go' or 'arrive'",
+      frequency_rank: 30,
+      notes:
+        "Resembles 夊 (suī) but with different stroke placement. Found in characters related to movement.",
+    },
+  },
+  {
+    id: "rad_0037",
+    glyph: "大",
+    alternate_glyphs: [],
+    name_pinyin: "dà",
+    name_chinese: "大",
+    meaning: "big",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 37,
+    metadata: {
+      etymology:
+        "Pictograph of a person standing with arms outstretched — implying 'big' or 'great'",
+      frequency_rank: 13,
+      notes:
+        "Also a common standalone character meaning 'big' or 'large'. Found in many compound characters.",
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0038",
+    glyph: "女",
+    alternate_glyphs: [],
+    name_pinyin: "nǚ",
+    name_chinese: "女",
+    meaning: "woman",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 38,
+    metadata: {
+      etymology: "Pictograph of a woman kneeling with folded hands",
+      frequency_rank: 8,
+      notes:
+        "Also a standalone character meaning 'woman' or 'female'. Found in characters related to gender and family.",
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0040",
+    glyph: "宀",
+    alternate_glyphs: [],
+    name_pinyin: "mián",
+    name_chinese: "宀",
+    meaning: "roof",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 40,
+    metadata: {
+      etymology: "Pictograph of a roof or shelter covering",
+      frequency_rank: 14,
+      notes:
+        "Always appears as the top component of characters. Found in characters related to buildings and homes.",
+    },
+  },
+  {
+    id: "rad_0041",
+    glyph: "寸",
+    alternate_glyphs: [],
+    name_pinyin: "cùn",
+    name_chinese: "寸",
+    meaning: "inch",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 41,
+    metadata: {
+      etymology:
+        "Pictograph of a hand at the wrist — indicating the inch measurement from the pulse point",
+      frequency_rank: 20,
+      notes:
+        "Also a standalone character and unit of measurement. Found in characters related to measurement and time.",
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0061",
+    glyph: "心",
+    alternate_glyphs: ["忄", "⺗"],
+    name_pinyin: "xīn",
+    meaning: "heart",
+    stroke_count: 4,
+    is_recommended: true,
+    kangxi_index: 61,
+    metadata: {
+      etymology: "Pictograph of a heart",
+      frequency_rank: 28,
+      variants: {
+        left_side: "忄",
+        bottom: "⺗",
+      },
+      is_also_character: true,
+    },
+  },
+  {
+    id: "rad_0064",
+    glyph: "扌",
+    alternate_glyphs: ["手"],
+    name_pinyin: "shǒu",
+    name_chinese: "手",
+    meaning: "hand",
+    stroke_count: 3,
+    is_recommended: true,
+    kangxi_index: 64,
+    metadata: {
+      etymology: "Derived from 手 (shǒu) — hand. The left-side form of the 'hand' radical.",
+      frequency_rank: 5,
+      notes:
+        "Extremely common left-side radical. Appears in hundreds of characters related to hand actions.",
+    },
+  },
+  {
+    id: "rad_0086",
+    glyph: "火",
+    alternate_glyphs: ["灬"],
+    name_pinyin: "huǒ",
+    name_chinese: "火",
+    meaning: "fire",
+    stroke_count: 4,
+    is_recommended: true,
+    kangxi_index: 86,
+    metadata: {
+      etymology: "Pictograph of flames rising upward",
+      frequency_rank: 7,
+      notes:
+        "Also a standalone character meaning 'fire'. Bottom form 灬 appears in characters related to heat and cooking.",
+      is_also_character: true,
+      variants: {
+        bottom: "灬",
+      },
+    },
+  },
+  {
+    id: "rad_0096",
+    glyph: "王",
+    alternate_glyphs: ["⺩"],
+    name_pinyin: "wáng",
+    name_chinese: "王",
+    meaning: "jade",
+    stroke_count: 4,
+    is_recommended: true,
+    kangxi_index: 96,
+    metadata: {
+      etymology:
+        "Derived from 玉 (yù) — jade. The side form of the 'jade' radical, identical in appearance to 王 (king).",
+      frequency_rank: 6,
+      notes:
+        "Visually identical to 王 (wáng — king) but used as the jade radical. Found in characters related to gems and precious objects.",
+    },
+  },
+];

@@ -1,0 +1,16 @@
+{
+  "id": "rad_0018",
+  "glyph": "刂",
+  "alternate_glyphs": ["刀"],
+  "name_pinyin": "dāo",
+  "name_chinese": "刀",
+  "meaning": "knife",
+  "stroke_count": 2,
+  "is_recommended": true,
+  "kangxi_index": 18,
+  "metadata": {
+    "etymology": "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
+    "frequency_rank": 10,
+    "notes": "Common right-side form. Appears in characters involving cutting or separating."
+  }
+}

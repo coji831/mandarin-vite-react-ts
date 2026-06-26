@@ -1,0 +1,16 @@
+{
+  "id": "rad_0009",
+  "glyph": "亻",
+  "alternate_glyphs": ["人"],
+  "name_pinyin": "rén",
+  "name_chinese": "人",
+  "meaning": "man",
+  "stroke_count": 2,
+  "is_recommended": true,
+  "kangxi_index": 9,
+  "metadata": {
+    "etymology": "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
+    "frequency_rank": 9,
+    "notes": "Common left-side form of the person radical. Appears in characters related to people."
+  }
+}

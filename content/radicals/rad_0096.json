@@ -1,0 +1,16 @@
+{
+  "id": "rad_0096",
+  "glyph": "王",
+  "alternate_glyphs": ["⺩"],
+  "name_pinyin": "wáng",
+  "name_chinese": "王",
+  "meaning": "jade",
+  "stroke_count": 4,
+  "is_recommended": true,
+  "kangxi_index": 96,
+  "metadata": {
+    "etymology": "Derived from 玉 (yù) — jade. The side form of the 'jade' radical, identical in appearance to 王 (king).",
+    "frequency_rank": 6,
+    "notes": "Visually identical to 王 (wáng — king) but used as the jade radical. Found in characters related to gems and precious objects."
+  }
+}

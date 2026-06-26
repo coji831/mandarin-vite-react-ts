@@ -1,0 +1,16 @@
+{
+  "id": "rad_0064",
+  "glyph": "扌",
+  "alternate_glyphs": ["手"],
+  "name_pinyin": "shǒu",
+  "name_chinese": "手",
+  "meaning": "hand",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 64,
+  "metadata": {
+    "etymology": "Derived from 手 (shǒu) — hand. The left-side form of the 'hand' radical.",
+    "frequency_rank": 5,
+    "notes": "Extremely common left-side radical. Appears in hundreds of characters related to hand actions."
+  }
+}

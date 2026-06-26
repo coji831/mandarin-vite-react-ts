@@ -2,6 +2,13 @@
 
 **Last Updated:** June 26, 2026
 
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: TBD
+- **Key Commit**: 08f8e03
+- **Completion Date**: 2026-06-26
+
 ## Technical Scope
 
 Create the `features/radicals/` feature folder with grid-based radical browser, content loading from `content/radicals/*.json`, filter/search/sort/top-20 toggle, and replace the `/learn/radicals` placeholder route component.
