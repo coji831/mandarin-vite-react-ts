@@ -81,6 +81,7 @@ import { ProgressService, StreakService } from "../modules/progress/index.js";
 import { VocabularyService, VocabularyListService } from "../modules/vocabulary/index.js";
 import { WordService } from "../modules/word/index.js";
 import { ProgressionService } from "../modules/progression/index.js";
+import { ReviewService, ReviewController } from "../modules/review/index.js";
 const authService = new AuthService(authRepository, jwtService, passwordService);
 const gamificationService = new GamificationService(badgeRepository, streakRepository);
 export const streakService = new StreakService(streakRepository);
@@ -88,15 +89,12 @@ export const progressService = new ProgressService(progressRepository);
 const vocabularyService = new VocabularyService(vocabularyRepository);
 const wordService = new WordService(wordRepository);
 const vocabularyListService = new VocabularyListService(vocabularyListRepository);
+const reviewService = new ReviewService(reviewRepository);
 const progressionService = new ProgressionService(progressionRepository);
 import { QuizService, QuizController } from "../modules/quiz/index.js";
 const quizService = new QuizService(quizRepository, progressionService);
 export const quizController = new QuizController(quizService);
 
-// ── Review Module ─────────────────────────────────────────────────────────
-import { ReviewService, ReviewController } from "../modules/review/index.js";
-
-const reviewService = new ReviewService(reviewRepository);
 export const reviewController = new ReviewController(reviewService);
 
 // ── Cache Middleware ───────────────────────────────────────────────────────
@@ -188,5 +186,5 @@ export const progressController = new ProgressController(
 export const ttsController = new TtsController(cachedTts, gcsClient);
 export const vocabularyController = new VocabularyController(vocabularyService, progressService);
 export const wordController = new WordController(wordService);
-export const progressionController = new ProgressionController(progressionService);
+export const progressionController = new ProgressionController(progressionService, reviewService);
 export const exampleController = new ExamplesController(exampleService);

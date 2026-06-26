@@ -33,7 +33,6 @@ export function useReview() {
 
   /* ── Session results ────────────────────────────── */
   const [sessionResult, setSessionResult] = useState<ReviewSessionResult>({
-    totalItems: 0,
     pinyinCorrect: 0,
     pinyinTotal: 0,
     toneCorrect: 0,
@@ -69,7 +68,6 @@ export function useReview() {
       setSource(src);
       resetPerItem();
       setSessionResult({
-        totalItems: 0,
         pinyinCorrect: 0,
         pinyinTotal: 0,
         toneCorrect: 0,
@@ -168,7 +166,9 @@ export function useReview() {
       try {
         await reviewService.recordRating(item.itemType, item.itemId, rating);
       } catch (err) {
-        console.warn("[Review] Failed to record rating:", err);
+        if (import.meta.env.DEV) {
+          console.warn("[Review] Failed to record rating:", err);
+        }
       }
 
       setSessionResult((prev) => ({
@@ -177,7 +177,6 @@ export function useReview() {
       }));
 
       if (currentIndex + 1 >= items.length) {
-        setSessionResult((prev) => ({ ...prev, totalItems: prev.totalItems + 1 }));
         setStep("complete");
       } else {
         setCurrentIndex((i) => i + 1);

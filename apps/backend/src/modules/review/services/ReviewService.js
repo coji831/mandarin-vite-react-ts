@@ -104,6 +104,40 @@ async function fetchPinyinCombos() {
   });
 }
 
+/**
+ * Build a review item from a radical content object + SRS state.
+ * Returns null if filtered out by the source filter.
+ * @param {Object} radical - Radical data from content/radicals/
+ * @param {Object|null} srs - SRS record from ReviewItem (or null)
+ * @param {Date} now - Current timestamp
+ * @param {Date} sevenDaysAgo - 7 days ago for "recent" filter
+ * @param {string} source - "due", "recent", or "all"
+ * @returns {Object|null}
+ */
+function buildRadicalItem(radical, srs, now, sevenDaysAgo, source) {
+  const nextReview = srs?.nextReview ? new Date(srs.nextReview) : now;
+  const lastReviewed = srs?.lastReviewed ? new Date(srs.lastReviewed) : null;
+
+  if (source === "due" && nextReview > now) return null;
+  if (source === "recent" && (!lastReviewed || lastReviewed < sevenDaysAgo)) return null;
+
+  return {
+    id: srs?.id || `radical-${radical.id}`,
+    itemType: "radical",
+    itemId: radical.id,
+    front: radical.name_pinyin,
+    back: `${radical.glyph} (${radical.name_pinyin}) — ${radical.meaning}`,
+    category: "radicals",
+    character: radical.glyph,
+    pinyinPlain: stripToneMarks(radical.name_pinyin || ""),
+    meaning: radical.meaning || null,
+    studyCount: srs?.studyCount || 0,
+    correctCount: srs?.correctCount || 0,
+    nextReview: nextReview.toISOString(),
+    intervalDays: srs?.intervalDays || 1,
+  };
+}
+
 export class ReviewService {
   constructor(reviewRepository) {
     this.reviewRepository = reviewRepository;
@@ -133,6 +167,7 @@ export class ReviewService {
     const srsItems = await this.reviewRepository.findByUserAndTypes(userId, [
       "pinyin-syllable",
       "tone-syllable",
+      "radical",
     ]);
     const srsByKey = new Map(srsItems.map((r) => [`${r.itemType}:${r.itemId}`, r]));
 
@@ -142,6 +177,7 @@ export class ReviewService {
     // Load content files
     const includePinyin = !typePrefix || typePrefix === "pinyin";
     const includeTones = !typePrefix || typePrefix === "tone";
+    const includeRadicals = !typePrefix || typePrefix === "radical";
     const items = [];
 
     if (includeTones) {
@@ -150,6 +186,16 @@ export class ReviewService {
         const key = `tone-syllable:${String(tone.number)}`;
         const srs = srsByKey.get(key);
         const item = buildToneItem(tone, srs, now, sevenDaysAgo, source);
+        if (item) items.push(item);
+      }
+    }
+
+    if (includeRadicals) {
+      const radicals = await readContentDir("radicals");
+      for (const radical of radicals) {
+        const key = `radical:${radical.id}`;
+        const srs = srsByKey.get(key);
+        const item = buildRadicalItem(radical, srs, now, sevenDaysAgo, source);
         if (item) items.push(item);
       }
     }

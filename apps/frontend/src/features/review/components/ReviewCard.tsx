@@ -9,11 +9,12 @@
  *  - "tone" (step="tone"): character + meaning + tone selection → ReviewCardToneSelect
  *  - "result" (step="result"): character + meaning + correct answer + ✅/❌ + A/G/E rating → ReviewCardResult
  */
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
 import { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
 import { ReviewCardToneSelect } from "./ReviewCardToneSelect";
 import { ReviewCardResult } from "./ReviewCardResult";
+import { getReviewStrategy } from "../engine/strategies";
 import type { ReviewItem, Rating } from "../types";
 import "./ReviewCard.css";
 
@@ -42,27 +43,45 @@ function ReviewCardComponent({
   onPlayAudio: externalOnPlayAudio,
 }: ReviewCardProps) {
   const { playWordAudio } = useAudioPlayback();
+  const hasUserInteracted = useRef(false);
 
   // Use external handler if provided, otherwise fall back to internal
   const handlePlayAudio =
     externalOnPlayAudio ??
     ((text: string) => {
+      hasUserInteracted.current = true;
       playWordAudio({ chinese: text, fallbackToBrowserTTS: true });
     });
 
+  // Auto-play audio when step changes (after first user gesture enables browser autoplay)
+  useEffect(() => {
+    if (hasUserInteracted.current && item) {
+      const displayChar = item.character ?? item.front;
+      playWordAudio({ chinese: displayChar, fallbackToBrowserTTS: true });
+    }
+  }, [step, item?.itemId, playWordAudio, item]);
+
   if (step === "pinyin") {
+    const strategy = getReviewStrategy(item.itemType);
     return (
       <ReviewCardPinyinInput
         item={item}
         onSubmitPinyin={onSubmitPinyin}
         onPlayAudio={handlePlayAudio}
+        showMeaning={strategy?.showMeaning ?? true}
       />
     );
   }
 
   if (step === "tone") {
+    const strategy = getReviewStrategy(item.itemType);
     return (
-      <ReviewCardToneSelect item={item} onSelectTone={onSelectTone} onPlayAudio={handlePlayAudio} />
+      <ReviewCardToneSelect
+        item={item}
+        onSelectTone={onSelectTone}
+        onPlayAudio={handlePlayAudio}
+        showMeaning={strategy?.showMeaning ?? true}
+      />
     );
   }
 

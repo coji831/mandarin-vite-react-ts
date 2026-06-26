@@ -9,7 +9,8 @@ export type ReviewItemType =
   | "stroke-reference"
   | "pinyin-syllable"
   | "tone-syllable"
-  | "vocabulary";
+  | "vocabulary"
+  | "radical";
 
 /** Rating options for SRS review */
 export type Rating = "again" | "good" | "easy";
@@ -22,7 +23,6 @@ export type ReviewStep = "pick" | "pinyin" | "tone" | "result" | "complete";
 
 /** Accumulated session results shown on the completion screen. */
 export interface ReviewSessionResult {
-  totalItems: number;
   pinyinCorrect: number;
   pinyinTotal: number;
   toneCorrect: number;

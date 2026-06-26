@@ -49,7 +49,7 @@
   border: 2px solid var(--color-primary-border);
   background: var(--surface-card);
   color: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: var(--font-2xl);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -69,7 +69,7 @@
 /* ── Pinyin input ────────────────────────────────── */
 .review-card__pinyin-input {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: var(--space-sm) var(--space-md);
   font-size: var(--font-lg);
   border: 2px solid var(--surface-border);
   border-radius: var(--radius-md);
@@ -134,29 +134,29 @@
 
 /* Per-tone colours (data attribute) */
 .review-card__tone-btn[data-tone="1"]:hover {
-  border-color: #ff4444;
-  background: rgba(255, 68, 68, 0.15);
-  color: #ff4444;
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
 }
 .review-card__tone-btn[data-tone="2"]:hover {
-  border-color: #ff8c00;
-  background: rgba(255, 140, 0, 0.15);
-  color: #ff8c00;
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 .review-card__tone-btn[data-tone="3"]:hover {
-  border-color: #4caf50;
-  background: rgba(76, 175, 80, 0.15);
-  color: #4caf50;
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 .review-card__tone-btn[data-tone="4"]:hover {
-  border-color: #2196f3;
-  background: rgba(33, 150, 243, 0.15);
-  color: #2196f3;
+  border-color: var(--color-info-blue);
+  background: var(--color-info-blue-bg);
+  color: var(--color-info-blue);
 }
 .review-card__tone-btn[data-tone="0"]:hover {
-  border-color: #9e9e9e;
-  background: rgba(158, 158, 158, 0.15);
-  color: #9e9e9e;
+  border-color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-tertiary);
 }
 
 /* ── Rating buttons ───────────────────────────────── */

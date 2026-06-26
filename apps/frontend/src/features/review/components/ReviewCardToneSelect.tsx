@@ -15,12 +15,14 @@ type ReviewCardToneSelectProps = {
   item: ReviewItem;
   onSelectTone: (tone: number) => void;
   onPlayAudio: (text: string) => void;
+  showMeaning?: boolean;
 };
 
 function ReviewCardToneSelectComponent({
   item,
   onSelectTone,
   onPlayAudio,
+  showMeaning = true,
 }: ReviewCardToneSelectProps) {
   const displayChar = item.character ?? item.front;
 
@@ -29,7 +31,7 @@ function ReviewCardToneSelectComponent({
       <div className="review-card__side flex-col-center gap-lg p-xl">
         <div className="review-card__character-display flex-col-center gap-sm">
           <span className="review-card__character">{displayChar}</span>
-          {item.meaning && (
+          {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})
             </span>

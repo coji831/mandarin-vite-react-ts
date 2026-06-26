@@ -28,6 +28,16 @@
 
 **Last Update:** June 26, 2026
 
+## Story Status
+
+| Story | Status | Implementation Doc |
+|-------|--------|-------------------|
+| 19.1 — Radicals Browser & Detail Card | Planned | — |
+| 19.2 — Character Hub Radical Section + IME Simulator Quiz | Planned | — |
+| 19.3 — Backend RadicalProgress + SRS Review Integration | ✅ Completed | [story-19-3-backend-radical-progress.md](./story-19-3-backend-radical-progress.md) |
+| 19.4 — Radical Trees (Phase 3) | Planned | — |
+| 19.5 — Character Hub Radical Section | Planned | — |
+
 ## Technical Overview
 
 **Frontend:** New `radicals` feature folder at `apps/frontend/src/features/radicals/` with grid page, Radical Detail Card, Radical Trees component, IME Simulator Quiz page, and extension of CharacterDetailHub with a radical decomposition section. Replaces the `/learn/radicals` placeholder with real content.

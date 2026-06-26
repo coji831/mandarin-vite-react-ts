@@ -11,6 +11,14 @@
   min-width: 160px;
 }
 
+.review-picker__card--selected {
+  border: 2px solid var(--color-primary) !important;
+}
+
+.review-picker__radio--selected {
+  background: var(--surface-hover) !important;
+}
+
 .review-picker__start-btn {
   align-self: center;
   min-width: 200px;

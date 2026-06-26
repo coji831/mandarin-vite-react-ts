@@ -2,6 +2,7 @@
  * ReviewPicker.tsx
  * Phase 1 Review — Content type and source selector.
  */
+import React from "react";
 import type { ReviewSource } from "../types";
 import { useReviewSources } from "../hooks/useReviewSources";
 import "./ReviewPicker.css";
@@ -17,7 +18,7 @@ const CONTENT_TYPES: ContentTypeOption[] = [
   {
     type: "pinyin",
     label: "Pinyin",
-    icon: "🔤",
+    icon: "�",
     description: "Initials, finals, and combinations",
   },
   {
@@ -25,6 +26,12 @@ const CONTENT_TYPES: ContentTypeOption[] = [
     label: "Tones",
     icon: "🎵",
     description: "Tone identification, pairs, and rules",
+  },
+  {
+    type: "radicals",
+    label: "Radicals",
+    icon: "📘",
+    description: "Kangxi radicals",
   },
 ];
 
@@ -40,10 +47,9 @@ const SOURCES: { value: ReviewSource; label: string; description: string }[] = [
 
 type ReviewPickerProps = {
   onStart: (source: ReviewSource, type: string) => void;
-  presetType?: string;
 };
 
-export function ReviewPicker({ onStart }: ReviewPickerProps) {
+function ReviewPickerComponent({ onStart }: ReviewPickerProps) {
   const {
     sourceCounts,
     checking,
@@ -56,6 +62,9 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
       <h2 className="review-picker__title text-primary font-xl m-0">🃏 Review</h2>
+      <p className="review-picker__description text-muted font-sm m-0 mt-xs">
+        No timer, no scoring. Self-rated: Again / Good / Easy.
+      </p>
 
       {/* Step 1: Content Type */}
       <div className="flex-col gap-md">
@@ -66,14 +75,9 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
           {CONTENT_TYPES.map((ct) => (
             <button
               key={ct.type}
-              className={`review-picker__card flex-col-center gap-xs p-lg cursor-pointer ${selectedType === ct.type ? "btn-primary" : "card-dark"}`}
+              className={`review-picker__card flex-col-center gap-xs p-lg cursor-pointer ${selectedType === ct.type ? "btn-primary" : "card-dark"} ${selectedType === ct.type ? "review-picker__card--selected" : ""}`}
               onClick={() => setSelectedType(ct.type)}
-              style={{
-                border:
-                  selectedType === ct.type
-                    ? "2px solid var(--color-primary)"
-                    : "2px solid transparent",
-              }}
+              aria-pressed={selectedType === ct.type}
               type="button"
             >
               <span className="review-picker__card-icon font-2xl">{ct.icon}</span>
@@ -96,17 +100,14 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
           </div>
         )}
         {!checking && (
-          <div className="flex-col gap-sm">
+          <div className="flex-col gap-sm" role="radiogroup" aria-label="Review source">
             {SOURCES.map((s) => {
               const count = sourceCounts[s.value as keyof typeof sourceCounts];
               const hasItems = count === -1 || count > 0; // "all" always available
               return (
                 <label
                   key={s.value}
-                  className={`review-picker__radio flex gap-sm py-sm px-md radius-md ${hasItems ? "cursor-pointer" : "op-60"}`}
-                  style={{
-                    background: selectedSource === s.value ? "var(--surface-hover)" : "transparent",
-                  }}
+                  className={`review-picker__radio flex gap-sm py-sm px-md radius-md ${hasItems ? "cursor-pointer" : "op-60"} ${selectedSource === s.value ? "review-picker__radio--selected" : ""}`}
                 >
                   <input
                     type="radio"
@@ -140,3 +141,5 @@ export function ReviewPicker({ onStart }: ReviewPickerProps) {
     </div>
   );
 }
+
+export const ReviewPicker = React.memo(ReviewPickerComponent);

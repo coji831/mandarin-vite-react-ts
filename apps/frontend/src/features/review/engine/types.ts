@@ -21,6 +21,8 @@ export interface ReviewStrategy {
   initialStep: "pinyin" | "tone";
   /** Label shown in result feedback (e.g., "Pinyin" or "Tone") */
   feedbackLabel: string;
+  /** Whether to show the item's meaning during the review input step */
+  showMeaning: boolean;
   /** Evaluate the user's input against the review item */
   evaluate(item: ReviewItem, input: ReviewInput): ReviewEvaluation;
 }

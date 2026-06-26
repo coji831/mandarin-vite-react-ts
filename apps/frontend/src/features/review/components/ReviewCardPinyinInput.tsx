@@ -14,12 +14,14 @@ type ReviewCardPinyinInputProps = {
   item: ReviewItem;
   onSubmitPinyin: (pinyin: string) => void;
   onPlayAudio: (text: string) => void;
+  showMeaning?: boolean;
 };
 
 function ReviewCardPinyinInputComponent({
   item,
   onSubmitPinyin,
   onPlayAudio,
+  showMeaning = true,
 }: ReviewCardPinyinInputProps) {
   const [localPinyin, setLocalPinyin] = useState("");
   const displayChar = item.character ?? item.front;
@@ -30,7 +32,7 @@ function ReviewCardPinyinInputComponent({
         {/* Character + Meaning for exposure */}
         <div className="review-card__character-display flex-col-center gap-md">
           <span className="review-card__character">{displayChar}</span>
-          {item.meaning && (
+          {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-lg">
               ({item.meaning})
             </span>

@@ -8,6 +8,7 @@ import { useCallback, useEffect } from "react";
 import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
+import { LoadingScreen, ErrorScreen } from "@/shared/components";
 import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
@@ -58,18 +59,18 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
   }, [presetType, presetSource, step, startReview]);
 
   if (loading) {
-    return (
-      <div className="flex-col-center gap-md p-2xl">
-        <div className="spinner" />
-        <p className="text-muted">Loading review items...</p>
-      </div>
-    );
+    return <LoadingScreen message="Loading review items..." />;
   }
 
   if (error) {
+    return <ErrorScreen error={error} onRetry={() => startReview(source, contentType)} />;
+  }
+
+  if (step === "complete" && totalItems === 0 && !loading) {
     return (
-      <div className="flex-col-center gap-md">
-        <p className="text-error">Error: {error}</p>
+      <div className="flex-col-center gap-lg p-2xl">
+        <h2 className="text-secondary">No items available</h2>
+        <p className="text-muted">Try a different content type or source.</p>
         <button
           className="btn-primary"
           onClick={() => startReview(source, contentType)}
@@ -83,7 +84,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
 
   switch (step) {
     case "pick":
-      return <ReviewPicker onStart={startReview} presetType={presetType ?? undefined} />;
+      return <ReviewPicker onStart={startReview} />;
 
     case "pinyin":
     case "tone":

@@ -133,6 +133,20 @@ model FoundationProgress {
   @@index([userId])
 }
 
+model RadicalProgress {
+  id               String   @id @default(uuid())
+  userId           String
+  radicalId        String   // "rad_0001", "rad_0002", etc.
+  memorized        Boolean  @default(false)
+  recognitionLevel Int      @default(0)
+  reviewedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId, radicalId])
+  @@index([userId])
+}
+
 model PhaseGate {
   id                  String   @id @default(uuid())
   userId              String   @unique
