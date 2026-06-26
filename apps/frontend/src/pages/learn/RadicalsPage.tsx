@@ -6,7 +6,13 @@
  */
 
 import { useState } from "react";
-import { useRadicals, FilterBar, RadicalGrid, RadicalDetailCard, type RadicalData } from "features/radicals";
+import {
+  useRadicals,
+  FilterBar,
+  RadicalGrid,
+  RadicalDetailCard,
+  type RadicalData,
+} from "features/radicals";
 import "./RadicalsPage.css";
 
 export function RadicalsPage() {

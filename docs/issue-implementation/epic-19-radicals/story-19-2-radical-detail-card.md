@@ -111,5 +111,5 @@ Dismiss animation: CSS transition on max-height
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD (to be filled after commit)
+- **Key Commit**: `0895a56`
 - **Completion Date**: June 26, 2026

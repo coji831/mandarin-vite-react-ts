@@ -11,7 +11,11 @@ import type { RadicalData } from "../types";
 
 // Mock ExampleCharGrid to avoid hook dependencies
 vi.mock("./ExampleCharGrid", () => ({
-  ExampleCharGrid: ({ characters }: { characters: Array<{ glyph: string; pinyin: string; meaning: string }> }) => (
+  ExampleCharGrid: ({
+    characters,
+  }: {
+    characters: Array<{ glyph: string; pinyin: string; meaning: string }>;
+  }) => (
     <div data-testid="example-char-grid" data-count={characters.length}>
       ExampleCharGrid
     </div>
@@ -29,18 +33,18 @@ const mockRadicalWithChars: RadicalData = {
   kangxi_index: 8,
   metadata: {
     hsk_characters: [
-      { glyph: "水", pinyin: "shuǐ" },
-      { glyph: "江", pinyin: "jiāng" },
-      { glyph: "河", pinyin: "hé" },
-      { glyph: "湖", pinyin: "hú" },
-      { glyph: "海", pinyin: "hǎi" },
-      { glyph: "洗", pinyin: "xǐ" },
-      { glyph: "活", pinyin: "huó" },
-      { glyph: "法", pinyin: "fǎ" },
-      { glyph: "清", pinyin: "qīng" },
-      { glyph: "汉", pinyin: "hàn" },
-      { glyph: "汁", pinyin: "zhī" },
-      { glyph: "汗", pinyin: "hàn" },
+      { glyph: "水", pinyin: "shuǐ", meaning: "water" },
+      { glyph: "江", pinyin: "jiāng", meaning: "river" },
+      { glyph: "河", pinyin: "hé", meaning: "river" },
+      { glyph: "湖", pinyin: "hú", meaning: "lake" },
+      { glyph: "海", pinyin: "hǎi", meaning: "sea" },
+      { glyph: "洗", pinyin: "xǐ", meaning: "to wash" },
+      { glyph: "活", pinyin: "huó", meaning: "to live" },
+      { glyph: "法", pinyin: "fǎ", meaning: "law" },
+      { glyph: "清", pinyin: "qīng", meaning: "clear" },
+      { glyph: "汉", pinyin: "hàn", meaning: "Han dynasty" },
+      { glyph: "汁", pinyin: "zhī", meaning: "juice" },
+      { glyph: "汗", pinyin: "hàn", meaning: "sweat" },
     ],
   },
 };
@@ -136,8 +140,6 @@ describe("RadicalDetailCard", () => {
   it("has correct aria-label on the dialog", () => {
     render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
 
-    expect(
-      screen.getByRole("dialog", { name: "Details for water radical" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Details for water radical" })).toBeInTheDocument();
   });
 });

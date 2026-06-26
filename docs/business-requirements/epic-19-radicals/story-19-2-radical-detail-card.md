@@ -38,4 +38,4 @@ The Radical Detail Card provides the deep learning experience for each radical â
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: (will be set after commit)
+- **Key Commit**: `0895a56`
