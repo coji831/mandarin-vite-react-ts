@@ -2,7 +2,7 @@
 
 **Last Updated:** June 27, 2026
 **Status:** Completed
-**Key Commit:** TBD
+**Key Commit:** `e743d13`
 
 ## Technical Scope
 
