@@ -21,7 +21,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 26, 2026
+**Last Update:** June 27, 2026
 
 ## Background
 
@@ -45,15 +45,15 @@ This epic consists of the following user stories:
 
 1. **Story 19.1: Radicals Browser Structure** ([story-19-1-radicals-browser-structure.md](story-19-1-radicals-browser-structure.md))
    - As a learner, I want to browse radicals in an interactive grid with search/filter/sort, so that I can discover and explore radicals systematically.
-   - **Status:** Planned
+   - **Status:** ✅ Completed
 
 2. **Story 19.2: Radical Detail Card** ([story-19-2-radical-detail-card.md](story-19-2-radical-detail-card.md))
    - As a learner, I want to tap a radical to see its detail card with glyph, meaning, example characters, and a mnemonic button, so that I can study each radical in depth.
-   - **Status:** Planned
+   - **Status:** ✅ Completed
 
 3. **Story 19.3: Backend RadicalProgress + SRS Review Integration** ([story-19-3-backend-radical-progress.md](story-19-3-backend-radical-progress.md))
    - As a learner, I want the app to track which radicals I've memorized and auto-add them to my SRS review queue, so that both my progress and retention are managed.
-   - **Status:** Planned
+   - **Status:** ✅ Completed
 
 4. **Story 19.4: Radical Trees (Phase 3)** ([story-19-4-radical-trees.md](story-19-4-radical-trees.md))
    - As a learner in Phase 3, I want to explore radical trees showing mastered radicals with expandable character lists, so that I can see how radicals compose into characters.
