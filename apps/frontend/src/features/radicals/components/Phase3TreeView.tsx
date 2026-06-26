@@ -114,7 +114,8 @@ export function Phase3TreeView({
             {/* Selected indicator */}
             {activeRadical && (
               <div className="phase3-tree-view__selected-indicator font-sm text-secondary px-md text-center">
-                Selected: {activeRadical.glyph} ({activeRadical.meaning}) — known ★ — click to expand
+                Selected: {activeRadical.glyph} ({activeRadical.meaning}) — known ★ — click to
+                expand
               </div>
             )}
           </div>

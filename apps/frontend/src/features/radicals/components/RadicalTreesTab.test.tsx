@@ -153,7 +153,9 @@ describe("RadicalTreesTab — Phase 2 (currentPhase < 3)", () => {
   it("does not show browse content for Phase 2 users in Trees tab", () => {
     render(<RadicalTreesTab {...defaultProps} />);
 
-    expect(screen.queryByText("Select a radical to see characters containing it.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Select a radical to see characters containing it."),
+    ).not.toBeInTheDocument();
     expect(screen.queryByTestId("radical-grid")).not.toBeInTheDocument();
   });
 
@@ -187,9 +189,7 @@ describe("RadicalTreesTab — Phase 3 (currentPhase >= 3)", () => {
     render(<RadicalTreesTab {...defaultProps} />);
 
     // Should show search bar immediately
-    expect(
-      screen.getByPlaceholderText("Filter radicals…"),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Filter radicals…")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByTestId("tree-root-node")).toBeInTheDocument();

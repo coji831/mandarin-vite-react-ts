@@ -44,7 +44,13 @@ export function CharacterListNode({ radical, characters }: CharacterListNodeProp
         aria-label="Characters containing this radical"
       >
         {characters.map((ch) => (
-          <BranchNode key={ch.glyph} character={ch.glyph} pinyin={ch.pinyin} meaning={ch.meaning} ariaRole="listitem" />
+          <BranchNode
+            key={ch.glyph}
+            character={ch.glyph}
+            pinyin={ch.pinyin}
+            meaning={ch.meaning}
+            ariaRole="listitem"
+          />
         ))}
       </div>
     </div>

@@ -51,11 +51,7 @@ const mockChips: RadicalData[] = [
 describe("RadicalChipPicker", () => {
   it("renders all chips", () => {
     render(
-      <RadicalChipPicker
-        filteredChips={mockChips}
-        activeRadicalId={null}
-        onChipClick={vi.fn()}
-      />,
+      <RadicalChipPicker filteredChips={mockChips} activeRadicalId={null} onChipClick={vi.fn()} />,
     );
     expect(screen.getByText("一")).toBeInTheDocument();
     expect(screen.getByText("mouth")).toBeInTheDocument();

@@ -30,14 +30,14 @@
 
 ## Story Status
 
-| Story                                                     | Status       | Implementation Doc                                                                 |
-| --------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
-| 19.1 — Radicals Browser & Detail Card                     | ✅ Completed | —                                                                                  |
-| 19.2 — Radical Detail Card                                | Planned      | —                                                                                  |
-| 19.3 — Backend RadicalProgress + SRS Review Integration   | ✅ Completed | [story-19-3-backend-radical-progress.md](./story-19-3-backend-radical-progress.md) |
-| 19.4 — Radical Trees (Phase 3)                            | ✅ Completed | [story-19-4-radical-trees.md](./story-19-4-radical-trees.md)                       |
-| 19.5 — Character Hub Radical Section                      | Planned      | —                                                                                  |
-| 19.6 — IME Simulator Quiz                                 | Planned      | —                                                                                  |
+| Story                                                   | Status       | Implementation Doc                                                                 |
+| ------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| 19.1 — Radicals Browser & Detail Card                   | ✅ Completed | —                                                                                  |
+| 19.2 — Radical Detail Card                              | Planned      | —                                                                                  |
+| 19.3 — Backend RadicalProgress + SRS Review Integration | ✅ Completed | [story-19-3-backend-radical-progress.md](./story-19-3-backend-radical-progress.md) |
+| 19.4 — Radical Trees (Phase 3)                          | ✅ Completed | [story-19-4-radical-trees.md](./story-19-4-radical-trees.md)                       |
+| 19.5 — Character Hub Radical Section                    | Planned      | —                                                                                  |
+| 19.6 — IME Simulator Quiz                               | Planned      | —                                                                                  |
 
 ## Technical Overview
 
@@ -100,6 +100,7 @@ apps/frontend/src/shared/components/CharacterDetailHub/   content/radicals/
 **Phase 2 (currentPhase < 3):** `RadicalTreesTab` shows a locked teaser with a lock icon and message explaining trees unlock in Phase 3. No browse mode in the Trees tab (browse via the Browse tab).
 
 **Phase 3 (currentPhase >= 3):** `RadicalTreesTab` delegates to `Phase3TreeView` which loads mastered radicals from `radicalProgressService.getRadicalProgress()`, filtered by `memorized=true`. The view renders:
+
 1. **Search bar** — filters mastered chips by glyph, meaning, or pinyin
 2. **RadicalChipPicker** — single-select chip row with `role="tablist"`, selected indicator with accent styling
 3. **Separator** — visual divider with "Your known radicals (★ mastered)" text

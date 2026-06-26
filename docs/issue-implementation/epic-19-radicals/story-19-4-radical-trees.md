@@ -152,15 +152,18 @@ export function TreeRootNode({ radical, characters }) {
 Audio playback uses the Web Speech API (`SpeechSynthesisUtterance`) with zh-CN language and Chinese voice preference. No external audio service dependency.
 
 ```typescript
-const handlePlayAudio = useCallback((e) => {
-  e.stopPropagation();
-  const utterance = new SpeechSynthesisUtterance(character);
-  utterance.lang = "zh-CN";
-  const voices = window.speechSynthesis.getVoices();
-  const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
-  if (zhVoice) utterance.voice = zhVoice;
-  window.speechSynthesis.speak(utterance);
-}, [character]);
+const handlePlayAudio = useCallback(
+  (e) => {
+    e.stopPropagation();
+    const utterance = new SpeechSynthesisUtterance(character);
+    utterance.lang = "zh-CN";
+    const voices = window.speechSynthesis.getVoices();
+    const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
+    if (zhVoice) utterance.voice = zhVoice;
+    window.speechSynthesis.speak(utterance);
+  },
+  [character],
+);
 ```
 
 ## Architecture Integration
@@ -204,6 +207,7 @@ Data sources:
 **Problem:** The project convention requires one CSS file per component (no `.module.css` or single global file), but several components were missing their CSS file or were importing styles from unrelated files.
 
 **Solution:** Created dedicated CSS files for each new component:
+
 - `RadicalTreesTab.css` — Tab-level layout, loading skeleton, locked teaser
 - `Phase3TreeView.css` — Search bar, skeleton, separator, selected indicator, tagline
 - `RadicalChipPicker.css` — Chip layout, horizontal scroll, selected state
@@ -235,15 +239,15 @@ Applied BEM naming consistently (`component__element--modifier`).
 
 Total: **47 tests** across 6 test files (for Story 19.4-specific components).
 
-| Test File                                    | Tests | Coverage                                                                            |
-| -------------------------------------------- | ----- | ----------------------------------------------------------------------------------- |
-| `RadicalTreesTab.test.tsx`                   | 10    | Phase 2 locked, Phase 3 chip/tree rendering, loading/error states, chip click, search filter, progress fetch |
-| `Phase3TreeView.test.tsx`                    | 7     | Loading/error/empty states, chips rendered, separator, tagline                       |
-| `RadicalChipPicker.test.tsx`                 | 6     | Chip rendering, selected style, empty array, keyboard nav, filtered chips            |
-| `TreeRootNode.test.tsx`                      | 8     | Rendering, expand/collapse, empty characters, Hub trigger, collapse button, disabled button |
-| `BranchNode.test.tsx`                        | 5     | Rendering, audio button, Hub link, connector, keyboard click                          |
-| `CharacterListNode.test.tsx`                 | 7     | Header, grid items, empty state, count display, keyboard nav                          |
-| `radicalProgressService.test.ts`             | 4     | Service method shapes and API calls                                                   |
+| Test File                        | Tests | Coverage                                                                                                     |
+| -------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------ |
+| `RadicalTreesTab.test.tsx`       | 10    | Phase 2 locked, Phase 3 chip/tree rendering, loading/error states, chip click, search filter, progress fetch |
+| `Phase3TreeView.test.tsx`        | 7     | Loading/error/empty states, chips rendered, separator, tagline                                               |
+| `RadicalChipPicker.test.tsx`     | 6     | Chip rendering, selected style, empty array, keyboard nav, filtered chips                                    |
+| `TreeRootNode.test.tsx`          | 8     | Rendering, expand/collapse, empty characters, Hub trigger, collapse button, disabled button                  |
+| `BranchNode.test.tsx`            | 5     | Rendering, audio button, Hub link, connector, keyboard click                                                 |
+| `CharacterListNode.test.tsx`     | 7     | Header, grid items, empty state, count display, keyboard nav                                                 |
+| `radicalProgressService.test.ts` | 4     | Service method shapes and API calls                                                                          |
 
 ### Key edge cases tested
 

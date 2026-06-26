@@ -120,9 +120,7 @@ describe("RadicalsPage", () => {
       fireEvent.click(treesBtn);
 
       expect(screen.getByText("Radical Trees")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Explore mastered radicals/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Explore mastered radicals/i)).toBeInTheDocument();
     });
 
     it("FilterBar is hidden in Trees mode", async () => {

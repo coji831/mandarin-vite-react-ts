@@ -21,7 +21,13 @@ interface BranchNodeProps {
   ariaRole?: string;
 }
 
-export function BranchNode({ character, pinyin, meaning, showConnector = false, ariaRole = "listitem" }: BranchNodeProps) {
+export function BranchNode({
+  character,
+  pinyin,
+  meaning,
+  showConnector = false,
+  ariaRole = "listitem",
+}: BranchNodeProps) {
   const { openHub } = useCharacterHub();
 
   const handleClick = useCallback(() => {

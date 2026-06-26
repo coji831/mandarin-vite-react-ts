@@ -139,7 +139,9 @@ export function RadicalTreesTab({
     return (
       <div className="radical-trees-tab">
         <div className="flex-col flex-center p-xl gap-md">
-          <span className="font-3xl" aria-hidden="true">🔒</span>
+          <span className="font-3xl" aria-hidden="true">
+            🔒
+          </span>
           <p className="text-muted font-lg">Radical Trees</p>
           <p className="text-muted font-sm text-center">
             Master radicals and pass the Phase 2 quiz to unlock tree visualization.

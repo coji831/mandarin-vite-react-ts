@@ -138,8 +138,6 @@ describe("Phase3TreeView", () => {
 
   it("renders tagline", () => {
     render(<Phase3TreeView {...defaultProps} />);
-    expect(
-      screen.getByText(/Learning through recognition/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Learning through recognition/)).toBeInTheDocument();
   });
 });
