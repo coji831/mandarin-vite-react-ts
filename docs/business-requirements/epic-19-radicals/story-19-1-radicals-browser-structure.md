@@ -40,4 +40,4 @@ The radicals browser is the foundational UI for the entire radicals experience. 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: 08f8e03
+- **Key Commit**: 327fa7e
