@@ -3,7 +3,7 @@
  * Phase 1 Gate Quiz — Score progress bar
  *
  * Shows current score vs total, progress fill, percentage,
- * and pass threshold warning line at 90%.
+ * and pass threshold warning line.
  */
 
 type QuizProgressBarProps = {
@@ -11,25 +11,27 @@ type QuizProgressBarProps = {
   current: number;
   /** Total questions */
   total: number;
+  /** Pass threshold as a fraction (0-1). Default 0.9 (90%). */
+  passThreshold?: number;
 };
 
 /** Score progress bar with pass threshold */
-export function QuizProgressBar({ current, total }: QuizProgressBarProps) {
+export function QuizProgressBar({ current, total, passThreshold = 0.9 }: QuizProgressBarProps) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-  const threshold = 90;
-  const passed = pct >= threshold;
-  const needCorrect = Math.ceil(total * 0.9);
+  const thresholdPct = Math.round(passThreshold * 100);
+  const passed = pct >= thresholdPct;
+  const needCorrect = Math.ceil(total * passThreshold);
 
   return (
     <div className="card-dark flex-col gap-sm">
       {/* Track with fill */}
       <div className="quiz-progress__track bg-surface-dark-alt radius-pill">
         <div className="quiz-progress__fill" style={{ width: `${Math.min(pct, 100)}%` }} />
-        {/* Threshold line at 90% */}
+        {/* Threshold line — position based on passThreshold */}
         <div
           className="quiz-progress__threshold"
-          style={{ left: `${threshold}%` }}
-          title="Pass threshold (90%)"
+          style={{ left: `${thresholdPct}%` }}
+          title={`Pass threshold (${thresholdPct}%)`}
         />
       </div>
 

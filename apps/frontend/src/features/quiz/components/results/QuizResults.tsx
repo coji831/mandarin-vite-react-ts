@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { PhaseGateBadge } from "./PhaseGateBadge";
 import { CategoryBreakdown } from "./CategoryBreakdown";
+import { getStrategy } from "../../engine/strategies";
 
 /** Format seconds to M:SS */
 function formatTime(seconds: number): string {
@@ -27,15 +28,21 @@ export function QuizResults() {
   const navigate = useNavigate();
   const answers = useQuizSessionStore((s) => s.answers);
   const questions = useQuizSessionStore((s) => s.questions);
+  const score = useQuizSessionStore((s) => s.score);
   const timer = useQuizSessionStore((s) => s.timer);
   const completionResult = useQuizSessionStore((s) => s.completionResult);
+  const strategyType = useQuizSessionStore((s) => s.strategyType);
   const retry = useQuizSessionStore((s) => s.retry);
 
-  // Use backend completion result if available, otherwise fall back to local calculation
+  const strategy = getStrategy(strategyType);
+  const passThreshold = strategy?.passThreshold ?? 0.9;
+  const nextPhase = (strategy?.phase ?? 1) + 1;
+
+  // Use backend completion result if available, otherwise fall back to local store's score
   const totalQuestions = completionResult?.maxScore ?? questions.length;
-  const correct = completionResult?.totalScore ?? answers.filter((a) => a.correct).length;
+  const correct = completionResult?.totalScore ?? score;
   const pct = totalQuestions > 0 ? Math.round((correct / totalQuestions) * 100) : 0;
-  const passed = pct >= 90;
+  const passed = completionResult?.passed ?? pct >= passThreshold * 100;
 
   const handlePass = () => {
     navigate("/learn");
@@ -55,7 +62,7 @@ export function QuizResults() {
         </div>
 
         {/* Pass/fail message */}
-        <PhaseGateBadge passed={passed} />
+        <PhaseGateBadge passed={passed} unlockedPhase={nextPhase} />
 
         {/* Timer display */}
         <div className="quiz-results__timer text-muted font-md">
@@ -63,14 +70,14 @@ export function QuizResults() {
         </div>
       </div>
 
-      {/* Category breakdown */}
-      <CategoryBreakdown answers={answers} />
+      {/* Category breakdown (only applicable to pinyin/tone quizzes, not IME simulator) */}
+      {strategyType !== "ime-simulator" && <CategoryBreakdown answers={answers} />}
 
       {/* Action button */}
       <div className="flex-center gap-md">
         {passed ? (
           <button className="btn btn-primary btn-lg" onClick={handlePass}>
-            Continue to Phase 2 \u2192
+            Continue to Phase {nextPhase} \u2192
           </button>
         ) : (
           <button className="btn btn-primary btn-lg" onClick={retry}>

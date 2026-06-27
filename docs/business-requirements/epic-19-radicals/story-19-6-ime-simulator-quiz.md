@@ -12,16 +12,16 @@ The IME Simulator Quiz serves as the Phase 2 gate — the milestone that separat
 
 ## Acceptance Criteria
 
-- [ ] IME Simulator quiz accessible from Practices page for Phase 1+ users (verify: navigate to quiz)
-- [ ] Quiz uses browser native IME input for character typing (verify: IME activates on input field)
-- [ ] Prompt shows a pinyin/meaning clue → user types the corresponding character via IME (verify: clue renders, IME input works)
-- [ ] 25 randomized questions per attempt (verify: 25 questions presented, randomized each attempt)
-- [ ] Instant correct/incorrect feedback with correct character revealed (verify: wrong answer shows correct character)
-- [ ] Progress bar shows current score vs 70% pass target (verify: bar updates after each answer)
-- [ ] Score ≥70% displays pass result, "Continue to Phase 3" CTA (verify: pass flow works)
-- [ ] Score <70% displays fail result, retry option with explanation (verify: fail flow works)
-- [ ] Quiz results recorded via existing QuizAttempt API with quizType "ime-simulator" (verify: POST to quiz-attempts, results persist)
-- [ ] Passing quiz updates PhaseGate.currentPhase to 3 (verify: GET phase-gate → currentPhase=3)
+- [x] IME Simulator quiz accessible from Practices page for Phase 1+ users (verify: navigate to quiz)
+- [x] Quiz uses browser native IME input for character typing (verify: IME activates on input field)
+- [x] Prompt shows a meaning clue → user types the corresponding character via IME (verify: clue renders, IME input works)
+- [x] 25 randomized questions per attempt (verify: 25 questions presented, randomized each attempt)
+- [x] Instant correct/incorrect feedback with correct character revealed (verify: wrong answer shows correct character)
+- [x] Progress bar shows current score vs 70% pass target (verify: bar updates after each answer)
+- [x] Score ≥70% displays pass result, "Continue to Phase 3" CTA (verify: pass flow works)
+- [x] Score <70% displays fail result, retry option with explanation (verify: fail flow works)
+- [x] Quiz results recorded via existing QuizAttempt API with quizType "ime-simulator" (verify: POST to quiz-attempts, results persist)
+- [x] Passing quiz updates PhaseGate.currentPhase to 3 (verify: GET phase-gate → currentPhase=3)
 
 ## Business Rules
 
@@ -40,7 +40,7 @@ The IME Simulator Quiz serves as the Phase 2 gate — the milestone that separat
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: ✅ Completed
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Key Commit**: TBD

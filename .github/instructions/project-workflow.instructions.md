@@ -1,5 +1,5 @@
 ---
-description: "Use when implementing a story, closing an epic, preparing a commit, or running quality gates. Covers the full story-level development workflow, closing procedures, and checklists."
+description: "Use when implementing a story, closing an epic, preparing a commit, or running quality gates. Covers the full story-level development workflow, pre-implementation investigation, closing procedures, and checklists."
 ---
 
 # Project Workflow
@@ -16,6 +16,37 @@ Follow this sequence when implementing or updating a story:
 6. **Update Documentation** — Developer records decisions, data shape changes, and performance notes in story implementation doc. Add "Technical Challenges & Solutions" section for non-trivial problems. Update Last Update date fields. Documentation changes must be reviewed before commit.
 7. **Pre-Commit Gate** — Run tests: `npm test` (or targeted pattern) → must pass. Type check & lint if configured. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
 8. **Commit** — Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`. Include scope referencing story. Ensure BR + implementation doc updates are in the same commit for traceability.
+
+## Pre-Implementation Investigation Checklist
+
+Before writing any code, the implementing agent MUST investigate these 4 areas to avoid systemic architecture mistakes:
+
+### 1. Pattern Investigation
+
+- Read the target feature directory to find existing architecture patterns (strategy pattern, component hierarchy, store patterns, service layers)
+- Check if a reusable pattern already exists for the type of work being done
+- ❌ Never build standalone implementations when a reusable pattern exists
+
+### 2. Project Structure Verification
+
+- Verify file placement against existing project conventions:
+  - Feature components → `features/<name>/components/`
+  - Quiz/assessment pages → `pages/practices/`
+  - Stores → `features/<name>/stores/` or `shared/store/`
+  - Services → `features/<name>/services/`
+- ❌ Never place feature files in unrelated feature directories
+
+### 3. Routing Convention Check
+
+- Examine existing route files (`router/`) and path constants (`shared/constants/paths.ts`)
+- Check for existing routing patterns (query params vs path segments)
+- ❌ Never create new route patterns when an established convention exists
+
+### 4. Data Source Audit
+
+- Determine if data should come from: backend API, content files, or be generated
+- Check if backend endpoints already exist for the data needed
+- ❌ Never hardcode data in frontend services when a backend API exists
 
 ### Edge Cases
 

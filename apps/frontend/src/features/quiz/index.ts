@@ -25,6 +25,7 @@ export { Timer } from "./components/Timer";
 export { PinyinToneInput } from "./components/inputs/PinyinToneInput";
 export { QuizResults } from "./components/results/QuizResults";
 export { PhaseGateBadge } from "./components/results/PhaseGateBadge";
+export { IMEQuestionView } from "./components/ime-input/IMEQuestionView";
 
 // Hooks
 export { useQuizEngine } from "./hooks";

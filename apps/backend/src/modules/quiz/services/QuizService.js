@@ -43,10 +43,12 @@ export class QuizService {
     const totalScore = answers.filter((a) => a.correct).length;
     const maxScore = answers.length;
     const accuracy = maxScore > 0 ? totalScore / maxScore : 0;
-    const passed = accuracy >= 0.9;
 
     const attempt = await this.quizRepository.findQuizAttemptById(attemptId);
     if (!attempt) throw new Error("Quiz attempt not found");
+
+    const passThreshold = attempt.quizType === "ime-simulator" ? 0.7 : 0.9;
+    const passed = accuracy >= passThreshold;
 
     await this.quizRepository.completeQuizAttempt(attemptId, { totalScore, maxScore, passed });
 

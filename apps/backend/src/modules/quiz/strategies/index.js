@@ -4,8 +4,10 @@
  * Add new strategies here as they are created.
  */
 import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
+import { imeSimulatorStrategy } from "./ImeSimulatorStrategy.js";
 
 export { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
+export { imeSimulatorStrategy } from "./ImeSimulatorStrategy.js";
 
 /**
  * Get a registered strategy by type name.
@@ -15,6 +17,7 @@ export { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js"
 export function getStrategy(type) {
   const strategies = {
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
+    "ime-simulator": imeSimulatorStrategy,
   };
   return strategies[type] ?? null;
 }
@@ -26,5 +29,6 @@ export function getStrategy(type) {
 export function getRegisteredTypes() {
   return Object.keys({
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
+    "ime-simulator": imeSimulatorStrategy,
   });
 }

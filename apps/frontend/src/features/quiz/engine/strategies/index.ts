@@ -8,9 +8,13 @@
 
 import type { QuizStrategy } from "../../types";
 import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy";
+import { imeQuizStrategy } from "./IMEQuizStrategy";
+
+export { imeQuizStrategy } from "./IMEQuizStrategy";
 
 export const QUIZ_STRATEGIES: Record<string, QuizStrategy> = {
   "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
+  "ime-simulator": imeQuizStrategy,
 };
 
 /** Look up a strategy by type string */

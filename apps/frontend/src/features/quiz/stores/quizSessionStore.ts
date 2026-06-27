@@ -103,7 +103,11 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
           category: question.category,
         });
         // Use backend's verdict as authoritative
-        if (backendAnswer.correct !== optimisticResult.correct) {
+        // For IME, trust local evaluation (backend compares pinyin strings, not characters)
+        if (
+          strategyType !== "ime-simulator" &&
+          backendAnswer.correct !== optimisticResult.correct
+        ) {
           backendVerdict = {
             ...optimisticResult,
             correct: backendAnswer.correct,

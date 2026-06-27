@@ -1,0 +1,91 @@
+/**
+ * IMEQuestionView.css
+ * IME Simulator Quiz — IME question view styles
+ *
+ * BEM naming with .ime-quiz-question-* prefix.
+ * Uses CSS variables from globals.css only.
+ */
+
+/* ── Container ── */
+.ime-quiz-question {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* ── Clue display ── */
+.ime-quiz-question__clue {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.ime-quiz-question__clue-label {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.ime-quiz-question__clue-meaning {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--color-primary-light);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Input area ── */
+.ime-quiz-question__input-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.ime-quiz-question__input {
+  background: var(--surface-dark);
+  border: 2px solid var(--surface-border);
+  color: var(--text-primary);
+  font-size: var(--font-4xl);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  width: 100%;
+  text-align: center;
+  font-family: inherit;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ime-quiz-question__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.ime-quiz-question__input::placeholder {
+  color: var(--text-muted);
+  font-size: var(--font-lg);
+}
+
+.ime-quiz-question__steps {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Submit button ── */
+.ime-quiz-question__submit {
+  width: 100%;
+}

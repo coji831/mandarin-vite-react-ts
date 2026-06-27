@@ -10,12 +10,17 @@ import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { QuestionView } from "./QuestionView";
 import { FeedbackView } from "./FeedbackView";
 import { QuizResults } from "./results/QuizResults";
+import { IMEQuestionView } from "./ime-input/IMEQuestionView";
 
 /** Phase-based routing with all phases */
 export function QuizRouter() {
   const phase = useQuizSessionStore((s) => s.phase);
   const error = useQuizSessionStore((s) => s.error);
+  const strategyType = useQuizSessionStore((s) => s.strategyType);
   const retry = useQuizSessionStore((s) => s.retry);
+
+  const showIMEQuestion =
+    (phase === "QUESTION" || phase === "INPUT") && strategyType === "ime-simulator";
 
   switch (phase) {
     case "LOADING":
@@ -27,6 +32,7 @@ export function QuizRouter() {
       );
     case "QUESTION":
     case "INPUT":
+      if (showIMEQuestion) return <IMEQuestionView />;
       return <QuestionView />;
     case "FEEDBACK":
       return <FeedbackView />;

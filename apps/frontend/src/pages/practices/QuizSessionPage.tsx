@@ -15,6 +15,7 @@ import {
   Timer,
   QuizProgressBar,
 } from "../../features/quiz";
+import { getStrategy } from "../../features/quiz/engine/strategies";
 import "./QuizSessionPage.css";
 
 import type { StrategyType } from "../../features/quiz/types";
@@ -26,6 +27,9 @@ type QuizSessionPageProps = {
 /** Full quiz session orchestrator with header, content, and progress bar */
 export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   useQuizEngine(strategyType);
+
+  const strategy = getStrategy(strategyType);
+  const phaseLabel = strategy ? `Phase ${strategy.phase} Quiz` : "Quiz";
 
   const phase = useQuizSessionStore((s) => s.phase);
   const score = useQuizSessionStore((s) => s.score);
@@ -52,8 +56,7 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
           className="fw-700 text-primary quiz-results__heading"
           style={{ fontSize: "var(--font-lg)" }}
         >
-          📝 Phase 1 Quiz &mdash;{" "}
-          {strategyType === "audio-to-tone" ? "Audio-to-Tone" : "Audio-to-Pinyin"}
+          📝 {phaseLabel} &mdash; {strategy?.label ?? strategyType}
         </span>
         <Timer />
       </div>
@@ -72,7 +75,11 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
 
       {/* Progress bar at bottom */}
       {(phase === "QUESTION" || phase === "INPUT" || phase === "FEEDBACK") && (
-        <QuizProgressBar current={score} total={totalQuestions} />
+        <QuizProgressBar
+          current={score}
+          total={totalQuestions}
+          passThreshold={strategy?.passThreshold ?? 0.9}
+        />
       )}
     </div>
   );
