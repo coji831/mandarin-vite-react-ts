@@ -27,19 +27,19 @@ export function RadicalDetailCard({ radical, onClose }: RadicalDetailCardProps) 
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  const hskCharacters = radical.metadata.hsk_characters ?? [];
+
   // Focus the card on mount for accessibility
   useEffect(() => {
     cardRef.current?.focus();
   }, []);
-
-  const hskCharacters = radical.metadata.hsk_characters ?? [];
 
   return (
     <>
       {/* Backdrop overlay */}
       <div className="radical-detail-card__backdrop" onClick={onClose} aria-hidden="true" />
 
-      {/* Detail card */}
+      {/* Detail card overlay */}
       <div
         ref={cardRef}
         className="radical-detail-card"
@@ -117,10 +117,15 @@ export function RadicalDetailCard({ radical, onClose }: RadicalDetailCardProps) 
           {/* Example characters */}
           {hskCharacters.length > 0 && <ExampleCharGrid characters={hskCharacters} />}
 
-          {/* Mnemonic button */}
-          <button className="mnemonic-btn" disabled title="Coming in Epic 20" type="button">
-            Generate Story
-          </button>
+          {/* Mnemonic section — placeholder for Epic 20 */}
+          <div className="radical-detail-card__mnemonic-placeholder">
+            <span className="font-xs text-muted">
+              Generate story for one of {hskCharacters.length} characters
+            </span>
+            <button className="mnemonic-btn" disabled title="Coming in Epic 20" type="button">
+              Generate Story
+            </button>
+          </div>
         </div>
       </div>
     </>

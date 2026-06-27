@@ -6,7 +6,8 @@
  * Story 19.4: Radical Trees (Phase 3)
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
 import {
   useRadicals,
@@ -19,11 +20,24 @@ import {
 import "./RadicalsPage.css";
 
 export function RadicalsPage() {
-  const { filteredRadicals, filter, setFilter, resetFilter, isLoading, error, refetch } =
+  const { radicals, filteredRadicals, filter, setFilter, resetFilter, isLoading, error, refetch } =
     useRadicals();
   const { phaseGate } = usePhaseGate();
+  const [searchParams] = useSearchParams();
   const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
   const [showTrees, setShowTrees] = useState(false);
+
+  // Handle ?radical=rad_XXXX query param: auto-select radical and switch to Browse view
+  useEffect(() => {
+    const radicalParam = searchParams.get("radical");
+    if (radicalParam && radicals.length > 0) {
+      const found = radicals.find((r) => r.id === radicalParam);
+      if (found) {
+        setSelectedRadical(found);
+        if (showTrees) setShowTrees(false);
+      }
+    }
+  }, [searchParams, radicals, showTrees]);
 
   // If API fails (null phaseGate), default to Phase 1 in prod, Phase 3 in dev
   const defaultPhase = import.meta.env.DEV ? 3 : 1;

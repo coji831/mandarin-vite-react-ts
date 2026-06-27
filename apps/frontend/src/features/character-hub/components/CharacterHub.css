@@ -41,10 +41,10 @@
 
 .hub-panel {
   position: relative;
-  background: #252540;
-  border: 1px solid #3a3a5e;
-  border-radius: 12px;
-  padding: 2rem 1.5rem 1.5rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
   max-width: 700px;
   width: 100%;
   max-height: 90vh;
@@ -56,13 +56,13 @@
 
 .hub-close-btn {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: var(--space-sm);
+  right: var(--space-sm);
   background: transparent;
-  color: #aaa;
+  color: var(--text-secondary);
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: var(--font-lg);
   line-height: 1;
   padding: 0.25rem;
   z-index: 1;
@@ -70,7 +70,7 @@
 }
 
 .hub-close-btn:hover {
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 /* ── Character Card ──────────────────────────────────────── */
@@ -81,10 +81,10 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  background: #1e1e2e;
-  border: 1px solid #3a3a5e;
-  border-radius: 10px;
-  padding: 1.5rem;
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
   max-width: 320px;
   margin: 0 auto;
 }
@@ -125,12 +125,12 @@
   align-items: center;
   justify-content: center;
   background: rgba(30, 30, 46, 0.8);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 
 .hub-character-canvas-error {
-  color: #f87171;
-  font-size: 0.75rem;
+  color: var(--color-error);
+  font-size: var(--font-xs);
   text-align: center;
   padding: 0.5rem;
 }
@@ -138,15 +138,15 @@
 .hub-character-hanzi {
   font-size: 4.5rem;
   font-weight: 700;
-  color: #e0e0e0;
+  color: var(--text-primary);
   line-height: 1;
   user-select: none;
 }
 
 /* Stroke info text (e.g., "Stroke 6 of 6") */
 .hub-stroke-info {
-  font-size: 0.8rem;
-  color: #777;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -164,19 +164,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #252540;
-  border: 1px solid #3a3a5e;
-  border-radius: 6px;
-  color: #aaa;
-  font-size: 0.9rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .hub-ctrl-btn:hover:not(:disabled) {
-  background: #2e2e50;
-  border-color: #5a5a8a;
-  color: #e0e0e0;
+  background: var(--surface-hover);
+  border-color: var(--color-primary-border-strong);
+  color: var(--text-primary);
 }
 
 .hub-ctrl-btn:disabled {
@@ -185,41 +185,41 @@
 }
 
 .hub-ctrl-play {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: #4a4a7a;
-  color: #818cf8;
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border-strong);
+  color: var(--color-primary-light);
 }
 
 .hub-ctrl-play:hover:not(:disabled) {
-  background: rgba(99, 102, 241, 0.35);
+  background: var(--color-primary-bg-medium);
 }
 
 .hub-ctrl-divider {
   width: 1px;
   height: 24px;
-  background: #3a3a5e;
+  background: var(--surface-border);
   margin: 0 0.35rem;
 }
 
-/* Audio button (circular, inside the controls row) */
+/* Audio button (next to pinyin, above stroke controls) */
 .hub-audio-btn {
   width: 36px;
   height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(99, 102, 241, 0.2);
-  border: 1px solid #4a4a7a;
+  background: var(--color-primary-bg);
+  border: 1px solid var(--color-primary-border-strong);
   border-radius: 50%;
-  color: #ccc;
-  font-size: 1rem;
+  color: var(--text-tertiary);
+  font-size: var(--font-md);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .hub-audio-btn:hover:not(:disabled) {
-  background: rgba(99, 102, 241, 0.35);
-  color: #e0e0e0;
+  background: var(--color-primary-bg-medium);
+  color: var(--text-primary);
 }
 
 .hub-audio-btn:disabled {
@@ -227,12 +227,51 @@
   cursor: not-allowed;
 }
 
-/* Pinyin shown inside the card below the character */
-.hub-card-pinyin {
-  font-size: 1.25rem;
-  color: #818cf8;
-  font-weight: 500;
+/* Pinyin row: pinyin text + audio button side by side */
+.hub-pinyin-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   margin-top: 0.25rem;
+}
+
+.hub-card-pinyin {
+  font-size: var(--font-xl);
+  color: var(--color-primary-light);
+  font-weight: 500;
+}
+
+/* ── Grid Layout ──────────────────────────────────────────── */
+/* Per wireframe: Radicals (left), Character (center), Examples (right) */
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.hub-grid__left {
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-grid__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hub-grid__right {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Info Line ────────────────────────────────────────────── */
@@ -240,28 +279,28 @@
 
 .hub-info-line {
   text-align: center;
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  color: #aaa;
+  margin-top: var(--space-md);
+  font-size: var(--font-md);
+  color: var(--text-secondary);
 }
 
 .hub-info-char {
   font-weight: 600;
-  color: #ccc;
+  color: var(--text-tertiary);
 }
 
 .hub-info-pinyin {
-  color: #818cf8;
+  color: var(--color-primary-light);
   margin-left: 0.25rem;
 }
 
 .hub-info-sep {
   margin: 0 0.5rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .hub-info-meaning {
-  color: #999;
+  color: var(--text-muted);
 }
 
 /* ── Actions ──────────────────────────────────────────────── */
@@ -269,8 +308,13 @@
 
 .hub-actions {
   display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-lg);
+}
+
+.hub-actions__error {
+  margin-top: var(--space-xs);
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */

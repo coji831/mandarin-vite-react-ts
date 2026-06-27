@@ -14,6 +14,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import pkg from "pg";
 import bcrypt from "bcrypt";
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
+import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
 
 const { Pool } = pkg;
 
@@ -58,6 +59,9 @@ async function main() {
 
   // Seed pinyin combinations
   await seedPinyinCombinations(prisma);
+
+  // Seed character-radical mappings
+  await seedCharacterRadicals(prisma);
 
   console.log("🎉 Database seed completed successfully!");
 }

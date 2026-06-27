@@ -20,15 +20,18 @@ export function HubActions({ character }: HubActionsProps) {
   const { saveToReview } = useReview();
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSaveToReview = async () => {
     if (saved || isSaving) return;
+    setError(null);
     setIsSaving(true);
     try {
       await saveToReview(character);
       setSaved(true);
     } catch (err) {
       console.error("Failed to save:", err);
+      setError("Failed to save. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -39,6 +42,7 @@ export function HubActions({ character }: HubActionsProps) {
       <Button variant="primary" onClick={handleSaveToReview} loading={isSaving} disabled={saved}>
         {saved ? "✅ Saved!" : "💾 Save to Review"}
       </Button>
+      {error && <p className="hub-actions__error font-xs text-error">{error}</p>}
     </div>
   );
 }

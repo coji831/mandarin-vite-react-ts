@@ -24,22 +24,7 @@ const SORT_OPTIONS: { value: RadicalFilter["sortBy"]; label: string }[] = [
 export function FilterBar({ filter, onFilterChange, onReset }: FilterBarProps) {
   return (
     <div className="radicals-filter-bar">
-      {/* Search input */}
-      <div className="radicals-filter-bar__group">
-        <label htmlFor="radicals-search" className="radicals-filter-bar__label">
-          Search
-        </label>
-        <input
-          id="radicals-search"
-          className="input-base radicals-filter-bar__input"
-          type="text"
-          placeholder="Search by pinyin, meaning, or glyph…"
-          value={filter.search}
-          onChange={(e) => onFilterChange({ search: e.target.value })}
-        />
-      </div>
-
-      {/* Stroke count dropdown */}
+      {/* Stroke count dropdown — first per wireframe */}
       <div className="radicals-filter-bar__group">
         <Dropdown
           value={filter.strokeCount}
@@ -53,6 +38,21 @@ export function FilterBar({ filter, onFilterChange, onReset }: FilterBarProps) {
           ]}
           label="Stroke count"
           id="radicals-stroke-count"
+        />
+      </div>
+
+      {/* Search input — second per wireframe */}
+      <div className="radicals-filter-bar__group">
+        <label htmlFor="radicals-search" className="radicals-filter-bar__label">
+          Search
+        </label>
+        <input
+          id="radicals-search"
+          className="input-base radicals-filter-bar__input"
+          type="text"
+          placeholder="Search by pinyin, meaning, or glyph…"
+          value={filter.search}
+          onChange={(e) => onFilterChange({ search: e.target.value })}
         />
       </div>
 

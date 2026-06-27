@@ -1,4 +1,4 @@
-﻿-- CreateTable: RadicalProgress
+-- CreateTable: RadicalProgress
 -- Tracks which radicals users have memorized and recognition levels.
 CREATE TABLE "RadicalProgress" (
     "id" TEXT NOT NULL,

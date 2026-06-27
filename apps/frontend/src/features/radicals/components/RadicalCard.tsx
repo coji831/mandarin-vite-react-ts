@@ -37,6 +37,7 @@ export function RadicalCard({ radical, onClick }: RadicalCardProps) {
       <span className="radical-card__strokes">
         {radical.stroke_count} stroke{radical.stroke_count !== 1 ? "s" : ""}
       </span>
+      <span className="radical-card__action">View ▸</span>
     </div>
   );
 }

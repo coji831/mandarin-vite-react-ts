@@ -54,6 +54,14 @@ export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellP
       >
         🔊
       </button>
+      <button
+        className="example-char-cell__hub-btn"
+        onClick={handleClick}
+        type="button"
+        aria-label={`Open character hub for ${character}`}
+      >
+        Open Hub ▸
+      </button>
     </div>
   );
 }

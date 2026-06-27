@@ -15,9 +15,9 @@ export function filterBySearch(radicals: RadicalData[], search: string): Radical
   const query = search.trim().toLowerCase();
   return radicals.filter(
     (r) =>
-      r.name_pinyin.toLowerCase().includes(query) ||
-      r.meaning.toLowerCase().includes(query) ||
-      r.glyph.includes(query),
+      (r.name_pinyin?.toLowerCase() ?? "").includes(query) ||
+      (r.meaning?.toLowerCase() ?? "").includes(query) ||
+      (r.glyph?.includes(query) ?? false),
   );
 }
 

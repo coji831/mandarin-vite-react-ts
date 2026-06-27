@@ -147,6 +147,18 @@ model RadicalProgress {
   @@index([userId])
 }
 
+model CharacterRadical {
+  id              Int      @id @default(autoincrement())
+  characterGlyph  String   // The character glyph, e.g. "路"
+  radicalId       String   // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([characterGlyph, radicalId])
+  @@index([characterGlyph])
+  @@index([radicalId])
+}
+
 model PhaseGate {
   id                  String   @id @default(uuid())
   userId              String   @unique

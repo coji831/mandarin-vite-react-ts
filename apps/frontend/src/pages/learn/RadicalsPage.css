@@ -272,6 +272,12 @@
   color: var(--text-muted);
 }
 
+.radical-card__action {
+  font-size: var(--font-xs);
+  color: var(--color-primary-light);
+  margin-top: var(--space-xs);
+}
+
 /* ═══════════════════════════════════════════════
    Loading & Error & Empty States
    ═══════════════════════════════════════════════ */
@@ -283,39 +289,20 @@
 }
 
 /* ═══════════════════════════════════════════════
-   Radical Detail Card
+   Radical Detail Card — Overlay
    ═══════════════════════════════════════════════ */
-
-.radical-detail-card__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: var(--overlay-dark);
-  animation: backdrop-fade-in var(--transition-normal) ease-out;
-}
-
-@keyframes backdrop-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
 .radical-detail-card {
   position: fixed;
-  z-index: 91;
   inset: 0;
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  pointer-events: none;
-  animation: popup-fade-in var(--transition-normal) ease-out;
+  animation: detail-fade-in var(--transition-normal) ease-out;
 }
 
-@keyframes popup-fade-in {
+@keyframes detail-fade-in {
   from {
     opacity: 0;
   }
@@ -324,25 +311,33 @@
   }
 }
 
-/* The visible card panel inside the fixed container */
+/* Backdrop overlay */
+.radical-detail-card__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* The visible card panel */
 .radical-detail-card__panel {
   background: var(--surface-dark);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   max-width: 600px;
-  width: 90vw;
-  max-height: 85vh;
+  width: 100%;
+  max-height: 90vh;
   overflow-y: auto;
-  pointer-events: auto;
   position: relative;
-  animation: popup-slide-up var(--transition-normal) ease-out;
+  animation: panel-fade-in var(--transition-normal) ease-out;
+  z-index: 201;
 }
 
-@keyframes popup-slide-up {
+@keyframes panel-fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -603,9 +598,33 @@
   opacity: 1;
 }
 
+.example-char-cell__hub-btn {
+  font-size: var(--font-xs);
+  color: var(--color-primary-light);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.example-char-cell__hub-btn:hover {
+  opacity: 1;
+}
+
 /* ═══════════════════════════════════════════════
    Mnemonic Button
    ═══════════════════════════════════════════════ */
+
+.radical-detail-card__mnemonic-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
 
 .mnemonic-btn {
   display: inline-flex;

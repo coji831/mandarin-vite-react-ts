@@ -73,6 +73,11 @@ import { FoundationsController, FoundationsService } from "../modules/foundation
 const foundationsService = new FoundationsService();
 export const foundationsController = new FoundationsController(foundationsService);
 
+// ── Radicals Data ─────────────────────────────────────────────────
+import { RadicalsController, RadicalsService } from "../modules/radicals/index.js";
+const radicalsService = new RadicalsService();
+export const radicalsController = new RadicalsController(radicalsService);
+
 // ── Core: Services ─────────────────────────────────────────────────────────
 import { AuthService } from "../modules/auth/index.js";
 import { AIFeedbackService } from "../modules/quiz/use-cases/AIFeedbackService.js";

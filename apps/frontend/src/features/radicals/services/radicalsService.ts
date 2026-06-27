@@ -1,45 +1,35 @@
 /**
  * @file services/radicalsService.ts
- * @description Service for loading radical content
+ * @description Service for loading radical content from backend API
  * Story 19.1: Radicals Browser Structure
- *
- * TODO: When backend API endpoint is ready, replace mock data with apiClient call:
- *   import { apiClient } from "../../../shared/api/axiosClient";
- *   const response = await apiClient.get("/v1/radicals");
- *   return response.data;
- * See foundationsService.ts for the reference pattern.
  */
 
+import { apiClient } from "../../../shared/api/axiosClient";
 import type { RadicalData } from "../types";
-import { MOCK_RADICALS } from "./radicalsMockData";
 
 // ─── Module-level cache ────────────────────────────────────────────────
 let cachedRadicals: RadicalData[] | null = null;
 
 /**
- * Load all radicals from mock data.
- * TODO: Replace with backend API call.
+ * Load all radicals from backend API.
  */
 async function loadAllRadicals(): Promise<RadicalData[]> {
   if (cachedRadicals) return cachedRadicals;
-  // Simulate async API call
-  cachedRadicals = MOCK_RADICALS;
-  return MOCK_RADICALS;
+  const response = await apiClient.get("/v1/radicals");
+  cachedRadicals = response.data;
+  return response.data;
 }
 
 /**
- * Load a single radical by its ID from the cached list.
- * TODO: Use when backend API endpoint is ready — Story 19.2 passes data via props.
+ * Load a single radical by its ID from the cached list or API.
  */
 async function loadRadicalById(id: string): Promise<RadicalData> {
   if (cachedRadicals) {
     const found = cachedRadicals.find((r) => r.id === id);
     if (found) return found;
   }
-  // Fallback: search in mock data without cache
-  const found = MOCK_RADICALS.find((r) => r.id === id);
-  if (!found) throw new Error(`Radical not found: ${id}`);
-  return found;
+  const response = await apiClient.get(`/v1/radicals/${id}`);
+  return response.data;
 }
 
 /**

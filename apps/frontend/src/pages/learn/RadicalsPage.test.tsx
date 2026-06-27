@@ -6,7 +6,12 @@
  */
 
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { RadicalsPage } from "./RadicalsPage";
+
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
 
 // Mock the radicalsService to avoid actual fetch calls
 // Use vi.hoisted to create the mock fn before vi.mock is hoisted
@@ -63,7 +68,7 @@ describe("RadicalsPage", () => {
   });
 
   it("renders the page title and description", async () => {
-    render(<RadicalsPage />);
+    renderWithRouter(<RadicalsPage />);
     expect(screen.getByText("Radicals")).toBeInTheDocument();
     expect(
       screen.getByText(/fundamental building blocks of Chinese characters/i),
@@ -75,7 +80,7 @@ describe("RadicalsPage", () => {
   });
 
   it("renders the filter bar with search input", async () => {
-    render(<RadicalsPage />);
+    renderWithRouter(<RadicalsPage />);
     expect(screen.getByPlaceholderText(/search by pinyin/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/stroke count/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/sort by/i)).toBeInTheDocument();
@@ -87,7 +92,7 @@ describe("RadicalsPage", () => {
   });
 
   it("loads and displays radicals", async () => {
-    render(<RadicalsPage />);
+    renderWithRouter(<RadicalsPage />);
 
     // Should show loading initially, then radicals after data loads
     await waitFor(() => {
@@ -98,7 +103,7 @@ describe("RadicalsPage", () => {
 
   describe("Browse/Trees toggle", () => {
     it("renders toggle buttons with correct aria-pressed values", async () => {
-      render(<RadicalsPage />);
+      renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
@@ -111,7 +116,7 @@ describe("RadicalsPage", () => {
     });
 
     it('clicking "🌳 Trees" switches heading to "Radical Trees"', async () => {
-      render(<RadicalsPage />);
+      renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
@@ -124,7 +129,7 @@ describe("RadicalsPage", () => {
     });
 
     it("FilterBar is hidden in Trees mode", async () => {
-      render(<RadicalsPage />);
+      renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
@@ -141,7 +146,7 @@ describe("RadicalsPage", () => {
     });
 
     it("RadicalTreesTab is shown when Trees is active", async () => {
-      render(<RadicalsPage />);
+      renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
