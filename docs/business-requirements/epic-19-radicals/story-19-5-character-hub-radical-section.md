@@ -12,11 +12,11 @@ The Character Detail Hub is the central reference point for character informatio
 
 ## Acceptance Criteria
 
-- [ ] Character Detail Hub shows a "Radical Decomposition" section when character data has radical info (verify: Hub → radical section renders for characters with known radicals)
-- [ ] Section displays the character's radical(s) with glyph, name, meaning (verify: radical info renders correctly)
-- [ ] Each displayed radical is clickable → opens that radical's detail card from radicals feature (verify: tap radical → navigates to radical detail)
-- [ ] Section is phase-gated: visible for Phase 2+ users (verify: Phase 2 user sees section, Phase 1 user does not)
-- [ ] Section gracefully hides (doesn't render empty container) when radical data is unavailable for a character (verify: rare/unknown character → no empty section shown)
+- [x] Character Detail Hub shows a "Radical Decomposition" section when character data has radical info (verify: Hub → radical section renders for characters with known radicals)
+- [x] Section displays the character's radical(s) with glyph, name, meaning (verify: radical info renders correctly)
+- [x] Each displayed radical is clickable → opens that radical's detail card from radicals feature (verify: tap radical → navigates to radical detail)
+- [x] Section is phase-gated: visible for Phase 2+ users (verify: Phase 2 user sees section, Phase 1 user does not)
+- [x] Section gracefully hides (doesn't render empty container) when radical data is unavailable for a character (verify: rare/unknown character → no empty section shown)
 
 ## Business Rules
 
@@ -31,7 +31,7 @@ The Character Detail Hub is the central reference point for character informatio
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: ✅ Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: 0cb2879

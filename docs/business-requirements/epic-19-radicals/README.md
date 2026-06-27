@@ -61,7 +61,7 @@ This epic consists of the following user stories:
 
 5. **Story 19.5: Character Hub Radical Section** ([story-19-5-character-hub-radical-section.md](story-19-5-character-hub-radical-section.md))
    - As a learner, I want to see the radical breakdown of any character in the Character Detail Hub, so that I can understand character composition from any context.
-   - **Status:** Planned
+   - **Status:** ✅ Completed
 
 6. **Story 19.6: IME Simulator Quiz (Phase 2 Gate)** ([story-19-6-ime-simulator-quiz.md](story-19-6-ime-simulator-quiz.md))
    - As a learner, I want to pass an IME-based quiz to prove Phase 2 readiness, so that I can unlock Phase 3 content.

@@ -1,6 +1,6 @@
 # Implementation 19-5: Character Hub Radical Section
 
-**Last Updated:** June 26, 2026
+**Last Updated:** June 27, 2026
 
 ## Technical Scope
 
@@ -133,3 +133,12 @@ Navigation: React Router navigate() + radicalsStore.setSelectedRadical()
 **Problem:** When a user taps a radical link in the Hub's radical decomposition section, they need to navigate to that radical's detail. The Hub is a portal overlay that can open from any context, so the navigation target isn't a simple route change.
 
 **Solution:** The Hub radical section dispatches to the radicals store. If the user is already on the radicals page, the detail card opens inline. If on a different page, the Hub closes first, then navigates to `/learn/radicals?radical=rad_XXXX` with a query parameter that auto-selects the radical and opens its detail card.
+
+## Actual Implementation Notes
+
+The `HubRadicalSection` was placed in `apps/frontend/src/features/character-hub/components/` (not in `shared/components/` as originally planned) since the CharacterDetailHub was already refactored into the `character-hub` feature folder. The section uses **dual-source lookup**:
+
+1. **HSK character data** — Characters in `content/characters/` contain a `radicals` field listing component radical IDs.
+2. **CharacterRadical API** — The backend `CharacterRadical` model (Prisma) provides a many-to-many mapping between characters and radicals, loaded via `useRadicalDecomposition()` → `radicalsService.fetchCharacterRadicals()`.
+
+This dual approach ensures comprehensive coverage: the static character JSON provides the primary radical decomposition, while the API can supplement with additional or verified mappings.
