@@ -103,11 +103,13 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
           category: question.category,
         });
         // Use backend's verdict as authoritative
-        // For IME, trust local evaluation (backend compares pinyin strings, not characters)
-        if (
-          strategyType !== "ime-simulator" &&
-          backendAnswer.correct !== optimisticResult.correct
-        ) {
+        // For IME and multiple-choice, trust local evaluation
+        // (backend compares pinyin strings; MC strategies use option IDs)
+        const trustLocalEval =
+          strategyType === "ime-simulator" ||
+          strategyType === "radical-splitter" ||
+          strategyType === "radical-gate";
+        if (!trustLocalEval && backendAnswer.correct !== optimisticResult.correct) {
           backendVerdict = {
             ...optimisticResult,
             correct: backendAnswer.correct,

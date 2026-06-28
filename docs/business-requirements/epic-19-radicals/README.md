@@ -21,7 +21,7 @@
 
 **Status:** In Progress
 
-**Last Update:** June 27, 2026
+**Last Update:** June 28, 2026
 
 ## Background
 
@@ -65,6 +65,10 @@ This epic consists of the following user stories:
 
 6. **Story 19.6: IME Simulator Quiz (Phase 2 Gate)** ([story-19-6-ime-simulator-quiz.md](story-19-6-ime-simulator-quiz.md))
    - As a learner, I want to pass an IME-based quiz to prove Phase 2 readiness, so that I can unlock Phase 3 content.
+   - **Status:** ✅ Completed
+
+7. **Story 19.7: Radical Review & Quiz Strategies** ([story-19-7-radical-review-quiz-strategies.md](story-19-7-radical-review-quiz-strategies.md))
+   - As a learner, I want to practice radical decomposition (Radical Splitter) and pass a Radical Gate Quiz (Tier 1: Core Lockdown + Tier 2: Predictor) to qualify for Phase 3.
    - **Status:** ✅ Completed
 
 ## Story Breakdown Logic

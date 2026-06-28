@@ -11,21 +11,32 @@ export type StrategyType =
   | "audio-to-pinyin"
   | "audio-to-tone"
   | "audio-to-pinyin-tone"
-  | "ime-simulator";
+  | "ime-simulator"
+  | "radical-splitter"
+  | "radical-gate";
 
 /** Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS */
 export type QuizPhase = "LOADING" | "QUESTION" | "INPUT" | "FEEDBACK" | "RESULTS" | "ERROR";
+
+/** An option in a multiple-choice quiz question */
+export interface QuizOption {
+  glyph: string;
+  meaning: string;
+  id: string;
+}
 
 /** A single question within a strategy-based quiz session */
 export interface QuizQuestion {
   id: string;
   audioKey: string; // e.g., "bā" — for TTS
-  correctPinyin: string; // pinyin without tone marks for comparison
+  correctPinyin: string; // pinyin without tone marks for comparison (or correct option ID for MC)
   correctTone: number; // 0-4 (0=neutral)
-  category: string; // e.g., "pinyin" | "tones" | "pairs" | "rules" | "ime"
+  category: string; // e.g., "pinyin" | "tones" | "pairs" | "rules" | "ime" | "radical-splitter" | "radical-core-lockdown" | "radical-predictor"
   displayPinyin?: string; // pinyin WITH tone marks
   character?: string | null; // Chinese character for TTS (e.g., "八")
   meaning?: string | null; // English meaning of the character
+  options?: QuizOption[]; // Multiple-choice options (for radical strategies)
+  prompt?: string; // Custom prompt text (for radical predictor questions)
 }
 
 /** Result of evaluating a user's answer */

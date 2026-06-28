@@ -26,18 +26,19 @@
 
 **Status:** In Progress
 
-**Last Update:** June 27, 2026
+**Last Update:** June 28, 2026
 
 ## Story Status
 
-| Story                                                   | Status       | Implementation Doc                                                                           |
-| ------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------- |
-| 19.1 — Radicals Browser & Detail Card                   | ✅ Completed | —                                                                                            |
-| 19.2 — Radical Detail Card                              | Planned      | —                                                                                            |
-| 19.3 — Backend RadicalProgress + SRS Review Integration | ✅ Completed | [story-19-3-backend-radical-progress.md](./story-19-3-backend-radical-progress.md)           |
-| 19.4 — Radical Trees (Phase 3)                          | ✅ Completed | [story-19-4-radical-trees.md](./story-19-4-radical-trees.md)                                 |
-| 19.5 — Character Hub Radical Section                    | ✅ Completed | [story-19-5-character-hub-radical-section.md](./story-19-5-character-hub-radical-section.md) |
-| 19.6 — IME Simulator Quiz                               | ✅ Completed | [story-19-6-ime-simulator-quiz.md](./story-19-6-ime-simulator-quiz.md) |
+| Story                                                   | Status       | Implementation Doc                                                                             |
+| ------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| 19.1 — Radicals Browser & Detail Card                   | ✅ Completed | —                                                                                              |
+| 19.2 — Radical Detail Card                              | ✅ Completed | —                                                                                              |
+| 19.3 — Backend RadicalProgress + SRS Review Integration | ✅ Completed | [story-19-3-backend-radical-progress.md](./story-19-3-backend-radical-progress.md)             |
+| 19.4 — Radical Trees (Phase 3)                          | ✅ Completed | [story-19-4-radical-trees.md](./story-19-4-radical-trees.md)                                   |
+| 19.5 — Character Hub Radical Section                    | ✅ Completed | [story-19-5-character-hub-radical-section.md](./story-19-5-character-hub-radical-section.md)   |
+| 19.6 — IME Simulator Quiz                               | ✅ Completed | [story-19-6-ime-simulator-quiz.md](./story-19-6-ime-simulator-quiz.md)                         |
+| 19.7 — Radical Review & Quiz Strategies                 | ✅ Completed | [story-19-7-radical-review-quiz-strategies.md](./story-19-7-radical-review-quiz-strategies.md) |
 
 ## Technical Overview
 

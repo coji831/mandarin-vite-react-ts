@@ -11,6 +11,10 @@ import { QuestionView } from "./QuestionView";
 import { FeedbackView } from "./FeedbackView";
 import { QuizResults } from "./results/QuizResults";
 import { IMEQuestionView } from "./ime-input/IMEQuestionView";
+import { MultipleChoiceView } from "./MultipleChoiceView";
+
+/** Quiz types that use multiple-choice rendering */
+const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-splitter", "radical-gate"]);
 
 /** Phase-based routing with all phases */
 export function QuizRouter() {
@@ -21,6 +25,8 @@ export function QuizRouter() {
 
   const showIMEQuestion =
     (phase === "QUESTION" || phase === "INPUT") && strategyType === "ime-simulator";
+  const showMultipleChoice =
+    (phase === "QUESTION" || phase === "INPUT") && MULTIPLE_CHOICE_STRATEGIES.has(strategyType);
 
   switch (phase) {
     case "LOADING":
@@ -33,6 +39,7 @@ export function QuizRouter() {
     case "QUESTION":
     case "INPUT":
       if (showIMEQuestion) return <IMEQuestionView />;
+      if (showMultipleChoice) return <MultipleChoiceView />;
       return <QuestionView />;
     case "FEEDBACK":
       return <FeedbackView />;

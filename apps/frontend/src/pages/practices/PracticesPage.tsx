@@ -18,6 +18,7 @@ import "./PracticesPage.css";
 const BASE_PHASES = [
   { name: "Phase 1: Foundations Quiz (pinyin + tone)" },
   { name: "Phase 2: IME Simulator Quiz" },
+  { name: "Phase 2 Gate: Radical Gate Quiz" },
   { name: "Phase 3: Reading Comprehension" },
 ] as const;
 
@@ -56,6 +57,23 @@ export default function PracticesPage() {
 
           <button className="btn-primary startBtn" onClick={() => navigate(practices_review)}>
             Start Review
+            <span className="startBtnArrow">▸</span>
+          </button>
+
+          <button
+            className={`btn-primary startBtn ${currentPhase < 2 ? "op-60" : ""}`}
+            onClick={() => {
+              if (currentPhase >= 2) {
+                navigate(`${practices_quiz}?type=radical-splitter`);
+              }
+            }}
+            title={
+              currentPhase < 2
+                ? "Complete Phase 1 to unlock"
+                : "Practice identifying radicals in characters"
+            }
+          >
+            {currentPhase >= 2 ? "\u{1F513} " : "\u{1F512} "}Radical Splitter Practice
             <span className="startBtnArrow">▸</span>
           </button>
         </div>
@@ -101,6 +119,23 @@ export default function PracticesPage() {
             title={currentPhase < 2 ? "Complete Phase 1 to unlock" : "Start IME Simulator Quiz"}
           >
             {currentPhase >= 2 ? "\u{1F513} " : "\u{1F512} "}Start IME Simulator
+            <span className="startBtnArrow">▸</span>
+          </button>
+
+          <button
+            className={`btn-primary startBtn ${currentPhase < 2 ? "op-60" : ""}`}
+            onClick={() => {
+              if (currentPhase >= 2) {
+                navigate(`${practices_quiz}?type=radical-gate`);
+              }
+            }}
+            title={
+              currentPhase < 2
+                ? "Complete Phase 1 to unlock"
+                : "Take the Radical Gate Quiz to advance to Phase 3"
+            }
+          >
+            {currentPhase >= 2 ? "\u{1F513} " : "\u{1F512} "}Radical Gate Quiz
             <span className="startBtnArrow">▸</span>
           </button>
         </div>

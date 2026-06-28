@@ -47,8 +47,27 @@ export class QuizService {
     const attempt = await this.quizRepository.findQuizAttemptById(attemptId);
     if (!attempt) throw new Error("Quiz attempt not found");
 
-    const passThreshold = attempt.quizType === "ime-simulator" ? 0.7 : 0.9;
-    const passed = accuracy >= passThreshold;
+    // Determine pass threshold per quiz type
+    let passThreshold;
+    if (attempt.quizType === "ime-simulator") {
+      passThreshold = 0.7;
+    } else if (attempt.quizType === "radical-gate") {
+      passThreshold = 0.85;
+    } else {
+      passThreshold = 0.9;
+    }
+
+    // For radical-gate, Tier 1 (Core Lockdown) must be 100% correct even if overall ≥85%
+    let tier1Passed = true;
+    if (attempt.quizType === "radical-gate") {
+      const tier1Answers = answers.filter((a) => a.category === "radical-core-lockdown");
+      if (tier1Answers.length > 0) {
+        const tier1Correct = tier1Answers.filter((a) => a.correct).length;
+        tier1Passed = tier1Correct === tier1Answers.length;
+      }
+    }
+
+    const passed = accuracy >= passThreshold && tier1Passed;
 
     await this.quizRepository.completeQuizAttempt(attemptId, { totalScore, maxScore, passed });
 
