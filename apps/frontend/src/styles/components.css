@@ -5,6 +5,7 @@
  *
  * Contains:
  * - .btn-icon-circle — Small circular icon button (22×22 play buttons)
+ * - .btn-outline — Outlined button with border (used by quiz MC options)
  */
 
 /* ═══════════════════════════════════════════════
@@ -30,4 +31,29 @@
 .btn-icon-circle:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Outlined Button
+   Border-only button with transparent background.
+   Used by quiz multiple-choice options and variant actions.
+   ═══════════════════════════════════════════════ */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.btn-outline:hover {
+  border-color: var(--color-primary-border);
+  background: var(--color-primary-bg-light);
+}
+.btn-outline:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.btn-outline:active {
+  background: var(--color-primary-bg);
 }

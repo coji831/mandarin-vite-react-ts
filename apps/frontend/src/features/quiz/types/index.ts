@@ -5,6 +5,7 @@
 
 export type {
   QuizStrategy,
+  QuizStrategyConfig,
   StrategyType,
   QuizQuestion,
   QuizOption,

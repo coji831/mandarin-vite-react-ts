@@ -18,7 +18,7 @@ const CONTENT_TYPES: ContentTypeOption[] = [
   {
     type: "pinyin",
     label: "Pinyin",
-    icon: "�",
+    icon: "🔤",
     description: "Initials, finals, and combinations",
   },
   {
@@ -32,6 +32,12 @@ const CONTENT_TYPES: ContentTypeOption[] = [
     label: "Radicals",
     icon: "📘",
     description: "Kangxi radicals",
+  },
+  {
+    type: "char-radical",
+    label: "Char→Radical",
+    icon: "🔍",
+    description: "Character radical decomposition",
   },
 ];
 
@@ -47,9 +53,10 @@ const SOURCES: { value: ReviewSource; label: string; description: string }[] = [
 
 type ReviewPickerProps = {
   onStart: (source: ReviewSource, type: string) => void;
+  presetType?: string | null;
 };
 
-function ReviewPickerComponent({ onStart }: ReviewPickerProps) {
+function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
   const {
     sourceCounts,
     checking,
@@ -57,7 +64,7 @@ function ReviewPickerComponent({ onStart }: ReviewPickerProps) {
     setSelectedType,
     selectedSource,
     setSelectedSource,
-  } = useReviewSources();
+  } = useReviewSources(presetType ?? undefined);
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
@@ -71,11 +78,11 @@ function ReviewPickerComponent({ onStart }: ReviewPickerProps) {
         <label className="review-picker__step-label text-secondary fw-600 font-md">
           Step 1: What do you want to review?
         </label>
-        <div className="flex-center gap-md flex-wrap">
+        <div className="review-picker__cards">
           {CONTENT_TYPES.map((ct) => (
             <button
               key={ct.type}
-              className={`review-picker__card flex-col-center gap-xs p-lg cursor-pointer ${selectedType === ct.type ? "btn-primary" : "card-dark"} ${selectedType === ct.type ? "review-picker__card--selected" : ""}`}
+              className={`review-picker__card flex-col-center gap-xs cursor-pointer ${selectedType === ct.type ? "review-picker__card--selected" : "review-picker__card--default"}`}
               onClick={() => setSelectedType(ct.type)}
               aria-pressed={selectedType === ct.type}
               type="button"
@@ -90,16 +97,15 @@ function ReviewPickerComponent({ onStart }: ReviewPickerProps) {
       </div>
 
       {/* Step 2: Source */}
-      <div className="flex-col gap-md">
+      <div className="flex-col gap-md review-picker__source-section">
         <label className="review-picker__step-label text-secondary fw-600 font-md">
           Step 2: Source (optional)
         </label>
-        {checking && (
+        {checking ? (
           <div className="flex-center gap-sm text-tertiary font-sm p-sm">
             <span className="spinner" /> Checking available sources...
           </div>
-        )}
-        {!checking && (
+        ) : (
           <div className="flex-col gap-sm" role="radiogroup" aria-label="Review source">
             {SOURCES.map((s) => {
               const count = sourceCounts[s.value as keyof typeof sourceCounts];

@@ -129,6 +129,31 @@ export function useReview() {
     [items, currentIndex, step, getReviewStrategy],
   );
 
+  /* ── Option selection ──────────────────────────── */
+
+  const selectOption = useCallback(
+    (optionId: string) => {
+      const item = items[currentIndex];
+      if (!item || step !== "option") return;
+
+      const strategy = getReviewStrategy(item.itemType);
+      const evaluation = strategy
+        ? strategy.evaluate(item, { type: "option", value: optionId })
+        : { correct: false };
+      const isCorrect = evaluation.correct;
+      setPinyinCorrect(isCorrect);
+
+      setSessionResult((prev) => ({
+        ...prev,
+        pinyinTotal: prev.pinyinTotal + 1,
+        pinyinCorrect: prev.pinyinCorrect + (isCorrect ? 1 : 0),
+      }));
+
+      setStep("result");
+    },
+    [items, currentIndex, step, getReviewStrategy],
+  );
+
   /* ── Step 2: Tone selection ─────────────────────── */
 
   const selectTone = useCallback(
@@ -212,6 +237,7 @@ export function useReview() {
     /* Actions */
     startReview,
     submitPinyin,
+    selectOption,
     selectTone,
     rateItem,
     /* Progress */

@@ -28,6 +28,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     error,
     startReview,
     submitPinyin,
+    selectOption,
     selectTone,
     rateItem,
     progress,
@@ -88,13 +89,18 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
 
     case "pinyin":
     case "tone":
+    case "option":
     case "result":
       return (
         <div className="review-view flex-col gap-lg mx-auto">
           {/* Header */}
           <header className="flex-between">
             <span className="text-secondary fw-600 font-sm">
-              {"\uD83C\uDCCF"} Review · {progress.current} of {progress.total}
+              {"\uD83C\uDCCF"} Review
+              {contentType
+                ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
+                : ""}{" "}
+              · {progress.current} of {progress.total}
             </span>
           </header>
 
@@ -107,6 +113,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
             toneCorrect={toneCorrect}
             onSubmitPinyin={submitPinyin}
             onSelectTone={selectTone}
+            onSelectOption={selectOption}
             onRate={rateItem}
             onPlayAudio={handlePlayAudio}
           />

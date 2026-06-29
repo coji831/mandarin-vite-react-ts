@@ -6,7 +6,7 @@
  * Manages its own local pinyin input state.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { ReviewItem } from "../types";
 import "./ReviewCard.css";
 
@@ -24,7 +24,15 @@ function ReviewCardPinyinInputComponent({
   showMeaning = true,
 }: ReviewCardPinyinInputProps) {
   const [localPinyin, setLocalPinyin] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const displayChar = item.character ?? item.front;
+  const inputPlaceholder =
+    item.itemType === "radical" ? "Type the meaning..." : "Type pinyin without tone...";
+
+  // Auto-focus pinyin input when item changes (new review card)
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [item.itemId]);
 
   return (
     <div className="review-card card-dark flex-col">
@@ -52,9 +60,10 @@ function ReviewCardPinyinInputComponent({
 
           <div className="flex-center gap-sm w-full" style={{ maxWidth: 320 }}>
             <input
+              ref={inputRef}
               type="text"
               className="review-card__pinyin-input"
-              placeholder="Type pinyin without tone..."
+              placeholder={inputPlaceholder}
               value={localPinyin}
               onChange={(e) => setLocalPinyin(e.target.value)}
               onKeyDown={(e) => {

@@ -55,22 +55,34 @@ export function MultipleChoiceView() {
       </p>
 
       {/* Multiple choice options */}
-      <div className="quiz-mc-options flex-col gap-sm" style={{ width: "100%" }}>
-        {options.map((option) => (
+      <div
+        className="quiz-mc-options flex flex-col gap-sm w-full"
+        role="radiogroup"
+        aria-label="Answer options"
+      >
+        {options.map((option, index) => (
           <button
             key={option.id}
-            className="btn-outline quiz-mc-option"
+            className="btn-outline quiz-mc-option quiz-mc-option__btn"
             onClick={() => handleSelect(option.id)}
             type="button"
-            style={{
-              padding: "var(--space-md) var(--space-lg)",
-              fontSize: "var(--font-lg)",
-              textAlign: "left" as const,
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--space-md)",
-              width: "100%",
-              cursor: "pointer",
+            role="radio"
+            aria-checked={false}
+            aria-label={`${option.glyph} — ${option.meaning}`}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+                e.preventDefault();
+                const next = e.currentTarget.parentElement?.children[
+                  index + 1
+                ] as HTMLElement | null;
+                next?.focus();
+              } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+                e.preventDefault();
+                const prev = e.currentTarget.parentElement?.children[
+                  index - 1
+                ] as HTMLElement | null;
+                prev?.focus();
+              }
             }}
           >
             <span className="quiz-mc-option__glyph font-xl fw-600">{option.glyph}</span>

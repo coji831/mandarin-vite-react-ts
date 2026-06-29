@@ -1,10 +1,11 @@
 /**
  * PracticesPage.css
  *
- * Styles for the Practices index page (Wireframe Section 7.5).
+ * Styles for the Practices index page.
  * Only styles that cannot be expressed with global utility classes:
  * - Responsive 2-column card grid
  * - Start button arrow hover animation
+ * - Phase timeline indicators
  */
 
 .cardGrid {
@@ -34,4 +35,33 @@
 .startBtnArrow {
   display: inline-block;
   transition: transform var(--transition-fast);
+}
+
+/* Phase timeline — compact row of phase indicators */
+.phase-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+}
+
+.phase-timeline-item {
+  font-size: var(--font-xs);
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.phase-timeline-item.phase-passed {
+  opacity: 1;
+}
+
+.phase-timeline-item.phase-current {
+  font-weight: 600;
+  opacity: 1;
+}
+
+.phase-timeline-item.phase-locked {
+  opacity: 0.45;
 }

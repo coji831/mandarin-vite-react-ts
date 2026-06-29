@@ -2,9 +2,9 @@
  * RadicalGateQuizStrategy.ts
  * Phase 2→3 Gate Quiz — Radical Gate strategy
  *
- * Two tiers (20 questions total):
- *   Tier 1 — Core Component Lockdown (10 Qs): Match radical glyph ↔ meaning.
- *   Tier 2 — The Radical Predictor (10 Qs): Unfamiliar character → predict
+ * Two tiers (10 questions total):
+ *   Tier 1 — Core Component Lockdown (5 Qs): Match radical glyph ↔ meaning.
+ *   Tier 2 — The Radical Predictor (5 Qs): Unfamiliar character → predict
  *            meaning category from its radical.
  *
  * Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS
@@ -18,12 +18,9 @@ export const radicalGateQuizStrategy: QuizStrategy = {
   label: "Radical Gate Quiz",
   icon: "🚪",
   phase: 2,
-  questionCount: 20,
-  passThreshold: 0.85,
-  timeLimitMinutes: 15,
 
-  async generateQuestions(): Promise<QuizQuestion[]> {
-    return quizService.fetchQuestions("radical-gate", this.questionCount);
+  async generateQuestions(count?: number): Promise<QuizQuestion[]> {
+    return quizService.fetchQuestions("radical-gate", count ?? 10);
   },
 
   evaluateAnswer(question: QuizQuestion, pinyin: string, _tone: number): AnswerResult {

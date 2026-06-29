@@ -29,7 +29,12 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   useQuizEngine(strategyType);
 
   const strategy = getStrategy(strategyType);
-  const phaseLabel = strategy ? `Phase ${strategy.phase} Quiz` : "Quiz";
+  const strategyConfig = useQuizSessionStore((s) => s.strategyConfig);
+
+  // Category emoji and label
+  const categoryEmoji = "\uD83D\uDCDD";
+  const categoryLabel = "Quiz";
+  const phaseLabel = strategy ? `${categoryEmoji} ${categoryLabel} — ${strategy.label}` : "Quiz";
 
   const phase = useQuizSessionStore((s) => s.phase);
   const score = useQuizSessionStore((s) => s.score);
@@ -39,7 +44,7 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   // Loading state
   if (phase === "LOADING") {
     return (
-      <div className="flex-col mx-auto gap-lg p-xl" style={{ maxWidth: 700 }}>
+      <div className="quiz-session-page flex-col gap-lg p-xl mx-auto">
         <div className="flex-col-center gap-md p-2xl text-muted">
           <div className="quiz-spinner radius-full" />
           <p>Loading quiz...</p>
@@ -49,22 +54,17 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   }
 
   return (
-    <div className="flex-col gap-lg p-xl mx-auto" style={{ maxWidth: 700 }}>
+    <div className="quiz-session-page flex-col gap-lg p-xl mx-auto">
       {/* Header */}
       <div className="card-dark flex-between gap-md p-md px-lg">
-        <span
-          className="fw-700 text-primary quiz-results__heading"
-          style={{ fontSize: "var(--font-lg)" }}
-        >
-          📝 {phaseLabel} &mdash; {strategy?.label ?? strategyType}
-        </span>
+        <span className="fw-700 text-primary quiz-results__heading font-lg">{phaseLabel}</span>
         <Timer />
       </div>
 
       {/* Question counter + category badge (outside card, per wireframe) */}
       {(phase === "QUESTION" || phase === "INPUT" || phase === "FEEDBACK") && (
-        <div className="flex-center flex-between" style={{ padding: "0 0.25rem" }}>
-          <span className="text-secondary fw-600" style={{ fontSize: "var(--font-md)" }}>
+        <div className="flex-center flex-between px-xs">
+          <span className="text-secondary fw-600 font-md">
             Question {currentIndex + 1} of {totalQuestions}
           </span>
         </div>
@@ -78,7 +78,8 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
         <QuizProgressBar
           current={score}
           total={totalQuestions}
-          passThreshold={strategy?.passThreshold ?? 0.9}
+          passThreshold={strategyConfig?.passThreshold}
+          isPractice={false}
         />
       )}
     </div>

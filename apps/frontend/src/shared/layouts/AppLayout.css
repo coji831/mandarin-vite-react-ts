@@ -10,11 +10,11 @@
 .app-navbar {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: var(--space-2xl);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -23,75 +23,75 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
+  gap: var(--space-xs);
+  font-size: var(--font-xl);
   font-weight: 600;
   cursor: default;
 }
 
 .navbar-logo {
-  font-size: 1.5rem;
+  font-size: var(--font-2xl);
 }
 
 .navbar-title {
-  color: white;
+  color: var(--text-primary);
 }
 
 .navbar-links {
   display: flex;
-  gap: 0.5rem;
-  margin-left: 2rem;
+  gap: var(--space-xs);
+  margin-left: var(--space-xl);
 }
 
 .navbar-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all 0.2s;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
   font-weight: 500;
 }
 
 .navbar-link:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: var(--surface-light-10);
+  color: var(--text-primary);
 }
 
 .navbar-link.active {
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
+  background: var(--surface-light-20);
+  color: var(--text-primary);
 }
 
 /* User Section */
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
   margin-left: auto;
 }
 
 .user-name {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-size: var(--font-sm);
   font-weight: 500;
 }
 
 .btn-logout,
 .btn-login {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-light-20);
+  background: var(--surface-light-10);
+  color: var(--text-primary);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .btn-logout:hover,
 .btn-login:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--surface-light-20);
+  border-color: var(--surface-light-20);
 }
 
 /* Main Content Area */
@@ -105,8 +105,8 @@
 @media (max-width: 768px) {
   .app-navbar {
     flex-wrap: wrap;
-    padding: 1rem;
-    gap: 1rem;
+    padding: var(--space-md);
+    gap: var(--space-md);
   }
 
   .navbar-links {
@@ -114,13 +114,13 @@
     flex-basis: 100%;
     margin-left: 0;
     justify-content: space-around;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--surface-light-20);
   }
 
   .navbar-link {
     padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
+    font-size: var(--font-sm);
   }
 
   .navbar-user {
@@ -134,11 +134,11 @@
 
 @media (max-width: 480px) {
   .navbar-brand {
-    font-size: 1rem;
+    font-size: var(--font-md);
   }
 
   .navbar-logo {
-    font-size: 1.25rem;
+    font-size: var(--font-xl);
   }
 
   .navbar-links {
@@ -147,6 +147,6 @@
 
   .navbar-link {
     padding: 0.35rem 0.6rem;
-    font-size: 0.85rem;
+    font-size: var(--font-xs);
   }
 }

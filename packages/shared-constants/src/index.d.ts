@@ -38,11 +38,10 @@ export declare const ROUTE_PATTERNS: {
   readonly reviewItems: string;
   readonly reviewResult: string;
   readonly reviewDueCount: string;
-  readonly reviewPoolItems: string;
-  readonly reviewItemRate: (id: string) => string;
   readonly foundationsPinyinTones: string;
   readonly foundationsPinyinCharacterMap: string;
   readonly foundationsStrokes: string;
+  readonly quizConfig: string;
   readonly quizQuestions: string;
 };
 

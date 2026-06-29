@@ -15,6 +15,7 @@ export class QuizController {
     this.completeQuizAttempt = this.completeQuizAttempt.bind(this);
     this.getQuizAttempts = this.getQuizAttempts.bind(this);
     this.getQuestions = this.getQuestions.bind(this);
+    this.getConfig = this.getConfig.bind(this);
   }
 
   async createQuizAttempt(req, res) {
@@ -25,7 +26,9 @@ export class QuizController {
       return res.status(201).json(attempt);
     } catch (error) {
       logger.error("Error creating quiz attempt", error);
-      return res.status(500).json({ error: "Failed to create quiz attempt" });
+      return res
+        .status(500)
+        .json({ error: "Failed to create quiz attempt", code: "INTERNAL_ERROR" });
     }
   }
 
@@ -36,7 +39,7 @@ export class QuizController {
       return res.status(200).json(answer);
     } catch (error) {
       logger.error("Error submitting answer", error);
-      return res.status(500).json({ error: "Failed to submit answer" });
+      return res.status(500).json({ error: "Failed to submit answer", code: "VALIDATION_ERROR" });
     }
   }
 
@@ -47,7 +50,9 @@ export class QuizController {
       return res.status(200).json(result);
     } catch (error) {
       logger.error("Error completing quiz attempt", error);
-      return res.status(500).json({ error: "Failed to complete quiz attempt" });
+      return res
+        .status(500)
+        .json({ error: "Failed to complete quiz attempt", code: "INTERNAL_ERROR" });
     }
   }
 
@@ -58,7 +63,7 @@ export class QuizController {
       return res.status(200).json(attempts);
     } catch (error) {
       logger.error("Error fetching quiz attempts", error);
-      return res.status(500).json({ error: "Failed to fetch quiz attempts" });
+      return res.status(500).json({ error: "Failed to fetch quiz attempts", code: "LOAD_ERROR" });
     }
   }
 
@@ -69,7 +74,18 @@ export class QuizController {
       res.json(questions);
     } catch (err) {
       logger.error("Failed to generate questions", err);
-      res.status(500).json({ error: "Failed to generate questions" });
+      res.status(500).json({ error: "Failed to generate questions", code: "LOAD_ERROR" });
+    }
+  }
+
+  async getConfig(req, res) {
+    try {
+      const { type } = req.query;
+      const config = await this.quizService.getQuizConfig(type || null);
+      res.json(config);
+    } catch (err) {
+      logger.error("Failed to get quiz config", err);
+      res.status(500).json({ error: "Failed to get quiz config", code: "LOAD_ERROR" });
     }
   }
 }

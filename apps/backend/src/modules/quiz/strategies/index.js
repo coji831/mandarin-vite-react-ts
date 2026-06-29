@@ -5,12 +5,10 @@
  */
 import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
 import { imeSimulatorStrategy } from "./ImeSimulatorStrategy.js";
-import { radicalSplitterStrategy } from "./RadicalSplitterStrategy.js";
 import { radicalGateStrategy } from "./RadicalGateStrategy.js";
 
 export { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
 export { imeSimulatorStrategy } from "./ImeSimulatorStrategy.js";
-export { radicalSplitterStrategy } from "./RadicalSplitterStrategy.js";
 export { radicalGateStrategy } from "./RadicalGateStrategy.js";
 
 /**
@@ -22,7 +20,6 @@ export function getStrategy(type) {
   const strategies = {
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
     "ime-simulator": imeSimulatorStrategy,
-    "radical-splitter": radicalSplitterStrategy,
     "radical-gate": radicalGateStrategy,
   };
   return strategies[type] ?? null;
@@ -36,7 +33,6 @@ export function getRegisteredTypes() {
   return Object.keys({
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
     "ime-simulator": imeSimulatorStrategy,
-    "radical-splitter": radicalSplitterStrategy,
     "radical-gate": radicalGateStrategy,
   });
 }

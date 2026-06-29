@@ -48,9 +48,12 @@ function buildReverseCharMap(radicalFiles) {
 
 export const radicalGateStrategy = {
   type: "radical-gate",
-  questionCount: 20,
+  questionCount: 10,
   passThreshold: 0.85,
-  timeLimitMinutes: 15,
+  tierRules: {
+    "radical-core-lockdown": { passThreshold: 1.0 },
+  },
+  timeLimitMinutes: 8,
 
   async generateQuestions() {
     const radicalFiles = await readContentFiles("radicals", "rad_");
@@ -67,8 +70,8 @@ export const radicalGateStrategy = {
     const recommended = radicalFiles.filter((f) => f.is_recommended);
     const tier1Pool = recommended.length > 5 ? recommended : radicalFiles;
 
-    // Ensure at least 10 unique radicals for Tier 1
-    const tier1Radicals = shuffleArray(tier1Pool).slice(0, Math.min(10, tier1Pool.length));
+    // Ensure at least 5 unique radicals for Tier 1
+    const tier1Radicals = shuffleArray(tier1Pool).slice(0, Math.min(5, tier1Pool.length));
 
     for (let i = 0; i < tier1Radicals.length; i++) {
       const radical = tier1Radicals[i];
@@ -135,7 +138,7 @@ export const radicalGateStrategy = {
     // or pick from radicals that have unambiguous semantic meanings
     const tier2Pool = uniqueChars.filter((c) => (reverseMap.get(c.glyph) || []).length <= 2);
 
-    const tier2Chars = shuffleArray(tier2Pool.length >= 10 ? tier2Pool : uniqueChars).slice(0, 10);
+    const tier2Chars = shuffleArray(tier2Pool.length >= 5 ? tier2Pool : uniqueChars).slice(0, 5);
 
     for (let i = 0; i < tier2Chars.length; i++) {
       const entry = tier2Chars[i];

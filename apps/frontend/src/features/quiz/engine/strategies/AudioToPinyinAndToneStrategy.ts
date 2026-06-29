@@ -15,15 +15,12 @@ import { TONE_DESCRIPTIONS } from "../constants";
 
 export const audioToPinyinAndToneStrategy: QuizStrategy = {
   type: "audio-to-pinyin-tone",
-  label: "Audio-to-Pinyin-Tone",
+  label: "Audio to Pinyin & Tone",
   icon: "🔊",
   phase: 1,
-  questionCount: 10,
-  passThreshold: 0.8,
-  timeLimitMinutes: 2.5,
 
-  async generateQuestions(): Promise<QuizQuestion[]> {
-    return quizService.fetchQuestions("audio-to-pinyin-tone", this.questionCount);
+  async generateQuestions(count?: number): Promise<QuizQuestion[]> {
+    return quizService.fetchQuestions("audio-to-pinyin-tone", count ?? 10);
   },
 
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult {

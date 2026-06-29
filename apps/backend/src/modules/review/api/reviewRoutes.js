@@ -27,14 +27,4 @@ router.get(
   asyncHandler((req, res) => req.reviewController.getDueCount(req, res)),
 );
 
-/**
- * GET /v1/review/pool/items
- * Get review items generated from the pinyin-tones pool.
- */
-router.get(
-  ROUTE_PATTERNS.reviewPoolItems,
-  authenticateToken,
-  asyncHandler((req, res) => req.reviewController.getPoolReviewItems(req, res)),
-);
-
 export default router;

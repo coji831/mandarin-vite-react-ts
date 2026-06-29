@@ -8,6 +8,8 @@
 import type { StrategyType, QuizPhase, QuizQuestion, AnswerResult } from "./engine";
 import type { GateQuizResult } from "./api";
 
+import type { QuizStrategyConfig } from "./engine";
+
 /** Overall session state for a strategy-based quiz */
 export interface QuizSession {
   strategyType: StrategyType;
@@ -20,6 +22,7 @@ export interface QuizSession {
   error: string | null;
   attemptId: string | null; // Backend attempt ID for answer persistence
   completionResult: GateQuizResult | null; // Backend completion result after finalizing
+  strategyConfig: QuizStrategyConfig | null; // Config fetched from backend at init
 }
 
 /** Initial state factory */
@@ -35,5 +38,6 @@ export function createInitialSession(strategyType: StrategyType): QuizSession {
     error: null,
     attemptId: null,
     completionResult: null,
+    strategyConfig: null,
   };
 }

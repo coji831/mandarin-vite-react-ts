@@ -13,6 +13,7 @@ import React, { useEffect, useRef } from "react";
 import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
 import { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
 import { ReviewCardToneSelect } from "./ReviewCardToneSelect";
+import { ReviewCardOptionSelect } from "./ReviewCardOptionSelect";
 import { ReviewCardResult } from "./ReviewCardResult";
 import { getReviewStrategy } from "../engine/strategies";
 import type { ReviewItem, Rating } from "../types";
@@ -20,12 +21,13 @@ import "./ReviewCard.css";
 
 type ReviewCardProps = {
   item: ReviewItem;
-  step: "pinyin" | "tone" | "result";
+  step: "pinyin" | "tone" | "option" | "result";
   userPinyin: string;
   pinyinCorrect: boolean;
   toneCorrect: boolean;
   onSubmitPinyin: (pinyin: string) => void;
   onSelectTone: (tone: number) => void;
+  onSelectOption?: (optionId: string) => void;
   onRate: (rating: Rating) => void;
   /** Optional external audio handler — falls back to internal useAudioPlayback if omitted */
   onPlayAudio?: (text: string) => void;
@@ -39,6 +41,7 @@ function ReviewCardComponent({
   toneCorrect,
   onSubmitPinyin,
   onSelectTone,
+  onSelectOption,
   onRate,
   onPlayAudio: externalOnPlayAudio,
 }: ReviewCardProps) {
@@ -81,6 +84,16 @@ function ReviewCardComponent({
         onSelectTone={onSelectTone}
         onPlayAudio={handlePlayAudio}
         showMeaning={strategy?.showMeaning ?? true}
+      />
+    );
+  }
+
+  if (step === "option") {
+    return (
+      <ReviewCardOptionSelect
+        item={item}
+        onSelectOption={onSelectOption ?? (() => {})}
+        onPlayAudio={handlePlayAudio}
       />
     );
   }

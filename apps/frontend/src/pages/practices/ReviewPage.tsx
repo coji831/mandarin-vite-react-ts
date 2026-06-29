@@ -3,10 +3,10 @@
  * Phase 1 Review — URL-driven router for picker vs session.
  *
  * URL states:
- *   /practices/review              → shows ReviewPicker
- *   /practices/review?type=T&filter=F → shows ReviewView (session)
- *   /practices/review?type=T       → redirects to /practices/review
- *   /practices/review?filter=F     → redirects to /practices/review
+ *   /practices/review                    → shows ReviewPicker
+ *   /practices/review?type=T&filter=F    → shows ReviewView (session)
+ *   /practices/review?type=T             → shows ReviewPicker with type pre-selected
+ *   /practices/review?filter=F           → shows ReviewPicker (no type pre-selected)
  */
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { practices_page, practices_review } from "../../shared/constants/paths";
@@ -19,14 +19,10 @@ export function ReviewPage() {
   const presetType = searchParams.get("type");
   const presetSource = searchParams.get("filter");
 
-  // If only one param is set, redirect to clean picker URL
-  if ((presetType && !presetSource) || (!presetType && presetSource)) {
-    navigate(practices_review, { replace: true });
-    return null;
-  }
+  // Only auto-start when BOTH type and filter are explicitly provided
+  const hasBothParams = presetType && presetSource;
 
-  // Both type and filter present → show review session
-  if (presetType && presetSource) {
+  if (hasBothParams) {
     return (
       <div className="flex-col-center gap-lg p-xl">
         <ReviewView
@@ -38,10 +34,11 @@ export function ReviewPage() {
     );
   }
 
-  // No params → show picker
+  // Show picker (with optional pre-selected type)
   return (
     <div className="flex-col-center gap-lg p-xl">
       <ReviewPicker
+        presetType={presetType}
         onStart={(source: ReviewSource, type: string) =>
           navigate(`${practices_review}?type=${type}&filter=${source}`)
         }

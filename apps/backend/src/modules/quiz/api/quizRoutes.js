@@ -11,6 +11,12 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 const router = express.Router();
 
 router.get(
+  ROUTE_PATTERNS.quizConfig,
+  authenticateToken,
+  asyncHandler((req, res) => req.quizController.getConfig(req, res)),
+);
+
+router.get(
   ROUTE_PATTERNS.quizQuestions,
   authenticateToken,
   asyncHandler((req, res) => req.quizController.getQuestions(req, res)),

@@ -22,6 +22,24 @@ const TONE_DESCS: Record<number, string> = {
   0: "neutral",
 };
 
+/** Strategies that use multiple-choice (selection-based) feedback */
+const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
+
+/** Shared card wrapper with correct/incorrect badge */
+function FeedbackCard({ correct, children }: { correct: boolean; children: React.ReactNode }) {
+  const cardClass = `quiz-feedback__card card-dark flex-col gap-md p-md radius-md ${correct ? "quiz-feedback__card--correct" : "quiz-feedback__card--incorrect"}`;
+  return (
+    <div className={cardClass}>
+      <div
+        className={`quiz-feedback__badge fw-700 flex-center font-md py-xs px-md radius-pill ${correct ? "quiz-feedback__badge--correct" : "quiz-feedback__badge--incorrect"}`}
+      >
+        <span>{correct ? "✅ Correct!" : "❌ Incorrect"}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 /** Feedback display with answer comparison */
 export function FeedbackView() {
   const answers = useQuizSessionStore((s) => s.answers);
@@ -40,19 +58,7 @@ export function FeedbackView() {
   // ── IME Simulator: character-focused feedback ──
   if (strategyType === "ime-simulator") {
     return (
-      <div
-        className="quiz-feedback__card card-dark flex-col gap-md p-md radius-md"
-        style={{
-          borderColor: lastAnswer.correct
-            ? "var(--color-success-border)"
-            : "var(--color-error-border)",
-        }}
-      >
-        <div
-          className={`quiz-feedback__badge fw-700 flex-center font-md py-xs px-md radius-pill ${lastAnswer.correct ? "quiz-feedback__badge--correct" : "quiz-feedback__badge--incorrect"}`}
-        >
-          <span>{lastAnswer.correct ? "✅ Correct!" : "❌ Incorrect"}</span>
-        </div>
+      <FeedbackCard correct={lastAnswer.correct}>
         <p
           className="ime-quiz-feedback__char"
           style={{ fontSize: "var(--font-3xl)", fontWeight: 700, margin: 0 }}
@@ -69,27 +75,27 @@ export function FeedbackView() {
         <button className="btn-primary" onClick={nextQuestion}>
           Next Question \u2192
         </button>
-      </div>
+      </FeedbackCard>
+    );
+  }
+
+  // ── Multiple-choice feedback (radical gate) ──
+  if (MULTIPLE_CHOICE_STRATEGIES.has(strategyType)) {
+    return (
+      <FeedbackCard correct={lastAnswer.correct}>
+        <p className="text-secondary font-md" style={{ margin: 0 }}>
+          {lastAnswer.feedback}
+        </p>
+        <button className="btn-primary quiz-feedback__next-btn" onClick={nextQuestion}>
+          Next Question →
+        </button>
+      </FeedbackCard>
     );
   }
 
   // ── Standard pinyin+tone feedback ──
   return (
-    <div
-      className="quiz-feedback__card card-dark flex-col gap-md p-md radius-md"
-      style={{
-        borderColor: lastAnswer.correct
-          ? "var(--color-success-border)"
-          : "var(--color-error-border)",
-      }}
-    >
-      {/* Correct/Incorrect badge */}
-      <div
-        className={`quiz-feedback__badge fw-700 flex-center font-md py-xs px-md radius-pill ${lastAnswer.correct ? "quiz-feedback__badge--correct" : "quiz-feedback__badge--incorrect"}`}
-      >
-        <span>{lastAnswer.correct ? "✅ Correct!" : "❌ Incorrect"}</span>
-      </div>
-
+    <FeedbackCard correct={lastAnswer.correct}>
       {/* Answer comparison */}
       <div className="flex-center gap-lg flex-wrap">
         <div className="text-secondary" style={{ fontSize: "var(--font-md)" }}>
@@ -123,6 +129,6 @@ export function FeedbackView() {
           Next Question &rarr;
         </button>
       </div>
-    </div>
+    </FeedbackCard>
   );
 }

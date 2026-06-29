@@ -11,9 +11,9 @@ const logger = createLogger("ImeSimulatorStrategy");
 
 export const imeSimulatorStrategy = {
   type: "ime-simulator",
-  questionCount: 25,
+  questionCount: 10,
   passThreshold: 0.7,
-  timeLimitMinutes: 10,
+  timeLimitMinutes: 4,
 
   async generateQuestions(userId) {
     const radicalFiles = await readContentFiles("radicals", "rad_");

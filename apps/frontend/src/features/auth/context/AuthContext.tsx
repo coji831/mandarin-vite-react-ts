@@ -37,7 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshTokens = useCallback(async () => {
     try {
-      console.log("[refreshTokens] Starting refresh...");
       const response = await fetch(baseApiUrl + ROUTE_PATTERNS.authRefresh, {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
@@ -50,12 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       const { accessToken } = data.data;
 
-      console.log("[refreshTokens] Storing new accessToken:", accessToken.substring(0, 20) + "...");
       localStorage.setItem(TOKEN_KEY, accessToken);
-      console.log(
-        "[refreshTokens] Stored. Verifying:",
-        localStorage.getItem(TOKEN_KEY)?.substring(0, 20) + "...",
-      );
       return accessToken;
     } catch (error) {
       console.error("Token refresh error:", error);
@@ -71,16 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true; // Prevent state updates after unmount (React Strict Mode)
 
     const initAuth = async () => {
-      console.log("[AuthContext] initAuth started");
       const accessToken = localStorage.getItem(TOKEN_KEY);
-      console.log("[AuthContext] accessToken from storage:", accessToken ? "present" : "missing");
 
       // If no access token, try to refresh using httpOnly cookie
       if (!accessToken) {
         try {
-          console.log("[AuthContext] Attempting refresh...");
           const newToken = await refreshTokens();
-          console.log("[AuthContext] Refresh result:", newToken ? "success" : "failed");
           if (newToken && isMounted) {
             // Successfully refreshed, fetch user with new token
             const response = await fetch(AUTH_ME_ENDPOINT, {
@@ -89,10 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               },
               credentials: "include",
             });
-            console.log("[AuthContext] /me response:", response.status);
             if (response.ok) {
               const data = await response.json();
-              console.log("[AuthContext] Setting user:", data.data.user.email);
               if (isMounted) {
                 setUser(data.data.user);
               }
@@ -101,7 +89,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
           console.error("Initial refresh failed:", error);
         } finally {
-          console.log("[AuthContext] Setting isLoading to false");
           if (isMounted) {
             setIsLoading(false);
           }
@@ -182,7 +169,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const intervalId = setInterval(async () => {
       const token = localStorage.getItem(TOKEN_KEY);
       if (token && isTokenExpired(token)) {
-        console.log("[AuthContext] Background token refresh...");
         try {
           await refreshTokens();
         } catch (error) {
@@ -197,7 +183,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Register logout callback for apiClient (Story 14.3)
   useEffect(() => {
     const handleApiClientLogout = () => {
-      console.log("[AuthContext] Auto-logout triggered by apiClient");
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);
     };

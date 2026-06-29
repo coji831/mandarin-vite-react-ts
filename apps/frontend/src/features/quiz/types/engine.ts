@@ -12,7 +12,6 @@ export type StrategyType =
   | "audio-to-tone"
   | "audio-to-pinyin-tone"
   | "ime-simulator"
-  | "radical-splitter"
   | "radical-gate";
 
 /** Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS */
@@ -31,7 +30,7 @@ export interface QuizQuestion {
   audioKey: string; // e.g., "bā" — for TTS
   correctPinyin: string; // pinyin without tone marks for comparison (or correct option ID for MC)
   correctTone: number; // 0-4 (0=neutral)
-  category: string; // e.g., "pinyin" | "tones" | "pairs" | "rules" | "ime" | "radical-splitter" | "radical-core-lockdown" | "radical-predictor"
+  category: string; // e.g., "pinyin" | "tones" | "pairs" | "rules" | "ime" | "radical-core-lockdown" | "radical-predictor"
   displayPinyin?: string; // pinyin WITH tone marks
   character?: string | null; // Chinese character for TTS (e.g., "八")
   meaning?: string | null; // English meaning of the character
@@ -51,9 +50,23 @@ export interface AnswerResult {
 }
 
 /**
+ * Quiz strategy runtime configuration fetched from backend.
+ * Backend is the source of truth; strategies no longer carry these values.
+ */
+export interface QuizStrategyConfig {
+  type: string;
+  questionCount: number;
+  passThreshold: number;
+  timeLimitMinutes: number;
+  tierRules: Record<string, { passThreshold: number }> | null;
+}
+
+/**
  * QuizStrategy interface
  * All quiz modes implement this contract to define their
  * question generation, answer evaluation, and feedback logic.
+ * Numeric config (questionCount, passThreshold, timeLimitMinutes)
+ * is fetched at runtime from the backend — see QuizStrategyConfig.
  */
 export interface QuizStrategy {
   /** Unique identifier for this strategy */
@@ -68,17 +81,8 @@ export interface QuizStrategy {
   /** Phase level number */
   readonly phase: number;
 
-  /** Number of questions per session */
-  readonly questionCount: number;
-
-  /** Pass threshold (0-1, e.g. 0.9 for 90%) */
-  readonly passThreshold: number;
-
-  /** Time limit in minutes */
-  readonly timeLimitMinutes: number;
-
   /** Generate questions for a session */
-  generateQuestions(): Promise<QuizQuestion[]>;
+  generateQuestions(count?: number): Promise<QuizQuestion[]>;
 
   /** Evaluate a user's answer and return feedback */
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult;

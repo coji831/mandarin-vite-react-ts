@@ -8,7 +8,10 @@
 
 import type { ReviewItem } from "../types/review";
 
-export type ReviewInput = { type: "pinyin"; value: string } | { type: "tone"; value: number };
+export type ReviewInput =
+  | { type: "pinyin"; value: string }
+  | { type: "tone"; value: number }
+  | { type: "option"; value: string };
 
 export interface ReviewEvaluation {
   correct: boolean;

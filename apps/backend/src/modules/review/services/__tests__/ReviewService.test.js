@@ -76,12 +76,17 @@ describe("ReviewService - buildRadicalItem", () => {
       expect(item.back).toBe("木 (mù) — tree");
       expect(item.category).toBe("radicals");
       expect(item.meaning).toBe("tree");
-      expect(item.pinyinPlain).toBe("mù");
+      expect(item.pinyinPlain).toBe("rad_0001");
       expect(item.studyCount).toBe(0);
       expect(item.correctCount).toBe(0);
       expect(item.intervalDays).toBe(1);
       expect(item.id).toBe("radical-rad_0001");
       expect(item.nextReview).toBeTruthy();
+      // Options array: correct option (no distractors when pool has 1 radical)
+      expect(item.options).toBeDefined();
+      expect(Array.isArray(item.options)).toBe(true);
+      expect(item.options).toHaveLength(1);
+      expect(item.options[0]).toEqual({ glyph: "木", meaning: "tree", id: "rad_0001" });
     });
 
     it("should return null when filtered by 'due' source and nextReview is in the future", async () => {
@@ -265,8 +270,10 @@ describe("ReviewService - buildRadicalItem", () => {
       });
 
       expect(items).toHaveLength(1);
-      expect(items[0].pinyinPlain).toBe("");
+      expect(items[0].pinyinPlain).toBe("rad_0001");
       expect(items[0].meaning).toBeNull();
+      expect(items[0].options).toBeDefined();
+      expect(Array.isArray(items[0].options)).toBe(true);
     });
   });
 

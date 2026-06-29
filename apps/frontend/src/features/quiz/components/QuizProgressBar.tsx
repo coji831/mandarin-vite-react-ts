@@ -13,10 +13,17 @@ type QuizProgressBarProps = {
   total: number;
   /** Pass threshold as a fraction (0-1). Default 0.9 (90%). */
   passThreshold?: number;
+  /** Is this a practice mode (no pass/fail)? */
+  isPractice?: boolean;
 };
 
 /** Score progress bar with pass threshold */
-export function QuizProgressBar({ current, total, passThreshold = 0.9 }: QuizProgressBarProps) {
+export function QuizProgressBar({
+  current,
+  total,
+  passThreshold = 0.9,
+  isPractice = false,
+}: QuizProgressBarProps) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
   const thresholdPct = Math.round(passThreshold * 100);
   const passed = pct >= thresholdPct;
@@ -27,12 +34,14 @@ export function QuizProgressBar({ current, total, passThreshold = 0.9 }: QuizPro
       {/* Track with fill */}
       <div className="quiz-progress__track bg-surface-dark-alt radius-pill">
         <div className="quiz-progress__fill" style={{ width: `${Math.min(pct, 100)}%` }} />
-        {/* Threshold line — position based on passThreshold */}
-        <div
-          className="quiz-progress__threshold"
-          style={{ left: `${thresholdPct}%` }}
-          title={`Pass threshold (${thresholdPct}%)`}
-        />
+        {/* Threshold line — position based on passThreshold (hidden for practice) */}
+        {!isPractice && (
+          <div
+            className="quiz-progress__threshold"
+            style={{ left: `${thresholdPct}%` }}
+            title={`Pass threshold (${thresholdPct}%)`}
+          />
+        )}
       </div>
 
       {/* Stats row */}
@@ -40,12 +49,13 @@ export function QuizProgressBar({ current, total, passThreshold = 0.9 }: QuizPro
         <span className="text-secondary fw-600">
           {current}/{total} correct ({pct}%)
         </span>
-        {!passed && (
+        {isPractice ? (
+          <span style={{ color: "var(--color-secondary)", fontWeight: 500 }}>Score: {pct}%</span>
+        ) : !passed ? (
           <span style={{ color: "var(--color-warning)", fontWeight: 500 }}>
             ⚠️ Need {needCorrect}/{total} to pass
           </span>
-        )}
-        {passed && (
+        ) : (
           <span style={{ color: "var(--color-success)", fontWeight: 600 }}>✅ Passing</span>
         )}
       </div>

@@ -36,8 +36,8 @@ type UseReviewSourcesReturn = {
  * "all" is always available (-1). Due and recent are checked via API with limit=1.
  * Automatically switches to "all" if the current source has no items.
  */
-export function useReviewSources(): UseReviewSourcesReturn {
-  const [selectedType, setSelectedType] = useState("pinyin");
+export function useReviewSources(initialType?: string): UseReviewSourcesReturn {
+  const [selectedType, setSelectedType] = useState(initialType ?? "pinyin");
   const [selectedSource, setSelectedSource] = useState<ReviewSource>("due");
   const [sourceCounts, setSourceCounts] = useState<SourceCounts>({
     due: 0,

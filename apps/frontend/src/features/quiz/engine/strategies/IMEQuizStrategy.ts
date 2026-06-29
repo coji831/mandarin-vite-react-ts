@@ -16,12 +16,9 @@ export const imeQuizStrategy: QuizStrategy = {
   label: "IME Simulator",
   icon: "\u{2328}\u{FE0F}",
   phase: 2,
-  questionCount: 25,
-  passThreshold: 0.7,
-  timeLimitMinutes: 10,
 
-  async generateQuestions(): Promise<QuizQuestion[]> {
-    return quizService.fetchQuestions("ime-simulator", this.questionCount);
+  async generateQuestions(count?: number): Promise<QuizQuestion[]> {
+    return quizService.fetchQuestions("ime-simulator", count ?? 10);
   },
 
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult {

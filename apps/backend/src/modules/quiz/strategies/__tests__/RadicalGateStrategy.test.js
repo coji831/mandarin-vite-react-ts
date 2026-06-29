@@ -98,9 +98,9 @@ describe("RadicalGateStrategy", () => {
 
   it("has correct type and metadata", () => {
     expect(radicalGateStrategy.type).toBe("radical-gate");
-    expect(radicalGateStrategy.questionCount).toBe(20);
+    expect(radicalGateStrategy.questionCount).toBe(10);
     expect(radicalGateStrategy.passThreshold).toBe(0.85);
-    expect(radicalGateStrategy.timeLimitMinutes).toBe(15);
+    expect(radicalGateStrategy.timeLimitMinutes).toBe(8);
   });
 
   it("generates questions from radical content files", async () => {

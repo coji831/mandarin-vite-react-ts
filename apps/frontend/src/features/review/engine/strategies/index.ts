@@ -5,12 +5,14 @@
 import type { ReviewStrategy } from "../types";
 import { pinyinReviewStrategy } from "./PinyinReviewStrategy";
 import { toneReviewStrategy } from "./ToneReviewStrategy";
-import { radicalReviewStrategy } from "./RadicalReviewStrategy";
+import { radicalMeaningReviewStrategy } from "./RadicalMeaningReviewStrategy";
+import { characterRadicalReviewStrategy } from "./CharacterRadicalReviewStrategy";
 
 export const REVIEW_STRATEGIES: Record<string, ReviewStrategy> = {
   "pinyin-syllable": pinyinReviewStrategy,
   "tone-syllable": toneReviewStrategy,
-  radical: radicalReviewStrategy,
+  radical: radicalMeaningReviewStrategy,
+  "character-radical": characterRadicalReviewStrategy,
 };
 
 /** Look up a review strategy by item type */

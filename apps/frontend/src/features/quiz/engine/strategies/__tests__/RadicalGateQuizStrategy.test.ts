@@ -57,9 +57,6 @@ describe("RadicalGateQuizStrategy", () => {
     expect(radicalGateQuizStrategy.type).toBe("radical-gate");
     expect(radicalGateQuizStrategy.label).toBe("Radical Gate Quiz");
     expect(radicalGateQuizStrategy.phase).toBe(2);
-    expect(radicalGateQuizStrategy.questionCount).toBe(20);
-    expect(radicalGateQuizStrategy.passThreshold).toBe(0.85);
-    expect(radicalGateQuizStrategy.timeLimitMinutes).toBe(15);
   });
 
   describe("Tier 1 — Core Component Lockdown", () => {

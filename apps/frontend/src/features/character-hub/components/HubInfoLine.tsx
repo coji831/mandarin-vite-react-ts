@@ -22,7 +22,14 @@ export function HubInfoLine({ character, pinyin }: HubInfoLineProps) {
       <span className="hub-info-char">{character}</span>
       <span className="hub-info-pinyin">{pinyin ? `(${pinyin})` : "(...)"}</span>
       <span className="hub-info-sep">·</span>
-      <span className="hub-info-meaning">Character info coming soon</span>
+      <span className="hub-info-meaning">
+        <span className="hub-info-meaning-text">
+          HSK level, definitions, and example sentences coming soon
+        </span>
+        <span className="hub-info-available">
+          (Stroke animation, audio, and radical info available now)
+        </span>
+      </span>
     </div>
   );
 }

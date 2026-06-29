@@ -92,6 +92,7 @@ export class ReviewRepository {
         lastReviewed: data.lastReviewed,
         nextReview: data.nextReview,
         intervalDays: data.intervalDays,
+        source: data.source || "viewed",
       },
     });
   }

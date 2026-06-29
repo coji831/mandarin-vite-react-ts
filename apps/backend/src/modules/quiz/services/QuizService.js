@@ -5,7 +5,7 @@
  * Cross-module: calls ProgressionService.updatePhaseGate() on pass.
  */
 import { createLogger } from "../../../shared/utils/logger.js";
-import { getStrategy } from "../strategies/index.js";
+import { getStrategy, getRegisteredTypes } from "../strategies/index.js";
 
 const logger = createLogger("QuizService");
 
@@ -36,38 +36,52 @@ export class QuizService {
     });
   }
 
-  async completeQuizAttempt(attemptId) {
-    const answers = await this.quizRepository.findQuizAttemptAnswers(attemptId);
-    if (!answers || answers.length === 0) throw new Error("No answers found for this quiz attempt");
-
+  /**
+   * Evaluate a quiz attempt against its strategy's pass thresholds.
+   * @param {object} attempt - The quiz attempt record
+   * @param {object} strategy - The strategy object
+   * @param {Array} answers - The attempt's answers
+   * @returns {{ passed: boolean, accuracy: number, totalScore: number, maxScore: number }}
+   */
+  evaluateWithStrategy(attempt, strategy, answers) {
     const totalScore = answers.filter((a) => a.correct).length;
     const maxScore = answers.length;
     const accuracy = maxScore > 0 ? totalScore / maxScore : 0;
 
-    const attempt = await this.quizRepository.findQuizAttemptById(attemptId);
-    if (!attempt) throw new Error("Quiz attempt not found");
+    const passThreshold = strategy?.passThreshold ?? 0.9;
+    let passed = accuracy >= passThreshold;
 
-    // Determine pass threshold per quiz type
-    let passThreshold;
-    if (attempt.quizType === "ime-simulator") {
-      passThreshold = 0.7;
-    } else if (attempt.quizType === "radical-gate") {
-      passThreshold = 0.85;
-    } else {
-      passThreshold = 0.9;
-    }
-
-    // For radical-gate, Tier 1 (Core Lockdown) must be 100% correct even if overall ≥85%
-    let tier1Passed = true;
-    if (attempt.quizType === "radical-gate") {
-      const tier1Answers = answers.filter((a) => a.category === "radical-core-lockdown");
-      if (tier1Answers.length > 0) {
-        const tier1Correct = tier1Answers.filter((a) => a.correct).length;
-        tier1Passed = tier1Correct === tier1Answers.length;
+    // Check tier rules generically — strategy self-describes its tiers
+    if (passed && strategy?.tierRules) {
+      for (const [tierCategory, rules] of Object.entries(strategy.tierRules)) {
+        const tierAnswers = answers.filter((a) => a.category === tierCategory);
+        if (tierAnswers.length > 0) {
+          const tierCorrect = tierAnswers.filter((a) => a.correct).length;
+          if (tierCorrect < tierAnswers.length * (rules.passThreshold ?? 1.0)) {
+            passed = false;
+            break;
+          }
+        }
       }
     }
 
-    const passed = accuracy >= passThreshold && tier1Passed;
+    return { passed, accuracy, totalScore, maxScore };
+  }
+
+  async completeQuizAttempt(attemptId) {
+    const answers = await this.quizRepository.findQuizAttemptAnswers(attemptId);
+    if (!answers || answers.length === 0) throw new Error("No answers found for this quiz attempt");
+
+    const attempt = await this.quizRepository.findQuizAttemptById(attemptId);
+    if (!attempt) throw new Error("Quiz attempt not found");
+
+    // Read pass threshold from the strategy instead of hardcoded if/else
+    const strategy = getStrategy(attempt.quizType);
+    const { passed, accuracy, totalScore, maxScore } = this.evaluateWithStrategy(
+      attempt,
+      strategy,
+      answers,
+    );
 
     await this.quizRepository.completeQuizAttempt(attemptId, { totalScore, maxScore, passed });
 
@@ -96,6 +110,32 @@ export class QuizService {
    * @param {number} count - number of questions to generate (default 20)
    * @returns {Promise<Array>} array of question objects
    */
+  async getQuizConfig(quizType) {
+    if (quizType) {
+      const strategy = getStrategy(quizType);
+      if (!strategy) throw new Error(`Unknown quiz type: ${quizType}`);
+      return {
+        type: strategy.type,
+        questionCount: strategy.questionCount,
+        passThreshold: strategy.passThreshold,
+        timeLimitMinutes: strategy.timeLimitMinutes,
+        tierRules: strategy.tierRules || null,
+      };
+    }
+    // Return all registered strategies
+    const types = getRegisteredTypes();
+    return types.map((type) => {
+      const strategy = getStrategy(type);
+      return {
+        type: strategy.type,
+        questionCount: strategy.questionCount,
+        passThreshold: strategy.passThreshold,
+        timeLimitMinutes: strategy.timeLimitMinutes,
+        tierRules: strategy.tierRules || null,
+      };
+    });
+  }
+
   async generateQuestions(quizType, count = 20) {
     const strategy = getStrategy(quizType);
     if (!strategy) throw new Error(`Unknown quiz type: ${quizType}`);

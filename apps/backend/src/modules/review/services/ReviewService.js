@@ -107,19 +107,31 @@ async function fetchPinyinCombos() {
 /**
  * Build a review item from a radical content object + SRS state.
  * Returns null if filtered out by the source filter.
+ * Includes multiple-choice options (correct meaning + distractors).
  * @param {Object} radical - Radical data from content/radicals/
  * @param {Object|null} srs - SRS record from ReviewItem (or null)
  * @param {Date} now - Current timestamp
  * @param {Date} sevenDaysAgo - 7 days ago for "recent" filter
  * @param {string} source - "due", "recent", or "all"
+ * @param {Object[]} [allRadicals] - Full radical pool for distractor selection
  * @returns {Object|null}
  */
-function buildRadicalItem(radical, srs, now, sevenDaysAgo, source) {
+function buildRadicalItem(radical, srs, now, sevenDaysAgo, source, allRadicals) {
   const nextReview = srs?.nextReview ? new Date(srs.nextReview) : now;
   const lastReviewed = srs?.lastReviewed ? new Date(srs.lastReviewed) : null;
 
   if (source === "due" && nextReview > now) return null;
   if (source === "recent" && (!lastReviewed || lastReviewed < sevenDaysAgo)) return null;
+
+  // Build multiple-choice options: 1 correct + 2 distractors
+  const distractors = Array.isArray(allRadicals)
+    ? shuffleArray(allRadicals.filter((r) => r.id !== radical.id))
+        .slice(0, 2)
+        .map((r) => ({ glyph: r.glyph, meaning: r.meaning, id: r.id }))
+    : [];
+
+  const correctOption = { glyph: radical.glyph, meaning: radical.meaning, id: radical.id };
+  const options = shuffleArray([correctOption, ...distractors]);
 
   return {
     id: srs?.id || `radical-${radical.id}`,
@@ -129,8 +141,50 @@ function buildRadicalItem(radical, srs, now, sevenDaysAgo, source) {
     back: `${radical.glyph} (${radical.name_pinyin}) — ${radical.meaning}`,
     category: "radicals",
     character: radical.glyph,
-    pinyinPlain: stripToneMarks(radical.name_pinyin || ""),
+    pinyinPlain: radical.id,
     meaning: radical.meaning || null,
+    options,
+    studyCount: srs?.studyCount || 0,
+    correctCount: srs?.correctCount || 0,
+    nextReview: nextReview.toISOString(),
+    intervalDays: srs?.intervalDays || 1,
+  };
+}
+
+/**
+ * Build a review item from a radical's hsk_characters entry + SRS state.
+ * For each character in the radical's hsk_characters array, generates an item
+ * asking "which radical gives this character its meaning".
+ * Returns null if filtered out by the source filter.
+ * @param {Object} radical - Radical data from content/radicals/
+ * @param {Object} charData - Character data from radical.metadata.hsk_characters[]
+ * @param {Object|null} srs - SRS record from ReviewItem (or null)
+ * @param {Date} now - Current timestamp
+ * @param {Date} sevenDaysAgo - 7 days ago for "recent" filter
+ * @param {string} source - "due", "recent", or "all"
+ * @returns {Object|null}
+ */
+function buildCharacterRadicalItem(radical, charData, srs, now, sevenDaysAgo, source) {
+  const charGlyph = charData.glyph;
+  const itemId = charGlyph;
+  const nextReview = srs?.nextReview ? new Date(srs.nextReview) : now;
+  const lastReviewed = srs?.lastReviewed ? new Date(srs.lastReviewed) : null;
+
+  if (source === "due" && nextReview > now) return null;
+  if (source === "recent" && (!lastReviewed || lastReviewed < sevenDaysAgo)) return null;
+
+  return {
+    id: srs?.id || `character-radical-${itemId}`,
+    itemType: "character-radical",
+    itemId,
+    front: charGlyph,
+    back: `${radical.glyph} (${radical.meaning})`,
+    category: "radicals",
+    character: charGlyph,
+    pinyinPlain: radical.id,
+    meaning: charData.meaning || null,
+    radicalId: radical.id,
+    radicalGlyph: radical.glyph,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,
     nextReview: nextReview.toISOString(),
@@ -168,6 +222,7 @@ export class ReviewService {
       "pinyin-syllable",
       "tone-syllable",
       "radical",
+      "character-radical",
     ]);
     const srsByKey = new Map(srsItems.map((r) => [`${r.itemType}:${r.itemId}`, r]));
 
@@ -178,6 +233,7 @@ export class ReviewService {
     const includePinyin = !typePrefix || typePrefix === "pinyin";
     const includeTones = !typePrefix || typePrefix === "tone";
     const includeRadicals = !typePrefix || typePrefix === "radical";
+    const includeCharacterRadical = !typePrefix || typePrefix === "char";
     const items = [];
 
     if (includeTones) {
@@ -195,8 +251,22 @@ export class ReviewService {
       for (const radical of radicals) {
         const key = `radical:${radical.id}`;
         const srs = srsByKey.get(key);
-        const item = buildRadicalItem(radical, srs, now, sevenDaysAgo, source);
+        const item = buildRadicalItem(radical, srs, now, sevenDaysAgo, source, radicals);
         if (item) items.push(item);
+      }
+    }
+
+    if (includeCharacterRadical) {
+      const radicals = await readContentDir("radicals");
+      for (const radical of radicals) {
+        const hskChars = radical.metadata?.hsk_characters || [];
+        if (hskChars.length === 0) continue;
+        for (const charData of hskChars) {
+          const key = `character-radical:${charData.glyph}`;
+          const srs = srsByKey.get(key);
+          const item = buildCharacterRadicalItem(radical, charData, srs, now, sevenDaysAgo, source);
+          if (item) items.push(item);
+        }
       }
     }
 
@@ -226,12 +296,18 @@ export class ReviewService {
    * Record a rating for a review item and compute next review date.
    * Simple SRS: again=reset to 1d, good=double, easy=triple, capped at MAX_INTERVAL.
    */
-  async recordRating(userId, { itemType, itemId, rating }) {
+  async recordRating(userId, { itemType, itemId, rating, source }) {
     if (!itemType || !itemId || !rating) {
       throw new Error("itemType, itemId, and rating are required");
     }
     if (!["again", "good", "easy"].includes(rating)) {
       throw new Error("rating must be 'again', 'good', or 'easy'");
+    }
+    if (source && !["due", "recent", "all", "viewed"].includes(source)) {
+      const validSources = ["due", "recent", "all", "viewed"];
+      throw new Error(
+        `Failed to record rating: source must be one of '${validSources.join("', '")}'`,
+      );
     }
 
     const current = await this.reviewRepository.findByUserAndItem(userId, itemType, itemId);
@@ -260,20 +336,10 @@ export class ReviewService {
       lastReviewed: new Date(),
       nextReview,
       intervalDays,
+      source: source || "viewed",
     });
 
     return { nextReview, intervalDays, studyCount: (current?.studyCount || 0) + 1 };
-  }
-
-  /**
-   * Get all review items from the pinyin-tones pool.
-   * Delegates to getReviewItems with source "all".
-   * @param {string} userId
-   * @param {number} limit - max items to return (default 20)
-   * @returns {Promise<Array>} review items with SRS data
-   */
-  async getPoolReviewItems(userId, limit = 20) {
-    return this.getReviewItems(userId, { source: "all", type: "", limit });
   }
 
   /**

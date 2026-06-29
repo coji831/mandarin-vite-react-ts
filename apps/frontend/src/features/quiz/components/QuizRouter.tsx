@@ -14,7 +14,7 @@ import { IMEQuestionView } from "./ime-input/IMEQuestionView";
 import { MultipleChoiceView } from "./MultipleChoiceView";
 
 /** Quiz types that use multiple-choice rendering */
-const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-splitter", "radical-gate"]);
+const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
 
 /** Phase-based routing with all phases */
 export function QuizRouter() {

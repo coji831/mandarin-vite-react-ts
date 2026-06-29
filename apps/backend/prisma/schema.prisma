@@ -126,6 +126,8 @@ model FoundationProgress {
   sectionId     String   // "pinyin" | "tones" | "strokes" | "animations"
   completed     Boolean  @default(false)
   completedAt   DateTime?
+  viewedCount   Int      @default(0)
+  firstViewedAt DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -139,6 +141,8 @@ model RadicalProgress {
   radicalId        String   // "rad_0001", "rad_0002", etc.
   memorized        Boolean  @default(false)
   recognitionLevel Int      @default(0)
+  viewedCount      Int      @default(0)
+  firstViewedAt    DateTime?
   reviewedAt       DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -263,9 +267,35 @@ model ReviewItem {
   lastReviewed  DateTime?
   nextReview    DateTime @default(now())
   intervalDays  Int      @default(1)
+  phaseId       Int      @default(1)
+  source        String   @default("viewed")
+  viewedCount   Int      @default(0)
+  firstViewedAt DateTime?
+  lastViewedAt  DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@unique([userId, itemType, itemId])
   @@index([userId, nextReview])
+  @@index([userId, phaseId])
+  @@index([userId, source])
+}
+
+model ContentItem {
+  id           String   @id
+  contentType  String            // "radical" | "character" | "word" | "foundation" | "grammar" | "chengyu" | "pinyin" | "tone"
+  contentId    String            // The content/ file reference: "rad_0008"
+  phaseId      Int               // 1 | 2 | 3 | 4
+  title        String            // Display name
+  subtitle     String?
+  metadata     Json?
+  version      Int      @default(1)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([contentType, contentId])
+  @@index([phaseId])
+  @@index([contentType])
+  @@index([phaseId, contentType])
 }
