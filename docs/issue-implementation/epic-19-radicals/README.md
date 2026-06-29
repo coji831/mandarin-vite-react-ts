@@ -1,7 +1,7 @@
 # Epic 19: Radicals & Character Composition — Implementation
 
 **BR Reference:** `docs/business-requirements/epic-19-radicals/README.md`
-**Last Updated:** June 27, 2026
+**Last Updated:** June 29, 2026
 
 ---
 
@@ -24,9 +24,9 @@
 - Radicals integrated into existing SRS Review system — "radical" added to ReviewItemType, buildRadicalItem() in ReviewService, ReviewItem created as side-effect of RadicalProgress memorized=true
 - [📘 Radicals] content type added to ReviewPicker — reuses existing ReviewCard / ReviewComplete / three-step active recall flow, no new frontend review components needed
 
-**Status:** In Progress
+**Status:** Completed
 
-**Last Update:** June 28, 2026
+**Last Update:** June 29, 2026
 
 ## Story Status
 

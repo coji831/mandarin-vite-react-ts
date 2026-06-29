@@ -19,9 +19,9 @@
 - Radicals integrated into the existing SRS Review system — [📘 Radicals] content type in ReviewPicker, buildRadicalItem() in ReviewService, ReviewItem created as side-effect of marking a radical memorized via RadicalProgress
 - Review flow for radicals: show radical glyph → user types pinyin → user selects tone → self-rate A/G/E (same active-recall pattern as Phase 1 review, no new frontend needed)
 
-**Status:** In Progress
+**Status:** Completed
 
-**Last Update:** June 28, 2026
+**Last Update:** June 29, 2026
 
 ## Background
 
