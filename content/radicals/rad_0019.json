@@ -1,0 +1,30 @@
+{
+  "id": "rad_0019",
+  "glyph": "力",
+  "alternate_glyphs": [],
+  "name_pinyin": "lì",
+  "name_chinese": "力",
+  "meaning": "power",
+  "stroke_count": 2,
+  "is_recommended": true,
+  "kangxi_index": 19,
+  "metadata": {
+    "etymology": "Pictograph of a muscular arm showing strength",
+    "frequency_rank": 11,
+    "notes": "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
+    "hsk_characters": [
+      { "glyph": "力", "pinyin": "lì", "meaning": "power/strength" },
+      { "glyph": "加", "pinyin": "jiā", "meaning": "add" },
+      { "glyph": "助", "pinyin": "zhù", "meaning": "help" },
+      { "glyph": "动", "pinyin": "dòng", "meaning": "move/action" },
+      { "glyph": "劲", "pinyin": "jìn", "meaning": "strong/energy" },
+      { "glyph": "劳", "pinyin": "láo", "meaning": "labor" },
+      { "glyph": "男", "pinyin": "nán", "meaning": "male" },
+      { "glyph": "勇", "pinyin": "yǒng", "meaning": "brave" },
+      { "glyph": "努", "pinyin": "nǔ", "meaning": "exert/strive" },
+      { "glyph": "势", "pinyin": "shì", "meaning": "power/situation" },
+      { "glyph": "勒", "pinyin": "lè", "meaning": "restrain" },
+      { "glyph": "劣", "pinyin": "liè", "meaning": "inferior" }
+    ]
+  }
+}

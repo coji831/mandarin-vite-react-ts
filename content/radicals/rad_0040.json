@@ -1,0 +1,30 @@
+{
+  "id": "rad_0040",
+  "glyph": "宀",
+  "alternate_glyphs": [],
+  "name_pinyin": "mián",
+  "name_chinese": "宀",
+  "meaning": "roof",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 40,
+  "metadata": {
+    "etymology": "Pictograph of a roof or shelter covering",
+    "frequency_rank": 14,
+    "notes": "Always appears as the top component of characters. Found in characters related to buildings and homes.",
+    "hsk_characters": [
+      { "glyph": "家", "pinyin": "jiā", "meaning": "home/family" },
+      { "glyph": "安", "pinyin": "ān", "meaning": "peaceful" },
+      { "glyph": "字", "pinyin": "zì", "meaning": "character" },
+      { "glyph": "宝", "pinyin": "bǎo", "meaning": "treasure" },
+      { "glyph": "定", "pinyin": "dìng", "meaning": "fixed/determine" },
+      { "glyph": "实", "pinyin": "shí", "meaning": "real/solid" },
+      { "glyph": "容", "pinyin": "róng", "meaning": "contain/appearance" },
+      { "glyph": "客", "pinyin": "kè", "meaning": "guest" },
+      { "glyph": "室", "pinyin": "shì", "meaning": "room" },
+      { "glyph": "宫", "pinyin": "gōng", "meaning": "palace" },
+      { "glyph": "牢", "pinyin": "láo", "meaning": "prison" },
+      { "glyph": "灾", "pinyin": "zāi", "meaning": "disaster" }
+    ]
+  }
+}

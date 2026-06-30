@@ -1,0 +1,29 @@
+{
+  "id": "rad_0037",
+  "glyph": "大",
+  "alternate_glyphs": [],
+  "name_pinyin": "dà",
+  "name_chinese": "大",
+  "meaning": "big",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 37,
+  "metadata": {
+    "etymology": "Pictograph of a person standing with arms outstretched — implying 'big' or 'great'",
+    "frequency_rank": 13,
+    "notes": "Also a common standalone character meaning 'big' or 'large'. Found in many compound characters.",
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "大", "pinyin": "dà", "meaning": "big/large" },
+      { "glyph": "太", "pinyin": "tài", "meaning": "too/very" },
+      { "glyph": "天", "pinyin": "tiān", "meaning": "sky/day" },
+      { "glyph": "头", "pinyin": "tóu", "meaning": "head" },
+      { "glyph": "奇", "pinyin": "qí", "meaning": "strange/odd" },
+      { "glyph": "夺", "pinyin": "duó", "meaning": "seize" },
+      { "glyph": "奔", "pinyin": "bēn", "meaning": "run quickly" },
+      { "glyph": "套", "pinyin": "tào", "meaning": "cover/set" },
+      { "glyph": "奢", "pinyin": "shē", "meaning": "extravagant" },
+      { "glyph": "达", "pinyin": "dá", "meaning": "reach" }
+    ]
+  }
+}

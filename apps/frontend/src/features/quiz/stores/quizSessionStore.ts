@@ -43,9 +43,20 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   initialize: async (strategyType) => {
     set({ phase: "LOADING", error: null });
     try {
-      const questions = await quizService.generateQuestionPool(strategyType);
       const strategy = getStrategy(strategyType);
-      const timer = strategy ? Math.round(strategy.timeLimitMinutes * 60) : 150;
+
+      // Fetch config from backend (source of truth for numeric values)
+      let strategyConfig: import("../types").QuizStrategyConfig | null = null;
+      try {
+        strategyConfig = await quizService.getQuizConfig(strategyType);
+      } catch (apiErr) {
+        // Backend unavailable — use sensible defaults
+      }
+
+      const questionCount = strategyConfig?.questionCount ?? 10;
+      const timeLimitMinutes = strategyConfig?.timeLimitMinutes ?? 2.5;
+      const questions = await quizService.generateQuestionPool(strategyType, questionCount);
+      const timer = Math.round(timeLimitMinutes * 60);
 
       // Create a backend attempt record (non-blocking — store attemptId for later use)
       let attemptId: string | null = null;
@@ -54,10 +65,6 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         attemptId = attempt.id;
       } catch (apiErr) {
         // Backend unavailable — proceed without remote attempt, answers won't be persisted
-        console.warn(
-          "[QuizSession] Backend unavailable, proceeding without remote attempt:",
-          apiErr,
-        );
       }
 
       set({
@@ -70,6 +77,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         phase: questions.length > 0 ? "INPUT" : "RESULTS",
         error: null,
         attemptId,
+        strategyConfig,
       });
     } catch (err) {
       set({
@@ -103,7 +111,10 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
           category: question.category,
         });
         // Use backend's verdict as authoritative
-        if (backendAnswer.correct !== optimisticResult.correct) {
+        // For IME and multiple-choice, trust local evaluation
+        // (backend compares pinyin strings; MC strategies use option IDs)
+        const trustLocalEval = strategyType === "ime-simulator" || strategyType === "radical-gate";
+        if (!trustLocalEval && backendAnswer.correct !== optimisticResult.correct) {
           backendVerdict = {
             ...optimisticResult,
             correct: backendAnswer.correct,
@@ -111,15 +122,27 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         }
       } catch (apiErr) {
         // Backend unavailable — keep optimistic UI result
-        console.warn("[QuizSession] Backend answer submission failed, using local eval:", apiErr);
+        set({ error: apiErr instanceof Error ? apiErr.message : "Answer submission failed" });
       }
     }
 
-    set((s) => ({
-      answers: [...s.answers, backendVerdict],
-      score: s.score + (backendVerdict.correct ? 1 : 0),
-      phase: "FEEDBACK" as QuizPhase,
-    }));
+    const isLastQuestion = currentIndex + 1 >= questions.length;
+
+    if (isLastQuestion) {
+      // Skip FEEDBACK for last question — go directly to RESULTS
+      get().completeAttempt();
+      set((s) => ({
+        answers: [...s.answers, backendVerdict],
+        score: s.score + (backendVerdict.correct ? 1 : 0),
+        phase: "RESULTS" as QuizPhase,
+      }));
+    } else {
+      set((s) => ({
+        answers: [...s.answers, backendVerdict],
+        score: s.score + (backendVerdict.correct ? 1 : 0),
+        phase: "FEEDBACK" as QuizPhase,
+      }));
+    }
   },
 
   completeAttempt: async () => {
@@ -131,7 +154,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       return result;
     } catch (apiErr) {
       // Backend unavailable — still show results locally
-      console.warn("[quizSessionStore] Failed to complete quiz attempt via backend:", apiErr);
+      set({ error: apiErr instanceof Error ? apiErr.message : "Failed to complete quiz attempt" });
       return null;
     }
   },
@@ -150,7 +173,14 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   tick: () => {
     const { timer, phase } = get();
     if (timer > 0 && phase !== "RESULTS" && phase !== "ERROR") {
-      set({ timer: timer - 1 });
+      const newTimer = timer - 1;
+      if (newTimer === 0) {
+        // Time's up — auto-submit current answer if pending, then show results
+        get().completeAttempt();
+        set({ timer: 0, phase: "RESULTS" });
+      } else {
+        set({ timer: newTimer });
+      }
     }
   },
 

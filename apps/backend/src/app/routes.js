@@ -18,12 +18,14 @@ import progressionRouter from "../modules/progression/api/progressionRoutes.js";
 import foundationsRoutes from "../modules/foundations/api/foundationsRoutes.js";
 import quizRouter from "../modules/quiz/api/quizRoutes.js";
 import reviewRouter from "../modules/review/api/reviewRoutes.js";
+import radicalsRoutes from "../modules/radicals/api/radicalsRoutes.js";
 import {
   quizController,
   reviewController,
   progressionController,
   aiFeedbackController,
   foundationsController,
+  radicalsController,
 } from "./container.js";
 
 const router = express.Router();
@@ -72,6 +74,13 @@ router.use((req, res, next) => {
   next();
 });
 router.use(foundationsRoutes);
+
+// Radicals data routes (v1)
+router.use((req, res, next) => {
+  req.radicalsController = radicalsController;
+  next();
+});
+router.use(radicalsRoutes);
 
 // Progression routes (v1) - Story 18.1
 router.use((req, res, next) => {

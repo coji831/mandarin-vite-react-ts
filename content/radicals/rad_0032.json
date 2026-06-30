@@ -1,0 +1,31 @@
+{
+  "id": "rad_0032",
+  "glyph": "土",
+  "alternate_glyphs": [],
+  "name_pinyin": "tǔ",
+  "name_chinese": "土",
+  "meaning": "earth",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 32,
+  "metadata": {
+    "etymology": "Pictograph of a mound of earth or soil",
+    "frequency_rank": 16,
+    "notes": "Also a standalone character meaning 'earth' or 'soil'. Found in characters related to ground and locations.",
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "土", "pinyin": "tǔ", "meaning": "earth/soil" },
+      { "glyph": "地", "pinyin": "dì", "meaning": "ground/land" },
+      { "glyph": "场", "pinyin": "chǎng", "meaning": "field/place" },
+      { "glyph": "城", "pinyin": "chéng", "meaning": "city/wall" },
+      { "glyph": "块", "pinyin": "kuài", "meaning": "piece/block" },
+      { "glyph": "垃", "pinyin": "lā", "meaning": "garbage" },
+      { "glyph": "圾", "pinyin": "jī", "meaning": "garbage" },
+      { "glyph": "址", "pinyin": "zhǐ", "meaning": "address/site" },
+      { "glyph": "坝", "pinyin": "bà", "meaning": "dam" },
+      { "glyph": "坦", "pinyin": "tǎn", "meaning": "flat/level" },
+      { "glyph": "培", "pinyin": "péi", "meaning": "cultivate" },
+      { "glyph": "境", "pinyin": "jìng", "meaning": "boundary/environment" }
+    ]
+  }
+}

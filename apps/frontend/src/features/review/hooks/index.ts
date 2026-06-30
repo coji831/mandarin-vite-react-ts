@@ -4,3 +4,4 @@
 export { useReview } from "./useReview";
 export { useReviewSources } from "./useReviewSources";
 export type { SourceCounts } from "./useReviewSources";
+export { useReviewLaunchCard } from "./useReviewLaunchCard";

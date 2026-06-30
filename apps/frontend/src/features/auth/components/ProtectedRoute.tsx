@@ -6,6 +6,7 @@
 import { Navigate } from "react-router-dom";
 import { login_page } from "../../../shared/constants/paths";
 import { useAuth } from "../context/AuthContext";
+import { LoadingScreen } from "shared/components";
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -15,18 +16,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        Loading...
-      </div>
-    );
+    return <LoadingScreen message="Checking authentication..." />;
   }
 
   if (!isAuthenticated) {

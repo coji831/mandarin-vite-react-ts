@@ -5,10 +5,13 @@
  */
 
 import { FOUNDATION_SECTIONS } from "@mandarin/shared-constants";
+import fs from "fs";
+import path from "path";
+import { CONTENT_DIR } from "../../../shared/utils/contentUtils.js";
 
 /**
  * ProgressionService
- * Manages foundation section progress and phase gate access control.
+ * Manages foundation section progress, phase gate access control, and radical progress.
  *
  * SOLID: Single Responsibility - progression business logic only.
  */
@@ -111,5 +114,52 @@ export class ProgressionService {
     if (!FOUNDATION_SECTIONS.includes(sectionId))
       throw new Error(`Invalid sectionId: ${sectionId}`);
     return this.progressionRepository.upsertFoundationProgress({ userId, sectionId, completed });
+  }
+
+  // ── Radical Progress ─────────────────────────────────────────────────────
+
+  /**
+   * Get all radical progress records for a user.
+   * @param {string} userId
+   * @returns {Promise<Array>}
+   */
+  async getRadicalProgress(userId) {
+    return this.progressionRepository.findRadicalProgressByUser(userId);
+  }
+
+  /**
+   * Get radical progress for a specific radical by ID.
+   * @param {string} userId
+   * @param {string} radicalId
+   * @returns {Promise<object|null>}
+   */
+  async getRadicalProgressById(userId, radicalId) {
+    return this.progressionRepository.findRadicalProgressByUserAndRadicalId(userId, radicalId);
+  }
+
+  /**
+   * Upsert a radical progress record.
+   * Validates radicalId against content data, then upserts.
+   *
+   * @param {string} userId
+   * @param {string} radicalId - e.g. "rad_0001"
+   * @param {{ memorized?: boolean, recognitionLevel?: number }} data
+   * @returns {Promise<object>}
+   */
+  async upsertRadicalProgress(userId, radicalId, { memorized = false, recognitionLevel = 0 }) {
+    // Validate radicalId exists in content data
+    const radicalPath = path.join(CONTENT_DIR, "radicals", `${radicalId}.json`);
+    if (!fs.existsSync(radicalPath)) {
+      throw new Error(`Invalid radicalId: ${radicalId}`);
+    }
+
+    const record = await this.progressionRepository.upsertRadicalProgress({
+      userId,
+      radicalId,
+      memorized,
+      recognitionLevel,
+    });
+
+    return record;
   }
 }

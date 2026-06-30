@@ -1,0 +1,31 @@
+{
+  "id": "rad_0038",
+  "glyph": "女",
+  "alternate_glyphs": [],
+  "name_pinyin": "nǚ",
+  "name_chinese": "女",
+  "meaning": "woman",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 38,
+  "metadata": {
+    "etymology": "Pictograph of a woman kneeling with folded hands",
+    "frequency_rank": 8,
+    "notes": "Also a standalone character meaning 'woman' or 'female'. Found in characters related to gender and family.",
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "女", "pinyin": "nǚ", "meaning": "woman" },
+      { "glyph": "好", "pinyin": "hǎo", "meaning": "good" },
+      { "glyph": "她", "pinyin": "tā", "meaning": "she/her" },
+      { "glyph": "妈", "pinyin": "mā", "meaning": "mother" },
+      { "glyph": "妹", "pinyin": "mèi", "meaning": "younger sister" },
+      { "glyph": "姐", "pinyin": "jiě", "meaning": "older sister" },
+      { "glyph": "妻", "pinyin": "qī", "meaning": "wife" },
+      { "glyph": "妇", "pinyin": "fù", "meaning": "woman/wife" },
+      { "glyph": "姓", "pinyin": "xìng", "meaning": "surname" },
+      { "glyph": "奶", "pinyin": "nǎi", "meaning": "milk/grandma" },
+      { "glyph": "娘", "pinyin": "niáng", "meaning": "mother/woman" },
+      { "glyph": "姑", "pinyin": "gū", "meaning": "aunt" }
+    ]
+  }
+}

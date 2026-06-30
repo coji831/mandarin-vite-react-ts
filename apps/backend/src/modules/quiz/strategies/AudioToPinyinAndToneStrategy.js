@@ -11,7 +11,7 @@ import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils
 export const audioToPinyinAndToneStrategy = {
   type: "audio-to-pinyin-tone",
   questionCount: 10,
-  passThreshold: 0.8,
+  passThreshold: 0.85,
   timeLimitMinutes: 2.5,
 
   async generateQuestions(userId) {

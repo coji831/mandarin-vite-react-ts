@@ -17,7 +17,7 @@ user-invocable: true
 
 1. **Hardcoded CSS values** — any color, spacing, or typography value that should be a CSS variable (`var(--)`) or utility class? Use `DESIGN.md` tokens and `globals.css` classes.
 
-2. **Shared component reuse** — any reimplementation of Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser instead of importing from `@/shared/components`?
+2. **Shared component reuse** — any reimplementation of Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser instead of importing from `shared/components`?
 
 3. **Direct apiClient calls** — any hook/component calling `apiClient.get/post/etc` directly instead of through a service layer?
 

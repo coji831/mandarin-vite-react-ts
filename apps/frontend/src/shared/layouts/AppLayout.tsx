@@ -9,7 +9,7 @@
  */
 import { Link, Outlet, useLocation } from "react-router-dom";
 
-import { practices_page } from "../constants/paths";
+import { login_page, practices_page } from "../constants/paths";
 import { useAuth } from "features/auth";
 import { CharacterHub } from "features/character-hub/components";
 import "./AppLayout.css";
@@ -25,7 +25,7 @@ function AppLayout() {
   };
 
   // Don't show navbar on auth page
-  const isAuthPage = location.pathname.startsWith("/auth");
+  const isAuthPage = location.pathname.startsWith(login_page) || location.pathname === "/auth";
 
   return (
     <div className="app-layout">
@@ -81,7 +81,7 @@ function AppLayout() {
                 </button>
               </>
             ) : (
-              <Link to="/auth">
+              <Link to={login_page}>
                 <button className="btn-login">Login</button>
               </Link>
             )}

@@ -36,14 +36,9 @@ export function QuizPage() {
 
   // Fallback — no matching strategy selected
   return (
-    <div
-      className="flex-col-center"
-      style={{ padding: "var(--space-2xl)", gap: "var(--space-lg)" }}
-    >
-      <h2 style={{ fontSize: "var(--font-xl)", color: "var(--text-primary)", margin: 0 }}>
-        📝 Quiz
-      </h2>
-      <p style={{ color: "var(--text-secondary)", textAlign: "center", maxWidth: 400 }}>
+    <div className="flex-col-center p-2xl gap-lg">
+      <h2 className="font-xl text-primary m-0">📝 Quiz</h2>
+      <p className="text-secondary text-center" style={{ maxWidth: 400 }}>
         Select a quiz type from the practices page to begin.
       </p>
       <a

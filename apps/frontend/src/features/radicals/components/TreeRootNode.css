@@ -1,0 +1,127 @@
+/**
+ * @file components/TreeRootNode.css
+ * @description Styles for TreeRootNode — mastered radical with expandable branches
+ * Story 19.4: Radical Trees (Phase 3)
+ */
+
+.tree-root-node {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.tree-root-node:hover {
+  border-color: var(--color-primary-border);
+}
+
+.tree-root-node__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-dark);
+}
+
+.tree-root-node__toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.tree-root-node__toggle:hover {
+  color: var(--color-primary-light);
+}
+
+.tree-root-node__chevron {
+  display: inline-block;
+  font-size: var(--font-xs);
+  transition: transform var(--transition-normal);
+  line-height: 1;
+}
+
+.tree-root-node__chevron--expanded {
+  transform: rotate(90deg);
+}
+
+.tree-root-node__radical {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  flex: 1;
+  padding: var(--space-xs);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.tree-root-node__radical:hover {
+  background: var(--surface-hover);
+}
+
+.tree-root-node__glyph {
+  font-size: var(--font-3xl);
+  color: var(--color-primary-light);
+  line-height: 1;
+  min-width: 40px;
+  text-align: center;
+}
+
+.tree-root-node__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-root-node__badge {
+  color: var(--text-muted);
+  background: var(--surface-light-10);
+  padding: var(--space-xs) var(--space-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Expandable branches with smooth animation ──────────────────── */
+
+.tree-root-node__branches {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-normal);
+  border-top: 1px solid transparent;
+}
+
+.tree-root-node__branches--expanded {
+  grid-template-rows: 1fr;
+  border-top-color: var(--surface-border);
+}
+
+.tree-root-node__branches-inner {
+  overflow: hidden;
+}
+
+/* ─── Character column (vertical list with tree lines) ──────────── */
+
+.tree-root-node__character-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--space-md) var(--space-md) 0;
+  background: var(--surface-light-3);
+}
+
+/* ─── Tree footer — uses Button component ────────────────────────── */
+
+.tree-root-node__footer {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--surface-light-3);
+  border-top: 1px solid var(--surface-border);
+}

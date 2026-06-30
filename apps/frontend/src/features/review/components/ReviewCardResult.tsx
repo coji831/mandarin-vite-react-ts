@@ -49,7 +49,7 @@ function ReviewCardResultComponent({
           {(() => {
             const strategy = getReviewStrategy(item.itemType);
             const label = strategy?.feedbackLabel ?? "Answer";
-            const isCorrect = label === "Pinyin" ? pinyinCorrect : toneCorrect;
+            const isCorrect = strategy?.initialStep === "tone" ? toneCorrect : pinyinCorrect;
             return (
               <div className="flex-between">
                 <span className="text-secondary">{label}:</span>

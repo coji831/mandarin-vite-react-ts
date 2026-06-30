@@ -1,0 +1,48 @@
+/**
+ * @file components/RadicalChipPicker.css
+ * @description Styles for the RadicalChipPicker component (chip picker row)
+ * Story 19.4: Radical Trees (Phase 3)
+ *
+ * Only contains rules that cannot be replaced by global utility classes.
+ * Layout and typography use globals.css utility classes directly in JSX.
+ */
+
+/* ─── Chip picker row ────────────────────────────────────────────── */
+
+.radical-chip-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.radical-chip-picker__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.radical-chip-picker__chip:hover {
+  background: var(--surface-light-10);
+  color: var(--text-primary);
+  border-color: var(--color-primary-border);
+}
+
+.radical-chip-picker__chip--selected {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-light);
+}
+
+.radical-chip-picker__chip--selected:hover {
+  background: var(--color-primary-bg-medium);
+}

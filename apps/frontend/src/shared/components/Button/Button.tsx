@@ -22,6 +22,7 @@ export type ButtonProps = {
   className?: string;
   type?: "button" | "submit" | "reset";
   style?: React.CSSProperties;
+  title?: string;
 };
 
 export function Button({
@@ -34,6 +35,7 @@ export function Button({
   className = "",
   type = "button",
   style,
+  title,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
 
@@ -54,6 +56,7 @@ export function Button({
       onClick={onClick}
       disabled={isDisabled}
       aria-busy={loading}
+      title={title}
       style={{ ...style }}
     >
       {loading && <span className="btn-spinner" aria-hidden="true"></span>}

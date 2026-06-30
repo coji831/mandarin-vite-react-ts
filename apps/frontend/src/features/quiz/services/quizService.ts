@@ -19,13 +19,13 @@ class QuizService {
    * Generate a question pool using the registered strategy.
    * Falls back to local strategy-based generation when backend is unavailable.
    */
-  async generateQuestionPool(strategyType: StrategyType): Promise<QuizQuestion[]> {
+  async generateQuestionPool(strategyType: StrategyType, count?: number): Promise<QuizQuestion[]> {
     const strategy = getStrategy(strategyType);
     if (!strategy) {
       console.warn("[QuizService] Unknown strategy:", strategyType);
       return [];
     }
-    return strategy.generateQuestions();
+    return strategy.generateQuestions(count);
   }
 
   // ─── Backend API calls ─────────────────────────────────────────────────
@@ -72,6 +72,22 @@ class QuizService {
    */
   async getQuizAttempts(): Promise<QuizAttempt[]> {
     const response = await apiClient.get(ROUTE_PATTERNS.quizAttempts);
+    return response.data;
+  }
+
+  /**
+   * Fetch quiz config from backend (source of truth for question count, thresholds, timer).
+   */
+  async getQuizConfig(quizType: string): Promise<{
+    type: string;
+    questionCount: number;
+    passThreshold: number;
+    timeLimitMinutes: number;
+    tierRules: Record<string, { passThreshold: number }> | null;
+  }> {
+    const response = await apiClient.get(ROUTE_PATTERNS.quizConfig, {
+      params: { type: quizType },
+    });
     return response.data;
   }
 

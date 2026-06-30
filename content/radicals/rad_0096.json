@@ -1,0 +1,30 @@
+{
+  "id": "rad_0096",
+  "glyph": "王",
+  "alternate_glyphs": ["⺩"],
+  "name_pinyin": "wáng",
+  "name_chinese": "王",
+  "meaning": "jade",
+  "stroke_count": 4,
+  "is_recommended": true,
+  "kangxi_index": 96,
+  "metadata": {
+    "etymology": "Derived from 玉 (yù) — jade. The side form of the 'jade' radical, identical in appearance to 王 (king).",
+    "frequency_rank": 6,
+    "notes": "Visually identical to 王 (wáng — king) but used as the jade radical. Found in characters related to gems and precious objects.",
+    "hsk_characters": [
+      { "glyph": "王", "pinyin": "wáng", "meaning": "king" },
+      { "glyph": "玉", "pinyin": "yù", "meaning": "jade" },
+      { "glyph": "主", "pinyin": "zhǔ", "meaning": "main/owner" },
+      { "glyph": "全", "pinyin": "quán", "meaning": "whole/complete" },
+      { "glyph": "弄", "pinyin": "nòng", "meaning": "do/play with" },
+      { "glyph": "皇", "pinyin": "huáng", "meaning": "emperor" },
+      { "glyph": "理", "pinyin": "lǐ", "meaning": "reason/management" },
+      { "glyph": "现", "pinyin": "xiàn", "meaning": "present/current" },
+      { "glyph": "环", "pinyin": "huán", "meaning": "ring" },
+      { "glyph": "玩", "pinyin": "wán", "meaning": "play" },
+      { "glyph": "球", "pinyin": "qiú", "meaning": "ball" },
+      { "glyph": "班", "pinyin": "bān", "meaning": "class/team" }
+    ]
+  }
+}

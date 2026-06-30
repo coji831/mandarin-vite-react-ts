@@ -1,0 +1,106 @@
+/**
+ * Dropdown Component Styles
+ * Custom controlled dropdown replacing native <select> elements.
+ */
+
+.dropdown {
+  position: relative;
+  min-width: 150px;
+}
+
+.dropdown__label {
+  display: block;
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--surface-light-5);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.dropdown__trigger:hover {
+  border-color: var(--color-primary-border);
+}
+
+.dropdown__trigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.dropdown__trigger-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown__arrow {
+  margin-left: var(--space-sm);
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+  line-height: 1;
+}
+
+.dropdown__arrow--open {
+  transform: rotate(180deg);
+}
+
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-xs) 0;
+}
+
+.dropdown__option {
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  transition: background var(--transition-fast);
+  outline: none;
+}
+
+.dropdown__option:hover,
+.dropdown__option:focus {
+  background: var(--surface-light-10);
+}
+
+.dropdown__option--selected {
+  background: var(--color-primary-bg);
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
+.dropdown__option--selected:hover,
+.dropdown__option--selected:focus {
+  background: var(--color-primary-bg-medium);
+}

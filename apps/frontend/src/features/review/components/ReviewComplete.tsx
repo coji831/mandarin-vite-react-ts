@@ -3,6 +3,7 @@
  * Phase 1 Review — Completion summary screen (wireframe Section 7.7).
  * Shows session stats: pinyin accuracy, tone accuracy, rating breakdown, retention rate.
  */
+import React from "react";
 import type { ReviewSessionResult } from "../types";
 import "./ReviewComplete.css";
 
@@ -13,7 +14,12 @@ type ReviewCompleteProps = {
   onBack: () => void;
 };
 
-export function ReviewComplete({ result, totalItems, onReviewAgain, onBack }: ReviewCompleteProps) {
+function ReviewCompleteComponent({
+  result,
+  totalItems,
+  onReviewAgain,
+  onBack,
+}: ReviewCompleteProps) {
   const pinyinPct =
     result.pinyinTotal > 0 ? Math.round((result.pinyinCorrect / result.pinyinTotal) * 100) : 0;
   const tonePct =
@@ -94,13 +100,15 @@ export function ReviewComplete({ result, totalItems, onReviewAgain, onBack }: Re
 
       {/* Action buttons */}
       <div className="flex-center gap-md flex-wrap">
-        <button className="btn-primary" onClick={onReviewAgain} type="button">
-          {"\uD83D\uDD04"} Review Again
-        </button>
         <button className="card-dark-hover hover-lift fw-600" onClick={onBack} type="button">
           {"\uD83D\uDCCB"} Back to Practices
+        </button>
+        <button className="btn-primary" onClick={onReviewAgain} type="button">
+          {"\uD83D\uDD04"} Review Again
         </button>
       </div>
     </div>
   );
 }
+
+export const ReviewComplete = React.memo(ReviewCompleteComponent);

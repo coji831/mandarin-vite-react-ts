@@ -12,6 +12,7 @@ import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
+import { ErrorScreen, LoadingScreen } from "shared/components";
 
 type ReviewViewProps = {
   onBack: () => void;
@@ -27,6 +28,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     error,
     startReview,
     submitPinyin,
+    selectOption,
     selectTone,
     rateItem,
     progress,
@@ -58,18 +60,18 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
   }, [presetType, presetSource, step, startReview]);
 
   if (loading) {
-    return (
-      <div className="flex-col-center gap-md p-2xl">
-        <div className="spinner" />
-        <p className="text-muted">Loading review items...</p>
-      </div>
-    );
+    return <LoadingScreen message="Loading review items..." />;
   }
 
   if (error) {
+    return <ErrorScreen error={error} onRetry={() => startReview(source, contentType)} />;
+  }
+
+  if (step === "complete" && totalItems === 0 && !loading) {
     return (
-      <div className="flex-col-center gap-md">
-        <p className="text-error">Error: {error}</p>
+      <div className="flex-col-center gap-lg p-2xl">
+        <h2 className="text-secondary">No items available</h2>
+        <p className="text-muted">Try a different content type or source.</p>
         <button
           className="btn-primary"
           onClick={() => startReview(source, contentType)}
@@ -83,17 +85,22 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
 
   switch (step) {
     case "pick":
-      return <ReviewPicker onStart={startReview} presetType={presetType ?? undefined} />;
+      return <ReviewPicker onStart={startReview} />;
 
     case "pinyin":
     case "tone":
+    case "option":
     case "result":
       return (
         <div className="review-view flex-col gap-lg mx-auto">
           {/* Header */}
           <header className="flex-between">
             <span className="text-secondary fw-600 font-sm">
-              {"\uD83C\uDCCF"} Review · {progress.current} of {progress.total}
+              {"\uD83C\uDCCF"} Review
+              {contentType
+                ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
+                : ""}{" "}
+              · {progress.current} of {progress.total}
             </span>
           </header>
 
@@ -106,6 +113,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
             toneCorrect={toneCorrect}
             onSubmitPinyin={submitPinyin}
             onSelectTone={selectTone}
+            onSelectOption={selectOption}
             onRate={rateItem}
             onPlayAudio={handlePlayAudio}
           />

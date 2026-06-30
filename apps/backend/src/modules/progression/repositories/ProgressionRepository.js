@@ -112,4 +112,47 @@ export class ProgressionRepository {
       data,
     });
   }
+
+  // ── Radical Progress ─────────────────────────────────────────────────────
+
+  /**
+   * Find all radical progress records for a user.
+   * @param {string} userId
+   * @returns {Promise<Array>}
+   */
+  async findRadicalProgressByUser(userId) {
+    return prisma.radicalProgress.findMany({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+    });
+  }
+
+  /**
+   * Find radical progress by user and radical ID (composite unique).
+   * @param {string} userId
+   * @param {string} radicalId
+   * @returns {Promise<object|null>}
+   */
+  async findRadicalProgressByUserAndRadicalId(userId, radicalId) {
+    return prisma.radicalProgress.findUnique({
+      where: { userId_radicalId: { userId, radicalId } },
+    });
+  }
+
+  /**
+   * Upsert a radical progress record (create or update).
+   * @param {object} params
+   * @param {string} params.userId
+   * @param {string} params.radicalId
+   * @param {boolean} params.memorized
+   * @param {number} params.recognitionLevel
+   * @returns {Promise<object>}
+   */
+  async upsertRadicalProgress({ userId, radicalId, memorized, recognitionLevel }) {
+    return prisma.radicalProgress.upsert({
+      where: { userId_radicalId: { userId, radicalId } },
+      update: { memorized, recognitionLevel, reviewedAt: new Date() },
+      create: { userId, radicalId, memorized, recognitionLevel, reviewedAt: new Date() },
+    });
+  }
 }

@@ -33,7 +33,6 @@ export function useReview() {
 
   /* ── Session results ────────────────────────────── */
   const [sessionResult, setSessionResult] = useState<ReviewSessionResult>({
-    totalItems: 0,
     pinyinCorrect: 0,
     pinyinTotal: 0,
     toneCorrect: 0,
@@ -69,7 +68,6 @@ export function useReview() {
       setSource(src);
       resetPerItem();
       setSessionResult({
-        totalItems: 0,
         pinyinCorrect: 0,
         pinyinTotal: 0,
         toneCorrect: 0,
@@ -131,6 +129,31 @@ export function useReview() {
     [items, currentIndex, step, getReviewStrategy],
   );
 
+  /* ── Option selection ──────────────────────────── */
+
+  const selectOption = useCallback(
+    (optionId: string) => {
+      const item = items[currentIndex];
+      if (!item || step !== "option") return;
+
+      const strategy = getReviewStrategy(item.itemType);
+      const evaluation = strategy
+        ? strategy.evaluate(item, { type: "option", value: optionId })
+        : { correct: false };
+      const isCorrect = evaluation.correct;
+      setPinyinCorrect(isCorrect);
+
+      setSessionResult((prev) => ({
+        ...prev,
+        pinyinTotal: prev.pinyinTotal + 1,
+        pinyinCorrect: prev.pinyinCorrect + (isCorrect ? 1 : 0),
+      }));
+
+      setStep("result");
+    },
+    [items, currentIndex, step, getReviewStrategy],
+  );
+
   /* ── Step 2: Tone selection ─────────────────────── */
 
   const selectTone = useCallback(
@@ -168,7 +191,9 @@ export function useReview() {
       try {
         await reviewService.recordRating(item.itemType, item.itemId, rating);
       } catch (err) {
-        console.warn("[Review] Failed to record rating:", err);
+        if (import.meta.env.DEV) {
+          console.warn("[Review] Failed to record rating:", err);
+        }
       }
 
       setSessionResult((prev) => ({
@@ -177,7 +202,6 @@ export function useReview() {
       }));
 
       if (currentIndex + 1 >= items.length) {
-        setSessionResult((prev) => ({ ...prev, totalItems: prev.totalItems + 1 }));
         setStep("complete");
       } else {
         setCurrentIndex((i) => i + 1);
@@ -213,6 +237,7 @@ export function useReview() {
     /* Actions */
     startReview,
     submitPinyin,
+    selectOption,
     selectTone,
     rateItem,
     /* Progress */

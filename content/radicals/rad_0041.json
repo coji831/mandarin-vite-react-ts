@@ -1,0 +1,30 @@
+{
+  "id": "rad_0041",
+  "glyph": "寸",
+  "alternate_glyphs": [],
+  "name_pinyin": "cùn",
+  "name_chinese": "寸",
+  "meaning": "inch",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 41,
+  "metadata": {
+    "etymology": "Pictograph of a hand at the wrist — indicating the inch measurement from the pulse point",
+    "frequency_rank": 20,
+    "notes": "Also a standalone character and unit of measurement. Found in characters related to measurement and time.",
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "寸", "pinyin": "cùn", "meaning": "inch" },
+      { "glyph": "对", "pinyin": "duì", "meaning": "correct/toward" },
+      { "glyph": "导", "pinyin": "dǎo", "meaning": "guide" },
+      { "glyph": "村", "pinyin": "cūn", "meaning": "village" },
+      { "glyph": "付", "pinyin": "fù", "meaning": "pay" },
+      { "glyph": "耐", "pinyin": "nài", "meaning": "endure" },
+      { "glyph": "封", "pinyin": "fēng", "meaning": "seal/envelop" },
+      { "glyph": "射", "pinyin": "shè", "meaning": "shoot" },
+      { "glyph": "专", "pinyin": "zhuān", "meaning": "special" },
+      { "glyph": "尊", "pinyin": "zūn", "meaning": "respect" },
+      { "glyph": "寻", "pinyin": "xún", "meaning": "seek" }
+    ]
+  }
+}

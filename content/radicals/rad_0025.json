@@ -10,6 +10,20 @@
   "metadata": {
     "etymology": "Pictograph of a white rice grain",
     "frequency_rank": 45,
-    "is_also_character": true
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "白", "pinyin": "bái", "meaning": "white" },
+      { "glyph": "百", "pinyin": "bǎi", "meaning": "hundred" },
+      { "glyph": "的", "pinyin": "de", "meaning": "possessive particle" },
+      { "glyph": "皇", "pinyin": "huáng", "meaning": "emperor" },
+      { "glyph": "泉", "pinyin": "quán", "meaning": "spring/fountain" },
+      { "glyph": "皂", "pinyin": "zào", "meaning": "soap" },
+      { "glyph": "皓", "pinyin": "hào", "meaning": "bright/white" },
+      { "glyph": "皈", "pinyin": "guī", "meaning": "convert" },
+      { "glyph": "帛", "pinyin": "bó", "meaning": "silk" },
+      { "glyph": "皆", "pinyin": "jiē", "meaning": "all/every" },
+      { "glyph": "碧", "pinyin": "bì", "meaning": "green jade" },
+      { "glyph": "魄", "pinyin": "pò", "meaning": "soul" }
+    ]
   }
 }

@@ -12,7 +12,6 @@ export class ReviewController {
     this.getReviewItems = this.getReviewItems.bind(this);
     this.recordRating = this.recordRating.bind(this);
     this.getDueCount = this.getDueCount.bind(this);
-    this.getPoolReviewItems = this.getPoolReviewItems.bind(this);
   }
 
   async getReviewItems(req, res) {
@@ -55,17 +54,6 @@ export class ReviewController {
     } catch (error) {
       logger.error("Error fetching due count", error);
       return res.status(500).json({ error: "Failed to fetch due count" });
-    }
-  }
-
-  async getPoolReviewItems(req, res) {
-    try {
-      const { limit = 10 } = req.query;
-      const items = await this.reviewService.getPoolReviewItems(req.userId, parseInt(limit, 10));
-      return res.json(items);
-    } catch (err) {
-      logger.error("Failed to get pool review items", err);
-      return res.status(500).json({ error: "Failed to get pool review items" });
     }
   }
 }

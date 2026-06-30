@@ -10,12 +10,23 @@ import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { QuestionView } from "./QuestionView";
 import { FeedbackView } from "./FeedbackView";
 import { QuizResults } from "./results/QuizResults";
+import { IMEQuestionView } from "./ime-input/IMEQuestionView";
+import { MultipleChoiceView } from "./MultipleChoiceView";
+
+/** Quiz types that use multiple-choice rendering */
+const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
 
 /** Phase-based routing with all phases */
 export function QuizRouter() {
   const phase = useQuizSessionStore((s) => s.phase);
   const error = useQuizSessionStore((s) => s.error);
+  const strategyType = useQuizSessionStore((s) => s.strategyType);
   const retry = useQuizSessionStore((s) => s.retry);
+
+  const showIMEQuestion =
+    (phase === "QUESTION" || phase === "INPUT") && strategyType === "ime-simulator";
+  const showMultipleChoice =
+    (phase === "QUESTION" || phase === "INPUT") && MULTIPLE_CHOICE_STRATEGIES.has(strategyType);
 
   switch (phase) {
     case "LOADING":
@@ -27,6 +38,8 @@ export function QuizRouter() {
       );
     case "QUESTION":
     case "INPUT":
+      if (showIMEQuestion) return <IMEQuestionView />;
+      if (showMultipleChoice) return <MultipleChoiceView />;
       return <QuestionView />;
     case "FEEDBACK":
       return <FeedbackView />;

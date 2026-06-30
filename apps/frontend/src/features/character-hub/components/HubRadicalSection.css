@@ -1,0 +1,59 @@
+/* HubRadicalSection.css — Radical Decomposition section for Character Detail Hub */
+/* Story 19.5: Character Hub Radical Section */
+
+.hub-radical-section {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.hub-radical-section__title {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hub-radical-section__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hub-radical-section__chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: var(--font-xs);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.hub-radical-section__chip:hover,
+.hub-radical-section__chip:focus-visible {
+  border-color: var(--color-primary);
+  background: var(--surface-hover);
+  outline: none;
+}
+
+.hub-radical-section__glyph {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.hub-radical-section__name {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.hub-radical-section__meaning {
+  color: var(--text-muted);
+}

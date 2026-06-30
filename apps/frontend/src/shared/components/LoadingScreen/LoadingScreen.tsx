@@ -8,14 +8,18 @@
 
 export { LoadingScreen };
 
-function LoadingScreen() {
+type LoadingScreenProps = {
+  message?: string;
+};
+
+function LoadingScreen({ message }: LoadingScreenProps) {
   return (
     <div className="flex-col-center" style={{ minHeight: "300px" }}>
       <p
         className="text-center"
         style={{ color: "var(--text-secondary)", fontSize: "var(--font-lg)" }}
       >
-        Loading quiz...
+        {message ?? "Loading quiz..."}
       </p>
     </div>
   );

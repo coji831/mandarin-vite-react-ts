@@ -1,0 +1,49 @@
+/**
+ * @file components/Phase3TreeView.css
+ * @description Styles for the Phase3TreeView component (skeleton/loading states)
+ * Story 19.4: Radical Trees (Phase 3)
+ *
+ * Only contains rules that cannot be replaced by global utility classes.
+ * Layout and typography use globals.css utility classes directly in JSX.
+ */
+
+/* ─── States ─────────────────────────────────────────────────────── */
+
+.phase3-tree-view__skeleton-tree {
+  width: 100%;
+  height: 60px;
+  background: var(--surface-light-5);
+  border-radius: var(--radius-lg);
+  /* skeleton-pulse defined in RadicalTreesTab.css — global scope */
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  margin-bottom: var(--space-md);
+}
+
+/* ─── Separator text (replaces inline style) ────────────────────── */
+
+.phase3-tree-view__separator-text {
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* ─── Search bar ────────────────────────────────────────────────── */
+
+.phase3-tree-view__search-bar {
+  justify-content: flex-end;
+}
+
+.phase3-tree-view__search-input {
+  max-width: 220px;
+  font-size: var(--font-sm);
+  padding: var(--space-xs) var(--space-sm);
+}
+
+/* ─── Indicator & Tagline ───────────────────────────────────────── */
+
+.phase3-tree-view__selected-indicator {
+  padding-bottom: var(--space-sm);
+}
+
+.phase3-tree-view__tagline {
+  padding-bottom: var(--space-xl);
+}

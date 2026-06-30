@@ -14,6 +14,20 @@
       "left_side": "忄",
       "bottom": "⺗"
     },
-    "is_also_character": true
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "心", "pinyin": "xīn", "meaning": "heart" },
+      { "glyph": "想", "pinyin": "xiǎng", "meaning": "think" },
+      { "glyph": "思", "pinyin": "sī", "meaning": "think" },
+      { "glyph": "念", "pinyin": "niàn", "meaning": "miss/read aloud" },
+      { "glyph": "忘", "pinyin": "wàng", "meaning": "forget" },
+      { "glyph": "您", "pinyin": "nín", "meaning": "you (respectful)" },
+      { "glyph": "意", "pinyin": "yì", "meaning": "meaning" },
+      { "glyph": "志", "pinyin": "zhì", "meaning": "ambition" },
+      { "glyph": "忍", "pinyin": "rěn", "meaning": "endure" },
+      { "glyph": "忽", "pinyin": "hū", "meaning": "suddenly" },
+      { "glyph": "忠", "pinyin": "zhōng", "meaning": "loyal" },
+      { "glyph": "悲", "pinyin": "bēi", "meaning": "sad" }
+    ]
   }
 }

@@ -1,0 +1,31 @@
+{
+  "id": "rad_0030",
+  "glyph": "口",
+  "alternate_glyphs": [],
+  "name_pinyin": "kǒu",
+  "name_chinese": "口",
+  "meaning": "mouth",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 30,
+  "metadata": {
+    "etymology": "Pictograph of an open mouth",
+    "frequency_rank": 4,
+    "notes": "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
+    "is_also_character": true,
+    "hsk_characters": [
+      { "glyph": "口", "pinyin": "kǒu", "meaning": "mouth" },
+      { "glyph": "吃", "pinyin": "chī", "meaning": "eat" },
+      { "glyph": "喝", "pinyin": "hē", "meaning": "drink" },
+      { "glyph": "唱", "pinyin": "chàng", "meaning": "sing" },
+      { "glyph": "吐", "pinyin": "tǔ", "meaning": "spit/vomit" },
+      { "glyph": "叫", "pinyin": "jiào", "meaning": "call/shout" },
+      { "glyph": "吸", "pinyin": "xī", "meaning": "inhale" },
+      { "glyph": "味", "pinyin": "wèi", "meaning": "taste/flavor" },
+      { "glyph": "告", "pinyin": "gào", "meaning": "tell/inform" },
+      { "glyph": "如", "pinyin": "rú", "meaning": "like/as" },
+      { "glyph": "扣", "pinyin": "kòu", "meaning": "button/deduct" },
+      { "glyph": "召", "pinyin": "zhào", "meaning": "summon" }
+    ]
+  }
+}

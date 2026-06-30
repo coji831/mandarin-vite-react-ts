@@ -1,0 +1,28 @@
+{
+  "id": "rad_0034",
+  "glyph": "夂",
+  "alternate_glyphs": ["⻊"],
+  "name_pinyin": "zhǐ",
+  "name_chinese": "夂",
+  "meaning": "go",
+  "stroke_count": 3,
+  "is_recommended": true,
+  "kangxi_index": 34,
+  "metadata": {
+    "etymology": "Pictograph of a foot or leg walking — extended to mean 'go' or 'arrive'",
+    "frequency_rank": 30,
+    "notes": "Resembles 夊 (suī) but with different stroke placement. Found in characters related to movement.",
+    "hsk_characters": [
+      { "glyph": "处", "pinyin": "chù", "meaning": "place/location" },
+      { "glyph": "冬", "pinyin": "dōng", "meaning": "winter" },
+      { "glyph": "各", "pinyin": "gè", "meaning": "each" },
+      { "glyph": "备", "pinyin": "bèi", "meaning": "prepare" },
+      { "glyph": "路", "pinyin": "lù", "meaning": "road" },
+      { "glyph": "降", "pinyin": "jiàng", "meaning": "descend" },
+      { "glyph": "夏", "pinyin": "xià", "meaning": "summer" },
+      { "glyph": "略", "pinyin": "lüè", "meaning": "brief/strategy" },
+      { "glyph": "洛", "pinyin": "luò", "meaning": "Luo river" },
+      { "glyph": "络", "pinyin": "luò", "meaning": "network" }
+    ]
+  }
+}

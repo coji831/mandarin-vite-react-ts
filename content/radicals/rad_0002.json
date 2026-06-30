@@ -1,0 +1,29 @@
+{
+  "id": "rad_0002",
+  "glyph": "丨",
+  "alternate_glyphs": [],
+  "name_pinyin": "gǔn",
+  "name_chinese": "丨",
+  "meaning": "line",
+  "stroke_count": 1,
+  "is_recommended": true,
+  "kangxi_index": 2,
+  "metadata": {
+    "etymology": "Pictograph of a vertical line or rod",
+    "frequency_rank": 2,
+    "notes": "Represents a vertical line. Rarely used alone but common as a component.",
+    "hsk_characters": [
+      { "glyph": "中", "pinyin": "zhōng", "meaning": "middle/center" },
+      { "glyph": "串", "pinyin": "chuàn", "meaning": "string/skewer" },
+      { "glyph": "旧", "pinyin": "jiù", "meaning": "old/former" },
+      { "glyph": "北", "pinyin": "běi", "meaning": "north" },
+      { "glyph": "卡", "pinyin": "kǎ", "meaning": "card/block" },
+      { "glyph": "引", "pinyin": "yǐn", "meaning": "lead/guide" },
+      { "glyph": "丰", "pinyin": "fēng", "meaning": "abundant" },
+      { "glyph": "半", "pinyin": "bàn", "meaning": "half" },
+      { "glyph": "申", "pinyin": "shēn", "meaning": "state/explain" },
+      { "glyph": "畅", "pinyin": "chàng", "meaning": "smooth/unimpeded" },
+      { "glyph": "肃", "pinyin": "sù", "meaning": "solemn" }
+    ]
+  }
+}

@@ -4,3 +4,4 @@
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
  */
 export { CharacterHub } from "./CharacterHub";
+export { HubRadicalSection } from "./HubRadicalSection";

@@ -9,9 +9,9 @@
   display: flex;
   justify-content: center;
   gap: 0.25rem;
-  padding: 0.75rem 1rem;
-  background: #1a1a2e;
-  border-bottom: 1px solid #333;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-dark-alt);
+  border-bottom: 1px solid var(--surface-border);
   overflow-x: auto;
 }
 
@@ -19,12 +19,12 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-xs) var(--space-sm);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #aaa;
-  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
@@ -34,13 +34,13 @@
 }
 
 .learn-phase-tab:hover:not(.learn-phase-tab--locked) {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ddd;
+  background: var(--surface-light-10);
+  color: var(--text-secondary);
 }
 
 .learn-phase-tab--active {
-  background: rgba(99, 102, 241, 0.2);
-  color: #818cf8;
+  background: var(--color-primary-bg);
+  color: var(--color-primary-light);
   font-weight: 600;
 }
 
@@ -51,7 +51,7 @@
 
 .learn-content {
   flex: 1;
-  background: #242424;
+  background: var(--surface-dark-alt);
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;
@@ -60,10 +60,10 @@
 
 @media (max-width: 768px) {
   .learn-phase-nav {
-    padding: 0.5rem;
+    padding: var(--space-xs);
   }
   .learn-phase-tab {
-    font-size: 0.8rem;
+    font-size: var(--font-xs);
     padding: 0.375rem 0.5rem;
   }
 }

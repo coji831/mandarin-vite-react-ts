@@ -53,4 +53,36 @@ router.put(
   asyncHandler((req, res) => req.progressionController.markSectionCompleted(req, res)),
 );
 
+// ── Radical Progress Routes ─────────────────────────────────────────────────
+
+/**
+ * GET /api/v1/progression/radical-progress
+ * Fetch user's radical progress records
+ */
+router.get(
+  ROUTE_PATTERNS.progressionRadicalProgress,
+  authenticateToken,
+  asyncHandler((req, res) => req.progressionController.getRadicalProgress(req, res)),
+);
+
+/**
+ * GET /api/v1/progression/radical-progress/:radicalId
+ * Fetch progress for a specific radical
+ */
+router.get(
+  ROUTE_PATTERNS.progressionRadicalProgressById(":radicalId"),
+  authenticateToken,
+  asyncHandler((req, res) => req.progressionController.getRadicalProgressById(req, res)),
+);
+
+/**
+ * PUT /api/v1/progression/radical-progress/:radicalId
+ * Create or update radical progress (with ReviewItem side-effect when memorized=true)
+ */
+router.put(
+  ROUTE_PATTERNS.progressionRadicalProgressById(":radicalId"),
+  authenticateToken,
+  asyncHandler((req, res) => req.progressionController.upsertRadicalProgress(req, res)),
+);
+
 export default router;

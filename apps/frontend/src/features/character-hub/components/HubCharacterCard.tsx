@@ -67,7 +67,21 @@ export function HubCharacterCard({ character, pinyin }: HubCharacterCardProps) {
           : "Loading..."}
       </span>
 
-      {/* Controls row: step back, play, step forward + audio */}
+      {/* Pinyin row: pinyin text + audio button side by side */}
+      <div className="hub-pinyin-row">
+        <div className="hub-card-pinyin">{pinyin || "..."}</div>
+        <button
+          className="hub-audio-btn"
+          onClick={handleAudioClick}
+          disabled={!character}
+          title="Play pronunciation"
+          aria-label="Play pronunciation"
+        >
+          🔊
+        </button>
+      </div>
+
+      {/* Controls row: step back, play, step forward */}
       <div className="hub-controls-row">
         <button
           className="hub-ctrl-btn"
@@ -108,20 +122,7 @@ export function HubCharacterCard({ character, pinyin }: HubCharacterCardProps) {
         >
           ▶
         </button>
-        <span className="hub-ctrl-divider" />
-        <button
-          className="hub-audio-btn"
-          onClick={handleAudioClick}
-          disabled={!character}
-          title="Play pronunciation"
-          aria-label="Play pronunciation"
-        >
-          🔊
-        </button>
       </div>
-
-      {/* Pinyin below the character */}
-      <div className="hub-card-pinyin">{pinyin || "..."}</div>
     </div>
   );
 }

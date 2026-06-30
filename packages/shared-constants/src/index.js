@@ -31,17 +31,21 @@ export const ROUTE_PATTERNS = {
   progressionFoundationProgressSection: (sectionId) =>
     `/v1/progression/foundation-progress/${sectionId}`,
   progressionPhaseGate: "/v1/progression/phase-gate",
+  progressionRadicalProgress: "/v1/progression/radical-progress",
+  progressionRadicalProgressById: (radicalId) => `/v1/progression/radical-progress/${radicalId}`,
   quizAttempts: "/v1/quiz/attempts",
   quizAttemptAnswer: (id) => `/v1/quiz/attempts/${id}/answers`,
   quizAttemptComplete: (id) => `/v1/quiz/attempts/${id}/complete`,
   reviewItems: "/v1/review/items",
   reviewResult: "/v1/review/result",
   reviewDueCount: "/v1/review/due-count",
-  reviewPoolItems: "/v1/review/pool/items",
-  reviewItemRate: (id) => `/v1/review/items/${id}/rate`,
+  radicals: "/v1/radicals",
+  radicalsById: (radicalId) => `/v1/radicals/${radicalId}`,
+  radicalsByCharacter: (glyph) => `/v1/radicals/character/${glyph}`,
   foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
   foundationsPinyinCharacterMap: "/v1/foundations/data/pinyin-character-map",
   foundationsStrokes: "/v1/foundations/data/strokes",
+  quizConfig: "/v1/quiz/config",
   quizQuestions: "/v1/quiz/questions",
 };
 

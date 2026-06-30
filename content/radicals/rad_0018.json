@@ -1,0 +1,30 @@
+{
+  "id": "rad_0018",
+  "glyph": "刂",
+  "alternate_glyphs": ["刀"],
+  "name_pinyin": "dāo",
+  "name_chinese": "刀",
+  "meaning": "knife",
+  "stroke_count": 2,
+  "is_recommended": true,
+  "kangxi_index": 18,
+  "metadata": {
+    "etymology": "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
+    "frequency_rank": 10,
+    "notes": "Common right-side form. Appears in characters involving cutting or separating.",
+    "hsk_characters": [
+      { "glyph": "到", "pinyin": "dào", "meaning": "arrive" },
+      { "glyph": "利", "pinyin": "lì", "meaning": "sharp/benefit" },
+      { "glyph": "制", "pinyin": "zhì", "meaning": "control/make" },
+      { "glyph": "刻", "pinyin": "kè", "meaning": "carve/moment" },
+      { "glyph": "划", "pinyin": "huá", "meaning": "scratch/row" },
+      { "glyph": "刑", "pinyin": "xíng", "meaning": "punishment" },
+      { "glyph": "刚", "pinyin": "gāng", "meaning": "just/firm" },
+      { "glyph": "创", "pinyin": "chuàng", "meaning": "create" },
+      { "glyph": "别", "pinyin": "bié", "meaning": "other/separate" },
+      { "glyph": "判", "pinyin": "pàn", "meaning": "judge" },
+      { "glyph": "刺", "pinyin": "cì", "meaning": "stab" },
+      { "glyph": "刮", "pinyin": "guā", "meaning": "scrape" }
+    ]
+  }
+}

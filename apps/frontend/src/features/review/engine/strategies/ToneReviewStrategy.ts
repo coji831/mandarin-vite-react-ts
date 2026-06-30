@@ -9,6 +9,7 @@ export const toneReviewStrategy: ReviewStrategy = {
   itemType: "tone-syllable",
   initialStep: "tone",
   feedbackLabel: "Tone",
+  showMeaning: true,
 
   evaluate(item: ReviewItem, input): { correct: boolean } {
     if (input.type !== "tone") return { correct: false };

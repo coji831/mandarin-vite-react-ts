@@ -9,7 +9,9 @@ export type ReviewItemType =
   | "stroke-reference"
   | "pinyin-syllable"
   | "tone-syllable"
-  | "vocabulary";
+  | "vocabulary"
+  | "radical"
+  | "character-radical";
 
 /** Rating options for SRS review */
 export type Rating = "again" | "good" | "easy";
@@ -18,11 +20,10 @@ export type Rating = "again" | "good" | "easy";
 export type ReviewSource = "due" | "recent" | "all";
 
 /** Phase in the three-step active recall flow. */
-export type ReviewStep = "pick" | "pinyin" | "tone" | "result" | "complete";
+export type ReviewStep = "pick" | "pinyin" | "tone" | "option" | "result" | "complete";
 
 /** Accumulated session results shown on the completion screen. */
 export interface ReviewSessionResult {
-  totalItems: number;
   pinyinCorrect: number;
   pinyinTotal: number;
   toneCorrect: number;
@@ -48,6 +49,8 @@ export interface ReviewItem {
   correctTone?: number;
   /** English meaning */
   meaning?: string;
+  /** Multiple-choice options (for character-radical review items) */
+  options?: Array<{ glyph: string; meaning: string; id: string }>;
 }
 
 /** Result of recording a rating */

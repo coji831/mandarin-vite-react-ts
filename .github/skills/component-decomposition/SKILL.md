@@ -1,6 +1,6 @@
 ---
 description: "Use when: designing a new page or feature UI, deciding where to place a component, or choosing between creating new vs reusing existing components."
-name: "Component Decomposition"
+name: "component-decomposition"
 ---
 
 # Component Decomposition Skill
@@ -59,7 +59,7 @@ See [DESIGN.md](../../../DESIGN.md) for the complete shared component catalog wi
 
 ```tsx
 // ✅ DO — Import Button from shared components
-import { Button } from "@/shared/components";
+import { Button } from "shared/components";
 
 function SaveProfile() {
   return (
@@ -190,8 +190,8 @@ When decomposing a UI, output your plan as:
 I will create:
 1. `src/features/<feature>/components/<ComponentName>.tsx` — Feature-level component for [purpose]
 2. `src/features/<feature>/components/<ComponentName>.css` — Co-located styles using CSS variables
-3. Uses shared `<Button>` from `@/shared/components`
-4. Uses shared `<ProgressBar>` from `@/shared/components`
+3. Uses shared `<Button>` from `shared/components`
+4. Uses shared `<ProgressBar>` from `shared/components`
 ```
 
 If no new components are needed (all can be composed from shared primitives), say:

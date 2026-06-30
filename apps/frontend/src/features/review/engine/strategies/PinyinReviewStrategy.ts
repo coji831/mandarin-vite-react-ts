@@ -9,6 +9,7 @@ export const pinyinReviewStrategy: ReviewStrategy = {
   itemType: "pinyin-syllable",
   initialStep: "pinyin",
   feedbackLabel: "Pinyin",
+  showMeaning: true,
 
   evaluate(item: ReviewItem, input): { correct: boolean } {
     if (input.type !== "pinyin") return { correct: false };

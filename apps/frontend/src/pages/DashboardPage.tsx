@@ -1,138 +1,89 @@
 /**
  * DashboardPage
- * Story 15.9: Gamification & AI Integration
  *
- * Main landing page for authenticated users.
- * Shows quick stats, action cards, navigation shortcuts, and live gamification data.
- * Features:
- * - Live streak counter and badge display (API-driven)
- * - Freeze spending with confirmation modal
- * - Badge celebration modal for newly earned badges
+ * Main landing page for authenticated users (Wireframe Sections 8.3/8.5).
+ * Shows current phase with progress, quick access buttons, and recent activity.
+ * No XP, levels, or badges — phase-focused overview.
  *
- * Phase 3 restructure: Renamed from Dashboard to DashboardPage
+ * Phase variants:
+ * - Phase 1: Welcome prompt with "Start with Pinyin Basics" CTA
+ * - Phase 2+: Phase progress bar, quick access, recent activity
  */
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { StreakCounter, XPProgressBar, BadgeDisplay } from "../features/gamification";
-import { useFetchStreak, useFetchBadges, useSpendFreeze } from "../features/gamification";
-import type { StreakData, Badge } from "../features/gamification";
+import { Link, useNavigate } from "react-router-dom";
+import { usePhaseGate } from "shared/hooks";
+import { LoadingScreen, ErrorScreen } from "shared/components";
+import {
+  learn_page,
+  practices_review,
+  practices_quiz,
+  learn_radicals,
+} from "../shared/constants/paths";
 import "./DashboardPage.css";
 
 export { DashboardPage };
 
+type ActivityItem = {
+  icon: string;
+  text: string;
+};
+
+const PHASE_NAMES: Record<number, string> = {
+  1: "Phase 1: The Blueprint",
+  2: "Phase 2: The Core 300",
+  3: "Phase 3: The Network",
+  4: "Phase 4: Advanced Fluidity",
+};
+
+const PHASE_PCT: Record<number, number> = {
+  1: 0,
+  2: 45,
+  3: 0,
+  4: 100,
+};
+
+const PHASE_NEXT: Record<number, string> = {
+  1: "Master Pinyin, tones, and basic strokes",
+  2: "Learn radicals (★ 氵, 亻, 口 recommended)",
+  3: "Explore phonetic clusters and graded readers",
+  4: "All content available — explore freely!",
+};
+
 function DashboardPage() {
-  const { fetchStreak, loading: streakLoading, error: streakError } = useFetchStreak();
-  const { fetchBadges, loading: badgesLoading, error: badgesError } = useFetchBadges();
-  const { spendFreeze, loading: spendingFreeze, error: freezeError } = useSpendFreeze();
+  const navigate = useNavigate();
+  const { phaseGate, isLoading: phaseLoading } = usePhaseGate();
+  const [streakDays] = useState(0);
+  const [activities] = useState<ActivityItem[]>([]);
 
-  const [streakData, setStreakData] = useState<StreakData | null>(null);
-  const [badges, setBadges] = useState<Badge[]>([]);
-  const [showFreezeConfirm, setShowFreezeConfirm] = useState(false);
-  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
-  const [newBadge, setNewBadge] = useState<Badge | null>(null);
+  const currentPhase = phaseGate?.currentPhase ?? 1;
+  const phaseName = PHASE_NAMES[currentPhase] ?? "Self-Directed Study";
+  const phasePct = currentPhase < 4 ? (PHASE_PCT[currentPhase] ?? 0) : 100;
+  const nextStep =
+    currentPhase < 4 ? (PHASE_NEXT[currentPhase] ?? "") : "You've completed all phases! 🎉";
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        // Fetch streak data
-        const streakResponse = await fetchStreak();
-        setStreakData({
-          currentStreak: streakResponse.currentStreak,
-          longestStreak: streakResponse.longestStreak,
-          freezeCount: streakResponse.freezeCount,
-          lastActivityDate: new Date(streakResponse.lastActivityDate),
-        });
-
-        // Fetch badges
-        const badgeResponse = await fetchBadges();
-        const allBadges = [
-          ...badgeResponse.earned.map((badge) => ({
-            id: badge.id,
-            name: badge.name,
-            description: `Maintain a ${badge.streakRequired}-day streak`,
-            icon: badge.icon,
-            earnedDate: badge.earnedDate ? new Date(badge.earnedDate) : undefined,
-          })),
-          ...badgeResponse.available.map((badge) => ({
-            id: badge.id,
-            name: badge.name,
-            description: `Maintain a ${badge.streakRequired}-day streak`,
-            icon: badge.icon,
-            earnedDate: undefined,
-          })),
-        ];
-        setBadges(allBadges);
-
-        // Check for new badges (Story 15.9 AC: Badge celebration modal)
-        // Story 15.11 Flow 2.6: Use "last_celebrated_badges" to avoid double-celebration
-        // Dashboard serves as fallback for users who missed quiz celebration
-        const lastCelebratedBadges = localStorage.getItem("last_celebrated_badges");
-        const lastCelebratedIds = lastCelebratedBadges ? JSON.parse(lastCelebratedBadges) : [];
-        const currentEarnedIds = badgeResponse.earned.map((b) => b.id);
-
-        const newlyEarned = badgeResponse.earned.find(
-          (badge) => !lastCelebratedIds.includes(badge.id),
-        );
-        if (newlyEarned) {
-          setNewBadge({
-            id: newlyEarned.id,
-            name: newlyEarned.name,
-            description: `Maintain a ${newlyEarned.streakRequired}-day streak`,
-            icon: newlyEarned.icon,
-            earnedDate: newlyEarned.earnedDate ? new Date(newlyEarned.earnedDate) : undefined,
-          });
-          setShowBadgeCelebration(true);
-          localStorage.setItem("last_celebrated_badges", JSON.stringify(currentEarnedIds));
-        } else if (lastCelebratedIds.length === 0 && currentEarnedIds.length > 0) {
-          // First load: set without showing modal
-          localStorage.setItem("last_celebrated_badges", JSON.stringify(currentEarnedIds));
-        }
-      } catch (err) {
-        console.error("Failed to load dashboard data:", err);
-      }
-    };
-
-    loadDashboardData();
-  }, [fetchStreak, fetchBadges]);
-
-  const handleSpendFreeze = async () => {
-    setShowFreezeConfirm(false);
-    try {
-      const response = await spendFreeze();
-      // Update streak data with new freeze count
-      if (streakData) {
-        setStreakData({
-          ...streakData,
-          freezeCount: response.freezeCount,
-          lastActivityDate: new Date(response.lastActivityDate),
-        });
-      }
-      alert("✅ Streak freeze activated! Your streak is protected for today.");
-    } catch {
-      alert(`❌ ${freezeError || "Failed to activate streak freeze. Please try again."}`);
-    }
-  };
-
-  const handleCloseBadgeCelebration = () => {
-    setShowBadgeCelebration(false);
-    setNewBadge(null);
-  };
-  if (streakLoading || badgesLoading) {
-    return (
-      <div className="dashboard">
-        <div className="dashboard-header">
-          <h1>Loading...</h1>
-        </div>
-      </div>
-    );
+  // Combined loading state
+  if (phaseLoading) {
+    return <LoadingScreen message="Loading your dashboard..." />;
   }
 
-  if (streakError || badgesError) {
+  // Phase 1 empty state (Wireframe 8.5)
+  if (currentPhase === 1) {
     return (
       <div className="dashboard">
         <div className="dashboard-header">
-          <h1>⚠️ Error Loading Dashboard</h1>
-          <p>{streakError || badgesError}</p>
+          <h1>👋 Welcome to PinyinPal!</h1>
+          <p className="dashboard-streak">🔥 {streakDays} days</p>
+        </div>
+        <div className="dashboard-empty-state card-dark flex-col-center gap-lg p-2xl text-center">
+          <span className="dashboard-empty-icon font-5xl">🎉</span>
+          <h2 className="font-2xl fw-700 text-primary m-0">Let's start learning!</h2>
+          <p className="font-md text-secondary m-0" style={{ maxWidth: 480 }}>
+            Begin with the foundations: master Pinyin, tones, and basic strokes. No characters
+            needed yet.
+          </p>
+          <button className="btn-primary btn-lg" onClick={() => navigate(learn_page)}>
+            Start with Pinyin Basics ▸
+          </button>
         </div>
       </div>
     );
@@ -141,169 +92,91 @@ function DashboardPage() {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>Welcome Back! 👋</h1>
-        <p>Continue your Mandarin learning journey</p>
+        <h1>👋 Welcome back!</h1>
+        <p className="dashboard-streak">🔥 {streakDays} day streak</p>
       </div>
 
-      <div className="dashboard-layout">
-        {/* Left Column: Stats & Badges */}
-        <div className="dashboard-left">
-          {/* Quick Stats - Gamification Components */}
-          <div className="stats-grid">
-            {streakData && <StreakCounter streakData={streakData} />}
-            <XPProgressBar currentXP={280} />
-            <StatCard icon="📚" label="Words Learned" value="Coming Soon" />
-          </div>
-
-          {/* Freeze Spend Button */}
-          {streakData && streakData.freezeCount > 0 && (
-            <div className="freeze-actions">
-              <button
-                onClick={() => setShowFreezeConfirm(true)}
-                className="freeze-button"
-                disabled={spendingFreeze}
-              >
-                ❄️ Use Streak Freeze ({streakData.freezeCount})
-              </button>
+      {/* Current Phase (Wireframe 8.3) */}
+      <div className="dashboard-phase card-dark p-lg flex-col gap-md">
+        <div className="flex-col gap-xs">
+          <h2 className="font-xl fw-700 text-primary m-0">{phaseName}</h2>
+          <div className="flex-col gap-xs">
+            <div className="flex-between">
+              <span className="font-sm text-secondary">{phasePct}% complete</span>
             </div>
-          )}
-
-          {/* Badges Section */}
-          <div className="badges-section">
-            <h3>Your Badges</h3>
-            <BadgeDisplay badges={badges} />
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${phasePct}%` }}
+                role="progressbar"
+                aria-valuenow={phasePct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              />
+            </div>
           </div>
         </div>
+        <p className="font-sm text-secondary m-0">Next: {nextStep}</p>
+        <button className="btn-primary" onClick={() => navigate(learn_page)}>
+          Continue Learning ▸
+        </button>
+      </div>
 
-        {/* Right Column: Quick Actions */}
-        <div className="dashboard-right">
-          <h3>Quick Actions</h3>
-          <div className="actions-grid">
-            <ActionCard
-              to="/learn/quiz"
-              icon="📝"
-              title="Daily Quiz"
-              description="Test your knowledge"
-              color="#3b82f6"
-            />
-            <ActionCard
-              to="/learn/review"
-              icon="🔄"
-              title="Review"
-              description="Practice due words"
-              color="#8b5cf6"
-            />
-            <ActionCard
-              to="/learn/vocabulary-list"
-              icon="📚"
-              title="Vocabulary"
-              description="Browse word lists"
-              color="#10b981"
-            />
-            <ActionCard
-              to="/progress"
-              icon="📊"
-              title="Progress"
-              description="View your stats"
-              color="#f59e0b"
-            />
-          </div>
+      {/* Quick Access (Wireframe 8.3) */}
+      <div className="dashboard-section">
+        <h3 className="font-lg fw-600 text-primary m-0 mb-sm">Quick Access</h3>
+        <div className="dashboard-quick-grid">
+          <Link
+            to={`${practices_review}?type=character`}
+            className="dashboard-quick-btn card-dark flex-col-center gap-sm p-lg text-center"
+          >
+            <span className="font-2xl">🃏</span>
+            <span className="font-sm fw-600 text-primary">Review Characters</span>
+          </Link>
+          <Link
+            to={`${practices_quiz}?type=audio-to-pinyin-tone`}
+            className="dashboard-quick-btn card-dark flex-col-center gap-sm p-lg text-center"
+          >
+            <span className="font-2xl">📝</span>
+            <span className="font-sm fw-600 text-primary">Take Phase Quiz</span>
+          </Link>
+          <Link
+            to={learn_radicals}
+            className="dashboard-quick-btn card-dark flex-col-center gap-sm p-lg text-center"
+          >
+            <span className="font-2xl">📘</span>
+            <span className="font-sm fw-600 text-primary">Study Radicals</span>
+          </Link>
+          <Link
+            to="/progress"
+            className="dashboard-quick-btn card-dark flex-col-center gap-sm p-lg text-center"
+          >
+            <span className="font-2xl">📊</span>
+            <span className="font-sm fw-600 text-primary">View Progress</span>
+          </Link>
         </div>
       </div>
 
-      {/* Freeze Confirmation Modal */}
-      {showFreezeConfirm && (
-        <div className="modal-overlay" onClick={() => setShowFreezeConfirm(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>❄️ Use Streak Freeze?</h3>
-            <p>
-              This will protect your streak for today. You have {streakData?.freezeCount} freezes
-              remaining.
+      {/* Recent Activity (Wireframe 8.3) */}
+      <div className="dashboard-section">
+        <h3 className="font-lg fw-600 text-primary m-0 mb-sm">Recent Activity</h3>
+        {activities.length > 0 ? (
+          <div className="card-dark p-md flex-col gap-sm">
+            {activities.map((item, i) => (
+              <div key={i} className="flex-center gap-sm font-sm text-secondary">
+                <span>{item.icon}</span>
+                <span>{item.text}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="card-dark p-md">
+            <p className="font-sm text-muted m-0">
+              No recent activity yet. Start learning to see your progress here!
             </p>
-            <div className="modal-actions">
-              <button
-                onClick={handleSpendFreeze}
-                className="modal-button confirm"
-                disabled={spendingFreeze}
-              >
-                {spendingFreeze ? "Activating..." : "Yes, Use It"}
-              </button>
-              <button onClick={() => setShowFreezeConfirm(false)} className="modal-button cancel">
-                Cancel
-              </button>
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* Badge Celebration Modal */}
-      {showBadgeCelebration && newBadge && (
-        <div className="modal-overlay badge-celebration" onClick={handleCloseBadgeCelebration}>
-          <div className="modal-content celebration" onClick={(e) => e.stopPropagation()}>
-            <div className="confetti-container">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="confetti-piece"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 3}s`,
-                    backgroundColor: ["#ffd700", "#ff6b6b", "#4ecdc4", "#45b7d1", "#f7b801"][i % 5],
-                  }}
-                />
-              ))}
-            </div>
-            <div className="badge-celebration-icon">{newBadge.icon}</div>
-            <h2 className="badge-celebration-title">🎉 New Badge Earned!</h2>
-            <h3 className="badge-celebration-name">{newBadge.name}</h3>
-            <p className="badge-celebration-description">{newBadge.description}</p>
-            <button onClick={handleCloseBadgeCelebration} className="modal-button celebrate">
-              Awesome! 🎉
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StatCard({ icon, label, value }: { icon: string; label: string; value: string | number }) {
-  return (
-    <div className="stat-card">
-      <div className="stat-icon">{icon}</div>
-      <div className="stat-content">
-        <div className="stat-label">{label}</div>
-        <div className="stat-value">{value}</div>
+        )}
       </div>
-    </div>
-  );
-}
-
-function ActionCard({
-  to,
-  icon,
-  title,
-  description,
-  color,
-}: {
-  to: string;
-  icon: string;
-  title: string;
-  description: string;
-  color: string;
-}) {
-  return (
-    <div className="action-card">
-      <Link to={to} className="action-card-link" style={{ borderLeftColor: color }}>
-        <div className="action-icon">{icon}</div>
-        <div className="action-content">
-          <h3 className="action-title">{title}</h3>
-          <p className="action-description">{description}</p>
-        </div>
-        <div className="action-arrow" style={{ color }}>
-          →
-        </div>
-      </Link>
     </div>
   );
 }

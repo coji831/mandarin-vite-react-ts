@@ -1,0 +1,30 @@
+{
+  "id": "rad_0001",
+  "glyph": "一",
+  "alternate_glyphs": [],
+  "name_pinyin": "yī",
+  "name_chinese": "一",
+  "meaning": "one",
+  "stroke_count": 1,
+  "is_recommended": true,
+  "kangxi_index": 1,
+  "metadata": {
+    "etymology": "Pictograph of a single horizontal stroke representing the number one",
+    "frequency_rank": 1,
+    "notes": "The first radical in the Kangxi system. Also a character meaning 'one'.",
+    "hsk_characters": [
+      { "glyph": "一", "pinyin": "yī", "meaning": "one" },
+      { "glyph": "七", "pinyin": "qī", "meaning": "seven" },
+      { "glyph": "三", "pinyin": "sān", "meaning": "three" },
+      { "glyph": "上", "pinyin": "shàng", "meaning": "above/up" },
+      { "glyph": "下", "pinyin": "xià", "meaning": "below/down" },
+      { "glyph": "不", "pinyin": "bù", "meaning": "not/no" },
+      { "glyph": "世", "pinyin": "shì", "meaning": "world/generation" },
+      { "glyph": "东", "pinyin": "dōng", "meaning": "east" },
+      { "glyph": "丝", "pinyin": "sī", "meaning": "silk" },
+      { "glyph": "两", "pinyin": "liǎng", "meaning": "two/both" },
+      { "glyph": "且", "pinyin": "qiě", "meaning": "moreover" },
+      { "glyph": "丘", "pinyin": "qiū", "meaning": "mound/hill" }
+    ]
+  }
+}

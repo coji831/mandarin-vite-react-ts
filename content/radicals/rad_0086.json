@@ -1,0 +1,34 @@
+{
+  "id": "rad_0086",
+  "glyph": "火",
+  "alternate_glyphs": ["灬"],
+  "name_pinyin": "huǒ",
+  "name_chinese": "火",
+  "meaning": "fire",
+  "stroke_count": 4,
+  "is_recommended": true,
+  "kangxi_index": 86,
+  "metadata": {
+    "etymology": "Pictograph of flames rising upward",
+    "frequency_rank": 7,
+    "notes": "Also a standalone character meaning 'fire'. Bottom form 灬 appears in characters related to heat and cooking.",
+    "is_also_character": true,
+    "variants": {
+      "bottom": "灬"
+    },
+    "hsk_characters": [
+      { "glyph": "火", "pinyin": "huǒ", "meaning": "fire" },
+      { "glyph": "灯", "pinyin": "dēng", "meaning": "lamp/light" },
+      { "glyph": "烧", "pinyin": "shāo", "meaning": "burn" },
+      { "glyph": "炸", "pinyin": "zhà", "meaning": "explode/fry" },
+      { "glyph": "炒", "pinyin": "chǎo", "meaning": "stir-fry" },
+      { "glyph": "烤", "pinyin": "kǎo", "meaning": "roast" },
+      { "glyph": "烟", "pinyin": "yān", "meaning": "smoke" },
+      { "glyph": "煤", "pinyin": "méi", "meaning": "coal" },
+      { "glyph": "炉", "pinyin": "lú", "meaning": "stove" },
+      { "glyph": "炎", "pinyin": "yán", "meaning": "flame" },
+      { "glyph": "灾", "pinyin": "zāi", "meaning": "disaster" },
+      { "glyph": "灭", "pinyin": "miè", "meaning": "extinguish" }
+    ]
+  }
+}
