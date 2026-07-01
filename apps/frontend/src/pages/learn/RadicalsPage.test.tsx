@@ -9,7 +9,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { RadicalsPage } from "./RadicalsPage";
 
-function renderWithRouter(ui: React.ReactElement) {
+function renderWithRouter(ui: JSX.Element) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 

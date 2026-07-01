@@ -14,10 +14,14 @@
     "build": "npm run build --workspaces --if-present",
     "build:frontend": "npm run build --workspace=@mandarin/frontend",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspace=@mandarin/frontend"
+    "lint": "npm run lint --workspace=@mandarin/frontend",
+    "format": "npm run format --workspaces --if-present"
   },
   "dependencies": {
     "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "devDependencies": {
     "@google/design.md": "^0.3.0",

@@ -8,6 +8,7 @@
 
 // Engine
 export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
+export { getPhaseQuizzes } from "./engine/PhaseStrategyRegistry";
 
 // Types
 export type { QuizStrategy, StrategyType, QuizQuestion, AnswerResult, QuizPhase } from "./types";

@@ -14,11 +14,7 @@ function ToggleSwitch({
   return (
     <div className="toggle-switch">
       <label className="switch">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
-        />
+        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
         <span className="slider round"></span>
         <span className="label-text" hidden>
           {label}

@@ -6,7 +6,7 @@
  * the review page itself via the Picker component (Step 1).
  */
 import { useNavigate } from "react-router-dom";
-import { practices_review } from "../../../shared/constants/paths";
+import { practices_review } from "shared/constants";
 
 export function useReviewLaunchCard() {
   const navigate = useNavigate();

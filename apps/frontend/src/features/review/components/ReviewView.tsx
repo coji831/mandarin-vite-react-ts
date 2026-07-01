@@ -7,7 +7,7 @@
 import { useCallback, useEffect } from "react";
 import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
-import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
+import { useAudioPlayback } from "shared/hooks";
 import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";

@@ -22,7 +22,7 @@ import {
 
 type UseHanziWriterReturn = {
   /** Ref to attach to the canvas container div */
-  canvasRef: React.RefObject<HTMLDivElement>;
+  canvasRef: React.RefObject<HTMLDivElement | null>;
   /** Whether the writer is ready for interaction */
   isReady: boolean;
   /** Error message if initialization failed */

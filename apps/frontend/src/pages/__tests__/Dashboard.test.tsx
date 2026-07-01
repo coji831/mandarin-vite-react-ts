@@ -21,7 +21,7 @@ vi.mock("shared/hooks", () => ({
 }));
 
 // Helper to render with router
-const renderWithRouter = (component: React.ReactElement) => {
+const renderWithRouter = (component: JSX.Element) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 

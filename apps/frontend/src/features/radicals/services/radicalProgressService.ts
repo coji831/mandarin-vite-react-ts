@@ -7,7 +7,7 @@
  * Follows patterns from foundationsService.ts (apiClient + module-level cache).
  */
 
-import { apiClient } from "../../../shared/api/axiosClient";
+import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 export interface RadicalProgressItem {

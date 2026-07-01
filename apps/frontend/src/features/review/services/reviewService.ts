@@ -2,7 +2,7 @@
  * reviewService.ts
  * Phase 1 Review — API calls for fetching items and recording ratings.
  */
-import { apiClient } from "../../../shared/api/axiosClient";
+import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type { ReviewItem, Rating, RatingResult } from "../types";
 

@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import MockAdapter from "axios-mock-adapter";
 import { apiClient } from "../axiosClient";
-import { API_CONFIG } from "../../../shared/config/api";
+import { API_CONFIG } from "shared/config";
 import type { NormalizedError } from "@mandarin/shared-types";
 
 describe("axiosClient", () => {

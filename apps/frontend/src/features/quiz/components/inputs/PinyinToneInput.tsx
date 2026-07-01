@@ -16,7 +16,7 @@ type PinyinToneInputProps = {
   disabled?: boolean;
 };
 
-import { TONE_BUTTONS_BASE } from "../../../../shared/constants/toneMap";
+import { TONE_BUTTONS_BASE } from "shared/constants";
 import "./PinyinToneInput.css";
 
 /** Tone buttons enriched with quiz-specific fields */

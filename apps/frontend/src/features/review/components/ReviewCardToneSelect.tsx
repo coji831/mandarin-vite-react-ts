@@ -8,7 +8,7 @@
 
 import React from "react";
 import type { ReviewItem } from "../types";
-import { TONE_BUTTONS_BASE } from "shared/constants/toneMap";
+import { TONE_BUTTONS_BASE } from "shared/constants";
 import "./ReviewCard.css";
 
 type ReviewCardToneSelectProps = {

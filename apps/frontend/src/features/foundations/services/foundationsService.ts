@@ -8,7 +8,7 @@
  * Data is fetched once and reused — eliminates duplicate fetches when switching tabs.
  */
 
-import { apiClient } from "../../../shared/api/axiosClient";
+import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type { FoundationProgress, PhaseGate } from "@mandarin/shared-types";
 import type { PinyinTonesPool } from "../types/pool";

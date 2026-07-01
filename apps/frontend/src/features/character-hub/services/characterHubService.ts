@@ -5,7 +5,7 @@
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import { apiClient } from "../../../shared/api/axiosClient";
+import { apiClient } from "shared/api";
 import type { RadicalData } from "features/radicals/types";
 
 /**

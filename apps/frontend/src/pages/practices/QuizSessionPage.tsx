@@ -15,7 +15,7 @@ import {
   Timer,
   QuizProgressBar,
 } from "../../features/quiz";
-import { getStrategy } from "../../features/quiz/engine/strategies";
+import { getStrategy } from "features/quiz";
 import "./QuizSessionPage.css";
 
 import type { StrategyType } from "../../features/quiz/types";

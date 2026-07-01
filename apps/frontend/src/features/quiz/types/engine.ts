@@ -8,11 +8,7 @@
 
 /** Supported quiz strategy types */
 export type StrategyType =
-  | "audio-to-pinyin"
-  | "audio-to-tone"
-  | "audio-to-pinyin-tone"
-  | "ime-simulator"
-  | "radical-gate";
+  "audio-to-pinyin" | "audio-to-tone" | "audio-to-pinyin-tone" | "ime-simulator" | "radical-gate";
 
 /** Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS */
 export type QuizPhase = "LOADING" | "QUESTION" | "INPUT" | "FEEDBACK" | "RESULTS" | "ERROR";

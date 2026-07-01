@@ -10,8 +10,21 @@ import { ExampleCharGrid } from "./ExampleCharGrid";
 
 // Mock child component to avoid hook dependencies
 vi.mock("./ExampleCharCell", () => ({
-  ExampleCharCell: ({ character, pinyin, meaning }: { character: string; pinyin: string; meaning: string }) => (
-    <div data-testid="example-char-cell" data-character={character} data-pinyin={pinyin} data-meaning={meaning}>
+  ExampleCharCell: ({
+    character,
+    pinyin,
+    meaning,
+  }: {
+    character: string;
+    pinyin: string;
+    meaning: string;
+  }) => (
+    <div
+      data-testid="example-char-cell"
+      data-character={character}
+      data-pinyin={pinyin}
+      data-meaning={meaning}
+    >
       {character}
     </div>
   ),

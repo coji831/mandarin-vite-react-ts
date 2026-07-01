@@ -8,7 +8,7 @@
  * Story 18.6: Added real backend API calls for persistence.
  */
 
-import { apiClient } from "../../../shared/api/axiosClient";
+import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type { QuizAttempt, PhaseGate } from "@mandarin/shared-types";
 import type { StrategyType, QuizQuestion, QuizAnswer, GateQuizResult } from "../types";

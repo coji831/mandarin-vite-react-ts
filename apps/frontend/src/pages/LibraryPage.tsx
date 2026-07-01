@@ -8,8 +8,8 @@
  * D1: Uses ContentBrowser with no phase gating (all content visible).
  */
 
-import { ContentBrowser } from "../shared/components/ContentBrowser";
-import type { ContentSource } from "../shared/components/ContentBrowser";
+import { ContentBrowser } from "shared/components";
+import type { ContentSource } from "shared/components";
 
 // Library-specific content source with no phase gating
 const libraryContentSource: ContentSource = {

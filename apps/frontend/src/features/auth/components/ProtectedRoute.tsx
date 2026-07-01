@@ -4,7 +4,7 @@
  */
 
 import { Navigate } from "react-router-dom";
-import { login_page } from "../../../shared/constants/paths";
+import { login_page } from "shared/constants";
 import { useAuth } from "../context/AuthContext";
 import { LoadingScreen } from "shared/components";
 

@@ -9,7 +9,7 @@
  *   /practices/review?filter=F           → shows ReviewPicker (no type pre-selected)
  */
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { practices_page, practices_review } from "../../shared/constants/paths";
+import { practices_page, practices_review } from "shared/constants";
 import { ReviewView, ReviewPicker } from "../../features/review";
 import type { ReviewSource } from "../../features/review";
 

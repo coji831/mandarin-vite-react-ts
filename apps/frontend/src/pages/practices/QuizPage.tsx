@@ -13,12 +13,12 @@
  *              Shows "select a quiz type" message for unregistered strategies
  */
 
+import type { StrategyType } from "features/quiz";
+import { getStrategy } from "features/quiz";
 import { useSearchParams } from "react-router-dom";
-import { QuizSessionPage } from "./QuizSessionPage";
+import { practices_page } from "shared/constants";
 import { QuizDebugPage } from "./QuizDebugPage";
-import { getStrategy } from "../../features/quiz/engine/strategies";
-import type { StrategyType } from "../../features/quiz/types";
-import { practices_page } from "../../shared/constants/paths";
+import { QuizSessionPage } from "./QuizSessionPage";
 
 export function QuizPage() {
   const [searchParams] = useSearchParams();

@@ -4,7 +4,7 @@
  */
 import { RegisterForm } from "../features/auth";
 import { useNavigate } from "react-router-dom";
-import { dashboard_page, login_page } from "../shared/constants/paths";
+import { dashboard_page, login_page } from "shared/constants";
 
 export function RegisterPage() {
   const navigate = useNavigate();

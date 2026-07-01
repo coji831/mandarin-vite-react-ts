@@ -1,7 +1,7 @@
 # TODO — Project-wide (GitHub-friendly)
 
 **Audience:** Project maintainers, developers tracking tasks  
-**Last Updated:** January 2026
+**Last Updated:** July 2026
 
 This file is a simple, human-editable TODO list compatible with GitHub (checkboxes are interactive in PRs and on GitHub.com).
 

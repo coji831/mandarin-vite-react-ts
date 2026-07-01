@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
+import { useAudioPlayback } from "shared/hooks";
 
 type AudioPlayerProps = {
   /** Pinyin audio key (e.g., "bā") */

@@ -13,12 +13,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
 import { LoadingScreen } from "shared/components";
-import {
-  learn_page,
-  practices_review,
-  practices_quiz,
-  learn_radicals,
-} from "../shared/constants/paths";
+import { learn_page, practices_review, practices_quiz, learn_radicals } from "shared/constants";
 import "./DashboardPage.css";
 
 export { DashboardPage };

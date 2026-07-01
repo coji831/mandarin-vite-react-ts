@@ -10,7 +10,7 @@
  *  - "result" (step="result"): character + meaning + correct answer + ✅/❌ + A/G/E rating → ReviewCardResult
  */
 import React, { useEffect, useRef } from "react";
-import { useAudioPlayback } from "../../../shared/hooks/useAudioPlayback";
+import { useAudioPlayback } from "shared/hooks";
 import { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
 import { ReviewCardToneSelect } from "./ReviewCardToneSelect";
 import { ReviewCardOptionSelect } from "./ReviewCardOptionSelect";

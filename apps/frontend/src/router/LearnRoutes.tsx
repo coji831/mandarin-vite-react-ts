@@ -11,7 +11,7 @@
  * ContentBrowser still works at /library for freeroam browsing.
  */
 import { Navigate, Route, Routes } from "react-router-dom";
-import { practices_quiz, practices_review } from "../shared/constants/paths";
+import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
 import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn";
 

@@ -10,8 +10,11 @@ export default tseslint.config(
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.browser,
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: "warn",
     },
     plugins: {
       "react-hooks": reactHooks,
@@ -29,6 +32,7 @@ export default tseslint.config(
         "error",
         {
           patterns: [
+            // Block deep imports inside any feature — must use feature barrel (index.ts)
             {
               group: [
                 "**/features/*/components/**",
@@ -38,19 +42,22 @@ export default tseslint.config(
                 "**/features/*/utils/**",
                 "**/features/*/context/**",
                 "**/features/*/reducers/**",
+                "**/features/*/engine/**",
+                "**/features/*/stores/**",
               ],
               message: "Import from the feature's barrel (index.ts) instead of internal paths.",
             },
-            // NEW: Prevent cross-feature store imports — use barrel exports
+            // Block deep imports into shared subdirectories that have barrels
             {
-              group: ["**/features/*/stores/**"],
-              message:
-                "Cross-feature store imports are forbidden. Import from the feature's barrel (index.ts) instead.",
-            },
-            // NEW: Prevent direct shared/store imports — use barrel
-            {
-              group: ["**/shared/store/**"],
-              message: "Import from shared/store/index.ts instead of internal paths.",
+              group: [
+                "**/shared/api/**",
+                "**/shared/config/**",
+                "**/shared/constants/**",
+                "**/shared/hooks/**",
+                "**/shared/store/**",
+                "**/shared/components/**",
+              ],
+              message: "Import from the shared/ barrel (index.ts) instead of internal paths.",
             },
           ],
         },

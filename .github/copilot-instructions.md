@@ -10,6 +10,8 @@ Install: `npm install`
 Run dev: `npm run dev` (port 5173)
 Run local backend: `npm run start-backend` (port 3001)
 Run tests: `npm test`
+Run build (type-check + bundle): `npm run build`
+Run format: `npm run format`
 Run design lint: `npx @google/design.md lint DESIGN.md`
 See AGENTS.md for agent roles, behavior rules, and prohibited patterns.
 Epic BR: use `docs/templates/epic-business-requirements-template.md`

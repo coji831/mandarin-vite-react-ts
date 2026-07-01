@@ -6,9 +6,8 @@
     "node": ">=20.0.0"
   },
   "type": "module",
-  "main": "dist/index.js",
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "node prisma/seed.js"
   },
   "scripts": {
     "dev": "node --watch src/app/index.js",
@@ -27,9 +26,6 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
-    "migrate:clean": "node scripts/clean-all-vocabulary.js",
-    "migrate:vocab": "node scripts/migrate-vocabulary-by-csv-id.js",
-    "migrate:categories": "node scripts/migrate-categories-by-csv-id.js",
     "seed:content-index": "node scripts/seed-content-index.js"
   },
   "dependencies": {

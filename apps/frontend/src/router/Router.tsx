@@ -10,7 +10,7 @@
  */
 
 import { Route, Routes } from "react-router-dom";
-import { learn_page, root, login_page, register_page } from "../shared/constants/paths";
+import { learn_page, root, login_page, register_page } from "shared/constants";
 import { LearnRoutes } from "./LearnRoutes";
 import { ProtectedRoute } from "../features/auth";
 import { AppLayout } from "../shared/layouts/AppLayout";

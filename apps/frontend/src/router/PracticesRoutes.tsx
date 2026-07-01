@@ -10,7 +10,7 @@
  * C1: Nested under practices/ in Router.tsx
  */
 import { Navigate, Route, Routes } from "react-router-dom";
-import { practices_page } from "../shared/constants/paths";
+import { practices_page } from "shared/constants";
 import PracticesPage from "../pages/practices/PracticesPage";
 import { ReviewPage } from "../pages/practices/ReviewPage";
 import { QuizPage } from "../pages/practices/QuizPage";

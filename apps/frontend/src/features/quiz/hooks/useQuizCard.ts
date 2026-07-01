@@ -6,9 +6,9 @@
  * Quizzes are read from PHASE_CONFIGS (single source of truth).
  */
 import { useNavigate } from "react-router-dom";
-import { practices_quiz } from "../../../shared/constants/paths";
-import { usePhaseGate } from "../../../shared/hooks/usePhaseGate";
-import { getPhaseQuizzes } from "../../../features/quiz/engine/PhaseStrategyRegistry";
+import { practices_quiz } from "shared/constants";
+import { usePhaseGate } from "shared/hooks";
+import { getPhaseQuizzes } from "features/quiz";
 
 export interface QuizAssessment {
   label: string;
