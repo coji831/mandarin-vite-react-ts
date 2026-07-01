@@ -7,11 +7,9 @@
 Provides an Express server for development and production, supporting:
 
 - Text-to-Speech (TTS) generation via Google Cloud TTS
-- Vocabulary management, quiz sessions, and spaced repetition
+- Quiz sessions and spaced repetition
 - User authentication with JWT refresh token rotation
-- Progress tracking, gamification (streaks, badges, XP)
 - AI-powered feedback for incorrect quiz answers via Gemini API
-- Word examples generation via Gemini API
 - Google Cloud Storage (GCS) caching for audio data
 
 ## Architecture
@@ -22,18 +20,18 @@ Provides an Express server for development and production, supporting:
 src/
 ├── app/                          ← Express app bootstrap, DI container, routes
 │   ├── index.js                  ← Express app entry point
-│   ├── container.js              ← DI composition root (15 exported instances)
-│   └── routes.js                 ← 11 route routers registered under /v1/
-├── modules/                      ← 8 business modules
+│   ├── container.js              ← DI composition root
+│   └── routes.js                 ← 9 route routers registered under /v1/
+├── modules/                      ← 7 business modules
 │   ├── auth/                     ← Simple CRUD (login, register, refresh)
-│   ├── word/                     ← Simple CRUD (word lookup)
-│   ├── vocabulary/               ← Feature Slices (lists, categories)
 │   ├── quiz/                     ← Clean Architecture (use-cases/, services/, repositories/)
-│   ├── gamification/             ← Simple CRUD (streaks, badges, XP)
-│   ├── examples/                 ← Feature Slices (word examples)
-│   ├── tts/                      ← Simple (TTS audio generation)
-│   └── health/                   ← Simple (health check)
+│   ├── foundations/              ← Simple CRUD (pinyin, tones, strokes)
+│   ├── progression/              ← Clean Architecture (learner progression)
+│   ├── radicals/                 ← Simple CRUD (radical data)
+│   ├── review/                   ← Clean Architecture (SRS review)
+│   ├── health/                   ← Simple (health check)
 └── shared/
+    ├── api/                      ← TTS routes (migrated from modules/tts/)
     ├── config/index.js           ← Centralized env config with validation
     ├── infrastructure/
     │   ├── cache/                ← CacheService + CacheFactory
@@ -90,7 +88,7 @@ src/
 
 ### Key Features
 
-- **Modular Monolith**: 8 self-contained modules, each owning its domain
+- **Modular Monolith**: 7 self-contained modules, each owning its domain
 - **Dependency Injection**: Container-based DI in `container.js` — services receive dependencies via constructor
 - **Fail-Open Caching**: Redis failures degrade gracefully to live API calls
 - **Repository Pattern**: All database access through repositories (abstracts Prisma)
@@ -106,23 +104,15 @@ src/
 4. If cache miss: calls Google TTS API → uploads to GCS
 5. Returns public URL `{ audioUrl, cached }`
 
-### Quiz Session Flow
+### Quiz Flow
 
-1. POST `/api/v1/quiz/session/start` with `{ hskLevel?, count? }`
-2. Quiz controller validates input
-3. Quiz use-case selects due words, builds 10-question session, stores in Redis
-4. POST `/api/v1/quiz/session/:sessionId/answer` with `{ questionId, answer }`
-5. Quiz use-case checks correctness, updates spaced repetition, awards XP
-6. If incorrect: calls Gemini API via `AiFeedbackService` for personalized explanation
-7. Returns `{ correct, feedback?, xpEarned, nextReview? }`
+Quiz endpoints now use the strategy-based `QuizAttempt` system (see `apps/backend/src/modules/quiz/`). Each quiz mode (multiple choice, pinyin typing, etc.) is implemented as a pluggable strategy, decoupling question generation from answer evaluation.
 
-### Word Examples Generation
+Key differences from the legacy session-based system:
 
-1. POST `/api/v1/examples` with `{ word, hskLevel, language }`
-2. Examples controller validates input
-3. Examples service calls Gemini API to generate 3–5 contextual example sentences
-4. Results cached via Redis (24-hour TTL)
-5. Returns `{ word, examples: [{ sentence, pinyin, translation }] }`
+- Questions are evaluated immediately via the active strategy
+- Spaced repetition updates are handled by the `Review` module
+- No Redis-backed session storage; state is managed per-attempt
 
 ## Error Handling
 
@@ -182,7 +172,7 @@ import { CacheFactory } from "../shared/infrastructure/cache/CacheFactory.js";
 import { config } from "../shared/config/index.js";
 
 export const cacheService = await CacheFactory.create("default");
-// ... 15 exported instances: repositories, services, infrastructure clients
+// ... exported instances: repositories, services, infrastructure clients
 const exists = await gcsService.fileExists(path); // Auto-initializes
 ```
 
@@ -205,13 +195,18 @@ const audioBuffer = await ttsService.synthesizeSpeech("你好世界", {
 });
 ```
 
-### Start Quiz Session
+### Submit Quiz Attempt
 
 ```js
 import { container } from "./app/container.js";
-const quizSessionService = container.get("quizSessionService");
-const session = await quizSessionService.startSession({ userId: "user-123", hskLevel: 1 });
-// Returns: { sessionId, questions: [...], totalQuestions: 10 }
+const quizAttemptService = container.get("quizAttemptService");
+const result = await quizAttemptService.submitAttempt({
+  userId: "user-123",
+  wordId: "hsk1_001",
+  mode: "multiple_choice",
+  answer: "nǐ hǎo",
+});
+// Returns: { correct, feedback?, xpEarned, nextReview? }
 ```
 
 ### Get AI Feedback

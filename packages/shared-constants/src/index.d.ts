@@ -7,20 +7,6 @@
 export declare const ROUTE_PATTERNS: {
   readonly health: string;
   readonly ttsAudio: string;
-  readonly vocabulary: string;
-  readonly examples: string;
-  readonly examplesSingleLine: string;
-  readonly examplesAudio: string;
-  readonly conversations: string;
-  readonly conversationTextGenerate: string;
-  readonly conversationAudioGenerate: string;
-  readonly progress: string;
-  readonly progressWord: (wordId: string) => string;
-  readonly progressBatch: string;
-  readonly progressStats: string;
-  readonly progressStreak: string;
-  readonly progressStreakFreeze: string;
-  readonly gamificationBadges: string;
   readonly quizFeedback: string;
   readonly authRegister: string;
   readonly authLogin: string;
@@ -38,6 +24,9 @@ export declare const ROUTE_PATTERNS: {
   readonly reviewItems: string;
   readonly reviewResult: string;
   readonly reviewDueCount: string;
+  readonly radicals: string;
+  readonly radicalsById: (radicalId: string) => string;
+  readonly radicalsByCharacter: (glyph: string) => string;
   readonly foundationsPinyinTones: string;
   readonly foundationsPinyinCharacterMap: string;
   readonly foundationsStrokes: string;

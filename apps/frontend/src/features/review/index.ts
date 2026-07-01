@@ -7,6 +7,7 @@ export {
   ReviewPicker,
   ReviewCard,
   ReviewComplete,
+  ReviewLaunchCard,
 } from "./components";
 export { useReview } from "./hooks";
 export { reviewService } from "./services";

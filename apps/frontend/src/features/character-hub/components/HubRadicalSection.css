@@ -57,3 +57,17 @@
 .hub-radical-section__meaning {
   color: var(--text-muted);
 }
+
+/* Loading state */
+.hub-radical-section__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  min-height: 60px;
+}
+
+.hub-radical-section__loading-text {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}

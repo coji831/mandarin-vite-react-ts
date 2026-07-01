@@ -8,8 +8,8 @@
  * Story 19.3: Redesigned with 2 clean pathways — Review and Phase Quiz.
  * Story 19.4: Cards extracted into feature-owned components with hooks.
  */
-import { ReviewLaunchCard } from "../../features/review/components/ReviewLaunchCard";
-import { QuizCard } from "../../features/quiz/components/QuizCard";
+import { ReviewLaunchCard } from "features/review";
+import { QuizCard } from "features/quiz";
 import "./PracticesPage.css";
 
 export default function PracticesPage() {

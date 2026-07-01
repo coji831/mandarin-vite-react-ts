@@ -126,7 +126,7 @@ export function useReview() {
 
       setStep("result");
     },
-    [items, currentIndex, step, getReviewStrategy],
+    [items, currentIndex, step],
   );
 
   /* ── Option selection ──────────────────────────── */
@@ -151,7 +151,7 @@ export function useReview() {
 
       setStep("result");
     },
-    [items, currentIndex, step, getReviewStrategy],
+    [items, currentIndex, step],
   );
 
   /* ── Step 2: Tone selection ─────────────────────── */
@@ -178,7 +178,7 @@ export function useReview() {
 
       setStep("result");
     },
-    [items, currentIndex, step, getReviewStrategy],
+    [items, currentIndex, step],
   );
 
   /* ── Step 3: Rating + advance ───────────────────── */

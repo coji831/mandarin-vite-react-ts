@@ -21,14 +21,14 @@ feature-name/
 
 ## Available Features
 
-| Feature          | Description                                                                                                        | README                             |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| **auth**         | JWT-based authentication with login, register, and token refresh                                                   | [`auth/README.md`](auth/README.md) |
-| **dashboard**    | User dashboard with learning statistics and leech detection                                                        | —                                  |
-| **foundations**  | Learn: pinyin, tones, strokes, animations                                                                          | —                                  |
-| **gamification** | Study streaks, badges, XP, mystery box rewards, and achievement display                                            | —                                  |
-| **quiz**         | Phase-gated audio-to-pinyin-and-tone assessment via Strategy pattern with progress tracking and session management | —                                  |
-| **vocabulary**   | Flashcard-based vocabulary learning with spaced repetition, audio, and word examples                               | —                                  |
+| Feature           | Description                                                                             | README                             |
+| ----------------- | --------------------------------------------------------------------------------------- | ---------------------------------- |
+| **auth**          | JWT-based authentication with login, register, and token refresh                        | [`auth/README.md`](auth/README.md) |
+| **character-hub** | Slide-up overlay panel showing character/word details, radical decomposition, mnemonics | —                                  |
+| **foundations**   | Phase 1 learning: pinyin, tones, strokes, animations                                    | —                                  |
+| **quiz**          | Phase-gated assessment via Strategy pattern with multiple quiz modes                    | —                                  |
+| **radicals**      | Radical browser, detail cards, radical trees, character decomposition                   | —                                  |
+| **review**        | SRS flip-card practice with SM-2 scheduling, multiple content types                     | —                                  |
 
 ## Documentation
 

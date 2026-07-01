@@ -1,24 +1,20 @@
 # Backend API Specification
 
-**Last Updated:** June 8, 2026
+**Last Updated:** July 1, 2026
 
 Complete API reference for the Express backend server. Each domain has its own specification file.
 
 ## Domain Index
 
-| Domain                | File                                 | Endpoints                                                      |
-| --------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| Authentication        | [`auth.md`](auth.md)                 | Register, login, refresh, logout, profile                      |
-| Health Check          | [`health.md`](health.md)             | Server health, cache metrics                                   |
-| Caching Strategy      | [`caching.md`](caching.md)           | TTS and conversation caching details                           |
-| Text-to-Speech        | [`tts.md`](tts.md)                   | TTS audio generation and retrieval                             |
-| Conversation          | [`conversation.md`](conversation.md) | AI conversation generation (text + audio)                      |
-| Progress Tracking     | [`progress.md`](progress.md)         | CRUD, batch, stats, due words, test results, spaced repetition |
-| Learning              | [`learning.md`](learning.md)         | Due words, leech detection                                     |
-| Gamification          | [`gamification.md`](gamification.md) | Streaks, badges, mystery box, XP system                        |
-| AI Feedback           | [`ai-feedback.md`](ai-feedback.md)   | Quiz answer explanations                                       |
-| Error Format          | [`errors.md`](errors.md)             | Standardized error response schema                             |
-| Environment Variables | [`env.md`](env.md)                   | Required and optional configuration                            |
+| Domain                | File                               | Endpoints                                 |
+| --------------------- | ---------------------------------- | ----------------------------------------- |
+| Authentication        | [`auth.md`](auth.md)               | Register, login, refresh, logout, profile |
+| Health Check          | [`health.md`](health.md)           | Server health, cache metrics              |
+| Caching Strategy      | [`caching.md`](caching.md)         | TTS and AI feedback caching details       |
+| Text-to-Speech        | [`tts.md`](tts.md)                 | TTS audio generation and retrieval        |
+| AI Feedback           | [`ai-feedback.md`](ai-feedback.md) | Quiz answer explanations                  |
+| Error Format          | [`errors.md`](errors.md)           | Standardized error response schema        |
+| Environment Variables | [`env.md`](env.md)                 | Required and optional configuration       |
 
 ## Common Patterns
 
@@ -26,4 +22,4 @@ Complete API reference for the Express backend server. Each domain has its own s
 - **Auth**: Protected endpoints require `Authorization: Bearer <access_token>` header
 - **Rate Limiting**: Login: 5/min per IP; Quiz: 100/hour per user; AI Feedback: 10/min per user
 - **Error Format**: All errors follow `{ code, message, requestId, metadata? }` structure
-- **Caching**: TTS (24h TTL), Conversations (1h TTL), AI Feedback (24h TTL)
+- **Caching**: TTS (24h TTL), AI Feedback (24h TTL)

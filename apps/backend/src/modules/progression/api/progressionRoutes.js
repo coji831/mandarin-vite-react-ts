@@ -43,16 +43,6 @@ router.put(
   asyncHandler((req, res) => req.progressionController.updatePhaseGate(req, res)),
 );
 
-/**
- * PUT /api/v1/progression/foundation-progress/:sectionId
- * Mark a foundation section as completed
- */
-router.put(
-  ROUTE_PATTERNS.progressionFoundationProgressSection(":sectionId"),
-  authenticateToken,
-  asyncHandler((req, res) => req.progressionController.markSectionCompleted(req, res)),
-);
-
 // ── Radical Progress Routes ─────────────────────────────────────────────────
 
 /**
@@ -63,16 +53,6 @@ router.get(
   ROUTE_PATTERNS.progressionRadicalProgress,
   authenticateToken,
   asyncHandler((req, res) => req.progressionController.getRadicalProgress(req, res)),
-);
-
-/**
- * GET /api/v1/progression/radical-progress/:radicalId
- * Fetch progress for a specific radical
- */
-router.get(
-  ROUTE_PATTERNS.progressionRadicalProgressById(":radicalId"),
-  authenticateToken,
-  asyncHandler((req, res) => req.progressionController.getRadicalProgressById(req, res)),
 );
 
 /**

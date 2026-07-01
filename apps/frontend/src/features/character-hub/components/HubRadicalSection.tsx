@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
 import { radicalsService } from "features/radicals/services";
-import { apiClient } from "../../../shared/api/axiosClient";
+import { loadRadicalsByCharacter } from "../services/characterHubService";
 import type { RadicalData } from "features/radicals/types";
 import "./HubRadicalSection.css";
 
@@ -56,15 +56,7 @@ export function HubRadicalSection({ character, onClose }: HubRadicalSectionProps
         ];
 
         // Source 2: Match via CharacterRadical table (new - supports multi-radical)
-        let dbMatches: RadicalData[] = [];
-        try {
-          const response = await apiClient.get(`/v1/radicals/character/${character}`);
-          if (Array.isArray(response.data)) {
-            dbMatches = response.data;
-          }
-        } catch {
-          // Silently fail — fall back to hsk_characters only
-        }
+        const dbMatches = await loadRadicalsByCharacter(character);
 
         // Merge and deduplicate by id
         const allMatches = [...withSelf];
@@ -88,9 +80,22 @@ export function HubRadicalSection({ character, onClose }: HubRadicalSectionProps
     };
   }, [character]);
 
-  // Don't render empty container
-  if (isLoading) return null;
+  // Phase gate: only render for Phase 2+ users
   if (effectivePhase < 2) return null;
+
+  // Loading state with accessible indicator
+  if (isLoading) {
+    return (
+      <div className="hub-radical-section">
+        <h3 className="hub-radical-section__title">Radical Decomposition</h3>
+        <div className="hub-radical-section__loading" role="status" aria-label="Loading radicals">
+          <span className="hub-radical-section__loading-text">Loading radicals...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state: no radicals found for this character
   if (matchingRadicals.length === 0) return null;
 
   return (

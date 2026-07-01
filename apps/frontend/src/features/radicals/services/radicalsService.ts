@@ -4,6 +4,7 @@
  * Story 19.1: Radicals Browser Structure
  */
 
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { apiClient } from "../../../shared/api/axiosClient";
 import type { RadicalData } from "../types";
 
@@ -15,7 +16,7 @@ let cachedRadicals: RadicalData[] | null = null;
  */
 async function loadAllRadicals(): Promise<RadicalData[]> {
   if (cachedRadicals) return cachedRadicals;
-  const response = await apiClient.get("/v1/radicals");
+  const response = await apiClient.get(ROUTE_PATTERNS.radicals);
   cachedRadicals = response.data;
   return response.data;
 }
@@ -28,7 +29,7 @@ async function loadRadicalById(id: string): Promise<RadicalData> {
     const found = cachedRadicals.find((r) => r.id === id);
     if (found) return found;
   }
-  const response = await apiClient.get(`/v1/radicals/${id}`);
+  const response = await apiClient.get(ROUTE_PATTERNS.radicalsById(id));
   return response.data;
 }
 

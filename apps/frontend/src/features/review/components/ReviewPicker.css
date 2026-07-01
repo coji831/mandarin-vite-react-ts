@@ -12,6 +12,12 @@
   gap: 0.75rem;
 }
 
+@media (max-width: 480px) {
+  .review-picker__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 .review-picker__card {
   width: 100%; /* fills grid cell width */
   height: 130px;

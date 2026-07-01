@@ -1,1 +1,0 @@
-export { useRecordActivity } from "./useRecordActivity";

@@ -1,3 +1,0 @@
-/**
- * Dashboard feature barrel export
- */

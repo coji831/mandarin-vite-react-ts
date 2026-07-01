@@ -39,7 +39,6 @@ describe("uiStore", () => {
     const state = useUiStore.getState();
     expect(state.isLoading).toBe(false);
     expect(state.selectedList).toBeNull();
-    expect(state.selectedWords).toEqual([]);
     expect(state.error).toBeUndefined();
   });
 

@@ -7,7 +7,6 @@
  * When no radical is selected, shows a prompt and RadicalGrid.
  */
 
-import { useCallback } from "react";
 import { Button } from "shared/components";
 import type { RadicalData } from "../types";
 import { RadicalGrid } from "./RadicalGrid";

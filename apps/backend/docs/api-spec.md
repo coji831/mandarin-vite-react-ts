@@ -5,18 +5,15 @@
 
 The API specification is now organized by domain:
 
-| Domain | File | Description |
-|---|---|---|
-| Authentication | [`api/auth.md`](api/auth.md) | Register, login, refresh, logout, profile |
-| Health Check | [`api/health.md`](api/health.md) | Server health, cache metrics |
-| Caching Strategy | [`api/caching.md`](api/caching.md) | TTS and conversation caching details |
-| Text-to-Speech | [`api/tts.md`](api/tts.md) | TTS audio generation |
-| Conversation | [`api/conversation.md`](api/conversation.md) | AI conversation generation (text + audio) |
-| Progress Tracking | [`api/progress.md`](api/progress.md) | CRUD, stats, due words, spaced repetition |
-| Gamification | [`api/gamification.md`](api/gamification.md) | Streaks, badges, mystery box, XP |
-| AI Feedback | [`api/ai-feedback.md`](api/ai-feedback.md) | Quiz answer explanations |
-| Error Format | [`api/errors.md`](api/errors.md) | Standardized error response schema |
-| Environment Variables | [`api/env.md`](api/env.md) | Required and optional configuration |
+| Domain                | File                                       | Description                               |
+| --------------------- | ------------------------------------------ | ----------------------------------------- |
+| Authentication        | [`api/auth.md`](api/auth.md)               | Register, login, refresh, logout, profile |
+| Health Check          | [`api/health.md`](api/health.md)           | Server health, cache metrics              |
+| Caching Strategy      | [`api/caching.md`](api/caching.md)         | TTS and AI feedback caching details       |
+| Text-to-Speech        | [`api/tts.md`](api/tts.md)                 | TTS audio generation                      |
+| AI Feedback           | [`api/ai-feedback.md`](api/ai-feedback.md) | Quiz answer explanations                  |
+| Error Format          | [`api/errors.md`](api/errors.md)           | Standardized error response schema        |
+| Environment Variables | [`api/env.md`](api/env.md)                 | Required and optional configuration       |
 
 **Last Updated:** June 8, 2026
 
@@ -253,18 +250,14 @@ Authorization: Bearer <access_token>
 
 See the [`api/`](api/) directory for complete specifications of remaining domains:
 
-| Domain | File | Description |
-|---|---|---|
-| Health Check | [`api/health.md`](api/health.md) | Server health and cache metrics |
-| Caching Strategy | [`api/caching.md`](api/caching.md) | TTS/conversation caching details |
-| Text-to-Speech | [`api/tts.md`](api/tts.md) | TTS audio generation |
-| Conversation | [`api/conversation.md`](api/conversation.md) | AI conversation generation |
-| Progress Tracking | [`api/progress.md`](api/progress.md) | CRUD, stats, due words, SRS |
-| Gamification | [`api/gamification.md`](api/gamification.md) | Streaks, badges, XP |
-| AI Feedback | [`api/ai-feedback.md`](api/ai-feedback.md) | Quiz error explanations |
-| Error Format | [`api/errors.md`](api/errors.md) | Standard error response |
-| Environment Variables | [`api/env.md`](api/env.md) | Config reference |
-
+| Domain                | File                                       | Description                      |
+| --------------------- | ------------------------------------------ | -------------------------------- |
+| Health Check          | [`api/health.md`](api/health.md)           | Server health and cache metrics  |
+| Caching Strategy      | [`api/caching.md`](api/caching.md)         | TTS/conversation caching details |
+| Text-to-Speech        | [`api/tts.md`](api/tts.md)                 | TTS audio generation             |
+| AI Feedback           | [`api/ai-feedback.md`](api/ai-feedback.md) | Quiz error explanations          |
+| Error Format          | [`api/errors.md`](api/errors.md)           | Standard error response          |
+| Environment Variables | [`api/env.md`](api/env.md)                 | Config reference                 |
 
 - Cache shared across users (common errors benefit all learners)
 - Cache hit rate logged every 50 requests
@@ -337,4 +330,3 @@ See the [`api/`](api/) directory for complete specifications of remaining domain
 ```
 
 **Example Request:**
-

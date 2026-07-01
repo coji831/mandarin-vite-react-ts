@@ -96,10 +96,6 @@ export const config = {
     enableMetrics: process.env.ENABLE_METRICS === "true",
     enableDetailedLogs: process.env.ENABLE_DETAILED_LOGS === "true",
   },
-
-  // HMAC
-  examplesCacheHmacKey: process.env.EXAMPLES_CACHE_HMAC_KEY,
-  examplesCacheHmacKeyPrevious: process.env.EXAMPLES_CACHE_HMAC_KEY_PREVIOUS || null,
 };
 
 /**

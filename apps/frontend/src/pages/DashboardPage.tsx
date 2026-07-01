@@ -9,10 +9,10 @@
  * - Phase 1: Welcome prompt with "Start with Pinyin Basics" CTA
  * - Phase 2+: Phase progress bar, quick access, recent activity
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { LoadingScreen, ErrorScreen } from "shared/components";
+import { LoadingScreen } from "shared/components";
 import {
   learn_page,
   practices_review,

@@ -27,19 +27,13 @@ interface RadicalTreesTabProps {
   refetch: () => void;
 }
 
-export function RadicalTreesTab({
-  radicals,
-  isLoading: radicalsLoading,
-  error: radicalsError,
-  refetch,
-}: RadicalTreesTabProps) {
+export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: RadicalTreesTabProps) {
   const { phaseGate, isLoading: phaseGateLoading } = usePhaseGate();
   // If API fails (null phaseGate), default to Phase 1 in prod, Phase 3 in dev
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
   const effectivePhase = phaseGate?.currentPhase ?? defaultPhase;
   const isPhase3 = effectivePhase >= 3;
 
-  const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
   const [masteredRadicals, setMasteredRadicals] = useState<RadicalData[]>([]);
   const [progressLoading, setProgressLoading] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
@@ -105,14 +99,6 @@ export function RadicalTreesTab({
       loadMasteredRadicals();
     }
   }, [radicals.length, radicalsLoading, isPhase3, loadMasteredRadicals]);
-
-  const handleRadicalClick = useCallback((radical: RadicalData) => {
-    setSelectedRadical(radical);
-  }, []);
-
-  const handleBackToBrowse = useCallback(() => {
-    setSelectedRadical(null);
-  }, []);
 
   const handleChipClick = useCallback((id: string) => {
     setSelectedChipId(id);

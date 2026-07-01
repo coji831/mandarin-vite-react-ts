@@ -4,7 +4,6 @@
 
 | Variable                     | Description                                   |
 | ---------------------------- | --------------------------------------------- |
-| `CONVERSATION_MODE`          | `real` or `scaffold`                          |
 | `GCS_BUCKET_NAME`            | Google Cloud Storage bucket name              |
 | `GOOGLE_TTS_CREDENTIALS_RAW` | Service account JSON (stringified)            |
 | `GEMINI_API_CREDENTIALS_RAW` | Service account JSON for Gemini (stringified) |

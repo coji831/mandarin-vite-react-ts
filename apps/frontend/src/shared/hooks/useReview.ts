@@ -11,8 +11,7 @@
 import { useCallback } from "react";
 
 export function useReview() {
-  const saveToReview = useCallback(async (char: string): Promise<boolean> => {
-    console.log(`[Story 18.5] Saving character "${char}" to review`);
+  const saveToReview = useCallback(async (_char: string): Promise<boolean> => {
     // Real backend integration in future story — uses existing progress API pattern
     // e.g., await progressApi.updateWordProgress(char, { studyCount: 1 })
     await new Promise((resolve) => setTimeout(resolve, 500));

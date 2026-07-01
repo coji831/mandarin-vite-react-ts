@@ -29,11 +29,6 @@ const practices_page = "/practices";
 const practices_review = "/practices/review";
 const practices_quiz = "/practices/quiz";
 
-/** @deprecated Use learn_page instead */
-export const mandarin_page = learn_page;
-/** @deprecated Use learn_basic instead */
-export const mandarin_basic = learn_basic;
-
 export {
   root,
   dashboard_page,

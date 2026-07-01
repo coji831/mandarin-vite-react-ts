@@ -12,7 +12,7 @@
 - [Data Flow & Integration](#data-flow--integration)
 - [Caching Strategy](#caching-strategy)
 - [Authentication & Multi-User](#authentication--multi-user)
-- [Progress & Spaced Repetition System](#progress--spaced-repetition-system)
+- [Quiz & Review System](#quiz--review-system)
 - [External Services](#external-services)
 
 ---
@@ -303,57 +303,32 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 - Auth system: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#authentication)
 - Environment setup: [Environment Setup Guide](./guides/getting-started/environment-setup.md)
 
-## Progress & Spaced Repetition System
+## Quiz & Review System
 
-**Pattern:** Quiz-based exponential backoff algorithm
+The platform has two distinct assessment systems serving different pedagogical purposes.
 
-**Core Formula:**
+**Quiz** is a timed, auto-scored assessment used for phase gating. Each quiz mode implements a strategy pattern — encapsulating question generation, answer evaluation, and pass/fail logic. Strategies are registered on both frontend and backend. Quiz sessions follow a state machine (loading → question → input → feedback → results) managed via Zustand on the frontend and persisted through `QuizAttempt` records. All numeric configuration (question count, pass threshold, time limit) is defined server-side, ensuring a single source of truth across clients.
 
-```
-newDelay = correct ? min(365, currentDelay * 2) : 1
-```
+**Review** is a self-paced, self-rated spaced repetition system using the SM-2 algorithm. Each review session covers a single content type. Items enter the review pool through content browsing (auto-enrolled after sufficient views), quiz failures (incorrect answers create review items), or explicit user saves. The 3-step active recall flow is: see prompt → type pinyin → select tone → self-rate retention.
 
-**Progression:** 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (max)
+### Phase Gating
 
-**Performance Multipliers:**
+Users progress through 4 learning phases: Blueprint (foundations) → Core 300 (radicals & characters) → Network (comprehension) → Advanced Fluidity (idioms & grammar). Each phase has defined gate quizzes with pass thresholds to unlock the next. A `PhaseStrategyRegistry` maps each phase to its available review types, quiz modes, and practice modes. Phase gate state is stored server-side and cached in the frontend.
 
-- **Quiz Correct**: Double the interval (exponential backoff), capped at 365 days
-- **Quiz Incorrect**: Reset to 1 day (immediate review)
+### Leech Detection
 
-**Progress Tracking:**
+Vocabulary items with repeated failures are flagged as "leeches" for targeted review. Accessible via dedicated API endpoints sorted by struggle intensity, enabling Pareto-based review — a small fraction of difficult items causes the majority of failures.
 
-- **Study Metrics**: `studyCount`, `correctCount`, `nextReview`, `currentDelay`
-- **Quiz Metrics**: `lapseCount` (consecutive failures for leech detection)
-- **Session Records**: `QuizSessionAnswer` table logs every quiz answer with timestamp, question type, correctness, and time spent
+### Backend Modules
 
-**Leech Detection:**
-
-- Words with `lapseCount >= 5` flagged as "leeches" (high-difficulty vocabulary)
-- Accessible via `GET /api/v1/learning/leeches` endpoint
-- Sorted by struggle intensity (highest lapseCount first)
-- Enables targeted review for 15% of words causing 50% of failures (Pareto principle)
-
-**Quiz Session Endpoints (Primary):**
-
-- `POST /api/v1/quiz/session/start` - Start or resume a session (returns 10 questions, handles daily check)
-- `POST /api/v1/quiz/session/:sessionId/answer` - Submit answer, receive feedback + AI explanation if incorrect
-- `GET /api/v1/quiz/session/:sessionId/summary` - Retrieve completed session metrics (XP, accuracy, badges)
-
-**Learning Endpoints (Stateless / Supplementary):**
-
-- `GET /api/v1/learning/due` - Fetch words requiring review (based on `nextReview <= date`)
-- `POST /api/v1/learning/result` - Save quiz answer directly, adjust spaced repetition
-- `GET /api/v1/learning/leeches` - Fetch struggling vocabulary for targeted practice
-
-**Progression System:**
-
-- **Phase Gating**: Users progress through 4 learning phases (Phase 1: Foundations, Phase 2: Characters, Phase 3: Readers, Phase 4: Mastery). Each phase has a gate quiz requirement to unlock the next. Phase gate state is stored server-side in PostgreSQL and cached in sessionStorage with a 5-minute TTL.
-- **Foundation Progress**: Tracked per-section (Pinyin, Tones, Strokes, Animations) via the `progression` backend module. Records auto-initialize on first GET for new users. Section IDs are defined in `packages/shared-constants/` for cross-cutting validation.
-- **API module**: `apps/backend/src/modules/progression/` — handles phase gating, foundation completion tracking, and quiz attempts.
+- **Quiz module**: Strategy-based quiz engine, generates questions from content data, evaluates answers, manages attempt lifecycle
+- **Progression module**: Handles phase gating, foundation progress tracking, quiz attempt coordination with pass threshold evaluation
+- **Review module**: Builds review items from content files and SRS state, manages SM-2 scheduling
 
 **See detailed documentation:**
 
-- Spaced repetition algorithm: [docs/knowledge-base/learning-theory/spaced-repetition-algorithms.md](./knowledge-base/learning-theory/spaced-repetition-algorithms.md)
+- Strategy pattern implementation: [Strategy Pattern (Frontend)](./knowledge-base/frontend/strategy-pattern-frontend.md)
+- Spaced repetition algorithm: [Spaced Repetition Algorithms](./knowledge-base/learning-theory/spaced-repetition-algorithms.md)
 - API specification: [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md#progress-tracking-endpoints)
 
 ## External Services
@@ -477,4 +452,4 @@ newDelay = correct ? min(365, currentDelay * 2) : 1
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** June 30, 2026

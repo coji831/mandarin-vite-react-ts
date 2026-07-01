@@ -36,7 +36,7 @@ type ReviewCardProps = {
 function ReviewCardComponent({
   item,
   step,
-  userPinyin,
+  userPinyin: _userPinyin,
   pinyinCorrect,
   toneCorrect,
   onSubmitPinyin,

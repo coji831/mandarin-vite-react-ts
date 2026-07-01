@@ -1,6 +1,6 @@
 # TTS Endpoints
 
-## POST /api/get-tts-audio
+## POST /v1/tts
 
 Generate or retrieve cached TTS audio for given text.
 

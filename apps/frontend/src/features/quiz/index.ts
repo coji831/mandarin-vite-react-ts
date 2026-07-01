@@ -15,6 +15,7 @@ export type { QuizSession } from "./types";
 export { createInitialSession } from "./types";
 
 // Components
+export { QuizCard } from "./components/QuizCard";
 export { QuizRouter } from "./components/QuizRouter";
 export { QuestionView } from "./components/QuestionView";
 export { AnswerInput } from "./components/AnswerInput";

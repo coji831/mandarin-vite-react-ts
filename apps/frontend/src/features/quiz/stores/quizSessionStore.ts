@@ -49,7 +49,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       let strategyConfig: import("../types").QuizStrategyConfig | null = null;
       try {
         strategyConfig = await quizService.getQuizConfig(strategyType);
-      } catch (apiErr) {
+      } catch (_apiErr) {
         // Backend unavailable — use sensible defaults
       }
 
@@ -63,7 +63,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       try {
         const attempt = await quizService.createQuizAttempt(strategyType, strategy?.phase ?? 1);
         attemptId = attempt.id;
-      } catch (apiErr) {
+      } catch (_apiErr) {
         // Backend unavailable — proceed without remote attempt, answers won't be persisted
       }
 
