@@ -1,8 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import dotenv from "dotenv";
 import { resolve } from "path";
+
+const { PrismaClient } = prismaPkg;
 
 dotenv.config({ path: resolve(process.cwd(), "../../.env.local") });
 

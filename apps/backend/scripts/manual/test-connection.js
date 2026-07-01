@@ -1,9 +1,11 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PrismaClient } from "@prisma/client";
+import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pkg from "pg";
+
+const { PrismaClient } = prismaPkg;
 const { Pool } = pkg;
 
 // Load .env.local from root (same as backend config)

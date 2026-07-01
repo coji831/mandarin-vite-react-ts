@@ -9,10 +9,12 @@
  */
 
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pkg from "pg";
 import bcrypt from "bcrypt";
+
+const { PrismaClient } = prismaPkg;
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
 

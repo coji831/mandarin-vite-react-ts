@@ -1,9 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "*": ["*"]
-    },
     "types": ["@testing-library/jest-dom", "node"]
   },
   "files": [],

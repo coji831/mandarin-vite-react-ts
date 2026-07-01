@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -20,16 +19,16 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "paths": {
-      "features": ["features"],
-      "features/*": ["features/*"],
-      "shared": ["shared"],
-      "shared/*": ["shared/*"],
-      "utils": ["utils"],
-      "utils/*": ["utils/*"],
-      "config": ["shared/config"],
-      "config/*": ["shared/config/*"],
-      "services": ["shared/api"],
-      "services/*": ["shared/api/*"]
+      "features": ["./src/features"],
+      "features/*": ["./src/features/*"],
+      "shared": ["./src/shared"],
+      "shared/*": ["./src/shared/*"],
+      "utils": ["./src/utils"],
+      "utils/*": ["./src/utils/*"],
+      "config": ["./src/shared/config"],
+      "config/*": ["./src/shared/config/*"],
+      "services": ["./src/shared/api"],
+      "services/*": ["./src/shared/api/*"]
     }
   },
   "include": ["src"],
