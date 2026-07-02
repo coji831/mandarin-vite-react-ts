@@ -1,6 +1,6 @@
 ---
 description: "Use when adding new logic, writing tests, or completing a story. Covers minimum testing requirements for new code: what must be tested and at what level. Prevents untested code from shipping."
-applyTo: "apps/frontend/src/**/*.ts,apps/frontend/src/**/*.tsx,apps/backend/src/**/*.js"
+applyTo: "apps/frontend/src/**/*.ts,apps/frontend/src/**/*.tsx,apps/backend/src/**/*.ts"
 ---
 
 # Testing Requirements

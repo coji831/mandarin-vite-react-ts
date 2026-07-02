@@ -9,8 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
+    "test": "vitest run --changed",
+    "test:full": "vitest run",
+    "test:watch": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui"
   },
@@ -41,7 +42,6 @@
     "globals": "^15.15.0",
     "jsdom": "^24.0.0",
     "prettier": "^3.9.4",
-    "typescript": "^5.9.3",
     "typescript-eslint": "^8.31.0",
     "vite": "^7.3.6",
     "vitest": "^4.1.9"

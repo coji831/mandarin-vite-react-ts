@@ -14,7 +14,9 @@
     "build": "npm run build --workspaces --if-present",
     "build:frontend": "npm run build --workspace=@mandarin/frontend",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspace=@mandarin/frontend",
+    "test:full": "npm run test:full --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present"
   },
   "dependencies": {
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@google/design.md": "^0.3.0",
-    "typescript": "^5.8.3"
+    "prettier": "^3.9.4",
+    "typescript": "^5.9.3"
   }
 }

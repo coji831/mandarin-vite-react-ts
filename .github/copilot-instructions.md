@@ -9,9 +9,11 @@ Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 Install: `npm install`
 Run dev: `npm run dev` (port 5173)
 Run local backend: `npm run start-backend` (port 3001)
-Run tests: `npm test`
+Run tests (changed scope only): `npm test`
+Run full test suite: `npm run test:full`
 Run build (type-check + bundle): `npm run build`
 Run format: `npm run format`
+Run lint: `npm run lint` (0 errors required)
 Run design lint: `npx @google/design.md lint DESIGN.md`
 See AGENTS.md for agent roles, behavior rules, and prohibited patterns.
 Epic BR: use `docs/templates/epic-business-requirements-template.md`

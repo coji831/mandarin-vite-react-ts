@@ -14,7 +14,7 @@ Follow this sequence when implementing or updating a story:
 4. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
 5. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
 6. **Update Documentation** — Developer records decisions, data shape changes, and performance notes in story implementation doc. Add "Technical Challenges & Solutions" section for non-trivial problems. Update Last Update date fields. Documentation changes must be reviewed before commit.
-7. **Pre-Commit Gate** — Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm test` (or targeted pattern) → must pass. Run `npm run lint` if available. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
+7. **Pre-Commit Gate** — Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm run test:full` → must pass (full suite; `npm test` runs changed-scope only). Run `npm run lint` → must have **0 errors** (warnings are acceptable during incremental migration). Fix any NEW errors you introduced. Do not add new `any` annotations — use proper types. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
 8. **Commit** — Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`. Include scope referencing story. Ensure BR + implementation doc updates are in the same commit for traceability.
 
 ## Pre-Implementation Investigation Checklist
@@ -73,7 +73,7 @@ Before writing any code, the implementing agent MUST investigate these 4 areas t
 1. Confirm all AC items checked in BR — split remaining into new story OR defer with explicit "Deferred" subsection if not
 2. Verify and update high-level docs (`docs/architecture.md`, `README.md`, `docs/README.md`, `apps/*/README.md`) using descriptive feature names (NOT story/epic numbers)
 3. Check for knowledge base and guideline updates — review "Technical Challenges & Solutions" section for reusable patterns; extract to `docs/knowledge-base/` or `docs/guides/` as appropriate
-4. Run all feature tests before closing — `npm test -- --run src/features/<feature>/` — 100% pass rate
+4. Run full test suite before closing — `npm run test:full`; for a specific feature: `vitest run src/features/<feature>/` or `vitest run src/modules/<module>/` — 100% pass rate
 5. Update `Status: Completed` in BR + implementation docs
 6. Update `Last Update` date in both
 7. Ensure PR number is referenced in both docs
@@ -82,7 +82,7 @@ Before writing any code, the implementing agent MUST investigate these 4 areas t
 
 ## Quality Gates (Before Merge/Close)
 
-- Tests passing (`npm test`)
+- Full tests passing (`npm run test:full`)
 - Type check clean (`tsc --noEmit`)
 - Lint clean (ESLint if configured)
 - DESIGN.md tokens valid (`npx @google/design.md lint DESIGN.md`)
