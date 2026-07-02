@@ -1,4 +1,5 @@
 node_modules
+dist
 # Environment variables (backend loads from root .env.local via config/index.js)
 .env
 .env.local

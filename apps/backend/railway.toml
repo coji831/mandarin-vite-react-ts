@@ -1,6 +1,6 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "npm install && npx prisma generate --schema=apps/backend/prisma/schema.prisma"
+buildCommand = "npm install && npm run build --workspace=@mandarin/backend && npx prisma generate --schema=apps/backend/prisma/schema.prisma"
 
 [deploy]
 startCommand = "npm run start --workspace=@mandarin/backend"
