@@ -1,6 +1,6 @@
 ﻿# Frontend-Backend Integration Guide
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** July 3, 2026  
 **Purpose:** Unified guide for cookie-based authentication, CORS setup, API communication, and frontend-backend sync  
 **Audience:** Full-stack developers configuring auth, debugging CORS/cookie issues, or integrating frontend clients with backend
 
@@ -32,9 +32,9 @@ Response with Set-Cookie header (if refresh token rotation)
 
 ### Backend Setup
 
-**File:** `apps/backend/src/shared/middleware/` (CORS is configured in `app/index.js`)
+**File:** `apps/backend/src/shared/middleware/` (CORS is configured in `app/index.ts`)
 
-```javascript
+```typescript
 import cors from "cors";
 
 export const corsMiddleware = cors({
@@ -52,8 +52,8 @@ FRONTEND_URL=http://localhost:5173  # Dev: localhost, Prod: Vercel domain
 
 **Server Initialization:**
 
-```javascript
-// apps/backend/src/app/index.js
+```typescript
+// apps/backend/src/app/index.ts
 import express from "express";
 import cookieParser from "cookie-parser";
 import { corsMiddleware } from "../shared/middleware/index.js";
@@ -115,19 +115,18 @@ const response = await fetch("http://localhost:3001/api/v1/auth/login", {
 
 **Step 2: Backend Response**
 
-Backend validates credentials and sends httpOnly cookie:
+Backend validates credentials and sends httpOnly cookie. The controller handles HTTP concerns, the service handles business logic:
 
 ```typescript
-// Backend: apps/backend/src/routes/auth.js
-app.post("/api/v1/auth/login", async (req, res) => {
-  const user = await AuthService.authenticate(req.body);
-  const accessToken = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "15m" });
-  const refreshToken = jwt.sign(user, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+// Backend: apps/backend/src/modules/auth/api/AuthController.ts
+async login(req: Request, res: Response) {
+  const { email, password } = req.body;
+  const { user, accessToken, refreshToken } = await this.authService.login(email, password);
 
   // Set httpOnly cookie (secure in production)
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true, // Not accessible via JavaScript (XSS protection)
-    secure: true, // HTTPS only in production
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
     sameSite: "lax", // CSRF protection
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -137,7 +136,7 @@ app.post("/api/v1/auth/login", async (req, res) => {
     accessToken, // Send in response (client stores in memory)
     user: { id: user.id, email: user.email },
   });
-});
+}
 ```
 
 **Step 3: Authenticated Requests**
@@ -158,28 +157,36 @@ const response = await fetch("http://localhost:3001/api/v1/vocab", {
 
 **Step 4: Token Rotation**
 
-Backend validates accessToken; if expired, issues new one via refresh token in cookie:
+Backend validates accessToken; if expired, the auth middleware delegates to the auth service to issue a new one via refresh token in cookie:
 
 ```typescript
-// Backend middleware
-export async function authenticateToken(req, res, next) {
+// Backend middleware: apps/backend/src/shared/middleware/authMiddleware.ts
+export async function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.split(" ")[1];
 
   if (!token) return res.status(401).json({ error: "No token" });
 
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = user;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    req.user = decoded;
     next();
   } catch (err) {
-    if (err.name === "TokenExpiredError") {
+    if (err instanceof Error && err.name === "TokenExpiredError") {
       // Refresh token logic
       const refreshToken = req.cookies.refreshToken;
-      const newAccessToken = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "15m" });
-      res.set("X-New-Access-Token", newAccessToken);
-      req.user = user;
-      next();
+      if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
+      try {
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayload;
+        const newAccessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET!, {
+          expiresIn: "15m",
+        });
+        res.set("X-New-Access-Token", newAccessToken);
+        req.user = decoded;
+        next();
+      } catch {
+        res.status(403).json({ error: "Invalid refresh token" });
+      }
     } else {
       res.status(403).json({ error: "Invalid token" });
     }
@@ -407,10 +414,10 @@ server: {
 ### Implementation Files
 
 - **Backend CORS:** `apps/backend/src/shared/middleware/`
-- **Backend Auth:** `apps/backend/src/modules/auth/services/AuthService.js`
+- **Backend Auth:** `apps/backend/src/modules/auth/services/AuthService.ts`
 - **Frontend API Client:** `apps/frontend/src/services/ApiClient.ts`
 - **Vite Config:** `apps/frontend/vite.config.ts`
 
 ---
 
-**Last Updated:** June 3, 2026
+**Last Updated:** July 3, 2026

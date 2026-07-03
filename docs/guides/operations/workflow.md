@@ -148,16 +148,7 @@ See [Infrastructure Setup Guide](../operations/infrastructure.md) for complete w
    - Update all internal usages to new pattern
    - Remove deprecated code in next major version
 
-   ```typescript
-   /**
-    * @deprecated Use getExamples() instead. Will be removed in v2.0.
-    * @see getExamples
-    */
-   export function fetchExamples() {
-     console.warn("fetchExamples() is deprecated. Use getExamples() instead.");
-     return getExamples();
-   }
-   ```
+   For code examples of the deprecation pattern, see `docs/guides/conventions/backend.md`.
 
 2. **Documentation:**
    - Add "BREAKING CHANGE" section to PR description
@@ -215,19 +206,4 @@ For standardized AI workflow steps, automation protocol, and structured prompt f
 
 ## CSV Vocabulary Management
 
-This project uses a CSV-based system for managing vocabulary data. Follow these steps when working with vocabulary:
-
-1. **Structure**: CSV files are stored in `public/data/vocabulary/` with standard headers: `No,Chinese,Pinyin,English`
-
-2. **Adding/Updating Vocabulary**:
-   - Update the appropriate CSV file in `public/data/vocabulary/hsk3.0/band1/`
-   - Ensure proper format with the required columns
-   - Use the `csvLoader.ts` utility for processing in code
-
-3. **Testing**:
-   - Test loading using `csvLoader.ts` utility
-   - Verify proper display in the vocabulary list component
-
-4. **Documentation**:
-   - Update vocabulary documentation when changing CSV structure
-   - Reference the vocabulary format in implementation docs
+See feature-specific docs for CSV structure and the `csvLoader.ts` utility. Update vocabulary documentation when changing CSV structure.

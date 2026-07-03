@@ -1,6 +1,6 @@
 # PostgreSQL Setup & Migrations
 
-**Last Updated:** June 2, 2026
+**Last Updated:** July 3, 2026
 
 **When Adopted:** Epic 13
 
@@ -65,8 +65,8 @@ Cloud database providers (Supabase, Railway, Neon) close idle connections after 
 
 ### Solution: Connection Pool Configuration
 
-```javascript
-// apps/backend/src/infrastructure/database/client.js
+```typescript
+// apps/backend/src/shared/infrastructure/database/client.ts
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({

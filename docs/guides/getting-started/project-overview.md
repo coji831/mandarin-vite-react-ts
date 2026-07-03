@@ -29,16 +29,20 @@ mandarin-vite-react-ts/
 │   ├── frontend/          # React + Vite SPA (port 5173)
 │   │   ├── src/
 │   │   │   ├── features/  # Feature modules (mandarin, quiz, etc.)
-│   │   │   ├── components/# Shared UI components
-│   │   │   ├── hooks/     # Shared custom hooks
-│   │   │   ├── services/  # API client and service layer
-│   │   │   └── utils/     # Utility functions
-│   │   └── public/data/   # CSV vocabulary files
+│   │   │   ├── shared/
+│   │   │   │   ├── components/  # Shared UI components
+│   │   │   │   ├── hooks/       # Shared custom hooks
+│   │   │   │   ├── api/         # API client and service layer
+│   │   │   │   └── utils/      # Utility functions
+│   │   │   ├── pages/     # Page-level components
+│   │   │   ├── router/    # Route definitions
+│   │   │   └── styles/    # Global CSS variables
+│   │   └── public/data/vocabulary/   # HSK vocabulary CSV files
 │   └── backend/           # Express API server (port 3001)
 │       ├── src/
-        │   ├── app/       # Entry point, DI container, routes
-        │   ├── modules/   # 8 business modules (auth, word, vocabulary, quiz, etc.)
-        │   └── shared/    # Cross-cutting: infrastructure, middleware, config, utils
+│       │   ├── app/       # Entry point, DI container, routes
+│       │   ├── modules/   # Business modules (auth, word, vocabulary, quiz, etc.)
+│       │   └── shared/    # Cross-cutting: infrastructure, middleware, config, utils
 │       └── prisma/        # Schema, migrations, seeds
 ├── packages/
 │   ├── shared-types/      # TypeScript types shared across apps
@@ -47,7 +51,7 @@ mandarin-vite-react-ts/
 │   ├── guides/            # Setup, conventions, testing, operations
 │   ├── knowledge-base/    # Deep dives, patterns, architecture
 │   └── templates/         # BR and implementation templates
-└── public/data/           # CSV vocabulary data
+└── content/               # Mandarin reference data (characters, radicals, pinyin, etc.)
 ```
 
 ---
@@ -69,7 +73,7 @@ mandarin-vite-react-ts/
 | What                     | Where                                                       |
 | ------------------------ | ----------------------------------------------------------- |
 | Frontend feature         | `apps/frontend/src/features/<feature>/`                     |
-| Shared UI component      | `apps/frontend/src/components/`                             |
+| Shared UI component      | `apps/frontend/src/shared/components/`                      |
 | Backend route/controller | `apps/backend/src/modules/<name>/api/`                      |
 | Backend service          | `apps/backend/src/modules/<name>/services/` or `use-cases/` |
 | Shared types             | `packages/shared-types/src/`                                |
@@ -92,33 +96,9 @@ New developers should follow this path:
 
 ---
 
-## 🚀 Frontend Setup (5 Minutes)
+## 🚀 Frontend Setup
 
-### 1. Clone & Install
-
-```bash
-# Clone repository
-git clone https://github.com/coji831/mandarin-vite-react-ts.git
-cd mandarin-vite-react-ts
-
-# Install dependencies (takes 1-2 minutes)
-npm install
-```
-
-### 2. Start Development Server
-
-```bash
-# Start frontend
-npm run dev
-```
-
-**✅ App is now running at:** `http://localhost:5173`
-
-Open your browser and you should see the Mandarin learning app!
-
-> **Note:** The frontend uses a Vite proxy to connect to the production backend by default. API features (vocabulary, flashcards, audio) work out of the box without backend setup.
-
----
+See [quickstart.md](./quickstart.md) for setup instructions — clone, install, and start the dev server in 5 minutes.
 
 ## Basic Commands
 

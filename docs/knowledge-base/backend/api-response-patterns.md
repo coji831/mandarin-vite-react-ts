@@ -1,6 +1,6 @@
 # API Response Patterns: Wrapper vs. Direct
 
-**Last Updated:** February 7, 2026  
+**Last Updated:** July 3, 2026  
 **Audience:** Engineers designing REST APIs, integrating HTTP clients  
 **Difficulty:** Intermediate
 
@@ -492,7 +492,7 @@ axios.interceptors.response.use(
 **Knowledge Base:**
 
 - [TypeScript Error Handling](./typescript-error-handling.md) - Best practices for `error: unknown`
-- [Backend Architecture](./backend-architecture.md) - Clean Architecture, CORS
+- [Backend Architecture](./backend-architecture.md) - Modulith Architecture, CORS
 - [Frontend State Management](../frontend/frontend-state-management.md) - Normalized state, data loading
 
 **External Resources:**

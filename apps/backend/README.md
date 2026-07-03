@@ -81,7 +81,7 @@ npm start
 npm test
 
 # Run specific test file
-npm test -- errorHandler.test.js
+npm test -- errorHandler.test.ts
 ```
 
 ## Troubleshooting

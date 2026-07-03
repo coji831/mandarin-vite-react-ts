@@ -1,7 +1,6 @@
 ---
 description: "Use when writing backend API controllers, services, or error handling. Covers consistent error response format and message conventions."
-applyTo:
-  ["apps/backend/src/**/*Controller*", "apps/backend/src/**/*Service*", "apps/backend/src/**/*.js"]
+applyTo: "apps/backend/src/**/*Controller*, apps/backend/src/**/*Service*, apps/backend/src/**/*.ts"
 ---
 
 # Backend Error Message Convention
@@ -26,7 +25,7 @@ All error messages must follow: `"Failed to {action} {resource}"`
 
 ## Response Shape
 
-```javascript
+```typescript
 // ✅ DO — Consistent error JSON
 res.status(400).json({
   error: "Failed to load review items",

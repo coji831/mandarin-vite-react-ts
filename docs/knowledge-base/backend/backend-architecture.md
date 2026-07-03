@@ -1,17 +1,65 @@
 # Backend Architecture Patterns
 
 **Category:** Backend Development  
-**Last Updated:** December 9, 2025
+**Last Updated:** July 3, 2026
 
 ---
 
-## Clean Architecture (Controllers → Services → Repositories)
+## Modulith Architecture (Modular Monolith)
 
-**When Adopted:** Epic 13 (Production Backend Architecture)  
+**Why:** Self-contained modules, controlled boundaries, each module picks its own internal pattern  
+**Use Case:** Scaling backend logic without imposing a single pattern across all modules
+
+The backend follows a **modulith** (modular monolith) architecture. The application is organized into self-contained modules under `src/modules/<name>/`, each owning its own API layer, business logic, data access, and types. Modules communicate through direct function calls (in-process), not through network calls.
+
+What makes this a modulith rather than a Clean Architecture system is that **each module chooses its own internal pattern** based on its business needs. Clean Architecture is one option; modules with simpler needs may use a flatter structure.
+
+### Folder Structure
+
+All backend source files are TypeScript (`.ts`). The `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports).
+
+```
+src/
+├── app/                    # Entry point, DI container, routes
+│   ├── index.ts
+│   ├── container.ts
+│   └── routes.ts
+├── modules/<name>/         # Per-module: api/, services/, repositories/, types/
+│   ├── api/                #   controllers + routes
+│   ├── services/           #   business logic (optional)
+│   ├── repositories/       #   data access (optional)
+│   ├── types/              #   typed interfaces (barrel re-exported via index.ts)
+│   └── __tests__/          #   unit/integration tests
+└── shared/                 # Cross-cutting concerns
+    ├── config/index.ts
+    ├── infrastructure/     #   external clients, cache, Redis, security
+    ├── middleware/          #   asyncHandler, auth, cache, errorHandler
+    └── utils/              #   logger, errorFactory, hashUtils
+```
+
+The `services/` and `repositories/` directories are **optional**. A module only includes them if its internal pattern requires those layers.
+
+### Module Pattern Selection
+
+Each module picks its internal architecture based on business complexity:
+
+| Module Type                     | Internal Pattern                                            | Example Modules         |
+| :------------------------------ | ----------------------------------------------------------- | ----------------------- |
+| **Simple CRUD**                 | Minimal Controller → Repository                             | `health`, `profile`     |
+| **Complex business logic**      | Full Clean Architecture (Controller → Service → Repository) | `auth`, `quiz`          |
+| **Data-intensive / reporting**  | CQRS or query-object patterns                               | `review`, `progression` |
+| **Trivial / no business logic** | Controller only (skips Service layer)                       | `static`, `config`      |
+
+This flexibility keeps simple modules simple — they aren't forced through unnecessary abstraction layers — while complex modules get the full separation of concerns they need.
+
+### Clean Architecture (Controllers → Services → Repositories)
+
 **Why:** Separation of concerns, testability, maintainability  
-**Use Case:** Scaling backend logic without spaghetti code
+**Use Case:** Modules with complex business logic that benefit from layered isolation
 
-### Minimal Example
+Clean Architecture is one of several internal patterns a module may adopt. It enforces a strict three-layer structure within the module.
+
+#### Minimal Example
 
 ```typescript
 // 1. Repository Layer (Data Access)
@@ -61,34 +109,15 @@ app.post("/api/progress", async (req, res) => {
 });
 ```
 
-### Folder Structure
-
-```
-src/
-├── app/                    # Entry point, DI container, routes
-│   ├── index.js
-│   ├── container.js
-│   └── routes.js
-├── modules/<name>/         # Per-module: api/, services/, repositories/
-│   ├── api/                #   controllers + routes
-│   ├── services/           #   business logic
-│   ├── repositories/       #   data access
-│   └── __tests__/          #   unit/integration tests
-└── shared/                 # Cross-cutting concerns
-    ├── config/index.js
-    ├── infrastructure/     #   external clients, cache, Redis, security
-    ├── middleware/          #   asyncHandler, auth, cache, errorHandler
-    └── utils/              #   logger, errorFactory, hashUtils
-```
-
-### Key Lessons
+#### Key Lessons
 
 - Controllers: thin, validate input, call services
 - Services: business logic, orchestrate repositories
 - Repositories: CRUD operations only
+- Types: Every module has a `types/` directory with typed interfaces; no `Record<string, unknown>` casts, no `as unknown as` double casts
 - DTOs: explicit types for request/response
 
-### When to Use
+#### When to Use
 
 Complex business logic, multiple data sources, testability required
 

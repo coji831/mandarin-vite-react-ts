@@ -37,7 +37,7 @@ const data = response.data; // Direct access — no wrapper
 
 > **Reference:** See [Backend Conventions](./backend.md) for:
 >
-> - Clean architecture layers (Controllers, Services, Repositories)
+> - Module architecture patterns (Controllers, Services, Repositories)
 > - Middleware patterns (auth, error handling)
 > - Error logging & scoping best practices
 > - Dependency injection setup
@@ -46,15 +46,15 @@ const data = response.data; // Direct access — no wrapper
 
 **Quick Reference:**
 
-```javascript
+```typescript
 // Controller: Thin, HTTP only
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   const result = await authService.login(req.body.email, req.body.password);
   res.json(result);
 });
 
 // Service: Business logic, stateless
-async login(email, password) {
+async login(email: string, password: string) {
   const user = await this.userRepository.findByEmail(email);
   if (!user) throw new AuthError('User not found');
   return { user, token: this.jwt.generateToken(user.id) };
@@ -247,9 +247,9 @@ import { config } from "../../config/index.js";
 import config from "../../config/index.js";
 ```
 
-**ESM requires `.js` extensions:**
+**ESM requires `.js` extensions in import paths (referring to compiled output):**
 
-```javascript
+```typescript
 // ✅ Correct - Include .js extension
 import { AuthService } from "./services/AuthService.js";
 

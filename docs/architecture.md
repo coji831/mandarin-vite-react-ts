@@ -27,7 +27,7 @@ PinyinPal is a **full-stack Mandarin learning platform** built with:
 - **Cache**: Redis (Upstash) for API response caching
 - **External APIs**: Google Cloud TTS, Google Cloud Storage, Gemini AI
 
-**Architecture Style:** Monorepo with npm workspaces, Clean Architecture on backend, Feature-Based Frontend
+**Architecture Style:** Monorepo with npm workspaces, Modulith (Modular Monolith) on backend, Feature-Based Frontend
 
 ## Monorepo Structure
 
@@ -57,24 +57,25 @@ mandarin-vite-react-ts/
 
 ## Backend Architecture
 
-**Pattern:** Clean Architecture Modular Monolith
+**Pattern:** Modulith (Modular Monolith) — modules pick their own internal pattern
 
 **Layer Separation (Modular Monolith):**
 
-- **App Layer** (`src/app/`): Entry point, DI container (`container.js`), route registration (`routes.js`)
-- **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access)
-  - Current modules: `auth`, `gamification`, `progress`, `quiz`, `progression`, `tts`, `learning`, `examples`
-- **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database), `middleware/`, `utils/`, `config/`
+- **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
+- **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
+  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`
+- **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
 
 **Key Design Decisions:**
 
 1. **Single Express App** (dev + prod): Unified behavior, no dual-backend maintenance
-2. **ESM Modules**: Requires `.js` extensions in imports (Node.js ESM requirement)
-3. **Dependency Injection**: Services accept repository/client dependencies for testability
+2. **ESM Modules**: TypeScript source uses `.ts` files; the `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports)
+3. **Dependency Injection**: Constructor injection with direct instantiation at composition root
 4. **Fail-Open Caching**: Redis failures never block requests (degrades to API calls)
 5. **Repository Pattern**: All database access through repositories (abstracts Prisma)
+6. **Types Directory**: Each module has `types/` with barrel re-exports; no `Record<string, unknown>` casts, no `as unknown as` double casts
 
 **See detailed documentation:**
 
@@ -172,24 +173,15 @@ flowchart TD
 
 #### Custom Data Fetching Hook
 
-Story 16.2 introduced a custom React hook (`useExamples`) that mimics SWR behavior without external dependencies:
-
-- **In-memory dedup:** Concurrent requests for the same (word, hskLevel, language) share a single promise for 60 seconds
-- **sessionStorage cache:** Successful responses cached as JSON; on re-fetch, `sessionStorage` is checked before network
-- **Cache invalidation:** 60-second TTL on the in-memory promise; explicit invalidation available via hook API
-- **Hook API:** `const { data, isLoading, error, cacheHit } = useExamples(word, hskLevel, language)`
-- **Use Case:** Word examples panel; reduces API calls for frequently viewed words
-- **Rationale:** SWR not available in dependencies; custom hook pattern aligns with project architecture
-
-**Integration Point:** Story 16.3 will integrate a real TTS audio endpoint (`GET /api/examples/audio`); no hook changes are required for that integration.
+Custom data-fetching hooks (e.g., `useExamples`) with in-memory dedup and sessionStorage cache.
 
 ### Accessibility
 
-**WCAG 2.1 AA Compliance:** Story 16.2 implements WCAG 2.1 AA patterns (ARIA labels, keyboard navigation, 44px+ touch targets, semantic HTML). See WordExamplesPanel for an example component pattern.
+**WCAG 2.1 AA compliance** for accessibility (ARIA labels, keyboard navigation, 44px+ touch targets, semantic HTML).
 
 ## Data Flow & Integration
 
-**Content (static reference data) and User Data (dynamic progress) are separated at the storage layer and joined at query time.** See [Architecture Overview](../docs/architecture.md#content-data-flow) and [Content Registry Architecture](../verification-artifacts/content-registry-architecture.md) for the full design.
+**Content (static reference data) and User Data (dynamic progress) are separated at the storage layer and joined at query time.** See [Architecture Overview](../docs/architecture.md#content-data-flow) for the full design.
 
 **Client → Server:**
 
@@ -254,7 +246,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 - **TTS Audio**: 24-hour TTL, SHA256-keyed, Base64-encoded binary storage
 - **AI Feedback**: 24-hour TTL, keyed per word+answer combination
 - **Due Words**: 5-minute TTL per user
-- **Quiz Sessions**: 24-hour TTL per user
+- **Quiz Attempts**: Results cached per user
 
 **Performance:**
 
@@ -305,19 +297,15 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 
 ## Quiz & Review System
 
-The platform has two distinct assessment systems serving different pedagogical purposes.
-
-**Quiz** is a timed, auto-scored assessment used for phase gating. Each quiz mode implements a strategy pattern — encapsulating question generation, answer evaluation, and pass/fail logic. Strategies are registered on both frontend and backend. Quiz sessions follow a state machine (loading → question → input → feedback → results) managed via Zustand on the frontend and persisted through `QuizAttempt` records. All numeric configuration (question count, pass threshold, time limit) is defined server-side, ensuring a single source of truth across clients.
-
-**Review** is a self-paced, self-rated spaced repetition system using the SM-2 algorithm. Each review session covers a single content type. Items enter the review pool through content browsing (auto-enrolled after sufficient views), quiz failures (incorrect answers create review items), or explicit user saves. The 3-step active recall flow is: see prompt → type pinyin → select tone → self-rate retention.
+The platform has two distinct assessment systems. **Quiz** is a timed, auto-scored assessment for phase gating — strategy-pattern-based with `QuizAttempt` records. **Review** is a self-paced, self-rated spaced repetition system using SM-2 with active recall (prompt → type pinyin → select tone → self-rate retention).
 
 ### Phase Gating
 
-Users progress through 4 learning phases: Blueprint (foundations) → Core 300 (radicals & characters) → Network (comprehension) → Advanced Fluidity (idioms & grammar). Each phase has defined gate quizzes with pass thresholds to unlock the next. A `PhaseStrategyRegistry` maps each phase to its available review types, quiz modes, and practice modes. Phase gate state is stored server-side and cached in the frontend.
+Users progress through 4 learning phases (Blueprint → Core 300 → Network → Advanced Fluidity), each with gate quizzes to unlock the next. Phase gate state is stored server-side.
 
 ### Leech Detection
 
-Vocabulary items with repeated failures are flagged as "leeches" for targeted review. Accessible via dedicated API endpoints sorted by struggle intensity, enabling Pareto-based review — a small fraction of difficult items causes the majority of failures.
+Items with repeated failures are flagged as "leeches" for targeted Pareto-based review.
 
 ### Backend Modules
 
@@ -337,41 +325,30 @@ Vocabulary items with repeated failures are flagged as "leeches" for targeted re
 
 | Service             | Purpose                         | Client Location                                         | Configuration                |
 | ------------------- | ------------------------------- | ------------------------------------------------------- | ---------------------------- |
-| Text-to-Speech      | Audio generation for vocabulary | `src/shared/infrastructure/external/GoogleTTSClient.js` | `GOOGLE_TTS_CREDENTIALS_RAW` |
-| Cloud Storage (GCS) | Audio/file storage              | `src/shared/infrastructure/external/GCSClient.js`       | `GCS_BUCKET_NAME`            |
-| Gemini AI           | AI feedback & examples          | `src/shared/infrastructure/external/GeminiClient.js`    | `GEMINI_API_CREDENTIALS_RAW` |
+| Text-to-Speech      | Audio generation for vocabulary | `src/shared/infrastructure/external/GoogleTTSClient.ts` | `GOOGLE_TTS_CREDENTIALS_RAW` |
+| Cloud Storage (GCS) | Audio/file storage              | `src/shared/infrastructure/external/GCSClient.ts`       | `GCS_BUCKET_NAME`            |
+| Gemini AI           | AI feedback & examples          | `src/shared/infrastructure/external/GeminiClient.ts`    | `GEMINI_API_CREDENTIALS_RAW` |
 
 **Upstash Redis:**
 
 - **Purpose**: API response caching (TTS, AI feedback, quiz sessions, due words)
-- **Client**: `src/shared/infrastructure/cache/CacheService.js`
+- **Client**: `src/shared/infrastructure/cache/CacheService.ts`
 - **Configuration**: `REDIS_URL` (auto-injected by Railway)
 
 **Supabase PostgreSQL:**
 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
-- **Client**: Prisma ORM (`src/shared/infrastructure/database/client.js`)
+- **Client**: Prisma ORM (`src/shared/infrastructure/database/client.ts`)
 - **Configuration**: `DATABASE_URL`
-- **Key Tables**: `users`, `progress`, `refresh_tokens`, `QuizSession`, `QuizSessionAnswer`, `QuizSessionSummary`, `study_streaks`, `user_badges`
+- **Key Tables**: `users`, `progress`, `ReviewItem`, `QuizAttempt`, `QuizAttemptAnswer`, `StudyStreak`, `ContentItem`, `PhaseGate`
 
 **Gamification System:**
 
-- **Streak Tracking**: 48-hour grace period with freeze currency system (earn per 10 perfect quizzes)
-- **Badge Awards**: 4 milestone tiers (7/30/100/365-day streaks), mystery box exclusive variants
-- **XP System**: +10 base per correct answer, +5 bonus for 7+ day streaks, 500 XP daily cap
-- **Mystery Boxes**: 5% drop rate on 7-day multiples, random rewards (50 XP / 1 freeze / rare badge)
-- **API Endpoints**: `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges`
+Streak tracking with freeze currency, milestone badges, XP scoring, and mystery box rewards.
 
 **AI Feedback System:**
 
-- **Purpose**: Personalized error explanations for incorrect quiz answers using Gemini API
-- **Delivery**: Auto-generated inline with answer submission (`POST /api/v1/quiz/session/:sessionId/answer`); only returned when incorrect
-- **Error Classification**: Tone errors (mā vs mǎ), character confusion (妈 vs 马), meaning mix-ups
-- **Caching**: Redis 24-hour TTL, cache key per word+answer combination, ~70-80% cost reduction
-- **Timeout Protection**: 3-second limit with graceful fallback to generic messages
-- **Rate Limiting**: 10 requests/minute per user to prevent API abuse
-- **Security**: Input sanitization (XSS prevention), JWT authentication required
-- **Standalone Endpoint**: `POST /api/v1/quiz/feedback` (available for direct AI feedback requests)
+Personalized error explanations for incorrect quiz answers via Gemini API, with Redis caching and timeout protection.
 
 ## Deployment Architecture
 
@@ -421,12 +398,12 @@ Vocabulary items with repeated failures are flagged as "leeches" for targeted re
 
 **Backend:**
 
-- **Clean Architecture**: Controllers → Services → Repositories (strict layer boundaries)
+- **Modulith Architecture**: Self-contained modules under src/modules/<name>/. Each module selects its internal pattern (Clean Architecture, CRUD, CQRS) based on business complexity. See backend-architecture.md for details.
 - **Repository Pattern**: Abstracts Prisma ORM, enables testing with mocks
 - **Dependency Injection**: Services receive dependencies via constructor/factory
 - **Fail-Open Caching**: Redis failures degrade gracefully to API calls
 
-📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware patterns
+📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Modulith Architecture, module patterns, CORS
 
 **Frontend:**
 
@@ -452,4 +429,4 @@ Vocabulary items with repeated failures are flagged as "leeches" for targeted re
 
 ---
 
-**Last Updated:** June 30, 2026
+**Last Updated:** July 3, 2026

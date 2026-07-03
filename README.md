@@ -65,7 +65,6 @@ This project is more than just a Mandarin learning tool; it's designed with scal
 
 - **Polyglot Expansion:** The core architecture is being built to easily support the addition of other languages, allowing PinyinPal to become a multi-language learning platform.
 - **Micro-Frontend Conversion:** We plan to explore converting the application into a micro-frontend architecture. This would allow different features (e.g., flashcards, tone drills) to be developed and deployed independently, making the project more robust and maintainable for a larger community.
-- **.NET Backend Migration:** Planned migration to ASP.NET Core 8 for improved performance on CPU-intensive operations (Epic xx).
 
 ## 📁 Project Structure
 

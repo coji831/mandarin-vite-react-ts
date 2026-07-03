@@ -2,14 +2,13 @@
 
 ## Quick Links
 
-| Resource                                                   | Description                                   |
-| ---------------------------------------------------------- | --------------------------------------------- |
-| [System Architecture](architecture.md)                     | High-level architecture overview              |
-| [Guides Index](guides/getting-started/README.md)           | All development guides by category            |
-| [Knowledge Base](knowledge-base/README.md)                 | Technical concepts and patterns               |
-| [Templates](templates/README.md)                           | Documentation templates (BR, implementation)  |
-| [Architecture](architecture.md)                            | System architecture, data flow, caching, auth |
-| [Copilot Instructions](../.github/copilot-instructions.md) | AI agent operational playbook                 |
+| Resource                                                   | Description                                                |
+| ---------------------------------------------------------- | ---------------------------------------------------------- |
+| [System Architecture](architecture.md)                     | High-level architecture overview, data flow, caching, auth |
+| [Guides Index](guides/getting-started/README.md)           | All development guides by category                         |
+| [Knowledge Base](knowledge-base/README.md)                 | Technical concepts and patterns                            |
+| [Templates](templates/README.md)                           | Documentation templates (BR, implementation)               |
+| [Copilot Instructions](../.github/copilot-instructions.md) | AI agent operational playbook                              |
 
 ## Guides by Category
 
@@ -37,7 +36,7 @@
 | Guide                                                      | Description                         |
 | ---------------------------------------------------------- | ----------------------------------- |
 | [Frontend](guides/conventions/frontend.md)                 | Component patterns, naming, exports |
-| [Backend](guides/conventions/backend.md)                   | Clean Architecture, DI patterns     |
+| [Backend](guides/conventions/backend.md)                   | Modulith Architecture, DI patterns  |
 | [API Client](guides/conventions/api-client.md)             | Service layer and error handling    |
 | [State Management](guides/conventions/state-management.md) | Context + reducer patterns          |
 | [Git](guides/conventions/git.md)                           | Branch strategy, commit conventions |
@@ -66,7 +65,7 @@
 | [Caching Patterns](guides/operations/caching-patterns.md) | Redis caching setup and tuning |
 | [Deployment](guides/operations/deployment.md)             | Vercel + Railway deployment    |
 | [Troubleshooting](guides/operations/troubleshooting.md)   | Common issues and solutions    |
-| [Review Checklist](guides/operations/review-checklist.md) | Code review checklist          |
+| [Review Checklist](guides/references/review-checklist.md) | Code review checklist          |
 
 ### 📚 References
 
@@ -78,11 +77,6 @@
 | [Supabase Setup](guides/references/supabase-setup-guide.md) | Legacy Supabase guide                     |
 
 ## Knowledge Base
-
-| Article | Description |
-| ------- | ----------- |
-
-|
 
 ### Architecture
 
@@ -187,20 +181,10 @@ To contribute to documentation:
 - Follow commit conventions in [Git Guide](guides/conventions/git.md)
 - Follow the [Workflow Guide](guides/operations/workflow.md)
 - Update this index and related READMEs as needed
-- **XP System**: +10 base per correct answer, +5 bonus for 7+ day streaks, 500 XP daily cap
-- **Mystery Boxes**: 5% drop rate on 7-day multiples, random rewards (50 XP / 1 freeze / rare badge)
-- **API Endpoints**: `GET /api/v1/progress/streak`, `POST /api/v1/progress/streak/freeze`, `GET /api/v1/gamification/badges`
 
-**AI Feedback System:**
+**Gamification**: XP, streak tracking, milestone rewards, and mystery boxes. See [Gamification Psychology](knowledge-base/learning-theory/gamification-psychology-learning.md).
 
-- **Purpose**: Personalized error explanations for incorrect quiz answers using Gemini API
-- **Delivery**: Auto-generated inline with answer submission (`POST /api/v1/quiz/session/:sessionId/answer`); only returned when incorrect
-- **Error Classification**: Tone errors (mā vs mǎ), character confusion (妈 vs 马), meaning mix-ups
-- **Caching**: Redis 24-hour TTL, cache key per word+answer combination, ~70-80% cost reduction
-- **Timeout Protection**: 3-second limit with graceful fallback to generic messages
-- **Rate Limiting**: 10 requests/minute per user to prevent API abuse
-- **Security**: Input sanitization (XSS prevention), JWT authentication required
-- **Standalone Endpoint**: `POST /api/v1/quiz/feedback` (available for direct AI feedback requests)
+**AI Feedback**: AI-powered error explanations via Gemini API with Redis caching and timeout protection. See [Google Cloud Integration](knowledge-base/infrastructure/integration-google-cloud.md).
 
 ## Deployment Architecture
 
@@ -250,12 +234,12 @@ To contribute to documentation:
 
 **Backend:**
 
-- **Clean Architecture**: Controllers → Services → Repositories (strict layer boundaries)
+- **Modulith Architecture**: Self-contained modules, each choosing its own internal pattern
 - **Repository Pattern**: Abstracts Prisma ORM, enables testing with mocks
 - **Dependency Injection**: Services receive dependencies via constructor/factory
 - **Fail-Open Caching**: Redis failures degrade gracefully to API calls
 
-📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware patterns
+📖 **Deep Dive:** [Backend Architecture Patterns](./knowledge-base/backend/backend-architecture.md) - Modulith Architecture, module patterns, CORS
 
 **Frontend:**
 
@@ -280,20 +264,4 @@ To contribute to documentation:
 
 ---
 
-**Last Updated:** January 29, 2026
-
-### Frontend: WordExamplesPanel Component (Story 16.2)
-
-- **Location:** `apps/frontend/src/features/word/components/WordExamplesPanel.tsx`
-- **Purpose:** Display 3–5 examples inline with on-demand TTS playback
-- **Data Flow:**
-  `     useExamples (custom hook)
-       ↓ [in-memory 60s dedupe + sessionStorage cache]
-       ↓ POST /api/examples (Story 16.1)
-WordExamplesPanel (render list)
-       ↓ [user clicks Play]
-       ↓ GET /api/examples/audio (mocked, Story 16.3 integrates real)
-audioService.playAudio()`
-- **Performance:** Cached payloads <500ms (sessionStorage hit); skeleton UX reduces perceived latency
-- **Accessibility:** ARIA labels, keyboard focus, `role=list/listitem`
-- **Analytics:** Tracks `examples_shown`, `example_played` (stub service, ready for real backend)
+**Last Updated:** July 3, 2026

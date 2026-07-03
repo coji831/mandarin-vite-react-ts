@@ -1,6 +1,6 @@
 # Knowledge Base
 
-**Last Updated:** June 26, 2026
+**Last Updated:** July 3, 2026
 
 Central repository for deep-dive concepts, patterns, and reference materials.
 
@@ -21,7 +21,7 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 
 | Article                                                                                      | Description                                                 |
 | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| [Architecture](./backend/backend-architecture.md)                                            | Clean Architecture, CORS, error handling                    |
+| [Architecture](./backend/backend-architecture.md)                                            | Modulith Architecture, CORS, error handling                 |
 | [Advanced Patterns](./backend/backend-advanced-patterns.md)                                  | Dependency injection, service patterns                      |
 | [Authentication](./backend/backend-authentication.md)                                        | JWT, refresh tokens, security                               |
 | [API Response Patterns](./backend/api-response-patterns.md)                                  | Consistent API response format                              |

@@ -1,6 +1,6 @@
-﻿# PinyinPal Development Guides
+# PinyinPal Development Guides
 
-**Last Updated:** January 30, 2026  
+**Last Updated:** July 3, 2026  
 **Purpose:** Comprehensive setup and workflow documentation for the PinyinPal project
 
 > **For New Developers:** Start with [Quickstart](quickstart.md) → [Project Overview](project-overview.md) → [Environment Setup](environment-setup.md)
@@ -44,7 +44,7 @@ Then proceed to:
 
 - **[Tooling Standards](../setup/tooling-standards.md)** - ESLint, TypeScript, Vitest monorepo configuration
 - **[Frontend Conventions](../conventions/frontend.md)** - Frontend code style, naming, imports, exports, file structure
-- **[Backend Conventions](../conventions/backend.md)** - Clean architecture, services, repositories, layer patterns
+- **[Backend Conventions](../conventions/backend.md)** - Modulith architecture, module patterns, services, repositories
 - **[API Client Patterns](../conventions/api-client.md)** - axiosClient, error handling, service layer integration
 - **[State Management Patterns](../conventions/state-management.md)** - Reducers, actions, selectors, hooks patterns
 - **[Git Convention](../conventions/git.md)** - Commit messages (Conventional Commits), branching, PR guidelines
@@ -56,7 +56,7 @@ Then proceed to:
 
 ### Code Quality & Review
 
-- **[Review Checklist](../operations/review-checklist.md)** - Pre-commit and PR review checklist
+- **[Review Checklist](../references/review-checklist.md)** - Pre-commit and PR review checklist
 
 ---
 
@@ -101,63 +101,11 @@ Then proceed to:
 | Backend architecture     | Services + Repositories        | [backend-conventions](../conventions/backend.md)                                      |
 | Infrastructure setup     | Terraform, migrations          | [infrastructure-setup-guide](../operations/infrastructure.md)                         |
 
-### ðŸ†˜ Common Issues at a Glance
+> **Common issues:** See [Troubleshooting](../operations/troubleshooting.md) for port conflicts, CORS errors, cookie issues, and more. The [Quick Reference Card](#quick-reference-card) above covers daily development commands.
 
-- **Port 5173 in use** â†’ Kill process: `netstat -ano | findstr :5173` then `taskkill /PID <PID> /F`
-- **Cookies not working** â†’ See [Frontend-Backend Integration Guide](../integrations/frontend-backend.md#cookies-not-visible-in-browser)
-- **CORS error** â†’ See [Frontend-Backend Integration Guide](../integrations/frontend-backend.md#cors-error-credentials-mode-is-include)
-- **Module not found** â†’ Run `npm install` + restart dev server
-- **Changes not appearing** â†’ Hard refresh: `Ctrl+Shift+R`
-- **Backend connection failed** â†’ Check `VITE_API_URL` in `.env.local`
-- **Database connection error** â†’ See [Database Setup Guide](../setup/database.md#troubleshooting)
-
-**Full troubleshooting:** See [Troubleshooting](../operations/troubleshooting.md) for 20+ documented issues
-
-### Daily Development Commands
-
-```bash
-# Frontend
-npm run dev                    # Start Vite dev server (port 5173)
-npm test                       # Run tests
-npm run lint                   # Lint code
-
-# Backend
-npm run dev:backend          # Start Express server (port 3001)
-npm run db:migrate             # Run Prisma migrations
-npm run db:studio              # Open Prisma Studio
-```
-
-### Key Files
-
-| File                              | Purpose                                          |
-| --------------------------------- | ------------------------------------------------ |
-| `.env.local`                      | Single source of truth for environment variables |
-| `vite.config.ts`                  | Vite configuration (proxy, plugins)              |
-| `jest.config.js`                  | Test runner configuration                        |
-| `prisma/schema.prisma`            | Database schema                                  |
-| `.github/copilot-instructions.md` | AI coding agent operational guide                |
-
-### Project Structure
-
-```
-mandarin-vite-react-ts/
-â”œâ”€â”€ apps/
-â”‚   â”œâ”€â”€ frontend/           # React + Vite + TypeScript
-â”‚   â””â”€â”€ backend/            # Express + Prisma + PostgreSQL
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ guides/             # This folder (project-specific)
-â”‚   â”œâ”€â”€ knowledge-base/     # Transferable patterns
-â”‚   â”œâ”€â”€ business-requirements/
-â”‚   â””â”€â”€ issue-implementation/
-â”œâ”€â”€ packages/
-â”‚   â”œâ”€â”€ shared-types/
-â”‚   â””â”€â”€ shared-constants/
-â””â”€â”€ .env.local              # Environment config (not committed)
-```
+> **Note:** Project structure tree moved to [project-overview.md](project-overview.md#monorepo-layout).
 
 ---
-
-## ðŸ“š Additional Resources
 
 ### External Docs
 
@@ -189,7 +137,7 @@ mandarin-vite-react-ts/
 1. Check [Business Requirements](../../business-requirements/) for spec
 2. Review [Frontend Conventions](../conventions/frontend.md) and [Backend Conventions](../conventions/backend.md) for patterns
 3. Follow [Development Workflow](../operations/workflow.md)
-4. Use [Review Checklist](../operations/review-checklist.md) before PR
+4. Use [Review Checklist](../references/review-checklist.md) before PR
 5. Update [Implementation Docs](../../issue-implementation/)
 
 ### For Debugging
@@ -213,5 +161,5 @@ mandarin-vite-react-ts/
 - [Linting Setup Guide](../setup/linting.md) - Quick-start ESLint/Prettier setup
 - [Frontend Conventions](../conventions/frontend.md) - Code style and patterns
 - [Backend Conventions](../conventions/backend.md) - Backend architecture patterns
-- [Review Checklist](../operations/review-checklist.md) - Pre-commit and PR checks
+- [Review Checklist](../references/review-checklist.md) - Pre-commit and PR checks
 - [Environment Setup Guide](environment-setup.md) - Environment variables

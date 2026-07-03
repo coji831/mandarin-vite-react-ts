@@ -16,7 +16,7 @@ Every new function, hook, reducer, or component must ship with tests:
 | Reducers / stores      | 1 test per action type                     | `quizSessionStore.test.ts` |
 | Components             | 1 RTL test (render + user interaction)     | `ReviewCard.test.tsx`      |
 | API services           | 1 integration test per endpoint            | `quizService.test.ts`      |
-| Backend services       | 1 test per public method                   | `ReviewService.test.js`    |
+| Backend services       | 1 test per public method                   | `ReviewService.test.ts`    |
 
 ## ❌ Never Ship Untested
 

@@ -24,5 +24,5 @@ This guide will be populated after Epic 14 (.NET Backend Migration) is complete.
 
 **Related Guides:**
 
-- [Backend Architecture](../backend/backend-architecture.md) — Clean Architecture applies to .NET too
+- [Backend Architecture](../backend/backend-architecture.md) — Modulith Architecture applies to .NET too
 - [Database & ORM](../backend/backend-database-postgres.md) — Compare with EF Core

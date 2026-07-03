@@ -1,6 +1,6 @@
 ﻿# Backend Development Guide
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** July 3, 2026  
 **Purpose:** Complete guide for running the Express backend locally, understanding architecture, and following development best practices  
 **Audience:** Developers setting up and working with the Express backend  
 **Time to Complete:** 15-20 minutes initial setup
@@ -79,12 +79,13 @@ npx prisma migrate dev
 
 This creates:
 
-- `users` table (authentication)
-- `progress` table (vocabulary progress tracking)
-- `vocabulary_word`, `category`, `vocabulary_list` tables (normalized vocabulary data)
-- Junction tables: `word_category`, `word_list` (many-to-many relationships)
+- **Auth**: `User`, `Session` (JWT refresh tokens)
+- **Progress**: `Progress` (vocabulary progress tracking), `FoundationProgress`, `RadicalProgress`
+- **Content**: `VocabularyWord`, `Category`, `VocabularyList`, `ContentItem`, `CharacterRadical`, `PinyinCombination` with junction tables `WordCategory`, `WordList`
+- **Quiz/Review**: `QuizAttempt`, `QuizAttemptAnswer`, `ReviewItem`
+- **Gating**: `PhaseGate`, `StudyStreak`
 
-**Verify:** Check your database - tables should exist now.
+**Verify:** Check your database — tables should exist now.
 
 ### Step 3: Load Vocabulary Data (Optional)
 
@@ -122,14 +123,7 @@ node scripts/check-migration-progress.js
 npm run db:seed
 ```
 
-This creates two test accounts:
-
-| Email              | Password    | Display Name |
-| ------------------ | ----------- | ------------ |
-| `test@example.com` | `Test1234!` | Test User    |
-| `demo@example.com` | `Demo1234!` | Demo User    |
-
-These are needed for auth, quiz sessions, and any user-scoped feature. Without them, login endpoints return 401.
+`npm run db:seed` creates test accounts needed for auth, quiz sessions, and any user-scoped feature. Without them, login endpoints return 401.
 
 ### Step 4: Start Backend Server
 
@@ -181,34 +175,38 @@ You should see (or HTTP 200):
 
 ### Modular Monolith Folder Structure
 
+All source files are TypeScript (`.ts`). The `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports).
+
 ```
 apps/backend/
 ├── src/
 │   ├── app/                       # Express App Bootstrap
-│   │   ├── index.js               # Express app entry point
-│   │   ├── container.js           # DI composition root
-│   │   └── routes.js              # 11 route routers under /v1/
-│   ├── modules/                   # 8 Business Modules
+│   │   ├── index.ts               # Express app entry point
+│   │   ├── container.ts           # DI composition root
+│   │   └── routes.ts              # Route routers under /v1/
+│   ├── modules/                   # Business Modules
 │   │   ├── auth/                  # Simple CRUD
 │   │   │   ├── api/               #   controllers + routes
 │   │   │   ├── services/
 │   │   │   ├── repositories/
+│   │   │   ├── types/             #   typed interfaces (barrel)
 │   │   │   └── __tests__/
-│   │   ├── word/                  # Simple CRUD
-│   │   ├── vocabulary/            # Feature Slices
 │   │   ├── quiz/                  # Clean Architecture (use-cases/)
-│   │   ├── gamification/          # Simple CRUD
+│   │   ├── review/                # Clean Architecture (SRS review)
+│   │   ├── foundations/           # Simple CRUD
+│   │   ├── radicals/              # Simple CRUD
+│   │   ├── progression/           # Clean Architecture
 │   │   ├── examples/              # Feature Slices
 │   │   ├── tts/                   # Simple
 │   │   └── health/                # Simple
 │   └── shared/                    # Cross-cutting Concerns
-│       ├── config/index.js        # Env config validation
-│       ├── infrastructure/        # External clients, cache, DB
+│       ├── config/index.ts        # Env config validation
+│       ├── infrastructure/        # External clients, cache, DB, security
 │       │   ├── cache/
 │       │   ├── database/
 │       │   ├── external/          # GCS, Gemini, GoogleTTS
 │       │   ├── redis/
-│       │   ├── security/          # JWT, Password, HMAC
+│       │   ├── security/          # JwtService, PasswordService, HmacManager
 │       │   └── storage/
 │       ├── middleware/            # asyncHandler, auth, cache, errorHandler
 │       └── utils/                 # logger, errorFactory, hashUtils, dateUtils
@@ -233,9 +231,9 @@ apps/backend/
 
 ## Express Server Setup
 
-**Key Configuration Points** ([apps/backend/src/server.js](../../apps/backend/src/server.js)):
+**Key Configuration Points** ([apps/backend/src/app/index.ts](../../apps/backend/src/app/index.ts)):
 
-```javascript
+```typescript
 const app = express();
 
 // Middleware order is critical:
@@ -245,7 +243,7 @@ app.use(corsMiddleware); // CORS configuration (apply once only)
 
 // API Routes
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/progress", progressRoutes);
+// ... more routes ...
 
 // Error handling (must be last middleware)
 app.use(errorHandler);
@@ -378,4 +376,4 @@ npm run test:coverage     # Coverage report
 
 ---
 
-**Last Updated:** June 2, 2026
+**Last Updated:** July 3, 2026

@@ -62,7 +62,10 @@ class DatabaseVocabularyService implements IVocabularyService {
 
 // 4. Service with fallback
 class FallbackVocabularyService implements IVocabularyService {
-  constructor(private primary: IVocabularyService, private fallback: IVocabularyService) {}
+  constructor(
+    private primary: IVocabularyService,
+    private fallback: IVocabularyService,
+  ) {}
 
   async getVocabularyList(listId: string): Promise<VocabularyList> {
     try {
@@ -262,7 +265,11 @@ Full-stack TypeScript projects, code sharing between packages
 ```typescript
 // 1. Error types
 class AppError extends Error {
-  constructor(public statusCode: number, public message: string, public code?: string) {
+  constructor(
+    public statusCode: number,
+    public message: string,
+    public code?: string,
+  ) {
     super(message);
   }
 }
@@ -356,5 +363,5 @@ All production APIs
 
 **Related Guides:**
 
-- [Backend Architecture](./backend-architecture.md) — Clean Architecture
+- [Backend Architecture](./backend-architecture.md) — Modulith Architecture
 - [Deployment](./infra-deployment.md) — Environment configuration
