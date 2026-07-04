@@ -32,6 +32,9 @@ process.on("unhandledRejection", (reason) => {
 });
 
 // CORS must be first — before body parsers — so error responses also carry CORS headers
+// TEMPORARY: allow all origins to debug Railway staging CORS issue
+app.use(cors({ origin: true, credentials: true }));
+/*
 // CORS configuration with explicit origin whitelist
 const allowedOrigins: string[] = [
   config.frontendUrl, // Production frontend (from FRONTEND_URL env var)
@@ -77,6 +80,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+*/
 
 // Body parsers after CORS so error responses always include CORS headers
 app.use(express.json());
