@@ -31,6 +31,10 @@ process.on("unhandledRejection", (reason) => {
   logger.error("FATAL: unhandledRejection — process may exit", reason);
 });
 
+// Trust Railway's proxy — required for rate limiter to read real client IP
+// from X-Forwarded-For header. Railway edge proxy is always 1 hop away.
+app.set("trust proxy", 1);
+
 // CORS must be first — before body parsers — so error responses also carry CORS headers
 // CORS configuration with explicit origin whitelist
 const allowedOrigins: string[] = [
