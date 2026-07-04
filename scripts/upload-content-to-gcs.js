@@ -11,7 +11,7 @@
  *   node scripts/upload-content-to-gcs.js
  *
  * Environment variables (from .env.local):
- *   GCS_BUCKET_NAME     - Target GCS bucket (default: mandarin-tts-app-cache)
+ *   GCS_BUCKET_NAME     - Target GCS bucket (default: pinyin-pal-data)
  *   GCS_CREDENTIALS_RAW - Service account JSON (stringified)
  *   GOOGLE_TTS_CREDENTIALS_RAW - Fallback if GCS_CREDENTIALS_RAW is not set
  */
@@ -27,7 +27,7 @@ const __dirname = path.dirname(__filename);
 // ── Config ────────────────────────────────────────────
 
 const CONTENT_DIR = path.resolve(__dirname, "..", "content");
-const BUCKET_NAME = process.env.GCS_BUCKET_NAME || "mandarin-tts-app-cache";
+const BUCKET_NAME = process.env.GCS_BUCKET_NAME || "pinyin-pal-data";
 const GCS_PREFIX = "content/";
 
 // Supported content subdirectories to upload

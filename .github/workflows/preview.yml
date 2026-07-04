@@ -1,0 +1,70 @@
+# Preview Environment
+# Creates a Neon preview branch + overrides Railway PR env DATABASE_URL.
+# Cleans up Neon branch when PR is merged/closed.
+
+name: Preview Environment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  # ── Provision preview environment ──────────────────────────────────────
+  provision:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Neon Preview Branch
+        uses: neondatabase/create-branch-action@v5
+        id: neon
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Wait for Railway PR Environment
+        id: wait-railway
+        run: |
+          for i in $(seq 1 30); do
+            ENV_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              --data '{"query":"{environments(projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\"){edges{node{id name}}}}"}' \
+              https://backboard.railway.com/graphql/v2 | \
+              jq -r '.data.environments.edges[].node | select(.name | startswith("pr-")) | .id' | head -1)
+            if [ -n "$ENV_ID" ]; then
+              echo "ENV_ID=$ENV_ID" >> $GITHUB_OUTPUT
+              break
+            fi
+            sleep 10
+          done
+
+      - name: Override DATABASE_URL on Railway PR Environment
+        run: |
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{
+              "query": "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }",
+              "variables": {
+                "input": {
+                  "projectId": "${{ vars.RAILWAY_PROJECT_ID }}",
+                  "environmentId": "${{ steps.wait-railway.outputs.ENV_ID }}",
+                  "serviceId": "${{ vars.RAILWAY_BACKEND_SERVICE_ID }}",
+                  "name": "DATABASE_URL",
+                  "value": "${{ steps.neon.outputs.db_url }}"
+                }
+              }
+            }' \
+            https://backboard.railway.com/graphql/v2
+
+  # ── Cleanup on PR close ────────────────────────────────────────────────
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon Preview Branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/${{ github.head_ref }}
+          api_key: ${{ secrets.NEON_API_KEY }}

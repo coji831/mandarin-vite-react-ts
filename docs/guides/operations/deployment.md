@@ -209,7 +209,7 @@ Preview deployments allow testing changes in a production-like environment befor
 
 1. Enable PR deployments in Railway dashboard
 2. Railway creates preview service for PR branch
-3. Preview URL: `https://mandarin-backend-pr-<number>.up.railway.app`
+3. Preview URL: `https://<project>-pr-<number>.up.railway.app` (see Railway dashboard)
 
 ### Update Preview Environment Variables
 

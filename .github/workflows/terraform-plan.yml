@@ -1,0 +1,39 @@
+# Terraform Plan
+# Runs on PRs that touch terraform/ files.
+# Shows expected infra changes before merge.
+
+name: Terraform Plan
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform/
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+        working-directory: terraform/
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}

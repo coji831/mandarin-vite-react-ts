@@ -12,7 +12,7 @@ info:
 servers:
   - url: http://localhost:3001/api
     description: Development server
-  - url: https://mandarin-backend.railway.app/api
+  - url: https://mandarin-vite-react-ts-production.up.railway.app/api
     description: Production server (Railway)
 
 tags:

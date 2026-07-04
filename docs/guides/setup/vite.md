@@ -113,7 +113,7 @@ Browser → Vercel (Frontend) → Railway (Backend via HTTPS)
 ### Key Differences from Development
 
 1. **No Proxy**: Production frontend makes direct HTTPS requests to Railway backend
-2. **Environment Variable**: `VITE_API_URL` must point to Railway backend URL (e.g., `https://mandarin-backend.up.railway.app`)
+2. **Environment Variable**: `VITE_API_URL` must point to Railway backend URL (e.g., `https://mandarin-vite-react-ts-production.up.railway.app`)
 3. **CORS**: Backend CORS must allow Vercel origin (configured via `FRONTEND_URL` env var)
 4. **Cookies**: httpOnly cookies work across domains if CORS credentials enabled
 
@@ -121,7 +121,7 @@ Browser → Vercel (Frontend) → Railway (Backend via HTTPS)
 
 ```env
 # .env.production (Vercel environment variables)
-VITE_API_URL=https://mandarin-backend.up.railway.app
+VITE_API_URL=https://mandarin-vite-react-ts-production.up.railway.app
 ```
 
 ### Vercel Deployment

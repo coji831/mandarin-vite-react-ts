@@ -22,6 +22,15 @@ validateConfig();
 const logger = createLogger("Server");
 const app: express.Application = express();
 
+// Catch unhandled errors so we see crashes in Railway logs
+process.on("uncaughtException", (err) => {
+  logger.error("FATAL: uncaughtException — process will exit", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  logger.error("FATAL: unhandledRejection — process may exit", reason);
+});
+
 // CORS must be first — before body parsers — so error responses also carry CORS headers
 // CORS configuration with explicit origin whitelist
 const allowedOrigins: string[] = [
@@ -138,6 +147,7 @@ app.listen(config.port, () => {
   logger.info(`Backend server running on port ${config.port}`);
   logger.info(`API docs: http://localhost:${config.port}/api-docs`);
   logger.info(`Environment: ${config.nodeEnvironment}`);
+  logger.info("Server ready — accepting connections");
 });
 
 export default app;

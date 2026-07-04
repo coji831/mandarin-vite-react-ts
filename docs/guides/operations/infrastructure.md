@@ -141,7 +141,7 @@ Manages GCP resources only (not Railway/Vercel). Current modules:
 | **Storage**          | `terraform/storage/*.tf`                   | Per-use-case GCS buckets (TTS, vocabulary, examples, audio) with lifecycle rules |
 | **Service Accounts** | `terraform/service-accounts/*.tf`          | Per-use-case GCP service accounts with least-privilege IAM                       |
 | **Redis**            | `terraform/redis.tf`                       | GCP Memorystore Redis instance (optional — Railway provides its own Redis)       |
-| **Monitoring**       | `terraform/conversation-infrastructure.tf` | TTS cost alert policy (stale — needs cleanup)                                    |
+| **Monitoring**       | GCP Budgets (manual setup)                 | TTS cost alert in Billing Console                                                |
 
 **State:** Check `terraform state list` to see what's provisioned.
 

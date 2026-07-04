@@ -40,3 +40,8 @@ terraform/.terraform/
 
 # Verification artifacts (design docs, not source code)
 verification-artifacts/
+# GCP service account keys
+keys/
+# Terraform state
+*.tfstate
+*.tfstate.backup

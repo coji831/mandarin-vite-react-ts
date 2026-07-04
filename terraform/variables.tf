@@ -12,3 +12,9 @@ variable "region" {
   type        = string
   default     = "us-central1"
 }
+
+variable "bucket_name" {
+  description = "GCS bucket name for application data (TTS audio, examples, vocabulary)"
+  type        = string
+  default     = "pinyin-pal-data"
+}

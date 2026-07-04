@@ -1,7 +1,26 @@
 # ── Main Terraform Configuration ─────────────────────────────────────────────
 # Single shared GCS bucket for all application data (TTS audio, examples, vocabulary CSVs).
-# Service accounts are managed manually in GCP Console, credentials passed via env vars.
-# Redis is provisioned by Railway plugin, not via terraform.
+# Service accounts are managed via service-accounts.tf + iam.tf, credentials passed via env vars.
+# Redis is provisioned by Upstash, not via Terraform.
+#
+# ── Architecture (Option B: Best-of-Breed) ───────────────────────────────────
+#   Frontend:  Vercel (SPA, CDN)       ← terraform/vercel.tf
+#   Backend:   Railway (Express API)   ← NOT in Terraform (no provider exists)
+#   Database:  Neon (serverless PG)    ← terraform/neon.tf
+#   Cache:     Upstash (Redis)         ← terraform/upstash.tf
+#   Storage:   GCP (GCS bucket)        ← terraform/main.tf
+#   Auth:      Custom JWT (backend)
+#   AI:        Google TTS + Gemini     ← terraform/service-accounts.tf + iam.tf
+#
+# ── Exit Strategy (Railway → Render) ─────────────────────────────────────────
+# Railway has no Terraform provider and has experienced reliability issues.
+# If migrating to Render, the following changes are needed:
+#   1. Add render_web_service + render_static_site resources
+#   2. Use render-oss/render provider (Terraform-native, stable)
+#   3. Replace Railway-Vercel integration with direct VITE_API_URL in vercel.tf
+#   4. Optionally keep Neon for DB branching, or use Render Postgres
+#   5. Replace Upstash with Render Key Value, or keep Upstash
+#   See: verification-artifacts/migration/README.md for full plan
 
 terraform {
   required_version = ">= 1.5"
@@ -11,6 +30,18 @@ terraform {
       source  = "hashicorp/google"
       version = ">= 5.0, < 7.0"
     }
+    neon = {
+      source  = "kislerdm/neon"
+      version = "~> 0.13"
+    }
+    upstash = {
+      source  = "upstash/upstash"
+      version = "~> 2.0"
+    }
+    vercel = {
+      source  = "vercel/vercel"
+      version = "~> 5.3"
+    }
   }
 }
 
@@ -19,12 +50,24 @@ provider "google" {
   region  = var.region
 }
 
+provider "neon" {
+  # API key read from NEON_API_KEY environment variable
+}
+
+provider "upstash" {
+  # API key read from UPSTASH_API_KEY environment variable
+}
+
+provider "vercel" {
+  # API token read from VERCEL_API_TOKEN environment variable
+}
+
 # ── Shared App Data Bucket ──────────────────────────────────────────────────
 # Used by all modules: TTS audio cache, examples cache, vocabulary CSV data.
 # All modules access the same bucket via GCS_BUCKET_NAME env var.
 
 resource "google_storage_bucket" "app_data" {
-  name          = "${var.project_id}-app-data"
+  name          = var.bucket_name
   location      = var.region
   storage_class = "STANDARD"
 
@@ -35,29 +78,8 @@ resource "google_storage_bucket" "app_data" {
 }
 
 # ── TTS Cost Alert ──────────────────────────────────────────────────────────
-# Monitors TTS API usage costs and alerts if daily spend exceeds $100.
-
-resource "google_monitoring_alert_policy" "tts_cost_alert" {
-  display_name = "TTS API Cost Alert"
-  combiner     = "OR"
-
-  conditions {
-    display_name = "TTS API daily cost > $100"
-
-    condition_threshold {
-      filter          = "resource.type=\"cloud_tts_api\""
-      comparison      = "COMPARISON_GT"
-      threshold_value = 100
-      duration        = "300s"
-
-      aggregations {
-        alignment_period   = "86400s"
-        per_series_aligner = "ALIGN_SUM"
-      }
-    }
-  }
-
-  alert_strategy {
-    auto_close = "604800s"
-  }
-}
+# NOTE: The previous alert used an invalid resource type (cloud_tts_api).
+# GCP does not expose TTS API costs via Monitoring metrics directly.
+# For cost alerts, use GCP Budgets instead (manual setup in Billing Console).
+# Budget alert setup: Billing → Budgets & alerts → Create budget
+# Filter by: Service = Cloud Text-to-Speech API, Threshold = $100
