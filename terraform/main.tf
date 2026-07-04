@@ -65,6 +65,7 @@ provider "vercel" {
 # ── Shared App Data Bucket ──────────────────────────────────────────────────
 # Used by all modules: TTS audio cache, examples cache, vocabulary CSV data.
 # All modules access the same bucket via GCS_BUCKET_NAME env var.
+# Located in Singapore (ASIA-SOUTHEAST1) — same region as Neon, Upstash, Railway.
 
 resource "google_storage_bucket" "app_data" {
   name          = var.bucket_name
