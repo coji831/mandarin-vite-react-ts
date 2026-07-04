@@ -1,8 +1,6 @@
 // TTS Controller — migrated from modules/tts/api/TtsController.js
 import { config } from "../config/index.js";
-import { TTS_STORAGE_PATH } from "../config/tts.js";
-import { computeTTSHash } from "../utils/hashUtils.js";
-import { validationError, ttsError } from "../utils/errorFactory.js";
+import { ttsError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
 import type { Request, Response } from "express";
 
@@ -10,50 +8,23 @@ const logger = createLogger("TTS");
 
 /**
  * TtsController handles HTTP requests for text-to-speech generation
+ * Thin HTTP layer — business logic delegated to TtsService.
  * @class
  */
 class TtsController {
   private ttsService: {
-    synthesizeSpeech(
-      text: string,
-      options: Record<string, unknown>,
-    ): Promise<Buffer | Uint8Array | string | undefined>;
+    getTtsUrl(text: string, voice?: string): Promise<{ audioUrl: string; cached: boolean }>;
     healthCheck(): Promise<boolean>;
-  };
-  private gcsService: {
-    fileExists(path: string): Promise<boolean>;
-    uploadFile(
-      path: string,
-      data: Buffer | Uint8Array | string | undefined,
-      contentType: string,
-    ): Promise<void>;
-    getPublicUrl(path: string): string;
   };
 
   /**
-   * @param ttsService - Text-to-speech service
-   * @param gcsService - Google Cloud Storage service
+   * @param ttsService - TTS service with business logic + caching
    */
-  constructor(
-    ttsService: {
-      synthesizeSpeech(
-        text: string,
-        options: Record<string, unknown>,
-      ): Promise<Buffer | Uint8Array | string | undefined>;
-      healthCheck(): Promise<boolean>;
-    },
-    gcsService: {
-      fileExists(path: string): Promise<boolean>;
-      uploadFile(
-        path: string,
-        data: Buffer | Uint8Array | string | undefined,
-        contentType: string,
-      ): Promise<void>;
-      getPublicUrl(path: string): string;
-    },
-  ) {
+  constructor(ttsService: {
+    getTtsUrl(text: string, voice?: string): Promise<{ audioUrl: string; cached: boolean }>;
+    healthCheck(): Promise<boolean>;
+  }) {
     this.ttsService = ttsService;
-    this.gcsService = gcsService;
   }
 
   /**
@@ -63,40 +34,11 @@ class TtsController {
   async getTtsAudio(req: Request, res: Response): Promise<void> {
     const { text, voice = config.tts.voiceDefault } = req.body;
 
-    if (!text || text.trim() === "") {
-      throw validationError("Text is required.");
-    }
-
-    // Input validation: 1-15 words
-    const words = text.split(/\s+/).filter(Boolean);
-    if (words.length === 0 || words.length > config.tts.maxWords) {
-      throw validationError(`Please enter between 1 and ${config.tts.maxWords} words.`);
-    }
-
-    // Generate hash for caching (include voice in hash)
-    const hash = computeTTSHash(text, voice);
-    const cachePath = TTS_STORAGE_PATH.replace("{hash}", hash);
-
     try {
-      // Check cache first
-      const exists = await this.gcsService.fileExists(cachePath);
-      let cached = false;
-
-      if (exists) {
-        logger.info(`Cache hit: ${cachePath}`);
-        cached = true;
-      } else {
-        // Cache miss - generate and store
-        logger.info(`Cache miss: ${cachePath}`);
-        const audioBuffer = await this.ttsService.synthesizeSpeech(text, { voice });
-        await this.gcsService.uploadFile(cachePath, audioBuffer, "audio/mpeg");
-        logger.info(`Successfully cached: ${cachePath}`);
-      }
-
-      const audioUrl = this.gcsService.getPublicUrl(cachePath);
+      const { audioUrl, cached } = await this.ttsService.getTtsUrl(text, voice);
       res.status(200).json({ audioUrl, cached });
     } catch (error) {
-      // Enhanced error handling with specific error codes
+      // Pass through known errors (validationError, ttsError) from the service
       const err = error as { code?: number; details?: string; message?: string };
       if (err.code === 7 || err.details?.includes("API key not valid")) {
         throw ttsError("Authentication error with TTS/GCS API. Check local backend logs.", {
@@ -112,9 +54,7 @@ class TtsController {
           { originalError: err.message },
         );
       }
-      throw ttsError(err.message || "TTS generation failed", {
-        originalError: err.message,
-      });
+      throw error; // Re-throw validationError and generic ttsError as-is
     }
   }
 }
