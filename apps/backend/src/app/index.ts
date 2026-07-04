@@ -32,9 +32,6 @@ process.on("unhandledRejection", (reason) => {
 });
 
 // CORS must be first — before body parsers — so error responses also carry CORS headers
-// TEMPORARY: allow all origins to debug Railway staging CORS issue
-app.use(cors({ origin: true, credentials: true }));
-/*
 // CORS configuration with explicit origin whitelist
 const allowedOrigins: string[] = [
   config.frontendUrl, // Production frontend (from FRONTEND_URL env var)
@@ -73,14 +70,13 @@ app.use(
 
       // Reject all other origins
       logger.warn(`CORS: Rejected origin: ${origin}`);
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      callback(null, false);
     },
     credentials: true, // Required for cookie-based auth
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-*/
 
 // Body parsers after CORS so error responses always include CORS headers
 app.use(express.json());
