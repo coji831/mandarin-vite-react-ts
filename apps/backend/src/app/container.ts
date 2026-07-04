@@ -97,25 +97,14 @@ export const cachedAIFeedback = {
   getMetrics: cachedAIFeedbackFn.getMetrics,
 };
 
-// TTS: wrap raw TTS service with Redis cache (24h TTL)
-const cachedTtsFn = withCache(
-  (text: string, options: Record<string, unknown> = {}) =>
-    rawTtsService.synthesizeSpeech(text, options),
-  {
-    ttl: 86400,
-    keyFn: (text: string, options: Record<string, unknown>) => `tts:${text}${options.voice ?? ""}`,
-    serviceName: "TTS",
-  },
-);
-
-// Preserve expected interface for TtsController (this.ttsService.synthesizeSpeech())
+// TTS: no Redis caching — Uint8Array audio data cannot be safely serialized.
+// GCS (via TtsController → gcsClient) is the actual cache for TTS audio.
+// Redis cache would corrupt binary data (JSON.stringify on Uint8Array).
 export const cachedTts = {
-  synthesizeSpeech: cachedTtsFn as (
-    text: string,
-    options: Record<string, unknown>,
-  ) => Promise<Buffer | Uint8Array | string | undefined>,
+  synthesizeSpeech: (text: string, options: Record<string, unknown> = {}) =>
+    rawTtsService.synthesizeSpeech(text, options),
   healthCheck: async () => true,
-  getMetrics: cachedTtsFn.getMetrics,
+  getMetrics: () => ({ hits: 0, misses: 1, total: 1, hitRate: "0.00" }),
 };
 
 // ── API: Controllers ───────────────────────────────────────────────────────
