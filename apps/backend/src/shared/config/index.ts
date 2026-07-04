@@ -1,7 +1,16 @@
 /**
- * @file apps/backend/src/shared/config/index.js
- * @description Centralized configuration for backend services
- * Clean architecture: Configuration layer
+ * @file apps/backend/src/shared/config/index.ts
+ * @description Centralized configuration — maps environment variables to typed config.
+ *
+ * Infrastructure (IaC-managed — see terraform/):
+ *   Neon      → DATABASE_URL              (serverless PostgreSQL)
+ *   Upstash   → REDIS_URL                 (Redis cache, TLS via rediss://)
+ *   GCP       → GCS_BUCKET_NAME           (content & audio storage)
+ *            → GCS_CREDENTIALS_RAW       (SA: gcs-storage-service — crucial)
+ *            → GEMINI_API_CREDENTIALS_RAW (SA: gemini-service)
+ *            → GOOGLE_TTS_CREDENTIALS_RAW (SA: tts-service)
+ *   Railway   → PORT, NODE_ENV
+ *   Vercel    → FRONTEND_URL              (CORS allowlist)
  */
 
 import dotenv from "dotenv";
@@ -9,234 +18,165 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createLogger } from "../utils/logger.js";
 
-const configLogger = createLogger("Config");
+const log = createLogger("Config");
+
+// ── Bootstrap ──────────────────────────────────────────────────────────────
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment variables from project root .env.local
-const envPath = path.resolve(__dirname, "..", "..", "..", "..", "..", ".env.local");
-dotenv.config({ path: envPath });
-configLogger.info("Loaded environment variables", { path: envPath });
+// Load .env.local in development only. Production env vars are injected by Railway.
+if (process.env.NODE_ENV !== "production") {
+  const envFile = path.resolve(__dirname, "..", "..", "..", "..", "..", ".env.local");
+  dotenv.config({ path: envFile });
+  log.info("Loaded .env.local", { path: envFile });
+}
 
-/**
- * Parse JSON from environment variable safely
- * @param envVar - Environment variable name
- * @param required - Whether this variable is required
- * @returns Parsed JSON object or null
- */
-function parseJsonEnv(envVar: string, required: boolean = false): Record<string, unknown> | null {
-  const value = process.env[envVar];
-  if (!value) {
-    if (required) {
-      throw new Error(`[Config] ${envVar} environment variable is required but not set`);
-    }
-    return null;
-  }
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+/** Parse a single-line JSON environment variable. Returns null if not set or invalid. */
+function jsonEnv(name: string): Record<string, unknown> | null {
+  const raw = process.env[name];
+  if (!raw) return null;
   try {
-    return JSON.parse(value);
-  } catch (error) {
-    throw new Error(
-      `[Config] ${envVar} contains invalid JSON: ${error instanceof Error ? error.message : String(error)}`,
+    return JSON.parse(raw);
+  } catch (cause) {
+    log.warn(
+      `Invalid JSON in ${name} — treating as unset. ${cause instanceof Error ? cause.message : String(cause)}`,
     );
+    return null;
   }
 }
 
-// Load and parse configuration
+// ── Application config ─────────────────────────────────────────────────────
+
 export const config = {
-  // Server
+  // ── Server (Railway) ──────────────────────────────────────────────────
   port: parseInt(process.env.PORT || "3001", 10),
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
-  envPath,
   nodeEnvironment: process.env.NODE_ENV || "development",
 
-  // Database
-  databaseUrl: process.env.DATABASE_URL,
+  // ── Database (Neon serverless PostgreSQL) ─────────────────────────────
+  databaseUrl: process.env.DATABASE_URL!,
 
-  //JWT
-  jwtSecret: process.env.JWT_SECRET,
-  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
+  // ── Auth ──────────────────────────────────────────────────────────────
+  jwtSecret: process.env.JWT_SECRET!,
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET!,
 
-  // Google Cloud Credentials
-  googleTtsCredentials: parseJsonEnv("GOOGLE_TTS_CREDENTIALS_RAW"),
-  geminiCredentials: parseJsonEnv("GEMINI_API_CREDENTIALS_RAW"),
-  // Use Gemini credentials for GCS
-  gcsCredentials: parseJsonEnv("GEMINI_API_CREDENTIALS_RAW"),
+  // ── GCP service account credentials ───────────────────────────────────
+  // Each env var is a JSON key for a dedicated SA (least privilege).
+  googleTtsCredentials: jsonEnv("GOOGLE_TTS_CREDENTIALS_RAW"),
+  geminiCredentials: jsonEnv("GEMINI_API_CREDENTIALS_RAW"),
+  gcsCredentials: jsonEnv("GCS_CREDENTIALS_RAW"),
 
-  // GCS
-  gcsBucket: process.env.GCS_BUCKET_NAME,
+  // ── GCS (content storage — crucial) ────────────────────────────────────
+  gcsBucket: process.env.GCS_BUCKET_NAME!,
 
-  // Reference Data
+  // ── Local data (dev fallback) ─────────────────────────────────────────
   localDataPath: path.resolve(__dirname, "../../../data"),
 
-  // TTS Configuration
+  // ── TTS (Google Cloud Text-to-Speech) ─────────────────────────────────
   tts: {
     voiceDefault: "cmn-CN-Wavenet-B",
     languageCode: "cmn-CN",
     maxWords: 15,
-    audioEncoding: "MP3",
+    audioEncoding: "MP3" as const,
   },
 
-  // Gemini Configuration
+  // ── Gemini AI ─────────────────────────────────────────────────────────
   gemini: {
     model: process.env.GEMINI_MODEL || "models/gemini-3.1-flash-lite",
     endpoint: process.env.GEMINI_ENDPOINT || "https://generativelanguage.googleapis.com/v1beta",
   },
-
-  // Feature Flags
-  features: {
-    enableMetrics: process.env.ENABLE_METRICS === "true",
-    enableDetailedLogs: process.env.ENABLE_DETAILED_LOGS === "true",
-  },
 };
 
-/**
- * Parse Redis URL from environment
- * Railway format: redis://:password@host:port or redis://default:password@host:port
- * @returns {Object} Parsed Redis configuration with type info
- */
-function parseRedisUrl() {
-  const redisUrl = process.env.REDIS_URL;
+// ── Redis (Upstash) ────────────────────────────────────────────────────────
 
-  if (!redisUrl) {
-    configLogger.warn("REDIS_URL not set, Redis will not be available");
-    return { urlType: "not configured" };
-  }
+type RedisConnection = {
+  host: string;
+  port: number;
+  password?: string;
+  username?: string;
+  tls?: Record<string, never>;
+};
 
-  // Skip Redis if using Railway internal hostname in local development
-  if (redisUrl.includes("redis.railway.internal") && process.env.NODE_ENV !== "production") {
-    configLogger.warn(
-      "Skipping Redis connection: Railway internal hostname detected in local development. Use localhost or disable REDIS_URL for local dev.",
-    );
-    return { urlType: "internal (skipped)" };
+function parseRedisUrl(): Partial<RedisConnection> {
+  const raw = process.env.REDIS_URL;
+  if (!raw) {
+    log.warn("REDIS_URL not set — Redis cache unavailable");
+    return {};
   }
 
   try {
-    const url = new URL(redisUrl);
-    const hostname = url.hostname;
-
-    // Determine URL type
-    let urlType;
-    if (hostname.includes("railway.internal")) {
-      urlType = "Railway internal";
-    } else if (hostname.includes(".rlwy.net") || hostname.includes(".railway.app")) {
-      urlType = "Railway public";
-    } else if (hostname === "localhost" || hostname === "127.0.0.1") {
-      urlType = "localhost";
-    } else {
-      urlType = "external";
-    }
-
+    const url = new URL(raw);
     return {
-      host: hostname,
+      host: url.hostname,
       port: parseInt(url.port, 10) || 6379,
       password: url.password || undefined,
       username: url.username || undefined,
-      urlType,
+      // Upstash requires TLS (rediss:// protocol)
+      tls: url.protocol === "rediss:" ? {} : undefined,
     };
-  } catch (error) {
-    configLogger.error(
-      "Invalid REDIS_URL format",
-      error instanceof Error ? error.message : String(error),
-    );
-    return { urlType: "invalid" };
+  } catch (cause) {
+    log.error("Invalid REDIS_URL", cause instanceof Error ? cause.message : String(cause));
+    return {};
   }
 }
 
-/**
- * Redis connection configuration with Railway-optimized settings
- */
 export const redisConfig = {
-  // Parse connection details from REDIS_URL
   ...parseRedisUrl(),
 
-  // Connection options
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
-  lazyConnect: true, // Don't connect immediately, wait for explicit connect()
+  lazyConnect: true,
 
-  // Retry strategy: exponential backoff (1s, 2s, 4s, max 10s)
   retryStrategy(times: number): number {
-    const delay = Math.min(times * 1000, 10000);
-    const logger = createLogger("Redis Config");
-    logger.info(`Retry attempt ${times}, waiting ${delay}ms`);
+    const delay = Math.min(times * 1000, 10_000);
+    log.info(`Redis retry ${times}, waiting ${delay}ms`);
     return delay;
   },
 
-  // Connection timeout
-  connectTimeout: 10000, // 10 seconds
-
-  // Keep-alive
-  keepAlive: 30000, // 30 seconds
-
-  // Key prefix for namespace isolation (dev/prod share same instance)
+  connectTimeout: 10_000,
+  keepAlive: 30_000,
   keyPrefix: "mandarin:",
 };
 
-// Cache settings — enabled automatically when REDIS_URL is set
 export const cacheConfig = {
   enabled: !!process.env.REDIS_URL,
   ttl: {
-    tts: parseInt(process.env.CACHE_TTL_TTS || "86400", 10), // 24 hours default
+    tts: parseInt(process.env.CACHE_TTL_TTS || "86400", 10),
   },
 };
 
-/**
- * Vocabulary configuration for data fetching from Google Cloud Storage.
- */
-export const vocabularyConfig = {
-  // Name of the lists JSON file in the GCS bucket
-  listsFile: "vocabularyLists.json",
+// ── Startup validation ─────────────────────────────────────────────────────
 
-  // Cache TTL (seconds) used by VocabularyRepository in-memory cache
-  cacheTTL: 3600,
-
-  // GCS enabled flag (should always be true in production)
-  gcsEnabled: process.env.GCS_ENABLED === "true",
-};
+type Check = [value: unknown, label: string];
 
 /**
- * Validate that all required configuration values are present.
- * Call this explicitly from the application entry point.
- * Throws if any critical config is missing (fail-fast at startup, not import time).
+ * Validate required configuration at startup (fail-fast).
+ * Throws on the first missing critical value.
  */
-export function validateConfig() {
-  configLogger.info("Validating infrastructure configuration...");
+export function validateConfig(): void {
+  log.info("Validating configuration…");
 
-  if (!config.databaseUrl) {
-    throw new Error(
-      "[Config] DATABASE_URL is required. Set it in .env.local or platform environment.",
-    );
+  // Critical — app cannot start without these
+  const critical: Check[] = [
+    [config.databaseUrl, "DATABASE_URL (Neon Postgres)"],
+    [config.jwtSecret, "JWT_SECRET"],
+    [config.jwtRefreshSecret, "JWT_REFRESH_SECRET"],
+    [config.gcsBucket, "GCS_BUCKET_NAME"],
+    [config.gcsCredentials?.client_email, "GCS_CREDENTIALS_RAW (SA: gcs-storage-service)"],
+    [config.googleTtsCredentials?.client_email, "GOOGLE_TTS_CREDENTIALS_RAW (SA: tts-service)"],
+    [config.geminiCredentials?.client_email, "GEMINI_API_CREDENTIALS_RAW (SA: gemini-service)"],
+  ];
+
+  for (const [value, label] of critical) {
+    if (!value) {
+      throw new Error(`[Config] ${label} is required but not set`);
+    }
   }
 
-  if (!config.jwtSecret) {
-    throw new Error(
-      "[Config] JWT_SECRET is required. Set it in .env.local. " +
-        "WARNING: Never use a default value in production — this would allow unauthenticated access.",
-    );
-  }
-
-  if (!config.jwtRefreshSecret) {
-    throw new Error("[Config] JWT_REFRESH_SECRET is required. Set it in .env.local.");
-  }
-
-  if (!config.gcsBucket) {
-    throw new Error("[Config] GCS_BUCKET_NAME is required. Check .env.local file.");
-  }
-
-  if (!config.googleTtsCredentials || !config.googleTtsCredentials.client_email) {
-    throw new Error("[Config] GOOGLE_TTS_CREDENTIALS_RAW is invalid or missing.");
-  }
-
-  if (!config.geminiCredentials || !config.geminiCredentials.client_email) {
-    throw new Error("[Config] GEMINI_API_CREDENTIALS_RAW is invalid or missing.");
-  }
-
-  if (!config.gcsCredentials || !config.gcsCredentials.client_email) {
-    throw new Error(
-      "[Config] GCS credentials missing. GEMINI_API_CREDENTIALS_RAW is used for both Gemini AI and GCS auth.",
-    );
-  }
-
-  configLogger.info(`Using GCS credentials from: ${config.gcsCredentials.client_email}`);
-  configLogger.info("Infrastructure configuration validated successfully");
+  log.info(`GCS:    ${config.gcsBucket} ← ${config.gcsCredentials!.client_email}`);
+  log.info(`TTS:    ${config.googleTtsCredentials!.client_email}`);
+  log.info(`Gemini: ${config.geminiCredentials!.client_email}`);
+  log.info("Configuration validated ✓");
 }

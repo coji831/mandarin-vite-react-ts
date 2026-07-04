@@ -55,19 +55,16 @@ npx create-db
 
 This creates a free Prisma PostgreSQL database and auto-configures `DATABASE_URL`.
 
-### Option 3: Supabase (Free Tier)
-
-1. Sign up at https://supabase.com
-2. Create project
-3. Copy connection string from Settings → Database
-4. Add to `.env.local` as `DATABASE_URL`
-
-### Option 4: Neon (Free Tier)
+### Option 3: Neon (Serverless PostgreSQL)
 
 1. Sign up at https://neon.tech
 2. Create project
-3. Copy connection string
-4. Add to `.env.local` as `DATABASE_URL`
+3. Get connection string from Neon Dashboard → Connection Details
+4. Add to `.env.local` as `DATABASE_URL` with `sslmode=require`:
+
+```env
+DATABASE_URL="postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require"
+```
 
 ---
 
@@ -215,6 +212,7 @@ npx prisma migrate dev --name <short-description>
 ```
 
 **Never** use `prisma db push` as a replacement for migrations. `db push` is only acceptable for:
+
 - Rapid prototyping during early development (pre-initial migration)
 - Temporary evaluation of schema ideas you plan to discard
 
@@ -245,6 +243,7 @@ npx prisma migrate dev --name update-schema
 3. Verify: `npx prisma migrate status` should show "Database schema is up to date!"
 
 **Before committing:** Always run:
+
 ```bash
 npx prisma migrate status
 npx prisma db push --dry-run  # confirms no drift
@@ -306,10 +305,10 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/mandarin_dev?schema=p
 postgresql://user:password@host:port/database?schema=public
 ```
 
-**Supabase:**
+**Neon:**
 
 ```
-postgresql://postgres.xxxxx:password@db.xxxxx.supabase.co:5432/postgres?schema=public&sslmode=require
+postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require
 ```
 
 **Neon:**
@@ -321,8 +320,8 @@ postgresql://user:password@pg.neon.tech/database?schema=public&sslmode=require
 **Connection Pooling (Production):**
 
 ```
-# Supabase with PgBouncer
-postgresql://pgbouncer_user:password@db.xxxxx.supabase.co:6543/postgres?schema=public&sslmode=require
+# Neon with connection pooling
+postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require&pool=1
 ```
 
 ---
@@ -341,16 +340,16 @@ postgresql://pgbouncer_user:password@db.xxxxx.supabase.co:6543/postgres?schema=p
    npx prisma migrate deploy
    ```
 
-### Vercel/Supabase
+### Railway/Neon
 
-1. **Create Supabase project**
-2. **Copy connection string**
-3. **Set DATABASE_URL** in Vercel environment variables
-4. **Deploy backend** to Railway/Heroku with migrations
+1. **Create Neon project**
+2. **Copy connection string** (with `sslmode=require`)
+3. **Set `DATABASE_URL`** in Railway backend service environment variables
+4. **Run migrations** via Procfile: `npx prisma migrate deploy`
 
 ### Database Backups
 
-**Supabase:** Automatic daily backups (retention: 7 days)
+**Neon:** Automatic daily backups with point-in-time recovery (7-day retention)
 
 **Railway:** Configure point-in-time recovery in PostgreSQL settings
 
@@ -408,7 +407,7 @@ npx prisma migrate dev
 **Solutions:**
 
 1. Increase connection pool size in `DATABASE_URL`
-2. Enable connection pooling (PgBouncer for Supabase)
+2. Enable connection pooling (Neon pooler or PgBouncer)
 3. Check database firewall rules
 4. Verify backend can reach database (network/VPN)
 
@@ -435,12 +434,12 @@ npx prisma migrate dev
 For production, use connection pooling to limit concurrent connections:
 
 ```env
-# Supabase with PgBouncer (port 6543)
-DATABASE_URL=postgresql://user:pass@host:6543/db?sslmode=require
+# Neon with connection pooling
+DATABASE_URL=postgresql://user:pass@pg.neon.tech/db?sslmode=require
 
 # Connection pool settings
-# Supabase default: 60 connections
-# Increase if needed in Settings → Database
+# Neon default: 100 connections (scales automatically)
+# Increase in Neon Dashboard → Connection Details
 ```
 
 ### Prisma Client Lifecycle
@@ -564,7 +563,6 @@ node scripts/check-migration-progress.js
 
 - [PostgreSQL Official](https://www.postgresql.org/)
 - [Prisma Documentation](https://www.prisma.io/docs/)
-- [Supabase Setup](https://supabase.com/docs)
 - [Neon Documentation](https://neon.tech/docs/introduction)
 
 ---

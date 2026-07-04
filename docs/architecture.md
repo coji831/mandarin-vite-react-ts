@@ -23,7 +23,7 @@ PinyinPal is a **full-stack Mandarin learning platform** built with:
 
 - **Frontend**: React 18 + TypeScript + Vite (deployed to Vercel)
 - **Backend**: Node.js + Express (deployed to Railway)
-- **Database**: PostgreSQL with Prisma ORM (hosted on Supabase)
+- **Database**: PostgreSQL with Prisma ORM (hosted on Neon)
 - **Cache**: Redis (Upstash) for API response caching
 - **External APIs**: Google Cloud TTS, Google Cloud Storage, Gemini AI
 
@@ -333,9 +333,9 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 
 - **Purpose**: API response caching (TTS, AI feedback, quiz sessions, due words)
 - **Client**: `src/shared/infrastructure/cache/CacheService.ts`
-- **Configuration**: `REDIS_URL` (auto-injected by Railway)
+- **Configuration**: `REDIS_URL` (from Upstash)
 
-**Supabase PostgreSQL:**
+**Neon PostgreSQL:**
 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/shared/infrastructure/database/client.ts`)
@@ -358,7 +358,7 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 | --------- | -------- | ---------------- | --------------------------- |
 | Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build)     |
 | Backend   | Railway  | Push to `main`   | Node.js 20 (Express server) |
-| Database  | Supabase | Manual migration | PostgreSQL 15               |
+| Database  | Neon     | Manual migration | PostgreSQL 17               |
 | Cache     | Upstash  | Always-on        | Redis 7                     |
 
 **Development Environment:**

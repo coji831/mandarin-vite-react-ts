@@ -26,12 +26,14 @@ npm install ioredis ioredis-mock
 
 ```typescript
 // 1. Install
-npm install redis
+npm install ioredis
 
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 
-const redis = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
+const redis = new Redis({
+  host: process.env.REDIS_URL || 'redis://localhost:6379',
+  lazyConnect: true,
+  maxRetriesPerRequest: 3,
 });
 
 await redis.connect();
@@ -52,7 +54,7 @@ async function getWithCache<T>(
   // Cache miss: fetch and store
   console.log('Cache miss:', key);
   const data = await fetchFn();
-  await redis.setEx(key, ttl, JSON.stringify(data));
+  await redis.setex(key, ttl, JSON.stringify(data));
 
   return data;
 }
@@ -98,7 +100,7 @@ async function updateProgress(userId: string, data: Progress): Promise<void> {
 
   // Update cache
   const cacheKey = `progress:${userId}`;
-  await redis.setEx(cacheKey, 3600, JSON.stringify(data));
+  await redis.setex(cacheKey, 3600, JSON.stringify(data));
 }
 
 // Cache with fallback (graceful degradation)
@@ -116,7 +118,7 @@ async function getCachedData<T>(key: string, fetchFn: () => Promise<T>): Promise
 
 // Batch cache operations
 async function batchGet(keys: string[]): Promise<Record<string, any>> {
-  const values = await redis.mGet(keys);
+  const values = await redis.mget(keys);
   const result: Record<string, any> = {};
 
   keys.forEach((key, i) => {

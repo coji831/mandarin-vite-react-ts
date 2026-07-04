@@ -5,14 +5,14 @@ info:
   description: |
     Production backend API for Mandarin vocabulary learning and AI-powered conversation generation. 
     All endpoints are versioned under /api/v1. 
-    Authentication required for AI services (TTS, Conversations) to control API costs.
+    Authentication required for AI services (TTS) to control API costs.
   contact:
     name: API Support
 
 servers:
   - url: http://localhost:3001/api
     description: Development server
-  - url: https://mandarin-backend.railway.app/api
+  - url: https://mandarin-vite-react-ts-production.up.railway.app/api
     description: Production server (Railway)
 
 tags:
@@ -26,8 +26,6 @@ tags:
     description: User learning progress tracking
   - name: TTS
     description: Text-to-speech synthesis
-  - name: Conversations
-    description: AI-powered conversation generation
 
 components:
   securitySchemes:
@@ -663,144 +661,3 @@ paths:
           description: Unauthorized (missing or invalid JWT)
         "500":
           description: TTS generation failed
-
-  /v1/conversations:
-    post:
-      summary: Generate conversation (unified endpoint)
-      tags:
-        - Conversations
-      security:
-        - bearerAuth: []
-      description: Type-based routing for conversation text or audio generation
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - type: object
-                  required:
-                    - type
-                    - wordId
-                    - word
-                  properties:
-                    type:
-                      type: string
-                      enum: [text]
-                    wordId:
-                      type: string
-                    word:
-                      type: string
-                    generatorVersion:
-                      type: string
-                      default: v1
-                - type: object
-                  required:
-                    - type
-                    - wordId
-                    - turnIndex
-                    - text
-                  properties:
-                    type:
-                      type: string
-                      enum: [audio]
-                    wordId:
-                      type: string
-                    turnIndex:
-                      type: number
-                    text:
-                      type: string
-                    voice:
-                      type: string
-      responses:
-        "200":
-          description: Conversation generated successfully
-        "400":
-          description: Validation error
-        "401":
-          description: Unauthorized
-        "500":
-          description: Generation failed
-
-  /v1/conversations/text/generate:
-    post:
-      summary: Generate conversation text
-      tags:
-        - Conversations
-      security:
-        - bearerAuth: []
-      description: Generates AI conversation dialogue using Gemini (cached 1 hour)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - wordId
-                - word
-              properties:
-                wordId:
-                  type: string
-                  example: hello
-                word:
-                  type: string
-                  example: 你好
-                generatorVersion:
-                  type: string
-                  default: v1
-      responses:
-        "200":
-          description: Conversation text generated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  wordId:
-                    type: string
-                  word:
-                    type: string
-                  turns:
-                    type: array
-                    items:
-                      type: object
-                  _metadata:
-                    type: object
-        "401":
-          description: Unauthorized
-
-  /v1/conversations/audio/generate:
-    post:
-      summary: Generate conversation audio
-      tags:
-        - Conversations
-      security:
-        - bearerAuth: []
-      description: Generates audio for a specific conversation turn
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - wordId
-                - turnIndex
-                - text
-              properties:
-                wordId:
-                  type: string
-                turnIndex:
-                  type: number
-                text:
-                  type: string
-                voice:
-                  type: string
-      responses:
-        "200":
-          description: Audio generated successfully
-        "401":
-          description: Unauthorized

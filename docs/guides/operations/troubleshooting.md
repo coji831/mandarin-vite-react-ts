@@ -1,7 +1,7 @@
 # Troubleshooting Guide
 
 **Audience:** Developers debugging common development, deployment, and integration issues  
-**Last Updated:** June 3, 2026  
+**Last Updated:** July 4, 2026  
 **Scope:** Consolidates troubleshooting from backend, frontend, database, infrastructure, and testing guides
 
 > **=��� Tip:** Use `Ctrl+F` to search for your specific error message or keyword.
@@ -19,7 +19,7 @@
 | Error Message                            | Category                | Severity | Solution                                                                                        |
 | ---------------------------------------- | ----------------------- | -------- | ----------------------------------------------------------------------------------------------- |
 | `ERR_MODULE_NOT_FOUND` (WindowsG��Linux) | Backend Deployment      | =���     | [Case-Sensitivity Fix](#-err_module_not_found-on-railwaylinux-case-sensitivity)                 |
-| `ENOTFOUND redis.railway.internal`       | Infrastructure/Redis    | =���     | [Redis Connection](#error-getaddrinfo-enotfound-redisrailwayinternal)                           |
+| `ENOTFOUND <redis-host>`                 | Infrastructure/Redis    | 🟡       | [Redis Connection](#error-getaddrinfo-enotfound-upstash-host)                                   |
 | `MaxRetriesPerRequestError`              | Infrastructure/Redis    | =���     | [Redis Connection](#error-maxretriesperrequest-error-reached-the-max-retries-per-request-limit) |
 | `Cookies not visible in browser`         | Authentication/Frontend | =���     | [Cookie Issues](#-cookies-not-visible-in-browser)                                               |
 | `CORS error` / `credentials`             | Backend Integration     | =���     | [CORS Credentials Error](#-cors-credentials-error)                                              |
@@ -36,7 +36,14 @@
 | `Redis connection error`                 | Infrastructure/Redis    | =���     | [Redis Issues](#-redis-connection-issues)                                                       |
 | `CORS errors persist`                    | Backend                 | =���     | [CORS Setup](#cors-errors-persist)                                                              |
 | `JWT authentication failing`             | Backend Auth            | =���     | [Auth Issues](#authentication-middleware-not-working)                                           |
-| `Database connection errors`             | Database                | =���     | [Database Issues](#database-connection-errors)                                                  |
+| `Database connection errors`             | Database                | 🟡       | [Database Issues](#database-connection-errors)                                                  |
+| `502 Bad Gateway`                        | Production/Deployment   | 🔴       | [Railway 502](#-railway-502-bad-gateway--domain-target-port-mismatch)                           |
+| `VITE_API_URL not syncing`               | Production/Deployment   | 🔴       | [Vercel Sync](#-railwayvercel-integration--vite_api_url-not-syncing)                            |
+| `ERR_BLOCKED_BY_ORB`                     | Production/Deployment   | 🔴       | [GCS CORS](#-gcs-cors--err_blocked_by_orb-on-tts-audio)                                         |
+| `GCS 403 Forbidden`                      | Production/Deployment   | 🔴       | [GCS Public Access](#-gcs-403-forbidden--no-public-read-access)                                 |
+| `APIS NOT PROVISIONED`                   | Production/Deployment   | 🟡       | [TTS API](#-tts-api-403--apis-not-provisioned)                                                  |
+| `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR`     | Production/Deployment   | 🟡       | [express-rate-limit](#-express-rate-limit-crashes-with-err_erl_unexpected_x_forwarded_for)      |
+| `SPA 404 on deep link`                   | Production/Deployment   | 🟢       | [SPA Rewrites](#-spa-deep-linking-returns-404)                                                  |
 
 ---
 
@@ -51,7 +58,8 @@
 - [=��� Testing Errors](#-testing-errors)
 - [=��� Build & Deployment Errors](#-build--deployment-errors)
 - [G�� Quick Diagnostic Checklists](#-quick-diagnostic-checklists)
-- [=��� Reference](#-reference)
+- [🚀 Production / Deployment Errors](#-production--deployment-errors)
+- [📖 Reference](#-reference)
 
 ---
 
@@ -465,8 +473,8 @@ client.$connect()
 # Local development
 DATABASE_URL="postgresql://user:password@localhost:5432/mandarin_db"
 
-# Supabase (includes connection pooling)
-DATABASE_URL="postgresql://user:password@db.supabase.co:6543/postgres?pgbouncer=true"
+# Neon (recommended for production)
+DATABASE_URL="postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require"
 
 # Railway
 DATABASE_URL="postgresql://username:password@containers-us-west-xyz.railway.app:5432/railway"
@@ -515,24 +523,25 @@ redis-cli -h switchback.proxy.rlwy.net -p 13172 -a YOUR_PASSWORD PING
 # Should respond: PONG
 ```
 
-### Error: `getaddrinfo ENOTFOUND redis.railway.internal`
+### Error: `getaddrinfo ENOTFOUND` (Upstash connection refused)
 
-**Cause:** Attempting to connect to Railway's internal Redis hostname from local machine (not supported)
+**Cause:** `REDIS_URL` points to an Upstash host that is unreachable — network issues, wrong hostname, or DNS resolution failure.
 
 **Solution:**
 
-- Comment out `REDIS_URL` in `.env.local` for local development
-- Or use Railway's public proxy URL: `redis://default:password@switchback.proxy.rlwy.net:PORT`
+- Verify the `REDIS_URL` is correct in your Upstash Dashboard
+- Ensure the URL uses `rediss://` (TLS) scheme
+- If developing locally and no Redis is needed, comment out `REDIS_URL` entirely
 
 **Verification:**
 
 ```bash
-# Should see:
-[Redis Config Warning] Skipping Redis connection: Railway internal hostname detected
-[CacheFactory] Using NoOpCacheService
+# Test connection with redis-cli
+redis-cli -h <upstash-host>.upstash.io -p 6379 -a YOUR_PASSWORD --tls PING
+# Should respond: PONG
 ```
 
-**Impact:** Minimal - GCS cache layer still works, only Redis layer disabled
+**Impact:** Minimal — cache falls back to no-op, the app continues without Redis
 
 ### Error: `MaxRetriesPerRequestError: Reached the max retries per request limit`
 
@@ -549,9 +558,8 @@ CACHE_ENABLED=false
 **Production Fix:**
 
 ```env
-# .env.production
-REDIS_URL="redis://default:password@redis.railway.internal:6379"
-CACHE_ENABLED=true
+# .env.production (or Railway Dashboard env vars)
+REDIS_URL="rediss://default:password@us1-robust-wasp-12345.upstash.io:6379"
 ```
 
 ### =��� Redis connection error: "Redis is already connecting/connected"
@@ -785,6 +793,92 @@ taskkill /PID <PID> /F
 - G�� VITE_API_URL set correctly
 - G�� No CORS errors in console
 - G�� DevTools G�� Network shows actual request/response
+
+---
+
+## 🚀 Production / Deployment Errors
+
+### 🔴 Railway 502 Bad Gateway — Domain Target Port Mismatch
+
+**Symptom:** All requests to Railway returned 502 in <5ms. Container logs showed server started correctly.
+
+**Root Cause:** The Railway domain had a custom target port of 3001 configured, but the app listened on `PORT` (8080, as injected by Railway). When `PORT` was removed from env vars, the domain still routed to port 3001.
+
+**Fix:**
+
+1. In Railway Dashboard → Service → Settings → Domains → edit the domain
+2. **Clear the Target Port** (set to blank/auto)
+3. OR set `PORT=8080` explicitly in Railway env vars (if you want explicit control)
+4. Also added `app.listen(config.port, "0.0.0.0", ...)` per Railway docs requirement
+
+**Prevention:** Never set custom target ports unless you have a specific reason. Railway's proxy + PORT env var should auto-match.
+
+### 🔴 Railway→Vercel Integration — `VITE_API_URL` Not Syncing
+
+**Symptom:** Railway environment variables were synced to Vercel, but `RAILWAY_PUBLIC_DOMAIN` (a Railway system variable) was not.
+
+**Root Cause:** Railway's Vercel integration only syncs **custom user-defined variables**, not Railway system-provided variables like `RAILWAY_PUBLIC_DOMAIN`.
+
+**Fix:** Create a custom reference variable: `VITE_API_URL = https://${{RAILWAY_PUBLIC_DOMAIN}}`. This is a custom variable that users defined, so it gets synced. The `${{}}` syntax resolves to the Railway-provided domain at runtime.
+
+### 🔴 GCS CORS — ERR_BLOCKED_BY_ORB on TTS Audio
+
+**Symptom:** Browser blocked TTS audio files from `storage.googleapis.com` with `ERR_BLOCKED_BY_ORB`.
+
+**Root Cause:** The GCS bucket `pinyin-pal-data` had no CORS configuration. The `TtsController.getTtsAudio()` returns a direct GCS public URL (`https://storage.googleapis.com/pinyin-pal-data/tts/{hash}.mp3`), and the browser fetches this URL cross-origin.
+
+**Fix:**
+
+1. Add CORS to the GCS bucket: `origin: ["*"]`, `method: ["GET", "HEAD"]`
+2. Note: GCS CORS does NOT support wildcard subdomains (`*.vercel.app`). Must use exact origins or `*`.
+3. Added `google_storage_bucket.cors` block in Terraform
+4. Applied via `gcloud storage buckets update` immediately
+
+### 🔴 GCS 403 Forbidden — No Public Read Access
+
+**Symptom:** Even after CORS fix, GCS URLs returned 403.
+
+**Root Cause:** The bucket uses `uniform_bucket_level_access`, and no `allUsers` principal was granted read access. The `getPublicUrl()` method returns a URL that relies on the object being publicly readable.
+
+**Fix:** Added `allUsers` with `roles/storage.objectViewer` on the bucket.
+
+- `gcloud storage buckets add-iam-policy-binding gs://pinyin-pal-data --member=allUsers --role=roles/storage.objectViewer`
+- Added `google_storage_bucket_iam_member.public_read` in Terraform
+
+### 🟡 TTS API 403 — APIS NOT PROVISIONED
+
+**Symptom:** TTS API calls returned 403 on fresh project.
+
+**Root Cause:** The `texttospeech.googleapis.com` API wasn't enabled. Previous version was enabled manually in the old GCP project.
+
+**Fix:** Enable via Terraform (`apis.tf`) or manually:
+
+```bash
+gcloud services enable texttospeech.googleapis.com
+```
+
+### 🟡 express-rate-limit Crashes with ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+
+**Symptom:** Server logs showed `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` crash.
+
+**Root Cause:** Railway's proxy sets `X-Forwarded-For` header, but Express has `trust proxy` disabled by default.
+
+**Fix:** Added `app.set("trust proxy", 1)` after the Express app creation.
+
+### 🟢 SPA Deep-Linking Returns 404
+
+**Symptom:** Direct navigation to `/learn/radicals` returns 404 on Vercel.
+
+**Root Cause:** `vercel.json` (which contained SPA rewrite rules) was deleted during the IaC migration as it was redundant with Terraform build config. But the SPA rewrite rules were NOT ported to Terraform.
+
+**Fix:** Restore `vercel.json` with:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
 
 ---
 

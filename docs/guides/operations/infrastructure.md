@@ -51,8 +51,8 @@
 | ---------------- | -------------------- | ------------------------------- | ------------------------------ |
 | Frontend hosting | Vercel               | `vercel.json`                   | ✅ Any static host             |
 | Backend runtime  | Railway              | `railway.toml`, `Procfile`      | ✅ Any Node host               |
-| SQL Database     | Supabase PostgreSQL  | `DATABASE_URL` (Prisma ORM)     | ✅ Any SQL DB                  |
-| KV Cache         | Railway Redis        | `REDIS_URL`                     | ✅ Any Redis                   |
+| SQL Database     | Neon PostgreSQL      | `DATABASE_URL` (Prisma ORM)     | ✅ Any SQL DB                  |
+| KV Cache         | Upstash Redis        | `REDIS_URL`                     | ✅ Any Redis                   |
 | Blob Storage     | Google Cloud Storage | `GCS_BUCKET_NAME` + credentials | ⚠️ GcsFileStore adapter needed |
 | TTS API          | Google Cloud TTS     | `GOOGLE_TTS_CREDENTIALS_RAW`    | ⚠️ New client adapter needed   |
 | LLM / AI         | Google Gemini        | `GEMINI_API_CREDENTIALS_RAW`    | ⚠️ New client adapter needed   |
@@ -67,14 +67,14 @@
 
 ### Local Development vs Cloud Deployment
 
-| Aspect                   | Local (`NODE_ENV=development`)          | Cloud (`NODE_ENV=production`)                                   |
-| ------------------------ | --------------------------------------- | --------------------------------------------------------------- |
-| Database                 | Supabase dev branch URL in `.env.local` | Supabase prod branch (`DATABASE_URL` set in platform Dashboard) |
-| Redis                    | Local or skipped (cache = no-op)        | Platform-managed (Railway auto-injects `REDIS_URL`)             |
-| GCS credentials          | Same GCP service account JSON           | Same — stored in platform env vars                              |
-| Google APIs (TTS/Gemini) | Same credentials, lazy-init             | Same                                                            |
-| Env file                 | `.env.local` at project root            | Railway Dashboard → Variables                                   |
-| File watching            | `node --watch` for hot reload           | `node` (no --watch, uses platform restart)                      |
+| Aspect                   | Local (`NODE_ENV=development`)      | Cloud (`NODE_ENV=production`)                               |
+| ------------------------ | ----------------------------------- | ----------------------------------------------------------- |
+| Database                 | Neon dev branch URL in `.env.local` | Neon prod branch (`DATABASE_URL` set in platform Dashboard) |
+| Redis                    | Local or skipped (cache = no-op)    | Platform-managed (Upstash — `REDIS_URL` set in Dashboard)   |
+| GCS credentials          | Same GCP service account JSON       | Same — stored in platform env vars                          |
+| Google APIs (TTS/Gemini) | Same credentials, lazy-init         | Same                                                        |
+| Env file                 | `.env.local` at project root        | Railway Dashboard → Variables                               |
+| File watching            | `node --watch` for hot reload       | `node` (no --watch, uses platform restart)                  |
 
 ---
 
@@ -94,12 +94,12 @@ const vocabularyStorage = StorageFactory.create("vocabulary", { bucket: config.g
 
 **What this enables:**
 
-| Scenario                         | How                                                                               |
-| -------------------------------- | --------------------------------------------------------------------------------- |
-| Same bucket, different prefix    | Instances auto-namespace under module name                                        |
-| Different buckets per module     | Pass `{ bucket: "other-bucket" }` per call                                        |
-| Different storage backend        | Swap `GcsFileStore` implementation behind same interface                          |
-| Future: per-use-case GCS buckets | Each factory call can point to dedicated bucket (defined in `terraform/storage/`) |
+| Scenario                         | How                                                                              |
+| -------------------------------- | -------------------------------------------------------------------------------- |
+| Same bucket, different prefix    | Instances auto-namespace under module name                                       |
+| Different buckets per module     | Pass `{ bucket: "other-bucket" }` per call                                       |
+| Different storage backend        | Swap `GcsFileStore` implementation behind same interface                         |
+| Future: per-use-case GCS buckets | Each factory call can point to dedicated bucket (defined in `terraform/main.tf`) |
 
 ### Cache (`CacheFactory`)
 
@@ -136,12 +136,12 @@ const analyticsCache = await CacheFactory.create("analytics", { enabled: false }
 
 Manages GCP resources only (not Railway/Vercel). Current modules:
 
-| Module               | Files                                      | What it manages                                                                  |
-| -------------------- | ------------------------------------------ | -------------------------------------------------------------------------------- |
-| **Storage**          | `terraform/storage/*.tf`                   | Per-use-case GCS buckets (TTS, vocabulary, examples, audio) with lifecycle rules |
-| **Service Accounts** | `terraform/service-accounts/*.tf`          | Per-use-case GCP service accounts with least-privilege IAM                       |
-| **Redis**            | `terraform/redis.tf`                       | GCP Memorystore Redis instance (optional — Railway provides its own Redis)       |
-| **Monitoring**       | `terraform/conversation-infrastructure.tf` | TTS cost alert policy (stale — needs cleanup)                                    |
+| Module               | Files                           | What it manages                                                                  |
+| -------------------- | ------------------------------- | -------------------------------------------------------------------------------- |
+| **Storage**          | `terraform/main.tf`             | Per-use-case GCS buckets (TTS, vocabulary, examples, audio) with lifecycle rules |
+| **Service Accounts** | `terraform/service-accounts.tf` | Per-use-case GCP service accounts with least-privilege IAM                       |
+| **Redis**            | `terraform/upstash.tf`          | Upstash Redis (configured in Upstash Dashboard)                                  |
+| **Monitoring**       | GCP Budgets (manual setup)      | TTS cost alert in Billing Console                                                |
 
 **State:** Check `terraform state list` to see what's provisioned.
 

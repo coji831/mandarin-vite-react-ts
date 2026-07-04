@@ -46,8 +46,8 @@ Edit `.env.local` with required variables. See **[Environment Setup Guide](../ge
 **Minimum Required Variables (all mandatory — `validateConfig()` will crash at startup if missing):**
 
 ```env
-# Database (Supabase dev branch)
-DATABASE_URL="postgresql://postgres:password@db.supabase.co:5432/postgres"
+# Database (Neon)
+DATABASE_URL="postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require"
 
 # Authentication
 # Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"

@@ -1,0 +1,39 @@
+# Terraform Apply
+# Deploys infrastructure changes on push to main.
+
+name: Terraform Apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "terraform/**"
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform/
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform/
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}

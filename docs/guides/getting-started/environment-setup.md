@@ -64,8 +64,8 @@ cp .env.example .env.local
 ```env
 # .env.local
 
-# === DATABASE (Supabase dev branch) ===
-DATABASE_URL=postgresql://postgres:password@db.supabase.co:5432/postgres
+# === DATABASE (Neon) ===
+DATABASE_URL=postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require
 
 # === AUTHENTICATION ===
 # Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -108,7 +108,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 | Variable                     | Where it's read                           | Local Dev                                | Cloud Deployment                                 | Notes                                                           |
 | ---------------------------- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------- |
-| `DATABASE_URL`               | `shared/config/index.js` → Prisma         | Supabase dev branch URL in `.env.local`  | Supabase prod branch URL in platform Dashboard   | No local PostgreSQL needed                                      |
+| `DATABASE_URL`               | `shared/config/index.js` → Prisma         | Neon connection string in `.env.local`   | Neon connection string in platform Dashboard     | No local PostgreSQL needed                                      |
 | `JWT_SECRET`                 | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Access tokens (15min).                            |
 | `JWT_REFRESH_SECRET`         | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Refresh tokens (7d). Different from `JWT_SECRET`. |
 | `GCS_BUCKET_NAME`            | `shared/config/index.js`                  | Same bucket name in `.env.local`         | Same bucket name in platform Dashboard           | Dev uses a dev-tier bucket                                      |

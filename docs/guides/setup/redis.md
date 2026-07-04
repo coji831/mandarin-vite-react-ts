@@ -67,17 +67,18 @@ docker exec mandarin-redis redis-cli ping
 docker stop mandarin-redis && docker rm mandarin-redis
 ```
 
-### Option 3: Railway Redis (Production)
+### Option 3: Upstash Redis (Production)
 
-1. Navigate to your Railway project dashboard
-2. Add the **Redis** plugin from the plugin marketplace
-3. Railway automatically injects the `REDIS_URL` environment variable:
-   - Internal: `redis://default:password@redis.railway.internal:6379`
-   - Public: `redis://default:password@<host>.rlwy.net:6379`
+1. Sign up at https://upstash.com
+2. Create a new Redis database in the Upstash Dashboard
+3. Copy the connection string (use the `rediss://` URL with TLS)
+4. Set `REDIS_URL` in your Railway or .env.local environment:
 
-No manual configuration is needed — the backend detects Railway's internal hostname and handles it automatically.
+```env
+REDIS_URL="rediss://default:password@us1-robust-wasp-12345.upstash.io:6379"
+```
 
-**Important:** If using Railway's internal hostname (`redis.railway.internal`) in local development, the backend automatically skips the connection. Use `localhost` for local development instead.
+**Important:** Always use the `rediss://` (TLS) URL for production. Upstash does not support plain `redis://` connections on production databases.
 
 ### Option 4: Disable Redis
 
@@ -107,14 +108,11 @@ The backend will skip Redis initialization entirely and all cache operations ret
 # Local development
 REDIS_URL=redis://default:password@localhost:6379
 
-# Railway (auto-injected)
-REDIS_URL=redis://default:password@redis.railway.internal:6379
+# Upstash (production — TLS required)
+REDIS_URL=rediss://default:password@us1-robust-wasp-12345.upstash.io:6379
 
-# Upstash (alternative provider)
-REDIS_URL=redis://default:password@host.upstash.io:6379
-
-# With TLS (production)
-REDIS_URL=rediss://default:password@host:6379
+# Local development
+REDIS_URL=redis://default:password@localhost:6379
 ```
 
 > **Full environment variable reference:** See [Environment Setup Guide](../getting-started/environment-setup.md)
@@ -129,14 +127,15 @@ The Redis connection is configured in `apps/backend/src/config/redis.js`.
 
 The config automatically detects the URL type:
 
-| URL Pattern                     | Type Detected    |
-| ------------------------------- | ---------------- |
-| `redis.railway.internal`        | Railway internal |
-| `*.rlwy.net` or `*.railway.app` | Railway public   |
-| `localhost` or `127.0.0.1`      | Localhost        |
-| Other                           | External         |
+| URL Pattern                | Type Detected |
+| -------------------------- | ------------- |
+| `rediss://*.upstash.io`    | Upstash (TLS) |
+| `localhost` or `127.0.0.1` | Localhost     |
+| Other                      | External      |
 
-**Key behavior:** In local development (`NODE_ENV !== "production"`), if the URL contains `redis.railway.internal`, the connection is **skipped** with a warning. This prevents accidental connections to production Redis from local development.
+**Key behavior:** Upstash URLs use the `rediss://` scheme with TLS. The backend connects with `tls: {}` when `rediss://` is detected.
+
+> **Note:** Unlike the former Railway setup, there is no internal-hostname skip logic — Upstash URLs work from anywhere (local dev, Railway, or other hosts), so you must manage `REDIS_URL` per environment.
 
 ### Connection Settings
 
@@ -243,15 +242,15 @@ Uses pipelining (100 keys per batch) for efficient large-scale deletion.
 
 ### Redis connection fails in production
 
-**Cause:** Railway Redis URL format mismatch — some plugins use `redis://` vs `rediss://` for TLS.
+**Cause:** Upstash Redis URL format mismatch — production databases require `rediss://` (TLS) but `redis://` was used.
 
-**Solution:** Check Railway environment variables; update `REDIS_URL` to include correct protocol and TLS settings.
+**Solution:** Use the `rediss://` URL from your Upstash Dashboard; `redis://` will be rejected by Upstash.
 
 ### Backend starts but cache is not working
 
-**Cause:** Redis URL points to Railway internal hostname in local development.
+**Cause:** `REDIS_URL` points to Upstash from local development where Redis is unavailable or credentials are invalid.
 
-**Solution:** Use `localhost` URL for local development:
+**Solution:** Comment out `REDIS_URL` for local development, or use `localhost`:
 
 ```env
 REDIS_URL=redis://default:password@localhost:6379
@@ -287,7 +286,7 @@ REDIS_URL=redis://default:password@localhost:6379
 
 - [Caching Patterns & Strategies](../operations/caching-patterns.md) — Key formats, TTLs, invalidation, monitoring
 - [Environment Setup Guide](../getting-started/environment-setup.md) — Environment variable reference
-- [Deployment Guide](../operations/deployment.md) — Production deployment with Railway Redis
+- [Deployment Guide](../operations/deployment.md) — Production deployment with Upstash Redis
 - [Backend Development Guide](./backend-development.md) — Backend architecture
 
 - [Infrastructure Configuration Management](../../knowledge-base/infrastructure/infra-configuration-management.md) — Environment strategies, validation

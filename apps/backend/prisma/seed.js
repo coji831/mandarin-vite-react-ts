@@ -1,35 +1,128 @@
 /**
  * @file apps/backend/prisma/seed.js
- * @description Database seed script for development and testing
+ * @description Database seed script — single entry point for all reference data.
  *
- * Populates the database with:
- * - Test users with hashed passwords
- * - Sample vocabulary words from HSK1-2 levels
- * - Initial progress records for testing
+ * Run via: npx prisma db seed (from apps/backend)
+ * Or:       node prisma/seed.js (with DATABASE_URL set)
+ *
+ * Seeds:
+ *   - ContentItem       ← content/manifest.json + content/ files
+ *   - PinyinCombination ← hardcoded sample set
+ *   - CharacterRadical  ← hardcoded mapping set
+ *   - Test users        ← dev only (test@example.com, demo@example.com)
  */
 
-import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import pkg from "pg";
+import pg from "pg";
 import bcrypt from "bcrypt";
-
-const { PrismaClient } = prismaPkg;
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
 
-const { Pool } = pkg;
+const { PrismaClient } = prismaPkg;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONTENT_DIR = path.resolve(__dirname, "..", "..", "..", "content");
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
+
+// ── ContentItem seeding (from content/manifest.json) ────────────────────────
+
+const CONTENT_TYPE_PHASE = {
+  foundations: 1,
+  characters: 2,
+  radicals: 2,
+  pinyin: 1,
+  tones: 1,
+  words: 3,
+  grammar: 4,
+  chengyu: 5,
+};
+
+function extractTitle(_type, data) {
+  return data.glyph || data.pinyin || data.name || data.id || "Untitled";
+}
+
+function extractSubtitle(type, data) {
+  if (type === "characters") return data.meaning || data.readings?.[0]?.pinyin || null;
+  if (type === "radicals") return `${data.stroke_count} strokes`;
+  if (type === "pinyin") return data.category || null;
+  if (type === "tones") return `Tone ${data.number}`;
+  return null;
+}
+
+async function seedContentItems() {
+  const manifestPath = path.join(CONTENT_DIR, "manifest.json");
+  if (!fs.existsSync(manifestPath)) {
+    console.log("  ⏭️  No manifest.json found — skipping ContentItem seed");
+    return 0;
+  }
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+  const contentTypes = manifest.content_types || [];
+  let count = 0;
+
+  for (const type of contentTypes) {
+    const phaseId = CONTENT_TYPE_PHASE[type];
+    if (!phaseId) {
+      console.log(`  ⏭️  Unknown type: ${type}`);
+      continue;
+    }
+
+    const dir = path.join(CONTENT_DIR, type);
+    if (!fs.existsSync(dir)) continue;
+
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+    for (const file of files) {
+      const data = JSON.parse(fs.readFileSync(path.join(dir, file), "utf-8"));
+      const contentId = file.replace(".json", "");
+      const id = `${type}-${contentId}`;
+
+      await prisma.contentItem.upsert({
+        where: { id },
+        update: {
+          title: extractTitle(type, data),
+          subtitle: extractSubtitle(type, data),
+          phaseId,
+        },
+        create: {
+          id,
+          contentType: type,
+          contentId,
+          phaseId,
+          title: extractTitle(type, data),
+          subtitle: extractSubtitle(type, data),
+        },
+      });
+      count++;
+    }
+  }
+
+  return count;
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
   console.log("🌱 Starting database seed...");
 
-  // Only create test users in non-production environments
+  // 1. ContentItem (reference index of all content)
+  const contentCount = await seedContentItems();
+  console.log(`  ✅ ContentItem: ${contentCount} rows`);
+
+  // 2. Pinyin combinations
+  await seedPinyinCombinations(prisma);
+
+  // 3. Character-radical mappings
+  await seedCharacterRadicals(prisma);
+
+  // 4. Test users (dev only)
   if (process.env.NODE_ENV !== "production") {
-    const testUser = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: "test@example.com" },
       update: {},
       create: {
@@ -39,7 +132,7 @@ async function main() {
       },
     });
 
-    const demoUser = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: "demo@example.com" },
       update: {},
       create: {
@@ -49,28 +142,17 @@ async function main() {
       },
     });
 
-    console.log("✅ Created test users");
+    console.log("  ✅ Test users created");
   } else {
-    console.log("⏭️ Skipping test user creation (production)");
+    console.log("  ⏭️  Skipping test users (production)");
   }
 
-  // Skip vocabulary creation - 500 words already migrated from CSV
-  // Check if vocabulary exists
-  const vocabCount = await prisma.vocabularyWord.count();
-  console.log(`📚 Found ${vocabCount} vocabulary words in database`);
-
-  // Seed pinyin combinations
-  await seedPinyinCombinations(prisma);
-
-  // Seed character-radical mappings
-  await seedCharacterRadicals(prisma);
-
-  console.log("🎉 Database seed completed successfully!");
+  console.log("🎉 Database seed completed!");
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seed failed:", e);
+    console.error("❌ Seed failed:", e.code || "ERROR", e.message);
     process.exit(1);
   })
   .finally(async () => {

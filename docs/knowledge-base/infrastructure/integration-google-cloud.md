@@ -19,10 +19,11 @@ npm install @google-cloud/text-to-speech
 
 import textToSpeech from '@google-cloud/text-to-speech';
 
-// 2. Initialize client
-const client = new textToSpeech.TextToSpeechClient({
-  keyFilename: './google-credentials.json', // Service account key
-});
+// 2. Initialize client (lazy-init pattern)
+function getTTSClient(): textToSpeech.TextToSpeechClient {
+  const credentials = JSON.parse(process.env.GOOGLE_TTS_CREDENTIALS_RAW!);
+  return new textToSpeech.TextToSpeechClient({ credentials });
+}
 
 // 3. Generate Mandarin audio
 async function generateMandarin(text: string): Promise<Buffer> {
@@ -86,11 +87,15 @@ npm install @google-cloud/storage
 
 import { Storage } from '@google-cloud/storage';
 
-const storage = new Storage({
-  keyFilename: './google-credentials.json',
-});
+// Lazy-init pattern: credentials parsed from env var at first use
+function getStorageClient(): Storage {
+  const credentials = JSON.parse(process.env.GOOGLE_TTS_CREDENTIALS_RAW!);
+  return new Storage({ credentials });
+}
 
-const bucket = storage.bucket('mandarin-app-conversations');
+const storage = getStorageClient();
+
+const bucket = storage.bucket('pinyin-pal-data');
 
 // 2. Upload file
 async function uploadConversation(filename: string, content: string): Promise<string> {

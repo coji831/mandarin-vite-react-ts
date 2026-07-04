@@ -23,7 +23,7 @@ PinyinPal is an interactive web application designed to help new learners master
 | -------------- | ------------------------------------- |
 | **Frontend**   | React + TypeScript (Vite)             |
 | **Backend**    | Node.js + Express                     |
-| **Database**   | PostgreSQL (Supabase) + Prisma        |
+| **Database**   | PostgreSQL (Neon) + Prisma            |
 | **Cache**      | Redis (Upstash)                       |
 | **Auth**       | JWT with httpOnly cookies             |
 | **APIs**       | Google Cloud TTS, Gemini AI           |

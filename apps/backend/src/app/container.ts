@@ -37,15 +37,10 @@ import * as ttsClientModule from "../shared/infrastructure/external/GoogleTTSCli
 
 import { redisClient } from "../shared/infrastructure/redis/RedisClient.js";
 
-// Adapter wrapping the module-level TTS functions to the ITTSClient interface
-const rawTtsService = {
-  async synthesizeSpeech(text: string, options: Record<string, unknown>) {
-    return ttsClientModule.synthesizeSpeech(text, options);
-  },
-  async healthCheck() {
-    return true;
-  },
-};
+import { TtsService } from "../shared/services/TtsService.js";
+
+// TTS service with two-tier caching: Redis (URL) → GCS (audio) → Google TTS API
+const ttsService = new TtsService(cacheService, gcsClient, ttsClientModule);
 
 // ── Foundations Data ──────────────────────────────────────────────
 import { FoundationsController, FoundationsService } from "../modules/foundations/index.js";
@@ -97,27 +92,6 @@ export const cachedAIFeedback = {
   getMetrics: cachedAIFeedbackFn.getMetrics,
 };
 
-// TTS: wrap raw TTS service with Redis cache (24h TTL)
-const cachedTtsFn = withCache(
-  (text: string, options: Record<string, unknown> = {}) =>
-    rawTtsService.synthesizeSpeech(text, options),
-  {
-    ttl: 86400,
-    keyFn: (text: string, options: Record<string, unknown>) => `tts:${text}${options.voice ?? ""}`,
-    serviceName: "TTS",
-  },
-);
-
-// Preserve expected interface for TtsController (this.ttsService.synthesizeSpeech())
-export const cachedTts = {
-  synthesizeSpeech: cachedTtsFn as (
-    text: string,
-    options: Record<string, unknown>,
-  ) => Promise<Buffer | Uint8Array | string | undefined>,
-  healthCheck: async () => true,
-  getMetrics: cachedTtsFn.getMetrics,
-};
-
 // ── API: Controllers ───────────────────────────────────────────────────────
 import { AuthController } from "../modules/auth/api/AuthController.js";
 import { AIFeedbackController } from "../modules/quiz/api/AIFeedbackController.js";
@@ -128,10 +102,10 @@ export const authController = new AuthController(authService);
 export const aiFeedbackController = new AIFeedbackController(cachedAIFeedback);
 export const healthController = new HealthController(
   geminiClient,
-  ttsClientModule,
+  ttsService,
   (redisClient.getClient() ?? { ping: async (_timeout?: number) => "NO_REDIS" }) as {
     ping(timeout?: number): Promise<string>;
   },
 );
-export const ttsController = new TtsController(cachedTts, gcsClient);
+export const ttsController = new TtsController(ttsService);
 export const progressionController = new ProgressionController(progressionService, reviewService);

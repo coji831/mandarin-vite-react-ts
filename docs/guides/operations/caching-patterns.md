@@ -63,8 +63,8 @@ Key: tts:a9d0701a3ecaf57d90eb272fc1618eaed238b864ad120c6b4324d11abe014c7c
 ### Clear All Keys (Development Only)
 
 ```bash
-# Connect to Railway Redis CLI
-railway run redis-cli
+# Connect to Upstash Redis CLI (use REST API or redis-cli with TLS)
+redis-cli -h us1-robust-wasp-12345.upstash.io -p 6379 -a YOUR_PASSWORD --tls
 
 # Delete all keys with prefix
 > KEYS mandarin:*
@@ -98,16 +98,16 @@ Visit `http://localhost:3001/api/v1/health` (or production URL) to see real-time
 
 **Metrics Reset**: Metrics reset on server restart (in-memory tracking).
 
-### Railway Dashboard Monitoring
+### Upstash Dashboard Monitoring
 
-1. Open Railway project → Redis service
+1. Open the Upstash Dashboard → your Redis database
 2. View built-in metrics:
    - **Memory Usage**: Should stay <100MB for typical usage
    - **Commands/Second**: Spikes during high traffic
    - **Connected Clients**: Backend connection count (usually 1)
 
 3. Set up alerts (optional):
-   - Settings → Alerts → Add Alert
+   - Under **Settings → Alerts**
    - Trigger: Memory usage >80%
    - Notification: Email or webhook
 

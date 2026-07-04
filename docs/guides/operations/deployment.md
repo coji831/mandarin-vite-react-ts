@@ -1,6 +1,6 @@
 # Deployment Guide
 
-**Last Updated:** June 12, 2026
+**Last Updated:** July 4, 2026
 **Purpose:** Step-by-step guide to deploy or add a new deployment environment
 **Audience:** DevOps engineers and developers managing deployments
 
@@ -30,8 +30,8 @@
 
 - **Frontend**: Vite React application → Vercel
 - **Backend**: Express API server → Railway
-- **Database**: PostgreSQL → Supabase PostgreSQL
-- **Cache**: Redis → Railway-provided Redis
+- **Database**: PostgreSQL → Neon PostgreSQL
+- **Cache**: Redis → Upstash Redis
 - **Storage**: Google Cloud Storage (TTS audio, examples)
 - **External APIs**: Google TTS, Gemini AI
 
@@ -39,11 +39,11 @@
 
 ### Deployment Environments
 
-| Environment    | Frontend URL                    | Backend URL                           | Purpose                        |
-| -------------- | ------------------------------- | ------------------------------------- | ------------------------------ |
-| **Local Dev**  | `http://localhost:5173`         | `http://localhost:3001`               | Development                    |
-| **Preview**    | `*.vercel.app` (auto-generated) | `*.up.railway.app` (preview branches) | Testing, QA, stakeholder demos |
-| **Production** | `your-domain.com`               | `api.your-domain.com`                 | Live user traffic              |
+| Environment    | Frontend URL                        | Backend URL                                        | Purpose                        |
+| -------------- | ----------------------------------- | -------------------------------------------------- | ------------------------------ |
+| **Local Dev**  | `http://localhost:5173`             | `http://localhost:3001`                            | Development                    |
+| **Preview**    | `*.vercel.app` (auto-generated)     | `*.up.railway.app` (preview branches)              | Testing, QA, stakeholder demos |
+| **Production** | `mandarin-vite-react-ts.vercel.app` | `mandarin-vite-react-ts-production.up.railway.app` | Live user traffic              |
 
 ---
 
@@ -69,7 +69,7 @@ npm install
 **Environment Variables (Vercel Dashboard):**
 
 ```env
-VITE_API_URL=https://api.your-domain.com  # Production
+VITE_API_URL=https://mandarin-vite-react-ts-production.up.railway.app  # Production
 VITE_API_URL=https://your-backend-preview.up.railway.app  # Preview
 ```
 
@@ -109,7 +109,7 @@ release: npx prisma migrate deploy    # Runs migrations BEFORE every deploy
 > **Note:** The `release` phase in `Procfile` means migrations run automatically on every deploy. If a migration fails, the deploy is blocked.
 
 **Environment Variables (Railway Dashboard):**
-Set all variables listed in [Environment Setup](../getting-started/environment-setup.md). Railway auto-injects `REDIS_URL` when the Redis plugin is attached. **`DATABASE_URL` must be set manually** pointing to your Supabase PostgreSQL instance.
+Set all variables listed in [Environment Setup](../getting-started/environment-setup.md). `REDIS_URL` is set from Upstash in the Railway Dashboard. **`DATABASE_URL` must be set manually** pointing to your Neon PostgreSQL instance.
 
 **Automatic Deployments:**
 
@@ -209,7 +209,7 @@ Preview deployments allow testing changes in a production-like environment befor
 
 1. Enable PR deployments in Railway dashboard
 2. Railway creates preview service for PR branch
-3. Preview URL: `https://mandarin-backend-pr-<number>.up.railway.app`
+3. Preview URL: `https://<project>-pr-<number>.up.railway.app` (see Railway dashboard)
 
 ### Update Preview Environment Variables
 
@@ -258,14 +258,14 @@ git push origin main
 1. Go to Vercel Dashboard → Deployments
 2. Monitor build logs
 3. Wait for "Ready" status
-4. Check deployment URL: `https://your-domain.com`
+4. Check deployment URL: `https://mandarin-vite-react-ts.vercel.app`
 
 **Backend (Railway):**
 
 1. Go to Railway Dashboard → Deployments
 2. Monitor build logs
 3. Wait for health check to pass (`/api/v1/health` returns 200)
-4. Check deployment URL: `https://api.your-domain.com`
+4. Check deployment URL: `https://mandarin-vite-react-ts-production.up.railway.app`
 
 ### Step 3: Run Database Migrations (if needed)
 
@@ -299,7 +299,7 @@ See [Post-Deployment Verification](#post-deployment-verification) section below.
 **Backend Health Endpoint:**
 
 ```bash
-curl https://api.your-domain.com/api/v1/health
+curl https://mandarin-vite-react-ts-production.up.railway.app/api/v1/health
 ```
 
 Expected response:
@@ -307,20 +307,21 @@ Expected response:
 ```json
 {
   "status": "healthy",
-  "timestamp": "2026-06-02T12:00:00.000Z",
-  "cache": {
-    "enabled": true,
-    "connected": true
+  "services": {
+    "gemini": true,
+    "tts": true
   },
-  "database": {
-    "connected": true
+  "cache": {
+    "redis": {
+      "connected": true
+    }
   }
 }
 ```
 
 **Frontend Health:**
 
-- Visit `https://your-domain.com`
+- Visit `https://mandarin-vite-react-ts.vercel.app`
 - Verify homepage loads
 - Check browser console for errors
 - Test navigation between pages
@@ -429,7 +430,7 @@ railway run npx prisma migrate deploy
 **Frontend (.env.production):**
 
 ```env
-VITE_API_URL=https://api.your-domain.com
+VITE_API_URL=https://mandarin-vite-react-ts-production.up.railway.app
 ```
 
 **Backend (Railway Production):**
@@ -442,25 +443,23 @@ DATABASE_URL=postgresql://user:pass@provider:5432/mandarin_prod
 JWT_SECRET=<production-secret-32-chars>
 JWT_REFRESH_SECRET=<production-refresh-secret-32-chars>
 
-# Redis (Railway auto-injects when Redis plugin is attached)
+# Redis (from Upstash — set in Railway Dashboard)
 REDIS_URL=redis://default:password@provider:6379
-CACHE_ENABLED=true
+# CACHE_ENABLED — deprecated; cache is auto-enabled when REDIS_URL is present
 
 # Server
-PORT=3001
+# PORT — do NOT set; Railway injects 8080 automatically
+# PORT=3001
 NODE_ENV=production
-FRONTEND_URL=https://your-domain.com
+FRONTEND_URL=https://mandarin-vite-react-ts.vercel.app
 
 # Google Cloud (mandatory for TTS/AI/GCS features)
 GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
 GEMINI_API_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
-GCS_BUCKET_NAME=mandarin-vocab-example-data
+GCS_BUCKET_NAME=pinyin-pal-data
 
-# Example Caching
-EXAMPLES_CACHE_HMAC_KEY=<secret-from-secret-manager>
 
 # Optional
-ENABLE_DETAILED_LOGS=false
 ```
 
 > **Full env var reference:** [Environment Setup Guide](../getting-started/environment-setup.md#environment-variable-catalog)
@@ -570,17 +569,10 @@ NODE_ENV=preview
 
 The Example Caching feature (Story 16.3) requires additional deployment steps:
 
-#### 1. Secrets & HMAC Key
-
-- **Secret Manager Setup:** Create secret `EXAMPLES_CACHE_HMAC_KEY` in Google Secret Manager (production) and set rotation cadence (90 days recommended).
-- **Environment Variable Injection:** Set `EXAMPLES_CACHE_HMAC_KEY` in Railway dashboard.
-- **Rotation Support:** Optionally create `EXAMPLES_CACHE_HMAC_KEY_PREVIOUS` for dual-key reads during key rotation.
-- **IAM Permissions:** Grant backend service account `Secret Manager Secret Accessor` role.
-
-#### 2. GCS Service Account & Bucket
+#### 1. GCS Service Account & Bucket
 
 - Create service account: `examples-service@<project>.iam.gserviceaccount.com`.
-- Grant IAM on bucket `mandarin-vocab-example-data`:
+- Grant IAM on bucket `pinyin-pal-data`:
   - `roles/storage.objectCreator` (for writes)
   - `roles/storage.objectViewer` (for reads)
 - Disable public access and enable uniform bucket-level access.
@@ -601,11 +593,11 @@ The Example Caching feature (Story 16.3) requires additional deployment steps:
 
 #### 5. Post-Deploy Manual Checks
 
-- [ ] Bucket `mandarin-vocab-example-data` exists with 30-day lifecycle
+- [ ] Bucket `pinyin-pal-data` exists with 30-day lifecycle
 - [ ] Service account IAM bindings limited to Creator/Viewer only
 - [ ] Logging sink forwarding `cloudaudit` logs to BigQuery
 - [ ] Redis connectivity verified with ACLs and TTLs applied
 
 ---
 
-**Last Updated:** June 2, 2026
+**Last Updated:** July 4, 2026

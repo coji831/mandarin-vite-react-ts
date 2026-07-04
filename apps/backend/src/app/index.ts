@@ -22,6 +22,19 @@ validateConfig();
 const logger = createLogger("Server");
 const app: express.Application = express();
 
+// Catch unhandled errors so we see crashes in Railway logs
+process.on("uncaughtException", (err) => {
+  logger.error("FATAL: uncaughtException — process will exit", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  logger.error("FATAL: unhandledRejection — process may exit", reason);
+});
+
+// Trust Railway's proxy — required for rate limiter to read real client IP
+// from X-Forwarded-For header. Railway edge proxy is always 1 hop away.
+app.set("trust proxy", 1);
+
 // CORS must be first — before body parsers — so error responses also carry CORS headers
 // CORS configuration with explicit origin whitelist
 const allowedOrigins: string[] = [
@@ -61,7 +74,7 @@ app.use(
 
       // Reject all other origins
       logger.warn(`CORS: Rejected origin: ${origin}`);
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      callback(null, false);
     },
     credentials: true, // Required for cookie-based auth
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -133,11 +146,12 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-// Start server
-app.listen(config.port, () => {
+// Start server — bind to 0.0.0.0 as required by Railway's edge proxy
+app.listen(config.port, "0.0.0.0", () => {
   logger.info(`Backend server running on port ${config.port}`);
   logger.info(`API docs: http://localhost:${config.port}/api-docs`);
   logger.info(`Environment: ${config.nodeEnvironment}`);
+  logger.info("Server ready — accepting connections");
 });
 
 export default app;

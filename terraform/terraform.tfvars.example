@@ -1,0 +1,29 @@
+# ── Terraform Variables ──────────────────────────────────────────────────────
+# Copy this file to terraform.tfvars and fill in your values.
+# Alternatively, set these as environment variables with the TF_VAR_ prefix
+# (e.g., TF_VAR_project_id=pinyin-pal-831).
+#
+# Provider credentials can also be passed directly as environment variables:
+#   GOOGLE_CREDENTIALS, NEON_API_KEY, UPSTASH_API_KEY, UPSTASH_EMAIL, VERCEL_API_TOKEN
+#
+# See docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md
+# for detailed setup instructions.
+
+# ── GCP Project ──────────────────────────────────────────────────────────────
+# project_id = "pinyin-pal-831"
+
+# ── GCP Region (optional, defaults to ASIA-SOUTHEAST1) ───────────────────────
+# region = "ASIA-SOUTHEAST1"
+
+# ── GCS Bucket Name (optional, defaults to pinyin-pal-data) ──────────────────
+# bucket_name = "pinyin-pal-data"
+
+# ── Provider Credentials (set via env vars, not .tfvars) ─────────────────────
+# These are NOT Terraform variables. They are read directly from environment
+# variables by their respective providers. Documented here for reference:
+#
+#   Neon:       NEON_API_KEY          — from Neon Dashboard → Account → API Keys
+#   Upstash:    UPSTASH_API_KEY       — from Upstash Dashboard → API Keys
+#   Upstash:    UPSTASH_EMAIL         — Upstash login email address
+#   Vercel:     VERCEL_API_TOKEN      — from vercel.com/account/tokens
+#   GCP:        GOOGLE_CREDENTIALS    — GCP SA key JSON (one-line), passed as GCP_SA_KEY in CI

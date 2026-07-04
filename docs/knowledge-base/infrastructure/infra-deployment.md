@@ -5,85 +5,62 @@
 
 ---
 
-## Vercel Deployment
+## Railway Deployment
 
-**When Adopted:** Epic 1 (Google Cloud TTS Integration)  
-**Why:** Zero-config deployment, serverless functions, global CDN  
-**Use Case:** Deploy React app + API endpoints without managing servers
+**When Adopted:** Epic 13  
+**Why:** Long-running Express server with PostgreSQL, Redis, and persistent connections  
+**Use Case:** Deploy Express backend with Prisma, Redis, and Google Cloud integrations
 
 ### Minimal Example
 
-```json
-// vercel.json
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" }
-      ]
-    }
-  ]
-}
+```bash
+# Procfile (at apps/backend/)
+web: npm start
 ```
 
-```typescript
-// api/get-tts-audio.ts (Serverless function)
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+```json
+// railway.toml (at apps/backend/)
+[build]
+  builder = "NIXPACKS"
+  buildCommand = "npm run build"
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Serverless function auto-deployed to /api/get-tts-audio
-  const { text } = req.query;
-
-  if (!text) {
-    return res.status(400).json({ error: "Missing text" });
-  }
-
-  const audio = await generateTTS(text as string);
-
-  res.setHeader("Content-Type", "audio/mpeg");
-  res.send(audio);
-}
+[deploy]
+  healthcheckPath = "/api/v1/health"
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 10
 ```
 
 ### Deploy Commands
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# Install Railway CLI
+npm i -g @railway/cli
 
-# Deploy to preview
-vercel
+# Login
+railway login
 
-# Deploy to production
-vercel --prod
+# Link project
+railway link
+
+# Deploy
+railway up
 
 # Set environment variables
-vercel env add GOOGLE_API_KEY
-vercel env add DATABASE_URL
+railway env set GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account",...}'
+railway env set DATABASE_URL="postgresql://..."
 ```
 
 ### Key Lessons
 
-- Serverless functions have 10s timeout (use background jobs for long tasks)
-- Environment variables set via Vercel dashboard or CLI
-- Use `rewrites` for clean API URLs (`/api/tts` not `/api/get-tts-audio`)
-- Enable CORS headers for cross-origin requests
-- Vercel auto-detects Vite (no config needed usually)
+- Railway runs a long-lived Node.js process (not serverless functions)
+- Environment variables set via Railway Dashboard or CLI
+- Health check endpoint at `/api/v1/health` for automatic restart
+- Use `NIXPACKS` builder for automatic Node.js detection
+- PostgreSQL and Redis are added as plugins (not separate services)
 
 ### When to Use
 
-React apps, serverless APIs, static sites, low-maintenance deployments
+Express backends, Prisma-based apps, services requiring persistent connections
 
 ---
 
@@ -97,10 +74,10 @@ React apps, serverless APIs, static sites, low-maintenance deployments
 
 ```bash
 # .env.local (Never commit this!)
-VITE_API_URL=http://localhost:3000
-GOOGLE_API_KEY=AIza...
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
-REDIS_URL=redis://localhost:6379
+VITE_API_URL=http://localhost:3001
+GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account",...}'
+DATABASE_URL=postgresql://user:pass@pg.neon.tech/mandarin_dev?sslmode=require
+REDIS_URL=rediss://default:password@us1-robust-wasp-12345.upstash.io:6379
 JWT_SECRET=supersecret123
 ```
 
@@ -116,7 +93,7 @@ export default defineConfig({
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // Backend usage (all vars available)
-const apiKey = process.env.GOOGLE_API_KEY;
+const credentials = JSON.parse(process.env.GOOGLE_TTS_CREDENTIALS_RAW!);
 ```
 
 ### Best Practices
@@ -124,13 +101,13 @@ const apiKey = process.env.GOOGLE_API_KEY;
 ```typescript
 // Type-safe environment variables
 interface Env {
-  GOOGLE_API_KEY: string;
+  GOOGLE_TTS_CREDENTIALS_RAW: string;
   DATABASE_URL: string;
   REDIS_URL?: string; // Optional
 }
 
 function loadEnv(): Env {
-  const required = ["GOOGLE_API_KEY", "DATABASE_URL"];
+  const required = ["GOOGLE_TTS_CREDENTIALS_RAW", "DATABASE_URL"];
 
   for (const key of required) {
     if (!process.env[key]) {
@@ -139,7 +116,7 @@ function loadEnv(): Env {
   }
 
   return {
-    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY!,
+    GOOGLE_TTS_CREDENTIALS_RAW: process.env.GOOGLE_TTS_CREDENTIALS_RAW!,
     DATABASE_URL: process.env.DATABASE_URL!,
     REDIS_URL: process.env.REDIS_URL,
   };
@@ -162,9 +139,9 @@ const env = loadEnv(); // Fails fast if missing
 
 ```.env.example
 # Copy to .env.local and fill in real values
-GOOGLE_API_KEY=your_api_key_here
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
-REDIS_URL=redis://localhost:6379
+GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account",...}'
+DATABASE_URL=postgresql://user:pass@pg.neon.tech/mandarin_dev?sslmode=require
+REDIS_URL=rediss://default:password@us1-robust-wasp-12345.upstash.io:6379
 ```
 
 ### Key Lessons
@@ -183,7 +160,7 @@ All projects with secrets, multi-environment deployments
 
 ---
 
-## Production Cookie Configuration (Vercel)
+## Production Cookie Configuration
 
 **When Adopted:** Epic 13 Story 13.3  
 **Why:** httpOnly cookies require environment-specific configuration for security  
@@ -197,8 +174,8 @@ CORS with credentials requires specific origin (not wildcard):
 # .env.local (Development)
 FRONTEND_URL=http://localhost:5173
 
-# Vercel Environment Variables (Production)
-FRONTEND_URL=https://your-app.vercel.app
+# Railway Environment Variables (Production)
+FRONTEND_URL=https://your-app.railway.app
 ```
 
 **Backend Usage:**
@@ -251,42 +228,25 @@ const { maxAge, ...clearOptions } = cookieOptions;
 res.clearCookie("refreshToken", clearOptions);
 ```
 
-### Vercel-Specific Considerations
+### Railway-Specific Considerations
 
-**1. Serverless Function Timeout**
+**1. Long-Running Process (No Timeout Issues)**
 
-Vercel hobby plan limits functions to 10s execution:
+Unlike serverless functions, Railway runs a persistent Express server — no 10-second timeout to worry about.
 
-```javascript
-// Add timeout warnings for long operations
-const timeout = setTimeout(() => {
-  console.warn("Function approaching timeout (8s)");
-}, 8000);
+**2. Connection Pooling**
 
-// Clear timeout when done
-clearTimeout(timeout);
-```
-
-**2. Connection Pooling Required**
-
-Vercel serverless functions need connection pooling:
+Railway supports persistent database connections — no special pooling config needed:
 
 ```javascript
-// prisma/schema.prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // Use connection pooling for serverless
-  relationMode = "prisma"
-}
-
-// .env.local (Production - use Supabase pooler URL)
-DATABASE_URL="postgresql://...?pgbouncer=true&connection_limit=1"
+// Prisma handles pooling automatically
+// .env.local (Production - use Neon connection string)
+DATABASE_URL = "postgresql://user:password@pg.neon.tech/mandarin_dev?sslmode=require";
 ```
 
-**3. Cookie Domain (Multi-Subdomain)**
+**3. Cookie Domain**
 
-If using custom domain with subdomains:
+If using a custom domain:
 
 ```javascript
 // Allow cookie across subdomains
@@ -298,13 +258,13 @@ res.cookie("refreshToken", token, {
 
 ### Deployment Checklist
 
-Before deploying to Vercel:
+Before deploying to Railway:
 
 **Environment Variables:**
 
-- [ ] `FRONTEND_URL` set to Vercel domain (e.g., `https://app.vercel.app`)
+- [ ] `FRONTEND_URL` set to Railway domain or custom domain
 - [ ] `NODE_ENV=production`
-- [ ] `DATABASE_URL` uses connection pooling (Supabase pooler)
+- [ ] `DATABASE_URL` uses Neon connection string with `sslmode=require`
 - [ ] `JWT_SECRET` and `JWT_REFRESH_SECRET` set (use `openssl rand -base64 32`)
 
 **Cookie Configuration:**
@@ -316,7 +276,7 @@ Before deploying to Vercel:
 
 **CORS Configuration:**
 
-- [ ] `origin` set to specific Vercel domain (not wildcard)
+- [ ] `origin` set to specific frontend domain (not wildcard)
 - [ ] `credentials: true` enabled
 - [ ] Frontend uses `credentials: 'include'` in all auth requests
 
@@ -330,7 +290,7 @@ Before deploying to Vercel:
 
 ### Common Production Issues
 
-**Issue: Cookies work locally but not in Vercel**
+**Issue: Cookies work locally but not in production**
 
 **Cause:** `sameSite: strict` + missing `secure: true`
 
@@ -359,15 +319,14 @@ res.cookie("refreshToken", token, {
 **Fix:**
 
 ```bash
-# Verify Vercel environment variable
-vercel env ls
+# Check Railway environment variable
+railway env list
 
 # Should show:
-# FRONTEND_URL (Production): https://your-app.vercel.app
+# FRONTEND_URL (Production): https://your-app.railway.app
 
 # If missing, add:
-vercel env add FRONTEND_URL
-# Enter: https://your-app.vercel.app
+railway env set FRONTEND_URL=https://your-app.railway.app
 ```
 
 **Issue: Cookie cleared on logout locally but not in production**

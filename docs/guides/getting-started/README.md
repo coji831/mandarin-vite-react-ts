@@ -1,15 +1,25 @@
 # PinyinPal Development Guides
 
-**Last Updated:** July 3, 2026  
+**Last Updated:** July 4, 2026  
 **Purpose:** Comprehensive setup and workflow documentation for the PinyinPal project
 
 > **For New Developers:** Start with [Quickstart](quickstart.md) → [Project Overview](project-overview.md) → [Environment Setup](environment-setup.md)
+
+> **For DevOps Engineers:** Recommended reading order for infrastructure/systems setup:
+>
+> 1. [`iac-phase1-migration-runbook.md`](../../knowledge-base/infrastructure/iac-phase1-migration-runbook.md) (Sections 1–3 first — architecture + provisioning order)
+> 2. [`verification-artifacts/migration/README.md`](../../../verification-artifacts/migration/README.md) (architecture diagram, component status)
+> 3. [`docs/guides/operations/infrastructure.md`](../operations/infrastructure.md) (Terraform quickstart)
+> 4. [`docs/guides/getting-started/environment-setup.md`](environment-setup.md) (env var catalog)
+> 5. [`docs/guides/operations/deployment.md`](../operations/deployment.md) (deploy walkthrough)
+> 6. [`docs/guides/operations/troubleshooting.md`](../operations/troubleshooting.md) (how to debug)
+> 7. Back to runbook Sections 4–9 (deep reference)
 
 > **For Transferable Patterns:** See [`docs/knowledge-base/`](../../knowledge-base/) for concepts applicable to other projects
 
 ---
 
-## ðŸš€ Getting Started
+## Getting Started
 
 New to the project? Start here:
 
@@ -21,7 +31,7 @@ Then proceed to:
 
 4. **[Frontend Development](../setup/frontend-development.md)** - React/TypeScript setup, component patterns, state management
 5. **[Backend Development](../setup/backend-development.md)** - Express server, middleware, authentication setup
-6. **[Database Setup](../setup/database.md)** - PostgreSQL/Prisma setup (local, Supabase, Railway)
+6. **[Database Setup](../setup/database.md)** - PostgreSQL/Prisma setup (local, Neon, Railway)
 
 ---
 

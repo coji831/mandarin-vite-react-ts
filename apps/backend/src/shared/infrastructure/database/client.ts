@@ -12,7 +12,7 @@ import { config } from "../../config/index.js";
 const { PrismaClient } = prismaPkg;
 
 // Create Prisma adapter — pass connection string directly so Prisma manages its own pool.
-// Per Supabase + Prisma docs: https://supabase.com/docs/guides/database/prisma
+// Per Neon + Prisma docs: https://neon.tech/docs/guides/prisma
 // Creating a custom pg.Pool conflicts with Prisma's internal connection management.
 const adapter = new PrismaPg({ connectionString: config.databaseUrl });
 
