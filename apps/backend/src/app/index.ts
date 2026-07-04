@@ -146,8 +146,8 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-// Start server
-app.listen(config.port, () => {
+// Start server — bind to 0.0.0.0 as required by Railway's edge proxy
+app.listen(config.port, "0.0.0.0", () => {
   logger.info(`Backend server running on port ${config.port}`);
   logger.info(`API docs: http://localhost:${config.port}/api-docs`);
   logger.info(`Environment: ${config.nodeEnvironment}`);
