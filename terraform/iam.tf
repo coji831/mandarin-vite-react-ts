@@ -1,11 +1,11 @@
 # ── IAM: TTS ────────────────────────────────────────────────────────────────
 # Least-privilege: only cloudtexttospeech.user — no storage or other roles.
-# DISABLED: TTS API hasn't fully propagated; retry after it's enabled via Cloud Console.
-# resource "google_project_iam_member" "tts_role" {
-#   project = var.project_id
-#   role    = "roles/cloudtexttospeech.user"
-#   member  = "serviceAccount:${google_service_account.tts.email}"
-# }
+
+resource "google_project_iam_member" "tts_role" {
+  project = var.project_id
+  role    = "roles/cloudtexttospeech.user"
+  member  = "serviceAccount:${google_service_account.tts.email}"
+}
 
 # ── IAM: Gemini ────────────────────────────────────────────────────────────
 # Least-privilege: only aiplatform.user for Gemini API access.

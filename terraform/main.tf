@@ -75,6 +75,29 @@ resource "google_storage_bucket" "app_data" {
   versioning {
     enabled = false
   }
+
+  # Security best practices
+  uniform_bucket_level_access = true
+  public_access_prevention    = "inherited"
+
+  # CORS — allow browser to fetch TTS audio from any origin (public bucket).
+  # GCS CORS only supports exact origins or "*"; wildcard subdomains (*.vercel.app) are NOT supported.
+  cors {
+    origin          = ["*"]
+    method          = ["GET", "HEAD"]
+    response_header = ["Content-Type", "Content-Disposition", "Content-Length", "Content-Range"]
+    max_age_seconds = 3600
+  }
+}
+
+# ── Public Read Access (TTS audio) ─────────────────────────────────────────
+# TTS audio files are served directly to browsers via public URLs.
+# allUsers objectViewer allows unauthenticated GET/HEAD requests.
+
+resource "google_storage_bucket_iam_member" "public_read" {
+  bucket = google_storage_bucket.app_data.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
 }
 
 # ── TTS Cost Alert ──────────────────────────────────────────────────────────
