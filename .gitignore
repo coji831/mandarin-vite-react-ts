@@ -18,6 +18,10 @@ dist-ssr
 .idea
 .DS_Store
 *.suo
+
+# Terraform
+**/.terraform/
+.terraform.tfstate.lock.info
 *.ntvs*
 *.njsproj
 *.sln
