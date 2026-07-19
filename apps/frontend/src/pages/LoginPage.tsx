@@ -18,7 +18,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="p-xl">
+    <div className="flex-center p-xl flex-1">
       <LoginForm onSuccess={handleSuccess} onSwitchToRegister={handleSwitchToRegister} />
     </div>
   );
