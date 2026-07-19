@@ -16,6 +16,9 @@ import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { PhaseGateBadge } from "./PhaseGateBadge";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { getStrategy } from "../../engine/strategies";
+import { Box, Button } from "shared/components";
+import { useAuth } from "features/auth";
+import { register_page } from "shared/constants";
 
 /** Format seconds to M:SS */
 function formatTime(seconds: number): string {
@@ -27,6 +30,7 @@ function formatTime(seconds: number): string {
 /** Quiz results screen */
 export function QuizResults() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const answers = useQuizSessionStore((s) => s.answers);
   const questions = useQuizSessionStore((s) => s.questions);
   const score = useQuizSessionStore((s) => s.score);
@@ -35,12 +39,16 @@ export function QuizResults() {
   const strategyType = useQuizSessionStore((s) => s.strategyType);
   const retry = useQuizSessionStore((s) => s.retry);
 
+  const isGuest = !isAuthenticated;
+
   const strategy = getStrategy(strategyType);
   const strategyConfig = useQuizSessionStore((s) => s.strategyConfig);
   // passThreshold comes from backend via strategyConfig (fetched at session init)
   // At RESULTS phase, strategyConfig must be populated — no hardcoded fallback
   const passThreshold = strategyConfig?.passThreshold;
-  const nextPhase = (strategy?.phase ?? 1) + 1;
+  const strategyPhase = strategy?.phase;
+  const isGateQuiz = strategyPhase != null && strategyPhase > 0;
+  const nextPhase = isGateQuiz ? strategyPhase + 1 : 2;
 
   // Use backend completion result if available, otherwise fall back to local store's score
   const totalQuestions = completionResult?.maxScore ?? questions.length;
@@ -49,29 +57,35 @@ export function QuizResults() {
   const passed =
     completionResult?.passed ?? (passThreshold != null ? pct >= passThreshold * 100 : false);
 
-  const resultCardClass = `card-dark flex-col-center gap-md quiz-results__card ${passed ? "quiz-results__card--passed" : "quiz-results__card--failed"}`;
-
   const PHASE_ROUTES: Record<number, string> = { 2: "/learn/radicals" };
   const handlePass = () => {
     const targetRoute = PHASE_ROUTES[nextPhase] ?? "/learn";
     navigate(targetRoute);
   };
 
+  const handleGuestRegister = () => {
+    navigate(register_page);
+  };
+
   return (
     <div className="flex-col-center gap-lg">
       <h2 className="quiz-results__heading text-primary font-2xl">📊 Quiz Complete</h2>
 
-      <div className={resultCardClass}>
+      <Box
+        variant={passed ? "pass" : "fail"}
+        padding="md"
+        className="quiz-results__card flex-col-center gap-md"
+      >
         {/* Score */}
         <div className="flex-center gap-md">
           <span className="quiz-results__score fw-800 text-primary font-3xl">
             {correct}/{totalQuestions} ({pct}%)
           </span>
-          <span style={{ fontSize: "var(--font-2xl)" }}>{passed ? "✅" : "❌"}</span>
+          <span className="font-2xl">{passed ? "✅" : "❌"}</span>
         </div>
 
         {/* Pass/fail message */}
-        <PhaseGateBadge passed={passed} unlockedPhase={nextPhase} />
+        <PhaseGateBadge passed={passed} unlockedPhase={nextPhase} isGuest={isGuest} />
 
         {/* Timer display */}
         <div className="quiz-results__timer text-muted font-md">
@@ -80,66 +94,60 @@ export function QuizResults() {
 
         {/* Score visualization bar */}
         <div
-          className="quiz-results__bar-wrapper"
+          className="quiz-results__bar-wrapper bg-surface-dark radius-pill"
           style={{
             width: "100%",
             height: 8,
-            background: "var(--surface-border, #3a3a5c)",
-            borderRadius: "var(--radius-pill, 999px)",
             overflow: "hidden",
           }}
         >
           <div
-            className="quiz-results__bar-fill"
+            className={`quiz-results__bar-fill radius-pill transition-width ${passed ? "bg-success" : "bg-error"}`}
             style={{
               width: `${pct}%`,
               height: "100%",
-              background: passed ? "var(--color-success, #00c853)" : "var(--color-error, #ff1744)",
-              borderRadius: "var(--radius-pill, 999px)",
-              transition: "width 0.5s ease",
             }}
           />
         </div>
-      </div>
+      </Box>
 
       {/* Category breakdown (only applicable to pinyin/tone quizzes, not IME simulator) */}
       {strategyType !== "ime-simulator" && <CategoryBreakdown answers={answers} />}
 
       {/* Action button */}
       <div className="flex-center gap-md">
-        {passed ? (
-          <button className="btn btn-primary btn-lg" onClick={handlePass}>
+        {isGuest && passed ? (
+          <Button variant="primary" size="lg" onClick={handleGuestRegister}>
+            📝 Register to save your progress
+          </Button>
+        ) : passed ? (
+          <Button variant="primary" size="lg" onClick={handlePass}>
             Continue to Phase {nextPhase} \u2192
-          </button>
+          </Button>
         ) : (
-          <button className="btn btn-primary btn-lg" onClick={retry}>
+          <Button variant="primary" size="lg" onClick={retry}>
             Try Again
-          </button>
+          </Button>
         )}
       </div>
+      {isGuest && !passed && (
+        <p className="font-sm text-secondary m-0">Register to track your scores across sessions.</p>
+      )}
 
       {/* Answer review section (collapsible) */}
-      <details className="quiz-results__review card-dark p-md radius-md" style={{ width: "100%" }}>
+      <Box as="details" variant="dark" padding="md" className="quiz-results__review w-full">
         <summary className="fw-600 text-primary font-md" style={{ cursor: "pointer" }}>
           📋 Review Answers ({answers.length} questions)
         </summary>
-        <div className="flex-col gap-xs" style={{ marginTop: "var(--space-md)" }}>
+        <div className="flex-col gap-xs mt-md">
           {questions.map((q, i) => {
             const answer = answers[i];
             const isCorrect = answer?.correct ?? false;
             return (
-              <div
+              <Box
                 key={q.id}
-                className="flex-between gap-md p-xs radius-sm"
-                style={{
-                  background: isCorrect
-                    ? "var(--color-success-bg, rgba(0,200,83,0.08))"
-                    : "var(--color-error-bg, rgba(255,23,68,0.08))",
-                  borderLeft: `3px solid ${
-                    isCorrect ? "var(--color-success, #00c853)" : "var(--color-error, #ff1744)"
-                  }`,
-                  padding: "var(--space-xs) var(--space-sm)",
-                }}
+                variant={isCorrect ? "pass" : "fail"}
+                className="flex-between gap-md p-xs"
               >
                 <div className="flex-col gap-xs">
                   <span className="font-sm text-primary">
@@ -150,11 +158,11 @@ export function QuizResults() {
                 <span className={`font-sm fw-600 ${isCorrect ? "text-success" : "text-error"}`}>
                   {isCorrect ? "✅" : "❌"}
                 </span>
-              </div>
+              </Box>
             );
           })}
         </div>
-      </details>
+      </Box>
     </div>
   );
 }

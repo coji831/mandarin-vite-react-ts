@@ -9,7 +9,7 @@ import { describe, it, expect, vi } from "vitest";
 import { FilterBar } from "./FilterBar";
 import type { RadicalFilter } from "../types";
 
-// Mock the shared Dropdown component
+// Mock the shared Dropdown and Input components
 vi.mock("shared/components", () => ({
   Dropdown: ({
     value,
@@ -43,6 +43,42 @@ vi.mock("shared/components", () => ({
       </select>
     </div>
   ),
+  Input: ({ value, onChange, placeholder, className, id }: any) => (
+    <input
+      data-testid="mock-input"
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={className}
+    />
+  ),
+  Button: ({ children, onClick, variant, className, ...props }: any) => (
+    <button onClick={onClick} className={className} {...props}>
+      {children}
+    </button>
+  ),
+  ToggleSwitch: ({ checked, onChange, label, ...props }: any) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onChange?.(!checked);
+      }
+    };
+    return (
+      <div data-testid="mock-toggle-switch">
+        <button
+          role="switch"
+          aria-checked={checked}
+          onClick={() => onChange?.(!checked)}
+          onKeyDown={handleKeyDown}
+          {...props}
+        >
+          {label}
+        </button>
+      </div>
+    );
+  },
 }));
 
 const defaultFilter: RadicalFilter = {
@@ -60,7 +96,7 @@ describe("FilterBar", () => {
     expect(screen.getByLabelText("Stroke count")).toBeInTheDocument();
     expect(screen.getByLabelText("Sort by")).toBeInTheDocument();
     expect(screen.getByLabelText("Reset all filters")).toBeInTheDocument();
-    expect(screen.getByLabelText("Show only top 20 recommended radicals")).toBeInTheDocument();
+    expect(screen.getByLabelText("Toggle show top 20 radicals only")).toBeInTheDocument();
   });
 
   it("renders search input with correct value", () => {

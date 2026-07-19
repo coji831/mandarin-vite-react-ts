@@ -68,6 +68,26 @@ export const PHASE_CONFIGS: Record<number, PhaseConfig> = {
       },
     ],
   },
+  4: {
+    phaseId: 4,
+    label: "Advanced Fluidity",
+    review: {
+      itemTypes: [],
+      strategies: [],
+    },
+    quizzes: [
+      {
+        strategies: ["ime-simulator"],
+        contentScope: ["character"],
+        quizType: "ime-simulator",
+      },
+      {
+        strategies: ["radical-gate"],
+        contentScope: ["radical"],
+        quizType: "radical-gate",
+      },
+    ],
+  },
 };
 
 export function getPhaseConfig(phaseId: number): PhaseConfig | undefined {

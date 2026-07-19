@@ -6,6 +6,8 @@
  * and pass threshold warning line.
  */
 
+import { Box, ProgressBar } from "shared/components";
+
 type QuizProgressBarProps = {
   /** Current score (number of correct answers) */
   current: number;
@@ -30,19 +32,13 @@ export function QuizProgressBar({
   const needCorrect = Math.ceil(total * passThreshold);
 
   return (
-    <div className="card-dark flex-col gap-sm">
+    <Box variant="dark" padding="md" className="flex-col gap-sm">
       {/* Track with fill */}
-      <div className="quiz-progress__track bg-surface-dark-alt radius-pill">
-        <div className="quiz-progress__fill" style={{ width: `${Math.min(pct, 100)}%` }} />
-        {/* Threshold line — position based on passThreshold (hidden for practice) */}
-        {!isPractice && (
-          <div
-            className="quiz-progress__threshold"
-            style={{ left: `${thresholdPct}%` }}
-            title={`Pass threshold (${thresholdPct}%)`}
-          />
-        )}
-      </div>
+      <ProgressBar
+        value={pct}
+        threshold={isPractice ? undefined : thresholdPct}
+        className="bg-surface-dark-alt radius-pill"
+      />
 
       {/* Stats row */}
       <div className="quiz-progress__stats flex-between gap-sm font-sm">
@@ -50,15 +46,15 @@ export function QuizProgressBar({
           {current}/{total} correct ({pct}%)
         </span>
         {isPractice ? (
-          <span style={{ color: "var(--color-secondary)", fontWeight: 500 }}>Score: {pct}%</span>
+          <span className="text-secondary fw-500">Score: {pct}%</span>
         ) : !passed ? (
-          <span style={{ color: "var(--color-warning)", fontWeight: 500 }}>
+          <span className="text-warning fw-500">
             ⚠️ Need {needCorrect}/{total} to pass
           </span>
         ) : (
-          <span style={{ color: "var(--color-success)", fontWeight: 600 }}>✅ Passing</span>
+          <span className="text-success fw-600">✅ Passing</span>
         )}
       </div>
-    </div>
+    </Box>
   );
 }

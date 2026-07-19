@@ -12,6 +12,7 @@
 
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { AudioPlayer } from "./AudioPlayer";
+import { Box, Button } from "shared/components";
 
 /** Tone descriptions for feedback text */
 const TONE_DESCS: Record<number, string> = {
@@ -27,16 +28,19 @@ const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
 
 /** Shared card wrapper with correct/incorrect badge */
 function FeedbackCard({ correct, children }: { correct: boolean; children: React.ReactNode }) {
-  const cardClass = `quiz-feedback__card card-dark flex-col gap-md p-md radius-md ${correct ? "quiz-feedback__card--correct" : "quiz-feedback__card--incorrect"}`;
   return (
-    <div className={cardClass}>
-      <div
-        className={`quiz-feedback__badge fw-700 flex-center font-md py-xs px-md radius-pill ${correct ? "quiz-feedback__badge--correct" : "quiz-feedback__badge--incorrect"}`}
+    <Box
+      variant={correct ? "pass" : "fail"}
+      padding="md"
+      className="quiz-feedback__card flex-col gap-md"
+    >
+      <Box
+        className={`quiz-feedback__badge fw-700 flex-center font-md p-xs radius-pill text-white self-start ${correct ? "bg-success" : "bg-error"}`}
       >
         <span>{correct ? "✅ Correct!" : "❌ Incorrect"}</span>
-      </div>
+      </Box>
       {children}
-    </div>
+    </Box>
   );
 }
 
@@ -52,29 +56,25 @@ export function FeedbackView() {
   const question = questions[currentIndex];
 
   if (!lastAnswer || !question) {
-    return <div className="card-dark">No feedback available</div>;
+    return (
+      <Box variant="dark" padding="md">
+        No feedback available
+      </Box>
+    );
   }
 
   // ── IME Simulator: character-focused feedback ──
   if (strategyType === "ime-simulator") {
     return (
       <FeedbackCard correct={lastAnswer.correct}>
-        <p
-          className="ime-quiz-feedback__char"
-          style={{ fontSize: "var(--font-3xl)", fontWeight: 700, margin: 0 }}
-        >
-          {question.character}
-        </p>
-        <p
-          className="ime-quiz-feedback__detail"
-          style={{ fontSize: "var(--font-md)", color: "var(--text-secondary)", margin: 0 }}
-        >
+        <p className="ime-quiz-feedback__char font-3xl fw-700 m-0">{question.character}</p>
+        <p className="ime-quiz-feedback__detail font-md text-secondary m-0">
           {question.displayPinyin ?? question.correctPinyin}
           {question.meaning ? ` \u2014 ${question.meaning}` : ""}
         </p>
-        <button className="btn-primary" onClick={nextQuestion}>
+        <Button variant="primary" onClick={nextQuestion}>
           Next Question \u2192
-        </button>
+        </Button>
       </FeedbackCard>
     );
   }
@@ -83,12 +83,10 @@ export function FeedbackView() {
   if (MULTIPLE_CHOICE_STRATEGIES.has(strategyType)) {
     return (
       <FeedbackCard correct={lastAnswer.correct}>
-        <p className="text-secondary font-md" style={{ margin: 0 }}>
-          {lastAnswer.feedback}
-        </p>
-        <button className="btn-primary quiz-feedback__next-btn" onClick={nextQuestion}>
+        <p className="text-secondary font-md m-0">{lastAnswer.feedback}</p>
+        <Button variant="primary" className="quiz-feedback__next-btn" onClick={nextQuestion}>
           Next Question →
-        </button>
+        </Button>
       </FeedbackCard>
     );
   }
@@ -98,13 +96,11 @@ export function FeedbackView() {
     <FeedbackCard correct={lastAnswer.correct}>
       {/* Answer comparison */}
       <div className="flex-center gap-lg flex-wrap">
-        <div className="text-secondary" style={{ fontSize: "var(--font-md)" }}>
+        <div className="text-secondary font-md">
           Your answer: {lastAnswer.userPinyin} ({TONE_DESCS[lastAnswer.userTone] ?? "unknown"})
         </div>
         {!lastAnswer.correct && (
-          <div
-            style={{ fontSize: "var(--font-md)", color: "var(--color-success)", fontWeight: 600 }}
-          >
+          <div className="font-md text-success fw-600">
             Correct: {lastAnswer.correctPinyin} ({TONE_DESCS[lastAnswer.correctTone] ?? "unknown"})
           </div>
         )}
@@ -119,16 +115,20 @@ export function FeedbackView() {
       )}
 
       {/* Actions */}
-      <div className="quiz-feedback__divider flex-center flex-between gap-md">
+      <Box
+        variant="divider"
+        className="quiz-feedback__divider flex-center flex-between gap-md"
+        padding="sm"
+      >
         <AudioPlayer
           audioKey={question.audioKey}
           character={question.character}
           label="Play Again"
         />
-        <button className="btn-primary quiz-feedback__next-btn" onClick={nextQuestion}>
+        <Button variant="primary" className="quiz-feedback__next-btn" onClick={nextQuestion}>
           Next Question &rarr;
-        </button>
-      </div>
+        </Button>
+      </Box>
     </FeedbackCard>
   );
 }

@@ -6,26 +6,35 @@
  * Displays clickable radical chips that compose the current character.
  * Phase-gated: visible only for Phase 2+ users.
  * Each chip navigates to the radical's detail in the radicals browser.
+ *
+ * Uses direct service import (loadMergedRadicals) instead of DI context —
+ * the merge logic lives in services/mergeRadicals.ts.
  */
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { radicalsService } from "features/radicals/services";
-import { loadRadicalsByCharacter } from "../services/characterHubService";
-import type { RadicalData } from "features/radicals/types";
+import { Box, Button, Skeleton } from "shared/components";
+import { loadMergedRadicals } from "../services/mergeRadicals";
+import type { RadicalEntry } from "../services/mergeRadicals";
 import "./HubRadicalSection.css";
 
 type HubRadicalSectionProps = {
   character: string;
   onClose: () => void;
+  loading?: boolean;
 };
 
-export function HubRadicalSection({ character, onClose }: HubRadicalSectionProps) {
+export function HubRadicalSection({
+  character,
+  onClose,
+  loading: externalLoading,
+}: HubRadicalSectionProps) {
   const navigate = useNavigate();
   const { phaseGate } = usePhaseGate();
   const [isLoading, setIsLoading] = useState(true);
-  const [matchingRadicals, setMatchingRadicals] = useState<RadicalData[]>([]);
+  const [matchingRadicals, setMatchingRadicals] = useState<RadicalEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Phase gate: same pattern as RadicalsPage
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
@@ -36,39 +45,18 @@ export function HubRadicalSection({ character, onClose }: HubRadicalSectionProps
 
     // Reset state immediately to prevent stale data flash
     setMatchingRadicals([]);
+    setError(null);
     setIsLoading(true);
 
     async function load() {
       try {
-        // Source 1: Match via hsk_characters (existing)
-        const allRadicals = await radicalsService.loadAllRadicals();
-        if (cancelled) return;
-
-        const hskMatches = allRadicals.filter((r) =>
-          r.metadata.hsk_characters?.some((c) => c.glyph === character),
-        );
-        // Also check if character matches any radical's own glyph
-        // (handles is_also_character radicals like 口, 水, 火)
-        const selfMatch = allRadicals.filter((r) => r.glyph === character);
-        const withSelf = [
-          ...hskMatches,
-          ...selfMatch.filter((r) => !hskMatches.find((m) => m.id === r.id)),
-        ];
-
-        // Source 2: Match via CharacterRadical table (new - supports multi-radical)
-        const dbMatches = await loadRadicalsByCharacter(character);
-
-        // Merge and deduplicate by id
-        const allMatches = [...withSelf];
-        for (const dbMatch of dbMatches) {
-          if (!allMatches.find((m) => m.id === dbMatch.id)) {
-            allMatches.push(dbMatch);
-          }
-        }
-
-        if (!cancelled) setMatchingRadicals(allMatches);
+        const radicals = await loadMergedRadicals(character);
+        if (!cancelled) setMatchingRadicals(radicals);
       } catch {
-        if (!cancelled) setMatchingRadicals([]);
+        if (!cancelled) {
+          setError("Failed to load radicals. Please try again.");
+          setMatchingRadicals([]);
+        }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -83,40 +71,100 @@ export function HubRadicalSection({ character, onClose }: HubRadicalSectionProps
   // Phase gate: only render for Phase 2+ users
   if (effectivePhase < 2) return null;
 
-  // Loading state with accessible indicator
-  if (isLoading) {
+  // Skeleton loading state (external or internal)
+  if (externalLoading || isLoading) {
     return (
-      <div className="hub-radical-section">
-        <h3 className="hub-radical-section__title">Radical Decomposition</h3>
-        <div className="hub-radical-section__loading" role="status" aria-label="Loading radicals">
-          <span className="hub-radical-section__loading-text">Loading radicals...</span>
+      <div
+        className="hub-radical-section flex-col gap-sm"
+        role="status"
+        aria-label="Loading radicals"
+      >
+        <h3 className="font-sm text-secondary text-uppercase tracking-wide">
+          Radical Decomposition
+        </h3>
+        <div className="hub-radical-section__skeleton-list flex flex-wrap gap-xs">
+          {[1, 2, 3].map((i) => (
+            <Skeleton
+              key={i}
+              variant="custom"
+              className="hub-radical-section__skeleton-chip radius-md"
+              aria-hidden="true"
+            />
+          ))}
         </div>
       </div>
     );
   }
 
-  // Empty state: no radicals found for this character
-  if (matchingRadicals.length === 0) return null;
+  if (error) {
+    return (
+      <div className="hub-radical-section flex-col gap-sm">
+        <h3 className="font-sm text-secondary text-uppercase tracking-wide">
+          Radical Decomposition
+        </h3>
+        <Box variant="error" padding="sm" className="flex-col gap-sm">
+          <p className="font-xs text-error m-0 text-center">{error}</p>
+          <div className="flex-center gap-sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setError(null);
+                setIsLoading(true);
+                loadMergedRadicals(character)
+                  .then((radicals) => {
+                    setMatchingRadicals(radicals);
+                    setIsLoading(false);
+                  })
+                  .catch(() => {
+                    setError("Failed to load radicals. Please try again.");
+                    setIsLoading(false);
+                  });
+              }}
+              aria-label="Retry loading radicals"
+            >
+              Retry
+            </Button>
+          </div>
+        </Box>
+      </div>
+    );
+  }
+
+  if (matchingRadicals.length === 0) {
+    return (
+      <div className="hub-radical-section flex-col gap-sm">
+        <h3 className="font-sm text-secondary text-uppercase tracking-wide">
+          Radical Decomposition
+        </h3>
+        <Box variant="dashed" padding="sm">
+          <p className="font-xs text-muted m-0 text-center">No radicals found for "{character}"</p>
+        </Box>
+      </div>
+    );
+  }
 
   return (
-    <div className="hub-radical-section">
-      <h3 className="hub-radical-section__title">Radical Decomposition</h3>
-      <div className="hub-radical-section__list">
+    <div className="hub-radical-section flex-col gap-sm">
+      <h3 className="font-sm text-secondary text-uppercase tracking-wide">Radical Decomposition</h3>
+      <div className="hub-radical-section__list flex flex-wrap gap-xs">
         {matchingRadicals.map((radical) => (
-          <button
+          <Button
             key={radical.id}
-            className="hub-radical-section__chip"
+            variant="ghost-primary"
+            size="sm"
+            className="hub-radical-section__chip flex items-center gap-xs"
             onClick={() => {
               onClose();
-              navigate(`/learn/radicals?radical=${radical.id}`);
+              navigate(`/learn/radicals?highlight=${radical.id}`);
             }}
-            aria-label={`Radical: ${radical.glyph} - ${radical.meaning} radical`}
-            type="button"
+            aria-label={`View radical: ${radical.glyph} ${radical.meaning}`}
           >
-            <span className="hub-radical-section__glyph">{radical.glyph}</span>
-            <span className="hub-radical-section__name">{radical.name_pinyin}</span>
-            <span className="hub-radical-section__meaning">{radical.meaning}</span>
-          </button>
+            <span className="hub-radical-section__glyph font-md fw-600">{radical.glyph}</span>
+            <span className="hub-radical-section__meaning font-xs text-tertiary">
+              {radical.meaning}
+            </span>
+          </Button>
         ))}
       </div>
     </div>

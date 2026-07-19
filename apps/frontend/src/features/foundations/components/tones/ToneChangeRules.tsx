@@ -15,6 +15,7 @@
 import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { ToneRule } from "../../types";
+import { Button, Box, Spinner } from "shared/components";
 import "./ToneChangeRules.css";
 
 export interface ToneChangeRulesProps {
@@ -61,14 +62,18 @@ function extractCharacterInfo(title: string): { char: string; pinyin: string } |
 function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRulesProps) {
   if (rules.length === 0) {
     return (
-      <div className="tone-rules-empty font-italic bg-surface-dark-alt border-default radius-md text-muted text-center p-md">
+      <Box
+        variant="dark-alt"
+        padding="md"
+        className="tone-rules-empty font-italic text-muted text-center"
+      >
         <p>No tone change rules available.</p>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="tone-rules bg-surface-dark-alt border-default radius-md p-xs">
+    <Box variant="dark-alt" padding="xs" className="tone-rules">
       {rules.flatMap((rule) => {
         const charInfo = extractCharacterInfo(rule.title);
 
@@ -110,20 +115,20 @@ function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRu
               </span>
 
               {/* Play button */}
-              <button
-                className="btn-icon-circle flex-center border-none radius-full lh-1 shrink-0"
+              <Button
+                variant="icon"
                 onClick={() => onPlay(example.chinese)}
                 disabled={isLoading}
                 title={isLoading ? "Generating audio..." : `Play ${example.chinese}`}
-                aria-label={`Play ${example.chinese}`}
+                aria-label={isLoading ? "Generating audio..." : `Play ${example.chinese}`}
               >
-                {isLoading ? <span className="tones-loading-spinner radius-full" /> : "▶"}
-              </button>
+                {isLoading ? <Spinner size="xs" /> : "▶"}
+              </Button>
             </div>
           );
         });
       })}
-    </div>
+    </Box>
   );
 }
 

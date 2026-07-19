@@ -14,17 +14,51 @@ import {
   AnimationPanel,
   SuggestionPanel,
 } from "features/foundations/components";
-import { useCharacterHub } from "shared/hooks";
+import { Box } from "shared/components";
+import { useAudioPlayback, useCharacterHub } from "shared/hooks";
+import "./StrokeAnimationTab.css";
 
 export function StrokeAnimationTab() {
   const [character, setCharacter] = useState<string>("水");
   const { openHub } = useCharacterHub();
+  const { playWordAudio } = useAudioPlayback();
+
+  const handlePlayAudio = async (char: string) => {
+    try {
+      await playWordAudio({ chinese: char, fallbackToBrowserTTS: true });
+    } catch {
+      // Audio playback is best-effort — silently ignore failures
+    }
+  };
 
   return (
-    <div className="stroke-anim-tab flex-col gap-xs w-full">
-      <CharacterSearchBar onCharacterSelect={setCharacter} />
-      <AnimationPanel character={character} onCharacterClick={(char) => openHub(char)} />
-      <SuggestionPanel onSelect={setCharacter} currentCharacter={character} />
+    <div className="stroke-anim-tab flex-col gap-xs mx-auto">
+      <Box variant="dark" padding="md" className="stroke-anim-header flex-col gap-xs">
+        <h2 className="font-xl fw-700 text-secondary m-0">Stroke Animations</h2>
+        <p className="font-sm text-muted m-0">
+          Interactive stroke order animations · Type any character to begin
+        </p>
+        <p className="font-sm text-muted m-0">
+          Watch, pause, and step through each stroke at your own pace
+        </p>
+      </Box>
+
+      {/* Search + Quick Select — merged into one compact bar */}
+      <Box
+        variant="dark-alt"
+        padding="xs"
+        className="stroke-anim-search-bar flex-center gap-xs flex-wrap"
+      >
+        <SuggestionPanel onSelect={setCharacter} currentCharacter={character} compact />
+        <div className="stroke-anim-search-divider shrink-0" />
+        <CharacterSearchBar onCharacterSelect={setCharacter} compact />
+      </Box>
+
+      <AnimationPanel
+        character={character}
+        onCharacterClick={(char) => openHub(char)}
+        onPlayAudio={handlePlayAudio}
+      />
     </div>
   );
 }

@@ -10,7 +10,7 @@ import { API_CONFIG } from "config";
 import { clearLogoutCallback, setLogoutCallback } from "services";
 import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = "accessToken";
 const baseApiUrl = API_CONFIG.baseURL;

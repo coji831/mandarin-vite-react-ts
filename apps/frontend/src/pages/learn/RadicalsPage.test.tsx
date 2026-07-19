@@ -6,10 +6,11 @@
  */
 
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { RadicalsPage } from "./RadicalsPage";
 
-function renderWithRouter(ui: JSX.Element) {
+function renderWithRouter(ui: ReactNode) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
@@ -96,23 +97,24 @@ describe("RadicalsPage", () => {
 
     // Should show loading initially, then radicals after data loads
     await waitFor(() => {
-      expect(screen.getByText("一")).toBeInTheDocument();
+      expect(screen.getAllByText("一").length).toBeGreaterThan(0);
     });
-    expect(screen.getByText("口")).toBeInTheDocument();
+    expect(screen.getAllByText("口").length).toBeGreaterThan(0);
   });
 
   describe("Browse/Trees toggle", () => {
-    it("renders toggle buttons with correct aria-pressed values", async () => {
+    it("renders toggle buttons with correct active state", async () => {
       renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
 
-      const browseBtn = screen.getByText("📋 Browse").closest("button")!;
-      const treesBtn = screen.getByText("🌳 Trees").closest("button")!;
+      const browseBtn = screen.getAllByText("📋 Browse")[0].closest("button")!;
+      const treesBtn = screen.getAllByText("🌳 Trees")[0].closest("button")!;
 
-      expect(browseBtn).toHaveAttribute("aria-pressed", "true");
-      expect(treesBtn).toHaveAttribute("aria-pressed", "false");
+      // Browse is active by default, Trees is not
+      expect(browseBtn.className).toContain("radicals-page__toggle-btn--active");
+      expect(treesBtn.className).not.toContain("radicals-page__toggle-btn--active");
     });
 
     it('clicking "🌳 Trees" switches heading to "Radical Trees"', async () => {

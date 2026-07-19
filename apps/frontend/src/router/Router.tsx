@@ -12,9 +12,8 @@
 import { Route, Routes } from "react-router-dom";
 import { learn_page, root, login_page, register_page } from "shared/constants";
 import { LearnRoutes } from "./LearnRoutes";
-import { ProtectedRoute } from "../features/auth";
 import { AppLayout } from "../shared/layouts/AppLayout";
-import { DashboardPage } from "../pages/DashboardPage";
+import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { PracticesRoutes } from "./PracticesRoutes";
 import LibraryPage from "../pages/LibraryPage";
 import { ProgressPage } from "../pages/ProgressPage";
@@ -25,46 +24,11 @@ function MainRoutes() {
   return (
     <Routes>
       <Route path={root} element={<AppLayout />}>
-        <Route
-          index
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path={learn_page + "/*"}
-          element={
-            <ProtectedRoute>
-              <LearnRoutes />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="practices/*"
-          element={
-            <ProtectedRoute>
-              <PracticesRoutes />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="library"
-          element={
-            <ProtectedRoute>
-              <LibraryPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="progress"
-          element={
-            <ProtectedRoute>
-              <ProgressPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route index element={<DashboardPage />} />
+        <Route path={learn_page + "/*"} element={<LearnRoutes />} />
+        <Route path="practices/*" element={<PracticesRoutes />} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="progress" element={<ProgressPage />} />
         <Route path={login_page} element={<LoginPage />} />
         <Route path={register_page} element={<RegisterPage />} />
       </Route>

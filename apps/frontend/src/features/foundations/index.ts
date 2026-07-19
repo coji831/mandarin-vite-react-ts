@@ -13,6 +13,7 @@ export {
   InitialsGrid,
   FinalsGrid,
   CombinationDisplay,
+  SlidingPinyinGrid,
   PinyinCell,
   ToneCell,
   ToneContourCard,
@@ -30,13 +31,15 @@ export {
   AnimationPanel,
   SuggestionPanel,
 } from "./components";
+export { useDragToPan } from "./hooks/useDragToPan";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
 export { isValidHanzi } from "./hooks/useCharacterSearch";
-export { useHanziWriter } from "./hooks/useHanziWriter";
 export { useStrokeReferenceData } from "./hooks/useStrokeReferenceData";
 export { foundationsService } from "./services/foundationsService";
 export {
   TONE_COLORS,
+  TONE_LABELS,
+  TONE_SYMBOLS,
   getCombination,
   extractToneNumber,
   stripToneMarks,

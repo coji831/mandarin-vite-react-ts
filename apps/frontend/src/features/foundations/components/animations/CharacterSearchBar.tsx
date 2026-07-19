@@ -10,13 +10,17 @@
 
 import { useState } from "react";
 import { isValidHanzi } from "features/foundations";
-import "./CharacterSearchBar.css";
+import { Box, Button, Input } from "shared/components";
 
 export interface CharacterSearchBarProps {
   onCharacterSelect: (character: string) => void;
+  compact?: boolean;
 }
 
-export function CharacterSearchBar({ onCharacterSelect }: CharacterSearchBarProps) {
+export function CharacterSearchBar({
+  onCharacterSelect,
+  compact = false,
+}: CharacterSearchBarProps) {
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = () => {
@@ -30,33 +34,53 @@ export function CharacterSearchBar({ onCharacterSelect }: CharacterSearchBarProp
     if (e.key === "Enter") handleSearch();
   };
 
-  return (
-    <section className="flex-col">
-      <h3 className="stroke-anim-heading font-sm text-secondary fw-600">Stroke Animations</h3>
-      <p className="stroke-anim-subtitle font-xs text-muted">
-        Type any character to see its stroke order
-      </p>
-      <div className="stroke-anim-search bg-surface-dark-alt border-default radius-md flex-center">
-        <span className="stroke-anim-search-icon font-sm shrink-0">🔍</span>
-        <input
-          className="stroke-anim-input grow-1 font-sm border-none text-primary"
-          type="text"
-          placeholder="Type a character..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          maxLength={1}
-          aria-label="Search character"
-        />
-        <button
-          className="stroke-anim-search-btn font-xs cursor-pointer shrink-0 border-none radius-sm"
-          onClick={handleSearch}
-          disabled={!searchInput.trim()}
-          aria-label="Search"
-        >
-          Search
-        </button>
-      </div>
-    </section>
+  const containerClassName = compact
+    ? "flex-center gap-xs grow-1"
+    : "stroke-anim-search flex-center gap-xs";
+
+  return compact ? (
+    <div className={containerClassName}>
+      <Input
+        className="grow-1"
+        type="text"
+        placeholder="Type a character..."
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        aria-label="Search character"
+        maxLength={1}
+      />
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={handleSearch}
+        disabled={!searchInput.trim()}
+        aria-label="Search"
+      >
+        Search
+      </Button>
+    </div>
+  ) : (
+    <Box variant="dark-alt" padding="xs" className={containerClassName}>
+      <Input
+        className="grow-1"
+        type="text"
+        placeholder="Type a character..."
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        aria-label="Search character"
+        maxLength={1}
+      />
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={handleSearch}
+        disabled={!searchInput.trim()}
+        aria-label="Search"
+      >
+        Search
+      </Button>
+    </Box>
   );
 }

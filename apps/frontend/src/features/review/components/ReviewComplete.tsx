@@ -5,6 +5,7 @@
  */
 import React from "react";
 import type { ReviewSessionResult } from "../types";
+import { Box, Button } from "shared/components";
 import "./ReviewComplete.css";
 
 type ReviewCompleteProps = {
@@ -32,15 +33,19 @@ function ReviewCompleteComponent({
 
   return (
     <div className="review-complete flex-col-center gap-lg mx-auto">
-      <span className="review-complete__emoji">{"\uD83C\uDF89"}</span>
-      <h2 className="review-complete__title text-primary m-0">Review Complete!</h2>
-      <p className="review-complete__subtitle text-muted text-center m-0">
+      <span className="review-complete__emoji font-5xl">{"\uD83C\uDF89"}</span>
+      <h2 className="review-complete__title text-primary font-3xl m-0">Review Complete!</h2>
+      <p className="review-complete__subtitle text-muted text-center font-lg m-0">
         You reviewed {totalItems} item{totalItems !== 1 ? "s" : ""}.
       </p>
 
       {/* Pinyin accuracy - only shown for pinyin review sessions */}
       {result.pinyinTotal > 0 && (
-        <div className="review-complete__stat-card card-dark w-full flex-col gap-sm p-lg">
+        <Box
+          variant="dark-accent"
+          padding="lg"
+          className="review-complete__stat-card w-full flex-col gap-sm"
+        >
           <div className="flex-between">
             <span className="text-secondary">Pinyin accuracy</span>
             <span className={pinyinPct >= 70 ? "text-success fw-600" : "text-warning fw-600"}>
@@ -57,11 +62,15 @@ function ReviewCompleteComponent({
               </span>
             </div>
           )}
-        </div>
+        </Box>
       )}
 
       {/* Rating breakdown */}
-      <div className="review-complete__stat-card card-dark w-full flex-col gap-sm p-lg">
+      <Box
+        variant="dark-accent"
+        padding="lg"
+        className="review-complete__stat-card w-full flex-col gap-sm"
+      >
         <h3 className="text-primary fw-600 font-md m-0">Self-Ratings</h3>
 
         <div className="flex-between">
@@ -88,7 +97,7 @@ function ReviewCompleteComponent({
           </span>
         </div>
 
-        <div className="review-complete__divider" />
+        <Box variant="divider" className="review-complete__divider" />
 
         <div className="flex-between">
           <span className="text-primary fw-600">Retention rate (Good/Easy)</span>
@@ -96,16 +105,16 @@ function ReviewCompleteComponent({
             {retentionPct}%
           </span>
         </div>
-      </div>
+      </Box>
 
       {/* Action buttons */}
       <div className="flex-center gap-md flex-wrap">
-        <button className="card-dark-hover hover-lift fw-600" onClick={onBack} type="button">
+        <Button variant="secondary" onClick={onBack}>
           {"\uD83D\uDCCB"} Back to Practices
-        </button>
-        <button className="btn-primary" onClick={onReviewAgain} type="button">
+        </Button>
+        <Button variant="primary" onClick={onReviewAgain}>
           {"\uD83D\uDD04"} Review Again
-        </button>
+        </Button>
       </div>
     </div>
   );

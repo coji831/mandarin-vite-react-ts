@@ -6,19 +6,17 @@
  * Manages dynamic import, character setup, teardown, playback controls, speed management,
  * stroke breakdown state, and stroke rules detection.
  *
+ * Extracted from features/foundations to shared/components/CharacterStroke.
+ * Stroke reference data loading (suggested characters) has been removed — it was never
+ * consumed by the component tree and remains in features/foundations for SuggestionPanel.
+ *
  * @warning Accesses hanzi-writer internal API via `writer._options.strokeAnimationSpeed`.
  *   This is a private API — there is no public alternative in hanzi-writer v2.x.
  *   Monitor hanzi-writer releases for a public speed setter and migrate when available.
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
-
-import type { StrokeData } from "features/foundations/types";
-import {
-  determineStrokeRules,
-  loadStrokeData,
-  getCachedStrokeData,
-} from "features/foundations/utils";
+import { determineStrokeRules } from "./strokeUtils";
 
 type UseHanziWriterReturn = {
   /** Ref to attach to the canvas container div */
@@ -39,8 +37,6 @@ type UseHanziWriterReturn = {
   strokePaths: string[];
   /** Stroke order rules that apply to the current character */
   appliedRules: string[];
-  /** Loaded stroke data (for suggested characters) */
-  strokeData: StrokeData | null;
   /** Start/resume full animation */
   handlePlay: () => void;
   /** Pause the current animation */
@@ -62,8 +58,6 @@ type UseHanziWriterReturn = {
  * @returns Refs, state, and handlers for stroke animation UI
  */
 export function useHanziWriter(character: string): UseHanziWriterReturn {
-  const [strokeData, setStrokeData] = useState<StrokeData | null>(getCachedStrokeData());
-
   // Hanzi Writer state
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,20 +79,6 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
   useEffect(() => {
     characterRef.current = character;
   }, [character]);
-
-  // Load stroke data for suggested characters list (using shared cache)
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await loadStrokeData();
-        setStrokeData(data);
-      } catch (err) {
-        // [Foundations] Failed to load stroke data for suggested characters
-        console.error("[HanziWriter] Failed to load strokes data:", err);
-      }
-    };
-    loadData();
-  }, []);
 
   // Hanzi Writer setup — re-runs when character changes
   useEffect(() => {
@@ -143,8 +123,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
               .then((data) => onComplete(data))
               .catch(() => {
                 // If CDN fails, character still renders outline but animation won't work
-                // [Foundations] CDN stroke data unavailable for character
-                console.warn(`[HanziWriter] Failed to load stroke data for "${char}" from CDN`);
+                // Error state is set via onLoadCharDataError below
               });
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,8 +151,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
           },
           onLoadCharDataError: () => {
             if (!cancelled) {
-              // [Foundations] Hanzi writer character data loader error
-              console.warn("[HanziWriter] Character data loading failed");
+              // Error state is handled by the component via setError fallback
             }
           },
         });
@@ -185,8 +163,6 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
 
         writerRef.current = writer;
       } catch (err) {
-        // [Foundations] Hanzi writer initialization failed
-        console.error("[HanziWriter] Failed to initialize Hanzi Writer:", err);
         if (!cancelled)
           setError(
             "Failed to load stroke animation. Check your internet connection and try again.",
@@ -306,7 +282,7 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
 
   /**
    * Jumps the animation to a specific stroke index (1-based).
-   * Resets the display and re-animates strokes 0..target-1 so the user
+   * Reset the display and re-animates strokes 0..target-1 so the user
    * sees the character built up to the selected stroke.
    */
   const handleStrokeSelect = useCallback((strokeIndex: number) => {
@@ -355,7 +331,6 @@ export function useHanziWriter(character: string): UseHanziWriterReturn {
     speed,
     strokePaths,
     appliedRules,
-    strokeData,
     handlePlay,
     handlePause,
     handleStepBack,

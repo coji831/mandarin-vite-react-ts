@@ -18,7 +18,7 @@ export function LoginPage() {
   };
 
   return (
-    <div style={{ padding: "2rem 0" }}>
+    <div className="p-xl">
       <LoginForm onSuccess={handleSuccess} onSwitchToRegister={handleSwitchToRegister} />
     </div>
   );

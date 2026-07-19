@@ -1,0 +1,25 @@
+/**
+ * @file components/RadicalDetailCard.css
+ * @description Dashboard-style layout for radical detail card
+ * Story 19.2: Radical Detail Card
+ *
+ * Uses a compact side-by-side hero, two-column info grid,
+ * full-width character grid, and always-visible notes.
+ */
+
+.rdc__glyph {
+  font-size: calc(var(--font-5xl) * 1.8);
+  width: 100px;
+}
+
+/* ── Two-column info grid ── */
+.rdc__info-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.rdc__variant-chip {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* ── Notes — separator handled by Box divider above, gap handles spacing ── */

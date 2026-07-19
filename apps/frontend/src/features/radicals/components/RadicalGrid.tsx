@@ -6,6 +6,8 @@
 
 import type { RadicalData } from "../types";
 import { RadicalCard } from "./RadicalCard";
+import "./RadicalGrid.css";
+import { ErrorScreen, LoadingScreen } from "shared/components";
 
 interface RadicalGridProps {
   radicals: RadicalData[];
@@ -23,36 +25,25 @@ export function RadicalGrid({
   onRetry,
 }: RadicalGridProps) {
   if (isLoading) {
-    return (
-      <div className="radical-grid__loading flex-col flex-center p-xl" role="status">
-        <div className="radical-grid__skeleton-grid">
-          {Array.from({ length: 8 }, (_, i) => (
-            <div key={i} className="radical-grid__skeleton-card card-dark" aria-hidden="true" />
-          ))}
-        </div>
-        <span className="text-muted font-sm radical-grid__loading-text">Loading radicals…</span>
-      </div>
-    );
+    return <LoadingScreen message="Loading radicals…" />;
   }
 
   if (error) {
+    if (onRetry) {
+      return <ErrorScreen error={error ?? "An unknown error occurred"} onRetry={onRetry} />;
+    }
     return (
-      <div className="radical-grid__error flex-col flex-center p-xl gap-md">
-        <div className="alert-error">
-          <p className="text-primary">{error}</p>
-        </div>
-        {onRetry && (
-          <button className="btn-primary" onClick={onRetry} type="button">
-            Retry
-          </button>
-        )}
+      <div className="error-screen flex-col-center text-center p-2xl">
+        <div className="error-screen__icon font-5xl op-100">⚠️</div>
+        <h2 className="text-error font-2xl">Something went wrong</h2>
+        <p className="error-screen__message text-tertiary font-md">{error}</p>
       </div>
     );
   }
 
   if (radicals.length === 0) {
     return (
-      <div className="radical-grid__empty flex-col flex-center p-xl">
+      <div className="radical-grid__empty grid flex-col flex-center p-xl">
         <p className="text-muted font-lg">No radicals match your filters.</p>
         <p className="text-muted font-sm">Try adjusting your search or filter criteria.</p>
       </div>
@@ -60,7 +51,7 @@ export function RadicalGrid({
   }
 
   return (
-    <div className="radical-grid" role="list" aria-label="Radicals grid">
+    <div className="radical-grid grid gap-md" role="list" aria-label="Radicals grid">
       {radicals.map((radical) => (
         <div key={radical.id} role="listitem">
           <RadicalCard radical={radical} onClick={onRadicalClick} />

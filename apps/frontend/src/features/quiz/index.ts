@@ -31,6 +31,8 @@ export { IMEQuestionView } from "./components/ime-input/IMEQuestionView";
 
 // Hooks
 export { useQuizEngine } from "./hooks";
+export { useQuizCard } from "./hooks/useQuizCard";
+export type { QuizAssessment } from "./hooks/useQuizCard";
 
 // Stores
 export { useQuizSessionStore } from "./stores";

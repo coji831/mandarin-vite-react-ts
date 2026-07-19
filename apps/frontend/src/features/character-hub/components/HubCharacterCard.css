@@ -1,0 +1,14 @@
+/* HubCharacterCard.css — Character Detail Hub — Center Zone */
+/* Story 18.5: Character Detail Hub (Phase 1 Minimal) */
+
+/* Center canvas skeleton — matches 200×200px canvas */
+.hub-center-canvas-skeleton {
+  width: 200px;
+  height: 200px;
+}
+
+/* Center control button skeletons — match 32×32px csp-ctrl-btn */
+.hub-center-ctrl-skeleton {
+  width: 32px;
+  height: 32px;
+}

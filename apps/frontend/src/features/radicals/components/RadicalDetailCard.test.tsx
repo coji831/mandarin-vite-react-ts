@@ -78,8 +78,8 @@ describe("RadicalDetailCard", () => {
   it("renders metadata section with stroke count and kangxi index", () => {
     render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
 
-    expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("#8")).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes("3") && c.includes("strokes"))).toBeInTheDocument();
+    expect(screen.getByText((c) => c.includes("Kangxi") && c.includes("8"))).toBeInTheDocument();
   });
 
   it("renders alternate glyph chips when present", () => {
@@ -101,19 +101,25 @@ describe("RadicalDetailCard", () => {
     expect(screen.queryByTestId("example-char-grid")).not.toBeInTheDocument();
   });
 
-  it("renders disabled mnemonic button with correct title", () => {
-    render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
+  it("renders notes section when metadata.notes is present", () => {
+    const radicalWithNotes: RadicalData = {
+      ...mockRadicalWithChars,
+      metadata: {
+        ...mockRadicalWithChars.metadata,
+        notes: "Some additional notes about this radical.",
+      },
+    };
+    render(<RadicalDetailCard radical={radicalWithNotes} onClose={vi.fn()} />);
 
-    const mnemonicBtn = screen.getByText("Generate Story");
-    expect(mnemonicBtn).toBeDisabled();
-    expect(mnemonicBtn).toHaveAttribute("title", "Coming in Epic 20");
+    expect(screen.getByText("Notes")).toBeInTheDocument();
+    expect(screen.getByText("Some additional notes about this radical.")).toBeInTheDocument();
   });
 
   it("calls onClose when close button is clicked", () => {
     const handleClose = vi.fn();
     render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={handleClose} />);
 
-    fireEvent.click(screen.getByLabelText("Close detail card"));
+    fireEvent.click(screen.getByLabelText("Close dialog"));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
@@ -124,10 +130,10 @@ describe("RadicalDetailCard", () => {
     );
 
     // Detail card is now an overlay with backdrop
-    const backdrop = container.querySelector(".radical-detail-card__backdrop");
+    const backdrop = container.querySelector(".modal-backdrop");
     expect(backdrop).toBeInTheDocument();
     // Card renders with dialog role
-    expect(container.querySelector(".radical-detail-card")).toBeInTheDocument();
+    expect(container.querySelector(".modal")).toBeInTheDocument();
   });
 
   it("calls onClose when Escape key is pressed", () => {
@@ -141,6 +147,6 @@ describe("RadicalDetailCard", () => {
   it("has correct aria-label on the dialog", () => {
     render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
 
-    expect(screen.getByRole("dialog", { name: "Details for water radical" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "氵 (water radical)" })).toBeInTheDocument();
   });
 });

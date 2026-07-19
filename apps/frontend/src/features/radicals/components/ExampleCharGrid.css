@@ -1,0 +1,16 @@
+/**
+ * @file components/ExampleCharGrid.css
+ * @description Styles for scrollable character list with compact rows
+ * Story 19.2: Radical Detail Card
+ *
+ * The list has a fixed max-height and scrolls internally so the modal
+ * doesn't grow too tall. Scrollbar styling uses the global `.custom-scrollbar`
+ * class from components.css.
+ */
+
+.example-char-list {
+  max-height: 320px;
+  overflow-y: auto;
+  /* border via border-1 border-surface utilities in TSX */
+  background: var(--surface-dark-alt-2);
+}

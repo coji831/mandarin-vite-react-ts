@@ -5,3 +5,5 @@
  */
 
 export { loadRadicalsByCharacter } from "./characterHubService";
+export { loadMergedRadicals } from "./mergeRadicals";
+export type { RadicalEntry } from "./mergeRadicals";

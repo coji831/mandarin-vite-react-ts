@@ -2,66 +2,10 @@
  * Quiz.css — Shared styles for quiz components.
  */
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-@keyframes animate-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Progress Bar
-   ═══════════════════════════════════════════════ */
-.quiz-progress__track {
-  position: relative;
-  height: 12px;
-  overflow: visible;
-}
-.quiz-progress__fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-success) 0%, #34d399 100%);
-  transition: width var(--transition-normal);
-  min-width: 4px;
-}
-.quiz-progress__threshold {
-  position: absolute;
-  top: -4px;
-  width: 3px;
-  height: 20px;
-  background: var(--color-warning);
-  border-radius: 2px;
-}
-
 /* ═══════════════════════════════════════════════
    Quiz: Timer
    ═══════════════════════════════════════════════ */
-.quiz-timer--warning {
-  border-color: var(--color-warning);
-  color: var(--color-warning);
-}
-.quiz-timer--danger {
-  border-color: var(--color-error);
-  color: var(--color-error);
-  animation: pulse 1s ease-in-out infinite;
-}
+
 .quiz-timer__value {
   font-family: "Courier New", monospace;
 }
@@ -70,27 +14,6 @@
    Quiz: Feedback
    ═══════════════════════════════════════════════ */
 
-.quiz-feedback__badge {
-  align-self: flex-start;
-}
-.quiz-feedback__card--correct {
-  border-color: var(--color-success-border);
-}
-.quiz-feedback__card--incorrect {
-  border-color: var(--color-error-border);
-}
-.quiz-feedback__badge--correct {
-  background: var(--color-success);
-  color: white;
-}
-.quiz-feedback__badge--incorrect {
-  background: var(--color-error);
-  color: white;
-}
-.quiz-feedback__divider {
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--surface-border);
-}
 .quiz-feedback__next-btn {
   min-width: 160px;
 }
@@ -100,28 +23,6 @@
    ═══════════════════════════════════════════════ */
 .quiz-question {
   min-height: 320px;
-}
-.quiz-question__prompt {
-  margin: -0.5rem 0 0;
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Multiple Choice Options
-   ═══════════════════════════════════════════════ */
-.quiz-mc-option__btn {
-  padding: var(--space-md) var(--space-lg);
-  font-size: var(--font-lg);
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  width: 100%;
-  cursor: pointer;
-}
-
-.quiz-mc-option__btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 /* ═══════════════════════════════════════════════
@@ -134,49 +35,15 @@
 .quiz-results__card {
   min-width: 320px;
 }
-.quiz-results__card--passed {
-  border-color: var(--color-success, #00c853);
-  box-shadow: 0 0 12px rgba(0, 200, 83, 0.15);
-}
-.quiz-results__card--failed {
-  border-color: var(--color-error, #ff1744);
-  box-shadow: 0 0 12px rgba(255, 23, 68, 0.15);
-}
-
-/* Score visualization bar */
-.quiz-results__bar-wrapper {
-  margin-top: var(--space-xs);
-}
 
 /* Answer review section */
-.quiz-results__review {
-  border: 1px solid var(--surface-border);
-  transition: border-color var(--transition-fast);
-}
-.quiz-results__review[open] {
-  border-color: var(--color-primary-border-strong);
-}
+
 .quiz-results__review summary {
   user-select: none;
 }
 .quiz-results__review summary:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Category Breakdown
-   ═══════════════════════════════════════════════ */
-.quiz-breakdown__label {
-  justify-content: space-between;
-}
-.quiz-breakdown__track {
-  height: 8px;
-}
-.quiz-breakdown__fill {
-  height: 100%;
-  transition: width var(--transition-normal);
 }
 
 /* ═══════════════════════════════════════════════
@@ -185,34 +52,25 @@
 .quiz-badge {
   animation: animate-fade-in 0.5s;
 }
-.quiz-badge--pass {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-.quiz-badge--fail {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
+
+/* ═══════════════════════════════════════════════
+   Quiz: Category Breakdown
+   ═══════════════════════════════════════════════ */
+.quiz-breakdown__fill {
+  /* height: 100% — migrated to utility class: h-full */
 }
 
 /* ═══════════════════════════════════════════════
-   Quiz: Spinner
+   Quiz: Phase Gate Badge
    ═══════════════════════════════════════════════ */
-.quiz-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--surface-border);
-  border-top-color: var(--color-primary);
-  animation: spin 0.8s linear infinite;
+.quiz-badge {
+  animation: animate-fade-in 0.5s;
 }
 
 /* ═══════════════════════════════════════════════
    Quiz: Audio Button
    ═══════════════════════════════════════════════ */
 .quiz-audio-btn {
-  display: inline-flex;
-  align-items: center;
+  /* Layout migrated to utility class */
 }
-.quiz-audio-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+/* .quiz-audio-btn:disabled — migrated to disabled:op-60 utility */

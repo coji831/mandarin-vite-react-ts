@@ -5,5 +5,5 @@
  */
 .review-view {
   max-width: 520px;
-  width: 100%;
+  /* width: 100% — migrated to utility class: w-full */
 }

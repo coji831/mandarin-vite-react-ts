@@ -18,18 +18,11 @@ type HubInfoLineProps = {
 
 export function HubInfoLine({ character, pinyin }: HubInfoLineProps) {
   return (
-    <div className="hub-info-line">
-      <span className="hub-info-char">{character}</span>
-      <span className="hub-info-pinyin">{pinyin ? `(${pinyin})` : "(...)"}</span>
-      <span className="hub-info-sep">·</span>
-      <span className="hub-info-meaning">
-        <span className="hub-info-meaning-text">
-          HSK level, definitions, and example sentences coming soon
-        </span>
-        <span className="hub-info-available">
-          (Stroke animation, audio, and radical info available now)
-        </span>
-      </span>
+    <div className="flex items-center justify-center gap-xs font-md text-secondary">
+      <span className="fw-600 text-tertiary">{character}</span>
+      <span className="text-primary-light">{pinyin ? `(${pinyin})` : "(...)"}</span>
+      <span className="text-secondary">·</span>
+      <span className="text-muted font-sm">HSK level coming soon</span>
     </div>
   );
 }

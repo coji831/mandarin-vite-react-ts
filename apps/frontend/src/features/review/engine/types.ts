@@ -13,11 +13,11 @@ export type ReviewInput =
   | { type: "tone"; value: number }
   | { type: "option"; value: string };
 
-export interface ReviewEvaluation {
+export type ReviewEvaluation = {
   correct: boolean;
-}
+};
 
-export interface ReviewStrategy {
+export type ReviewStrategy = {
   /** The item type this strategy handles (e.g., "pinyin-syllable") */
   itemType: string;
   /** The initial review step for this type ("pinyin", "tone", or "option") */
@@ -28,4 +28,4 @@ export interface ReviewStrategy {
   showMeaning: boolean;
   /** Evaluate the user's input against the review item */
   evaluate(item: ReviewItem, input: ReviewInput): ReviewEvaluation;
-}
+};

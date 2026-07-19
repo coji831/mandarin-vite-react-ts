@@ -1,98 +1,76 @@
 /**
  * AppLayout component
  *
- * Root layout with unified navigation bar for the entire application.
- * Provides global navigation: Dashboard, Learn, Progress, and user menu.
- * Wraps all authenticated routes with consistent header and layout.
+ * Root layout with left sidebar navigation for the entire application.
+ * Provides global navigation: Dashboard, Learn, Practices, Library, Progress.
+ * Sidebar fills full viewport height; page content renders beside it.
  *
- * Phase 2: Navigation redesign - replaces Root.tsx with modern two-level nav system
+ * Phase 2: Sidebar redesign — replaces top navbar with left sidebar.
+ * Uses shared SideNav component for the sidebar.
  */
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { login_page, practices_page } from "../constants/paths";
+import { SideNav, Modal } from "shared/components";
 import { useAuth } from "features/auth";
 import { CharacterHub } from "features/character-hub/components";
+import { useHubStore } from "shared/store";
 import "./AppLayout.css";
 
 export { AppLayout };
 
+function HubModal() {
+  const { isOpen, character, pinyin, close } = useHubStore();
+
+  return (
+    <Modal isOpen={isOpen} onClose={close} size="lg" title={character || "Character Detail"}>
+      <CharacterHub character={character ?? ""} pinyin={pinyin} onClose={close} />
+    </Modal>
+  );
+}
+
 function AppLayout() {
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
+    navigate("/");
   };
 
-  // Don't show navbar on auth page
+  const handleLogin = () => {
+    navigate(login_page);
+  };
+
+  // Don't show sidebar on auth page
   const isAuthPage = location.pathname.startsWith(login_page) || location.pathname === "/auth";
 
+  const navItems = [
+    { path: "/", label: "Dashboard", icon: "🏠", exact: true },
+    { path: "/learn", label: "Learn", icon: "📚", exact: false },
+    { path: practices_page, label: "Practices", icon: "🎯", exact: false },
+    { path: "/library", label: "Library", icon: "📖", exact: false },
+    { path: "/progress", label: "Progress", icon: "📊", exact: false },
+  ];
+
   return (
-    <div className="app-layout">
+    <div className="app-layout flex">
       {!isAuthPage && (
-        <nav className="app-navbar">
-          <div className="navbar-brand">
-            <span className="navbar-logo">🏮</span>
-            <span className="navbar-title">Mandarin</span>
-          </div>
-
-          {isAuthenticated && (
-            <div className="navbar-links">
-              <Link to="/" className={`navbar-link ${location.pathname === "/" ? "active" : ""}`}>
-                🏠 Dashboard
-              </Link>
-
-              <Link
-                to="/learn"
-                className={`navbar-link ${location.pathname.startsWith("/learn") ? "active" : ""}`}
-              >
-                📚 Learn
-              </Link>
-
-              <Link
-                to={practices_page}
-                className={`navbar-link ${location.pathname.startsWith(practices_page) ? "active" : ""}`}
-              >
-                🎯 Practices
-              </Link>
-
-              <Link
-                to="/library"
-                className={`navbar-link ${location.pathname.startsWith("/library") ? "active" : ""}`}
-              >
-                📖 Library
-              </Link>
-
-              <Link
-                to="/progress"
-                className={`navbar-link ${location.pathname.startsWith("/progress") ? "active" : ""}`}
-              >
-                📊 Progress
-              </Link>
-            </div>
-          )}
-
-          <div className="navbar-user">
-            {isAuthenticated ? (
-              <>
-                <span className="user-name">{user?.displayName || user?.email}</span>
-                <button onClick={handleLogout} className="btn-logout">
-                  Logout
-                </button>
-              </>
-            ) : (
-              <Link to={login_page}>
-                <button className="btn-login">Login</button>
-              </Link>
-            )}
-          </div>
-        </nav>
+        <SideNav
+          navItems={navItems}
+          currentPath={location.pathname}
+          isAuthenticated={isAuthenticated}
+          userName={user?.displayName || user?.email}
+          onLogout={handleLogout}
+          onLogin={handleLogin}
+        />
       )}
 
-      <main className="app-content">
+      <main className="app-content flex flex-col flex-1">
         <Outlet />
       </main>
-      <CharacterHub />
+      <HubModal />
     </div>
   );
 }

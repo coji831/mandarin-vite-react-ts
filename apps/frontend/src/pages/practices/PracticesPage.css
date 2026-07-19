@@ -8,60 +8,13 @@
  * - Phase timeline indicators
  */
 
-.cardGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
-  width: 100%;
-}
-
 @media (max-width: 768px) {
   .cardGrid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Arrow shift on hover for start buttons */
-.startBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.startBtn:hover .startBtnArrow {
-  transform: translateX(3px);
-}
-
-.startBtnArrow {
-  display: inline-block;
-  transition: transform var(--transition-fast);
-}
-
-/* Phase timeline — compact row of phase indicators */
-.phase-timeline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-sm);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
-}
-
-.phase-timeline-item {
-  font-size: var(--font-xs);
-  white-space: nowrap;
-  opacity: 0.9;
-}
-
-.phase-timeline-item.phase-passed {
-  opacity: 1;
-}
-
-.phase-timeline-item.phase-current {
-  font-weight: 600;
-  opacity: 1;
-}
-
-.phase-timeline-item.phase-locked {
-  opacity: 0.45;
+/* Max-width utility for page layout */
+.max-w-700 {
+  max-width: 700px;
 }

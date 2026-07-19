@@ -5,6 +5,7 @@
 
 import { useState, FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Box, Button, Input, TextLink } from "shared/components";
 import "./AuthForm.css";
 
 type LoginFormProps = {
@@ -35,20 +36,24 @@ export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="auth-form-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2 className="auth-form-title">Login</h2>
+    <form className="auth-form  p-xl flex-center " onSubmit={handleSubmit}>
+      <Box variant="elevated" padding="xl" className="auth-form-container w-full flex-col gap-lg">
+        <h2 className="text-primary font-2xl fw-600 text-center">Login</h2>
 
-        {error && <div className="auth-form-error">{error}</div>}
+        {error && (
+          <Box variant="error" className="auth-form-error bg-error-bg text-error font-sm">
+            {error}
+          </Box>
+        )}
 
-        <div className="auth-form-field">
-          <label htmlFor="email" className="auth-form-label">
+        <div>
+          <label htmlFor="email" className="auth-form-label text-secondary font-sm fw-500">
             Email
           </label>
-          <input
+          <Input
             id="email"
             type="email"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -57,14 +62,14 @@ export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
           />
         </div>
 
-        <div className="auth-form-field">
-          <label htmlFor="password" className="auth-form-label">
+        <div>
+          <label htmlFor="password" className="auth-form-label text-secondary font-sm fw-500">
             Password
           </label>
-          <input
+          <Input
             id="password"
             type="password"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -73,24 +78,16 @@ export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
           />
         </div>
 
-        <button type="submit" className="auth-form-button primary" disabled={isLoading}>
+        <Button variant="primary" type="submit" loading={isLoading} disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
-        </button>
+        </Button>
 
         {onSwitchToRegister && (
-          <div className="auth-form-footer">
-            Don't have an account?{" "}
-            <button
-              type="button"
-              className="auth-form-link"
-              onClick={onSwitchToRegister}
-              disabled={isLoading}
-            >
-              Register
-            </button>
+          <div className="text-center text-tertiary font-sm">
+            Don't have an account? <TextLink onClick={onSwitchToRegister}>Register</TextLink>
           </div>
         )}
-      </form>
-    </div>
+      </Box>
+    </form>
   );
 }

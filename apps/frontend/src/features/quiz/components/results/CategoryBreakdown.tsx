@@ -7,6 +7,7 @@
  * score, percentage, and category name.
  */
 
+import { Box } from "shared/components";
 import type { AnswerResult } from "../../types/engine";
 
 type CategoryBreakdownProps = {
@@ -39,7 +40,7 @@ function CategoryBar({
   return (
     <div className="flex-col gap-xs w-full">
       {/* Label row */}
-      <div className="quiz-breakdown__label text-primary font-sm flex">
+      <div className="quiz-breakdown__label text-primary font-sm flex-between">
         <span>{label}</span>
         <span>
           {correct}/{total} ({pct}%)
@@ -47,10 +48,10 @@ function CategoryBar({
       </div>
 
       {/* Bar background */}
-      <div className="quiz-breakdown__track bg-surface-dark-alt radius-pill w-full overflow-hidden">
+      <div className="quiz-breakdown__track bg-surface-dark-alt radius-pill w-full overflow-hidden h-8px">
         {/* Bar fill */}
         <div
-          className="quiz-breakdown__fill radius-pill"
+          className="quiz-breakdown__fill radius-pill h-full"
           style={{ width: `${pct}%`, background: color }}
         />
       </div>
@@ -65,22 +66,22 @@ export function CategoryBreakdown({ answers }: CategoryBreakdownProps) {
   if (total === 0) return null;
 
   return (
-    <div className="card-dark flex-col gap-md p-md" style={{ minWidth: 320 }}>
+    <Box variant="dark" padding="md" className="flex-col gap-md" style={{ minWidth: 320 }}>
       <h3 className="quiz-breakdown__heading font-lg text-primary m-0">📊 Category Breakdown</h3>
 
       <CategoryBar
         label="Pinyin recognition"
         correct={pinyinCorrect}
         total={total}
-        color="var(--accent-primary)"
+        color="var(--color-primary-light)"
       />
 
       <CategoryBar
         label="Tone identification"
         correct={toneCorrect}
         total={total}
-        color="var(--accent-warning)"
+        color="var(--color-warning)"
       />
-    </div>
+    </Box>
   );
 }

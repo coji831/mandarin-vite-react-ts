@@ -50,14 +50,11 @@ const mockRadicals: RadicalData[] = [
 ];
 
 describe("RadicalGrid", () => {
-  it("renders 8 skeleton cards when loading", () => {
-    const { container } = render(<RadicalGrid radicals={[]} isLoading={true} error={null} />);
+  it("renders loading spinner when loading", () => {
+    render(<RadicalGrid radicals={[]} isLoading={true} error={null} />);
 
-    expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.getByText("Loading radicals…")).toBeInTheDocument();
-
-    const skeletons = container.querySelectorAll(".radical-grid__skeleton-card");
-    expect(skeletons).toHaveLength(8);
+    expect(screen.getByLabelText("Loading")).toBeInTheDocument();
   });
 
   it("renders error message with retry button when onRetry is provided", () => {
@@ -66,18 +63,20 @@ describe("RadicalGrid", () => {
       <RadicalGrid radicals={[]} isLoading={false} error="Failed to fetch" onRetry={handleRetry} />,
     );
 
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
     expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Try Again" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
     expect(handleRetry).toHaveBeenCalledTimes(1);
   });
 
   it("renders error message without retry button when onRetry is not provided", () => {
-    render(<RadicalGrid radicals={[]} isLoading={false} error="Something went wrong" />);
+    render(<RadicalGrid radicals={[]} isLoading={false} error="An unknown error occurred" />);
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /something went wrong/i })).toBeInTheDocument();
+    expect(screen.getByText("An unknown error occurred")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Try Again" })).not.toBeInTheDocument();
   });
 
   it("renders empty state message when no radicals match filters", () => {

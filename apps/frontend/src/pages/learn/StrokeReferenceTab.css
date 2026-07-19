@@ -6,10 +6,32 @@
  * Component styles are in their own per-component CSS files.
  */
 
+/* ─── Tab Container ─── */
+
+.stroke-ref-tab {
+  width: 900px;
+}
+
+/* ─── Loading / Error ─── */
+
 .stroke-ref-loading {
   min-height: 200px;
 }
 
-.stroke-ref-subtitle {
-  margin: 0 0 0.35rem;
+.stroke-ref-error {
+  min-height: 200px;
+}
+
+/* ─── Intro Header ─── */
+
+.stroke-ref-tip-header {
+  justify-content: flex-start;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .stroke-glyph {
+    font-size: 1.5rem;
+  }
 }

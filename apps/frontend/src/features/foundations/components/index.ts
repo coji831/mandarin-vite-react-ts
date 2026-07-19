@@ -8,6 +8,8 @@
 export { InitialsGrid } from "./pinyin/InitialsGrid";
 export { FinalsGrid } from "./pinyin/FinalsGrid";
 export { CombinationDisplay } from "./pinyin/CombinationDisplay";
+export { SlidingPinyinGrid } from "./pinyin/SlidingPinyinGrid";
+export { DetailPanel } from "./pinyin/DetailPanel";
 export { PinyinCell } from "./pinyin/PinyinCell";
 export { ToneCell } from "./pinyin/ToneCell";
 export { ToneContourCard } from "./tones/ToneContourCard";
@@ -16,7 +18,7 @@ export { ToneChangeRules } from "./tones/ToneChangeRules";
 export { FoundationsProgressBar } from "./shared/FoundationsProgressBar";
 export { BasicStrokesGrid } from "./strokes/BasicStrokesGrid";
 export { StrokeRulesList } from "./strokes/StrokeRulesList";
-export { AnimationCanvas } from "./animations/AnimationCanvas";
+export { AnimationCanvas, CharacterStrokePlayer } from "shared/components";
 export { AnimationControls } from "./animations/AnimationControls";
 export { StrokeBreakdown } from "./strokes/StrokeBreakdown";
 export { StrokeRulesDisplay } from "./strokes/StrokeRulesDisplay";

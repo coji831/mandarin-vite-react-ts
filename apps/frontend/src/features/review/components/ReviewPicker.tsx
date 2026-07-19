@@ -5,6 +5,7 @@
 import React from "react";
 import type { ReviewSource } from "../types";
 import { useReviewSources } from "../hooks/useReviewSources";
+import { Button, RadioGroup, Spinner } from "shared/components";
 import "./ReviewPicker.css";
 
 type ContentTypeOption = {
@@ -68,31 +69,38 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
-      <h2 className="review-picker__title text-primary font-xl m-0">🃏 Review</h2>
-      <p className="review-picker__description text-muted font-sm m-0 mt-xs">
-        No timer, no scoring. Self-rated: Again / Good / Easy.
-      </p>
+      <div className="flex-col gap-xs">
+        <h2 className="review-picker__title text-primary font-xl m-0">🃏 Review</h2>
+        <p className="review-picker__description text-muted font-sm m-0">
+          No timer, no scoring. Self-rated: Again / Good / Easy.
+        </p>
+      </div>
 
       {/* Step 1: Content Type */}
       <div className="flex-col gap-md">
         <label className="review-picker__step-label text-secondary fw-600 font-md">
           Step 1: What do you want to review?
         </label>
-        <div className="review-picker__cards">
-          {CONTENT_TYPES.map((ct) => (
-            <button
-              key={ct.type}
-              className={`review-picker__card flex-col-center gap-xs cursor-pointer ${selectedType === ct.type ? "review-picker__card--selected" : "review-picker__card--default"}`}
-              onClick={() => setSelectedType(ct.type)}
-              aria-pressed={selectedType === ct.type}
-              type="button"
-            >
-              <span className="review-picker__card-icon font-2xl">{ct.icon}</span>
-              <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
-              <span className="review-picker__card-desc text-muted font-sm">{ct.description}</span>
-              <span className="review-picker__card-count text-tertiary font-sm">All items</span>
-            </button>
-          ))}
+        <div className="review-picker__cards grid gap-sm">
+          {CONTENT_TYPES.map((ct) => {
+            const isSelected = selectedType === ct.type;
+            return (
+              <Button
+                key={ct.type}
+                variant={isSelected ? "control-active" : "control"}
+                className={`review-picker__card w-full flex-col ${isSelected ? "bg-primary-bg" : ""}`}
+                onClick={() => setSelectedType(ct.type)}
+                aria-pressed={isSelected}
+              >
+                <span className="review-picker__card-icon font-2xl">{ct.icon}</span>
+                <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
+                <span className="review-picker__card-desc text-muted font-sm">
+                  {ct.description}
+                </span>
+                <span className="review-picker__card-count text-tertiary font-sm">All items</span>
+              </Button>
+            );
+          })}
         </div>
       </div>
 
@@ -103,47 +111,35 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
         </label>
         {checking ? (
           <div className="flex-center gap-sm text-tertiary font-sm p-sm">
-            <span className="spinner" /> Checking available sources...
+            <Spinner size="xs" /> Checking available sources...
           </div>
         ) : (
-          <div className="flex-col gap-sm" role="radiogroup" aria-label="Review source">
-            {SOURCES.map((s) => {
-              const count = sourceCounts[s.value as keyof typeof sourceCounts];
-              const hasItems = count === -1 || count > 0; // "all" always available
-              return (
-                <label
-                  key={s.value}
-                  className={`review-picker__radio flex gap-sm py-sm px-md radius-md ${hasItems ? "cursor-pointer" : "op-60"} ${selectedSource === s.value ? "review-picker__radio--selected" : ""}`}
-                >
-                  <input
-                    type="radio"
-                    name="source"
-                    value={s.value}
-                    checked={selectedSource === s.value}
-                    onChange={() => setSelectedSource(s.value)}
-                    disabled={!hasItems}
-                  />
-                  <span style={{ fontWeight: selectedSource === s.value ? 600 : 400 }}>
-                    {s.label}
-                  </span>
-                  <span className="review-picker__radio-desc text-tertiary font-sm">
-                    {!hasItems ? "No items available — try another source" : s.description}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+          <RadioGroup
+            name="source"
+            options={SOURCES.map((s) => ({
+              value: s.value,
+              label: s.label,
+              disabled: (() => {
+                const count = sourceCounts[s.value as keyof typeof sourceCounts];
+                return count !== -1 && count <= 0;
+              })(),
+            }))}
+            value={selectedSource}
+            onChange={(value) => setSelectedSource(value as ReviewSource)}
+            layout="vertical"
+          />
         )}
       </div>
 
-      <button
-        className={`review-picker__start-btn btn-primary btn-lg ${checking ? "op-60" : ""}`}
+      <Button
+        variant="primary"
+        size="lg"
+        className={`review-picker__start-btn ${checking ? "op-60" : ""}`}
         onClick={() => onStart(selectedSource, selectedType)}
         disabled={checking}
-        type="button"
       >
         {checking ? "Checking sources..." : "Start Review"}
-      </button>
+      </Button>
     </div>
   );
 }

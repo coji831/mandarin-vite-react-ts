@@ -9,3 +9,4 @@ export { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
 export { ReviewCardToneSelect } from "./ReviewCardToneSelect";
 export { ReviewCardResult } from "./ReviewCardResult";
 export { ReviewLaunchCard } from "./ReviewLaunchCard";
+export { ReviewPromptCard } from "./ReviewPromptCard";

@@ -12,7 +12,7 @@ import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
-import { ErrorScreen, LoadingScreen } from "shared/components";
+import { Button, ErrorScreen, LoadingScreen, ProgressBar } from "shared/components";
 
 type ReviewViewProps = {
   onBack: () => void;
@@ -72,13 +72,9 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
       <div className="flex-col-center gap-lg p-2xl">
         <h2 className="text-secondary">No items available</h2>
         <p className="text-muted">Try a different content type or source.</p>
-        <button
-          className="btn-primary"
-          onClick={() => startReview(source, contentType)}
-          type="button"
-        >
+        <Button variant="primary" onClick={() => startReview(source, contentType)}>
           Try Again
-        </button>
+        </Button>
       </div>
     );
   }
@@ -92,7 +88,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "option":
     case "result":
       return (
-        <div className="review-view flex-col gap-lg mx-auto">
+        <div className="review-view flex-col gap-lg mx-auto w-full">
           {/* Header */}
           <header className="flex-between">
             <span className="text-secondary fw-600 font-sm">
@@ -119,17 +115,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
           />
 
           {/* Progress bar */}
-          <div className="flex-col gap-xs">
-            <div className="progress-bar w-full">
-              <div
-                className="progress-fill"
-                style={{ width: `${Math.round((progress.current / progress.total) * 100)}%` }}
-              />
-            </div>
-            <span className="text-muted font-sm text-center">
-              {progress.current} of {progress.total}
-            </span>
-          </div>
+          <ProgressBar value={progress.current / progress.total} />
         </div>
       );
 

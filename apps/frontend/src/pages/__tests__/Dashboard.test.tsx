@@ -11,8 +11,9 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { DashboardPage } from "../DashboardPage";
+import { DashboardPage } from "../dashboard/DashboardPage";
 import { usePhaseGate } from "shared/hooks";
 
 // Mock usePhaseGate
@@ -20,8 +21,26 @@ vi.mock("shared/hooks", () => ({
   usePhaseGate: vi.fn(),
 }));
 
-// Helper to render with router
-const renderWithRouter = (component: JSX.Element) => {
+// Mock features/auth — provide a pass-through AuthProvider and a mock useAuth
+// returning an authenticated user (the default state for registered users).
+vi.mock("features/auth", () => {
+  const MockAuthProvider = ({ children }: { children: ReactNode }) => <>{children}</>;
+  const mockUseAuth = () => ({
+    user: { id: "test-user", email: "test@test.com", displayName: "Test User" },
+    isAuthenticated: true,
+    isLoading: false,
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
+    refreshTokens: vi.fn(),
+  });
+  return {
+    AuthProvider: MockAuthProvider,
+    useAuth: mockUseAuth,
+  };
+});
+
+const renderWithProviders = (component: ReactNode) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
@@ -36,7 +55,7 @@ describe("Dashboard Page", () => {
       isLoading: true,
     });
 
-    renderWithRouter(<DashboardPage />);
+    renderWithProviders(<DashboardPage />);
 
     expect(screen.getByText(/Loading your dashboard/i)).toBeInTheDocument();
   });
@@ -47,7 +66,7 @@ describe("Dashboard Page", () => {
       isLoading: false,
     });
 
-    renderWithRouter(<DashboardPage />);
+    renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Welcome to PinyinPal/i)).toBeInTheDocument();
@@ -62,7 +81,7 @@ describe("Dashboard Page", () => {
       isLoading: false,
     });
 
-    renderWithRouter(<DashboardPage />);
+    renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
@@ -76,7 +95,7 @@ describe("Dashboard Page", () => {
       isLoading: false,
     });
 
-    renderWithRouter(<DashboardPage />);
+    renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Review Characters/i)).toBeInTheDocument();
@@ -92,7 +111,7 @@ describe("Dashboard Page", () => {
       isLoading: false,
     });
 
-    renderWithRouter(<DashboardPage />);
+    renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Continue Learning/i)).toBeInTheDocument();

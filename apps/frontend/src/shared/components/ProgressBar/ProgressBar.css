@@ -1,0 +1,25 @@
+/**
+ * ProgressBar Component Styles
+ * Uses CSS variables for colors, inline styles for dynamic width.
+ */
+
+.progress-bar__track {
+  position: relative;
+  height: 12px;
+  overflow: visible;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--gradient-success);
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+
+.progress-bar__threshold {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 20px;
+  background: var(--color-warning);
+}

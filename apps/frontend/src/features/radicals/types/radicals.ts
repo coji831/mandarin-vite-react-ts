@@ -19,6 +19,7 @@ export interface RadicalData {
     frequency_rank?: number;
     hsk_characters?: Array<{ glyph: string; pinyin: string; meaning: string }>;
     notes?: string;
+    is_also_character?: boolean;
     [key: string]: unknown;
   };
 }

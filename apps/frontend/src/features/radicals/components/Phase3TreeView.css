@@ -7,23 +7,11 @@
  * Layout and typography use globals.css utility classes directly in JSX.
  */
 
-/* ─── States ─────────────────────────────────────────────────────── */
-
-.phase3-tree-view__skeleton-tree {
-  width: 100%;
-  height: 60px;
-  background: var(--surface-light-5);
-  border-radius: var(--radius-lg);
-  /* skeleton-pulse defined in RadicalTreesTab.css — global scope */
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-  margin-bottom: var(--space-md);
-}
-
 /* ─── Separator text (replaces inline style) ────────────────────── */
 
 .phase3-tree-view__separator-text {
   letter-spacing: 0.03em;
-  white-space: nowrap;
+  /* white-space: nowrap — migrated to utility class: whitespace-nowrap */
 }
 
 /* ─── Search bar ────────────────────────────────────────────────── */
@@ -34,16 +22,6 @@
 
 .phase3-tree-view__search-input {
   max-width: 220px;
-  font-size: var(--font-sm);
-  padding: var(--space-xs) var(--space-sm);
 }
 
 /* ─── Indicator & Tagline ───────────────────────────────────────── */
-
-.phase3-tree-view__selected-indicator {
-  padding-bottom: var(--space-sm);
-}
-
-.phase3-tree-view__tagline {
-  padding-bottom: var(--space-xl);
-}

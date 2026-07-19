@@ -1,0 +1,16 @@
+/**
+ * @file components/RadicalGrid.css
+ * @description Styles for RadicalGrid — auto-fill grid of radical cards
+ * Story 19.1: Radicals Browser Structure
+ * Extracted from RadicalsPage.css for component encapsulation.
+ */
+
+.radical-grid {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.radical-grid__loading,
+.radical-grid__error,
+.radical-grid__empty {
+  min-height: 200px;
+}

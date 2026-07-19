@@ -9,12 +9,9 @@
  */
 
 import { ContentBrowser } from "shared/components";
-import type { ContentSource } from "shared/components";
+import { createMockContentSource } from "../shared/services/mockContentSource";
 
-// Library-specific content source with no phase gating
-const libraryContentSource: ContentSource = {
-  getItems: async () => ({ items: [], total: 0 }),
-};
+const libraryContentSource = createMockContentSource();
 
 export default function LibraryPage() {
   // Library shows ALL content regardless of phase

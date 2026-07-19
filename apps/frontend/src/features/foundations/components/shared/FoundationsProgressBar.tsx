@@ -7,10 +7,12 @@
  * Reuses the existing shared ProgressBar component.
  */
 
-import { ProgressBar } from "shared/components";
+import { Box, ProgressBar } from "shared/components";
 import { useFoundationsProgress } from "../../hooks/useFoundationsProgress";
 
 export function FoundationsProgressBar() {
+  // Temporarily hidden — progress tracking disabled
+  return null;
   const { completedCount, totalSections, isLoading } = useFoundationsProgress();
 
   if (isLoading) {
@@ -22,11 +24,11 @@ export function FoundationsProgressBar() {
   }
 
   return (
-    <div className="foundations-progress-bar bg-surface-dark radius-md flex-col p-md gap-sm">
+    <Box variant="surface" padding="md" className="foundations-progress-bar flex-col gap-sm">
       <div className="foundations-progress-text text-secondary font-sm">
         {completedCount} of {totalSections} sections completed
       </div>
-      <ProgressBar current={completedCount} total={totalSections} />
-    </div>
+      <ProgressBar value={completedCount / totalSections} />
+    </Box>
   );
 }

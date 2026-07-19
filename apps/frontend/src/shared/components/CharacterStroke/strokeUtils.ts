@@ -2,6 +2,8 @@
  * @file strokeUtils.ts
  * @description Utility functions for stroke analysis and display
  * Story 18.4: Stroke Order Reference & Animations
+ *
+ * Extracted from features/foundations to shared/components/CharacterStroke.
  */
 
 /**
@@ -24,8 +26,7 @@ export function determineStrokeRules(charData: CharData | null | undefined): str
   const rules: string[] = [];
   const medians = charData?.medians;
   if (!medians || medians.length === 0) {
-    // [Foundations] Stroke rule detection: medians data missing, using defaults
-    console.warn("[Foundations] Stroke rule detection: medians data missing, using defaults");
+    // Medians data missing — fall back to default rules
     return ["Top \u2192 Bottom", "Left \u2192 Right"]; // defaults for most chars
   }
 

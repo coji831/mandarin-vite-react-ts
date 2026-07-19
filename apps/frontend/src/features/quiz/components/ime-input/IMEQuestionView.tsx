@@ -6,6 +6,7 @@
  */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
+import { Button, Input, Box } from "shared/components";
 import "./IMEQuestionView.css";
 
 export function IMEQuestionView() {
@@ -33,23 +34,36 @@ export function IMEQuestionView() {
   );
 
   if (!question) {
-    return <div className="card-dark">No question available</div>;
+    return (
+      <Box variant="dark" padding="md">
+        No question available
+      </Box>
+    );
   }
 
   return (
-    <div className="ime-quiz-question">
+    <div className="ime-quiz-question mx-auto flex-col gap-xl">
       {/* Clue — meaning only */}
-      <div className="ime-quiz-question__clue">
-        <p className="ime-quiz-question__clue-label">Meaning</p>
-        <p className="ime-quiz-question__clue-meaning">{question.meaning ?? "\u2014"}</p>
-      </div>
+      <Box
+        variant="surface"
+        padding="xl"
+        className="ime-quiz-question__clue radius-lg flex-col gap-md text-center"
+      >
+        <p className="ime-quiz-question__clue-label font-xs text-muted text-uppercase m-0 tracking-wide">
+          Meaning
+        </p>
+        <p className="font-3xl fw-700 text-accent lh-tight">{question.meaning ?? "—"}</p>
+      </Box>
 
       {/* IME Input */}
-      <div className="ime-quiz-question__input-area">
-        <input
+      <Box
+        variant="elevated"
+        padding="md"
+        className="ime-quiz-question__input-area outline-none flex-col gap-md text-primary font-4xl w-full text-center"
+      >
+        <Input
           ref={inputRef}
-          className="ime-quiz-question__input"
-          type="text"
+          className="ime-quiz-question__input focus-ring"
           lang="zh"
           inputMode="text"
           value={inputValue}
@@ -58,19 +72,20 @@ export function IMEQuestionView() {
           placeholder="Type character here..."
           autoComplete="off"
         />
-        <p className="ime-quiz-question__steps">
+        <p className="ime-quiz-question__steps font-sm text-muted text-center lh-normal m-0">
           ① Type the pinyin using your IME keyboard
           <br />② Select the correct character from IME candidates
         </p>
-      </div>
+      </Box>
 
-      <button
-        className="btn-primary ime-quiz-question__submit"
+      <Button
+        variant="primary"
+        className="ime-quiz-question__submit w-full"
         onClick={handleSubmit}
         disabled={!inputValue.trim()}
       >
         Submit Answer
-      </button>
+      </Button>
     </div>
   );
 }

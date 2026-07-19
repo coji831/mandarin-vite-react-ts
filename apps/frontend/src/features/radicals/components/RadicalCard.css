@@ -1,0 +1,27 @@
+/**
+ * @file components/RadicalCard.css
+ * @description Styles for RadicalCard — individual radical grid card
+ * Story 19.1: Radicals Browser Structure
+ * Extracted from RadicalsPage.css for component encapsulation.
+ */
+
+.radical-card {
+  height: 200px; /* fixed height ensures all cards match */
+}
+
+.radical-card:hover {
+  transform: translateY(-2px);
+}
+
+.radical-card__badge {
+  top: var(--space-xs);
+  right: var(--space-xs);
+}
+
+.radical-card__freq-dot {
+  bottom: var(--space-xs);
+  right: var(--space-xs);
+  width: 8px;
+  /* structural: fixed size frequency indicator */
+  height: 8px;
+}

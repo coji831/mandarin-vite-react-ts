@@ -5,8 +5,9 @@
  */
 
 import React from "react";
-import type { ReviewItem, Rating } from "../types";
+import { Box, Button } from "shared/components";
 import { getReviewStrategy } from "../engine/strategies";
+import type { Rating, ReviewItem } from "../types";
 import "./ReviewCard.css";
 
 type ReviewCardResultProps = {
@@ -32,20 +33,24 @@ function ReviewCardResultComponent({
   const correctPinyin = item.front;
 
   return (
-    <div className="review-card card-dark flex-col">
-      <div className="review-card__side flex-col-center gap-lg p-xl">
+    <Box variant="dark" padding="md" className="review-card flex-col w-full">
+      <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         <div className="review-card__character-display flex-col-center gap-sm">
-          <span className="review-card__character">{displayChar}</span>
+          <span className="review-card__character font-5xl lh-tight tracking-wide text-primary fw-700">
+            {displayChar}
+          </span>
           {item.meaning && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})
             </span>
           )}
-          <span className="review-card__full-answer fw-600 font-2xl">{correctPinyin}</span>
+          <span className="review-card__full-answer fw-600 font-2xl text-center">
+            {correctPinyin}
+          </span>
         </div>
 
         {/* Per-step correctness — uses the active review strategy's feedback label */}
-        <div className="review-card__feedback flex-col gap-sm w-full">
+        <div className="review-card__feedback flex-col gap-sm w-full p-md">
           {(() => {
             const strategy = getReviewStrategy(item.itemType);
             const label = strategy?.feedbackLabel ?? "Answer";
@@ -66,23 +71,29 @@ function ReviewCardResultComponent({
           <label className="text-secondary fw-500 font-sm">How well did you know it?</label>
           <div className="review-card__ratings flex-center gap-md flex-wrap">
             {RATINGS.map((r) => (
-              <button
+              <Button
                 key={r.value}
-                className="review-card__rating-btn flex-col-center gap-xs p-md radius-md fw-700 transition-all cursor-pointer"
+                variant={
+                  r.value === "again"
+                    ? "rating-again"
+                    : r.value === "good"
+                      ? "rating-good"
+                      : "rating-easy"
+                }
                 data-rating={r.value}
+                className="review-card__rating-btn flex-1 transition-all"
                 onClick={() => onRate(r.value)}
-                type="button"
               >
                 <span className="font-lg">
                   {r.emoji} {r.label}
                 </span>
                 <span className="font-sm fw-400 op-80">{r.desc}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </Box>
   );
 }
 

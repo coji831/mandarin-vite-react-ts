@@ -7,7 +7,7 @@
  * separator, selected indicator, single expandable tree root node, and tagline.
  */
 
-import { Button } from "shared/components";
+import { Button, Input, Skeleton, Box } from "shared/components";
 import type { RadicalData } from "../types";
 import { RadicalChipPicker } from "./RadicalChipPicker";
 import { TreeRootNode } from "./TreeRootNode";
@@ -43,14 +43,13 @@ export function Phase3TreeView({
   return (
     <>
       {/* Search bar — compact, inline (always visible in Phase 3) */}
-      <div className="flex-end p-sm px-md bg-surface-dark phase3-tree-view__search-bar">
+      <div className="flex-end p-sm bg-surface-dark phase3-tree-view__search-bar">
         <div className="flex-center gap-xs">
           <span className="font-sm text-muted" aria-hidden="true">
             🔍
           </span>
-          <input
-            className="input-base phase3-tree-view__search-input"
-            type="text"
+          <Input
+            className="phase3-tree-view__search-input font-sm p-xs"
             placeholder="Filter radicals…"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -62,7 +61,7 @@ export function Phase3TreeView({
       {/* Progress loading state */}
       {progressLoading && (
         <div className="flex-col flex-center p-xl" role="status">
-          <div className="phase3-tree-view__skeleton-tree" aria-hidden="true" />
+          <Skeleton variant="custom" height="60px" className="w-full radius-lg" />
           <span className="text-muted font-sm">Loading mastered radicals…</span>
         </div>
       )}
@@ -70,7 +69,7 @@ export function Phase3TreeView({
       {/* Progress error state */}
       {progressError && !progressLoading && (
         <div className="flex-col flex-center p-lg gap-md">
-          <div className="alert-error">
+          <div className="alert-error p-md">
             <p className="text-primary">{progressError}</p>
           </div>
           <Button variant="primary" size="md" onClick={onRetry}>
@@ -93,10 +92,8 @@ export function Phase3TreeView({
       {!progressLoading && !progressError && masteredRadicals.length > 0 && (
         <>
           {/* Card container for chips + separator + indicator */}
-          <div className="card-dark">
-            <p className="font-sm text-secondary p-md" style={{ paddingBottom: 0 }}>
-              Pick a radical to expand:
-            </p>
+          <Box variant="dark" padding="md">
+            <p className="font-sm text-secondary">Pick a radical to expand:</p>
 
             <RadicalChipPicker
               filteredChips={filteredChips}
@@ -105,20 +102,20 @@ export function Phase3TreeView({
             />
 
             {/* Separator */}
-            <div className="flex-center p-sm px-md" aria-hidden="true">
-              <span className="font-xs text-muted phase3-tree-view__separator-text">
+            <div className="flex-center p-sm" aria-hidden="true">
+              <span className="font-xs text-muted phase3-tree-view__separator-text whitespace-nowrap">
                 ─── Your known radicals (★ mastered) ───
               </span>
             </div>
 
             {/* Selected indicator */}
             {activeRadical && (
-              <div className="phase3-tree-view__selected-indicator font-sm text-secondary px-md text-center">
+              <div className="phase3-tree-view__selected-indicator font-sm text-secondary p-md text-center">
                 Selected: {activeRadical.glyph} ({activeRadical.meaning}) — known ★ — click to
                 expand
               </div>
             )}
-          </div>
+          </Box>
 
           {/* Single tree node */}
           {activeRadical && (
@@ -132,7 +129,7 @@ export function Phase3TreeView({
           )}
 
           {/* Tagline */}
-          <div className="phase3-tree-view__tagline text-center font-sm text-muted p-lg px-md">
+          <div className="phase3-tree-view__tagline text-center font-sm text-muted p-xl">
             ✨ Learning through recognition — no testing. Browse freely.
           </div>
         </>

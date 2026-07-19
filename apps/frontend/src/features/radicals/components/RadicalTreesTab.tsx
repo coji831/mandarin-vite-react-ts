@@ -18,6 +18,7 @@ import {
 } from "../services/radicalProgressService";
 import type { RadicalData } from "../types";
 import { Phase3TreeView } from "./Phase3TreeView";
+import { Skeleton } from "shared/components";
 import "./RadicalTreesTab.css";
 
 interface RadicalTreesTabProps {
@@ -111,9 +112,9 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
   // Loading state
   if (radicalsLoading || phaseGateLoading) {
     return (
-      <div className="radical-trees-tab">
+      <div className="radical-trees-tab w-full">
         <div className="radical-trees-tab__loading flex-col flex-center p-xl">
-          <div className="radical-trees-tab__skeleton-tree" aria-hidden="true" />
+          <Skeleton variant="custom" height="60px" className="w-full radius-lg" />
           <span className="text-muted font-sm">Loading…</span>
         </div>
       </div>
@@ -123,7 +124,7 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
   // --- Phase 2: Locked teaser (Trees tab clicked but user not yet Phase 3) ---
   if (!isPhase3) {
     return (
-      <div className="radical-trees-tab">
+      <div className="radical-trees-tab w-full">
         <div className="flex-col flex-center p-xl gap-md">
           <span className="font-3xl" aria-hidden="true">
             🔒
@@ -139,7 +140,7 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
 
   // --- Phase 3: Trees view ---
   return (
-    <div className="radical-trees-tab">
+    <div className="radical-trees-tab w-full">
       <Phase3TreeView
         searchQuery={searchQuery}
         filteredChips={filteredChips}

@@ -8,6 +8,7 @@
  * and has a play button.
  */
 
+import { Box } from "shared/components";
 import { ToneCell } from "./ToneCell";
 import "./CombinationDisplay.css";
 
@@ -30,26 +31,27 @@ export function CombinationDisplay({
 }: CombinationDisplayProps) {
   if (tones.length === 0) {
     return (
-      <div className="pinyin-combination-empty p-lg bg-surface-dark-alt border-default radius-md text-tertiary text-center">
+      <Box
+        variant="dark-alt"
+        padding="lg"
+        className="pinyin-combination-empty text-tertiary text-center"
+      >
         <p>
           No valid combination for{" "}
           <strong className="text-secondary">
             {initial}+{final}
           </strong>
         </p>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="pinyin-combination-display p-md bg-surface-dark-alt border-default radius-md flex-col gap-sm">
+    <Box variant="dark-alt" padding="md" className="pinyin-combination-display flex-col gap-sm">
       <h3 className="pinyin-combination-heading font-md text-secondary fw-600 text-center m-0">
         {initial} + {final}
       </h3>
-      <div
-        className="pinyin-combination-row flex gap-sm flex-wrap flex-center mx-auto"
-        style={{ maxWidth: 450 }}
-      >
+      <div className="pinyin-combination-row flex gap-sm flex-wrap flex-center mx-auto max-w-450">
         {tones.filter(Boolean).map((pinyin, index) => (
           <div key={pinyin} className="flex-col-center gap-xs">
             <span className="pinyin-tone-label font-xs text-uppercase text-muted">
@@ -63,6 +65,6 @@ export function CombinationDisplay({
           </div>
         ))}
       </div>
-    </div>
+    </Box>
   );
 }

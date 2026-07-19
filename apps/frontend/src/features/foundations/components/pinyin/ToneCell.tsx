@@ -7,8 +7,9 @@
  * Shows a play button overlay on hover and loading spinner during audio generation.
  */
 
-import React, { type MouseEvent, useMemo } from "react";
+import React, { useMemo } from "react";
 import { TONE_COLORS, extractToneNumber, getToneVowelIndex } from "../../utils/pinyinUtils";
+import { Button } from "shared/components";
 import "./ToneCell.css";
 
 export interface ToneCellProps {
@@ -48,16 +49,16 @@ function ToneCellComponent({
   const { before, vowel, after } = useMemo(() => splitPinyinAtToneVowel(pinyin), [pinyin]);
   const toneColor = TONE_COLORS[toneNumber] ?? TONE_COLORS[0];
 
-  const handlePlay = (e: MouseEvent) => {
-    e.stopPropagation();
+  const handlePlay = () => {
     if (!isLoading) {
       onPlay?.(pinyin);
     }
   };
 
   return (
-    <button
-      className="pinyin-tone-cell bg-surface-dark border-default radius-md flex-col-center"
+    <Button
+      variant="ghost-primary"
+      className="pinyin-tone-cell box-surface relative"
       onClick={handlePlay}
       disabled={isLoading}
       title={isLoading ? "Generating audio..." : `Play ${pinyin}`}
@@ -71,9 +72,11 @@ function ToneCellComponent({
         {after}
       </span>
       {isLoading && (
-        <span className="pinyin-tone-loading font-xs font-italic text-muted">{loadingText}</span>
+        <span className="pinyin-tone-loading font-xs font-italic text-muted absolute">
+          {loadingText}
+        </span>
       )}
-    </button>
+    </Button>
   );
 }
 

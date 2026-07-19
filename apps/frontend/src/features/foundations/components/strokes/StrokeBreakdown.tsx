@@ -5,6 +5,7 @@
  */
 
 import React from "react";
+import { Button } from "shared/components";
 import "./StrokeBreakdown.css";
 
 export interface StrokeBreakdownProps {
@@ -33,22 +34,28 @@ export const StrokeBreakdown = React.memo(function StrokeBreakdown({
         {totalStrokes > 0 ? `${totalStrokes} strokes` : "Loading stroke data..."}
       </span>
       {strokePaths.length > 0 && (
-        <div className="stroke-breakdown-paths flex gap-xs flex-wrap flex-center">
+        <div className="flex gap-xs flex-wrap flex-center">
           {strokePaths.map((path: string, i: number) => (
-            <svg
+            <Button
               key={i}
-              className={`stroke-breakdown-svg border-default bg-surface-dark cursor-pointer ${currentStroke === i + 1 ? "stroke-breakdown-svg--active" : ""}`}
-              viewBox="0 0 100 100"
+              variant="ghost"
+              className="stroke-breakdown-svg p-0"
               onClick={() => onStrokeSelect?.(i + 1)}
-              role="button"
-              tabIndex={0}
               aria-label={`Stroke ${i + 1} of ${totalStrokes}`}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") onStrokeSelect?.(i + 1);
-              }}
             >
-              <path d={path} fill="#aaa" transform="translate(0, 112.5) scale(0.125, -0.125)" />
-            </svg>
+              <svg
+                className={`${currentStroke === i + 1 ? "stroke-breakdown-svg--active" : ""}`}
+                viewBox="0 0 100 100"
+                width="100%"
+                height="100%"
+              >
+                <path
+                  d={path}
+                  fill="var(--text-muted)"
+                  transform="translate(0, 112.5) scale(0.125, -0.125)"
+                />
+              </svg>
+            </Button>
           ))}
         </div>
       )}

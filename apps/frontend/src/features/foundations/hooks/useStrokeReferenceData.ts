@@ -4,21 +4,26 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import type { StrokeData } from "../types";
-import { loadStrokeData, getCachedStrokeData } from "../utils/strokeDataLoader";
+import {
+  loadStrokeData,
+  getCachedStrokeData,
+  clearStrokeDataCache,
+} from "../utils/strokeDataLoader";
 
 export interface UseStrokeReferenceDataReturn {
   data: StrokeData | null;
   isLoading: boolean;
   error: string | null;
+  retry: () => void;
 }
 
 /**
  * Hook that loads stroke reference data from /data/foundations/strokes.json
  * with module-level caching to prevent redundant network requests.
  *
- * @returns Data, loading state, and error state
+ * @returns Data, loading state, error state, and retry callback
  */
 export function useStrokeReferenceData(): UseStrokeReferenceDataReturn {
   const [data, setData] = useState<StrokeData | null>(getCachedStrokeData());
@@ -43,5 +48,12 @@ export function useStrokeReferenceData(): UseStrokeReferenceDataReturn {
     loadData();
   }, [data]);
 
-  return { data, isLoading: !data && !error, error };
+  const retry = useCallback(() => {
+    clearStrokeDataCache();
+    fetchAttempted.current = false;
+    setError(null);
+    setData(null);
+  }, []);
+
+  return { data, isLoading: !data && !error, error, retry };
 }

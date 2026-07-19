@@ -27,7 +27,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className = "", ...props }, ref) => {
-    const inputClassName = `input-base ${className}`.trim();
+    const inputClassName = `input-base p-sm ${className}`.trim();
 
     return <input ref={ref} type="text" className={inputClassName} {...props} />;
   },

@@ -33,10 +33,19 @@ vi.mock("./TreeRootNode", () => ({
 }));
 
 vi.mock("shared/components", () => ({
+  Box: vi.fn(({ children, variant, padding, className }) => (
+    <div data-testid={`mock-box-${variant}`} data-padding={padding} className={className}>
+      {children}
+    </div>
+  )),
   Button: vi.fn(({ children, onClick, variant }) => (
     <button data-testid={`mock-button-${variant}`} onClick={onClick} type="button">
       {children}
     </button>
+  )),
+  Input: vi.fn((props) => <input {...props} />),
+  Skeleton: vi.fn(({ variant, ...props }) => (
+    <div data-testid="skeleton" data-variant={variant} {...props} />
   )),
 }));
 
