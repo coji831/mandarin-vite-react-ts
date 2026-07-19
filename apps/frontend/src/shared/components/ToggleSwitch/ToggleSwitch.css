@@ -1,0 +1,64 @@
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  width: 72px;
+  height: 44px;
+  /* display: inline-block — migrated to utility class: inline-block */
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color migrated to bg-primary-bg utility in ToggleSwitch.tsx */
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+/* .slider border-color hover/checked migrated to hover:border-primary / border-primary in ToggleSwitch.tsx */
+
+/* The round knob — pseudo-element, can't use utility class */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 36px;
+  width: 36px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--text-primary);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--color-primary);
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(28px);
+  -ms-transform: translateX(28px);
+  transform: translateX(28px);
+}
+
+.slider.round {
+  border-radius: 44px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  bottom: auto;
+  /* vertically center the knob */
+  transform: translateY(0);
+}

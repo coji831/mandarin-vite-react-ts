@@ -1,0 +1,11 @@
+/**
+ * @file components/TopNav/TopNav.css
+ * @description Styles for TopNav — site-level navigation bar.
+ * Directional border replaces removed global utility border-b-2.
+ */
+
+.top-nav__link {
+  /* Used with border-primary / border-transparent color utilities */
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}

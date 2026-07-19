@@ -1,0 +1,49 @@
+.radio-group {
+  display: flex;
+}
+
+.radio-group--vertical {
+  flex-direction: column;
+}
+
+.radio-group--horizontal {
+  flex-direction: row;
+  /* flex-wrap: wrap — migrated to utility class: flex-wrap */
+}
+
+.radio-group__option {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.radio-group__option:hover:not(.radio-group__option--disabled) {
+  background: var(--color-primary-bg-light);
+}
+
+.radio-group__option--selected {
+  /* background migrated to bg-primary-bg utility in RadioGroup.tsx */
+}
+
+.radio-group__option--disabled {
+  cursor: not-allowed;
+}
+
+.radio-group__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.radio-group__custom-radio {
+  width: 16px;
+  height: 16px;
+}
+
+.radio-group__option--selected .radio-group__custom-radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  /* border-radius migrated to — pseudo-element, can't use utility class */
+  background: var(--color-primary);
+}

@@ -1,0 +1,35 @@
+.card {
+  position: relative;
+}
+
+.card--unlocked:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card--unlocked:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.card--locked {
+  cursor: not-allowed;
+}
+
+.card__badge {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  /* background migrated to bg-primary-bg utility in Card.tsx */
+  color: var(--color-primary-light);
+}
+
+.card__lock-badge {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+}
+
+.card__body {
+  gap: var(--space-xs);
+}
