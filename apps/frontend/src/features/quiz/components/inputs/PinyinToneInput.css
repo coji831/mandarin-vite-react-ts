@@ -1,6 +1,4 @@
 /* Label color migrated to text-secondary utility class */
 .pinyin-tone-input__btn {
   min-height: 60px;
-  /* bg/color migrated to tone Button variants (tone-1 through tone-5) */
 }
-/* .pinyin-tone-input__btn:disabled — migrated to disabled:op-50 utility */

@@ -10,8 +10,13 @@ import React from "react";
 import type { ReviewItem } from "../types";
 import { TONE_BUTTONS_BASE } from "shared/constants";
 import { Box, Button, RadioGroup } from "shared/components";
-import type { RadioOption } from "shared/components";
+import type { ButtonVariant, RadioOption } from "shared/components";
 import "./ReviewCard.css";
+
+const TONE_BUTTONS = TONE_BUTTONS_BASE.map((btn) => ({
+  ...btn,
+  example: ["mā", "má", "mǎ", "mà", "ma"][btn.tone === 0 ? 4 : btn.tone - 1],
+}));
 
 type ReviewCardToneSelectProps = {
   item: ReviewItem;
@@ -56,15 +61,26 @@ function ReviewCardToneSelectComponent({
           </Button>
         </div>
 
-        <div className="flex-col-center gap-md w-full">
-          <RadioGroup
-            name="tone-select"
-            options={toneOptions}
-            value={null}
-            onChange={(value) => onSelectTone(Number(value))}
-            layout="horizontal"
-            label="Select the correct tone:"
-          />
+        <label className="font-sm fw-500"> Select the correct tone:</label>
+        <div className="flex-center gap-sm">
+          {TONE_BUTTONS.map((btn) => {
+            const toneKey = btn.tone === 0 ? 5 : btn.tone;
+            return (
+              <Button
+                key={btn.tone}
+                variant={`tone-${toneKey}` as ButtonVariant}
+                size="sm"
+                className="hover-lift flex-col"
+                onClick={() => onSelectTone(btn.tone)}
+              >
+                <span className="font-lg fw-700 lh-1">
+                  {btn.mark}
+                  {btn.label}
+                </span>
+                <span className=" font-sm op-80">{btn.example}</span>
+              </Button>
+            );
+          })}
         </div>
       </div>
     </Box>

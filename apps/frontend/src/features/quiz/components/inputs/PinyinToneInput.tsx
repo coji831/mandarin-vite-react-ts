@@ -16,9 +16,9 @@ type PinyinToneInputProps = {
   disabled?: boolean;
 };
 
-import { TONE_BUTTONS_BASE } from "shared/constants";
+import type { ButtonVariant } from "shared/components";
 import { Button, Input } from "shared/components";
-import type { ButtonVariant } from "shared/components/Button/Button";
+import { TONE_BUTTONS_BASE } from "shared/constants";
 import "./PinyinToneInput.css";
 
 const TONE_BUTTONS = TONE_BUTTONS_BASE.map((btn) => ({
@@ -56,12 +56,12 @@ export function PinyinToneInput({
         <div className="flex-center gap-sm">
           {TONE_BUTTONS.map((btn) => {
             const toneKey = btn.tone === 0 ? 5 : btn.tone;
-            const isSelected = tone === btn.tone;
             return (
               <Button
                 key={btn.tone}
-                variant={isSelected ? (`tone-${toneKey}` as ButtonVariant) : "ghost"}
-                className="pinyin-tone-input__btn hover-lift flex-col p-sm radius-md grow-1"
+                variant={`tone-${toneKey}` as ButtonVariant}
+                size="sm"
+                className="pinyin-tone-input__btn hover-lift flex-col"
                 onClick={() => onToneSelect(btn.tone)}
                 disabled={disabled}
               >

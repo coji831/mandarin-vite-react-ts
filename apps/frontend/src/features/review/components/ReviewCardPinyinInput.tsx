@@ -78,7 +78,7 @@ function ReviewCardPinyinInputComponent({
             />
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={() => {
                 if (localPinyin.trim()) {
                   onSubmitPinyin(localPinyin.trim());

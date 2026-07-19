@@ -43,7 +43,7 @@ function ReviewCardOptionSelectComponent({
 
         {/* Option buttons */}
         <p className="font-sm text-secondary m-0">What does this radical mean?</p>
-        <div className="flex-col gap-sm w-full max-w-320">
+        <div className="flex flex-wrap gap-sm w-full ">
           {options.map((opt) => (
             <Button
               key={opt.id}

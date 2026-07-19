@@ -88,7 +88,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "option":
     case "result":
       return (
-        <div className="review-view flex-col gap-lg mx-auto w-full">
+        <div className="review-view flex-col gap-lg w-full">
           {/* Header */}
           <header className="flex-between">
             <span className="text-secondary fw-600 font-sm">
