@@ -1,0 +1,45 @@
+/* Dashboard.css - Main landing page styles */
+/* Wireframe Sections 8.3/8.5 */
+
+.dashboard {
+  max-width: 900px;
+  min-height: calc(100vh - 120px);
+  overflow-x: hidden;
+}
+
+.max-w-480 {
+  max-width: 480px;
+}
+
+/* ── Current Phase ───────────────────────────── */
+
+/* ── Quick Access Grid ────────────────────────── */
+.dashboard-quick-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.dashboard-quick-btn {
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-quick-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .dashboard-quick-grid {
+    /* structural: grid-2-col — responsive */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
