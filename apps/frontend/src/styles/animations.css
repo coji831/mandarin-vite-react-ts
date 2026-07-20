@@ -1,0 +1,159 @@
+/* ═══════════════════════════════════════════════
+   Animations & Transitions
+   ═══════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════
+   @keyframes: Fade
+   ═══════════════════════════════════════════════ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   @keyframes: Motion
+   ═══════════════════════════════════════════════ */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   @keyframes: Pulse / Opacity
+   ═══════════════════════════════════════════════ */
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   @keyframes: Modal
+   ═══════════════════════════════════════════════ */
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   @keyframes: Skeleton / Shimmer
+   ═══════════════════════════════════════════════ */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Animation Utility Classes
+   ═══════════════════════════════════════════════ */
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse-opacity 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-fast {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    var(--surface-light-5) 0%,
+    var(--surface-light-10) 50%,
+    var(--surface-light-5) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   Transition Utilities
+   ═══════════════════════════════════════════════ */
+.transition-all {
+  transition: all var(--transition-fast);
+}
+
+.transition-colors {
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.transition-opacity {
+  transition: opacity var(--transition-fast);
+}
+
+.transition-border-color {
+  transition: border-color var(--transition-fast);
+}
+
+/* .transition-border-shadow — single use, inlined as transition-all */
+
+.transition-transform {
+  transition: transform var(--transition-fast);
+}
+
+.transition-width {
+  transition: width 0.3s ease;
+}

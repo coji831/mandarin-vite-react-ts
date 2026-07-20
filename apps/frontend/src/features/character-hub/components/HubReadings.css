@@ -1,0 +1,8 @@
+/* HubReadings.css — Character Detail Hub — Readings Zone */
+/* Story 18.5: Character Detail Hub (Phase 1 Minimal) */
+
+/* Full-width ghost button with content justified to both ends */
+.hub-reading-btn {
+  min-width: unset;
+  min-height: unset;
+}

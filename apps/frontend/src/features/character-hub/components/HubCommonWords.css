@@ -1,0 +1,13 @@
+/* HubCommonWords.css — Character Detail Hub — Common Words */
+/* Story 18.5: Character Detail Hub (Phase 1 Minimal) */
+
+.hub-word-chip {
+  min-width: unset;
+  min-height: unset;
+}
+
+/* Common word skeleton chip — matches tag button shape */
+.hub-word-skeleton {
+  width: 80px;
+  height: 32px;
+}
