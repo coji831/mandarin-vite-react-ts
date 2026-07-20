@@ -4,6 +4,7 @@
  * Delegates to the registered strategy via QuizService.
  */
 import { createLogger } from "../../../shared/utils/logger.js";
+import crypto from "node:crypto";
 import type { Request, Response } from "express";
 
 const logger = createLogger("QuizController");
@@ -23,9 +24,22 @@ export class QuizController {
 
   async createQuizAttempt(req: Request, res: Response) {
     try {
-      const userId = req.userId!;
+      if (!req.userId) {
+        // Guest user — return mock attempt (no persistence, no tracking)
+        return res.status(201).json({
+          id: crypto.randomUUID(),
+          quizType: req.body.quizType,
+          phase: req.body.phase ?? 1,
+          totalScore: null,
+          maxScore: null,
+          passed: false,
+          completedAt: null,
+          createdAt: new Date().toISOString(),
+          userId: null,
+        });
+      }
       const { quizType, phase } = req.body;
-      const attempt = await this.quizService.createQuizAttempt(userId, quizType, phase);
+      const attempt = await this.quizService.createQuizAttempt(req.userId, quizType, phase);
       return res.status(201).json(attempt);
     } catch (error) {
       logger.error("Error creating quiz attempt", error);
@@ -37,6 +51,23 @@ export class QuizController {
 
   async submitAnswer(req: Request, res: Response) {
     try {
+      if (!req.userId) {
+        // Guest user — return mock answer (no persistence)
+        return res.status(200).json({
+          id: crypto.randomUUID(),
+          attemptId: String(req.params.id),
+          questionIndex: req.body.questionIndex,
+          pinyinInput: req.body.pinyinInput,
+          selectedTone: req.body.selectedTone,
+          correctPinyin: req.body.correctPinyin,
+          correctTone: req.body.correctTone,
+          correct:
+            req.body.pinyinInput === req.body.correctPinyin &&
+            req.body.selectedTone === req.body.correctTone,
+          category: req.body.category,
+          createdAt: new Date().toISOString(),
+        });
+      }
       const id = String(req.params.id);
       const answer = await this.quizService.submitAnswer(id, req.body);
       return res.status(200).json(answer);
@@ -48,6 +79,15 @@ export class QuizController {
 
   async completeQuizAttempt(req: Request, res: Response) {
     try {
+      if (!req.userId) {
+        // Guest user — return mock completion (no persistence)
+        return res.status(200).json({
+          totalScore: 0,
+          maxScore: 0,
+          passed: false,
+          accuracy: 0,
+        });
+      }
       const id = String(req.params.id);
       const result = await this.quizService.completeQuizAttempt(id);
       return res.status(200).json(result);
@@ -61,8 +101,11 @@ export class QuizController {
 
   async getQuizAttempts(req: Request, res: Response) {
     try {
-      const userId = req.userId!;
-      const attempts = await this.quizService.getUserQuizAttempts(userId);
+      if (!req.userId) {
+        // Guest user — no tracking data
+        return res.status(200).json([]);
+      }
+      const attempts = await this.quizService.getUserQuizAttempts(req.userId);
       return res.status(200).json(attempts);
     } catch (error) {
       logger.error("Error fetching quiz attempts", error);

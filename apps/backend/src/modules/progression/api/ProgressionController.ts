@@ -6,6 +6,7 @@
 
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { Request, Response } from "express";
+import { createGuestPhaseGate } from "@mandarin/shared-constants";
 
 const logger = createLogger("ProgressionController");
 
@@ -46,8 +47,11 @@ export class ProgressionController {
    */
   async getFoundationProgress(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
-      const progress = await this.progressionService.getOrCreateFoundationProgress(userId);
+      if (!req.userId) {
+        // Guest user — no tracking data
+        return res.status(200).json([]);
+      }
+      const progress = await this.progressionService.getOrCreateFoundationProgress(req.userId);
 
       return res.status(200).json(progress);
     } catch (error) {
@@ -68,29 +72,34 @@ export class ProgressionController {
    * @returns
    */
   async getPhaseGate(req: Request, res: Response): Promise<Response> {
+    if (!req.userId) {
+      // Guest — return all content unlocked (no gating)
+      return res.status(200).json(createGuestPhaseGate());
+    }
+    // Registered user: actual persisted phase gate from DB
     try {
-      const userId = req.userId!;
-      const phaseGate = await this.progressionService.getOrCreatePhaseGate(userId);
-
+      const phaseGate = await this.progressionService.getOrCreatePhaseGate(req.userId);
       return res.status(200).json(phaseGate);
     } catch (error) {
       logger.error("Error fetching phase gate", error);
       return res.status(500).json({ error: "Failed to fetch phase gate", code: "LOAD_FAILED" });
     }
   }
+
   /**
    * PUT /api/v1/progression/phase-gate
    * Update phase gate progression after a quiz attempt.
-   *
-   * @param req - Express request (expects req.userId + body with phase, passed, gateCriteria)
-   * @param res - Express response
-   * @returns
+   * Protected by requireAuth middleware — guests never reach this handler.
    */
   async updatePhaseGate(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
-      const gate = await this.progressionService.updatePhaseGate(userId, req.body);
-      return res.status(200).json(gate);
+      const { phase, passed, gateCriteria } = req.body;
+      const updated = await this.progressionService.updatePhaseGate(req.userId!, {
+        phase,
+        passed,
+        gateCriteria,
+      });
+      return res.status(200).json(updated);
     } catch (error) {
       logger.error("Error updating phase gate", error);
       return res.status(500).json({ error: "Failed to update phase gate", code: "UPDATE_FAILED" });
@@ -107,10 +116,13 @@ export class ProgressionController {
    */
   async markSectionCompleted(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
+      if (!req.userId) {
+        // Guest user — no-op
+        return res.status(200).json({ sectionId: req.params.sectionId, completed: false });
+      }
       const sectionId = String(req.params.sectionId);
       const progress = await this.progressionService.upsertFoundationProgress(
-        userId,
+        req.userId,
         sectionId,
         true,
       );
@@ -138,8 +150,11 @@ export class ProgressionController {
    */
   async getRadicalProgress(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
-      const progress = await this.progressionService.getRadicalProgress(userId);
+      if (!req.userId) {
+        // Guest user — no tracking data
+        return res.status(200).json([]);
+      }
+      const progress = await this.progressionService.getRadicalProgress(req.userId);
 
       return res.status(200).json(progress);
     } catch (error) {
@@ -160,9 +175,12 @@ export class ProgressionController {
    */
   async getRadicalProgressById(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
+      if (!req.userId) {
+        // Guest user — no tracking data
+        return res.status(200).json(null);
+      }
       const radicalId = String(req.params.radicalId);
-      const progress = await this.progressionService.getRadicalProgressById(userId, radicalId);
+      const progress = await this.progressionService.getRadicalProgressById(req.userId, radicalId);
 
       if (!progress) {
         return res
@@ -190,11 +208,18 @@ export class ProgressionController {
    */
   async upsertRadicalProgress(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
+      if (!req.userId) {
+        // Guest user — no-op
+        return res.status(200).json({
+          radicalId: req.params.radicalId,
+          memorized: req.body.memorized ?? false,
+          recognitionLevel: req.body.recognitionLevel ?? 0,
+        });
+      }
       const radicalId = String(req.params.radicalId);
       const { memorized, recognitionLevel } = req.body;
 
-      const progress = await this.progressionService.upsertRadicalProgress(userId, radicalId, {
+      const progress = await this.progressionService.upsertRadicalProgress(req.userId, radicalId, {
         memorized: memorized ?? false,
         recognitionLevel: recognitionLevel ?? 0,
       });
@@ -202,7 +227,7 @@ export class ProgressionController {
       // Side-effect: if memorized, create a ReviewItem via ReviewService (fire-and-forget)
       if (memorized && this.reviewService) {
         this.reviewService
-          .recordRating(userId, {
+          .recordRating(req.userId, {
             itemType: "radical",
             itemId: radicalId,
             rating: "good",

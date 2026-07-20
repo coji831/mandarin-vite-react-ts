@@ -72,4 +72,47 @@ export function optionalAuth(req: Request, res: Response, next: NextFunction): v
   next();
 }
 
-export default { authenticateToken, optionalAuth };
+/**
+ * Require valid authentication - rejects guests with 401.
+ * Reuses authenticateToken logic but with user-friendly messaging.
+ * Use for endpoints that must have a registered user (SRS, progress persistence, AI feedback).
+ */
+export function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void | Response<Record<string, unknown>, Record<string, unknown>> {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      error: "Authentication required",
+      code: "AUTH_REQUIRED",
+      message: "Please sign in to access this feature",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret!);
+    req.user = decoded as { userId: string; email?: string } & Record<string, unknown>;
+    req.userId = (decoded as { userId: string }).userId;
+    next();
+  } catch (error) {
+    if (error instanceof Error && error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        error: "Authentication required",
+        code: "TOKEN_EXPIRED",
+        message: "Your session has expired. Please sign in again.",
+      });
+    }
+
+    return res.status(403).json({
+      error: "Forbidden",
+      code: "INVALID_TOKEN",
+      message: "Invalid access token",
+    });
+  }
+}
+
+export default { authenticateToken, optionalAuth, requireAuth };
