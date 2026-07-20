@@ -81,7 +81,11 @@ function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRu
           const isLoading = loadingPinyin === example.chinese;
 
           return (
-            <div key={`${rule.id}-${idx}`} className="tone-rule-card flex-center gap-xs flex-wrap">
+            <Box
+              key={`${rule.id}-${idx}`}
+              variant="card"
+              className="tone-rule-card flex-center gap-xs flex-wrap"
+            >
               {/* 📖 icon */}
               <span className="tone-rule-icon font-xs shrink-0">📖</span>
 
@@ -124,7 +128,7 @@ function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRu
               >
                 {isLoading ? <Spinner size="xs" /> : "▶"}
               </Button>
-            </div>
+            </Box>
           );
         });
       })}

@@ -13,7 +13,7 @@
 
 import { TONE_COLORS } from "../../utils/pinyinUtils";
 import type { ToneDefinition } from "../../types";
-import { Button, Spinner } from "shared/components";
+import { Box, Button, Spinner } from "shared/components";
 import "./ToneContourCard.css";
 
 export interface ToneContourCardProps {
@@ -61,7 +61,7 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
   const shortName = TONE_SHORT_NAMES[tone.number] ?? tone.name;
 
   return (
-    <div className="tone-contour-card flex-center gap-xs">
+    <Box variant="card" className="tone-contour-card flex-center gap-xs">
       {/* Tone Info — wireframe order: name: mark pinyin (description) chinese */}
       <div className="tone-contour-info flex-1 flex gap-xs">
         <span
@@ -142,6 +142,6 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
       >
         {isLoading ? <Spinner size="xs" /> : "▶"}
       </Button>
-    </div>
+    </Box>
   );
 }

@@ -18,7 +18,7 @@ export function StrokeRulesList({ rules }: StrokeRulesListProps) {
   return (
     <Box variant="dark-alt" padding="xs" className="stroke-rules-container flex-col">
       {rules.map((rule) => (
-        <div key={rule.id} className="stroke-rule-card flex-center gap-xs p-xs">
+        <Box key={rule.id} variant="card" className="stroke-rule-card flex-center gap-xs p-xs">
           <span className="stroke-rule-number font-sm shrink-0 fw-700 text-primary">
             {rule.number}.
           </span>
@@ -31,7 +31,7 @@ export function StrokeRulesList({ rules }: StrokeRulesListProps) {
           <span className="stroke-rule-desc font-xs font-italic text-muted">
             ({rule.description})
           </span>
-        </div>
+        </Box>
       ))}
     </Box>
   );

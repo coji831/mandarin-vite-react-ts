@@ -65,7 +65,7 @@ export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrills
         const isLoading = loadingPinyin === drill.spokenPinyin;
 
         return (
-          <div key={drill.id} className="tone-pair-drill-card flex-center gap-xs">
+          <Box key={drill.id} variant="card" className="tone-pair-drill-card flex-center gap-xs">
             {/* Rule badge — moved to front (wireframe: "3rd+3rd → 2nd+3rd") */}
             <span className="tone-pair-drill-rule text-muted bg-surface-dark whitespace-nowrap radius-sm">
               {drill.rule}
@@ -104,7 +104,7 @@ export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrills
             >
               {isLoading ? <Spinner size="xs" /> : "▶"}
             </Button>
-          </div>
+          </Box>
         );
       })}
     </Box>
