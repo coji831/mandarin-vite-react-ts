@@ -40,7 +40,7 @@ This is the core engine of Epic 20. Without this, there are no mnemonic stories 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Key Commit**: TBD

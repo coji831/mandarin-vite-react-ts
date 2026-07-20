@@ -63,7 +63,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
-  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`
+  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`, `mnemonics`
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse

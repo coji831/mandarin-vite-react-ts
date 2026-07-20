@@ -299,3 +299,19 @@ model ContentItem {
   @@index([contentType])
   @@index([phaseId, contentType])
 }
+
+model MnemonicStory {
+  id              String   @id @default(uuid())
+  characterGlyph  String
+  userId          String?
+  story           String
+  radicalIds      Json     @default("[]")
+  isEdited        Boolean  @default(false)
+  isPictograph    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([characterGlyph, userId])
+  @@index([characterGlyph])
+  @@index([userId])
+}

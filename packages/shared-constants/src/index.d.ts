@@ -30,6 +30,8 @@ export declare const ROUTE_PATTERNS: {
   readonly foundationsPinyinTones: string;
   readonly foundationsPinyinCharacterMap: string;
   readonly foundationsStrokes: string;
+  readonly mnemonics: string;
+  readonly mnemonicsByChar: (glyph: string) => string;
   readonly quizConfig: string;
   readonly quizQuestions: string;
 };

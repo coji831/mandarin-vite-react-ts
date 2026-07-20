@@ -1,10 +1,10 @@
 # Implementation 20-1: Mnemonic Generation Backend
 
-**Last Updated:** July 20, 2026
+**Last Updated:** July 21, 2026
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 
 ## Technical Scope
@@ -173,3 +173,14 @@ MnemonicsModule
 - **Integration tests**: API endpoints — test GET/POST/PUT/DELETE with auth, rate limiting, validation errors
 - **Integration tests**: Cache behavior — verify cached stories return without regeneration
 - **Integration tests**: Stampede — fire 5 concurrent POST requests, verify only 1 Gemini call
+
+## Completed Work
+
+- Created `apps/backend/src/modules/mnemonics/` — full module with controller, service, repository, routes, types
+- Added `MnemonicStory` Prisma model with `@@unique([characterGlyph, userId])`
+- 4 CRUD endpoints: GET, POST, PUT, DELETE with rate limiting
+- 4-step cache lookup chain (DB user-edited → Redis cache → DB AI → generate)
+- Cache stampede prevention via `SETNX` lock
+- Input validation: Han char regex, story length, pictograph rejection
+- Error responses in `{ error, code, message }` format
+- All fixed audit issues: isEdited logic, null userId, per-user rate limiting, HTML sanitization

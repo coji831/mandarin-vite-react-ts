@@ -7,20 +7,22 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import authRouter from "../modules/auth/api/authRoutes.js";
 import aiFeedbackRouter from "../modules/quiz/api/aiFeedbackRoutes.js";
-import ttsRouter from "../shared/api/ttsRoutes.js";
+import ttsRouter from "../modules/tts/api/ttsRoutes.js";
 import healthRouter from "../modules/health/api/healthRoutes.js";
 import progressionRouter from "../modules/progression/api/progressionRoutes.js";
 import foundationsRoutes from "../modules/foundations/api/foundationsRoutes.js";
 import quizRouter from "../modules/quiz/api/quizRoutes.js";
 import reviewRouter from "../modules/review/api/reviewRoutes.js";
 import radicalsRoutes from "../modules/radicals/api/radicalsRoutes.js";
+import mnemonicsRoutes from "../modules/mnemonics/api/mnemonicsRoutes.js";
 import {
   quizController,
   reviewController,
   progressionController,
-  aiFeedbackController,
   foundationsController,
   radicalsController,
+  mnemonicsController,
+  geminiService,
 } from "./container.js";
 
 const router = express.Router();
@@ -36,9 +38,9 @@ router.use(healthRouter);
 // Authentication routes (v1)
 router.use(authRouter);
 
-// AI Feedback routes (v1) - Story 15.4
+// AI Feedback routes (v1) — uses GeminiService directly
 router.use((req: Request, res: Response, next: NextFunction) => {
-  req.aiFeedbackController = aiFeedbackController;
+  req.geminiService = geminiService;
   next();
 });
 router.use(aiFeedbackRouter);
@@ -80,5 +82,12 @@ router.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 router.use(reviewRouter);
+
+// Mnemonics routes (v1) - Story 20.1
+router.use((req: Request, res: Response, next: NextFunction) => {
+  req.mnemonicsController = mnemonicsController;
+  next();
+});
+router.use(mnemonicsRoutes);
 
 export default router;
