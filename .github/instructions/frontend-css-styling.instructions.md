@@ -187,6 +187,14 @@ These classes live in `components.css` and bundle **multiple properties** into r
 </div>
 ```
 
+## ✅ CSS Color Function Rule — `rgba()`/`rgb()` Only in `:root`
+
+- `rgba()`, `rgb()`, `hsl()`, `hsla()` are **ONLY** allowed in `apps/frontend/src/styles/globals.css` (where `:root` token declarations live)
+- ALL other `.css` files must reference colors via `var(--token)` — never raw color functions
+- This is enforced by Stylelint's `function-disallowed-list` rule with an override exempting `globals.css`
+- If you need a new color that doesn't have a token yet, add it to `:root` in `globals.css` first, then reference via `var(--token)` in your CSS
+- NEVER hardcode `rgba()`/`rgb()` in feature CSS, component CSS, or `components.css`/`animations.css`
+
 ## ✅ Run Design Audit
 
 After writing or modifying CSS/TSX, run the automated scanner to catch violations:

@@ -30,7 +30,7 @@
   transition: border-color var(--transition-normal);
 }
 .btn-base:hover {
-  border-color: #646cff;
+  border-color: var(--color-primary-border-hover);
 }
 .btn-base:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -200,7 +200,7 @@
 /* Celebration state for 100% completion */
 .progress-fill[style*="100%"] {
   background: var(--gradient-success);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  box-shadow: var(--shadow-md);
 }
 
 /* ═══════════════════════════════════════════════

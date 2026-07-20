@@ -27,7 +27,7 @@
 
 .side-nav__link:hover {
   background: var(--surface-light-8);
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
 }
 
 .side-nav__icon {

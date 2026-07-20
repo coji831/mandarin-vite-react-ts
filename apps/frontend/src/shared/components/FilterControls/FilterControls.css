@@ -13,6 +13,6 @@
 
 .filter-controls__select option {
   background: var(--surface-dark-alt);
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
   /* NOTE: <option> elements don't support className well; select already uses bg-surface-dark-alt utility */
 }

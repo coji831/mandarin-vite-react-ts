@@ -3,5 +3,5 @@
 /* border/background/outline — migrated to border-none/bg-transparent/outline-none utility classes */
 
 .search-input__field::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-subtle);
 }

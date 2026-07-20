@@ -9,7 +9,7 @@
 .spinner {
   display: inline-block;
   border-style: solid;
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--surface-light-10);
   animation: spinner-rotate 0.8s linear infinite;
   box-sizing: border-box;
 }
