@@ -9,13 +9,47 @@ description: "Use when implementing a story, closing an epic, preparing a commit
 Follow this sequence when implementing or updating a story:
 
 1. **Review Requirements** — Open the story BR file and its epic BR README. Open corresponding implementation docs. Confirm Acceptance Criteria clarity; note ambiguous items in a "Questions / Clarifications" subsection.
+
+1.5 **Design Thinking & User Flow** — Before planning any code, establish the user's mental model:
+
+- **Read the research** — Open design docs, proposals, competitor analysis, domain research under `docs/` and `verification-artifacts/`. If the feature has a `docs/design.md`, read it. Don't design UI without understanding the domain context.
+- **Map the user's flow step by step** — For each action the user takes, ask:
+  - What do they see? (visual state)
+  - What do they think? (interpretation)
+  - What do they want to do next? (intent)
+  - What does the interface tell them they CAN do? (WAGC — What Am I Gonna Click)
+- **Establish the preview/reward boundary** — Identify which elements are preview/teaser surfaces (cards, list items) and which are detail/reward surfaces (modals, panels, expandable sections). Detail content must NOT appear on the preview surface — that breaks the reward loop. See `preview-detail-separation.instructions.md`.
+- **Check source for every design decision** — If you propose adding an element to the UI, you must be able to answer "where did my data come from to design this layout?" If the answer is a future-state proposal, verify the change works with the CURRENT architecture, not just the proposed one. Incremental changes to an existing system must not pre-implement future-state designs.
+- **Apply principles before polish** — Evaluate each UI addition against: WAGC (does this look clickable when it shouldn't?), content density (can the user parse this in 2 seconds?), clarity (is the meaning obvious without a tooltip?), cognitive load (does this add mental work or reduce it?).
+
 2. **Plan Changes** — Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
 3. **Implement Code** — Create/update components, hooks, reducers, types within the feature folder. Maintain state rules (domain-prefixed action types, immutable updates, normalized collections). Keep scope tightly bound to story AC; defer extras into a new follow-up story.
 4. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
 5. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
-6. **Update Documentation** — Developer records decisions, data shape changes, and performance notes in story implementation doc. Add "Technical Challenges & Solutions" section for non-trivial problems. Update Last Update date fields. Documentation changes must be reviewed before commit.
-7. **Pre-Commit Gate** — Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm run test:full` → must pass (full suite; `npm test` runs changed-scope only). Run `npm run lint` → must have **0 errors** (warnings are acceptable during incremental migration). Fix any NEW errors you introduced. Do not add new `any` annotations — use proper types. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
-8. **Commit** — Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`. Include scope referencing story. Ensure BR + implementation doc updates are in the same commit for traceability.
+
+**5.5 Visual Verification** — After all UI changes are implemented, visually validate against Storybook:
+
+1. Start Storybook: `npm run storybook` — open the affected page story(ies) in the browser
+2. Start dev server: `npm run dev` — open the same page in production
+3. **Wait for both pages to fully load** — ensure loading spinners/placeholders have resolved before taking screenshots. If one page shows a loading state and the other shows data, this is a state mismatch — log it as a discrepancy and re-check after data resolves.
+4. Take screenshots of both side-by-side
+5. Compare: does the Storybook story match production appearance in layout, spacing, colors, and component structure?
+6. If discrepancies exist, fix the story to match production OR fix the component to match the story (whichever is the source of truth)
+7. Log any discrepancies in `verification-artifacts/` with a `review-findings-*` artifact
+
+⚠️ **When to skip**: Pure backend changes, logic-only changes with no UI surface, or documentation-only changes. Never skip for UI changes.
+
+**Story test validation**: After visual verification, run story tests to catch rendering regressions:
+
+```
+npm run test-storybook
+```
+
+This runs Chromatic/vitest-integration tests on all stories. Fix any failures before committing.
+
+7. **Update Documentation** — Developer records decisions, data shape changes, and performance notes in story implementation doc. Add "Technical Challenges & Solutions" section for non-trivial problems. Update Last Update date fields. Documentation changes must be reviewed before commit.
+8. **Pre-Commit Gate** — Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm run test:full` → must pass (full suite; `npm test` runs changed-scope only). Run `npm run test-storybook` → must pass if stories were modified. Run `npm run lint` → must have **0 errors** (warnings are acceptable during incremental migration). Fix any NEW errors you introduced. Do not add new `any` annotations — use proper types. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
+9. **Commit** — Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`. Include scope referencing story. Ensure BR + implementation doc updates are in the same commit for traceability.
 
 ## Pre-Implementation Investigation Checklist
 

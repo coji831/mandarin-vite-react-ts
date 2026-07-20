@@ -44,6 +44,9 @@ terraform/.terraform/
 
 # Verification artifacts (design docs, not source code)
 verification-artifacts/
+*storybook.log
+storybook-static
+
 # GCP service account keys
 keys/
 # Terraform state

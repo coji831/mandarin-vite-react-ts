@@ -45,6 +45,41 @@ user-invocable: true
 
 15. **Debounce edge cases** — auto-submit inputs must account for multi-syllable input (longer debounce or explicit submit button)
 
+16. **Visual drift (trace to page)** — For any modified feature component (in `features/*/components/`):
+    - Was the corresponding page-level `.stories.tsx` file updated to reflect the changes?
+    - Search `pages/` for imports of the modified component
+    - If found, verify the page story was also updated
+    - Severity: HIGH if a modified feature component has no corresponding page story update
+
+17. **Visual drift (Storybook vs production)** — For any page-level changes:
+    - Open the Storybook page story in browser
+    - Open the production page in browser
+    - **Wait for both to fully render** (loading spinners must resolve)
+    - Verify both are showing the **same state**: compare loading↔loading, error↔error, data↔data — never compare a loading state to a data state
+    - **Verify data parity**: compare visible content — same number of rows/columns/cards/items? If Storybook shows 12 columns and production shows 5, flag it as a data source mismatch
+    - Compare screenshots: is the layout, spacing, colors, and component structure consistent?
+    - Severity: HIGH if visual discrepancies found between Storybook and production
+    - Severity: MEDIUM if data content differs significantly (different dataset sizes)
+
+18. **Visual overflow** — after rendering in the browser, check container boundaries:
+    - For any element with dynamic content, evaluate `scrollWidth > clientWidth` or `scrollHeight > clientHeight`
+    - Look for text clipping, content spilling outside parent borders, or horizontal scrollbars on containers that shouldn't scroll
+    - Pay special attention to: animated/staggered content, dynamically loaded sections, and responsive breakpoints
+    - Severity: HIGH if content is clipped or spills outside its visible container
+    - Severity: MEDIUM if horizontal overflow creates unexpected scrollbars
+
+19. **Component patterns in globals.css** — any multi-property component pattern (`.btn-*`, `.input-*`, `.card-*`, `.alert-*`, `.overlay`, `.hover-*`, `.progress-*`) defined in `globals.css` instead of `styles/components.css`? Only single-property utilities belong in `globals.css`.
+
+20. **Utility duplication** — run `npm run design-audit` to detect local CSS that duplicates global utility classes without a clarifying comment.
+
+21. **Layout hierarchy & spacing** — evaluate the rendered layout against the design system:
+    - Identify the primary focal point (CTA, main heading). Is it visually dominant (larger, brighter, bolder)?
+    - Check that spacing between sibling sections uses consistent `gap-*` or `var(--space-*)` tokens — no raw `margin` values
+    - Verify the content-to-edge padding on cards/panels matches the `Box` variant's token (e.g. `padding="md"` → `var(--space-md)`)
+    - Check for "visual noise": are there competing elements that fight for attention without clear hierarchy?
+    - Severity: MEDIUM if spacing uses raw values instead of tokens
+    - Severity: LOW if hierarchy is present but could be clearer
+
 ## Output Format
 
 - Group findings by file path

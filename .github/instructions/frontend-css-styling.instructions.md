@@ -5,92 +5,212 @@ applyTo: "**/*.css,apps/frontend/src/**/*.tsx"
 
 # CSS & Styling Conventions
 
+## Before You Write Any UI
+
+- ✅ Read `.github/instructions/ui-composition.instructions.md` for layout hierarchy, spacing rhythm, and container discipline
+- ✅ Read `.github/component-registry.json` for allowed shared components and their props
+
+## Layout Gotchas — Flex Overflow & Scrolling
+
+When building page layouts with flexbox where only a specific area should scroll (not the whole page), the flex chain must be properly bounded at every level.
+
+### The Scroll Chain Rule
+
+For `overflow-y: auto` to create an internal scroll area in a flex layout:
+
+```
+root-container { height: 100vh }           ← MUST be bounded (not min-height)
+  flex-child { flex: 1; min-height: 0 }    ← MUST have min-height: 0
+    scroll-area { flex: 1; overflow-y: auto; min-height: 0 }  ← scrolls
+```
+
+**Three conditions, all required:**
+
+1. **The root flex container must have a bounded height** — `height: 100vh` (not `min-height: 100vh`). `min-height` is a floor, not a ceiling — the layout can still grow past it, making overflow impossible.
+
+2. **Every flex ancestor in the chain needs `min-height: 0`** — Flex items default to `min-height: auto`, which means they CANNOT shrink below their content size. Without `min-height: 0`, `overflow-y: auto` never activates because there's never space for overflow.
+
+3. **The scroll area must be a `flex: 1` child between fixed-height siblings** — The scroll area fills remaining space. Its siblings (header, footer, toolbar) take their natural height via `flex: 0 0 auto` or just no flex-grow.
+
+### Anti-pattern
+
+❌ `min-height: 100vh` on the root container — lets the entire layout grow past the viewport, forcing document-level scroll instead of internal scroll.
+
+❌ `overflow-y: auto` on a flex child without `min-height: 0` on every flex ancestor — the child can't shrink below content size, so it never overflows.
+
+❌ Fixing the scroll at `.learn-content` level when only `.radicals-page__content` needs to scroll — creates nested scroll containers and unexpected scrollbar behavior.
+
+### ✅ Fix pattern (from radicals page)
+
+```css
+.app-layout {
+  height: 100vh;
+} /* bounded root */
+.app-content {
+  min-height: 0;
+  overflow-y: auto;
+} /* ancestor chain */
+.learn-content {
+  min-height: 0;
+} /* ancestor chain */
+.radicals-page__content {
+  overflow-y: auto;
+  min-height: 0;
+} /* scrolls */
+```
+
+## CSS Architecture (3-File Split)
+
+| File                    | Purpose                                         | Example content                                                            |
+| ----------------------- | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `styles/globals.css`    | **Tokens** + **single-property utilities**      | `:root` vars, `.gap-*`, `.p-*`, `.flex-center`, `.text-*`                  |
+| `styles/components.css` | **Multi-property component patterns**           | `.btn-base`, `.input-base`, `.card-interactive`, `.hover-lift`, `.overlay` |
+| `styles/animations.css` | **`@keyframes` + animation/transition classes** | `.animate-fade-in`, `.transition-all`, `.skeleton-loading`                 |
+
+All three are imported via `globals.css`. Every component/tokens file references CSS variables defined in `:root`.
+
 ## DESIGN.md Token Reference
 
 This project has a machine-readable design token file at the project root: `DESIGN.md`
 
 - ✅ ALWAYS read `DESIGN.md` before styling any component
 - ✅ ALWAYS use CSS variables from `apps/frontend/src/styles/globals.css` — they map directly to DESIGN.md tokens
-- ✅ Use `card-dark` and `card-dark-hover` CSS classes for card surfaces
-- ✅ Use `hover-lift` for interactive element hover effects
 - ❌ NEVER hardcode hex values, spacing, or font sizes — they all have CSS variables
 
-## ✅ Utility Classes (Prefer Over Custom CSS)
+## ✅ Utility Classes (in `globals.css` — Single-Property)
 
-`globals.css` provides utility classes that should be used instead of writing custom CSS for common layouts and styles:
+These classes live in `globals.css` and map **one CSS property to one class**. Prefer these over writing custom CSS.
 
 **Layout:**
 
-- `.flex-center` — `display: flex; align-items: center; justify-content: center; gap: var(--space-sm);`
-- `.flex-col` — `display: flex; flex-direction: column;`
-- `.flex-col-center` — `.flex-col` + centered alignment
-- `.flex-between` — `display: flex; justify-content: space-between; align-items: center;`
-- `.flex-wrap` — `display: flex; flex-wrap: wrap; gap: var(--space-sm);`
-- `.grid-2-col` — 2-column responsive grid
-- `.grid-3-col` — 3-column responsive grid
-- `.w-full` — `width: 100%`
-- `.mx-auto` — `margin: 0 auto`
+| Class                | Effect                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `.flex-center`       | `display: flex; align-items: center; justify-content: center; gap: var(--space-sm);` |
+| `.flex-col`          | `display: flex; flex-direction: column;`                                             |
+| `.flex-col-center`   | `.flex-col` + centered alignment                                                     |
+| `.flex-between`      | `display: flex; justify-content: space-between; align-items: center;`                |
+| `.flex-wrap`         | `flex-wrap: wrap`                                                                    |
+| `.flex-align-center` | `display: flex; align-items: center`                                                 |
+| `.shrink-0`          | `flex-shrink: 0`                                                                     |
+| `.grid-2-col`        | 2-column responsive grid                                                             |
+| `.grid-3-col`        | 3-column responsive grid                                                             |
+| `.w-full`            | `width: 100%`                                                                        |
+| `.mx-auto`           | `margin: 0 auto`                                                                     |
 
 **Spacing:**
 
-- `.gap-{xs/sm/md/lg/xl/2xl}` — gap between flex/grid children
-- `.p-{xs/sm/md/lg/xl/2xl}` — padding on all sides
-- `.px-{sm/md/lg}` — horizontal padding
-- `.py-{sm/md/lg}` — vertical padding
+| Class                       | Effect                                                                                  |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| `.gap-{xs/sm/md/lg/xl/2xl}` | `gap: var(--space-*)`                                                                   |
+| `.p-{0/xs/sm/md/lg/xl/2xl}` | `padding: var(--space-*)` (all sides; use `gap` on parent for spacing between children) |
 
 **Typography:**
 
-- `.font-{xs/sm/md/lg/xl/2xl/3xl/4xl/5xl}` — font-size via `var(--font-*)`
-- `.fw-{400/500/600/700/800}` — font-weight
-- `.text-center` — text-align: center
-- `.font-italic` — italic text
+| Class                                    | Effect                     |
+| ---------------------------------------- | -------------------------- |
+| `.font-{xs/sm/md/lg/xl/2xl/3xl/4xl/5xl}` | `font-size: var(--font-*)` |
+| `.fw-{400/500/600/700/800}`              | `font-weight: *`           |
+| `.text-center`                           | `text-align: center`       |
+| `.text-left`                             | `text-align: left`         |
+| `.text-white`                            | `color: white`             |
+| `.inline-block`                          | `display: inline-block`    |
+| `.whitespace-nowrap`                     | `white-space: nowrap`      |
 
 **Text color:**
 
-- `.text-{primary/secondary/tertiary/muted/success/error/warning}` — text color
+| Class                                             | Effect                  |
+| ------------------------------------------------- | ----------------------- |
+| `.text-{primary/secondary/tertiary/muted/subtle}` | `color: var(--text-*)`  |
+| `.text-{success/error/warning}`                   | `color: var(--color-*)` |
 
 **Border/Radius:**
 
-- `.radius-{sm/md/lg/pill/full}` — border-radius
-- `.border-default` — 1px solid `var(--surface-border)`
-- `.border-none` — no border
+| Class                          | Effect                                          |
+| ------------------------------ | ----------------------------------------------- |
+| `.radius-{sm/md/lg/pill/full}` | `border-radius`                                 |
+| `.border-{1/2}`                | `border-width: 1px/2px` + `border-style: solid` |
+| `.border-none`                 | `border: none`                                  |
+| `.border-surface`              | `border-color: var(--surface-border)`           |
+| `.border-primary`              | `border-color: var(--color-primary)`            |
+| `.border-primary-border`       | `border-color: var(--color-primary-border)`     |
+| `.border-transparent`          | `border-color: transparent`                     |
 
 **Background:**
 
-- `.bg-surface-{dark/dark-alt/dark-2}` — background color
-- `.gradient-primary` — primary gradient
+| Class                  | Effect                                |
+| ---------------------- | ------------------------------------- |
+| `.bg-surface-light-5`  | `background: var(--surface-light-5)`  |
+| `.bg-surface-light-10` | `background: var(--surface-light-10)` |
 
-**Effects:**
+**Full reference:** see `apps/frontend/src/styles/globals.css` for the complete list.
 
-- `.transition-all` — transition: all `var(--transition-fast)`
-- `.skeleton-loading` — skeleton loading animation
+## ✅ Component Pattern Classes (in `components.css` — Multi-Property)
 
-**Inputs:**
+These classes live in `components.css` and bundle **multiple properties** into reusable patterns. Use them for common UI structures.
 
-- Use `.input-base` class on `<input>` elements instead of custom input styles
+| Class                               | Purpose                                                     |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `.btn-base`                         | Base button reset (border-radius, font, background, cursor) |
+| `.btn-close`                        | Close button for modals/popups (absolute, transparent)      |
+| `.btn-icon-circle`                  | Small circular icon button (22×22, play buttons)            |
+| `.input-base`                       | Generic text input styling (use on `<input>`)               |
+| `.overlay`                          | Fullscreen backdrop for modals                              |
+| `.card-interactive`                 | Clickable card surface with hover lift                      |
+| `.hover-lift` / `.-sm` / `.-md`     | Interactive hover lift effects (translateY + shadow)        |
+| `.hover-scale`                      | Hover scale effect                                          |
+| `.alert-success/error/warning/info` | State feedback containers                                   |
+| `.progress-container/text/bar/fill` | Progress bar structure                                      |
+
+## ✅ Animation Classes (in `animations.css`)
+
+| Class                                    | Effect                                        |
+| ---------------------------------------- | --------------------------------------------- |
+| `.animate-fade-in`                       | Fade-in animation                             |
+| `.animate-slide-up`                      | Slide-up animation                            |
+| `.animate-pulse` / `.animate-pulse-fast` | Pulse opacity                                 |
+| `.skeleton-loading`                      | Skeleton shimmer animation                    |
+| `.transition-all`                        | `transition: all var(--transition-fast)`      |
+| `.transition-colors`                     | `transition: background, border-color, color` |
+| `.transition-opacity`                    | `transition: opacity`                         |
+
+## ✅ Example
 
 ```tsx
-// ✅ DO — Use utility classes
-<div className="flex-center gap-sm p-md border-default">
+// ✅ DO — Use utility classes from globals.css + component patterns from components.css
+<div className="flex-center gap-sm p-md radius-md border-bottom-default">
   <span className="font-sm text-muted">Label</span>
 </div>
 
-// ❌ BAD — Custom CSS that duplicates utility classes
+// ❌ BAD — Custom CSS that duplicates utility/pattern classes
 <div className="my-custom-bar">
   <span className="my-custom-label">Label</span>
 </div>
 ```
 
+## ✅ Run Design Audit
+
+After writing or modifying CSS/TSX, run the automated scanner to catch violations:
+
+```bash
+npm run design-audit              # Scan entire frontend
+npm run design-audit:feature apps/frontend/src/features/<name>/  # Scan a specific feature
+```
+
+This checks: hardcoded colors/spacing/font-sizes, console.log, inline styles, TODO comments, missing aria-labels, and CSS that duplicates global utility classes without a clarifying comment.
+
+**Shared component CSS (`shared/components/`) is exempt** from the utility-duplicate check — those files define intentionally multi-property variant classes (e.g., `box-dark`, `btn-primary`) that bundle background, border, radius, shadow, and padding together by design. Feature CSS files should still prefer utility classes or add clarifying comments for intentional overrides.
+
 ## ✅ Shared Components Over Raw HTML
 
 `src/shared/components/` has re-exported components that replace raw HTML:
 
-- `Button` — variants `primary`/`secondary`, sizes `sm`/`md`/`lg`, loading state
+- `Box` — generic container; 20 variants (`dark`, `dark-alt`, `dark-accent`, `dark-accent-primary`, `surface`, `elevated`, `error`, `card`, `divider`, `header`, `dashed`, `chip`, `item`, `pass`, `fail`, `tone-1` through `tone-5`), padding sizes `none`/`xs`/`sm`/`md`/`lg`/`xl`/`2xl`
+- `Button` — 21 variants (`primary`, `secondary`, `icon`, `ghost`, `control`, `control-active`, `circle`, `tag`, `tag-active`, `primary-active`, `tab`, `tab-active`, `tone-1` through `tone-5`, `ghost-primary`, `rating-again`, `rating-good`, `rating-easy`), sizes `sm`/`md`/`lg`, loading/disabled states
 - `Input` — styled text input
 - `LoadingScreen`, `ErrorScreen` — full-page states
+- `ProgressBar` — progress indicator with threshold marker
 - `FilterChip` — toggleable filter chip
 - `ToggleSwitch` — on/off toggle
-- `ProgressBar` — progress indicator
 - `Dropdown` — select dropdown
 - `ContentBrowser` — content browsing
 
@@ -129,8 +249,35 @@ function MyFeature() {
 ## Global CSS Avoidance
 
 - ❌ NEVER use `// eslint-disable-next-line no-restricted-imports` to bypass CSS import restrictions
-- ❌ NEVER rely on global button/input resets — they affect ALL elements of that type
+- ❌ NEVER rely on global button/input resets (outside `components.css`) — they affect ALL elements of that type
 - ✅ Use `<div>` with `role="button"` and `tabIndex={0}` for custom button-like elements to avoid global button styles
+
+## Hardcoded Styles Prohibition
+
+- ❌ NEVER hardcode color values (`rgba()`, `#hex`, named colors) in component CSS — use CSS variables from `globals.css`
+- ❌ NEVER use arbitrary opacity values like `opacity: 0.35` — use the `op-40`, `op-60`, `op-80`, `op-100` utility classes from `globals.css`
+- ❌ NEVER write `transition` in feature component CSS — transitions belong on shared components (`components.css` or `animations.css`)
+- ✅ Use `className="transition-all"`, `className="transition-opacity"`, etc. from `animations.css` when needed in JSX
+
+## Directional Properties Prohibition
+
+- ❌ NEVER use `border-top`, `border-bottom`, `border-left`, `border-right` — use `<Box variant="divider" />` for separators
+- ❌ NEVER use `padding-top`, `padding-bottom`, `padding-left`, `padding-right` — use `Box` with `padding` prop or full `p-*` utility classes
+- ❌ NEVER use `margin-top`, `margin-bottom`, `margin-left`, `margin-right` — prefer `gap` on parent containers; use `m-0` for resets
+- ✅ Use `padding: var(--space-*)` symmetrical shorthand only when both axes need the same tokens
+- ✅ Use `gap-*` on parent containers for spacing between children
+
+## Custom Scrollbar Rule
+
+- ✅ Use `className="custom-scrollbar"` from `components.css` for any overflow container that needs custom scrollbar styling
+- ❌ NEVER define `::-webkit-scrollbar` styles in component CSS — they belong in the global `components.css` `.custom-scrollbar` class
+
+## Shared Components Over Custom Styles
+
+- ❌ NEVER add custom `transition`, `opacity`, `background`, `font-size`, or `outline` overrides for shared components (Button, Input, etc.) in feature CSS — accept the shared component's default interaction design
+- ✅ If a shared component's styling doesn't fit the exact use case, extend it with new props rather than overriding via CSS cascade
+  - Example: Added `width`/`height` props to `<Button variant="icon">` instead of overriding 22×22 with parent-prefixed CSS selectors
+- ✅ Propose new variants when a pattern is widely needed across features
 
 ## CSS Scope & File Placement
 
@@ -158,6 +305,25 @@ This project follows the standard BEM naming convention:
 
 - Use short, semantic element names. Prefer `__search` over `__search-bar`.
 - Use CSS modules as an alternative if preferred.
+
+## No Raw Element Selectors
+
+- ❌ NEVER use raw HTML element selectors (`p`, `span`, `div`, `button`, `h1`–`h6`, `a`, etc.) in component CSS — even when nested under a class
+- ✅ Always use a BEM-classed element instead
+
+```css
+/* ❌ BAD — Raw element selector, even when context-scoped */
+.rdc__etymology p {
+  margin: var(--space-xs) 0 0;
+}
+
+/* ✅ GOOD — BEM-classed element */
+.rdc__etymology-text {
+  margin: var(--space-xs) 0 0;
+}
+```
+
+**Exception:** Pseudo-elements (`::-webkit-scrollbar`, `::before`, `::after`) are exempt from this rule — they cannot use class names.
 
 ### File Placement: One CSS File Per Component
 
@@ -211,3 +377,59 @@ import './styles.css';
 // ❌ BAD — button picks up global reset styles
 <button className="tab" onClick={...}>{label}</button>
 ```
+
+## ✅ Inline Style Prohibition
+
+- ❌ NEVER use `style={{}}` inline style props on React elements
+- ✅ Use global utility classes in `className` for repeated token-driven properties
+- ✅ Use local CSS file (co-located `.css`) for unique component-specific properties
+
+### ✅ DO
+
+```tsx
+<div className="flex-center gap-sm p-md text-primary">Content</div>
+```
+
+### ❌ DON'T
+
+```tsx
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "var(--space-sm)",
+    padding: "var(--space-md)",
+    color: "var(--text-primary)",
+  }}
+>
+  Content
+</div>
+```
+
+## ✅ Dynamic States (Active, Disabled, Error)
+
+Use **conditional className** with **global utility classes** for dynamic visual states. Never compute styles in JavaScript.
+
+### ✅ DO
+
+```tsx
+<Link
+  className={`base-class flex items-center gap-sm ... ${isActive ? "bg-primary-bg border-primary text-accent fw-600" : ""}`}
+/>
+```
+
+### ❌ DON'T
+
+```tsx
+const getStyle = (isActive) => ({
+  background: isActive ? "var(--color-primary-bg)" : "transparent",
+  border: isActive ? "1px solid var(--color-primary-border)" : "1px solid transparent",
+});
+```
+
+| State                | Approach                                                  |
+| -------------------- | --------------------------------------------------------- |
+| **Default**          | Base global utility classes                               |
+| **Hover**            | CSS `:hover` pseudo-class in local `.css`                 |
+| **Active/Selected**  | Toggle global utility classes via conditional `className` |
+| **Missing utility?** | Add to `globals.css`                                      |

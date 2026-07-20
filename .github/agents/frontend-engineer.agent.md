@@ -17,6 +17,8 @@ You are a frontend-focused engineer for the mandarin-vite-react-ts monorepo. You
 - DO follow the code conventions, frontend patterns, and SOLID principles of this project
 - ALWAYS check `src/shared/components/` before creating a new component
 - ALWAYS use CSS variables from `globals.css` — never hardcode colors, spacing, or typography
+- KNOW the CSS architecture: `globals.css` = tokens + single-property utilities; `components.css` = multi-property patterns; `animations.css` = @keyframes + transition classes
+- ALWAYS run `npm run design-audit` after modifying CSS or TSX to catch token violations early
 - ALWAYS write or update tests alongside implementation changes
 - ALWAYS update file headers and documentation when public APIs change
 - ALWAYS close any terminal you start before exiting
