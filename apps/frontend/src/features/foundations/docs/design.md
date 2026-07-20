@@ -1,6 +1,6 @@
 # Foundations Feature Design
 
-**Last Updated:** 2026-07-08
+**Last Updated:** 2026-07-20
 
 ## Overview
 
@@ -28,6 +28,9 @@ The feature is rendered via `FoundationsPage.tsx` with 4 tabs:
 | `components/tones/`               | Tone card/drill/rule components                      |
 | `components/strokes/`             | Stroke order components                              |
 | `components/animations/`          | Hanzi writer animation components                    |
+| `components/pinyin/SlidingPinyinGrid.tsx`  | Sliding pinyin grid with drag-to-pan interaction          |
+| `components/pinyin/DetailPanel.tsx`         | Pinyin detail panel with character info                 |
+| `hooks/useDragToPan.ts`                     | Touch/drag panning hook for pinyin grid                |
 | `hooks/useFoundationsProgress.ts` | Progress tracking                                    |
 | `services/foundationsService.ts`  | API calls for pool + progress                        |
 | `types/pool.ts`                   | Type definitions matching `pinyin-tones-pool.json`   |

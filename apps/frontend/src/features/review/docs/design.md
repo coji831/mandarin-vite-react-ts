@@ -1,6 +1,6 @@
 # Feature: Review — Design Spec
 
-**Last Updated:** 2026-07-01
+**Last Updated:** 2026-07-20
 **Status:** Reviewed
 
 ---
@@ -46,8 +46,7 @@ Review uses a **Strategy Pattern** similar to quiz:
 | `ReviewCardOptionSelect` | Custom in `components/`          | Multiple choice option step                  |
 | `ReviewCardResult`       | Custom in `components/`          | Result step with ✅/❌ + A/G/E rating        |
 | `ReviewComplete`         | Custom in `components/`          | Session complete summary                     |
-| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        |
-
+| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        || `ReviewPromptCard`       | Custom in `components/`          | Launch/prompt card for review start              |
 ### Step Flow
 
 ```
