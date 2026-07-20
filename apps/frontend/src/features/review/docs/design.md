@@ -46,7 +46,8 @@ Review uses a **Strategy Pattern** similar to quiz:
 | `ReviewCardOptionSelect` | Custom in `components/`          | Multiple choice option step                  |
 | `ReviewCardResult`       | Custom in `components/`          | Result step with ✅/❌ + A/G/E rating        |
 | `ReviewComplete`         | Custom in `components/`          | Session complete summary                     |
-| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        || `ReviewPromptCard`       | Custom in `components/`          | Launch/prompt card for review start              |
+| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        |     | `ReviewPromptCard` | Custom in `components/` | Launch/prompt card for review start |
+
 ### Step Flow
 
 ```

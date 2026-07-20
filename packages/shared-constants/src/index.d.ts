@@ -56,6 +56,27 @@ export declare const TTS_VOICES: {
   };
 };
 
+/**
+ * Creates a guest phase gate response — returned when no user is authenticated.
+ * All phases unlocked (currentPhase: 4) so guests can browse all content.
+ */
+export declare function createGuestPhaseGate(): {
+  readonly id: "guest-unlocked";
+  readonly currentPhase: 4;
+  readonly phase1Passed: false;
+  readonly phase2Passed: false;
+  readonly phase3Passed: false;
+  readonly phase4Unlocked: true;
+  readonly qualificationScore: null;
+  readonly placedPhase: null;
+  readonly phase1Retention: null;
+  readonly phase2Retention: null;
+  readonly phase3Retention: null;
+  readonly gateCriteria: null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
 // Confidence Levels
 export declare const CONFIDENCE_LEVELS: {
   readonly NEW: number;

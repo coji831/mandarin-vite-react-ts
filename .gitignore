@@ -48,6 +48,15 @@ verification-artifacts/
 storybook-static
 
 # GCP service account keys
+
+# Playwright MCP logs
+.playwright-mcp/
+
+# Build output
+apps/frontend/build-output.txt
+
+# MSW service worker
+apps/frontend/public/mockServiceWorker.js
 keys/
 # Terraform state
 *.tfstate

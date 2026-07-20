@@ -19,22 +19,22 @@ The feature is rendered via `FoundationsPage.tsx` with 4 tabs:
 
 ## Key Files
 
-| File                              | Purpose                                              |
-| --------------------------------- | ---------------------------------------------------- |
-| `FoundationsPage.tsx`             | Tab orchestrator (page-level, in `pages/learn/`)     |
-| `PinyinTab.tsx`                   | Pinyin reference tab                                 |
-| `TonesTab.tsx`                    | Tones reference tab                                  |
-| `components/pinyin/`              | Pinyin grid/cell components                          |
-| `components/tones/`               | Tone card/drill/rule components                      |
-| `components/strokes/`             | Stroke order components                              |
-| `components/animations/`          | Hanzi writer animation components                    |
-| `components/pinyin/SlidingPinyinGrid.tsx`  | Sliding pinyin grid with drag-to-pan interaction          |
-| `components/pinyin/DetailPanel.tsx`         | Pinyin detail panel with character info                 |
-| `hooks/useDragToPan.ts`                     | Touch/drag panning hook for pinyin grid                |
-| `hooks/useFoundationsProgress.ts` | Progress tracking                                    |
-| `services/foundationsService.ts`  | API calls for pool + progress                        |
-| `types/pool.ts`                   | Type definitions matching `pinyin-tones-pool.json`   |
-| `utils/pinyinUtils.ts`            | Tone color mapping, combination lookup, tone helpers |
+| File                                      | Purpose                                              |
+| ----------------------------------------- | ---------------------------------------------------- |
+| `FoundationsPage.tsx`                     | Tab orchestrator (page-level, in `pages/learn/`)     |
+| `PinyinTab.tsx`                           | Pinyin reference tab                                 |
+| `TonesTab.tsx`                            | Tones reference tab                                  |
+| `components/pinyin/`                      | Pinyin grid/cell components                          |
+| `components/tones/`                       | Tone card/drill/rule components                      |
+| `components/strokes/`                     | Stroke order components                              |
+| `components/animations/`                  | Hanzi writer animation components                    |
+| `components/pinyin/SlidingPinyinGrid.tsx` | Sliding pinyin grid with drag-to-pan interaction     |
+| `components/pinyin/DetailPanel.tsx`       | Pinyin detail panel with character info              |
+| `hooks/useDragToPan.ts`                   | Touch/drag panning hook for pinyin grid              |
+| `hooks/useFoundationsProgress.ts`         | Progress tracking                                    |
+| `services/foundationsService.ts`          | API calls for pool + progress                        |
+| `types/pool.ts`                           | Type definitions matching `pinyin-tones-pool.json`   |
+| `utils/pinyinUtils.ts`                    | Tone color mapping, combination lookup, tone helpers |
 
 ## Data Flow
 
