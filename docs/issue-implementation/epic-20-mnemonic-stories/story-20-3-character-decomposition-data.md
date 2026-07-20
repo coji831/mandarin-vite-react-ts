@@ -1,11 +1,11 @@
 # Implementation 20-3: Character Decomposition Data
 
-**Last Updated:** July 20, 2026
+**Last Updated:** July 21, 2026
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
+- **Status**: Completed
+- **PR**: _(part of epic-20-mnemonic-stories branch)_
 
 ## Technical Scope
 
@@ -143,6 +143,16 @@ MnemonicStory (displayed in HubMnemonicSection)
 **Problem:** Running the script multiple times must not create duplicate entries.
 
 **Solution:** Use Prisma `upsert` with the compound unique key `[characterGlyph, radicalId]`. If an entry already exists, the `update: {}` is a no-op.
+
+## Completed Work
+
+### Files Created
+
+- `scripts/import-decomposition-data.mjs` — ESM script following existing backend pattern (PrismaPg adapter, pg pool, dotenv). Builds dynamic glyph-to-ID map from `content/radicals/*.json` (supports both primary `glyph` and `alternate_glyphs`), reads Make Me a Hanzi decompositions JSON, validates structure, and upserts into `CharacterRadical` table. Pinned commit hash, JSON validation, summary of unmapped radicals with grouped output.
+
+### Files Modified
+
+- `apps/backend/package.json` — Added `"db:import-decomposition": "node scripts/import-decomposition-data.mjs"` script entry
 
 ## Testing Implementation
 

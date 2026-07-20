@@ -12,12 +12,12 @@ Without decomposition data, the AI prompt has no radical context — stories wou
 
 ## Acceptance Criteria
 
-- [ ] Import script parses Make Me a Hanzi JSON and maps radical glyphs to rad_XXXX IDs
-- [ ] Unmapped radicals are logged as warnings, not errors — script continues processing
-- [ ] Script is idempotent — safe to run multiple times via Prisma upsert
-- [ ] At minimum, the 20 pictograph characters have decomposition entries after running
-- [ ] Script runs via `node scripts/import-decomposition-data.js`
-- [ ] Source commit hash is pinned in script header to prevent format drift
+- [x] Import script parses Make Me a Hanzi JSON and maps radical glyphs to rad_XXXX IDs
+- [x] Unmapped radicals are logged as warnings, not errors — script continues processing
+- [x] Script is idempotent — safe to run multiple times via Prisma upsert
+- [x] At minimum, the 20 pictograph characters have decomposition entries after running
+- [x] Script runs via `npm run db:import-decomposition`
+- [x] Source commit hash is pinned in script header to prevent format drift
 
 ## Business Rules
 
@@ -35,7 +35,7 @@ Without decomposition data, the AI prompt has no radical context — stories wou
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
+- **Status**: Completed
+- **PR**: _(part of epic-20-mnemonic-stories branch)_
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `epic-20-mnemonic-stories`

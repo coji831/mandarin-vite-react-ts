@@ -30,6 +30,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
+    "db:import-decomposition": "node scripts/import-decomposition-data.mjs",
     "seed:content-index": "node scripts/seed-content-index.js"
   },
   "dependencies": {
