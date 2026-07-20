@@ -182,7 +182,7 @@ router.get("/progress", requireAuth, (req, res) =>
 ```
 
 ````markdown
-// docs/archive/dotnet-migration.md (archived)
+// .NET migration planning moved to Epic 24
 
 # .NET Migration Guide
 

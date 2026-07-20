@@ -16,7 +16,7 @@ Refactoring to clean architecture separates business logic from framework code, 
 - [x] Services in core/ contain zero Express/framework dependencies (pure JavaScript)
 - [x] OpenAPI 3.1 spec generated from code and accessible at /api-docs
 - [x] Swagger UI rendered at /api-docs for interactive API testing
-- [x] Migration guide documented in docs/archive/dotnet-migration.md (archived - future planning)
+- [x] Migration approach documented (see Epic 24 for .NET migration planning)
 - [x] All service unit tests pass with >90% coverage
 - [x] Code review checklist completed (separation of concerns verified)
 
