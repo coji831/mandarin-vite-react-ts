@@ -1,0 +1,16 @@
+{
+  "id": "fin_ia",
+  "pinyin": "ia",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "jiā",
+    "tone2": "jiá",
+    "tone3": "jiǎ",
+    "tone4": "jià",
+    "tone0": "jia"
+  },
+  "metadata": {
+    "pronunciation_guide": "ia — like '**yah**'"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "fin_ou",
+  "pinyin": "ou",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "dōu",
+    "tone2": "dóu",
+    "tone3": "dǒu",
+    "tone4": "dòu",
+    "tone0": "dou"
+  },
+  "metadata": {
+    "pronunciation_guide": "ou — like '**go**'"
+  }
+}

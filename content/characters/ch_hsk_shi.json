@@ -1,0 +1,14 @@
+{
+  "id": "ch_hsk_shi",
+  "glyph": "是",
+  "traditional": "是",
+  "stroke_count": 9,
+  "readings": [{ "pinyin": "shì", "tone": 4, "type": "primary", "core_meaning": "to be" }],
+  "hsk_level": 1,
+  "metadata": {
+    "frequency_rank": 2,
+    "etymology": "Associative compound: 日 (sun) + 正 (correct) — originally 'straight/right'",
+    "common_words": ["是的", "可是", "但是", "还是"],
+    "radical_ids": ["rad_0001"]
+  }
+}

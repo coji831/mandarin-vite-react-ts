@@ -1,0 +1,14 @@
+{
+  "id": "init_n",
+  "pinyin": "n",
+  "ipa": "/n/",
+  "description": "like '**n**o'",
+  "mouth_position": "alveolar",
+  "category": "nasal",
+  "voiced": false,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "n — like 'n**o**'",
+    "common_issues": ""
+  }
+}

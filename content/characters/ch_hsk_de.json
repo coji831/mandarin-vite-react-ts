@@ -1,0 +1,16 @@
+{
+  "id": "ch_hsk_de",
+  "glyph": "的",
+  "traditional": "的",
+  "stroke_count": 8,
+  "readings": [
+    { "pinyin": "de", "tone": 0, "type": "primary", "core_meaning": "possessive particle" }
+  ],
+  "hsk_level": 1,
+  "metadata": {
+    "frequency_rank": 1,
+    "etymology": "Phonetic-semantic: 白 (white) + 勺 (spoon) + 丶 — acquired possessive meaning",
+    "common_words": ["我的", "你的", "真的", "好的"],
+    "radical_ids": ["rad_0001"]
+  }
+}

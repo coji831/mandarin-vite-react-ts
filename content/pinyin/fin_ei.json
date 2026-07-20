@@ -1,0 +1,16 @@
+{
+  "id": "fin_ei",
+  "pinyin": "ei",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "bēi",
+    "tone2": "béi",
+    "tone3": "běi",
+    "tone4": "bèi",
+    "tone0": "bei"
+  },
+  "metadata": {
+    "pronunciation_guide": "ei — like '**eight**'"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "fin_ao",
+  "pinyin": "ao",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "bāo",
+    "tone2": "báo",
+    "tone3": "bǎo",
+    "tone4": "bào",
+    "tone0": "bao"
+  },
+  "metadata": {
+    "pronunciation_guide": "ao — like '**ow**'"
+  }
+}

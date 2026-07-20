@@ -1,0 +1,16 @@
+{
+  "id": "fin_ve",
+  "pinyin": "üe",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "xuē",
+    "tone2": "xué",
+    "tone3": "xuě",
+    "tone4": "xuè",
+    "tone0": "xue"
+  },
+  "metadata": {
+    "pronunciation_guide": "üe — like '**yueh**'"
+  }
+}

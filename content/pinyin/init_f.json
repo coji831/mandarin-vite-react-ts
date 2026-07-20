@@ -1,0 +1,14 @@
+{
+  "id": "init_f",
+  "pinyin": "f",
+  "ipa": "/f/",
+  "description": "like '**f**un'",
+  "mouth_position": "labiodental",
+  "category": "fricative",
+  "voiced": false,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "f — like 'f**un**'",
+    "common_issues": ""
+  }
+}

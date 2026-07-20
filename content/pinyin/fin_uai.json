@@ -1,0 +1,16 @@
+{
+  "id": "fin_uai",
+  "pinyin": "uai",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "guāi",
+    "tone2": "guái",
+    "tone3": "guǎi",
+    "tone4": "guài",
+    "tone0": "guai"
+  },
+  "metadata": {
+    "pronunciation_guide": "uai — like '**why**'"
+  }
+}

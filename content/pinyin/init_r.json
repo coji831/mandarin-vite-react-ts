@@ -1,0 +1,14 @@
+{
+  "id": "init_r",
+  "pinyin": "r",
+  "ipa": "/ʐ/",
+  "description": "like '**r**easure'",
+  "mouth_position": "retroflex",
+  "category": "approximant",
+  "voiced": false,
+  "aspirated": false,
+  "metadata": {
+    "pronunciation_guide": "r — like 'r**easure**'",
+    "common_issues": ""
+  }
+}

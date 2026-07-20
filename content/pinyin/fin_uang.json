@@ -1,0 +1,16 @@
+{
+  "id": "fin_uang",
+  "pinyin": "uang",
+  "type": "nasal",
+  "category": "nasal_final",
+  "tone_variants": {
+    "tone1": "guāng",
+    "tone2": "guáng",
+    "tone3": "guǎng",
+    "tone4": "guàng",
+    "tone0": "guang"
+  },
+  "metadata": {
+    "pronunciation_guide": "uang — like '**wong**'"
+  }
+}

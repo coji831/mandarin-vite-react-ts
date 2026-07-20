@@ -1,0 +1,16 @@
+{
+  "id": "fin_ang",
+  "pinyin": "ang",
+  "type": "nasal",
+  "category": "nasal_final",
+  "tone_variants": {
+    "tone1": "bāng",
+    "tone2": "báng",
+    "tone3": "bǎng",
+    "tone4": "bàng",
+    "tone0": "bang"
+  },
+  "metadata": {
+    "pronunciation_guide": "ang — like '**song**'"
+  }
+}

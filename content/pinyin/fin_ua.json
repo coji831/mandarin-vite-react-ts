@@ -1,0 +1,16 @@
+{
+  "id": "fin_ua",
+  "pinyin": "ua",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "guā",
+    "tone2": "guá",
+    "tone3": "guǎ",
+    "tone4": "guà",
+    "tone0": "gua"
+  },
+  "metadata": {
+    "pronunciation_guide": "ua — like '**wah**'"
+  }
+}

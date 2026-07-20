@@ -1,0 +1,16 @@
+{
+  "id": "fin_un",
+  "pinyin": "un",
+  "type": "nasal",
+  "category": "nasal_final",
+  "tone_variants": {
+    "tone1": "gūn",
+    "tone2": "gún",
+    "tone3": "gǔn",
+    "tone4": "gùn",
+    "tone0": "gun"
+  },
+  "metadata": {
+    "pronunciation_guide": "un — like '**wun**'"
+  }
+}

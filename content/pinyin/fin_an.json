@@ -1,0 +1,16 @@
+{
+  "id": "fin_an",
+  "pinyin": "an",
+  "type": "nasal",
+  "category": "nasal_final",
+  "tone_variants": {
+    "tone1": "bān",
+    "tone2": "bán",
+    "tone3": "bǎn",
+    "tone4": "bàn",
+    "tone0": "ban"
+  },
+  "metadata": {
+    "pronunciation_guide": "an — like '**on**'"
+  }
+}
