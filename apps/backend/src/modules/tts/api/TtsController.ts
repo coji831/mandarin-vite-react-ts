@@ -1,6 +1,6 @@
-// TTS Controller — migrated from modules/tts/api/TtsController.js
-import { config } from "../config/index.js";
-import { ttsError } from "../utils/errorFactory.js";
+// TTS Controller — migrated from shared/api/TtsController.js
+import { config } from "../../../shared/config/index.js";
+import { ttsError } from "../../../shared/utils/errorFactory.js";
 import type { Request, Response } from "express";
 
 /**

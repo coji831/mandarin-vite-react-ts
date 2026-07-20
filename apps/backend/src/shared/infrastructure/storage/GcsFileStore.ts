@@ -1,5 +1,7 @@
 import { createLogger } from "../../utils/logger.js";
-import * as gcsClient from "../external/GCSClient.js";
+import { GCSClient } from "../external/GCSClient.js";
+
+const gcsClient = new GCSClient();
 
 const logger = createLogger("GcsFileStore");
 
