@@ -320,6 +320,27 @@
         "aria-label": { "type": "string" },
         "align": { "type": "enum", "values": ["start", "center", "end"] }
       }
+    },
+    "Textarea": {
+      "description": "Controlled multiline text input. Always use this instead of raw <textarea>.",
+      "importPath": "shared/components",
+      "props": {
+        "value": { "type": "string", "required": true },
+        "onChange": { "type": "function", "required": true },
+        "placeholder": { "type": "string" },
+        "maxLength": { "type": "number" },
+        "disabled": { "type": "boolean" },
+        "rows": { "type": "number" },
+        "className": { "type": "string" },
+        "aria-label": { "type": "string" }
+      }
+    },
+    "HubMnemonicSection": {
+      "description": "Feature component — Phase-gated mnemonic story section for CharacterHub. Displays, generates, and edits AI-powered mnemonic stories.",
+      "importPath": "features/character-hub/components",
+      "props": {
+        "character": { "type": "string", "required": true }
+      }
     }
   },
   "rules": [

@@ -1,6 +1,6 @@
 # Character Hub — Design Spec
 
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-21
 
 ## Storybook References
 
@@ -16,15 +16,16 @@
 
 ## Components
 
-| Component         | Purpose                                       | States                 |
-| ----------------- | --------------------------------------------- | ---------------------- |
-| HubCharacterCard  | West zone — character display + stroke player | Loading, loaded, error |
-| HubInfoLine       | Character info (pinyin, HSK level)            | Loaded                 |
-| HubActions        | Action buttons (favorite, practice)           | Default, active        |
-| HubRadicalSection | Radical breakdown                             | Loading, loaded, empty |
-| HubEtymology      | Etymology description                         | Loaded, empty          |
-| HubReadings       | Reading list with audio                       | Loading, loaded, empty |
-| HubCommonWords    | Common word chips                             | Loading, loaded, empty |
+| Component          | Purpose                                       | States                                                                                     |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| HubCharacterCard   | West zone — character display + stroke player | Loading, loaded, error                                                                     |
+| HubInfoLine        | Character info (pinyin, HSK level)            | Loaded                                                                                     |
+| HubActions         | Action buttons (favorite, practice)           | Default, active                                                                            |
+| HubRadicalSection  | Radical breakdown                             | Loading, loaded, empty                                                                     |
+| HubEtymology       | Etymology description                         | Loaded, empty                                                                              |
+| HubReadings        | Reading list with audio                       | Loading, loaded, empty                                                                     |
+| HubCommonWords     | Common word chips                             | Loading, loaded, empty                                                                     |
+| HubMnemonicSection | Mnemonic story display, generation, editing   | 9 states: Loading, Cached, Empty, Generating, Display, Editing, Error, Timeout, Pictograph |
 
 ## Visual Acceptance Criteria
 
@@ -34,6 +35,8 @@
 - [ ] Empty states show "No data" message, not blank
 - [ ] Error states show inline error with retry
 - [ ] All interactive elements have aria-labels
+- [ ] Mnemonic section has fixed-height container (180px) with overflow-y auto
+- [ ] 📖 "View Story" button in HubActions (phase-gated, Phase 2+)
 
 - Character data fetched from backend API via `characterHubService`
 - Reviews saved via `useReview().saveToReview()`

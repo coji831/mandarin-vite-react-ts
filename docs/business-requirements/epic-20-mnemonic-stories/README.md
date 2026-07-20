@@ -17,7 +17,7 @@
 - **Mobile-friendly:** mnemonic button in HubActions to avoid overflow
 - **Accessible design** with full ARIA support
 
-**Status:** In Progress
+**Status:** In Progress (Stories 20.3, 20.2 complete; 20.1 pending)
 
 **Last Update:** July 21, 2026
 
@@ -72,7 +72,7 @@ Story 20.3 must be completed first to provide radical decomposition data. Story 
 
 1. ✅ Story 20.3: Import Make Me a Hanzi decomposition data
 2. ⏳ Story 20.1: Build backend module (API, AI, caching, validation)
-3. ⏳ Story 20.2: Build frontend UI (HubMnemonicSection, HubActions button, Textarea)
+3. ✅ Story 20.2: Build frontend UI (HubMnemonicSection, HubActions button, Textarea)
 
 ## Risks & mitigations
 

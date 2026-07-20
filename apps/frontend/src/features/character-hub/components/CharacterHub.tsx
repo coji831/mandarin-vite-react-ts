@@ -3,6 +3,7 @@
  * @description Character Detail Hub — Cardinal Layout (fully controlled)
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
  * Story 19.5: Character Hub Radical Section
+ * Story 20.2: Mnemonic Display UI
  *
  * Fully controlled component — receives all data via props.
  * No store, no mock data, no Modal wrapper.
@@ -10,11 +11,13 @@
  * sub-components render empty/placeholder states.
  */
 
+import { useState } from "react";
 import { Box } from "shared/components";
 import { HubCharacterCard } from "./HubCharacterCard";
 import { HubInfoLine } from "./HubInfoLine";
 import { HubActions } from "./HubActions";
 import { HubRadicalSection } from "./HubRadicalSection";
+import { HubMnemonicSection } from "./HubMnemonicSection";
 import { HubEtymology } from "./HubEtymology";
 import { HubReadings } from "./HubReadings";
 import type { ReadingInfo } from "./HubReadings";
@@ -43,6 +46,7 @@ export type CharacterHubProps = {
 export function CharacterHub({ character, pinyin, onClose, characterData }: CharacterHubProps) {
   const loading = !character;
   const data = !loading ? characterData : undefined;
+  const [showMnemonic, setShowMnemonic] = useState(false);
 
   return (
     <div className="hub-cardinal flex-col gap-sm">
@@ -59,9 +63,10 @@ export function CharacterHub({ character, pinyin, onClose, characterData }: Char
 
       {/* MIDDLE: West | Center | East */}
       <div className="hub-cardinal__middle grid gap-sm">
-        {/* WEST: Radical decomposition */}
-        <Box variant="card" className="height-full p-sm">
+        {/* WEST: Radical decomposition + Mnemonic story */}
+        <Box variant="card" className="height-full p-sm flex-col gap-sm">
           <HubRadicalSection character={character} onClose={onClose} loading={loading} />
+          {showMnemonic && <HubMnemonicSection character={character} />}
         </Box>
 
         {/* CENTER: Stroke animation + pinyin + audio */}
@@ -83,7 +88,7 @@ export function CharacterHub({ character, pinyin, onClose, characterData }: Char
       <Box variant="card" className="hub-cardinal__south flex-col gap-md">
         <HubCommonWords commonWords={data?.commonWords} loading={loading} />
         <HubInfoLine character={character} pinyin={pinyin ?? null} />
-        <HubActions character={character} />
+        <HubActions character={character} onOpenMnemonic={() => setShowMnemonic(true)} />
       </Box>
     </div>
   );

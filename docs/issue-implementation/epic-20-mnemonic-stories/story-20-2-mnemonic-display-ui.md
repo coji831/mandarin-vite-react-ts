@@ -1,11 +1,11 @@
 # Implementation 20-2: Mnemonic Display UI
 
-**Last Updated:** July 20, 2026
+**Last Updated:** July 21, 2026
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
+- **Status**: Completed
+- **PR**: epic-20-mnemonic-stories
 
 ## Technical Scope
 
@@ -189,6 +189,40 @@ Phase gate: usePhaseGate() — Phase 2+ only
 **Problem:** 📖 button is in RadicalDetailCard (a modal). Without closing it first, clicking 📖 opens CharacterHub on top — creating two stacked modals.
 
 **Solution:** The 📖 click handler calls `onClose()` on RadicalDetailCard before calling `hubStore.open()`. This ensures the RadicalDetailCard is dismissed before CharacterHub appears.
+
+## Completed Work
+
+### Created Files
+
+- `apps/frontend/src/features/character-hub/components/HubMnemonicSection.tsx` — Main mnemonic component with phase gate (Phase 2+) and useReducer-based 9-state machine
+- `apps/frontend/src/features/character-hub/components/HubMnemonicSection.css` — Styles for all mnemonic states
+- `apps/frontend/src/features/character-hub/components/mnemonic/index.ts` — Barrel exports for mnemonic sub-components
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicDisplay.tsx` — Display + Cached states with story text, ✏️ Edit, 🔄 Regenerate buttons
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicEditing.tsx` — Editing state with Textarea, 💾 Save, ✖ Cancel
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicEmpty.tsx` — Empty state with ✨ Generate Story button
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicError.tsx` — Error + Timeout states with retry
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicLoading.tsx` — Loading + Generating states with spinner
+- `apps/frontend/src/features/character-hub/components/mnemonic/MnemonicPictograph.tsx` — Pictograph info message
+- `apps/frontend/src/features/character-hub/components/mnemonic/mnemonicReducer.ts` — Typed state machine reducer (9 states)
+- `apps/frontend/src/features/character-hub/components/mnemonic/__tests__/HubMnemonicSection.test.tsx` — Tests for all 9 states and phase gating
+- `apps/frontend/src/features/character-hub/constants/pictographs.ts` — PICTOGRAPH_CHARS constant moved to dedicated file
+- `apps/frontend/src/features/character-hub/services/mnemonicService.ts` — Service layer with 4 API methods (GET, POST, PUT, DELETE)
+- `apps/frontend/src/features/character-hub/services/__tests__/mnemonicService.test.ts` — Tests for all 4 API calls
+- `apps/frontend/src/shared/components/Textarea/Textarea.tsx` — Shared multiline text input (forwardRef pattern)
+- `apps/frontend/src/shared/components/Textarea/Textarea.css` — Textarea styles
+- `apps/frontend/src/shared/components/Textarea/index.ts` — Barrel export
+- `apps/frontend/src/shared/components/Textarea/__tests__/Textarea.test.tsx` — Unit tests
+
+### Modified Files
+
+- `.github/component-registry.json` — Added Textarea + HubMnemonicSection
+- `apps/frontend/src/features/character-hub/components/CharacterHub.stories.tsx` — Added mnemonic MSW handlers
+- `apps/frontend/src/features/character-hub/components/CharacterHub.tsx` — Added HubMnemonicSection with onCloseMnemonic callback
+- `apps/frontend/src/features/character-hub/components/HubActions.tsx` — Added 📖 "View Story" button (phase-gated) with pictograph handling
+- `apps/frontend/src/features/character-hub/components/__tests__/HubActions.test.tsx` — Added mnemonic button tests
+- `apps/frontend/src/features/character-hub/components/index.ts` — Added HubMnemonicSection exports
+- `apps/frontend/src/features/character-hub/services/index.ts` — Added mnemonicService + PICTOGRAPH_CHARS exports
+- `apps/frontend/src/shared/components/index.tsx` — Added Textarea export
 
 ## Testing Implementation
 

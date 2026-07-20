@@ -29,6 +29,8 @@ export { CharacterStrokePlayer } from "./CharacterStroke";
 export type { CharacterStrokePlayerProps, CharacterStrokeMode } from "./CharacterStroke";
 export { TextLink } from "./TextLink/TextLink";
 export type { TextLinkProps } from "./TextLink/TextLink";
+export { Textarea } from "./Textarea";
+export type { TextareaProps } from "./Textarea";
 export { ToggleSwitch } from "./ToggleSwitch/ToggleSwitch";
 export { TopNav } from "./TopNav/TopNav";
 export type { TopNavItem, TopNavProps } from "./TopNav/TopNav";

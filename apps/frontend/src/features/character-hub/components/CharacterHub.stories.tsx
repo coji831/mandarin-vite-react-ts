@@ -93,12 +93,49 @@ const radicalsByCharacterFallback = http.get(new RegExp(`^${API_BASE}/radicals/c
   HttpResponse.json([]),
 );
 
+/** Mnemonic handler: returns a sample story for "好" */
+const mnemonicForHao = () =>
+  http.get(`${API_BASE}/v1/mnemonics/好`, () =>
+    HttpResponse.json({
+      id: "mne_001",
+      characterGlyph: "好",
+      story: "A woman (女) with a child (子) is good — a classic compound ideograph.",
+      radicalIds: ["rad_0025"],
+      isEdited: false,
+      isPictograph: false,
+      createdAt: "2025-01-01T00:00:00Z",
+      updatedAt: "2025-01-01T00:00:00Z",
+    }),
+  );
+
+/** Mnemonic handler: returns 404 for other characters (empty state) */
+const mnemonicNotFound = http.get(new RegExp(`^${API_BASE}/v1/mnemonics/.+`), () =>
+  HttpResponse.json(null, { status: 404 }),
+);
+
+/** Mnemonic POST handler: returns a generated story */
+const mnemonicGenerate = http.post(new RegExp(`^${API_BASE}/v1/mnemonics/.+`), () =>
+  HttpResponse.json({
+    id: "mne_gen_001",
+    characterGlyph: "好",
+    story: "Generated: A woman (女) and a child (子) together represent goodness.",
+    radicalIds: ["rad_0025"],
+    isEdited: false,
+    isPictograph: false,
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z",
+  }),
+);
+
 export const DefaultHandlers = [
   ...mswHandlers.auth,
   mswHandlers.progression.phaseGate(3),
   ...mswHandlers.foundations.default(),
   radicalsWithHao(),
   radicalsByCharacterFallback,
+  mnemonicForHao(),
+  mnemonicNotFound,
+  mnemonicGenerate,
 ];
 
 const meta: Meta<typeof CharacterHub> = {

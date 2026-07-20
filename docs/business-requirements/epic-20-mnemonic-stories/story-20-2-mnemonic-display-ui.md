@@ -12,16 +12,16 @@ Mnemonics are the most requested feature for character memorization. Embedding i
 
 ## Acceptance Criteria
 
-- [ ] 📖 "View Story" button appears in HubActions for characters with decomposition data
-- [ ] Clicking 📖 opens HubMnemonicSection within CharacterHub (no separate page)
-- [ ] All 9 states implemented: Loading, Cached, Empty, Generating, Display, Editing, Error, Timeout, Pictograph
-- [ ] Auto-save on generation — story saves when generated, no explicit save during generation flow
-- [ ] User can edit story (✏️) via Textarea and save (💾)
-- [ ] User can regenerate (🔄) with confirmation "This will replace your story" for edited stories
-- [ ] Simple pictographs show info message instead of generate button
-- [ ] Works on mobile (320px+) without overflow
-- [ ] All interactive elements have ARIA labels per accessibility table
-- [ ] Phase 2+ users see mnemonics; Phase 1 users see nothing
+- [x] 📖 "View Story" button appears in HubActions for characters with decomposition data
+- [x] Clicking 📖 opens HubMnemonicSection within CharacterHub (no separate page)
+- [x] All 9 states implemented: Loading, Cached, Empty, Generating, Display, Editing, Error, Timeout, Pictograph
+- [x] Auto-save on generation — story saves when generated, no explicit save during generation flow
+- [x] User can edit story (✏️) via Textarea and save (💾)
+- [x] User can regenerate (🔄) with confirmation "This will replace your story" for edited stories
+- [x] Simple pictographs show info message instead of generate button
+- [x] Works on mobile (320px+) without overflow
+- [x] All interactive elements have ARIA labels per accessibility table
+- [x] Phase 2+ users see mnemonics; Phase 1 users see nothing
 
 ## Business Rules
 
@@ -40,7 +40,7 @@ Mnemonics are the most requested feature for character memorization. Embedding i
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Completed
+- **PR**: epic-20-mnemonic-stories
+- **Merge Date**: July 21, 2026
+- **Key Commit**: Story 20.2 commit (see implementation doc)
