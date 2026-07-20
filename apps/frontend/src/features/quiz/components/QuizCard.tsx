@@ -1,17 +1,39 @@
 /**
  * QuizCard
  *
- * Self-contained quiz card for the Practices index page.
+ * Presentational quiz card for the Practices index page.
  * Shows the current phase, its available gate assessments, and a phase timeline.
- * Uses the useQuizCard hook for data and navigation.
+ * All data is received via props — no direct hook calls.
  */
-import { useQuizCard } from "../hooks/useQuizCard";
+import type { QuizAssessment } from "../hooks/useQuizCard";
+import { Box, Button } from "shared/components";
 
-export function QuizCard() {
-  const { currentPhase, label, quizzes, takeQuiz, timeline } = useQuizCard();
+type TimelineItem = {
+  phase: number;
+  isPassed: boolean;
+  isCurrent: boolean;
+  isLocked: boolean;
+};
 
+type QuizCardProps = {
+  isGuest: boolean;
+  currentPhase: number;
+  label: string;
+  quizzes: QuizAssessment[];
+  takeQuiz: (type: string) => void;
+  timeline: TimelineItem[];
+};
+
+export function QuizCard({
+  isGuest,
+  currentPhase,
+  label,
+  quizzes,
+  takeQuiz,
+  timeline,
+}: QuizCardProps) {
   return (
-    <div className="card-dark p-lg flex-col gap-md">
+    <Box variant="dark" padding="lg" className="flex-col gap-md">
       <h2 className="font-2xl fw-700 text-primary m-0">📝 Phase Quiz</h2>
       <p className="font-sm text-secondary m-0 lh-normal">
         Validate what you've learned in this phase.
@@ -23,7 +45,7 @@ export function QuizCard() {
         </p>
         {quizzes.length > 0 && (
           <div className="flex-col gap-xs">
-            <p className="font-xs text-muted m-0 mt-xs">Available assessments:</p>
+            <p className="font-xs text-muted m-0">Available assessments:</p>
             {quizzes.map((q) => (
               <p key={q.type} className="font-sm text-secondary m-0">
                 • {q.label}
@@ -34,37 +56,38 @@ export function QuizCard() {
       </div>
 
       {quizzes.length > 0 && (
-        <button
-          className="btn-primary startBtn"
-          onClick={() => takeQuiz(quizzes[0].type)}
-          type="button"
-        >
+        <Button variant="primary" onClick={() => takeQuiz(quizzes[0].type)}>
           📝 Take Phase {currentPhase} Quiz
-          <span className="startBtnArrow">▸</span>
-        </button>
+          <span>▸</span>
+        </Button>
       )}
 
       {/* Phase timeline */}
-      <PhaseTimeline timeline={timeline} />
-    </div>
+      <PhaseTimeline timeline={timeline} isGuest={isGuest} />
+    </Box>
   );
 }
 
 function PhaseTimeline({
   timeline,
+  isGuest = false,
 }: {
   timeline: { phase: number; isPassed: boolean; isCurrent: boolean; isLocked: boolean }[];
+  isGuest?: boolean;
 }) {
   return (
-    <div className="phase-timeline">
-      {timeline.map((p) => (
-        <span
-          key={p.phase}
-          className={`phase-timeline-item ${p.isPassed ? "phase-passed" : ""} ${p.isCurrent ? "phase-current" : ""} ${p.isLocked ? "phase-locked" : ""}`}
-        >
-          {p.isPassed ? "✅" : p.isCurrent ? "📌" : "🔒"} Phase {p.phase}
-        </span>
-      ))}
-    </div>
+    <Box variant="divider" as="div" className="phase-timeline">
+      {timeline.map((p) => {
+        const effectiveLocked = isGuest ? false : p.isLocked;
+        return (
+          <span
+            key={p.phase}
+            className={`phase-timeline-item ${effectiveLocked ? "phase-locked op-40" : "op-100"} ${p.isPassed ? "phase-passed" : ""} ${p.isCurrent ? "phase-current" : ""}`}
+          >
+            {p.isPassed ? "✅" : p.isCurrent ? "📌" : effectiveLocked ? "🔒" : "🔓"} Phase {p.phase}
+          </span>
+        );
+      })}
+    </Box>
   );
 }

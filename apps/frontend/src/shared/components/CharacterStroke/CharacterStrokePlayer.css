@@ -1,0 +1,54 @@
+/**
+ * @file CharacterStrokePlayer.css
+ * @description Styles for the CharacterStrokePlayer component (Story 18.4)
+ *
+ * Mini-mode (csp-*) and full-mode (anim-*) control button styles.
+ * Full-mode controls are inline (not using old AnimationControls component).
+ *
+ * Extracted from features/foundations to shared/components/CharacterStroke.
+ */
+
+/* ── Mini mode controls ──────────────────────────────────── */
+
+.csp-controls-row {
+  gap: 0.25rem; /* 4px — intentionally tighter than var(--space-xs) for compact mini layout */
+}
+
+/* Control button sizing */
+.csp-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  min-width: unset;
+  min-height: unset;
+}
+
+.csp-ctrl-play {
+  color: var(--color-primary-light);
+}
+
+@media (max-width: 640px) {
+  .csp-ctrl-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ── Full-mode control buttons ───────────────────────────── */
+
+.anim-control-btn {
+  width: 32px;
+  height: 32px;
+  min-width: unset;
+  min-height: unset;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Speed slider */
+.stroke-speed-slider {
+  width: 60px;
+  accent-color: var(--color-primary-light);
+  cursor: pointer;
+}

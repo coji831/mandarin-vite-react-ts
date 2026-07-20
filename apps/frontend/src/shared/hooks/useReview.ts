@@ -18,5 +18,12 @@ export function useReview() {
     return true;
   }, []);
 
-  return { saveToReview };
+  const markLearned = useCallback(async (_char: string): Promise<boolean> => {
+    // Story 18.5 AC #7: Mark Learned → sets confidence to 0.9
+    // Real backend integration in future story
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return true;
+  }, []);
+
+  return { saveToReview, markLearned };
 }

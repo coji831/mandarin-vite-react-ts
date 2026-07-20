@@ -10,32 +10,11 @@
  * Skeleton/loading styles duplicated in Phase3TreeView.css (renamed)
  */
 
-.radical-trees-tab {
-  width: 100%;
-}
+/* Width/100 migrated to w-full utility class */
 
 /* ─── Initial tab loading state ──────────────────────────────────── */
 /* Used by RadicalTreesTab.tsx directly (not Phase3TreeView) */
 
 .radical-trees-tab__loading {
   min-height: 200px;
-}
-
-.radical-trees-tab__skeleton-tree {
-  width: 100%;
-  height: 60px;
-  background: var(--surface-light-5);
-  border-radius: var(--radius-lg);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-  margin-bottom: var(--space-md);
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
 }

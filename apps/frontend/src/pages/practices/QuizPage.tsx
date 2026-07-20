@@ -13,21 +13,17 @@
  *              Shows "select a quiz type" message for unregistered strategies
  */
 
+import "./QuizPage.css";
 import type { StrategyType } from "features/quiz";
 import { getStrategy } from "features/quiz";
 import { useSearchParams } from "react-router-dom";
 import { practices_page } from "shared/constants";
-import { QuizDebugPage } from "./QuizDebugPage";
 import { QuizSessionPage } from "./QuizSessionPage";
+import { Button } from "shared/components";
 
 export function QuizPage() {
   const [searchParams] = useSearchParams();
   const quizType = searchParams.get("type");
-
-  // Route to debug page
-  if (quizType === "_debug") {
-    return <QuizDebugPage />;
-  }
 
   // Route to strategy-based quiz if type matches registry
   if (quizType && getStrategy(quizType)) {
@@ -38,16 +34,12 @@ export function QuizPage() {
   return (
     <div className="flex-col-center p-2xl gap-lg">
       <h2 className="font-xl text-primary m-0">📝 Quiz</h2>
-      <p className="text-secondary text-center" style={{ maxWidth: 400 }}>
+      <p className="text-secondary text-center quiz-page__fallback-text">
         Select a quiz type from the practices page to begin.
       </p>
-      <a
-        href={practices_page}
-        className="btn-primary"
-        style={{ textDecoration: "none", padding: "var(--space-md) var(--space-xl)" }}
-      >
+      <Button variant="primary" onClick={() => (window.location.href = practices_page)}>
         Back to Practices
-      </a>
+      </Button>
     </div>
   );
 }

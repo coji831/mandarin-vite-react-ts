@@ -4,7 +4,7 @@
  * Story 19.4: Radical Trees (Phase 3)
  */
 
-import { useCallback } from "react";
+import { Box, Button } from "shared/components";
 import type { RadicalData } from "../types";
 import "./RadicalChipPicker.css";
 
@@ -19,35 +19,29 @@ export function RadicalChipPicker({
   activeRadicalId,
   onChipClick,
 }: RadicalChipPickerProps) {
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent, id: string) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        onChipClick(id);
-      }
-    },
-    [onChipClick],
-  );
-
   return (
-    <div className="radical-chip-picker" role="tablist" aria-label="Mastered radicals">
+    <Box
+      variant="divider"
+      className="radical-chip-picker flex-wrap gap-sm"
+      padding="md"
+      role="tablist"
+      aria-label="Mastered radicals"
+    >
       {filteredChips.map((radical) => {
         const isSelected = activeRadicalId === radical.id;
         return (
-          <button
+          <Button
             key={radical.id}
-            className={`radical-chip-picker__chip ${isSelected ? "radical-chip-picker__chip--selected" : ""}`}
+            variant={isSelected ? "tag-active" : "ghost"}
+            className="radical-chip-picker__chip text-secondary transition-all"
             onClick={() => onChipClick(radical.id)}
-            onKeyDown={(e) => handleKeyDown(e, radical.id)}
-            role="tab"
-            aria-selected={isSelected}
-            type="button"
+            aria-label={`Select ${radical.meaning} radical`}
           >
             <span className="font-md">{radical.glyph}</span>
             <span className="font-xs">{radical.meaning}</span>
-          </button>
+          </Button>
         );
       })}
-    </div>
+    </Box>
   );
 }

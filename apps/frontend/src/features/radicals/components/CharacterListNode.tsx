@@ -7,9 +7,9 @@
  * and meaning subtext. Each character is clickable → opens Character Detail Hub.
  */
 
+import { Box } from "shared/components";
 import type { RadicalData } from "../types";
 import { BranchNode } from "./BranchNode";
-import "./CharacterListNode.css";
 
 interface CharacterListNodeProps {
   radical: RadicalData;
@@ -26,20 +26,26 @@ export function CharacterListNode({ radical, characters }: CharacterListNodeProp
   }
 
   return (
-    <div className="character-list-node">
-      <div className="character-list-node__header">
-        <span className="character-list-node__radical-glyph">{radical.glyph}</span>
-        <div className="character-list-node__radical-info">
-          <span className="character-list-node__radical-meaning">{radical.meaning}</span>
-          <span className="character-list-node__radical-pinyin">{radical.name_pinyin}</span>
+    <Box variant="surface" className="character-list-node radius-lg overflow-hidden">
+      <Box
+        variant="header"
+        className="character-list-node__header flex-center gap-md bg-surface-light-5"
+        padding="md"
+      >
+        <span className="character-list-node__radical-glyph font-3xl text-primary-light lh-1">
+          {radical.glyph}
+        </span>
+        <div className="character-list-node__radical-info flex-col flex-1">
+          <span className="font-md text-primary fw-500">{radical.meaning}</span>
+          <span className="font-sm text-secondary">{radical.name_pinyin}</span>
         </div>
-        <span className="character-list-node__count">
+        <span className="character-list-node__count font-xs text-muted whitespace-nowrap">
           {characters.length} character{characters.length !== 1 ? "s" : ""}
         </span>
-      </div>
+      </Box>
 
       <div
-        className="character-list-node__grid"
+        className="character-list-node__grid flex-wrap gap-md p-md"
         role="list"
         aria-label="Characters containing this radical"
       >
@@ -53,6 +59,6 @@ export function CharacterListNode({ radical, characters }: CharacterListNodeProp
           />
         ))}
       </div>
-    </div>
+    </Box>
   );
 }

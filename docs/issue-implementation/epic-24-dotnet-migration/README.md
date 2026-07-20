@@ -532,7 +532,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - [Architecture Overview](../../architecture.md)
 - [Epic 13: Production Backend Architecture](../epic-13-production-backend-architecture/README.md)
 - [Code Conventions](../../guides/conventions/backend.md)
-- [.NET Migration Guide (Archived)](../../archive/dotnet-migration.md)
+- [Epic 13 Production Architecture](../epic-13-production-backend-architecture/README.md)
 
 ---
 

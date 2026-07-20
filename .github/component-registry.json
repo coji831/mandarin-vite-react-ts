@@ -1,0 +1,332 @@
+{
+  "description": "Mandarin-Vite-React-TS shared component registry. The agent MUST check this before creating any UI structure. Do not invent components not listed here.",
+  "version": "1.0",
+  "components": {
+    "Box": {
+      "description": "Generic layout container. Preferred over raw <div> for any container with visual treatment.",
+      "importPath": "shared/components",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "dark",
+            "dark-alt",
+            "dark-accent",
+            "dark-accent-primary",
+            "surface",
+            "elevated",
+            "error",
+            "card",
+            "divider",
+            "header",
+            "dashed",
+            "chip",
+            "item",
+            "pass",
+            "fail",
+            "tone-1",
+            "tone-2",
+            "tone-3",
+            "tone-4",
+            "tone-5"
+          ],
+          "default": "dark"
+        },
+        "padding": {
+          "type": "enum",
+          "values": ["none", "xs", "sm", "md", "lg", "xl", "2xl"],
+          "default": "none"
+        },
+        "as": {
+          "type": "elementType",
+          "description": "HTML element to render as (div, section, span, etc.)",
+          "default": "div"
+        },
+        "className": { "type": "string" },
+        "children": { "type": "reactNode" }
+      }
+    },
+    "Button": {
+      "description": "Standardized button with variants, sizes, and loading state.",
+      "importPath": "shared/components",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "primary",
+            "secondary",
+            "icon",
+            "ghost",
+            "control",
+            "control-active",
+            "circle",
+            "tag",
+            "tag-active",
+            "primary-active",
+            "tab",
+            "tab-active",
+            "tone-1",
+            "tone-2",
+            "tone-3",
+            "tone-4",
+            "tone-5",
+            "ghost-primary",
+            "rating-again",
+            "rating-good",
+            "rating-easy"
+          ],
+          "default": "primary"
+        },
+        "size": { "type": "enum", "values": ["sm", "md", "lg"], "default": "md" },
+        "width": { "type": "number", "description": "Override variant's default width (px)" },
+        "height": { "type": "number", "description": "Override variant's default height (px)" },
+        "loading": { "type": "boolean", "default": false },
+        "disabled": { "type": "boolean", "default": false },
+        "onClick": { "type": "function" },
+        "children": { "type": "reactNode" },
+        "className": { "type": "string" },
+        "type": { "type": "enum", "values": ["button", "submit", "reset"], "default": "button" },
+        "aria-label": { "type": "string" }
+      }
+    },
+    "Input": {
+      "description": "Controlled text input. Always use this instead of raw <input>.",
+      "importPath": "shared/components",
+      "props": {
+        "value": { "type": "string", "required": true },
+        "onChange": { "type": "function", "required": true },
+        "onKeyDown": { "type": "function" },
+        "placeholder": { "type": "string" },
+        "className": { "type": "string" },
+        "maxLength": { "type": "number" },
+        "disabled": { "type": "boolean" },
+        "aria-label": { "type": "string" }
+      }
+    },
+    "TextLink": {
+      "description": "Inline text-style button that looks like a link. For form-switch actions where Router links won't work.",
+      "importPath": "shared/components",
+      "props": {
+        "onClick": { "type": "function" },
+        "disabled": { "type": "boolean", "default": false },
+        "children": { "type": "reactNode" },
+        "className": { "type": "string" }
+      }
+    },
+    "Card": {
+      "description": "Content card with title, subtitle, optional icon/badge/locked state.",
+      "importPath": "shared/components",
+      "props": {
+        "title": { "type": "string", "required": true },
+        "subtitle": { "type": "string" },
+        "supportingText": { "type": "string" },
+        "icon": { "type": "string" },
+        "badge": { "type": "string" },
+        "isLocked": { "type": "boolean", "default": false },
+        "onClick": { "type": "function" }
+      }
+    },
+    "Modal": {
+      "description": "Controlled overlay dialog with backdrop, close on Escape, size variants.",
+      "importPath": "shared/components",
+      "props": {
+        "isOpen": { "type": "boolean", "required": true },
+        "onClose": { "type": "function", "required": true },
+        "title": { "type": "string" },
+        "children": { "type": "reactNode" },
+        "footer": { "type": "reactNode" },
+        "size": { "type": "enum", "values": ["sm", "md", "lg"], "default": "md" }
+      }
+    },
+    "Tabs": {
+      "description": "Tab navigation bar with panel content slot.",
+      "importPath": "shared/components",
+      "props": {
+        "tabs": { "type": "TabConfig[]", "required": true },
+        "activeTab": { "type": "string", "required": true },
+        "onTabChange": { "type": "function", "required": true },
+        "children": { "type": "reactNode" },
+        "lockedTabs": { "type": "string[]" },
+        "getLockPhase": { "type": "function" },
+        "align": { "type": "enum", "values": ["start", "center"] }
+      }
+    },
+    "ProgressBar": {
+      "description": "Progress bar with optional threshold marker.",
+      "importPath": "shared/components",
+      "props": {
+        "value": { "type": "number", "required": true, "description": "0-100" },
+        "threshold": { "type": "number", "description": "Marker position 0-100" },
+        "className": { "type": "string" }
+      }
+    },
+    "ToggleSwitch": {
+      "description": "Toggle switch with label.",
+      "importPath": "shared/components",
+      "props": {
+        "label": { "type": "string", "required": true },
+        "checked": { "type": "boolean", "required": true },
+        "onChange": { "type": "function", "required": true },
+        "aria-label": { "type": "string" }
+      }
+    },
+    "FilterChip": {
+      "description": "Toggle chip for filter selection.",
+      "importPath": "shared/components",
+      "props": {
+        "label": { "type": "string", "required": true },
+        "selected": { "type": "boolean", "required": true },
+        "onClick": { "type": "function", "required": true }
+      }
+    },
+    "LoadingScreen": {
+      "description": "Full-section loading state with spinner.",
+      "importPath": "shared/components",
+      "props": {
+        "message": { "type": "string", "default": "Loading..." }
+      }
+    },
+    "ErrorScreen": {
+      "description": "Full-section error state with retry button.",
+      "importPath": "shared/components",
+      "props": {
+        "error": { "type": "string", "required": true },
+        "onRetry": { "type": "function", "required": true },
+        "title": { "type": "string", "default": "Something went wrong" }
+      }
+    },
+    "Spinner": {
+      "description": "Loading spinner indicator.",
+      "importPath": "shared/components",
+      "props": {
+        "size": { "type": "enum", "values": ["sm", "md", "lg"] },
+        "color": { "type": "string" },
+        "hidden": { "type": "boolean" }
+      }
+    },
+    "Skeleton": {
+      "description": "Content placeholder shimmer.",
+      "importPath": "shared/components"
+    },
+    "ContentBrowser": {
+      "description": "Full content browsing UI with grid, filters, pagination.",
+      "importPath": "shared/components"
+    },
+    "SearchInput": {
+      "description": "Search input with icon.",
+      "importPath": "shared/components"
+    },
+    "Dropdown": {
+      "description": "Dropdown select menu.",
+      "importPath": "shared/components"
+    },
+    "RadioGroup": {
+      "description": "Radio button group.",
+      "importPath": "shared/components",
+      "props": {
+        "options": { "type": "RadioOption[]", "required": true },
+        "value": { "type": "string", "required": true },
+        "onChange": { "type": "function", "required": true },
+        "name": { "type": "string", "required": true }
+      }
+    },
+    "Grid": {
+      "description": "CSS Grid layout container.",
+      "importPath": "shared/components"
+    },
+    "FilterControls": {
+      "description": "Filter bar with multiple FilterChips.",
+      "importPath": "shared/components"
+    },
+    "SideNav": {
+      "description": "Side navigation panel.",
+      "importPath": "shared/components",
+      "props": {
+        "items": { "type": "NavItem[]", "required": true },
+        "activeId": { "type": "string" },
+        "onNavigate": { "type": "function" }
+      }
+    },
+    "TopNav": {
+      "description": "Top navigation bar.",
+      "importPath": "shared/components",
+      "props": {
+        "items": { "type": "TopNavItem[]", "required": true },
+        "activeId": { "type": "string" },
+        "onNavigate": { "type": "function" }
+      }
+    },
+    "CharacterStrokePlayer": {
+      "description": "Stroke animation player for Chinese characters. Mini mode for embedding (hub), full mode for dedicated stroke practice.",
+      "importPath": "shared/components",
+      "props": {
+        "character": { "type": "string", "required": true },
+        "mode": { "type": "enum", "values": ["full", "mini"], "default": "full" },
+        "placeholderSize": {
+          "type": "string",
+          "description": "Font utility class for placeholder character"
+        },
+        "onCharacterClick": { "type": "function" },
+        "onPlayAudio": { "type": "function" },
+        "className": { "type": "string" }
+      }
+    },
+    "CharacterHub": {
+      "description": "Character Detail Hub overlay — modal with character info, stroke animation, audio, radicals, and actions.",
+      "importPath": "features/character-hub/components",
+      "props": {},
+      "subComponents": {
+        "HubCharacterCard": {
+          "description": "Character hero card with stroke player, pinyin, and audio button."
+        },
+        "HubInfoLine": {
+          "description": "Metadata row: character (pinyin) · HSK level."
+        },
+        "HubActions": {
+          "description": "Action buttons: Save to Review + Mark Learned."
+        },
+        "HubRadicalSection": {
+          "description": "Phase-gated radical decomposition with skeleton loading and styled empty state."
+        },
+        "HubEtymology": {
+          "description": "Character etymology and info (traditional, HSK level, stroke count)."
+        },
+        "HubReadings": {
+          "description": "All readings with pinyin, tone, audio, and frequency rank."
+        },
+        "HubCommonWords": {
+          "description": "Clickable chips for common compound words containing the character."
+        }
+      }
+    },
+    "AnimationCanvas": {
+      "description": "Canvas-based animation container for stroke order visualization.",
+      "importPath": "shared/components",
+      "props": {
+        "character": { "type": "string", "required": true },
+        "onComplete": { "type": "function" },
+        "strokeColor": { "type": "string" },
+        "strokeWidth": { "type": "number" },
+        "className": { "type": "string" }
+      }
+    },
+    "TopNav": {
+      "description": "Top-level navigation bar with route-based NavLinks. Phase-gated lock support.",
+      "importPath": "shared/components",
+      "props": {
+        "items": { "type": "TopNavItem[]", "required": true },
+        "phaseGate": { "type": "number" },
+        "requiredPhase": { "type": "function" },
+        "aria-label": { "type": "string" },
+        "align": { "type": "enum", "values": ["start", "center", "end"] }
+      }
+    }
+  },
+  "rules": [
+    "Do NOT invent component variants not listed here",
+    "Do NOT use raw <div> when Box can be used",
+    "Do NOT use raw <button> when Button can be used",
+    "Do NOT use raw <input> when Input can be used",
+    "Always prefer existing shared components from registry over creating new ones"
+  ]
+}

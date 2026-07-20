@@ -4,35 +4,34 @@
  * Story 19.4: Radical Trees (Phase 3)
  */
 
-.branch-node {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xs) var(--space-sm);
-  position: relative;
-}
-
-.branch-node:hover {
-  background: var(--surface-hover);
-  border-radius: var(--radius-md);
-}
+/* position:relative migrated to relative utility class */
 
 /* ─── Tree connector line ──────────────────────────────────────────── */
 
+/* Tree connector indentation — structural, kept intentionally */
 .branch-node--with-connector {
   padding-left: var(--space-lg);
 }
 
 .branch-node__connector {
+  /* structural: absolute */
   position: absolute;
+  /* structural: left-0 */
   left: 0;
+  /* structural: top-0 */
   top: 0;
   bottom: 50%;
   width: 1.5em;
-  border-left: 2px solid var(--surface-border);
-  border-bottom: 2px solid var(--surface-border);
-  border-bottom-left-radius: var(--radius-md);
   pointer-events: none;
+  /* Directional border — replaces removed global utility border-b-2 border-l-2 */
+  border-bottom: 2px solid var(--surface-border);
+  border-left: 2px solid var(--surface-border);
+  /* ═══════════════════════════════════════════════
+     EXCEPTIONAL CASE: Tree connector corner radius
+     Directional radius for tree diagram connector.
+     Structural — only applies to this tree element.
+     ═══════════════════════════════════════════════ */
+  border-bottom-left-radius: var(--radius-md);
 }
 
 .branch-node--with-connector:last-child .branch-node__connector {
@@ -40,13 +39,17 @@
 }
 
 .branch-node--with-connector:first-child .branch-node__connector {
+  /* structural: top-0 — tree connector offset */
   top: 0;
 }
 
 .branch-node--with-connector::before {
   content: "";
+  /* structural: absolute */
   position: absolute;
+  /* structural: left-0 */
   left: 0;
+  /* structural: top-0 */
   top: 0;
   bottom: 0;
   width: 1.5em;
@@ -62,88 +65,22 @@
   bottom: 50%;
 }
 
+/* ═══════════════════════════════════════════════
+   EXCEPTIONAL CASE: Hover radius for branch node
+   Single-component — radius change on hover for
+   the character branch container. Not a global utility.
+   ═══════════════════════════════════════════════ */
+.branch-node:hover {
+  /* structural: radius-md — hover state */
+  border-radius: var(--radius-md);
+}
+
 /* ─── Character info (horizontal row) ──────────────────────────────── */
 
-.branch-node__main {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  cursor: pointer;
-  flex: 1;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
-}
-
-.branch-node__main:hover {
-  background: var(--surface-light-10);
-}
-
 .branch-node__glyph {
-  font-size: var(--font-lg);
-  color: var(--text-primary);
-  line-height: 1;
   min-width: 1.5em;
-  text-align: center;
-}
-
-.branch-node__pinyin {
-  font-size: var(--font-sm);
-  color: var(--color-primary-light);
-  line-height: 1;
-}
-
-.branch-node__separator {
-  font-size: var(--font-sm);
-  color: var(--text-muted);
-  line-height: 1;
-  margin: 0 var(--space-xs);
-}
-
-.branch-node__meaning {
-  font-size: var(--font-xs);
-  color: var(--text-muted);
-  line-height: 1;
 }
 
 /* ─── Audio button ─────────────────────────────────────────────────── */
 
-.branch-node__audio-btn {
-  background: transparent;
-  border: 1px solid var(--surface-border);
-  color: var(--text-secondary);
-  font-size: var(--font-sm);
-  padding: var(--space-xs);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.branch-node__audio-btn:hover {
-  background: var(--surface-light-10);
-  color: var(--color-primary-light);
-  border-color: var(--color-primary-border);
-}
-
 /* ─── Hub button ───────────────────────────────────────────────────── */
-
-.branch-node__hub-btn {
-  background: transparent;
-  border: 1px solid var(--surface-border);
-  color: var(--text-secondary);
-  font-size: var(--font-xs);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.branch-node__hub-btn:hover {
-  background: var(--surface-light-10);
-  color: var(--color-primary-light);
-  border-color: var(--color-primary-border);
-}

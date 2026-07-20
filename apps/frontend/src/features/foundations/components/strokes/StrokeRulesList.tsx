@@ -4,8 +4,8 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
+import { Box } from "shared/components";
 import type { StrokeOrderRule } from "../../types";
-import "./StrokeRulesList.css";
 
 export interface StrokeRulesListProps {
   rules: StrokeOrderRule[];
@@ -16,10 +16,12 @@ export interface StrokeRulesListProps {
  */
 export function StrokeRulesList({ rules }: StrokeRulesListProps) {
   return (
-    <div className="stroke-rules-container bg-surface-dark-alt border-default radius-md p-xs flex-col">
+    <Box variant="dark-alt" padding="xs" className="stroke-rules-container flex-col">
       {rules.map((rule) => (
-        <div key={rule.id} className="stroke-rule-card">
-          <span className="stroke-rule-number font-sm shrink-0 fw-700">{rule.number}.</span>
+        <Box key={rule.id} variant="card" className="stroke-rule-card flex-center gap-xs p-xs">
+          <span className="stroke-rule-number font-sm shrink-0 fw-700 text-primary">
+            {rule.number}.
+          </span>
           <span className="stroke-rule-name font-sm whitespace-nowrap fw-600 text-secondary">
             {rule.name}
           </span>
@@ -29,8 +31,8 @@ export function StrokeRulesList({ rules }: StrokeRulesListProps) {
           <span className="stroke-rule-desc font-xs font-italic text-muted">
             ({rule.description})
           </span>
-        </div>
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 }

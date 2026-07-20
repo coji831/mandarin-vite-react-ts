@@ -12,6 +12,7 @@ import { FeedbackView } from "./FeedbackView";
 import { QuizResults } from "./results/QuizResults";
 import { IMEQuestionView } from "./ime-input/IMEQuestionView";
 import { MultipleChoiceView } from "./MultipleChoiceView";
+import { ErrorScreen, LoadingScreen, Spinner } from "shared/components";
 
 /** Quiz types that use multiple-choice rendering */
 const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
@@ -31,9 +32,9 @@ export function QuizRouter() {
   switch (phase) {
     case "LOADING":
       return (
-        <div className="quiz-loading">
-          <div className="spinner" />
-          <p>Loading quiz...</p>
+        <div className="flex-col-center gap-sm">
+          <Spinner size="lg" />
+          <p className="text-secondary font-md m-0">Loading quiz...</p>
         </div>
       );
     case "QUESTION":
@@ -46,20 +47,8 @@ export function QuizRouter() {
     case "RESULTS":
       return <QuizResults />;
     case "ERROR":
-      return (
-        <div className="card quiz-error flex-col-center gap-md p-lg">
-          <p className="text-error fw-600">Error: {error}</p>
-          <button className="btn-primary" onClick={() => retry()} type="button">
-            Retry Quiz
-          </button>
-        </div>
-      );
+      return <ErrorScreen error={error ?? "An unknown error occurred"} onRetry={() => retry()} />;
     default:
-      return (
-        <div className="quiz-loading">
-          <div className="spinner" />
-          <p>Loading quiz...</p>
-        </div>
-      );
+      return <LoadingScreen message="Loading quiz..." />;
   }
 }

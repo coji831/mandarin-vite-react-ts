@@ -11,6 +11,8 @@
 
 import { useCallback } from "react";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
+import { Box, RadioGroup } from "shared/components";
+import type { RadioOption } from "shared/components";
 
 /** Multiple choice question view */
 export function MultipleChoiceView() {
@@ -27,13 +29,22 @@ export function MultipleChoiceView() {
   );
 
   if (!question) {
-    return <div className="card-dark quiz-question-empty">No question available</div>;
+    return (
+      <Box variant="dark" padding="md" className="quiz-question-empty">
+        No question available
+      </Box>
+    );
   }
 
   const options = question.options ?? [];
 
+  const radioOptions: RadioOption[] = options.map((opt) => ({
+    value: opt.id,
+    label: `${opt.glyph} — ${opt.meaning}`,
+  }));
+
   return (
-    <div className="card-dark flex-col gap-md quiz-question">
+    <Box variant="dark" padding="md" className="flex-col gap-md quiz-question">
       {/* Character + Meaning display */}
       <div className="quiz-question__character-display flex-col-center gap-xs text-center">
         {question.character && (
@@ -50,46 +61,20 @@ export function MultipleChoiceView() {
       </div>
 
       {/* Custom prompt or default */}
-      <p className="quiz-question__prompt text-secondary text-center font-md">
+      <p className="text-secondary text-center font-md">
         {question.prompt ?? "Which radical gives this character its meaning?"}
       </p>
 
       {/* Multiple choice options */}
-      <div
-        className="quiz-mc-options flex flex-col gap-sm w-full"
-        role="radiogroup"
-        aria-label="Answer options"
-      >
-        {options.map((option, index) => (
-          <button
-            key={option.id}
-            className="btn-outline quiz-mc-option quiz-mc-option__btn"
-            onClick={() => handleSelect(option.id)}
-            type="button"
-            role="radio"
-            aria-checked={false}
-            aria-label={`${option.glyph} — ${option.meaning}`}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-                e.preventDefault();
-                const next = e.currentTarget.parentElement?.children[
-                  index + 1
-                ] as HTMLElement | null;
-                next?.focus();
-              } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-                e.preventDefault();
-                const prev = e.currentTarget.parentElement?.children[
-                  index - 1
-                ] as HTMLElement | null;
-                prev?.focus();
-              }
-            }}
-          >
-            <span className="quiz-mc-option__glyph font-xl fw-600">{option.glyph}</span>
-            <span className="quiz-mc-option__meaning text-secondary">— {option.meaning}</span>
-          </button>
-        ))}
+      <div className="quiz-mc-options w-full">
+        <RadioGroup
+          name="mc-options"
+          options={radioOptions}
+          value={null}
+          onChange={handleSelect}
+          layout="vertical"
+        />
       </div>
-    </div>
+    </Box>
   );
 }

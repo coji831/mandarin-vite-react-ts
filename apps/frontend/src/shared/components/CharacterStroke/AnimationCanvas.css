@@ -1,0 +1,36 @@
+/**
+ * @file AnimationCanvas.css
+ * @description Styles for the AnimationCanvas component (Story 18.4)
+ *
+ * Extracted from features/foundations to shared/components/CharacterStroke.
+ *
+ * Dimensions use CSS variables with fallbacks for easy per-instance overrides.
+ */
+
+.stroke-anim-canvas-wrapper {
+  width: var(--canvas-size, 200px);
+  height: var(--canvas-size, 200px);
+}
+
+.stroke-anim-canvas {
+  width: var(--canvas-size, 200px);
+  height: var(--canvas-size, 200px);
+}
+
+@media (max-width: 640px) {
+  .stroke-anim-canvas-wrapper {
+    width: var(--canvas-size-mobile, 160px);
+    height: var(--canvas-size-mobile, 160px);
+  }
+  .stroke-anim-canvas {
+    width: var(--canvas-size-mobile, 160px);
+    height: var(--canvas-size-mobile, 160px);
+  }
+}
+
+.stroke-anim-canvas-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}

@@ -5,7 +5,7 @@
  */
 import express from "express";
 import type { Request, Response } from "express";
-import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
+import { optionalAuth, requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
@@ -13,37 +13,37 @@ const router = express.Router();
 
 router.get(
   ROUTE_PATTERNS.quizConfig,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.getConfig(req, res)),
 );
 
 router.get(
   ROUTE_PATTERNS.quizQuestions,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.getQuestions(req, res)),
 );
 
 router.post(
   ROUTE_PATTERNS.quizAttempts,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.createQuizAttempt(req, res)),
 );
 
 router.post(
   ROUTE_PATTERNS.quizAttemptAnswer(":id"),
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.submitAnswer(req, res)),
 );
 
 router.put(
   ROUTE_PATTERNS.quizAttemptComplete(":id"),
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.completeQuizAttempt(req, res)),
 );
 
 router.get(
   ROUTE_PATTERNS.quizAttempts,
-  authenticateToken,
+  requireAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.getQuizAttempts(req, res)),
 );
 

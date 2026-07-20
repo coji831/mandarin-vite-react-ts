@@ -9,6 +9,7 @@
  */
 
 import { useQuizSessionStore } from "../stores/quizSessionStore";
+import { Box } from "shared/components";
 import { AudioPlayer } from "./AudioPlayer";
 import { AnswerInput } from "./AnswerInput";
 
@@ -19,11 +20,15 @@ export function QuestionView() {
   const question = questions[currentIndex];
 
   if (!question) {
-    return <div className="card-dark quiz-question-empty">No question available</div>;
+    return (
+      <Box variant="dark" padding="md" className="quiz-question-empty">
+        No question available
+      </Box>
+    );
   }
 
   return (
-    <div className="card-dark flex-col gap-md quiz-question">
+    <Box variant="dark" padding="md" className="flex-col gap-md quiz-question">
       {/* Audio player */}
       <AudioPlayer audioKey={question.audioKey} character={question.character} />
 
@@ -40,12 +45,10 @@ export function QuestionView() {
       )}
 
       {/* Listen prompt */}
-      <p className="quiz-question__prompt text-tertiary text-center font-sm">
-        Listen to the audio, then:
-      </p>
+      <p className="text-tertiary text-center font-sm">Listen to the audio, then:</p>
 
       {/* Answer input */}
       <AnswerInput />
-    </div>
+    </Box>
   );
 }

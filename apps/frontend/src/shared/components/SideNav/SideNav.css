@@ -1,0 +1,104 @@
+/* SideNav.css - Left sidebar navigation (BEM: .side-nav) */
+
+.side-nav {
+  width: 220px;
+  min-height: 100vh;
+}
+
+/* Brand */
+.side-nav__brand {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Navigation links */
+.side-nav__links {
+  gap: var(--space-xs);
+}
+
+.side-nav__link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.side-nav__link:hover {
+  background: var(--surface-light-8);
+  color: var(--text-secondary);
+}
+
+.side-nav__icon {
+  width: 24px;
+}
+
+.side-nav__label {
+  text-overflow: ellipsis;
+}
+
+/* User section */
+.side-nav__user {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.side-nav__user-avatar {
+  width: 28px;
+  height: 28px;
+  /* background migrated to bg-surface-light-20 utility in SideNav.tsx */
+}
+
+.side-nav__user-name {
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.side-nav__login {
+  /* background migrated to bg-primary utility in SideNav.tsx */
+  color: white;
+}
+
+/* .side-nav__login:hover — migrated to hover:op-90 utility */
+
+/* ===========================
+   Mobile Responsive
+   =========================== */
+
+@media (max-width: 768px) {
+  .side-nav {
+    width: 60px;
+    align-items: center;
+  }
+
+  .side-nav__title {
+    display: none;
+  }
+
+  .side-nav__link {
+    justify-content: center;
+  }
+
+  .side-nav__icon {
+    width: auto;
+    font-size: var(--font-lg);
+  }
+
+  .side-nav__label {
+    display: none;
+  }
+
+  .side-nav__user-name {
+    display: none;
+  }
+
+  .side-nav__user {
+    justify-content: center;
+  }
+
+  .side-nav__logout {
+    display: none;
+  }
+}

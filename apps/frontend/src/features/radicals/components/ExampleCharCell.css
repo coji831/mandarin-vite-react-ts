@@ -1,0 +1,32 @@
+/**
+ * @file components/ExampleCharCell.css
+ * @description Styles for ExampleCharRow — compact horizontal row with two action buttons
+ * Story 19.2: Radical Detail Card
+ *
+ * Layout: [glyph] [info] [🔊][↗]
+ * Row is a flex container; actions use <Button variant="icon"> from shared components.
+ * All button interaction styles come from the shared Button component.
+ */
+
+.example-char-row:hover {
+  /* pseudo-class: cannot use bg-surface-light-5 utility — only applies on hover */
+  background: var(--surface-light-5);
+}
+
+/* ── Glyph ── */
+.example-char-row__glyph {
+  width: 36px;
+}
+
+/* ── Info area ── */
+.example-char-row__info {
+  min-width: 0;
+}
+
+.example-char-row__pinyin {
+  min-width: 80px;
+}
+
+.example-char-row__meaning {
+  text-overflow: ellipsis;
+}

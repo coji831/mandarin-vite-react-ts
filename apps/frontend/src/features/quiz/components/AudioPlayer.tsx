@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from "react";
 import { useAudioPlayback } from "shared/hooks";
+import { Button } from "shared/components";
 
 type AudioPlayerProps = {
   /** Pinyin audio key (e.g., "bā") */
@@ -33,19 +34,19 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
 
   return (
     <div className="flex-center">
-      <button
-        className="btn-primary quiz-audio-btn hover-lift gap-sm py-md px-xl"
+      <Button
+        variant="primary"
+        size="md"
         onClick={handlePlay}
         disabled={buttonDisabled}
-        aria-label={isPlaying ? "Playing audio..." : hasPlayed ? "Replay audio" : "Play audio"}
+        title={isPlaying ? "Playing audio..." : hasPlayed ? "Replay audio" : "Play audio"}
+        className="quiz-audio-btn hover-lift disabled:op-60"
       >
-        <span style={{ fontSize: "var(--font-xl)" }}>
-          {isLoading ? "⏳" : isPlaying ? "🔊" : "🔊"}
-        </span>
+        <span className="font-xl">{isLoading ? "⏳" : isPlaying ? "🔊" : "🔊"}</span>
         <span style={{ fontSize: "var(--font-md)" }}>
           {error ? "⚠️ Error" : isLoading ? "Loading..." : isPlaying ? "Playing..." : label}
         </span>
-      </button>
+      </Button>
     </div>
   );
 }

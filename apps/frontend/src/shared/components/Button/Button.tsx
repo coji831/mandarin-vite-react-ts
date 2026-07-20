@@ -7,27 +7,59 @@
  */
 
 import React from "react";
+import { Spinner } from "shared/components";
 import "./Button.css";
 
-export type ButtonVariant = "primary" | "secondary";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "icon"
+  | "ghost"
+  | "control"
+  | "control-active"
+  | "circle"
+  | "tag"
+  | "tag-active"
+  | "primary-active"
+  | "tab"
+  | "tab-active"
+  | "tone-1"
+  | "tone-2"
+  | "tone-3"
+  | "tone-4"
+  | "tone-5"
+  | "ghost-primary"
+  | "rating-again"
+  | "rating-good"
+  | "rating-easy";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  width?: number;
+  height?: number;
   loading?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset";
   style?: React.CSSProperties;
   title?: string;
+  "aria-label"?: string;
+  "aria-selected"?: boolean;
+  role?: string;
+  id?: string;
+  "aria-controls"?: string;
+  "data-rating"?: string;
 };
 
 export function Button({
   variant = "primary",
   size = "md",
+  width,
+  height,
   loading = false,
   disabled = false,
   onClick,
@@ -36,12 +68,42 @@ export function Button({
   type = "button",
   style,
   title,
+  "aria-label": ariaLabel,
+  "aria-selected": ariaSelected,
+  role,
+  id,
+  "aria-controls": ariaControls,
+  "data-rating": dataRating,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
 
+  const variantClasses: Record<string, string> = {
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    ghost: "btn-ghost",
+    icon: "btn-icon",
+    control: "btn-control",
+    "control-active": "btn-control-active",
+    circle: "btn-circle",
+    tag: "btn-tag",
+    "tag-active": "btn-tag-active",
+    "primary-active": "btn-primary-active",
+    tab: "btn-tab",
+    "tab-active": "btn-tab-active",
+    "tone-1": "btn-tone-1",
+    "tone-2": "btn-tone-2",
+    "tone-3": "btn-tone-3",
+    "tone-4": "btn-tone-4",
+    "tone-5": "btn-tone-5",
+    "ghost-primary": "btn-ghost-primary",
+    "rating-again": "btn-rating-again",
+    "rating-good": "btn-rating-good",
+    "rating-easy": "btn-rating-easy",
+  };
+
   const buttonClass = [
     "btn",
-    `btn-${variant}`,
+    variantClasses[variant],
     `btn-${size}`,
     loading ? "btn-loading" : "",
     className,
@@ -56,11 +118,21 @@ export function Button({
       onClick={onClick}
       disabled={isDisabled}
       aria-busy={loading}
+      aria-label={ariaLabel}
+      aria-selected={ariaSelected}
+      aria-controls={ariaControls}
+      data-rating={dataRating}
       title={title}
-      style={{ ...style }}
+      role={role}
+      id={id}
+      style={{
+        ...(width !== undefined ? { width } : {}),
+        ...(height !== undefined ? { height } : {}),
+        ...style,
+      }}
     >
-      {loading && <span className="btn-spinner" aria-hidden="true"></span>}
-      <span className={loading ? "btn-content-loading" : ""}>{children}</span>
+      {loading && <Spinner size="sm" color="white" hidden />}
+      {loading ? <span className="btn-content-loading op-80"></span> : children}
     </button>
   );
 }

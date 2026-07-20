@@ -4,40 +4,26 @@
  * Merged styles from the old three-step components.
  */
 .review-card {
-  max-width: 520px;
-  width: 100%;
+  max-width: 600px;
   min-height: 300px;
 }
 
-.review-card__side {
-  width: 100%;
-}
+/* review-card__side: width migrated to utility class w-full */
 
 .review-card__character-display {
   min-height: 140px;
 }
 
-.review-card__character {
-  font-size: var(--font-5xl);
-  line-height: 1.2;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
 .review-card__meaning {
-  text-align: center;
   line-height: 1.4;
+  /* text-align migrated to utility class: text-center */
 }
 
 /* ── Prompt icon & text (front side) ──────────────── */
 .review-card__prompt-icon {
   font-size: 2.5rem;
-  opacity: 0.6;
 }
 .review-card__prompt-text {
-  text-align: center;
-  line-height: 1.5;
   max-width: 320px;
 }
 
@@ -45,77 +31,44 @@
 .review-card__audio-btn {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  border: 2px solid var(--color-primary-border);
-  background: var(--surface-card);
-  color: var(--text-primary);
-  font-size: var(--font-2xl);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  /* transition migrated to .transition-all on JSX */
+  /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
 .review-card__audio-btn:hover {
   transform: scale(1.1);
+  /* structural: shadow-md — hover lift */
   box-shadow: var(--shadow-md);
-  border-color: var(--color-primary);
 }
 .review-card__audio-btn:active {
   transform: scale(0.95);
 }
 
-.review-card__pinyin-hint {
-  letter-spacing: 0.05em;
-}
-
 /* ── Pinyin input ────────────────────────────────── */
 .review-card__pinyin-input {
-  flex: 1;
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--font-lg);
-  border: 2px solid var(--surface-border);
-  border-radius: var(--radius-md);
-  background: var(--surface-input);
-  color: var(--text-primary);
-  text-align: center;
   letter-spacing: 0.1em;
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-.review-card__pinyin-input:focus {
-  border-color: var(--color-primary);
 }
 .review-card__pinyin-input::placeholder {
   color: var(--text-tertiary);
+  /* structural: placeholder font */
   font-size: var(--font-sm);
   letter-spacing: normal;
 }
 
 .review-card__full-answer {
   letter-spacing: 0.03em;
-  text-align: center;
-}
-
-/* ── Feedback section ─────────────────────────────── */
-.review-card__feedback {
-  border-left: 3px solid var(--color-primary-border);
-  padding-left: var(--space-md);
 }
 
 /* ── Tone buttons ─────────────────────────────────── */
-.review-card__tone-buttons {
-  justify-content: center;
-}
 
 .review-card__tone-btn {
   min-height: 68px;
   min-width: 72px;
-  border: 2px solid var(--surface-border);
-  background: transparent;
-  color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  /* transition migrated to .transition-all on JSX */
 }
 
 .review-card__tone-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  /* structural: shadow-md — hover lift */
   box-shadow: var(--shadow-md);
 }
 
@@ -128,54 +81,16 @@
   transform: translateY(0);
 }
 
-.review-card__tone-btn-mark {
-  font-size: var(--font-xl);
-}
-
-/* Per-tone colours (data attribute) */
-.review-card__tone-btn[data-tone="1"]:hover {
-  border-color: var(--color-error);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-}
-.review-card__tone-btn[data-tone="2"]:hover {
-  border-color: var(--color-warning);
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-}
-.review-card__tone-btn[data-tone="3"]:hover {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-.review-card__tone-btn[data-tone="4"]:hover {
-  border-color: var(--color-info-blue);
-  background: var(--color-info-blue-bg);
-  color: var(--color-info-blue);
-}
-.review-card__tone-btn[data-tone="0"]:hover {
-  border-color: var(--text-tertiary);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-tertiary);
-}
-
 /* ── Rating buttons ───────────────────────────────── */
-.review-card__ratings {
-  justify-content: center;
-}
-
 .review-card__rating-btn {
-  flex: 1;
   min-width: 120px;
   min-height: 68px;
-  border: 2px solid var(--surface-border);
-  background: transparent;
-  color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  /* transition migrated to .transition-all on JSX */
 }
 
 .review-card__rating-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  /* structural: shadow-md — hover lift */
   box-shadow: var(--shadow-md);
 }
 
@@ -186,23 +101,4 @@
 
 .review-card__rating-btn:active:not(:disabled) {
   transform: translateY(0);
-}
-
-/* Per-rating colours */
-.review-card__rating-btn[data-rating="again"]:hover {
-  border-color: var(--color-error);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-}
-
-.review-card__rating-btn[data-rating="good"]:hover {
-  border-color: var(--color-warning);
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-}
-
-.review-card__rating-btn[data-rating="easy"]:hover {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--color-success);
 }

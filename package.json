@@ -17,10 +17,17 @@
     "test:full": "npm run test:full --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present"
+    "format": "npm run format --workspaces --if-present",
+    "design-audit": "node tools/design-audit.mjs",
+    "design-audit:feature": "node tools/design-audit.mjs"
   },
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "@rollup/pluginutils": "^5.4.0",
+    "concurrently": "^9.1.2",
+    "mockdate": "^3.0.5",
+    "msw-storybook-addon": "^2.0.7",
+    "ts-dedent": "^2.0.0",
+    "tsconfig-paths": "^4.2.0"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -30,6 +37,8 @@
   },
   "devDependencies": {
     "@google/design.md": "^0.3.0",
+    "@webcontainer/env": "^1.1.1",
+    "jsdom": "^24.0.0",
     "prettier": "^3.9.4",
     "typescript": "^5.9.3"
   }

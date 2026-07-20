@@ -107,16 +107,19 @@ export function Dropdown<TValue = string | number | null>({
   const listboxId = `${dropdownId}-listbox`;
 
   return (
-    <div ref={containerRef} className={`dropdown ${className}`.trim()}>
+    <div ref={containerRef} className={`dropdown relative flex-col gap-xs ${className}`.trim()}>
       {label && (
-        <label htmlFor={dropdownId} className="dropdown__label">
+        <label
+          htmlFor={dropdownId}
+          className="dropdown__label font-xs text-secondary text-uppercase tracking-wide"
+        >
           {label}
         </label>
       )}
       <button
         id={dropdownId}
         type="button"
-        className="dropdown__trigger"
+        className="dropdown__trigger focus-ring flex-center flex-between w-full text-primary font-lg p-sm radius-md cursor-pointer bg-surface-light-5 border-1 border-surface transition-all hover:border-primary-border focus:border-primary"
         onClick={handleToggle}
         onKeyDown={handleTriggerKeyDown}
         aria-expanded={isOpen}
@@ -124,9 +127,11 @@ export function Dropdown<TValue = string | number | null>({
         aria-label={ariaLabel || label}
         aria-controls={listboxId}
       >
-        <span className="dropdown__trigger-text">{displayText}</span>
+        <span className="dropdown__trigger-text flex-1 whitespace-nowrap overflow-hidden">
+          {displayText}
+        </span>
         <span
-          className={`dropdown__arrow ${isOpen ? "dropdown__arrow--open" : ""}`}
+          className={`dropdown__arrow font-xs text-muted lh-1 ${isOpen ? "dropdown__arrow--open" : ""}`}
           aria-hidden="true"
         >
           ▾
@@ -135,7 +140,7 @@ export function Dropdown<TValue = string | number | null>({
       {isOpen && (
         <ul
           id={listboxId}
-          className="dropdown__menu"
+          className="dropdown__menu m-0 border-1 border-surface radius-md bg-surface-dark-alt shadow-md p-xs absolute"
           role="listbox"
           aria-label={label || ariaLabel}
         >
@@ -148,7 +153,7 @@ export function Dropdown<TValue = string | number | null>({
                 id={optionId}
                 role="option"
                 aria-selected={isSelected}
-                className={`dropdown__option ${isSelected ? "dropdown__option--selected" : ""}`}
+                className={`dropdown__option text-primary font-sm cursor-pointer p-sm ${isSelected ? "dropdown__option--selected bg-primary-bg text-accent fw-600" : ""}`}
                 onClick={() => handleSelect(option)}
                 onKeyDown={(e) => handleOptionKeyDown(e, option)}
                 tabIndex={0}

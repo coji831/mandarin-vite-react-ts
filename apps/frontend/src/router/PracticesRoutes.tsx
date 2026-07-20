@@ -11,6 +11,7 @@
  */
 import { Navigate, Route, Routes } from "react-router-dom";
 import { practices_page } from "shared/constants";
+import { ProtectedRoute } from "features/auth";
 import PracticesPage from "../pages/practices/PracticesPage";
 import { ReviewPage } from "../pages/practices/ReviewPage";
 import { QuizPage } from "../pages/practices/QuizPage";
@@ -19,7 +20,14 @@ export function PracticesRoutes() {
   return (
     <Routes>
       <Route index element={<PracticesPage />} />
-      <Route path="review" element={<ReviewPage />} />
+      <Route
+        path="review"
+        element={
+          <ProtectedRoute>
+            <ReviewPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="quiz" element={<QuizPage />} />
       <Route path="*" element={<Navigate to={practices_page} replace />} />
     </Routes>

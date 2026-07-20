@@ -13,8 +13,8 @@ export function useCharacterHub() {
   const { isOpen, character, pinyin, open, close } = useHubStore();
 
   const openHub = useCallback(
-    (char: string, pinyin?: string, position?: { x: number; y: number }) => {
-      open(char, pinyin, position);
+    (char: string, pinyin?: string) => {
+      open(char, pinyin);
     },
     [open],
   );

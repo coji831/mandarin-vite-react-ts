@@ -4,9 +4,234 @@
  * Imported via globals.css.
  *
  * Contains:
+ * - .btn-base — base button reset (padding, font, background, cursor)
  * - .btn-icon-circle — Small circular icon button (22×22 play buttons)
- * - .btn-outline — Outlined button with border (used by quiz MC options)
+ * - .btn-close — Close button for modals/popups (absolute position, transparent)
+ * - .input-base — Generic input field styling
+ * - .alert-success/error/warning/info — State feedback containers
+ * - .overlay — Fullscreen backdrop/overlay
+ * - .progress-container/text/bar/fill — Progress bar structure
+ * - .hover-lift/hover-lift-sm/hover-lift-md/hover-scale — Interactive hover effects
+ * - .card-interactive — Clickable card surfaces with hover lift
  */
+
+/* ═══════════════════════════════════════════════
+   Component: Base Button
+   Base button styling (replaces global button element selector).
+   ═══════════════════════════════════════════════ */
+.btn-base {
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--surface-dark-alt);
+  cursor: pointer;
+  transition: border-color var(--transition-normal);
+}
+.btn-base:hover {
+  border-color: var(--color-primary-border-hover);
+}
+.btn-base:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Close Button
+   Close button for modals/popups.
+   ═══════════════════════════════════════════════ */
+.btn-close {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-xl);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+.btn-close:hover {
+  background: var(--surface-light-10);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+.btn-close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Hover Lift
+   Transition-enabled lift effect for interactive elements.
+   ═══════════════════════════════════════════════ */
+.hover-lift {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.hover-lift:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.hover-lift:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Small lift on hover */
+.hover-lift-sm {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.hover-lift-sm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Medium lift on hover */
+.hover-lift-md {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.hover-lift-md:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Scale on hover */
+.hover-scale {
+  transition: transform var(--transition-fast);
+}
+.hover-scale:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Input Base
+   Generic input field styling.
+   ═══════════════════════════════════════════════ */
+.input-base {
+  background: var(--surface-light-5);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  border-radius: var(--radius-md);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+.input-base:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+.input-base::placeholder {
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Alert Containers
+   State feedback containers for success/error/warning/info.
+   ═══════════════════════════════════════════════ */
+.alert-success {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-md);
+}
+.alert-error {
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-md);
+}
+.alert-warning {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+}
+.alert-info {
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Overlay
+   Fullscreen backdrop for modals/popups.
+   ═══════════════════════════════════════════════ */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Progress Bar
+   Progress bar structure with fill state.
+   ═══════════════════════════════════════════════ */
+.progress-container {
+  gap: var(--space-xs);
+}
+.progress-text {
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+}
+.progress-bar {
+  height: 10px;
+  background-color: var(--surface-light-10);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-success);
+  transition: width 0.3s ease-in-out;
+  border-radius: 6px;
+}
+/* Celebration state for 100% completion */
+.progress-fill[style*="100%"] {
+  background: var(--gradient-success);
+  box-shadow: var(--shadow-md);
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Card Interactive
+   Clickable card surface with hover lift effect.
+   ═══════════════════════════════════════════════ */
+.card-interactive {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.card-interactive:hover {
+  background: var(--surface-hover);
+  border-color: var(--color-primary-border);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════
+   Component: Card Raised
+   Elevated container card with shadow (non-interactive).
+   ═══════════════════════════════════════════════ */
+.card-raised {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
 
 /* ═══════════════════════════════════════════════
    Component: Icon Circle Button
@@ -18,42 +243,36 @@
   height: 22px;
   background: var(--surface-light-10);
   color: var(--text-secondary);
-  font-size: 0.6rem;
-  padding: 0;
+  font-size: var(--font-xs);
   transition:
-    background 0.15s,
-    color 0.15s;
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 .btn-icon-circle:hover:not(:disabled) {
-  background: var(--color-primary-border-hover);
-  color: #fff;
-}
-.btn-icon-circle:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ═══════════════════════════════════════════════
-   Component: Outlined Button
-   Border-only button with transparent background.
-   Used by quiz multiple-choice options and variant actions.
-   ═══════════════════════════════════════════════ */
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--surface-border);
+  background: var(--color-primary-bg-medium);
   color: var(--text-primary);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
 }
-.btn-outline:hover {
-  border-color: var(--color-primary-border);
-  background: var(--color-primary-bg-light);
-}
-.btn-outline:focus-visible {
+/* .btn-icon-circle:disabled — migrated to disabled:op-60 utility */
+
+.btn-icon-circle:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
-.btn-outline:active {
-  background: var(--color-primary-bg);
+
+/* ═══════════════════════════════════════════════
+   Component: Custom Scrollbar
+   Thin scrollbar for all overflow containers.
+   WebKit only — Firefox/Edge use defaults.
+   ═══════════════════════════════════════════════ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 3px;
 }

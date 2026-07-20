@@ -1,0 +1,50 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "overrides": [
+    {
+      "files": ["src/styles/globals.css"],
+      "rules": {
+        "function-disallowed-list": null
+      }
+    }
+  ],
+  "rules": {
+    "function-disallowed-list": ["rgb", "rgba", "hsl", "hsla"],
+    "alpha-value-notation": null,
+    "at-rule-empty-line-before": null,
+    "color-function-alias-notation": null,
+    "color-function-notation": null,
+    "color-hex-length": null,
+    "color-no-hex": [
+      true,
+      {
+        "severity": "warning"
+      }
+    ],
+    "comment-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "declaration-empty-line-before": null,
+    "declaration-no-important": [
+      true,
+      {
+        "severity": "warning"
+      }
+    ],
+    "no-duplicate-selectors": null,
+    "import-notation": null,
+    "media-feature-range-notation": null,
+    "no-descending-specificity": null,
+    "property-no-deprecated": null,
+    "property-no-vendor-prefix": null,
+    "rule-empty-line-before": null,
+    "selector-class-pattern": [
+      "^([a-z]+(-[a-z]+)*:)*[a-z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*((__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?)?$",
+      {
+        "message": "Expected class selector to be BEM-style, kebab-case, or variant-prefixed (e.g., hover:op-90)"
+      }
+    ],
+    "selector-pseudo-element-colon-notation": null,
+    "value-keyword-case": null,
+    "unit-allowed-list": ["px", "%", "em", "rem", "vw", "vh", "s", "ms", "deg", "fr"]
+  }
+}

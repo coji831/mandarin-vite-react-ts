@@ -18,6 +18,7 @@
  */
 
 import { useSearchParams } from "react-router-dom";
+import { Button } from "shared/components";
 import { CONTENT_TABS } from "./types";
 import type { TabDefinition } from "./types";
 
@@ -59,28 +60,33 @@ function TabBar({
   };
 
   return (
-    <nav className="tab-bar" role="tablist" aria-label="Content type tabs">
+    <nav
+      className="tab-bar p-xs border-2 border-surface"
+      role="tablist"
+      aria-label="Content type tabs"
+    >
       {tabs.map((tab) => {
         const lockPhase = tab.isLocked ? getLockPhase(tab.id) : null;
         return (
-          <button
+          <Button
             key={tab.id}
+            variant={activeTab === tab.id ? "tab-active" : "tab"}
+            size="sm"
             role="tab"
-            type="button"
-            className={`tab-bar__tab ${activeTab === tab.id ? "tab-bar__tab--active" : ""} ${tab.isLocked ? "tab-bar__tab--locked" : ""}`}
             aria-selected={activeTab === tab.id}
             disabled={tab.isLocked}
             onClick={() => !tab.isLocked && handleTabClick(tab.id)}
             title={lockPhase ? `Complete Phase ${lockPhase} to unlock` : undefined}
+            className={`tab-bar__tab ${tab.isLocked ? "op-40" : ""}`}
           >
             <span aria-hidden="true">{tab.icon}</span>
             <span>{tab.label}</span>
             {tab.isLocked && (
-              <span className="tab-bar__lock-icon" aria-label="locked">
+              <span className="font-xs" aria-label="locked">
                 🔒
               </span>
             )}
-          </button>
+          </Button>
         );
       })}
     </nav>

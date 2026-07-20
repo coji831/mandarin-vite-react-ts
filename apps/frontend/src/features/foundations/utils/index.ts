@@ -14,5 +14,4 @@ export {
   getToneVowelIndex,
 } from "./pinyinUtils";
 export { parseSpokenPinyinForAudio } from "./toneUtils";
-export { determineStrokeRules } from "./strokeUtils";
 export { loadStrokeData, getCachedStrokeData, clearStrokeDataCache } from "./strokeDataLoader";

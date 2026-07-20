@@ -1,0 +1,14 @@
+/**
+ * ProgressPage.css
+ *
+ * Styles for the Progress page.
+ * Uses CSS variables from the global design system.
+ */
+
+.progress-page {
+  max-width: 1000px;
+}
+
+.progress-page__xp-badge {
+  color: var(--color-xp);
+}

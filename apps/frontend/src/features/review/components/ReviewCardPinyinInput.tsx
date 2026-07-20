@@ -8,6 +8,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type { ReviewItem } from "../types";
+import { Box, Button, Input } from "shared/components";
 import "./ReviewCard.css";
 
 type ReviewCardPinyinInputProps = {
@@ -35,13 +36,15 @@ function ReviewCardPinyinInputComponent({
   }, [item.itemId]);
 
   return (
-    <div className="review-card card-dark flex-col">
-      <div className="review-card__side flex-col-center gap-lg p-xl">
+    <Box variant="dark" padding="md" className="review-card flex-col w-full">
+      <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         {/* Character + Meaning for exposure */}
         <div className="review-card__character-display flex-col-center gap-md">
-          <span className="review-card__character">{displayChar}</span>
+          <span className="review-card__character font-5xl lh-tight tracking-wide text-primary fw-700">
+            {displayChar}
+          </span>
           {item.meaning && showMeaning !== false && (
-            <span className="review-card__meaning text-secondary fw-500 font-lg">
+            <span className="review-card__meaning text-secondary fw-500 font-lg text-center">
               ({item.meaning})
             </span>
           )}
@@ -49,20 +52,19 @@ function ReviewCardPinyinInputComponent({
 
         {/* Audio + Pinyin input */}
         <div className="flex-col-center gap-md w-full">
-          <button
-            className="review-card__audio-btn flex-center"
+          <Button
+            variant="circle"
+            className="review-card__audio-btn bg-surface-dark transition-all"
             onClick={() => onPlayAudio(displayChar)}
             aria-label="Play audio"
-            type="button"
           >
             {"\uD83D\uDD0A"}
-          </button>
+          </Button>
 
-          <div className="flex-center gap-sm w-full" style={{ maxWidth: 320 }}>
-            <input
+          <div className="flex-center gap-sm w-full max-w-320">
+            <Input
               ref={inputRef}
-              type="text"
-              className="review-card__pinyin-input"
+              className="review-card__pinyin-input text-center bg-surface-dark-alt flex-1"
               placeholder={inputPlaceholder}
               value={localPinyin}
               onChange={(e) => setLocalPinyin(e.target.value)}
@@ -74,8 +76,9 @@ function ReviewCardPinyinInputComponent({
               }}
               autoFocus
             />
-            <button
-              className="btn-primary"
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => {
                 if (localPinyin.trim()) {
                   onSubmitPinyin(localPinyin.trim());
@@ -83,14 +86,13 @@ function ReviewCardPinyinInputComponent({
                 }
               }}
               disabled={!localPinyin.trim()}
-              type="button"
             >
               Submit
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </Box>
   );
 }
 

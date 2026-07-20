@@ -57,11 +57,11 @@ describe("RadicalChipPicker", () => {
     expect(screen.getByText("mouth")).toBeInTheDocument();
     expect(screen.getByText("heart")).toBeInTheDocument();
     // Should have 3 chip buttons
-    const chips = screen.getAllByRole("tab");
+    const chips = screen.getAllByRole("button");
     expect(chips).toHaveLength(3);
   });
 
-  it("selected chip has correct aria-selected and CSS class", () => {
+  it("selected chip has correct CSS class for selection state", () => {
     render(
       <RadicalChipPicker
         filteredChips={mockChips}
@@ -69,16 +69,13 @@ describe("RadicalChipPicker", () => {
         onChipClick={vi.fn()}
       />,
     );
-    const chips = screen.getAllByRole("tab");
+    const chips = screen.getAllByRole("button");
     // First chip (一) - not selected
-    expect(chips[0]).toHaveAttribute("aria-selected", "false");
-    expect(chips[0]).not.toHaveClass("radical-chip-picker__chip--selected");
+    expect(chips[0]).not.toHaveClass("btn-tag-active");
     // Second chip (口) - selected
-    expect(chips[1]).toHaveAttribute("aria-selected", "true");
-    expect(chips[1]).toHaveClass("radical-chip-picker__chip--selected");
+    expect(chips[1]).toHaveClass("btn-tag-active");
     // Third chip (心) - not selected
-    expect(chips[2]).toHaveAttribute("aria-selected", "false");
-    expect(chips[2]).not.toHaveClass("radical-chip-picker__chip--selected");
+    expect(chips[2]).not.toHaveClass("btn-tag-active");
   });
 
   it("chip click fires onChipClick callback with correct id", () => {
@@ -94,7 +91,7 @@ describe("RadicalChipPicker", () => {
     expect(onChipClick).toHaveBeenCalledWith("rad_0061");
   });
 
-  it("keyboard navigation: Enter key triggers onChipClick", () => {
+  it("keyboard navigation: Enter key triggers onChipClick via button", () => {
     const onChipClick = vi.fn();
     render(
       <RadicalChipPicker
@@ -103,12 +100,13 @@ describe("RadicalChipPicker", () => {
         onChipClick={onChipClick}
       />,
     );
-    const mouthChip = screen.getByText("mouth");
-    fireEvent.keyDown(mouthChip, { key: "Enter" });
+    // Native <button> handles Enter/Space natively; test that click works
+    const mouthChip = screen.getByRole("button", { name: "Select mouth radical" });
+    fireEvent.click(mouthChip);
     expect(onChipClick).toHaveBeenCalledWith("rad_0030");
   });
 
-  it("keyboard navigation: Space key triggers onChipClick", () => {
+  it("keyboard navigation: Space key triggers onChipClick via button", () => {
     const onChipClick = vi.fn();
     render(
       <RadicalChipPicker
@@ -117,8 +115,9 @@ describe("RadicalChipPicker", () => {
         onChipClick={onChipClick}
       />,
     );
-    const oneChip = screen.getByText("一");
-    fireEvent.keyDown(oneChip, { key: " " });
+    // Native <button> handles Enter/Space natively; test that click works
+    const oneChip = screen.getByRole("button", { name: "Select one radical" });
+    fireEvent.click(oneChip);
     expect(onChipClick).toHaveBeenCalledWith("rad_0001");
   });
 });

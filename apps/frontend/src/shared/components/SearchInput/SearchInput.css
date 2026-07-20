@@ -1,0 +1,7 @@
+/* .search-input:focus-within — migrated to focus-within:border-primary utility class */
+/* search-input__icon — flex-shrink migrated to flex-shrink-0 utility class */
+/* border/background/outline — migrated to border-none/bg-transparent/outline-none utility classes */
+
+.search-input__field::placeholder {
+  color: var(--text-subtle);
+}

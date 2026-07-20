@@ -5,6 +5,7 @@
 
 import { useState, FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Box, Button, Input, TextLink } from "shared/components";
 import "./AuthForm.css";
 
 type RegisterFormProps = {
@@ -71,20 +72,24 @@ export function RegisterForm({ onSwitchToLogin, onSuccess }: RegisterFormProps) 
   };
 
   return (
-    <div className="auth-form-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2 className="auth-form-title">Create Account</h2>
+    <form className="auth-form flex-center p-xl" onSubmit={handleSubmit}>
+      <Box variant="elevated" padding="xl" className="auth-form-container w-full flex-col gap-lg">
+        <h2 className="text-primary font-2xl fw-600 text-center">Create Account</h2>
 
-        {error && <div className="auth-form-error">{error}</div>}
+        {error && (
+          <Box variant="error" className="auth-form-error bg-error-bg text-error font-sm">
+            {error}
+          </Box>
+        )}
 
-        <div className="auth-form-field">
-          <label htmlFor="email" className="auth-form-label">
+        <div>
+          <label htmlFor="email" className="auth-form-label text-secondary font-sm fw-500">
             Email
           </label>
-          <input
+          <Input
             id="email"
             type="email"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -93,14 +98,14 @@ export function RegisterForm({ onSwitchToLogin, onSuccess }: RegisterFormProps) 
           />
         </div>
 
-        <div className="auth-form-field">
-          <label htmlFor="displayName" className="auth-form-label">
+        <div>
+          <label htmlFor="displayName" className="auth-form-label text-secondary font-sm fw-500">
             Display Name (Optional)
           </label>
-          <input
+          <Input
             id="displayName"
             type="text"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             disabled={isLoading}
@@ -108,33 +113,36 @@ export function RegisterForm({ onSwitchToLogin, onSuccess }: RegisterFormProps) 
           />
         </div>
 
-        <div className="auth-form-field">
-          <label htmlFor="password" className="auth-form-label">
+        <div>
+          <label htmlFor="password" className="auth-form-label text-secondary font-sm fw-500">
             Password
           </label>
-          <input
+          <Input
             id="password"
             type="password"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isLoading}
             placeholder="••••••••"
           />
-          <div className="auth-form-hint">
+          <div className="text-tertiary font-xs">
             Minimum 8 characters, 1 uppercase, 1 lowercase, 1 digit
           </div>
         </div>
 
-        <div className="auth-form-field">
-          <label htmlFor="confirmPassword" className="auth-form-label">
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="auth-form-label text-secondary font-sm fw-500"
+          >
             Confirm Password
           </label>
-          <input
+          <Input
             id="confirmPassword"
             type="password"
-            className="auth-form-input"
+            className="p-sm transition-normal w-full font-md text-primary bg-surface-dark radius-md"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -143,24 +151,16 @@ export function RegisterForm({ onSwitchToLogin, onSuccess }: RegisterFormProps) 
           />
         </div>
 
-        <button type="submit" className="auth-form-button primary" disabled={isLoading}>
+        <Button variant="primary" type="submit" loading={isLoading} disabled={isLoading}>
           {isLoading ? "Creating account..." : "Register"}
-        </button>
+        </Button>
 
         {onSwitchToLogin && (
-          <div className="auth-form-footer">
-            Already have an account?{" "}
-            <button
-              type="button"
-              className="auth-form-link"
-              onClick={onSwitchToLogin}
-              disabled={isLoading}
-            >
-              Login
-            </button>
+          <div className="text-center text-tertiary font-sm">
+            Already have an account? <TextLink onClick={onSwitchToLogin}>Login</TextLink>
           </div>
         )}
-      </form>
-    </div>
+      </Box>
+    </form>
   );
 }

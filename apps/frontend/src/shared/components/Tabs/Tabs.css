@@ -1,0 +1,18 @@
+.tabs-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs-tab-bar {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs-panel {
+  flex: 1;
+}

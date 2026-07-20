@@ -1,0 +1,159 @@
+/**
+ * @file components/pinyin/SlidingPinyinGrid.css
+ * @description Styles for the 2D sliding pinyin grid
+ *
+ * Uses CSS Grid with sticky positioning to create frozen row/column headers.
+ * The scroll container provides drag-to-pan and standard wheel scrolling.
+ */
+
+/* ─── Grid area (grid + panel side by side) ─── */
+
+.sliding-pinyin-grid__area {
+  /* flex behavior: align-items default is stretch */
+}
+
+/* ─── Container ─── */
+
+.sliding-pinyin-grid__container {
+  --grid-cell-width: 60px;
+  --grid-cell-height: 40px;
+  --grid-header-type-size: 9px;
+
+  height: 420px;
+}
+
+/* ─── Scroll wrapper ─── */
+
+.sliding-pinyin-grid__scroll {
+  overflow: auto;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-dark-alt) var(--surface-dark-alt);
+}
+
+/* ─── Grid ─── */
+
+.sliding-pinyin-grid {
+  min-width: max-content;
+}
+
+/* ─── Corner spacer (sticky, diagonal split with I/F labels) ─── */
+
+.sliding-pinyin-grid__corner-spacer {
+  position: sticky;
+  /* top-0, left-0 migrated to className */
+  z-index: 10;
+  width: var(--grid-cell-width);
+  height: var(--grid-cell-height);
+  background-image: linear-gradient(
+    to top right,
+    var(--surface-dark-alt-2) calc(50% - 1.5px),
+    var(--surface-dark) calc(50% - 1.5px),
+    var(--surface-dark) calc(50% + 1.5px),
+    var(--surface-dark-alt-2) calc(50% + 1.5px)
+  );
+}
+
+.sliding-pinyin-grid__corner-init {
+  bottom: 3px;
+  left: 4px;
+  font-size: var(--grid-header-type-size);
+}
+
+.sliding-pinyin-grid__corner-fin {
+  top: 3px;
+  right: 4px;
+  font-size: var(--grid-header-type-size);
+}
+
+/* ─── Column headers (finals) ─── */
+
+.sliding-pinyin-grid__col-header {
+  position: sticky;
+  /* top-0 migrated to className */
+  z-index: 2;
+  /* flex-center applied via className */
+  height: var(--grid-cell-height);
+}
+
+/* line-height migrated to lh-tight on span */
+
+.sliding-pinyin-grid__col-header span.text-muted {
+  /* structural: absolute */
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+  font-size: var(--grid-header-type-size);
+}
+
+.sliding-pinyin-grid__header-content {
+  /* relative migrated to className */
+  height: 100%;
+}
+
+/* ─── Row headers (initials) ─── */
+
+.sliding-pinyin-grid__row-header {
+  position: sticky;
+  /* left-0 migrated to className */
+  z-index: 3;
+  /* flex-center applied via className */
+  height: var(--grid-cell-height);
+}
+
+/* line-height migrated to lh-tight on span */
+
+.sliding-pinyin-grid__row-header span.text-muted {
+  /* structural: absolute */
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: var(--grid-header-type-size);
+}
+
+/* ─── Data cells ─── */
+
+.sliding-pinyin-grid__cell {
+  /* flex-center applied via className */
+  height: var(--grid-cell-height);
+  width: var(--grid-cell-width);
+}
+
+.sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty) {
+  /* structural: cursor-pointer — interactive cell */
+  cursor: pointer;
+}
+
+.sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):hover {
+  outline: 1px solid var(--color-primary-bg);
+  z-index: 1;
+  /* structural: relative — hover outline layer */
+  position: relative;
+}
+
+.sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: -2px;
+  z-index: 1;
+  /* structural: relative — focus outline layer */
+  position: relative;
+}
+
+.sliding-pinyin-grid__cell--empty {
+  cursor: default;
+}
+
+.sliding-pinyin-grid__cell--selected {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 768px) {
+  .sliding-pinyin-grid__area {
+    /* structural: flex-col — responsive */
+    flex-direction: column;
+  }
+}

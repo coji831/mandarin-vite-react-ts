@@ -19,11 +19,10 @@ export class ReviewController {
 
   async getReviewItems(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
       const source = typeof req.query.source === "string" ? req.query.source : undefined;
       const type = typeof req.query.type === "string" ? req.query.type : undefined;
       const limit = typeof req.query.limit === "string" ? req.query.limit : undefined;
-      const items = await this.reviewService.getReviewItems(userId, {
+      const items = await this.reviewService.getReviewItems(req.userId!, {
         source: source || "due",
         type: type || "",
         limit: limit ? parseInt(limit, 10) : 20,
@@ -37,9 +36,12 @@ export class ReviewController {
 
   async recordRating(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
       const { itemType, itemId, rating } = req.body;
-      const result = await this.reviewService.recordRating(userId, { itemType, itemId, rating });
+      const result = await this.reviewService.recordRating(req.userId!, {
+        itemType,
+        itemId,
+        rating,
+      });
       return res.status(200).json(result);
     } catch (error) {
       if (
@@ -55,9 +57,8 @@ export class ReviewController {
 
   async getDueCount(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.userId!;
       const type = typeof req.query.type === "string" ? req.query.type : undefined;
-      const count = await this.reviewService.getDueCount(userId, type || "");
+      const count = await this.reviewService.getDueCount(req.userId!, type || "");
       return res.status(200).json({ count });
     } catch (error) {
       logger.error("Error fetching due count", error);

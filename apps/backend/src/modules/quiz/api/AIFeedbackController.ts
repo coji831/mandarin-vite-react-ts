@@ -79,7 +79,9 @@ export class AIFeedbackController {
         });
       }
 
-      logger.info(`Generating feedback for wordId=${wordId}, user=${req.user?.id || "unknown"}`);
+      logger.info(
+        `Generating feedback for wordId=${wordId}, user=${req.user?.userId || "unknown"}`,
+      );
 
       // Generate feedback via service
       const feedback = await this.feedbackService.generateFeedback({

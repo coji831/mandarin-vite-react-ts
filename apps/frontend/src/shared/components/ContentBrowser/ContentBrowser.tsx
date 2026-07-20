@@ -21,11 +21,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Box, Button, Dropdown } from "shared/components";
 import { CONTENT_TABS } from "./types";
 import type { ContentItem, ContentSource, ContentType } from "./types";
 import { TabBar } from "./TabBar";
 import { SearchBar } from "./SearchBar";
-import { FilterDropdown } from "./FilterDropdown";
 import { ContentGrid } from "./ContentGrid";
 import "./ContentBrowser.css";
 
@@ -179,38 +179,128 @@ function ContentBrowser({
     };
   }, [contentSource, contentTypeFilter, searchQuery, hskLevel, phase, page, pageSize]);
 
+  // Determine whether any filter is active
+  const hasActiveFilters = hskLevel !== undefined || phase !== undefined || searchQuery !== "";
+  const activeFilterCount = [
+    hskLevel !== undefined,
+    phase !== undefined,
+    searchQuery !== "",
+  ].filter(Boolean).length;
+
+  const handleClearAllFilters = useCallback(() => {
+    setHskLevel(undefined);
+    setPhase(undefined);
+    setSearchQuery("");
+    setPage(1);
+    syncUrlParams({ hsk: undefined, phase: undefined, q: undefined, page: undefined });
+  }, [syncUrlParams]);
+
+  const handleTabSuggestion = useCallback(
+    (tab: ContentType) => {
+      handleTabChange(tab);
+    },
+    [handleTabChange],
+  );
+
   if (error) {
     return (
-      <div className="content-browser" role="alert">
-        <div className="content-browser__error">
-          <p>Error: {error}</p>
-          <button type="button" onClick={() => window.location.reload()}>
-            Retry
-          </button>
-        </div>
+      <div
+        className="content-browser mx-auto p-lg flex flex-col gap-lg text-secondary"
+        role="alert"
+      >
+        <Box
+          variant="error"
+          padding="xl"
+          className="content-browser__error text-center bg-surface-dark-alt radius-md flex-col gap-md"
+        >
+          <p className="text-error font-md">Error: {error}</p>
+          <div>
+            <Button variant="primary" size="sm" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </div>
+        </Box>
       </div>
     );
   }
 
   return (
-    <div className="content-browser">
+    <div className="content-browser mx-auto p-lg flex flex-col gap-lg text-secondary">
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} tabs={visibleTabs} />
 
-      <div className="content-browser__toolbar">
-        <div className="content-browser__search-filter">
+      <Box variant="dark" padding="md" className="content-browser__toolbar flex flex-wrap gap-sm">
+        {/* Search */}
+        <div className="content-browser__toolbar-group flex-col">
+          <label
+            htmlFor="library-search"
+            className="font-xs text-secondary text-uppercase tracking-wide"
+          >
+            Search
+          </label>
           <SearchBar
             value={searchQuery}
             onChange={handleSearchChange}
-            placeholder="Search by Chinese, pinyin, or English..."
-          />
-          <FilterDropdown
-            selectedHskLevel={hskLevel}
-            onHskLevelChange={handleHskLevelChange}
-            selectedPhase={phase}
-            onPhaseChange={handlePhaseChange}
+            placeholder="Chinese, pinyin, or English..."
           />
         </div>
-      </div>
+
+        {/* HSK Level dropdown */}
+        <div className="content-browser__toolbar-group flex-col gap-xs">
+          <Dropdown<number | null>
+            value={hskLevel ?? null}
+            onChange={(val) => handleHskLevelChange(val === null ? undefined : val)}
+            options={[
+              { value: null, label: "All" },
+              { value: 1, label: "HSK 1" },
+              { value: 2, label: "HSK 2" },
+              { value: 3, label: "HSK 3" },
+              { value: 4, label: "HSK 4" },
+              { value: 5, label: "HSK 5" },
+              { value: 6, label: "HSK 6" },
+            ]}
+            label="HSK Level"
+            id="hsk-level-select"
+            ariaLabel="HSK Level filter"
+          />
+        </div>
+
+        {/* Phase dropdown */}
+        <div className="content-browser__toolbar-group flex-col gap-xs">
+          <Dropdown<number | null>
+            value={phase ?? null}
+            onChange={(val) => handlePhaseChange(val === null ? undefined : val)}
+            options={[
+              { value: null, label: "All" },
+              { value: 1, label: "Phase 1" },
+              { value: 2, label: "Phase 2" },
+              { value: 3, label: "Phase 3" },
+              { value: 4, label: "Phase 4" },
+            ]}
+            label="Phase"
+            id="phase-select"
+            ariaLabel="Phase filter"
+          />
+        </div>
+
+        {/* Clear button */}
+        <div className="content-browser__toolbar-group flex-col">
+          <span className="font-xs text-secondary text-uppercase tracking-wide">&nbsp;</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={!hasActiveFilters}
+            onClick={handleClearAllFilters}
+            aria-label="Clear all filters"
+          >
+            {activeFilterCount > 0 && (
+              <span className="content-browser__filter-badge font-xs fw-600 p-xs bg-primary text-white radius-pill whitespace-nowrap lh-1">
+                {activeFilterCount}
+              </span>
+            )}
+            ✕ Clear all
+          </Button>
+        </div>
+      </Box>
 
       <ContentGrid
         items={items}
@@ -221,6 +311,8 @@ function ContentBrowser({
         onPageSizeChange={handlePageSizeChange}
         onItemClick={() => {}}
         isLoading={isLoading}
+        onClearFilters={handleClearAllFilters}
+        onTabSuggestion={handleTabSuggestion}
       />
     </div>
   );

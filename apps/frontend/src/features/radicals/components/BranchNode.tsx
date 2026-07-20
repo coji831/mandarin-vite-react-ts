@@ -11,6 +11,7 @@
 
 import { useCallback } from "react";
 import { useCharacterHub } from "shared/hooks";
+import { Box, Button } from "shared/components";
 import "./BranchNode.css";
 
 interface BranchNodeProps {
@@ -34,20 +35,16 @@ export function BranchNode({
     openHub(character, pinyin);
   }, [character, pinyin, openHub]);
 
-  const handlePlayAudio = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        const utterance = new SpeechSynthesisUtterance(character);
-        utterance.lang = "zh-CN";
-        const voices = window.speechSynthesis.getVoices();
-        const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
-        if (zhVoice) utterance.voice = zhVoice;
-        window.speechSynthesis.speak(utterance);
-      }
-    },
-    [character],
-  );
+  const handlePlayAudio = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(character);
+      utterance.lang = "zh-CN";
+      const voices = window.speechSynthesis.getVoices();
+      const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
+      if (zhVoice) utterance.voice = zhVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [character]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -60,49 +57,51 @@ export function BranchNode({
   );
 
   return (
-    <div
-      className={`branch-node ${showConnector ? "branch-node--with-connector" : ""}`}
+    <Box
+      className={`branch-node flex items-center gap-sm p-xs relative ${showConnector ? "branch-node--with-connector" : ""}`}
       role={ariaRole}
     >
       {/* Tree connector line */}
-      {showConnector && <span className="branch-node__connector" aria-hidden="true" />}
+      {showConnector && (
+        <span className="branch-node__connector border-surface" aria-hidden="true" />
+      )}
 
       {/* Character glyph — opens Hub */}
-      <div
-        className="branch-node__main"
+      <Button
+        variant="ghost"
+        className="branch-node__main flex-1"
         onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
         aria-label={`${character} — ${pinyin} — ${meaning}`}
       >
-        <span className="branch-node__glyph">{character}</span>
-        <span className="branch-node__pinyin">{pinyin}</span>
-        <span className="branch-node__separator">—</span>
-        <span className="branch-node__meaning">{meaning}</span>
-      </div>
+        <span className="branch-node__glyph font-lg text-primary lh-1 text-center">
+          {character}
+        </span>
+        <span className="branch-node__pinyin font-sm text-primary-light lh-1">{pinyin}</span>
+        <span className="font-sm text-muted lh-1">—</span>
+        <span className="branch-node__meaning font-xs text-muted lh-1">{meaning}</span>
+      </Button>
 
       {/* Audio button */}
-      <button
-        className="branch-node__audio-btn"
+      <Button
+        variant="ghost"
+        className="branch-node__audio-btn font-sm p-xs transition-fast lh-1 shrink-0 hover:border-primary-border"
         onClick={handlePlayAudio}
-        type="button"
         aria-label={`Play pronunciation for ${character}`}
         title="Play pronunciation"
       >
         🔊
-      </button>
+      </Button>
 
       {/* Hub link */}
-      <button
-        className="branch-node__hub-btn"
+      <Button
+        variant="ghost"
+        className="branch-node__hub-btn font-xs p-xs radius-md transition-fast whitespace-nowrap shrink-0 hover:border-primary-border"
         onClick={handleClick}
-        type="button"
         aria-label={`Open ${character} in Character Detail Hub`}
         title="Open in Character Detail Hub"
       >
         Hub ▸
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 }

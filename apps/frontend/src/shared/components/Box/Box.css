@@ -1,0 +1,167 @@
+/* Box.css — Self-contained variant classes */
+
+/* ── Elevated Tier (has box-shadow) ── */
+
+.box-dark {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.box-dark-accent {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-left: 3px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.box-dark-accent-primary {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.box-card {
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  transition: all var(--transition-fast);
+}
+
+.box-elevated {
+  background: var(--surface-dark-alt-2);
+  border: 2px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.box-pass {
+  background: var(--surface-dark);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+.box-fail {
+  background: var(--surface-dark);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+/* ── Flat Tier (no shadow) ── */
+
+.box-dark-alt {
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.box-surface {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+/* ── Border-Only Tier (no background, no shadow) ── */
+
+.box-error {
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+.box-header {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+.box-chip {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.box-divider {
+  border: 1px solid var(--surface-border);
+  border-radius: 0;
+  transition: all var(--transition-fast);
+}
+
+.box-dashed {
+  border: 1px dashed var(--surface-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.box-item {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.box-tone-1 {
+  border: 1px solid var(--tone-1);
+  border-radius: var(--radius-sm);
+  color: var(--tone-1);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.box-tone-2 {
+  border: 1px solid var(--tone-2);
+  border-radius: var(--radius-sm);
+  color: var(--tone-2);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.box-tone-3 {
+  border: 1px solid var(--tone-3);
+  border-radius: var(--radius-sm);
+  color: var(--tone-3);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.box-tone-4 {
+  border: 1px solid var(--tone-4);
+  border-radius: var(--radius-sm);
+  color: var(--tone-4);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.box-tone-5 {
+  border: 1px solid var(--tone-5);
+  border-radius: var(--radius-sm);
+  color: var(--tone-5);
+  padding: var(--space-xs);
+  transition: all var(--transition-fast);
+}

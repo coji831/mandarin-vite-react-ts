@@ -17,6 +17,7 @@
  * ```
  */
 
+import { Button } from "shared/components";
 import type { ContentItem } from "./types";
 
 export { ContentCard };
@@ -60,34 +61,46 @@ function ContentCard({
   //   - chengyu: show story teaser
 
   return (
-    <div
-      className={`content-card ${isLocked ? "content-card--locked" : "content-card--unlocked"}`}
-      role="button"
-      tabIndex={isLocked ? -1 : 0}
+    <Button
+      variant="control"
+      className={`content-card flex-col ${isLocked ? "content-card--locked op-60" : "content-card--unlocked"}`}
       aria-label={`${title}${subtitle ? ` - ${subtitle}` : ""}${isLocked ? " (locked)" : ""}`}
-      aria-disabled={isLocked}
+      disabled={isLocked}
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
     >
-      {/* Type badge */}
-      <span className="content-card__type-badge" aria-hidden="true">
-        {typeIcon}
-      </span>
-
       {/* Lock badge */}
       {isLocked && (
-        <span className="content-card__lock-badge" aria-label="Locked content">
+        <span
+          className="content-card__lock-badge absolute font-lg lh-1"
+          aria-label="Locked content"
+        >
           🔒
         </span>
       )}
 
       {/* Card body */}
-      <div className="content-card__body">
-        <h3 className="content-card__title">{title}</h3>
-        {subtitle && <p className="content-card__subtitle">{subtitle}</p>}
-        {translation && <p className="content-card__translation">{translation}</p>}
-        {hskLevel && <span className="content-card__hsk">HSK {hskLevel}</span>}
+      <div className="content-card__body flex-col gap-xs">
+        <div className="content-card__title-row flex-center gap-xs">
+          <span className="content-card__type-badge font-lg lh-1" aria-hidden="true">
+            {typeIcon}
+          </span>
+          <span className="content-card__title font-lg">{title}</span>
+        </div>
+        {(subtitle || translation) && (
+          <p className="content-card__subtitle-row">
+            {subtitle}
+            {subtitle && translation && <span className="content-card__separator"> · </span>}
+            {translation}
+          </p>
+        )}
+        <div className="content-card__meta-row flex-center gap-xs">
+          {hskLevel && (
+            <span className="content-card__hsk inline-block p-xs bg-primary-bg text-primary-light radius-sm font-xs fw-500 self-start">
+              HSK {hskLevel}
+            </span>
+          )}
+        </div>
       </div>
-    </div>
+    </Button>
   );
 }

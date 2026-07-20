@@ -7,6 +7,7 @@
  * Features:
  * - Immediate local input feedback for responsive typing
  * - Debounced onChange callback to reduce filter re-computation
+ * - Loading spinner while debounce timer is active
  * - Search icon indicator
  * - Accessible with aria-label
  *
@@ -17,6 +18,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { Spinner } from "shared/components";
 
 export { SearchBar };
 
@@ -30,6 +32,7 @@ function SearchBar({
   placeholder?: string;
 }) {
   const [localValue, setLocalValue] = useState(value);
+  const [isDebouncing, setIsDebouncing] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync external value changes
@@ -40,6 +43,7 @@ function SearchBar({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
+    setIsDebouncing(true);
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -47,6 +51,7 @@ function SearchBar({
 
     debounceRef.current = setTimeout(() => {
       onChange(newValue);
+      setIsDebouncing(false);
     }, 300);
   };
 
@@ -59,19 +64,38 @@ function SearchBar({
     };
   }, []);
 
+  const handleClear = () => {
+    setLocalValue("");
+    onChange("");
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+  };
+
   return (
-    <div className="search-bar">
-      <span className="search-bar__icon" aria-hidden="true">
+    <div className="search-bar__row">
+      <span className="search-bar__icon font-md op-60" aria-hidden="true">
         🔍
       </span>
       <input
         type="search"
-        className="search-bar__input"
+        className="search-bar__input focus-ring"
         value={localValue}
         onChange={handleChange}
         placeholder={placeholder}
         aria-label={placeholder}
       />
+      {localValue && (
+        <button
+          className="search-bar__clear btn-base p-sm"
+          onClick={handleClear}
+          aria-label="Clear search"
+          type="button"
+        >
+          ✕
+        </button>
+      )}
+      {isDebouncing && <Spinner size="xs" />}
     </div>
   );
 }

@@ -1,0 +1,13 @@
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-light-5) 25%,
+    var(--surface-light-10) 50%,
+    var(--surface-light-5) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* skeleton--line/card/circle — border-radius migrated to radius-sm/lg/full utility classes */
+/* skeleton--custom — no default sizing, handled via className */

@@ -1,8 +1,16 @@
 # Knowledge Base
 
-**Last Updated:** July 3, 2026
+**Last Updated:** July 20, 2026
 
 Central repository for deep-dive concepts, patterns, and reference materials.
+
+## Agent Operations (Agentics)
+
+| Article                                                                | Description                                        | Source Material                                                                          |
+| ---------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Agent Development Pipeline](./agentics/agent-development-pipeline.md) | Full 9-step dev lifecycle for AI coding agents     | `copilot-instructions.md`, `docs/guides/operations/workflow.md`                          |
+| [Agent Visual Understanding](./agentics/agent-visual-understanding.md) | Storybook-first, token integrity, MCP toolchain    | `docs/guides/design/visual-design-workflow.md`, `docs/guides/design/design-reasoning.md` |
+| [Structured AI Prompts](./agentics/structured-prompts.md)              | `[TASK][CONTEXT][PARAMETERS][OUTPUT][CONSTRAINTS]` | `docs/automation/structured-ai-prompts.md`                                               |
 
 ## Frontend
 
@@ -35,14 +43,15 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 
 ## Learning Theory
 
-| Article                                                                                        | Description                                                    |
-| ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [Adult Mandarin Learning Roadmap](./learning-theory/adult-mandarin-learning-roadmap.md)        | Structured learning path                                       |
-| [Chinese Character Structure](./learning-theory/chinese-character-structure.md)                | Radicals, decomposition, mnemonics                             |
-| [Cognitive Science of Active Recall](./learning-theory/cognitive-science-active-recall.md)     | Retrieval practice, testing effect                             |
-| [Gamification Psychology](./learning-theory/gamification-psychology-learning.md)               | Motivation, feedback loops                                     |
-| [Spaced Repetition Algorithms](./learning-theory/spaced-repetition-algorithms.md)              | FSRS, SM-2, interval calculations                              |
-| [Vocabulary Retention Research](./learning-theory/vocabulary-retention-research.md)            | Research findings                                              |
+| Article                                                                                    | Description                        |
+| ------------------------------------------------------------------------------------------ | ---------------------------------- |
+| [Adult Mandarin Learning Roadmap](./learning-theory/adult-mandarin-learning-roadmap.md)    | Structured learning path           |
+| [Chinese Character Structure](./learning-theory/chinese-character-structure.md)            | Radicals, decomposition, mnemonics |
+| [Cognitive Science of Active Recall](./learning-theory/cognitive-science-active-recall.md) | Retrieval practice, testing effect |
+| [Gamification Psychology](./learning-theory/gamification-psychology-learning.md)           | Motivation, feedback loops         |
+| [Spaced Repetition Algorithms](./learning-theory/spaced-repetition-algorithms.md)          | FSRS, SM-2, interval calculations  |
+| [Vocabulary Retention Research](./learning-theory/vocabulary-retention-research.md)        | Research findings                  |
+
 | [Modeling Chinese as a Knowledge Graph](./learning-theory/modeling-chinese-knowledge-graph.md) | Nodes (radicals/chars/words) and edges (composition, synonymy) |
 
 ## Infrastructure

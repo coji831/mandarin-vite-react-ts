@@ -5,9 +5,9 @@
  */
 export function ContentPlaceholderPage({ title }: { title: string }) {
   return (
-    <div className="tab-placeholder" style={{ textAlign: "center", padding: "3rem 1rem" }}>
-      <h2 style={{ marginBottom: "0.5rem" }}>{title}</h2>
-      <p style={{ color: "#888" }}>Coming in a future update.</p>
+    <div className="tab-placeholder flex-col gap-sm text-center p-2xl">
+      <h2>{title}</h2>
+      <p className="text-muted">Coming in a future update.</p>
     </div>
   );
 }

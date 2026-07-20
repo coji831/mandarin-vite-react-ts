@@ -5,6 +5,7 @@
  */
 import React from "react";
 import type { ReviewItem } from "../types";
+import { Box, Button } from "shared/components";
 import "./ReviewCard.css";
 
 type ReviewCardOptionSelectProps = {
@@ -22,39 +23,40 @@ function ReviewCardOptionSelectComponent({
   const options = item.options ?? [];
 
   return (
-    <div className="review-card card-dark flex-col">
-      <div className="review-card__side flex-col-center gap-lg p-xl">
+    <Box variant="dark" padding="md" className="review-card flex-col w-full">
+      <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         {/* Character / Glyph display */}
         <div className="review-card__character-display flex-col-center gap-md">
           <span className="review-card__character">{displayChar}</span>
         </div>
 
         {/* Audio button */}
-        <button
-          className="review-card__audio-btn flex-center"
+        <Button
+          variant="circle"
+          size="sm"
+          className="review-card__audio-btn transition-all"
           onClick={() => onPlayAudio(displayChar)}
           aria-label="Play audio"
-          type="button"
         >
           🔊
-        </button>
+        </Button>
 
         {/* Option buttons */}
         <p className="font-sm text-secondary m-0">What does this radical mean?</p>
-        <div className="flex-col gap-sm w-full" style={{ maxWidth: 320 }}>
+        <div className="flex flex-wrap gap-sm w-full ">
           {options.map((opt) => (
-            <button
+            <Button
               key={opt.id}
-              className="btn-outline font-sm p-xs px-sm"
+              variant="secondary"
+              size="sm"
               onClick={() => onSelectOption(opt.id)}
-              type="button"
             >
               {opt.meaning}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
-    </div>
+    </Box>
   );
 }
 

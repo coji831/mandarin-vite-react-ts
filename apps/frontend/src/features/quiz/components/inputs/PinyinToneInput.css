@@ -1,10 +1,4 @@
-.pinyin-tone-input__label {
-  color: var(--text-secondary);
-}
+/* Label color migrated to text-secondary utility class */
 .pinyin-tone-input__btn {
-  transition: all var(--transition-fast);
   min-height: 60px;
-}
-.pinyin-tone-input__btn:disabled {
-  opacity: 0.5;
 }

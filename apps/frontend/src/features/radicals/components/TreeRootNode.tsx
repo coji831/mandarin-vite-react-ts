@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Button } from "shared/components";
+import { Box, Button } from "shared/components";
 import { useCharacterHub } from "shared/hooks";
 import type { RadicalData } from "../types";
 import { BranchNode } from "./BranchNode";
@@ -47,60 +47,58 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
   );
 
   return (
-    <div className="tree-root-node card-dark">
+    <Box
+      variant="dark"
+      padding="md"
+      className="tree-root-node transition-border-color radius-lg overflow-hidden"
+    >
       {/* Root node header */}
-      <div className="tree-root-node__header">
-        <button
-          className="tree-root-node__toggle"
+      <div className="tree-root-node__header flex-center gap-sm p-sm bg-surface-dark">
+        <Button
+          variant="icon"
+          className="tree-root-node__toggle text-secondary shrink-0 transition-colors"
           onClick={toggleExpand}
-          onKeyDown={handleKeyDown}
-          type="button"
           aria-expanded={isExpanded}
           aria-label={`${isExpanded ? "Collapse" : "Expand"} ${radical.meaning}`}
         >
           <span
-            className={`tree-root-node__chevron ${isExpanded ? "tree-root-node__chevron--expanded" : ""}`}
+            className={`tree-root-node__chevron inline-block font-xs lh-1 transition-transform ${isExpanded ? "tree-root-node__chevron--expanded" : ""}`}
             aria-hidden="true"
           >
             ▶
           </span>
-        </button>
+        </Button>
 
-        <div
-          className="tree-root-node__radical"
+        <Button
+          variant="ghost"
+          className="tree-root-node__radical gap-md flex-1"
           onClick={handleRadicalClick}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              handleRadicalClick();
-            }
-          }}
-          role="button"
-          tabIndex={0}
           title={`${radical.stroke_count} stroke${radical.stroke_count !== 1 ? "s" : ""}`}
           aria-label={`${radical.glyph} — ${radical.meaning} — ${radical.stroke_count} strokes`}
         >
-          <span className="tree-root-node__glyph">{radical.glyph}</span>
-          <div className="tree-root-node__info">
+          <span className="tree-root-node__glyph font-3xl text-accent lh-1 text-center">
+            {radical.glyph}
+          </span>
+          <div className="tree-root-node__info flex-col">
             <span className="font-md text-primary fw-500">{radical.meaning}</span>
             <span className="font-xs text-muted">{radical.name_pinyin}</span>
           </div>
-        </div>
+        </Button>
 
-        <span className="font-xs radius-pill tree-root-node__badge">
+        <span className="font-xs radius-pill tree-root-node__badge text-muted whitespace-nowrap shrink-0 p-xs bg-surface-light-10">
           {characters.length} character{characters.length !== 1 ? "s" : ""}
         </span>
       </div>
 
       {/* Expandable character branches */}
       <div
-        className={`tree-root-node__branches ${isExpanded ? "tree-root-node__branches--expanded" : ""}`}
+        className={`tree-root-node__branches grid ${isExpanded ? "tree-root-node__branches--expanded" : ""}`}
         role="region"
         aria-label={`Characters for ${radical.meaning}`}
       >
-        <div className="tree-root-node__branches-inner">
+        <div className="tree-root-node__branches-inner overflow-hidden">
           {characters.length > 0 ? (
-            <div className="tree-root-node__character-column">
+            <div className="tree-root-node__character-column bg-surface-light-3 flex-col p-md">
               {characters.map((ch) => (
                 <BranchNode
                   key={ch.glyph}
@@ -116,16 +114,20 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
           )}
 
           {/* Tree footer with action buttons */}
-          <div className="tree-root-node__footer">
+          <Box
+            variant="divider"
+            className="tree-root-node__footer bg-surface-light-3 flex gap-sm"
+            padding="md"
+          >
             <Button variant="secondary" size="sm" onClick={handleCollapse}>
               🌲 Collapse
             </Button>
             <Button variant="secondary" size="sm" disabled title="Coming in Epic 20">
               Generate stories for all ▸
             </Button>
-          </div>
+          </Box>
         </div>
       </div>
-    </div>
+    </Box>
   );
 }

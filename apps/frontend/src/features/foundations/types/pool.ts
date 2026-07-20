@@ -5,37 +5,37 @@
  * and exposed to the frontend via API.
  */
 
-export interface PinyinTonesPool {
+export type PinyinTonesPool = {
   initials: PinyinInitial[];
   finals: PinyinFinal[];
   combinations: PinyinCombination[];
   toneInfo: ToneDefinition[];
   tonePairs: TonePairDrill[];
   toneRules: ToneRule[];
-}
+};
 
-export interface PinyinInitial {
+export type PinyinInitial = {
   id: string;
   pinyin: string;
   ipa: string;
   description: string;
-}
+};
 
-export interface PinyinFinal {
+export type PinyinFinal = {
   id: string;
   pinyin: string;
   ipa?: string;
   type: "simple" | "compound" | "nasal";
   description: string;
-}
+};
 
-export interface PinyinCombination {
+export type PinyinCombination = {
   initial: string;
   final: string;
   tones: (string | null)[];
-}
+};
 
-export interface ToneDefinition {
+export type ToneDefinition = {
   number: number;
   name: string;
   mark: string;
@@ -44,29 +44,29 @@ export interface ToneDefinition {
   description: string;
   contour: number[];
   color: string;
-}
+};
 
 /**
  * TonePairDrill: A 2-syllable tone pair drill with sandhi-aware pinyin
  */
-export interface TonePairDrill {
+export type TonePairDrill = {
   id: string;
   chinese: string;
   dictionaryPinyin: string;
   spokenPinyin: string;
   rule: string;
   pattern: string;
-}
+};
 
-export interface ToneRule {
+export type ToneRule = {
   id: string;
   title: string;
   rule: string;
   examples: ToneRuleExample[];
-}
+};
 
-export interface ToneRuleExample {
+export type ToneRuleExample = {
   chinese: string;
   dictionary: string;
   spoken: string;
-}
+};

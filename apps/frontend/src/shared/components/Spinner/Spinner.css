@@ -1,0 +1,60 @@
+/**
+ * Spinner Component Styles
+ *
+ * Single shared CSS spinner animation.
+ * All 4 @keyframes (spin, tones-spin, btn-spin, grid-spin) were identical
+ * — consolidated into one.
+ */
+
+.spinner {
+  display: inline-block;
+  border-style: solid;
+  border-color: var(--surface-light-10);
+  animation: spinner-rotate 0.8s linear infinite;
+  box-sizing: border-box;
+}
+
+/* Sizes */
+.spinner--xs {
+  width: 8px;
+  height: 8px;
+  border-width: 1.5px;
+  animation-duration: 0.6s;
+}
+
+.spinner--sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.spinner--md {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.spinner--lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+/* ═══════════════════════════════════════════════
+   EXCEPTIONAL CASE: Spinner half-border coloring
+   Intentionally directional — transparent on 3 sides
+   + colored top creates the spinning needle effect.
+   NOT a reusable utility; specific to spinner visual.
+   ═══════════════════════════════════════════════ */
+.spinner--color-primary {
+  border-top-color: var(--color-primary);
+}
+.spinner--color-white {
+  border-top-color: white;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

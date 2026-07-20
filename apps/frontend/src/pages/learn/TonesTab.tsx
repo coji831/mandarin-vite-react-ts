@@ -12,20 +12,26 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useAudioPlayback } from "shared/hooks";
+import { ErrorScreen, LoadingScreen, Box } from "shared/components";
 import {
   ToneContourCard,
   TonePairDrills,
   ToneChangeRules,
   foundationsService,
+  TONE_LABELS,
+  TONE_SYMBOLS,
 } from "features/foundations";
 import type { PinyinTonesPool } from "features/foundations";
 
 import "./TonesTab.css";
 
+const TONE_BOX_VARIANTS = ["tone-1", "tone-2", "tone-3", "tone-4", "tone-5"] as const;
+
 export function TonesTab() {
   const [data, setData] = useState<PinyinTonesPool | null>(null);
   const [loadingPinyin, setLoadingPinyin] = useState<string | null>(null);
   const [charMap, setCharMap] = useState<Record<string, string>>({});
+  const [hasError, setHasError] = useState(false);
   const { playWordAudio } = useAudioPlayback();
   const fetchAttempted = useRef(false);
 
@@ -40,6 +46,8 @@ export function TonesTab() {
         setData(pool);
       } catch (err) {
         console.error("[TonesTab] Failed to load tones data:", err);
+        fetchAttempted.current = false; // Allow retry
+        setHasError(true);
       }
     };
     loadData();
@@ -73,23 +81,60 @@ export function TonesTab() {
     }
   };
 
-  if (!data) {
+  if (hasError) {
     return (
-      <div className="tones-tab tones-tab-loading font-lg flex-center text-muted">
-        <p>Loading tones data...</p>
-      </div>
+      <ErrorScreen
+        error="Failed to load tones data"
+        onRetry={() => {
+          fetchAttempted.current = false;
+          setHasError(false);
+          setData(null);
+        }}
+      />
     );
   }
 
+  if (!data) {
+    return <LoadingScreen message="Loading tones data..." />;
+  }
+
   return (
-    <div className="tones-tab">
+    <div className="tones-tab flex-col gap-sm mx-auto">
+      {/* Intro Header — full width */}
+      <Box variant="dark" padding="md" className="tones-tab-header flex-col gap-xs">
+        <h2 className="font-xl fw-700 text-secondary m-0">Tones Reference &amp; Practice</h2>
+        <p className="font-sm text-muted m-0">
+          5 tones &middot; {data.tonePairs.length} tone pairs &middot; {data.toneRules.length} tone
+          change rules
+        </p>
+        <p className="font-sm text-muted m-0">Click the play button to hear each tone pronounced</p>
+      </Box>
+
+      {/* Tone Color Legend — full width */}
+      <div className="tones-tab-legend flex items-center flex-wrap gap-xs">
+        {[1, 2, 3, 4, 0].map((toneNum) => {
+          const toneCss = toneNum === 0 ? 5 : toneNum;
+          return (
+            <Box
+              key={toneNum}
+              variant={TONE_BOX_VARIANTS[toneCss - 1]}
+              className="tones-tab-legend-chip inline-flex items-center radius-pill bg-surface-dark lh-1 gap-4px"
+              title={TONE_LABELS[toneNum]}
+            >
+              <span className="font-sm fw-600">{TONE_SYMBOLS[toneNum]}</span>
+              <span className="font-xs">{TONE_LABELS[toneNum]}</span>
+            </Box>
+          );
+        })}
+      </div>
+
       {/* Tone Reference Section */}
       <section className="flex-col">
         <h3 className="tones-section-heading font-sm text-secondary fw-600 m-0">Tone Contours</h3>
         <p className="tones-section-subtitle font-xs text-muted">
           Click the play button to hear each tone pronounced
         </p>
-        <div className="tones-contour-grid bg-surface-dark-alt border-default radius-md p-xs">
+        <Box variant="dark-alt" padding="xs" className="tones-contour-grid">
           {data.toneInfo.map((tone) => (
             <ToneContourCard
               key={tone.number}
@@ -98,7 +143,7 @@ export function TonesTab() {
               isLoading={loadingPinyin === tone.pinyinExample}
             />
           ))}
-        </div>
+        </Box>
       </section>
 
       {/* Tone Pair Drills Section */}
@@ -122,6 +167,18 @@ export function TonesTab() {
         </p>
         <ToneChangeRules rules={data.toneRules} onPlay={handlePlay} loadingPinyin={loadingPinyin} />
       </section>
+
+      {/* Pronunciation Tip Callout — full width */}
+      <Box variant="dark" padding="md" className="tones-tab-tip">
+        <div className="flex-center gap-xs tones-tab-tip-header">
+          <span className="font-lg">💡</span>
+          <span className="font-sm fw-600 text-secondary">Tip:</span>
+        </div>
+        <p className="font-sm text-tertiary mt-xs">
+          Tones are meaning-distinguishing — mā (妈/mother), má (麻/hemp), mǎ (马/horse), and mà
+          (骂/scold) are completely different words despite sharing the same consonant and vowel.
+        </p>
+      </Box>
     </div>
   );
 }

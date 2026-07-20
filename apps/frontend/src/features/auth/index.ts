@@ -2,7 +2,7 @@
  * Auth feature exports
  */
 
-export { AuthProvider, useAuth } from "./context/AuthContext";
+export { AuthContext, AuthProvider, useAuth } from "./context/AuthContext";
 export { LoginForm } from "./components/LoginForm";
 export { RegisterForm } from "./components/RegisterForm";
 export { ProtectedRoute } from "./components/ProtectedRoute";

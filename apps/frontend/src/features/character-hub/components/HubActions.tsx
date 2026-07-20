@@ -4,7 +4,7 @@
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
  *
  * Single "Save to Review" button per Phase 1 wireframe.
- * Uses useCharacterHub().saveToReview for the API call (cross-cutting),
+ * Uses useReview for the API call (cross-cutting),
  * manages local UI state for loading/success transitions.
  */
 
@@ -17,9 +17,11 @@ type HubActionsProps = {
 };
 
 export function HubActions({ character }: HubActionsProps) {
-  const { saveToReview } = useReview();
+  const { saveToReview, markLearned } = useReview();
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isMarking, setIsMarking] = useState(false);
+  const [marked, setMarked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSaveToReview = async () => {
@@ -29,20 +31,50 @@ export function HubActions({ character }: HubActionsProps) {
     try {
       await saveToReview(character);
       setSaved(true);
-    } catch (err) {
-      console.error("Failed to save:", err);
+    } catch {
       setError("Failed to save. Please try again.");
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleMarkLearned = async () => {
+    if (marked || isMarking) return;
+    setError(null);
+    setIsMarking(true);
+    try {
+      await markLearned(character);
+      setMarked(true);
+    } catch {
+      setError("Failed to mark as learned. Please try again.");
+    } finally {
+      setIsMarking(false);
+    }
+  };
+
   return (
-    <div className="hub-actions">
-      <Button variant="primary" onClick={handleSaveToReview} loading={isSaving} disabled={saved}>
-        {saved ? "✅ Saved!" : "💾 Save to Review"}
-      </Button>
-      {error && <p className="hub-actions__error font-xs text-error">{error}</p>}
+    <div className="flex-col items-center gap-xs">
+      <div className="flex-center gap-sm">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleSaveToReview}
+          loading={isSaving}
+          disabled={saved}
+        >
+          {saved ? "✅ Saved!" : "💾 Save to Review"}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleMarkLearned}
+          loading={isMarking}
+          disabled={marked}
+        >
+          {marked ? "✓ Learned!" : "✓ Mark Learned"}
+        </Button>
+      </div>
+      {error && <p className="font-xs text-error">{error}</p>}
     </div>
   );
 }

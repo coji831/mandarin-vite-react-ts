@@ -8,6 +8,7 @@
  * Uses shared PinyinCell component.
  */
 
+import { Box } from "../../../../shared/components/Box/Box";
 import { type PinyinFinal } from "../../types";
 import { PinyinCell } from "./PinyinCell";
 import "./FinalsGrid.css";
@@ -39,9 +40,14 @@ export function FinalsGrid({ finals, selected, onSelect }: FinalsGridProps) {
 
         return (
           <div key={group} className="pinyin-finals-group flex-col">
-            <h4 className="pinyin-finals-group-label font-sm text-tertiary">
+            <Box
+              variant="divider"
+              as="h4"
+              className="pinyin-finals-group-label font-sm text-tertiary"
+              padding="xs"
+            >
               {GROUP_LABELS[group]}
-            </h4>
+            </Box>
             <div className="flex gap-xs flex-wrap">
               {items.map((fin) => (
                 <PinyinCell

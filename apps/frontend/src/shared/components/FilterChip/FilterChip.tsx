@@ -12,7 +12,7 @@ function FilterChip({
   return (
     <button
       type="button"
-      className={"filter-chip" + (selected ? " selected" : "")}
+      className={"filter-chip btn-base p-sm" + (selected ? " selected" : "")}
       onClick={onClick}
       aria-pressed={selected}
     >

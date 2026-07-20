@@ -14,6 +14,7 @@
 import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { TonePairDrill } from "../../types";
+import { Button, Box, Spinner } from "shared/components";
 import "./TonePairDrills.css";
 
 export interface TonePairDrillsProps {
@@ -48,21 +49,25 @@ export function ColorizedPinyin({ pinyin }: { pinyin: string }) {
 export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrillsProps) {
   if (drills.length === 0) {
     return (
-      <div className="tone-pair-drills-empty font-italic bg-surface-dark-alt border-default radius-md text-muted text-center p-md">
+      <Box
+        variant="dark-alt"
+        padding="md"
+        className="tone-pair-drills-empty font-italic text-muted text-center"
+      >
         <p>No tone pair drills available.</p>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="tone-pair-drills bg-surface-dark-alt border-default radius-md p-xs">
+    <Box variant="dark-alt" padding="xs" className="tone-pair-drills">
       {drills.map((drill) => {
         const isLoading = loadingPinyin === drill.spokenPinyin;
 
         return (
-          <div key={drill.id} className="tone-pair-drill-card flex-center gap-xs">
+          <Box key={drill.id} variant="card" className="tone-pair-drill-card flex-center gap-xs">
             {/* Rule badge — moved to front (wireframe: "3rd+3rd → 2nd+3rd") */}
-            <span className="tone-pair-drill-rule text-muted bg-surface-dark whitespace-nowrap">
+            <span className="tone-pair-drill-rule text-muted bg-surface-dark whitespace-nowrap radius-sm">
               {drill.rule}
             </span>
 
@@ -77,7 +82,7 @@ export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrills
             </span>
 
             {/* Dict/Spoken comparison — compact inline */}
-            <span className="tone-pair-drill-comparison">
+            <span className="tone-pair-drill-comparison text-tertiary">
               <span className="tone-pair-drill-label text-muted text-uppercase">Dict:</span>
               <span className="tone-pair-drill-dict font-xs line-through op-60 shrink-0">
                 <ColorizedPinyin pinyin={drill.dictionaryPinyin} />
@@ -90,18 +95,18 @@ export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrills
             </span>
 
             {/* Play button */}
-            <button
-              className="btn-icon-circle flex-center border-none radius-full lh-1 shrink-0"
+            <Button
+              variant="icon"
               onClick={() => onPlay(drill.chinese)}
               disabled={isLoading}
               title={isLoading ? "Generating audio..." : `Play ${drill.chinese}`}
-              aria-label={`Play ${drill.chinese}`}
+              aria-label={isLoading ? "Generating audio..." : `Play ${drill.chinese}`}
             >
-              {isLoading ? <span className="tones-loading-spinner radius-full" /> : "▶"}
-            </button>
-          </div>
+              {isLoading ? <Spinner size="xs" /> : "▶"}
+            </Button>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 }

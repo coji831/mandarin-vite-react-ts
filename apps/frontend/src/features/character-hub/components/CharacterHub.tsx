@@ -1,82 +1,90 @@
 /**
  * @file CharacterHub.tsx
- * @description Main portal overlay for Character Detail Hub
+ * @description Character Detail Hub — Cardinal Layout (fully controlled)
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
+ * Story 19.5: Character Hub Radical Section
  *
- * Renders as a React Portal into document.body when open.
- * Composes HubCharacterCard (character + stroke + controls),
- * HubInfoLine (pinyin + meaning), and HubActions.
+ * Fully controlled component — receives all data via props.
+ * No store, no mock data, no Modal wrapper.
+ * Content data (etymology, readings, words) is optional — when not provided,
+ * sub-components render empty/placeholder states.
  */
 
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
-import { useHubStore } from "shared/store";
-import { LoadingScreen } from "shared/components";
+import { Box } from "shared/components";
 import { HubCharacterCard } from "./HubCharacterCard";
 import { HubInfoLine } from "./HubInfoLine";
 import { HubActions } from "./HubActions";
 import { HubRadicalSection } from "./HubRadicalSection";
+import { HubEtymology } from "./HubEtymology";
+import { HubReadings } from "./HubReadings";
+import type { ReadingInfo } from "./HubReadings";
+import { HubCommonWords } from "./HubCommonWords";
 import "./CharacterHub.css";
-import "./HubRadicalSection.css";
 
-export function CharacterHub() {
-  const { isOpen, character, pinyin, close } = useHubStore();
+/** Optional character data for development/Storybook */
+export type CharacterData = {
+  etymology?: string;
+  traditional?: string;
+  hskLevel?: number;
+  strokeCount?: number;
+  frequencyRank?: number;
+  readings?: ReadingInfo[];
+  commonWords?: string[];
+};
 
-  useEffect(() => {
-    if (!isOpen) return;
+export type CharacterHubProps = {
+  character: string;
+  pinyin?: string | null;
+  onClose: () => void;
+  /** Optional data — in production this comes from an API */
+  characterData?: CharacterData | null;
+};
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        close();
-      }
-    };
+export function CharacterHub({ character, pinyin, onClose, characterData }: CharacterHubProps) {
+  const loading = !character;
+  const data = !loading ? characterData : undefined;
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, close]);
+  return (
+    <div className="hub-cardinal flex-col gap-sm">
+      {/* NORTH: Etymology & character info */}
+      <Box variant="card">
+        <HubEtymology
+          etymology={data?.etymology}
+          traditional={data?.traditional}
+          hskLevel={data?.hskLevel}
+          strokeCount={data?.strokeCount}
+          loading={loading}
+        />
+      </Box>
 
-  if (!isOpen) return null;
+      {/* MIDDLE: West | Center | East */}
+      <div className="hub-cardinal__middle grid gap-sm">
+        {/* WEST: Radical decomposition */}
+        <Box variant="card" className="height-full p-sm">
+          <HubRadicalSection character={character} onClose={onClose} loading={loading} />
+        </Box>
 
-  if (!character) {
-    return createPortal(
-      <div className="hub-backdrop" onClick={close}>
-        <div className="hub-panel" onClick={(e) => e.stopPropagation()}>
-          <button className="hub-close-btn" onClick={close} aria-label="Close">
-            ✕
-          </button>
-          <LoadingScreen message="Loading character..." />
-        </div>
-      </div>,
-      document.body,
-    );
-  }
-
-  return createPortal(
-    <div className="hub-backdrop" onClick={close}>
-      <div className="hub-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="hub-close-btn" onClick={close} aria-label="Close">
-          ✕
-        </button>
-        <div className="hub-grid">
-          {/* Left column: Radicals */}
-          <div className="hub-grid__left">
-            <HubRadicalSection character={character} onClose={close} />
-          </div>
-
-          {/* Center column: Character card + info */}
-          <div className="hub-grid__center">
-            <HubCharacterCard character={character} pinyin={pinyin} />
-            <HubInfoLine character={character} pinyin={pinyin} />
-          </div>
-
-          {/* Right column: Reserved for future example sentences */}
-          <div className="hub-grid__right" />
+        {/* CENTER: Stroke animation + pinyin + audio */}
+        <div className="flex-col-center">
+          <HubCharacterCard character={character} loading={loading} />
         </div>
 
-        {/* Actions span full width at bottom */}
-        <HubActions character={character} />
+        {/* EAST: Readings + stats */}
+        <Box variant="card" className="height-full p-sm">
+          <HubReadings
+            glyph={loading ? undefined : character}
+            readings={data?.readings}
+            frequencyRank={data?.frequencyRank}
+            loading={loading}
+          />
+        </Box>
       </div>
-    </div>,
-    document.body,
+      {/* SOUTH: Common words + actions */}
+      <Box variant="card" className="hub-cardinal__south flex-col gap-md">
+        <HubCommonWords commonWords={data?.commonWords} loading={loading} />
+        <HubInfoLine character={character} pinyin={pinyin ?? null} />
+        <HubActions character={character} />
+      </Box>
+    </div>
   );
 }

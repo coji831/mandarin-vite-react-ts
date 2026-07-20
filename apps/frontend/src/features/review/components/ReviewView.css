@@ -4,6 +4,6 @@
  * Container max-width for the review flow.
  */
 .review-view {
-  max-width: 520px;
-  width: 100%;
+  max-width: 620px;
+  /* width: 100% — migrated to utility class: w-full */
 }

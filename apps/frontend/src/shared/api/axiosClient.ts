@@ -66,7 +66,6 @@ async function refreshAccessToken(): Promise<string> {
 
   refreshPromise = (async () => {
     try {
-      console.log("[apiClient] Refreshing access token...");
       const response = await axios.post(
         API_CONFIG.baseURL + ROUTE_PATTERNS.authRefresh,
         {},
@@ -75,7 +74,6 @@ async function refreshAccessToken(): Promise<string> {
 
       const { accessToken } = response.data.data;
       localStorage.setItem(TOKEN_KEY, accessToken);
-      console.log("[apiClient] Token refreshed successfully");
       return accessToken;
     } catch (error) {
       console.error("[apiClient] Token refresh failed:", error);
@@ -176,10 +174,6 @@ apiClient.interceptors.response.use(
     ) {
       originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
       const delay = Math.pow(2, originalRequest._retryCount - 1) * 1000; // 1s, 2s, 4s
-
-      console.log(
-        `[apiClient] Retrying request (attempt ${originalRequest._retryCount}/3) after ${delay}ms...`,
-      );
 
       await new Promise((resolve) => setTimeout(resolve, delay));
       return apiClient(originalRequest);

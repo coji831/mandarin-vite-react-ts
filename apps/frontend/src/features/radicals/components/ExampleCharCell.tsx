@@ -1,11 +1,21 @@
 /**
  * @file components/ExampleCharCell.tsx
- * @description Single character cell showing glyph, pinyin, meaning, audio play, and hub navigation
+ * @description Single character row — compact list item with two action buttons
  * Story 19.2: Radical Detail Card
+ *
+ * Layout:
+ *   [glyph]  [pinyin meaning]           [🔊] [↗]
+ *   ────────  info area ────────  ── actions ──
+ *
+ * Audio + Hub use <Button variant="icon"> from shared components with
+ * custom CSS to override the default 22×22 size to 28×28.
  */
 
+import { useCallback } from "react";
+import { Button } from "shared/components";
 import { useHubStore } from "shared/store";
 import { useAudioPlayback } from "shared/hooks";
+import "./ExampleCharCell.css";
 
 interface ExampleCharCellProps {
   character: string;
@@ -17,51 +27,52 @@ export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellP
   const hubOpen = useHubStore((s) => s.open);
   const { playWordAudio } = useAudioPlayback();
 
-  function handleClick() {
+  const handleHubClick = useCallback(() => {
     hubOpen(character, pinyin);
-  }
+  }, [character, pinyin, hubOpen]);
 
   function handleAudioClick(e: React.MouseEvent) {
     e.stopPropagation();
     playWordAudio({ chinese: character, fallbackToBrowserTTS: true });
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleClick();
-    }
-  }
-
   return (
-    <div
-      className="example-char-cell card-dark flex-col flex-center"
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${character} — ${pinyin} — ${meaning}`}
-    >
-      <span className="example-char-cell__glyph">{character}</span>
-      <span className="example-char-cell__pinyin">{pinyin}</span>
-      <span className="example-char-cell__meaning">{meaning}</span>
-      <button
-        className="example-char-cell__audio"
-        onClick={handleAudioClick}
-        type="button"
-        aria-label={`Play audio for ${character}`}
-        title={`Listen to ${character}`}
-      >
-        🔊
-      </button>
-      <button
-        className="example-char-cell__hub-btn"
-        onClick={handleClick}
-        type="button"
-        aria-label={`Open character hub for ${character}`}
-      >
-        Open Hub ▸
-      </button>
+    <div className="example-char-row p-sm flex items-center gap-sm radius-sm" role="listitem">
+      <span className="example-char-row__glyph text-primary lh-1 text-center font-xl shrink-0">
+        {character}
+      </span>
+
+      <div className="example-char-row__info flex-1 flex items-center gap-md">
+        <span className="example-char-row__pinyin font-sm text-primary-light font-italic">
+          {pinyin}
+        </span>
+        <span className="example-char-row__meaning font-sm text-muted whitespace-nowrap overflow-hidden">
+          {meaning}
+        </span>
+      </div>
+
+      <div className="example-char-row__actions flex shrink-0 gap-xs">
+        <Button
+          variant="icon"
+          width={28}
+          height={28}
+          onClick={handleAudioClick}
+          aria-label={`Play audio for ${character}`}
+          title="Listen to pronunciation"
+        >
+          🔊
+        </Button>
+        <Button
+          variant="icon"
+          width={28}
+          height={28}
+          onClick={handleHubClick}
+          aria-label={`${character} — ${pinyin} — ${meaning}`}
+          title="View character details"
+        >
+          ↗
+        </Button>
+      </div>
     </div>
   );
 }

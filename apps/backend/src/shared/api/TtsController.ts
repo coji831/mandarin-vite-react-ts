@@ -1,10 +1,7 @@
 // TTS Controller — migrated from modules/tts/api/TtsController.js
 import { config } from "../config/index.js";
 import { ttsError } from "../utils/errorFactory.js";
-import { createLogger } from "../utils/logger.js";
 import type { Request, Response } from "express";
-
-const logger = createLogger("TTS");
 
 /**
  * TtsController handles HTTP requests for text-to-speech generation

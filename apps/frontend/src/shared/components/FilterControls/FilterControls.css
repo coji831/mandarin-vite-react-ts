@@ -1,0 +1,18 @@
+.filter-controls {
+  align-items: flex-end;
+}
+
+/* .filter-controls__label — Migrated to utility classes: font-xs text-muted */
+
+.filter-controls__select {
+  min-width: 130px;
+}
+
+/* .filter-controls__select:focus — migrated to focus:border-primary utility class */
+/* outline: none — the select element already inherits outline-none via utility */
+
+.filter-controls__select option {
+  background: var(--surface-dark-alt);
+  color: var(--text-secondary);
+  /* NOTE: <option> elements don't support className well; select already uses bg-surface-dark-alt utility */
+}

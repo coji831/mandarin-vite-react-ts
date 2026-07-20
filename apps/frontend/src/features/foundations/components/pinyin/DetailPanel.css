@@ -1,0 +1,32 @@
+/**
+ * @file components/pinyin/DetailPanel.css
+ * @description Styles for the pinyin detail panel — shown when a grid cell is selected.
+ * Layout properties delegated to global utility classes (flex-col, flex-center, etc.).
+ */
+
+/* ─── Detail Panel ─── */
+
+.pinyin-detail-panel {
+  width: 260px;
+  height: 420px;
+  position: sticky;
+}
+
+.pinyin-detail-tones {
+  flex-wrap: nowrap;
+}
+
+.pinyin-detail-tone-chip {
+  min-width: 36px;
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 768px) {
+  .pinyin-detail-panel {
+    /* structural: w-full */
+    width: 100%;
+    max-width: 100%;
+    position: static;
+  }
+}

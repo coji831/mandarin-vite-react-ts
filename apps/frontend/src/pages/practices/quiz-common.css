@@ -1,0 +1,36 @@
+@import "../../features/quiz/components/Quiz.css";
+.quiz-feedback__next-btn {
+  min-width: 160px;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Question View
+   ═══════════════════════════════════════════════ */
+.quiz-question {
+  min-height: 320px;
+}
+/* ═══════════════════════════════════════════════
+   Quiz: Results
+   ═══════════════════════════════════════════════ */
+.quiz-results__timer {
+  font-family: "Courier New", monospace;
+}
+.quiz-results__card {
+  min-width: 320px;
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Category Breakdown
+   ═══════════════════════════════════════════════ */
+
+.quiz-breakdown__fill {
+  /* height: 100% — migrated to utility class: h-full */
+  transition: width var(--transition-normal);
+}
+
+/* ═══════════════════════════════════════════════
+   Quiz: Phase Gate Badge
+   ═══════════════════════════════════════════════ */
+.quiz-badge {
+  animation: animate-fade-in 0.5s;
+}

@@ -18,7 +18,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div style={{ padding: "2rem 0" }}>
+    <div className="flex-center p-xl flex-1">
       <RegisterForm onSuccess={handleSuccess} onSwitchToLogin={handleSwitchToLogin} />
     </div>
   );

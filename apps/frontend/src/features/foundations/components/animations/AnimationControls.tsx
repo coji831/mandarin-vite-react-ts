@@ -4,6 +4,7 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
+import { Button } from "shared/components";
 import "./AnimationControls.css";
 
 export interface AnimationControlsProps {
@@ -12,6 +13,7 @@ export interface AnimationControlsProps {
   currentStroke: number;
   totalStrokes: number;
   speed: number;
+  showSpeedSlider?: boolean;
   onPlay: () => void;
   onPause: () => void;
   onStepBack: () => void;
@@ -29,6 +31,7 @@ export function AnimationControls({
   currentStroke,
   totalStrokes,
   speed,
+  showSpeedSlider = true,
   onPlay,
   onPause,
   onStepBack,
@@ -37,59 +40,58 @@ export function AnimationControls({
 }: AnimationControlsProps) {
   return (
     <div className="flex-center gap-xs flex-wrap">
-      <button
-        className="anim-control-btn border-none radius-sm text-muted flex-center"
+      <Button
+        variant="ghost-primary"
+        size="sm"
+        className="anim-control-btn text-primary disabled:op-40"
         onClick={isPlaying ? onPause : onPlay}
         disabled={!isReady}
         title={isPlaying ? "Pause" : "Play"}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? "⏸" : "▶"}
-      </button>
-      <button
-        className="anim-control-btn border-none radius-sm text-muted flex-center"
-        onClick={onPause}
-        disabled={!isReady || !isPlaying}
-        title="Pause"
-        aria-label="Pause"
-      >
-        ⏸
-      </button>
-      <button
-        className="anim-control-btn border-none radius-sm text-muted flex-center"
+      </Button>
+      <Button
+        variant="ghost-primary"
+        size="sm"
+        className="anim-control-btn text-primary disabled:op-40"
         onClick={onStepBack}
         disabled={!isReady || currentStroke <= 0}
         title="Step back"
         aria-label="Step back one stroke"
       >
         ⏪
-      </button>
-      <button
-        className="anim-control-btn border-none radius-sm text-muted flex-center"
+      </Button>
+      <Button
+        variant="ghost-primary"
+        size="sm"
+        className="anim-control-btn text-primary disabled:op-40"
         onClick={onStepForward}
         disabled={!isReady || currentStroke >= totalStrokes}
         title="Step forward"
         aria-label="Step forward one stroke"
       >
         ⏩
-      </button>
-      <div className="anim-speed-control flex">
-        <label className="anim-speed-label font-xs text-muted" htmlFor="anim-speed-slider">
-          Speed:
-        </label>
-        <input
-          id="anim-speed-slider"
-          type="range"
-          className="anim-speed-slider"
-          min={0.5}
-          max={3}
-          step={0.5}
-          value={speed}
-          onChange={onSpeedChange}
-          disabled={!isReady}
-        />
-        <span className="anim-speed-value font-xs text-tertiary">{speed}x</span>
-      </div>
+      </Button>
+      {showSpeedSlider && (
+        <div className="flex">
+          <label className="anim-speed-label font-xs text-muted" htmlFor="anim-speed-slider">
+            Speed:
+          </label>
+          <input
+            id="anim-speed-slider"
+            type="range"
+            className="anim-speed-slider cursor-pointer disabled:op-30"
+            min={0.5}
+            max={3}
+            step={0.5}
+            value={speed}
+            onChange={onSpeedChange}
+            disabled={!isReady}
+          />
+          <span className="anim-speed-value font-xs text-tertiary">{speed}x</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -44,7 +44,19 @@ terraform/.terraform/
 
 # Verification artifacts (design docs, not source code)
 verification-artifacts/
+*storybook.log
+storybook-static
+
 # GCP service account keys
+
+# Playwright MCP logs
+.playwright-mcp/
+
+# Build output
+apps/frontend/build-output.txt
+
+# MSW service worker
+apps/frontend/public/mockServiceWorker.js
 keys/
 # Terraform state
 *.tfstate

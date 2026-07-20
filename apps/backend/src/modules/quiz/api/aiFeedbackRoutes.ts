@@ -9,7 +9,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
-import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
+import { requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 
 const router = express.Router();
@@ -33,7 +33,7 @@ const feedbackLimiter = rateLimit({
  */
 router.post(
   "/v1/quiz/feedback",
-  authenticateToken,
+  requireAuth,
   feedbackLimiter,
   asyncHandler((req: Request, res: Response) =>
     req.aiFeedbackController!.generateAIFeedback(req, res),

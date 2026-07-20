@@ -9,7 +9,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
-import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
+import { optionalAuth, requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
 const router = express.Router();
@@ -17,32 +17,48 @@ const router = express.Router();
 /**
  * GET /api/v1/progression/foundation-progress
  * Fetch user's foundation section progress (auto-initializes if empty)
+ * optionalAuth — guest users get empty array from controller
  */
 router.get(
   ROUTE_PATTERNS.progressionFoundationProgress,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) =>
     req.progressionController!.getFoundationProgress(req, res),
   ),
 );
 
 /**
+ * PUT /api/v1/progression/foundation-progress/:sectionId
+ * Mark a foundation section as completed.
+ * requireAuth — progress requires a registered user.
+ */
+router.put(
+  ROUTE_PATTERNS.progressionFoundationProgressSection(":sectionId"),
+  requireAuth,
+  asyncHandler((req: Request, res: Response) =>
+    req.progressionController!.markSectionCompleted(req, res),
+  ),
+);
+
+/**
  * GET /api/v1/progression/phase-gate
  * Fetch user's phase gate status (auto-creates if none exists)
+ * optionalAuth — guest users get all-unlocked response
  */
 router.get(
   ROUTE_PATTERNS.progressionPhaseGate,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) => req.progressionController!.getPhaseGate(req, res)),
 );
 
 /**
  * PUT /api/v1/progression/phase-gate
  * Update phase gate progression after a quiz attempt
+ * requireAuth — phase gating requires a registered user
  */
 router.put(
   ROUTE_PATTERNS.progressionPhaseGate,
-  authenticateToken,
+  requireAuth,
   asyncHandler((req: Request, res: Response) =>
     req.progressionController!.updatePhaseGate(req, res),
   ),
@@ -53,10 +69,11 @@ router.put(
 /**
  * GET /api/v1/progression/radical-progress
  * Fetch user's radical progress records
+ * optionalAuth — guest users get empty array from controller
  */
 router.get(
   ROUTE_PATTERNS.progressionRadicalProgress,
-  authenticateToken,
+  optionalAuth,
   asyncHandler((req: Request, res: Response) =>
     req.progressionController!.getRadicalProgress(req, res),
   ),
@@ -65,10 +82,11 @@ router.get(
 /**
  * PUT /api/v1/progression/radical-progress/:radicalId
  * Create or update radical progress (with ReviewItem side-effect when memorized=true)
+ * requireAuth — progress persistence requires a registered user
  */
 router.put(
   ROUTE_PATTERNS.progressionRadicalProgressById(":radicalId"),
-  authenticateToken,
+  requireAuth,
   asyncHandler((req: Request, res: Response) =>
     req.progressionController!.upsertRadicalProgress(req, res),
   ),

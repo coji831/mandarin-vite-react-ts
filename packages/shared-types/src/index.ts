@@ -17,14 +17,40 @@ export interface PhaseGate {
   phase2Passed: boolean;
   phase3Passed: boolean;
   phase4Unlocked: boolean;
-  qualificationScore?: number;
-  placedPhase?: number;
-  phase1Retention?: number;
-  phase2Retention?: number;
-  phase3Retention?: number;
+  qualificationScore: number | null;
+  placedPhase: number | null;
+  phase1Retention: number | null;
+  phase2Retention: number | null;
+  phase3Retention: number | null;
   gateCriteria: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * Checks if a response is a guest-unlocked phase gate (vs a real persisted one).
+ * Guest phase gates have id === "guest-unlocked" and all phases accessible.
+ */
+export function isGuestPhaseGate(
+  gate: PhaseGate | { id: string },
+): gate is PhaseGate & { id: "guest-unlocked" } {
+  return gate.id === "guest-unlocked";
+}
+
+/**
+ * Checks if a value is a valid PhaseGate object (has required fields).
+ */
+export function isPhaseGate(value: unknown): value is PhaseGate {
+  if (!value || typeof value !== "object") return false;
+  const g = value as Record<string, unknown>;
+  return (
+    typeof g.id === "string" &&
+    typeof g.currentPhase === "number" &&
+    typeof g.phase1Passed === "boolean" &&
+    typeof g.phase2Passed === "boolean" &&
+    typeof g.phase3Passed === "boolean" &&
+    typeof g.phase4Unlocked === "boolean"
+  );
 }
 
 // TTS types

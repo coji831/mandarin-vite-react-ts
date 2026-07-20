@@ -9,6 +9,7 @@
  */
 
 import React from "react";
+import { Button } from "shared/components";
 import "./PinyinCell.css";
 
 export interface PinyinCellProps {
@@ -29,18 +30,20 @@ function PinyinCellComponent({
   onSelect,
 }: PinyinCellProps) {
   return (
-    <button
-      className={`pinyin-cell-button bg-surface-dark border-default radius-md text-primary flex cursor-pointer ${isSelected ? "pinyin-cell--selected fw-600" : ""}`}
+    <Button
+      variant="ghost-primary"
+      className={`pinyin-cell-button box-surface p-xs ${isSelected ? "pinyin-cell--selected bg-primary-bg fw-600 " : ""}`}
       onClick={() => onSelect(id)}
       aria-label={ariaLabel}
-      aria-pressed={isSelected}
       title={ariaLabel}
     >
       <span className="pinyin-cell-pinyin font-md fw-500">{label}</span>
       {secondary && (
-        <span className="pinyin-cell-ipa font-xs font-italic text-tertiary">{secondary}</span>
+        <span className="pinyin-cell-ipa font-xs font-italic text-tertiary" aria-hidden="true">
+          {secondary}
+        </span>
       )}
-    </button>
+    </Button>
   );
 }
 

@@ -22,6 +22,22 @@ export const TONE_COLORS: Record<number, string> = {
   0: "#9E9E9E",
 };
 
+export const TONE_LABELS: Record<number, string> = {
+  1: "T1 (flat)",
+  2: "T2 (rising)",
+  3: "T3 (dip)",
+  4: "T4 (falling)",
+  0: "T0 (neutral)",
+};
+
+export const TONE_SYMBOLS: Record<number, string> = {
+  1: "\u02C9",
+  2: "\u02CA",
+  3: "\u02C7",
+  4: "\u02CB",
+  0: "\u25CB",
+};
+
 /**
  * Find a valid combination for the given initial + final pair.
  * Returns null if no valid combination exists.

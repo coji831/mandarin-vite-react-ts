@@ -32,3 +32,32 @@ export function helper() { ... }
 1. Create dedicated file: `types/myTypes.ts`, `constants.ts`
 2. Export from there
 3. Re-export through barrel: `export type { MyType } from './types/myTypes';`
+
+## Import Rule (Consumers)
+
+Files outside the barrel directory MUST import shared components through the barrel, NOT through direct file paths.
+
+### ✅ DO
+
+```typescript
+// Import from barrel — single source of truth
+import { Button, LoadingScreen, ErrorScreen } from "shared/components";
+import { Card } from "../shared/components";
+```
+
+### ❌ DON'T
+
+```typescript
+// Direct file path bypasses barrel
+import { LoadingScreen } from "../shared/components/LoadingScreen/LoadingScreen";
+import { ErrorScreen } from "../shared/components/ErrorScreen/ErrorScreen";
+```
+
+## Reasoning
+
+Barrel files exist as a single entry point for a module. Bypassing them with direct file paths:
+
+1. Circumvents the barrel's versioning and re-export logic
+2. Makes refactoring harder (moving a component requires updating all import paths)
+3. Creates inconsistency — some imports use the barrel, others don't
+4. Bypasses any lint rules or transforms configured on the barrel

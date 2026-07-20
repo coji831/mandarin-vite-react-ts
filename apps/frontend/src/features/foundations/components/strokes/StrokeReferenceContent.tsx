@@ -8,11 +8,12 @@
  */
 
 import { useStrokeReferenceData } from "features/foundations/hooks";
+import { Button, Box } from "shared/components";
 import { BasicStrokesGrid } from "./BasicStrokesGrid";
 import { StrokeRulesList } from "./StrokeRulesList";
 
 export function StrokeReferenceContent() {
-  const { data, isLoading, error } = useStrokeReferenceData();
+  const { data, isLoading, error, retry } = useStrokeReferenceData();
 
   if (isLoading) {
     return (
@@ -20,9 +21,20 @@ export function StrokeReferenceContent() {
         <section className="flex-col">
           <h3 className="stroke-ref-heading font-sm m-0">The 8 Basic Strokes</h3>
           <p className="stroke-ref-subtitle font-xs">Learn by sight — no writing required</p>
-          <div className="stroke-ref-loading font-lg flex-center text-muted">
-            <p>Loading stroke reference...</p>
-          </div>
+          <Box variant="dark-alt" padding="xs" className="stroke-grid flex flex-wrap">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Box
+                key={i}
+                variant="dark-alt"
+                padding="xs"
+                className="stroke-card flex-col gap-xs op-60"
+              >
+                <span className="stroke-glyph font-3xl lh-1 fw-600 text-muted">?</span>
+                <span className="stroke-pinyin font-xs text-muted">loading...</span>
+                <span className="stroke-meaning font-xs text-muted">loading...</span>
+              </Box>
+            ))}
+          </Box>
         </section>
       </>
     );
@@ -30,14 +42,30 @@ export function StrokeReferenceContent() {
 
   if (error || !data) {
     return (
-      <section className="flex-col">
-        <p>Failed to load stroke reference data.</p>
+      <section className="stroke-ref-error flex-col-center gap-sm">
+        <span className="font-lg text-muted">Failed to load stroke reference data</span>
+        <Button variant="primary" onClick={retry}>
+          Retry
+        </Button>
       </section>
     );
   }
 
   return (
     <>
+      {/* Intro header — full width */}
+      <Box variant="dark" padding="md" className="stroke-ref-header flex-col gap-xs">
+        <h2 className="font-xl fw-700 text-secondary m-0">Stroke Reference Guide</h2>
+        <p className="font-sm text-muted m-0">
+          {data.strokes.length} basic strokes &middot; {data.strokeOrderRules.length} stroke order
+          rules &middot; 95% character coverage
+        </p>
+        <p className="font-sm text-muted m-0">
+          Master these fundamentals to write any Chinese character
+        </p>
+      </Box>
+
+      {/* Basic Strokes */}
       <section className="flex-col">
         <h3 className="stroke-ref-heading font-sm text-secondary fw-600 m-0">
           The 8 Basic Strokes
@@ -48,6 +76,7 @@ export function StrokeReferenceContent() {
         <BasicStrokesGrid strokes={data.strokes} />
       </section>
 
+      {/* Stroke Order Rules */}
       <section className="flex-col">
         <h3 className="stroke-ref-heading font-sm text-secondary fw-600 m-0">
           The 4 Stroke Order Rules
@@ -55,9 +84,44 @@ export function StrokeReferenceContent() {
         <StrokeRulesList rules={data.strokeOrderRules} />
       </section>
 
-      <p className="stroke-ref-tip font-xs font-italic text-muted m-0 text-center">
-        🛈 Once you know these rules, you can guess the stroke order for ~95% of characters.
-      </p>
+      {/* Suggested Characters */}
+      <section className="flex-col">
+        <h3 className="stroke-ref-heading font-sm text-secondary fw-600 m-0">
+          Try These Characters
+        </h3>
+        <p className="stroke-ref-subtitle font-xs text-muted">
+          Switch to the Animations tab to see stroke order in motion
+        </p>
+        <Box
+          variant="dark-alt"
+          padding="xs"
+          className="stroke-ref-suggested flex-center flex-wrap gap-xs"
+        >
+          {data.suggestedCharacters.map((char: string) => (
+            <Box
+              key={char}
+              variant="item"
+              as="span"
+              className="stroke-ref-suggested-char text-secondary font-lg fw-500"
+            >
+              {char}
+            </Box>
+          ))}
+        </Box>
+      </section>
+
+      {/* Tip callout — full width */}
+      <Box variant="dark" padding="md" className="stroke-ref-tip">
+        <div className="flex-center gap-xs stroke-ref-tip-header">
+          <span className="font-lg">💡</span>
+          <span className="font-sm fw-600 text-secondary">Tip:</span>
+        </div>
+        <p className="font-sm text-tertiary mt-xs">
+          Once you know these rules, you can guess the stroke order for ~95% of characters. Stroke
+          order matters for handwriting recognition — even phone keyboards expect the correct stroke
+          count.
+        </p>
+      </Box>
     </>
   );
 }

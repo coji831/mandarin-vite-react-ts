@@ -13,6 +13,7 @@
 
 import { TONE_COLORS } from "../../utils/pinyinUtils";
 import type { ToneDefinition } from "../../types";
+import { Box, Button, Spinner } from "shared/components";
 import "./ToneContourCard.css";
 
 export interface ToneContourCardProps {
@@ -60,9 +61,9 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
   const shortName = TONE_SHORT_NAMES[tone.number] ?? tone.name;
 
   return (
-    <div className="tone-contour-card flex-center gap-xs">
+    <Box variant="card" className="tone-contour-card flex-center gap-xs">
       {/* Tone Info — wireframe order: name: mark pinyin (description) chinese */}
-      <div className="tone-contour-info flex">
+      <div className="tone-contour-info flex-1 flex gap-xs">
         <span
           className="tone-contour-mark font-xs whitespace-nowrap fw-600"
           style={{ color: toneColor }}
@@ -75,7 +76,7 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
         <span className="tone-contour-pinyin font-sm fw-600" style={{ color: toneColor }}>
           {tone.pinyinExample}
         </span>
-        <span className="tone-contour-description text-muted whitespace-nowrap">
+        <span className="tone-contour-description font-xs text-muted whitespace-nowrap">
           ({tone.description.toLowerCase()})
         </span>
         <span className="tone-contour-chinese font-sm fw-500 text-primary">
@@ -91,17 +92,17 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
         aria-label={`${tone.name} pitch contour`}
       >
         {/* Background grid lines */}
-        <line x1="10" y1="10" x2="10" y2="90" stroke="#3a3a5e" strokeWidth="0.5" />
+        <line x1="10" y1="10" x2="10" y2="90" stroke="var(--tone-contour-bg)" strokeWidth="0.5" />
         <line
           x1="10"
           y1="50"
           x2="90"
           y2="50"
-          stroke="#3a3a5e"
+          stroke="var(--tone-contour-bg)"
           strokeWidth="0.5"
           strokeDasharray="2,2"
         />
-        <line x1="90" y1="10" x2="90" y2="90" stroke="#3a3a5e" strokeWidth="0.5" />
+        <line x1="90" y1="10" x2="90" y2="90" stroke="var(--tone-contour-bg)" strokeWidth="0.5" />
         {/* Contour path */}
         <path
           d={contourPath}
@@ -125,22 +126,22 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
               cy={y}
               r="3"
               fill={toneColor}
-              stroke="#1a1a2e"
+              stroke="var(--tone-contour-axis)"
               strokeWidth="1"
             />
           );
         })}
       </svg>
 
-      <button
-        className="btn-icon-circle flex-center border-none radius-full lh-1 shrink-0"
+      <Button
+        variant="icon"
         onClick={() => onPlay(tone.pinyinExample)}
         disabled={isLoading}
         title={isLoading ? "Generating audio..." : `Play ${tone.pinyinExample}`}
-        aria-label={`Play ${tone.pinyinExample}`}
+        aria-label={isLoading ? "Generating audio..." : `Play ${tone.pinyinExample}`}
       >
-        {isLoading ? <span className="tones-loading-spinner radius-full" /> : "▶"}
-      </button>
-    </div>
+        {isLoading ? <Spinner size="xs" /> : "▶"}
+      </Button>
+    </Box>
   );
 }

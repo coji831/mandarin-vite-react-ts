@@ -24,8 +24,8 @@ describe("ContentCard", () => {
     render(<ContentCard item={baseItem} />);
 
     expect(screen.getByText("你好")).toBeInTheDocument();
-    expect(screen.getByText("nǐ hǎo")).toBeInTheDocument();
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("nǐ hǎo"))).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("Hello"))).toBeInTheDocument();
   });
 
   it("shows lock badge when locked", () => {

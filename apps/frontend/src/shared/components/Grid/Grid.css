@@ -1,0 +1,12 @@
+.grid__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.grid__page-btn {
+  cursor: pointer;
+}
+
+/* .grid__page-btn:disabled — migrated to disabled:op-40 utility */
+
+/* .grid__page-size-select — was empty, removed */

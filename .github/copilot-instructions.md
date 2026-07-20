@@ -11,10 +11,16 @@ Run dev: `npm run dev` (port 5173)
 Run local backend: `npm run start-backend` (port 3001)
 Run tests (changed scope only): `npm test`
 Run full test suite: `npm run test:full`
+Run storybook: `npm run storybook` (port 6006)
+Run story tests: `npm run test-storybook`
+Build storybook: `npm run build-storybook`
 Run build (type-check + bundle): `npm run build`
 Run format: `npm run format`
 Run lint: `npm run lint` (0 errors required)
 Run design lint: `npx @google/design.md lint DESIGN.md`
+Read design reasoning: `docs/guides/design-reasoning.md`
+Run pre-delivery checklist: `.github/instructions/frontend-pre-delivery-checklist.instructions.md`
+See visual design protocol: `.github/instructions/frontend-visual-design-protocol.instructions.md`
 See AGENTS.md for agent roles, behavior rules, and prohibited patterns.
 Epic BR: use `docs/templates/epic-business-requirements-template.md`
 Story BR: use `docs/templates/story-business-requirements-template.md`
@@ -22,6 +28,14 @@ Epic Implementation: `docs/templates/epic-implementation-template.md`
 Story Implementation: `docs/templates/story-implementation-template.md`
 Code change: follow `docs/guides/conventions/frontend.md` (frontend) or `docs/guides/conventions/backend.md` (backend) + `docs/knowledge-base/practices/solid-principles.md`
 Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
+
+## 🎨 Visual Design Protocol
+
+See `.github/instructions/frontend-visual-design-protocol.instructions.md` for the full protocol covering: Storybook-first mandate, component reuse, token integrity, Storybook mandate, verification requirements, responsive/accessibility checks, data-resilient UI principle, and UI composition guide.
+
+**Key references:** `ui-composition.instructions.md` (layout rules), `component-registry.json` (allowed components), `design-reasoning.md` (design philosophy), `DESIGN.md` (design tokens).
+
+---
 
 ## 🏗️ Architecture Overview
 
@@ -44,27 +58,38 @@ Close epic/story: verify all AC done → update Status & Last Update in BR + imp
 
 ## 🔄 Development Workflow
 
-Concise checklist: `Context → Review → Plan → Implement → Test → Run → Docs → Gates → Commit`
+Concise checklist: `Context → Review → Plan → Implement → Verify → Test → Run → Docs → Gates → Commit`
 
-Where **Context** means: before writing code, read the relevant shared components, DESIGN.md tokens, and existing feature structure to understand what's available for reuse.
+Where **Context** means: before writing code, read the relevant shared components, DESIGN.md tokens, and existing feature structure to understand what's available for reuse. If a Figma design URL is available, query the Framelink MCP to fetch structured design data.
+
+Where **Verify** means: after implementation, use Playwright/Chrome DevTools MCP to open the page, take screenshots, and visually validate against the design spec. Document any discrepancies in `verification-artifacts/`.
 
 See [project-workflow.instructions.md](./instructions/project-workflow.instructions.md) for the detailed story-level development workflow, epic/story closing procedures, quality gates, and code change checklist.
 
+## ✅ Pre-Delivery UI Checklist
+
+Run through `.github/instructions/frontend-pre-delivery-checklist.instructions.md` before reporting any UI code as complete. Covers: token compliance, states coverage, interaction, layout, and quality gates.
+
+---
+
 ## 📋 Where to Find Rules
 
-| Topic                        | File                                                                                              | Auto-attaches when...                        |
-| ---------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| Workflow, epics, closing     | [project-workflow.instructions.md](./instructions/project-workflow.instructions.md)               | Description matches task                     |
-| Documentation standards      | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md) | Editing `docs/**/*.md`                       |
-| API client rules             | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)         | Editing frontend `.ts/.tsx`                  |
-| CSS & styling                | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)       | Editing `.css` or frontend `.tsx`            |
-| Barrel files                 | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                       | Editing `index.ts`                           |
-| Store placement              | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                 | Editing store files                          |
-| Testing requirements         | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)             | Editing frontend `.ts/.tsx` or backend `.js` |
-| Prisma schema changes        | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)     | Editing `schema.prisma`                      |
-| External libs (hanzi-writer) | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)         | Editing canvas/animation files               |
-| Input/timer edge cases       | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md) | Editing input/timer/quiz files               |
-| Backend error messages       | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)   | Editing backend controllers/services         |
+| Topic                        | File                                                                                                              | Auto-attaches when...                                            |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Workflow, epics, closing     | [project-workflow.instructions.md](./instructions/project-workflow.instructions.md)                               | Description matches task                                         |
+| Documentation standards      | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md)                 | Editing `docs/**/*.md`                                           |
+| API client rules             | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)                         | Editing frontend `.ts/.tsx`                                      |
+| CSS & styling                | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)                       | Editing `.css` or frontend `.tsx`                                |
+| Barrel files                 | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                                       | Editing `index.ts`                                               |
+| Store placement              | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                                 | Editing store files                                              |
+| Testing requirements         | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)                             | Editing frontend `.ts/.tsx` or backend `.js`                     |
+| Prisma schema changes        | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)                     | Editing `schema.prisma`                                          |
+| External libs (hanzi-writer) | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)                         | Editing canvas/animation files                                   |
+| Input/timer edge cases       | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md)                 | Editing input/timer/quiz files                                   |
+| Backend error messages       | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)                   | Editing backend controllers/services                             |     | UI composition | [ui-composition.instructions.md](./instructions/ui-composition.instructions.md) | Writing `.tsx` UI code |
+| Visual design protocol       | [frontend-visual-design-protocol.instructions.md](./instructions/frontend-visual-design-protocol.instructions.md) | Writing `.tsx` UI code                                           |
+| Pre-delivery checklist       | [frontend-pre-delivery-checklist.instructions.md](./instructions/frontend-pre-delivery-checklist.instructions.md) | Before shipping any UI code                                      |
+| Design system drift          | [design-system-drift.instructions.md](./instructions/design-system-drift.instructions.md)                         | Editing DESIGN.md, component-registry.json, or shared components |
 
 ## 📦 Templates Index
 
@@ -97,17 +122,19 @@ Feature flags: document flag names & purpose in epic BR + implementation README 
 
 Each pitfall category has a dedicated `.instructions.md` file with DO/DON'T examples:
 
-| Category                       | File                                                                                              |
-| ------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Prisma & Database              | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)     |
-| External libraries & React DOM | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)         |
-| CSS & styling                  | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)       |
-| API client & service layer     | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)         |
-| Barrel files                   | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                       |
-| Store placement                | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                 |
-| Input/timer edge cases         | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md) |
-| Testing requirements           | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)             |
-| Backend error messages         | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)   |
+| Category                       | File                                                                                                            |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Prisma & Database              | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)                   |
+| External libraries & React DOM | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)                       |
+| CSS & styling                  | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)                     |
+| API client & service layer     | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)                       |
+| Barrel files                   | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                                     |
+| Store placement                | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                               |
+| Input/timer edge cases         | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md)               |
+| Testing requirements           | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)                           |
+| Storybook-Production drift     | [storybook-production-alignment.instructions.md](./instructions/storybook-production-alignment.instructions.md) |
+| Backend error messages         | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)                 |
+| Design system drift            | [design-system-drift.instructions.md](./instructions/design-system-drift.instructions.md)                       |
 
 ## 📁 Key Files & Directories
 

@@ -1,0 +1,9 @@
+/**
+ * QuizPage.css
+ *
+ * Styles for the Quiz page orchestrator.
+ */
+
+.quiz-page__fallback-text {
+  max-width: 400px;
+}
