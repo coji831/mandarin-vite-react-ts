@@ -51,10 +51,18 @@
 
 ### 🔗 Integrations
 
-| Guide                                                                   | Description                   |
-| ----------------------------------------------------------------------- | ----------------------------- |
-| [Frontend-Backend Integration](guides/integrations/frontend-backend.md) | Proxy, CORS, shared constants |
-| [Gemini API](guides/integrations/gemini-api.md)                         | AI conversation generation    |
+| Guide                                                                        | Description                                                           |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [Frontend-Backend Integration](guides/integrations/frontend-backend.md)      | Proxy, CORS, shared constants                                         |
+| [Gemini API](guides/integrations/gemini-api.md)                              | AI conversation generation                                            |
+| [Storybook–Production Alignment](guides/integrations/storybook-alignment.md) | Maintaining zero drift between Storybook stories and production pages |
+
+### 🎨 Design
+
+| Guide                                                             | Description                                               |
+| ----------------------------------------------------------------- | --------------------------------------------------------- |
+| [Visual Design Workflow](guides/design/visual-design-workflow.md) | Storybook-first design workflow and token management      |
+| [Design Reasoning](guides/design/design-reasoning.md)             | Design philosophy ("Warm Minimalism") and UX fundamentals |
 
 ### ⚡ Operations
 

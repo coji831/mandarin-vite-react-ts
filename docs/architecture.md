@@ -21,7 +21,7 @@
 
 PinyinPal is a **full-stack Mandarin learning platform** built with:
 
-- **Frontend**: React 18 + TypeScript + Vite (deployed to Vercel)
+- **Frontend**: React 19.1.0 + TypeScript + Vite (deployed to Vercel)
 - **Backend**: Node.js + Express (deployed to Railway)
 - **Database**: PostgreSQL with Prisma ORM (hosted on Neon)
 - **Cache**: Redis (Upstash) for API response caching
