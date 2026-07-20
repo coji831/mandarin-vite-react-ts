@@ -2,15 +2,21 @@
  * Import Character Decomposition Data from Make Me a Hanzi
  * =========================================================
  *
- * Parses Make Me a Hanzi (MIT-licensed) decomposition JSON and populates
- * the CharacterRadical Prisma table by mapping radical glyphs to rad_XXXX
- * IDs from content/radicals/*.json.
+ * Parses Make Me a Hanzi (MIT-licensed) dictionary.txt (line-delimited JSON)
+ * and populates the CharacterRadical Prisma table by mapping radical glyphs
+ * to rad_XXXX IDs from content/radicals/*.json.
  *
- * Source commit (pinned): 1c5c6e6f5b6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c
+ * The dictionary.txt file contains one JSON object per line, with fields:
+ *   character, decomposition (IDS), etymology, radical, pinyin, definition
+ *
+ * Source commit (pinned): bddc96d
  * https://github.com/skishore/makemeahanzi
  *
- * Data file expected at: ../../data/make-me-a-hanzi/decompositions.json
+ * Data file expected at: ../../data/make-me-a-hanzi/dictionary.txt
  * (when run from apps/backend/)
+ *
+ * Download:
+ *   https://raw.githubusercontent.com/skishore/makemeahanzi/master/dictionary.txt
  *
  * Usage:
  *   npm run db:import-decomposition
@@ -20,7 +26,6 @@
 
 import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
 import dotenv from "dotenv";
 import { resolve } from "path";
 import { readFileSync, readdirSync, existsSync } from "fs";
@@ -32,19 +37,115 @@ const { PrismaClient } = prismaPkg;
 const CWD = process.cwd();
 const DOTENV_PATH = resolve(CWD, "../../.env.local");
 const RADICALS_DIR = resolve(CWD, "../../content/radicals");
-const DATA_FILE = resolve(CWD, "../../data/make-me-a-hanzi/decompositions.json");
+const DATA_FILE = resolve(CWD, "../../data/make-me-a-hanzi/dictionary.txt");
 
 dotenv.config({ path: DOTENV_PATH });
 
 // ── Prisma Client ─────────────────────────────────────────────────────────
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
+// Pass connection string directly — creating a custom pg.Pool conflicts with
+// Prisma's internal connection management (matching backend client.ts pattern).
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
+// ── IDS Operators ──────────────────────────────────────────────────────────
+// Ideograph Description Characters that structure IDS strings.
+// These are NOT component characters — skip them during parsing.
+const IDS_OPERATORS = new Set([
+  "\u2FF0", // ⿰ Left to right
+  "\u2FF1", // ⿱ Above to below
+  "\u2FF2", // ⿲ Left to middle and right
+  "\u2FF3", // ⿳ Above to middle and below
+  "\u2FF4", // ⿴ Full surround
+  "\u2FF5", // ⿵ Surround from above
+  "\u2FF6", // ⿶ Surround from below
+  "\u2FF7", // ⿷ Surround from left
+  "\u2FF8", // ⿸ Surround from upper left
+  "\u2FF9", // ⿹ Surround from upper right
+  "\u2FFA", // ⿺ Surround from lower left
+  "\u2FFB", // ⿻ Overlaid
+  "\uFF1F", // ？ Unknown component
+]);
+
 // ── Types ──────────────────────────────────────────────────────────────────
-/** @typedef {{ character: string; radicals: string[] }} DecompositionEntry */
+
+/**
+ * @typedef {{
+ *   character: string;
+ *   definition: string;
+ *   pinyin: string;
+ *   decomposition: string;
+ *   etymology?: {
+ *     type: string;
+ *     phonetic?: string;
+ *     semantic?: string;
+ *     hint?: string;
+ *   };
+ *   radical: string;
+ *   matches: string[];
+ * }} DictionaryEntry
+ */
 
 /** @typedef {{ id: string; glyph: string; alternate_glyphs?: string[] }} RadicalEntry */
+
+// ── IDS Parsing ────────────────────────────────────────────────────────────
+
+/**
+ * Extract component characters from an Ideograph Description Sequence (IDS).
+ * Skips IDS operators and unknown (？) markers; returns unique characters.
+ *
+ * @param {string} ids - The IDS string (e.g. "\u2FF0\u2ECA\u5404")
+ * @returns {Set<string>} Set of component glyph characters
+ */
+function extractComponentsFromIDS(ids) {
+  const components = new Set();
+
+  for (const char of ids) {
+    if (!IDS_OPERATORS.has(char)) {
+      components.add(char);
+    }
+  }
+
+  return components;
+}
+
+/**
+ * Collect all component glyphs for a dictionary entry using multiple sources:
+ *   1. IDS decomposition parsing
+ *   2. etymology.phonetic (pictophonetic phonetic component)
+ *   3. etymology.semantic (pictophonetic semantic component)
+ *   4. radical field (Unicode primary radical)
+ *
+ * @param {DictionaryEntry} entry
+ * @returns {string[]} Deduplicated array of component glyphs
+ */
+function collectComponentGlyphs(entry) {
+  const glyphs = new Set();
+
+  // 1. Extract from IDS decomposition
+  if (entry.decomposition) {
+    const idsComponents = extractComponentsFromIDS(entry.decomposition);
+    for (const g of idsComponents) {
+      glyphs.add(g);
+    }
+  }
+
+  // 2. Etymology phonetic/semantic
+  if (entry.etymology) {
+    if (entry.etymology.phonetic) {
+      glyphs.add(entry.etymology.phonetic);
+    }
+    if (entry.etymology.semantic) {
+      glyphs.add(entry.etymology.semantic);
+    }
+  }
+
+  // 3. Primary radical
+  if (entry.radical) {
+    glyphs.add(entry.radical);
+  }
+
+  return [...glyphs];
+}
 
 // ── Glyph-to-ID Map Builder ────────────────────────────────────────────────
 
@@ -72,7 +173,7 @@ function buildGlyphMap() {
     const radical = JSON.parse(readFileSync(filePath, "utf-8"));
 
     if (!radical.id || !radical.glyph) {
-      console.warn(`  ⚠  Skipping invalid radical file: ${file} (missing id or glyph)`);
+      console.warn(`  \u26A0  Skipping invalid radical file: ${file} (missing id or glyph)`);
       continue;
     }
 
@@ -80,13 +181,13 @@ function buildGlyphMap() {
     glyphToId[radical.glyph] = radical.id;
     totalRadicals++;
 
-    // Map alternate glyphs (e.g. "人" for rad_0009 glyph "亻")
+    // Map alternate glyphs (e.g. "\u4EBA" for rad_0009 glyph "\u4EBB")
     const alternates = radical.alternate_glyphs ?? [];
     for (const altGlyph of alternates) {
       if (glyphToId[altGlyph] && glyphToId[altGlyph] !== radical.id) {
         console.warn(
-          `  ⚠  Glyph "${altGlyph}" already mapped to ${glyphToId[altGlyph]}, ` +
-            `skipping duplicate from ${radical.id}`
+          `  \u26A0  Glyph "${altGlyph}" already mapped to ${glyphToId[altGlyph]}, ` +
+            `skipping duplicate from ${radical.id}`,
         );
         continue;
       }
@@ -97,27 +198,30 @@ function buildGlyphMap() {
   return { glyphToId, totalRadicals };
 }
 
-// ── JSON Validation ────────────────────────────────────────────────────────
+// ── Dictionary Entry Validation ────────────────────────────────────────────
 
 /**
- * Validate that the parsed JSON has the expected structure.
+ * Validate that a parsed dictionary entry has the required fields.
  *
- * @param {unknown} data
- * @returns {data is DecompositionEntry[]}
+ * @param {unknown} entry
+ * @returns {entry is DictionaryEntry}
  */
-function validateDecompositionData(data) {
-  if (!Array.isArray(data)) {
+function validateDictionaryEntry(entry) {
+  if (!entry || typeof entry !== "object") {
     return false;
   }
 
-  return data.every(
-    (entry) =>
-      entry !== null &&
-      typeof entry === "object" &&
-      typeof entry.character === "string" &&
-      Array.isArray(entry.radicals) &&
-      entry.radicals.every((r) => typeof r === "string")
-  );
+  const e = /** @type {Record<string, unknown>} */ (entry);
+
+  if (typeof e.character !== "string" || e.character.length === 0) {
+    return false;
+  }
+
+  if (typeof e.decomposition !== "string") {
+    return false;
+  }
+
+  return true;
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
@@ -128,89 +232,117 @@ async function main() {
   console.log("=".repeat(60));
 
   // 1. Build glyph map from radical JSON files
-  console.log("\n📂 Building radical glyph map...");
+  console.log("\n\uD83D\uDCC2 Building radical glyph map...");
   const { glyphToId, totalRadicals } = buildGlyphMap();
-  console.log(`  Loaded ${totalRadicals} radical files, ${Object.keys(glyphToId).length} glyph mappings`);
+  console.log(
+    `  Loaded ${totalRadicals} radical files, ${Object.keys(glyphToId).length} glyph mappings`,
+  );
 
   // 2. Check data file exists
-  console.log(`\n📄 Reading decomposition data...`);
+  console.log(`\n\uD83D\uDCC4 Reading decomposition data...`);
   if (!existsSync(DATA_FILE)) {
     console.error(`  FATAL: Data file not found: ${DATA_FILE}`);
-    console.error(`  Download from https://github.com/skishore/makemeahanzi`);
-    console.error(`  and place at: data/make-me-a-hanzi/decompositions.json`);
-    process.exit(1);
-  }
-
-  // 3. Parse and validate
-  let rawData;
-  try {
-    rawData = JSON.parse(readFileSync(DATA_FILE, "utf-8"));
-  } catch (err) {
-    console.error(`  FATAL: Failed to parse data file: ${err.message}`);
-    process.exit(1);
-  }
-
-  if (!validateDecompositionData(rawData)) {
+    console.error(`  Download dictionary.txt from:`);
     console.error(
-      `  FATAL: Data file has unexpected structure. Expected array of ` +
-        `{ character: string, radicals: string[] }`
+      `  https://raw.githubusercontent.com/skishore/makemeahanzi/master/dictionary.txt`,
     );
+    console.error(`  And place at: data/make-me-a-hanzi/dictionary.txt`);
     process.exit(1);
   }
 
-  /** @type {DecompositionEntry[]} */
-  const decompositions = rawData;
-  console.log(`  Found ${decompositions.length} character decomposition entries`);
+  // 3. Read and parse line-delimited JSON
+  const fileContent = readFileSync(DATA_FILE, "utf-8");
+  const lines = fileContent.split("\n").filter((line) => line.trim().length > 0);
+  console.log(`  Found ${lines.length} lines in dictionary.txt`);
 
-  // 4. Process each entry
-  console.log(`\n🔄 Processing decompositions...`);
-  let totalUpserted = 0;
+  // 4. Process each line
+  console.log(`\n\uD83D\uDD04 Processing decompositions...`);
   let totalEntries = 0;
+  let parseErrors = 0;
+  let skippedUnknownDecomposition = 0;
   /** @type {Array<{ glyph: string; character: string }>} */
   const unmappedRadicals = [];
+  /** @type {Array<{ characterGlyph: string; radicalId: string }>} */
+  const records = [];
 
-  for (const entry of decompositions) {
+  for (const line of lines) {
+    // Parse JSON
+    /** @type {unknown} */
+    let entry;
+    try {
+      entry = JSON.parse(line);
+    } catch {
+      parseErrors++;
+      continue;
+    }
+
+    // Validate
+    if (!validateDictionaryEntry(entry)) {
+      parseErrors++;
+      continue;
+    }
+
+    // Skip if decomposition starts with "\uFF1F" (unknown)
+    if (entry.decomposition.startsWith("\uFF1F")) {
+      skippedUnknownDecomposition++;
+      continue;
+    }
+
     totalEntries++;
 
-    for (const radicalGlyph of entry.radicals) {
-      const radicalId = glyphToId[radicalGlyph];
+    // Collect component glyphs from IDS, etymology, and radical
+    const componentGlyphs = collectComponentGlyphs(entry);
+
+    if (componentGlyphs.length === 0) {
+      skippedUnknownDecomposition++;
+      continue;
+    }
+
+    // Collect each mapped component record
+    for (const glyph of componentGlyphs) {
+      const radicalId = glyphToId[glyph];
 
       if (!radicalId) {
-        unmappedRadicals.push({ glyph: radicalGlyph, character: entry.character });
+        unmappedRadicals.push({ glyph, character: entry.character });
         continue;
       }
 
-      await prisma.characterRadical.upsert({
-        where: {
-          characterGlyph_radicalId: {
-            characterGlyph: entry.character,
-            radicalId,
-          },
-        },
-        create: {
-          characterGlyph: entry.character,
-          radicalId,
-        },
-        update: {}, // No fields to update — data is static
-      });
-
-      totalUpserted++;
+      records.push({ characterGlyph: entry.character, radicalId });
     }
 
+    // Progress every 500 characters
     if (totalEntries % 500 === 0) {
-      console.log(`  Progress: ${totalEntries}/${decompositions.length} characters processed`);
+      console.log(`  Progress: ${totalEntries} characters parsed`);
     }
+  }
+
+  // 5. Batch insert all records (using createMany with skipDuplicates for performance)
+  console.log(`\n\uD83D\uDCDA Inserting ${records.length} radical links in batches...`);
+  const BATCH_SIZE = 500;
+  let totalUpserted = 0;
+
+  for (let i = 0; i < records.length; i += BATCH_SIZE) {
+    const batch = records.slice(i, i + BATCH_SIZE);
+    await prisma.characterRadical.createMany({
+      data: batch,
+      skipDuplicates: true,
+    });
+    totalUpserted += batch.length;
+    console.log(`  Inserted batch ${Math.min(i + BATCH_SIZE, records.length)}/${records.length}`);
   }
 
   // 5. Summary
   console.log("\n" + "=".repeat(60));
   console.log("  Import Summary");
   console.log("=".repeat(60));
-  console.log(`  Total characters processed:  ${totalEntries}`);
-  console.log(`  Total radical links upserted: ${totalUpserted}`);
+  console.log(`  Total lines in file:          ${lines.length}`);
+  console.log(`  Characters processed:          ${totalEntries}`);
+  console.log(`  Parse errors:                  ${parseErrors}`);
+  console.log(`  Skipped (unknown decomps):     ${skippedUnknownDecomposition}`);
+  console.log(`  Total radical links upserted:  ${totalUpserted}`);
 
   if (unmappedRadicals.length > 0) {
-    console.log(`\n  ⚠  Unmapped radicals: ${unmappedRadicals.length}`);
+    console.log(`\n  \u26A0  Unmapped radicals: ${unmappedRadicals.length}`);
 
     // Group by glyph for cleaner output
     /** @type {Record<string, string[]>} */
@@ -226,14 +358,19 @@ async function main() {
     for (const glyph of sortedGlyphs) {
       const chars = glyphGroups[glyph];
       // Show up to 5 example characters per glyph
-      const examples = chars.length <= 5 ? chars.join(", ") : `${chars.slice(0, 5).join(", ")}, ... (${chars.length} total)`;
-      console.log(`    "${glyph}" (U+${glyph.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0")}) → ${examples}`);
+      const examples =
+        chars.length <= 5
+          ? chars.join(", ")
+          : `${chars.slice(0, 5).join(", ")}, ... (${chars.length} total)`;
+      console.log(
+        `    "${glyph}" (U+${glyph.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0")}) \u2192 ${examples}`,
+      );
     }
   } else {
-    console.log(`\n  ✅ All radicals mapped successfully!`);
+    console.log(`\n  \u2705 All radicals mapped successfully!`);
   }
 
-  console.log("\n✅ Import complete.");
+  console.log("\n\u2705 Import complete.");
 }
 
 // ── Execute ────────────────────────────────────────────────────────────────
@@ -241,10 +378,13 @@ async function main() {
 try {
   await main();
 } catch (err) {
-  console.error(`\n❌ Import failed: ${err.message}`);
+  console.error(`\n\u274C Import failed: ${err.message}`);
+  if (err.code) console.error(`  Error code: ${err.code}`);
+  if (err.meta) console.error(`  Error meta:`, JSON.stringify(err.meta, null, 2));
+  // Full error object
+  console.error(`  Full error:`, err);
   console.error(err.stack);
   process.exit(1);
 } finally {
   await prisma.$disconnect();
-  await pool.end();
 }

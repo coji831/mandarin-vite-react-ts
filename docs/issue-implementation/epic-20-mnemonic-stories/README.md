@@ -8,11 +8,11 @@
 
 ## Story Status
 
-| Story | Status |
-| ----- | ------ |
+| Story                                        | Status       |
+| -------------------------------------------- | ------------ |
 | **Story 20.3: Character Decomposition Data** | ✅ Completed |
-| **Story 20.1: Mnemonic Generation Backend** | ⏳ Planned |
-| **Story 20.2: Mnemonic Display UI** | ⏳ Planned |
+| **Story 20.1: Mnemonic Generation Backend**  | ⏳ Planned   |
+| **Story 20.2: Mnemonic Display UI**          | ⏳ Planned   |
 
 ---
 

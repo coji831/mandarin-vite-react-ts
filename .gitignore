@@ -61,3 +61,6 @@ keys/
 # Terraform state
 *.tfstate
 *.tfstate.backup
+
+# External data (downloaded from Make Me a Hanzi)
+data/
