@@ -1,0 +1,16 @@
+{
+  "id": "fin_iao",
+  "pinyin": "iao",
+  "type": "compound",
+  "category": "compound_final",
+  "tone_variants": {
+    "tone1": "biāo",
+    "tone2": "biáo",
+    "tone3": "biǎo",
+    "tone4": "biào",
+    "tone0": "biao"
+  },
+  "metadata": {
+    "pronunciation_guide": "iao — like '**yow**' (ee-ah-oh)"
+  }
+}
