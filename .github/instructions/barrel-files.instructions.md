@@ -5,33 +5,35 @@ applyTo: "**/index.ts"
 
 # Barrel File Rules
 
-## Rule
+## How To Create a Barrel (Numbered Steps)
 
-Barrel files (`index.ts`) must ONLY re-export symbols from other modules. They must NEVER define types, constants, functions, or any logic inline.
-
-## ✅ DO
+1. **Check if the symbol needs a barrel export** — Is this a public symbol used outside the module? If yes, it needs a barrel re-export. If it's internal-only, skip the barrel.
+2. **Create the symbol in its proper file** — Never define types, constants, or logic directly in `index.ts`. Create: `types/myTypes.ts`, `constants.ts`, `utils/helpers.ts`, then re-export.
+3. **Add the re-export** — Add `export { Symbol } from "./path/to/file";` or `export type { Type } from "./path/to/types";`
+4. **Verify** — Run `npm run lint` — the `no-restricted-imports` rule catches barrel bypasses. Run `grep -n "^export (interface|type|const|function)" **/index.ts` to confirm no inline definitions.
 
 ```typescript
-// features/myfeature/index.ts — Only re-exports
-export { MyComponent } from "./components/MyComponent";
-export { useMyHook } from "./hooks/useMyHook";
-export type { MyType } from "./types/myTypes";
+// Step 3 example: features/myfeature/index.ts
+export { MyComponent } from "./components/MyComponent"; // From component file
+export { useMyHook } from "./hooks/useMyHook"; // From hook file
+export type { MyType } from "./types/myTypes"; // From types file (re-export)
 ```
 
-## ❌ DON'T
+## ❌ Inline Definitions (Don't)
 
 ```typescript
-// ❌ BAD — Types defined inline in barrel
+// ❌ BAD — Types/constants defined inline in barrel
 export interface MyType { id: string; name: string; }
 export const CONSTANT = "value";
 export function helper() { ... }
 ```
 
-## If you have types/constants
+## Import Rule (Consumers)
 
-1. Create dedicated file: `types/myTypes.ts`, `constants.ts`
-2. Export from there
-3. Re-export through barrel: `export type { MyType } from './types/myTypes';`
+Files outside the barrel directory MUST import shared components through the barrel, NOT through direct file paths. The ESLint `no-restricted-imports` rule enforces this.
+---
+
+**See also:** `frontend-api-client.instructions.md` • `testing-standards.instructions.md`
 
 ## Import Rule (Consumers)
 

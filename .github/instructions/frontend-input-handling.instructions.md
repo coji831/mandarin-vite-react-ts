@@ -69,3 +69,7 @@ if (timeLeft <= 0) return; // silent stop, no UI transition
 ## Reasoning
 
 Untested edge cases in inputs cause the worst UX bugs — partial answers submitted, timers that freeze without feedback. These patterns are easy to miss during development because the "happy path" appears to work.
+
+---
+
+**See also:** `quiz-architecture.instructions.md` (timer strategies in quiz) • `testing-standards.instructions.md` (test timer edge cases) • `frontend-pre-delivery-checklist.instructions.md` (state coverage)

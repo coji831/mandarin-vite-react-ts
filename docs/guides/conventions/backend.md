@@ -214,7 +214,47 @@ word (zero external deps)         auth (zero external deps)
 
 ---
 
-### 4. Pre-Commit Checks
+### 4. Module-Level Container Pattern
+
+Each module exports a **typed factory function** from its own `container.ts`:
+
+```typescript
+// modules/<name>/container.ts
+export interface XModuleDeps {
+  /* external deps only — repos, shared services */
+}
+
+export function createXModule(deps: XModuleDeps): { controller: XController };
+```
+
+The factory defines a typed dependency interface, instantiates internal layers (repository → service → controller), and returns a minimal result (typically `{ controller }`). Services that other modules depend on can also be returned.
+
+The root `container.ts` (`app/container.ts`) imports all module factories and calls them with infrastructure singletons:
+
+```typescript
+// app/container.ts — declarative wiring
+const cacheService = await CacheFactory.create("default");
+const geminiService = new GeminiService(geminiClient);
+
+const mnemonicsModule = createMnemonicsModule({ geminiService, cacheService });
+const authModule = createAuthModule({ authRepository, jwtService, passwordService });
+
+export const mnemonicsController = mnemonicsModule.controller;
+export const authController = authModule.controller;
+```
+
+**Benefits:**
+
+- **Explicit dependencies** — each factory has a typed `Deps` interface
+- **Testable modules** — `createXModule(mockDeps)` works without the full container
+- **Reduced merge conflicts** — each module's wiring is in its own file
+- **NestJS migration path** — factory body → `@Module({ providers: [...], controllers: [...] })`
+
+> **Deep dive:** See `docs/knowledge-base/backend/module-level-containers.md` for full explanation with code examples, migration path, and tradeoff analysis.
+
+---
+
+### 5. Pre-Commit Checks
 
 The following checks should pass before committing:
 

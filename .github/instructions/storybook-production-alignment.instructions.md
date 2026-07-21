@@ -429,3 +429,7 @@ When reviewing a PR that touches page files:
 | **Shared components**      | ✅ Each has its own `.stories.tsx`         | `shared/components/<Name>/`             |
 | **Page containers**        | ✅ Single `*PageFull.stories.tsx` per page | `pages/` (targets `*Page.tsx` with MSW) |
 | **Feature sub-components** | ❌ No individual stories                   | `features/*/components/`                |
+
+---
+
+**See also:** `frontend-visual-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (UI gate) • `project-workflow.instructions.md` (commit gates)

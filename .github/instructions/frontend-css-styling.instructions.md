@@ -441,3 +441,7 @@ const getStyle = (isActive) => ({
 | **Hover**            | CSS `:hover` pseudo-class in local `.css`                 |
 | **Active/Selected**  | Toggle global utility classes via conditional `className` |
 | **Missing utility?** | Add to `globals.css`                                      |
+
+---
+
+**See also:** `ui-composition.instructions.md` (layout rules) • `frontend-visual-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (token compliance check)

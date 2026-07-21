@@ -72,51 +72,46 @@ Run through `.github/instructions/frontend-pre-delivery-checklist.instructions.m
 
 ---
 
-## 📋 Where to Find Rules
+## 📋 Instruction Reference — What to Read When
 
-| Topic                        | File                                                                                                              | Auto-attaches when...                                            |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Workflow, epics, closing     | [project-workflow.instructions.md](./instructions/project-workflow.instructions.md)                               | Description matches task                                         |
-| Documentation standards      | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md)                 | Editing `docs/**/*.md`                                           |
-| API client rules             | [frontend-api-client.instructions.md](./instructions/frontend-api-client.instructions.md)                         | Editing frontend `.ts/.tsx`                                      |
-| CSS & styling                | [frontend-css-styling.instructions.md](./instructions/frontend-css-styling.instructions.md)                       | Editing `.css` or frontend `.tsx`                                |
-| Barrel files                 | [barrel-files.instructions.md](./instructions/barrel-files.instructions.md)                                       | Editing `index.ts`                                               |
-| Store placement              | [store-placement.instructions.md](./instructions/store-placement.instructions.md)                                 | Editing store files                                              |
-| Testing requirements         | [testing-standards.instructions.md](./instructions/testing-standards.instructions.md)                             | Editing frontend `.ts/.tsx` or backend `.js`                     |
-| Prisma schema changes        | [prisma-schema-changes.instructions.md](./instructions/prisma-schema-changes.instructions.md)                     | Editing `schema.prisma`                                          |
-| External libs (hanzi-writer) | [react-external-libs.instructions.md](./instructions/react-external-libs.instructions.md)                         | Editing canvas/animation files                                   |
-| Input/timer edge cases       | [frontend-input-handling.instructions.md](./instructions/frontend-input-handling.instructions.md)                 | Editing input/timer/quiz files                                   |
-| Backend error messages       | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)                   | Editing backend controllers/services                             |     | UI composition | [ui-composition.instructions.md](./instructions/ui-composition.instructions.md) | Writing `.tsx` UI code |
-| Visual design protocol       | [frontend-visual-design-protocol.instructions.md](./instructions/frontend-visual-design-protocol.instructions.md) | Writing `.tsx` UI code                                           |
-| Pre-delivery checklist       | [frontend-pre-delivery-checklist.instructions.md](./instructions/frontend-pre-delivery-checklist.instructions.md) | Before shipping any UI code                                      |
-| Design system drift          | [design-system-drift.instructions.md](./instructions/design-system-drift.instructions.md)                         | Editing DESIGN.md, component-registry.json, or shared components |
+| When you need to...              | Read this file (`.github/instructions/`)                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| Follow the full dev pipeline     | `project-workflow.instructions.md` + `docs/guides/dev-flow-visualization.html`       |
+| Implement UI from spec           | `frontend-visual-design-protocol.instructions.md` → `ui-composition.instructions.md` |
+| Write CSS / style a component    | `frontend-css-styling.instructions.md`                                               |
+| Make API calls from frontend     | `frontend-api-client.instructions.md`                                                |
+| Build a card + detail panel      | `preview-detail-separation.instructions.md`                                          |
+| Handle inputs, debounce, timers  | `frontend-input-handling.instructions.md`                                            |
+| Write tests                      | `testing-standards.instructions.md`                                                  |
+| Modify Prisma schema             | `prisma-schema-changes.instructions.md`                                              |
+| Integrate external libs (canvas) | `react-external-libs.instructions.md`                                                |
+| Write backend error handlers     | `backend-error-messages.instructions.md`                                             |
+| Create/edit barrel files         | `barrel-files.instructions.md`                                                       |
+| Create/move a state store        | `store-placement.instructions.md`                                                    |
+| Update DESIGN.md / registry      | `design-system-drift.instructions.md`                                                |
+| Write story docs, KB articles    | `documentation-standards.instructions.md`                                            |
+| Add a new quiz mode              | `quiz-architecture.instructions.md`                                                  |
+| Create Storybook stories         | `storybook-production-alignment.instructions.md`                                     |
+| Pre-ship UI quality check        | `frontend-pre-delivery-checklist.instructions.md`                                    |
 
-## 📦 Templates Index
+All `.instructions.md` files auto-attach when editing matching file types. Each has **numbered how-to steps** and cross-references to related files. See also the agent files in `.github/agents/` and audit skills in `.github/skills/`.
 
-Epic BR: `docs/templates/epic-business-requirements-template.md`
-Story BR: `docs/templates/story-business-requirements-template.md`
-Epic Implementation: `docs/templates/epic-implementation-template.md`
-Story Implementation: `docs/templates/story-implementation-template.md`
-Commit Message: `docs/templates/commit-message-template.md`
-File Header Summary: `docs/templates/file-summary-template.md`
+## 📦 Templates & Naming
 
-## 🏷️ Naming & Structure
-
-Epic BR: `docs/business-requirements/epic-<num>-<slug>/README.md`
-Story BR: `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
-Epic Implementation: `docs/issue-implementation/epic-<num>-<slug>/README.md`
-Story Implementation: `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`
-Feature code: `apps/frontend/src/features/<feature>/`
-Reducer files: `apps/frontend/src/features/<feature>/reducers/<domain>Reducer.ts`
-Design docs: `apps/frontend/src/features/<feature>/docs/design.md`
-Architecture overview: `docs/architecture.md`
+| Item                 | Path                                                                           |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Epic BR              | `docs/business-requirements/epic-<num>-<slug>/README.md`                       |
+| Story BR             | `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md` |
+| Epic Implementation  | `docs/issue-implementation/epic-<num>-<slug>/README.md`                        |
+| Story Implementation | `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`  |
+| Feature code         | `apps/frontend/src/features/<feature>/`                                        |
+| Architecture         | `docs/architecture.md`                                                         |
 
 ## 🌿 Git & Branching
 
 Branch naming: `epic-<num>-<slug>` primary; optional `feature/<short>` or `fix/<short>`.
 Conventional Commits: `<type>(<scope>): <description>`; scopes: e.g., `epic-N`, `component`, `hook`, `api`, `docs`.
-Always consult: `docs/guides/conventions/git.md` + `docs/templates/commit-message-template.md`.
-Feature flags: document flag names & purpose in epic BR + implementation README when used.
+See `docs/guides/conventions/git.md` + `docs/templates/commit-message-template.md`.
 
 ## 🛑 Known Pitfalls
 
@@ -166,12 +161,12 @@ See `.github/instructions/` and `.github/agents/` for the full list.
 
 ## 🛠️ Resources
 
-Frontend Conventions: `docs/guides/conventions/frontend.md`
-Backend Conventions: `docs/guides/conventions/backend.md`
-SOLID Principles: `docs/knowledge-base/practices/solid-principles.md`
-Git Workflow: `docs/guides/conventions/git.md`
-Documentation Patterns: `docs/knowledge-base/practices/documentation-patterns.md`
-Architecture: `docs/architecture.md`
+- Frontend Conventions: `docs/guides/conventions/frontend.md`
+- Backend Conventions: `docs/guides/conventions/backend.md`
+- SOLID Principles: `docs/knowledge-base/practices/solid-principles.md`
+- Git Workflow: `docs/guides/conventions/git.md`
+- Documentation Patterns: `docs/knowledge-base/practices/documentation-patterns.md`
+- Architecture: `docs/architecture.md`
 
 ---
 

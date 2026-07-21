@@ -133,3 +133,7 @@ Before writing any code, the implementing agent MUST investigate these 4 areas t
 - Templates followed (all required sections intact)
 - AC list maps to stories or tests
 - Architecture/design/API decisions recorded if changed
+
+---
+
+**See also:** `docs/guides/dev-flow-visualization.html` (pipeline diagram) • `frontend-pre-delivery-checklist.instructions.md` (UI gate) • `documentation-standards.instructions.md` (doc updates) • `testing-standards.instructions.md` (test requirements)

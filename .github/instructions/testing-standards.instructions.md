@@ -54,3 +54,7 @@ npm test -- --run src/features/myfeature/  # or targeted
 ## Reasoning
 
 Tests are not optional — they catch regressions, document expected behavior, and enable confident refactoring. The "story is complete" definition includes passing tests.
+
+---
+
+**See also:** `frontend-api-client.instructions.md` (service layer to test) • `quiz-architecture.instructions.md` (strategy pattern testing) • `frontend-input-handling.instructions.md` (timer edge case tests)
