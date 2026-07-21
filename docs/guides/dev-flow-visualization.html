@@ -1377,40 +1377,83 @@ QUALITY GATES (run in order):
       </p>
 
       <!-- Tooling Table -->
-      <div style="overflow-x: auto; margin-bottom: 1rem;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; color: rgba(255,255,255,0.7);">
+      <div style="overflow-x: auto; margin-bottom: 1rem">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+          "
+        >
           <thead>
-            <tr style="border-bottom: 1px solid #3d3935;">
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Layer</th>
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Runner</th>
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Environment</th>
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Config</th>
+            <tr style="border-bottom: 1px solid #3d3935">
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Layer
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Runner
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Environment
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Config
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px; color: #93c5fd;">Frontend unit/integration</td>
-              <td style="padding: 8px 10px;">Vitest</td>
-              <td style="padding: 8px 10px;">jsdom</td>
-              <td style="padding: 8px 10px;"><code>apps/frontend/vite.config.ts</code></td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #93c5fd">Frontend unit/integration</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">jsdom</td>
+              <td style="padding: 8px 10px"><code>apps/frontend/vite.config.ts</code></td>
             </tr>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px; color: #93c5fd;">Frontend Storybook</td>
-              <td style="padding: 8px 10px;">Vitest + addon</td>
-              <td style="padding: 8px 10px;">jsdom + browser</td>
-              <td style="padding: 8px 10px;"><code>apps/frontend/.storybook/</code></td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #93c5fd">Frontend Storybook</td>
+              <td style="padding: 8px 10px">Vitest + addon</td>
+              <td style="padding: 8px 10px">jsdom + browser</td>
+              <td style="padding: 8px 10px"><code>apps/frontend/.storybook/</code></td>
             </tr>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px; color: #6ee7b7;">Backend unit</td>
-              <td style="padding: 8px 10px;">Vitest</td>
-              <td style="padding: 8px 10px;">node (forks)</td>
-              <td style="padding: 8px 10px;"><code>apps/backend/vitest.config.ts</code></td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #6ee7b7">Backend unit</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">node (forks)</td>
+              <td style="padding: 8px 10px"><code>apps/backend/vitest.config.ts</code></td>
             </tr>
             <tr>
-              <td style="padding: 8px 10px; color: #6ee7b7;">Backend integration</td>
-              <td style="padding: 8px 10px;">Vitest</td>
-              <td style="padding: 8px 10px;">node (separate)</td>
-              <td style="padding: 8px 10px;"><code>vitest.integration.config.ts</code></td>
+              <td style="padding: 8px 10px; color: #6ee7b7">Backend integration</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">node (separate)</td>
+              <td style="padding: 8px 10px"><code>vitest.integration.config.ts</code></td>
             </tr>
           </tbody>
         </table>
@@ -1418,40 +1461,76 @@ QUALITY GATES (run in order):
 
       <!-- Command Reference -->
       <h3 style="margin-top: 1rem">Commands</h3>
-      <div style="overflow-x: auto; margin-bottom: 1rem;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; color: rgba(255,255,255,0.7);">
+      <div style="overflow-x: auto; margin-bottom: 1rem">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+          "
+        >
           <thead>
-            <tr style="border-bottom: 1px solid #3d3935;">
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Command</th>
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">Scope</th>
-              <th style="text-align: left; padding: 8px 10px; color: rgba(255,255,255,0.5); font-weight: 600;">When</th>
+            <tr style="border-bottom: 1px solid #3d3935">
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Command
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Scope
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                When
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px;"><code>npm test</code></td>
-              <td style="padding: 8px 10px;">Changed code only</td>
-              <td style="padding: 8px 10px;">During development</td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm test</code></td>
+              <td style="padding: 8px 10px">Changed code only</td>
+              <td style="padding: 8px 10px">During development</td>
             </tr>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px;"><code>npm run test:full</code></td>
-              <td style="padding: 8px 10px;">Full suite</td>
-              <td style="padding: 8px 10px;">Before commit</td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm run test:full</code></td>
+              <td style="padding: 8px 10px">Full suite</td>
+              <td style="padding: 8px 10px">Before commit</td>
             </tr>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px;"><code>npm run test-storybook</code></td>
-              <td style="padding: 8px 10px;">Storybook stories</td>
-              <td style="padding: 8px 10px;">After UI changes</td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm run test-storybook</code></td>
+              <td style="padding: 8px 10px">Storybook stories</td>
+              <td style="padding: 8px 10px">After UI changes</td>
             </tr>
-            <tr style="border-bottom: 1px solid #2d2925;">
-              <td style="padding: 8px 10px;"><code>vitest run src/features/myfeature/</code></td>
-              <td style="padding: 8px 10px;">Single feature</td>
-              <td style="padding: 8px 10px;">Focused iteration</td>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>vitest run src/features/myfeature/</code></td>
+              <td style="padding: 8px 10px">Single feature</td>
+              <td style="padding: 8px 10px">Focused iteration</td>
             </tr>
             <tr>
-              <td style="padding: 8px 10px;"><code>vitest --config vitest.integration.config.ts</code></td>
-              <td style="padding: 8px 10px;">Backend integration</td>
-              <td style="padding: 8px 10px;">After API/DB changes</td>
+              <td style="padding: 8px 10px">
+                <code>vitest --config vitest.integration.config.ts</code>
+              </td>
+              <td style="padding: 8px 10px">Backend integration</td>
+              <td style="padding: 8px 10px">After API/DB changes</td>
             </tr>
           </tbody>
         </table>
@@ -1459,10 +1538,12 @@ QUALITY GATES (run in order):
 
       <!-- Frontend Testing Cards -->
       <h3 style="margin-top: 1rem">Frontend — By Code Type</h3>
-      <div class="detail-grid" style="margin-bottom: 1rem;">
+      <div class="detail-grid" style="margin-bottom: 1rem">
         <div class="detail-card fe">
           <div class="card-title">🧩 Pure Functions / Utils</div>
-          <div class="card-desc">1 test per exported function. <code>__tests__/</code> next to source.</div>
+          <div class="card-desc">
+            1 test per exported function. <code>__tests__/</code> next to source.
+          </div>
           <span class="card-code">pinyinUtils.test.ts</span>
         </div>
         <div class="detail-card fe">
@@ -1472,55 +1553,91 @@ QUALITY GATES (run in order):
         </div>
         <div class="detail-card fe">
           <div class="card-title">📦 Reducers / Stores</div>
-          <div class="card-desc">1 test per action type. Verify state transitions exhaustively.</div>
+          <div class="card-desc">
+            1 test per action type. Verify state transitions exhaustively.
+          </div>
           <span class="card-code">quizSessionStore.test.ts</span>
         </div>
         <div class="detail-card fe">
           <div class="card-title">🎨 Components</div>
-          <div class="card-desc">1 RTL test: render + user interaction. Role/text queries. No snapshots.</div>
+          <div class="card-desc">
+            1 RTL test: render + user interaction. Role/text queries. No snapshots.
+          </div>
           <span class="card-code">ReviewCard.test.tsx</span>
         </div>
         <div class="detail-card fe">
           <div class="card-title">🔌 API Services</div>
-          <div class="card-desc">1 integration test per endpoint. Mock apiClient. 404 → null, error → throw.</div>
+          <div class="card-desc">
+            1 integration test per endpoint. Mock apiClient. 404 → null, error → throw.
+          </div>
           <span class="card-code">mnemonicService.test.ts</span>
         </div>
         <div class="detail-card fe">
           <div class="card-title">📖 Storybook Tests</div>
-          <div class="card-desc">Auto-tested by Vitest addon. Cover all visual states. Run <code>npm run test-storybook</code>.</div>
+          <div class="card-desc">
+            Auto-tested by Vitest addon. Cover all visual states. Run
+            <code>npm run test-storybook</code>.
+          </div>
           <span class="card-code">*.stories.tsx → test-storybook</span>
         </div>
       </div>
 
       <!-- Backend Testing Cards -->
       <h3 style="margin-top: 1rem">Backend — By Layer</h3>
-      <div class="detail-grid" style="margin-bottom: 1rem;">
+      <div class="detail-grid" style="margin-bottom: 1rem">
         <div class="detail-card be">
           <div class="card-title">⚙️ Services</div>
-          <div class="card-desc">1 test per public method. Mock repos + external deps (Gemini, Cache). Test all code paths.</div>
+          <div class="card-desc">
+            1 test per public method. Mock repos + external deps (Gemini, Cache). Test all code
+            paths.
+          </div>
           <span class="card-code">MnemonicsService.test.ts</span>
         </div>
         <div class="detail-card be">
           <div class="card-title">🗄️ Repositories</div>
-          <div class="card-desc">Mock Prisma, verify query logic. Test edge cases (null userId, upsert).</div>
+          <div class="card-desc">
+            Mock Prisma, verify query logic. Test edge cases (null userId, upsert).
+          </div>
           <span class="card-code">MnemonicsRepository.test.ts</span>
         </div>
         <div class="detail-card be">
           <div class="card-title">🎮 Controllers</div>
-          <div class="card-desc">Mock req/res + service. Verify status codes + error shapes. Test validation edge cases.</div>
+          <div class="card-desc">
+            Mock req/res + service. Verify status codes + error shapes. Test validation edge cases.
+          </div>
           <span class="card-code">MnemonicsController.test.ts</span>
         </div>
         <div class="detail-card be">
           <div class="card-title">🔗 Integration</div>
-          <div class="card-desc">Full request → response cycle. Test DB via <code>vitest.integration.config.ts</code>.</div>
+          <div class="card-desc">
+            Full request → response cycle. Test DB via <code>vitest.integration.config.ts</code>.
+          </div>
           <span class="card-code">tests/integration/*.test.ts</span>
         </div>
       </div>
 
       <!-- Prohibitions -->
-      <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.75rem;">
-        <div style="font-size: 0.8rem; font-weight: 600; color: #fca5a5; margin-bottom: 0.3rem;">⛔ Prohibitions</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.7rem; color: rgba(255,255,255,0.55);">
+      <div
+        style="
+          background: rgba(239, 68, 68, 0.06);
+          border: 1px solid rgba(239, 68, 68, 0.15);
+          border-radius: 8px;
+          padding: 0.75rem 1rem;
+          margin-top: 0.75rem;
+        "
+      >
+        <div style="font-size: 0.8rem; font-weight: 600; color: #fca5a5; margin-bottom: 0.3rem">
+          ⛔ Prohibitions
+        </div>
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1rem;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.55);
+          "
+        >
           <span>❌ No snapshot tests</span>
           <span>❌ No testing CSS class names</span>
           <span>❌ No testing internal state (test behavior)</span>
