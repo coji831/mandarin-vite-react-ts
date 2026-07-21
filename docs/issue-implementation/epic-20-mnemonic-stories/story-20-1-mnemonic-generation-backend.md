@@ -5,7 +5,7 @@
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: TBD
+- **PR**: epic-20-mnemonic-stories
 
 ## Technical Scope
 

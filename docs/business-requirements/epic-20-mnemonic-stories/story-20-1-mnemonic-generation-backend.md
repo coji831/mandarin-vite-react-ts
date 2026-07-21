@@ -12,16 +12,16 @@ This is the core engine of Epic 20. Without this, there are no mnemonic stories 
 
 ## Acceptance Criteria
 
-- [ ] `GET /api/mnemonics/:character` returns existing mnemonic following lookup order: user-edited → Redis cache → AI-generated DB → generate
-- [ ] `POST /api/mnemonics/:character` generates a mnemonic via Gemini, auto-saves to DB + cache
-- [ ] `PUT /api/mnemonics/:character` edits a saved mnemonic and sets `isEdited=true`
-- [ ] `DELETE /api/mnemonics/:character` resets to AI-generated version (deletes user edit)
-- [ ] Redis caching with 30-day TTL for AI-generated stories
-- [ ] Cache stampede prevention via Redis `SETNX` lock with 20s TTL per glyph
-- [ ] Rate limiting: POST 10 req/min per-user, PUT 30 req/min, GET 60 req/min
-- [ ] Input validation: characterGlyph must be single Han character (`/^\p{Script=Han}$/u`)
-- [ ] Pictograph characters return 422 from POST instead of generating
-- [ ] All error responses follow `{ error, code, message }` format per backend-error-messages.instructions.md
+- [x] `GET /api/mnemonics/:character` returns existing mnemonic following lookup order: user-edited → Redis cache → AI-generated DB → generate
+- [x] `POST /api/mnemonics/:character` generates a mnemonic via Gemini, auto-saves to DB + cache
+- [x] `PUT /api/mnemonics/:character` edits a saved mnemonic and sets `isEdited=true`
+- [x] `DELETE /api/mnemonics/:character` resets to AI-generated version (deletes user edit)
+- [x] Redis caching with 30-day TTL for AI-generated stories
+- [x] Cache stampede prevention via Redis `SETNX` lock with 20s TTL per glyph
+- [x] Rate limiting: POST 10 req/min per-user, PUT 30 req/min, GET 60 req/min
+- [x] Input validation: characterGlyph must be single Han character (`/^\p{Script=Han}$/u`)
+- [x] Pictograph characters return 422 from POST instead of generating
+- [x] All error responses follow `{ error, code, message }` format per backend-error-messages.instructions.md
 
 ## Business Rules
 
