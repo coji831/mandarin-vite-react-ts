@@ -80,6 +80,7 @@ export interface MnemonicStoryRecord {
  * Mnemonic story response sent to the client.
  */
 export interface MnemonicStoryResponse {
+  id: string;
   characterGlyph: string;
   story: string;
   radicalIds: string[];

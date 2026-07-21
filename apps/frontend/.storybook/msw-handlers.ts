@@ -510,6 +510,75 @@ export const mswHandlers = {
         HttpResponse.json({ error: "Failed to load radicals" }, { status: 500 }),
       ),
   },
+  mnemonics: {
+    /** Returns a sample mnemonic story for a character */
+    default: (character = "好") =>
+      http.get(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json({
+          id: "mne_storybook_001",
+          characterGlyph: character,
+          story: `A woman (女) with a child (子) is good — a classic compound ideograph.`,
+          radicalIds: ["rad_0025"],
+          isEdited: false,
+          isPictograph: false,
+          createdAt: "2025-01-01T00:00:00Z",
+          updatedAt: "2025-01-01T00:00:00Z",
+        }),
+      ),
+    /** Returns an edited mnemonic story */
+    edited: (character = "好") =>
+      http.get(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json({
+          id: "mne_storybook_002",
+          characterGlyph: character,
+          story: `A woman (女) with a child (子) is good — a classic compound ideograph.`,
+          radicalIds: ["rad_0025"],
+          isEdited: true,
+          isPictograph: false,
+          createdAt: "2025-01-01T00:00:00Z",
+          updatedAt: "2025-01-01T00:00:00Z",
+        }),
+      ),
+    /** Returns 404 (empty state) */
+    empty: (character = "好") =>
+      http.get(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json(null, { status: 404 }),
+      ),
+    /** Never resolves (loading state) */
+    loading: (character = "好") =>
+      http.get(`${API_BASE}/v1/mnemonics/${character}`, () => new Promise(() => {})),
+    /** Returns 500 error */
+    error: (character = "好") =>
+      http.get(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json({ error: "Failed to load mnemonic" }, { status: 500 }),
+      ),
+    /** Catch-all 404 for any character not explicitly handled */
+    notFound: http.get(new RegExp(`^${API_BASE}/v1/mnemonics/.+`), () =>
+      HttpResponse.json(null, { status: 404 }),
+    ),
+    /** POST handler — generates a new mnemonic */
+    generate: (character = "好") =>
+      http.post(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json({
+          id: "mne_gen_storybook_001",
+          characterGlyph: character,
+          story: `Generated: A woman (女) and a child (子) together represent goodness.`,
+          radicalIds: ["rad_0025"],
+          isEdited: false,
+          isPictograph: false,
+          createdAt: "2025-01-01T00:00:00Z",
+          updatedAt: "2025-01-01T00:00:00Z",
+        }),
+      ),
+    /** POST handler that never resolves (generating state) */
+    generating: (character = "好") =>
+      http.post(`${API_BASE}/v1/mnemonics/${character}`, () => new Promise(() => {})),
+    /** POST handler that returns error */
+    generateError: (character = "好") =>
+      http.post(`${API_BASE}/v1/mnemonics/${character}`, () =>
+        HttpResponse.json({ error: "Generation failed" }, { status: 500 }),
+      ),
+  },
   foundations: {
     default: () => [
       http.get(`${API_BASE}/foundations/data/pinyin-tones`, () =>

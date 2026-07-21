@@ -5,9 +5,12 @@
  * Story 20.2: Mnemonic Display UI
  */
 
-export { loadRadicalsByCharacter } from "./characterHubService";
-export { loadMergedRadicals } from "./mergeRadicals";
-export type { RadicalEntry } from "./mergeRadicals";
-export { mnemonicService } from "./mnemonicService";
-export { PICTOGRAPH_CHARS } from "../constants/pictographs";
-export type { MnemonicResponse } from "./mnemonicService";
+export {
+  loadCharacterData,
+  loadRadicalsByCharacter,
+  getMnemonic,
+  generateMnemonic,
+  updateMnemonic,
+  deleteMnemonic,
+} from "./characterService";
+export type { CharacterDetailResponse, MnemonicResponse } from "./characterService";

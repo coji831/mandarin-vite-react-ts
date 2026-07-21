@@ -8,12 +8,11 @@
  * All CharacterHub components now live directly in the feature layer
  * instead of being re-exported from shared.
  */
-export { CharacterHub } from "./CharacterHub";
-export { HubRadicalSection } from "./HubRadicalSection";
-export { HubMnemonicSection } from "./HubMnemonicSection";
-export { HubEtymology } from "./HubEtymology";
-export { HubReadings } from "./HubReadings";
-export { HubCommonWords } from "./HubCommonWords";
-export { HubCharacterCard } from "./HubCharacterCard";
-export { HubInfoLine } from "./HubInfoLine";
-export { HubActions } from "./HubActions";
+export { CharacterHub } from "./CharacterHub/CharacterHub";
+export { HubIdentityCard } from "./HubIdentityCard/HubIdentityCard";
+export { HubRadicalSection } from "./HubRadicalSection/HubRadicalSection";
+export { HubMnemonicSection } from "./HubMnemonicSection/HubMnemonicSection";
+export { HubReadings } from "./HubReadings/HubReadings";
+export { HubCommonWords } from "./HubCommonWords/HubCommonWords";
+export { HubCharacterCard } from "./HubCharacterCard/HubCharacterCard";
+export { HubActions } from "./HubActions/HubActions";

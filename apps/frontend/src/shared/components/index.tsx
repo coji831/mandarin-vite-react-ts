@@ -22,7 +22,7 @@ export type { NavItem, SideNavProps } from "./SideNav/SideNav";
 export { Skeleton } from "./Skeleton";
 export { Spinner } from "./Spinner/Spinner";
 export { Tabs } from "./Tabs";
-export type { TabsProps, TabConfig } from "./Tabs";
+export type { TabsProps, TabConfig, TabsVariant } from "./Tabs";
 export { AnimationCanvas } from "./CharacterStroke";
 export type { AnimationCanvasProps } from "./CharacterStroke";
 export { CharacterStrokePlayer } from "./CharacterStroke";

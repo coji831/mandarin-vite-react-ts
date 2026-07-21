@@ -279,17 +279,14 @@
         "HubCharacterCard": {
           "description": "Character hero card with stroke player, pinyin, and audio button."
         },
-        "HubInfoLine": {
-          "description": "Metadata row: character (pinyin) · HSK level."
-        },
         "HubActions": {
           "description": "Action buttons: Save to Review + Mark Learned."
         },
         "HubRadicalSection": {
           "description": "Phase-gated radical decomposition with skeleton loading and styled empty state."
         },
-        "HubEtymology": {
-          "description": "Character etymology and info (traditional, HSK level, stroke count)."
+        "HubIdentityCard": {
+          "description": "NORTH zone identity card: glyph, pinyin, meaning, badges, etymology."
         },
         "HubReadings": {
           "description": "All readings with pinyin, tone, audio, and frequency rank."

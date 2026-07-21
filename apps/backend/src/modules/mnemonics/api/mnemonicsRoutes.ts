@@ -8,7 +8,7 @@
 
 import express from "express";
 import type { Request, Response } from "express";
-import { rateLimit } from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
@@ -21,7 +21,7 @@ const router = express.Router();
 const getLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 60,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment before fetching more mnemonics.",
     code: "RATE_LIMIT",
@@ -34,7 +34,7 @@ const getLimiter = rateLimit({
 const generateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 10,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many generation requests. Please wait a moment before generating more mnemonics.",
     code: "RATE_LIMIT",
@@ -47,7 +47,7 @@ const generateLimiter = rateLimit({
 const updateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 30,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many update requests. Please wait a moment before updating more mnemonics.",
     code: "RATE_LIMIT",
@@ -60,7 +60,7 @@ const updateLimiter = rateLimit({
 const deleteLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 30,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many reset requests. Please wait a moment before resetting more mnemonics.",
     code: "RATE_LIMIT",

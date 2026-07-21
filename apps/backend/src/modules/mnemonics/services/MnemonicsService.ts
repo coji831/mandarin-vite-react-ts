@@ -133,6 +133,7 @@ export class MnemonicsService {
       );
 
       const response: MnemonicStoryResponse = {
+        id: "",
         characterGlyph,
         story,
         radicalIds: radicals.map((r) => r.radicalId),
@@ -251,6 +252,7 @@ export class MnemonicsService {
    */
   private getFallbackMnemonic(characterGlyph: string): MnemonicStoryResponse {
     return {
+      id: "",
       characterGlyph,
       story: getFallbackStory(characterGlyph),
       radicalIds: [],
@@ -276,6 +278,7 @@ export class MnemonicsService {
    * Map database record to API response.
    */
   private toResponse(record: {
+    id: string;
     characterGlyph: string;
     story: string;
     radicalIds: string[];
@@ -285,6 +288,7 @@ export class MnemonicsService {
     updatedAt: Date;
   }): MnemonicStoryResponse {
     return {
+      id: record.id,
       characterGlyph: record.characterGlyph,
       story: record.story,
       radicalIds: record.radicalIds,

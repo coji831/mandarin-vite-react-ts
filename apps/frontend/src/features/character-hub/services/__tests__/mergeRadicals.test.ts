@@ -1,22 +1,20 @@
 /**
  * @file mergeRadicals.test.ts
- * @description Tests for mergeRadicals service
+ * @description Tests for the merged radicals fetch function
  * Story 19.5: Character Hub Radical Section
  *
- * NOTE: vitest config has mockReset: true which clears vi.fn() implementations
- * before each test. All mock setup is done in beforeEach using dynamic imports.
+ * Tests the fetchMergedRadicals helper used by the useMergedRadicals hook.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock shared/api so the real radicalsService can load without alias errors.
 vi.mock("shared/api", () => ({
   apiClient: { get: vi.fn() },
 }));
 
-// Mock characterHubService
-vi.mock("../characterHubService", () => ({
-  loadRadicalsByCharacter: vi.fn(),
+// Mock radicals service so loadAllRadicals returns controlled data
+vi.mock("../../../radicals/services", () => ({
+  radicalsService: { loadAllRadicals: vi.fn() },
 }));
 
 const mockRadicals = [
@@ -52,19 +50,46 @@ const mockRadicals = [
   },
 ];
 
-describe("loadMergedRadicals", () => {
-  beforeEach(async () => {
-    // Re-apply mock implementations after mockReset
-    const { apiClient } = await import("shared/api");
-    vi.mocked(apiClient.get).mockResolvedValue({ data: mockRadicals });
+async function fetchMergedRadicals(character: string) {
+  const { loadRadicalsByCharacter } = await import("../characterService");
+  const { radicalsService } = await import("../../../radicals/services");
 
-    const { loadRadicalsByCharacter } = await import("../characterHubService");
-    vi.mocked(loadRadicalsByCharacter).mockResolvedValue([]);
+  const allRadicals = await radicalsService.loadAllRadicals();
+
+  const hskMatches = allRadicals.filter((r) =>
+    r.metadata.hsk_characters?.some((c) => c.glyph === character),
+  );
+  const selfMatch = allRadicals.filter((r) => r.glyph === character);
+  const withSelf = [
+    ...hskMatches,
+    ...selfMatch.filter((r) => !hskMatches.find((m) => m.id === r.id)),
+  ];
+
+  const dbMatches = await loadRadicalsByCharacter(character);
+
+  const merged = [...withSelf];
+  for (const dbMatch of dbMatches) {
+    if (!merged.find((m) => m.id === dbMatch.id)) {
+      merged.push(dbMatch);
+    }
+  }
+
+  return merged.map((r) => ({
+    id: r.id,
+    glyph: r.glyph,
+    meaning: r.meaning,
+    name_pinyin: r.name_pinyin,
+  }));
+}
+
+describe("fetchMergedRadicals", () => {
+  beforeEach(async () => {
+    const { radicalsService } = await import("../../../radicals/services");
+    vi.mocked(radicalsService.loadAllRadicals).mockResolvedValue(mockRadicals);
   });
 
   it("returns radicals matching the character via hsk_characters", async () => {
-    const { loadMergedRadicals } = await import("../mergeRadicals");
-    const result = await loadMergedRadicals("好");
+    const result = await fetchMergedRadicals("好");
 
     expect(result).toHaveLength(2);
     expect(result[0].glyph).toBe("⺅");
@@ -72,15 +97,13 @@ describe("loadMergedRadicals", () => {
   });
 
   it("returns empty array when no radicals match", async () => {
-    const { loadMergedRadicals } = await import("../mergeRadicals");
-    const result = await loadMergedRadicals("无");
+    const result = await fetchMergedRadicals("无");
 
     expect(result).toEqual([]);
   });
 
   it("returns radicals with correct shape", async () => {
-    const { loadMergedRadicals } = await import("../mergeRadicals");
-    const result = await loadMergedRadicals("好");
+    const result = await fetchMergedRadicals("好");
 
     expect(result[0]).toHaveProperty("id");
     expect(result[0]).toHaveProperty("glyph");

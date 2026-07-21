@@ -14,9 +14,9 @@ model User {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   deletedAt    DateTime?
-  progress            Progress[]
-  sessions            Session[]
-  customLists         VocabularyList[]
+  progress     Progress[]
+  sessions     Session[]
+  customLists  VocabularyList[]
 
   @@index([email])
 }
@@ -121,64 +121,85 @@ model WordList {
 }
 
 model FoundationProgress {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  sectionId     String   // "pinyin" | "tones" | "strokes" | "animations"
-  completed     Boolean  @default(false)
+  sectionId     String // "pinyin" | "tones" | "strokes" | "animations"
+  completed     Boolean   @default(false)
   completedAt   DateTime?
-  viewedCount   Int      @default(0)
+  viewedCount   Int       @default(0)
   firstViewedAt DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@unique([userId, sectionId])
   @@index([userId])
 }
 
 model RadicalProgress {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
-  radicalId        String   // "rad_0001", "rad_0002", etc.
-  memorized        Boolean  @default(false)
-  recognitionLevel Int      @default(0)
-  viewedCount      Int      @default(0)
+  radicalId        String // "rad_0001", "rad_0002", etc.
+  memorized        Boolean   @default(false)
+  recognitionLevel Int       @default(0)
+  viewedCount      Int       @default(0)
   firstViewedAt    DateTime?
   reviewedAt       DateTime?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@unique([userId, radicalId])
   @@index([userId])
 }
 
 model CharacterRadical {
-  id              Int      @id @default(autoincrement())
-  characterGlyph  String   // The character glyph, e.g. "路"
-  radicalId       String   // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  characterGlyph String // The character glyph, e.g. "路"
+  radicalId      String // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([characterGlyph, radicalId])
   @@index([characterGlyph])
   @@index([radicalId])
 }
 
+// ── Character: Unified character aggregate ──
+// Seeded from content/characters/*.json files.
+// Replaces ad-hoc JSON file scanning for character detail API.
+model Character {
+  id            String   @id // "ch_1001"
+  glyph         String   @unique // "好"
+  traditional   String? // null if same as glyph
+  strokeCount   Int // 6
+  hskLevel      Int? // 1-6
+  frequencyRank Int? // e.g. 22
+  definition    String? // Core meaning from primary reading's gloss
+  readings      Json     @default("[]") // [{pinyin, tone, type, meaning}]
+  etymology     String? // Story of character origin
+  commonWords   String[] @default([]) // ["很好", "爱好"]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([glyph])
+  @@index([hskLevel])
+}
+
 model PhaseGate {
-  id                  String   @id @default(uuid())
-  userId              String   @unique
-  currentPhase        Int      @default(1)
-  phase1Passed        Boolean  @default(false)
-  phase2Passed        Boolean  @default(false)
-  phase3Passed        Boolean  @default(false)
-  phase4Unlocked      Boolean  @default(false)
-  qualificationScore  Int?     // Placement quiz score
-  placedPhase         Int?     // Phase assigned by qualification
-  phase1Retention     Float?   // Retention rate for phase 1
-  phase2Retention     Float?   // Retention rate for phase 2
-  phase3Retention     Float?   // Retention rate for phase 3
-  gateCriteria        String?  // "quiz" | "retention" | "both"
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  currentPhase       Int      @default(1)
+  phase1Passed       Boolean  @default(false)
+  phase2Passed       Boolean  @default(false)
+  phase3Passed       Boolean  @default(false)
+  phase4Unlocked     Boolean  @default(false)
+  qualificationScore Int? // Placement quiz score
+  placedPhase        Int? // Phase assigned by qualification
+  phase1Retention    Float? // Retention rate for phase 1
+  phase2Retention    Float? // Retention rate for phase 2
+  phase3Retention    Float? // Retention rate for phase 3
+  gateCriteria       String? // "quiz" | "retention" | "both"
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([userId])
 }
@@ -189,13 +210,13 @@ model PhaseGate {
 // This is a junction table for the M:N relationship between pinyin initials,
 // finals, and tones — not a content entity itself.
 model PinyinCombination {
-  id          String  @id        // "init_b-fin_a-1"
-  initialId   String             // "init_b" — matches content/pinyin/init_b.json
-  finalId     String             // "fin_a"  — matches content/pinyin/fin_a.json
-  tone        Int                // 1-5
-  syllable    String             // "bā"
-  character   String?            // "八"
-  meaning     String?            // "eight"
+  id        String  @id // "init_b-fin_a-1"
+  initialId String // "init_b" — matches content/pinyin/init_b.json
+  finalId   String // "fin_a"  — matches content/pinyin/fin_a.json
+  tone      Int // 1-5
+  syllable  String // "bā"
+  character String? // "八"
+  meaning   String? // "eight"
 
   @@unique([initialId, finalId, tone])
   @@index([syllable])
@@ -204,14 +225,14 @@ model PinyinCombination {
 }
 
 model QuizAttempt {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String
-  quizType    String   // "audio-to-type"
-  phase       Int?     // 1 | 2 | 3 | 0 (qualification)
-  totalScore  Int      @default(0)
-  maxScore    Int      @default(20)
-  passed      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  quizType    String // "audio-to-type"
+  phase       Int? // 1 | 2 | 3 | 0 (qualification)
+  totalScore  Int       @default(0)
+  maxScore    Int       @default(20)
+  passed      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
   completedAt DateTime?
 
   answers QuizAttemptAnswer[]
@@ -221,15 +242,15 @@ model QuizAttempt {
 }
 
 model QuizAttemptAnswer {
-  id             String  @id @default(uuid())
-  attemptId      String
-  questionIndex  Int
-  pinyinInput    String
-  selectedTone   Int
-  correctPinyin  String
-  correctTone    Int
-  correct        Boolean
-  category       String
+  id            String  @id @default(uuid())
+  attemptId     String
+  questionIndex Int
+  pinyinInput   String
+  selectedTone  Int
+  correctPinyin String
+  correctTone   Int
+  correct       Boolean
+  category      String
 
   attempt QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
 
@@ -247,33 +268,34 @@ model StudyStreak {
   updatedAt        DateTime @updatedAt
 
   @@index([userId])
-}// ── ReviewItem: Phase 1 review tracking (flip-card SRS) ──
+}
+// ── ReviewItem: Phase 1 review tracking (flip-card SRS) ──
 // Tracks study progress for pinyin, tones, stroke reference, and vocabulary items.
 // Uses simple interval doubling (not full SM-2) — Phase 1 is introductory.
 model ReviewItem {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  itemType      String   // "pinyin-initial" | "pinyin-final" | "pinyin-combination" | "tone-identification" | "tone-pair" | "tone-rule" | "stroke-reference" | "pinyin-syllable" | "tone-syllable" | "vocabulary"
-  itemId        String   // identifier within the type (e.g., "b", "ao", "mā", "3rd+3rd")
-  front         String?  // Display text for the front of the flip-card
-  back          String?  // Display text for the back of the flip-card (answer)
-  category      String?  // Grouping category: "pinyin" | "tones" | "strokes"
-  character     String?  // Chinese character for vocabulary items
-  pinyinPlain   String?  // Pinyin without tone marks
-  correctTone   Int?     // Correct tone number (0-4)
-  meaning       String?  // English meaning
-  studyCount    Int      @default(0)
-  correctCount  Int      @default(0)
+  itemType      String // "pinyin-initial" | "pinyin-final" | "pinyin-combination" | "tone-identification" | "tone-pair" | "tone-rule" | "stroke-reference" | "pinyin-syllable" | "tone-syllable" | "vocabulary"
+  itemId        String // identifier within the type (e.g., "b", "ao", "mā", "3rd+3rd")
+  front         String? // Display text for the front of the flip-card
+  back          String? // Display text for the back of the flip-card (answer)
+  category      String? // Grouping category: "pinyin" | "tones" | "strokes"
+  character     String? // Chinese character for vocabulary items
+  pinyinPlain   String? // Pinyin without tone marks
+  correctTone   Int? // Correct tone number (0-4)
+  meaning       String? // English meaning
+  studyCount    Int       @default(0)
+  correctCount  Int       @default(0)
   lastReviewed  DateTime?
-  nextReview    DateTime @default(now())
-  intervalDays  Int      @default(1)
-  phaseId       Int      @default(1)
-  source        String   @default("viewed")
-  viewedCount   Int      @default(0)
+  nextReview    DateTime  @default(now())
+  intervalDays  Int       @default(1)
+  phaseId       Int       @default(1)
+  source        String    @default("viewed")
+  viewedCount   Int       @default(0)
   firstViewedAt DateTime?
   lastViewedAt  DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@unique([userId, itemType, itemId])
   @@index([userId, nextReview])
@@ -282,17 +304,17 @@ model ReviewItem {
 }
 
 model ContentItem {
-  id           String   @id
-  contentType  String            // "radical" | "character" | "word" | "foundation" | "grammar" | "chengyu" | "pinyin" | "tone"
-  contentId    String            // The content/ file reference: "rad_0008"
-  phaseId      Int               // 1 | 2 | 3 | 4
-  title        String            // Display name
-  subtitle     String?
-  metadata     Json?
-  version      Int      @default(1)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id
+  contentType String // "radical" | "character" | "word" | "foundation" | "grammar" | "chengyu" | "pinyin" | "tone"
+  contentId   String // The content/ file reference: "rad_0008"
+  phaseId     Int // 1 | 2 | 3 | 4
+  title       String // Display name
+  subtitle    String?
+  metadata    Json?
+  version     Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([contentType, contentId])
   @@index([phaseId])
@@ -301,15 +323,15 @@ model ContentItem {
 }
 
 model MnemonicStory {
-  id              String   @id @default(uuid())
-  characterGlyph  String
-  userId          String?
-  story           String
-  radicalIds      Json     @default("[]")
-  isEdited        Boolean  @default(false)
-  isPictograph    Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  characterGlyph String
+  userId         String?
+  story          String
+  radicalIds     Json     @default("[]")
+  isEdited       Boolean  @default(false)
+  isPictograph   Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([characterGlyph, userId])
   @@index([characterGlyph])

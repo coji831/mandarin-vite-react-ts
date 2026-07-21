@@ -44,3 +44,26 @@ export interface StrokesReference {
   suggestedCharacters: unknown[];
   [key: string]: unknown;
 }
+
+/** Character reading (from content JSON). */
+export interface CharacterReading {
+  pinyin: string;
+  tone: number;
+  type: string;
+  core_meaning: string;
+}
+
+/** Character detail response shape. */
+export interface CharacterDetailResponse {
+  glyph: string;
+  traditional: string;
+  strokeCount: number;
+  hskLevel: number;
+  readings: CharacterReading[];
+  etymology?: string;
+  frequencyRank?: number;
+  commonWords?: string[];
+  radicalIds?: string[];
+  /** Core meaning from primary reading's gloss */
+  definition?: string;
+}

@@ -31,7 +31,7 @@ export interface TextareaProps extends Omit<
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className = "", onChange, ...props }, ref) => {
-    const textareaClassName = `input-base p-sm w-full ${className}`.trim();
+    const textareaClassName = `input-base textarea p-sm w-full ${className}`.trim();
 
     return (
       <textarea

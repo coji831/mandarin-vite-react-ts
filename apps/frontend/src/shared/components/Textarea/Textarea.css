@@ -3,6 +3,6 @@
  * Minimal wrapper styles - actual input styling comes from .input-base in globals.css
  */
 
-textarea.input-base {
+.textarea {
   resize: vertical;
 }

@@ -21,6 +21,7 @@ import pg from "pg";
 import bcrypt from "bcrypt";
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
+import { seedCharacters } from "./seeds/seed-characters.js";
 
 const { PrismaClient } = prismaPkg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -114,10 +115,13 @@ async function main() {
   const contentCount = await seedContentItems();
   console.log(`  ✅ ContentItem: ${contentCount} rows`);
 
-  // 2. Pinyin combinations
+  // 2. Character data (readings, etymology, HSK, etc.)
+  await seedCharacters(prisma);
+
+  // 3. Pinyin combinations
   await seedPinyinCombinations(prisma);
 
-  // 3. Character-radical mappings
+  // 4. Character-radical mappings
   await seedCharacterRadicals(prisma);
 
   // 4. Test users (dev only)
