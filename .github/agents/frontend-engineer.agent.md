@@ -33,18 +33,32 @@ Use existing `globals.css` classNames before writing custom CSS. Refer to `DESIG
 - **Styles**: CSS custom properties from `apps/frontend/src/styles/globals.css` — never Tailwind or other frameworks
 - **State**: Context + reducers + Zustand
 
-## Approach
+## Approach — Storybook-First with User Preview Gate
 
-1. **Read the Spec** — Read the relevant spec, story BR, wireframe, or requirements to understand what needs to be built.
-2. **Survey the Code** — Read existing files in the affected area to understand current patterns, types, and conventions. Check shared components first.
-3. **Implement** — Write clean, idiomatic frontend code following project conventions.
-4. **Test** — Write/update unit and component tests. Run the test suite to verify.
-5. **Audit** — Run the **[frontend-audit skill](../skills/frontend-audit/SKILL.md)** to self-review before routing to Code Reviewer.
-6. **Cleanup** — Close any terminal sessions you started.
+UI design must be completed and approved in Storybook BEFORE any logic implementation. Follow this sequence:
 
-## Two-Pass Workflow (UI from Wireframes)
+### Pass A: Storybook UI Design (with Styling, No Logic)
 
-When implementing UI from wireframes or text descriptions, follow exactly two passes:
+1. **Read the Spec** — Read story BR, design docs, `verification-artifacts/` proposals
+2. **Survey the Code** — Check shared components, `component-registry.json`, existing patterns
+3. **High-level design** — Wireframe/sketch. Identify the page or most-complex parent component that will host the UI
+4. **Build UI in Storybook** — Create or update `.stories.tsx` on the host component. Cover ALL visual states (loading, empty, error, display, edge cases) using MSW mocks. **No API calls, no hook logic** — pure visual shell
+5. **Polish styling** — Apply CSS variables, utility classes, BEM. Data-resilient shell (fixed container, inner scroll). Responsive check. See `frontend-css-styling.instructions.md`
+6. **Preview & iterate** — Open Storybook in browser. Present to user for feedback. Iterate layout, spacing, colors, states until approved
+
+⚠️ **Gate: Do NOT proceed to Pass B until user approves the fully-styled Storybook UI design**
+
+### Pass B: Logic Implementation
+
+6. **Connect logic** — Add hooks, state (reducer/context/Zustand), API service layer. Wire real data to the approved visual shell
+7. **Update stories** — Ensure Storybook stories still render correctly with real data flow
+8. **Test** — Write/update unit and component tests. Run suite to verify
+9. **Audit** — Run **[frontend-audit skill](../skills/frontend-audit/SKILL.md)**, then route to Code Reviewer
+10. **Cleanup** — Close terminal sessions
+
+## Two-Pass Workflow (Legacy — UI from Wireframes)
+
+For rapid wireframe-to-UI without Storybook gate (deprecated; prefer Storybook-first above):
 
 ### Pass 1: Skeleton Structure
 

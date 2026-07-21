@@ -23,9 +23,20 @@ Follow this sequence when implementing or updating a story:
 - **Apply principles before polish** — Evaluate each UI addition against: WAGC (does this look clickable when it shouldn't?), content density (can the user parse this in 2 seconds?), clarity (is the meaning obvious without a tooltip?), cognitive load (does this add mental work or reduce it?).
 
 2. **Plan Changes** — Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
-3. **Implement Code** — Create/update components, hooks, reducers, types within the feature folder. Maintain state rules (domain-prefixed action types, immutable updates, normalized collections). Keep scope tightly bound to story AC; defer extras into a new follow-up story.
-4. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
-5. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
+
+3. **Storybook-First UI Design (with Styling, before User Preview Gate)** — BEFORE implementing any logic, build the complete visual UI in Storybook:
+
+   1. **High-level design** — Wireframe/sketch the UI. Identify which page or parent component will host the new UI. Check `component-registry.json` + `shared/components/` for reuse.
+   2. **Low-level design** — Build the UI structure (JSX skeleton) directly in a `.stories.tsx` file on the page-level or most-complex-parent component. Cover ALL visual states: loading, empty, error, display, edge cases.
+   3. **Mock all data** — Use MSW handlers to simulate every state. No real API calls. No hook logic. Pure visual shell.
+   4. **Polish styling** — Apply CSS variables, global utility classes, BEM component CSS. Data-resilient shell (fixed container, inner scroll). Verify at 320px. See `frontend-css-styling.instructions.md`.
+   5. **Preview & iterate** — Open Storybook in the browser. Present to the user for feedback. Iterate on layout, spacing, colors, states until approved.
+
+   ⚠️ **Gate rule**: Do NOT proceed to logic implementation until the user has previewed and approved the fully-styled UI design in Storybook. This prevents wasted work on logic behind unapproved layouts.
+
+4. **Implement Logic** — After UI design is approved, add hooks, state management (reducers/context/Zustand), and API service layer. Connect the visual shell to real data. Wire up loading/error/empty state transitions.
+5. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
+6. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
 
 **5.5 Visual Verification** — After all UI changes are implemented, visually validate against Storybook:
 
