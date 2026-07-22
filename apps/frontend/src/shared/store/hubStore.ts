@@ -4,6 +4,7 @@
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
  *
  * Manages hub open/close, character selection, and trigger position for animation.
+ * Each hub section fetches its own data independently via dedicated hooks/services.
  * Follows patterns from shared/store/uiStore.ts.
  */
 

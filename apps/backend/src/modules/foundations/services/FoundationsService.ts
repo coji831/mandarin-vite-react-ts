@@ -9,13 +9,19 @@
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import { readContentFiles, readContentFile } from "../../../shared/utils/contentUtils.js";
+import {
+  readContentDir,
+  readContentFiles,
+  readContentFile,
+} from "../../../shared/utils/contentUtils.js";
 import type { ContentFile } from "../../../shared/utils/contentUtils.js";
 import type {
   ComboPair,
   PinyinComboRow,
   PinyinTonesPool,
   StrokesReference,
+  CharacterDetailResponse,
+  CharacterReading,
 } from "../types/foundations.js";
 
 const logger = createLogger("FoundationsService");
@@ -131,6 +137,87 @@ export class FoundationsService {
     } catch (err) {
       logger.error("[FoundationsService] Failed to load strokes reference", err);
       throw err;
+    }
+  }
+
+  /**
+   * Get character detail data by glyph.
+   * Reads from the Character table (Prisma) first, falls back to scanning
+   * content/characters/ JSON files for backward compatibility.
+   * @param glyph - The Chinese character glyph (e.g. "好")
+   * @returns Character detail or null if not found
+   */
+  async getCharacterByGlyph(glyph: string): Promise<CharacterDetailResponse | null> {
+    try {
+      // Try Prisma Character table first
+      const character = await prisma.character.findUnique({
+        where: { glyph },
+      });
+
+      if (character) {
+        const readings =
+          (character.readings as Array<{
+            pinyin: string;
+            tone: number;
+            type: string;
+            meaning: string;
+          }> | null) || [];
+
+        // Load radicals from CharacterRadical table
+        const radicalLinks = await prisma.characterRadical.findMany({
+          where: { characterGlyph: glyph },
+        });
+
+        return {
+          glyph: character.glyph,
+          traditional: character.traditional || character.glyph,
+          strokeCount: character.strokeCount,
+          hskLevel: character.hskLevel ?? 0,
+          readings: readings.map((r) => ({
+            pinyin: r.pinyin,
+            tone: r.tone,
+            type: r.type,
+            core_meaning: r.meaning,
+          })),
+          etymology: character.etymology || undefined,
+          frequencyRank: character.frequencyRank || undefined,
+          commonWords: character.commonWords.length > 0 ? character.commonWords : undefined,
+          radicalIds: radicalLinks.map((r) => r.radicalId),
+          definition: character.definition || undefined,
+        };
+      }
+
+      // Fallback: scan JSON files
+      const characters = await readContentDir("characters");
+      const match = characters.find((c) => c.glyph === glyph);
+      if (!match) return null;
+
+      const readings: CharacterReading[] = (match.readings || []).map(
+        (r: Record<string, unknown>) => ({
+          pinyin: r.pinyin as string,
+          tone: r.tone as number,
+          type: r.type as string,
+          core_meaning: r.core_meaning as string,
+        }),
+      );
+
+      const meta = (match.metadata || {}) as Record<string, unknown>;
+
+      return {
+        glyph: match.glyph as string,
+        traditional: (match.traditional as string) || (match.glyph as string),
+        strokeCount: match.stroke_count as number,
+        hskLevel: match.hsk_level as number,
+        readings,
+        etymology: (meta.etymology as string) || undefined,
+        frequencyRank: (meta.frequency_rank as number) || undefined,
+        commonWords: (meta.common_words as string[]) || undefined,
+        radicalIds: (meta.radical_ids as string[]) || undefined,
+        definition: readings[0]?.core_meaning || undefined,
+      };
+    } catch (err) {
+      logger.error(`[FoundationsService] Failed to get character "${glyph}"`, err);
+      return null;
     }
   }
 }

@@ -31,6 +31,9 @@ export const ROUTE_PATTERNS = {
   foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
   foundationsPinyinCharacterMap: "/v1/foundations/data/pinyin-character-map",
   foundationsStrokes: "/v1/foundations/data/strokes",
+  charactersByGlyph: (glyph) => `/v1/characters/${glyph}`,
+  mnemonics: "/v1/mnemonics",
+  mnemonicsByChar: (glyph) => `/v1/mnemonics/${glyph}`,
   quizConfig: "/v1/quiz/config",
   quizQuestions: "/v1/quiz/questions",
 };

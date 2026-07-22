@@ -95,3 +95,7 @@ grep -c '^export {' apps/frontend/src/shared/components/index.tsx
 ```
 
 Or manually verify the `components:` list in DESIGN.md matches the exports in `shared/components/index.tsx`.
+
+---
+
+**See also:** `frontend-visual-design-protocol.instructions.md` (design pipeline) • `ui-composition.instructions.md` (component composition) • `frontend-pre-delivery-checklist.instructions.md` (registry update check)

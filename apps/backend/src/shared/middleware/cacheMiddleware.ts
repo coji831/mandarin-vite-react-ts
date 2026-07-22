@@ -1,28 +1,24 @@
 /**
- * @file apps/backend/src/shared/middleware/cacheMiddleware.js
+ * @file apps/backend/src/shared/middleware/cacheMiddleware.ts
  * @description Cache middleware — decorator pattern for transparent caching.
  *
- * Replaces all Cached*Service wrapper classes with a single composable decorator.
  * Services remain pure business logic; caching is applied at the composition root.
  *
  * Usage (in container.js):
  *   import { withCache } from "./shared/middleware/cacheMiddleware.js";
  *
  *   // Simple Redis-backed caching
- *   export const cachedGenerateFeedback = withCache(
- *     (params) => aiFeedbackService.generateFeedback(params),
+ *   const cachedGenerateFeedback = withCache(
+ *     (params) => someService.someMethod(params),
  *     {
  *       ttl: 86400,
- *       keyFn: ({ wordId, userAnswer }) => `quiz:feedback:${wordId}:${userAnswer.toLowerCase()}`,
- *       serviceName: "AIFeedback",
+ *       keyFn: ({ wordId }) => `service:${wordId}`,
+ *       serviceName: "SomeService",
+ *       cacheService: myCacheService,
  *     }
  *   );
- *
- * See: docs/guides/references/modular-monolith-plan.md Phase 5
- * See: docs/guides/references/module-architecture-guide.md Section 4.1
  */
 
-import { CacheFactory } from "../../shared/infrastructure/cache/CacheFactory.js";
 import { createLogger } from "../utils/logger.js";
 
 const logger = createLogger("CacheMiddleware");
@@ -32,6 +28,7 @@ interface CacheOptions {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   keyFn: (...args: any[]) => string;
   serviceName?: string;
+  cacheService: import("../infrastructure/cache/CacheService.js").CacheService;
 }
 
 export interface CacheMetrics {
@@ -55,13 +52,13 @@ export interface CacheMetrics {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function withCache(
   serviceMethod: (...args: any[]) => Promise<unknown>,
-  { ttl, keyFn, serviceName = "unknown" }: CacheOptions,
+  { ttl, keyFn, serviceName = "unknown", cacheService }: CacheOptions,
 ): ((...args: any[]) => Promise<unknown>) & { getMetrics: () => CacheMetrics } {
   const metrics = { hits: 0, misses: 0, total: 0 };
 
   const wrapped = async (...args: any[]) => {
     /* eslint-enable @typescript-eslint/no-explicit-any */
-    const cache = await CacheFactory.create("default");
+    const cache = cacheService;
     const key = typeof keyFn === "function" ? keyFn(...args) : args[0];
 
     try {

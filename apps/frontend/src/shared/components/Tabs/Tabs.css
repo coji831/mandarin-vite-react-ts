@@ -16,3 +16,46 @@
 .tabs-panel {
   flex: 1;
 }
+
+/* ── Variant: underline ────────────────────────────── */
+/* Amber underline active indicator, equal-width tabs, p-sm panel */
+/* Used by Character Hub and similar compact tab surfaces */
+
+.tabs-container--underline {
+  flex: 1;
+  min-height: 0;
+}
+
+.tabs-container--underline .tabs-tab-bar {
+  border-bottom: 1px solid var(--surface-border);
+  padding: 0;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.tabs-container--underline .tabs__tab {
+  flex: 1;
+  font-weight: 500;
+  border-radius: 0;
+  padding: var(--space-sm);
+  color: var(--text-muted);
+  transition:
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.tabs-container--underline .tabs__tab:hover:not(:disabled) {
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.tabs-container--underline .btn-tab-active {
+  color: var(--color-primary);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
+.tabs-container--underline .tabs-panel {
+  padding: var(--space-sm);
+  overflow-y: auto;
+}

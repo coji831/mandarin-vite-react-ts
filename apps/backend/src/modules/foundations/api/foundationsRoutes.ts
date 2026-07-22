@@ -49,4 +49,16 @@ router.get(
   ),
 );
 
+/**
+ * GET /v1/characters/:glyph
+ * Returns character detail data (readings, etymology, HSK level, stroke count, etc.).
+ * Reads from content/characters/ JSON files.
+ */
+router.get(
+  ROUTE_PATTERNS.charactersByGlyph(":glyph"),
+  asyncHandler((req: Request, res: Response) =>
+    req.foundationsController!.getCharacterByGlyph(req, res),
+  ),
+);
+
 export default router;

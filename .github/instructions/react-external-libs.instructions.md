@@ -45,3 +45,7 @@ function MyCanvas({ onInit }: { onInit: (lib: ExternalLib) => void }) {
 - Destroy library instance in `useEffect` cleanup
 - Don't conditionally render the container div — keep it mounted
 - Use `useMemo` + `useCallback` for stable ref assignment
+
+---
+
+**See also:** `frontend-pre-delivery-checklist.instructions.md` (animation rules) • `testing-standards.instructions.md` (test ref interactions)

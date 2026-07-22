@@ -1,0 +1,1656 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PinyinPal — Development Workflow Visualization</title>
+    <style>
+      /* ===== Reset & Base ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-size: 15px;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+          sans-serif;
+        background: #1c1917;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.5;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* ===== Typography ===== */
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 0.25rem;
+      }
+      h2 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.92);
+        margin: 2rem 0 1rem;
+      }
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.88);
+        margin: 1.25rem 0 0.6rem;
+      }
+      .subtitle {
+        color: rgba(255, 255, 255, 0.55);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      /* ===== Layout ===== */
+      .container {
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+
+      /* ===== Swimlanes ===== */
+      .swimlane {
+        border: 1px solid #3d3935;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        background: #262321;
+      }
+      .swimlane-header {
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        border-bottom: 1px solid #3d3935;
+      }
+      .swimlane-header .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .swimlane-body {
+        padding: 1rem 1.25rem;
+      }
+
+      /* Color themes */
+      .swimlane-fe {
+        border-color: #3d3935;
+      }
+      .swimlane-fe .swimlane-header {
+        background: rgba(59, 130, 246, 0.12);
+        color: #93c5fd;
+      }
+      .swimlane-fe .dot {
+        background: #3b82f6;
+      }
+
+      .swimlane-be {
+        border-color: #3d3935;
+      }
+      .swimlane-be .swimlane-header {
+        background: rgba(16, 185, 129, 0.12);
+        color: #6ee7b7;
+      }
+      .swimlane-be .dot {
+        background: #10b981;
+      }
+
+      .swimlane-int {
+        border-color: #3d3935;
+      }
+      .swimlane-int .swimlane-header {
+        background: rgba(139, 92, 246, 0.12);
+        color: #c4b5fd;
+      }
+      .swimlane-int .dot {
+        background: #8b5cf6;
+      }
+
+      /* ===== Flow Steps (horizontal pipeline) ===== */
+      .flow-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.5rem 0;
+      }
+      .flow-step {
+        flex: 1 1 140px;
+        min-width: 130px;
+        max-width: 170px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 0.6rem 0.7rem;
+        text-align: center;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .flow-step:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .flow-step .icon {
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+      .flow-step .label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .flow-step .desc {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.15rem;
+        line-height: 1.3;
+      }
+      .flow-arrow {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.25);
+        flex-shrink: 0;
+        padding: 0 0.2rem;
+      }
+
+      /* ===== Detailed section cards ===== */
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      .detail-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 0.75rem 0.9rem;
+        border-left: 3px solid transparent;
+      }
+      .detail-card .card-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+      .detail-card .card-desc {
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1.4;
+      }
+      .detail-card .card-code {
+        font-size: 0.65rem;
+        font-family: "SF Mono", Consolas, "Courier New", monospace;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        padding: 0.2rem 0.4rem;
+        color: rgba(255, 255, 255, 0.6);
+        display: inline-block;
+        margin-top: 0.25rem;
+      }
+      .detail-card.fe {
+        border-left-color: #3b82f6;
+      }
+      .detail-card.fe .card-title {
+        color: #93c5fd;
+      }
+      .detail-card.be {
+        border-left-color: #10b981;
+      }
+      .detail-card.be .card-title {
+        color: #6ee7b7;
+      }
+      .detail-card.int {
+        border-left-color: #8b5cf6;
+      }
+      .detail-card.int .card-title {
+        color: #c4b5fd;
+      }
+
+      /* ===== Vertical flow pipeline ===== */
+      .pipeline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: flex-start;
+        padding: 0.5rem 0;
+      }
+      .pipeline-step {
+        flex: 1 1 160px;
+        min-width: 140px;
+        max-width: 200px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 8px;
+        padding: 0.55rem 0.65rem;
+        position: relative;
+      }
+      .pipeline-step .step-num {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+      .pipeline-step .step-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .pipeline-step .step-desc {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.3;
+      }
+      .pipeline-arrow {
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 1rem;
+        flex-shrink: 0;
+        padding: 0.3rem 0.1rem 0;
+      }
+
+      /* ===== Quality Gates ===== */
+      .gates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+      }
+      .gate-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 0.65rem 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .gate-item .gate-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+      .gate-item .gate-info {
+      }
+      .gate-item .gate-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .gate-item .gate-cmd {
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.45);
+        font-family: "SF Mono", Consolas, "Courier New", monospace;
+      }
+
+      /* ===== Story Workflow (numbered) ===== */
+      .steps-list {
+        counter-reset: step;
+        margin-top: 0.5rem;
+      }
+      .step-item {
+        counter-increment: step;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.6rem 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 6px;
+        transition: background 0.2s;
+      }
+      .step-item:last-child {
+        border-bottom: none;
+      }
+      .step-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .step-item .step-badge {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: rgba(180, 83, 9, 0.2);
+        color: #fcd34d;
+        border: 1px solid rgba(180, 83, 9, 0.3);
+      }
+      .step-item .step-body {
+        flex: 1;
+      }
+      .step-item .step-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .step-item .step-detail {
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.1rem;
+        line-height: 1.35;
+      }
+
+      /* ===== Section links / TOC ===== */
+      .toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #3d3935;
+      }
+      .toc a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+      .toc a:hover {
+        color: #fcd34d;
+        background: rgba(180, 83, 9, 0.12);
+      }
+
+      /* ===== Integration arrows ===== */
+      .int-flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: center;
+        padding: 0.4rem 0;
+      }
+      .int-item {
+        background: rgba(139, 92, 246, 0.08);
+        border: 1px solid rgba(139, 92, 246, 0.18);
+        border-radius: 8px;
+        padding: 0.55rem 0.8rem;
+        flex: 1 1 200px;
+      }
+      .int-item .int-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #c4b5fd;
+      }
+      .int-item .int-desc {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.15rem;
+        line-height: 1.35;
+      }
+      .int-item .int-path {
+        font-size: 0.62rem;
+        font-family: "SF Mono", Consolas, "Courier New", monospace;
+        color: rgba(255, 255, 255, 0.35);
+        margin-top: 0.2rem;
+      }
+
+      /* ===== Legend ===== */
+      .legend {
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+        margin: 1rem 0 0.5rem;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .legend-swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+      }
+
+      /* ===== Footer ===== */
+      .footer {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 0.7rem;
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #3d3935;
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .flow-step,
+        .pipeline-step {
+          flex: 1 1 100%;
+        }
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+        .gates-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <h1>🏗️ PinyinPal Development Workflow</h1>
+      <p class="subtitle">
+        mandarin-vite-react-ts monorepo · Frontend + Backend + Integration visualization
+      </p>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: #3b82f6"></span> Frontend
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: #10b981"></span> Backend
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: #8b5cf6"></span> Integration / Shared
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background: rgba(180, 83, 9, 0.5)"></span> Quality Gate
+        </div>
+      </div>
+
+      <!-- TOC -->
+      <div class="toc">
+        <a href="#overall">1. Overall Flow</a>
+        <a href="#frontend">2. Frontend Pipeline</a>
+        <a href="#backend">3. Backend Pipeline</a>
+        <a href="#integration">4. Integration Points</a>
+        <a href="#quality">5. Quality Gates</a>
+        <a href="#story-workflow">6. Story Workflow</a>
+        <a href="#agents">7. Agents &amp; Skills</a>
+        <a href="#testing">8. Testing Strategy</a>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 1. OVERALL DEVELOPMENT FLOW -->
+      <!-- ============================================================ -->
+      <h2 id="overall">1. Overall Development Flow</h2>
+
+      <!-- Frontend Swimlane -->
+      <div class="swimlane swimlane-fe">
+        <div class="swimlane-header">
+          <span class="dot"></span> Frontend — Context → Design → Component → Storybook → Style →
+          Logic → Test → Audit
+        </div>
+        <div class="swimlane-body">
+          <div class="flow-row">
+            <div class="flow-step">
+              <span class="icon">🔍</span>
+              <span class="label">Gather Context</span>
+              <span class="desc">Business need, user need, research</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">✏️</span>
+              <span class="label">High-Level Design</span>
+              <span class="desc">Wireframe, visual understanding</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🧩</span>
+              <span class="label">Component Breakdown</span>
+              <span class="desc">Composition, reuse, hierarchy, impact</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">📖</span>
+              <span class="label">Detail Design</span>
+              <span class="desc">Storybook for complex/page-level</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🎭</span>
+              <span class="label">Styling</span>
+              <span class="desc">Global classes → CSS → variants</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">⚛️</span>
+              <span class="label">Logic</span>
+              <span class="desc">State, hooks, API service layer</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🧪</span>
+              <span class="label">Testing</span>
+              <span class="desc">Unit/Integration/E2E by scope</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">✅</span>
+              <span class="label">Audit</span>
+              <span class="desc">Convention, visual, accessibility</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backend Swimlane -->
+      <div class="swimlane swimlane-be">
+        <div class="swimlane-header">
+          <span class="dot"></span> Backend — Modulith Module Creation Pipeline
+        </div>
+        <div class="swimlane-body">
+          <div class="flow-row">
+            <div class="flow-step">
+              <span class="icon">🏗️</span>
+              <span class="label">Module Scaffold</span>
+              <span class="desc">api/ services/ repos/ types/</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🗄️</span>
+              <span class="label">Database</span>
+              <span class="desc">Prisma schema → migrate</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">💉</span>
+              <span class="label">Container DI</span>
+              <span class="desc">Factory → root container.ts</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🛣️</span>
+              <span class="label">Routes</span>
+              <span class="desc">Rate limiting → register</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🔒</span>
+              <span class="label">Validation</span>
+              <span class="desc">Input check, error format</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">☁️</span>
+              <span class="label">Ext. Services</span>
+              <span class="desc">Gemini, Cache, GCS</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🧪</span>
+              <span class="label">Tests</span>
+              <span class="desc">Unit + integration</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integration Swimlane -->
+      <div class="swimlane swimlane-int">
+        <div class="swimlane-header">
+          <span class="dot"></span> Integration — How FE + BE Connect
+        </div>
+        <div class="swimlane-body">
+          <div class="flow-row">
+            <div class="flow-step">
+              <span class="icon">📐</span>
+              <span class="label">API Contracts</span>
+              <span class="desc">shared-constants routes</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🔑</span>
+              <span class="label">Auth Flow</span>
+              <span class="desc">JWT cookies → refresh</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">🚦</span>
+              <span class="label">Phase Gating</span>
+              <span class="desc">usePhaseGate → DB table</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">⚠️</span>
+              <span class="label">Error Flow</span>
+              <span class="desc">Normalize → handle → render</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+              <span class="icon">📦</span>
+              <span class="label">Shared Types</span>
+              <span class="desc">shared-types package</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 2. FRONTEND FLOW (DETAILED) -->
+      <!-- ============================================================ -->
+      <h2 id="frontend">2. Frontend Flow — Detailed Pipeline</h2>
+
+      <div class="pipeline">
+        <!-- Phase A: Storybook UI Design (No Logic) -->
+        <div
+          class="pipeline-phase"
+          style="
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 0 2px;
+            border-bottom: 1px dashed #f59e0b33;
+            margin-bottom: 6px;
+          "
+        >
+          Phase A — Storybook UI Design (No Logic)
+        </div>
+
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">1</span>
+          <span class="step-label" style="color: #93c5fd">🔍 Gather Context</span>
+          <span class="step-desc"
+            ><strong>Business need</strong> → <strong>User need</strong> →
+            <strong>Research</strong>. Read design docs, <code>docs/design.md</code>, component
+            registry, proposals in <code>verification-artifacts/</code>.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">2</span>
+          <span class="step-label" style="color: #93c5fd">✏️ High-Level Design</span>
+          <span class="step-desc"
+            ><strong>Wireframe / sketch</strong>. Map user flow: see → think → do. Identify
+            <strong>host component</strong> (page or most complex parent). Check
+            <code>ui-composition.instructions.md</code> &amp; tokens.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">3</span>
+          <span class="step-label" style="color: #93c5fd">🧩 Component Breakdown</span>
+          <span class="step-desc"
+            ><strong>Composition</strong> + <strong>reuse check</strong>:
+            <code>component-registry.json</code> + <code>shared/components/</code>. Run
+            <code>codegraph_explore</code> for impact radius. Map hierarchy + props.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #f59e0b">
+          <span class="step-num" style="background: #f59e0b">4</span>
+          <span class="step-label" style="color: #fcd34d">📖 Storybook UI Build</span>
+          <span class="step-desc"
+            ><strong>Build visual shell on host component's <code>.stories.tsx</code></strong
+            >. Cover ALL states: loading, empty, error, display, edge cases. Use MSW mocks.
+            <strong>No hooks, no API calls</strong> — pure visual UI with mock data.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #f59e0b">
+          <span class="step-num" style="background: #f59e0b">5</span>
+          <span class="step-label" style="color: #fcd34d">🎭 Polish Styling</span>
+          <span class="step-desc"
+            >CSS variables → utility classes → BEM. Data-resilient shell. Responsive check at 320px.
+            See <code>frontend-css-styling.instructions.md</code>. Run
+            <code>npm run test-storybook</code>.</span
+          >
+        </div>
+
+        <!-- User Preview Gate -->
+        <div
+          style="
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f59e0b12;
+            border: 1px solid #f59e0b44;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 4px 0;
+          "
+        >
+          <span style="font-size: 1.4rem">🧑‍💻</span>
+          <div style="flex: 1">
+            <div style="font-weight: 700; font-size: 0.9rem; color: #fcd34d">
+              🔴 User Preview Gate — Stop Here
+            </div>
+            <div style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.7)">
+              Present fully-styled Storybook in browser. Walk through all visual states. User
+              approves layout, spacing, colors.
+              <strong>Do NOT proceed to Logic until approved.</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase B: Logic Implementation -->
+        <div
+          class="pipeline-phase"
+          style="
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 0 2px;
+            border-bottom: 1px dashed #10b98133;
+            margin-bottom: 6px;
+          "
+        >
+          Phase B — Logic &amp; Integration (After Approval)
+        </div>
+
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">6</span>
+          <span class="step-label" style="color: #93c5fd">⚛️ Logic</span>
+          <span class="step-desc"
+            >Connect hooks, state (reducer/context/Zustand), API service layer. Wire real data to
+            the approved visual shell. See <code>frontend-api-client.instructions.md</code>.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">7</span>
+          <span class="step-label" style="color: #93c5fd">🧪 Testing</span>
+          <span class="step-desc"
+            >Unit (changed) → Integration (impacted) → E2E (cross-page). See
+            <code>testing-standards.instructions.md</code>.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #3b82f6">
+          <span class="step-num" style="background: #3b82f6">8</span>
+          <span class="step-label" style="color: #93c5fd">✅ Audit</span>
+          <span class="step-desc"
+            >Conventions, visual check, accessibility. Run <code>frontend-audit</code> skill +
+            <code>frontend-pre-delivery-checklist</code>.</span
+          >
+        </div>
+      </div>
+
+      <!-- Frontend Detail Cards -->
+      <div class="detail-grid">
+        <div class="detail-card fe">
+          <div class="card-title">� Context Gathering</div>
+          <div class="card-desc">
+            Start with business need + user need, not code. Read existing design docs and domain
+            research. Check <code>verification-artifacts/</code> for proposals. Map user flow: what
+            they see → think → want to do next. Establish preview/reward boundary.
+          </div>
+          <span class="card-code">docs/design.md → verification-artifacts/</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">✏️ Wireframe-First Design</div>
+          <div class="card-desc">
+            Sketch or wireframe before writing components. Visual understanding must precede
+            implementation. Align with <code>DESIGN.md</code> tokens and
+            <code>ui-composition.instructions.md</code>. Check
+            <code>preview-detail-separation</code>.
+          </div>
+          <span class="card-code">sketch → DESIGN.md → tokens</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🧩 Component Decomposition</div>
+          <div class="card-desc">
+            Break UI into atoms → molecules → organisms. Reuse check:
+            <code>component-registry.json</code> + <code>shared/components/</code>. Map hierarchy,
+            define props interfaces, check impact radius with codegraph.
+          </div>
+          <span class="card-code">component-registry.json → codegraph explore</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">📖 Storybook for Complex UI</div>
+          <div class="card-desc">
+            Create <code>.stories.tsx</code> for page-level and complex components only. Not every
+            atom needs a story — focus on consumer components + organisms. Use MSW mocks. Cover all
+            visual states. Run <code>npm run test-storybook</code>.
+          </div>
+          <span class="card-code">*Page.stories.tsx → test-storybook</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🎨 CSS Priority</div>
+          <div class="card-desc">
+            ① Global utility classes first (<code>.flex-center</code>, <code>.gap-sm</code>,
+            <code>.w-full</code>, <code>.font-sm</code>). ② Component CSS (BEM, scoped, no leaks). ③
+            Shared component variants. CSS variables only — never hardcode.
+          </div>
+          <span class="card-code">utility → .component-bem → variant</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🧪 Testing by Scope</div>
+          <div class="card-desc">
+            Unit: changed code only (<code>npm test</code>). Integration: impacted service/API
+            scope. E2E: cross-page or auth flows only (Playwright). Role/text queries via RTL. Full
+            suite (<code>npm run test:full</code>) before commit.
+          </div>
+          <span class="card-code">npm test → test:full → test-storybook</span>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 3. BACKEND FLOW (DETAILED) -->
+      <!-- ============================================================ -->
+      <h2 id="backend">3. Backend Flow — Detailed Pipeline</h2>
+
+      <div class="pipeline">
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">1</span>
+          <span class="step-label" style="color: #6ee7b7">🏗️ Module Scaffold</span>
+          <span class="step-desc"
+            >Create <code>modules/&lt;name&gt;/</code> with <code>api/</code>,
+            <code>services/</code>, <code>repositories/</code>, <code>types/</code>,
+            <code>container.ts</code>. Choose CRUD, Feature Slices, or Clean Architecture
+            template.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">2</span>
+          <span class="step-label" style="color: #6ee7b7">🗄️ Database</span>
+          <span class="step-desc"
+            >Edit <code>prisma/schema.prisma</code> → <code>npx prisma migrate dev</code> →
+            <code>npx prisma generate</code>. Never <code>push</code> to production. Use migration
+            files.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">3</span>
+          <span class="step-label" style="color: #6ee7b7">💉 Container DI</span>
+          <span class="step-desc"
+            >Create <code>createXModule(deps)</code> factory function. Register in root
+            <code>src/app/container.ts</code>. Constructor injection at composition root.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">4</span>
+          <span class="step-label" style="color: #6ee7b7">🛣️ Routes</span>
+          <span class="step-desc"
+            >Define routes with rate limiting. Register in <code>src/app/routes.ts</code>. Use
+            shared constants from <code>packages/shared-constants</code>.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">5</span>
+          <span class="step-label" style="color: #6ee7b7">🔒 Validation</span>
+          <span class="step-desc"
+            >Input validation at controller layer. Error responses in
+            <code>{ error, code, message }</code> format. "Failed to {action} {resource}" message
+            convention.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">6</span>
+          <span class="step-label" style="color: #6ee7b7">☁️ External Services</span>
+          <span class="step-desc"
+            >GeminiService, CacheService, GCSClient — class pattern with constructor injection.
+            Fail-open caching: Redis failures never block requests.</span
+          >
+        </div>
+        <span class="pipeline-arrow">→</span>
+        <div class="pipeline-step" style="border-left: 3px solid #10b981">
+          <span class="step-num" style="background: #10b981">7</span>
+          <span class="step-label" style="color: #6ee7b7">🧪 Tests</span>
+          <span class="step-desc"
+            >Unit tests for service + repository. Integration tests for endpoints. Mock external
+            services. <code>vitest run src/modules/&lt;module&gt;/</code>.</span
+          >
+        </div>
+      </div>
+
+      <!-- Backend Detail Cards -->
+      <div class="detail-grid">
+        <div class="detail-card be">
+          <div class="card-title">🏗️ Module Templates</div>
+          <div class="card-desc">
+            <strong>CRUD:</strong> Controller → Service → Repository.
+            <strong>Feature Slices:</strong> Mixed concerns, less overhead.
+            <strong>Clean Arch:</strong> Complex business rules (quiz). No business logic in
+            controllers.
+          </div>
+          <span class="card-code">modules/&lt;name&gt;/api/ /services/ /repositories/</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">💉 Dependency Injection</div>
+          <div class="card-desc">
+            <code>createXModule(deps)</code> factory pattern. Direct instantiation at composition
+            root (<code>src/app/container.ts</code>). Module depends on interfaces, not
+            implementations.
+          </div>
+          <span class="card-code">createQuizModule({ db, cache, gemini })</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">🔒 Error Format</div>
+          <div class="card-desc">
+            All errors: <code>{ error: "Failed to {action} {resource}", code: "LOAD_ERROR" }</code>.
+            Codes: <code>VALIDATION_ERROR</code>, <code>NOT_FOUND</code>, <code>AUTH_ERROR</code>,
+            <code>INTERNAL_ERROR</code>.
+          </div>
+          <span class="card-code">"Failed to load review items"</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">📁 Repository Pattern</div>
+          <div class="card-desc">
+            All DB access through repositories (abstracts Prisma). One method per query. Services
+            never access Prisma directly. Repositories depend on PrismaClient.
+          </div>
+          <span class="card-code">repositories/UserRepository.ts</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">🔄 Layer Rules</div>
+          <div class="card-desc">
+            API → Services/Use-Cases → Repositories → Infrastructure. Never reverse. Services call
+            other services via module public API (<code>index.ts</code>). No HTTP knowledge in
+            services.
+          </div>
+          <span class="card-code">Controller → Service → Repository</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">☁️ External Clients</div>
+          <div class="card-desc">
+            Class pattern with constructor injection. <strong>GeminiService</strong> (AI),
+            <strong>CacheService</strong> (Redis), <strong>GCSClient</strong> (Storage). Fail-open
+            design — degrade, don't crash.
+          </div>
+          <span class="card-code">class GeminiService { constructor(private api: ...) }</span>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 4. INTEGRATION POINTS -->
+      <!-- ============================================================ -->
+      <h2 id="integration">4. Integration Points</h2>
+
+      <div class="int-flow">
+        <div class="int-item">
+          <div class="int-title">📐 API Contracts</div>
+          <div class="int-desc">
+            <code>packages/shared-constants</code> defines route patterns used by both FE and BE.
+            <code>packages/shared-types</code> provides TypeScript interfaces shared across
+            packages.
+          </div>
+          <div class="int-path">API_ROUTES.review → /api/v1/review</div>
+        </div>
+        <div class="int-item">
+          <div class="int-title">🔑 Auth Flow</div>
+          <div class="int-desc">
+            JWT httpOnly cookies set by backend. <code>apiClient</code> interceptor handles token
+            refresh. Refresh token rotation on re-auth. Frontend checks <code>AuthContext</code> for
+            session state.
+          </div>
+          <div class="int-path">apiClient.interceptors.response → refresh token</div>
+        </div>
+        <div class="int-item">
+          <div class="int-title">🚦 Phase Gating</div>
+          <div class="int-desc">
+            <code>usePhaseGate()</code> hook queries backend <code>PhaseGate</code> table. Frontend
+            conditionally renders available sections. Locked tabs show indicators.
+          </div>
+          <div class="int-path">usePhaseGate(phase) → GET /api/v1/progress/phase-gates</div>
+        </div>
+        <div class="int-item">
+          <div class="int-title">⚠️ Error Flow</div>
+          <div class="int-desc">
+            <code>apiClient</code> normalizes backend errors. Service layer handles and re-throws
+            typed errors. Components render <code>ErrorScreen</code> or inline error with retry.
+            Three states: loading, error, success.
+          </div>
+          <div class="int-path">apiClient → service → hook → ErrorScreen</div>
+        </div>
+        <div class="int-item">
+          <div class="int-title">📦 Shared Packages</div>
+          <div class="int-desc">
+            <strong>shared-constants:</strong> route paths, HSK levels, regex patterns.
+            <strong>shared-types:</strong> TypeScript interfaces. Changes must be synced across FE +
+            BE.
+          </div>
+          <div class="int-path">packages/shared-constants/ src/ packages/shared-types/ src/</div>
+        </div>
+        <div class="int-item">
+          <div class="int-title">⚡ Vite Dev Proxy</div>
+          <div class="int-desc">
+            In dev, Vite proxies <code>/api/*</code> to <code>localhost:3001</code>. In prod,
+            frontend (Vercel) calls backend (Railway) directly via API routes.
+          </div>
+          <div class="int-path">
+            npm run dev (FE :5173) → proxy → npm run start-backend (BE :3001)
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 5. QUALITY GATES -->
+      <!-- ============================================================ -->
+      <h2 id="quality">5. Quality Gates</h2>
+      <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
+        All these must pass before any commit. Run in order as part of the pre-commit gate.
+      </p>
+
+      <div class="gates-grid">
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(52, 211, 153, 0.15); color: #34d399">
+            ✓
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Format</div>
+            <div class="gate-cmd">npm run format</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa">
+            B
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Build</div>
+            <div class="gate-cmd">npm run build</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24">
+            T
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Full Tests</div>
+            <div class="gate-cmd">npm run test:full</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa">
+            S
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Storybook Tests</div>
+            <div class="gate-cmd">npm run test-storybook</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(239, 107, 107, 0.15); color: #ef6b6b">
+            !
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Lint</div>
+            <div class="gate-cmd">npm run lint</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(180, 83, 9, 0.15); color: #d97706">D</div>
+          <div class="gate-info">
+            <div class="gate-name">Design Audit</div>
+            <div class="gate-cmd">npx @google/design.md lint DESIGN.md</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399">
+            FE
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Frontend Audit</div>
+            <div class="gate-cmd">frontend-audit skill</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399">
+            BE
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Backend Audit</div>
+            <div class="gate-cmd">backend-audit skill</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b">
+            📝
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Docs Updated</div>
+            <div class="gate-cmd">BR + implementation + design</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(252, 211, 77, 0.15); color: #fcd34d">
+            📋
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Pre-Delivery Checklist</div>
+            <div class="gate-cmd">frontend-pre-delivery-checklist</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 6. STORY-LEVEL WORKFLOW -->
+      <!-- ============================================================ -->
+      <h2 id="story-workflow">6. Story-Level Workflow</h2>
+      <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
+        Sequential steps when implementing a story. From
+        <code>project-workflow.instructions.md</code>.
+      </p>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-badge">1</div>
+          <div class="step-body">
+            <div class="step-title">📖 Review Requirements</div>
+            <div class="step-detail">
+              Open story BR + epic BR README. Confirm AC clarity. Note ambiguous items in "Questions
+              / Clarifications" subsection. Read corresponding implementation docs.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">2</div>
+          <div class="step-body">
+            <div class="step-title">🧠 Design Thinking &amp; User Flow</div>
+            <div class="step-detail">
+              Read research/design docs. Map user flow: What do they see → think → want to do?
+              Establish preview/reward boundary. Check source for every design decision. Apply WAGC,
+              content density, clarity, cognitive load principles.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">3</div>
+          <div class="step-body">
+            <div class="step-title">📋 Plan Changes</div>
+            <div class="step-detail">
+              Read <code>AGENTS.md</code> for behavior rules. Identify impacted feature folders.
+              Check design doc + <code>docs/architecture.md</code> for conflicts. Prepare file
+              header summaries for new public APIs.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">4</div>
+          <div class="step-body">
+            <div class="step-title">💻 Implement Code</div>
+            <div class="step-detail">
+              Create/update components, hooks, reducers, types. Domain-prefixed action types.
+              Immutable updates. Normalized collections. Scope tightly bound to story AC. Defer
+              extras to follow-up story.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">5</div>
+          <div class="step-body">
+            <div class="step-title">🧪 Write Tests</div>
+            <div class="step-detail">
+              Unit/component tests: happy path + ≥1 edge case from AC. Reducer/action/selector
+              isolation tests. RTL role/text queries. Avoid brittle assertions. Mock external
+              services.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">6</div>
+          <div class="step-body">
+            <div class="step-title">🏃 Run Locally</div>
+            <div class="step-detail">
+              <code>npm run dev</code> (FE) + <code>npm run start-backend</code> (BE if API
+              touched). Manual sanity check. Exercise UI path for story. Capture discrepancies
+              against AC.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">7</div>
+          <div class="step-body">
+            <div class="step-title">👁️ Visual Verification</div>
+            <div class="step-detail">
+              Start Storybook + dev server. Wait for full load. Screenshot side-by-side. Compare
+              layout, spacing, colors, structure. Fix mismatches. Log findings in
+              <code>verification-artifacts/</code>. Run <code>npm run test-storybook</code>.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">8</div>
+          <div class="step-body">
+            <div class="step-title">📝 Update Documentation</div>
+            <div class="step-detail">
+              Record decisions, data shape changes, performance notes in story implementation doc.
+              Add "Technical Challenges &amp; Solutions" section. Update Last Update dates.
+              Cross-link BR ↔ implementation ↔ stories.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">9</div>
+          <div class="step-body">
+            <div class="step-title">🚦 Pre-Commit Gate</div>
+            <div class="step-detail">
+              Run ALL quality gates: <code>npm run format</code> → <code>npm run build</code> →
+              <code>npm run test:full</code> → <code>npm run test-storybook</code> →
+              <code>npm run lint</code> (0 errors). Design audit. Cross-doc alignment check. No
+              TODO/FIXME/commented-out code.
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-badge">10</div>
+          <div class="step-body">
+            <div class="step-title">✅ Commit</div>
+            <div class="step-detail">
+              Conventional Commit format:
+              <code>&lt;type&gt;(story-&lt;epic&gt;-&lt;story&gt;): &lt;summary&gt;</code>. BR +
+              implementation doc updates in same commit. Reference PR number in both docs. Close
+              epic: update Status + Last Update, verify all AC done.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-implementation checklist -->
+      <h3 style="margin-top: 1.5rem">Pre-Implementation Investigation Checklist</h3>
+      <div class="detail-grid">
+        <div class="detail-card int">
+          <div class="card-title">🔍 Pattern Investigation</div>
+          <div class="card-desc">
+            Read target feature directory for existing architecture patterns. Check if reusable
+            pattern exists. Never build standalone when reusable pattern exists.
+          </div>
+        </div>
+        <div class="detail-card int">
+          <div class="card-title">📁 Project Structure Verification</div>
+          <div class="card-desc">
+            Verify file placement: <code>features/</code> for components,
+            <code>pages/practices/</code> for quiz pages, <code>stores/</code> for state. Never
+            place in unrelated directories.
+          </div>
+        </div>
+        <div class="detail-card int">
+          <div class="card-title">🛣️ Routing Convention Check</div>
+          <div class="card-desc">
+            Examine route files + <code>shared/constants/paths.ts</code>. Check query params vs path
+            segments patterns. Never create new patterns when established convention exists.
+          </div>
+        </div>
+        <div class="detail-card int">
+          <div class="card-title">💾 Data Source Audit</div>
+          <div class="card-desc">
+            Determine data source: backend API, content files, or generated. Check if backend
+            endpoints exist. Never hardcode data when backend API exists.
+          </div>
+        </div>
+      </div>
+
+      <!-- Architecture diagram -->
+      <h3 style="margin-top: 1.5rem">Architecture at a Glance</h3>
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 10px;
+          padding: 1rem;
+          margin-top: 0.5rem;
+          overflow-x: auto;
+        "
+      >
+        <pre
+          style="
+            font-family: &quot;SF Mono&quot;, Consolas, &quot;Courier New&quot;, monospace;
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.65);
+            line-height: 1.6;
+            white-space: pre;
+          "
+        >
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          mandarin-vite-react-ts                             │
+├───────────────────────────────┬─────────────────────────────────────────────┤
+│       Frontend (Vite)         │          Backend (Express)                  │
+├───────────────────────────────┼─────────────────────────────────────────────┤
+│  pages/        Route-level    │  modules/    auth, quiz, review, radicals   │
+│  features/     Quiz, Review   │    api/      Controllers (thin, HTTP only)  │
+│    components/  Domain UI     │    services/  Business logic (no HTTP/DB)   │
+│    services/    apiClient     │    repos/     Prisma queries (one/ method)  │
+│    hooks/       usePhaseGate  │    types/     Barrel re-exports             │
+│    stores/      Zustand       │  app/         container.ts, routes.ts       │
+│  shared/                      │  shared/      middleware, infra, config     │
+│    components/  Button,Input  │  prisma/      schema.prisma                 │
+│    api/         axiosClient   │                                             │
+│    hooks/       shared hooks  │  ─── External Services ───                 │
+│    layouts/     AppLayout     │  GeminiService │ CacheService │ GCSClient  │
+├───────────────────────────────┴─────────────────────────────────────────────┤
+│  packages/shared-constants/  —  API_ROUTES, HSK levels, regex patterns      │
+│  packages/shared-types/      —  TypeScript interfaces (FE + BE)             │
+│  content/                    —  Versioned JSON (characters, radicals, etc.) │
+│  docs/                       —  Architecture, guides, BR, implementation    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DEV SERVERS:
+  npm run dev            →  Frontend  :5173  (Vite dev server)
+  npm run start-backend  →  Backend   :3001  (Express on Railway in prod)
+  npm run storybook      →  Storybook :6006  (Component library)
+
+QUALITY GATES (run in order):
+  format  →  build  →  test:full  →  test-storybook  →  lint  →  design audit
+</pre>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 8. TESTING STRATEGY -->
+      <!-- ============================================================ -->
+      <h2 id="testing" style="margin-top: 2rem">8. Testing Strategy</h2>
+      <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
+        Vitest across both FE and BE. Storybook addon for visual regression. Scope-based execution.
+      </p>
+
+      <!-- Tooling Table -->
+      <div style="overflow-x: auto; margin-bottom: 1rem">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+          "
+        >
+          <thead>
+            <tr style="border-bottom: 1px solid #3d3935">
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Layer
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Runner
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Environment
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Config
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #93c5fd">Frontend unit/integration</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">jsdom</td>
+              <td style="padding: 8px 10px"><code>apps/frontend/vite.config.ts</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #93c5fd">Frontend Storybook</td>
+              <td style="padding: 8px 10px">Vitest + addon</td>
+              <td style="padding: 8px 10px">jsdom + browser</td>
+              <td style="padding: 8px 10px"><code>apps/frontend/.storybook/</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px; color: #6ee7b7">Backend unit</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">node (forks)</td>
+              <td style="padding: 8px 10px"><code>apps/backend/vitest.config.ts</code></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 10px; color: #6ee7b7">Backend integration</td>
+              <td style="padding: 8px 10px">Vitest</td>
+              <td style="padding: 8px 10px">node (separate)</td>
+              <td style="padding: 8px 10px"><code>vitest.integration.config.ts</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Command Reference -->
+      <h3 style="margin-top: 1rem">Commands</h3>
+      <div style="overflow-x: auto; margin-bottom: 1rem">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+          "
+        >
+          <thead>
+            <tr style="border-bottom: 1px solid #3d3935">
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Command
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                Scope
+              </th>
+              <th
+                style="
+                  text-align: left;
+                  padding: 8px 10px;
+                  color: rgba(255, 255, 255, 0.5);
+                  font-weight: 600;
+                "
+              >
+                When
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm test</code></td>
+              <td style="padding: 8px 10px">Changed code only</td>
+              <td style="padding: 8px 10px">During development</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm run test:full</code></td>
+              <td style="padding: 8px 10px">Full suite</td>
+              <td style="padding: 8px 10px">Before commit</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>npm run test-storybook</code></td>
+              <td style="padding: 8px 10px">Storybook stories</td>
+              <td style="padding: 8px 10px">After UI changes</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #2d2925">
+              <td style="padding: 8px 10px"><code>vitest run src/features/myfeature/</code></td>
+              <td style="padding: 8px 10px">Single feature</td>
+              <td style="padding: 8px 10px">Focused iteration</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 10px">
+                <code>vitest --config vitest.integration.config.ts</code>
+              </td>
+              <td style="padding: 8px 10px">Backend integration</td>
+              <td style="padding: 8px 10px">After API/DB changes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Frontend Testing Cards -->
+      <h3 style="margin-top: 1rem">Frontend — By Code Type</h3>
+      <div class="detail-grid" style="margin-bottom: 1rem">
+        <div class="detail-card fe">
+          <div class="card-title">🧩 Pure Functions / Utils</div>
+          <div class="card-desc">
+            1 test per exported function. <code>__tests__/</code> next to source.
+          </div>
+          <span class="card-code">pinyinUtils.test.ts</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🪝 Hooks</div>
+          <div class="card-desc">1 test per hook: happy path + 1 edge case. Mock dependencies.</div>
+          <span class="card-code">useReview.test.ts</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">📦 Reducers / Stores</div>
+          <div class="card-desc">
+            1 test per action type. Verify state transitions exhaustively.
+          </div>
+          <span class="card-code">quizSessionStore.test.ts</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🎨 Components</div>
+          <div class="card-desc">
+            1 RTL test: render + user interaction. Role/text queries. No snapshots.
+          </div>
+          <span class="card-code">ReviewCard.test.tsx</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">🔌 API Services</div>
+          <div class="card-desc">
+            1 integration test per endpoint. Mock apiClient. 404 → null, error → throw.
+          </div>
+          <span class="card-code">mnemonicService.test.ts</span>
+        </div>
+        <div class="detail-card fe">
+          <div class="card-title">📖 Storybook Tests</div>
+          <div class="card-desc">
+            Auto-tested by Vitest addon. Cover all visual states. Run
+            <code>npm run test-storybook</code>.
+          </div>
+          <span class="card-code">*.stories.tsx → test-storybook</span>
+        </div>
+      </div>
+
+      <!-- Backend Testing Cards -->
+      <h3 style="margin-top: 1rem">Backend — By Layer</h3>
+      <div class="detail-grid" style="margin-bottom: 1rem">
+        <div class="detail-card be">
+          <div class="card-title">⚙️ Services</div>
+          <div class="card-desc">
+            1 test per public method. Mock repos + external deps (Gemini, Cache). Test all code
+            paths.
+          </div>
+          <span class="card-code">MnemonicsService.test.ts</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">🗄️ Repositories</div>
+          <div class="card-desc">
+            Mock Prisma, verify query logic. Test edge cases (null userId, upsert).
+          </div>
+          <span class="card-code">MnemonicsRepository.test.ts</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">🎮 Controllers</div>
+          <div class="card-desc">
+            Mock req/res + service. Verify status codes + error shapes. Test validation edge cases.
+          </div>
+          <span class="card-code">MnemonicsController.test.ts</span>
+        </div>
+        <div class="detail-card be">
+          <div class="card-title">🔗 Integration</div>
+          <div class="card-desc">
+            Full request → response cycle. Test DB via <code>vitest.integration.config.ts</code>.
+          </div>
+          <span class="card-code">tests/integration/*.test.ts</span>
+        </div>
+      </div>
+
+      <!-- Prohibitions -->
+      <div
+        style="
+          background: rgba(239, 68, 68, 0.06);
+          border: 1px solid rgba(239, 68, 68, 0.15);
+          border-radius: 8px;
+          padding: 0.75rem 1rem;
+          margin-top: 0.75rem;
+        "
+      >
+        <div style="font-size: 0.8rem; font-weight: 600; color: #fca5a5; margin-bottom: 0.3rem">
+          ⛔ Prohibitions
+        </div>
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1rem;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.55);
+          "
+        >
+          <span>❌ No snapshot tests</span>
+          <span>❌ No testing CSS class names</span>
+          <span>❌ No testing internal state (test behavior)</span>
+          <span>❌ No mocking what you don't own</span>
+          <span>❌ No "will add tests later"</span>
+          <span>❌ No skipping because "it works in dev"</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        PinyinPal · mandarin-vite-react-ts · Generated from <code>.github/instructions/</code>,
+        <code>docs/architecture.md</code>, <code>DESIGN.md</code> · Updated July 2026
+      </div>
+    </div>
+  </body>
+</html>

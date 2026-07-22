@@ -5,5 +5,4 @@
  * Only re-exports — no inline definitions.
  */
 
-export type { FeedbackResponse, IAIClient, IWordRepository, WordData } from "./ai";
 export type { QuizStrategy } from "./quiz";

@@ -9,7 +9,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { config } from "../config/index.js";
-import { downloadFile, listFiles } from "../infrastructure/external/GCSClient.js";
+import { GCSClient } from "../infrastructure/external/GCSClient.js";
+
+const gcsClient = new GCSClient();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,10 +57,10 @@ export interface ContentFile {
 export async function readContentDir(subDir: string): Promise<ContentFile[]> {
   if (config.nodeEnvironment === "production" && config.gcsBucket) {
     const prefix = `content/${subDir}/`;
-    const files = await listFiles(prefix);
+    const files = await gcsClient.listFiles(prefix);
     const results = [];
     for (const filePath of files) {
-      const buffer = await downloadFile(filePath);
+      const buffer = await gcsClient.downloadFile(filePath);
       results.push(JSON.parse(buffer.toString()));
     }
     return results.sort((a, b) => (a.id || "").localeCompare(b.id || ""));
@@ -79,7 +81,7 @@ export async function readContentDir(subDir: string): Promise<ContentFile[]> {
  */
 export async function readContentFile(subDir: string, filename: string): Promise<ContentFile> {
   if (config.nodeEnvironment === "production" && config.gcsBucket) {
-    const buffer = await downloadFile(`content/${subDir}/${filename}`);
+    const buffer = await gcsClient.downloadFile(`content/${subDir}/${filename}`);
     return JSON.parse(buffer.toString());
   }
   const filePath = path.join(CONTENT_DIR, subDir, filename);

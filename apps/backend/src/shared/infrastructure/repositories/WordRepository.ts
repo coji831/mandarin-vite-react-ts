@@ -10,7 +10,7 @@
  * - Unlearned word discovery
  *
  * Originally in modules/word/repositories/ — moved to shared during Epic 18 cleanup
- * because only AIFeedbackService (quiz module) still uses it.
+ * for cross-module word data access.
  */
 
 import { prisma } from "../database/client.js";

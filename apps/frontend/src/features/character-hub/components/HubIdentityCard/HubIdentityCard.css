@@ -1,0 +1,31 @@
+/* HubIdentityCard.css — Character Identity Card (NORTH zone) */
+/* Replaces the old empty NORTH box + HubInfoLine */
+
+.hub-identity {
+  min-height: 0;
+}
+
+/* ── Header Row: large glyph + pinyin + meaning ────────── */
+/* Remaining properties have no global utility equivalent.
+   font-size, font-weight, color, flex-shrink moved to utility classes in TSX. */
+
+.hub-identity__meaning {
+  line-height: 1.3;
+  opacity: 0.9;
+}
+
+/* ── Metadata Badges ──────────────────────────────────── */
+/* All badge styling now uses global utility classes in TSX */
+
+/* ── Skeleton States ───────────────────────────────────── */
+/* Dimensions only — border-radius uses utility classes in TSX */
+
+.hub-identity__glyph-skeleton {
+  width: 56px;
+  height: 56px;
+}
+
+.hub-identity__badge-skeleton {
+  width: 72px;
+  height: 22px;
+}

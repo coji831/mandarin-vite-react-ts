@@ -10,87 +10,98 @@
 import { Storage, File } from "@google-cloud/storage";
 import { config } from "../../config/index.js";
 
-let storageClient: Storage | null = null;
-let bucketName: string | null | undefined = null;
+/**
+ * Google Cloud Storage infrastructure client.
+ */
+export class GCSClient {
+  private storageClient: Storage | null = null;
+  private bucketName: string | null = null;
 
-export function getGCSClient(): Storage {
-  if (!storageClient) {
-    const credentials = config.gcsCredentials;
-    if (!credentials) {
-      throw new Error(
-        "GCS credentials not found. Set GCS_CREDENTIALS_RAW or GOOGLE_TTS_CREDENTIALS_RAW with a service account that has Storage Object Creator role.",
-      );
+  private getClient(): Storage {
+    if (!this.storageClient) {
+      const credentials = config.gcsCredentials;
+      if (!credentials) {
+        throw new Error(
+          "GCS credentials not found. Set GCS_CREDENTIALS_RAW or GOOGLE_TTS_CREDENTIALS_RAW with a service account that has Storage Object Creator role.",
+        );
+      }
+      this.storageClient = new Storage({
+        credentials: credentials,
+        projectId: credentials.project_id as string | undefined,
+      });
     }
-    storageClient = new Storage({
-      credentials: credentials,
-      projectId: credentials.project_id as string | undefined,
-    });
+    return this.storageClient;
   }
-  return storageClient;
-}
 
-export function getBucketName(): string {
-  if (!bucketName) {
-    bucketName = config.gcsBucket;
-    if (!bucketName) throw new Error("GCS_BUCKET_NAME env var not set");
+  private getBucket(): string {
+    if (!this.bucketName) {
+      const bucket = config.gcsBucket;
+      if (!bucket) throw new Error("GCS_BUCKET_NAME env var not set");
+      this.bucketName = bucket;
+    }
+    return this.bucketName;
   }
-  return bucketName;
-}
 
-export function getGCSFile(filePath: string, bucket?: string): File {
-  const client = getGCSClient();
-  const resolvedBucket = bucket || getBucketName();
-  return client.bucket(resolvedBucket).file(filePath);
-}
+  private getFile(filePath: string, bucket?: string): File {
+    const client = this.getClient();
+    const resolvedBucket = bucket || this.getBucket();
+    return client.bucket(resolvedBucket).file(filePath);
+  }
 
-export async function fileExists(filePath: string, bucket?: string): Promise<boolean> {
-  const file = getGCSFile(filePath, bucket);
-  const [exists] = await file.exists();
-  return exists;
-}
+  /** @deprecated Use getFile via a public method — kept for GcsFileStore compatibility */
+  getGCSFile(filePath: string, bucket?: string): File {
+    return this.getFile(filePath, bucket);
+  }
 
-export async function downloadFile(filePath: string, bucket?: string): Promise<Buffer> {
-  const file = getGCSFile(filePath, bucket);
-  const [contents] = await file.download();
-  return contents;
-}
+  async fileExists(filePath: string, bucket?: string): Promise<boolean> {
+    const file = this.getFile(filePath, bucket);
+    const [exists] = await file.exists();
+    return exists;
+  }
 
-export async function uploadFile(
-  filePath: string,
-  buffer: Buffer,
-  contentType: string = "application/octet-stream",
-  bucket?: string,
-): Promise<void> {
-  const file = getGCSFile(filePath, bucket);
+  async downloadFile(filePath: string, bucket?: string): Promise<Buffer> {
+    const file = this.getFile(filePath, bucket);
+    const [contents] = await file.download();
+    return contents;
+  }
 
-  // Match old conversationCache.js behavior (line 62):
-  // Use { contentType } directly - this doesn't trigger delete operation
-  await file.save(buffer, { contentType });
-}
+  async uploadFile(
+    filePath: string,
+    buffer: Buffer,
+    contentType: string = "application/octet-stream",
+    bucket?: string,
+  ): Promise<void> {
+    const file = this.getFile(filePath, bucket);
 
-/**
- * List files in a GCS bucket matching a prefix.
- * @param prefix - Path prefix to filter by (e.g. "content/pinyin/")
- * @param bucket - Optional bucket name; falls back to getBucketName()
- * @returns Array of file paths
- */
-export async function listFiles(prefix: string, bucket?: string): Promise<string[]> {
-  const resolvedBucket = bucket || getBucketName();
-  const client = getGCSClient();
-  const [files] = await client.bucket(resolvedBucket).getFiles({ prefix });
-  return files
-    .map((f: File) => f.name)
-    .filter((name: string) => name.endsWith(".json"))
-    .sort();
-}
+    // Match old conversationCache.js behavior (line 62):
+    // Use { contentType } directly - this doesn't trigger delete operation
+    await file.save(buffer, { contentType });
+  }
 
-/**
- * Get public URL for a GCS file
- * @param filePath - Path to file in bucket
- * @param bucket - Optional bucket name; falls back to getBucketName()
- * @returns Public URL
- */
-export function getPublicUrl(filePath: string, bucket?: string): string {
-  const resolvedBucket = bucket || getBucketName();
-  return `https://storage.googleapis.com/${resolvedBucket}/${filePath}`;
+  /**
+   * List files in a GCS bucket matching a prefix.
+   * @param prefix - Path prefix to filter by (e.g. "content/pinyin/")
+   * @param bucket - Optional bucket name; falls back to getBucket()
+   * @returns Array of file paths
+   */
+  async listFiles(prefix: string, bucket?: string): Promise<string[]> {
+    const resolvedBucket = bucket || this.getBucket();
+    const client = this.getClient();
+    const [files] = await client.bucket(resolvedBucket).getFiles({ prefix });
+    return files
+      .map((f: File) => f.name)
+      .filter((name: string) => name.endsWith(".json"))
+      .sort();
+  }
+
+  /**
+   * Get public URL for a GCS file
+   * @param filePath - Path to file in bucket
+   * @param bucket - Optional bucket name; falls back to getBucket()
+   * @returns Public URL
+   */
+  getPublicUrl(filePath: string, bucket?: string): string {
+    const resolvedBucket = bucket || this.getBucket();
+    return `https://storage.googleapis.com/${resolvedBucket}/${filePath}`;
+  }
 }

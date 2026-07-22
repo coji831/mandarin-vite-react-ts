@@ -15,6 +15,8 @@ export type TabConfig = {
   icon?: string;
 };
 
+export type TabsVariant = "default" | "underline";
+
 export type TabsProps = {
   tabs: TabConfig[];
   activeTab: string;
@@ -27,6 +29,8 @@ export type TabsProps = {
   getLockPhase?: (id: string) => number | null;
   /** Alignment of tab items in the bar */
   align?: "start" | "center" | "end";
+  /** Visual variant: default (filled active) or underline (amber underline) */
+  variant?: TabsVariant;
 };
 
 export function Tabs({
@@ -37,9 +41,17 @@ export function Tabs({
   lockedTabs,
   getLockPhase,
   align = "start",
+  variant = "default",
 }: TabsProps) {
+  const containerClass = [
+    "tabs-container",
+    variant === "underline" ? "tabs-container--underline" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="tabs-container">
+    <div className={containerClass}>
       <div
         className="tabs-tab-bar gap-xs p-xs"
         style={{

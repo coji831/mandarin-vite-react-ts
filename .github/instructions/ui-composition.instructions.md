@@ -63,3 +63,7 @@ Prevent "AI slop" UI — generic, cluttered, no-hierarchy layouts. These rules t
 - **Consistent radii:** `radius-sm` for buttons/cards, `radius-md` for larger panels, `radius-pill` for chips/tags.
 - **Subtle borders:** `border-1 border-surface` on panels and cards. Avoid thick borders.
 - **Minimal text colors:** `text-primary` for headings, `text-secondary` for body, `text-tertiary` for secondary info, `text-muted` for hints/metadata. Don't invent other colors.
+
+---
+
+**See also:** `frontend-css-styling.instructions.md` (styling workflow) • `frontend-pre-delivery-checklist.instructions.md` (layout audit) • `preview-detail-separation.instructions.md` (card/detail patterns)

@@ -90,3 +90,7 @@ export const imeQuizStrategy: QuizStrategy = {
 - Quiz pages → `pages/practices/` (only QuizPage, QuizSessionPage)
 - Quiz services → `features/quiz/services/`
 - Quiz stores → `features/quiz/stores/`
+
+---
+
+**See also:** `frontend-input-handling.instructions.md` (timer edge cases in quiz) • `frontend-api-client.instructions.md` (service layer for quiz API calls) • `testing-standards.instructions.md` (test quiz strategies)

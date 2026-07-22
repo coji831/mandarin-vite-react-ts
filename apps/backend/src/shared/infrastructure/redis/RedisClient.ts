@@ -11,7 +11,7 @@ const logger = createLogger("RedisClient");
  * Redis client singleton with graceful error handling
  * Manages connection lifecycle and provides health check methods
  */
-class RedisClient {
+export class RedisClient {
   private client: Redis | null;
   private isConnected: boolean;
 

@@ -5,18 +5,36 @@ applyTo: "apps/backend/src/**/*Controller*, apps/backend/src/**/*Service*, apps/
 
 # Backend Error Message Convention
 
+## How To Apply (Numbered Steps)
+
+1. **Identify the action** — What operation failed? (load, create, update, delete, fetch)
+2. **Identify the resource** — What was being operated on? (quiz attempt, review item, phase gate, pinyin pool)
+3. **Construct the message** — Format: `"Failed to {action} {resource}"` (e.g., `"Failed to create quiz attempt"`)
+4. **Pick the error code** — Match the action to the code table below
+5. **Return the JSON shape** — Always `{ error: string, code: string }` — never add extra fields
+
+```typescript
+// Step-by-step: Controller error handler
+res.status(400).json({
+  error: "Failed to create quiz attempt", // Steps 1-3
+  code: "VALIDATION_ERROR", // Step 4
+});
+```
+
+6. **Verify** — Run `grep -r '"error":' apps/backend/src/` to confirm all controllers follow the pattern
+
 ## Format
 
 All error messages must follow: `"Failed to {action} {resource}"`
 
-## ✅ Examples
+### ✅ Examples
 
 - `"Failed to load pinyin pool"` ✓
 - `"Failed to create quiz attempt"` ✓
 - `"Failed to fetch review items"` ✓
 - `"Failed to update phase gate"` ✓
 
-## ❌ Inconsistent Patterns to Avoid
+### ❌ Inconsistent Patterns to Avoid
 
 - `"Error loading data"` — not specific enough
 - `"Failed to fetch"` — no resource named
@@ -53,4 +71,8 @@ Use SCREAMING_SNAKE_CASE error codes matching the action:
 
 ## Reasoning
 
-Consistent error messages make debugging faster and enable frontend error handling to be generic rather than case-by-case. The "Failed to {action} {resource}" pattern is specific enough to diagnose issues while being generic enough to apply uniformly.
+Consistent error messages make debugging faster and enable frontend error handling to be generic rather than case-by-case.
+
+---
+
+**See also:** `testing-standards.instructions.md` (test your error handlers) • `backend-audit skill` (audit error format)

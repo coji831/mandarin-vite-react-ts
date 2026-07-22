@@ -63,7 +63,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
-  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`
+  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`, `mnemonics`
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
@@ -98,6 +98,7 @@ mandarin-vite-react-ts/
   - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
   - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
+  - **Character Hub**: Character detail overlay with identity card, mnemonics, radicals, readings, common words, and stroke animation
 - **Pages** (`src/pages/`): Route-level page orchestrators
   - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
 - **Router** (`src/router/`): React Router configuration
@@ -236,6 +237,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 - Entity relationships are stored in DB junction tables (CharacterRadical, WordCharacter, etc.)
 - Dynamic user data uses CRUD with an append-only `review_log` side-effect table
 - The Read Model pre-joins content + relationships + progress for query optimization
+- `ContentIndexService` syncs `manifest.json` entries into the `ContentItem` table on server start
 
 ## Caching Strategy
 
@@ -247,6 +249,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 - **AI Feedback**: 24-hour TTL, keyed per word+answer combination
 - **Due Words**: 5-minute TTL per user
 - **Quiz Attempts**: Results cached per user
+- **Mnemonic Stories**: 30-day TTL (AI-generated), no expiry (user-edited); stampede prevention via Redis SETNX
 
 **Performance:**
 
@@ -309,6 +312,7 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 
 ### Backend Modules
 
+- **Mnemonics module**: CRUD + AI generation of mnemonic stories per character via Gemini API, with 30-day caching and stampede prevention. Endpoints: `GET /api/v1/mnemonics/:glyph`, `POST /api/v1/mnemonics/:glyph`, `PUT /api/v1/mnemonics/:glyph`
 - **Quiz module**: Strategy-based quiz engine, generates questions from content data, evaluates answers, manages attempt lifecycle
 - **Progression module**: Handles phase gating, foundation progress tracking, quiz attempt coordination with pass threshold evaluation
 - **Review module**: Builds review items from content files and SRS state, manages SM-2 scheduling
@@ -323,11 +327,11 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 
 **Google Cloud Platform:**
 
-| Service             | Purpose                         | Client Location                                         | Configuration                |
-| ------------------- | ------------------------------- | ------------------------------------------------------- | ---------------------------- |
-| Text-to-Speech      | Audio generation for vocabulary | `src/shared/infrastructure/external/GoogleTTSClient.ts` | `GOOGLE_TTS_CREDENTIALS_RAW` |
-| Cloud Storage (GCS) | Audio/file storage              | `src/shared/infrastructure/external/GCSClient.ts`       | `GCS_BUCKET_NAME`            |
-| Gemini AI           | AI feedback & examples          | `src/shared/infrastructure/external/GeminiClient.ts`    | `GEMINI_API_CREDENTIALS_RAW` |
+| Service             | Purpose                                    | Client Location                                                          | Configuration                |
+| ------------------- | ------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------- |
+| Text-to-Speech      | Audio generation for vocabulary            | `src/shared/infrastructure/external/GoogleTTSClient.ts`                  | `GOOGLE_TTS_CREDENTIALS_RAW` |
+| Cloud Storage (GCS) | Audio/file storage                         | `src/shared/infrastructure/external/GCSClient.ts`                        | `GCS_BUCKET_NAME`            |
+| Gemini AI           | AI feedback, examples, mnemonic generation | `src/shared/infrastructure/external/GeminiClient.ts` via `GeminiService` | `GEMINI_API_CREDENTIALS_RAW` |
 
 **Upstash Redis:**
 
@@ -340,7 +344,7 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/shared/infrastructure/database/client.ts`)
 - **Configuration**: `DATABASE_URL`
-- **Key Tables**: `users`, `progress`, `ReviewItem`, `QuizAttempt`, `QuizAttemptAnswer`, `StudyStreak`, `ContentItem`, `PhaseGate`
+- **Key Tables**: `users`, `progress`, `ReviewItem`, `QuizAttempt`, `QuizAttemptAnswer`, `StudyStreak`, `ContentItem`, `PhaseGate`, `Character`, `MnemonicStory`
 
 **Gamification System:**
 
@@ -429,4 +433,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** July 3, 2026
+**Last Updated:** July 22, 2026

@@ -1,0 +1,41 @@
+/* CharacterHub.css — Character Detail Hub — Fixed-Height Cardinal Layout + Tabs */
+/* Story 18.5: Character Detail Hub (Phase 1 Minimal) */
+/* Story 19.5: Character Hub Radical Section */
+/* Story 20.2: Mnemonic Display UI */
+/* NORTH + tabs are fixed height; middle section flexes to fill available space. */
+/* This prevents layout jumps while ensuring the modal never overflows 90vh. */
+/* Consistent p-sm padding across all sections */
+
+/* ── Cardinal Layout ──────────────────────────────────────── */
+
+.hub-cardinal {
+  width: 670px;
+  max-width: 100%;
+  min-height: 0;
+}
+
+/* ── Section sizing ───────────────────────────────────────── */
+/* NORTH: fixed — identity card content is consistent */
+/* MIDDLE: flex — shares remaining space, shrinks on small viewports */
+/* TABS: fixed — tab bar + panel height is predictable */
+/* ACTIONS: auto — minimal height at bottom */
+
+.hub-cardinal__identity {
+  height: 110px;
+  overflow-y: auto;
+}
+
+.hub-cardinal__middle {
+  min-height: 180px;
+  grid-template-columns: 222px 200px 222px;
+}
+
+.hub-cardinal__side-panel {
+  overflow-y: auto;
+}
+
+/* ── Tab Area — fixed height, no content jump on tab switch ─ */
+
+.hub-tab-area {
+  height: 200px;
+}

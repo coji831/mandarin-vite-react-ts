@@ -45,4 +45,25 @@ export class FoundationsController {
       res.status(500).json({ error: "Failed to load strokes reference" });
     }
   }
+
+  async getCharacterByGlyph(req: Request, res: Response): Promise<void> {
+    try {
+      const glyphParam = req.params.glyph;
+      if (!glyphParam || Array.isArray(glyphParam)) {
+        res.status(400).json({ error: "Glyph parameter is required" });
+        return;
+      }
+      const data = await this.foundationsService.getCharacterByGlyph(
+        decodeURIComponent(glyphParam),
+      );
+      if (!data) {
+        res.status(404).json({ error: `Character "${glyphParam}" not found` });
+        return;
+      }
+      res.json(data);
+    } catch (err) {
+      logger.error("Failed to get character by glyph", err);
+      res.status(500).json({ error: "Failed to get character data" });
+    }
+  }
 }

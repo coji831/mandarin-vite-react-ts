@@ -9,17 +9,13 @@ applyTo: "apps/frontend/src/**/*.tsx"
 
 **A card is a teaser. A detail panel is a reward.** The learner clicks the card because the card promises value. The detail panel delivers value that the card did NOT already show.
 
-## The Reward Loop
+## How To Apply (Numbered Steps)
 
-```
-Card (preview)         →     Learner clicks     →     Detail panel (reward)
-Glyph, meaning,        │                          │    New content they
-basic metadata         │                          │    haven't seen yet
-```
+1. **Identify the preview surface** — Find the card or list item. What is its purpose? (e.g., a radical card in a grid)
+2. **List all elements currently on the card** — Write them down. (Glyph, pinyin, meaning, strokes, badge, variant forms, etymology snippet, etc.)
+3. **Classify each element** — Using the table below, mark each as "preview" or "reward":
 
-If the card already shows what's inside, there's no reason to click. If the card shows too little, there's no reason to click either. The balance is:
-
-| Card shows              | Detail panel shows                   |
+| Preview (stays on card) | Reward (move to detail panel)        |
 | ----------------------- | ------------------------------------ |
 | Glyph (hero)            | Etymology (story)                    |
 | Pinyin (how to say it)  | Variant forms (new discovery)        |
@@ -27,33 +23,23 @@ If the card already shows what's inside, there's no reason to click. If the card
 | Strokes (metadata)      | Notes (extra context)                |
 | ★ badge (priority)      | Similar radicals (comparison)        |
 
+4. **Remove reward elements from the card** — Duplicating detail-panel content on the card makes the detail panel feel redundant. If the card shows etymology, the learner has no reason to click.
+5. **Verify the reward loop** — After clicking through, does the learner find NEW content they haven't seen? If they think "I already saw this on the card," the card has too much.
+
 ## ❌ Anti-Patterns
 
-- **Variant forms on card**: Variants belong in the detail panel. Showing them on the card steals the modal's content and adds visual density. A learner discovers "oh, 扌 is also 手!" when they click through — that's the reward.
-
-- **Character preview strip on card**: Small character examples look clickable but aren't (WAGC violation). If they ARE clickable, they compete with the card's own CTA. Character examples belong in the detail panel.
-
-- **Etymology on card**: Too much text for a card. Etymology is a deep-read element for the detail panel.
-
-- **Duplicating any detail-panel section on the card**: If the detail panel has "Also written as" and the card also shows variants, the learner sees the same info twice. The card becomes a mini-detail-panel and the actual detail panel feels redundant.
+- **Variant forms on card**: Belong in the detail panel. Discovery of "oh, 扌 is also 手!" is the reward for clicking.
+- **Character preview strip on card**: Small characters look clickable but aren't (WAGC violation). Belongs in detail panel.
+- **Etymology on card**: Too much text. Deep-read element belongs in detail panel.
+- **Duplicating any detail-panel section on the card**: Makes the detail panel feel redundant — the card becomes a mini-detail-panel.
 
 ## ✅ Best Practices
 
-1. **One priority indicator per card** — If you use a ★ badge, don't also add a colored border, elevated shadow, and wider column. One signal is enough. Stacking them creates visual noise.
+1. **One priority indicator per card** — A ★ badge is enough. Don't add colored border + elevated shadow + wider column. One signal, not three.
+2. **Every card element must help scanning** — Glyph → "Is this the shape?", Meaning → "What is this?", ★ → "Important?", Strokes → "How complex?"
+3. **Design for current architecture, not future-state** — Don't pre-implement a richer card design that belongs to a future redesign.
+4. **WAGC + density + clarity** before adding anything to a card.
 
-2. **Every card element must help scanning** — The learner scans 10+ cards in seconds. Each element must answer one question:
-   - Glyph → "Is this the shape I'm looking for?"
-   - Meaning → "Do I understand what this is?"
-   - ★ → "Is this important to learn first?"
-   - Strokes → "How complex is it?"
+---
 
-   If an element doesn't answer a scanning question, remove it.
-
-3. **Design for the current architecture, not the future-state proposal** — A design proposal may show a richer card as part of a complete system redesign (e.g., inline Atlas replacing modal). Applying those card changes incrementally — without the rest of the redesign — creates duplication. The enriched card steals the detail panel's job.
-
-4. **Think WAGC + density + clarity before adding any element to a card**:
-   - **WAGC** (What Am I Gonna Click): Does this look interactive? If yes, it should BE interactive. If no, it shouldn't look interactive.
-   - **Density**: Can the learner parse this card in under 2 seconds? If not, it's too dense.
-   - **Clarity**: Is it obvious what this element means? If you need a legend or tooltip, reconsider.
-
-5. **A card that makes the detail panel feel redundant is a bug** — After clicking through to the detail panel, the learner should find NEW content. If they think "I already saw this on the card," the card has too much.
+**See also:** `ui-composition.instructions.md` • `frontend-visual-design-protocol.instructions.md` • `frontend-pre-delivery-checklist.instructions.md`

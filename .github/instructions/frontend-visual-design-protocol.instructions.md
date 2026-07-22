@@ -5,57 +5,77 @@ applyTo: "apps/frontend/src/**/*.tsx"
 
 # Visual Design Protocol
 
-## Design-First Mandate
+Follow this numbered pipeline when implementing any UI. See `docs/guides/dev-flow-visualization.html#frontend` for the full flow diagram.
 
-- ✅ Before implementing any UI, check Storybook for existing components and patterns
-- ✅ All design tokens live in `DESIGN.md` → verified via `npx @google/design.md lint DESIGN.md`
-- ✅ Storybook (`npm run storybook`, port 6006) is the visual source of truth for all components
+## 📋 Implementation Pipeline
 
-## Component Reuse Rule
+### Phase A: Storybook UI Design (No Logic) — User Preview Gate
 
-- ✅ Before creating a new component, search existing shared components in `src/shared/components/`
-- ✅ If a matching component exists (same visual pattern), reuse it with style overrides — never duplicate
+Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or API calls. The host component must be the **page-level** or **most complex parent** component — never an isolated atom.
 
-## Token Integrity
+#### Step 1: Research & Host Selection
 
-- ✅ Never hardcode colors, spacing, font sizes, or shadows — always reference CSS variables from `apps/frontend/src/styles/globals.css` or `DESIGN.md` tokens
+1. Read `DESIGN.md` for design tokens and `ui-composition.instructions.md` for layout rules
+2. Identify the **host component**: the page or most-complex parent that will contain the new UI. Create or update the `.stories.tsx` on this host.
+3. Search `src/shared/components/` and check `component-registry.json` for existing components to reuse
+4. Run `codegraph_explore` to check impact radius of changes
+5. If a matching component exists, reuse with props — never duplicate
 
-## Storybook Mandate
+#### Step 2: Build Storybook UI (JSX + Mock Data)
 
-- ✅ Every shared component MUST have a `.stories.tsx` file covering all visual states (default, loading, error, empty, edge cases)
-- ✅ Feature components should have Storybook stories for key states
-- ✅ Run story tests: `npm run test-storybook`
+1. Build the UI structure (JSX skeleton) directly on the host component's `.stories.tsx`
+2. **Cover ALL visual states**: default, loading, empty, error, edge cases — use MSW mocks
+3. **No API calls, no hook logic, no state management** — pure visual shell with mock data only
 
-## Verification Requirement
+#### Step 3: Polish Styling
 
-- ✅ After every UI implementation, use Playwright or Chrome DevTools MCP to:
-  1. Open the page in the integrated browser
-  2. Take a screenshot
-  3. Compare visually against the Storybook story reference
-- ✅ Log any visual discrepancies in a `review-findings-*` artifact under `verification-artifacts/`
+1. Apply CSS variables from `globals.css` only — never hardcode colors/spacing/fonts
+2. Use global utility classes first (`.flex-center`, `.gap-sm`, `.w-full`) before custom CSS (BEM)
+3. Follow data-resilient shell principle: fixed container dimensions, inner scroll for dynamic content
+4. Test at 320px for responsive correctness — no horizontal scroll
+5. See `frontend-css-styling.instructions.md` for the full styling workflow
+6. Run `npm run test-storybook` to verify stories render correctly
 
-## Responsive & Accessibility Checks
+#### Step 4: User Preview & Approval (Gate)
 
-- ✅ Test at breakpoints: 320px, 768px, 1024px using browser tools
-- ✅ Verify WCAG contrast ratios when colors are selected
-- ✅ Ensure proper ARIA labels on all interactive elements
+1. Open Storybook in the browser and present to the user
+2. Walk through each visual state (loading, empty, error, display, edge cases)
+3. User approves layout, spacing, colors, and state coverage
 
-## Feature Design Specs
+> ⚠️ **Gate rule**: Do NOT proceed to Phase B until the user has previewed and approved the UI design in Storybook. Logic implementation on unapproved layouts wastes effort.
 
-- ✅ Every feature with a UI surface should have a `docs/design.md` file containing: Storybook story references, list of design tokens used, and visual acceptance criteria
+### Phase B: Logic Implementation (After Approval)
 
-## Data-Resilient UI Principle
+#### Step 4: Connect Logic
 
-Components must have a **data-resilient visual shell** — the outer container dimensions, padding, overlays, and scroll behavior must be invariant regardless of data volume.
+1. Add hooks, state management (reducers/context/Zustand), and API service layer
+2. Wire real data to the approved visual shell — replace mock data with real API calls
+3. Ensure loading/error/empty state transitions match the approved Storybook states
 
-- ✅ **DO**: Use fixed `height`/`width` on containers that wrap dynamic content. Let the inner scroll area handle overflow.
-- ✅ **DO**: Verify in Storybook with mock data, then verify in production with real data — the visual footprint should be identical.
-- ❌ **DON'T**: Use `max-height`/`max-width` on containers where the visual footprint must stay consistent.
+#### Step 5: Verify & Design Spec
 
-**Rationale**: Storybook uses curated mock data (often larger datasets) while production serves real data (which may be smaller or incomplete). If the component shell changes size based on data, you get visual drift between environments — making Storybook verification unreliable.
+1. Open the page in browser and take screenshots — compare against approved Storybook
+2. Test at 320px, 768px, 1024px for responsive correctness
+3. Verify ARIA labels on all interactive elements
+4. Update feature `docs/design.md` with Storybook story references, design tokens used, and visual acceptance criteria
+5. Log any visual discrepancies in `verification-artifacts/` with `review-findings-*` artifact
 
-## UI Composition Guide
+## 📐 Core Principles
 
-- ✅ Before writing any UI code, read `.github/instructions/ui-composition.instructions.md` — it covers visual hierarchy, spacing rhythm, CTA clarity, and container discipline
-- ✅ Always check `.github/component-registry.json` before creating UI structures — only use components listed there with their defined props
-- ✅ Never invent new component variants or props not in the registry
+### Data-Resilient UI Principle
+
+Components must have a **data-resilient visual shell** — outer container dimensions, padding, and scroll behavior invariant regardless of data volume.
+
+- ✅ **DO**: Fixed `height`/`width` on containers wrapping dynamic content. Inner scroll handles overflow.
+- ✅ **DO**: Verify in Storybook with mock data, then production with real data — identical visual footprint.
+- ❌ **DON'T**: `max-height`/`max-width` on containers where the footprint must stay consistent.
+
+### UI Composition Guide
+
+- Read `ui-composition.instructions.md` before writing any UI code
+- Always check `component-registry.json` before creating UI structures
+- Never invent new component variants or props not in the registry
+
+---
+
+**See also:** `ui-composition.instructions.md` • `frontend-css-styling.instructions.md` • `storybook-production-alignment.instructions.md` • `frontend-pre-delivery-checklist.instructions.md` • `component-registry.json`

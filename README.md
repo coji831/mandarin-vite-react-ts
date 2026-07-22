@@ -6,15 +6,14 @@ PinyinPal is an interactive web application designed to help new learners master
 
 ## ✨ Key Features
 
-- **Interactive Flashcards:** Practice vocabulary with pinyin, characters, and English definitions with audio playback.
-- **Vocabulary Lists:** Browse HSK-level vocabulary organized by difficulty with card-based interface.
 - **Quiz System:** Daily review quizzes with spaced repetition algorithm for optimal retention.
 - **Progress Tracking:** Unified spaced repetition supporting both flashcard confidence ratings and quiz results.
-- **Gamification:** Study streaks with 48-hour grace period, milestone badges (7/30/100/365 days), XP rewards, and mystery boxes.
-- **Leech Detection:** Automatic identification of struggling vocabulary (5+ consecutive failures) for targeted practice.
-- **AI-Generated Conversations:** Context-aware conversation generation with word usage examples and audio playback.
+- **Gamification:** Study streaks with backend persistence and progress page for tracking learning momentum.
+- **Review System (SRS):** Spaced repetition with flip-card review for pinyin, tones, and character recognition.
+- **Mnemonic Stories (AI-Generated):** AI-powered mnemonic stories to help remember character meanings and readings, with manual editing and 30-day cached generation.
 - **Audio & TTS Integration:** Robust service layer with Google Cloud TTS backend and browser TTS fallback for reliability.
 - **Multi-User Support:** Per-user progress tracking with database persistence and cross-device synchronization via backend API.
+- **Character Hub:** Deep character detail view with identity card, radical decomposition, common words, and AI-powered mnemonic stories.
 - **Performance-Optimized State:** Split contexts with normalized state and granular selectors for scalability.
 
 ## 🛠️ Tech Stack
@@ -78,6 +77,7 @@ mandarin-vite-react-ts/
 ├── packages/
 │   ├── shared-types/      # Shared TypeScript types
 │   └── shared-constants/  # Shared constants
+├── content/               # Mandarin reference data (characters, radicals, pinyin, tones)
 ├── docs/                  # Architecture, guides, KB, BRs
 └── terraform/             # Infrastructure as Code
 ```
@@ -103,7 +103,10 @@ mandarin-vite-react-ts/
 - [Business Requirements (Epics, Stories, PRs)](docs/business-requirements/README.md)
 - [Technical Implementation Details](docs/issue-implementation/README.md)
 - Feature Design
-  - [Mandarin](apps/frontend/src/features/mandarin/docs/design.md)
+  - [Character Hub](apps/frontend/src/features/character-hub/docs/design.md)
+  - [Foundations](apps/frontend/src/features/foundations/docs/design.md)
+  - [Radicals](apps/frontend/src/features/radicals/docs/design.md)
+  - [Dashboard](apps/frontend/src/features/dashboard/docs/design.md)
 
 ## 🔧 Environment Variables
 
@@ -154,4 +157,4 @@ For detailed deployment instructions, see [Backend Development Guide](docs/guide
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License.

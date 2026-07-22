@@ -25,6 +25,9 @@ Sections
 
 ### Learning Roadmap (Epics 18-23)
 
+- [x] **Epic 20: Mnemonic Stories** — Backend: `mnemonics` module (CRUD + Gemini generation), `GeminiService`, `ContentIndexService`, `Character` and `MnemonicStory` Prisma models, mnemonic caching (30-day TTL with stampede prevention)
+- [x] **Epic 20: Mnemonic Stories** — Frontend: `character-hub` feature (HubIdentityCard, HubMnemonicSection, HubRadicalSection, HubReadings, HubCommonWords, HubActions), `mnemonicStore` (Zustand, 10-state machine), `Tabs` underline variant, `Textarea` shared component
+- [x] **Epic 20: Mnemonic Stories** — Content: ch_jiang.json added (11 characters total), prisma.config.ts, run-gcs-upload.js wrapper
 - [ ] **Onboarding tutorial (deferred)** — Design and implement a first-time onboarding flow for new learners. Not a blocker for UI design. See `verification-artifacts/learning-roadmap-usecases.md` Decision #1.
 
 ### Story 16 — Example Caching & Service Alignment: Infrastructure Verification
@@ -115,4 +118,4 @@ Then reference the issue number in TODO.md: `- [ ] Task summary (#123)`
 
 ---
 
-Last updated: January 2026
+Last updated: July 2026

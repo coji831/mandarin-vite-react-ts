@@ -10,7 +10,9 @@
 import fs from "fs";
 import path from "path";
 import { config } from "../../config/index.js";
-import { downloadFile } from "../external/GCSClient.js";
+import { GCSClient } from "../external/GCSClient.js";
+
+const gcsClient = new GCSClient();
 
 const cache: Map<string, unknown> = new Map();
 
@@ -26,7 +28,7 @@ export async function readStaticReference(relativePath: string): Promise<unknown
 
   let raw: string;
   if (config.nodeEnvironment === "production" && config.gcsBucket) {
-    const buffer = await downloadFile(relativePath, config.gcsBucket);
+    const buffer = await gcsClient.downloadFile(relativePath, config.gcsBucket);
     raw = buffer.toString();
   } else {
     const localPath = path.resolve(config.localDataPath, relativePath);

@@ -1,0 +1,8 @@
+/**
+ * Textarea Component Styles
+ * Minimal wrapper styles - actual input styling comes from .input-base in globals.css
+ */
+
+.textarea {
+  resize: vertical;
+}

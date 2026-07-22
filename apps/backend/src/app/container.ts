@@ -1,111 +1,94 @@
 /**
- * @file apps/backend/src/app/container.js
- * @description Composition root — single place where all dependencies are instantiated.
- * Clean architecture: wires infrastructure → core → API layers exactly once.
- * All route files import controllers from here instead of constructing their own instances.
+ * @file apps/backend/src/app/container.ts
+ * @description Composition root — wires infrastructure, calls module factories.
+ *
+ * Structure:
+ *   1. Imports (infrastructure → module factories)
+ *   2. Infrastructure singletons
+ *   3. Module factory calls
+ *   4. Exports
  */
 
-// ── Infrastructure: Cache ──────────────────────────────────────────────────
+// ── 1. Imports ─────────────────────────────────────────────────────────────
+
+// Infrastructure
 import { CacheFactory } from "../shared/infrastructure/cache/CacheFactory.js";
+import { JwtService } from "../shared/infrastructure/security/JwtService.js";
+import { PasswordService } from "../shared/infrastructure/security/PasswordService.js";
+import { GeminiClient } from "../shared/infrastructure/external/GeminiClient.js";
+import { GCSClient } from "../shared/infrastructure/external/GCSClient.js";
+import { GoogleTTSClient } from "../shared/infrastructure/external/GoogleTTSClient.js";
+import { redisClient } from "../shared/infrastructure/redis/RedisClient.js";
+import { TtsService } from "../shared/services/TtsService.js";
+import { GeminiService } from "../shared/services/GeminiService.js";
 
-export const cacheService = await CacheFactory.create("default");
-
-// ── Infrastructure: Repositories ──────────────────────────────────────────
+// Repositories
 import { AuthRepository } from "../modules/auth/repositories/AuthRepository.js";
-import { WordRepository } from "../shared/infrastructure/repositories/WordRepository.js";
 import { ProgressionRepository } from "../modules/progression/repositories/ProgressionRepository.js";
 import { ReviewRepository } from "../modules/review/repositories/ReviewRepository.js";
 import { QuizRepository } from "../modules/quiz/repositories/QuizRepository.js";
 
+// Module factories
+import { createFoundationsModule } from "../modules/foundations/container.js";
+import { createRadicalsModule } from "../modules/radicals/container.js";
+import { createMnemonicsModule } from "../modules/mnemonics/container.js";
+import { createAuthModule } from "../modules/auth/container.js";
+import { createReviewModule } from "../modules/review/container.js";
+import { createProgressionModule } from "../modules/progression/container.js";
+import { createQuizModule } from "../modules/quiz/container.js";
+import { createHealthModule } from "../modules/health/container.js";
+import { createTtsModule } from "../modules/tts/container.js";
+
+// ── 2. Infrastructure Singletons ───────────────────────────────────────────
+
+export const cacheService = await CacheFactory.create("default");
+
 const authRepository = new AuthRepository();
-const wordRepository = new WordRepository();
 const progressionRepository = new ProgressionRepository();
 const reviewRepository = new ReviewRepository();
 const quizRepository = new QuizRepository();
 
-// ── Infrastructure: Security ──────────────────────────────────────────────
-import { JwtService } from "../shared/infrastructure/security/JwtService.js";
-import { PasswordService } from "../shared/infrastructure/security/PasswordService.js";
-
 const jwtService = new JwtService();
 const passwordService = new PasswordService();
 
-// ── Infrastructure: External Clients ─────────────────────────────────────
-import * as geminiClient from "../shared/infrastructure/external/GeminiClient.js";
-import * as gcsClient from "../shared/infrastructure/external/GCSClient.js";
-import * as ttsClientModule from "../shared/infrastructure/external/GoogleTTSClient.js";
+const geminiClient = new GeminiClient();
+const gcsClient = new GCSClient();
+const ttsClient = new GoogleTTSClient();
 
-import { redisClient } from "../shared/infrastructure/redis/RedisClient.js";
+const ttsService = new TtsService(cacheService, gcsClient, ttsClient);
+export const geminiService = new GeminiService(geminiClient);
 
-import { TtsService } from "../shared/services/TtsService.js";
+// ── 3. Module Factory Calls ────────────────────────────────────────────────
 
-// TTS service with two-tier caching: Redis (URL) → GCS (audio) → Google TTS API
-const ttsService = new TtsService(cacheService, gcsClient, ttsClientModule);
+// Simple modules (no cross-module deps)
+const foundationsModule = createFoundationsModule();
+const radicalsModule = createRadicalsModule();
+const mnemonicsModule = createMnemonicsModule({ geminiService, cacheService });
+const reviewModule = createReviewModule({ reviewRepository });
+const authModule = createAuthModule({ authRepository, jwtService, passwordService });
 
-// ── Foundations Data ──────────────────────────────────────────────
-import { FoundationsController, FoundationsService } from "../modules/foundations/index.js";
-const foundationsService = new FoundationsService();
-export const foundationsController = new FoundationsController(foundationsService);
+// Cross-module dependencies — order matters
+const progressionModule = createProgressionModule({
+  progressionRepository,
+  reviewService: reviewModule.service,
+});
 
-// ── Radicals Data ─────────────────────────────────────────────────
-import { RadicalsController, RadicalsService } from "../modules/radicals/index.js";
-import { RadicalsRepository } from "../modules/radicals/repositories/RadicalsRepository.js";
-const radicalsRepository = new RadicalsRepository();
-const radicalsService = new RadicalsService(radicalsRepository);
-export const radicalsController = new RadicalsController(radicalsService);
+const quizModule = createQuizModule({
+  quizRepository,
+  progressionService: progressionModule.service,
+});
 
-// ── Core: Services ─────────────────────────────────────────────────────────
-import { AuthService } from "../modules/auth/index.js";
-import { AIFeedbackService } from "../modules/quiz/use-cases/AIFeedbackService.js";
-import { ProgressionService } from "../modules/progression/index.js";
-import { ReviewService, ReviewController } from "../modules/review/index.js";
-const authService = new AuthService(authRepository, jwtService, passwordService);
-const reviewService = new ReviewService(reviewRepository);
-const progressionService = new ProgressionService(progressionRepository);
-import { QuizService, QuizController } from "../modules/quiz/index.js";
-const quizService = new QuizService(quizRepository, progressionService);
-export const quizController = new QuizController(quizService);
+const ttsModule = createTtsModule({ ttsService });
 
-export const reviewController = new ReviewController(reviewService);
+const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
 
-// ── Cache Middleware ───────────────────────────────────────────────────────
-import { withCache } from "../shared/middleware/cacheMiddleware.js";
-
-// AIFeedback: wrap pure service with Redis cache (24h TTL)
-const aiFeedbackService = new AIFeedbackService(wordRepository, geminiClient);
-const cachedAIFeedbackFn = withCache(
-  (params: { wordId: string; userAnswer: string; correctAnswer: string; questionType: string }) =>
-    aiFeedbackService.generateFeedback(params),
-  {
-    ttl: 86400,
-    keyFn: ({ wordId, userAnswer }: { wordId: string; userAnswer: string }) =>
-      `quiz:feedback:${wordId}:${userAnswer.toLowerCase()}`,
-    serviceName: "AIFeedback",
-  },
-);
-
-// Preserve expected interface for AIFeedbackController (this.feedbackService.generateFeedback())
-export const cachedAIFeedback = {
-  generateFeedback: cachedAIFeedbackFn as (
-    params: Record<string, unknown>,
-  ) => Promise<{ explanation: string; errorType: string }>,
-  getMetrics: cachedAIFeedbackFn.getMetrics,
-};
-
-// ── API: Controllers ───────────────────────────────────────────────────────
-import { AuthController } from "../modules/auth/api/AuthController.js";
-import { AIFeedbackController } from "../modules/quiz/api/AIFeedbackController.js";
-import { HealthController } from "../modules/health/api/HealthController.js";
-import TtsController from "../shared/api/TtsController.js";
-import { ProgressionController } from "../modules/progression/api/ProgressionController.js";
-export const authController = new AuthController(authService);
-export const aiFeedbackController = new AIFeedbackController(cachedAIFeedback);
-export const healthController = new HealthController(
-  geminiClient,
-  ttsService,
-  (redisClient.getClient() ?? { ping: async (_timeout?: number) => "NO_REDIS" }) as {
-    ping(timeout?: number): Promise<string>;
-  },
-);
-export const ttsController = new TtsController(ttsService);
-export const progressionController = new ProgressionController(progressionService, reviewService);
+// ── 4. Exports ─────────────────────────────────────────────────────────────
+export const ttsController = ttsModule.controller;
+export const foundationsController = foundationsModule.controller;
+export const radicalsController = radicalsModule.controller;
+export const mnemonicsController = mnemonicsModule.controller;
+export const authController = authModule.controller;
+export const reviewController = reviewModule.controller;
+export const progressionController = progressionModule.controller;
+export const quizController = quizModule.controller;
+export const healthController = healthModule.controller;

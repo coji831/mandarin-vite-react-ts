@@ -13,9 +13,10 @@ import type { AuthController } from "../../modules/auth/api/AuthController.js";
 import type { QuizController } from "../../modules/quiz/api/QuizController.js";
 import type { ReviewController } from "../../modules/review/api/ReviewController.js";
 import type { ProgressionController } from "../../modules/progression/api/ProgressionController.js";
-import type { AIFeedbackController } from "../../modules/quiz/api/AIFeedbackController.js";
 import type { FoundationsController } from "../../modules/foundations/api/FoundationsController.js";
 import type { RadicalsController } from "../../modules/radicals/api/RadicalsController.js";
+import type { MnemonicsController } from "../../modules/mnemonics/api/MnemonicsController.js";
+import type { GeminiService } from "../services/GeminiService.js";
 
 declare global {
   namespace Express {
@@ -42,13 +43,16 @@ declare global {
       progressionController?: ProgressionController;
 
       /** Injected by routes.ts middleware */
-      aiFeedbackController?: AIFeedbackController;
-
-      /** Injected by routes.ts middleware */
       foundationsController?: FoundationsController;
 
       /** Injected by routes.ts middleware */
       radicalsController?: RadicalsController;
+
+      /** Injected by routes.ts middleware */
+      mnemonicsController?: MnemonicsController;
+
+      /** Injected by routes.ts middleware */
+      geminiService?: GeminiService;
     }
   }
 }
