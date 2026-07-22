@@ -17,7 +17,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import prismaPkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
 import bcrypt from "bcrypt";
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
@@ -27,8 +26,18 @@ const { PrismaClient } = prismaPkg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONTENT_DIR = path.resolve(__dirname, "..", "..", "..", "content");
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
+// Parse DATABASE_URL into individual params and pass as plain config object.
+// NOTE: Do NOT create a pg.Pool and pass it — adapter-pg bundles its own pg version,
+// so instanceof checks fail (pg 8.16.3 vs 8.22.0). Pass a plain config instead.
+const dbUrl = new URL(process.env.DATABASE_URL);
+const adapter = new PrismaPg({
+  host: dbUrl.hostname,
+  port: Number(dbUrl.port) || 5432,
+  database: dbUrl.pathname.slice(1),
+  user: decodeURIComponent(dbUrl.username),
+  password: decodeURIComponent(dbUrl.password),
+  ssl: { rejectUnauthorized: false },
+});
 const prisma = new PrismaClient({ adapter });
 
 // ── ContentItem seeding (from content/manifest.json) ────────────────────────
@@ -161,5 +170,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
   });
