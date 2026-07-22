@@ -1,6 +1,6 @@
 # Project Overview
 
-**Last Updated:** June 8, 2026
+**Last Updated:** July 22, 2026
 **Purpose:** High-level overview of the monorepo structure, tech stack, and development workflow
 **Audience:** New developers joining the project
 
@@ -28,7 +28,7 @@ mandarin-vite-react-ts/
 ├── apps/
 │   ├── frontend/          # React + Vite SPA (port 5173)
 │   │   ├── src/
-│   │   │   ├── features/  # Feature modules (mandarin, quiz, etc.)
+│   │   │   ├── features/  # Feature modules (mandarin, quiz, character-hub, review, foundations, etc.)
 │   │   │   ├── shared/
 │   │   │   │   ├── components/  # Shared UI components
 │   │   │   │   ├── hooks/       # Shared custom hooks
@@ -41,7 +41,7 @@ mandarin-vite-react-ts/
 │   └── backend/           # Express API server (port 3001)
 │       ├── src/
 │       │   ├── app/       # Entry point, DI container, routes
-│       │   ├── modules/   # Business modules (auth, word, vocabulary, quiz, etc.)
+│   │   ├── modules/   # Business modules (auth, quiz, progression, review, foundations, radicals, mnemonics, health, tts)
 │       │   └── shared/    # Cross-cutting: infrastructure, middleware, config, utils
 │       └── prisma/        # Schema, migrations, seeds
 ├── packages/
@@ -73,6 +73,7 @@ mandarin-vite-react-ts/
 | What                     | Where                                                       |
 | ------------------------ | ----------------------------------------------------------- |
 | Frontend feature         | `apps/frontend/src/features/<feature>/`                     |
+| Character Hub feature    | `apps/frontend/src/features/character-hub/`                 |
 | Shared UI component      | `apps/frontend/src/shared/components/`                      |
 | Backend route/controller | `apps/backend/src/modules/<name>/api/`                      |
 | Backend service          | `apps/backend/src/modules/<name>/services/` or `use-cases/` |

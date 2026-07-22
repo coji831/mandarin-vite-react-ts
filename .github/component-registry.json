@@ -139,7 +139,7 @@
       }
     },
     "Tabs": {
-      "description": "Tab navigation bar with panel content slot.",
+      "description": "Tab navigation bar with panel content slot. Supports default and underline variants.",
       "importPath": "shared/components",
       "props": {
         "tabs": { "type": "TabConfig[]", "required": true },
@@ -148,7 +148,13 @@
         "children": { "type": "reactNode" },
         "lockedTabs": { "type": "string[]" },
         "getLockPhase": { "type": "function" },
-        "align": { "type": "enum", "values": ["start", "center"] }
+        "align": { "type": "enum", "values": ["start", "center"] },
+        "variant": {
+          "type": "string",
+          "description": "Tab style variant",
+          "options": ["default", "underline"],
+          "default": "default"
+        }
       }
     },
     "ProgressBar": {

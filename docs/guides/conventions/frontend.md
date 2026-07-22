@@ -1,6 +1,6 @@
 # Frontend Conventions
 
-**Last Updated:** June 12, 2026  
+**Last Updated:** July 22, 2026  
 **Purpose:** Frontend coding standards, conventions, and patterns  
 **Audience:** Frontend developers
 
@@ -259,7 +259,7 @@ import { AuthService } from "./services/AuthService";
 
 ## Project Structure
 
-- `apps/frontend/src/features/`: Feature modules (auth, dashboard, gamification, quiz, vocabulary)
+- `apps/frontend/src/features/`: Feature modules (auth, character-hub, dashboard, foundations, gamification, quiz, review, vocabulary)
 - `apps/frontend/src/pages/`: Route-level page orchestrators
 - `apps/frontend/src/router/`: React Router configuration
 - `apps/frontend/src/shared/`: Cross-cutting layer (api, components, config, constants, layouts)
@@ -278,6 +278,17 @@ import { AuthService } from "./services/AuthService";
 
 - High-level docs in [./](./)
 - Feature docs in `../src/features/<feature>/docs/`
+
+## Shared Components
+
+- **Button**, **Input**, **Textarea**, **ToggleSwitch**, **FilterChip**, **LoadingScreen**, **ErrorScreen**, **ProgressBar**, **ContentBrowser**, **SearchInput**, **Dropdown**, **RadioGroup**, **Box**, **Card**, **Modal**, **Tabs**, **Spinner**, **Skeleton**, **SideNav**, **TopNav**, **FilterControls**, **TextLink**, **CharacterStrokePlayer**, **AnimationCanvas** — all in `src/shared/components/`
+- Prefer these over raw HTML elements
+- `Tabs` supports two style variants: `"default"` (filled tabs) and `"underline"` (underline-style tabs)
+
+## Zustand Stores
+
+- `hubStore` — CharacterDetailHub overlay state (isOpen, characterId, position)
+- `mnemonicStore` — Mnemonic story state (10-state machine: idle, loading, cached, empty, generating, display, editing, error, timeout, pictograph)
 
 ## CSS & Styling Conventions
 

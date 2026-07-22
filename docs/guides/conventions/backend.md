@@ -1,6 +1,6 @@
 ﻿# Backend Conventions & Architecture (Quick Reference)
 
-**Last Updated:** July 3, 2026
+**Last Updated:** July 22, 2026
 
 > **Deep Dive:** For architecture patterns and design principles, see [backend-architecture.md](../knowledge-base/backend/backend-architecture.md)
 
@@ -27,7 +27,7 @@
 
 ## Module Architecture Guide
 
-**Last Updated:** July 3, 2026
+**Last Updated:** July 22, 2026
 **Purpose:** Standard for creating and maintaining backend modules in the modular monolith
 **Audience:** Backend developers
 
@@ -186,13 +186,13 @@ export function createQuizModule({ wordService, prisma, cacheService }) {
 #### 3.1 Dependency Graph
 
 ```
-word (zero external deps)         auth (zero external deps)
+word (zero external deps)         auth (zero external deps)         mnemonics (zero external deps)
   <- vocabulary                       <- gamification
   <- quiz
   <- examples
 ```
 
-- `word` and `auth` are **foundation modules** — they depend on nothing but infrastructure
+- `word`, `auth`, and `mnemonics` are **foundation modules** — they depend on nothing but infrastructure
 - All other modules depend only on `word` and/or `auth`
 - Circular dependencies are **forbidden**
 

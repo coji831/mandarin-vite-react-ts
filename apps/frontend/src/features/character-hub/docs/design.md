@@ -1,6 +1,6 @@
 # Character Hub — Design Spec
 
-**Last Updated:** 2026-07-21
+**Last Updated:** 2026-07-22
 
 ## Layout
 
@@ -36,7 +36,7 @@ SOUTH: Tabs (📖 Common Words | 📝 Mnemonic Story) → HubActions (bottom, al
 | HubRadicalSection  | WEST   | Phase-gated radical decomposition with navigation             | Loading, loaded, empty, error with retry                                                   |
 | HubCharacterCard   | CENTER | Stroke animation player (mini mode)                           | Loading (skeleton), loaded                                                                 |
 | HubReadings        | EAST   | All readings with pinyin, tone, audio, frequency              | Loading, loaded, empty                                                                     |
-| HubActions         | SOUTH  | Save to Review / Mark Learned buttons                         | Default, loading, saved/marked, error with retry                                           |
+| HubActions         | SOUTH  | Save to Review / Mark Learned / 📖 Mnemonic Story buttons     | Default, loading, saved/marked, error with retry                                           |
 | HubCommonWords     | SOUTH  | Common compound word chips                                    | Loading, loaded, empty                                                                     |
 | HubMnemonicSection | SOUTH  | Mnemonic story display, generation, editing                   | 9 states: Loading, Cached, Empty, Generating, Display, Editing, Error, Timeout, Pictograph |
 
@@ -46,8 +46,9 @@ SOUTH: Tabs (📖 Common Words | 📝 Mnemonic Story) → HubActions (bottom, al
 - Each section fetches detail data independently:
   - `HubIdentityCard`, `HubReadings`, `HubCommonWords` → `useCharacterDetail` hook → `characterService.loadCharacterData()`
   - `HubRadicalSection` → `useMergedRadicals()` hook → `radicalsService.loadAllRadicals()` + `loadRadicalsByCharacter()`
-  - `HubMnemonicSection` → `characterService.getMnemonic()` / `generateMnemonic()` / `updateMnemonic()`
+  - `HubMnemonicSection` → `characterService.getMnemonic()` / `generateMnemonic()` / `updateMnemonic()`; state managed via `mnemonicStore` (Zustand, 10-state machine)
 - Reviews saved via `useReview().saveToReview()`
+- Mnemonic state managed via `mnemonicStore` (Zustand): idle → loading → cached | empty → generating → display → editing | error | timeout | pictograph
 - Character detail fetched from `GET /v1/characters/:glyph`
 
 ## Visual Acceptance Criteria
