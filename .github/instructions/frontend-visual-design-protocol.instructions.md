@@ -13,21 +13,35 @@ Follow this numbered pipeline when implementing any UI. See `docs/guides/dev-flo
 
 Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or API calls. The host component must be the **page-level** or **most complex parent** component — never an isolated atom.
 
-#### Step 1: Research & Host Selection
+#### Step 1: Gather Context (Research)
 
-1. Read `DESIGN.md` for design tokens and `ui-composition.instructions.md` for layout rules
-2. Identify the **host component**: the page or most-complex parent that will contain the new UI. Create or update the `.stories.tsx` on this host.
-3. Search `src/shared/components/` and check `component-registry.json` for existing components to reuse
-4. Run `codegraph_explore` to check impact radius of changes
-5. If a matching component exists, reuse with props — never duplicate
+1. **Business need → User need → Research**: Start with business requirements and user needs, not code. Read design docs, `docs/design.md`, proposals in `verification-artifacts/`.
+2. **Map user flow**: For each action the user takes, determine: what do they see? (visual state), what do they think? (interpretation), what do they want to do next? (intent).
+3. **Establish preview/reward boundary**: Identify preview surfaces (cards, list items) vs detail surfaces (modals, panels, expandable sections). Detail content must NOT appear on the preview surface. See `preview-detail-separation.instructions.md`.
+4. **Check source for every design decision**: If you propose adding a UI element, verify it works with the CURRENT architecture, not just proposed future states.
 
-#### Step 2: Build Storybook UI (JSX + Mock Data)
+#### Step 2: High-Level Design (Wireframe)
+
+1. **Wireframe/sketch** the UI before writing components. Visual understanding must precede implementation.
+2. Read `DESIGN.md` for design tokens and `ui-composition.instructions.md` for layout rules.
+3. Identify the **host component**: the page or most-complex parent that will contain the new UI.
+4. Search `src/shared/components/` and check `component-registry.json` for existing components to reuse.
+5. Apply design principles: WAGC (does this look clickable?), content density (parsable in 2s?), clarity (obvious meaning?), cognitive load (reduces or adds?).
+
+#### Step 3: Component Breakdown
+
+1. **Decompose** the wireframe into a component hierarchy (atoms → molecules → organisms).
+2. Run `codegraph_explore` to check impact radius of changes.
+3. Map hierarchy, define props interfaces for each component.
+4. If a matching component exists, reuse with props — never duplicate.
+
+#### Step 4: Build Storybook UI (JSX + Mock Data)
 
 1. Build the UI structure (JSX skeleton) directly on the host component's `.stories.tsx`
 2. **Cover ALL visual states**: default, loading, empty, error, edge cases — use MSW mocks
 3. **No API calls, no hook logic, no state management** — pure visual shell with mock data only
 
-#### Step 3: Polish Styling
+#### Step 5: Polish Styling
 
 1. Apply CSS variables from `globals.css` only — never hardcode colors/spacing/fonts
 2. Use global utility classes first (`.flex-center`, `.gap-sm`, `.w-full`) before custom CSS (BEM)
@@ -36,7 +50,7 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 5. See `frontend-css-styling.instructions.md` for the full styling workflow
 6. Run `npm run test-storybook` to verify stories render correctly
 
-#### Step 4: User Preview & Approval (Gate)
+#### Step 6: User Preview & Approval (Gate)
 
 1. Open Storybook in the browser and present to the user
 2. Walk through each visual state (loading, empty, error, display, edge cases)
@@ -44,21 +58,29 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 
 > ⚠️ **Gate rule**: Do NOT proceed to Phase B until the user has previewed and approved the UI design in Storybook. Logic implementation on unapproved layouts wastes effort.
 
-### Phase B: Logic Implementation (After Approval)
+### Phase B: Logic & Integration (After Approval)
 
-#### Step 4: Connect Logic
+#### Step 7: Connect Logic
 
 1. Add hooks, state management (reducers/context/Zustand), and API service layer
 2. Wire real data to the approved visual shell — replace mock data with real API calls
 3. Ensure loading/error/empty state transitions match the approved Storybook states
 
-#### Step 5: Verify & Design Spec
+#### Step 8: Test
+
+1. Unit tests: changed code only (`npm test`)
+2. Integration tests: impacted service/API scope
+3. See `testing-standards.instructions.md` for minimum coverage requirements
+
+#### Step 9: Verify & Audit
 
 1. Open the page in browser and take screenshots — compare against approved Storybook
 2. Test at 320px, 768px, 1024px for responsive correctness
 3. Verify ARIA labels on all interactive elements
-4. Update feature `docs/design.md` with Storybook story references, design tokens used, and visual acceptance criteria
-5. Log any visual discrepancies in `verification-artifacts/` with `review-findings-*` artifact
+4. Run `frontend-pre-delivery-checklist.instructions.md` — token compliance, states, interaction, layout, quality gates
+5. Run `frontend-audit` skill — CSS tokens, shared component reuse, API client rules, barrel files, store placement, accessibility, responsiveness, edge cases
+6. Update feature `docs/design.md` with Storybook story references, design tokens used, and visual acceptance criteria
+7. Log any visual discrepancies in `verification-artifacts/` with `review-findings-*` artifact
 
 ## 📐 Core Principles
 

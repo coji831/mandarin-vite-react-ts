@@ -22,6 +22,14 @@ applyTo: "docs/**/*.md"
 3. Fill all sections — link back to epic BR + implementation README
 4. During implementation, add "Technical Challenges & Solutions" for non-trivial problems (debugging >1h, schema issues, architectural decisions)
 
+### Story Numbering Convention
+
+1. **Stories are 1-indexed.** Always start at 1 (21.1, 21.2, 21.3), never 0 (21.0).
+2. A "prerequisite" or "data migration" story is still a real story — give it the first number (21.1), not 21.0.
+3. If a new story needs to be inserted before existing ones, **renumber all subsequent stories** to maintain sequential order. Do not leave gaps or use .0/.5 suffixes.
+4. Story file names use zero-padded single digits: `story-21-1-data-lifecycle.md`, `story-21-2-passage-generation.md`.
+5. Epic-level story tables must use the same 1-indexed numbering.
+
 ### Updating Existing Docs
 
 1. Open the template at `docs/templates/` to cross-check current structure

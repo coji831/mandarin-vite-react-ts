@@ -10,7 +10,7 @@ Follow this sequence when implementing or updating a story:
 
 1. **Review Requirements** — Open the story BR file and its epic BR README. Open corresponding implementation docs. Confirm Acceptance Criteria clarity; note ambiguous items in a "Questions / Clarifications" subsection.
 
-1.5 **Design Thinking & User Flow** — Before planning any code, establish the user's mental model:
+1.5 **Design Thinking & User Flow** — Before planning any code, establish the user's mental model. See `docs/guides/dev-flow-visualization.html` for the full flow diagram and `frontend-visual-design-protocol.instructions.md` for the detailed frontend pipeline:
 
 - **Read the research** — Open design docs, proposals, competitor analysis, domain research under `docs/` and `verification-artifacts/`. If the feature has a `docs/design.md`, read it. Don't design UI without understanding the domain context.
 - **Map the user's flow step by step** — For each action the user takes, ask:
@@ -22,21 +22,35 @@ Follow this sequence when implementing or updating a story:
 - **Check source for every design decision** — If you propose adding an element to the UI, you must be able to answer "where did my data come from to design this layout?" If the answer is a future-state proposal, verify the change works with the CURRENT architecture, not just the proposed one. Incremental changes to an existing system must not pre-implement future-state designs.
 - **Apply principles before polish** — Evaluate each UI addition against: WAGC (does this look clickable when it shouldn't?), content density (can the user parse this in 2 seconds?), clarity (is the meaning obvious without a tooltip?), cognitive load (does this add mental work or reduce it?).
 
-2. **Plan Changes** — Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
+2. **Plan Changes** — Read [`AGENTS.md`](../AGENTS.md) for agent behavior rules, structure conventions, and prohibitions. Identify impacted feature folder(s) under `apps/frontend/src/features/` or `apps/backend/src/modules/`. Check design doc (`apps/frontend/src/features/<feature>/docs/design.md`) and `docs/architecture.md` for conflicts. If adding public APIs/components/hooks, prepare file header summaries.
 
-3. **Storybook-First UI Design (with Styling, before User Preview Gate)** — BEFORE implementing any logic, build the complete visual UI in Storybook:
+3. **Backend Implementation (if applicable)** — For backend changes (API, database, external services), follow the modulith creation pipeline from `docs/guides/dev-flow-visualization.html`:
 
-   1. **High-level design** — Wireframe/sketch the UI. Identify which page or parent component will host the new UI. Check `component-registry.json` + `shared/components/` for reuse.
-   2. **Low-level design** — Build the UI structure (JSX skeleton) directly in a `.stories.tsx` file on the page-level or most-complex-parent component. Cover ALL visual states: loading, empty, error, display, edge cases.
-   3. **Mock all data** — Use MSW handlers to simulate every state. No real API calls. No hook logic. Pure visual shell.
-   4. **Polish styling** — Apply CSS variables, global utility classes, BEM component CSS. Data-resilient shell (fixed container, inner scroll). Verify at 320px. See `frontend-css-styling.instructions.md`.
-   5. **Preview & iterate** — Open Storybook in the browser. Present to the user for feedback. Iterate on layout, spacing, colors, states until approved.
+   1. **Module scaffold** — Create `modules/<name>/` with `api/`, `services/`, `repositories/`, `types/`, `container.ts`. Choose CRUD, Feature Slices, or Clean Architecture template based on complexity. See `docs/guides/conventions/backend.md`.
+   2. **Database** — Edit `prisma/schema.prisma` → `npx prisma migrate dev` → `npx prisma generate`. Never `push` to production. See `prisma-schema-changes.instructions.md`.
+   3. **Container DI** — Create `createXModule(deps)` factory. Register in root `src/app/container.ts`. Constructor injection at composition root.
+   4. **Routes** — Define endpoints with rate limiting. Register in `src/app/routes.ts`. Use route constants from `packages/shared-constants`.
+   5. **Validation** — Input validation at controller layer. Error responses in `{ error, code, message }` format per `backend-error-messages.instructions.md`.
+   6. **External services** — Class pattern with constructor injection (GeminiService, CacheService, GCSClient). Fail-open: degraded service, never crash.
+   7. **Tests** — Unit: service + repository. Integration: full request→response cycle. Mock external deps. `vitest run src/modules/<module>/`.
+
+4. **Storybook-First UI Design (Phase A — No Logic)** — BEFORE implementing any logic, build the complete visual UI in Storybook. Follow the full Phase A pipeline from `frontend-visual-design-protocol.instructions.md`:
+
+   1. **Gather context** — Research business need, user need, read design docs.
+   2. **High-level design** — Wireframe/sketch the UI. Identify host component.
+   3. **Component breakdown** — Decompose into hierarchy, check reuse, impact radius.
+   4. **Build Storybook UI** — JSX skeleton on host `.stories.tsx`. Cover ALL visual states. MSW mocks. No hooks, no API calls.
+   5. **Polish styling** — CSS variables, utility classes, data-resilient shell, responsive at 320px. See `frontend-css-styling.instructions.md`.
+   6. **User preview & approval** — Present in browser. User approves layout/spacing/colors/states. **Gate: do NOT proceed until approved.**
+   7. **Mock all data** — Use MSW handlers to simulate every state. No real API calls. No hook logic. Pure visual shell.
+   8. **Polish styling** — Apply CSS variables, global utility classes, BEM component CSS. Data-resilient shell (fixed container, inner scroll). Verify at 320px. See `frontend-css-styling.instructions.md`.
+   9. **Preview & iterate** — Open Storybook in the browser. Present to the user for feedback. Iterate on layout, spacing, colors, states until approved.
 
    ⚠️ **Gate rule**: Do NOT proceed to logic implementation until the user has previewed and approved the fully-styled UI design in Storybook. This prevents wasted work on logic behind unapproved layouts.
 
-4. **Implement Logic** — After UI design is approved, add hooks, state management (reducers/context/Zustand), and API service layer. Connect the visual shell to real data. Wire up loading/error/empty state transitions.
-5. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
-6. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
+5. **Implement Logic** — After UI design is approved, add hooks, state management (reducers/context/Zustand), and API service layer. Connect the visual shell to real data. Wire up loading/error/empty state transitions.
+6. **Tests (Create / Update)** — Add or adjust unit/component tests to cover happy path + at least one edge case from AC. Ensure new reducers/actions/selectors have isolated tests. Avoid brittle UI assertions (prefer role/text queries via RTL).
+7. **Run Locally (If Needed)** — Start app: `npm run dev`. Start local backend (if API integration touched): `npm run start-backend`. Manual sanity check: exercise UI path for story; capture any discrepancies against AC.
 
 **5.5 Visual Verification** — After all UI changes are implemented, visually validate against Storybook:
 
@@ -47,6 +61,9 @@ Follow this sequence when implementing or updating a story:
 5. Compare: does the Storybook story match production appearance in layout, spacing, colors, and component structure?
 6. If discrepancies exist, fix the story to match production OR fix the component to match the story (whichever is the source of truth)
 7. Log any discrepancies in `verification-artifacts/` with a `review-findings-*` artifact
+
+⚠️ **When to skip visual verification**: Pure backend changes with no UI surface. Never skip for UI changes.
+🔄 **When to run backend pipeline only**: Database-only, API-only, or external-service-only changes with no UI surface — skip steps 4-5.5 and jump to step 6 (Run Locally) to verify backend endpoints. 7. Log any discrepancies in `verification-artifacts/` with a `review-findings-*` artifact
 
 ⚠️ **When to skip**: Pure backend changes, logic-only changes with no UI surface, or documentation-only changes. Never skip for UI changes.
 

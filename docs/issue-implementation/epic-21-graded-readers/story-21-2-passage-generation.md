@@ -1,0 +1,91 @@
+# Implementation 21-2: Passage Generation Backend
+
+> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-2-passage-generation.md`
+
+## Technical Scope
+
+Build the backend passage generation system: Gemini API integration, backend segmenter with caching, error-handling middleware, and rate limiting.
+
+**Files:**
+
+- `apps/backend/src/modules/readers/` — container.ts, api/ (ReadersController.ts, ReadersRoutes.ts), services/ReadersService.ts, repositories/ReadersRepository.ts, types/readers.ts, api/**tests**/ReadersController.test.ts
+- `apps/backend/src/app/container.ts` — wire readersModule with dependencies (geminiService, segmenterService, progressionService)
+- `apps/backend/src/app/routes.ts` — register readers middleware + routes
+- `apps/backend/src/shared/services/GeminiService.ts` — add `generatePassage()` method
+- `apps/backend/src/modules/readers/services/SegmenterService.ts` — new: backend segmenter with word index
+- `apps/backend/src/modules/readers/middleware/` — error-catching middleware for Gemini, TTS, Segmenter
+- `packages/shared-constants/src/index.js` — add readers route patterns
+- `packages/shared-constants/src/index.d.ts` — add type declarations
+- `docs/guides/prompt-templates.md` — prompt templates for 5 topics
+
+## Implementation Details
+
+### API Endpoints
+
+| Method | Endpoint                          | Auth     | Description                                     |
+| ------ | --------------------------------- | -------- | ----------------------------------------------- |
+| `GET`  | `/v1/readers/passages?hskLevel=N` | Required | List cached passages at level                   |
+| `GET`  | `/v1/readers/passages/:id`        | Required | Full passage with segmented result + audio URLs |
+| `POST` | `/v1/readers/generate`            | Required | Generate passage. Body: `{ topic }`. Auth-only  |
+
+### SegmenterService
+
+- Initializes word index from `content/words/index.json` at server startup (~500KB)
+- Segmenter algorithm: longest-match against word index
+- Caches segmented result keyed by passage content hash
+- Computes HSK profile from passage words
+
+### GeminiService Modification
+
+- Add `generatePassage(hskLevel, knownWords, targetNewWords)` method
+- Accepts `maxTokens` parameter (default 1024)
+- Returns structured JSON (sentences with pre-split words + pinyin)
+- Does NOT apply the 500-char substring truncation
+- Uses the existing `GeminiClient.generateText()` under the hood
+
+### Prompt Format
+
+Gemini returns JSON:
+
+```json
+{ "sentences": [{ "index": 0, "text": "我今天去学校。" }] }
+```
+
+Backend parses, segments, caches. TODO: RAG for future.
+
+### Error-catching Middleware
+
+- Error-catching middleware per external service (Gemini, TTS, Segmenter)
+- Typed error classes
+- Consumers handle at their level
+- User sees fallback UI per error type
+
+### Rate Limiting
+
+- Authenticated: 5 generations/day
+- Guest: 0 (cannot generate)
+- Max total passages per user (not per-level)
+
+## Architecture Integration
+
+```
+[Story 21.1: Passage Generation Backend]
+├── Controllers → ReadersController (GET passages, GET passage, POST generate)
+├── Services → ReadersService (orchestration), SegmenterService (word segmentation)
+├── Middleware → Error-catching for Gemini/TTS/Segmenter
+└── GeminiService → generatePassage() extension
+
+Consumed by: Story 21.3 (Reading UI frontend)
+```
+
+## Technical Challenges & Solutions
+
+```
+Problem: GeminiService.MAX_OUTPUT_LENGTH = 500 is too short for passages.
+Solution: Add generatePassage() method without truncation. Do not modify existing
+         generateText() to avoid regression.
+
+Problem: Chinese word tokenization errors from Gemini.
+Solution: Gemini returns structured JSON with pre-split sentences. Server-side
+         validation catches mismatches. Regenerate on failure.
+```
