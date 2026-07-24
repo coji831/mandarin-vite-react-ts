@@ -1,5 +1,7 @@
 # Implementation 21-6: Phonetic Clusters
 
+**Last Update:** July 24, 2026
+
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-6-phonetic-clusters.md`
 
 ## Technical Scope
@@ -60,7 +62,7 @@ PhoneticClustersTab
 ## Architecture Integration
 
 ```
-[Story 21.5: Phonetic Clusters]
+[Story 21.6: Phonetic Clusters]
 ├── Static data → public/data/phonetic-clusters/clusters.json
 ├── PhoneticClustersTab → feature/readers/components/
 └── Integration → CharacterHub (via existing useCharacterHub/useEntityHub)

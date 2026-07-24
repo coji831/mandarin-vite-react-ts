@@ -1,6 +1,6 @@
-# Implementation 21-4: Audio Sync
+# Implementation 21-5: Audio Sync
 
-> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-4-audio-sync.md`
+> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-5-audio-sync.md`
 
 ## Technical Scope
 
@@ -65,7 +65,7 @@ function useSentenceAudio(sentences: Sentence[]) {
 ## Architecture Integration
 
 ```
-[Story 21.3: Audio Sync]
+[Story 21.5: Audio Sync]
 ├── useSentenceAudio hook → manages playback state
 ├── AudioControlBar component → play/pause, speed, progress
 └── ReadingView integration → sentence highlighting, tap-to-replay

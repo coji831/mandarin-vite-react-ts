@@ -1,4 +1,4 @@
-# Story 21.5: Reading Progress
+# Story 21.7: Reading Progress
 
 ## Description
 
@@ -32,7 +32,7 @@ Progress tracking turns reading from a one-time activity into an ongoing learnin
 ## Related Issues
 
 - Epic 21: Graded Readers — BR (`../README.md`) (epic parent)
-- **Story 21.3: Reading UI + LexicalHub Phase 1** ([BR](story-21-3-reading-ui-lexical-hub.md)) (dependency — reading UI must exist)
+- **Story 21.4: Reading UI + LexicalHub Phase 1** ([BR](story-21-4-reading-ui-lexical-hub.md)) (dependency — reading UI must exist)
 
 ## Implementation Status
 

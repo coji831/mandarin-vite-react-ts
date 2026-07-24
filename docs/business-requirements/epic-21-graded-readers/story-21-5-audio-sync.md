@@ -1,4 +1,4 @@
-# Story 21.4: Audio Sync
+# Story 21.5: Audio Sync
 
 ## Description
 
@@ -33,7 +33,7 @@ Audio sync turns reading into a multi-sensory learning experience. Learners can 
 ## Related Issues
 
 - Epic 21: Graded Readers — BR (`../README.md`) (epic parent)
-- **Story 21.3: Reading UI + LexicalHub Phase 1** ([BR](story-21-3-reading-ui-lexical-hub.md)) (dependency — reading UI must exist)
+- **Story 21.4: Reading UI + LexicalHub Phase 1** ([BR](story-21-4-reading-ui-lexical-hub.md)) (dependency — reading UI must exist)
 
 ## Implementation Status
 

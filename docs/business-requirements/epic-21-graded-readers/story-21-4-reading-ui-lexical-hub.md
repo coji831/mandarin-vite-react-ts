@@ -1,4 +1,6 @@
-# Story 21.3: Reading UI + LexicalHub Phase 1
+# Story 21.4: Reading UI + LexicalHub Phase 1
+
+**Last Update:** July 24, 2026
 
 ## Description
 
@@ -42,9 +44,9 @@ This story delivers the core learner-facing reading experience. It replaces the 
 
 - Epic 21: Graded Readers — BR (`../README.md`) (epic parent)
 - **Story 21.1: Data Lifecycle** ([BR](story-21-1-data-lifecycle.md)) (dependency)
-- **Story 21.2: Passage Generation Backend** ([BR](story-21-2-passage-generation.md)) (dependency)
-- **Story 21.4: Audio Sync** ([BR](story-21-4-audio-sync.md)) (depends on this story)
-- **Story 21.5: Reading Progress** ([BR](story-21-5-reading-progress.md)) (depends on this story)
+- **Story 21.3: Passage Generation Backend** ([BR](story-21-3-passage-generation.md)) (dependency)
+- **Story 21.5: Audio Sync** ([BR](story-21-5-audio-sync.md)) (depends on this story)
+- **Story 21.7: Reading Progress** ([BR](story-21-7-reading-progress.md)) (depends on this story)
 
 ## Implementation Status
 

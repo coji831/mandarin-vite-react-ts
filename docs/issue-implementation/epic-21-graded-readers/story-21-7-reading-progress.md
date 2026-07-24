@@ -1,6 +1,6 @@
-# Implementation 21-5: Reading Progress
+# Implementation 21-7: Reading Progress
 
-> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-5-reading-progress.md`
+> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-7-reading-progress.md`
 
 ## Technical Scope
 
@@ -65,7 +65,7 @@ interface ReadingStore {
 ## Architecture Integration
 
 ```
-[Story 21.4: Reading Progress]
+[Story 21.7: Reading Progress]
 ├── readingStore (Zustand) → client state management
 ├── Backend API → session + bookmark CRUD
 │   ├── GET/PUT /sessions/:passageId

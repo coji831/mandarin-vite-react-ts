@@ -1,4 +1,6 @@
-# Story 21.2: Passage Generation Backend
+# Story 21.3: Passage Generation Backend
+
+**Last Update:** July 24, 2026
 
 ## Description
 
@@ -8,7 +10,7 @@
 
 ## Business Value
 
-This story builds the entire server-side foundation for the graded readers feature. It enables AI-generated reading passages via Gemini, smart word segmentation against the word index, and reliable error handling. Together with the data foundation (Story 21.1), it powers the reading experience that learners interact with in Story 21.3.
+This story builds the entire server-side foundation for the graded readers feature. It enables AI-generated reading passages via Gemini, smart word segmentation against the word index, and reliable error handling. Together with the data foundation (Story 21.1), it powers the reading experience that learners interact with in Story 21.4.
 
 ## Acceptance Criteria
 
@@ -37,7 +39,7 @@ This story builds the entire server-side foundation for the graded readers featu
 
 - Epic 21: Graded Readers — BR (`../README.md`) (epic parent)
 - **Story 21.1: Data Lifecycle** ([BR](story-21-1-data-lifecycle.md)) (dependency — must be completed first)
-- **Story 21.3: Reading UI + LexicalHub Phase 1** ([BR](story-21-3-reading-ui-lexical-hub.md)) (consumer of this API)
+- **Story 21.4: Reading UI + LexicalHub Phase 1** ([BR](story-21-4-reading-ui-lexical-hub.md)) (consumer of this API)
 
 ## Implementation Status
 

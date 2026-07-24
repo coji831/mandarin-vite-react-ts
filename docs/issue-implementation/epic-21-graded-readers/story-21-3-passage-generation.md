@@ -1,6 +1,6 @@
-# Implementation 21-2: Passage Generation Backend
+# Implementation 21-3: Passage Generation Backend
 
-> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-2-passage-generation.md`
+> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-3-passage-generation.md`
 
 ## Technical Scope
 
@@ -69,13 +69,13 @@ Backend parses, segments, caches. TODO: RAG for future.
 ## Architecture Integration
 
 ```
-[Story 21.1: Passage Generation Backend]
+[Story 21.3: Passage Generation Backend]
 ├── Controllers → ReadersController (GET passages, GET passage, POST generate)
 ├── Services → ReadersService (orchestration), SegmenterService (word segmentation)
 ├── Middleware → Error-catching for Gemini/TTS/Segmenter
 └── GeminiService → generatePassage() extension
 
-Consumed by: Story 21.3 (Reading UI frontend)
+Consumed by: Story 21.4 (Reading UI frontend)
 ```
 
 ## Technical Challenges & Solutions

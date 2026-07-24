@@ -26,15 +26,23 @@ Create the entire data foundation for Epic 21: new Prisma models, seed scripts, 
 
 ### New Prisma Models
 
-```prisma
+````prisma
 model Word {
   id              String   @id              // "w_00001" — stable content ID
-  // ⚠️ Pure ID-only. All attributes (simplified, pinyin, definitions, examples, POS)
-  //    stored in content/words/*.json static files — loaded via in-memory cache
+  simplified      String                    // Commonly-queried — indexed
+  pinyin          String?                   // Pinyin with tone marks
+  meaning         String?                   // English meaning(s)
+  hskLevel        Int?                      // Direct HSK level (fast filter)
+  frequencyRank   Int?                      // Corpus frequency rank
+  wordClass       String?                   // POS tag: "noun", "verb", etc.
   characters      WordCharacter[]
   studyContexts   WordStudyContext[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([simplified])
+  @@index([hskLevel])
+  @@index([frequencyRank])
 }
 
 model WordHskLevel {
@@ -80,20 +88,23 @@ model CharacterReading {
 }
 
 model Character {
-  id              String   @id              // "ch_1001"
-  glyph           String   @unique
-  strokeCount     Int                       // Queryable filter (e.g., "≤8 strokes")
-  // ⚠️ Extended attributes in content/characters/*.json
-  readings        CharacterReading[]
-  radicals        CharacterRadical[]
-  progress        CharacterProgress[]
-  wordLinks       WordCharacter[]
-  mnemonicStories Mnemonic[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                  String   @id              // "ch_1001"
+  glyph               String   @unique
+  strokeCount         Int                       // Queryable filter (e.g., "≤8 strokes")
+  classification      String?                   // "pictograph" | "ideograph" | "phono_semantic" | "compound_ideograph" | null
+  phoneticComponentId String?                   // References another Character that provides the sound hint
+  readings            CharacterReading[]
+  radicals            CharacterRadical[]
+  progress            CharacterProgress[]
+  wordLinks           WordCharacter[]
+  mnemonicStories     Mnemonic[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@index([glyph])
   @@index([strokeCount])
+  @@index([classification])
+  @@index([phoneticComponentId])
 }
 
 model CharacterProgress {
@@ -154,7 +165,50 @@ model WordLookupEvent {
   @@index([wordId])
   @@index([timestamp])
 }
-```
+
+```prisma
+model PinyinSyllable {
+  id              String   @id
+  syllable        String   @unique    // "ma", "shi", "bu"
+  tone            Int                 // 1-5 (5=neutral)
+  valid           Boolean  @default(true)
+  characters      PinyinCharacterMapping[]
+}
+
+model PinyinCharacterMapping {
+  id              String   @id @default(uuid())
+  pinyinSyllableId String
+  characterId     String
+  pinyinSyllable  PinyinSyllable @relation(fields: [pinyinSyllableId], references: [id])
+  character       Character      @relation(fields: [characterId], references: [id])
+
+  @@unique([pinyinSyllableId, characterId])
+  @@index([characterId])
+  @@index([pinyinSyllableId])
+}
+
+model Component {
+  id          String   @id              // "cmp_001"
+  glyph       String   @unique
+  meaning     String?                   // "water", "hand", "mouth"
+  variantOf   String?                   // References another Component ID
+  characters  CharacterComponent[]
+}
+
+model ContentEmbedding {
+  id          String   @id @default(uuid())
+  entityType  String                     // "word" | "character" | "passage"
+  entityId    String                     // Stable content ID
+  embedding   Unsupported("vector(384)") // pgvector — 384-dim for text-embedding-3-small
+  model       String                     // "text-embedding-3-small"
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType])
+}
+````
 
 Also add Passage, ReadingSession, Bookmark models (these are needed for later stories but the schema must exist):
 
@@ -214,6 +268,9 @@ model Bookmark {
 - `VocabularyList` — replaced by hskLevel on Word
 - `WordList` — junction no longer needed
 - `Progress.wordId` (free-form String field) — replaced by CharacterProgress
+- `ContentItem` — deprecated, no replacement needed
+- `PinyinCombination` — replaced by PinyinSyllable + PinyinCharacterMapping
+- `Category` — deprecated, no replacement needed
 
 ### Migration of Existing Progress Data
 
@@ -227,23 +284,25 @@ model Bookmark {
 ### Data Flow
 
 ```
-data/HSK-3.0-Word-List CSV (~11000 words, 6 columns, no pinyin/definitions)
+data/HSK-3.0-Word-List CSV (~11000 words, 6 columns)
 │
 ▼
 seed-word.js parsing:
-├── Word record (id only: w_00001)                    → Word table
-├── WordHskLevel (wordId → hskLevel)                  → WordHskLevel table
-├── Character glyphs → deduplicate by glyph           → Character table (upsert)
-├── WordCharacter (wordId ↔ characterId + order)       → WordCharacter table
-├── CharacterHskLevel (min HSK per glyph)              → CharacterHskLevel table
+├── Word record (widened: id, simplified, pinyin, meaning,       → Word table
+│              hskLevel, frequencyRank, wordClass)
+├── WordHskLevel (wordId → hskLevel)                              → WordHskLevel table
+├── Character glyphs → deduplicate by glyph                       → Character table (upsert)
+├── WordCharacter (wordId ↔ characterId + order)                   → WordCharacter table
+├── CharacterHskLevel (min HSK per glyph)                          → CharacterHskLevel table
 │
 ▼
-Content files (aggregate, not per-word):
-├── content/words/index.json
-│   ├── Map<simplified → wordId>  — for segmentation/lookup
-│   └── Map<wordId → hskLevel>    — for HSK queries
-└── content/words/words.json
-    └── Map<wordId → { simplified, hskLevel, hskNo, hskUsage, characters[], sequenceOrder[] }>
+Content files (seed source — regenerated from DB, never read at runtime):
+├── content/words/index.json       — lookup maps (for CI verification only)
+└── content/words/words.json       — per-word attributes (for CI verification only)
+│
+▼
+Runtime (production & dev):
+└── Prisma queries → PostgreSQL (source of truth for ALL structured data)
 ```
 
 ### Seed Script Idempotency
@@ -273,16 +332,14 @@ All subsequent stories (21.1–21.5) depend on this data foundation.
 
 ## Data Tiering
 
-This story establishes the **4-tier data architecture** defined in [ADR-006](../../guides/adr/data-tiering-architecture.md):
+This story establishes the **all-in-DB architecture** (superseding ADR-006 4-tier data tiering):
 
-| Tier | Name              | Entities                           | Storage                                                        | Cache                     |
-| ---- | ----------------- | ---------------------------------- | -------------------------------------------------------------- | ------------------------- |
-| 1    | Static Reference  | Foundations, Radicals              | content/*.json + DB                                            | In-memory (never evict)   |
-| 2    | Master Data       | Characters, Readings, HskLevel     | DB (crucial) + content/characters/characters.json (enrichment) | In-memory + Redis, TTL 1h |
-| 3    | Produced Content  | Words, Passages, Phonetic Clusters | DB (structure) + content/words/ aggregate files (attributes)   | Redis, TTL 5-30 min       |
-| 4    | Transaction/Event | Progress, ReviewLog, Lookups       | DB only                                                        | None or < 1 min           |
-
-The 11K word storage was the trigger for this ADR. Instead of 11K individual files, words use **2 aggregate files** (~5 MB total). Characters follow a **DB-for-crucial/JSON-for-enrichment** split: Character table stores id, glyph, strokeCount (indexed); CharacterReading table stores pinyin/tone/type; enrichment data (traditional, definition, etymology, frequencyRank, commonWords) lives in a single `content/characters/characters.json` aggregate file.
+| Tier | Name              | Entities                                       | Storage                   | Cache                   |
+| ---- | ----------------- | ---------------------------------------------- | ------------------------- | ----------------------- |
+| 1    | Static Reference  | Foundations, Radicals                          | DB (seeded from content/) | In-memory (never evict) |
+| 2    | Master Data       | Characters, Words, Components, PinyinSyllables | DB (source of truth)      | Redis, TTL 1h           |
+| 3    | Produced Content  | Passages, Phonetic Clusters                    | DB                        | Redis, TTL 5-30 min     |
+| 4    | Transaction/Event | Progress, ReviewLog, Lookups                   | DB only                   | None or < 1 min         |
 
 ## Technical Challenges & Solutions
 

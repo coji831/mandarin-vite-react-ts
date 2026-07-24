@@ -1,5 +1,7 @@
 # Story 21.6: Phonetic Clusters
 
+**Last Update:** July 24, 2026
+
 ## Description
 
 **As a** learner,
@@ -31,7 +33,8 @@ Phonetic clusters help learners recognize patterns in character pronunciation �
 
 - Epic 21: Graded Readers — BR (`../README.md`) (epic parent)
 - **Story 21.1: Data Lifecycle** ([BR](story-21-1-data-lifecycle.md)) (dependency — character data needed)
-- Can run in parallel with Stories 21.2-21.5
+- **Story 21.2: Character Content Generation** ([BR](story-21-2-character-content.md)) (dependency — character enrichment with phonetic data)
+- Can run in parallel with Stories 21.3-21.5
 
 ## Implementation Status
 

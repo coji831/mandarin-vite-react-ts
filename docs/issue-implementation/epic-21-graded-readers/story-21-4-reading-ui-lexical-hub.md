@@ -1,6 +1,6 @@
-# Implementation 21-3: Reading UI + LexicalHub Phase 1
+# Implementation 21-4: Reading UI + LexicalHub Phase 1
 
-> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-3-reading-ui-lexical-hub.md`
+> **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-4-reading-ui-lexical-hub.md`
 
 ## Technical Scope
 
@@ -38,7 +38,7 @@ ReadersPage (container)
 └── ReadingView (sentence-by-sentence reader)
     ├── SentenceDisplay (highlighted text, pinyin below)
     ├── WordPopover (inline: glyph, pinyin, meaning, "Open in Word Hub" button)
-    └── AudioControlBar (play/pause, speed, progress) (from Story 21.4)
+    └── AudioControlBar (play/pause, speed, progress) (from Story 21.5)
 ```
 
 ### hubStore Types
@@ -85,27 +85,19 @@ Thin router that checks `entityType` and renders the correct content component:
 ## Architecture Integration
 
 ```
-[Story 21.2: Reading UI + LexicalHub Phase 1]
+[Story 21.4: Reading UI + LexicalHub Phase 1]
 ├── ReadersPage → feature/readers/
 ├── LexicalHub → feature/lexical-hub/
 │   ├── LexicalHubRouter
 │   ├── WordHubContent (new)
 │   └── CharacterHubContent (moved)
 ├── Shared → hubStore (generalized), useEntityHub, HubEntityCard, etc.
-├── Services → apiClient → Story 21.2 backend API
+├── Services → apiClient → Story 21.3 backend API
 ```
 
 ## Technical Challenges & Solutions
 
 ```
-Problem: CharacterHub is deeply integrated across features. Generalizing to
-         LexicalHub must not break existing code.
-Solution: Create useEntityHub as a backward-compatible wrapper. Existing
-         useCharacterHub calls forward to useEntityHub internally. Barrel
-         re-exports maintain import paths.
-
-Problem: Inline WordPopover must not interfere with reading flow.
-Solution: Popover appears on tap (not hover). Audio pauses when popover is
-         open. Popover closes on tap outside. "Open in Word Hub" navigates
-         to full detail in LexicalHub.
+Problem: LexicalHub must remain backward-compatible with existing useCharacterHub callers while generalizing to support Word, Character, and Radical entity types.
+Solution: Create a generalized hubStore with entityType, entityId, context, and navigationStack. Wrap the existing useCharacterHub API surface as a backward-compatible adapter that delegates to the new store.
 ```
