@@ -1,6 +1,6 @@
 # Data Import Scripts for Prisma
 
-**Last Updated:** July 21, 2026
+**Last Updated:** July 24, 2026
 
 **Purpose:** Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma.
 
@@ -15,7 +15,40 @@
 | Schema migration with data transformation                      | Prisma migration + import script |
 | Importing external datasets (Make Me a Hanzi, HSK lists, etc.) | Import script                    |
 
-Import scripts live in `apps/backend/scripts/` (or `apps/backend/prisma/scripts/` for seed-related utilities). They are **not** part of the application build — they are executed directly by `node`.
+Import scripts live in `apps/backend/scripts/` (or `apps/backend/scripts/database/` for seed-related utilities). They are **not** part of the application build — they are executed directly by `node` (for `.js`) or `npx tsx` (for `.ts`).
+
+> **File extension convention:** Prisma-heavy scripts use `.ts` for type safety (run via `npx tsx`). Seed files (seed.js, seeds/*.js) stay as `.js` for Prisma node runner compatibility.
+
+### Shared Script Infrastructure
+
+Scripts in `apps/backend/scripts/database/` should use the shared infrastructure in `apps/backend/scripts/` instead of creating their own Prisma client:
+
+| Module      | Path                    | Purpose                           |
+| ----------- | ----------------------- | --------------------------------- |
+| `client.ts` | `apps/backend/scripts/` | Shared Prisma client (reuses app) |
+| `logger.ts` | `apps/backend/scripts/` | Shared script logger              |
+| `utils.ts`  | `apps/backend/scripts/` | Env loading, atomic writes, etc.  |
+
+```typescript
+// ✅ CORRECT — import shared client
+import { prisma } from "../client.js";
+import { loadEnv } from "../utils.js";
+
+// loadEnv() ensures .env.local is loaded before any app config is read
+async function main() {
+  loadEnv();
+  // ... use prisma ...
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
+```
+
+This avoids the copy-paste anti-pattern of each script creating its own `new PrismaClient()` with duplicate adapter configuration.
 
 ---
 
@@ -182,6 +215,39 @@ See `apps/backend/scripts/import-decomposition-data.mjs` for a complete working 
 - Line-delimited JSON parsing with validation
 - Batch processing with `createMany` + `skipDuplicates`
 - Progress logging every 500 records
+
+---
+
+## TypeScript for Scripts
+
+Scripts that are written in `.ts` (as opposed to `.js` seed files) use a dedicated TypeScript configuration to validate their types independently of the application code.
+
+### tsconfig.scripts.json
+
+The file `apps/backend/tsconfig.scripts.json` extends the base `tsconfig.json` but scopes the type checker to the `scripts/` directory:
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["scripts/**/*.ts"],
+  "exclude": ["scripts/__tests__/**"]
+}
+```
+
+### Running the Type Check
+
+Script types can be validated with:
+
+```bash
+npm run typecheck:scripts   # from apps/backend/
+```
+
+This runs `tsc --noEmit --project tsconfig.scripts.json` and reports any type errors in the script files. It excludes `__tests__/` directories since test files have their own type checking through Vitest.
+
+The main `npm run typecheck` (or `npm run build`) only checks `src/` — it does **not** cover scripts. This separation keeps the app build fast while allowing independent validation of script types.
 
 ---
 

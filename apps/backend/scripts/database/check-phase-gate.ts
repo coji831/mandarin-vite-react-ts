@@ -1,30 +1,24 @@
 /**
- * Check Phase Gate status for test@example.com
- * Run: node prisma/scripts/check-phase-gate.js (from apps/backend)
+ * @file apps/backend/scripts/database/check-phase-gate.ts
+ * @description Check Phase Gate status for test@example.com.
+ *   Verifies the test user exists and inspects their PhaseGate record.
+ *
+ * Run: cd apps/backend && npx tsx scripts/database/check-phase-gate.ts
  */
 
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, "../../../../.env.local") });
-import prismaPkg from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-const { PrismaClient } = prismaPkg;
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+import { prisma } from "../client.js";
+import { loadEnv } from "../utils.js";
 
 async function main() {
+  loadEnv();
+
   const user = await prisma.user.findUnique({
     where: { email: "test@example.com" },
   });
 
   if (!user) {
     console.log("❌ Test user not found (test@example.com)");
-    await prisma.$disconnect();
-    await pool.end();
-    process.exit(0);
+    return;
   }
 
   console.log(`✅ Test user found: ${user.email} (id: ${user.id})`);
@@ -44,11 +38,11 @@ async function main() {
   } else {
     console.log("\n❌ No PhaseGate record found for test@example.com");
   }
-
-  await prisma.$disconnect();
 }
 
-main().catch((e) => {
-  console.error("Error:", e);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error("Error:", e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());

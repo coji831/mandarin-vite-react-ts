@@ -1,13 +1,13 @@
 /**
  * Unlock Phase 2 for Test User
- * Run: node prisma/scripts/unlock-phase2.js
+ * Run: node scripts/database/unlock-phase2.js
  *
  * Prerequisites:
  *   - cd apps/backend
- *   - node prisma/scripts/unlock-phase2.js
+ *   - node scripts/database/unlock-phase2.js
  *
  * Or from monorepo root:
- *   node apps/backend/prisma/scripts/unlock-phase2.js
+ *   node apps/backend/scripts/database/unlock-phase2.js
  */
 
 import dotenv from "dotenv";

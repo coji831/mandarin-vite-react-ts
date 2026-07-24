@@ -21,6 +21,9 @@ import bcrypt from "bcrypt";
 import { seedPinyinCombinations } from "./seeds/seed-pinyin-combinations.js";
 import { seedCharacterRadicals } from "./seeds/seed-character-radicals.js";
 import { seedCharacters } from "./seeds/seed-characters.js";
+import { seedWords } from "./seeds/seed-word.js";
+import { seedDemoPassages } from "./seeds/seed-demo-passages.js";
+import { generateCharacterEnrichment } from "./scripts/generate-character-enrichment.js";
 
 const { PrismaClient } = prismaPkg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -133,7 +136,16 @@ async function main() {
   // 4. Character-radical mappings
   await seedCharacterRadicals(prisma);
 
-  // 4. Test users (dev only)
+  // 5. Word data (HSK words + word-character junctions)
+  await seedWords(prisma);
+
+  // 6. Demo passages (HSK 1-6 graded readers)
+  await seedDemoPassages(prisma);
+
+  // 7. Character enrichment aggregate (from individual JSON files → characters.json)
+  await generateCharacterEnrichment(prisma);
+
+  // 8. Test users (dev only)
   if (process.env.NODE_ENV !== "production") {
     await prisma.user.upsert({
       where: { email: "test@example.com" },
