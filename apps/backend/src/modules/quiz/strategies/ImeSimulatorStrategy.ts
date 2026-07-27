@@ -4,7 +4,7 @@
  * Generates questions from radical content file HSK characters.
  * Evaluates character input via NFKC normalization (no tone required).
  */
-import { readContentFiles, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { readAggregateContent, shuffleArray } from "../../../shared/utils/contentUtils.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 
 const logger = createLogger("ImeSimulatorStrategy");
@@ -16,7 +16,7 @@ export const imeSimulatorStrategy = {
   timeLimitMinutes: 4,
 
   async generateQuestions(_userId?: string) {
-    const radicalFiles = await readContentFiles("radicals", "rad_");
+    const radicalFiles = await readAggregateContent("radicals", "radicals.json");
 
     if (!radicalFiles || radicalFiles.length === 0) {
       throw new Error("Failed to load radical content files");
@@ -36,11 +36,9 @@ export const imeSimulatorStrategy = {
     }> = [];
 
     for (const file of radicalFiles) {
-      const metadata = file.metadata as
-        | { hsk_characters?: Array<{ glyph: string; pinyin?: string; meaning?: string }> }
-        | undefined;
-      const hskChars = metadata?.hsk_characters || [];
-      for (const char of hskChars) {
+      const hskChars = (file as any).hskCharacters as
+        Array<{ glyph: string; pinyin?: string; meaning?: string }> | undefined;
+      for (const char of hskChars || []) {
         const glyph = char.glyph;
         if (glyph && !seenGlyphs.has(glyph)) {
           seenGlyphs.add(glyph);

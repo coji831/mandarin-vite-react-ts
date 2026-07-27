@@ -20,7 +20,7 @@ const sampleItems: ContentItem[] = [
     phase: 1,
   },
   {
-    id: "ch_0342",
+    id: "ch_27809",
     contentType: "foundations",
     title: "没",
     subtitle: "méi",

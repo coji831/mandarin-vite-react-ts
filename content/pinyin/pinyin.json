@@ -1,0 +1,734 @@
+[
+  {
+    "id": "init_b",
+    "pinyin": "b",
+    "ipa": "/p/",
+    "description": "unaspirated p, like 's**p**in'",
+    "mouthPosition": "bilabial",
+    "category": "plosive_unaspirated",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "b — unaspirated p, like 's**p**in'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_ch",
+    "pinyin": "ch",
+    "ipa": "/ʈʂʰ/",
+    "description": "like '**ch**urch'",
+    "mouthPosition": "retroflex",
+    "category": "affricate_aspirated",
+    "voiced": false,
+    "aspirated": true,
+    "type": "initial",
+    "pronunciationGuide": "ch — like 'ch**urch**'",
+    "commonIssues": "retroflex — curl tongue back",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_d",
+    "pinyin": "d",
+    "ipa": "/t/",
+    "description": "unaspirated t, like 's**t**op'",
+    "mouthPosition": "alveolar",
+    "category": "plosive_unaspirated",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "d — unaspirated t, like 's**t**op'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_f",
+    "pinyin": "f",
+    "ipa": "/f/",
+    "description": "like '**f**un'",
+    "mouthPosition": "labiodental",
+    "category": "fricative",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "f — like 'f**un**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_g",
+    "pinyin": "g",
+    "ipa": "/k/",
+    "description": "unaspirated k, like 's**k**ip'",
+    "mouthPosition": "velar",
+    "category": "plosive_unaspirated",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "g — unaspirated k, like 's**k**ip'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_h",
+    "pinyin": "h",
+    "ipa": "/x/",
+    "description": "like '**h**ello'",
+    "mouthPosition": "velar",
+    "category": "fricative",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "h — like 'h**ello**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_j",
+    "pinyin": "j",
+    "ipa": "/tɕ/",
+    "description": "like '**j**eep'",
+    "mouthPosition": "palatal",
+    "category": "affricate_unaspirated",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "j — like 'j**eep**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_k",
+    "pinyin": "k",
+    "ipa": "/kʰ/",
+    "description": "like '**k**ind'",
+    "mouthPosition": "velar",
+    "category": "plosive_aspirated",
+    "voiced": false,
+    "aspirated": true,
+    "type": "initial",
+    "pronunciationGuide": "k — like 'k**ind**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_l",
+    "pinyin": "l",
+    "ipa": "/l/",
+    "description": "like '**l**ove'",
+    "mouthPosition": "alveolar",
+    "category": "lateral",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "l — like 'l**ove**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_m",
+    "pinyin": "m",
+    "ipa": "/m/",
+    "description": "like '**m**an'",
+    "mouthPosition": "bilabial",
+    "category": "nasal",
+    "voiced": true,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "m — like '**m**an'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_n",
+    "pinyin": "n",
+    "ipa": "/n/",
+    "description": "like '**n**o'",
+    "mouthPosition": "alveolar",
+    "category": "nasal",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "n — like 'n**o**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_p",
+    "pinyin": "p",
+    "ipa": "/pʰ/",
+    "description": "aspirated p, like '**p**in' with a strong puff of air",
+    "mouthPosition": "bilabial",
+    "category": "plosive_aspirated",
+    "voiced": false,
+    "aspirated": true,
+    "type": "initial",
+    "pronunciationGuide": "p — aspirated p, like 'p**in' with a strong puff of air",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_q",
+    "pinyin": "q",
+    "ipa": "/tɕʰ/",
+    "description": "like '**ch**eek'",
+    "mouthPosition": "palatal",
+    "category": "affricate_aspirated",
+    "voiced": false,
+    "aspirated": true,
+    "type": "initial",
+    "pronunciationGuide": "q — like 'ch**eek**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_r",
+    "pinyin": "r",
+    "ipa": "/ʐ/",
+    "description": "like '**r**easure'",
+    "mouthPosition": "retroflex",
+    "category": "approximant",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "r — like 'r**easure**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_sh",
+    "pinyin": "sh",
+    "ipa": "/ʂ/",
+    "description": "like '**sh**irt'",
+    "mouthPosition": "retroflex",
+    "category": "fricative",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "sh — like 'sh**irt**'",
+    "commonIssues": "retroflex — curl tongue back",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_t",
+    "pinyin": "t",
+    "ipa": "/tʰ/",
+    "description": "aspirated t, like '**t**op' with a strong puff of air",
+    "mouthPosition": "alveolar",
+    "category": "plosive_aspirated",
+    "voiced": false,
+    "aspirated": true,
+    "type": "initial",
+    "pronunciationGuide": "t — aspirated t, like '**t**op' with a strong puff of air",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_x",
+    "pinyin": "x",
+    "ipa": "/ɕ/",
+    "description": "like '**sh**e'",
+    "mouthPosition": "palatal",
+    "category": "fricative",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "x — like 'sh**e**'",
+    "commonIssues": "",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "init_zh",
+    "pinyin": "zh",
+    "ipa": "/ʈʂ/",
+    "description": "like '**j**udge'",
+    "mouthPosition": "retroflex",
+    "category": "affricate_unaspirated",
+    "voiced": false,
+    "aspirated": false,
+    "type": "initial",
+    "pronunciationGuide": "zh — like 'j**udge**'",
+    "commonIssues": "retroflex — curl tongue back",
+    "phonemeType": "initial"
+  },
+  {
+    "id": "fin_a",
+    "pinyin": "a",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "bā",
+      "tone2": "bá",
+      "tone3": "bǎ",
+      "tone4": "bà",
+      "tone0": "ba"
+    },
+    "pronunciationGuide": "a — like '**a**h'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ai",
+    "pinyin": "ai",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "bāi",
+      "tone2": "bái",
+      "tone3": "bǎi",
+      "tone4": "bài",
+      "tone0": "bai"
+    },
+    "pronunciationGuide": "ai — like '**eye**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_an",
+    "pinyin": "an",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "bān",
+      "tone2": "bán",
+      "tone3": "bǎn",
+      "tone4": "bàn",
+      "tone0": "ban"
+    },
+    "pronunciationGuide": "an — like '**on**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ang",
+    "pinyin": "ang",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "bāng",
+      "tone2": "báng",
+      "tone3": "bǎng",
+      "tone4": "bàng",
+      "tone0": "bang"
+    },
+    "pronunciationGuide": "ang — like '**song**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ao",
+    "pinyin": "ao",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "bāo",
+      "tone2": "báo",
+      "tone3": "bǎo",
+      "tone4": "bào",
+      "tone0": "bao"
+    },
+    "pronunciationGuide": "ao — like '**ow**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_e",
+    "pinyin": "e",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "ē",
+      "tone2": "é",
+      "tone3": "ě",
+      "tone4": "è",
+      "tone0": "e"
+    },
+    "pronunciationGuide": "e — like '**u**' in '**u**p' or '**ur**' in 'b**ur**n'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ei",
+    "pinyin": "ei",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "bēi",
+      "tone2": "béi",
+      "tone3": "běi",
+      "tone4": "bèi",
+      "tone0": "bei"
+    },
+    "pronunciationGuide": "ei — like '**eight**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_en",
+    "pinyin": "en",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "bēn",
+      "tone2": "bén",
+      "tone3": "běn",
+      "tone4": "bèn",
+      "tone0": "ben"
+    },
+    "pronunciationGuide": "en — like '**end**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_eng",
+    "pinyin": "eng",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "zhēng",
+      "tone2": "zhéng",
+      "tone3": "zhěng",
+      "tone4": "zhèng",
+      "tone0": "zheng"
+    },
+    "pronunciationGuide": "eng — like '**young**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_i",
+    "pinyin": "i",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "ī",
+      "tone2": "í",
+      "tone3": "ǐ",
+      "tone4": "ì",
+      "tone0": "i"
+    },
+    "pronunciationGuide": "i — like '**ee**' in 's**ee**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ia",
+    "pinyin": "ia",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "jiā",
+      "tone2": "jiá",
+      "tone3": "jiǎ",
+      "tone4": "jià",
+      "tone0": "jia"
+    },
+    "pronunciationGuide": "ia — like '**yah**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ian",
+    "pinyin": "ian",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "jiān",
+      "tone2": "jián",
+      "tone3": "jiǎn",
+      "tone4": "jiàn",
+      "tone0": "jian"
+    },
+    "pronunciationGuide": "ian — like '**yen**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_iang",
+    "pinyin": "iang",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "jiāng",
+      "tone2": "jiáng",
+      "tone3": "jiǎng",
+      "tone4": "jiàng",
+      "tone0": "jiang"
+    },
+    "pronunciationGuide": "iang — like '**yang**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_iao",
+    "pinyin": "iao",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "biāo",
+      "tone2": "biáo",
+      "tone3": "biǎo",
+      "tone4": "biào",
+      "tone0": "biao"
+    },
+    "pronunciationGuide": "iao — like '**yow**' (ee-ah-oh)",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ie",
+    "pinyin": "ie",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "jiē",
+      "tone2": "jié",
+      "tone3": "jiě",
+      "tone4": "jiè",
+      "tone0": "jie"
+    },
+    "pronunciationGuide": "ie — like '**yeah**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_in",
+    "pinyin": "in",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "jīn",
+      "tone2": "jín",
+      "tone3": "jǐn",
+      "tone4": "jìn",
+      "tone0": "jin"
+    },
+    "pronunciationGuide": "in — like '**in**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ing",
+    "pinyin": "ing",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "jīng",
+      "tone2": "jíng",
+      "tone3": "jǐng",
+      "tone4": "jìng",
+      "tone0": "jing"
+    },
+    "pronunciationGuide": "ing — like '**sing**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_iong",
+    "pinyin": "iong",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "jiōng",
+      "tone2": "jióng",
+      "tone3": "jiǒng",
+      "tone4": "jiòng",
+      "tone0": "jiong"
+    },
+    "pronunciationGuide": "iong — like '**yong**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_iu",
+    "pinyin": "iu",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "liū",
+      "tone2": "liú",
+      "tone3": "liǔ",
+      "tone4": "liù",
+      "tone0": "liu"
+    },
+    "pronunciationGuide": "iu — like '**yo**' (flowing)",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_o",
+    "pinyin": "o",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "bō",
+      "tone2": "bó",
+      "tone3": "bǒ",
+      "tone4": "bò",
+      "tone0": "bo"
+    },
+    "pronunciationGuide": "o — like '**o**h'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ong",
+    "pinyin": "ong",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "dōng",
+      "tone2": "dóng",
+      "tone3": "dǒng",
+      "tone4": "dòng",
+      "tone0": "dong"
+    },
+    "pronunciationGuide": "ong — like '**song**' but with rounded lips",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ou",
+    "pinyin": "ou",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "dōu",
+      "tone2": "dóu",
+      "tone3": "dǒu",
+      "tone4": "dòu",
+      "tone0": "dou"
+    },
+    "pronunciationGuide": "ou — like '**go**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_u",
+    "pinyin": "u",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "ū",
+      "tone2": "ú",
+      "tone3": "ǔ",
+      "tone4": "ù",
+      "tone0": "u"
+    },
+    "pronunciationGuide": "u — like '**oo**' in 'b**oo**t'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ua",
+    "pinyin": "ua",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "guā",
+      "tone2": "guá",
+      "tone3": "guǎ",
+      "tone4": "guà",
+      "tone0": "gua"
+    },
+    "pronunciationGuide": "ua — like '**wah**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_uai",
+    "pinyin": "uai",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "guāi",
+      "tone2": "guái",
+      "tone3": "guǎi",
+      "tone4": "guài",
+      "tone0": "guai"
+    },
+    "pronunciationGuide": "uai — like '**why**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_uan",
+    "pinyin": "uan",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "guān",
+      "tone2": "guán",
+      "tone3": "guǎn",
+      "tone4": "guàn",
+      "tone0": "guan"
+    },
+    "pronunciationGuide": "uan — like '**wan**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_uang",
+    "pinyin": "uang",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "guāng",
+      "tone2": "guáng",
+      "tone3": "guǎng",
+      "tone4": "guàng",
+      "tone0": "guang"
+    },
+    "pronunciationGuide": "uang — like '**wong**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ui",
+    "pinyin": "ui",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "guī",
+      "tone2": "guí",
+      "tone3": "guǐ",
+      "tone4": "guì",
+      "tone0": "gui"
+    },
+    "pronunciationGuide": "ui — like '**way**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_un",
+    "pinyin": "un",
+    "type": "nasal",
+    "category": "nasal_final",
+    "toneVariants": {
+      "tone1": "gūn",
+      "tone2": "gún",
+      "tone3": "gǔn",
+      "tone4": "gùn",
+      "tone0": "gun"
+    },
+    "pronunciationGuide": "un — like '**wun**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_uo",
+    "pinyin": "uo",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "guō",
+      "tone2": "guó",
+      "tone3": "guǒ",
+      "tone4": "guò",
+      "tone0": "guo"
+    },
+    "pronunciationGuide": "uo — like '**woah**'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_v",
+    "pinyin": "ü",
+    "type": "simple",
+    "category": "simple_final",
+    "toneVariants": {
+      "tone1": "xū",
+      "tone2": "xú",
+      "tone3": "xǔ",
+      "tone4": "xù",
+      "tone0": "xu"
+    },
+    "pronunciationGuide": "ü — like German '**ü**ber'",
+    "phonemeType": "final"
+  },
+  {
+    "id": "fin_ve",
+    "pinyin": "üe",
+    "type": "compound",
+    "category": "compound_final",
+    "toneVariants": {
+      "tone1": "xuē",
+      "tone2": "xué",
+      "tone3": "xuě",
+      "tone4": "xuè",
+      "tone0": "xue"
+    },
+    "pronunciationGuide": "üe — like '**yueh**'",
+    "phonemeType": "final"
+  }
+]

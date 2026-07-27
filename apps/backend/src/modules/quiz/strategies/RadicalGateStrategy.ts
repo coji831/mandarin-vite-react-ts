@@ -9,19 +9,19 @@
  *
  * Pass threshold: 85% overall, plus Tier 1 must be 100%.
  */
-import { readContentFiles, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { readAggregateContent, shuffleArray } from "../../../shared/utils/contentUtils.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 
 const logger = createLogger("RadicalGateStrategy");
 
-/** Shape of a radical content file loaded from content/radicals/rad_*.json. */
+/** Shape of a radical item from the radicals.json aggregate (camelCase fields). */
 interface RadicalFile {
   id?: string;
   glyph?: string;
   meaning?: string;
-  name_pinyin?: string;
-  is_recommended?: boolean;
-  metadata?: { hsk_characters?: Array<{ glyph: string; meaning?: string; pinyin?: string }> };
+  namePinyin?: string;
+  isRecommended?: boolean;
+  hskCharacters?: Array<{ glyph: string; meaning?: string; pinyin?: string }>;
   [key: string]: unknown;
 }
 
@@ -45,9 +45,7 @@ function pickDistractors(arr: RadicalFile[], n: number, exclude: string | string
 function buildReverseCharMap(radicalFiles: RadicalFile[]): Map<string, string[]> {
   const map = new Map<string, string[]>();
   for (const file of radicalFiles) {
-    const metadata = file.metadata as
-      { hsk_characters?: Array<{ glyph: string; pinyin: string; meaning: string }> } | undefined;
-    const hskChars = metadata?.hsk_characters || [];
+    const hskChars = file.hskCharacters || [];
     for (const char of hskChars) {
       const glyph = char.glyph;
       if (!map.has(glyph)) {
@@ -69,7 +67,7 @@ export const radicalGateStrategy = {
   timeLimitMinutes: 8,
 
   async generateQuestions() {
-    const radicalFiles = await readContentFiles("radicals", "rad_");
+    const radicalFiles = await readAggregateContent<RadicalFile>("radicals", "radicals.json");
 
     if (!radicalFiles || radicalFiles.length === 0) {
       throw new Error("Failed to load radical content files");
@@ -80,7 +78,7 @@ export const radicalGateStrategy = {
     // ── Tier 1: Core Component Lockdown (10 Qs) ──────────────────────────
     // Show a radical glyph, pick its meaning from 4 options.
     // Focus on recommended radicals (the most important ones).
-    const recommended = radicalFiles.filter((f) => f.is_recommended);
+    const recommended = radicalFiles.filter((f) => f.isRecommended);
     const tier1Pool = recommended.length > 5 ? recommended : radicalFiles;
 
     // Ensure at least 5 unique radicals for Tier 1
@@ -104,13 +102,13 @@ export const radicalGateStrategy = {
 
       questions.push({
         id: `rad-gate-t1-${i}`,
-        audioKey: radical.name_pinyin || "",
+        audioKey: radical.namePinyin || "",
         correctPinyin: radical.id!, // Correct option ID
         correctTone: 0,
         category: "radical-core-lockdown",
         character: radical.glyph!,
         meaning: radical.meaning!,
-        displayPinyin: radical.name_pinyin!,
+        displayPinyin: radical.namePinyin!,
         options,
       });
     }
@@ -129,10 +127,7 @@ export const radicalGateStrategy = {
       radicalMeaning?: string;
     }> = [];
     for (const file of radicalFiles) {
-      const metadata = file.metadata as
-        | { hsk_characters?: Array<{ glyph: string; pinyin?: string; meaning?: string }> }
-        | undefined;
-      const hskChars = metadata?.hsk_characters || [];
+      const hskChars = file.hskCharacters || [];
       for (const char of hskChars) {
         const glyph = char.glyph;
         if (glyph) {

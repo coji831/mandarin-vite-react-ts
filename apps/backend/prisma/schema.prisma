@@ -7,16 +7,19 @@ datasource db {
 }
 
 model User {
-  id           String           @id @default(uuid())
-  email        String           @unique
-  passwordHash String
-  displayName  String?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  deletedAt    DateTime?
-  progress     Progress[]
-  sessions     Session[]
-  customLists  VocabularyList[]
+  id                 String           @id @default(uuid())
+  email              String           @unique
+  passwordHash       String
+  displayName        String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+  sessions           Session[]
+  characterProgress  CharacterProgress[]
+  wordStudyContext   WordStudyContext[]
+  reviewLogs         ReviewLog[]
+  readingSessions    ReadingSession[]
+  bookmarks          Bookmark[]
 
   @@index([email])
 }
@@ -33,92 +36,9 @@ model Session {
   @@index([refreshToken])
 }
 
-model Progress {
-  id           String   @id @default(uuid())
-  userId       String
-  wordId       String
-  studyCount   Int      @default(0)
-  correctCount Int      @default(0)
-  confidence   Float    @default(0)
-  nextReview   DateTime @default(now())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  currentDelay Int?
-  lapseCount   Int      @default(0)
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, wordId])
-  @@index([userId])
-  @@index([nextReview])
-  @@index([userId, nextReview])
-  @@index([userId, lapseCount])
-}
-
-model VocabularyWord {
-  id              String         @id
-  traditional     String
-  simplified      String
-  pinyin          String
-  english         String
-  exampleSentence String?
-  audioUrl        String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @default(now()) @updatedAt
-  categories      WordCategory[]
-  lists           WordList[]
-
-  @@index([pinyin])
-  @@index([simplified])
-}
-
-model Category {
-  id           String         @id @default(uuid())
-  name         String         @unique
-  description  String?
-  icon         String?
-  displayOrder Int?
-  words        WordCategory[]
-
-  @@index([name])
-}
-
-model VocabularyList {
-  id          String     @id
-  name        String
-  description String?
-  difficulty  String?
-  isPublic    Boolean    @default(true)
-  createdBy   String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  creator     User?      @relation(fields: [createdBy], references: [id])
-  words       WordList[]
-
-  @@index([difficulty])
-  @@index([createdBy])
-}
-
-model WordCategory {
-  wordId     String
-  categoryId String
-  category   Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  word       VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
-
-  @@id([wordId, categoryId])
-  @@index([categoryId])
-}
-
-model WordList {
-  wordId    String
-  listId    String
-  sortOrder Int?
-  addedAt   DateTime       @default(now())
-  list      VocabularyList @relation(fields: [listId], references: [id], onDelete: Cascade)
-  word      VocabularyWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
-
-  @@id([wordId, listId])
-  @@index([listId, sortOrder])
-}
+// ── Deprecated Models Removed (Phase C) ──
+// Progress → migrated to CharacterProgress + ReviewLog (see migrate-progress.ts)
+// VocabularyWord, Category, VocabularyList, WordCategory, WordList → replaced by Word model
 
 model FoundationProgress {
   id            String    @id @default(uuid())
@@ -152,35 +72,63 @@ model RadicalProgress {
 }
 
 model CharacterRadical {
-  id             Int      @id @default(autoincrement())
-  characterGlyph String // The character glyph, e.g. "路"
-  radicalId      String // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  characterGlyph   String // The character glyph, e.g. "路" (kept for backward compat; use characterId going forward)
+  characterId      String? // FK to Character.id — nullable for Phase A, will be made required in Phase B
+  radicalId        String // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
+  decompositionType String? // "semantic" | "phonetic" | "remaining" | null
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  character Character? @relation(fields: [characterId], references: [id])
 
   @@unique([characterGlyph, radicalId])
+  @@unique([characterId, radicalId])
   @@index([characterGlyph])
+  @@index([characterId])
   @@index([radicalId])
 }
 
 // ── Character: Unified character aggregate ──
 // Seeded from content/characters/*.json files.
 // Replaces ad-hoc JSON file scanning for character detail API.
+// Phase A: Additive — old fields kept for backward compat, new fields + relations added.
 model Character {
-  id            String   @id // "ch_1001"
-  glyph         String   @unique // "好"
-  traditional   String? // null if same as glyph
-  strokeCount   Int // 6
-  hskLevel      Int? // 1-6
-  frequencyRank Int? // e.g. 22
-  definition    String? // Core meaning from primary reading's gloss
-  readings      Json     @default("[]") // [{pinyin, tone, type, meaning}]
-  etymology     String? // Story of character origin
-  commonWords   String[] @default([]) // ["很好", "爱好"]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                 String   @id // "ch_1001"
+  glyph              String   @unique // "好"
+  traditional        String?  // null if same as glyph
+  strokeCount        Int      // 6
+  classification     String?  // "pictograph" | "ideograph" | "phono_semantic" | "compound_ideograph" | null
+  phoneticComponentId String? // References another Character that provides the sound hint
+  hskLevel           Int?     // 1-6
+  frequencyRank      Int?     // e.g. 22
+  definition         String?  // Core meaning from primary reading's gloss
+  readings           Json     @default("[]") // [{pinyin, tone, type, meaning}]
+  etymology          String?  // Story of character origin
+  commonWords        String[] @default([]) // ["很好", "爱好"]
+  content_version    Int      @default(1)
+  metadata           Json?    // Flexible metadata from content/characters/*.json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Phase A relations (additive)
+  characterReadings CharacterReading[]
+  characterProgress CharacterProgress[]
+  wordCharacters    WordCharacter[]
+  hskLevels         CharacterHskLevel[]
+  wordStudyContext  WordStudyContext[]
+  radicals          CharacterRadical[]
+  pinyinMappings    PinyinCharacterMapping[]
+  characterComponents CharacterComponent[]
+
+  // Self-referential phonetic component relation
+  phoneticComponent Character?   @relation("PhoneticComponent", fields: [phoneticComponentId], references: [id])
+  phoneticChildren  Character[] @relation("PhoneticComponent")
 
   @@index([glyph])
+  @@index([strokeCount])
+  @@index([classification])
+  @@index([phoneticComponentId])
   @@index([hskLevel])
 }
 
@@ -209,21 +157,6 @@ model PhaseGate {
 // Domain columns: tone (int), syllable (string), character (string?), meaning (string?)
 // This is a junction table for the M:N relationship between pinyin initials,
 // finals, and tones — not a content entity itself.
-model PinyinCombination {
-  id        String  @id // "init_b-fin_a-1"
-  initialId String // "init_b" — matches content/pinyin/init_b.json
-  finalId   String // "fin_a"  — matches content/pinyin/fin_a.json
-  tone      Int // 1-5
-  syllable  String // "bā"
-  character String? // "八"
-  meaning   String? // "eight"
-
-  @@unique([initialId, finalId, tone])
-  @@index([syllable])
-  @@index([initialId])
-  @@index([finalId])
-}
-
 model QuizAttempt {
   id          String    @id @default(uuid())
   userId      String
@@ -303,25 +236,6 @@ model ReviewItem {
   @@index([userId, source])
 }
 
-model ContentItem {
-  id          String   @id
-  contentType String // "radical" | "character" | "word" | "foundation" | "grammar" | "chengyu" | "pinyin" | "tone"
-  contentId   String // The content/ file reference: "rad_0008"
-  phaseId     Int // 1 | 2 | 3 | 4
-  title       String // Display name
-  subtitle    String?
-  metadata    Json?
-  version     Int      @default(1)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([contentType, contentId])
-  @@index([phaseId])
-  @@index([contentType])
-  @@index([phaseId, contentType])
-}
-
 model MnemonicStory {
   id             String   @id @default(uuid())
   characterGlyph String
@@ -337,3 +251,328 @@ model MnemonicStory {
   @@index([characterGlyph])
   @@index([userId])
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Epic 21: Graded Readers — Data Lifecycle Models (Phase A — Additive)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Word: Commonly-queried fields in DB ──
+// ID format: "w_XXXXX" where XXXXX is a zero-padded integer.
+// Stores frequently accessed fields directly for fast queries.
+// content/words/words.json is seed source only — never read at runtime.
+model Word {
+  id              String   @id              // "w_00001"
+  simplified      String?                   // Indexed — commonly queried; null until seed populates it
+  pinyin          String?                   // Pinyin with tone marks
+  meaning         String?                   // English meaning(s)
+  hskLevel        Int?                      // Direct HSK level for fast filtering
+  frequencyRank   Int?                      // Corpus frequency rank
+  wordClass       String?                   // POS tag: "noun", "verb", etc.
+
+  wordCharacters    WordCharacter[]
+  wordHskLevels     WordHskLevel[]
+  wordStudyContext  WordStudyContext[]
+  wordLookupEvents  WordLookupEvent[]
+  measureWordWords  MeasureWordWord[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([simplified])
+  @@index([hskLevel])
+  @@index([frequencyRank])
+}
+
+// ── WordHskLevel: Which HSK level(s) a word belongs to ──
+model WordHskLevel {
+  wordId    String
+  hskLevel  Int
+  hskVersion String?
+
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@id([wordId])
+  @@index([hskLevel])
+}
+
+// ── CharacterHskLevel: HSK level assignment for characters ──
+model CharacterHskLevel {
+  characterId String
+  hskLevel    Int
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@id([characterId])
+  @@index([hskLevel])
+}
+
+// ── WordCharacter: Junction — which characters make up a word ──
+model WordCharacter {
+  id            String @id @default(uuid())
+  wordId        String
+  characterId   String
+  sequenceOrder Int
+
+  word      Word      @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([wordId, characterId])
+  @@index([characterId])
+}
+
+// ── CharacterReading: Individual readings (pinyin + tone) for a character ──
+model CharacterReading {
+  id          String @id @default(uuid())
+  characterId String
+  pinyin      String
+  tone        Int
+  type        String?  // "primary" | "secondary"
+  commonality Int?
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
+}
+
+// ── CharacterProgress: Per-user SRS progress for individual characters ──
+model CharacterProgress {
+  id            String    @id @default(uuid())
+  userId        String
+  characterId   String
+  content_version Int     @default(1)
+  studyCount    Int       @default(0)
+  correctCount  Int       @default(0)
+  confidence    Float     @default(0)
+  nextReview    DateTime?
+  currentDelay  Int?
+  lapseCount    Int       @default(0)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([userId])
+  @@index([characterId])
+}
+
+// ── WordStudyContext: Records which words a user studied within a character context ──
+model WordStudyContext {
+  id          String   @id @default(uuid())
+  userId      String
+  characterId String
+  wordId      String
+  studiedAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  word      Word      @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@index([userId, characterId])
+}
+
+// ── ReviewLog: Append-only event log for all review events ──
+model ReviewLog {
+  id             String   @id @default(uuid())
+  userId         String
+  itemType       String   // "character" | "chengyu" | "radical" | "word"
+  itemId         String
+  content_version Int     @default(1)
+  rating         String   // "again" | "good" | "easy"
+  source         String?  // "quiz_failure" | "review" | "viewed"
+  timestamp      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, itemType, timestamp])
+}
+
+// ── WordLookupEvent: Tracks word lookup activity (guest users via sessionId) ──
+model WordLookupEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  sessionId String
+  wordId    String
+  passageId String?
+  timestamp DateTime @default(now())
+
+  word    Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  passage Passage? @relation("PassageLookups", fields: [passageId], references: [id])
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([wordId])
+  @@index([timestamp])
+}
+
+// ── Passage: Graded reading passage ──
+// Content stored as JSON: { sentences: [...], metadata: {...} }
+model Passage {
+  id              String   @id @default(uuid())
+  hskLevel        Int
+  passageIndex    Int
+  title           String
+  content         Json     // { sentences: [...], metadata: {...} }
+  wordCount       Int
+  knownWordRatio  Float
+  targetHskLevel  Int
+  generatedById   String?
+  generatedAt     DateTime @default(now())
+  accessCount     Int      @default(0)
+  lastAccessedAt  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  readingSessions ReadingSession[]
+  bookmarks       Bookmark[]
+  lookupEvents    WordLookupEvent[] @relation("PassageLookups")
+
+  @@unique([hskLevel, passageIndex])
+  @@index([hskLevel])
+  @@index([lastAccessedAt])
+}
+
+// ── ReadingSession: Tracks a user's reading progress through a passage ──
+model ReadingSession {
+  id              String    @id @default(uuid())
+  userId          String
+  passageId       String
+  currentSentence Int       @default(0)
+  completed       Boolean   @default(false)
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  lastAccessedAt  DateTime  @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passage Passage @relation(fields: [passageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, passageId])
+  @@index([userId])
+}
+
+// ── Bookmark: Saved passages for later reading ──
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  passageId String
+  note      String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passage Passage @relation(fields: [passageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, passageId])
+  @@index([userId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Phase A — New Models (additive)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── PinyinSyllable: Canonical pinyin syllable reference ──
+// Seeded from content/pinyin/init_*.json + fin_*.json data.
+// Represents every valid (initial × final × tone) combination in standard Mandarin.
+model PinyinSyllable {
+  id              String   @id // e.g., "b_a_1" — composite key pattern
+  initial         String?  // e.g., "b", "p", "m", "f" — null for zero-initial
+  final           String?  // e.g., "a", "o", "e", "i"
+  tone            Int      // 1-5 (5 = neutral)
+  syllable        String   // Full pinyin with tone number, e.g., "ma1"
+  syllablePretty  String   // Full pinyin with tone mark, e.g., "mā"
+  isStandard      Boolean  @default(true) // part of standard Mandarin inventory
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  characterMappings PinyinCharacterMapping[]
+
+  @@unique([initial, final, tone])
+  @@index([syllable])
+  @@map("PinyinSyllable")
+}
+
+// ── PinyinCharacterMapping: Links pinyin syllables to character readings ──
+model PinyinCharacterMapping {
+  id               String   @id @default(uuid())
+  pinyinSyllableId String
+  characterId      String
+  readingType      String   @default("primary") // "primary" | "literary" | "colloquial" | "variant"
+  isDefault        Boolean  @default(false) // Is this the default reading for this character?
+  createdAt        DateTime @default(now())
+
+  pinyinSyllable PinyinSyllable @relation(fields: [pinyinSyllableId], references: [id])
+  character      Character     @relation(fields: [characterId], references: [id])
+
+  @@unique([pinyinSyllableId, characterId, readingType])
+  @@index([characterId])
+  @@map("PinyinCharacterMapping")
+}
+
+// ── MeasureWord: Measure word (量词) entity ──
+// ID format: "mw_XXXXX" where XXXXX is a zero-padded integer.
+model MeasureWord {
+  id        String   @id                // "mw_00001"
+  simplified String  @unique            // "个", "条", "张"
+  pinyin    String?                     // "gè", "tiáo", "zhāng"
+  meaning   String?                     // "general individual", "for long slender objects"
+  category  String?                     // "measure", "time", "abstract", "verb", "formal"
+  usageNote String?                     // "Used for people, general objects"
+  nouns     MeasureWordWord[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("MeasureWord")
+}
+
+// ── MeasureWordWord: Measure word ↔ Word (noun) junction ──
+// Pairs a measure word with the nouns it modifies.
+model MeasureWordWord {
+  id              String   @id @default(uuid())
+  measureWordId   String
+  wordId          String                // "w_00001" — FK to Word table (noun)
+  exampleSentence String?               // "一个人" — illustrative example
+  isDefault       Boolean  @default(false) // true if this is the default MW for this noun
+  measureWord     MeasureWord @relation(fields: [measureWordId], references: [id])
+  word            Word        @relation(fields: [wordId], references: [id])
+
+  @@unique([measureWordId, wordId])
+  @@index([wordId])
+  @@index([measureWordId])
+  @@map("MeasureWordWord")
+}
+
+// ── Component: Reusable sub-character component ──
+// Represents a structural component that appears inside characters.
+// ID format: "cmp_XXX" — zero-padded integer.
+model Component {
+  id        String   @id                // "cmp_001"
+  glyph     String   @unique            // "氵", "口", "青", "可"
+  meaning   String?                     // "water", "mouth", "blue/green", "able"
+  type      String?                     // "radical" | "phonetic" | "both"
+  variantOf String?                     // References another Component ID (e.g., 氵 is variant of 水)
+  strokes   Int?                        // Stroke count for this component
+  characters CharacterComponent[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([variantOf])
+  @@map("Component")
+}
+
+// ── CharacterComponent: Character ↔ Component decomposition junction ──
+// Links a character to its constituent components with positional info.
+model CharacterComponent {
+  id            String   @id @default(uuid())
+  characterId   String                 // FK to Character.id
+  componentId   String                 // FK to Component.id
+  position      String?                // "left" | "right" | "top" | "bottom" | "outside" | "inside" | "center"
+  function      String?                // "semantic" | "phonetic" | "remaining"
+  character     Character @relation(fields: [characterId], references: [id])
+  component     Component @relation(fields: [componentId], references: [id])
+
+  @@unique([characterId, componentId])
+  @@index([characterId])
+  @@index([componentId])
+  @@index([function])
+  @@map("CharacterComponent")
+}
+

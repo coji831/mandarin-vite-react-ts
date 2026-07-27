@@ -1,9 +1,9 @@
 /**
  * @file apps/backend/src/modules/quiz/strategies/AudioToPinyinAndToneStrategy.js
  * Combined Audio-to-Pinyin-and-Tone quiz strategy.
- * Generates questions from PinyinCombination and evaluates BOTH pinyin and tone.
+ * Generates questions from PinyinSyllable + PinyinCharacterMapping and evaluates BOTH pinyin and tone.
  *
- * Data source: PinyinCombination (Prisma junction table)
+ * Data source: PinyinSyllable (replaces deprecated PinyinCombination)
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
@@ -15,40 +15,52 @@ export const audioToPinyinAndToneStrategy = {
   timeLimitMinutes: 2.5,
 
   async generateQuestions(_userId?: string) {
-    const combinations = await prisma.pinyinCombination.findMany({
+    const syllables = await prisma.pinyinSyllable.findMany({
       select: {
+        syllablePretty: true,
         syllable: true,
         tone: true,
-        character: true,
-        meaning: true,
       },
     });
 
-    if (combinations.length === 0) {
-      throw new Error("PinyinCombination table is empty — run the seed script first");
+    if (syllables.length === 0) {
+      throw new Error("PinyinSyllable table is empty — run the seed script first");
     }
 
-    const charBySyllable = new Map();
-    for (const combo of combinations) {
-      if (combo.character && !charBySyllable.has(combo.syllable)) {
-        charBySyllable.set(combo.syllable, combo.character);
+    // Get character mappings for syllables that have them
+    const mappings = await prisma.pinyinCharacterMapping.findMany({
+      select: {
+        pinyinSyllable: { select: { syllablePretty: true, syllable: true } },
+        character: { select: { glyph: true } },
+      },
+      where: { isDefault: true },
+    });
+
+    const charBySyllable = new Map<string, string>();
+    for (const m of mappings) {
+      const syl = m.pinyinSyllable.syllablePretty;
+      if (!charBySyllable.has(syl)) {
+        charBySyllable.set(syl, m.character.glyph);
       }
     }
 
-    const shuffled = shuffleArray([...combinations]);
+    const shuffled = shuffleArray([...syllables]);
     return shuffled.map((entry, index) => ({
       id: `q-${index + 1}`,
       audioKey: entry.syllable,
       correctPinyin: stripToneMarks(entry.syllable),
       correctTone: entry.tone,
       category: entry.tone === 0 ? "tones" : Math.random() > 0.5 ? "pinyin" : "tones",
-      displayPinyin: entry.syllable,
-      character: charBySyllable.get(entry.syllable) || null,
-      meaning: entry.meaning || null,
+      displayPinyin: entry.syllablePretty,
+      character: charBySyllable.get(entry.syllablePretty) || null,
+      meaning: null,
     }));
   },
 
-  validateAnswer(question: { correctPinyin: string; correctTone: number; displayPinyin?: string }, { pinyin, tone }: { pinyin: string; tone: number }) {
+  validateAnswer(
+    question: { correctPinyin: string; correctTone: number; displayPinyin?: string },
+    { pinyin, tone }: { pinyin: string; tone: number },
+  ) {
     const pinyinCorrect = pinyin.trim().toLowerCase() === question.correctPinyin.toLowerCase();
     const toneCorrect = tone === question.correctTone;
     const correct = pinyinCorrect && toneCorrect;

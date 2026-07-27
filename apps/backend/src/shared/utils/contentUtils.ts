@@ -102,6 +102,62 @@ export async function readContentFiles(subDir: string, prefix: string): Promise<
 }
 
 /**
+ * Read an aggregate content file (a JSON array) from a content subdirectory.
+ * Aggregate files contain the full dataset as a single JSON array, replacing
+ * the old pattern of one file per entity.
+ *
+ * @param subDir - e.g. "radicals", "pinyin", "tones"
+ * @param aggregateName - e.g. "radicals.json", "pinyin.json", "tones.json"
+ * @returns Parsed array of content items
+ */
+export async function readAggregateContent<T = ContentFile>(
+  subDir: string,
+  aggregateName: string,
+): Promise<T[]> {
+  if (config.nodeEnvironment === "production" && config.gcsBucket) {
+    const buffer = await gcsClient.downloadFile(`content/${subDir}/${aggregateName}`);
+    return JSON.parse(buffer.toString()) as T[];
+  }
+  const filePath = path.join(CONTENT_DIR, subDir, aggregateName);
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T[];
+}
+
+/**
+ * Read content from an aggregate file and filter by a predicate.
+ * Convenience wrapper for common aggregate access patterns.
+ * @param subDir - e.g. "radicals"
+ * @param aggregateName - e.g. "radicals.json"
+ * @param predicate - Filter function
+ * @returns Filtered array of content items
+ */
+export async function readAggregateContentWhere<T = ContentFile>(
+  subDir: string,
+  aggregateName: string,
+  predicate: (item: T) => boolean,
+): Promise<T[]> {
+  const all = await readAggregateContent<T>(subDir, aggregateName);
+  return all.filter(predicate);
+}
+
+/**
+ * Find a single item in an aggregate content file by a key-value match.
+ * @param subDir - e.g. "radicals"
+ * @param aggregateName - e.g. "radicals.json"
+ * @param key - Property name to match (e.g. "id")
+ * @param value - Value to match
+ * @returns Matching item or undefined
+ */
+export async function findInAggregateContent<T = ContentFile>(
+  subDir: string,
+  aggregateName: string,
+  key: keyof T,
+  value: unknown,
+): Promise<T | undefined> {
+  const all = await readAggregateContent<T>(subDir, aggregateName);
+  return all.find((item) => item[key] === value);
+}
+
+/**
  * Strip tone marks from a pinyin syllable, returning plain ASCII.
  * @param syllable - Pinyin with tone marks (e.g., "mā")
  * @returns Plain pinyin (e.g., "ma")

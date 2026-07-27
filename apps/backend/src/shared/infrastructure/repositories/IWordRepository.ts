@@ -3,54 +3,42 @@
  * @description Repository interface for word data access
  *
  * Implementations should handle:
- * - Fetching vocabulary words from the database
+ * - Fetching words from the database
  * - Searching words by criteria
  * - Batch word lookups
  */
 
-import type { VocabularyWord } from "@prisma/client";
+import type { Word } from "@prisma/client";
 
 /**
- * Word from a vocabulary list with sort order.
+ * Word with HSK level info.
  */
-export type WordWithSortOrder = VocabularyWord & { sortOrder: number | null };
-
-/**
- * Word with categories and list info.
- */
-export type WordWithDetails = VocabularyWord & {
-  categories: Array<{
-    category: {
-      id: string;
-      name: string;
-      description: string | null;
-      icon: string | null;
-      displayOrder: number | null;
-    };
+export type WordWithDetails = Word & {
+  wordHskLevels: Array<{
+    hskLevel: number;
+    hskVersion: string | null;
   }>;
-  lists: Array<{ list: { name: string; difficulty: string | null }; sortOrder?: number | null }>;
 };
 
 /**
- * Word with category names only.
+ * Word with HSK level info only (lightweight).
  */
-export type WordWithCategoryNames = VocabularyWord & {
-  categories: Array<{ category: { name: string } }>;
+export type WordWithCategoryNames = Word & {
+  wordHskLevels: Array<{ hskLevel: number }>;
 };
 
 /**
  * @typedef {Object} WordSearchFilters
- * @property {string[]} [categories] - Filter by category names
- * @property {string[]} [lists] - Filter by list IDs
+ * @property {number} [hskLevel] - Filter by HSK level
  * @property {number} [limit=50] - Maximum results
  * @property {number} [offset=0] - Pagination offset
  */
 
 /**
  * @typedef {Object} IWordRepository
- * @property {() => Promise<VocabularyWord[]>} findAll - Get all vocabulary words
+ * @property {() => Promise<Word[]>} findAll - Get all words
  * @property {(id: string) => Promise<WordWithDetails|null>} findById - Find word by ID
- * @property {(listId: string) => Promise<WordWithSortOrder[]>} findByList - Find words belonging to a list
- * @property {(query: string, filters?: WordSearchFilters) => Promise<WordWithCategoryNames[]>} findByIds - Find words by IDs
+ * @property {(ids: string[]) => Promise<WordWithCategoryNames[]>} findByIds - Find words by IDs
  * @property {(query: string, filters?: WordSearchFilters) => Promise<WordWithDetails[]>} search - Search words with optional filters
+ * @property {(learnedWordIds: string[], limit?: number) => Promise<Word[]>} findUnlearnedWords - Find unlearned words
  */

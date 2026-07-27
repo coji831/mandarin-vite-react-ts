@@ -1,0 +1,555 @@
+[
+  {
+    "glyph": "个",
+    "pinyin": "gè",
+    "meaning": "generic individual unit",
+    "hskLevel": 1,
+    "nouns": [
+      "人",
+      "朋友",
+      "学生"
+    ]
+  },
+  {
+    "glyph": "本",
+    "pinyin": "běn",
+    "meaning": "bound volumes (books, magazines)",
+    "hskLevel": 1,
+    "nouns": [
+      "书",
+      "词典",
+      "杂志"
+    ]
+  },
+  {
+    "glyph": "张",
+    "pinyin": "zhāng",
+    "meaning": "flat objects, sheets",
+    "hskLevel": 1,
+    "nouns": [
+      "纸",
+      "票",
+      "床",
+      "桌子"
+    ]
+  },
+  {
+    "glyph": "条",
+    "pinyin": "tiáo",
+    "meaning": "long slender objects",
+    "hskLevel": 1,
+    "nouns": [
+      "鱼",
+      "路",
+      "裤子",
+      "河"
+    ]
+  },
+  {
+    "glyph": "只",
+    "pinyin": "zhǐ",
+    "meaning": "one of a pair; animals",
+    "hskLevel": 1,
+    "nouns": [
+      "猫",
+      "狗",
+      "鸟",
+      "鞋"
+    ]
+  },
+  {
+    "glyph": "杯",
+    "pinyin": "bēi",
+    "meaning": "cup of",
+    "hskLevel": 1,
+    "nouns": [
+      "水",
+      "茶",
+      "咖啡"
+    ]
+  },
+  {
+    "glyph": "碗",
+    "pinyin": "wǎn",
+    "meaning": "bowl of",
+    "hskLevel": 2,
+    "nouns": [
+      "饭",
+      "面",
+      "汤"
+    ]
+  },
+  {
+    "glyph": "块",
+    "pinyin": "kuài",
+    "meaning": "piece, lump; yuan (money)",
+    "hskLevel": 1,
+    "nouns": [
+      "钱",
+      "蛋糕",
+      "石头"
+    ]
+  },
+  {
+    "glyph": "件",
+    "pinyin": "jiàn",
+    "meaning": "item, article (clothing, matters)",
+    "hskLevel": 2,
+    "nouns": [
+      "衣服",
+      "事",
+      "礼物"
+    ]
+  },
+  {
+    "glyph": "双",
+    "pinyin": "shuāng",
+    "meaning": "pair of",
+    "hskLevel": 2,
+    "nouns": [
+      "鞋",
+      "筷子",
+      "手"
+    ]
+  },
+  {
+    "glyph": "对",
+    "pinyin": "duì",
+    "meaning": "pair, couple",
+    "hskLevel": 2,
+    "nouns": [
+      "耳朵",
+      "夫妻",
+      "眼睛"
+    ]
+  },
+  {
+    "glyph": "片",
+    "pinyin": "piàn",
+    "meaning": "slice, thin piece",
+    "hskLevel": 3,
+    "nouns": [
+      "面包",
+      "药",
+      "树叶"
+    ]
+  },
+  {
+    "glyph": "把",
+    "pinyin": "bǎ",
+    "meaning": "handful; objects with handles",
+    "hskLevel": 2,
+    "nouns": [
+      "刀",
+      "钥匙",
+      "椅子",
+      "伞"
+    ]
+  },
+  {
+    "glyph": "辆",
+    "pinyin": "liàng",
+    "meaning": "wheeled vehicles",
+    "hskLevel": 2,
+    "nouns": [
+      "车",
+      "自行车",
+      "公共汽车"
+    ]
+  },
+  {
+    "glyph": "台",
+    "pinyin": "tái",
+    "meaning": "machines, devices",
+    "hskLevel": 3,
+    "nouns": [
+      "电脑",
+      "电视",
+      "手机"
+    ]
+  },
+  {
+    "glyph": "部",
+    "pinyin": "bù",
+    "meaning": "department; literary works",
+    "hskLevel": 3,
+    "nouns": [
+      "电影",
+      "电话",
+      "小说"
+    ]
+  },
+  {
+    "glyph": "间",
+    "pinyin": "jiān",
+    "meaning": "room of",
+    "hskLevel": 2,
+    "nouns": [
+      "房间",
+      "教室",
+      "公司"
+    ]
+  },
+  {
+    "glyph": "所",
+    "pinyin": "suǒ",
+    "meaning": "institutions, buildings",
+    "hskLevel": 3,
+    "nouns": [
+      "学校",
+      "医院",
+      "房子"
+    ]
+  },
+  {
+    "glyph": "家",
+    "pinyin": "jiā",
+    "meaning": "family, business",
+    "hskLevel": 1,
+    "nouns": [
+      "公司",
+      "商店",
+      "餐厅",
+      "人"
+    ]
+  },
+  {
+    "glyph": "座",
+    "pinyin": "zuò",
+    "meaning": "large structures",
+    "hskLevel": 3,
+    "nouns": [
+      "山",
+      "桥",
+      "城市"
+    ]
+  },
+  {
+    "glyph": "门",
+    "pinyin": "mén",
+    "meaning": "subject, branch",
+    "hskLevel": 3,
+    "nouns": [
+      "课",
+      "语言",
+      "技术"
+    ]
+  },
+  {
+    "glyph": "口",
+    "pinyin": "kǒu",
+    "meaning": "mouthful; family members",
+    "hskLevel": 2,
+    "nouns": [
+      "人",
+      "水"
+    ]
+  },
+  {
+    "glyph": "头",
+    "pinyin": "tóu",
+    "meaning": "head of (animals)",
+    "hskLevel": 3,
+    "nouns": [
+      "牛",
+      "猪",
+      "大象"
+    ]
+  },
+  {
+    "glyph": "匹",
+    "pinyin": "pǐ",
+    "meaning": "bolt of cloth; horse",
+    "hskLevel": 3,
+    "nouns": [
+      "马",
+      "布"
+    ]
+  },
+  {
+    "glyph": "封",
+    "pinyin": "fēng",
+    "meaning": "sealed item (letters)",
+    "hskLevel": 3,
+    "nouns": [
+      "信",
+      "邮件"
+    ]
+  },
+  {
+    "glyph": "份",
+    "pinyin": "fèn",
+    "meaning": "portion, copy",
+    "hskLevel": 3,
+    "nouns": [
+      "报纸",
+      "工作",
+      "礼物"
+    ]
+  },
+  {
+    "glyph": "首",
+    "pinyin": "shǒu",
+    "meaning": "piece of (poetry, song)",
+    "hskLevel": 3,
+    "nouns": [
+      "歌",
+      "诗"
+    ]
+  },
+  {
+    "glyph": "篇",
+    "pinyin": "piān",
+    "meaning": "piece of writing",
+    "hskLevel": 3,
+    "nouns": [
+      "文章",
+      "日记"
+    ]
+  },
+  {
+    "glyph": "页",
+    "pinyin": "yè",
+    "meaning": "page",
+    "hskLevel": 3,
+    "nouns": [
+      "书",
+      "纸"
+    ]
+  },
+  {
+    "glyph": "层",
+    "pinyin": "céng",
+    "meaning": "layer, floor",
+    "hskLevel": 3,
+    "nouns": [
+      "楼",
+      "土"
+    ]
+  },
+  {
+    "glyph": "朵",
+    "pinyin": "duǒ",
+    "meaning": "flower, cloud",
+    "hskLevel": 3,
+    "nouns": [
+      "花",
+      "云"
+    ]
+  },
+  {
+    "glyph": "颗",
+    "pinyin": "kē",
+    "meaning": "small round objects",
+    "hskLevel": 3,
+    "nouns": [
+      "星",
+      "牙",
+      "心"
+    ]
+  },
+  {
+    "glyph": "粒",
+    "pinyin": "lì",
+    "meaning": "small grain-like objects",
+    "hskLevel": 3,
+    "nouns": [
+      "米",
+      "药"
+    ]
+  },
+  {
+    "glyph": "根",
+    "pinyin": "gēn",
+    "meaning": "long slender objects (hair, sticks)",
+    "hskLevel": 3,
+    "nouns": [
+      "头发",
+      "香蕉",
+      "筷子"
+    ]
+  },
+  {
+    "glyph": "支",
+    "pinyin": "zhī",
+    "meaning": "slim rod-like objects",
+    "hskLevel": 3,
+    "nouns": [
+      "笔",
+      "烟",
+      "枪"
+    ]
+  },
+  {
+    "glyph": "段",
+    "pinyin": "duàn",
+    "meaning": "section, segment",
+    "hskLevel": 3,
+    "nouns": [
+      "时间",
+      "路",
+      "话"
+    ]
+  },
+  {
+    "glyph": "节",
+    "pinyin": "jié",
+    "meaning": "class period; section",
+    "hskLevel": 3,
+    "nouns": [
+      "课",
+      "车厢"
+    ]
+  },
+  {
+    "glyph": "种",
+    "pinyin": "zhǒng",
+    "meaning": "kind, type, sort",
+    "hskLevel": 1,
+    "nouns": [
+      "人",
+      "动物",
+      "颜色"
+    ]
+  },
+  {
+    "glyph": "样",
+    "pinyin": "yàng",
+    "meaning": "kind, type",
+    "hskLevel": 3,
+    "nouns": [
+      "东西",
+      "菜"
+    ]
+  },
+  {
+    "glyph": "类",
+    "pinyin": "lèi",
+    "meaning": "category, class",
+    "hskLevel": 3,
+    "nouns": [
+      "问题",
+      "活动"
+    ]
+  },
+  {
+    "glyph": "级",
+    "pinyin": "jí",
+    "meaning": "level, grade, rank",
+    "hskLevel": 3,
+    "nouns": [
+      "台阶",
+      "考试"
+    ]
+  },
+  {
+    "glyph": "等",
+    "pinyin": "děng",
+    "meaning": "class, grade, rank",
+    "hskLevel": 3,
+    "nouns": [
+      "人"
+    ]
+  },
+  {
+    "glyph": "号",
+    "pinyin": "hào",
+    "meaning": "number, size",
+    "hskLevel": 2,
+    "nouns": [
+      "房间",
+      "鞋"
+    ]
+  },
+  {
+    "glyph": "位",
+    "pinyin": "wèi",
+    "meaning": "polite person counter",
+    "hskLevel": 2,
+    "nouns": [
+      "人",
+      "老师",
+      "客人"
+    ]
+  },
+  {
+    "glyph": "名",
+    "pinyin": "míng",
+    "meaning": "person (formal)",
+    "hskLevel": 3,
+    "nouns": [
+      "学生",
+      "记者",
+      "医生"
+    ]
+  },
+  {
+    "glyph": "项",
+    "pinyin": "xiàng",
+    "meaning": "item (abstract)",
+    "hskLevel": 3,
+    "nouns": [
+      "工作",
+      "任务"
+    ]
+  },
+  {
+    "glyph": "任",
+    "pinyin": "rèn",
+    "meaning": "term of office",
+    "hskLevel": 4,
+    "nouns": [
+      "总统",
+      "经理"
+    ]
+  },
+  {
+    "glyph": "届",
+    "pinyin": "jiè",
+    "meaning": "session, term",
+    "hskLevel": 4,
+    "nouns": [
+      "会议",
+      "学生"
+    ]
+  },
+  {
+    "glyph": "句",
+    "pinyin": "jù",
+    "meaning": "sentence, line",
+    "hskLevel": 2,
+    "nouns": [
+      "话",
+      "台词"
+    ]
+  },
+  {
+    "glyph": "顿",
+    "pinyin": "dùn",
+    "meaning": "meal",
+    "hskLevel": 3,
+    "nouns": [
+      "饭",
+      "早餐"
+    ]
+  },
+  {
+    "glyph": "场",
+    "pinyin": "chǎng",
+    "meaning": "event, match",
+    "hskLevel": 3,
+    "nouns": [
+      "电影",
+      "比赛"
+    ]
+  },
+  {
+    "glyph": "遍",
+    "pinyin": "biàn",
+    "meaning": "time (through)",
+    "hskLevel": 3,
+    "nouns": [
+      "书"
+    ]
+  }
+]

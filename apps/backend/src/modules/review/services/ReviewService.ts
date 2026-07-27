@@ -4,12 +4,13 @@
  * records SRS ratings, and computes next review dates.
  *
  * Data sources (Content Registry):
- *   - Tones: content/tones/tn_*.json
+ *   - Tones: content/tones/tones.json aggregate
+ *   - Radicals: content/radicals/radicals.json aggregate
  *   - Pinyin combos: PinyinCombination (Prisma junction table)
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 import {
-  readContentDir,
+  readAggregateContent,
   stripToneMarks,
   shuffleArray,
 } from "../../../shared/utils/contentUtils.js";
@@ -120,11 +121,17 @@ function buildPinyinItem(
 }
 
 /**
- * Get all available pinyin combos from the PinyinCombination junction table.
+ * Get all available pinyin syllables with character mappings (replaces deprecated PinyinCombination).
  */
 async function fetchPinyinCombos() {
-  return prisma.pinyinCombination.findMany({
-    where: { character: { not: null } },
+  return prisma.pinyinSyllable.findMany({
+    where: { isStandard: true },
+    include: {
+      characterMappings: {
+        include: { character: { select: { glyph: true } } },
+        take: 1,
+      },
+    },
   });
 }
 
@@ -167,8 +174,8 @@ function buildRadicalItem(
     id: srs?.id || `radical-${radical.id}`,
     itemType: "radical",
     itemId: radical.id!,
-    front: radical.name_pinyin!,
-    back: `${radical.glyph} (${radical.name_pinyin}) — ${radical.meaning}`,
+    front: (radical as any).namePinyin || (radical as any).name_pinyin || "",
+    back: `${radical.glyph} (${(radical as any).namePinyin || (radical as any).name_pinyin || ""}) — ${radical.meaning}`,
     category: "radicals",
     character: radical.glyph!,
     pinyinPlain: radical.id!,
@@ -280,7 +287,7 @@ export class ReviewService {
     const items: ReviewItemOutput[] = [];
 
     if (includeTones) {
-      const tones = await readContentDir("tones");
+      const tones = await readAggregateContent("tones", "tones.json");
       for (const tone of tones) {
         const key = `tone-syllable:${String(tone.number)}`;
         const srs = srsByKey.get(key) ?? null;
@@ -290,7 +297,7 @@ export class ReviewService {
     }
 
     if (includeRadicals) {
-      const radicals = await readContentDir("radicals");
+      const radicals = await readAggregateContent("radicals", "radicals.json");
       for (const radical of radicals) {
         const key = `radical:${radical.id}`;
         const srs = srsByKey.get(key) ?? null;
@@ -300,7 +307,7 @@ export class ReviewService {
     }
 
     if (includeCharacterRadical) {
-      const radicals = await readContentDir("radicals");
+      const radicals = await readAggregateContent("radicals", "radicals.json");
       for (const radical of radicals) {
         const metadata = radical.metadata as
           { hsk_characters?: Array<{ glyph: string; meaning?: string }> } | undefined;
@@ -320,16 +327,31 @@ export class ReviewService {
       const seenComboKeys = new Set<string>();
 
       for (const combo of combos) {
-        const initialId = combo.initialId?.replace("init_", "") || combo.initialId;
-        const finalId = combo.finalId?.replace("fin_", "") || combo.finalId;
-        const comboKey = `${initialId}-${finalId}`;
+        const initial = combo.initial || "";
+        const final = combo.final || "";
+        const comboKey = `${initial}-${final}`;
 
         if (seenComboKeys.has(comboKey)) continue;
         seenComboKeys.add(comboKey);
 
+        // Extract character and meaning from first character mapping, if available
+        const firstMapping = combo.characterMappings?.[0];
+        const characterGlyph = firstMapping?.character?.glyph ?? null;
+        const meaning = null; // PinyinSyllable doesn't carry meaning directly
+
+        const adapter = {
+          id: combo.id,
+          initialId: initial,
+          finalId: final,
+          tone: combo.tone,
+          syllable: combo.syllable,
+          character: characterGlyph,
+          meaning,
+        };
+
         const key = `pinyin-syllable:${comboKey}`;
         const srs = srsByKey.get(key) ?? null;
-        const item = buildPinyinItem(combo, srs, now, sevenDaysAgo, source, comboKey);
+        const item = buildPinyinItem(adapter, srs, now, sevenDaysAgo, source, comboKey);
         if (item) items.push(item);
       }
     }

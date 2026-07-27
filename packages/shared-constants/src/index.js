@@ -126,3 +126,11 @@ export const ERROR_MESSAGES = {
   TTS_ERROR: "Text-to-speech service error",
   CONVERSATION_ERROR: "Conversation service error",
 };
+
+// HSK Word/Character Counts
+export {
+  HSK_WORD_COUNTS,
+  HSK_CHAR_COUNTS,
+  getCumulativeWordCount,
+  getCumulativeCharCount,
+} from "./hsk-word-counts.js";

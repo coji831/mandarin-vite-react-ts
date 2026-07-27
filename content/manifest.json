@@ -1,39 +1,18 @@
 {
-  "version": 2,
-  "created_at": "2026-06-23",
+  "version": 4,
+  "created_at": "2026-07-24",
   "content_types": ["characters", "radicals", "words", "grammar", "chengyu", "pinyin", "tones"],
   "entity_counts": {
-    "characters": 11,
+    "characters": 2971,
     "radicals": 20,
-    "words": 0,
+    "words": 11092,
     "grammar": 0,
     "chengyu": 0,
-    "pinyin": 51,
+    "pinyin": 50,
     "tones": 5
   },
   "radicals": {
-    "files": [
-      "rad_0001.json",
-      "rad_0002.json",
-      "rad_0003.json",
-      "rad_0008.json",
-      "rad_0009.json",
-      "rad_0018.json",
-      "rad_0019.json",
-      "rad_0025.json",
-      "rad_0029.json",
-      "rad_0030.json",
-      "rad_0032.json",
-      "rad_0034.json",
-      "rad_0037.json",
-      "rad_0038.json",
-      "rad_0040.json",
-      "rad_0041.json",
-      "rad_0061.json",
-      "rad_0064.json",
-      "rad_0086.json",
-      "rad_0096.json"
-    ],
+    "files": ["radicals.json", "index.json"],
     "top20": [
       "rad_0001",
       "rad_0002",
@@ -56,5 +35,19 @@
       "rad_0086",
       "rad_0096"
     ]
+  },
+  "characters": {
+    "files": ["characters.json", "index.json"]
+  },
+  "words": {
+    "files": ["index.json", "words.json"]
+  },
+  "pinyin": {
+    "files": ["pinyin.json", "index.json", "pinyin-character-map.json"],
+    "initials": 18,
+    "finals": 32
+  },
+  "tones": {
+    "files": ["tones.json"]
   }
 }

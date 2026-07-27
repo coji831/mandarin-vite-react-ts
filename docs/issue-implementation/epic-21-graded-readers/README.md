@@ -4,7 +4,7 @@
 
 **Status:** In Progress
 
-**Last Update:** July 24, 2026
+**Last Update:** July 25, 2026
 
 ## Epic Summary
 
@@ -42,7 +42,7 @@
 
 **Status:** In Progress
 
-**Last Update:** July 24, 2026
+**Last Update:** July 25, 2026
 
 ## Technical Overview
 
@@ -210,7 +210,7 @@ Phase D (Character Practice UI/UX, stories 21.13–21.21) operates as three para
 
 ### Implementation Plan
 
-1. **Story 21.1** — Data Lifecycle (Phase A ✅, A1-A4 additions, B1-B2, Phase B migration scripts)
+1. **Story 21.1 (Redesigned)** — Data Lifecycle: Phase A schema (4 new models: MeasureWord, MeasureWordWord, Component, CharacterComponent), Phase B data population (Character ≥2,971 enriched, Word pinyin/meaning/wordClass ≥2,000, PinyinSyllable ≥1,300, PinyinCharacterMapping ≥2,971, MeasureWord ≥50, MeasureWordWord ≥100, Component ≥500, CharacterComponent ≥2,000), Phase C content regeneration (characters.json, words.json, manifest.json), verification gates
 2. **Story 21.2** — Character Content Generation (Make Me a Hanzi import, phonetic inference, classification, pinyin index)
 3. **Story 21.3** — Passage Generation Backend (Gemini, segmenter, sandhi rules, polyphone)
 4. **Story 21.4** — Reading UI + LexicalHub Phase 1 (Library, reading view, WordPopover, hub, frequency badges, HSK pills)

@@ -10,10 +10,10 @@ export interface ComboPair {
   tones: (string | null)[];
 }
 
-/** PinyinCombination row shape. */
+/** PinyinSyllable row shape (replaces deprecated PinyinCombination). */
 export interface PinyinComboRow {
-  initialId: string;
-  finalId: string;
+  initial: string | null;
+  final: string | null;
   tone: number;
   syllable: string;
 }

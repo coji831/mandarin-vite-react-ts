@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-07-27T04:09:58.290Z",
+  "phase1": {
+    "cc-cedict-entries.json": {
+      "entries": 124457,
+      "sha256": "b6645e4cf20ad067a9c0a2401eb33c8164f19a464e2e5821c2f43a128a6fe4f4"
+    },
+    "demo-passages.json": {
+      "entries": 6,
+      "sha256": "9aee8983e7907fac224c8bba870c9deb8a2de9f8c346360c823868df35a1cbe8"
+    },
+    "hsk-words.json": {
+      "entries": 11092,
+      "sha256": "ba4190ac8c581fb5bdb5adc59fc23ea2ad3f0ea9c51f39d2fc68d9824aff7d8c"
+    },
+    "measure-words.json": {
+      "entries": 52,
+      "sha256": "5de343240e3aeff50836a44443bd24afe5c229d1dd7cb801f166213499f98a05"
+    },
+    "mmah-entries.json": {
+      "entries": 9574,
+      "sha256": "75034f13d0ea1f1ed6291ece36636757bee03ed07c5bed274b25d9b6fc236690"
+    },
+    "pinyin-syllables.json": {
+      "entries": 2045,
+      "sha256": "9fa0139c0d526853d6bed7aec77b9b218c010f95a6912a005fb7ac1db7a45c2b"
+    },
+    "unihan-strokes.json": {
+      "entries": 102996,
+      "sha256": "a3aba26df95de66c169227c6e7fea07c59d2ca1d4268bb569ef2038107ef9d37"
+    }
+  },
+  "phase2": {
+    "character-components.json": {
+      "entries": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "character-hsk-levels.json": {
+      "entries": 2971,
+      "sha256": "e8e53d7bbe9c9ac4e7179c4f58271e0c37a86a202710ec9af71df67afe17b2a2"
+    },
+    "character-radicals.json": {
+      "entries": 2798,
+      "sha256": "2595e6fde98486091a92a4525dda16b62291d30e967a04cf2baf022e6281a78c"
+    },
+    "character-readings.json": {
+      "entries": 15582,
+      "sha256": "ef6aa4d543c7bb88c7a1e0cafce1e8b398d4c74bf7a74aa91ea66a31530f2406"
+    },
+    "characters.json": {
+      "entries": 103006,
+      "sha256": "f4e573e4cf483d244da3f59870237a38f5e7b906c2e43ed5598857738bf63149"
+    },
+    "component-entries.json": {
+      "entries": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "demo-passages.json": {
+      "entries": 6,
+      "sha256": "7af42424269eaaea4e5eb650c1f353db935e9d57f2acee6a7550603947178dba"
+    },
+    "measure-word-words.json": {
+      "entries": 135,
+      "sha256": "ac31be7f7d445aa0290278f8faba36660fd78bf6862696af17785421aae85cc0"
+    },
+    "measure-words.json": {
+      "entries": 52,
+      "sha256": "94c699bd0fc13ff90bb71ceb3566d39e6ff6611e1fefdc1d1f174553dbb53a67"
+    },
+    "pinyin-character-mappings.json": {
+      "entries": 11797,
+      "sha256": "ecd25a9a21c9830f1ccf2067093cda4a66e17cd6e90adfea28bc1ab34bfa51cf"
+    },
+    "pinyin-syllables.json": {
+      "entries": 2045,
+      "sha256": "1bf0b8dc8b339c6fc82549e617e87499432eaa5b54160162b6c67f1490306886"
+    },
+    "word-characters.json": {
+      "entries": 21715,
+      "sha256": "d942c3974b1fb1e91d1599652a997acc36354f6fcda385f35377420459adb3e9"
+    },
+    "word-hsk-levels.json": {
+      "entries": 10943,
+      "sha256": "3d0901d4689ade4747a836e1a5e4b78eeaee043e3a021fb0edd334cc5c8dc7c4"
+    },
+    "words.json": {
+      "entries": 10943,
+      "sha256": "364d85a8d35c3d8d466038cfa5c4c58ccbcf30f2aa75fe2bbdfe9e3e5fd49b38"
+    }
+  }
+}

@@ -10,8 +10,8 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 import {
-  readContentDir,
-  readContentFiles,
+  readAggregateContent,
+  readAggregateContentWhere,
   readContentFile,
 } from "../../../shared/utils/contentUtils.js";
 import type { ContentFile } from "../../../shared/utils/contentUtils.js";
@@ -27,24 +27,24 @@ import type {
 const logger = createLogger("FoundationsService");
 
 /**
- * Group PinyinCombination records by initial+final pair into 5-slot tone arrays.
- * @param combinations - Raw records from PinyinCombination table
+ * Group PinyinSyllable records by initial+final pair into 5-slot tone arrays.
+ * @param syllables - Raw records from PinyinSyllable table (replaces deprecated PinyinCombination)
  * @returns Pool-shaped combo objects with tones[5] arrays
  */
-function groupCombosByPair(combinations: PinyinComboRow[]): ComboPair[] {
+function groupCombosByPair(syllables: PinyinComboRow[]): ComboPair[] {
   const comboMap = new Map<string, { initial: string; final: string; tones: (string | null)[] }>();
-  for (const c of combinations) {
-    const key = `${c.initialId}-${c.finalId}`;
+  for (const s of syllables) {
+    const key = `${s.initial ?? ""}-${s.final ?? ""}`;
     if (!comboMap.has(key)) {
-      comboMap.set(key, { initial: c.initialId, final: c.finalId, tones: [] });
+      comboMap.set(key, { initial: s.initial ?? "", final: s.final ?? "", tones: [] });
     }
     const entry = comboMap.get(key)!;
-    const toneIdx = c.tone === 0 ? 4 : c.tone - 1;
-    entry.tones[toneIdx] = c.syllable;
+    const toneIdx = s.tone === 0 ? 4 : s.tone - 1;
+    entry.tones[toneIdx] = s.syllable;
   }
   return Array.from(comboMap.values()).map((c) => ({
-    initial: c.initial.replace("init_", ""),
-    final: c.final.replace("fin_", ""),
+    initial: c.initial.replace(/^init_/, ""),
+    final: c.final.replace(/^fin_/, ""),
     tones: Array.from({ length: 5 }, (_, i) => c.tones[i] || null),
   }));
 }
@@ -58,46 +58,48 @@ export class FoundationsService {
    */
   async getPinyinTonesPool(): Promise<PinyinTonesPool> {
     try {
-      const [initials, finals, toneInfo, toneReference] = await Promise.all([
-        readContentFiles("pinyin", "init_"),
-        readContentFiles("pinyin", "fin_"),
-        readContentFiles("tones", "tn_"),
+      const [allPinyin, toneInfo, toneReference] = await Promise.all([
+        readAggregateContent<ContentFile>("pinyin", "pinyin.json"),
+        readAggregateContent<ContentFile>("tones", "tones.json"),
         readContentFile("references", "tone-reference.json"),
       ]);
 
-      // Read all combinations from PinyinCombination (Prisma junction table)
-      const combinations = await prisma.pinyinCombination.findMany();
+      // Filter by phoneme type — pinyin.json aggregate uses phonemeType field
+      const initials = allPinyin.filter((p) => p.phonemeType === "initial");
+      const finals = allPinyin.filter((p) => p.phonemeType === "final");
+
+      // Read all syllables from PinyinSyllable (replaces deprecated PinyinCombination)
+      const syllables = await prisma.pinyinSyllable.findMany();
 
       // Group by initial+final for the pool shape (5-slot tone array per combo)
-      const combined = groupCombosByPair(combinations);
+      const combined = groupCombosByPair(syllables);
 
       return {
         initials: initials.map((i: ContentFile) => ({
           id: i.pinyin!,
           pinyin: i.pinyin!,
-          ipa: i.ipa || null,
-          description:
-            (i.metadata as { pronunciation_guide?: string } | undefined)?.pronunciation_guide ||
-            i.description ||
-            "",
+          ipa: (i as any).ipa || null,
+          description: (i as any).pronunciationGuide || i.description || "",
         })),
         finals: finals.map((f: ContentFile) => ({
           id: f.pinyin!,
           pinyin: f.pinyin!,
-          type: f.category === "simple" || f.category === "simple_final" ? "simple" : "compound",
-          description:
-            (f.metadata as { pronunciation_guide?: string } | undefined)?.pronunciation_guide || "",
+          type:
+            (f as any).type === "simple" || (f as any).type === "simple_final"
+              ? "simple"
+              : "compound",
+          description: (f as any).pronunciationGuide || "",
         })),
         combinations: combined,
         toneInfo: toneInfo.map((t: ContentFile) => ({
           number: t.number!,
           name: t.name!,
-          mark: t.mark!,
-          pinyinExample: t.example_syllable!,
-          chineseExample: t.example_character!,
-          description: t.pitch_description!,
-          contour: t.contour || null,
-          color: t.color!,
+          mark: (t as any).mark || "",
+          pinyinExample: (t as any).exampleSyllable || "",
+          chineseExample: (t as any).exampleCharacter || "",
+          description: (t as any).pitchDescription || "",
+          contour: (t as any).contour || null,
+          color: (t as any).color || "",
         })),
         tonePairs: (toneReference.tonePairs as unknown[]) || [],
         toneRules: (toneReference.toneRules as unknown[]) || [],
@@ -109,18 +111,21 @@ export class FoundationsService {
   }
 
   /**
-   * Get a pinyin-to-character mapping from PinyinCombination.
+   * Get a pinyin-to-character mapping from PinyinCharacterMapping.
    * @returns Map of syllable -> character
    */
   async getPinyinCharacterMap(): Promise<Record<string, string | null>> {
-    const combos = await prisma.pinyinCombination.findMany({
-      where: { character: { not: null } },
-      select: { syllable: true, character: true },
+    const mappings = await prisma.pinyinCharacterMapping.findMany({
+      include: {
+        pinyinSyllable: { select: { syllablePretty: true } },
+        character: { select: { glyph: true } },
+      },
     });
     const map: Record<string, string | null> = {};
-    for (const combo of combos) {
-      if (!map[combo.syllable]) {
-        map[combo.syllable] = combo.character;
+    for (const mapping of mappings) {
+      const syl = mapping.pinyinSyllable.syllablePretty;
+      if (syl && !map[syl]) {
+        map[syl] = mapping.character.glyph;
       }
     }
     return map;
@@ -187,9 +192,9 @@ export class FoundationsService {
         };
       }
 
-      // Fallback: scan JSON files
-      const characters = await readContentDir("characters");
-      const match = characters.find((c) => c.glyph === glyph);
+      // Fallback: scan aggregate characters file
+      const characters = await readAggregateContent("characters", "characters.json");
+      const match = characters.find((c: any) => c.glyph === glyph);
       if (!match) return null;
 
       const readings: CharacterReading[] = (match.readings || []).map(

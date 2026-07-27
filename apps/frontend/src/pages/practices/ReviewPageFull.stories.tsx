@@ -41,7 +41,7 @@ const MOCK_PINYIN_ITEMS: ReviewItem[] = [
   {
     id: "r3",
     itemType: "pinyin-syllable",
-    itemId: "ch_0342",
+    itemId: "ch_27809",
     front: "xué xí",
     back: "study",
     character: "学习",
@@ -319,7 +319,7 @@ const MOCK_REVIEW_ITEMS = [
     pinyin: "xué xí",
     meaning: "study",
     itemType: "character",
-    itemId: "ch_0342",
+    itemId: "ch_27809",
   },
 ];
 

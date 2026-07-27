@@ -35,3 +35,16 @@ export function ensureDir(dir: string): void {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
+
+/** Split a string into individual Unicode characters (grapheme clusters). */
+export function charsOf(s: string): string[] {
+  return [...s];
+}
+
+/**
+ * Resolve `__dirname` from `import.meta.url`.
+ * Usage: const __dirname = getDirname(import.meta.url);
+ */
+export function getDirname(importMetaUrl: string): string {
+  return path.dirname(fileURLToPath(importMetaUrl));
+}

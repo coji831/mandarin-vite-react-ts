@@ -20,7 +20,7 @@
 - Phonetic Clusters browser
 
 **Status:** In Progress
-**Last Update:** July 24, 2026
+**Last Update:** July 25, 2026
 
 ## Background
 
@@ -40,12 +40,14 @@ The graded readers epic introduces an extensive reading experience to the Mandar
 - ✅ Design token system (CSS variables in `globals.css`)
 - ✅ Shared components: Card, Grid, Modal, LoadingScreen, ErrorScreen, Tabs
 - ✅ Storybook + MSW for visual component testing
-- ✅ Passage/reading models in Prisma schema (Story 21.1 — Phase A complete)
+- ✅ Passage/reading models in Prisma schema (Story 21.1 — Phase A schema complete)
 - ✅ Word index seeded with 11,092 words from HSK 3.0 CSV (Story 21.1)
-- ✅ PinyinSyllable table seeded with ≥1,300 entries
+- ⏳ PinyinSyllable table seeding (≥1,300 entries) — pending Story 21.1 Phase B population
 - ✅ pgvector extension enabled on Neon
-- ✅ CharacterRadical.decompositionType populated for all characters
-- ✅ Character.classification populated for pictographs/ideographs
+- ⏳ CharacterRadical.decompositionType schema exists — population pending Story 21.1 Phase B enrichment
+- ⏳ Character.classification — schema exists with 9 characters classified; bulk population (≥500) pending Story 21.1 Phase B
+- ⏳ Character enrichment (strokeCount, pinyin, etymology, frequencyRank, commonWords, phoneticComponentId) — pending Story 21.1 Phase B data population
+- ⏳ MeasureWord + Component models — pending Story 21.1 new schema addition
 - ✅ Progress table dropped per clean-slate migration
 - ❌ GeminiService capped at 500 tokens — needs `generatePassage()` method
 
@@ -120,14 +122,14 @@ This epic consists of the following user stories:
 
 This epic is divided into stories based on a dependency chain updated by the clean-slate data model redesign:
 
-- **Story 21.1 (Data Lifecycle)** is the critical prerequisite — establishes the foundational schema (Word, Character, PinyinSyllable, Component scaffold), seeds all reference data, and runs Phase B migration scripts. Enhanced with A1-A4 schema additions and B1-B2 content generation.
+- **Story 21.1 (Data Lifecycle)** is the critical prerequisite — establishes the foundational schema (Word, Character, PinyinSyllable, MeasureWord, Component scaffold, CharacterComponent, PinyinCharacterMapping), seeds all reference data (≥2,971 characters, ≥1,300 pinyin syllables, ≥50 measure words, ≥500 components, ≥2,000 decomposition records), enriches character fields (strokeCount, classification, etymology, frequencyRank, commonWords, phoneticComponentId, pinyin readings), enriches word fields (pinyin, meaning, wordClass for ≥2,000 words), and regenerates aggregate content files. Redesigned scope adds 4 new models (MeasureWord, MeasureWordWord, Component, CharacterComponent), Make Me a Hanzi import pipeline for decomposition data, and CC-CEDICT/Unihan import for pinyin/definitions.
 - **Story 21.2 (Character Content Generation)** — Depends on 21.1. Imports Make Me a Hanzi decomposition data, infers phonetic components, populates character classification and CharacterRadical.decompositionType, generates the pinyin→character reverse index. Blocks 21.4 (frequency badges/HSK pills) and 21.6 (DB-driven phonetic clusters).
 - **Story 21.3 (Passage Generation Backend)** depends on 21.1 only. Builds the server-side foundation with Gemini integration, sandhi-aware segmentation, and polyphone disambiguation.
 - **Story 21.4 (Reading UI + LexicalHub)** depends on 21.1 and 21.2 — consumes passage API and enriched character data. Renders the reading experience with frequency badges, HSK pills, phonetic decomposition layout.
 - **Story 21.5 (Audio Sync)** depends on 21.3 — uses ToneSandhiService from 21.3 for sandhi-aware TTS. Can proceed in parallel with 21.4.
 - **Story 21.6 (Phonetic Clusters)** — DB-driven clusters. Depends on 21.2 (character enrichment with phonetic component data). Phase 2 gated (was Phase 3). Can run in parallel with 21.4.
 - **Story 21.7 (Reading Progress)** — Depends on 21.4 and 21.5. Minimal changes from original scope.
-- **Story 21.8 (Measure Word Foundation)** — Depends on 21.1 (schema foundation) and 21.2 (character enrichment for supporting data). Creates MeasureWord + MeasureWordWord models (Phase B4), seeds ~50 HSK 1-3 common measure words, and exposes a `GET /api/v1/words/:id/measure-words` endpoint. Not on the critical path for 21.4 reading UI, but blocks measure word display integration in LexicalHub. Can proceed in parallel with 21.4-21.7.
+- **Story 21.8 (Measure Word Foundation)** — Depends on 21.1 (MeasureWord + MeasureWordWord schema and seed data now part of 21.1). Consumes the already-seeded data to expose a `GET /api/v1/words/:id/measure-words` endpoint and integrate measure word display into LexicalHub. No longer needs to create models or seed data — those responsibilities moved to 21.1. Not on the critical path for 21.4 reading UI, but blocks measure word display integration in LexicalHub. Can proceed in parallel with 21.4-21.7.
 - **Story 21.9 (Phase Gate Calibration)** — Standalone — no data dependencies. Raises IME Simulator threshold from 70%→80%, implements a Phase 3→4 comprehension gate (≥60% on 5 passage questions + ≥90% known words), and adds a character count ≥500 gate check for Phase 2→3. Should complete before 21.4 ships to ensure correct gating for reading content.
 - **Story 21.10 (Characters Backend Module)** — Depends on 21.1 and 21.2. Creates `modules/characters/` following the modulith pattern with 6 read-only endpoints (character detail, phonetic component, homophones, decomposition, search, frequency). All data already exists in tables populated by 21.1+21.2 — purely an API wiring task. Blocks 21.4 (LexicalHub needs character API) and 21.6 (Phonetic Clusters needs phonetic component API). Should be implemented before those stories complete their backend work.
 - **Story 21.11 (Data Consistency Cleanup)** — Depends on 21.1 (CharacterRadical table) and 21.2 (character data). Strips `metadata.hsk_characters` from radical JSON files, adds `GET /api/v1/radicals/:id/characters` endpoint, updates Radical Detail Card to consume API instead of JSON, adds CI validation. Independent of most other stories — can proceed in parallel with 21.4-21.9. Touches Epic 19 surface (Radical Detail Card) — coordinate frontend changes.
@@ -168,16 +170,25 @@ The 9 new stories are organized into three parallel tracks that can proceed conc
 - [ ] Test coverage meets minimums: unit tests for all new services/utilities, Storybook stories covering loading/empty/error/populated states for every new component
 - [ ] No regressions in existing CharacterHub usage
 - [ ] Rate limiting enforced: 5 generations/day for auth users, 0 for guests
-- [ ] Character coverage milestone: 500+ characters with metadata.classification populated
+- [ ] Character table populated with ≥2,971 unique characters from HSK vocabulary
+- [ ] Character enrichment fields populated: strokeCount (100%), classification (≥500), etymology (≥500), frequencyRank (≥2,971), commonWords (all chars), phoneticComponentId (all phono-semantic), pinyin readings (≥2,000)
+- [ ] Word enrichment fields populated: pinyin (≥2,000), meaning (≥2,000), wordClass (≥2,000)
 - [ ] PinyinSyllable table seeded with ≥1,300 entries
+- [ ] PinyinCharacterMapping table populated with ≥2,971 entries
 - [ ] CharacterRadical.decompositionType populated for all characters ('semantic' | 'phonetic' | 'remaining')
-- [ ] Character.classification populated for pictographs, ideographs, and phono-semantic compounds
+- [ ] Character.classification populated for ≥500 characters (pictographs, ideographs, phono-semantic compounds)
+- [ ] Component scaffold populated with ≥500 components
+- [ ] CharacterComponent decomposition data populated for ≥2,000 characters
+- [ ] Measure word table seeded with ≥50 HSK 1-3 common measure words
+- [ ] MeasureWordWord noun-pairing table populated with ≥100 correct measure word → noun associations
 - [ ] pgvector extension enabled on Neon
 - [ ] Deprecated tables dropped: Progress, VocabularyWord, VocabularyList, WordList, Category, PinyinCombination, ContentItem (Phase C)
 - [ ] Phase C table drops executed immediately (no 2-week safety window — clean-slate drops old data)
+- [ ] `content/characters/characters.json` regenerated with ≥2,971 enriched entries
+- [ ] `content/words/words.json` and `content/words/index.json` refreshed
+- [ ] `content/manifest.json` updated to reflect all entity counts
+- [ ] Verification gates passed: SQL count queries match targets, file sizes within range, spot-checks pass
 - [ ] Design token compliance verified via `npm run design-audit`
-- [ ] Measure word table seeded with ≥50 HSK 1-3 common measure words
-- [ ] MeasureWordWord noun-pairing table populated with correct measure word → noun associations
 - [ ] `GET /api/v1/words/:id/measure-words` endpoint returns measure words for a given noun
 - [ ] IME Simulator threshold raised from 70%→80%
 - [ ] Phase 3→4 comprehension gate implemented: ≥60% on 5 passage questions + ≥90% known words
@@ -309,7 +320,7 @@ The 9 new stories are organized into three parallel tracks that can proceed conc
 
 ## Implementation Plan
 
-1. Data Lifecycle — Seed word index, classification tables, A1-A4 schema additions, B1-B2 content generation, execute Phase B migration scripts
+1. Data Lifecycle (Redesigned) — Add 4 new models (MeasureWord, MeasureWordWord, Component, CharacterComponent), populate Character table ≥2,971, enrich all character fields (strokeCount, classification, etymology, frequencyRank, commonWords, phoneticComponentId, pinyin readings), enrich Word fields (pinyin, meaning, wordClass for ≥2,000), seed PinyinSyllable ≥1,300 + PinyinCharacterMapping ≥2,971, seed MeasureWord ≥50 + MeasureWordWord ≥100, import Make Me a Hanzi decomposition data for Component scaffold ≥500 + CharacterComponent ≥2,000, import CC-CEDICT/Unihan for pinyin/definitions, regenerate all aggregate content files, run verification gates
 2. Character Content Generation — Make Me a Hanzi import, phonetic inference, pinyin index, character classification
 3. Passage Generation Backend — Gemini integration, segmenter, sandhi rules engine, polyphone disambiguation, caching, rate limiting
 4. Reading UI + LexicalHub Phase 1 — Library view, reading view, inline WordPopover, unified LexicalHub, frequency badges, HSK pills

@@ -25,7 +25,7 @@ describe("MnemonicsService", () => {
   const testGlyph = "好";
   const testUserId = "user-1";
   const testStory = "A woman (女) holding a child (子) represents goodness.";
-  const testRadicalIds = ["ch_hsk_hao"];
+  const testRadicalIds = ["ch_1001"];
 
   const mockRecord = {
     id: "mnemonic-1",
@@ -132,7 +132,7 @@ describe("MnemonicsService", () => {
   describe("generateMnemonic", () => {
     it("should call Gemini and persist when generation succeeds", async () => {
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       mockGeminiService.generateText.mockResolvedValue(testStory);
       mockRepository.upsert.mockResolvedValue(mockRecord);
@@ -156,7 +156,7 @@ describe("MnemonicsService", () => {
 
     it("should return fallback when Gemini fails", async () => {
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       mockGeminiService.generateText.mockRejectedValue(new Error("API error"));
       mockCacheService.get.mockResolvedValue(null);
@@ -173,7 +173,7 @@ describe("MnemonicsService", () => {
 
     it("should include id in response", async () => {
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       mockGeminiService.generateText.mockResolvedValue(testStory);
       mockRepository.upsert.mockResolvedValue(mockRecord);
@@ -188,7 +188,7 @@ describe("MnemonicsService", () => {
 
     it("should release lock after generation", async () => {
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       mockGeminiService.generateText.mockResolvedValue(testStory);
       mockRepository.upsert.mockResolvedValue(mockRecord);
@@ -207,7 +207,7 @@ describe("MnemonicsService", () => {
     it("should update story and return response", async () => {
       const updatedStory = "An updated mnemonic story.";
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       const updatedRecord = { ...mockRecord, story: updatedStory, isEdited: true };
       mockRepository.upsert.mockResolvedValue(updatedRecord);
@@ -242,7 +242,7 @@ describe("MnemonicsService", () => {
   describe("toResponse", () => {
     it("should include id in the output via updateMnemonic", async () => {
       mockRepository.getCharacterRadicals.mockResolvedValue([
-        { characterGlyph: testGlyph, radicalId: "ch_hsk_hao" },
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
       ]);
       const updatedRecord = { ...mockRecord, isEdited: true };
       mockRepository.upsert.mockResolvedValue(updatedRecord);

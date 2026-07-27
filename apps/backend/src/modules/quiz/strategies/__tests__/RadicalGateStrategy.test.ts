@@ -5,9 +5,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock contentUtils before importing the strategy
-const mockReadContentFiles = vi.fn();
+const mockReadAggregateContent = vi.fn();
 vi.mock("../../../../shared/utils/contentUtils.js", () => ({
-  readContentFiles: mockReadContentFiles,
+  readAggregateContent: mockReadAggregateContent,
   shuffleArray: (arr: any[]) => [...arr].sort(() => Math.random() - 0.5),
 }));
 
@@ -19,75 +19,63 @@ const mockRadicalFiles = [
     id: "rad_0001",
     glyph: "一",
     meaning: "one",
-    is_recommended: true,
-    name_pinyin: "yī",
-    metadata: {
-      hsk_characters: [
-        { glyph: "一", pinyin: "yī", meaning: "one" },
-        { glyph: "三", pinyin: "sān", meaning: "three" },
-      ],
-    },
+    isRecommended: true,
+    namePinyin: "yī",
+    hskCharacters: [
+      { glyph: "一", pinyin: "yī", meaning: "one" },
+      { glyph: "三", pinyin: "sān", meaning: "three" },
+    ],
   },
   {
     id: "rad_0008",
     glyph: "氵",
     meaning: "water",
-    is_recommended: true,
-    name_pinyin: "sāndiǎnshuǐ",
-    metadata: {
-      hsk_characters: [
-        { glyph: "河", pinyin: "hé", meaning: "river" },
-        { glyph: "海", pinyin: "hǎi", meaning: "sea" },
-        { glyph: "江", pinyin: "jiāng", meaning: "river" },
-      ],
-    },
+    isRecommended: true,
+    namePinyin: "sāndiǎnshuǐ",
+    hskCharacters: [
+      { glyph: "河", pinyin: "hé", meaning: "river" },
+      { glyph: "海", pinyin: "hǎi", meaning: "sea" },
+      { glyph: "江", pinyin: "jiāng", meaning: "river" },
+    ],
   },
   {
     id: "rad_0018",
     glyph: "口",
     meaning: "mouth",
-    is_recommended: true,
-    name_pinyin: "kǒu",
-    metadata: {
-      hsk_characters: [
-        { glyph: "吃", pinyin: "chī", meaning: "eat" },
-        { glyph: "喝", pinyin: "hē", meaning: "drink" },
-        { glyph: "叫", pinyin: "jiào", meaning: "call" },
-      ],
-    },
+    isRecommended: true,
+    namePinyin: "kǒu",
+    hskCharacters: [
+      { glyph: "吃", pinyin: "chī", meaning: "eat" },
+      { glyph: "喝", pinyin: "hē", meaning: "drink" },
+      { glyph: "叫", pinyin: "jiào", meaning: "call" },
+    ],
   },
   {
     id: "rad_0061",
     glyph: "心",
     meaning: "heart",
-    is_recommended: true,
-    name_pinyin: "xīn",
-    metadata: {
-      hsk_characters: [
-        { glyph: "想", pinyin: "xiǎng", meaning: "think" },
-        { glyph: "思", pinyin: "sī", meaning: "think" },
-      ],
-    },
+    isRecommended: true,
+    namePinyin: "xīn",
+    hskCharacters: [
+      { glyph: "想", pinyin: "xiǎng", meaning: "think" },
+      { glyph: "思", pinyin: "sī", meaning: "think" },
+    ],
   },
   {
     id: "rad_0086",
     glyph: "火",
     meaning: "fire",
-    is_recommended: false,
-    name_pinyin: "huǒ",
-    metadata: {
-      hsk_characters: [{ glyph: "火", pinyin: "huǒ", meaning: "fire" }],
-    },
+    isRecommended: false,
+    namePinyin: "huǒ",
+    hskCharacters: [{ glyph: "火", pinyin: "huǒ", meaning: "fire" }],
   },
   {
     id: "rad_0096",
     glyph: "犭",
     meaning: "animal",
-    is_recommended: false,
-    name_pinyin: "quǎn",
-    metadata: {
-      hsk_characters: [{ glyph: "猫", pinyin: "māo", meaning: "cat" }],
-    },
+    isRecommended: false,
+    namePinyin: "quǎn",
+    hskCharacters: [{ glyph: "猫", pinyin: "māo", meaning: "cat" }],
   },
 ];
 
@@ -104,7 +92,7 @@ describe("RadicalGateStrategy", () => {
   });
 
   it("generates questions from radical content files", async () => {
-    mockReadContentFiles.mockResolvedValue(mockRadicalFiles);
+    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
     const questions = await radicalGateStrategy.generateQuestions();
 
     expect(questions.length).toBeGreaterThanOrEqual(10);
@@ -119,7 +107,7 @@ describe("RadicalGateStrategy", () => {
   });
 
   it("all questions have required structure", async () => {
-    mockReadContentFiles.mockResolvedValue(mockRadicalFiles);
+    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
     const questions = await radicalGateStrategy.generateQuestions();
 
     for (const q of questions) {
@@ -134,7 +122,7 @@ describe("RadicalGateStrategy", () => {
   });
 
   it("Tier 2 questions have a prompt", async () => {
-    mockReadContentFiles.mockResolvedValue(mockRadicalFiles);
+    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
     const questions = await radicalGateStrategy.generateQuestions();
     const tier2 = questions.filter((q) => q.category === "radical-predictor");
 
@@ -145,7 +133,7 @@ describe("RadicalGateStrategy", () => {
   });
 
   it("throws error when no radical files found", async () => {
-    mockReadContentFiles.mockResolvedValue([]);
+    mockReadAggregateContent.mockResolvedValue([]);
     await expect(radicalGateStrategy.generateQuestions()).rejects.toThrow(
       "Failed to load radical content files",
     );

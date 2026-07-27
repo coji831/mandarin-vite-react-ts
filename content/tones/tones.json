@@ -1,0 +1,91 @@
+[
+  {
+    "id": "tn_0",
+    "number": 0,
+    "name": "Neutral",
+    "mark": "·",
+    "contour": [],
+    "pitchDescription": "Light/unstressed",
+    "exampleSyllable": "ma",
+    "exampleCharacter": "吗",
+    "color": "#9E9E9E",
+    "pronunciationGuide": "Tone 0 (neutral tone): Light and unstressed, with no fixed pitch contour.",
+    "commonIssues": ""
+  },
+  {
+    "id": "tn_1",
+    "number": 1,
+    "name": "First Tone",
+    "mark": "ˉ",
+    "contour": [
+      4,
+      4.5,
+      5,
+      5,
+      5
+    ],
+    "pitchDescription": "High level",
+    "exampleSyllable": "mā",
+    "exampleCharacter": "妈",
+    "color": "#FF4444",
+    "pronunciationGuide": "Think of tone 1 pitch contour: High level.",
+    "commonIssues": ""
+  },
+  {
+    "id": "tn_2",
+    "number": 2,
+    "name": "Second",
+    "mark": "ˊ",
+    "contour": [
+      3,
+      3.5,
+      4,
+      4.5,
+      5
+    ],
+    "pitchDescription": "Rising",
+    "exampleSyllable": "má",
+    "exampleCharacter": "麻",
+    "color": "#ffaa00",
+    "pronunciationGuide": "Think of tone 2 pitch contour: Rising.",
+    "commonIssues": ""
+  },
+  {
+    "id": "tn_3",
+    "number": 3,
+    "name": "Third",
+    "mark": "ˇ",
+    "contour": [
+      2,
+      1,
+      0.5,
+      1,
+      4
+    ],
+    "pitchDescription": "Falling-rising",
+    "exampleSyllable": "mǎ",
+    "exampleCharacter": "马",
+    "color": "#44aa44",
+    "pronunciationGuide": "Think of tone 3 pitch contour: Falling-rising.",
+    "commonIssues": ""
+  },
+  {
+    "id": "tn_4",
+    "number": 4,
+    "name": "Fourth Tone",
+    "mark": "ˋ",
+    "contour": [
+      5,
+      4.5,
+      3,
+      1,
+      0
+    ],
+    "pitchDescription": "Falling",
+    "exampleSyllable": "mà",
+    "exampleCharacter": "骂",
+    "color": "#2196F3",
+    "pronunciationGuide": "Think of tone 4 pitch contour: Falling.",
+    "commonIssues": ""
+  }
+]
