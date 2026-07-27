@@ -38,6 +38,9 @@ import { createProgressionModule } from "../modules/progression/container.js";
 import { createQuizModule } from "../modules/quiz/container.js";
 import { createHealthModule } from "../modules/health/container.js";
 import { createTtsModule } from "../modules/tts/container.js";
+import { createReadersModule } from "../modules/readers/container.js";
+import { SegmenterService } from "../modules/readers/services/SegmenterService.js";
+import { PassageGenerationService } from "../modules/readers/services/PassageGenerationService.js";
 
 // ── 2. Infrastructure Singletons ───────────────────────────────────────────
 
@@ -82,6 +85,16 @@ const ttsModule = createTtsModule({ ttsService });
 
 const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
 
+// Readers module — uses SegmenterService and PassageGenerationService singletons
+export const segmenterService = new SegmenterService(cacheService);
+export const passageGenerationService = new PassageGenerationService(geminiService);
+
+const readersModule = createReadersModule({
+  passageGenerationService,
+  segmenterService,
+  cacheService,
+});
+
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const ttsController = ttsModule.controller;
 export const foundationsController = foundationsModule.controller;
@@ -92,3 +105,5 @@ export const reviewController = reviewModule.controller;
 export const progressionController = progressionModule.controller;
 export const quizController = quizModule.controller;
 export const healthController = healthModule.controller;
+export const readersController = readersModule.controller;
+export { readersModule };

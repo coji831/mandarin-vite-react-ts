@@ -9,11 +9,11 @@ Build the backend passage generation system: Gemini API integration, backend seg
 **Files:**
 
 - `apps/backend/src/modules/readers/` — container.ts, api/ (ReadersController.ts, ReadersRoutes.ts), services/ReadersService.ts, repositories/ReadersRepository.ts, types/readers.ts, api/**tests**/ReadersController.test.ts
+- `apps/backend/src/modules/readers/types/readers-errors.ts` — typed error classes for Gemini, Segmenter, and reader-specific failures
 - `apps/backend/src/app/container.ts` — wire readersModule with dependencies (geminiService, segmenterService, progressionService)
 - `apps/backend/src/app/routes.ts` — register readers middleware + routes
 - `apps/backend/src/shared/services/GeminiService.ts` — add `generatePassage()` method
 - `apps/backend/src/modules/readers/services/SegmenterService.ts` — new: backend segmenter with word index
-- `apps/backend/src/modules/readers/middleware/` — error-catching middleware for Gemini, TTS, Segmenter
 - `packages/shared-constants/src/index.js` — add readers route patterns
 - `packages/shared-constants/src/index.d.ts` — add type declarations
 - `docs/guides/prompt-templates.md` — prompt templates for 5 topics
@@ -37,11 +37,12 @@ Build the backend passage generation system: Gemini API integration, backend seg
 
 ### GeminiService Modification
 
-- Add `generatePassage(hskLevel, knownWords, targetNewWords)` method
+- Add `generatePassage(prompt: string)` method
 - Accepts `maxTokens` parameter (default 1024)
 - Returns structured JSON (sentences with pre-split words + pinyin)
 - Does NOT apply the 500-char substring truncation
 - Uses the existing `GeminiClient.generateText()` under the hood
+- knownWords/targetNewWords derived server-side from CharacterProgress data — see SegmenterService for HSK level derivation
 
 ### Prompt Format
 
@@ -53,18 +54,20 @@ Gemini returns JSON:
 
 Backend parses, segments, caches. TODO: RAG for future.
 
-### Error-catching Middleware
+### Error Handling
 
-- Error-catching middleware per external service (Gemini, TTS, Segmenter)
-- Typed error classes
+- Typed error classes in `modules/readers/types/readers-errors.ts` for Gemini, Segmenter, and reader-specific failures
+- Error-catching handled inline in ReadersService or via `shared/middleware/errorMiddleware.ts`
+- TTS errors are out of scope for this module (separate TTS module)
 - Consumers handle at their level
 - User sees fallback UI per error type
 
 ### Rate Limiting
 
-- Authenticated: 5 generations/day
+- **Daily cap**: `express-rate-limit` with `windowMs: 24*60*60*1000, max: 5, keyGenerator: (req) => req.userId` (follows mnemonics module pattern)
+- **Total storage cap**: DB check before insert — `COUNT WHERE generatedById = req.userId`, reject if ≥ 5
 - Guest: 0 (cannot generate)
-- Max total passages per user (not per-level)
+- Seeded demo passages (`generatedById = null`) do not count toward user caps
 
 ## Architecture Integration
 
@@ -72,8 +75,8 @@ Backend parses, segments, caches. TODO: RAG for future.
 [Story 21.3: Passage Generation Backend]
 ├── Controllers → ReadersController (GET passages, GET passage, POST generate)
 ├── Services → ReadersService (orchestration), SegmenterService (word segmentation)
-├── Middleware → Error-catching for Gemini/TTS/Segmenter
-└── GeminiService → generatePassage() extension
+├── Errors → Typed error classes in modules/readers/types/readers-errors.ts
+└── GeminiService → generatePassage(prompt) extension
 
 Consumed by: Story 21.4 (Reading UI frontend)
 ```

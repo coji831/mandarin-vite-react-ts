@@ -1,0 +1,74 @@
+/**
+ * @file apps/backend/src/modules/readers/api/readersRoutes.ts
+ * @description Routes for reading passage CRUD and generation operations.
+ *
+ * Controller is injected via factory function (createReadersRoutes).
+ * GET routes require auth; POST generate requires auth + daily rate limit.
+ */
+
+import express from "express";
+import type { Request, Response } from "express";
+import rateLimit from "express-rate-limit";
+import { requireAuth } from "../../../shared/middleware/authMiddleware.js";
+import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import type { ReadersController } from "./ReadersController.js";
+
+/**
+ * Create the readers router with controller injection.
+ */
+export function createReadersRoutes(readersController: ReadersController): express.Router {
+  const router = express.Router();
+
+  // ── Rate Limiters ──────────────────────────────────────────────────────
+
+  /** GET rate limiter: 60 requests per minute per user */
+  const getLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 60,
+    keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+    message: {
+      error: "Too many requests. Please wait a moment.",
+      code: "RATE_LIMIT",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  // ── Routes ─────────────────────────────────────────────────────────────
+
+  /**
+   * GET /v1/readers/passages
+   * List cached passages, optionally filtered by HSK level.
+   */
+  router.get(
+    ROUTE_PATTERNS.readersPassages,
+    requireAuth,
+    getLimiter,
+    asyncHandler((req: Request, res: Response) => readersController.listPassages(req, res)),
+  );
+
+  /**
+   * GET /v1/readers/passages/:id
+   * Full passage with segmented result and HSK profile.
+   */
+  router.get(
+    ROUTE_PATTERNS.readersPassageById(":id"),
+    requireAuth,
+    getLimiter,
+    asyncHandler((req: Request, res: Response) => readersController.getPassage(req, res)),
+  );
+
+  /**
+   * POST /v1/readers/generate
+   * Generate passage. Auth-only. Body: { topic }.
+   * Rate limited to 5/day per user (DB-backed UTC midnight reset).
+   */
+  router.post(
+    ROUTE_PATTERNS.readersGenerate,
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.generatePassage(req, res)),
+  );
+
+  return router;
+}

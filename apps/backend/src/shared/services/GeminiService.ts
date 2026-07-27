@@ -11,6 +11,7 @@
 import { createLogger } from "../utils/logger.js";
 import { timeoutPromise } from "../utils/promise.js";
 import { GeminiClient } from "../infrastructure/external/GeminiClient.js";
+import { GeminiError } from "../errors/gemini-errors.js";
 
 const logger = createLogger("GeminiService");
 
@@ -53,6 +54,31 @@ export class GeminiService {
     } catch (error) {
       logger.error("Gemini API call failed", error);
       return DEFAULT_FALLBACK;
+    }
+  }
+
+  /**
+   * Generate text without truncation or fallback.
+   * Use when the caller needs the full response, structured output,
+   * or wants to handle errors themselves.
+   * Throws GeminiError on failure.
+   */
+  async generateRaw(prompt: string, options?: GeminiServiceOptions): Promise<string> {
+    const timeout = options?.timeout ?? 30_000; // 30s default (longer for passages)
+    const genOptions = {
+      temperature: options?.temperature,
+      maxTokens: options?.maxTokens ?? 1024,
+    };
+
+    try {
+      const result = await Promise.race([
+        this.client.generateText(prompt, genOptions),
+        timeoutPromise(timeout),
+      ]);
+      return result.trim();
+    } catch (error) {
+      logger.error("Gemini API raw call failed", error);
+      throw new GeminiError("Gemini API call failed", { cause: error });
     }
   }
 

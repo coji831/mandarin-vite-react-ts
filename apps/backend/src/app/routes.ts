@@ -15,6 +15,7 @@ import quizRouter from "../modules/quiz/api/quizRoutes.js";
 import reviewRouter from "../modules/review/api/reviewRoutes.js";
 import radicalsRoutes from "../modules/radicals/api/radicalsRoutes.js";
 import mnemonicsRoutes from "../modules/mnemonics/api/mnemonicsRoutes.js";
+import { createReadersRoutes } from "../modules/readers/api/readersRoutes.js";
 import {
   quizController,
   reviewController,
@@ -22,6 +23,7 @@ import {
   foundationsController,
   radicalsController,
   mnemonicsController,
+  readersController,
   geminiService,
 } from "./container.js";
 
@@ -89,5 +91,9 @@ router.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 router.use(mnemonicsRoutes);
+
+// Readers routes (v1) - Story 21.3
+const readersRoutes = createReadersRoutes(readersController);
+router.use(readersRoutes);
 
 export default router;

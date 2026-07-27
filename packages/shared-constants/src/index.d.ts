@@ -35,6 +35,9 @@ export declare const ROUTE_PATTERNS: {
   readonly mnemonicsByChar: (glyph: string) => string;
   readonly quizConfig: string;
   readonly quizQuestions: string;
+  readonly readersPassages: string;
+  readonly readersPassageById: (id: string) => string;
+  readonly readersGenerate: string;
 };
 
 // HSK Levels
