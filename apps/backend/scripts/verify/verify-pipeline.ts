@@ -173,6 +173,8 @@ interface Phase2Context {
   pinyinMappings: Array<{ pinyinSyllableId: string; characterId: string }>;
   characterRadicals: Array<{ characterId: string; radicalId: string }>;
   measureWordWords: Array<{ measureWordId: string; wordId: string }>;
+  componentEntries: Map<string, { glyph: string }>;
+  characterComponents: Array<{ characterId: string; componentId: string }>;
 }
 
 function buildPhase2Context(): Phase2Context {
@@ -187,6 +189,8 @@ function buildPhase2Context(): Phase2Context {
     pinyinMappings: [],
     characterRadicals: [],
     measureWordWords: [],
+    componentEntries: new Map(),
+    characterComponents: [],
   };
 
   // ── characters.json ──
@@ -273,6 +277,24 @@ function buildPhase2Context(): Phase2Context {
     measureWordId: string;
     wordId: string;
   }>;
+
+  // ── component-entries.json ──
+  const compEntriesPath = path.join(PHASE2_DIR, "component-entries.json");
+  if (fs.existsSync(compEntriesPath)) {
+    const entries = readJsonFile(compEntriesPath) as Array<{ id: string; glyph: string }>;
+    for (const e of entries) {
+      ctx.componentEntries.set(e.id, { glyph: e.glyph });
+    }
+  }
+
+  // ── character-components.json ──
+  const charCompPath = path.join(PHASE2_DIR, "character-components.json");
+  if (fs.existsSync(charCompPath)) {
+    ctx.characterComponents = readJsonFile(charCompPath) as Array<{
+      characterId: string;
+      componentId: string;
+    }>;
+  }
 
   return ctx;
 }
@@ -491,6 +513,44 @@ function runPhase2Checks(): Record<string, number> {
       2,
       "P2: phoneticComponentId format",
       `${badPhoneticIds} phoneticComponentId values do not start with "ch_"`,
+    );
+  }
+
+  // C9: All componentId values in character-components.json exist in component-entries.json
+  let badCompRefs = 0;
+  for (const cc of ctx.characterComponents) {
+    if (!ctx.componentEntries.has(cc.componentId)) badCompRefs++;
+  }
+  if (badCompRefs === 0) {
+    pass(
+      2,
+      "P2: character-components → component-entries",
+      `All ${ctx.characterComponents.length.toLocaleString()} componentId values are valid`,
+    );
+  } else {
+    fail(
+      2,
+      "P2: character-components → component-entries",
+      `${badCompRefs} componentId values not found in component-entries.json`,
+    );
+  }
+
+  // C10: All characterId values in character-components.json exist in characters.json
+  let badCharCompRefs = 0;
+  for (const cc of ctx.characterComponents) {
+    if (!ctx.characters.has(cc.characterId)) badCharCompRefs++;
+  }
+  if (badCharCompRefs === 0) {
+    pass(
+      2,
+      "P2: character-components → characters",
+      `All ${ctx.characterComponents.length.toLocaleString()} characterId values are valid`,
+    );
+  } else {
+    fail(
+      2,
+      "P2: character-components → characters",
+      `${badCharCompRefs} characterId values not found in characters.json`,
     );
   }
 

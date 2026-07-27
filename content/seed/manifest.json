@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-27T04:09:58.290Z",
+  "generatedAt": "2026-07-27T07:43:58.977Z",
   "phase1": {
     "cc-cedict-entries.json": {
       "entries": 124457,
@@ -32,8 +32,8 @@
   },
   "phase2": {
     "character-components.json": {
-      "entries": 0,
-      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "entries": 15742,
+      "sha256": "d1d4a15102a984f4c535b876f9095583fd168e8dfbaee7b94185e22193ca255a"
     },
     "character-hsk-levels.json": {
       "entries": 2971,
@@ -52,8 +52,8 @@
       "sha256": "f4e573e4cf483d244da3f59870237a38f5e7b906c2e43ed5598857738bf63149"
     },
     "component-entries.json": {
-      "entries": 0,
-      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "entries": 1777,
+      "sha256": "6be6a86e03865ed3b607cf437c48f1039702e7b9261b43d35f46b00310a64cfd"
     },
     "demo-passages.json": {
       "entries": 6,

@@ -4,113 +4,202 @@
 
 ## Technical Scope
 
-Import Make Me a Hanzi decomposition data, infer phonetic components, populate character classification and CharacterRadical.decompositionType, create CharacterComponent model, and generate the pinyin→character reverse index.
+Seed the remaining two tables — `Component` and `CharacterComponent` — by building two new enrich scripts that parse Make Me a Hanzi IDS decomposition data. Most of the original ACs (classification, phoneticComponentId, decompositionType, PinyinCharacterMapping, PinyinSyllable, content regeneration, seed idempotency) were already delivered by Story 21.1's 3-phase pipeline.
 
-**Files:**
+**Files — NEW:**
 
-- `apps/backend/prisma/schema.prisma` — add CharacterComponent model, update Character.classification and Character.phoneticComponentId fields
-- `apps/backend/prisma/migrations/` — new migration for CharacterComponent table and Character field additions
-- `apps/backend/prisma/seeds/seed-character-enrichment.ts` — NEW: import Make Me a Hanzi decomposition, classify characters, infer phonetic components
-- `apps/backend/scripts/database/populate-decomposition-types.ts` — Populate CharacterRadical.decompositionType
-- `apps/backend/scripts/database/generate-pinyin-index.ts` — Generate PinyinCharacterMapping records
-- `apps/backend/scripts/database/classify-characters.ts` — Classification inference script
-- `content/characters/` — Regenerated aggregate files with classification data
+- `apps/backend/scripts/enrich/build-component-entries.ts` — Parse MMAH IDS decompositions → extract unique component glyphs → `content/seed/phase2/component-entries.json`
+- `apps/backend/scripts/enrich/build-character-components.ts` — Parse MMAH IDS → create CharacterComponent junction records → `content/seed/phase2/character-components.json`
+
+**Files — EXISTING (already delivered by Story 21.1, referenced here):**
+
+- `apps/backend/prisma/schema.prisma` — `Component` model (line ~545), `CharacterComponent` model (line ~563) — already created
+- `apps/backend/prisma/seed.ts` — Step 4 (Component) and Step 14 (CharacterComponent) already ready with `createMany` + `skipDuplicates: true`; just need non-empty JSON
+- `apps/backend/scripts/enrich/build-character-entries.ts` — Already populates `Character.classification` and `Character.phoneticComponentId` from MMAH etymology
+- `apps/backend/scripts/enrich/build-character-radicals.ts` — Already populates `CharacterRadical.decompositionType`
+- `apps/backend/scripts/enrich/build-pinyin-mappings.ts` — Already generates `PinyinCharacterMapping` records
+- `apps/backend/scripts/verify/verify-pipeline.ts` — Phase 2 + Phase 3 checks
+- `content/seed/phase2/component-entries.json` — Currently `[]` (empty — target for this story)
+- `content/seed/phase2/character-components.json` — Currently `[]` (empty — target for this story)
 
 ## Implementation Details
 
-### CharacterComponent Model
+### Component Model (Existing)
+
+From `schema.prisma` (line ~545):
+
+```prisma
+model Component {
+  id        String   @id                // "cmp_001"
+  glyph     String   @unique            // "氵", "口", "青", "可"
+  meaning   String?                     // "water", "mouth", "blue/green", "able"
+  type      String?                     // "radical" | "phonetic" | "both"
+  variantOf String?                     // References another Component ID (e.g., 氵 is variant of 水)
+  strokes   Int?                        // Stroke count for this component
+  characters CharacterComponent[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
+
+### CharacterComponent Model (Existing)
+
+From `schema.prisma` (line ~563):
 
 ```prisma
 model CharacterComponent {
-  id           String @id @default(uuid())
-  characterId  String                        // The composed character (e.g., 请)
-  componentId  String                        // The component (e.g., 青)
-  role         String?                       // "phonetic" | "semantic" | "positional" | null
-  position     String?                       // "left" | "right" | "top" | "bottom" | "surround" | null
-  character    Character @relation("ComposedCharacter", fields: [characterId], references: [id])
-  component    Character @relation("ComponentCharacter", fields: [componentId], references: [id])
+  id            String   @id @default(uuid())
+  characterId   String                 // FK to Character.id (e.g., the composed character 请)
+  componentId   String                 // FK to Component.id (e.g., the component 青)
+  position      String?                // "left" | "right" | "top" | "bottom" | "outside" | "inside" | "center"
+  function      String?                // "semantic" | "phonetic" | "remaining"
+  character     Character @relation(fields: [characterId], references: [id])
+  component     Component @relation(fields: [componentId], references: [id])
 
   @@unique([characterId, componentId])
   @@index([characterId])
   @@index([componentId])
+  @@index([function])
 }
 ```
 
-### Classification Inference
+Note: `function` (not `role`) is the field name. Both FKs do NOT point to `Character` — `characterId` → `Character`, `componentId` → `Component`.
 
-Characters are classified using a heuristic pipeline:
+### Classification — Actual Pipeline
 
-1. **Pictographs** (象形): Characters that visually represent objects (日, 月, 山, 水). Curated list from Make Me a Hanzi dataset.
-2. **Ideographs** (指事): Abstract concept indicators (上, 下, 一, 二). Curated list.
-3. **Phono-semantic** (形声): Characters with a phonetic component + semantic radical (most common type, ~80% of characters). Identified by detecting a component that shares pronunciation with the composed character.
-4. **Compound ideographs** (会意): Characters formed from multiple meaning components (休 = 人 + 木, "person by tree" = rest).
-
-### Phonetic Component Inference
-
-For phono-semantic characters, the phonetic component is the sub-component whose pinyin most closely matches the full character's pinyin (accounting for tone changes and initial/final variations).
+Classification is determined by `build-character-entries.ts` using MMAH's `etymology.type` field mapped via a `CLASSIFICATION_MAP`:
 
 ```typescript
-function inferPhoneticComponent(
-  character: Character,
-  components: CharacterComponent[],
-): string | null {
-  for (const comp of components) {
-    const compChar = getCharacter(comp.componentId);
-    if (!compChar?.pinyin) continue;
+const CLASSIFICATION_MAP: Record<string, string> = {
+  pictographic: "pictograph",
+  pictophonetic: "phono_semantic",
+  ideographic: "ideograph",
+};
 
-    // Check if component pinyin matches character pinyin
-    // (allowing for tone differences: mā vs má vs ma)
-    if (normalizePinyin(compChar.pinyin) === normalizePinyin(character.pinyin)) {
-      return compChar.id; // This component is the phonetic indicator
-    }
-
-    // Check partial match (initial/final matches)
-    if (shareInitialOrFinal(compChar.pinyin, character.pinyin)) {
-      return compChar.id; // Likely phonetic component
-    }
-  }
-  return null;
+function mapClassification(mmahType: string | undefined): string | null {
+  if (!mmahType) return null;
+  const lower = mmahType.toLowerCase().trim();
+  return CLASSIFICATION_MAP[lower] || null;
 }
 ```
 
-### Decomposition Type Population
+No heuristic pinyin matching or curated lists are involved. The MMAH dataset provides the classification directly; this script simply maps the MMAH type names to the project's enum values.
 
-`CharacterRadical.decompositionType` is populated based on the radical's relationship to the character:
+### Phonetic Component — Actual Pipeline
 
-- `"semantic"` — Radical contributes meaning (e.g., 扌 in 打, 提)
-- `"phonetic"` — Radical indicates pronunciation (rare for Kangxi radicals)
-- `"remaining"` — Residual stroke component (e.g., 丿 in 系)
-- `null` — Unknown or unclassified
-
-### PinyinCharacterMapping Generation
+Phonetic component resolution uses MMAH's `etymology.phonetic` field directly — no pinyin matching:
 
 ```typescript
-// For each Character with readings, create PinyinCharacterMapping records
-for (const character of characters) {
-  for (const reading of character.readings) {
-    const syllable = await prisma.pinyinSyllable.findFirst({
-      where: {
-        syllable: normalizeSyllable(reading.pinyin),
-        tone: reading.tone,
-      },
-    });
+// Step 1: Store the raw glyph from MMAH
+if (mmah.etymology?.phonetic) {
+  phoneticComponentId = mmah.etymology.phonetic; // e.g., "从"
+}
 
-    if (syllable) {
-      await prisma.pinyinCharacterMapping.create({
-        data: {
-          pinyinSyllableId: syllable.id,
-          characterId: character.id,
-        },
-      });
-    }
+// Step 2: Second pass — resolve glyph → character ID
+for (const ch of characters) {
+  if (!ch.phoneticComponentId) continue;
+  if (ch.phoneticComponentId.startsWith("ch_")) continue; // Already resolved
+  const resolvedId = glyphToIdMap.get(ch.phoneticComponentId);
+  if (resolvedId) {
+    ch.phoneticComponentId = resolvedId;
+  } else {
+    ch.phoneticComponentId = null; // Glyph not found in our dataset
   }
 }
 ```
+
+The glyph-to-ID map is built from all known characters (existing + new), so any glyph in MMAH that maps to a character in the pipeline gets resolved. Characters without a matching MMAH entry remain `null`.
+
+### Decomposition Type — Actual Pipeline
+
+`CharacterRadical.decompositionType` is populated by `build-character-radicals.ts`, which infers it from MMAH `etymology.type`:
+
+- If etymology type is `"pictophonetic"` → radical function is `"semantic"` (the radical is the meaning component)
+- Otherwise → `null`
+
+This covers 2,798 records.
+
+### build-component-entries.ts — NEW Script Design
+
+Parses MMAH IDS (Ideographic Description Sequence) decomposition strings to extract unique component glyphs:
+
+```
+Input: content/seed/phase1/mmah-entries.json  (has `decomposition` field with IDS strings)
+       content/radicals/radicals.json          (existing radicals for dedup)
+
+Logic:
+  1. For each MMAH entry with a `decomposition` field, parse the IDS string
+     to extract all component glyphs (characters that are not IDS operators).
+  2. IDS operators to strip: ⿰ (left-right), ⿱ (top-bottom), ⿲ (left-mid-right),
+     ⿳ (top-mid-bottom), ⿴ (full surround), ⿵ (surround from above),
+     ⿶ (surround from below), ⿷ (surround from left), ⿸ (surround from upper left),
+     ⿹ (surround from upper right), ⿺ (surround from lower left),
+     ⿻ (overlaid), 〾 (variation indicator), etc.
+  3. Cross-reference extracted glyphs against existing Kangxi radicals
+     (content/radicals/radicals.json) to avoid creating duplicate entries.
+     Radical glyphs that appear as components are linked by `variantOf`.
+  4. Assign each unique non-radical component a `cmp_XXX` ID (zero-padded integer).
+  5. Assign `type` ("radical" | "phonetic" | "both") based on whether the component
+     also appears as a phonetic indicator in MMAH etymology data.
+  6. Write to: content/seed/phase2/component-entries.json
+
+Output shape:
+  [
+    { "id": "cmp_001", "glyph": "氵", "meaning": null, "type": "radical",
+      "variantOf": "cmp_water", "strokes": null },
+    { "id": "cmp_002", "glyph": "青", "meaning": null, "type": "phonetic",
+      "variantOf": null, "strokes": null }
+  ]
+```
+
+### build-character-components.ts — NEW Script Design
+
+Parses the same MMAH IDS strings to create CharacterComponent junction records:
+
+```
+Input: content/seed/phase1/mmah-entries.json       (decomposition field)
+       content/seed/phase2/characters.json          (character ID lookup)
+       content/seed/phase2/component-entries.json   (component ID lookup)
+
+Logic:
+  1. For each MMAH entry with a `decomposition` field, parse the IDS string.
+  2. Determine position from the IDS operator:
+     - ⿰ → "left" / "right" (first operand is left, second is right)
+     - ⿱ → "top" / "bottom"
+     - ⿴ → "outside" / "inside"
+     - etc.
+  3. Determine function from MMAH etymology.type:
+     - "pictophonetic" → first component is "semantic", second is "phonetic"
+     - Otherwise → both are null
+  4. Resolve component glyphs → Component IDs via the phase2/component-entries.json index.
+  5. Write to: content/seed/phase2/character-components.json
+
+Output shape:
+  [
+    { "id": "auto-uuid", "characterId": "ch_1001", "componentId": "cmp_042",
+      "position": "left", "function": "semantic" },
+    { "id": "auto-uuid", "characterId": "ch_1001", "componentId": "cmp_007",
+      "position": "right", "function": "phonetic" }
+  ]
+```
+
+### Seed Pipeline Integration
+
+Both new scripts must be added to:
+
+1. **`package.json` `script:enrich-all`** — Add the two new scripts to the enrich pipeline chain
+2. **`prisma/seed.ts`** — Steps 4 (Component) and 14 (CharacterComponent) already use `createMany` + `skipDuplicates: true` — no code changes needed, just need non-empty JSON files
 
 ### Seed Idempotency
 
+All operations use `skipDuplicates: true`:
+
 ```typescript
-// All operations use upsert patterns
+await prisma.component.createMany({
+  data: componentEntries,
+  skipDuplicates: true,
+});
+
 await prisma.characterComponent.createMany({
   data: characterComponents,
   skipDuplicates: true,
@@ -121,26 +210,49 @@ await prisma.characterComponent.createMany({
 
 ```
 [Story 21.2: Character Content Generation]
-├── Prisma → CharacterComponent model (new), Character.classification + phoneticComponentId
-├── Seeds → seed-character-enrichment.ts (Make Me a Hanzi import, classification)
-├── Scripts → populate-decomposition-types.ts, generate-pinyin-index.ts, classify-characters.ts
-└── Content → regenerated characters.json with classification data
+├── Phase 1 (Generate)
+│   └── mmah-entries.json ← scripts/generate/mmah-entries.ts
+├── Phase 2 (Enrich) — NEW scripts
+│   ├── build-component-entries.ts → component-entries.json
+│   └── build-character-components.ts → character-components.json
+├── Phase 3 (Seed)
+│   ├── seed.ts Step 4: Component ← component-entries.json
+│   └── seed.ts Step 14: CharacterComponent ← character-components.json
+└── Verify
+    └── verify-pipeline.ts — phase2 + phase3 checks (extended for new tables)
 
-Dependencies: Story 21.1 (Character table, schema foundation)
-Consumed by: Story 21.4 (Reading UI — frequency badges, HSK pills, phonetic layout)
-             Story 21.6 (Phonetic Clusters — DB-driven clusters)
+Dependencies: Story 21.1 (Character table, 3-phase pipeline, MMAH data,
+              Component + CharacterComponent schema models, classification,
+              phoneticComponentId, decompositionType, PinyinCharacterMapping)
+Consumed by: Story 21.4 (Reading UI — decomposition display, component layout)
+             Story 21.6 (Deferred — phonetic clusters)
 ```
 
 ## Technical Challenges & Solutions
 
 ```
-Problem: Make Me a Hanzi dataset uses different character IDs than our ch_XXXX system.
-Solution: Map by glyph (Unicode code point). The dataset indexes by character, so we
-         join on the glyph field. Any character not in the dataset is classified as null.
+Problem: MMAH decomposition uses IDS format (e.g., ⿰女子 for 好) — need a parser.
+Solution: Write an IDS parser that:
+          (1) Recognizes IDS operators (⿰, ⿱, ⿲, ⿳, ⿴, ⿵, ⿶, ⿷, ⿸, ⿹, ⿺, ⿻, 〾)
+          (2) Recursively extracts all leaf glyphs (CJK characters), ignoring operators
+          (3) Maps position from the operator (left-right → "left"/"right", etc.)
+          (4) Handles nested IDS (e.g., ⿰⿱宀⿱罒巾⿱㇒⿱㇏𠃋㇕ for 應 → extracts 宀, 罒, 巾, ㇒, ㇏, 𠃋, ㇕)
 
-Problem: Phonetic component inference is non-trivial — some characters share no phonetic
-         relationship with their components despite being classified as phono-semantic.
-Solution: Use a tiered approach: (1) exact pinyin match, (2) initial/final match,
-         (3) manual override list for known exceptions. The seed script logs all
-         inference results for manual review.
+Problem: Component entries must not duplicate existing Kangxi radicals.
+Solution: Cross-reference against content/radicals/radicals.json before creating
+          new Component records. When a decomposition glyph matches an existing
+          radical, set `variantOf` to link the component entry to the radical,
+          and use `type: "radical"`.
+
+Problem: Some IDS decompositions are partial or missing for certain characters.
+Solution: Skip characters without a `decomposition` field. The seed script
+          logs statistics on how many characters have/pass decompositions for
+          manual gap analysis.
+
+Problem: CharacterComponent needs position inference from IDS operator type,
+          but nested IDS makes this non-trivial (e.g., left side may itself be
+          a two-component compound).
+Solution: Only assign top-level position from the outermost IDS operator.
+          Nested components get `position: null`. The `function` field is
+          inferred from MMAH etymology.type when available.
 ```
