@@ -317,6 +317,18 @@ html {
 .p-2xl {
   padding: var(--space-2xl);
 }
+.py-xs {
+  padding-top: var(--space-xs);
+  padding-bottom: var(--space-xs);
+}
+.py-sm {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+.py-md {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Margin (all sides only — no directional variants)
@@ -464,6 +476,9 @@ html {
 .left-0 {
   left: 0;
 }
+.inset-0 {
+  inset: 0;
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Size
@@ -480,6 +495,15 @@ html {
 .h-8px {
   height: 8px;
 }
+.min-h-0 {
+  min-height: 0;
+}
+.min-w-0 {
+  min-width: 0;
+}
+.max-w-full {
+  max-width: 100%;
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Display
@@ -487,8 +511,14 @@ html {
 .inline-block {
   display: inline-block;
 }
+.block {
+  display: block;
+}
 .overflow-hidden {
   overflow: hidden;
+}
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 /* ═══════════════════════════════════════════════
@@ -666,6 +696,12 @@ html {
 .lh-normal {
   line-height: 1.5;
 }
+.lh-1-3 {
+  line-height: 1.3;
+}
+.lh-1-4 {
+  line-height: 1.4;
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Text Transform
@@ -743,6 +779,10 @@ html {
    ═══════════════════════════════════════════════ */
 .outline-none {
   outline: none;
+}
+.focus-ring-primary {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* ═══════════════════════════════════════════════

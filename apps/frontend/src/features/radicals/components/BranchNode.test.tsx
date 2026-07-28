@@ -8,12 +8,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BranchNode } from "./BranchNode";
 
-const mockOpenHub = vi.fn();
-vi.mock("shared/hooks", () => ({
-  useCharacterHub: () => ({
-    openHub: mockOpenHub,
-  }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
 describe("BranchNode", () => {
   beforeEach(() => {
@@ -45,7 +44,11 @@ describe("BranchNode", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: "水 — shuǐ — water" }));
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("calls openHub on Enter key", () => {
@@ -54,7 +57,11 @@ describe("BranchNode", () => {
     fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
       key: "Enter",
     });
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("calls openHub on Space key", () => {
@@ -63,7 +70,11 @@ describe("BranchNode", () => {
     fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
       key: " ",
     });
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("has correct aria-label on character section", () => {
@@ -76,7 +87,11 @@ describe("BranchNode", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: /open 水 in character detail hub/i }));
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("renders with connector class when showConnector is true", () => {

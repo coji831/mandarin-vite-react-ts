@@ -3,13 +3,13 @@
  * @description Routes for reading passage CRUD and generation operations.
  *
  * Controller is injected via factory function (createReadersRoutes).
- * GET routes require auth; POST generate requires auth + daily rate limit.
+ * GET routes use optional auth (guests can browse passages); POST generate requires auth + daily rate limit.
  */
 
 import express from "express";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
-import { requireAuth } from "../../../shared/middleware/authMiddleware.js";
+import { optionalAuth, requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type { ReadersController } from "./ReadersController.js";
@@ -35,6 +35,28 @@ export function createReadersRoutes(readersController: ReadersController): expre
     legacyHeaders: false,
   });
 
+  /** Guest GET rate limiter: 20 requests per minute per IP */
+  const guestGetLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 20,
+    keyGenerator: (req: Request) => req.ip || "unknown",
+    message: {
+      error: "Too many requests. Please wait a moment.",
+      code: "RATE_LIMIT",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  /** Route-level middleware: apply stricter rate limit for guests */
+  function rateLimitByAuth(req: Request, res: Response, next: NextFunction): void {
+    if (req.userId) {
+      getLimiter(req, res, next);
+    } else {
+      guestGetLimiter(req, res, next);
+    }
+  }
+
   // ── Routes ─────────────────────────────────────────────────────────────
 
   /**
@@ -43,8 +65,8 @@ export function createReadersRoutes(readersController: ReadersController): expre
    */
   router.get(
     ROUTE_PATTERNS.readersPassages,
-    requireAuth,
-    getLimiter,
+    optionalAuth,
+    rateLimitByAuth,
     asyncHandler((req: Request, res: Response) => readersController.listPassages(req, res)),
   );
 
@@ -54,8 +76,8 @@ export function createReadersRoutes(readersController: ReadersController): expre
    */
   router.get(
     ROUTE_PATTERNS.readersPassageById(":id"),
-    requireAuth,
-    getLimiter,
+    optionalAuth,
+    rateLimitByAuth,
     asyncHandler((req: Request, res: Response) => readersController.getPassage(req, res)),
   );
 

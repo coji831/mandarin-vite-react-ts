@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FoundationsPage } from "./FoundationsPage";
-import { mswHandlers } from "../../../.storybook/msw-handlers";
+import { mswHandlers } from "../../../../.storybook/msw-handlers";
 
 const meta: Meta<typeof FoundationsPage> = {
   title: "Pages/Learn/Foundations",

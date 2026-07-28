@@ -16,7 +16,7 @@ import "./HubRadicalSection.css";
 
 type HubRadicalSectionProps = {
   character: string;
-  onClose: () => void;
+  onClose?: () => void;
   loading?: boolean;
 };
 
@@ -72,7 +72,7 @@ export function HubRadicalSection({
             size="sm"
             className="hub-radical-section__chip flex items-center gap-xs"
             onClick={() => {
-              onClose();
+              onClose?.();
               navigate(`/learn/radicals?highlight=${radical.id}`);
             }}
             aria-label={`View radical: ${radical.glyph} ${radical.meaning}`}

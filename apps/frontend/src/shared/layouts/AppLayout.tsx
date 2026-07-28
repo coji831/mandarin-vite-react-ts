@@ -13,18 +13,22 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { login_page, practices_page } from "../constants/paths";
 import { SideNav, Modal } from "shared/components";
 import { useAuth } from "features/auth";
-import { CharacterHub } from "features/character-hub/components";
+import { LexicalHubRouter } from "features/lexical-hub/components";
 import { useHubStore } from "shared/store";
 import "./AppLayout.css";
 
 export { AppLayout };
 
 function HubModal() {
-  const { isOpen, character, pinyin, close } = useHubStore();
+  const { isOpen, currentEntity, close } = useHubStore();
 
   return (
-    <Modal isOpen={isOpen} onClose={close} size="lg" title={character || "Character Detail"}>
-      <CharacterHub character={character ?? ""} pinyin={pinyin} onClose={close} />
+    <Modal isOpen={isOpen} onClose={close} size="lg" title={currentEntity?.label ?? "Detail"}>
+      {/*
+       * LexicalHubRouter reads currentEntity from hubStore directly.
+       * No props needed — Storybook stories pass props for testing.
+       */}
+      <LexicalHubRouter />
     </Modal>
   );
 }

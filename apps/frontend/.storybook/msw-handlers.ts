@@ -579,6 +579,54 @@ export const mswHandlers = {
         HttpResponse.json({ error: "Generation failed" }, { status: 500 }),
       ),
   },
+  characters: {
+    /** Returns full character detail for a known glyph */
+    default: (glyph: string) =>
+      http.get(`${API_BASE}/characters/${glyph}`, () => {
+        const body = CHARACTER_DETAIL_BODIES[glyph as keyof typeof CHARACTER_DETAIL_BODIES];
+        if (body) return HttpResponse.json(body, { status: 200 });
+        // Fallback: return minimal data for unknown glyphs
+        return HttpResponse.json(
+          {
+            data: {
+              glyph,
+              traditional: glyph,
+              strokeCount: 0,
+              hskLevel: 0,
+              definition: "",
+              readings: [],
+            },
+          },
+          { status: 200 },
+        );
+      }),
+    /** Never resolves (loading state) */
+    loading: () => http.get(new RegExp(`^${API_BASE}/characters/.+`), () => new Promise(() => {})),
+    /** Returns 500 error */
+    error: () =>
+      http.get(new RegExp(`^${API_BASE}/characters/.+`), () =>
+        HttpResponse.json({ error: "Failed to load character detail" }, { status: 500 }),
+      ),
+    /** Catch-all returns minimal data for any glyph */
+    fallback: http.get(new RegExp(`^${API_BASE}/characters/.+`), ({ params }) => {
+      const glyph = params[0] as string;
+      const body = CHARACTER_DETAIL_BODIES[glyph as keyof typeof CHARACTER_DETAIL_BODIES];
+      if (body) return HttpResponse.json(body, { status: 200 });
+      return HttpResponse.json(
+        {
+          data: {
+            glyph,
+            traditional: glyph,
+            strokeCount: 0,
+            hskLevel: 0,
+            definition: "",
+            readings: [],
+          },
+        },
+        { status: 200 },
+      );
+    }),
+  },
   foundations: {
     default: () => [
       http.get(`${API_BASE}/foundations/data/pinyin-tones`, () =>
@@ -984,5 +1032,515 @@ export const mswHandlers = {
         HttpResponse.json({ error: "Failed to load pinyin character map" }, { status: 500 }),
       ),
     ],
+  },
+  readers: {
+    passages: {
+      default: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json(
+            {
+              data: [
+                { id: "p1", title: "你好", hskLevel: 1, knownWordRatio: 95, isBookmarked: true },
+                { id: "p2", title: "我的家", hskLevel: 1, knownWordRatio: 88 },
+                {
+                  id: "p3",
+                  title: "学校生活",
+                  hskLevel: 2,
+                  knownWordRatio: 76,
+                  isBookmarked: true,
+                },
+                { id: "p4", title: "中国的节日", hskLevel: 2, knownWordRatio: 70 },
+                { id: "p5", title: "去旅行", hskLevel: 3, knownWordRatio: 65 },
+                { id: "p6", title: "环境保护", hskLevel: 3, knownWordRatio: 58 },
+                { id: "p7", title: "健康饮食", hskLevel: 4, knownWordRatio: 45 },
+                { id: "p8", title: "经济发展", hskLevel: 4, knownWordRatio: 40 },
+                { id: "p9", title: "科技与创新", hskLevel: 5, knownWordRatio: 28 },
+                { id: "p10", title: "社会学研究", hskLevel: 5, knownWordRatio: 22 },
+                { id: "p11", title: "古典文学", hskLevel: 6, knownWordRatio: 15 },
+                {
+                  id: "p12",
+                  title: "哲学思考",
+                  hskLevel: 6,
+                  knownWordRatio: 10,
+                  isBookmarked: true,
+                },
+              ],
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/readers/passages`, () => new Promise(() => {})),
+      empty: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json({ data: [] }, { status: 200 }),
+        ),
+      error: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json({ error: "Failed to load passages" }, { status: 500 }),
+        ),
+    },
+    passageDetail: {
+      default: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, ({ params }) =>
+          HttpResponse.json(
+            {
+              data: {
+                id: params.id,
+                title: "学校生活",
+                hskLevel: 2,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "我是学生。",
+                    pinyin: "Wǒ shì xuéshēng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "是", wordId: "w_002", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "学生",
+                        wordId: "w_003",
+                        hskLevel: 1,
+                        pinyin: "xuéshēng",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我每天去学校。",
+                    pinyin: "Wǒ měi tiān qù xuéxiào.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      {
+                        glyph: "每天",
+                        wordId: "w_004",
+                        hskLevel: 2,
+                        pinyin: "měitiān",
+                        isKnown: false,
+                      },
+                      { glyph: "去", wordId: "w_005", hskLevel: 1, pinyin: "qù", isKnown: true },
+                      {
+                        glyph: "学校",
+                        wordId: "w_006",
+                        hskLevel: 1,
+                        pinyin: "xuéxiào",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 2,
+                    text: "我喜欢学中文。",
+                    pinyin: "Wǒ xǐhuān xué zhōngwén.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      {
+                        glyph: "喜欢",
+                        wordId: "w_007",
+                        hskLevel: 2,
+                        pinyin: "xǐhuān",
+                        isKnown: false,
+                      },
+                      { glyph: "学", wordId: "w_008", hskLevel: 1, pinyin: "xué", isKnown: true },
+                      {
+                        glyph: "中文",
+                        wordId: "w_009",
+                        hskLevel: 1,
+                        pinyin: "zhōngwén",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 3,
+                    text: "我的老师很好。",
+                    pinyin: "Wǒ de lǎoshī hěn hǎo.",
+                    words: [
+                      {
+                        glyph: "我的",
+                        wordId: "w_010",
+                        hskLevel: 1,
+                        pinyin: "wǒ de",
+                        isKnown: true,
+                      },
+                      {
+                        glyph: "老师",
+                        wordId: "w_011",
+                        hskLevel: 1,
+                        pinyin: "lǎoshī",
+                        isKnown: true,
+                      },
+                      { glyph: "很", wordId: "w_012", hskLevel: 1, pinyin: "hěn", isKnown: true },
+                      { glyph: "好", wordId: "w_013", hskLevel: 1, pinyin: "hǎo", isKnown: true },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 4,
+                    text: "我有很多朋友。",
+                    pinyin: "Wǒ yǒu hěn duō péngyǒu.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "有", wordId: "w_014", hskLevel: 1, pinyin: "yǒu", isKnown: true },
+                      {
+                        glyph: "很多",
+                        wordId: "w_015",
+                        hskLevel: 1,
+                        pinyin: "hěn duō",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "朋友",
+                        wordId: "w_016",
+                        hskLevel: 1,
+                        pinyin: "péngyǒu",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk1: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk1",
+                title: "你好",
+                hskLevel: 1,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "你好。",
+                    pinyin: "Nǐ hǎo.",
+                    words: [
+                      {
+                        glyph: "你好",
+                        wordId: "w_hello",
+                        hskLevel: 1,
+                        pinyin: "nǐhǎo",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我叫小明。",
+                    pinyin: "Wǒ jiào Xiǎomíng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "叫", wordId: "w_call", hskLevel: 1, pinyin: "jiào", isKnown: true },
+                      {
+                        glyph: "小明",
+                        wordId: "w_xm",
+                        hskLevel: 1,
+                        pinyin: "xiǎomíng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 2,
+                    text: "我是学生。",
+                    pinyin: "Wǒ shì xuéshēng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "是", wordId: "w_is", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "学生",
+                        wordId: "w_stu",
+                        hskLevel: 1,
+                        pinyin: "xuéshēng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk4: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk4",
+                title: "环境保护",
+                hskLevel: 4,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "环境保护是现代社会的重要议题。",
+                    pinyin: "Huánjìng bǎohù shì xiàndài shèhuì de zhòngyào yìtí.",
+                    words: [
+                      {
+                        glyph: "环境",
+                        wordId: "w_env",
+                        hskLevel: 4,
+                        pinyin: "huánjìng",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "保护",
+                        wordId: "w_protect",
+                        hskLevel: 3,
+                        pinyin: "bǎohù",
+                        isKnown: false,
+                      },
+                      { glyph: "是", wordId: "w_is", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "现代",
+                        wordId: "w_modern",
+                        hskLevel: 4,
+                        pinyin: "xiàndài",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "社会",
+                        wordId: "w_soc",
+                        hskLevel: 3,
+                        pinyin: "shèhuì",
+                        isKnown: false,
+                      },
+                      { glyph: "的", wordId: "w_de", hskLevel: 1, pinyin: "de", isKnown: true },
+                      {
+                        glyph: "重要",
+                        wordId: "w_imp",
+                        hskLevel: 3,
+                        pinyin: "zhòngyào",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "议题",
+                        wordId: "w_topic",
+                        hskLevel: 5,
+                        pinyin: "yìtí",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我们应该减少使用塑料袋。",
+                    pinyin: "Wǒmen yīnggāi jiǎnshǎo shǐyòng sùliàodài.",
+                    words: [
+                      {
+                        glyph: "我们",
+                        wordId: "w_we",
+                        hskLevel: 1,
+                        pinyin: "wǒmen",
+                        isKnown: true,
+                      },
+                      {
+                        glyph: "应该",
+                        wordId: "w_should",
+                        hskLevel: 3,
+                        pinyin: "yīnggāi",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "减少",
+                        wordId: "w_reduce",
+                        hskLevel: 4,
+                        pinyin: "jiǎnshǎo",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "使用",
+                        wordId: "w_use",
+                        hskLevel: 3,
+                        pinyin: "shǐyòng",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "塑料",
+                        wordId: "w_plastic",
+                        hskLevel: 4,
+                        pinyin: "sùliào",
+                        isKnown: false,
+                      },
+                      { glyph: "袋", wordId: "w_bag", hskLevel: 5, pinyin: "dài", isKnown: false },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk6: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk6",
+                title: "古典文学与现代思想",
+                hskLevel: 6,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "古典文学承载着丰富的哲学思想。",
+                    pinyin: "Gǔdiǎn wénxué chéngzài zhe fēngfù de zhéxué sīxiǎng.",
+                    words: [
+                      {
+                        glyph: "古典",
+                        wordId: "w_classic",
+                        hskLevel: 5,
+                        pinyin: "gǔdiǎn",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "文学",
+                        wordId: "w_lit",
+                        hskLevel: 4,
+                        pinyin: "wénxué",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "承载",
+                        wordId: "w_carry",
+                        hskLevel: 6,
+                        pinyin: "chéngzài",
+                        isKnown: false,
+                      },
+                      { glyph: "着", wordId: "w_zhe", hskLevel: 3, pinyin: "zhe", isKnown: false },
+                      {
+                        glyph: "丰富",
+                        wordId: "w_rich",
+                        hskLevel: 3,
+                        pinyin: "fēngfù",
+                        isKnown: false,
+                      },
+                      { glyph: "的", wordId: "w_de", hskLevel: 1, pinyin: "de", isKnown: true },
+                      {
+                        glyph: "哲学",
+                        wordId: "w_phil",
+                        hskLevel: 5,
+                        pinyin: "zhéxué",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "思想",
+                        wordId: "w_thought",
+                        hskLevel: 4,
+                        pinyin: "sīxiǎng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "这些作品对当代社会仍有深远影响。",
+                    pinyin: "Zhèxiē zuòpǐn duì dāngdài shèhuì réng yǒu shēnyuǎn yǐngxiǎng.",
+                    words: [
+                      {
+                        glyph: "这些",
+                        wordId: "w_these",
+                        hskLevel: 2,
+                        pinyin: "zhèxiē",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "作品",
+                        wordId: "w_work",
+                        hskLevel: 4,
+                        pinyin: "zuòpǐn",
+                        isKnown: false,
+                      },
+                      { glyph: "对", wordId: "w_to", hskLevel: 2, pinyin: "duì", isKnown: true },
+                      {
+                        glyph: "当代",
+                        wordId: "w_contemp",
+                        hskLevel: 5,
+                        pinyin: "dāngdài",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "社会",
+                        wordId: "w_soc",
+                        hskLevel: 3,
+                        pinyin: "shèhuì",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "仍",
+                        wordId: "w_still",
+                        hskLevel: 6,
+                        pinyin: "réng",
+                        isKnown: false,
+                      },
+                      { glyph: "有", wordId: "w_have", hskLevel: 1, pinyin: "yǒu", isKnown: true },
+                      {
+                        glyph: "深远",
+                        wordId: "w_deep",
+                        hskLevel: 6,
+                        pinyin: "shēnyuǎn",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "影响",
+                        wordId: "w_infl",
+                        hskLevel: 3,
+                        pinyin: "yǐngxiǎng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/readers/passages/:id`, () => new Promise(() => {})),
+      error: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json({ error: "Failed to load passage" }, { status: 500 }),
+        ),
+    },
+    wordDetail: {
+      default: () =>
+        http.get(`${API_BASE}/words/:word`, ({ params }) =>
+          HttpResponse.json(
+            {
+              data: {
+                glyph: params.word,
+                pinyin: "xǐhuān",
+                definitions: ["to like; to be fond of", "to love; to be keen on"],
+                hskLevel: 2,
+                constituentCharacters: [
+                  { glyph: "喜", pinyin: "xǐ", meaning: "happy; like" },
+                  { glyph: "欢", pinyin: "huān", meaning: "joy; happy" },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/words/:word`, () => new Promise(() => {})),
+      error: () =>
+        http.get(`${API_BASE}/words/:word`, () =>
+          HttpResponse.json({ error: "Failed to load word" }, { status: 500 }),
+        ),
+      notFound: () =>
+        http.get(`${API_BASE}/words/:word`, () => HttpResponse.json(null, { status: 404 })),
+    },
   },
 };

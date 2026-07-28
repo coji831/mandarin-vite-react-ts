@@ -13,6 +13,23 @@ export interface WordSegment {
   end: number;
 }
 
+/** A single word with enrichment data for display. */
+export interface EnrichedWord {
+  glyph: string;
+  wordId: string | null;
+  hskLevel: number | null;
+  pinyin: string | null;
+  isKnown: boolean;
+}
+
+/** A sentence enriched with word-level data. */
+export interface EnrichedSentence {
+  index: number;
+  text: string;
+  pinyin: string;
+  words: EnrichedWord[];
+}
+
 /** HSK profile for a passage — computed after segmentation. */
 export interface HskProfile {
   distribution: Record<number, number>;
@@ -49,6 +66,26 @@ export interface PassageContent {
 export interface PassageSentence {
   index: number;
   text: string;
+}
+
+/** Response shape for passage endpoints (dates serialized to ISO strings). */
+export interface PassageResponseData {
+  id: string;
+  hskLevel: number;
+  passageIndex: number;
+  title: string;
+  wordCount: number;
+  knownWordRatio: number;
+  targetHskLevel: number;
+  generatedById: string | null;
+  generatedAt: string;
+  accessCount: number;
+  lastAccessedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  sentences: EnrichedSentence[];
+  segments: WordSegment[];
+  hskProfile: HskProfile;
 }
 
 /** Input for creating a new passage. */

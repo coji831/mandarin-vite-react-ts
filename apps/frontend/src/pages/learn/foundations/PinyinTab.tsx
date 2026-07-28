@@ -10,16 +10,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { Box } from "shared/components";
+import type { PinyinTonesPool } from "features/foundations";
 import {
-  SlidingPinyinGrid,
   foundationsService,
+  SlidingPinyinGrid,
   TONE_LABELS,
   TONE_SYMBOLS,
 } from "features/foundations";
-import type { PinyinTonesPool } from "features/foundations";
-import { useCharacterHub, useAudioPlayback } from "shared/hooks";
-import { ErrorScreen, LoadingScreen } from "shared/components";
+import { Box, ErrorScreen, LoadingScreen } from "shared/components";
 import "./PinyinTab.css";
 
 /** Count valid combinations in the pool */
@@ -38,8 +36,6 @@ export function PinyinTab() {
   const [charMap, setCharMap] = useState<Record<string, string>>({});
   const [hasError, setHasError] = useState(false);
   const fetchAttempted = useRef(false);
-  const { openHub } = useCharacterHub();
-  const { playWordAudio } = useAudioPlayback();
   // Fetch pinyin data and character map on mount (once)
   useEffect(() => {
     if (fetchAttempted.current) return;
@@ -116,8 +112,6 @@ export function PinyinTab() {
         finals={data.finals}
         combinations={data.combinations}
         charMap={charMap}
-        onPlayAudio={(character) => playWordAudio({ chinese: character })}
-        onCharacterHub={(character, pinyin) => openHub(character, pinyin)}
       />
 
       {/* Section C: Pronunciation tip callout */}

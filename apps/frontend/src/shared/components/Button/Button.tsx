@@ -7,7 +7,6 @@
  */
 
 import React from "react";
-import { Spinner } from "shared/components";
 import "./Button.css";
 
 export type ButtonVariant =
@@ -31,7 +30,8 @@ export type ButtonVariant =
   | "ghost-primary"
   | "rating-again"
   | "rating-good"
-  | "rating-easy";
+  | "rating-easy"
+  | "inline-text";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = {
@@ -77,7 +77,7 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
 
-  const variantClasses: Record<string, string> = {
+  const VARIANT_CLASSES: Record<string, string> = {
     primary: "btn-primary",
     secondary: "btn-secondary",
     ghost: "btn-ghost",
@@ -99,11 +99,12 @@ export function Button({
     "rating-again": "btn-rating-again",
     "rating-good": "btn-rating-good",
     "rating-easy": "btn-rating-easy",
+    "inline-text": "btn-inline-text",
   };
 
   const buttonClass = [
     "btn",
-    variantClasses[variant],
+    VARIANT_CLASSES[variant],
     `btn-${size}`,
     loading ? "btn-loading" : "",
     className,
@@ -131,7 +132,6 @@ export function Button({
         ...style,
       }}
     >
-      {loading && <Spinner size="sm" color="white" hidden />}
       {loading ? <span className="btn-content-loading op-80"></span> : children}
     </button>
   );

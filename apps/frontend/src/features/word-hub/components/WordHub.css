@@ -1,0 +1,17 @@
+/**
+ * @file WordHub.css
+ * @description Styles for WordHub component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ */
+
+.word-hub__definition {
+  margin-left: 1.2em;
+  list-style-position: inside;
+}
+
+.word-hub__char-chip:hover {
+  /* utility: border-primary-border — kept inside hover pseudo */
+  border-color: var(--color-primary-border);
+  /* utility: bg-primary-bg-light — kept inside hover pseudo */
+  background: var(--color-primary-bg-light);
+}

@@ -1,6 +1,6 @@
 # Story 21.4: Reading UI + LexicalHub Phase 1
 
-**Last Update:** July 24, 2026
+**Last Update:** July 29, 2026
 
 ## Description
 
@@ -14,22 +14,22 @@ This story delivers the core learner-facing reading experience. It replaces the 
 
 ## Acceptance Criteria
 
-- [ ] Library view with HSK level pills and passage card grid (3-col desktop, 2-col tablet, 1-col mobile)
-- [ ] Reading view with sentence-by-sentence layout, pinyin below each sentence
-- [ ] Inline WordPopover on tap: compact card with glyph, pinyin, meaning
-- [ ] WordPopover has "Open in Word Hub" button that opens LexicalHub in word mode (with character breakdown)
-- [ ] All states covered: loading (skeleton), empty (CTA), error (retry), populated
-- [ ] Storybook stories for every component with MSW handlers for all 6 HSK levels
-- [ ] No hardcoded values — all styling uses CSS design tokens
-- [ ] hubStore generalized from `{character, pinyin}` to `{entityType, entityId, context, navigationStack}`
-- [ ] `useEntityHub` hook created (backward-compatible with existing `useCharacterHub`)
-- [ ] LexicalHubRouter component created and mounted in AppLayout Modal
-- [ ] WordHubContent component: word-level pinyin, definitions (polysemy), HSK badge, constituent characters as clickable chips
-- [ ] CharacterHubContent moved into lexical-hub/ feature folder
-- [ ] Navigation stack enables back button: word→character→radical
-- [ ] Inline word popover → "View Details" → opens LexicalHub in word mode
-- [ ] No regressions: existing CharacterHub usage across all features continues to work
-- [ ] Phase 3 gating is respected — users cannot access readers before completing Phase 2
+- [x] Library view with HSK level pills and passage card grid (3-col desktop, 2-col tablet, 1-col mobile)
+- [x] Reading view with sentence-by-sentence layout, pinyin below each sentence
+- [x] Inline WordPopover on tap: compact card with glyph, pinyin, meaning
+- [x] WordPopover has "Open in Word Hub" button that opens LexicalHub in word mode (with character breakdown)
+- [x] All states covered: loading (skeleton), empty (CTA), error (retry), populated
+- [x] Storybook stories for every component with MSW handlers for all 6 HSK levels
+- [x] No hardcoded values — all styling uses CSS design tokens
+- [x] hubStore generalized from `{character, pinyin}` to `{entityType, entityId, context, navigationStack}`
+- [x] `useEntityHub` hook created (backward-compatible with existing `useCharacterHub`) — **Note:** Consolidated to a single `openHub()` entry point from `shared/hub-entry`; the hook was deemed unnecessary and removed.
+- [x] LexicalHubRouter component created and mounted in AppLayout Modal
+- [x] WordHubContent component: word-level pinyin, definitions (polysemy), HSK badge, constituent characters as clickable chips
+- [x] CharacterHubContent moved into lexical-hub/ feature folder — **Note:** Instead of creating an adapter, `CharacterHub` was refactored to accept `EntityHubProps` (`entityId`/`entityLabel`) directly, eliminating the need for any adapter.
+- [x] Navigation stack enables back button: word→character→radical
+- [x] Inline word popover → "View Details" → opens LexicalHub in word mode
+- [x] No regressions: existing CharacterHub usage across all features continues to work
+- [x] Phase 3 gating is respected — users cannot access readers before completing Phase 2
 
 ## Business Rules
 
@@ -50,7 +50,7 @@ This story delivers the core learner-facing reading experience. It replaces the 
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
+- **Status**: Complete
+- **PR**: epic-21-graded-readers
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: TBD (to be added after commit)

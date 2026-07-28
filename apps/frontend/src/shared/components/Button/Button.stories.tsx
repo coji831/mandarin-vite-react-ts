@@ -166,7 +166,31 @@ export const Tone5: Story = {
   },
 };
 
-/** All 16 variants rendered together for side-by-side comparison */
+/**
+ * Inline-text — flows inline with surrounding text.
+ * Zero padding/background/border — only dotted underline affordance.
+ * Used for tappable unknown words in reading UI.
+ */
+export const InlineText: Story = {
+  args: {
+    variant: "inline-text",
+    children: "未知",
+  },
+};
+
+/**
+ * Inline-text rendered inline with regular text to demonstrate
+ * how it flows naturally within a text paragraph.
+ */
+export const InlineTextInContext: Story = {
+  render: () => (
+    <p style={{ fontSize: "18px", lineHeight: 1.8 }}>
+      这是一段包含 <Button variant="inline-text">未知</Button> 文字的例子。
+    </p>
+  ),
+};
+
+/** All 17 variants rendered together for side-by-side comparison */
 export const AllVariants: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-start" }}>
@@ -195,6 +219,7 @@ export const AllVariants: Story = {
       <Button variant="tone-3">tone-3</Button>
       <Button variant="tone-4">tone-4</Button>
       <Button variant="tone-5">tone-5</Button>
+      <Button variant="inline-text">inline-text</Button>
     </div>
   ),
 };

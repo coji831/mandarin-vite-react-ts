@@ -15,21 +15,10 @@ import {
   SuggestionPanel,
 } from "features/foundations/components";
 import { Box } from "shared/components";
-import { useAudioPlayback, useCharacterHub } from "shared/hooks";
 import "./StrokeAnimationTab.css";
 
 export function StrokeAnimationTab() {
   const [character, setCharacter] = useState<string>("水");
-  const { openHub } = useCharacterHub();
-  const { playWordAudio } = useAudioPlayback();
-
-  const handlePlayAudio = async (char: string) => {
-    try {
-      await playWordAudio({ chinese: char, fallbackToBrowserTTS: true });
-    } catch {
-      // Audio playback is best-effort — silently ignore failures
-    }
-  };
 
   return (
     <div className="stroke-anim-tab flex-col gap-xs mx-auto">
@@ -54,11 +43,7 @@ export function StrokeAnimationTab() {
         <CharacterSearchBar onCharacterSelect={setCharacter} compact />
       </Box>
 
-      <AnimationPanel
-        character={character}
-        onCharacterClick={(char) => openHub(char)}
-        onPlayAudio={handlePlayAudio}
-      />
+      <AnimationPanel character={character} />
     </div>
   );
 }

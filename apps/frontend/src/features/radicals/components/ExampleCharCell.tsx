@@ -13,7 +13,7 @@
 
 import { useCallback } from "react";
 import { Button } from "shared/components";
-import { useHubStore } from "shared/store";
+import { openHub } from "shared/store";
 import { useAudioPlayback } from "shared/hooks";
 import "./ExampleCharCell.css";
 
@@ -24,12 +24,11 @@ interface ExampleCharCellProps {
 }
 
 export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellProps) {
-  const hubOpen = useHubStore((s) => s.open);
   const { playWordAudio } = useAudioPlayback();
 
   const handleHubClick = useCallback(() => {
-    hubOpen(character, pinyin);
-  }, [character, pinyin, hubOpen]);
+    openHub({ entityType: "character", entityId: character, label: pinyin });
+  }, [character, pinyin]);
 
   function handleAudioClick(e: React.MouseEvent) {
     e.stopPropagation();

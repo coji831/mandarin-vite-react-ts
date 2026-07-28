@@ -10,7 +10,7 @@
 
 import { useState, useCallback } from "react";
 import { Box, Button } from "shared/components";
-import { useCharacterHub } from "shared/hooks";
+import { openHub } from "shared/store";
 import type { RadicalData } from "../types";
 import { BranchNode } from "./BranchNode";
 import "./TreeRootNode.css";
@@ -22,7 +22,6 @@ interface TreeRootNodeProps {
 
 export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { openHub } = useCharacterHub();
 
   const toggleExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
@@ -33,8 +32,8 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
   }, []);
 
   const handleRadicalClick = useCallback(() => {
-    openHub(radical.glyph, radical.name_pinyin);
-  }, [radical, openHub]);
+    openHub({ entityType: "character", entityId: radical.glyph, label: radical.name_pinyin });
+  }, [radical]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

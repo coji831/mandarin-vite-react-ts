@@ -1,5 +1,7 @@
 # Implementation 21-3: Passage Generation Backend
 
+> ✅ **Complete — All verification checks pass**
+
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-3-passage-generation.md`
 
 ## Technical Scope
@@ -91,4 +93,12 @@ Solution: Add generatePassage() method without truncation. Do not modify existin
 Problem: Chinese word tokenization errors from Gemini.
 Solution: Gemini returns structured JSON with pre-split sentences. Server-side
          validation catches mismatches. Regenerate on failure.
+
+## Status
+
+✅ **Complete** — All verification checks pass (14 unit tests, type-check, lint).
+
+**Delivered:** PassageGenerationService, SegmenterService, ReadersService,
+ReadersController, rate limiting (5/day + 5 total caps), GeminiService.generateRaw(),
+container wiring, typed error classes, 14 unit tests.
 ```

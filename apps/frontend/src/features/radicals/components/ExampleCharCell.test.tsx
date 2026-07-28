@@ -9,11 +9,11 @@ import { describe, it, expect, vi } from "vitest";
 import { ExampleCharCell } from "./ExampleCharCell";
 
 // Mock the hub store
-const mockOpen = vi.fn();
-vi.mock("shared/store", () => ({
-  useHubStore: (selector: (s: { open: typeof mockOpen }) => unknown) =>
-    selector({ open: mockOpen }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
 // Mock the audio playback hook
 const mockPlayWordAudio = vi.fn();
@@ -36,11 +36,15 @@ describe("ExampleCharCell", () => {
     expect(screen.getByText("water")).toBeInTheDocument();
   });
 
-  it("calls hubStore.open when clicked", () => {
+  it("calls openHub when clicked", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: "水 — shuǐ — water" }));
-    expect(mockOpen).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("calls playWordAudio when audio button is clicked", () => {
@@ -55,13 +59,13 @@ describe("ExampleCharCell", () => {
     });
   });
 
-  it("does not call hubStore.open when audio button is clicked", () => {
+  it("does not call openHub when audio button is clicked", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     const audioButton = screen.getByLabelText("Play audio for 水");
     fireEvent.click(audioButton);
 
-    expect(mockOpen).not.toHaveBeenCalled();
+    expect(mockOpenHub).not.toHaveBeenCalled();
   });
 
   it("has correct aria-label including meaning", () => {

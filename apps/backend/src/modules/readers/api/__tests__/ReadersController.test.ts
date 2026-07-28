@@ -45,6 +45,14 @@ describe("ReadersController", () => {
   };
 
   const mockSegments = [{ text: "你好", wordId: "w_00001", start: 0, end: 2 }];
+  const mockEnrichedSentences = [
+    {
+      index: 0,
+      text: "你好。",
+      pinyin: "nǐ hǎo",
+      words: [{ glyph: "你好", wordId: "w_00001", hskLevel: 1, pinyin: "nǐ hǎo", isKnown: true }],
+    },
+  ];
   const mockHskProfile = {
     distribution: { 1: 1.0 },
     unknownRatio: 0,
@@ -136,16 +144,18 @@ describe("ReadersController", () => {
         passage: mockPassage,
         segments: mockSegments,
         hskProfile: mockHskProfile,
+        enrichedSentences: mockEnrichedSentences,
       });
 
       await controller.getPassage(mockReq, mockRes);
 
-      expect(mockReadersService.getPassage).toHaveBeenCalledWith("passage-1");
+      expect(mockReadersService.getPassage).toHaveBeenCalledWith("passage-1", "user-1");
       expect(mockRes.json).toHaveBeenCalledWith({
         data: expect.objectContaining({
           id: "passage-1",
           segments: mockSegments,
           hskProfile: mockHskProfile,
+          sentences: mockEnrichedSentences,
         }),
       });
     });
@@ -183,6 +193,7 @@ describe("ReadersController", () => {
         passage: generatedPassage,
         segments: mockSegments,
         hskProfile: mockHskProfile,
+        enrichedSentences: mockEnrichedSentences,
       });
 
       await controller.generatePassage(mockReq, mockRes);
@@ -193,6 +204,7 @@ describe("ReadersController", () => {
         data: expect.objectContaining({
           id: "passage-1",
           generatedById: "user-1",
+          sentences: mockEnrichedSentences,
         }),
       });
     });

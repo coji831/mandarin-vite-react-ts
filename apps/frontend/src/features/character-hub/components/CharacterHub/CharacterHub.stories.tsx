@@ -1,69 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
-import { CharacterHub, type CharacterData } from "./CharacterHub";
+import { CharacterHub } from "./CharacterHub";
 import { mswHandlers } from "../../../../../.storybook/msw-handlers";
 
 const API_BASE = "http://localhost:3001/api/v1";
-
-const MOCK_CHARACTER_DATA: Record<string, CharacterData> = {
-  好: {
-    meaning: "good, well",
-    traditional: "好",
-    strokeCount: 6,
-    hskLevel: 1,
-    frequencyRank: 22,
-    etymology: "Compound ideograph: 女 (woman) + 子 (child) — a woman with a child is 'good'",
-    readings: [
-      { pinyin: "hǎo", tone: 3, type: "primary", coreMeaning: "good, well" },
-      { pinyin: "hào", tone: 4, type: "secondary", coreMeaning: "to like, to love" },
-    ],
-    commonWords: ["很好", "爱好", "好吃"],
-  },
-  水: {
-    meaning: "water",
-    traditional: "水",
-    strokeCount: 4,
-    hskLevel: 1,
-    frequencyRank: 8,
-    etymology: "Pictograph of flowing water. Originally depicted a meandering stream with ripples.",
-    readings: [{ pinyin: "shuǐ", tone: 3, type: "primary", coreMeaning: "water" }],
-    commonWords: ["水果", "水平", "喝水"],
-  },
-  火: {
-    meaning: "fire",
-    traditional: "火",
-    strokeCount: 4,
-    hskLevel: 1,
-    frequencyRank: 45,
-    etymology: "Pictograph of a flame with sparks rising upward.",
-    readings: [{ pinyin: "huǒ", tone: 3, type: "primary", coreMeaning: "fire" }],
-    commonWords: ["火车", "火锅"],
-  },
-  没: {
-    meaning: "not, have not",
-    traditional: "沒",
-    strokeCount: 7,
-    hskLevel: 1,
-    frequencyRank: 15,
-    etymology: "Phonetic-semantic compound: 氵 (water) + 叟 (old man)",
-    readings: [
-      { pinyin: "méi", tone: 2, type: "primary", coreMeaning: "not, have not" },
-      { pinyin: "mò", tone: 4, type: "literary", coreMeaning: "sink, disappear" },
-    ],
-    commonWords: ["没有", "没用", "没关系"],
-  },
-  爱: {
-    meaning: "love, affection",
-    traditional: "愛",
-    strokeCount: 10,
-    hskLevel: 1,
-    frequencyRank: 35,
-    etymology: "Complex compound: 爫 (hand) + 冖 (cover) + 心 (heart) + 夊 (foot)",
-    readings: [{ pinyin: "ài", tone: 4, type: "primary", coreMeaning: "love, affection" }],
-    commonWords: ["爱情", "爱好", "可爱"],
-  },
-};
 
 // ─── Shared MSW Handler Constants ──────────────────────────────────────
 
@@ -136,6 +77,7 @@ export const DefaultHandlers = [
   ...mswHandlers.auth,
   mswHandlers.progression.phaseGate(3),
   ...mswHandlers.foundations.default(),
+  mswHandlers.characters.fallback,
   radicalsWithHao(),
   radicalsByCharacterFallback,
   mnemonicForHao(),
@@ -172,9 +114,7 @@ export const Loaded: Story = {
       handlers: DefaultHandlers,
     },
   },
-  render: () => (
-    <CharacterHub character="好" onClose={() => {}} characterData={MOCK_CHARACTER_DATA["好"]} />
-  ),
+  render: () => <CharacterHub entityId="好" />,
 };
 
 export const Loading: Story = {
@@ -189,25 +129,26 @@ export const Loading: Story = {
       ],
     },
   },
-  render: () => <CharacterHub character="" onClose={() => {}} />,
+  render: () => <CharacterHub entityId="" />,
 };
 
 /** Story: character with no radicals (empty state) */
 export const Empty: Story = {
   name: "Empty — No radicals found",
-  render: () => <CharacterHub character="爱" onClose={() => {}} />,
+  render: () => <CharacterHub entityId="爱" />,
 };
 
 /** Story: simulating API failure for radicals */
 export const Error: Story = {
   name: "Error — Radicals load failure",
-  render: () => <CharacterHub character="好" onClose={() => {}} />,
+  render: () => <CharacterHub entityId="好" />,
   parameters: {
     msw: {
       handlers: [
         ...mswHandlers.auth,
         mswHandlers.progression.phaseGate(3),
         ...mswHandlers.foundations.default(),
+        mswHandlers.characters.default("好"),
         http.get(`${API_BASE}/radicals`, () => HttpResponse.error()),
         http.get(new RegExp(`^${API_BASE}/radicals/character/.+`), () => HttpResponse.error()),
         mnemonicForHao(),
@@ -240,19 +181,15 @@ export const MnemonicDisplay: Story = {
       ],
     },
   },
-  render: () => (
-    <CharacterHub character="好" onClose={() => {}} characterData={MOCK_CHARACTER_DATA["好"]} />
-  ),
+  render: () => <CharacterHub entityId="好" />,
 };
 
 export const MnemonicEmpty: Story = {
   name: "好 — No Mnemonic Story Yet",
-  render: () => <CharacterHub character="好" onClose={() => {}} />,
+  render: () => <CharacterHub entityId="好" />,
 };
 
 export const MnemonicPictograph: Story = {
   name: "水 — Pictograph (no mnemonic needed)",
-  render: () => (
-    <CharacterHub character="水" onClose={() => {}} characterData={MOCK_CHARACTER_DATA["水"]} />
-  ),
+  render: () => <CharacterHub entityId="水" />,
 };

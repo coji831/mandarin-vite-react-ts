@@ -1,6 +1,6 @@
 # Story 21.3: Passage Generation Backend
 
-**Last Update:** July 24, 2026
+**Last Update:** July 27, 2026
 
 ## Description
 
@@ -14,14 +14,14 @@ This story builds the entire server-side foundation for the graded readers featu
 
 ## Acceptance Criteria
 
-- [ ] Gemini API integration for passage generation (free prompt, 5 beginner topics, JSON format enforced)
-- [ ] Backend segmenter: parses passage text into words against word index, caches segmented result
-- [ ] Error-catching middleware for Gemini and Segmenter services with typed error classes
-- [ ] Passage stores sentence-structured JSON (content: Json) — segmented result cached separately
-- [ ] HSK profile computed by segmenter and cached alongside passage
-- [ ] Rate limiting: max 5 generation requests per authenticated user per day (UTC midnight reset), 0 for guests
-- [ ] Max total passages per user limit enforced (5 passages per user, seeded demos excluded)
-- [ ] GeminiService updated with `generatePassage()` method (no 500-char cap)
+- [x] Gemini API integration for passage generation (free prompt, 5 beginner topics, JSON format enforced)
+- [x] Backend segmenter: parses passage text into words against word index, caches segmented result
+- [x] Error-catching middleware for Gemini and Segmenter services with typed error classes
+- [x] Passage stores sentence-structured JSON (content: Json) — segmented result cached separately
+- [x] HSK profile computed by segmenter and cached alongside passage
+- [x] Rate limiting: max 5 generation requests per authenticated user per day (UTC midnight reset), 0 for guests
+- [x] Max total passages per user limit enforced (5 passages per user, seeded demos excluded)
+- [x] GeminiService updated with `generatePassage()` method (no 500-char cap)
 
 ## Business Rules
 
@@ -45,7 +45,18 @@ This story builds the entire server-side foundation for the graded readers featu
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Complete
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Key Commit**: TBD
+
+**Delivered:**
+
+- `PassageGenerationService` — wraps `GeminiService.generateRaw()` with JSON parsing
+- `SegmenterService` — longest-match Chinese word segmentation against in-memory word index
+- `ReadersService` — orchestrates generation, HSK level derivation from CharacterProgress
+- `ReadersController` — 3 endpoints: list, detail, generate (all auth-required)
+- Rate limiting — 5/day per user + 5 total per user caps
+- `GeminiService.generateRaw()` — generic full-output method (replaces `generatePassage()` approach)
+- Container wiring — readers module registered with all dependencies
+- 14 unit tests covering services, controller, and rate limiting

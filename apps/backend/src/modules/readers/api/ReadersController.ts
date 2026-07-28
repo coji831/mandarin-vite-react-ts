@@ -10,6 +10,13 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { Request, Response } from "express";
 import type { ReadersService } from "../services/ReadersService.js";
+import type {
+  PassageResponseData,
+  WordSegment,
+  HskProfile,
+  EnrichedSentence,
+  PassageRecord,
+} from "../types/readers.js";
 import {
   PassageNotFoundError,
   RateLimitExceededError,
@@ -26,6 +33,31 @@ export class ReadersController {
 
   constructor(readersService: ReadersService) {
     this.readersService = readersService;
+  }
+
+  /**
+   * Format a passage service result into the standard API response shape.
+   * Strips the raw `content` field and serializes Date objects to ISO strings.
+   */
+  private formatPassageResponse(result: {
+    passage: PassageRecord;
+    segments: WordSegment[];
+    hskProfile: HskProfile;
+    enrichedSentences: EnrichedSentence[];
+  }): { data: PassageResponseData } {
+    const { content: _content, ...passageWithoutContent } = result.passage;
+    return {
+      data: {
+        ...passageWithoutContent,
+        generatedAt: result.passage.generatedAt.toISOString(),
+        createdAt: result.passage.createdAt.toISOString(),
+        updatedAt: result.passage.updatedAt.toISOString(),
+        lastAccessedAt: result.passage.lastAccessedAt?.toISOString() ?? null,
+        sentences: result.enrichedSentences,
+        segments: result.segments,
+        hskProfile: result.hskProfile,
+      },
+    };
   }
 
   /**
@@ -67,6 +99,7 @@ export class ReadersController {
   async getPassage(req: Request, res: Response): Promise<void> {
     try {
       const id = String(req.params.id);
+      const userId = req.userId;
 
       if (!id) {
         res.status(400).json({
@@ -76,18 +109,8 @@ export class ReadersController {
         return;
       }
 
-      const result = await this.readersService.getPassage(id);
-      res.json({
-        data: {
-          ...result.passage,
-          generatedAt: result.passage.generatedAt.toISOString(),
-          createdAt: result.passage.createdAt.toISOString(),
-          updatedAt: result.passage.updatedAt.toISOString(),
-          lastAccessedAt: result.passage.lastAccessedAt?.toISOString() ?? null,
-          segments: result.segments,
-          hskProfile: result.hskProfile,
-        },
-      });
+      const result = await this.readersService.getPassage(id, userId);
+      res.json(this.formatPassageResponse(result));
     } catch (err) {
       if (err instanceof PassageNotFoundError) {
         res.status(404).json({
@@ -140,17 +163,7 @@ export class ReadersController {
       }
 
       const result = await this.readersService.generatePassage(topic.trim(), userId);
-      res.status(201).json({
-        data: {
-          ...result.passage,
-          generatedAt: result.passage.generatedAt.toISOString(),
-          createdAt: result.passage.createdAt.toISOString(),
-          updatedAt: result.passage.updatedAt.toISOString(),
-          lastAccessedAt: result.passage.lastAccessedAt?.toISOString() ?? null,
-          segments: result.segments,
-          hskProfile: result.hskProfile,
-        },
-      });
+      res.status(201).json(this.formatPassageResponse(result));
     } catch (err) {
       if (err instanceof RateLimitExceededError) {
         res.status(429).json({

@@ -16,7 +16,13 @@ import {
   RateLimitExceededError,
   PassageGenerationError,
 } from "../types/readers-errors.js";
-import type { PassageRecord, PassageContent, WordSegment, HskProfile } from "../types/readers.js";
+import type {
+  PassageRecord,
+  PassageContent,
+  WordSegment,
+  HskProfile,
+  EnrichedSentence,
+} from "../types/readers.js";
 
 const logger = createLogger("ReadersService");
 
@@ -70,11 +76,16 @@ export class ReadersService {
    * Get a full passage with segmented result and HSK profile.
    * Uses the SegmenterService on first read and caches the result.
    * Increments access count.
+   * When userId is provided, computes per-word known status.
    */
-  async getPassage(id: string): Promise<{
+  async getPassage(
+    id: string,
+    userId?: string,
+  ): Promise<{
     passage: PassageRecord;
     segments: WordSegment[];
     hskProfile: HskProfile;
+    enrichedSentences: EnrichedSentence[];
   }> {
     const passage = await this.repository.findPassageById(id);
     if (!passage) {
@@ -82,7 +93,7 @@ export class ReadersService {
     }
 
     // Increment access counter (fire-and-forget)
-    this.repository.incrementAccessCount(id).catch((err) => {
+    void this.repository.incrementAccessCount(id).catch((err) => {
       logger.warn(`Failed to increment access count for passage ${id}`, err);
     });
 
@@ -119,7 +130,14 @@ export class ReadersService {
       }
     }
 
-    return { passage, segments, hskProfile };
+    const knownWordIds = userId ? await this.computeKnownWordIds(userId, segments) : undefined;
+    const enrichedSentences = this.segmenterService.enrichSentences(
+      content.sentences,
+      segments,
+      knownWordIds,
+    );
+
+    return { passage, segments, hskProfile, enrichedSentences };
   }
 
   /**
@@ -141,6 +159,7 @@ export class ReadersService {
     passage: PassageRecord;
     segments: WordSegment[];
     hskProfile: HskProfile;
+    enrichedSentences: EnrichedSentence[];
   }> {
     // Step 1: Check rate limits
     await this.checkRateLimits(userId);
@@ -188,7 +207,34 @@ export class ReadersService {
       `Generated passage for user ${userId}: "${topic}" (HSK ${targetHskLevel}, ${segments.length} words)`,
     );
 
-    return { passage, segments, hskProfile };
+    const knownWordIds = await this.computeKnownWordIds(userId, segments);
+    const enrichedSentences = this.segmenterService.enrichSentences(
+      passageResult.sentences,
+      segments,
+      knownWordIds,
+    );
+
+    return { passage, segments, hskProfile, enrichedSentences };
+  }
+
+  /**
+   * Compute a set of known word IDs for a user based on their derived HSK level.
+   * A word is considered "known" if its HSK level <= the user's known HSK level.
+   */
+  private async computeKnownWordIds(userId: string, segments: WordSegment[]): Promise<Set<string>> {
+    const knownHskLevel = await this.getUserKnownLevel(userId);
+    const knownWordIds = new Set<string>();
+
+    for (const seg of segments) {
+      if (seg.wordId) {
+        const hskLevel = this.segmenterService.getWordHskLevel(seg.wordId);
+        if (hskLevel !== null && hskLevel <= knownHskLevel) {
+          knownWordIds.add(seg.wordId);
+        }
+      }
+    }
+
+    return knownWordIds;
   }
 
   /**
@@ -235,7 +281,7 @@ export class ReadersService {
       logger.info(`User ${userId} known HSK level: ${knownLevel}`);
       return knownLevel;
     } catch (error) {
-      logger.error("Failed to derive user HSK level, defaulting to 1", error);
+      logger.error(`Failed to derive HSK level for user ${userId}, defaulting to 1`, error);
       return 1;
     }
   }

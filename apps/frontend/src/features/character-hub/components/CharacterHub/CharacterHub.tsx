@@ -17,65 +17,45 @@
 
 import { useState } from "react";
 import { Box, Tabs } from "shared/components";
-import { HubCharacterCard } from "../HubCharacterCard/HubCharacterCard";
-import { HubIdentityCard } from "../HubIdentityCard/HubIdentityCard";
+import { useHubStore } from "shared/store";
 import { HubActions } from "../HubActions/HubActions";
-import { HubRadicalSection } from "../HubRadicalSection/HubRadicalSection";
-import { HubMnemonicSection } from "../HubMnemonicSection/HubMnemonicSection";
-import { HubReadings } from "../HubReadings/HubReadings";
-import type { ReadingInfo } from "../HubReadings/HubReadings";
+import { HubCharacterCard } from "../HubCharacterCard/HubCharacterCard";
 import { HubCommonWords } from "../HubCommonWords/HubCommonWords";
+import { HubIdentityCard } from "../HubIdentityCard/HubIdentityCard";
+import { HubMnemonicSection } from "../HubMnemonicSection/HubMnemonicSection";
+import { HubRadicalSection } from "../HubRadicalSection/HubRadicalSection";
+import { HubReadings } from "../HubReadings/HubReadings";
 import "./CharacterHub.css";
 
-/** Optional character data for Storybook/development — sections self-fetch in production */
-export type CharacterData = {
-  etymology?: string;
-  traditional?: string;
-  hskLevel?: number;
-  strokeCount?: number;
-  frequencyRank?: number;
-  readings?: ReadingInfo[];
-  commonWords?: string[];
-  meaning?: string;
-};
-
 export type CharacterHubProps = {
-  character: string;
-  pinyin?: string | null;
-  onClose: () => void;
-  /** Optional mock data for Storybook — in production sections self-fetch */
-  characterData?: CharacterData | null;
+  entityId: string;
+  entityLabel?: string | null;
 };
 
 type HubTab = "words" | "story";
 
-export function CharacterHub({ character, pinyin, onClose, characterData }: CharacterHubProps) {
+export function CharacterHub({ entityId, entityLabel }: CharacterHubProps) {
+  const character = entityId;
+  const pinyin = entityLabel ?? null;
   const loading = !character;
-  const data = !loading ? characterData : undefined;
   const [activeTab, setActiveTab] = useState<HubTab>("story");
 
   return (
     <div className="hub-cardinal flex-1 flex-col gap-sm">
       {/* NORTH: Character identity card */}
       <Box variant="card" className="hub-cardinal__identity shrink-0 p-sm">
-        <HubIdentityCard
-          character={character}
-          pinyin={pinyin}
-          meaning={data?.meaning}
-          hskLevel={data?.hskLevel}
-          strokeCount={data?.strokeCount}
-          traditional={data?.traditional}
-          frequencyRank={data?.frequencyRank}
-          etymology={data?.etymology}
-          loading={loading}
-        />
+        <HubIdentityCard character={character} pinyin={pinyin} loading={loading} />
       </Box>
 
       {/* MIDDLE: West | Center | East — fixed 270px height */}
       <div className="hub-cardinal__middle flex-1 grid gap-sm">
         {/* WEST: Radical decomposition */}
         <Box variant="card" className="hub-cardinal__side-panel h-full p-sm flex-col gap-sm">
-          <HubRadicalSection character={character} onClose={onClose} loading={loading} />
+          <HubRadicalSection
+            character={character}
+            onClose={() => useHubStore.getState().close()}
+            loading={loading}
+          />
         </Box>
 
         {/* CENTER: Stroke animation */}
@@ -85,12 +65,7 @@ export function CharacterHub({ character, pinyin, onClose, characterData }: Char
 
         {/* EAST: Readings + stats */}
         <Box variant="card" className="hub-cardinal__side-panel h-full p-sm">
-          <HubReadings
-            glyph={loading ? undefined : character}
-            readings={data?.readings}
-            frequencyRank={data?.frequencyRank}
-            loading={loading}
-          />
+          <HubReadings glyph={loading ? undefined : character} loading={loading} />
         </Box>
       </div>
 
@@ -107,11 +82,7 @@ export function CharacterHub({ character, pinyin, onClose, characterData }: Char
           variant="underline"
         >
           {activeTab === "words" ? (
-            <HubCommonWords
-              commonWords={data?.commonWords}
-              loading={loading}
-              glyph={loading ? undefined : character}
-            />
+            <HubCommonWords glyph={loading ? undefined : character} loading={loading} />
           ) : (
             <HubMnemonicSection character={character} />
           )}

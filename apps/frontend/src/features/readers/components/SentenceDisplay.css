@@ -1,0 +1,31 @@
+/**
+ * @file SentenceDisplay.css
+ * @description Styles for SentenceDisplay component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ */
+
+.sentence-display:hover {
+  background-color: var(--surface-light-3);
+  /* utility: radius-sm — kept inside hover pseudo */
+  border-radius: var(--radius-sm);
+}
+
+.sentence-display:last-child {
+  border-bottom: none;
+}
+
+.sentence-display__text {
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+
+.sentence-word {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Stronger specificity (0,2,0) to override .btn-inline-text's color: inherit */
+.sentence-word.sentence-word--unknown {
+  color: var(--color-primary-light);
+}

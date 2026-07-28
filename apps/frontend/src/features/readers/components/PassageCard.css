@@ -1,0 +1,13 @@
+/**
+ * @file PassageCard.css
+ * @description Styles for PassageCard component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ */
+
+.passage-card__top-row {
+  min-height: 24px;
+}
+
+.passage-card__ratio {
+  margin-top: auto;
+}

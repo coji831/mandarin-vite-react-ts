@@ -39,6 +39,7 @@ import { createQuizModule } from "../modules/quiz/container.js";
 import { createHealthModule } from "../modules/health/container.js";
 import { createTtsModule } from "../modules/tts/container.js";
 import { createReadersModule } from "../modules/readers/container.js";
+import { createWordsModule } from "../modules/words/container.js";
 import { SegmenterService } from "../modules/readers/services/SegmenterService.js";
 import { PassageGenerationService } from "../modules/readers/services/PassageGenerationService.js";
 
@@ -95,6 +96,9 @@ const readersModule = createReadersModule({
   cacheService,
 });
 
+// Words module — no cross-module deps, pure reference data
+const wordsModule = createWordsModule();
+
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const ttsController = ttsModule.controller;
 export const foundationsController = foundationsModule.controller;
@@ -106,4 +110,5 @@ export const progressionController = progressionModule.controller;
 export const quizController = quizModule.controller;
 export const healthController = healthModule.controller;
 export const readersController = readersModule.controller;
+export const wordsController = wordsModule.controller;
 export { readersModule };

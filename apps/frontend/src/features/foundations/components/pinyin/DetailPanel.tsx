@@ -6,8 +6,10 @@
 
 import { useState } from "react";
 
-import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import { Box, Button, ButtonVariant } from "shared/components";
+import { useAudioPlayback } from "shared/hooks";
+import { openHub } from "shared/store";
+import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import "./DetailPanel.css";
 
 // ─── Constants ───
@@ -73,24 +75,15 @@ interface DetailPanelProps {
   final: string;
   tones: string[];
   charMap?: Record<string, string>;
-  onPlayAudio: (character: string) => void;
-  onCharacterHub?: (character: string, pinyin: string) => void;
   onClose: () => void;
 }
 
 // ─── Component ───
 
-export function DetailPanel({
-  initial,
-  final,
-  tones,
-  charMap,
-  onPlayAudio,
-  onCharacterHub,
-  onClose,
-}: DetailPanelProps) {
+export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailPanelProps) {
   const defaultTone = tones[0] ?? "";
   const [activeTone, setActiveTone] = useState(defaultTone);
+  const { playWordAudio } = useAudioPlayback();
   const toneNum = extractToneNumber(activeTone);
   const toneColor = TONE_COLORS[toneNum] ?? TONE_COLORS[0];
 
@@ -129,7 +122,13 @@ export function DetailPanel({
             <Button
               variant="ghost-primary"
               className="pinyin-detail-char-link gap-4px p-xs"
-              onClick={() => onCharacterHub?.(chineseChar, activeTone)}
+              onClick={() =>
+                openHub({
+                  entityType: "character",
+                  entityId: chineseChar,
+                  label: activeTone,
+                })
+              }
               title="View character details"
             >
               <span className="font-2xl text-primary">{chineseChar}</span>
@@ -170,7 +169,11 @@ export function DetailPanel({
 
       {/* Play audio button */}
       <div className="pinyin-detail-actions flex-center shrink-0 p-md">
-        <Button variant="primary" className="gap-sm" onClick={() => onPlayAudio(chineseChar)}>
+        <Button
+          variant="primary"
+          className="gap-sm"
+          onClick={() => playWordAudio({ chinese: chineseChar })}
+        >
           🔊 <span>Play</span>
         </Button>
       </div>

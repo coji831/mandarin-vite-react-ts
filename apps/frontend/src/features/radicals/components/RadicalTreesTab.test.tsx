@@ -22,7 +22,6 @@ vi.mock("../services/radicalProgressService", () => ({
 
 vi.mock("shared/hooks", () => ({
   usePhaseGate: (...args: unknown[]) => mockUsePhaseGate(...args),
-  useCharacterHub: () => ({ openHub: vi.fn() }),
 }));
 
 // Mock child components

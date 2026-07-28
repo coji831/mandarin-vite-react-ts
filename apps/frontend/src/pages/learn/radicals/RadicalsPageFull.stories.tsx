@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RadicalsPage } from "./RadicalsPage";
-import { mswHandlers } from "../../../.storybook/msw-handlers";
+import { mswHandlers } from "../../../../.storybook/msw-handlers";
 
 const PHASE2 = [mswHandlers.progression.phaseGate(2), mswHandlers.radicals.default()];
 const PHASE3 = [

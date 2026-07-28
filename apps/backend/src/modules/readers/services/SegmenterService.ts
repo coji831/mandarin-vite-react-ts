@@ -1,66 +1,102 @@
 /**
  * @file apps/backend/src/modules/readers/services/SegmenterService.ts
- * @description Chinese word segmenter using longest-match against the word index.
+ * @description Chinese word segmenter using longest-match against DB word index.
  *
  * Clean Architecture: Service layer — pure business logic with cache integration.
- * Loads the word index at construction time and performs longest-match segmentation.
- * Results are cached keyed by SHA-256 hash of the input text.
+ * Loads the word index from the database at first use (lazy init) and performs
+ * longest-match segmentation in memory. Results are cached keyed by SHA-256 hash.
  */
 
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+// INTENTIONAL: SegmenterService loads the entire word index into memory at startup
+// as a process-lifetime cache. This cross-cutting concern doesn't fit the standard
+// CRUD repository pattern. The direct Prisma queries are an accepted trade-off for
+// bulk data loading performance.
+import { prisma } from "../../../shared/infrastructure/database/client.js";
 import { createLogger } from "../../../shared/utils/logger.js";
+import { pinyinStringToToneMarks } from "../../../shared/utils/pinyinFormatUtils.js";
 import { SegmenterError } from "../types/readers-errors.js";
-import type { WordSegment, HskProfile } from "../types/readers.js";
+import type { WordSegment, HskProfile, EnrichedSentence, EnrichedWord } from "../types/readers.js";
 import type { CacheService } from "../../../shared/infrastructure/cache/CacheService.js";
 
 const logger = createLogger("SegmenterService");
 
-/** Regex matching non-Chinese characters (spaces, punctuation, digits, etc.). */
 const NON_CHINESE_REGEX =
   /[^\u4e00-\u9fff\u3400-\u4dbf\u2e80-\u2eff\u2f00-\u2fdf\u3000-\u303f\uff00-\uffef\u20000-\u2a6df\u2a700-\u2b73f\u2b740-\u2b81f]+/;
 
-/** Cache TTL for segmented results (1 hour). */
 const SEGMENT_CACHE_TTL = 3600;
 
-/**
- * Service for Chinese word segmentation using longest-match against a word index.
- */
 export class SegmenterService {
-  private simplifiedToId: Map<string, string>;
-  private wordsJson: Record<string, { hskLevel?: number }> | null = null;
+  private simplifiedToId: Map<string, string> = new Map();
+  private hskLevels: Map<string, number> = new Map();
+  private pinyinMap: Map<string, string> = new Map();
+  /** Map of character glyph → tone-marked pinyin from Character.readings first reading */
+  private characterPinyinMap: Map<string, string> = new Map();
   private cacheService: CacheService | null;
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
 
   constructor(cacheService?: CacheService) {
     this.cacheService = cacheService ?? null;
-
-    // Load word index at construction time
-    try {
-      const indexPath = new URL("../../../../../content/words/index.json", import.meta.url);
-      const raw = readFileSync(indexPath, "utf-8");
-      const data = JSON.parse(raw) as { simplified_to_id: Record<string, string> };
-      this.simplifiedToId = new Map(Object.entries(data.simplified_to_id));
-      logger.info(`Loaded ${this.simplifiedToId.size} word entries from index`);
-    } catch (error) {
-      logger.error("Failed to load word index", error);
-      throw new SegmenterError("Failed to load word index at startup");
-    }
   }
 
   /**
-   * Lazily load full word data (words.json) for HSK profiling.
+   * Lazy-load word index from database on first use.
+   * Uses a promise guard to prevent concurrent initialization.
    */
-  private async ensureWordsJson(): Promise<void> {
-    if (this.wordsJson) return;
+  private async init(): Promise<void> {
+    if (this.initialized) return;
+    if (this.initPromise) return this.initPromise;
 
+    this.initPromise = this.loadWordIndex();
+    return this.initPromise;
+  }
+
+  /**
+   * Load the full word index from the database into memory.
+   * Word data is static reference data that doesn't change at runtime,
+   * so it's safe to cache in memory for the process lifetime.
+   */
+  private async loadWordIndex(): Promise<void> {
     try {
-      const wordsPath = new URL("../../../../../content/words/words.json", import.meta.url);
-      const raw = readFileSync(wordsPath, "utf-8");
-      this.wordsJson = JSON.parse(raw) as Record<string, { hskLevel?: number }>;
-      logger.info(`Loaded ${Object.keys(this.wordsJson).length} word entries for profiling`);
+      logger.info("Loading word index from database...");
+      const words = await prisma.word.findMany({
+        where: { simplified: { not: null } },
+        select: { id: true, simplified: true, hskLevel: true, pinyin: true },
+      });
+
+      for (const word of words) {
+        if (word.simplified) {
+          this.simplifiedToId.set(word.simplified, word.id);
+        }
+        if (word.hskLevel !== null && word.hskLevel !== undefined) {
+          this.hskLevels.set(word.id, word.hskLevel);
+        }
+        if (word.pinyin) {
+          this.pinyinMap.set(word.id, word.pinyin);
+        }
+      }
+
+      // Load character-level pinyin fallback map from Character.readings
+      const characters = await prisma.character.findMany({
+        select: { glyph: true, readings: true },
+      });
+
+      for (const char of characters) {
+        const readings = char.readings as Array<{ pinyin?: string }> | null;
+        if (readings && readings.length > 0 && readings[0].pinyin) {
+          this.characterPinyinMap.set(char.glyph, readings[0].pinyin);
+        }
+      }
+
+      logger.info(
+        `Loaded ${this.simplifiedToId.size} word entries, ${this.hskLevels.size} HSK levels, ${this.pinyinMap.size} word pinyin, ${this.characterPinyinMap.size} character pinyin from database`,
+      );
+      this.initialized = true;
     } catch (error) {
-      logger.error("Failed to load words.json", error);
-      this.wordsJson = {};
+      logger.error("Failed to load word index from database", error);
+      this.initPromise = null; // Allow retry on next call
+      throw new SegmenterError("Failed to load word index from database");
     }
   }
 
@@ -140,14 +176,11 @@ export class SegmenterService {
 
   /**
    * Segment text and compute its HSK profile.
-   *
-   * Caches the result keyed by SHA-256 hash of the input text (TTL: 1 hour).
-   *
-   * @param text - The text to analyze.
-   * @returns HskProfile with level distribution and ratios.
+   * Triggers lazy DB load on first call.
    */
   async getHskProfile(text: string): Promise<HskProfile> {
-    // Check cache first
+    await this.init();
+
     const cacheKey = this.hashText(text);
     if (this.cacheService) {
       try {
@@ -161,25 +194,19 @@ export class SegmenterService {
       }
     }
 
-    // Ensure full word data is loaded
-    await this.ensureWordsJson();
-
-    // Segment the text
     const segments = this.segment(text);
 
-    // Compute HSK level counts
     const levelCounts: Record<number, number> = {};
     let unknownCount = 0;
 
     for (const seg of segments) {
-      if (seg.wordId === null || !this.wordsJson) {
+      if (seg.wordId === null) {
         unknownCount++;
         continue;
       }
 
-      const wordData = this.wordsJson[seg.wordId];
-      const hskLevel = wordData?.hskLevel;
-      if (hskLevel !== undefined && hskLevel !== null) {
+      const hskLevel = this.hskLevels.get(seg.wordId);
+      if (hskLevel !== undefined) {
         levelCounts[hskLevel] = (levelCounts[hskLevel] ?? 0) + 1;
       } else {
         unknownCount++;
@@ -187,10 +214,9 @@ export class SegmenterService {
     }
 
     const totalWords = segments.length;
-
-    // Compute distribution (percentage of known words at each HSK level)
     const knownWords = totalWords - unknownCount;
     const distribution: Record<number, number> = {};
+
     for (const [level, count] of Object.entries(levelCounts)) {
       distribution[Number(level)] = knownWords > 0 ? count / knownWords : 0;
     }
@@ -202,12 +228,11 @@ export class SegmenterService {
       totalWords,
     };
 
-    // Cache the result
     if (this.cacheService) {
       try {
-        await this.cacheService.set(cacheKey, profile, SEGMENT_CACHE_TTL);
+        await this.cacheService.set(cacheKey, JSON.stringify(profile), SEGMENT_CACHE_TTL);
       } catch {
-        logger.warn("HSK profile cache write failed, continuing without");
+        logger.warn("HSK profile cache write failed");
       }
     }
 
@@ -219,5 +244,98 @@ export class SegmenterService {
    */
   private hashText(text: string): string {
     return `segment:hsk:${createHash("sha256").update(text, "utf-8").digest("hex")}`;
+  }
+
+  /**
+   * Get the HSK level for a word by its ID.
+   * Returns null if the word is unknown or has no HSK level.
+   */
+  getWordHskLevel(wordId: string): number | null {
+    return this.hskLevels.get(wordId) ?? null;
+  }
+
+  /**
+   * Enrich raw passage sentences with word-level data from segments.
+   * Maps segment positions to sentences and looks up pinyin/HSK levels.
+   * When knownWordIds is provided, sets isKnown=true for words in the set.
+   */
+  enrichSentences(
+    sentences: Array<{ index: number; text: string }>,
+    segments: WordSegment[],
+    knownWordIds?: Set<string>,
+  ): EnrichedSentence[] {
+    let segmentIdx = 0;
+
+    return sentences.map((sentence, idx) => {
+      // Calculate character start position for this sentence in the full passage text
+      const sentenceStart =
+        idx > 0 ? sentences.slice(0, idx).reduce((sum, s) => sum + s.text.length, 0) : 0;
+      const sentenceEnd = sentenceStart + sentence.text.length;
+
+      // Collect segments that fall within this sentence's character range
+      const sentenceWords: EnrichedWord[] = [];
+      const sentencePinyinParts: string[] = [];
+
+      while (segmentIdx < segments.length && segments[segmentIdx].start < sentenceEnd) {
+        const seg = segments[segmentIdx];
+
+        // Extract the glyph from the original sentence text
+        const localStart = seg.start - sentenceStart;
+        const localEnd = seg.end - sentenceStart;
+        const glyph = sentence.text.slice(localStart, localEnd);
+
+        // Look up pinyin and HSK level from the in-memory maps
+        let wordPinyin = seg.wordId ? (this.pinyinMap.get(seg.wordId) ?? null) : null;
+        const hskLevel = seg.wordId ? (this.hskLevels.get(seg.wordId) ?? null) : null;
+
+        // Fix 1: Convert tone numbers to tone marks for display
+        if (wordPinyin) {
+          wordPinyin = pinyinStringToToneMarks(wordPinyin);
+        }
+
+        // Fix 2: Character-level pinyin fallback for words not in the index
+        if (!wordPinyin && seg.wordId === null && /[\u4e00-\u9fff]/.test(seg.text)) {
+          const charPinyins: string[] = [];
+          for (const ch of seg.text) {
+            const cp = this.characterPinyinMap.get(ch);
+            if (cp) {
+              charPinyins.push(cp);
+            } else {
+              charPinyins.push(ch); // fallback to raw glyph
+            }
+          }
+          if (charPinyins.length > 0) {
+            wordPinyin = charPinyins.join(" ");
+          }
+        }
+
+        // Only add meaningful pinyin parts for Chinese words
+        if (wordPinyin && (seg.wordId !== null || /[\u4e00-\u9fff]/.test(seg.text))) {
+          sentencePinyinParts.push(wordPinyin);
+        } else {
+          // For non-Chinese tokens (punctuation, spaces), pass through the raw text
+          sentencePinyinParts.push(seg.text);
+        }
+
+        const isKnown = knownWordIds ? knownWordIds.has(seg.wordId ?? "") : false;
+
+        sentenceWords.push({
+          glyph,
+          wordId: seg.wordId,
+          hskLevel,
+          pinyin: wordPinyin,
+          isKnown,
+        });
+
+        segmentIdx++;
+      }
+
+      return {
+        index: sentence.index,
+        text: sentence.text,
+        pinyin: sentencePinyinParts.join(" "),
+        words: sentenceWords,
+      };
+    });
   }
 }

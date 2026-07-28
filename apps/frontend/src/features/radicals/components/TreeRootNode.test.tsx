@@ -9,14 +9,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TreeRootNode } from "./TreeRootNode";
 import type { RadicalData } from "../types";
 
-const mockOpenHub = vi.fn();
-vi.mock("shared/hooks", () => ({
-  useCharacterHub: () => ({
-    openHub: mockOpenHub,
-  }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
-// BranchNode is not mocked — it renders with useCharacterHub already mocked above.
+// BranchNode is not mocked — it renders with useHubStore already mocked above.
 // We use text queries to verify expand/collapse behavior.
 
 const mockRadical: RadicalData = {
@@ -143,7 +142,11 @@ describe("TreeRootNode", () => {
 
     const radicalButton = screen.getByRole("button", { name: "一 — one — 1 strokes" });
     fireEvent.click(radicalButton);
-    expect(mockOpenHub).toHaveBeenCalledWith("一", "yī");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "一",
+      label: "yī",
+    });
   });
 
   it("shows empty message when no characters", () => {

@@ -1,0 +1,9 @@
+/**
+ * @file WordPopover.css
+ * @description Styles for WordPopover component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ */
+
+.word-popover__backdrop {
+  z-index: 999;
+}
