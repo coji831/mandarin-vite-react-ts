@@ -10,6 +10,7 @@ import { createLogger } from "../../../shared/utils/logger.js";
 import { ReadersRepository } from "../repositories/ReadersRepository.js";
 import { SegmenterService } from "./SegmenterService.js";
 import { PassageGenerationService } from "./PassageGenerationService.js";
+import { ReadersAudioService } from "./ReadersAudioService.js";
 import type { CacheService } from "../../../shared/infrastructure/cache/CacheService.js";
 import {
   PassageNotFoundError,
@@ -23,6 +24,7 @@ import type {
   HskProfile,
   EnrichedSentence,
 } from "../types/readers.js";
+import type { PassageAudioResponse } from "../types/readers-audio.js";
 
 const logger = createLogger("ReadersService");
 
@@ -36,24 +38,27 @@ const MAX_DAILY_GENERATIONS = 5;
 const PASSAGE_CACHE_TTL = 3600;
 
 /**
- * Readers Service — manages reading passages: listing, retrieval, and AI generation.
+ * Readers Service — manages reading passages: listing, retrieval, AI generation, and audio sync.
  */
 export class ReadersService {
   private readonly repository: ReadersRepository;
   private readonly passageGenService: PassageGenerationService;
   private readonly segmenterService: SegmenterService;
   private readonly cacheService: CacheService;
+  private readonly readersAudioService: ReadersAudioService;
 
   constructor(
     repository: ReadersRepository,
     passageGenService: PassageGenerationService,
     segmenterService: SegmenterService,
     cacheService: CacheService,
+    readersAudioService: ReadersAudioService,
   ) {
     this.repository = repository;
     this.passageGenService = passageGenService;
     this.segmenterService = segmenterService;
     this.cacheService = cacheService;
+    this.readersAudioService = readersAudioService;
     logger.info("Initialized Readers Service");
   }
 
@@ -138,6 +143,27 @@ export class ReadersService {
     );
 
     return { passage, segments, hskProfile, enrichedSentences };
+  }
+
+  /**
+   * Get a raw passage by ID without segmentation or enrichment.
+   * Returns null if not found.
+   */
+  async getRawPassage(id: string): Promise<PassageRecord | null> {
+    return this.repository.findPassageById(id);
+  }
+
+  /**
+   * Get audio URLs for all sentences in a passage.
+   * Validates passage exists, then delegates to ReadersAudioService.
+   */
+  async getPassageAudio(id: string): Promise<PassageAudioResponse> {
+    const passage = await this.repository.findPassageById(id);
+    if (!passage) {
+      throw new PassageNotFoundError(id);
+    }
+
+    return this.readersAudioService.getPassageAudio(passage);
   }
 
   /**

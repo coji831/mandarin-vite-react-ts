@@ -136,7 +136,7 @@ export function QuizResults() {
 
       {/* Answer review section (collapsible) */}
       <Box as="details" variant="dark" padding="md" className="quiz-results__review w-full">
-        <summary className="fw-600 text-primary font-md" style={{ cursor: "pointer" }}>
+        <summary className="fw-600 text-primary font-md cursor-pointer">
           📋 Review Answers ({answers.length} questions)
         </summary>
         <div className="flex-col gap-xs mt-md">

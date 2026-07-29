@@ -7,7 +7,7 @@
 
 .hub-mnemonic-section__story {
   max-height: 180px;
-  overflow-y: auto;
+  overflow-y: auto; /* bundled with max-height as a size contract for the story container */
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }

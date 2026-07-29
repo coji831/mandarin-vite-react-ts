@@ -197,6 +197,7 @@ function SlidingPinyinGridComponent({
                 className="font-sm fw-500"
                 style={{ color: TONE_COLORS[extractToneNumber(firstTone)] ?? TONE_COLORS[0] }}
               >
+                {/* inline: dynamic tone color — depends on cell data */}
                 {firstTone}
               </span>
             ) : (

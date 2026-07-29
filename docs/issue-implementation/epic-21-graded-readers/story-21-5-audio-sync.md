@@ -4,13 +4,49 @@
 
 ## Technical Scope
 
-Add per-sentence TTS audio playback with dual-flow fallback, AudioControlBar, and useSentenceAudio hook.
+Add per-sentence TTS audio playback with dual-flow fallback, AudioControlBar, and decomposed audio hooks.
 
-**Files:**
+**Files created (23):**
 
-- `apps/frontend/src/features/readers/hooks/useSentenceAudio.ts`
-- `apps/frontend/src/features/readers/components/AudioControlBar/`
-- `apps/frontend/src/features/readers/components/ReadingView/` (audio integration)
+### Backend
+
+- `apps/backend/src/modules/readers/services/ReadersAudioService.ts` — GCS lookup → TTS orchestration
+- `apps/backend/src/modules/readers/types/readers-audio.ts` — Audio response types
+- `apps/backend/src/modules/readers/api/__tests__/ReadersAudioController.test.ts` — 4 controller tests
+- `apps/backend/src/modules/readers/services/__tests__/ReadersAudioService.test.ts` — 5 service tests
+- `apps/backend/src/modules/readers/services/__tests__/ReadersService.test.ts` — 4 service tests
+
+### Frontend — hooks (decomposed per SRP)
+
+- `apps/frontend/src/features/readers/hooks/useAudioEngine.ts` — Core HTMLAudioElement lifecycle
+- `apps/frontend/src/features/readers/hooks/useBrowserTTS.ts` — SpeechSynthesisUtterance wrapper
+- `apps/frontend/src/features/readers/hooks/useAudioAutoAdvance.ts` — Sequential playback + cancellation
+- `apps/frontend/src/features/readers/hooks/useSentenceAudio.ts` — Composition hook (popover + visibility)
+- `apps/frontend/src/features/readers/hooks/usePassageAudio.ts` — Audio URL fetch hook
+- `apps/frontend/src/features/readers/hooks/index.ts` — Hook barrel
+- `apps/frontend/src/features/readers/hooks/__tests__/useSentenceAudio.test.ts` — 10 hook tests
+- `apps/frontend/src/features/readers/hooks/__tests__/usePassageAudio.test.ts` — 5 hook tests
+
+### Frontend — components
+
+- `apps/frontend/src/features/readers/components/AudioControlBar/AudioControlBar.tsx` — Transport + speed controls
+- `apps/frontend/src/features/readers/components/AudioControlBar/AudioControlBar.css`
+- `apps/frontend/src/features/readers/components/AudioControlBar/__tests__/AudioControlBar.test.tsx` — 12 component tests
+
+### Frontend — types, services, stores
+
+- `apps/frontend/src/features/readers/types/audio.ts` — Audio type definitions
+- `apps/frontend/src/features/readers/types/api.ts` — API response types
+- `apps/frontend/src/features/readers/constants/audio.ts` — Playback constants
+- `apps/frontend/src/features/readers/services/passageService.ts` — `fetchPassageAudio()`
+- `apps/frontend/src/features/readers/stores/readingStore.ts` — `currentAudioIndex` + `pendingPlayIndex`
+- `apps/frontend/src/features/readers/services/__tests__/passageService.test.ts` — Service tests
+
+### Storybook
+
+- `apps/frontend/.storybook/msw-handlers.ts` — Audio API handlers
+- `apps/frontend/.storybook/decorators/withReadingStore.tsx` — Audio index override
+- `apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx` — 4 audio story variants
 
 ## Implementation Details
 
@@ -81,6 +117,42 @@ Solution: Parallel TTS requests (one per sentence). 5s timeout per sentence.
          Cache partial results and retry failed.
 
 Problem: Some sentences may fail TTS generation.
-Solution: Two-flow fallback: (1) pre-generated, (2) per-sentence on-demand,
-         (3) synthetic browser SpeechSynthesis. User can retry failed sentences.
+Solution: Two-flow fallback: (1) pre-generated (GCS), (2) per-sentence on-demand,
+         (3) synthetic browser SpeechSynthesis. Backend orchestrates (1)→(2),
+         frontend only handles (3) as last resort.
+
+Problem: Audio overlap on tap — tapping a sentence while audio was playing
+         caused overlapping playback.
+Solution: playSequenceRef cancellation token. On new play request, stop
+         current audio immediately via ref sync before starting new sequence.
+
+Problem: Tap-triggered auto-advance — tapping a sentence would start auto-
+         advance mode and continue through all sentences.
+Solution: autoAdvance parameter on playSentence(index, autoAdvance=true).
+         Tap path passes false (single sentence only), Play button passes true.
+
+Problem: Props drilling — audio callbacks (currentAudioIndex, onSentenceTap)
+         passed through 3 component levels.
+Solution: Moved currentAudioIndex + pendingPlayIndex to readingStore (Zustand).
+         SentenceDisplay reads store directly via selector hooks.
+
+Problem: useSentenceAudio violated SRP — managed 7 concerns in one hook.
+Solution: Decomposed into 3 focused sub-hooks:
+         - useAudioEngine() — core HTMLAudioElement lifecycle
+         - useBrowserTTS() — SpeechSynthesis wrapper
+         - useAudioAutoAdvance() — sequential playback + cancellation
+         - useSentenceAudio() — composes sub-hooks + popover/visibility effects
+
+Problem: SentenceDisplay was coupled to Zustand store directly.
+Solution: Converted to props-only interface (currentAudioIndex, onSentenceTap).
+         ReadersPage container bridges store values to props.
+
+Problem: isComplete display bug — idle state showed "5/5" instead of "0/5".
+Solution: Added hasCompleted prop to separate idle vs completed states.
 ```
+
+## Implementation Status
+
+- **Status**: Completed
+- **PR**: TBD
+- **Commit**: `6878493f`

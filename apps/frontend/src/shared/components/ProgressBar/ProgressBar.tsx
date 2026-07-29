@@ -22,6 +22,7 @@ export function ProgressBar({ value, threshold, className = "" }: ProgressBarPro
       aria-valuemax={100}
     >
       <div className="progress-bar__fill" style={{ width: `${Math.max(value, 4)}%` }} />
+      {/* inline: dynamic width/left — percentage values computed from props */}
       {threshold !== undefined && (
         <div className="progress-bar__threshold" style={{ left: `${threshold}%` }} />
       )}

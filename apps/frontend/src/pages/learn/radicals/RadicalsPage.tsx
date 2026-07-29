@@ -28,7 +28,7 @@ export function RadicalsPage() {
   const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
   const [showTrees, setShowTrees] = useState(() => searchParams.get("view") === "trees");
 
-  // Effect 1: ?radical=rad_XXXX — select radical, switch to browse if in trees
+  // Effect 1: ?radical query param — select radical, switch to browse if in trees
   useEffect(() => {
     const radicalParam = searchParams.get("radical");
     if (!radicalParam || radicals.length === 0) return;

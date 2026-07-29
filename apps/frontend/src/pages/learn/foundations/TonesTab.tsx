@@ -44,8 +44,8 @@ export function TonesTab() {
       try {
         const pool = await foundationsService.getPinyinTonesPool();
         setData(pool);
-      } catch (err) {
-        console.error("[TonesTab] Failed to load tones data:", err);
+      } catch {
+        // Failed to load tones data — error state shown
         fetchAttempted.current = false; // Allow retry
         setHasError(true);
       }
@@ -74,8 +74,8 @@ export function TonesTab() {
       // for Chinese words (multiple characters), use directly
       const audioText = /^[a-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]/.test(text) ? charMap[text] || text : text;
       await playWordAudio({ chinese: audioText, fallbackToBrowserTTS: true });
-    } catch (err) {
-      console.warn(`[TonesTab] Audio failed for "${text}"`, err);
+    } catch {
+      // Audio playback failed — non-critical, TTS fallback available
     } finally {
       setLoadingPinyin(null);
     }

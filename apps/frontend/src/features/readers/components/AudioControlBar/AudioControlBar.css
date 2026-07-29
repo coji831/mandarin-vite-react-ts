@@ -1,0 +1,96 @@
+/**
+ * @file AudioControlBar.css
+ * @description Styles for AudioControlBar component (Story 21.5).
+ *
+ * Intentionally bundles layout properties (flex, gap, align-items) locally
+ * rather than using global utility classes, because this component is a
+ * self-contained toolbar where every property is part of a single visual
+ * contract. Using className utilities here would split the layout definition
+ * across TSX and CSS, making it harder to reason about the toolbar as a unit.
+ */
+
+.audio-control-bar {
+  /* toolbar row layout — bundled (see file header) */
+  display: flex;
+  /* align-items bundled with display:flex */
+  align-items: center;
+  /* gap bundled with display:flex */
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  min-height: 44px;
+  background-color: var(--surface-dark-alt-2);
+  border: 1px solid var(--surface-border);
+  /* border-radius bundled with toolbar border */
+  border-radius: var(--radius-md);
+}
+
+/* Transport button group */
+.audio-control-bar__transport {
+  /* transport group layout — bundled */
+  display: flex;
+  /* bundled */
+  align-items: center;
+  /* bundled */
+  gap: var(--space-xs);
+}
+
+.audio-control-bar__transport-btn {
+  min-width: 36px;
+  min-height: 36px;
+  /* transport-btn reset */
+  padding: 0;
+  /* transport-btn font */
+  font-size: var(--font-md);
+  /* transport-btn center */
+  justify-content: center;
+}
+
+/* Progress indicator */
+.audio-control-bar__progress {
+  min-width: 60px;
+  /* progress text alignment */
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  /* progress font */
+  font-size: var(--font-sm);
+  /* progress color */
+  color: var(--text-secondary);
+}
+
+/* Speed pills group */
+.audio-control-bar__speed-group {
+  /* speed-group layout — bundled */
+  display: flex;
+  /* bundled */
+  align-items: center;
+  /* bundled */
+  gap: var(--space-xs);
+  margin-left: auto;
+}
+
+.audio-control-bar__speed-label {
+  /* speed-label font */
+  font-size: var(--font-xs);
+  /* speed-label color */
+  color: var(--text-tertiary);
+  /* speed-label nowrap */
+  white-space: nowrap;
+}
+
+.audio-control-bar__speed-pill {
+  min-width: 44px;
+  min-height: 28px;
+  padding: 2px var(--space-xs);
+  /* speed-pill font */
+  font-size: var(--font-xs);
+  /* speed-pill center */
+  justify-content: center;
+}
+
+/* Error indicator */
+.audio-control-bar__error {
+  /* error font */
+  font-size: var(--font-sm);
+  cursor: help;
+  margin-left: var(--space-xs);
+}

@@ -1515,6 +1515,31 @@ export const mswHandlers = {
           HttpResponse.json({ error: "Failed to load passage" }, { status: 500 }),
         ),
     },
+    passageAudio: {
+      default: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () =>
+          HttpResponse.json({
+            data: {
+              audioUrls: {
+                0: { url: "https://storage.googleapis.com/example/tts/hash/0.mp3", source: "gcs" },
+                1: { url: "https://storage.googleapis.com/example/tts/hash/1.mp3", source: "gcs" },
+                2: { url: "", source: "failed" },
+                3: {
+                  url: "https://storage.googleapis.com/example/tts/hash/3.mp3",
+                  source: "ondemand",
+                },
+                4: { url: "https://storage.googleapis.com/example/tts/hash/4.mp3", source: "gcs" },
+              },
+            },
+          }),
+        ),
+      loading: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () => new Promise(() => {})),
+      error: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () =>
+          HttpResponse.json({ error: "Failed to load audio" }, { status: 500 }),
+        ),
+    },
     wordDetail: {
       default: () =>
         http.get(`${API_BASE}/words/:word`, ({ params }) =>

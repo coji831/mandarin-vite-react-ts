@@ -35,8 +35,7 @@
 
 /* AnimationPanel residuals */
 .stroke-anim-error {
-  max-width: 100%;
-  /* max-width: 100% is a responsive constraint - keeping */
+  max-width: 100%; /* responsive constraint — .max-w-full utility doesn't convey the error component context */
 }
 
 .stroke-anim-error-hint {

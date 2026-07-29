@@ -6,10 +6,10 @@
  *   hub navigation goes directly through Zustand hubStore).
  * Story 21.x Phase 2: Collapsed onPopoverOpen prop chain via component composition.
  *   SentenceDisplay is now rendered as children by the parent (ReadersPage).
+ * Story 21.5: Added audioControlBar slot.
  *
  * Props-only — no logic, no hooks, no API calls.
  * Covers: default, loading (skeleton), error (retry).
- * No AudioControlBar — deferred to Story 21.5.
  */
 import { Box, Button, Skeleton, ErrorScreen } from "shared/components";
 import type { SentenceData } from "./SentenceDisplay";
@@ -29,6 +29,8 @@ export type ReadingViewProps = {
   isLoading: boolean;
   hasError: boolean;
   onRetry: () => void;
+  /** AudioControlBar rendered between the divider and sentences. */
+  audioControlBar?: React.ReactNode;
 };
 
 export function ReadingView({
@@ -38,6 +40,7 @@ export function ReadingView({
   isLoading,
   hasError,
   onRetry,
+  audioControlBar,
 }: ReadingViewProps) {
   // Error state
   if (hasError) {
@@ -97,6 +100,9 @@ export function ReadingView({
       </div>
 
       <Box variant="divider" />
+
+      {/* AudioControlBar slot — Story 21.5 */}
+      {audioControlBar}
 
       {/* Sentences — scrollable (rendered from parent via children) */}
       <Box

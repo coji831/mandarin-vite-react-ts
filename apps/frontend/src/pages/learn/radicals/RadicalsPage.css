@@ -19,15 +19,15 @@
    ═══════════════════════════════════════════════ */
 
 .radicals-page__content {
-  min-height: 0;
+  min-height: 0; /* flex ancestor — required for internal overflow to work (scroll chain rule) */
 }
 
 /* Grid wrapper card — scrolls internally, fills content space */
 .radicals-page__grid-wrapper {
-  padding: 0;
-  overflow-y: auto;
-  min-height: 0;
-  flex: 1;
+  padding: 0; /* grid-wrapper padding reset — part of the scroll chain contract */
+  overflow-y: auto; /* scroll zone — part of the scroll chain contract */
+  min-height: 0; /* flex child — part of the scroll chain contract */
+  flex: 1; /* flex fill — part of the scroll chain contract */
 }
 
 /* ═══════════════════════════════════════════════
@@ -36,12 +36,11 @@
 
 /* Search input fills full width of the filter bar */
 .radicals-filter-bar__search {
-  width: 100%;
+  width: 100%; /* search input fill — BEM component style, w-full utility doesn't pair with BEM naming */
 }
 
 .radicals-filter-bar__label {
-  display: block;
-  /* typography migrated to utility classes: font-xs text-secondary text-uppercase tracking-wide */
+  display: block; /* label element — block display is structural */
 }
 
 .radicals-filter-bar__input {

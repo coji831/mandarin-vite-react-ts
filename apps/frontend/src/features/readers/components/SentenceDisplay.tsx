@@ -3,11 +3,14 @@
  * @description Renders one sentence with Chinese text and pinyin below.
  * Each word is tappable — unknown words are highlighted to indicate clickability.
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Story 21.5: Audio Sync — reads currentAudioIndex from readingStore directly.
  *
  * Only popover position flows through onPopoverOpen prop.
  * The "Open in Word Hub" button inside WordPopover handles hub navigation.
+ * Audio cursor is received via props (currentAudioIndex + onSentenceTap).
+ * Story 21.6: Removed direct readingStore coupling — container passes props.
  */
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { Button } from "shared/components";
 import "./SentenceDisplay.css";
 
@@ -28,6 +31,10 @@ export type SentenceData = {
 export type SentenceDisplayProps = {
   sentence: SentenceData;
   onPopoverOpen: (glyph: string, rect: DOMRect) => void;
+  /** Current audio cursor index (null if no audio is active). */
+  currentAudioIndex: number | null;
+  /** Callback when the sentence is tapped (for audio playback). */
+  onSentenceTap: (index: number) => void;
 };
 
 /** Punctuation characters set for fast lookup */
@@ -132,12 +139,41 @@ function SentenceWord({
 export const SentenceDisplay = memo(function SentenceDisplay({
   sentence,
   onPopoverOpen,
+  currentAudioIndex,
+  onSentenceTap,
 }: SentenceDisplayProps) {
+  // Note: Raw <div> is intentional here. No Box variant matches the visual
+  // contract of SentenceDisplay (no default bg/border, single-sided active border).
+  const isActive = currentAudioIndex === sentence.index;
+  const handleTap = useCallback(() => {
+    onSentenceTap(sentence.index);
+  }, [onSentenceTap, sentence.index]);
+
+  const containerClass = [
+    "sentence-display",
+    "transition-all",
+    "flex-col",
+    "gap-xs",
+    "py-sm",
+    isActive ? "sentence-display--active" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div
-      className="sentence-display transition-all flex-col gap-xs py-sm"
-      role="group"
+      className={containerClass}
+      role="button"
       aria-label={`Sentence ${sentence.index + 1}`}
+      onClick={handleTap}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleTap();
+        }
+      }}
+      tabIndex={0}
+      aria-current={isActive ? "step" : undefined}
     >
       {/* Chinese text with tappable words */}
       <div className="sentence-display__text font-xl lh-normal">

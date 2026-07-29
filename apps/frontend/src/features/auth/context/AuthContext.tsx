@@ -52,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, accessToken);
       return accessToken;
     } catch (error) {
-      console.error("Token refresh error:", error);
       // If refresh fails, clear tokens
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);
@@ -86,8 +85,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               }
             }
           }
-        } catch (error) {
-          console.error("Initial refresh failed:", error);
+        } catch {
+          // Initial refresh failed — handled by isLoading=false below
         } finally {
           if (isMounted) {
             setIsLoading(false);
@@ -134,15 +133,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
               throw new Error("Session expired");
             }
-          } catch (refreshError) {
-            console.error("Token refresh failed:", refreshError);
+          } catch {
             throw new Error("Session expired");
           }
         } else {
           throw new Error(`Unexpected response: ${response.status}`);
         }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
+      } catch {
         // Clear invalid tokens
         localStorage.removeItem(TOKEN_KEY);
       } finally {
@@ -171,8 +168,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token && isTokenExpired(token)) {
         try {
           await refreshTokens();
-        } catch (error) {
-          console.error("[AuthContext] Background refresh failed:", error);
+        } catch {
+          // Background refresh failed — will retry next interval
         }
       }
     }, REFRESH_CHECK_INTERVAL);
@@ -213,7 +210,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, accessToken);
       setUser(userData);
     } catch (error) {
-      console.error("Login error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -241,7 +237,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, accessToken);
       setUser(userData);
     } catch (error) {
-      console.error("Registration error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -255,8 +250,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         credentials: "include", // Send httpOnly cookie
       });
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
+      // Logout failed — still clear local state
     } finally {
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);

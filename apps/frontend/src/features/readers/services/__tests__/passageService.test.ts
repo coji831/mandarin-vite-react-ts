@@ -5,7 +5,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchPassages, fetchPassageDetail, generatePassage } from "../passageService";
+import {
+  fetchPassages,
+  fetchPassageDetail,
+  generatePassage,
+  fetchPassageAudio,
+} from "../passageService";
 
 const mockGet = vi.fn();
 const mockPost = vi.fn();
@@ -147,6 +152,44 @@ describe("passageService", () => {
       mockPost.mockRejectedValue(new Error("Generation failed"));
 
       await expect(generatePassage()).rejects.toThrow("Generation failed");
+    });
+  });
+
+  describe("fetchPassageAudio", () => {
+    const SAMPLE_AUDIO_RESPONSE = {
+      data: {
+        audioUrls: {
+          0: { url: "https://example.com/audio/0.mp3", source: "gcs" },
+          1: { url: "https://example.com/audio/1.mp3", source: "gcs" },
+        },
+      },
+    };
+
+    it("fetches audio URLs for a passage", async () => {
+      mockPost.mockResolvedValue({ data: SAMPLE_AUDIO_RESPONSE });
+
+      const result = await fetchPassageAudio("p1");
+
+      expect(result).toEqual(SAMPLE_AUDIO_RESPONSE.data);
+      expect(mockPost).toHaveBeenCalledWith(
+        "/v1/readers/passages/p1/audio",
+        {},
+        { timeout: 30000 },
+      );
+    });
+
+    it("falls back to response.data when data wrapper missing", async () => {
+      mockPost.mockResolvedValue({ data: SAMPLE_AUDIO_RESPONSE.data });
+
+      const result = await fetchPassageAudio("p1");
+
+      expect(result).toEqual(SAMPLE_AUDIO_RESPONSE.data);
+    });
+
+    it("throws on network error", async () => {
+      mockPost.mockRejectedValue(new Error("Audio fetch failed"));
+
+      await expect(fetchPassageAudio("p1")).rejects.toThrow("Audio fetch failed");
     });
   });
 });

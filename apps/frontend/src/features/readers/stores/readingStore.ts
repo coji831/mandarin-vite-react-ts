@@ -24,12 +24,23 @@ interface ReadingStore {
   mode: ReadersMode;
   /** Word popover state */
   popover: PopoverState;
+  /** Currently highlighted/playing sentence index (null = no audio cursor). */
+  currentAudioIndex: number | null;
+  /**
+   * Event signal: when non-null, the audio hook should start playback from this index.
+   * The hook clears it after consuming. Used by SentenceDisplay tap-to-play.
+   */
+  pendingPlayIndex: number | null;
 
   // Actions
   setPassageId: (id: string | null) => void;
   setMode: (mode: ReadersMode) => void;
   openPopover: (glyph: string, rect: DOMRect) => void;
   closePopover: () => void;
+  /** Thin setter — no engine side-effects. Only updates the cursor position. */
+  setCurrentAudioIndex: (index: number | null) => void;
+  /** Signal the audio hook to begin playback from the given index. */
+  setPendingPlayIndex: (index: number | null) => void;
 }
 
 export const useReadingStore = create<ReadingStore>()(
@@ -38,6 +49,8 @@ export const useReadingStore = create<ReadingStore>()(
       currentPassageId: null,
       mode: "library",
       popover: { glyph: null, position: null },
+      currentAudioIndex: null,
+      pendingPlayIndex: null,
 
       setPassageId: (id) => set({ currentPassageId: id }),
 
@@ -55,6 +68,10 @@ export const useReadingStore = create<ReadingStore>()(
         set({
           popover: { glyph: null, position: null },
         }),
+
+      setCurrentAudioIndex: (index) => set({ currentAudioIndex: index }),
+
+      setPendingPlayIndex: (index) => set({ pendingPlayIndex: index }),
     }),
     { name: "reading-store" },
   ),

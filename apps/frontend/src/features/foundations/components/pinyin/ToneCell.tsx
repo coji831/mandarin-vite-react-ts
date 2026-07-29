@@ -67,6 +67,7 @@ function ToneCellComponent({
       <span className="pinyin-tone-cell-text font-lg fw-600">
         {before}
         <span className="pinyin-tone-vowel" style={{ color: toneColor }}>
+          {/* inline: dynamic tone vowel color — toneColor computed from syllable */}
           {vowel}
         </span>
         {after}

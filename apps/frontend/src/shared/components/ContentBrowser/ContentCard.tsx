@@ -52,7 +52,7 @@ function ContentCard({
     }
   };
 
-  // TODO: Add type-specific card layouts per wireframe Section 8.1
+  // Future: Add type-specific card layouts per wireframe Section 8.1
   //   - vocabulary: show HSK level, pinyin, translation (current default)
   //   - radical: show stroke count, Top20 marker
   //   - phonetic: show cluster group, character list

@@ -45,6 +45,7 @@ export function BasicStrokesGrid({ strokes }: BasicStrokesGridProps) {
               className="stroke-glyph font-3xl lh-1 fw-600 transition-transform"
               style={{ color: accentColor }}
             >
+              {/* inline: dynamic accent color — per-stroke color from data */}
               {stroke.glyph}
             </span>
             <span className="stroke-pinyin font-xs text-tertiary">{stroke.pinyin}</span>

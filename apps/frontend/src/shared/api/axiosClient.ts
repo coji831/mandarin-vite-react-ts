@@ -76,7 +76,6 @@ async function refreshAccessToken(): Promise<string> {
       localStorage.setItem(TOKEN_KEY, accessToken);
       return accessToken;
     } catch (error) {
-      console.error("[apiClient] Token refresh failed:", error);
       localStorage.removeItem(TOKEN_KEY);
       if (logoutCallback) {
         logoutCallback();
@@ -116,9 +115,8 @@ apiClient.interceptors.request.use(
       if (isTokenExpired(token)) {
         try {
           token = await refreshAccessToken();
-        } catch (_error) {
+        } catch {
           // If refresh fails, continue without token (will get 401)
-          console.warn("[apiClient] Proactive refresh failed, continuing request");
         }
       }
 
@@ -205,15 +203,6 @@ function createNormalizedError(error: AxiosError): NormalizedError {
     code: error.code || (error.response ? undefined : "ERR_NETWORK"),
     originalError: error,
   };
-
-  // Log error for debugging
-  console.error("[apiClient] Request failed:", {
-    url: error.config?.url,
-    method: error.config?.method?.toUpperCase(),
-    status: normalizedError.status,
-    code: normalizedError.code,
-    message: normalizedError.message,
-  });
 
   return normalizedError;
 }

@@ -42,6 +42,7 @@ import { createReadersModule } from "../modules/readers/container.js";
 import { createWordsModule } from "../modules/words/container.js";
 import { SegmenterService } from "../modules/readers/services/SegmenterService.js";
 import { PassageGenerationService } from "../modules/readers/services/PassageGenerationService.js";
+import { ReadersAudioService } from "../modules/readers/services/ReadersAudioService.js";
 
 // ── 2. Infrastructure Singletons ───────────────────────────────────────────
 
@@ -86,14 +87,16 @@ const ttsModule = createTtsModule({ ttsService });
 
 const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
 
-// Readers module — uses SegmenterService and PassageGenerationService singletons
+// Readers module — uses SegmenterService, PassageGenerationService, and ReadersAudioService singletons
 export const segmenterService = new SegmenterService(cacheService);
 export const passageGenerationService = new PassageGenerationService(geminiService);
+export const readersAudioService = new ReadersAudioService(ttsService, gcsClient);
 
 const readersModule = createReadersModule({
   passageGenerationService,
   segmenterService,
   cacheService,
+  readersAudioService,
 });
 
 // Words module — no cross-module deps, pure reference data

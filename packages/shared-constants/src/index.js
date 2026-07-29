@@ -40,6 +40,7 @@ export const ROUTE_PATTERNS = {
   readersPassages: "/v1/readers/passages",
   readersPassageById: (id) => `/v1/readers/passages/${id}`,
   readersGenerate: "/v1/readers/generate",
+  readersPassageAudioById: (id) => `/v1/readers/passages/${id}/audio`,
 };
 
 // HSK Levels

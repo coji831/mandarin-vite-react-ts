@@ -46,9 +46,7 @@ vi.mock("features/readers/stores", () => ({
   ),
 }));
 
-import { usePassages } from "features/readers/hooks/usePassages";
-import { usePassageDetail } from "features/readers/hooks/usePassageDetail";
-import { useGeneratePassage } from "features/readers/hooks/useGeneratePassage";
+import { usePassages, usePassageDetail, useGeneratePassage } from "features/readers";
 
 describe("ReadersPage", () => {
   beforeEach(() => {

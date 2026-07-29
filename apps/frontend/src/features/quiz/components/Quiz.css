@@ -42,7 +42,8 @@
   user-select: none;
 }
 .quiz-results__review summary:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary); /* pseudo-class + pseudo-element selector — focus-ring-primary utility can't target this */
+  /* bundled with outline */
   outline-offset: 2px;
 }
 

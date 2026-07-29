@@ -49,8 +49,8 @@ export function PinyinTab() {
         ]);
         setData(pool);
         setCharMap(map);
-      } catch (err) {
-        console.error("[PinyinTab] Failed to load pinyin data:", err);
+      } catch {
+        // Failed to load pinyin data — error state shown
         fetchAttempted.current = false; // Allow retry
         setHasError(true);
       }

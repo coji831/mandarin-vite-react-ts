@@ -15,16 +15,7 @@
 }
 
 .review-card__meaning {
-  line-height: 1.4;
-  /* text-align migrated to utility class: text-center */
-}
-
-/* ── Prompt icon & text (front side) ──────────────── */
-.review-card__prompt-icon {
-  font-size: 2.5rem;
-}
-.review-card__prompt-text {
-  max-width: 320px;
+  line-height: 1.4; /* custom line-height — .lh-1-4 utility doesn't convey the meaning semantic */
 }
 
 /* ── Audio button ────────────────────────────────── */
@@ -48,37 +39,15 @@
   letter-spacing: 0.1em;
 }
 .review-card__pinyin-input::placeholder {
-  color: var(--text-tertiary);
-  /* structural: placeholder font */
-  font-size: var(--font-sm);
+  color: var(
+    --text-tertiary
+  ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
+  font-size: var(--font-sm); /* ::placeholder pseudo-element */
   letter-spacing: normal;
 }
 
 .review-card__full-answer {
   letter-spacing: 0.03em;
-}
-
-/* ── Tone buttons ─────────────────────────────────── */
-
-.review-card__tone-btn {
-  min-height: 68px;
-  min-width: 72px;
-  /* transition migrated to .transition-all on JSX */
-}
-
-.review-card__tone-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  /* structural: shadow-md — hover lift */
-  box-shadow: var(--shadow-md);
-}
-
-.review-card__tone-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.review-card__tone-btn:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 /* ── Rating buttons ───────────────────────────────── */
@@ -95,7 +64,8 @@
 }
 
 .review-card__rating-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
+  /* bundled with outline */
   outline-offset: 2px;
 }
 

@@ -20,7 +20,7 @@
 
 /* ── Info area ── */
 .example-char-row__info {
-  min-width: 0;
+  min-width: 0; /* flex child — required for text truncation to work in flex layout */
 }
 
 .example-char-row__pinyin {

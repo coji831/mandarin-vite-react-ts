@@ -1,7 +1,7 @@
 /* LearnLayout.css - Learn section layout */
 
 .learn-layout {
-  min-height: 0;
+  min-height: 0; /* flex ancestor — required for internal scroll to work (scroll chain rule) */
 }
 
 .learn-nav-bar {
@@ -17,6 +17,6 @@
 
 .learn-content {
   overflow-x: hidden;
-  overflow-y: auto;
-  min-height: 0;
+  overflow-y: auto; /* scroll zone — learn content area (scroll chain rule) */
+  min-height: 0; /* flex child — required for internal overflow to work (scroll chain rule) */
 }

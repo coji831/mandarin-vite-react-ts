@@ -13,7 +13,7 @@
 }
 
 .pinyin-detail-tones {
-  flex-wrap: nowrap;
+  flex-wrap: nowrap; /* custom nowrap override — same-origin override of the parent's flex-wrap */
 }
 
 .pinyin-detail-tone-chip {
@@ -24,9 +24,8 @@
 
 @media (max-width: 768px) {
   .pinyin-detail-panel {
-    /* structural: w-full */
-    width: 100%;
-    max-width: 100%;
+    width: 100%; /* responsive override — media query context prevents using .w-full utility class */
+    max-width: 100%; /* bundled with width:100% in media query */
     position: static;
   }
 }

@@ -2,18 +2,27 @@
  * @file ReadersPageFull.stories.tsx
  * @description Consolidated page-level Storybook stories for Graded Readers page.
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Story 21.5: Added reading variants with audio sync.
  *
- * Covers 16 variants: library (populated, loading, empty, error, filtered, edge)
+ * Covers 19+ variants: library (populated, loading, empty, error, filtered, edge)
  * and reading (default, loading, error, short, all-known, all-unknown, long,
- * popover desktop, popover mobile).
+ * popover desktop, popover mobile, with audio, audio complete, audio paused).
  *
  * Library variants use MSW handlers (API-driven). Reading variants use MSW
  * handlers for passage detail + withReadingStore decorator for store state.
+ * Audio state variants (complete, paused) use custom render with ReadingView
+ * for controlled visual state, since useSentenceAudio has internal useState.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
-import { ReadersPage } from "../../../features/readers";
+import { Box } from "shared/components";
+import {
+  ReadersPage,
+  ReadingView,
+  AudioControlBar,
+  SentenceDisplay,
+} from "../../../features/readers";
 import type { PassageDetail } from "../../../features/readers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
 import { withReadingStore } from "../../../../.storybook/decorators";
@@ -425,5 +434,143 @@ export const ReadingWithPopoverMobile: Story = {
   parameters: {
     msw: { handlers: [mswHandlers.readers.passageDetail.default()] },
     viewport: { defaultViewport: "mobile1" },
+  },
+};
+
+// ============================================================================
+// READING MODE VARIANTS — Audio Sync (Story 21.5)
+// ============================================================================
+
+export const ReadingWithAudio: Story = {
+  name: "Reading — With Audio Sync",
+  args: { mode: "reading" },
+  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
+  parameters: {
+    msw: {
+      handlers: [
+        mswHandlers.readers.passageDetail.default(),
+        mswHandlers.readers.passageAudio.default(),
+      ],
+    },
+  },
+};
+
+export const ReadingWithAudioLoading: Story = {
+  name: "Reading — Audio Loading",
+  args: { mode: "reading" },
+  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
+  parameters: {
+    msw: {
+      handlers: [
+        mswHandlers.readers.passageDetail.default(),
+        mswHandlers.readers.passageAudio.loading(),
+      ],
+    },
+  },
+};
+
+export const ReadingWithAudioComplete: Story = {
+  name: "Reading — Audio Complete",
+  parameters: {
+    msw: {
+      handlers: [
+        mswHandlers.readers.passageDetail.default(),
+        mswHandlers.readers.passageAudio.default(),
+      ],
+    },
+  },
+  decorators: [
+    withReadingStore({ mode: "reading", currentPassageId: "p-1", currentAudioIndex: null }),
+  ],
+  render: () => {
+    const passage = defaultPassageDetail;
+    return (
+      <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
+        <h2 className="font-2xl fw-700 text-primary m-0">Graded Readers</h2>
+        <ReadingView
+          passage={passage}
+          onBack={() => {}}
+          isLoading={false}
+          hasError={false}
+          onRetry={() => {}}
+          audioControlBar={
+            <AudioControlBar
+              currentIndex={null}
+              isPlaying={false}
+              isLoading={false}
+              hasCompleted={true}
+              totalSentences={passage.sentences.length}
+              speed={1}
+              onTogglePlay={() => {}}
+              onStop={() => {}}
+              onSpeedChange={() => {}}
+            />
+          }
+        >
+          {passage.sentences.map((sentence) => (
+            <SentenceDisplay
+              key={sentence.index}
+              sentence={sentence}
+              onPopoverOpen={() => {}}
+              currentAudioIndex={null}
+              onSentenceTap={() => {}}
+            />
+          ))}
+        </ReadingView>
+      </Box>
+    );
+  },
+};
+
+export const ReadingWithAudioPaused: Story = {
+  name: "Reading — Audio Paused",
+  parameters: {
+    msw: {
+      handlers: [
+        mswHandlers.readers.passageDetail.default(),
+        mswHandlers.readers.passageAudio.default(),
+      ],
+    },
+  },
+  decorators: [
+    withReadingStore({ mode: "reading", currentPassageId: "p-1", currentAudioIndex: 2 }),
+  ],
+  render: () => {
+    const passage = defaultPassageDetail;
+    return (
+      <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
+        <h2 className="font-2xl fw-700 text-primary m-0">Graded Readers</h2>
+        <ReadingView
+          passage={passage}
+          onBack={() => {}}
+          isLoading={false}
+          hasError={false}
+          onRetry={() => {}}
+          audioControlBar={
+            <AudioControlBar
+              currentIndex={2}
+              isPlaying={false}
+              isLoading={false}
+              hasCompleted={false}
+              totalSentences={passage.sentences.length}
+              speed={1}
+              onTogglePlay={() => {}}
+              onStop={() => {}}
+              onSpeedChange={() => {}}
+            />
+          }
+        >
+          {passage.sentences.map((sentence) => (
+            <SentenceDisplay
+              key={sentence.index}
+              sentence={sentence}
+              onPopoverOpen={() => {}}
+              currentAudioIndex={2}
+              onSentenceTap={() => {}}
+            />
+          ))}
+        </ReadingView>
+      </Box>
+    );
   },
 };

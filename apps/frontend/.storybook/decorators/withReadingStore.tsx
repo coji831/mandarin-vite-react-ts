@@ -4,7 +4,10 @@ import { useReadingStore } from "../../src/features/readers/stores";
 import type { ReadersMode } from "../../src/features/readers/stores";
 
 type ReadingStoreOverrides = Partial<
-  Pick<ReturnType<typeof useReadingStore.getState>, "currentPassageId" | "mode" | "popover">
+  Pick<
+    ReturnType<typeof useReadingStore.getState>,
+    "currentPassageId" | "mode" | "popover" | "currentAudioIndex"
+  >
 >;
 
 export function withReadingStore(overrides: ReadingStoreOverrides = {}): Decorator {
@@ -14,6 +17,7 @@ export function withReadingStore(overrides: ReadingStoreOverrides = {}): Decorat
         currentPassageId: null,
         mode: "library" as ReadersMode,
         popover: { glyph: null, position: null },
+        currentAudioIndex: null,
         ...overrides,
       });
     }, []);

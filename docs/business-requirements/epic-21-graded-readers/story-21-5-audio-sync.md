@@ -12,19 +12,19 @@ Audio sync turns reading into a multi-sensory learning experience. Learners can 
 
 ## Acceptance Criteria
 
-- [ ] Per-sentence TTS playback using existing AudioService
-- [ ] Audio playback highlights the current sentence (CSS class toggle)
-- [ ] Auto-advance mode: plays sentences sequentially, stops after last
-- [ ] Tap any sentence to replay its audio
-- [ ] Audio pauses when WordPopover is open
-- [ ] AudioControlBar with: play/pause, speed control (0.75x, 1x, 1.25x), progress indicator
-- [ ] Audio URLs are pre-fetched (loaded from Passage content JSON, not fetched per-sentence)
-- [ ] Audio auto-pauses when browser tab is backgrounded (Page Visibility API)
+- [x] Per-sentence TTS playback using existing AudioService
+- [x] Audio playback highlights the current sentence (CSS class toggle)
+- [x] Auto-advance mode: plays sentences sequentially, stops after last
+- [x] Tap any sentence to replay its audio
+- [x] Audio pauses when WordPopover is open
+- [x] AudioControlBar with: play/pause, speed control (0.75x, 1x, 1.25x), progress indicator
+- [x] Audio URLs are pre-fetched (loaded from Passage content JSON, not fetched per-sentence)
+- [x] Audio auto-pauses when browser tab is backgrounded (Page Visibility API)
 
 ## Business Rules
 
 1. **Batch TTS pre-generation** — All sentences are queued for TTS when a passage is first requested. Parallel generation reduces latency.
-2. **Two-flow fallback**: (1) Pre-generated audio from GCS, (2) Per-sentence on-demand if some pre-generation failed, (3) Synthetic browser SpeechSynthesis as last resort.
+2. **Two-flow fallback**: (1) Pre-generated audio from GCS, (2) Per-sentence on-demand if some pre-generation failed. The backend orchestrates GCS lookup → on-demand TTS via `ReadersAudioService`, returning `{ url, source }` per sentence. The frontend only handles `source: "failed"` → browser SpeechSynthesis as last resort.
 3. **Per-sentence retry** — Failed sentences show a retry icon. User can retry individual sentences without regenerating the entire passage.
 4. **Naming convention** — GCS path: `tts/{passageHash}/{sentenceIndex}.mp3`. Passage content hash = folder name. Sentence index = file name. Deterministic paths, no collisions.
 5. **Audio is standalone** — Uses existing AudioService + useAudioPlayback hook. No new audio infrastructure needed.
@@ -37,7 +37,7 @@ Audio sync turns reading into a multi-sensory learning experience. Learners can 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: `6878493f`

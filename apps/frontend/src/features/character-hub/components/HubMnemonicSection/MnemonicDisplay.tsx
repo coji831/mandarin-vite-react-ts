@@ -24,7 +24,7 @@ export function MnemonicDisplay({
   onRegenerate,
 }: MnemonicDisplayProps) {
   return (
-    <div className="hub-mnemonic-section" aria-label={`Mnemonic story for ${character}`}>
+    <div className="hub-mnemonic-section min" aria-label={`Mnemonic story for ${character}`}>
       <div className="flex-between items-center">
         <div className="flex gap-xs flex-wrap">
           <Button variant="icon" size="sm" onClick={onEdit} aria-label="Edit mnemonic story">

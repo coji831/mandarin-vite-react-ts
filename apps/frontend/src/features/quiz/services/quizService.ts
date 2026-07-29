@@ -22,7 +22,6 @@ class QuizService {
   async generateQuestionPool(strategyType: StrategyType, count?: number): Promise<QuizQuestion[]> {
     const strategy = getStrategy(strategyType);
     if (!strategy) {
-      console.warn("[QuizService] Unknown strategy:", strategyType);
       return [];
     }
     return strategy.generateQuestions(count);

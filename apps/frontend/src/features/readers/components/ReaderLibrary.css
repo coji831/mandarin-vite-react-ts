@@ -1,6 +1,8 @@
 .reader-library__grid {
-  display: grid;
+  display: grid; /* auto-fill grid with custom column sizing — can't use grid-2-col/grid-3-col */
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-md);
+  gap: var(
+    --space-md
+  ); /* bundled with display:grid for auto-fill layout — using gap-md utility would split the contract */
   padding: var(--space-md) 0;
 }

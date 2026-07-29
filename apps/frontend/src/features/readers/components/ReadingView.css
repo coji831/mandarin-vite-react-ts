@@ -1,6 +1,9 @@
 .reading-view__sentences {
+  /* sentence list layout — bundled as part of component visual contract */
   display: flex;
+  /* column direction */
   flex-direction: column;
+  /* sentence gap */
   gap: var(--space-md);
   padding: var(--space-md) 0;
 }

@@ -67,6 +67,7 @@ export function CategoryBreakdown({ answers }: CategoryBreakdownProps) {
 
   return (
     <Box variant="dark" padding="md" className="flex-col gap-md" style={{ minWidth: 320 }}>
+      {/* inline: fixed minWidth for breakdown card — no utility class for 320px */}
       <h3 className="quiz-breakdown__heading font-lg text-primary m-0">📊 Category Breakdown</h3>
 
       <CategoryBar

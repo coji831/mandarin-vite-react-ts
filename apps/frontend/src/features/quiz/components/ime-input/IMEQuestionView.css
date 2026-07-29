@@ -21,9 +21,10 @@
 }
 
 .ime-quiz-question__input::placeholder {
-  color: var(--text-muted);
-  /* structural: font-lg — placeholder */
-  font-size: var(--font-lg);
+  color: var(
+    --text-muted
+  ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
+  font-size: var(--font-lg); /* ::placeholder pseudo-element */
 }
 
 /* ── Submit button ── */

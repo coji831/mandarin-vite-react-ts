@@ -114,6 +114,7 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
       {/* Main content — fills remaining space, centered */}
       <div className="pinyin-detail-main flex-col-center gap-sm flex-1 p-0">
         <span className="font-3xl fw-700" style={{ color: toneColor }}>
+          {/* inline: dynamic tone color — toneColor is computed at render time */}
           {activeTone}
         </span>
 

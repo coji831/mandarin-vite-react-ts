@@ -12,7 +12,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { LexicalHubRouter } from "./LexicalHubRouter";
-import { withHubStore } from "../../../.storybook/decorators";
+import { withHubStore } from "../../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
 

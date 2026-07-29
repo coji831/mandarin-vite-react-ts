@@ -39,6 +39,7 @@ export declare const ROUTE_PATTERNS: {
   readonly readersPassages: string;
   readonly readersPassageById: (id: string) => string;
   readonly readersGenerate: string;
+  readonly readersPassageAudioById: (id: string) => string;
 };
 
 // HSK Levels

@@ -82,6 +82,18 @@ export function createReadersRoutes(readersController: ReadersController): expre
   );
 
   /**
+   * POST /v1/readers/passages/:id/audio
+   * Get audio URLs for all sentences in a passage.
+   * Two-tier fallback: GCS → on-demand TTS.
+   * Uses POST because this endpoint may trigger TTS generation as a side-effect.
+   */
+  router.post(
+    ROUTE_PATTERNS.readersPassageAudioById(":id"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.getPassageAudio(req, res)),
+  );
+
+  /**
    * POST /v1/readers/generate
    * Generate passage. Auth-only. Body: { topic }.
    * Rate limited to 5/day per user (DB-backed UTC midnight reset).

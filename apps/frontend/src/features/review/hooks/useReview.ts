@@ -190,10 +190,8 @@ export function useReview() {
 
       try {
         await reviewService.recordRating(item.itemType, item.itemId, rating);
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          console.warn("[Review] Failed to record rating:", err);
-        }
+      } catch {
+        // Rating save failed — non-critical, review continues
       }
 
       setSessionResult((prev) => ({

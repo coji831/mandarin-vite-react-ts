@@ -128,6 +128,41 @@ export class ReadersController {
   }
 
   /**
+   * POST /v1/readers/passages/:id/audio
+   * Get audio URLs for all sentences in a passage.
+   * Returns per-sentence source status — never 5xx for audio infra failures.
+   */
+  async getPassageAudio(req: Request, res: Response): Promise<void> {
+    try {
+      const id = String(req.params.id);
+
+      if (!id) {
+        res.status(400).json({
+          error: "Failed to get passage audio",
+          code: "VALIDATION_ERROR",
+        });
+        return;
+      }
+
+      const result = await this.readersService.getPassageAudio(id);
+      res.json({ data: result });
+    } catch (err) {
+      if (err instanceof PassageNotFoundError) {
+        res.status(404).json({
+          error: "Failed to get passage audio",
+          code: "NOT_FOUND",
+        });
+        return;
+      }
+      logger.error("Failed to get passage audio", err);
+      res.status(500).json({
+        error: "Failed to get passage audio",
+        code: "LOAD_ERROR",
+      });
+    }
+  }
+
+  /**
    * POST /v1/readers/generate
    * Generate a new passage on a given topic.
    * Auth-only. Body: { topic: string }.

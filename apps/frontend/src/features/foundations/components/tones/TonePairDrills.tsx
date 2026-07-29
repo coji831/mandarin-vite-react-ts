@@ -38,7 +38,10 @@ export function ColorizedPinyin({ pinyin }: { pinyin: string }) {
         return (
           <span key={idx}>
             {idx > 0 && " "}
-            <span style={{ color }}>{syllable}</span>
+            <span style={{ color }}>
+              {/* inline: dynamic tone color — depends on tone number */}
+              {syllable}
+            </span>
           </span>
         );
       })}

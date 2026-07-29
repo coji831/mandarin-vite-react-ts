@@ -23,14 +23,21 @@ const SAMPLE_SENTENCE: SentenceData = {
 
 describe("SentenceDisplay", () => {
   const onPopoverOpen = vi.fn();
+  const onSentenceTap = vi.fn();
   const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+
+  const defaultProps = {
+    onPopoverOpen,
+    onSentenceTap,
+    currentAudioIndex: null,
+  };
 
   afterEach(() => {
     Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
   });
 
   it("renders Chinese text as individual word elements", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     // Text is rendered word-by-word, not as a single node
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
@@ -38,25 +45,31 @@ describe("SentenceDisplay", () => {
   });
 
   it("renders pinyin", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     expect(screen.getByText("nǐ hǎo.")).toBeInTheDocument();
   });
 
   it("marks known words with known class", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     const knownWord = screen.getByText("你");
     expect(knownWord.className).toContain("sentence-word--known");
   });
 
   it("marks unknown words as clickable", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     const unknownWord = screen.getByText("好");
     expect(unknownWord.className).toContain("sentence-word--unknown");
   });
 
   it("opens popover on tapping unknown word", async () => {
     const onPopoverOpen = vi.fn();
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(
+      <SentenceDisplay
+        sentence={SAMPLE_SENTENCE}
+        {...defaultProps}
+        onPopoverOpen={onPopoverOpen}
+      />,
+    );
 
     // getBoundingClientRect mock
     const mockRect = {
@@ -76,12 +89,12 @@ describe("SentenceDisplay", () => {
   });
 
   it("renders aria label for sentence", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
-    expect(screen.getByRole("group", { name: "Sentence 1" })).toBeInTheDocument();
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+    expect(screen.getByRole("button", { name: "Sentence 1" })).toBeInTheDocument();
   });
 
   it("renders punctuation as plain text", () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} onPopoverOpen={onPopoverOpen} />);
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     const punct = screen.getByText("。");
     expect(punct.className).toContain("sentence-word--punct");
   });

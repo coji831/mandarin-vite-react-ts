@@ -43,7 +43,7 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
         className="quiz-audio-btn hover-lift disabled:op-60"
       >
         <span className="font-xl">{isLoading ? "⏳" : isPlaying ? "🔊" : "🔊"}</span>
-        <span style={{ fontSize: "var(--font-md)" }}>
+        <span className="font-md">
           {error ? "⚠️ Error" : isLoading ? "Loading..." : isPlaying ? "Playing..." : label}
         </span>
       </Button>

@@ -49,7 +49,6 @@ export class AudioService implements IAudioService {
       audio.onerror = (e) => reject(e);
       // Start playback (may reject due to autoplay policies)
       audio.play().catch((err) => {
-        console.error("[AudioService] playAudio failed", err);
         reject(err);
       });
     });
@@ -68,12 +67,7 @@ export class AudioBackend implements IAudioBackend {
         text: chinese,
       });
       return response.data;
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("[AudioBackend] fetchWordAudio error", {
-        error: message,
-        endpoint: ROUTE_PATTERNS.ttsAudio,
-      });
+    } catch {
       throw new Error("Failed to generate audio. Please try again.");
     }
   }

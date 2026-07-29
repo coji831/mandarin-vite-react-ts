@@ -2,12 +2,15 @@
  * @file SentenceDisplay.css
  * @description Styles for SentenceDisplay component.
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Story 21.5: Audio Sync — cursor pointer via [role="button"].
  */
 
-.sentence-display:hover {
-  background-color: var(--surface-light-3);
-  /* utility: radius-sm — kept inside hover pseudo */
-  border-radius: var(--radius-sm);
+.sentence-display[role="button"] {
+  cursor: pointer; /* attribute selector — cursor-pointer utility only works on simple class selectors */
+}
+
+.sentence-display[role="button"]:hover {
+  background-color: var(--surface-light-8);
 }
 
 .sentence-display:last-child {
@@ -27,5 +30,17 @@
 
 /* Stronger specificity (0,2,0) to override .btn-inline-text's color: inherit */
 .sentence-word.sentence-word--unknown {
-  color: var(--color-primary-light);
+  color: var(
+    --color-primary-light
+  ); /* double-class selector for specificity — text-accent/text-primary-light won't match .btn-inline-text's color:inherit */
+}
+
+/* ─── Audio Active State ──────────────────────────────────── */
+
+.sentence-display--active {
+  --active-border-width: 3px;
+  background-color: var(--surface-light-5);
+  border-left: var(--active-border-width) solid var(--color-primary);
+  padding-left: calc(var(--space-sm) - var(--active-border-width));
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }

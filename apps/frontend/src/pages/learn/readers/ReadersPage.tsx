@@ -3,6 +3,8 @@
  * @description Page-level container for Graded Readers feature.
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Phase 4: Migrated popover state, mode, and passageId to readingStore.
+ * Story 21.5: Audio Sync — SentenceDisplay reads currentAudioIndex from
+ * readingStore directly. SentenceWithTap wrapper removed.
  *
  * Uses a single code path: always fetches data via hooks, always writes to
  * readingStore. Storybook stories use MSW handlers + withReadingStore decorator
@@ -20,9 +22,12 @@ import {
   ReadingView,
   SentenceDisplay,
   WordPopover,
+  AudioControlBar,
   usePassages,
   usePassageDetail,
   useGeneratePassage,
+  usePassageAudio,
+  useSentenceAudio,
 } from "../../../features/readers";
 import { useReadingStore } from "../../../features/readers/stores";
 
@@ -72,6 +77,18 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     retry: readRetry,
   } = usePassageDetail(currentPassageId);
 
+  // Audio hooks (Story 21.5)
+  const { audioUrls, isLoading: isAudioLoading } = usePassageAudio(
+    mode === "reading" ? currentPassageId : null,
+  );
+
+  const { currentIndex, isPlaying, hasCompleted, speed, play, pause, stop, toggle, setSpeed } =
+    useSentenceAudio({
+      sentenceCount: passage?.sentences.length ?? 0,
+      audioUrls,
+      sentenceTexts: passage?.sentences.map((s) => s.text) ?? [],
+    });
+
   // Handlers
   const handleLevelChange = (level: number | null) => {
     setInternalLevel(level);
@@ -90,6 +107,11 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   const handlePopoverOpen = (glyph: string, rect: DOMRect) => {
     openPopover(glyph, rect);
   };
+
+  const handleSentenceTap = useCallback((index: number) => {
+    useReadingStore.getState().setCurrentAudioIndex(index);
+    useReadingStore.getState().setPendingPlayIndex(index);
+  }, []);
 
   const handleGeneratePassage = useCallback(() => {
     generatePassage(selectedLevel ?? undefined);
@@ -121,17 +143,35 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           isLoading={readLoading}
           hasError={readError}
           onRetry={readRetry}
+          audioControlBar={
+            <AudioControlBar
+              currentIndex={currentIndex}
+              isPlaying={isPlaying}
+              isLoading={isAudioLoading}
+              hasCompleted={hasCompleted}
+              totalSentences={passage.sentences.length}
+              speed={speed}
+              onTogglePlay={toggle}
+              onStop={stop}
+              onSpeedChange={setSpeed}
+            />
+          }
         >
-          {passage.sentences.flatMap((sentence, idx) => [
-            <SentenceDisplay
-              key={sentence.index}
-              sentence={sentence}
-              onPopoverOpen={handlePopoverOpen}
-            />,
-            ...(idx < passage.sentences.length - 1
-              ? [<Box key={`divider-${sentence.index}`} variant="divider" />]
-              : []),
-          ])}
+          {passage.sentences.flatMap((sentence) => {
+            const items: React.ReactNode[] = [
+              <SentenceDisplay
+                key={sentence.index}
+                sentence={sentence}
+                onPopoverOpen={handlePopoverOpen}
+                currentAudioIndex={currentIndex}
+                onSentenceTap={handleSentenceTap}
+              />,
+            ];
+            if (sentence.index < passage.sentences.length - 1) {
+              items.push(<Box key={`divider-${sentence.index}`} variant="divider" />);
+            }
+            return items;
+          })}
         </ReadingView>
       )}
 
