@@ -105,4 +105,14 @@ router.use(wordsRoutes);
 const readersRoutes = createReadersRoutes(readersController);
 router.use(readersRoutes);
 
+// Phonetic Clusters routes (v1) - Story 21.6
+import phoneticClustersRoutes from "../modules/phonetic-clusters/api/phoneticClustersRoutes.js";
+import { phoneticClustersController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.phoneticClustersController = phoneticClustersController;
+  next();
+});
+router.use(phoneticClustersRoutes);
+
 export default router;

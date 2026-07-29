@@ -1,0 +1,18 @@
+[
+  {
+    "id": "pc_0001",
+    "componentId": "cmp_1684",
+    "displayOrder": 1,
+    "description": "Characters containing 青 as phonetic component",
+    "pronunciationNote": "All characters share qing- onset but differ in tone",
+    "phoneticPinyin": "qīng"
+  },
+  {
+    "id": "pc_0002",
+    "componentId": "cmp_282",
+    "displayOrder": 2,
+    "description": "Characters containing 包 as phonetic component",
+    "pronunciationNote": "Most read bāo/bǎo/páo — phonetic drift from original bāo",
+    "phoneticPinyin": "bāo"
+  }
+]

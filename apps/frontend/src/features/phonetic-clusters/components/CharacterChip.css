@@ -1,0 +1,25 @@
+/**
+ * @file components/CharacterChip.css
+ * @description Styles for the CharacterChip component
+ * Story 21.6: Phonetic Clusters
+ */
+
+.character-chip {
+  min-width: 64px;
+  /* gap provided by .gap-xs utility className in TSX */
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.character-chip:hover {
+  /* :hover pseudo — can't use className utility */
+  background: var(--surface-light-10);
+}
+
+.character-chip:focus-visible {
+  /* :focus-visible pseudo — can't use className utility */
+  outline: 2px solid var(--color-primary);
+  /* paired with outline above — same reason */
+  outline-offset: 2px;
+}

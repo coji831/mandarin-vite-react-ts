@@ -135,15 +135,17 @@ async function main() {
     pinyinCharacterMappings: loadJson<any>("pinyin-character-mappings.json"),
     measureWordWords: loadJson<any>("measure-word-words.json"),
     characterComponents: loadJson<any>("character-components.json"),
+    phoneticClusters: loadJson<any>("phonetic-clusters.json"),
+    phoneticClusterMembers: loadJson<any>("phonetic-cluster-members.json"),
   };
   const totalEntries = Object.values(phase2).reduce((sum, arr) => sum + arr.length, 0);
-  console.log(`   Loaded ${totalEntries} total entries across 14 files\n`);
+  console.log(`   Loaded ${totalEntries} total entries across 16 files\n`);
 
   // ──────────────────────────────────────────────────────────────────────────
   // 1. Character (103K — chunked) — no FK deps
   //    Map readings format and coreMeaning → definition
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📄 Step 1/15: Seeding Character...");
+  console.log("📄 Step 1/17: Seeding Character...");
   // Note: phoneticComponentId contains glyphs (e.g., "从"), not character IDs.
   // Skipping until Phase 2 data is corrected to use character IDs.
   const characterData = phase2.characters.map((c) => ({
@@ -170,7 +172,7 @@ async function main() {
   // 2. PinyinSyllable (2K) — no FK deps (clear first for idempotency)
   //    Clears PinyinCharacterMapping too (FK depends on PinyinSyllable)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🎵 Step 2/15: Seeding PinyinSyllable...");
+  console.log("🎵 Step 2/17: Seeding PinyinSyllable...");
   await prisma.$executeRawUnsafe('DELETE FROM "PinyinCharacterMapping"');
   console.log("  🧹 Cleared PinyinCharacterMapping");
   await prisma.$executeRawUnsafe('DELETE FROM "PinyinSyllable"');
@@ -181,7 +183,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 3. MeasureWord (52) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📏 Step 3/15: Seeding MeasureWord...");
+  console.log("📏 Step 3/17: Seeding MeasureWord...");
   // Map Phase 2 fields: glyph→simplified, drop hskLevel and nouns (go to MeasureWordWord)
   const measureWordData = phase2.measureWords.map((mw: any) => ({
     id: mw.id,
@@ -197,7 +199,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 4. Component (0 — deferred, skip gracefully) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 4/15: Seeding Component...");
+  console.log("🧩 Step 4/17: Seeding Component...");
   await seedTable("Component", "component", phase2.componentEntries);
   console.log("");
 
@@ -205,7 +207,7 @@ async function main() {
   // 5. Passage (6) — no FK deps
   //    Enrich with passageIndex, knownWordRatio, targetHskLevel, sentence index
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📖 Step 5/15: Seeding Passage...");
+  console.log("📖 Step 5/17: Seeding Passage...");
   const passageData = phase2.demoPassages.map((p, i) => {
     const enrichedSentences = (p.content?.sentences || []).map((s, si) => ({
       index: si,
@@ -238,7 +240,7 @@ async function main() {
   // 6. Word (11K — chunked) — no FK deps
   //    Strip extra fields not in Prisma model (characters[], sequenceOrder[], etc.)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📝 Step 6/15: Seeding Word...");
+  console.log("📝 Step 6/17: Seeding Word...");
   const wordData: Phase2Word[] = phase2.words.map((w: any) => ({
     id: w.id,
     simplified: w.simplified,
@@ -255,7 +257,7 @@ async function main() {
   // 7. CharacterReading (15K — chunked) — FK → Character
   //    Pre-clear for idempotency (no unique constraint beyond id)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔤 Step 7/15: Seeding CharacterReading...");
+  console.log("🔤 Step 7/17: Seeding CharacterReading...");
   console.log("  🧹 Cleared CharacterReading (pre-clear for idempotency)");
   await prisma.characterReading.deleteMany();
   await seedTable("CharacterReading", "characterReading", phase2.characterReadings);
@@ -265,7 +267,7 @@ async function main() {
   // 8. CharacterRadical (2.8K) — FK → Character
   //    @@unique([characterGlyph, radicalId]) requires skip-duplicate logic
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 8/15: Seeding CharacterRadical...");
+  console.log("🔗 Step 8/17: Seeding CharacterRadical...");
   const existingRadicals = new Set(
     (
       await prisma.characterRadical.findMany({
@@ -283,7 +285,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 9. CharacterHskLevel (3K) — FK → Character (@id on characterId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 9/15: Seeding CharacterHskLevel...");
+  console.log("🏷️ Step 9/17: Seeding CharacterHskLevel...");
   await seedTable("CharacterHskLevel", "characterHskLevel", phase2.characterHskLevels, {
     chunkSize: 1_000,
   });
@@ -292,7 +294,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 10. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 10/15: Seeding WordHskLevel...");
+  console.log("🏷️ Step 10/17: Seeding WordHskLevel...");
   const wordHskData = phase2.wordHskLevels.map((whl: any) => ({
     wordId: whl.wordId,
     hskLevel: whl.hskLevel,
@@ -304,7 +306,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 11. WordCharacter (22K — chunked) — FK → Word + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 11/15: Seeding WordCharacter...");
+  console.log("🔗 Step 11/17: Seeding WordCharacter...");
   await seedTable("WordCharacter", "wordCharacter", phase2.wordCharacters);
   console.log("");
 
@@ -312,7 +314,7 @@ async function main() {
   // 12. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
   //     PinyinCharacterMapping was already cleared in step 2, so just insert
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 12/15: Seeding PinyinCharacterMapping...");
+  console.log("🔗 Step 12/17: Seeding PinyinCharacterMapping...");
   await seedTable(
     "PinyinCharacterMapping",
     "pinyinCharacterMapping",
@@ -323,21 +325,33 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 13. MeasureWordWord (135) — FK → MeasureWord + Word
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 13/15: Seeding MeasureWordWord...");
+  console.log("🔗 Step 13/17: Seeding MeasureWordWord...");
   await seedTable("MeasureWordWord", "measureWordWord", phase2.measureWordWords);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 14. CharacterComponent (0 — deferred, skip gracefully) — FK → Character + Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 14/15: Seeding CharacterComponent...");
+  console.log("🧩 Step 14/17: Seeding CharacterComponent...");
   await seedTable("CharacterComponent", "characterComponent", phase2.characterComponents);
   console.log("");
 
+  // ── 15. PhoneticCluster — FK → Component
   // ──────────────────────────────────────────────────────────────────────────
-  // 15. Test users (dev only)
+  console.log("🔊 Step 15/17: Seeding PhoneticCluster...");
+  await seedTable("PhoneticCluster", "phoneticCluster", phase2.phoneticClusters);
+  console.log("");
+
+  // ── 16. PhoneticClusterMember — FK → PhoneticCluster + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("👤 Step 15/15: Creating test users...");
+  console.log("🔗 Step 16/17: Seeding PhoneticClusterMember...");
+  await seedTable("PhoneticClusterMember", "phoneticClusterMember", phase2.phoneticClusterMembers);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 17. Test users (dev only)
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("👤 Step 17/17: Creating test users...");
   if (process.env.NODE_ENV !== "production") {
     await prisma.user.upsert({
       where: { email: "test@example.com" },

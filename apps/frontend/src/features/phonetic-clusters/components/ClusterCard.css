@@ -1,0 +1,31 @@
+/**
+ * @file components/ClusterCard.css
+ * @description Styles for the ClusterCard component
+ * Story 21.6: Phonetic Clusters
+ */
+
+.cluster-card {
+  gap: 0;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.cluster-card:hover {
+  /* :hover pseudo — can't use className utility */
+  border-color: var(--color-primary-border);
+  /* :hover pseudo — paired with border-color above */
+  box-shadow: var(--shadow-sm);
+}
+
+.cluster-card__glyph {
+  /* needs shrink-0 within flex header layout */
+  flex-shrink: 0;
+}
+
+.cluster-card__hsk-badge {
+  /* needs inline-block for pill layout */
+  display: inline-block;
+  /* line-height tweak for badge text alignment */
+  line-height: 1.4;
+}

@@ -40,6 +40,8 @@ export declare const ROUTE_PATTERNS: {
   readonly readersPassageById: (id: string) => string;
   readonly readersGenerate: string;
   readonly readersPassageAudioById: (id: string) => string;
+  readonly phoneticClusters: string;
+  readonly phoneticClustersById: (id: string) => string;
 };
 
 // HSK Levels

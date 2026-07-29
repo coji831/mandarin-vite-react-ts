@@ -14,6 +14,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
 import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn/foundations";
+import { PhoneticClustersPage } from "../pages/learn/phonetic-clusters/PhoneticClustersPage";
 import { ReadersPage } from "../features/readers";
 import { usePhaseGate } from "shared/hooks";
 import type { ReactNode } from "react";
@@ -46,10 +47,7 @@ export function LearnRoutes() {
         {/* Future content type placeholders */}
         <Route path="radicals" element={<RadicalsPage />} />
         <Route path="grammar" element={<ContentPlaceholderPage title="Grammar" />} />
-        <Route
-          path="phonetic-clusters"
-          element={<ContentPlaceholderPage title="Phonetic Clusters" />}
-        />
+        <Route path="phonetic-clusters" element={<PhoneticClustersPage />} />
         <Route
           path="readers"
           element={

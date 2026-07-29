@@ -1,0 +1,11 @@
+[
+  { "clusterId": "pc_0001", "characterId": "请", "sequenceOrder": 1 },
+  { "clusterId": "pc_0001", "characterId": "情", "sequenceOrder": 2 },
+  { "clusterId": "pc_0001", "characterId": "清", "sequenceOrder": 3 },
+  { "clusterId": "pc_0001", "characterId": "晴", "sequenceOrder": 4 },
+  { "clusterId": "pc_0002", "characterId": "包", "sequenceOrder": 1 },
+  { "clusterId": "pc_0002", "characterId": "跑", "sequenceOrder": 2 },
+  { "clusterId": "pc_0002", "characterId": "炮", "sequenceOrder": 3 },
+  { "clusterId": "pc_0002", "characterId": "抱", "sequenceOrder": 4 },
+  { "clusterId": "pc_0002", "characterId": "饱", "sequenceOrder": 5 }
+]

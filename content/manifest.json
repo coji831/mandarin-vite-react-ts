@@ -49,5 +49,11 @@
   },
   "tones": {
     "files": ["tones.json"]
+  },
+  "phonetic_clusters": {
+    "entity_counts": {
+      "clusters": 2,
+      "members": 9
+    }
   }
 }

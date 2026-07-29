@@ -99,8 +99,12 @@ const readersModule = createReadersModule({
   readersAudioService,
 });
 
+// Phonetic Clusters module — no cross-module deps, pure reference data
+import { createPhoneticClustersModule } from "../modules/phonetic-clusters/container.js";
+
 // Words module — no cross-module deps, pure reference data
 const wordsModule = createWordsModule();
+const phoneticClustersModule = createPhoneticClustersModule();
 
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const ttsController = ttsModule.controller;
@@ -114,4 +118,5 @@ export const quizController = quizModule.controller;
 export const healthController = healthModule.controller;
 export const readersController = readersModule.controller;
 export const wordsController = wordsModule.controller;
+export const phoneticClustersController = phoneticClustersModule.controller;
 export { readersModule };
