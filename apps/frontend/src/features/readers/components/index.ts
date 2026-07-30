@@ -3,6 +3,7 @@
  * @description Barrel exports for readers feature components.
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Story 21.5: Added AudioControlBar exports.
+ * Story 21.7: Added updated PassageCardProps and ReaderLibraryProps.
  */
 export { PassageCard } from "./PassageCard";
 export type { PassageCardProps } from "./PassageCard";

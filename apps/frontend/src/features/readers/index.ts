@@ -4,6 +4,7 @@
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Phase 4: Added store exports.
  * Story 21.5: Added audio hooks and components.
+ * Story 21.7: Added reading progress service, auto-save hook.
  */
 export {
   PassageCard,
@@ -34,6 +35,7 @@ export {
   useGeneratePassage,
   usePassageAudio,
   useSentenceAudio,
+  useAutoSaveProgress,
 } from "./hooks";
 
 // Stores
@@ -47,6 +49,7 @@ export {
   generatePassage,
   fetchPassageAudio,
 } from "./services/passageService";
+export { readingProgressService } from "./services/readingProgressService";
 
 // Types
 export type { SentenceData } from "./components";

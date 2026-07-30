@@ -5,6 +5,10 @@
  * Phase 4: Migrated popover state, mode, and passageId to readingStore.
  * Story 21.5: Audio Sync — SentenceDisplay reads currentAudioIndex from
  * readingStore directly. SentenceWithTap wrapper removed.
+ * Story 21.7: Reading Progress — integrates readingStore progress state with
+ *   ReaderLibrary and ReadingView. Fetches bookmarks on library mount, sets
+ *   isAuthenticated from auth context, handles bookmark toggling, passes
+ *   completion/completed state to passage cards, and wires onComplete callback.
  *
  * Uses a single code path: always fetches data via hooks, always writes to
  * readingStore. Storybook stories use MSW handlers + withReadingStore decorator
@@ -15,7 +19,7 @@
  * Decision: The `mode` prop sets initial mode; after that, readingStore.setMode
  * handles transitions (library ↔ reading). The prop is kept for SSR/mount parity.
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Box } from "shared/components";
 import {
   ReaderLibrary,
@@ -28,8 +32,9 @@ import {
   useGeneratePassage,
   usePassageAudio,
   useSentenceAudio,
+  useReadingStore,
 } from "../../../features/readers";
-import { useReadingStore } from "../../../features/readers/stores";
+import { useAuth } from "../../../features/auth";
 
 export type ReadersPageMode = "library" | "reading";
 
@@ -49,11 +54,37 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   const setPassageId = useReadingStore((s) => s.setPassageId);
   const setMode = useReadingStore((s) => s.setMode);
 
+  // Story 21.7: Progress selectors
+  const completedPassages = useReadingStore((s) => s.completedPassages);
+  const bookmarkedPassages = useReadingStore((s) => s.bookmarkedPassages);
+  const setCurrentSentence = useReadingStore((s) => s.setCurrentSentence);
+  const markCompleted = useReadingStore((s) => s.markCompleted);
+  const fetchBookmarks = useReadingStore((s) => s.fetchBookmarks);
+  const toggleBookmark = useReadingStore((s) => s.toggleBookmark);
+  const setIsAuthenticated = useReadingStore((s) => s.setIsAuthenticated);
+
+  // Auth context
+  const { isAuthenticated } = useAuth();
+
   // Internal state — HSK level filter (local, not session state)
   const [internalLevel, setInternalLevel] = useState<number | null>(null);
+  // Story 21.7: Bookmark filter state
+  const [bookmarkFilter, setBookmarkFilter] = useState<"all" | "bookmarked">("all");
+
+  // Sync auth state to readingStore
+  useEffect(() => {
+    setIsAuthenticated(isAuthenticated);
+  }, [isAuthenticated, setIsAuthenticated]);
+
+  // Fetch bookmarks on library mount (authenticated only)
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchBookmarks();
+    }
+  }, [isAuthenticated, fetchBookmarks]);
 
   // Production-only: passage generation hook
-  const { isGenerating, generate: generatePassage } = useGeneratePassage();
+  const { generate: generatePassage } = useGeneratePassage();
 
   // Mode: store takes precedence after user action, otherwise use prop for initial mount
   const mode = storeMode === "reading" ? "reading" : modeProp;
@@ -82,12 +113,20 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     mode === "reading" ? currentPassageId : null,
   );
 
-  const { currentIndex, isPlaying, hasCompleted, speed, play, pause, stop, toggle, setSpeed } =
-    useSentenceAudio({
+  const { currentIndex, isPlaying, hasCompleted, speed, stop, toggle, setSpeed } = useSentenceAudio(
+    {
       sentenceCount: passage?.sentences.length ?? 0,
       audioUrls,
       sentenceTexts: passage?.sentences.map((s) => s.text) ?? [],
-    });
+    },
+  );
+
+  // Merge store progress state into passage summaries
+  const passagesWithProgress = passages.map((p) => ({
+    ...p,
+    isCompleted: completedPassages.has(p.id),
+    isBookmarked: bookmarkedPassages.has(p.id),
+  }));
 
   // Handlers
   const handleLevelChange = (level: number | null) => {
@@ -100,9 +139,17 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   };
 
   const handleBack = () => {
+    setCurrentSentence(0);
     setPassageId(null);
     setMode("library");
   };
+
+  /** Story 21.7: Called when the last sentence is reached. */
+  const handleComplete = useCallback(() => {
+    if (currentPassageId) {
+      markCompleted(currentPassageId);
+    }
+  }, [currentPassageId, markCompleted]);
 
   const handlePopoverOpen = (glyph: string, rect: DOMRect) => {
     openPopover(glyph, rect);
@@ -117,6 +164,14 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     generatePassage(selectedLevel ?? undefined);
   }, [generatePassage, selectedLevel]);
 
+  /** Story 21.7: Bookmark toggle handler. */
+  const handleBookmarkToggle = useCallback(
+    (passageId: string) => {
+      toggleBookmark(passageId);
+    },
+    [toggleBookmark],
+  );
+
   return (
     <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
       {/* Page title */}
@@ -124,7 +179,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
 
       {mode === "library" && (
         <ReaderLibrary
-          passages={passages}
+          passages={passagesWithProgress}
           selectedLevel={selectedLevel}
           onLevelChange={handleLevelChange}
           onSelectPassage={handleSelectPassage}
@@ -133,6 +188,9 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           hasError={libError}
           onRetry={libRetry}
           onGeneratePassage={handleGeneratePassage}
+          bookmarkFilter={bookmarkFilter}
+          onBookmarkFilterChange={setBookmarkFilter}
+          onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
         />
       )}
 
@@ -143,6 +201,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           isLoading={readLoading}
           hasError={readError}
           onRetry={readRetry}
+          onComplete={handleComplete}
           audioControlBar={
             <AudioControlBar
               currentIndex={currentIndex}

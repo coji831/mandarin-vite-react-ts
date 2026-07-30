@@ -104,5 +104,83 @@ export function createReadersRoutes(readersController: ReadersController): expre
     asyncHandler((req: Request, res: Response) => readersController.generatePassage(req, res)),
   );
 
+  // ── Reading Session Routes ─────────────────────────────────────────────
+
+  /**
+   * GET /v1/readers/sessions/:passageId
+   * Get or create a reading session. Auth-only.
+   */
+  router.get(
+    ROUTE_PATTERNS.readersSessionByPassageId(":passageId"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.getSession(req, res)),
+  );
+
+  /**
+   * PUT /v1/readers/sessions/:passageId
+   * Update reading position. Auth-only. Body: { currentSentence }.
+   */
+  router.put(
+    ROUTE_PATTERNS.readersSessionByPassageId(":passageId"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.updateSession(req, res)),
+  );
+
+  /**
+   * POST /v1/readers/sessions/:passageId/complete
+   * Mark passage as completed. Auth-only.
+   */
+  router.post(
+    ROUTE_PATTERNS.readersSessionCompleteByPassageId(":passageId"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.completePassage(req, res)),
+  );
+
+  // ── Bookmark Routes ────────────────────────────────────────────────────
+
+  /**
+   * GET /v1/readers/bookmarks
+   * List bookmarked passage IDs. Auth-only.
+   */
+  router.get(
+    ROUTE_PATTERNS.readersBookmarks,
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.listBookmarks(req, res)),
+  );
+
+  /**
+   * POST /v1/readers/bookmarks
+   * Add a bookmark. Auth-only. Body: { passageId }.
+   */
+  router.post(
+    ROUTE_PATTERNS.readersBookmarks,
+    requireAuth,
+    asyncHandler((req: Request, res: Response) => readersController.addBookmark(req, res)),
+  );
+
+  /**
+   * DELETE /v1/readers/bookmarks/by-passage/:passageId
+   * Remove a bookmark by passage ID. Auth-only.
+   */
+  router.delete(
+    ROUTE_PATTERNS.readersBookmarkByPassageId(":passageId"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) =>
+      readersController.deleteBookmarkByPassage(req, res),
+    ),
+  );
+
+  /**
+   * GET /v1/readers/bookmarks/by-passage/:passageId
+   * Check if a passage is bookmarked. Auth-only.
+   */
+  router.get(
+    ROUTE_PATTERNS.readersBookmarkByPassageId(":passageId"),
+    requireAuth,
+    asyncHandler((req: Request, res: Response) =>
+      readersController.checkBookmarkByPassage(req, res),
+    ),
+  );
+
   return router;
 }

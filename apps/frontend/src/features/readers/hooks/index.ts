@@ -3,6 +3,7 @@
  * @description Barrel exports for readers feature hooks.
  * Story 21.5: Added audio hooks.
  * Story 21.6: Added useAudioEngine, useBrowserTTS, useAudioAutoAdvance.
+ * Story 21.7: Added useAutoSaveProgress.
  */
 export { usePassages } from "./usePassages";
 export { usePassageDetail } from "./usePassageDetail";
@@ -15,3 +16,4 @@ export { useBrowserTTS } from "./useBrowserTTS";
 export type { UseBrowserTTSReturn } from "./useBrowserTTS";
 export { useAudioAutoAdvance } from "./useAudioAutoAdvance";
 export type { UseAudioAutoAdvanceReturn } from "./useAudioAutoAdvance";
+export { useAutoSaveProgress } from "./useAutoSaveProgress";

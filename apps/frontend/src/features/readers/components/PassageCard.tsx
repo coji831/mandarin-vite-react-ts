@@ -2,6 +2,7 @@
  * @file PassageCard.tsx
  * @description Preview card for a single passage in the library grid.
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Story 21.7: Added bookmark toggle button and completion checkmark indicator.
  *
  * Data-resilient: fixed card width, inner scroll for overflow, text-overflow ellipsis.
  * Props-only — no logic, no hooks, no API calls.
@@ -15,7 +16,10 @@ export type PassageCardProps = {
   hskLevel: number;
   knownWordRatio: number;
   isBookmarked?: boolean;
+  isCompleted?: boolean;
   onClick: () => void;
+  /** Fired when the bookmark toggle is clicked. If omitted, toggle is hidden. */
+  onBookmarkToggle?: () => void;
 };
 
 export const PassageCard = memo(function PassageCard({
@@ -23,7 +27,9 @@ export const PassageCard = memo(function PassageCard({
   hskLevel,
   knownWordRatio: rawRatio,
   isBookmarked = false,
+  isCompleted = false,
   onClick,
+  onBookmarkToggle,
 }: PassageCardProps) {
   // Clamp knownWordRatio to [0, 100] range
   const knownWordRatio = Math.min(100, Math.max(0, rawRatio));
@@ -42,21 +48,72 @@ export const PassageCard = memo(function PassageCard({
           onClick();
         }
       }}
-      aria-label={`Passage: ${title}, HSK level ${hskLevel}, ${knownWordRatio}% known words`}
+      aria-label={
+        `Passage: ${title}, HSK level ${hskLevel}, ${knownWordRatio}% known words` +
+        (isCompleted ? ", completed" : "") +
+        (isBookmarked ? ", bookmarked" : "")
+      }
     >
-      {/* Top row: HSK badge + bookmark */}
+      {/* Top row: HSK badge + indicators */}
       <div className="passage-card__top-row flex-between">
         <span className="passage-card__hsk-badge inline-block lh-1 bg-primary-bg radius-pill p-xs font-xs fw-600 text-primary">
           HSK {hskLevel}
         </span>
-        {isBookmarked && (
-          <span
-            className="passage-card__bookmark text-warning lh-1 bg-warning-bg radius-pill p-xs font-xs"
-            aria-label="Bookmarked"
-          >
-            ★
-          </span>
-        )}
+        <div className="passage-card__indicators flex-row gap-xs items-center">
+          {/* Completion checkmark */}
+          {isCompleted && (
+            <span
+              className="passage-card__completed text-success lh-1 font-sm fw-700"
+              aria-label="Completed"
+            >
+              ✓
+            </span>
+          )}
+          {/* Bookmark indicator / toggle */}
+          {isBookmarked ? (
+            <span
+              className="passage-card__bookmark text-warning lh-1 font-sm cursor-pointer"
+              aria-label="Bookmarked"
+              role="button"
+              tabIndex={0}
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                onBookmarkToggle?.();
+              }}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onBookmarkToggle?.();
+                }
+              }}
+            >
+              ★
+            </span>
+          ) : (
+            onBookmarkToggle && (
+              <span
+                className="passage-card__bookmark-off text-tertiary lh-1 font-sm cursor-pointer op-50 hover-op-100 transition-all"
+                aria-label="Add bookmark"
+                role="button"
+                tabIndex={0}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onBookmarkToggle?.();
+                }}
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onBookmarkToggle?.();
+                  }
+                }}
+              >
+                ☆
+              </span>
+            )
+          )}
+        </div>
       </div>
 
       {/* Title */}

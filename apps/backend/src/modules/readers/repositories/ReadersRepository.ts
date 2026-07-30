@@ -129,6 +129,112 @@ export class ReadersRepository {
     return result._max.passageIndex ?? -1;
   }
 
+  // ── Reading Session Methods ────────────────────────────────────────────
+
+  /**
+   * Upsert a reading session: create if not exists, update currentSentence if exists.
+   */
+  async upsertSession(
+    userId: string,
+    passageId: string,
+    currentSentence: number,
+  ): Promise<{ id: string; currentSentence: number; completed: boolean }> {
+    return prisma.readingSession.upsert({
+      where: { userId_passageId: { userId, passageId } },
+      create: { userId, passageId, currentSentence },
+      update: { currentSentence },
+      select: { id: true, currentSentence: true, completed: true },
+    });
+  }
+
+  /**
+   * Find a reading session by userId and passageId.
+   */
+  async findSession(
+    userId: string,
+    passageId: string,
+  ): Promise<{ id: string; currentSentence: number; completed: boolean } | null> {
+    const session = await prisma.readingSession.findUnique({
+      where: { userId_passageId: { userId, passageId } },
+      select: { id: true, currentSentence: true, completed: true },
+    });
+    return session;
+  }
+
+  /**
+   * Create a new reading session with currentSentence = 0.
+   */
+  async createSession(
+    userId: string,
+    passageId: string,
+  ): Promise<{ id: string; currentSentence: number; completed: boolean }> {
+    return prisma.readingSession.create({
+      data: { userId, passageId, currentSentence: 0 },
+      select: { id: true, currentSentence: true, completed: true },
+    });
+  }
+
+  /**
+   * Mark a passage as completed for the user (idempotent).
+   */
+  async completePassage(userId: string, passageId: string): Promise<void> {
+    await prisma.readingSession.upsert({
+      where: { userId_passageId: { userId, passageId } },
+      create: { userId, passageId, currentSentence: 0, completed: true, completedAt: new Date() },
+      update: { completed: true, completedAt: new Date() },
+    });
+  }
+
+  // ── Bookmark Methods ───────────────────────────────────────────────────
+
+  /**
+   * Create a bookmark for a passage (idempotent).
+   */
+  async createBookmark(
+    userId: string,
+    passageId: string,
+  ): Promise<{ id: string; passageId: string }> {
+    return prisma.bookmark.upsert({
+      where: { userId_passageId: { userId, passageId } },
+      create: { userId, passageId },
+      update: {},
+      select: { id: true, passageId: true },
+    });
+  }
+
+  /**
+   * Delete a bookmark by userId and passageId (idempotent — no-op if not found).
+   */
+  async deleteBookmarkByPassage(userId: string, passageId: string): Promise<void> {
+    await prisma.bookmark.deleteMany({
+      where: { userId, passageId },
+    });
+  }
+
+  /**
+   * Find a bookmark by userId and passageId.
+   */
+  async findBookmarkByPassage(
+    userId: string,
+    passageId: string,
+  ): Promise<{ id: string; passageId: string } | null> {
+    return prisma.bookmark.findUnique({
+      where: { userId_passageId: { userId, passageId } },
+      select: { id: true, passageId: true },
+    });
+  }
+
+  /**
+   * Find all bookmarks for a user, returning passage IDs.
+   */
+  async findAllBookmarks(userId: string): Promise<{ passageId: string }[]> {
+    return prisma.bookmark.findMany({
+      where: { userId },
+      select: { passageId: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
   /**
    * Map Prisma record to domain type.
    */

@@ -37,6 +37,16 @@ export class PassageNotFoundError extends Error {
 }
 
 /**
+ * Validation failure — precondition not met (e.g., invalid argument).
+ */
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+/**
  * General passage generation failure.
  */
 export class PassageGenerationError extends Error {

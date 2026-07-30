@@ -7,11 +7,16 @@
  * Story 21.x Phase 2: Collapsed onPopoverOpen prop chain via component composition.
  *   SentenceDisplay is now rendered as children by the parent (ReadersPage).
  * Story 21.5: Added audioControlBar slot.
+ * Story 21.7: Added restore flow — on mount calls restoreSession, scrolls to saved
+ *   sentence. Uses useAutoSaveProgress for debounced auto-save.
  *
  * Props-only — no logic, no hooks, no API calls.
  * Covers: default, loading (skeleton), error (retry).
  */
+import { useEffect, useRef } from "react";
 import { Box, Button, Skeleton, ErrorScreen } from "shared/components";
+import { useReadingStore } from "../stores/readingStore";
+import { useAutoSaveProgress } from "../hooks/useAutoSaveProgress";
 import type { SentenceData } from "./SentenceDisplay";
 import "./ReadingView.css";
 
@@ -31,7 +36,14 @@ export type ReadingViewProps = {
   onRetry: () => void;
   /** AudioControlBar rendered between the divider and sentences. */
   audioControlBar?: React.ReactNode;
+  /**
+   * Callback fired when the passage reaches the final sentence.
+   * Parent uses this to call readingStore.markCompleted(passageId).
+   */
+  onComplete?: () => void;
 };
+
+const SKELETON_ROW_COUNT = 5;
 
 export function ReadingView({
   passage,
@@ -41,7 +53,43 @@ export function ReadingView({
   hasError,
   onRetry,
   audioControlBar,
+  onComplete,
 }: ReadingViewProps) {
+  // Story 21.7: Restore session on mount
+  const restoreSession = useReadingStore((s) => s.restoreSession);
+  const currentSentence = useReadingStore((s) => s.currentSentence);
+  const sentencesRef = useRef<HTMLDivElement>(null);
+  const lastRestoredRef = useRef<string | null>(null);
+
+  // Auto-save hook (Story 21.7)
+  useAutoSaveProgress();
+
+  // Restore session and scroll to saved position on mount
+  useEffect(() => {
+    if (lastRestoredRef.current === passage.id) return;
+    lastRestoredRef.current = passage.id;
+    restoreSession(passage.id);
+  }, [passage.id, restoreSession]);
+
+  // Scroll to saved sentence position after restore
+  useEffect(() => {
+    if (currentSentence <= 0 || !sentencesRef.current) return;
+
+    const sentenceEl = sentencesRef.current.querySelector(
+      `[data-sentence-index="${currentSentence}"]`,
+    );
+    if (sentenceEl) {
+      sentenceEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentSentence]);
+
+  // On final sentence — mark as completed
+  useEffect(() => {
+    if (passage.sentences.length > 0 && currentSentence >= passage.sentences.length - 1) {
+      onComplete?.();
+    }
+  }, [currentSentence, passage.sentences.length, onComplete]);
+
   // Error state
   if (hasError) {
     return (
@@ -63,7 +111,7 @@ export function ReadingView({
           <Skeleton variant="custom" width="60px" height="24px" className="radius-pill" />
         </div>
         <div className="flex-col gap-md">
-          {Array.from({ length: 5 }, (_, i) => (
+          {Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
             <div key={i} className="flex-col gap-xs">
               <Skeleton variant="line" width="100%" height="20px" />
               <Skeleton variant="line" width="60%" height="14px" />
@@ -108,6 +156,7 @@ export function ReadingView({
       <Box
         variant="surface"
         className="reading-view__sentences flex-col gap-sm flex-1 overflow-y-auto min-h-0"
+        ref={sentencesRef}
       >
         {children}
       </Box>

@@ -70,4 +70,55 @@ describe("PassageCard", () => {
     render(<PassageCard {...defaultProps} isBookmarked={false} />);
     expect(screen.queryByLabelText("Bookmarked")).not.toBeInTheDocument();
   });
+
+  // Story 21.7: Completion + bookmark toggle
+
+  it("shows completion checkmark when isCompleted is true", () => {
+    render(<PassageCard {...defaultProps} isCompleted={true} />);
+    expect(screen.getByLabelText("Completed")).toBeInTheDocument();
+  });
+
+  it("hides completion checkmark when isCompleted is false", () => {
+    render(<PassageCard {...defaultProps} isCompleted={false} />);
+    expect(screen.queryByLabelText("Completed")).not.toBeInTheDocument();
+  });
+
+  it("shows empty star when not bookmarked but onBookmarkToggle is provided", () => {
+    render(<PassageCard {...defaultProps} isBookmarked={false} onBookmarkToggle={vi.fn()} />);
+    expect(screen.getByLabelText("Add bookmark")).toBeInTheDocument();
+  });
+
+  it("does not show empty star when not bookmarked and no toggle handler", () => {
+    render(<PassageCard {...defaultProps} isBookmarked={false} />);
+    expect(screen.queryByLabelText("Add bookmark")).not.toBeInTheDocument();
+  });
+
+  it("calls onBookmarkToggle when bookmark icon is clicked", async () => {
+    const onToggle = vi.fn();
+    render(<PassageCard {...defaultProps} isBookmarked={true} onBookmarkToggle={onToggle} />);
+
+    await userEvent.click(screen.getByLabelText("Bookmarked"));
+    expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onBookmarkToggle when empty star is clicked", async () => {
+    const onToggle = vi.fn();
+    render(<PassageCard {...defaultProps} isBookmarked={false} onBookmarkToggle={onToggle} />);
+
+    await userEvent.click(screen.getByLabelText("Add bookmark"));
+    expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("includes completion status in aria-label", () => {
+    render(<PassageCard {...defaultProps} isCompleted={true} />);
+    const card = screen.getByRole("button");
+    expect(card.getAttribute("aria-label")).toContain("completed");
+  });
+
+  it("includes bookmark status in aria-label", () => {
+    render(<PassageCard {...defaultProps} isBookmarked={true} />);
+    const cards = screen.getAllByRole("button");
+    const card = cards.find((el) => el.getAttribute("aria-label")?.startsWith("Passage:"));
+    expect(card?.getAttribute("aria-label")).toContain("bookmarked");
+  });
 });

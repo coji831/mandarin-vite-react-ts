@@ -16,6 +16,7 @@ import {
   PassageNotFoundError,
   RateLimitExceededError,
   PassageGenerationError,
+  ValidationError,
 } from "../types/readers-errors.js";
 import type {
   PassageRecord,
@@ -351,5 +352,82 @@ Do not include any text before or after the JSON object.`;
       6: 200,
     };
     return counts[hskLevel] ?? 50;
+  }
+
+  // ── Reading Session Methods ────────────────────────────────────────────
+
+  /**
+   * Get or create a reading session for a user + passage.
+   * Returns the session with currentSentence and completed status.
+   */
+  async getOrCreateSession(
+    userId: string,
+    passageId: string,
+  ): Promise<{ currentSentence: number; isCompleted: boolean }> {
+    const existing = await this.repository.findSession(userId, passageId);
+    if (existing) {
+      return { currentSentence: existing.currentSentence, isCompleted: existing.completed };
+    }
+    const created = await this.repository.createSession(userId, passageId);
+    return { currentSentence: created.currentSentence, isCompleted: created.completed };
+  }
+
+  /**
+   * Update the reading position for a user's passage.
+   * Validates currentSentence >= 0.
+   */
+  async updatePosition(
+    userId: string,
+    passageId: string,
+    currentSentence: number,
+  ): Promise<{ currentSentence: number; isCompleted: boolean }> {
+    if (currentSentence < 0 || !Number.isInteger(currentSentence)) {
+      throw new ValidationError(
+        `updatePosition: currentSentence must be a non-negative integer, got ${currentSentence}`,
+      );
+    }
+    const result = await this.repository.upsertSession(userId, passageId, currentSentence);
+    return { currentSentence: result.currentSentence, isCompleted: result.completed };
+  }
+
+  /**
+   * Mark a passage as completed for the user (idempotent).
+   */
+  async markCompleted(userId: string, passageId: string): Promise<{ passageId: string }> {
+    await this.repository.completePassage(userId, passageId);
+    return { passageId };
+  }
+
+  // ── Bookmark Methods ───────────────────────────────────────────────────
+
+  /**
+   * Add a bookmark for a passage (idempotent).
+   */
+  async addBookmark(userId: string, passageId: string): Promise<{ passageId: string }> {
+    await this.repository.createBookmark(userId, passageId);
+    return { passageId };
+  }
+
+  /**
+   * Remove a bookmark by passage ID (idempotent).
+   */
+  async removeBookmarkByPassage(userId: string, passageId: string): Promise<void> {
+    await this.repository.deleteBookmarkByPassage(userId, passageId);
+  }
+
+  /**
+   * Check if a passage is bookmarked by the user.
+   */
+  async checkBookmarkByPassage(userId: string, passageId: string): Promise<boolean> {
+    const bookmark = await this.repository.findBookmarkByPassage(userId, passageId);
+    return bookmark !== null;
+  }
+
+  /**
+   * List all bookmarked passage IDs for a user.
+   */
+  async listBookmarks(userId: string): Promise<string[]> {
+    const bookmarks = await this.repository.findAllBookmarks(userId);
+    return bookmarks.map((b) => b.passageId);
   }
 }

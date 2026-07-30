@@ -41,6 +41,10 @@ export const ROUTE_PATTERNS = {
   readersPassageById: (id) => `/v1/readers/passages/${id}`,
   readersGenerate: "/v1/readers/generate",
   readersPassageAudioById: (id) => `/v1/readers/passages/${id}/audio`,
+  readersSessionByPassageId: (id) => `/v1/readers/sessions/${id}`,
+  readersSessionCompleteByPassageId: (id) => `/v1/readers/sessions/${id}/complete`,
+  readersBookmarks: "/v1/readers/bookmarks",
+  readersBookmarkByPassageId: (id) => `/v1/readers/bookmarks/by-passage/${id}`,
   phoneticClusters: "/v1/phonetic-clusters",
   phoneticClustersById: (id) => `/v1/phonetic-clusters/${id}`,
 };
