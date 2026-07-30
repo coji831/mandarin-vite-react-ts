@@ -25,10 +25,9 @@ describe("RadicalCard", () => {
   it("renders glyph, pinyin, meaning, and stroke count", () => {
     render(<RadicalCard radical={mockRadical} />);
 
-    // Glyph appears twice: primary glyph + Chinese name — use getAllByText
-    const glyphs = screen.getAllByText("一");
-    expect(glyphs.length).toBeGreaterThanOrEqual(2);
-    expect(glyphs[0]).toHaveClass("radical-card__glyph");
+    // Glyph appears once as the primary glyph
+    expect(screen.getByText("一")).toBeInTheDocument();
+    expect(screen.getByText("一")).toHaveClass("radical-card__glyph");
     expect(screen.getByText("yī")).toBeInTheDocument();
     expect(screen.getByText("one")).toBeInTheDocument();
     expect(screen.getByText("1 stroke")).toBeInTheDocument();

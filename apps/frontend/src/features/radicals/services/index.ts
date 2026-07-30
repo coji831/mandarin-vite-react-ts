@@ -8,3 +8,12 @@
 export { radicalsService } from "./radicalsService";
 export { radicalProgressService } from "./radicalProgressService";
 export type { RadicalProgressItem } from "./radicalProgressService";
+export {
+  getPhoneticFamilies,
+  getPhoneticFamilyDetail,
+  enrichFamilyMembers,
+} from "./phoneticTreeService";
+export type {
+  PhoneticFamily,
+  PhoneticFamilyMember,
+} from "./phoneticTreeService";

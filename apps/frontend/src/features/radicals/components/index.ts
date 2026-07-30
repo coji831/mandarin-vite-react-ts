@@ -17,3 +17,5 @@ export { RadicalChipPicker } from "./RadicalChipPicker";
 export { CharacterListNode } from "./CharacterListNode";
 export { TreeRootNode } from "./TreeRootNode";
 export { BranchNode } from "./BranchNode";
+export { PhoneticTreeView } from "./PhoneticTreeView";
+export { PhoneticFamilyNode } from "./PhoneticFamilyNode";

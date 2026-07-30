@@ -9,41 +9,51 @@ import { describe, it, expect, vi } from "vitest";
 import { FilterBar } from "./FilterBar";
 import type { RadicalFilter } from "../types";
 
-// Mock the shared Dropdown and Input components
+// Mock the shared components
 vi.mock("shared/components", () => ({
+  Box: ({ children, variant, className, ...props }: any) => (
+    <div className={className} data-variant={variant} {...props}>
+      {children}
+    </div>
+  ),
   Dropdown: ({
     value,
     onChange,
     options,
+    ariaLabel,
     label,
     id,
   }: {
     value: unknown;
     onChange: (val: unknown) => void;
     options: Array<{ value: unknown; label: string }>;
+    ariaLabel?: string;
     label?: string;
     id?: string;
-  }) => (
-    <div data-testid={`dropdown-${id ?? label}`}>
-      <span>{label}</span>
-      <select
-        aria-label={label}
-        id={id}
-        value={String(value ?? "")}
-        onChange={(e) => {
-          const option = options.find((o) => String(o.value) === e.target.value);
-          onChange(option?.value ?? null);
-        }}
-      >
-        {options.map((opt) => (
-          <option key={String(opt.value)} value={String(opt.value)}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  ),
-  Input: ({ value, onChange, placeholder, className, id }: any) => (
+  }) => {
+    const labelText = ariaLabel ?? label ?? "";
+    return (
+      <div data-testid={`dropdown-${id ?? labelText}`}>
+        <span>{labelText}</span>
+        <select
+          aria-label={labelText}
+          id={id}
+          value={String(value ?? "")}
+          onChange={(e) => {
+            const option = options.find((o) => String(o.value) === e.target.value);
+            onChange(option?.value ?? null);
+          }}
+        >
+          {options.map((opt) => (
+            <option key={String(opt.value)} value={String(opt.value)}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  },
+  Input: ({ value, onChange, placeholder, className, id, ...props }: any) => (
     <input
       data-testid="mock-input"
       id={id}
@@ -51,6 +61,7 @@ vi.mock("shared/components", () => ({
       onChange={onChange}
       placeholder={placeholder}
       className={className}
+      {...props}
     />
   ),
   Button: ({ children, onClick, variant, className, ...props }: any) => (
@@ -92,9 +103,9 @@ describe("FilterBar", () => {
   it("renders all filter controls", () => {
     render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    expect(screen.getByLabelText("Search")).toBeInTheDocument();
-    expect(screen.getByLabelText("Stroke count")).toBeInTheDocument();
-    expect(screen.getByLabelText("Sort by")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by pinyin, meaning, or glyph…")).toBeInTheDocument();
+    expect(screen.getByLabelText("Filter by stroke count")).toBeInTheDocument();
+    expect(screen.getByLabelText("Sort radicals")).toBeInTheDocument();
     expect(screen.getByLabelText("Reset all filters")).toBeInTheDocument();
     expect(screen.getByLabelText("Toggle show top 20 radicals only")).toBeInTheDocument();
   });
@@ -103,7 +114,7 @@ describe("FilterBar", () => {
     const filter = { ...defaultFilter, search: "water" };
     render(<FilterBar filter={filter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    const searchInput = screen.getByLabelText("Search") as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText("Search by pinyin, meaning, or glyph…") as HTMLInputElement;
     expect(searchInput.value).toBe("water");
   });
 
@@ -111,7 +122,7 @@ describe("FilterBar", () => {
     const handleChange = vi.fn();
     render(<FilterBar filter={defaultFilter} onFilterChange={handleChange} onReset={vi.fn()} />);
 
-    fireEvent.change(screen.getByLabelText("Search"), {
+    fireEvent.change(screen.getByPlaceholderText("Search by pinyin, meaning, or glyph…"), {
       target: { value: "fire" },
     });
 
@@ -121,7 +132,7 @@ describe("FilterBar", () => {
   it("renders stroke count dropdown with all options", () => {
     render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    const strokeDropdown = screen.getByLabelText("Stroke count");
+    const strokeDropdown = screen.getByLabelText("Filter by stroke count");
     expect(strokeDropdown).toBeInTheDocument();
 
     // Should have "All strokes" + 17 stroke count options
@@ -136,7 +147,7 @@ describe("FilterBar", () => {
     const handleChange = vi.fn();
     render(<FilterBar filter={defaultFilter} onFilterChange={handleChange} onReset={vi.fn()} />);
 
-    const strokeDropdown = screen.getByLabelText("Stroke count");
+    const strokeDropdown = screen.getByLabelText("Filter by stroke count");
     fireEvent.change(strokeDropdown, { target: { value: "3" } });
 
     expect(handleChange).toHaveBeenCalledWith({ strokeCount: 3 });
@@ -145,7 +156,7 @@ describe("FilterBar", () => {
   it("renders sort dropdown with all sort options", () => {
     render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    const sortDropdown = screen.getByLabelText("Sort by");
+    const sortDropdown = screen.getByLabelText("Sort radicals");
     expect(sortDropdown).toBeInTheDocument();
 
     const options = sortDropdown.querySelectorAll("option");
@@ -160,7 +171,7 @@ describe("FilterBar", () => {
     const handleChange = vi.fn();
     render(<FilterBar filter={defaultFilter} onFilterChange={handleChange} onReset={vi.fn()} />);
 
-    const sortDropdown = screen.getByLabelText("Sort by");
+    const sortDropdown = screen.getByLabelText("Sort radicals");
     fireEvent.change(sortDropdown, { target: { value: "meaning" } });
 
     expect(handleChange).toHaveBeenCalledWith({ sortBy: "meaning" });
@@ -230,7 +241,7 @@ describe("FilterBar", () => {
   it("has search input with correct placeholder", () => {
     render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    const searchInput = screen.getByLabelText("Search");
+    const searchInput = screen.getByPlaceholderText("Search by pinyin, meaning, or glyph…");
     expect(searchInput).toHaveAttribute("placeholder", "Search by pinyin, meaning, or glyph…");
   });
 });

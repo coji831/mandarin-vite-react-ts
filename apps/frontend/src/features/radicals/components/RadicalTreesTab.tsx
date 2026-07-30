@@ -19,6 +19,7 @@ import {
 import type { RadicalData } from "../types";
 import { radicalsService } from "../services/radicalsService";
 import { Phase3TreeView } from "./Phase3TreeView";
+import { PhoneticTreeView } from "./PhoneticTreeView";
 import { Skeleton } from "shared/components";
 import "./RadicalTreesTab.css";
 
@@ -27,9 +28,14 @@ interface RadicalTreesTabProps {
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
+  treeMode: "radical" | "phonetic";
 }
 
-export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: RadicalTreesTabProps) {
+export function RadicalTreesTab({
+  radicals,
+  isLoading: radicalsLoading,
+  treeMode,
+}: RadicalTreesTabProps) {
   const { phaseGate, isLoading: phaseGateLoading } = usePhaseGate();
   // If API fails (null phaseGate), default to Phase 1 in prod, Phase 3 in dev
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
@@ -137,6 +143,15 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
     );
   }
 
+  // --- Phonetic tree (available in Phase 2 preview or Phase 3 full) ---
+  if (treeMode === "phonetic") {
+    return (
+      <div className="radical-trees-tab w-full">
+        <PhoneticTreeView isPhase3={isPhase3} />
+      </div>
+    );
+  }
+
   // --- Phase 2: Locked teaser (Trees tab clicked but user not yet Phase 3) ---
   if (!isPhase3) {
     return (
@@ -154,7 +169,7 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
     );
   }
 
-  // --- Phase 3: Trees view ---
+  // --- Phase 3: Radical tree view ---
   return (
     <div className="radical-trees-tab w-full">
       <Phase3TreeView

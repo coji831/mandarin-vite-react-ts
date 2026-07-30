@@ -27,6 +27,9 @@ export function RadicalsPage() {
   const [searchParams] = useSearchParams();
   const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
   const [showTrees, setShowTrees] = useState(() => searchParams.get("view") === "trees");
+  const [treeMode, setTreeMode] = useState<"radical" | "phonetic">(
+    () => (localStorage.getItem("treeMode") as "radical" | "phonetic") || "radical",
+  );
 
   // Effect 1: ?radical query param — select radical, switch to browse if in trees
   useEffect(() => {
@@ -38,12 +41,17 @@ export function RadicalsPage() {
     setShowTrees((prev) => (prev === true ? false : prev));
   }, [searchParams, radicals]);
 
+  // Persist treeMode to localStorage
+  useEffect(() => {
+    localStorage.setItem("treeMode", treeMode);
+  }, [treeMode]);
+
   // If API fails (null phaseGate), default to Phase 1 in prod, Phase 3 in dev
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
   const effectivePhase = phaseGate?.currentPhase ?? defaultPhase;
   const isPhase3 = effectivePhase >= 3;
 
-  const showTreesHeading = showTrees && isPhase3;
+  const showTreesHeading = showTrees && (treeMode === "radical" ? isPhase3 : true);
 
   const handleRadicalClick = (radical: RadicalData) => {
     setSelectedRadical(radical);
@@ -58,16 +66,26 @@ export function RadicalsPage() {
     setSelectedRadical(null);
   };
 
+  const handleTreeModeChange = (mode: "radical" | "phonetic") => {
+    setTreeMode(mode);
+  };
+
   return (
     <div className="radicals-page flex flex-col flex-1 gap-xs p-md">
       <Box variant="dark" padding="md" className="radicals-page__header flex-col gap-xs">
         <h2 className="font-xl fw-700 text-secondary m-0 flex gap-xs">
-          {showTreesHeading ? "Radical Trees" : "Radicals"}
+          {showTrees && treeMode === "phonetic"
+            ? "Phonetic Trees"
+            : showTreesHeading
+              ? "Radical Trees"
+              : "Radicals"}
         </h2>
         <p className="font-sm text-muted m-0">
-          {showTreesHeading
-            ? "Explore mastered radicals as expandable tree views."
-            : "Browse the building blocks of Chinese characters. Click a card to see its characters and story."}
+          {showTrees && treeMode === "phonetic"
+            ? "Explore characters grouped by shared phonetic components."
+            : showTreesHeading
+              ? "Explore mastered radicals as expandable tree views."
+              : "Browse the building blocks of Chinese characters. Click a card to see its characters and story."}
         </p>
       </Box>
 
@@ -80,6 +98,7 @@ export function RadicalsPage() {
             isLoading={isLoading}
             error={error}
             refetch={refetch}
+            treeMode={treeMode}
           />
         ) : (
           <div className="radicals-page__grid-wrapper">
@@ -108,6 +127,27 @@ export function RadicalsPage() {
         >
           🌳 Trees
         </Button>
+        {showTrees && (
+          <>
+            <span className="text-muted font-xs" aria-hidden="true">
+              |
+            </span>
+            <Button
+              variant={treeMode === "radical" ? "primary-active" : "ghost"}
+              onClick={() => handleTreeModeChange("radical")}
+              size="sm"
+            >
+              🔤 Radical
+            </Button>
+            <Button
+              variant={treeMode === "phonetic" ? "primary-active" : "ghost"}
+              onClick={() => handleTreeModeChange("phonetic")}
+              size="sm"
+            >
+              🔈 Phonetic
+            </Button>
+          </>
+        )}
       </Box>
 
       {selectedRadical && (

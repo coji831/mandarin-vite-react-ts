@@ -1,0 +1,49 @@
+/**
+ * @file components/PhoneticFamilyNode.css
+ * @description Styles for PhoneticFamilyNode — expandable phonetic family node
+ * Story 21.19: Radical Trees — Phonetic Tree Toggle
+ *
+ * Only contains rules that cannot be replaced by global utility classes.
+ */
+
+/* ─── Family node header (clickable toggle) ──────────────────────── */
+
+.phonetic-family-node__header {
+  cursor: pointer;
+}
+
+.phonetic-family-node__header:hover {
+  background: var(--color-primary-bg-light);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Expand/collapse arrow ──────────────────────────────────────── */
+
+.phonetic-family-node__arrow {
+  transition: transform var(--transition-fast);
+}
+
+.phonetic-family-node__arrow--expanded {
+  transform: rotate(90deg);
+}
+
+/* ─── Member list ────────────────────────────────────────────────── */
+
+.phonetic-family-node__members {
+  border-left: 2px solid var(--surface-border);
+  margin-left: calc(var(--space-sm) + 2px);
+}
+
+/* ─── Member row ─────────────────────────────────────────────────── */
+
+.phonetic-family-node__member-row {
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.phonetic-family-node__member-row:hover {
+  background: var(--color-primary-bg-light);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Empty state within a family ────────────────────────────────── */

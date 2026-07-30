@@ -1,0 +1,34 @@
+/**
+ * @file components/PhoneticTreeView.css
+ * @description Styles for PhoneticTreeView — phonetic tree view container
+ * Story 21.19: Radical Trees — Phonetic Tree Toggle
+ *
+ * Only contains rules that cannot be replaced by global utility classes.
+ */
+
+/* ─── Preview banner (Phase 2) ───────────────────────────────────── */
+
+.phonetic-tree-view__preview-banner {
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Loading skeleton ───────────────────────────────────────────── */
+
+.phonetic-tree-view__loading {
+  min-height: 200px;
+}
+
+/* ─── Empty state ────────────────────────────────────────────────── */
+
+.phonetic-tree-view__empty {
+  min-height: 200px;
+}
+
+/* ─── Families list container ────────────────────────────────────── */
+
+.phonetic-tree-view__families {
+  max-height: 600px;
+  overflow-y: auto;
+}

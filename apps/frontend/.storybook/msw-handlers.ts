@@ -147,6 +147,185 @@ const RADICAL_PROGRESS_BODIES = {
   ],
 };
 
+/**
+ * Mock phonetic cluster families for Storybook phonetic tree stories.
+ * Includes families with varying member counts and HSK levels.
+ */
+const PHONETIC_CLUSTER_FAMILIES = [
+  {
+    id: "pc_0001",
+    phoneticPattern: "青",
+    pinyin: "qīng",
+    description: "blue/green",
+    pronunciationNote: "Tones vary by character",
+    memberCount: 4,
+    hskLevels: [2, 3],
+    members: [
+      { glyph: "清", pinyin: "qīng", meaning: "clear", hskLevel: 3 },
+      { glyph: "情", pinyin: "qíng", meaning: "feeling", hskLevel: 2 },
+      { glyph: "请", pinyin: "qǐng", meaning: "request", hskLevel: 2 },
+      { glyph: "晴", pinyin: "qíng", meaning: "clear (sky)", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0002",
+    phoneticPattern: "包",
+    pinyin: "bāo",
+    description: "wrap",
+    pronunciationNote: null,
+    memberCount: 4,
+    hskLevels: [2, 3, 4],
+    members: [
+      { glyph: "包", pinyin: "bāo", meaning: "to wrap", hskLevel: 2 },
+      { glyph: "抱", pinyin: "bào", meaning: "to hug", hskLevel: 3 },
+      { glyph: "跑", pinyin: "pǎo", meaning: "to run", hskLevel: 2 },
+      { glyph: "炮", pinyin: "pào", meaning: "cannon", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0003",
+    phoneticPattern: "方",
+    pinyin: "fāng",
+    description: "square/direction",
+    pronunciationNote: null,
+    memberCount: 5,
+    hskLevels: [2, 3, 4],
+    members: [
+      { glyph: "方", pinyin: "fāng", meaning: "square", hskLevel: 2 },
+      { glyph: "放", pinyin: "fàng", meaning: "to put", hskLevel: 2 },
+      { glyph: "房", pinyin: "fáng", meaning: "house", hskLevel: 2 },
+      { glyph: "访", pinyin: "fǎng", meaning: "to visit", hskLevel: 3 },
+      { glyph: "纺", pinyin: "fǎng", meaning: "to spin", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0004",
+    phoneticPattern: "马",
+    pinyin: "mǎ",
+    description: "horse",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "马", pinyin: "mǎ", meaning: "horse", hskLevel: 1 },
+      { glyph: "吗", pinyin: "ma", meaning: "question particle", hskLevel: 1 },
+      { glyph: "妈", pinyin: "mā", meaning: "mother", hskLevel: 1 },
+    ],
+  },
+  {
+    id: "pc_0005",
+    phoneticPattern: "工",
+    pinyin: "gōng",
+    description: "work",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 4],
+    members: [
+      { glyph: "工", pinyin: "gōng", meaning: "work", hskLevel: 1 },
+      { glyph: "功", pinyin: "gōng", meaning: "achievement", hskLevel: 2 },
+      { glyph: "攻", pinyin: "gōng", meaning: "to attack", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0006",
+    phoneticPattern: "可",
+    pinyin: "kě",
+    description: "can/may",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "可", pinyin: "kě", meaning: "can", hskLevel: 1 },
+      { glyph: "河", pinyin: "hé", meaning: "river", hskLevel: 2 },
+      { glyph: "何", pinyin: "hé", meaning: "what", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0007",
+    phoneticPattern: "中",
+    pinyin: "zhōng",
+    description: "center",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 4],
+    members: [
+      { glyph: "中", pinyin: "zhōng", meaning: "middle", hskLevel: 1 },
+      { glyph: "钟", pinyin: "zhōng", meaning: "clock", hskLevel: 2 },
+      { glyph: "种", pinyin: "zhǒng", meaning: "type/kind", hskLevel: 2 },
+    ],
+  },
+  {
+    id: "pc_0008",
+    phoneticPattern: "分",
+    pinyin: "fēn",
+    description: "divide",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "分", pinyin: "fēn", meaning: "minute", hskLevel: 1 },
+      { glyph: "份", pinyin: "fèn", meaning: "portion", hskLevel: 2 },
+      { glyph: "粉", pinyin: "fěn", meaning: "powder", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0009",
+    phoneticPattern: "白",
+    pinyin: "bái",
+    description: "white",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "白", pinyin: "bái", meaning: "white", hskLevel: 1 },
+      { glyph: "百", pinyin: "bǎi", meaning: "hundred", hskLevel: 1 },
+      { glyph: "拍", pinyin: "pāi", meaning: "to clap", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0010",
+    phoneticPattern: "丁",
+    pinyin: "dīng",
+    description: "nail/male adult",
+    pronunciationNote: null,
+    memberCount: 4,
+    hskLevels: [2, 3, 5],
+    members: [
+      { glyph: "顶", pinyin: "dǐng", meaning: "top/peak", hskLevel: 3 },
+      { glyph: "订", pinyin: "dìng", meaning: "to book", hskLevel: 2 },
+      { glyph: "钉", pinyin: "dīng", meaning: "nail", hskLevel: 5 },
+      { glyph: "厅", pinyin: "tīng", meaning: "hall", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0011",
+    phoneticPattern: "里",
+    pinyin: "lǐ",
+    description: "inside",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "里", pinyin: "lǐ", meaning: "inside", hskLevel: 1 },
+      { glyph: "理", pinyin: "lǐ", meaning: "reason", hskLevel: 2 },
+      { glyph: "厘", pinyin: "lí", meaning: "centi-", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0012",
+    phoneticPattern: "古",
+    pinyin: "gǔ",
+    description: "ancient",
+    pronunciationNote: null,
+    memberCount: 2,
+    hskLevels: [2, 3],
+    members: [
+      { glyph: "古", pinyin: "gǔ", meaning: "ancient", hskLevel: 2 },
+      { glyph: "故", pinyin: "gù", meaning: "therefore", hskLevel: 3 },
+    ],
+  },
+];
+
 export const mswHandlers = {
   auth: [
     // Token refresh — called by AuthProvider on mount
@@ -1440,5 +1619,29 @@ export const mswHandlers = {
       notFound: () =>
         http.get(`${API_BASE}/words/:word`, () => HttpResponse.json(null, { status: 404 })),
     },
+  },
+  phoneticClusters: {
+    /** Returns mock phonetic cluster families for Storybook */
+    default: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json(
+          {
+            data: PHONETIC_CLUSTER_FAMILIES,
+          },
+          { status: 200 },
+        ),
+      ),
+    /** Never resolves (loading state) */
+    loading: () => http.get(`${API_BASE}/phonetic-clusters`, () => new Promise(() => {})),
+    /** Returns empty array (empty state) */
+    empty: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json({ data: [] }, { status: 200 }),
+      ),
+    /** Returns 500 error */
+    error: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json({ error: "Failed to load phonetic clusters" }, { status: 500 }),
+      ),
   },
 };
