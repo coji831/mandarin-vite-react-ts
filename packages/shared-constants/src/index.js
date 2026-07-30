@@ -48,6 +48,11 @@ export const ROUTE_PATTERNS = {
   readersBookmarkByPassageId: (id) => `/v1/readers/bookmarks/by-passage/${id}`,
   phoneticClusters: "/v1/phonetic-clusters",
   phoneticClustersById: (id) => `/v1/phonetic-clusters/${id}`,
+  charactersPhonetic: (glyph) => `/v1/characters/${glyph}/phonetic`,
+  charactersHomophones: (glyph) => `/v1/characters/${glyph}/homophones`,
+  charactersDecomposition: (glyph) => `/v1/characters/${glyph}/decomposition`,
+  charactersSearch: "/v1/characters/search",
+  charactersFrequency: "/v1/characters/frequency",
 };
 
 // HSK Levels

@@ -47,6 +47,11 @@ export declare const ROUTE_PATTERNS: {
   readonly readersBookmarkByPassageId: (id: string) => string;
   readonly phoneticClusters: string;
   readonly phoneticClustersById: (id: string) => string;
+  readonly charactersPhonetic: (glyph: string) => string;
+  readonly charactersHomophones: (glyph: string) => string;
+  readonly charactersDecomposition: (glyph: string) => string;
+  readonly charactersSearch: string;
+  readonly charactersFrequency: string;
 };
 
 // HSK Levels

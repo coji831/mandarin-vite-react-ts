@@ -114,6 +114,10 @@ import { createPhoneticClustersModule } from "../modules/phonetic-clusters/conta
 const wordsModule = createWordsModule();
 const phoneticClustersModule = createPhoneticClustersModule();
 
+// Characters module — no cross-module deps, pure reference data
+import { createCharactersModule } from "../modules/characters/container.js";
+const charactersModule = createCharactersModule();
+
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const ttsController = ttsModule.controller;
 export const foundationsController = foundationsModule.controller;
@@ -127,4 +131,5 @@ export const healthController = healthModule.controller;
 export const readersController = readersModule.controller;
 export const wordsController = wordsModule.controller;
 export const phoneticClustersController = phoneticClustersModule.controller;
+export const charactersController = charactersModule.controller;
 export { readersModule };

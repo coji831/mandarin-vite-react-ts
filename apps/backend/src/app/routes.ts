@@ -115,4 +115,14 @@ router.use((req, res, next) => {
 });
 router.use(phoneticClustersRoutes);
 
+// Characters routes (v1) — Story 21.10
+import charactersRoutes from "../modules/characters/api/charactersRoutes.js";
+import { charactersController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.charactersController = charactersController;
+  next();
+});
+router.use(charactersRoutes);
+
 export default router;

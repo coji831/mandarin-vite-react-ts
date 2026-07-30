@@ -1,6 +1,8 @@
 # Implementation 21-10: Characters Backend Module
 
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-10-characters-module.md`
+> **Status:** Implemented
+> **Last Update:** July 30, 2026
 
 ## Technical Scope
 
@@ -10,15 +12,20 @@ Create a dedicated `modules/characters/` module following the existing modulith 
 
 - `apps/backend/src/modules/characters/` — **NEW**: module root
 - `apps/backend/src/modules/characters/container.ts` — **NEW**: DI registration
+- `apps/backend/src/modules/characters/index.ts` — **NEW**: barrel file (re-exports all types and classes)
 - `apps/backend/src/modules/characters/api/CharactersController.ts` — **NEW**: REST controller (6 endpoints)
 - `apps/backend/src/modules/characters/api/characters.routes.ts` — **NEW**: route definitions
 - `apps/backend/src/modules/characters/services/CharactersService.ts` — **NEW**: business logic layer
 - `apps/backend/src/modules/characters/repositories/CharactersRepository.ts` — **NEW**: Prisma query layer
 - `apps/backend/src/modules/characters/types/characters.ts` — **NEW**: request/response types
 - `apps/backend/src/modules/characters/services/__tests__/CharactersService.test.ts` — **NEW**: unit tests
-- `apps/backend/src/app/container.ts` — update: register characters module
-- `apps/frontend/src/mocks/handlers/characters-handlers.ts` — **NEW**: MSW handlers for frontend testing
-- `apps/backend/src/modules/radicals/` — audit for existing character routes; refactor if found
+- `apps/backend/src/app/container.ts` — **UPDATE**: register characters module
+- `apps/backend/src/app/routes.ts` — **UPDATE**: wire characters routes
+- `apps/backend/src/shared/types/express.d.ts` — **UPDATE**: add characters controller type declaration
+- `packages/shared-constants/src/index.js` — **UPDATE**: add 5 new route constants
+- `packages/shared-constants/index.d.ts` — **UPDATE**: add type declarations for new constants
+- `apps/frontend/src/mocks/handlers/characters-handlers.ts` — **NEW**: MSW handlers for frontend testing (Storybook + Vitest)
+- `apps/backend/src/modules/radicals/` — audit for existing character routes; confirm no refactoring needed
 
 ## API Endpoint Specification
 
@@ -49,17 +56,6 @@ Create a dedicated `modules/characters/` module following the existing modulith 
 }
 ```
 
-`GET /api/v1/characters/好/homophones?exactTone=true` (200):
-
-```json
-{
-  "glyph": "好",
-  "pinyin": "hǎo",
-  "tone": 3,
-  "homophones": [{ "glyph": "郝", "pinyin": "hǎo", "meaning": "surname Hao" }]
-}
-```
-
 `GET /api/v1/characters/河/decomposition` (200):
 
 ```json
@@ -75,7 +71,41 @@ Create a dedicated `modules/characters/` module following the existing modulith 
 `GET /api/v1/characters/nonexistent` (404):
 
 ```json
-{ "error": "Character not found", "code": "CHARACTER_NOT_FOUND" }
+{ "error": "Character not found", "code": "NOT_FOUND" }
+```
+
+`GET /api/v1/characters/search` (400 — no params):
+
+```json
+{
+  "error": "At least one search parameter (q, tone, hskLevel) is required",
+  "code": "VALIDATION_ERROR"
+}
+```
+
+### Homophone Response — Multi-Reading Grouped Format
+
+For characters with multiple pronunciations (e.g., 好 → hǎo/hào), the homophone endpoint groups results by reading:
+
+```json
+{
+  "glyph": "好",
+  "readings": [
+    {
+      "pinyin": "hǎo",
+      "tone": 3,
+      "homophones": [{ "glyph": "郝", "pinyin": "hǎo", "tone": 3, "meaning": "surname Hao" }]
+    },
+    {
+      "pinyin": "hào",
+      "tone": 4,
+      "homophones": [
+        { "glyph": "號", "pinyin": "hào", "tone": 4, "meaning": "number, mark" },
+        { "glyph": "昊", "pinyin": "hào", "tone": 4, "meaning": "vast, sky" }
+      ]
+    }
+  ]
+}
 ```
 
 ## Implementation Details
@@ -99,7 +129,7 @@ async findFrequencyList(tier?: number, page?: number, pageSize?: number): Promis
 // findByGlyph — joins across Character, CharacterReading, CharacterRadical, CharacterHskLevel
 async findByGlyph(glyph: string) {
   return prisma.character.findUnique({
-    where: { simplified: glyph },
+    where: { glyph },
     include: {
       readings: true,
       radical: { include: { radical: true } },
@@ -108,20 +138,27 @@ async findByGlyph(glyph: string) {
   });
 }
 
-// findHomophones — query CharacterReading for matching pinyin
+// findHomophones — two-step glyph→id resolution, then query CharacterReading
 async findHomophones(glyph: string, exactTone: boolean) {
-  // 1. Get readings for source character
+  // Step 1: Resolve source character ID
+  const source = await prisma.character.findUnique({
+    where: { glyph },
+    select: { id: true },
+  });
+  if (!source) return [];
+
+  // Step 2: Get readings for source character
   const sourceReadings = await prisma.characterReading.findMany({
-    where: { characterId: glyph },
+    where: { characterId: source.id },
   });
 
-  // 2. Find other characters with matching readings
+  // Step 3: Find other characters with matching readings
   const pinyinSet = sourceReadings.map(r => r.pinyin);
   return prisma.characterReading.findMany({
     where: {
       pinyin: { in: pinyinSet },
       ...(exactTone ? { tone: { in: sourceReadings.map(r => r.tone) } } : {}),
-      characterId: { not: glyph },
+      characterId: { not: source.id },
     },
     include: { character: true },
   });
@@ -131,6 +168,10 @@ async findHomophones(glyph: string, exactTone: boolean) {
 async searchCharacters(params: SearchParams) {
   const { q, tone, hskLevel } = params;
   const where: any = {};
+
+  if (!q && !tone && !hskLevel) {
+    return []; // controller will return 400 before reaching repository
+  }
 
   if (q) {
     where.readings = { some: { pinyin: { contains: q } } };
@@ -160,7 +201,7 @@ class CharactersService {
 
   async getCharacter(glyph: string): Promise<CharacterDetailResponse> {
     const character = await this.repo.findByGlyph(glyph);
-    if (!character) throw new NotFoundError('CHARACTER_NOT_FOUND', `Character '${glyph}' not found`);
+    if (!character) throw new NotFoundError('NOT_FOUND', `Character '${glyph}' not found`);
     return CharacterDetailMapper.toResponse(character);
   }
 
@@ -176,11 +217,105 @@ Express request handlers with Zod validation for query params.
 
 ### Route Audit
 
-Before finalizing routes, scan `apps/backend/src/modules/radicals/` for any existing character-related routes (e.g., `GET /api/v1/radicals/:id/characters` is legitimate; `GET /api/v1/radicals/characters/:glyph` is not). If character routes exist outside `modules/characters/`, refactor them:
+The audit of `apps/backend/src/modules/radicals/` found a single character-related route: `GET /api/v1/radicals/character/:glyph`. This route returns radical data filtered by character glyph — it is a radicals-view concern ("which radicals belong to this character?") and belongs in the radicals module. No refactoring is needed: no character-specific routes exist outside `modules/characters/`.
 
-- Move controller logic to `CharactersController`
-- Keep a thin proxy route in the original module that forwards to the new endpoint
-- Add a deprecation notice log
+### Shared Constants — 5 New Route Constants
+
+Add the following to `packages/shared-constants/src/index.js` and `packages/shared-constants/index.d.ts`:
+
+| Constant                  | Value                                     | Used By                |
+| ------------------------- | ----------------------------------------- | ---------------------- |
+| `charactersPhonetic`      | `/api/v1/characters/:glyph/phonetic`      | `characters.routes.ts` |
+| `charactersHomophones`    | `/api/v1/characters/:glyph/homophones`    | `characters.routes.ts` |
+| `charactersDecomposition` | `/api/v1/characters/:glyph/decomposition` | `characters.routes.ts` |
+| `charactersSearch`        | `/api/v1/characters/search`               | `characters.routes.ts` |
+| `charactersFrequency`     | `/api/v1/characters/frequency`            | `characters.routes.ts` |
+
+Note: `charactersDetail` (`/api/v1/characters/:glyph`) was added in a prior story or already exists in the path constants.
+
+### Route Registration
+
+The module is wired through four registration points:
+
+**1. `apps/backend/src/modules/characters/api/characters.routes.ts`** — Defines Express Router with 6 GET routes, each using controller methods:
+
+```typescript
+import { Router } from "express";
+import { PATHS } from "@mandarin/shared-constants";
+import { charactersController } from "../container";
+
+const router = Router();
+
+router.get("/:glyph", (req, res) => charactersController.getCharacter(req, res));
+router.get(PATHS.charactersPhonetic.replace("/api/v1/characters/", ""), (req, res) =>
+  charactersController.getPhonetic(req, res),
+);
+router.get(PATHS.charactersHomophones.replace("/api/v1/characters/", ""), (req, res) =>
+  charactersController.getHomophones(req, res),
+);
+router.get(PATHS.charactersDecomposition.replace("/api/v1/characters/", ""), (req, res) =>
+  charactersController.getDecomposition(req, res),
+);
+router.get(PATHS.charactersSearch.replace("/api/v1/characters/", ""), (req, res) =>
+  charactersController.search(req, res),
+);
+router.get(PATHS.charactersFrequency.replace("/api/v1/characters/", ""), (req, res) =>
+  charactersController.getFrequency(req, res),
+);
+
+export default router;
+```
+
+**2. `apps/backend/src/modules/characters/container.ts`** — Registers CharactersRepository → CharactersService → CharactersController in the DI container.
+
+**3. `apps/backend/src/app/container.ts`** — Imports and calls the characters module's container registration function.
+
+**4. `apps/backend/src/app/routes.ts`** — Mounts `charactersRoutes` at `/api/v1/characters`.
+
+**5. `apps/backend/src/shared/types/express.d.ts`** — Adds the `CharactersController` type to the Express `container` augmentation.
+
+### Decomposition Query — Component Include
+
+The `findDecomposition` repository method includes the component details:
+
+```typescript
+async findDecomposition(glyph: string) {
+  const character = await prisma.character.findUnique({
+    where: { glyph },
+    select: { id: true },
+  });
+  if (!character) return [];
+
+  return prisma.characterComponent.findMany({
+    where: { characterId: character.id },
+    include: {
+      component: {
+        select: { glyph: true, meaning: true },
+      },
+    },
+    orderBy: { position: 'asc' },
+  });
+}
+```
+
+### MSW Handlers — Dual Purpose
+
+`apps/frontend/src/mocks/handlers/characters-handlers.ts` serves both Storybook stories (via `storybook-msw-addon`) and Vitest tests (via `msw/node`). Handlers cover all 6 endpoints with realistic response data matching the API spec. The same handlers are imported in:
+
+- `.storybook/preview.tsx` — global MSW decorator
+- Individual story files using `mswParameters`
+- Test setup files via `setupServer(...handlers)`
+
+### Test Coverage
+
+| Method             | Success Path                         | Error Paths                                                      |
+| ------------------ | ------------------------------------ | ---------------------------------------------------------------- |
+| `getCharacter`     | Returns full CharacterDetailResponse | 404 when glyph not found; 400 for empty glyph                    |
+| `getPhonetic`      | Returns phonetic component info      | 404 when character not found; 404 when no phonetic component     |
+| `getHomophones`    | Returns grouped homophones list      | 404 when character not found; empty readings for unknown pinyin  |
+| `getDecomposition` | Returns ordered component list       | 404 when character not found; empty array for undecomposed chars |
+| `searchCharacters` | Returns filtered results             | 400 when all params empty; empty array for no matches            |
+| `getFrequencyList` | Returns paginated frequency list     | Empty array when tier has no characters                          |
 
 ## Architecture Integration
 
@@ -211,13 +346,31 @@ Dependencies:
 ```
 Problem: Route collision risk — modules/radicals/ may already expose character-related
          endpoints (e.g., radical-character lookup).
-Solution: Pre-implementation audit of all existing route files. Any character-specific
-         endpoints found outside modules/characters/ are refactored into the new module
-         with thin proxy routes for backward compatibility. Log deprecation warnings on
-         proxy routes.
+Solution: Pre-implementation audit found GET /api/v1/radicals/character/:glyph returns
+         radical data filtered by character. This is a radicals-view concern ("which
+         radicals belong to this character?") and belongs in the radicals module.
+         No refactoring needed — confirmed no character-specific routes exist outside
+         modules/characters/.
+
+Problem: CharacterRadical table uses dual-key for character reference (characterId FK
+         + characterGlyph string fallback). The Prisma include on CharacterRadical.radical
+         may need conditional logic.
+Solution: The character detail endpoint's radical join prefers characterId FK where
+         available; falls back to characterGlyph string for records not yet migrated.
+         Repository method handles both cases with a union select.
 
 Problem: Homophone query could return hundreds of results for common pinyin (e.g.,
          "yì" has 50+ characters).
 Solution: Default response limit of 50 results with pagination metadata. Frontend
          can request additional pages. Add `?exactTone=true` to narrow results.
+
+Problem: CharacterReading is keyed by internal UUID (characterId FK), not by glyph.
+         Direct Prisma queries using glyph as characterId will silently return no rows.
+Solution: Two-step resolution — first query Character by glyph to get the internal ID,
+         then use that ID for CharacterReading queries. The findHomophones and
+         findDecomposition methods both follow this pattern.
+
+Problem: Search endpoint with empty params would return all 2,971 characters.
+Solution: Controller returns 400 VALIDATION_ERROR when all params (q, tone, hskLevel)
+         are empty. Repository also guards against empty queries as defense-in-depth.
 ```

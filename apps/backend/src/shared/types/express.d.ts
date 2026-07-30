@@ -18,6 +18,7 @@ import type { RadicalsController } from "../../modules/radicals/api/RadicalsCont
 import type { MnemonicsController } from "../../modules/mnemonics/api/MnemonicsController.js";
 import type { WordsController } from "../../modules/words/api/WordsController.js";
 import type { PhoneticClustersController } from "../../modules/phonetic-clusters/api/PhoneticClustersController.js";
+import type { CharactersController } from "../../modules/characters/api/CharactersController.js";
 import type { GeminiService } from "../services/GeminiService.js";
 
 declare global {
@@ -58,6 +59,9 @@ declare global {
 
       /** Injected by routes.ts middleware */
       phoneticClustersController?: PhoneticClustersController;
+
+      /** Injected by routes.ts middleware */
+      charactersController?: CharactersController;
 
       /** Injected by routes.ts middleware */
       geminiService?: GeminiService;
