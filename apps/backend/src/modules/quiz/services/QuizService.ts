@@ -6,6 +6,7 @@
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { getStrategy, getRegisteredTypes } from "../strategies/index.js";
+import { isSandhiAcceptable } from "@mandarin/shared-utils";
 import type { QuizStrategy } from "../types/quiz.js";
 
 const logger = createLogger("QuizService");
@@ -19,6 +20,8 @@ interface QuizAnswerInput {
   correctPinyin: string;
   correctTone: number;
   category: string;
+  isSandhiQuestion?: boolean;
+  sandhiRule?: string;
 }
 
 interface EvaluationResult {
@@ -67,14 +70,31 @@ export class QuizService {
     userId: string,
     quizType: string,
     phase: number = 1,
+    metadata?: unknown,
   ): Promise<QuizAttempt> {
     if (!quizType) throw new Error("quizType is required");
-    return this.quizRepository.createQuizAttempt({ userId, quizType, phase });
+    return this.quizRepository.createQuizAttempt({ userId, quizType, phase, metadata });
   }
 
   async submitAnswer(attemptId: string, data: QuizAnswerInput): Promise<QuizAttemptAnswer> {
-    const { questionIndex, pinyinInput, selectedTone, correctPinyin, correctTone, category } = data;
-    const correct = pinyinInput === correctPinyin && selectedTone === correctTone;
+    const {
+      questionIndex,
+      pinyinInput,
+      selectedTone,
+      correctPinyin,
+      correctTone,
+      category,
+      isSandhiQuestion,
+      sandhiRule,
+    } = data;
+    const toneCorrect = selectedTone === correctTone;
+    const sandhiAccepted = isSandhiAcceptable(
+      correctTone,
+      selectedTone,
+      isSandhiQuestion,
+      sandhiRule,
+    );
+    const correct = pinyinInput === correctPinyin && (toneCorrect || sandhiAccepted);
     return this.quizRepository.createQuizAttemptAnswer({
       attemptId,
       questionIndex,

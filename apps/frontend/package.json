@@ -22,6 +22,7 @@
   "dependencies": {
     "@mandarin/shared-constants": "*",
     "@mandarin/shared-types": "*",
+    "@mandarin/shared-utils": "*",
     "axios": "^1.18.0",
     "hanzi-writer": "^3.7.3",
     "react": "^19.1.0",

@@ -31,11 +31,17 @@ class QuizService {
 
   /**
    * Create a new quiz attempt via backend.
+   * Optionally accepts metadata about the quiz session (e.g., neutral tone / sandhi info).
    */
-  async createQuizAttempt(quizType: string, phase: number = 1): Promise<QuizAttempt> {
+  async createQuizAttempt(
+    quizType: string,
+    phase: number = 1,
+    metadata?: { neutralToneTested: boolean; sandhiQuestions: number },
+  ): Promise<QuizAttempt> {
     const response = await apiClient.post(ROUTE_PATTERNS.quizAttempts, {
       quizType,
       phase,
+      ...(metadata ? { metadata } : {}),
     });
     return response.data;
   }

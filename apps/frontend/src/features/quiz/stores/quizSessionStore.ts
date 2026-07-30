@@ -58,10 +58,19 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       const questions = await quizService.generateQuestionPool(strategyType, questionCount);
       const timer = Math.round(timeLimitMinutes * 60);
 
+      // Compute session metadata for backend tracking
+      const neutralToneTested = questions.some((q) => q.correctTone === 0);
+      const sandhiQuestions = questions.filter((q) => q.isSandhiQuestion).length;
+      const metadata = { neutralToneTested, sandhiQuestions };
+
       // Create a backend attempt record (non-blocking — store attemptId for later use)
       let attemptId: string | null = null;
       try {
-        const attempt = await quizService.createQuizAttempt(strategyType, strategy?.phase ?? 1);
+        const attempt = await quizService.createQuizAttempt(
+          strategyType,
+          strategy?.phase ?? 1,
+          metadata,
+        );
         attemptId = attempt.id;
       } catch (_apiErr) {
         // Backend unavailable — proceed without remote attempt, answers won't be persisted

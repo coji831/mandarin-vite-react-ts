@@ -32,6 +32,10 @@ export interface QuizQuestion {
   meaning?: string | null; // English meaning of the character
   options?: QuizOption[]; // Multiple-choice options (for radical strategies)
   prompt?: string; // Custom prompt text (for radical predictor questions)
+  /** Whether this question involves a tone sandhi pattern */
+  isSandhiQuestion?: boolean;
+  /** The sandhi rule pattern (e.g., "3-3") */
+  sandhiRule?: string;
 }
 
 /** Result of evaluating a user's answer */

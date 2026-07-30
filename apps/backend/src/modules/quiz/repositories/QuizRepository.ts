@@ -11,13 +11,15 @@ export class QuizRepository {
     quizType,
     phase,
     passageId,
+    metadata,
   }: {
     userId: string;
     quizType: string;
     phase?: number | null;
     passageId?: string | null;
+    metadata?: unknown;
   }): Promise<QuizAttempt> {
-    return prisma.quizAttempt.create({ data: { userId, quizType, phase, passageId } });
+    return prisma.quizAttempt.create({ data: { userId, quizType, phase, passageId, metadata: metadata as Prisma.InputJsonValue } });
   }
 
   async findQuizAttemptById(id: string): Promise<QuizAttempt | null> {

@@ -38,8 +38,8 @@ export class QuizController {
           userId: null,
         });
       }
-      const { quizType, phase } = req.body;
-      const attempt = await this.quizService.createQuizAttempt(req.userId, quizType, phase);
+      const { quizType, phase, metadata } = req.body;
+      const attempt = await this.quizService.createQuizAttempt(req.userId, quizType, phase, metadata);
       return res.status(201).json(attempt);
     } catch (error) {
       logger.error("Error creating quiz attempt", error);

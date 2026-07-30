@@ -168,6 +168,7 @@ model QuizAttempt {
   passed      Boolean   @default(false)
   passageId   String?  // Links comprehension quizzes to passages.
                        // No @@index needed — queries filter by [userId, quizType] first.
+  metadata    Json?
   createdAt   DateTime  @default(now())
   completedAt DateTime?
 
