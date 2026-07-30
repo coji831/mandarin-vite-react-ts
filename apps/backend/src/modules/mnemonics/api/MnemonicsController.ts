@@ -10,7 +10,7 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { Request, Response } from "express";
 import type { MnemonicsService } from "../services/MnemonicsService.js";
-import { MnemonicNotFoundError, PICTOGRAPH_CHARS } from "../types/mnemonics.js";
+import { MnemonicNotFoundError } from "../types/mnemonics.js";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -98,16 +98,6 @@ export class MnemonicsController {
           error: "Failed to generate mnemonic story",
           code: "VALIDATION_ERROR",
           message: validationError,
-        });
-        return;
-      }
-
-      // Check pictograph (422)
-      if (PICTOGRAPH_CHARS.has(character)) {
-        res.status(422).json({
-          error: "Failed to generate mnemonic story",
-          code: "VALIDATION_ERROR",
-          message: `"${character}" is a pictograph and cannot be decomposed into radicals`,
         });
         return;
       }

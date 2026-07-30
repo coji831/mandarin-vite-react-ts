@@ -26,7 +26,7 @@ export type MnemonicState =
   | { type: "Error"; message: string }
   | { type: "Timeout" }
   | { type: "Saving"; story: string }
-  | { type: "Pictograph"; character: string };
+  | { type: "Pictograph"; character: string; story?: string };
 
 export const GENERATE_TIMEOUT_MS = 30_000;
 
@@ -71,7 +71,9 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
       if (result === null) {
         set({ state: { type: "Empty" } });
       } else if (result.isPictograph) {
-        set({ state: { type: "Pictograph", character: result.characterGlyph } });
+        set({
+          state: { type: "Pictograph", character: result.characterGlyph, story: result.story },
+        });
       } else if (result.isEdited) {
         set({ state: { type: "Display", story: result.story, isEdited: true } });
       } else {

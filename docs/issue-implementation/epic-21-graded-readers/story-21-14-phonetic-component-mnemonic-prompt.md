@@ -8,19 +8,41 @@ Modify the AI mnemonic prompt template in the backend mnemonic generation servic
 
 **Files:**
 
-- `apps/backend/src/services/MnemonicService.ts` (or `CachedAIFeedbackService.ts`) — update: extend prompt template with classification + phonetic data, add pictograph early-return
-- `apps/backend/src/services/__tests__/MnemonicService.test.ts` — update: tests for enhanced prompt and pictograph skip
+- `apps/backend/src/modules/mnemonics/repositories/MnemonicsRepository.ts` — add `getCharacterByGlyph()` and `getPhoneticComponent()` methods
+- `apps/backend/src/modules/mnemonics/services/MnemonicsService.ts` — refactor: extend prompt template with classification + phonetic data, add pictograph skip using repository
+- `apps/backend/src/modules/mnemonics/services/__tests__/MnemonicsService.test.ts` — update: tests for enhanced prompt, pictograph skip, and repository method behavior
+- `apps/backend/src/modules/mnemonics/api/MnemonicsController.ts` — remove `PICTOGRAPH_CHARS` 422 check (controller no longer blocks pictographs)
+- `apps/frontend/src/features/character-hub/components/HubMnemonicSection/MnemonicPictograph.tsx` — update: accept dynamic `story` prop from backend response instead of hardcoded message
 
 ## Implementation Details
 
 ### Prompt Template Enhancement
 
-The current prompt is: "Generate a memorable story for the Chinese character [glyph]..."
+The current prompt is built via the module-level function `buildMnemonicPrompt(character: string, radicalIds: string[])` which accepts a character glyph and radical IDs.
 
-Updated prompt:
+Refactored signature:
+
+```typescript
+interface PromptContext {
+  character: string;
+  radicalIds: string[];
+  classification?: string;
+  phoneticComponent?: {
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+  };
+  etymology?: string;
+}
+
+// Module-level function — not a class method
+function buildMnemonicPrompt(context: PromptContext): string;
+```
+
+Updated prompt template:
 
 ```
-Generate a memorable story for the Chinese character [glyph] (pinyin: [pinyin], meaning: [meaning]).
+Generate a memorable story for the Chinese character [character] (pinyin: [pinyin], meaning: [meaning]).
 
 Character classification: [classification]
 - If phono-semantic: The semantic component is [radicalGlyph] ([radicalMeaning]).
@@ -34,31 +56,60 @@ Character classification: [classification]
 ### Pictograph Skip Logic
 
 ```typescript
-async generateMnemonic(character: CharacterData): Promise<string> {
+async generateMnemonic(glyph: string): Promise<MnemonicResponse> {
+  // Fetch character data from repository
+  const char = await this.repository.getCharacterByGlyph(glyph);
+
   // Pictograph check — early return for visual-origin characters
-  if (character.classification === 'pictograph') {
-    return `This is a pictograph — its meaning comes from its visual form. Try to visualize ${character.etymologyDescription ?? 'the object it depicts'} when you see this character.`;
+  if (char?.classification === 'pictograph') {
+    return {
+      story: `This is a pictograph — its meaning comes from its visual form. Try to visualize ${char.etymology ?? 'the object it depicts'} when you see this character.`,
+      isPictograph: true,
+    };
   }
 
-  // Build enhanced prompt for non-pictograph characters
-  const prompt = this.buildEnhancedPrompt(character);
+  // Fetch phonetic component data
+  const phoneticComponent = char?.phoneticComponentId
+    ? await this.repository.getPhoneticComponent(char.phoneticComponentId)
+    : undefined;
+
+  // Build enhanced prompt
+  const prompt = buildMnemonicPrompt({
+    character: glyph,
+    radicalIds: [],
+    classification: char?.classification,
+    phoneticComponent,
+    etymology: char?.etymology,
+  });
 
   // Call AI service with enhanced prompt
-  return this.aiService.generate(prompt);
+  const story = await this.aiService.generate(prompt);
+  return { story, isPictograph: false };
 }
 ```
+
+> **Note:** The controller (`MnemonicsController.ts`) currently has a hardcoded `PICTOGRAPH_CHARS` Set that returns 422 for pictographs. This check must be removed — the service now handles pictographs by returning a 200 OK with `isPictograph: true`.
 
 ### Data Flow
 
 ```
 Request: mnemonic for character 河 (hé, "river")
-→ Check classification: "phono-semantic"
-→ Fetch phonetic component: 可 (kě, "can/allow")
+→ MnemonicsRepository.getCharacterByGlyph("河")
+    → Query Character table: classification = "phono-semantic", phoneticComponentId = "ke-4"
+→ MnemonicsRepository.getPhoneticComponent("ke-4")
+    → Query character 可: glyph = "可", pinyin = "kě", meaning = "can/allow"
+→ buildMnemonicPrompt({
+    character: "河",
+    classification: "phono-semantic",
+    phoneticComponent: { glyph: "可", pinyin: "kě", meaning: "can/allow" },
+    radicalIds: ["water-radical-id"],
+  })
 → Enhanced prompt includes:
     classification: phono-semantic
     semantic component: 氵 (water radical)
     phonetic component: 可 (kě, meaning: "can/allow")
 → AI returns mnemonic that connects water + "can" → "river"
+→ Response: { story: "...", isPictograph: false }
 ```
 
 ## Architecture Integration
@@ -66,11 +117,21 @@ Request: mnemonic for character 河 (hé, "river")
 ```
 [Story 21.14: Mnemonic Prompt Enhancement]
 ├── Backend
-│   └── MnemonicService (or CachedAIFeedbackService)
-│       ├── buildEnhancedPrompt() — adds classification + phonetic data
-│       └── pictographSkip() — early return for pictographs
+│   └── MnemonicsService (modules/mnemonics/services/)
+│       ├── buildMnemonicPrompt() — module-level function, accepts PromptContext
+│       └── generateMnemonic() — calls repository, handles pictograph skip
+│   └── MnemonicsRepository (modules/mnemonics/repositories/)
+│       ├── getCharacterByGlyph(glyph) — fetches classification, phoneticComponentId, etymology
+│       └── getPhoneticComponent(id) — fetches glyph, pinyin, meaning for phonetic component
+│   └── MnemonicsController (modules/mnemonics/api/)
+│       └── remove PICTOGRAPH_CHARS 422 check — pictographs now return 200 OK
+├── Frontend
+│   └── MnemonicPictograph component
+│       └── accept dynamic `story` prop from backend response
 └── Data Sources
     ├── Character.classification (populated by 21.2)
+    ├── Character.phoneticComponentId (populated by 21.2)
+    ├── Character.etymology (populated by 21.2)
     ├── CharacterComponent (phonetic component — populated by 21.2)
     └── CharacterReading (pinyin data — populated by 21.2)
 ```
@@ -78,9 +139,26 @@ Request: mnemonic for character 河 (hé, "river")
 ## Technical Challenges & Solutions
 
 ```
-Problem: Pictographs need to be identified reliably — classification may not
-         be populated for all characters in the initial 500-character milestone.
+Challenge 1: Classification may be null for some characters
+───────────────────────────────────────────────────────────
+Problem: Character.classification may not be populated for all characters in
+         the initial 500-character milestone.
 Solution: If classification is null/undefined, fall through to normal AI
          generation (current behavior). Pictograph skip only triggers when
          classification === "pictograph" explicitly.
+
+Challenge 2: Dual pictograph sources must stay in sync
+──────────────────────────────────────────────────────
+Problem: The frontend has a hardcoded PICTOGRAPH_CHARS Set (in MnemonicsController
+         or MnemonicPictograph) as a local optimization, while the authoritative
+         source is Character.classification in the database. These can drift.
+Solution: The controller's PICTOGRAPH_CHARS 422 check is removed — the backend
+         now determines pictograph status from the database (authoritative).
+         The frontend PICTOGRAPH_CHARS (if any) is a local rendering hint;
+         the backend response's `isPictograph` boolean is the source of truth.
 ```
+
+## Implementation Status
+
+**Status:** ✅ Implemented
+**Date Completed:** July 30, 2026

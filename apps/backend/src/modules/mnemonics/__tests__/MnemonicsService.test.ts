@@ -57,6 +57,8 @@ describe("MnemonicsService", () => {
       upsert: vi.fn(),
       deleteByCharacterAndUser: vi.fn(),
       getCharacterRadicals: vi.fn(),
+      getCharacterByGlyph: vi.fn(),
+      getPhoneticComponent: vi.fn(),
     };
 
     mockGeminiService = {
@@ -112,10 +114,30 @@ describe("MnemonicsService", () => {
     it("should throw MnemonicNotFoundError when nothing found", async () => {
       mockCacheService.get.mockResolvedValue(null);
       mockRepository.findAnyByCharacter.mockResolvedValue(null);
+      mockRepository.getCharacterByGlyph.mockResolvedValue(null);
 
       await expect(service.getMnemonic(testGlyph)).rejects.toThrow(
         `No mnemonic story found for character: ${testGlyph}`,
       );
+    });
+
+    it("should return static pictograph note when character is pictograph and nothing else found", async () => {
+      const pictographGlyph = "日";
+      mockCacheService.get.mockResolvedValue(null);
+      mockRepository.findAnyByCharacter.mockResolvedValue(null);
+      mockRepository.getCharacterByGlyph.mockResolvedValue({
+        classification: "pictograph",
+        phoneticComponentId: null,
+        etymology: "ancient depiction of the sun",
+        definition: "sun",
+        readings: [{ pinyin: "ri", tone: 4 }],
+      });
+
+      const result = await service.getMnemonic(pictographGlyph);
+
+      expect(result.story).toContain("pictograph");
+      expect(result.isPictograph).toBe(true);
+      expect(result.id).toBe("");
     });
 
     it("should continue to DB when cache read fails", async () => {
@@ -200,6 +222,85 @@ describe("MnemonicsService", () => {
 
       // Lock should be released via delete
       expect(mockCacheService.delete).toHaveBeenCalledWith(`mnemonic:lock:${testGlyph}`);
+    });
+
+    it("should return static pictograph note without calling Gemini", async () => {
+      const pictographGlyph = "日";
+      const pictographEtymology = "ancient depiction of the sun";
+      mockRepository.getCharacterByGlyph.mockResolvedValue({
+        classification: "pictograph",
+        phoneticComponentId: null,
+        etymology: pictographEtymology,
+        definition: "sun",
+        readings: [{ pinyin: "ri", tone: 4 }],
+      });
+
+      const result = await service.generateMnemonic(pictographGlyph, testUserId);
+
+      expect(result.story).toContain("pictograph");
+      expect(result.story).toContain(pictographEtymology);
+      expect(result.isPictograph).toBe(true);
+      expect(result.radicalIds).toEqual([]);
+      // Should NOT call Gemini
+      expect(mockGeminiService.generateText).not.toHaveBeenCalled();
+      // Should NOT try to upsert or cache
+      expect(mockRepository.upsert).not.toHaveBeenCalled();
+      expect(mockCacheService.set).not.toHaveBeenCalled();
+    });
+
+    it("should pass phono-semantic data into the AI prompt", async () => {
+      const phonoGlyph = "沐";
+      mockRepository.getCharacterByGlyph.mockResolvedValue({
+        classification: "phono_semantic",
+        phoneticComponentId: "ch_2001",
+        etymology: "water + wood sound",
+        definition: "to bathe",
+        readings: [{ pinyin: "mu", tone: 4 }],
+      });
+      mockRepository.getPhoneticComponent.mockResolvedValue({
+        glyph: "木",
+        pinyin: "mu",
+        meaning: "wood",
+      });
+      mockRepository.getCharacterRadicals.mockResolvedValue([
+        { characterGlyph: phonoGlyph, radicalId: "ch_3001" },
+      ]);
+      mockGeminiService.generateText.mockResolvedValue("A mnemonic for 沐");
+      mockRepository.upsert.mockResolvedValue(mockRecord);
+      mockCacheService.get.mockResolvedValue(null);
+      mockCacheService.delete.mockResolvedValue(undefined);
+
+      await service.generateMnemonic(phonoGlyph, testUserId);
+
+      // Verify the prompt sent to Gemini includes phonetic component info
+      const promptArg = mockGeminiService.generateText.mock.calls[0][0] as string;
+      expect(promptArg).toContain("phono-semantic");
+      expect(promptArg).toContain("木 (mu, meaning: wood)");
+      expect(promptArg).toContain("connect both the meaning clue and the sound clue");
+    });
+
+    it("should fall through to normal generation when classification is null", async () => {
+      mockRepository.getCharacterByGlyph.mockResolvedValue({
+        classification: null,
+        phoneticComponentId: null,
+        etymology: null,
+        definition: "good",
+        readings: [{ pinyin: "hao", tone: 3 }],
+      });
+      mockRepository.getCharacterRadicals.mockResolvedValue([
+        { characterGlyph: testGlyph, radicalId: "ch_1001" },
+      ]);
+      mockGeminiService.generateText.mockResolvedValue(testStory);
+      mockRepository.upsert.mockResolvedValue(mockRecord);
+      mockCacheService.get.mockResolvedValue(null);
+      mockCacheService.delete.mockResolvedValue(undefined);
+
+      const result = await service.generateMnemonic(testGlyph, testUserId);
+
+      // Should proceed with normal AI generation
+      expect(mockGeminiService.generateText).toHaveBeenCalled();
+      expect(result.story).toBe(testStory);
+      expect(result.isPictograph).toBe(false);
     });
   });
 

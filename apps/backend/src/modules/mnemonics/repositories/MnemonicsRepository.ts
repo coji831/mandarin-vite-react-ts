@@ -127,6 +127,56 @@ export class MnemonicsRepository {
   }
 
   /**
+   * Fetch a character's classification and related data from the Character table.
+   */
+  async getCharacterByGlyph(glyph: string): Promise<{
+    classification: string | null;
+    phoneticComponentId: string | null;
+    etymology: string | null;
+    definition: string | null;
+    readings: Array<{ pinyin: string; tone: number }> | null;
+  } | null> {
+    const char = await prisma.character.findUnique({
+      where: { glyph },
+      select: {
+        classification: true,
+        phoneticComponentId: true,
+        etymology: true,
+        definition: true,
+        readings: true,
+      },
+    });
+    return char as unknown as {
+      classification: string | null;
+      phoneticComponentId: string | null;
+      etymology: string | null;
+      definition: string | null;
+      readings: Array<{ pinyin: string; tone: number }> | null;
+    } | null;
+  }
+
+  /**
+   * Fetch the phonetic component character's glyph, pinyin, and meaning.
+   */
+  async getPhoneticComponent(componentId: string): Promise<{
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+  } | null> {
+    const comp = await prisma.character.findUnique({
+      where: { id: componentId },
+      select: { glyph: true, readings: true, definition: true },
+    });
+    if (!comp) return null;
+    const readings = (comp.readings as Array<{ pinyin: string; tone: number }> | null) || [];
+    return {
+      glyph: comp.glyph,
+      pinyin: readings[0]?.pinyin ?? "",
+      meaning: comp.definition ?? "",
+    };
+  }
+
+  /**
    * Map Prisma model to domain record.
    */
   private toRecord(raw: {

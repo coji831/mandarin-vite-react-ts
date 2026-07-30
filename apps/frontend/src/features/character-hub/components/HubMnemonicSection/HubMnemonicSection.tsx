@@ -126,7 +126,9 @@ function MnemonicSectionInner({ character }: { character: string }) {
       case "Timeout":
         return <MnemonicError character={character} isTimeout onRetry={retry} />;
       case "Pictograph":
-        return <MnemonicPictograph character={character} glyph={state.character} />;
+        return (
+          <MnemonicPictograph character={character} glyph={state.character} story={state.story} />
+        );
       default:
         return null;
     }
