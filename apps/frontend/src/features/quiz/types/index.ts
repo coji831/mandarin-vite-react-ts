@@ -12,7 +12,7 @@ export type {
   AnswerResult,
   QuizPhase,
 } from "./engine";
-export type { QuizSession } from "./session";
+export type { QuizSession, PhoneticHintState } from "./session";
 export { createInitialSession } from "./session";
 export type {
   QuizGenerateRequest,

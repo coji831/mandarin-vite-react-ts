@@ -65,6 +65,8 @@ export function FeedbackView() {
 
   // ── IME Simulator: character-focused feedback ──
   if (strategyType === "ime-simulator") {
+    const phoneticHint = lastAnswer.phoneticHint;
+
     return (
       <FeedbackCard correct={lastAnswer.correct}>
         <p className="ime-quiz-feedback__char font-3xl fw-700 m-0">{question.character}</p>
@@ -72,6 +74,25 @@ export function FeedbackView() {
           {question.displayPinyin ?? question.correctPinyin}
           {question.meaning ? ` \u2014 ${question.meaning}` : ""}
         </p>
+
+        {/* Phonetic hint — shown only after wrong answer */}
+        {!lastAnswer.correct && (
+          <div className="ime-quiz-feedback__hint flex-col gap-xs mt-sm p-sm radius-md bg-surface-dark">
+            {phoneticHint ? (
+              <p className="font-sm text-secondary m-0 lh-normal">
+                💡 <strong>Hint:</strong> This character contains phonetic component{" "}
+                <strong>{phoneticHint.glyph}</strong> (pinyin: <strong>{phoneticHint.pinyin}</strong>
+                , meaning: <strong>{phoneticHint.meaning}</strong>). Try to connect the sound!
+              </p>
+            ) : (
+              <p className="font-sm text-secondary m-0 lh-normal">
+                💡 This character doesn&apos;t have a phonetic component — try memorizing it by its
+                visual structure.
+              </p>
+            )}
+          </div>
+        )}
+
         <Button variant="primary" onClick={nextQuestion}>
           Next Question \u2192
         </Button>

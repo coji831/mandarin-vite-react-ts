@@ -79,6 +79,88 @@ function makeCorrectAnswer(question: QuizQuestion): AnswerResult {
   };
 }
 
+// ── IME Simulator mock questions (Story 21.18) ────────────────────
+
+const MOCK_IME_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "ime-q1",
+    audioKey: "hǎo",
+    correctPinyin: "hao",
+    correctTone: 3,
+    category: "ime",
+    displayPinyin: "hǎo",
+    character: "好",
+    meaning: "good",
+  },
+  {
+    id: "ime-q2",
+    audioKey: "nǐ",
+    correctPinyin: "ni",
+    correctTone: 3,
+    category: "ime",
+    displayPinyin: "nǐ",
+    character: "你",
+    meaning: "you",
+  },
+  {
+    id: "ime-q3",
+    audioKey: "mā",
+    correctPinyin: "ma",
+    correctTone: 1,
+    category: "ime",
+    displayPinyin: "mā",
+    character: "妈",
+    meaning: "mother",
+  },
+  {
+    id: "ime-q4",
+    audioKey: "míng",
+    correctPinyin: "ming",
+    correctTone: 2,
+    category: "ime",
+    displayPinyin: "míng",
+    character: "明",
+    meaning: "bright",
+  },
+  {
+    id: "ime-q5",
+    audioKey: "shuō",
+    correctPinyin: "shuo",
+    correctTone: 1,
+    category: "ime",
+    displayPinyin: "shuō",
+    character: "说",
+    meaning: "to speak",
+  },
+];
+
+function makeCorrectIMEAnswer(question: QuizQuestion, classification: string): AnswerResult {
+  return {
+    correct: true,
+    userPinyin: question.character ?? "",
+    userTone: 0,
+    correctPinyin: question.correctPinyin,
+    correctTone: question.correctTone,
+    feedback: `Correct! ${question.character}`,
+    toneDescription: "",
+    classification,
+  };
+}
+
+function makeWrongIMEAnswer(question: QuizQuestion, classification: string): AnswerResult {
+  return {
+    correct: false,
+    userPinyin: "X",
+    userTone: 0,
+    correctPinyin: question.correctPinyin,
+    correctTone: question.correctTone,
+    feedback: `Incorrect. The correct answer was: ${question.character}`,
+    toneDescription: "",
+    classification,
+    phoneticHint: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+  };
+}
+
 function makeWrongAnswer(question: QuizQuestion): AnswerResult {
   const wrongTone = question.correctTone === 1 ? 3 : 1;
   return {
@@ -328,4 +410,141 @@ export const GuestResultsFailed: Story = {
     withGuestAuth,
     withAppLayoutAt("/practices/quiz"),
   ],
+
+  // ─────────────────────────────────────────────────────────────────
+  // IME Simulator Stories (Story 21.18)
+  // ─────────────────────────────────────────────────────────────────
+
+  /**
+   * IMEQuestion — IME Simulator INPUT phase with meaning clue and IME input.
+   */
+  IMEQuestion: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "INPUT",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 0,
+        answers: [],
+        score: 0,
+        timer: 150,
+        hintsRemaining: 3,
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
+
+  /**
+   * IMEHintDisplay — IME Simulator question with phonetic hint visible.
+   */
+  IMEHintDisplay: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "INPUT",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 1,
+        answers: [],
+        score: 0,
+        timer: 130,
+        hintsRemaining: 3,
+        currentPhoneticHint: {
+          data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+          hasPhoneticComponent: true,
+        },
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
+
+  /**
+   * IMEHintExhausted — IME Simulator question with 0 hints remaining.
+   */
+  IMEHintExhausted: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "INPUT",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 2,
+        answers: [],
+        score: 0,
+        timer: 120,
+        hintsRemaining: 0,
+        currentPhoneticHint: {
+          data: null,
+          hasPhoneticComponent: false,
+        },
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
+
+  /**
+   * IMEHintRadicalShown — IME Simulator question with radical hint toggled on.
+   */
+  IMEHintRadicalShown: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "INPUT",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 0,
+        answers: [],
+        score: 0,
+        timer: 140,
+        hintsRemaining: 2,
+        showRadicalHint: true,
+        maxScorePenalty: 0.05,
+        currentPhoneticHint: {
+          data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+          hasPhoneticComponent: true,
+        },
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
+
+  /**
+   * IMEResults — IME Simulator RESULTS phase with score-by-type breakdown.
+   */
+  IMEResults: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "RESULTS",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 4,
+        answers: [
+          makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[0], "phono_semantic"),
+          makeWrongIMEAnswer(MOCK_IME_QUESTIONS[1], "pictograph"),
+          makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[2], "phono_semantic"),
+          makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[3], "compound_ideograph"),
+          makeWrongIMEAnswer(MOCK_IME_QUESTIONS[4], "ideograph"),
+        ],
+        score: 3,
+        timer: 90,
+        hintsRemaining: 1,
+        strategyConfig: {
+          type: "ime-simulator",
+          questionCount: 5,
+          passThreshold: 0.6,
+          timeLimitMinutes: 2.5,
+          tierRules: null,
+        },
+        scoreByType: {
+          pictograph: { correct: 0, total: 1 },
+          phono_semantic: { correct: 2, total: 2 },
+          compound_ideograph: { correct: 1, total: 1 },
+          ideograph: { correct: 0, total: 1 },
+        },
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
 };

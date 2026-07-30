@@ -17,6 +17,7 @@ import { PhaseGateBadge } from "./PhaseGateBadge";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { getStrategy } from "../../engine/strategies";
 import { Box, Button } from "shared/components";
+import { ClassificationBadge } from "shared/components";
 import { useAuth } from "features/auth";
 import { register_page } from "shared/constants";
 
@@ -40,6 +41,8 @@ export function QuizResults() {
   const retry = useQuizSessionStore((s) => s.retry);
 
   const isGuest = !isAuthenticated;
+
+  const scoreByType = useQuizSessionStore((s) => s.scoreByType);
 
   const strategy = getStrategy(strategyType);
   const strategyConfig = useQuizSessionStore((s) => s.strategyConfig);
@@ -113,6 +116,27 @@ export function QuizResults() {
 
       {/* Category breakdown (only applicable to pinyin/tone quizzes, not IME simulator) */}
       {strategyType !== "ime-simulator" && <CategoryBreakdown answers={answers} />}
+
+      {/* Score by Type (IME Simulator only — classification-based breakdown) */}
+      {strategyType === "ime-simulator" && Object.keys(scoreByType).length > 0 && (
+        <Box variant="dark" padding="md" className="flex-col gap-md w-full">
+          <h3 className="quiz-results__score-by-type-heading font-lg text-primary m-0">
+            📊 Score by Type
+          </h3>
+          {Object.entries(scoreByType).map(([type, { correct, total }]) => (
+            <div key={type} className="score-by-type-row flex-align-center gap-md">
+              <ClassificationBadge
+                classification={type}
+                showLabel={true}
+                size="sm"
+              />
+              <span className="font-sm text-primary">
+                {correct}/{total}
+              </span>
+            </div>
+          ))}
+        </Box>
+      )}
 
       {/* Action button */}
       <div className="flex-center gap-md">

@@ -8,12 +8,18 @@ Extend the IME Simulator with phonetic hint display on wrong answers, a radical 
 
 **Files:**
 
-- `apps/frontend/src/features/radicals/components/IMESimulator.tsx` — update: add hint display after wrong answer, hint toggle, score breakdown
-- `apps/frontend/src/features/radicals/services/hintService.ts` — **NEW**: hint generation logic
-- `apps/frontend/src/features/radicals/services/__tests__/hintService.test.ts` — **NEW**: unit tests
-- `apps/frontend/src/features/radicals/stores/imeStore.ts` — update: extend state with hint pool, score penalties
-- `apps/frontend/src/features/radicals/components/__stories__/IMESimulator.stories.tsx` — update: stories with hint states
-- `apps/frontend/src/features/radicals/services/radicalService.ts` — update: add API call for phonetic component lookup (or fallback to local data)
+- `apps/frontend/src/features/quiz/services/hintService.ts` — **NEW**: hint generation logic with Characters Module API integration
+- `apps/frontend/src/features/quiz/services/__tests__/hintService.test.ts` — **NEW**: 6 unit tests (phonetic, radical, character detail, fallback, error handling)
+- `apps/frontend/src/features/quiz/types/engine.ts` — modified: hint pool, penalty, and score-by-type logic in quiz engine
+- `apps/frontend/src/features/quiz/types/session.ts` — modified: hint state, penalty tracking, score-by-classification types
+- `apps/frontend/src/features/quiz/types/index.ts` — modified: barrel export for new types
+- `apps/frontend/src/features/quiz/stores/quizSessionStore.ts` — modified: hint pool, penalty accumulation, score-by-type tracking
+- `apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx` — modified: phonetic hint display on wrong answer, radical hint toggle
+- `apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.css` — modified: styles for hint UI elements
+- `apps/frontend/src/features/quiz/components/FeedbackView.tsx` — modified: score breakdown by character type
+- `apps/frontend/src/features/quiz/components/results/QuizResults.tsx` — modified: results display with classification breakdown
+- `apps/frontend/src/features/quiz/index.ts` — modified: barrel export for hint service
+- `apps/frontend/src/pages/practices/QuizPageFull.stories.tsx` — modified: Storybook stories covering hint UI states
 
 ## Implementation Details
 
@@ -41,8 +47,8 @@ class HintService {
 ### Score Penalty Logic
 
 ```typescript
-// In imeStore
-interface IMEState {
+// In quizSessionStore
+interface QuizSessionState {
   hintsRemaining: number; // starts at 3
   showRadicalHint: boolean;
   maxScorePenalty: number; // accumulates -5% per radical hint use
@@ -67,10 +73,10 @@ Uses the `ClassificationBadge` component from Story 21.15 for each row.
 
 ```
 [Story 21.18: IME Simulator Phonetic Hints]
-├── Frontend — features/radicals/
-│   ├── IMESimulator — hint UI + toggle + score breakdown
+├── Frontend — features/quiz/
+│   ├── IMEQuestionView — hint UI + toggle + score breakdown
 │   ├── hintService — hint generation (API-first with fallback)
-│   └── imeStore — hint pool, penalties, score by type
+│   └── quizSessionStore — hint pool, penalties, score by type
 └── Dependencies
     ├── 21.10 Characters Module API — phonetic component lookup
     ├── 21.15 ClassificationBadge — score breakdown rows

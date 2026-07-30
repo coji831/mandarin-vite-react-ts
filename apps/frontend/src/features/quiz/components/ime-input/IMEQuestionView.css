@@ -26,5 +26,3 @@
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
   font-size: var(--font-lg); /* ::placeholder pseudo-element */
 }
-
-/* ── Submit button ── */

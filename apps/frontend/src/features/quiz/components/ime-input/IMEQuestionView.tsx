@@ -3,9 +3,11 @@
  * IME Simulator Quiz — IME-specific question display
  *
  * Shows meaning clue + IME text input for character typing.
+ * Story 21.18: Added phonetic hint display and radical hint toggle.
  */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
+import { getRadicalHint } from "../../services/hintService";
 import { Button, Input, Box } from "shared/components";
 import "./IMEQuestionView.css";
 
@@ -14,10 +16,34 @@ export function IMEQuestionView() {
   const currentIndex = useQuizSessionStore((s) => s.currentIndex);
   const questions = useQuizSessionStore((s) => s.questions);
   const question = questions[currentIndex];
+  const hintsRemaining = useQuizSessionStore((s) => s.hintsRemaining);
+  const showRadicalHint = useQuizSessionStore((s) => s.showRadicalHint);
+  const currentPhoneticHint = useQuizSessionStore((s) => s.currentPhoneticHint);
+  const consumeHint = useQuizSessionStore((s) => s.useHint);
+  const applyRadicalPenalty = useQuizSessionStore((s) => s.applyRadicalPenalty);
   const [inputValue, setInputValue] = useState("");
+  const [radicalHintData, setRadicalHintData] = useState<{
+    glyph: string;
+    meaning: string;
+  } | null>(null);
+  const [radicalLoading, setRadicalLoading] = useState(false);
+
+  // Load radical hint data when user requests it
+  useEffect(() => {
+    if (showRadicalHint && question?.character && !radicalHintData && !radicalLoading) {
+      setRadicalLoading(true);
+      getRadicalHint(question.character)
+        .then((data) => {
+          setRadicalHintData(data);
+          setRadicalLoading(false);
+        })
+        .catch(() => setRadicalLoading(false));
+    }
+  }, [showRadicalHint, question?.character, radicalHintData, radicalLoading]);
 
   useEffect(() => {
     setInputValue("");
+    setRadicalHintData(null);
     if (inputRef.current) inputRef.current.focus();
   }, [currentIndex]);
 
@@ -32,6 +58,12 @@ export function IMEQuestionView() {
     },
     [handleSubmit],
   );
+
+  const handleRadicalHint = useCallback(() => {
+    if (hintsRemaining <= 0) return;
+    consumeHint();
+    applyRadicalPenalty();
+  }, [hintsRemaining, consumeHint, applyRadicalPenalty]);
 
   if (!question) {
     return (
@@ -86,6 +118,61 @@ export function IMEQuestionView() {
       >
         Submit Answer
       </Button>
+
+      {/* ─── Hint system (Story 21.18) ──────────────────────────── */}
+
+      {/* Phonetic hint from previous wrong answer */}
+      {currentPhoneticHint && (
+        <Box variant="dark" padding="sm" className="ime-quiz-question__phonetic-hint w-full">
+          {currentPhoneticHint.data ? (
+            <p className="font-sm text-secondary m-0 lh-normal">
+              💡 <strong>Hint:</strong> This character contains phonetic component{" "}
+              <strong>{currentPhoneticHint.data.glyph}</strong> (pinyin:{" "}
+              <strong>{currentPhoneticHint.data.pinyin}</strong>, meaning:{" "}
+              <strong>{currentPhoneticHint.data.meaning}</strong>). Try to connect the sound!
+            </p>
+          ) : (
+            <p className="font-sm text-secondary m-0 lh-normal">
+              💡 This character doesn&apos;t have a phonetic component — try memorizing it by its
+              visual structure.
+            </p>
+          )}
+        </Box>
+      )}
+
+      {/* Hint pool indicator + radical hint toggle */}
+      <div className="ime-quiz-question__hint-toggle flex-between w-full gap-md">
+        <span className="font-sm text-muted">
+          💡 x{hintsRemaining} hint{hintsRemaining !== 1 ? "s" : ""} remaining
+        </span>
+
+        {hintsRemaining > 0 && !showRadicalHint && (
+          <button
+            className="ime-quiz-question__radical-hint-btn font-sm text-accent bg-transparent border-none cursor-pointer p-0"
+            onClick={handleRadicalHint}
+            type="button"
+            aria-label="Show radical hint (consumes one hint, -5% penalty)"
+          >
+            🔍 Show radical hint
+          </button>
+        )}
+      </div>
+
+      {/* Radical hint content */}
+      {showRadicalHint && (
+        <Box variant="dark" padding="sm" className="ime-quiz-question__radical-hint w-full">
+          {radicalLoading ? (
+            <p className="font-sm text-muted m-0">Loading radical hint...</p>
+          ) : radicalHintData ? (
+            <p className="font-sm text-secondary m-0 lh-normal">
+              🔍 <strong>Radical:</strong> {radicalHintData.glyph} — {radicalHintData.meaning}
+              <span className="text-warning font-xs ml-sm">(-5% penalty applied)</span>
+            </p>
+          ) : (
+            <p className="font-sm text-muted m-0">No radical data available for this character.</p>
+          )}
+        </Box>
+      )}
     </div>
   );
 }

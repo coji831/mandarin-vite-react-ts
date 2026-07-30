@@ -1,6 +1,6 @@
 # Story 21.18: IME Simulator Phonetic Hints
 
-**Last Update:** July 24, 2026
+**Last Update:** July 30, 2026
 
 ## Description
 
@@ -10,18 +10,18 @@
 
 ## Business Value
 
-The IME Simulator (Epic 19 feature in `features/radicals/`) currently shows correct/incorrect feedback but does not provide learning support when the user gets an answer wrong. A learner who types the wrong character learns nothing except that they were wrong — a missed pedagogical opportunity. This story adds contextual phonetic hints: when the user answers incorrectly, the sim displays "Hint: This character contains phonetic component [X] (pinyin: [Y])", helping the learner connect the sound to the glyph. A "Show radical hint" toggle is added for when the phonetic hint isn't enough, consuming one hint and reducing the max score by 5%. Score is also broken down by character type (pictograph, phono-semantic, etc.), reinforcing classification awareness. Estimated effort is ~2-3 days.
+The IME Simulator (Epic 19 feature in `features/quiz/`) currently shows correct/incorrect feedback but does not provide learning support when the user gets an answer wrong. A learner who types the wrong character learns nothing except that they were wrong — a missed pedagogical opportunity. This story adds contextual phonetic hints: when the user answers incorrectly, the sim displays "Hint: This character contains phonetic component [X] (pinyin: [Y])", helping the learner connect the sound to the glyph. A "Show radical hint" toggle is added for when the phonetic hint isn't enough, consuming one hint and reducing the max score by 5%. Score is also broken down by character type (pictograph, phono-semantic, etc.), reinforcing classification awareness. Estimated effort is ~2-3 days.
 
 ## Acceptance Criteria
 
-- [ ] IME Simulator shows phonetic hint on wrong answer: "Hint: This character contains phonetic component [X] (pinyin: [Y])"
-- [ ] Phonetic component lookup uses the Characters Module API (Story 21.10) for phonetic component data
-- [ ] "Show radical hint" toggle available during quiz — consumes one hint, reduces max possible score by 5%
-- [ ] Score breakdown by character type shown in quiz results (e.g., "Pictographs: 3/3, Phono-semantic: 5/8, Compound ideographs: 2/2")
-- [ ] Classification badges (from Story 21.15) displayed alongside score breakdown
-- [ ] Unit tests for hint generation and score penalty logic
-- [ ] Storybook stories updated for hint UI states
-- [ ] 0 lint errors across all changed files
+- [x] IME Simulator shows phonetic hint on wrong answer: "Hint: This character contains phonetic component [X] (pinyin: [Y])"
+- [x] Phonetic component lookup uses the Characters Module API (Story 21.10) for phonetic component data
+- [x] "Show radical hint" toggle available during quiz — consumes one hint, reduces max possible score by 5%
+- [x] Score breakdown by character type shown in quiz results (e.g., "Pictographs: 3/3, Phono-semantic: 5/8, Compound ideographs: 2/2")
+- [x] Classification badges (from Story 21.15) displayed alongside score breakdown
+- [x] Unit tests for hint generation and score penalty logic
+- [x] Storybook stories updated for hint UI states
+- [x] 0 lint errors across all changed files
 
 ## Business Rules
 
@@ -37,11 +37,22 @@ The IME Simulator (Epic 19 feature in `features/radicals/`) currently shows corr
 - **Story 21.2: Character Content Generation** ([BR](story-21-2-character-content.md)) (dependency — classification + phoneticComponentId available)
 - **Story 21.10: Characters Backend Module** ([BR](story-21-10-characters-module.md)) (dependency — characters API for phonetic component lookup)
 - **Story 21.15: Pictograph Classification Badges** ([BR](story-21-15-pictograph-classification-badges.md)) (dependency — badge component and classification data)
-- Epic 19: Radicals & Character Details (coordination — IME Simulator ownership in features/radicals/)
+- Epic 19: Radicals & Character Details (coordination — IME Simulator ownership in features/quiz/)
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Implemented
 - **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Merge Date**: July 30, 2026
+- **Key Commit**: TBD (see commit hash below)
+
+## Completed
+
+- **Hint Service** — `hintService.ts` with Characters Module API integration for phonetic component lookup, radical detail fetching, and fallback messaging for characters without phonetic components
+- **Quiz Engine/State Extension** — `quizSessionStore.ts` extended with hint pool (max 3), penalty tracking (-5% per radical hint), and score-by-character-type tracking
+- **IME Question View** — `IMEQuestionView.tsx` updated to show phonetic hints on wrong answers with a "Show radical hint" toggle below
+- **Results View** — `QuizResults.tsx` and `FeedbackView.tsx` updated with score breakdown by character type using `ClassificationBadge` from Story 21.15
+- **Types** — New types in `session.ts`, `engine.ts`, and `types/index.ts` for hint state, penalty logic, and score-by-classification tracking
+- **Barrel** — `index.ts` updated to export hint service
+- **Storybook** — `QuizPageFull.stories.tsx` covering hint UI states
+- **Tests** — 6 unit tests in `hintService.test.ts` covering phonetic hints, radical hints, character detail retrieval, fallback messaging, and error handling

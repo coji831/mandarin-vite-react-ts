@@ -6,6 +6,8 @@
  * the strategy-based quiz engine to support multiple quiz modes.
  */
 
+import type { PhoneticHint } from "../services/hintService";
+
 /** Supported quiz strategy types */
 export type StrategyType =
   "audio-to-pinyin" | "audio-to-tone" | "audio-to-pinyin-tone" | "ime-simulator" | "radical-gate";
@@ -47,6 +49,14 @@ export interface AnswerResult {
   correctTone: number;
   feedback: string;
   toneDescription: string;
+  /** Character classification type (e.g., "pictograph", "phono_semantic") — used for score-by-type breakdowns */
+  classification?: string;
+  /** Phonetic hint data — populated after a wrong answer in IME simulator */
+  phoneticHint?: PhoneticHint | null;
+  /** Whether a radical hint was used for this question */
+  radicalHintUsed?: boolean;
+  /** Penalty applied for using radical hint (0-1) */
+  penalty?: number;
 }
 
 /**
