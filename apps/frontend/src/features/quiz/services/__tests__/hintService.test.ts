@@ -51,6 +51,7 @@ describe("getPhoneticHint", () => {
     expect(result).toEqual(mockPhoneticData);
     expect(mockApiClient.get).toHaveBeenCalledWith(
       expect.stringContaining("/v1/characters/好/phonetic"),
+      { timeout: 10000 },
     );
   });
 
@@ -78,6 +79,7 @@ describe("getRadicalHint", () => {
     expect(result).toEqual({ glyph: "女", meaning: "woman" });
     expect(mockApiClient.get).toHaveBeenCalledWith(
       expect.stringContaining("/v1/characters/好"),
+      { timeout: 10000 },
     );
   });
 
@@ -105,6 +107,7 @@ describe("getCharacterDetail", () => {
     expect(result).toEqual(mockCharacterDetail);
     expect(mockApiClient.get).toHaveBeenCalledWith(
       expect.stringContaining("/v1/characters/好"),
+      { timeout: 10000 },
     );
   });
 

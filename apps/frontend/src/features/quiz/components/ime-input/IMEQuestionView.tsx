@@ -148,7 +148,7 @@ export function IMEQuestionView() {
 
         {hintsRemaining > 0 && !showRadicalHint && (
           <button
-            className="ime-quiz-question__radical-hint-btn font-sm text-accent bg-transparent border-none cursor-pointer p-0"
+            className="ime-quiz-question__radical-hint-btn font-sm text-accent bg-transparent ime-quiz-hint-toggle p-0"
             onClick={handleRadicalHint}
             type="button"
             aria-label="Show radical hint (consumes one hint, -5% penalty)"
@@ -166,7 +166,9 @@ export function IMEQuestionView() {
           ) : radicalHintData ? (
             <p className="font-sm text-secondary m-0 lh-normal">
               🔍 <strong>Radical:</strong> {radicalHintData.glyph} — {radicalHintData.meaning}
-              <span className="text-warning font-xs ml-sm">(-5% penalty applied)</span>
+              <span className="text-warning font-xs ime-quiz-penalty-label">
+                (-5% penalty applied)
+              </span>
             </p>
           ) : (
             <p className="font-sm text-muted m-0">No radical data available for this character.</p>

@@ -124,12 +124,8 @@ export function QuizResults() {
             📊 Score by Type
           </h3>
           {Object.entries(scoreByType).map(([type, { correct, total }]) => (
-            <div key={type} className="score-by-type-row flex-align-center gap-md">
-              <ClassificationBadge
-                classification={type}
-                showLabel={true}
-                size="sm"
-              />
+            <div key={type} className="flex-align-center gap-md">
+              <ClassificationBadge classification={type} showLabel={true} size="sm" />
               <span className="font-sm text-primary">
                 {correct}/{total}
               </span>

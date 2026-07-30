@@ -81,8 +81,9 @@ export function FeedbackView() {
             {phoneticHint ? (
               <p className="font-sm text-secondary m-0 lh-normal">
                 💡 <strong>Hint:</strong> This character contains phonetic component{" "}
-                <strong>{phoneticHint.glyph}</strong> (pinyin: <strong>{phoneticHint.pinyin}</strong>
-                , meaning: <strong>{phoneticHint.meaning}</strong>). Try to connect the sound!
+                <strong>{phoneticHint.glyph}</strong> (pinyin:{" "}
+                <strong>{phoneticHint.pinyin}</strong>, meaning:{" "}
+                <strong>{phoneticHint.meaning}</strong>). Try to connect the sound!
               </p>
             ) : (
               <p className="font-sm text-secondary m-0 lh-normal">

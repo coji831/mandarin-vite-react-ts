@@ -10,12 +10,7 @@
 
 import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-
-export interface PhoneticHint {
-  glyph: string;
-  pinyin: string;
-  meaning: string;
-}
+import type { PhoneticHint } from "../types";
 
 export interface RadicalHint {
   glyph: string;
@@ -40,7 +35,9 @@ export interface CharacterDetail {
  */
 export async function getPhoneticHint(characterGlyph: string): Promise<PhoneticHint | null> {
   try {
-    const response = await apiClient.get(ROUTE_PATTERNS.charactersPhonetic(characterGlyph));
+    const response = await apiClient.get(ROUTE_PATTERNS.charactersPhonetic(characterGlyph), {
+      timeout: 10000,
+    });
     return response.data; // phoneticComponent: { glyph, pinyin, meaning }
   } catch {
     return null; // No phonetic component found
@@ -53,7 +50,9 @@ export async function getPhoneticHint(characterGlyph: string): Promise<PhoneticH
  */
 export async function getRadicalHint(characterGlyph: string): Promise<RadicalHint | null> {
   try {
-    const response = await apiClient.get(ROUTE_PATTERNS.charactersByGlyph(characterGlyph));
+    const response = await apiClient.get(ROUTE_PATTERNS.charactersByGlyph(characterGlyph), {
+      timeout: 10000,
+    });
     return response.data.radical; // radical: { glyph, meaning }
   } catch {
     return null;
@@ -64,11 +63,11 @@ export async function getRadicalHint(characterGlyph: string): Promise<RadicalHin
  * Fetch full character detail including classification.
  * Returns null if the API call fails.
  */
-export async function getCharacterDetail(
-  characterGlyph: string,
-): Promise<CharacterDetail | null> {
+export async function getCharacterDetail(characterGlyph: string): Promise<CharacterDetail | null> {
   try {
-    const response = await apiClient.get(ROUTE_PATTERNS.charactersByGlyph(characterGlyph));
+    const response = await apiClient.get(ROUTE_PATTERNS.charactersByGlyph(characterGlyph), {
+      timeout: 10000,
+    });
     return response.data;
   } catch {
     return null;

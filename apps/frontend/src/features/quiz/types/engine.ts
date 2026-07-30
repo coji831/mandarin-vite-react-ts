@@ -6,8 +6,6 @@
  * the strategy-based quiz engine to support multiple quiz modes.
  */
 
-import type { PhoneticHint } from "../services/hintService";
-
 /** Supported quiz strategy types */
 export type StrategyType =
   "audio-to-pinyin" | "audio-to-tone" | "audio-to-pinyin-tone" | "ime-simulator" | "radical-gate";
@@ -38,6 +36,13 @@ export interface QuizQuestion {
   isSandhiQuestion?: boolean;
   /** The sandhi rule pattern (e.g., "3-3") */
   sandhiRule?: string;
+}
+
+/** Phonetic component data for a character — used for wrong-answer hints in IME simulator */
+export interface PhoneticHint {
+  glyph: string;
+  pinyin: string;
+  meaning: string;
 }
 
 /** Result of evaluating a user's answer */

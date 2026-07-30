@@ -12,12 +12,17 @@
 }
 
 /* ── Input area ── */
-.ime-quiz-question__input-area {
-  font-family: inherit;
-}
-
 .ime-quiz-question__input:focus {
   box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.ime-quiz-hint-toggle {
+  border: none;
+  cursor: pointer;
+}
+
+.ime-quiz-penalty-label {
+  margin-left: var(--space-sm);
 }
 
 .ime-quiz-question__input::placeholder {

@@ -510,6 +510,37 @@ export const GuestResultsFailed: Story = {
   },
 
   /**
+   * IMEWrongFeedback — IME Simulator FEEDBACK phase showing phonetic hint after wrong answer.
+   */
+  IMEWrongFeedback: {
+    args: { strategyType: "ime-simulator" },
+    decorators: [
+      withQuizState({
+        strategyType: "ime-simulator",
+        phase: "FEEDBACK",
+        questions: MOCK_IME_QUESTIONS,
+        currentIndex: 1,
+        answers: [
+          makeWrongIMEAnswer(MOCK_IME_QUESTIONS[0], "phono_semantic"),
+          makeWrongIMEAnswer(MOCK_IME_QUESTIONS[1], "pictograph"),
+        ],
+        score: 0,
+        timer: 120,
+        hintsRemaining: 2,
+        currentPhoneticHint: {
+          data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+          hasPhoneticComponent: true,
+        },
+        scoreByType: {
+          phono_semantic: { correct: 0, total: 1 },
+          pictograph: { correct: 0, total: 1 },
+        },
+      }),
+      withAppLayoutAt("/practices/quiz"),
+    ],
+  },
+
+  /**
    * IMEResults — IME Simulator RESULTS phase with score-by-type breakdown.
    */
   IMEResults: {

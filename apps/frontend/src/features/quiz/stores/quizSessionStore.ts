@@ -9,7 +9,13 @@
  */
 
 import { create } from "zustand";
-import type { StrategyType, QuizPhase, QuizSession, GateQuizResult } from "../types";
+import type {
+  StrategyType,
+  QuizPhase,
+  QuizSession,
+  GateQuizResult,
+  QuizStrategyConfig,
+} from "../types";
 import { createInitialSession } from "../types/session";
 import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
@@ -61,7 +67,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       const strategy = getStrategy(strategyType);
 
       // Fetch config from backend (source of truth for numeric values)
-      let strategyConfig: import("../types").QuizStrategyConfig | null = null;
+      let strategyConfig: QuizStrategyConfig | null = null;
       try {
         strategyConfig = await quizService.getQuizConfig(strategyType);
       } catch (_apiErr) {
@@ -160,7 +166,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       }
     } else if (strategyType === "ime-simulator" && question.character) {
       // Correct answer — still fetch classification for score-by-type tracking
-      const charDetail = await getCharacterDetail(question.character).catch(() => null);
+      const charDetail = await getCharacterDetail(question.character);
       if (charDetail?.classification) {
         augmentedResult = {
           ...optimisticResult,
