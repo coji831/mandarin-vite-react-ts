@@ -43,4 +43,4 @@ The current stroke reference data lives in `content/references/strokes.json` and
 - **Status**: Implemented
 - **PR**: N/A (direct commit)
 - **Merge Date**: July 30, 2026
-- **Key Commit**: TBD
+- **Key Commit**: `6d673bc2`
