@@ -1,8 +1,8 @@
 /**
  * @file apps/frontend/src/mocks/handlers/characters-handlers.ts
- * @description MSW handlers for Characters API endpoints (Story 21.10)
+ * @description MSW handlers for Characters API endpoints (Story 21.10, 21.12)
  *
- * Provides factory functions for all 6 endpoints with 4 states each:
+ * Provides factory functions for all 7 endpoints with 4 states each:
  * default (populated), loading (never-resolving), empty (404/empty), error (500).
  *
  * Handlers are used in both Storybook stories (via storybook-msw-addon)
@@ -85,6 +85,19 @@ const sampleFrequency = {
   page: 1,
   pageSize: 50,
   total: 5,
+};
+
+const samplePinyinSearch = {
+  query: "ma",
+  totalResults: 42,
+  page: 1,
+  pageSize: 50,
+  results: [
+    { glyph: "妈", pinyin: "mā", tone: 1, meaning: "mother" },
+    { glyph: "麻", pinyin: "má", tone: 2, meaning: "hemp" },
+    { glyph: "马", pinyin: "mǎ", tone: 3, meaning: "horse" },
+    { glyph: "骂", pinyin: "mà", tone: 4, meaning: "to scold" },
+  ],
 };
 
 // ─── Handler Factories ──────────────────────────────────────────────────
@@ -171,6 +184,28 @@ export const charactersHandlers = {
 
       return HttpResponse.json(sampleFrequency, { status: 200 });
     }),
+
+    getPinyinSearch: http.get(url(ROUTE_PATTERNS.pinyinSearch), ({ request }) => {
+      const url_obj = new URL(request.url);
+      const q = url_obj.searchParams.get("q") || "";
+      const tone = url_obj.searchParams.get("tone");
+
+      let results = samplePinyinSearch.results;
+      if (tone) {
+        results = results.filter((r) => r.tone === parseInt(tone, 10));
+      }
+
+      return HttpResponse.json(
+        {
+          query: q,
+          totalResults: results.length,
+          page: 1,
+          pageSize: 50,
+          results,
+        },
+        { status: 200 },
+      );
+    }),
   },
 
   loading: {
@@ -195,6 +230,7 @@ export const charactersHandlers = {
       url(ROUTE_PATTERNS.charactersFrequency),
       () => new Promise<never>(() => {}),
     ),
+    getPinyinSearch: http.get(url(ROUTE_PATTERNS.pinyinSearch), () => new Promise<never>(() => {})),
   },
 
   empty: {
@@ -234,6 +270,12 @@ export const charactersHandlers = {
     frequency: http.get(url(ROUTE_PATTERNS.charactersFrequency), () =>
       HttpResponse.json({ data: [], page: 1, pageSize: 50, total: 0 }, { status: 200 }),
     ),
+    getPinyinSearch: http.get(url(ROUTE_PATTERNS.pinyinSearch), () =>
+      HttpResponse.json(
+        { query: "", totalResults: 0, page: 1, pageSize: 50, results: [] },
+        { status: 200 },
+      ),
+    ),
   },
 
   error: {
@@ -270,6 +312,12 @@ export const charactersHandlers = {
     frequency: http.get(url(ROUTE_PATTERNS.charactersFrequency), () =>
       HttpResponse.json(
         { error: "Failed to get frequency list", code: "INTERNAL_ERROR" },
+        { status: 500 },
+      ),
+    ),
+    getPinyinSearch: http.get(url(ROUTE_PATTERNS.pinyinSearch), () =>
+      HttpResponse.json(
+        { error: "Failed to search by pinyin", code: "INTERNAL_ERROR" },
         { status: 500 },
       ),
     ),

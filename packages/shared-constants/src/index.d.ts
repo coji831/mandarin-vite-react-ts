@@ -54,6 +54,7 @@ export declare const ROUTE_PATTERNS: {
   readonly charactersSearch: string;
   readonly charactersFrequency: string;
   readonly radicalsCharacters: (radicalId: string) => string;
+  readonly pinyinSearch: string;
 };
 
 // HSK Levels

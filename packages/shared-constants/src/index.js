@@ -55,6 +55,7 @@ export const ROUTE_PATTERNS = {
   charactersSearch: "/v1/characters/search",
   charactersFrequency: "/v1/characters/frequency",
   radicalsCharacters: (radicalId) => `/v1/radicals/${radicalId}/characters`,
+  pinyinSearch: "/v1/pinyin/search",
 };
 
 // HSK Levels

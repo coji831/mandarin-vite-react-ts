@@ -1,55 +1,59 @@
-# Implementation 21-12: Pinyin Search & Homophone API
+# Implementation 21-12: Pinyin Search API
 
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-12-pinyin-search-homophones.md`
 
 ## Technical Scope
 
-Add two read-only endpoints to the `modules/characters/` module (Story 21.10): a pinyin search endpoint returning characters grouped by tone, and a homophone discovery endpoint returning characters sharing the same pronunciation. Both leverage already-populated tables (PinyinSyllable, PinyinCharacterMapping, CharacterReading) with straightforward Prisma queries.
+Add a pinyin search read-only endpoint to `modules/characters/` using a dedicated sub-module (PinyinController, PinyinSearchService, PinyinSearchRepository). The endpoint queries `PinyinSyllable` → `PinyinCharacterMapping` → `Character` tables (all populated by Story 21.2) to return characters matching a pinyin prefix.
 
-**Files:**
+**Note:** The homophone endpoint (`GET /v1/characters/:glyph/homophones`) was delivered in Story 21.10 and is NOT part of this story's scope.
 
-- `apps/backend/src/modules/characters/api/CharactersController.ts` — add homophone endpoint handler
-- `apps/backend/src/modules/characters/api/characters.routes.ts` — add homophone route
-- `apps/backend/src/modules/characters/api/PinyinController.ts` — **NEW**: pinyin search controller
-- `apps/backend/src/modules/characters/api/pinyin.routes.ts` — **NEW**: pinyin search routes
-- `apps/backend/src/modules/characters/services/PinyinSearchService.ts` — **NEW**: pinyin search business logic
-- `apps/backend/src/modules/characters/types/pinyin.ts` — **NEW**: pinyin search request/response types
-- `apps/backend/src/modules/characters/services/__tests__/PinyinSearchService.test.ts` — **NEW**: unit tests
-- `apps/backend/src/modules/characters/services/__tests__/HomophoneService.test.ts` — **NEW**: unit tests for homophone logic
-- `apps/frontend/src/mocks/handlers/characters-handlers.ts` — add MSW handlers for both endpoints
-- `apps/backend/src/modules/characters/container.ts` — register PinyinSearchService and PinyinController
+### Key Facts (Verified from Codebase)
+
+- `PinyinCharacterMapping` has NO `pinyin` or `tone` field — these are on the related `PinyinSyllable` model
+- `PinyinSyllable.syllable` stores pinyin with tone NUMBER (e.g., "ma1") — not tone marks
+- `PinyinSyllable.syllablePretty` stores the accented form (e.g., "mā")
+- `Character.glyph` is the character field (NOT `simplified`)
+- `Character.definition` is the meaning field (NOT `meaning` on the model)
+- The existing `charactersSearch` endpoint at `GET /v1/characters/search` uses `contains` on `CharacterReading.pinyin` — this is different from the structured pinyin search
+- Error convention: `{ error: string, code: string }` with codes `VALIDATION_ERROR`, `NOT_FOUND`, `INTERNAL_ERROR`
+- Repository pattern: Prisma queries go in repositories, not services
+
+### File Manifest
+
+| File                                                                                 | Action                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `apps/backend/src/modules/characters/api/PinyinController.ts`                        | **NEW** — validates query params, delegates to service                          |
+| `apps/backend/src/modules/characters/services/PinyinSearchService.ts`                | **NEW** — orchestrates pinyin search business logic                             |
+| `apps/backend/src/modules/characters/repositories/PinyinSearchRepository.ts`         | **NEW** — Prisma queries on PinyinSyllable → PinyinCharacterMapping → Character |
+| `apps/backend/src/modules/characters/types/pinyin.ts`                                | **NEW** — request/response types                                                |
+| `apps/backend/src/modules/characters/api/pinyinRoutes.ts`                            | **NEW** — mounts `GET /search`                                                  |
+| `apps/backend/src/modules/characters/services/__tests__/PinyinSearchService.test.ts` | **NEW** — unit tests                                                            |
+| `packages/shared-constants/src/index.js`                                             | Add `pinyinSearch` route constant                                               |
+| `packages/shared-constants/src/index.d.ts`                                           | Add type declaration for `pinyinSearch`                                         |
+| `apps/backend/src/app/container.ts`                                                  | Wire pinyin module components                                                   |
+| `apps/backend/src/app/routes.ts`                                                     | Mount pinyin sub-router with controller injection                               |
+| `apps/backend/src/shared/types/express.d.ts`                                         | Add `pinyinController?: PinyinController`                                       |
+| `apps/frontend/src/mocks/handlers/characters-handlers.ts`                            | Add pinyin search MSW handlers (4 states)                                       |
 
 ## API Endpoint Specification
 
-| Method | Endpoint                               | Auth     | Description                                                                                                             |
-| ------ | -------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `GET`  | `/api/v1/characters/:glyph/homophones` | Optional | Find all characters sharing the same pinyin+tone(s) as the given character. Supports `?exactTone=true`                  |
-| `GET`  | `/api/v1/pinyin/search`                | Optional | Search characters by pinyin query. Params: `q` (required, partial pinyin), `tone` (optional, 1-4/5), `page`, `pageSize` |
+| Method | Endpoint                | Auth                   | Description                                                     |
+| ------ | ----------------------- | ---------------------- | --------------------------------------------------------------- |
+| `GET`  | `/api/v1/pinyin/search` | Optional (public data) | Search characters by pinyin prefix, optionally filtered by tone |
 
-**Request examples:**
+### Query Parameters
 
-`GET /api/v1/pinyin/search?q=ma&tone=3`:
+| Param      | Type   | Required | Default | Description                                                    |
+| ---------- | ------ | -------- | ------- | -------------------------------------------------------------- |
+| `q`        | string | ✅ Yes   | —       | Pinyin query (lowercased, tone marks stripped before matching) |
+| `tone`     | number | ❌ No    | —       | Filter by tone (1-4, or 5 for neutral)                         |
+| `page`     | number | ❌ No    | 1       | Page number (1-based)                                          |
+| `pageSize` | number | ❌ No    | 50      | Items per page (max: 100)                                      |
 
-- Searches `PinyinCharacterMapping` for entries where pinyin starts with "ma" and tone = 3
-- Returns: characters with pinyin "mǎ"
+### Response Examples
 
-`GET /api/v1/pinyin/search?q=ma`:
-
-- Searches all tone variants of "ma"
-- Returns: characters grouped by tone (1: mā, 2: má, 3: mǎ, 4: mà, 5: ma)
-
-`GET /api/v1/characters/妈/homophones`:
-
-- Finds all readings for 妈 → "mā" (tone 1)
-- Returns: other characters read as "mā" (e.g., 妈, 抹, 摩) and optionally other tones of "ma"
-
-`GET /api/v1/characters/妈/homophones?exactTone=true`:
-
-- Returns only characters read as "mā" (tone 1)
-
-**Response examples:**
-
-`GET /api/v1/pinyin/search?q=ma` (200):
+**Success (200):**
 
 ```json
 {
@@ -58,225 +62,300 @@ Add two read-only endpoints to the `modules/characters/` module (Story 21.10): a
   "page": 1,
   "pageSize": 50,
   "results": [
-    {
-      "glyph": "妈",
-      "pinyin": "mā",
-      "tone": 1,
-      "meaning": "mother"
-    },
-    {
-      "glyph": "麻",
-      "pinyin": "má",
-      "tone": 2,
-      "meaning": "hemp/numbs"
-    },
-    {
-      "glyph": "马",
-      "pinyin": "mǎ",
-      "tone": 3,
-      "meaning": "horse"
-    },
-    {
-      "glyph": "骂",
-      "pinyin": "mà",
-      "tone": 4,
-      "meaning": "to scold"
-    }
+    { "glyph": "妈", "pinyin": "mā", "tone": 1, "meaning": "mother" },
+    { "glyph": "麻", "pinyin": "má", "tone": 2, "meaning": "hemp" },
+    { "glyph": "马", "pinyin": "mǎ", "tone": 3, "meaning": "horse" },
+    { "glyph": "骂", "pinyin": "mà", "tone": 4, "meaning": "to scold" }
   ]
 }
 ```
 
-`GET /api/v1/characters/妈/homophones` (200):
+**Missing required param (400):**
 
 ```json
-{
-  "glyph": "妈",
-  "sourcePinyin": "mā",
-  "sourceTone": 1,
-  "homophones": [
-    { "glyph": "抹", "pinyin": "mā", "tone": 1, "meaning": "to wipe" },
-    { "glyph": "摩", "pinyin": "mā", "tone": 1, "meaning": "to rub" }
-  ]
-}
+{ "error": "Query parameter 'q' is required", "code": "VALIDATION_ERROR" }
 ```
 
-`GET /api/v1/pinyin/search?q=zzzz` (200, empty):
+**No matches (200):**
 
 ```json
-{
-  "query": "zzzz",
-  "totalResults": 0,
-  "page": 1,
-  "pageSize": 50,
-  "results": []
-}
+{ "query": "zzzz", "totalResults": 0, "page": 1, "pageSize": 50, "results": [] }
 ```
 
-`GET /api/v1/pinyin/search` (400):
+## Route Constant
 
-```json
-{ "error": "Query parameter 'q' is required", "code": "MISSING_QUERY_PARAM" }
+Add to `packages/shared-constants/src/index.js`:
+
+```javascript
+pinyinSearch: "/v1/pinyin/search",
 ```
 
-## Implementation Details
-
-### Pinyin Search Service
+Add to `packages/shared-constants/src/index.d.ts`:
 
 ```typescript
-class PinyinSearchService {
-  constructor(private repo: CharactersRepository) {}
+readonly pinyinSearch: string;
+```
 
-  async searchPinyin(params: PinyinSearchParams): Promise<PinyinSearchResponse> {
-    const { q, tone, page = 1, pageSize = 50 } = params;
+## Repository: PinyinSearchRepository (NEW)
 
-    if (!q || q.trim().length === 0) {
-      throw new ValidationError("MISSING_QUERY_PARAM", "Query parameter 'q' is required");
-    }
+```typescript
+import { prisma } from "../../../shared/infrastructure/database/client.js";
 
-    // Query PinyinCharacterMapping with prefix match on pinyin
-    const where: any = {
-      pinyin: { startsWith: q.toLowerCase() },
+export interface PinyinSearchParams {
+  q: string;
+  tone?: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface PinyinSearchResult {
+  glyph: string;
+  pinyin: string;
+  tone: number;
+  meaning: string | null;
+}
+
+export interface PinyinSearchResponse {
+  query: string;
+  totalResults: number;
+  page: number;
+  pageSize: number;
+  results: PinyinSearchResult[];
+}
+
+export class PinyinSearchRepository {
+  async searchByPinyin(params: PinyinSearchParams): Promise<PinyinSearchResponse> {
+    const { q, tone, page, pageSize } = params;
+    const normalizedQuery = q.toLowerCase().replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/g, (c) => {
+      // Strip tone marks for normalized matching
+      const toneMap: Record<string, string> = {
+        ā: "a",
+        á: "a",
+        ǎ: "a",
+        à: "a",
+        ē: "e",
+        é: "e",
+        ě: "e",
+        è: "e",
+        ī: "i",
+        í: "i",
+        ǐ: "i",
+        ì: "i",
+        ō: "o",
+        ó: "o",
+        ǒ: "o",
+        ò: "o",
+        ū: "u",
+        ú: "u",
+        ǔ: "u",
+        ù: "u",
+        ǖ: "ü",
+        ǘ: "ü",
+        ǚ: "ü",
+        ǜ: "ü",
+        ü: "ü",
+      };
+      return toneMap[c] || c;
+    });
+
+    // Build where clause filtering through PinyinSyllable relation
+    const where: Record<string, unknown> = {
+      pinyinSyllable: {
+        syllable: { startsWith: normalizedQuery },
+      },
     };
 
-    if (tone) {
-      where.tone = parseInt(tone);
+    if (tone !== undefined) {
+      (where.pinyinSyllable as Record<string, unknown>).tone = tone;
     }
 
     const [mappings, total] = await Promise.all([
       prisma.pinyinCharacterMapping.findMany({
         where,
-        include: { character: { select: { simplified: true, meaning: true } } },
+        include: {
+          character: {
+            select: { glyph: true, definition: true },
+          },
+          pinyinSyllable: {
+            select: { syllablePretty: true, tone: true },
+          },
+        },
         take: pageSize,
         skip: (page - 1) * pageSize,
-        orderBy: [{ pinyin: "asc" }, { tone: "asc" }],
+        orderBy: [{ pinyinSyllable: { syllable: "asc" } }, { pinyinSyllable: { tone: "asc" } }],
       }),
       prisma.pinyinCharacterMapping.count({ where }),
     ]);
+
+    const results: PinyinSearchResult[] = mappings.map((m) => ({
+      glyph: m.character.glyph,
+      pinyin: m.pinyinSyllable.syllablePretty,
+      tone: m.pinyinSyllable.tone,
+      meaning: m.character.definition,
+    }));
 
     return {
       query: q,
       totalResults: total,
       page,
       pageSize,
-      results: mappings.map((m) => ({
-        glyph: m.character.simplified,
-        pinyin: m.pinyin,
-        tone: m.tone,
-        meaning: m.character.meaning,
-      })),
+      results,
     };
   }
 }
 ```
 
-### Homophone Logic
-
-Implemented as a new method on `CharactersService` (already created in Story 21.10):
+## Service: PinyinSearchService (NEW)
 
 ```typescript
-async getHomophones(glyph: string, exactTone = false): Promise<HomophoneResponse> {
-  // 1. Verify character exists
-  const character = await this.repo.findByGlyph(glyph);
-  if (!character) throw new NotFoundError('CHARACTER_NOT_FOUND', `Character '${glyph}' not found`);
+import {
+  PinyinSearchRepository,
+  PinyinSearchParams,
+  PinyinSearchResponse,
+} from "../repositories/PinyinSearchRepository.js";
 
-  // 2. Get readings for source character
-  const sourceReadings = await prisma.characterReading.findMany({
-    where: { characterId: glyph },
-  });
+export class PinyinSearchService {
+  private repository: PinyinSearchRepository;
 
-  if (sourceReadings.length === 0) {
-    return {
-      glyph,
-      sourcePinyin: null,
-      sourceTone: null,
-      homophones: [],
-    };
+  constructor(repository: PinyinSearchRepository) {
+    this.repository = repository;
   }
 
-  // 3. Find matching readings on other characters
-  const wherePinyin: any[] = sourceReadings.map(r => ({
-    pinyin: r.pinyin,
-    ...(exactTone ? { tone: r.tone } : {}),
-  }));
+  async search(params: PinyinSearchParams): Promise<PinyinSearchResponse> {
+    const { q, page = 1, pageSize = 50 } = params;
 
-  const homophoneReadings = await prisma.characterReading.findMany({
-    where: {
-      OR: wherePinyin,
-      characterId: { not: glyph },
-    },
-    include: {
-      character: { select: { simplified: true, meaning: true } },
-    },
-    distinct: ['characterId', 'pinyin', 'tone'],
-    take: 50,
-  });
+    if (!q || q.trim().length === 0) {
+      throw new ValidationError("VALIDATION_ERROR", "Query parameter 'q' is required");
+    }
 
-  return {
-    glyph,
-    sourcePinyin: sourceReadings[0].pinyin,
-    sourceTone: sourceReadings[0].tone,
-    homophones: homophoneReadings.map(r => ({
-      glyph: r.character.simplified,
-      pinyin: r.pinyin,
-      tone: r.tone,
-      meaning: r.character.meaning,
-    })),
-  };
+    const validatedPageSize = Math.min(pageSize, 100);
+
+    return this.repository.searchByPinyin({
+      q: q.trim(),
+      tone: params.tone,
+      page,
+      pageSize: validatedPageSize,
+    });
+  }
 }
 ```
 
-### Route Registration
+## Controller: PinyinController (NEW)
 
-The pinyin search route is separate from characters routes to follow REST conventions:
-
-```typescript
-// pinyin.routes.ts
-router.get("/search", pinyinController.search);
-
-// Registered in container.ts as a sub-router under /api/v1/pinyin
-```
-
-The homophone endpoint is nested under the characters resource:
+**File:** `apps/backend/src/modules/characters/api/PinyinController.ts`
 
 ```typescript
-// characters.routes.ts
-router.get("/:glyph/homophones", charactersController.getHomophones);
+import { createLogger } from "../../../shared/utils/logger.js";
+import type { Request, Response } from "express";
+import type { PinyinSearchService } from "../services/PinyinSearchService.js";
+
+const logger = createLogger("PinyinController");
+
+export class PinyinController {
+  private service: PinyinSearchService;
+
+  constructor(service: PinyinSearchService) {
+    this.service = service;
+  }
+
+  async search(req: Request, res: Response): Promise<void> {
+    try {
+      const q = req.query.q as string | undefined;
+      const tone = req.query.tone ? parseInt(req.query.tone as string, 10) : undefined;
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 50;
+
+      const result = await this.service.search({ q, tone, page, pageSize });
+      res.status(200).json(result);
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        res.status(400).json({ error: err.message, code: "VALIDATION_ERROR" });
+        return;
+      }
+      logger.error("Failed to search pinyin", err);
+      res.status(500).json({ error: "Failed to search pinyin", code: "INTERNAL_ERROR" });
+    }
+  }
+}
 ```
 
-## Architecture Integration
+**IMPLEMENTATION NOTE:** For the ValidationError, check how other modules define it. In Story 21.10, the characters module has `CharacterValidationError` in `types/characters-errors.ts`. Create a similar error class for pinyin or import the characters one. A simple approach: create a `PinyinValidationError` or import a shared error type.
 
+## Routes: pinyinRoutes.ts (NEW)
+
+**File:** `apps/backend/src/modules/characters/api/pinyinRoutes.ts`
+
+```typescript
+import express from "express";
+import type { Request, Response } from "express";
+import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+
+const router = express.Router();
+
+/**
+ * GET /v1/pinyin/search
+ * Search characters by pinyin query.
+ * Params: q (required), tone (optional), page, pageSize.
+ * Public data — no authentication required.
+ */
+router.get(
+  ROUTE_PATTERNS.pinyinSearch,
+  asyncHandler((req: Request, res: Response) => req.pinyinController!.search(req, res)),
+);
+
+export default router;
 ```
-[Story 21.12: Pinyin Search & Homophone API]
-├── Pinyin Search → GET /api/v1/pinyin/search
-│   ├── Service → PinyinSearchService
-│   ├── Query → PinyinSyllable + PinyinCharacterMapping (≥1,300 entries from 21.2)
-│   └── Response → Characters grouped by tone, paginated
-├── Homophone API → GET /api/v1/characters/:glyph/homophones
-│   ├── Service → CharactersService.getHomophones() (extension of 21.10)
-│   ├── Query → CharacterReading (populated by 21.2)
-│   └── Response → Same-pinyin characters with tone filtering
-└── Consumers:
-    ├── 21.4 LexicalHub → homophone display in WordHubContent
-    ├── Epic 19 IME Simulator → pinyin search for autocomplete
-    └── 21.6 Phonetic Clusters → tone-based character comparison
 
-Dependencies:
-└── 21.10 → Characters module provides the service infrastructure, container registration, and route mounting
+## Container + App Wiring
+
+Update `apps/backend/src/modules/characters/container.ts` to also export pinyin components:
+
+```typescript
+import { PinyinController } from "./api/PinyinController.js";
+import { PinyinSearchService } from "./services/PinyinSearchService.js";
+import { PinyinSearchRepository } from "./repositories/PinyinSearchRepository.js";
+
+export function createCharactersModule() {
+  const repository = new CharactersRepository();
+  const service = new CharactersService(repository);
+  const controller = new CharactersController(service);
+  return { controller };
+}
+
+export function createPinyinModule() {
+  const repository = new PinyinSearchRepository();
+  const service = new PinyinSearchService(repository);
+  const controller = new PinyinController(service);
+  return { controller };
+}
 ```
 
-## Technical Challenges & Solutions
+Update `apps/backend/src/app/container.ts` — add pinyin module import and export.
 
-```
-Problem: Pinyin search needs to support partial matching (e.g., "ma" matching
-         "ma", "mā", "má", "mǎ", "mà") without requiring tone mark input.
-Solution: Store pinyin in two forms in PinyinSyllable: a normalized ASCII form
-         ("ma" without tone marks) and the full accented form ("mǎ"). The search
-         query is lowercased and matched against the normalized form using
-         Prisma's `startsWith`. This is already populated by 21.2's seed.
+Update `apps/backend/src/app/routes.ts` — mount pinyin routes with controller injection.
 
-Problem: Homophone query must exclude the source character from results but
-         the source character may have multiple readings (e.g., 好 has hǎo and hào).
-Solution: Use `characterId: { not: glyph }` in the WHERE clause. Group results
-         by pinyin+tone combination using distinct to avoid duplicates from
-         multiple readings on the same target character.
-```
+Update `apps/backend/src/shared/types/express.d.ts` — add `pinyinController?: PinyinController`.
+
+## MSW Handlers
+
+Add to `apps/frontend/src/mocks/handlers/characters-handlers.ts` — 4 states (default, loading, empty, error) for the pinyin search endpoint.
+
+## Unit Tests
+
+**File:** `apps/backend/src/modules/characters/services/__tests__/PinyinSearchService.test.ts` (NEW)
+
+Test scenarios:
+
+1. Search with valid `q` returns results
+2. Search with `q` + `tone` filters correctly
+3. Search with missing `q` throws ValidationError
+4. Search with no matches returns empty results
+5. Search with page/pageSize paginates correctly
+
+## Implementation Status
+
+- **Status**: Implemented
+- **PR**: TBD
+- **Merge Date**: TBD
+- **Key Commit**: TBD
