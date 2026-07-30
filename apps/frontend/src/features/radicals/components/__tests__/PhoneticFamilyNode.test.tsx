@@ -36,18 +36,16 @@ vi.mock("shared/components", () => ({
       {children}
     </button>
   )),
-  ClassificationBadge: vi.fn(
-    ({ classification, size, showLabel }) => (
-      <span
-        data-testid="classification-badge"
-        data-classification={classification}
-        data-size={size}
-        data-show-label={showLabel}
-      >
-        {classification}
-      </span>
-    ),
-  ),
+  ClassificationBadge: vi.fn(({ classification, size, showLabel }) => (
+    <span
+      data-testid="classification-badge"
+      data-classification={classification}
+      data-size={size}
+      data-show-label={showLabel}
+    >
+      {classification}
+    </span>
+  )),
 }));
 
 const SAMPLE_FAMILY: PhoneticFamily = {
@@ -67,8 +65,20 @@ const SAMPLE_FAMILY: PhoneticFamily = {
 const SAMPLE_ENRICHED_FAMILY: PhoneticFamily = {
   ...SAMPLE_FAMILY,
   members: [
-    { glyph: "清", pinyin: "qīng", meaning: "clear", hskLevel: 3, classification: "phono_semantic" },
-    { glyph: "情", pinyin: "qíng", meaning: "feeling", hskLevel: 2, classification: "phono_semantic" },
+    {
+      glyph: "清",
+      pinyin: "qīng",
+      meaning: "clear",
+      hskLevel: 3,
+      classification: "phono_semantic",
+    },
+    {
+      glyph: "情",
+      pinyin: "qíng",
+      meaning: "feeling",
+      hskLevel: 2,
+      classification: "phono_semantic",
+    },
   ],
 };
 
@@ -170,7 +180,9 @@ describe("PhoneticFamilyNode", () => {
   // ── Enrichment on expand ──
 
   it("calls enrichFamilyMembers when expanded for the first time", async () => {
-    const enrichSpy = vi.spyOn(phoneticTreeService, "enrichFamilyMembers").mockResolvedValue(SAMPLE_ENRICHED_FAMILY);
+    const enrichSpy = vi
+      .spyOn(phoneticTreeService, "enrichFamilyMembers")
+      .mockResolvedValue(SAMPLE_ENRICHED_FAMILY);
     render(<PhoneticFamilyNode family={SAMPLE_FAMILY} />);
 
     const header = screen.getByRole("button", {
@@ -211,7 +223,9 @@ describe("PhoneticFamilyNode", () => {
     const singleMemberFamily: PhoneticFamily = {
       ...SAMPLE_FAMILY,
       memberCount: 1,
-      members: [{ glyph: "清", pinyin: "qīng", meaning: "clear", hskLevel: 3, classification: null }],
+      members: [
+        { glyph: "清", pinyin: "qīng", meaning: "clear", hskLevel: 3, classification: null },
+      ],
     };
 
     render(<PhoneticFamilyNode family={singleMemberFamily} />);

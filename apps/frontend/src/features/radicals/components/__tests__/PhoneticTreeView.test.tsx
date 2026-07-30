@@ -129,9 +129,7 @@ describe("PhoneticTreeView", () => {
     render(<PhoneticTreeView isPhase3={false} />);
 
     expect(await screen.findByText("No phonetic families found.")).toBeInTheDocument();
-    expect(
-      screen.getByText("Phonetic cluster data may not be available yet."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Phonetic cluster data may not be available yet.")).toBeInTheDocument();
   });
 
   // ── Phase 2 preview ──
@@ -149,9 +147,7 @@ describe("PhoneticTreeView", () => {
     render(<PhoneticTreeView isPhase3={false} />);
 
     // Wait for data to load
-    const banner = await screen.findByText(
-      /Showing top 10 of 12 phonetic families/,
-    );
+    const banner = await screen.findByText(/Showing top 10 of 12 phonetic families/);
     expect(banner).toBeInTheDocument();
 
     // Should show 10 family nodes
@@ -165,9 +161,7 @@ describe("PhoneticTreeView", () => {
 
     await screen.findByTestId("family-node-pc_0001");
 
-    expect(
-      screen.queryByText(/Showing top 10 of/),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing top 10 of/)).not.toBeInTheDocument();
   });
 
   // ── Phase 3 full view ──
@@ -191,9 +185,7 @@ describe("PhoneticTreeView", () => {
     expect(nodes).toHaveLength(15);
 
     // No locked banner
-    expect(
-      screen.queryByText(/Showing top .* of/),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing top .* of/)).not.toBeInTheDocument();
   });
 
   // ── Phase 2 with no overflow ──
@@ -206,8 +198,6 @@ describe("PhoneticTreeView", () => {
     expect(screen.getByTestId("family-node-pc_0002")).toBeInTheDocument();
 
     // No banner since count <= 10
-    expect(
-      screen.queryByText(/Showing top/),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing top/)).not.toBeInTheDocument();
   });
 });

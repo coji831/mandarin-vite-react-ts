@@ -55,9 +55,7 @@ export async function getPhoneticFamilies(): Promise<PhoneticFamily[]> {
  * @param family - The phonetic family to enrich
  * @returns A new family object with classification filled in on each member
  */
-export async function enrichFamilyMembers(
-  family: PhoneticFamily,
-): Promise<PhoneticFamily> {
+export async function enrichFamilyMembers(family: PhoneticFamily): Promise<PhoneticFamily> {
   const enrichedMembers = await Promise.all(
     family.members.map(async (member) => {
       try {

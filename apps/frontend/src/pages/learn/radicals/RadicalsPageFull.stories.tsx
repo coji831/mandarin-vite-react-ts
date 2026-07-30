@@ -55,15 +55,9 @@ export const Trees: Story = {
 
 // ─── Phonetic tree stories ──────────────────────────────────────────────
 
-const PHONETIC_PHASE3 = [
-  ...PHASE3,
-  mswHandlers.phoneticClusters.default(),
-];
+const PHONETIC_PHASE3 = [...PHASE3, mswHandlers.phoneticClusters.default()];
 
-const PHONETIC_PHASE2 = [
-  ...PHASE2,
-  mswHandlers.phoneticClusters.default(),
-];
+const PHONETIC_PHASE2 = [...PHASE2, mswHandlers.phoneticClusters.default()];
 
 export const PhoneticTreePhase3: Story = {
   name: "Phonetic Tree — Phase 3",
@@ -86,10 +80,7 @@ export const PhoneticTreeLoading: Story = {
   parameters: {
     layoutPath: "/learn/radicals?view=trees",
     msw: {
-      handlers: [
-        ...PHASE3,
-        mswHandlers.phoneticClusters.loading(),
-      ],
+      handlers: [...PHASE3, mswHandlers.phoneticClusters.loading()],
     },
   },
 };
@@ -99,10 +90,7 @@ export const PhoneticTreeError: Story = {
   parameters: {
     layoutPath: "/learn/radicals?view=trees",
     msw: {
-      handlers: [
-        ...PHASE3,
-        mswHandlers.phoneticClusters.error(),
-      ],
+      handlers: [...PHASE3, mswHandlers.phoneticClusters.error()],
     },
   },
 };
@@ -112,10 +100,7 @@ export const PhoneticTreeEmpty: Story = {
   parameters: {
     layoutPath: "/learn/radicals?view=trees",
     msw: {
-      handlers: [
-        ...PHASE3,
-        mswHandlers.phoneticClusters.empty(),
-      ],
+      handlers: [...PHASE3, mswHandlers.phoneticClusters.empty()],
     },
   },
 };

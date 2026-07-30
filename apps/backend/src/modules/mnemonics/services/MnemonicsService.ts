@@ -56,7 +56,8 @@ export class MnemonicsService {
       const userEdited = await this.repository.findByCharacterAndUser(characterGlyph, userId, true);
       if (userEdited) {
         logger.info(`Found user-edited mnemonic for ${characterGlyph}`);
-        return this.toResponse(userEdited);
+        const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+        return this.toResponse(userEdited, charData?.classification);
       }
     }
 
@@ -77,7 +78,8 @@ export class MnemonicsService {
     const anyAi = await this.repository.findAnyByCharacter(characterGlyph, false);
     if (anyAi) {
       logger.info(`Found DB AI mnemonic for ${characterGlyph}`);
-      const response = this.toResponse(anyAi);
+      const charDataStep3 = await this.repository.getCharacterByGlyph(characterGlyph);
+      const response = this.toResponse(anyAi, charDataStep3?.classification);
 
       // Populate cache asynchronously (best-effort)
       this.cacheMnemonic(cacheKey, response);
@@ -96,6 +98,7 @@ export class MnemonicsService {
         radicalIds: [],
         isEdited: false,
         isPictograph: true,
+        classification: charData?.classification ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -121,6 +124,7 @@ export class MnemonicsService {
         radicalIds: [],
         isEdited: false,
         isPictograph: true,
+        classification: charData?.classification ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -141,7 +145,8 @@ export class MnemonicsService {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         const existing = await this.repository.findAnyByCharacter(characterGlyph);
         if (existing) {
-          return this.toResponse(existing);
+          const charDataLock = await this.repository.getCharacterByGlyph(characterGlyph);
+          return this.toResponse(existing, charDataLock?.classification);
         }
 
         // If still nothing, proceed despite lock
@@ -171,6 +176,7 @@ export class MnemonicsService {
         radicalIds: radicals.map((r) => r.radicalId),
         isEdited: false,
         isPictograph: false,
+        classification: charData?.classification ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -249,7 +255,8 @@ export class MnemonicsService {
     );
 
     logger.info(`User ${userId} edited mnemonic for ${characterGlyph}`);
-    return this.toResponse(record);
+    const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+    return this.toResponse(record, charData?.classification);
   }
 
   /**
@@ -312,6 +319,7 @@ export class MnemonicsService {
       radicalIds: [],
       isEdited: false,
       isPictograph: false,
+      classification: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -331,16 +339,19 @@ export class MnemonicsService {
   /**
    * Map database record to API response.
    */
-  private toResponse(record: {
-    id: string;
-    characterGlyph: string;
-    story: string;
-    radicalIds: string[];
-    isEdited: boolean;
-    isPictograph: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }): MnemonicStoryResponse {
+  private toResponse(
+    record: {
+      id: string;
+      characterGlyph: string;
+      story: string;
+      radicalIds: string[];
+      isEdited: boolean;
+      isPictograph: boolean;
+      createdAt: Date;
+      updatedAt: Date;
+    },
+    classification?: string | null,
+  ): MnemonicStoryResponse {
     return {
       id: record.id,
       characterGlyph: record.characterGlyph,
@@ -348,6 +359,7 @@ export class MnemonicsService {
       radicalIds: record.radicalIds,
       isEdited: record.isEdited,
       isPictograph: record.isPictograph,
+      classification: classification ?? null,
       createdAt:
         record.createdAt instanceof Date
           ? record.createdAt.toISOString()

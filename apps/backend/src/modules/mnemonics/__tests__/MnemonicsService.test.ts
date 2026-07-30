@@ -46,6 +46,7 @@ describe("MnemonicsService", () => {
     radicalIds: testRadicalIds,
     isEdited: false,
     isPictograph: false,
+    classification: null,
     createdAt: "2026-07-01T00:00:00.000Z",
     updatedAt: "2026-07-01T00:00:00.000Z",
   };

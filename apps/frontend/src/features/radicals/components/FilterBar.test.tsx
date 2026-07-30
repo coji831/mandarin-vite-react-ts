@@ -114,7 +114,9 @@ describe("FilterBar", () => {
     const filter = { ...defaultFilter, search: "water" };
     render(<FilterBar filter={filter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    const searchInput = screen.getByPlaceholderText("Search by pinyin, meaning, or glyph…") as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText(
+      "Search by pinyin, meaning, or glyph…",
+    ) as HTMLInputElement;
     expect(searchInput.value).toBe("water");
   });
 

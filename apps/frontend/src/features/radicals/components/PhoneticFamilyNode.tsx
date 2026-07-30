@@ -53,10 +53,12 @@ export function PhoneticFamilyNode({ family }: PhoneticFamilyNodeProps) {
   useEffect(() => {
     if (isExpanded && !enrichmentRef.current) {
       enrichmentRef.current = true;
-      enrichFamilyMembers(family).then(setEnrichedFamily).catch(() => {
-        // Silently fail — classification badges simply won't show
-        setEnrichedFamily(family);
-      });
+      enrichFamilyMembers(family)
+        .then(setEnrichedFamily)
+        .catch(() => {
+          // Silently fail — classification badges simply won't show
+          setEnrichedFamily(family);
+        });
     }
   }, [isExpanded, family]);
 
@@ -96,9 +98,7 @@ export function PhoneticFamilyNode({ family }: PhoneticFamilyNodeProps) {
         <span className="font-sm text-primary-light font-italic shrink-0">{family.pinyin}</span>
 
         {/* Description / meaning */}
-        <span className="font-sm text-muted flex-1 truncate">
-          — {family.description}
-        </span>
+        <span className="font-sm text-muted flex-1 truncate">— {family.description}</span>
 
         {/* Character count */}
         <span className="font-xs text-secondary whitespace-nowrap shrink-0">

@@ -12,15 +12,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { usePhaseGate } from "shared/hooks";
-import { Modal, Button } from "shared/components";
+import { Modal, Button, MnemonicCard } from "shared/components";
 import { useMnemonicStore } from "../../stores/mnemonicStore";
 import {
-  MnemonicLoading,
-  MnemonicDisplay,
   MnemonicEditing,
   MnemonicEmpty,
   MnemonicError,
-  MnemonicPictograph,
 } from "./index";
 import "./HubMnemonicSection.css";
 
@@ -83,17 +80,19 @@ function MnemonicSectionInner({ character }: { character: string }) {
   const renderContent = () => {
     switch (state.type) {
       case "Loading":
-        return <MnemonicLoading character={character} />;
+        return <MnemonicCard character={character} classification={null} radicalIds={[]} story="" isEdited={false} isLoading />;
       case "Generating":
-        return <MnemonicLoading character={character} isGenerating />;
+        return <MnemonicCard character={character} classification={null} radicalIds={[]} story="" isEdited={false} isGenerating />;
       case "Empty":
         return (
           <MnemonicEmpty character={character} onGenerate={() => generateMnemonic(character)} />
         );
       case "Display":
         return (
-          <MnemonicDisplay
+          <MnemonicCard
             character={character}
+            classification={state.classification}
+            radicalIds={state.radicalIds}
             story={state.story}
             isEdited={state.isEdited}
             onEdit={startEdit}
@@ -102,8 +101,10 @@ function MnemonicSectionInner({ character }: { character: string }) {
         );
       case "Cached":
         return (
-          <MnemonicDisplay
+          <MnemonicCard
             character={character}
+            classification={null}
+            radicalIds={[]}
             story={state.story}
             isEdited={false}
             onEdit={startEdit}
@@ -127,7 +128,13 @@ function MnemonicSectionInner({ character }: { character: string }) {
         return <MnemonicError character={character} isTimeout onRetry={retry} />;
       case "Pictograph":
         return (
-          <MnemonicPictograph character={character} glyph={state.character} story={state.story} />
+          <MnemonicCard
+            character={character}
+            classification="pictograph"
+            radicalIds={[]}
+            story={state.story ?? ""}
+            isEdited={false}
+          />
         );
       default:
         return null;

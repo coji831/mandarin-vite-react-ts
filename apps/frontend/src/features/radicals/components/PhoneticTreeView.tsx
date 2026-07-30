@@ -18,10 +18,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, Skeleton, ErrorScreen } from "shared/components";
 import { PhoneticFamilyNode } from "./PhoneticFamilyNode";
-import {
-  getPhoneticFamilies,
-  type PhoneticFamily,
-} from "../services/phoneticTreeService";
+import { getPhoneticFamilies, type PhoneticFamily } from "../services/phoneticTreeService";
 import "./PhoneticTreeView.css";
 
 interface PhoneticTreeViewProps {
@@ -59,9 +56,7 @@ export function PhoneticTreeView({ isPhase3 }: PhoneticTreeViewProps) {
   }, [fetchFamilies]);
 
   // Derive display families based on phase gating
-  const displayFamilies = isPhase3
-    ? families
-    : families.slice(0, PHASE2_PREVIEW_COUNT);
+  const displayFamilies = isPhase3 ? families : families.slice(0, PHASE2_PREVIEW_COUNT);
 
   const totalFamilyCount = families.length;
 
@@ -121,10 +116,7 @@ export function PhoneticTreeView({ isPhase3 }: PhoneticTreeViewProps) {
         aria-label="Phonetic families"
       >
         {displayFamilies.map((family) => (
-          <PhoneticFamilyNode
-            key={family.id}
-            family={family}
-          />
+          <PhoneticFamilyNode key={family.id} family={family} />
         ))}
       </div>
     </div>
