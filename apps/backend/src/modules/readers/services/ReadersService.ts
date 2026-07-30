@@ -293,7 +293,7 @@ export class ReadersService {
    * studied at confidence >= 0.8. Return the highest level with >= 80% coverage.
    * If no level meets the threshold, return 1 (safe default for beginners).
    */
-  private async getUserKnownLevel(userId: string): Promise<number> {
+  async getUserKnownLevel(userId: string): Promise<number> {
     try {
       const results = await this.repository.getUserCharacterCoverage(userId);
 
@@ -392,6 +392,32 @@ Do not include any text before or after the JSON object.`;
   async markCompleted(userId: string, passageId: string): Promise<{ passageId: string }> {
     await this.repository.completePassage(userId, passageId);
     return { passageId };
+  }
+
+  // ── Phase Gate Methods ──────────────────────────────────────────────────
+
+  /**
+   * Select a passage for the comprehension gate at the given HSK level.
+   * Picks the least-recently-accessed passage at that level to distribute load.
+   * Returns null if no passage exists at the level.
+   *
+   * @param hskLevel - Target HSK level for the gate
+   * @returns Passage record or null if none available
+   */
+  async selectPassageForGate(hskLevel: number): Promise<PassageRecord | null> {
+    const passages = await this.repository.findPassages(hskLevel);
+
+    if (passages.length === 0) return null;
+
+    // Sort by lastAccessedAt ascending (nulls last), so least-recently-accessed comes first
+    passages.sort((a, b) => {
+      if (!a.lastAccessedAt && !b.lastAccessedAt) return 0;
+      if (!a.lastAccessedAt) return -1;
+      if (!b.lastAccessedAt) return 1;
+      return a.lastAccessedAt.getTime() - b.lastAccessedAt.getTime();
+    });
+
+    return passages[0];
   }
 
   // ── Bookmark Methods ───────────────────────────────────────────────────

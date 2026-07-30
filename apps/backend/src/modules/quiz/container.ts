@@ -15,5 +15,5 @@ export interface QuizModuleDeps {
 export function createQuizModule(deps: QuizModuleDeps) {
   const service = new QuizService(deps.quizRepository, deps.progressionService);
   const controller = new QuizController(service);
-  return { controller };
+  return { controller, service };
 }

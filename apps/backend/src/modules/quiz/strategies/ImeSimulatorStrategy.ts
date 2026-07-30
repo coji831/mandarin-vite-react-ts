@@ -11,8 +11,8 @@ const logger = createLogger("ImeSimulatorStrategy");
 
 export const imeSimulatorStrategy = {
   type: "ime-simulator",
-  questionCount: 10,
-  passThreshold: 0.7,
+  questionCount: 25,
+  passThreshold: 0.8,
   timeLimitMinutes: 4,
 
   async generateQuestions(_userId?: string) {

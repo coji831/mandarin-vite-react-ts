@@ -43,6 +43,7 @@ interface IQuizRepository {
   findQuizAttemptById(attemptId: string): Promise<QuizAttempt | null>;
   completeQuizAttempt(attemptId: string, data: Record<string, unknown>): Promise<QuizAttempt>;
   findQuizAttemptsByUser(userId: string): Promise<QuizAttempt[]>;
+  findQuizAttemptByUserAndType(userId: string, quizType: string): Promise<QuizAttempt | null>;
 }
 
 interface IProgressionService {
@@ -152,6 +153,27 @@ export class QuizService {
 
   async getUserQuizAttempts(userId: string): Promise<QuizAttempt[]> {
     return this.quizRepository.findQuizAttemptsByUser(userId);
+  }
+
+  /**
+   * Get the comprehension quiz result for a user and passage.
+   * Looks up the latest QuizAttempt with quizType = "comprehension" for the user,
+   * verifies it matches the given passageId, and returns the score ratio.
+   * Returns null if no matching attempt exists.
+   *
+   * @param userId - User ID
+   * @param passageId - Passage ID to match
+   * @returns Score object with ratio, or null if no attempt found
+   */
+  async getComprehensionQuizResult(
+    userId: string,
+    passageId: string,
+  ): Promise<{ score: number } | null> {
+    const attempt = await this.quizRepository.findQuizAttemptByUserAndType(userId, "comprehension");
+    if (!attempt || attempt.passageId !== passageId) return null;
+
+    const maxScore = attempt.maxScore > 0 ? attempt.maxScore : 1;
+    return { score: attempt.totalScore / maxScore };
   }
 
   /**

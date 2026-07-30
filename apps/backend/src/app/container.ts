@@ -36,6 +36,7 @@ import { createAuthModule } from "../modules/auth/container.js";
 import { createReviewModule } from "../modules/review/container.js";
 import { createProgressionModule } from "../modules/progression/container.js";
 import { createQuizModule } from "../modules/quiz/container.js";
+import type { QuizService } from "../modules/quiz/index.js";
 import { createHealthModule } from "../modules/health/container.js";
 import { createTtsModule } from "../modules/tts/container.js";
 import { createReadersModule } from "../modules/readers/container.js";
@@ -72,21 +73,6 @@ const mnemonicsModule = createMnemonicsModule({ geminiService, cacheService });
 const reviewModule = createReviewModule({ reviewRepository });
 const authModule = createAuthModule({ authRepository, jwtService, passwordService });
 
-// Cross-module dependencies — order matters
-const progressionModule = createProgressionModule({
-  progressionRepository,
-  reviewService: reviewModule.service,
-});
-
-const quizModule = createQuizModule({
-  quizRepository,
-  progressionService: progressionModule.service,
-});
-
-const ttsModule = createTtsModule({ ttsService });
-
-const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
-
 // Readers module — uses SegmenterService, PassageGenerationService, and ReadersAudioService singletons
 export const segmenterService = new SegmenterService(cacheService);
 export const passageGenerationService = new PassageGenerationService(geminiService);
@@ -98,6 +84,28 @@ const readersModule = createReadersModule({
   cacheService,
   readersAudioService,
 });
+
+// Cross-module dependencies — order matters
+// ProgressionModule created first without quizService (circular dep);
+// quizModule is created next, then quizService is injected back.
+const progressionModule = createProgressionModule({
+  progressionRepository,
+  reviewService: reviewModule.service,
+  readersService: readersModule.service,
+  quizService: undefined as unknown as QuizService, // Will be set after quizModule creation
+});
+
+const quizModule = createQuizModule({
+  quizRepository,
+  progressionService: progressionModule.service,
+});
+
+// Break circular dependency: inject quizService into progressionService
+progressionModule.service.setQuizService(quizModule.service);
+
+const ttsModule = createTtsModule({ ttsService });
+
+const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
 
 // Phonetic Clusters module — no cross-module deps, pure reference data
 import { createPhoneticClustersModule } from "../modules/phonetic-clusters/container.js";

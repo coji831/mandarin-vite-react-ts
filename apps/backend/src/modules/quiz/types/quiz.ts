@@ -12,5 +12,11 @@ export interface QuizStrategy {
   passThreshold: number;
   timeLimitMinutes?: number;
   tierRules?: Record<string, { passThreshold?: number }>;
-  generateQuestions(userId?: string): Promise<unknown[]>;
+  generateQuestions(userId?: string, ...args: unknown[]): Promise<unknown[]>;
 }
+
+/**
+ * Quiz attempt type values used across the system.
+ */
+export type QuizAttemptType =
+  "audio-to-pinyin-tone" | "ime-simulator" | "radical-gate" | "comprehension" | "qualification";

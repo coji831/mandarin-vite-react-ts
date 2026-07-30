@@ -2,20 +2,26 @@
 
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-9-phase-gate-calibration.md`
 
+**Last Update:** July 30, 2026
+
 ## Technical Scope
 
-Raise IME Simulator threshold from 70%→80%, implement Phase 3→4 comprehension gate, add character count ≥500 gate check for Phase 2→3. All changes are configuration + service logic — no new models required.
+Raise IME Simulator threshold from 70%→80%, implement Phase 3→4 comprehension gate with template-based `ComprehensionQuizStrategy`, add character count ≥500 gate check via `CharacterProgress` (user-level). All gate-check methods live directly on `ProgressionService` (no new `PhaseGateService`). Add `QualificationQuizStrategy` for fallback when no passage exists. Add `passageId` field to `QuizAttempt` model.
 
 **Files:**
 
 - `apps/backend/src/config/gate-thresholds.ts` — **NEW**: centralized gate threshold constants
-- `apps/backend/src/modules/progression/services/PhaseGateService.ts` — update gate logic: threshold, comprehension gate, character count gate
-- `apps/backend/src/modules/progression/services/ProgressionService.ts` — update to pass passage state to gate check
-- `apps/backend/src/modules/progression/types/progression.ts` — add comprehension gate types
-- `apps/backend/src/modules/quiz/types/quiz.ts` — add `"comprehension"` to QuizAttempt.quizType enum
-- `apps/backend/prisma/schema.prisma` — update QuizAttempt model if quizType is enum-based
-- `apps/backend/src/shared/services/ReadersService.ts` — provide passage selection logic for comprehension gate
-- `apps/backend/src/modules/progression/services/__tests__/PhaseGateService.test.ts` — updated unit tests
+- `apps/backend/src/modules/progression/services/ProgressionService.ts` — **UPDATE**: add gate-check methods directly
+- `apps/backend/src/modules/progression/types/progression.ts` — **UPDATE**: add comprehension gate types, GateResult type
+- `apps/backend/src/modules/quiz/types/quiz.ts` — **UPDATE**: add `"comprehension"` and `"qualification"` to quizType union
+- `apps/backend/prisma/schema.prisma` — **UPDATE**: add `passageId String?` field to QuizAttempt model
+- `apps/backend/src/modules/readers/services/ReadersService.ts` — **UPDATE**: add `selectPassageForGate(hskLevel)` method
+- `apps/backend/src/modules/quiz/services/QuizService.ts` — **UPDATE**: add `getComprehensionQuizResult(userId, passageId)` method
+- `apps/backend/src/modules/quiz/repositories/QuizRepository.ts` — **UPDATE**: add `findQuizAttemptByUserAndType(userId, quizType)` method
+- `apps/backend/src/modules/quiz/strategies/ComprehensionQuizStrategy.ts` — **NEW**: template-based question generator from passage sentences
+- `apps/backend/src/modules/quiz/strategies/QualificationQuizStrategy.ts` — **NEW**: basic HSK-level-appropriate quiz strategy for fallback
+- `apps/backend/src/modules/progression/container.ts` — **UPDATE**: wire ReadersService and QuizService dependencies
+- `apps/backend/src/modules/progression/services/__tests__/ProgressionService.test.ts` — **UPDATE**: add tests for 3 gate checks
 
 ## Configuration Changes
 
@@ -26,7 +32,7 @@ export const GATE_THRESHOLDS = {
   /** Phase 2 → 3: IME Simulator minimum correct answers (out of 25) */
   IME_SIMULATOR_MIN_SCORE: 20, // 80% (was 18 = 70%)
 
-  /** Phase 2 → 3: Minimum characters in DB before unlocking Phase 3 */
+  /** Phase 2 → 3: Minimum characters LEARNED (CharacterProgress) before unlocking Phase 3 */
   CHARACTER_COUNT_MINIMUM: 500,
 
   /** Phase 3 → 4: Comprehension gate — minimum passage quiz score */
@@ -37,6 +43,9 @@ export const GATE_THRESHOLDS = {
 
   /** Comprehension gate: number of passage questions */
   COMPREHENSION_QUESTION_COUNT: 5,
+
+  /** Qualification quiz: number of questions */
+  QUALIFICATION_QUIZ_QUESTION_COUNT: 5,
 } as const;
 ```
 
@@ -44,28 +53,24 @@ export const GATE_THRESHOLDS = {
 
 ### 1. IME Threshold Change (70%→80%)
 
-**Before:** `PhaseGateService.ts` checks `score >= 18` for IME Simulator.
-**After:** Check `score >= GATE_THRESHOLDS.IME_SIMULATOR_MIN_SCORE` (20).
+Replace hardcoded `score >= 18` check in `ProgressionService` with:
 
 ```typescript
-// Current (to be replaced):
-// const imePassed = score >= 18;
-
-// New:
 import { GATE_THRESHOLDS } from "../../../config/gate-thresholds";
 const imePassed = score >= GATE_THRESHOLDS.IME_SIMULATOR_MIN_SCORE;
 ```
 
-### 2. Phase 3→4 Comprehension Gate
+### 2. Comprehension Gate (Phase 3→4)
 
-New gate logic added to `PhaseGateService.checkPhase3To4Gate()`:
+Gate method added directly to `ProgressionService`:
 
 ```typescript
 async checkPhase3To4Gate(userId: string): Promise<GateResult> {
-  // 1. Select passage at learner's HSK level
-  const passage = await this.readersService.selectPassageForGate(
-    userHskLevel // derived from PhaseGate.phase1Retention or qualificationScore
-  );
+  // 1. Determine user's HSK level via existing ReadersService method
+  const hskLevel = await this.readersService.getUserKnownLevel(userId);
+
+  // 2. Select passage at learner's HSK level
+  const passage = await this.readersService.selectPassageForGate(hskLevel);
 
   if (!passage) {
     return {
@@ -76,7 +81,7 @@ async checkPhase3To4Gate(userId: string): Promise<GateResult> {
     };
   }
 
-  // 2. Check known word ratio (≥90%)
+  // 3. Check known word ratio (≥90%)
   const knownWordRatio = await this.computeKnownWordRatio(userId, passage.id);
   if (knownWordRatio < GATE_THRESHOLDS.COMPREHENSION_KNOWN_WORD_RATIO) {
     return {
@@ -86,10 +91,8 @@ async checkPhase3To4Gate(userId: string): Promise<GateResult> {
     };
   }
 
-  // 3. Check comprehension quiz score (≥60%)
-  const quizResult = await this.quizService.getLatestQuizResult(
-    userId, passage.id, 'comprehension'
-  );
+  // 4. Check comprehension quiz score (≥60%)
+  const quizResult = await this.quizService.getComprehensionQuizResult(userId, passage.id);
 
   if (!quizResult || quizResult.score < GATE_THRESHOLDS.COMPREHENSION_QUIZ_MIN_SCORE) {
     return {
@@ -105,54 +108,176 @@ async checkPhase3To4Gate(userId: string): Promise<GateResult> {
 }
 ```
 
-### 3. Character Count Gate (Phase 2→3)
+#### `selectPassageForGate(hskLevel)` — on ReadersService
 
 ```typescript
-async checkCharacterCountGate(): Promise<GateResult> {
-  const charCount = await prisma.character.count();
+/**
+ * Selects a passage for the comprehension gate at the given HSK level.
+ * Picks the least-recently-accessed passage at that level to distribute load.
+ * Returns null if no passage exists at the level.
+ */
+async selectPassageForGate(hskLevel: number): Promise<Passage | null>
+```
 
-  if (charCount < GATE_THRESHOLDS.CHARACTER_COUNT_MINIMUM) {
+#### Known word ratio computation (private method on ProgressionService)
+
+```typescript
+private async computeKnownWordRatio(userId: string, passageId: string): Promise<number> {
+  const passage = await prisma.passage.findUnique({
+    where: { id: passageId },
+    include: { words: { include: { word: { include: { characters: true } } } } }
+  });
+
+  const passageCharIds = [...new Set(
+    passage.words.flatMap(w => w.word.characters.map(c => c.characterId))
+  )];
+
+  const knownCount = await prisma.characterProgress.count({
+    where: {
+      userId,
+      characterId: { in: passageCharIds },
+      confidence: { gt: 0 }
+    }
+  });
+
+  return passageCharIds.length > 0 ? knownCount / passageCharIds.length : 0;
+}
+```
+
+### 3. Character Count Gate (Phase 2→3)
+
+User-level check — counts characters the user has learned via `CharacterProgress`:
+
+```typescript
+async checkCharacterCountGate(userId: string): Promise<GateResult> {
+  const learnedCharCount = await prisma.characterProgress.count({
+    where: { userId, confidence: { gt: 0 } }
+  });
+
+  if (learnedCharCount < GATE_THRESHOLDS.CHARACTER_COUNT_MINIMUM) {
     return {
       passed: false,
       reason: 'INSUFFICIENT_CHARACTER_COVERAGE',
-      details: `Character count: ${charCount} (needs ≥${GATE_THRESHOLDS.CHARACTER_COUNT_MINIMUM})`
+      details: `Characters learned: ${learnedCharCount} (needs ≥${GATE_THRESHOLDS.CHARACTER_COUNT_MINIMUM})`
     };
   }
-
   return { passed: true };
 }
 ```
 
-This check runs during Phase 2→3 transition. It is a system-level check (same for all users) — the `Character` table is shared across all users.
+### 4. QuizAttempt Schema Update
 
-### 4. QuizAttempt.quizType Extension
-
-The `QuizAttempt` model needs `"comprehension"` added to its `quizType` field. If `quizType` is a String field (not an enum), this is a no-op — any string is valid. If it's an enum in Prisma, add the new value:
+Add to `schema.prisma`:
 
 ```prisma
-// If quizType is modeled as an enum:
-enum QuizType {
-  quiz
-  exam
-  comprehension  // NEW
-  ime_simulator
+model QuizAttempt {
+  // ... existing fields ...
+  passageId String?   // NEW: links comprehension quizzes to passages
 }
 ```
 
-Update the QuizAttempt model if it uses a Prisma enum; otherwise just document the new string value.
+`quizType` is a String field — adding `"comprehension"` and `"qualification"` requires no Prisma enum changes.
 
-### 5. Retroactive Application Logic
+### 5. Comprehension Quiz Strategy
 
 ```typescript
-// In PhaseGateService — only apply new thresholds to NEW attempts
-async evaluatePhase2Gate(userId: string, attempt: QuizAttempt): Promise<boolean> {
-  // If user already passed Phase 2 under old thresholds, don't regress
-  const gate = await this.getPhaseGate(userId);
-  if (gate.phase2Passed) {
-    return true; // Already passed — grandfathered
+export class ComprehensionQuizStrategy implements QuizStrategy {
+  readonly type = "comprehension" as const;
+
+  async generate(passage: Passage, userId: string): Promise<QuizQuestion[]> {
+    const sentences = passage.text.split(/[。！？\n]/).filter(Boolean);
+    const targetSentences = shuffle(sentences).slice(
+      0,
+      GATE_THRESHOLDS.COMPREHENSION_QUESTION_COUNT,
+    );
+
+    return targetSentences.map((sentence) => {
+      const question = this.buildQuestion(sentence);
+      const choices = this.generateChoices(sentence, passage);
+      return { question, choices, correctIndex: 0 };
+    });
   }
 
-  // Apply new threshold
+  private buildQuestion(sentence: string): { text: string; type: QuestionType } {
+    // Pattern matching for Chinese sentence structure
+  }
+
+  private generateChoices(sentence: string, passage: Passage): string[] {
+    // One correct answer + 3 distractors from other passage elements
+  }
+}
+```
+
+- **No LLM dependency** — pure pattern-based extraction
+- **Distractors**: Drawn from other elements in the same passage
+- **Score**: `correctAnswers / totalQuestions`
+
+### 6. Qualification Quiz Strategy
+
+```typescript
+export class QualificationQuizStrategy implements QuizStrategy {
+  readonly type = "qualification" as const;
+
+  async generate(userId: string, hskLevel: number): Promise<QuizQuestion[]> {
+    const characters = await prisma.character.findMany({
+      where: { hskLevels: { some: { hskLevel } } },
+      take: 20,
+    });
+
+    const selected = shuffle(characters).slice(
+      0,
+      GATE_THRESHOLDS.QUALIFICATION_QUIZ_QUESTION_COUNT,
+    );
+
+    return selected.map((char) => ({
+      question: `What is the pinyin for "${char.glyph}"?`,
+      choices: this.generatePinyinChoices(char, characters),
+      correctIndex: 0,
+    }));
+  }
+}
+```
+
+### 7. QuizService & Repository Methods
+
+```typescript
+// QuizService
+async getComprehensionQuizResult(userId: string, passageId: string): Promise<{ score: number } | null> {
+  const attempt = await this.quizRepository.findQuizAttemptByUserAndType(userId, 'comprehension');
+  if (!attempt || attempt.passageId !== passageId) return null;
+  return { score: attempt.correctCount / attempt.totalCount };
+}
+
+// QuizRepository
+async findQuizAttemptByUserAndType(userId: string, quizType: string): Promise<QuizAttempt | null> {
+  return prisma.quizAttempt.findFirst({
+    where: { userId, quizType },
+    orderBy: { createdAt: 'desc' }
+  });
+}
+```
+
+### 8. User HSK Level Source
+
+Uses existing `ReadersService.getUserKnownLevel(userId)` — determines the user's current HSK level based on their character knowledge.
+
+### 9. ProgressionModuleDeps
+
+```typescript
+export interface ProgressionModuleDeps {
+  progressionRepository: ProgressionRepository;
+  reviewService: ReviewService;
+  readersService: ReadersService; // NEW
+  quizService: QuizService; // NEW
+}
+```
+
+### 10. Retroactive Application
+
+```typescript
+async evaluatePhase2Gate(userId: string, attempt: QuizAttempt): Promise<boolean> {
+  const gate = await this.getPhaseGate(userId);
+  if (gate.phase2Passed) return true; // Grandfathered
   return attempt.score >= GATE_THRESHOLDS.IME_SIMULATOR_MIN_SCORE;
 }
 ```
@@ -162,33 +287,47 @@ async evaluatePhase2Gate(userId: string, attempt: QuizAttempt): Promise<boolean>
 ```
 [Story 21.9: Phase Gate Calibration]
 ├── Config → gate-thresholds.ts (centralized constants)
-├── Service → PhaseGateService (3 gate checks)
+├── ProgressionService (3 gate-check methods)
 │   ├── checkPhase2Gate() — IME threshold 80%
-│   ├── checkPhase2To3Gate() — character count ≥500 + IME
+│   ├── checkCharacterCountGate() — CharacterProgress ≥500
 │   └── checkPhase3To4Gate() — comprehension gate
-├── Quiz → QuizAttempt.quizType = "comprehension"
-└── Readers → Passage selection for comprehension gate
+├── Quiz
+│   ├── QuizAttempt.passageId (new field)
+│   ├── ComprehensionQuizStrategy (template-based questions)
+│   ├── QualificationQuizStrategy (fallback questions)
+│   └── QuizRepository.findQuizAttemptByUserAndType()
+├── Readers → ReadersService.selectPassageForGate()
+└── DI → ProgressionModuleDeps extended with readersService + quizService
 
-No new models. No migration. No frontend changes.
+No new models. Schema migration needed for QuizAttempt.passageId.
+No frontend changes required (gate checks are server-side).
 ```
 
 ## Technical Challenges & Solutions
 
 ```
-Problem: Passage selection for comprehension gate requires a passage at the
-         learner's HSK level, but passages may not exist yet.
-Solution: Fetch the least-recently-accessed passage at the learner's HSK level.
-         If none exists, present a qualification quiz fallback instead of
-         blocking the gate entirely.
+Problem: Comprehension questions need to be generated from passage text without an LLM or external API.
+Solution: Implement a template-based ComprehensionQuizStrategy that extracts subjects, verbs, objects, and locations from passage sentences using simple Chinese text patterns. Generates 5 multiple-choice questions with one correct answer and three distractors. Distractors are drawn from other elements in the same passage to ensure plausibility.
 
-Problem: Retroactive application — users who passed Phase 2 at 70% should
-         not be forced to re-pass at 80%.
-Solution: Check `gate.phase2Passed` flag before applying new thresholds.
-         Only new attempts use new thresholds. Grandfather existing passes.
+Problem: Qualification quiz needs HSK-level-appropriate questions without an external question bank.
+Solution: Implement a QualificationQuizStrategy that generates basic character-recognition and vocabulary questions using existing Character data filtered by HSK level. Questions are simple: "What is the pinyin for [character]?" with multiple choice options drawn from the same HSK level.
 
-Problem: Known word ratio computation requires knowing which words in a passage
-         the user has encountered.
-Solution: Use CharacterProgress records + Passage word set. For each unique
-         character in the passage, check if the user has a CharacterProgress
-         record with confidence > 0. Known word ratio = known chars / total chars.
+Problem: Passage selection for comprehension gate requires a passage at the learner's HSK level, but passages may not exist yet.
+Solution: Fetch the least-recently-accessed passage at the learner's HSK level via ReadersService.selectPassageForGate(hskLevel). If none exists, present a qualification quiz fallback instead of blocking the gate entirely.
+
+Problem: Retroactive application — users who passed Phase 2 at 70% should not be forced to re-pass at 80%.
+Solution: Check `gate.phase2Passed` flag before applying new thresholds. Only new attempts use new thresholds. Grandfather existing passes.
+
+Problem: Known word ratio computation requires knowing which words in a passage the user has encountered.
+Solution: Use CharacterProgress records + Passage word set. For each unique character in the passage, check if the user has a CharacterProgress record with confidence > 0. Known word ratio = known chars / total chars.
+
+Problem: Character count gate needs per-user character knowledge, not system-wide character availability.
+Solution: Query CharacterProgress.count() with userId filter and confidence > 0 instead of Character.count(). This is a user-level check — different users may have different counts based on their learning progress.
 ```
+
+## Implementation Status
+
+- **Status**: Implemented
+- **PR**: TBD
+- **Merge Date**: TBD
+- **Key Commit**: TBD

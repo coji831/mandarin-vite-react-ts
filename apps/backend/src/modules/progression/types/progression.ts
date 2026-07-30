@@ -6,6 +6,16 @@
 import type { FoundationProgress, RadicalProgress, PhaseGate } from "@prisma/client";
 
 /**
+ * Result of a gate check evaluation.
+ */
+export interface GateResult {
+  passed: boolean;
+  reason?: string;
+  fallback?: string;
+  details?: string;
+}
+
+/**
  * Repository interface consumed by ProgressionService.
  */
 export interface IProgressionRepository {
