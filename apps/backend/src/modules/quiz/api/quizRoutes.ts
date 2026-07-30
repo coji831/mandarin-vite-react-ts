@@ -2,14 +2,18 @@
  * @file apps/backend/src/modules/quiz/api/quizRoutes.js
  * Generic quiz routes (mounted under /api in routes.js)
  * quizType is passed in request body — the strategy registry resolves it.
+ *
+ * Also includes sandhi-drill routes (Story 21.17) via SandhiDrillController.
  */
 import express from "express";
 import type { Request, Response } from "express";
 import { optionalAuth, requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { SandhiDrillController } from "./SandhiDrillController.js";
 
 const router = express.Router();
+const sandhiDrillController = new SandhiDrillController();
 
 router.get(
   ROUTE_PATTERNS.quizConfig,
@@ -45,6 +49,14 @@ router.get(
   ROUTE_PATTERNS.quizAttempts,
   requireAuth,
   asyncHandler((req: Request, res: Response) => req.quizController!.getQuizAttempts(req, res)),
+);
+
+// ── Sandhi Drill routes (Story 21.17) ──────────────────────────────────────
+
+router.get(
+  "/v1/quiz/sandhi-drill/questions",
+  optionalAuth,
+  asyncHandler((req: Request, res: Response) => sandhiDrillController.getQuestions(req, res)),
 );
 
 export default router;

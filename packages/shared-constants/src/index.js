@@ -39,6 +39,7 @@ export const ROUTE_PATTERNS = {
   mnemonicsByChar: (glyph) => `/v1/mnemonics/${glyph}`,
   quizConfig: "/v1/quiz/config",
   quizQuestions: "/v1/quiz/questions",
+  quizSandhiDrill: "/v1/quiz/sandhi-drill/questions",
   readersPassages: "/v1/readers/passages",
   readersPassageById: (id) => `/v1/readers/passages/${id}`,
   readersGenerate: "/v1/readers/generate",

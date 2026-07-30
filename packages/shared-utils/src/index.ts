@@ -3,4 +3,4 @@
  * Exports shared utility functions used across the monorepo.
  */
 
-export { isSandhiAcceptable } from "./sandhi/toneSandhiUtils";
+export { isSandhiAcceptable, applyToneMark } from "./sandhi/toneSandhiUtils";

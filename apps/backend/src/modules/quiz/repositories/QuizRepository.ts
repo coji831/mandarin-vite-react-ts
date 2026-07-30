@@ -19,7 +19,9 @@ export class QuizRepository {
     passageId?: string | null;
     metadata?: unknown;
   }): Promise<QuizAttempt> {
-    return prisma.quizAttempt.create({ data: { userId, quizType, phase, passageId, metadata: metadata as Prisma.InputJsonValue } });
+    return prisma.quizAttempt.create({
+      data: { userId, quizType, phase, passageId, metadata: metadata as Prisma.InputJsonValue },
+    });
   }
 
   async findQuizAttemptById(id: string): Promise<QuizAttempt | null> {

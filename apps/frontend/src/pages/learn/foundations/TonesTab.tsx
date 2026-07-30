@@ -17,6 +17,7 @@ import {
   ToneContourCard,
   TonePairDrills,
   ToneChangeRules,
+  SandhiDrill,
   foundationsService,
   TONE_LABELS,
   TONE_SYMBOLS,
@@ -166,6 +167,17 @@ export function TonesTab() {
           Learn how tones shift in context: 3rd tone sandhi, 一 (yī), and 不 (bù)
         </p>
         <ToneChangeRules rules={data.toneRules} onPlay={handlePlay} loadingPinyin={loadingPinyin} />
+      </section>
+
+      {/* Tone Sandhi Drill Section */}
+      <section className="flex-col">
+        <h3 className="tones-section-heading font-sm text-secondary fw-600 m-0">
+          Tone Sandhi Practice Drill
+        </h3>
+        <p className="tones-section-subtitle font-xs text-muted">
+          Test your knowledge of tone sandhi rules with an interactive quiz
+        </p>
+        <SandhiDrill />
       </section>
 
       {/* Pronunciation Tip Callout — full width */}

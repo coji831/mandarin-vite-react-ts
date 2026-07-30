@@ -1,6 +1,6 @@
 # Story 21.17: Tone Sandhi Practice Quiz
 
-**Last Update:** July 24, 2026
+**Last Update:** July 30, 2026
 
 ## Description
 
@@ -14,34 +14,59 @@ Tone sandhi is one of the most challenging aspects of spoken Chinese for learner
 
 ## Acceptance Criteria
 
-- [ ] SandhiDrill section created in the TonesTab with rule explanation cards for each sandhi rule
-- [ ] Rule cards cover: (a) 3-3 → 2-3 (e.g., 你好 nǐ hǎo → ní hǎo), (b) 不 before 4th tone (bù → bú), (c) 一 before 4th tone (yī → yí), (d) 一 before non-4th tone (yī → yì)
-- [ ] 10-question drill where learner sees a word/phrase and selects the correct spoken pinyin (comparing dictionary vs. sandhi form)
-- [ ] Results stored as `QuizAttempt.quizType = "sandhi-drill"` with score, rule-specific breakdown, and completion status
-- [ ] New quiz strategy implemented following the existing strategy pattern
-- [ ] Storybook stories created covering rule cards, drill questions, and results states
-- [ ] Unit tests for sandhi drill scoring and question generation
-- [ ] MSW handlers created for the sandhi-drill endpoint
-- [ ] 0 lint errors across all changed files
+- [x] Backend `SandhiDrillService` generates sandhi drill questions from the database word bank
+- [x] Questions cover: (a) 3-3 → 2-3 (e.g., 你好 nǐ hǎo → ní hǎo), (b) 不 before 4th tone (bù → bú), (c) 一 before 4th tone (yī → yí), (d) 一 before non-4th tone (yī → yì)
+- [x] API endpoint `GET /v1/quiz/sandhi-drill/questions?count=10` returns `DrillQuestion[]` with 4 multiple-choice options
+- [x] Results posted to existing `POST /v1/quiz/attempts` with `quizType: "sandhi-drill"` (no Prisma changes needed)
+- [x] `@mandarin/shared-utils` extended with bu/yi sandhi rules in `isSandhiAcceptable()` + new `applyToneMark()` helper
+- [x] Unit tests for `SandhiDrillService` (question generation, scoring) and `toneSandhiUtils` (bu/yi rules, applyToneMark)
+- [x] 0 TypeScript errors across all changed files
+- [x] All backend conventions followed (error message format, service layer pattern, DI via constructor)
+- [x] SandhiDrill section created in TonesTab with rule explanation cards and 10-question drill
+- [x] Storybook stories created covering rules intro, drill active, results, loading, and error states
+- [x] Unit tests for SandhiDrill component (11 tests) and sandhiDrillService (6 tests)
+- [x] MSW handlers created for sandhi-drill questions endpoint
+- [x] 0 lint errors across all changed files
 
 ## Business Rules
 
-1. **Strategy Pattern** — The SandhiDrill follows the existing quiz strategy pattern (defined in quiz architecture). A new `SandhiDrillStrategy` class implements the standard strategy interface: `generateQuestions()`, `scoreAnswer()`, `getResults()`.
-2. **Rule Cards** — Each rule card shows: rule name (e.g., "Third Tone Sandhi"), the rule formula (e.g., "3-3 → 2-3"), 2-3 example word pairs with audio, and a brief mnemonic. Cards are laid out in a 2×2 grid (desktop).
-3. **Drill Questions** — Each question presents a word or 2-character phrase. The learner sees the characters and must select the correct spoken pinyin from 4 options (mix of dictionary forms, sandhi forms, and distractors). Audio playback is included for each question.
-4. **QuizAttempt Extension** — `QuizAttempt.quizType` enum extended with `"sandhi-drill"`. The metadata JSON stores rule-specific breakdown: `{ ruleScores: { "3-3-sandhi": { correct: 3, total: 4 }, "bu-before-4th": { correct: 2, total: 2 }, ... } }`.
-5. **Passing Threshold** — A score of ≥70% on the sandhi drill is required to pass. Below that, the learner is encouraged to review the rule cards and retry. This threshold is defined in the gate thresholds config file.
+1. **Drill Widget Pattern (NOT strategy registry)** — The SandhiDrill does NOT register in the quiz strategy registry. It's a standalone service with its own controller and route, following the "Drill Widget" pattern. The backend is the source of truth for question generation.
+2. **Backend Sources Questions from DB** — `SandhiDrillService` queries `Word` + `WordCharacter` + `Character` + `CharacterReading` tables to find real 2-character words matching sandhi patterns. Questions are distributed proportionally across all 4 rules.
+3. **Drill Questions** — Each question presents a word or 2-character phrase. The learner sees the characters and must select the correct spoken pinyin from 4 shuffled options (sandhi form + dictionary form + 2 distractors).
+4. **QuizAttempt Reuse** — Results are stored via the existing `POST /v1/quiz/attempts` endpoint with `quizType: "sandhi-drill"`. The `quizType` field is `String` (not enum), so no Prisma migration is needed. Rule-specific breakdowns are stored in the existing `metadata` JSON field.
+5. **Passing Threshold** — A score of ≥70% on the sandhi drill is required to pass. Below that, the learner is encouraged to review the rule cards and retry. This threshold is defined as a local constant in the frontend SandhiDrill component.
 
 ## Related Issues
 
 - Epic 21: Foundation Complete — Graded Readers & Character Practice — BR (`../README.md`) (epic parent)
-- **Story 21.3: Passage Generation Backend** ([BR](story-21-3-passage-generation.md)) (dependency — ToneSandhiService for generating sandhi rules)
 - **Story 21.16: Audio-to-Type Neutral Tone & Sandhi Extension** ([BR](story-21-16-audio-to-type-neutral-tone-sandhi.md)) (dependency — sandhi-aware scoring logic and QuizAttempt metadata extension)
 - Epic 18: Character Foundations (coordination — SandhiDrill lives in TonesTab within features/foundations/)
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Implemented
 - **PR**: TBD
 - **Merge Date**: TBD
 - **Key Commit**: TBD
+
+### Completed (Backend)
+
+- [x] Extended `packages/shared-utils/src/sandhi/toneSandhiUtils.ts` with bu-before-4th, yi-before-4th, yi-before-non4th rules + `applyToneMark()` helper
+- [x] Added 14 new tests to `toneSandhiUtils.test.ts` covering all 3 new rules + `applyToneMark()`
+- [x] Created `apps/backend/src/modules/quiz/strategies/SandhiDrillService.ts` — question generation engine querying Word + CharacterReading tables
+- [x] Created `apps/backend/src/modules/quiz/strategies/__tests__/SandhiDrillService.test.ts` — 8 tests covering generate, clamp, scoring
+- [x] Created `apps/backend/src/modules/quiz/api/SandhiDrillController.ts` — GET endpoint with validation + error handling
+- [x] Added route `GET /v1/quiz/sandhi-drill/questions` to `quizRoutes.ts`
+- [x] 0 TypeScript errors, all tests pass (31 shared-utils + 8 SandhiDrillService + all existing quiz tests)
+
+### Completed (Frontend)
+
+- [x] Created `apps/frontend/src/features/foundations/services/sandhiDrillService.ts` — service layer with `getSandhiDrillQuestions()`, `calculateScore()`, `submitSandhiDrillAttempt()`
+- [x] Created `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx` — main drill widget with rules intro, active drill, results, loading, and error states
+- [x] Created `apps/frontend/src/features/foundations/components/tones/SandhiDrill.css` — styles using CSS variables from globals.css
+- [x] Created Storybook stories covering all 6 visual states
+- [x] Created component tests (11 tests) and service tests (6 tests)
+- [x] Created MSW handlers for quiz endpoints in `src/mocks/handlers/quiz-handlers.ts`
+- [x] Added `quizSandhiDrill` route constant to shared-constants
+- [x] Updated barrel exports (components/index.ts, foundations/index.ts)
+- [x] Embedded SandhiDrill in TonesTab below ToneChangeRules

@@ -1,0 +1,185 @@
+/**
+ * @file SandhiDrill.css
+ * @description Styles for the SandhiDrill component (Story 21.17)
+ *
+ * Covers: rule intro cards grid, active drill state, results display,
+ * and all responsive breakpoints.
+ */
+
+/* ─── Section Container ─── */
+
+.sandhi-drill {
+  width: 100%;
+}
+
+/* ─── Section Header ─── */
+
+.sandhi-drill-header {
+  text-align: center;
+}
+
+/* ─── Rule Cards Intro (2×2 Grid) ─── */
+
+.sandhi-drill-rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.sandhi-drill-rule-card {
+  text-align: center;
+}
+
+.sandhi-drill-rule-formula {
+  font-size: var(--font-xs);
+  opacity: 0.7;
+}
+
+.sandhi-drill-rule-examples {
+  font-size: var(--font-xs);
+}
+
+/* ─── Active Drill State ─── */
+
+.sandhi-drill-active {
+  text-align: center;
+}
+
+.sandhi-drill-character {
+  font-size: 3rem;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+}
+
+.sandhi-drill-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.sandhi-drill-option-btn {
+  width: 100%;
+  min-height: 48px;
+  font-size: var(--font-md);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sandhi-drill-option-btn--correct {
+  background-color: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+  color: var(--text-primary) !important;
+}
+
+.sandhi-drill-option-btn--wrong {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+  color: var(--text-primary) !important;
+}
+
+.sandhi-drill-option-btn--dimmed {
+  opacity: 0.4;
+}
+
+.sandhi-drill-feedback {
+  min-height: 28px;
+}
+
+.sandhi-drill-feedback--correct {
+  color: var(--color-success);
+}
+
+.sandhi-drill-feedback--wrong {
+  color: var(--color-error);
+}
+
+.sandhi-drill-progress-text {
+  font-size: var(--font-xs);
+}
+
+/* ─── Results State ─── */
+
+.sandhi-drill-results {
+  text-align: center;
+}
+
+.sandhi-drill-results-score {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+}
+
+.sandhi-drill-results-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+.sandhi-drill-results-badge--pass {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.sandhi-drill-results-badge--fail {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.sandhi-drill-results-table {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.sandhi-drill-results-table th,
+.sandhi-drill-results-table td {
+  padding: var(--space-xs) var(--space-sm);
+  text-align: left;
+  font-size: var(--font-sm);
+}
+
+.sandhi-drill-results-table th {
+  font-weight: 600;
+  opacity: 0.7;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.sandhi-drill-results-table td {
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.sandhi-drill-results-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+/* ─── Loading State ─── */
+
+.sandhi-drill-loading {
+  min-height: 200px;
+}
+
+/* ─── Mobile Responsive ─── */
+
+@media (max-width: 640px) {
+  .sandhi-drill-rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sandhi-drill-options {
+    grid-template-columns: 1fr;
+  }
+
+  .sandhi-drill-character {
+    font-size: 2.5rem;
+  }
+
+  .sandhi-drill-results-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}

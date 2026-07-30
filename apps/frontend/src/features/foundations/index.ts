@@ -19,6 +19,7 @@ export {
   ToneContourCard,
   TonePairDrills,
   ToneChangeRules,
+  SandhiDrill,
   FoundationsProgressBar,
   BasicStrokesGrid,
   StrokeRulesList,

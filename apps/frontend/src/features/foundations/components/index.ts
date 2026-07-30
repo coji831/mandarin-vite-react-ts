@@ -15,6 +15,7 @@ export { ToneCell } from "./pinyin/ToneCell";
 export { ToneContourCard } from "./tones/ToneContourCard";
 export { TonePairDrills } from "./tones/TonePairDrills";
 export { ToneChangeRules } from "./tones/ToneChangeRules";
+export { SandhiDrill } from "./tones/SandhiDrill";
 export { FoundationsProgressBar } from "./shared/FoundationsProgressBar";
 export { BasicStrokesGrid } from "./strokes/BasicStrokesGrid";
 export { StrokeRulesList } from "./strokes/StrokeRulesList";

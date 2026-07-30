@@ -94,12 +94,14 @@ export const audioToPinyinAndToneStrategy = {
     const toneCorrect = tone === question.correctTone;
 
     // Sandhi-aware: accept tone 2 for 3-3 sandhi contexts
-    const sandhiAccepted = !toneCorrect && isSandhiAcceptable(
-      question.correctTone,
-      tone,
-      !!question.isSandhiQuestion,
-      question.sandhiRule,
-    );
+    const sandhiAccepted =
+      !toneCorrect &&
+      isSandhiAcceptable(
+        question.correctTone,
+        tone,
+        !!question.isSandhiQuestion,
+        question.sandhiRule,
+      );
 
     const correct = pinyinCorrect && (toneCorrect || sandhiAccepted);
     let feedback;

@@ -4,95 +4,130 @@
 
 ## Technical Scope
 
-Create a new SandhiDrill quiz strategy with rule explanation cards and 10-question drill. Extend QuizAttempt.quizType enum.
+Create a backend SandhiDrillService that generates sandhi drill questions from the database word bank, served via a dedicated API endpoint. Results are posted to the existing quiz attempts endpoint with `quizType: "sandhi-drill"`. Extends `@mandarin/shared-utils` with bu/yi sandhi rules. Frontend provides the SandhiDrill widget embedded in TonesTab.
 
 **Files:**
 
-- `apps/frontend/src/features/foundations/components/SandhiDrill.tsx` — **NEW**: SandhiDrill component (rule cards + drill)
-- `apps/frontend/src/features/foundations/components/SandhiRuleCard.tsx` — **NEW**: rule explanation card
-- `apps/frontend/src/features/foundations/components/index.ts` — update: export new components
-- `apps/frontend/src/features/foundations/services/sandhiDrillService.ts` — **NEW**: question generation and scoring
-- `apps/frontend/src/features/foundations/services/__tests__/sandhiDrillService.test.ts` — **NEW**: unit tests
-- `apps/frontend/src/features/foundations/stores/quizStore.ts` — update: extend QuizAttempt for "sandhi-drill" type
-- `apps/frontend/src/features/foundations/components/__stories__/SandhiDrill.stories.tsx` — **NEW**: stories
-- `apps/frontend/src/mocks/handlers/quiz-handlers.ts` — update: MSW handlers for sandhi-drill endpoint
+| Action | File |
+|---|---|
+| MODIFY | `packages/shared-utils/src/sandhi/toneSandhiUtils.ts` |
+| MODIFY | `packages/shared-utils/src/sandhi/__tests__/toneSandhiUtils.test.ts` |
+| CREATE | `apps/backend/src/modules/quiz/strategies/SandhiDrillService.ts` |
+| CREATE | `apps/backend/src/modules/quiz/strategies/__tests__/SandhiDrillService.test.ts` |
+| CREATE | `apps/backend/src/modules/quiz/api/SandhiDrillController.ts` |
+| MODIFY | `apps/backend/src/modules/quiz/api/quizRoutes.ts` |
+| MODIFY | `packages/shared-constants/src/index.js` |
+| CREATE | `apps/frontend/src/features/foundations/services/sandhiDrillService.ts` |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx` |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.css` |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/__stories__/SandhiDrill.stories.tsx` |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/__tests__/SandhiDrill.test.tsx` |
+| CREATE | `apps/frontend/src/features/foundations/services/__tests__/sandhiDrillService.test.ts` |
+| MODIFY | `apps/frontend/src/mocks/handlers/quiz-handlers.ts` |
+| MODIFY | `apps/frontend/src/features/foundations/components/index.ts` |
+| MODIFY | `apps/frontend/src/features/foundations/index.ts` |
+| MODIFY | `apps/frontend/src/pages/learn/foundations/TonesTab.tsx` |
+
+## Architecture Decisions
+
+### Drill Widget Pattern (NOT full quiz strategy)
+
+- **NOT registered** in the strategy registry (`registry.ts`).
+- Has its own `<SandhiDrillController>` and route `GET /v1/quiz/sandhi-drill/questions?count=10`.
+- Results are posted to the **existing** `POST /v1/quiz/attempts` with `quizType: "sandhi-drill"`.
+- No Prisma schema changes needed — `QuizAttempt.quizType` is `String`, not an enum.
+
+### Backend as Source of Truth
+
+- `SandhiDrillService` queries the database (`Word` + `WordCharacter` + `Character` + `CharacterReading`) for 2-character words matching sandhi patterns.
+- Generates 4 multiple-choice pinyin options per question (sandhi form + dictionary form + 2 distractors).
+- Questions are distributed proportionally across all 4 sandhi rules.
 
 ## Implementation Details
 
-### SandhiDrill Strategy
+### 1. shared-utils: `toneSandhiUtils.ts`
+
+Extended `isSandhiAcceptable()` with 3 new sandhi rules:
+- `"bu-before-4th"`: `bù` (tone 4) before 4th tone → `bú` (tone 2) — accepts `correctTone=4, selectedTone=2`
+- `"yi-before-4th"`: `yī` (tone 1) before 4th tone → `yí` (tone 2) — accepts `correctTone=1, selectedTone=2`
+- `"yi-before-non4th"`: `yī` (tone 1) before non-4th → `yì` (tone 4) — accepts `correctTone=1, selectedTone=4`
+
+Also added `applyToneMark(pinyin: string, tone: number): string` helper to convert plain pinyin + tone number to pretty pinyin with tone marks.
+
+### 2. Backend: `SandhiDrillService`
 
 ```typescript
-class SandhiDrillStrategy implements QuizStrategy {
-  rules = [
-    {
-      id: "3-3-sandhi",
-      name: "Third Tone Sandhi",
-      formula: "3-3 → 2-3",
-      description:
-        "When two third-tone syllables appear together, the first changes to second tone.",
-      examples: [
-        { word: "你好", dictionary: "nǐ hǎo", spoken: "ní hǎo" },
-        { word: "很好", dictionary: "hěn hǎo", spoken: "hén hǎo" },
-        { word: "可以", dictionary: "kě yǐ", spoken: "ké yǐ" },
-      ],
-    },
-    {
-      id: "bu-before-4th",
-      name: "不 (bù) Before 4th Tone",
-      formula: "bù + 4th → bú + 4th",
-      description:
-        "The character 不 changes from tone 4 (bù) to tone 2 (bú) before another 4th-tone syllable.",
-      examples: [
-        { word: "不是", dictionary: "bù shì", spoken: "bú shì" },
-        { word: "不对", dictionary: "bù duì", spoken: "bú duì" },
-      ],
-    },
-    {
-      id: "yi-before-4th",
-      name: "一 (yī) Before 4th Tone",
-      formula: "yī + 4th → yí + 4th",
-      description: "一 changes from tone 1 (yī) to tone 2 (yí) before a 4th-tone syllable.",
-      examples: [
-        { word: "一个", dictionary: "yī gè", spoken: "yí gè" },
-        { word: "一次", dictionary: "yī cì", spoken: "yí cì" },
-      ],
-    },
-    {
-      id: "yi-before-non4th",
-      name: "一 (yī) Before Non-4th Tone",
-      formula: "yī + (1st/2nd/3rd) → yì + (1st/2nd/3rd)",
-      description:
-        "一 changes from tone 1 (yī) to tone 4 (yì) before first, second, or third tone syllables.",
-      examples: [
-        { word: "一天", dictionary: "yī tiān", spoken: "yì tiān" },
-        { word: "一年", dictionary: "yī nián", spoken: "yì nián" },
-        { word: "一起", dictionary: "yī qǐ", spoken: "yì qǐ" },
-      ],
-    },
-  ];
-
-  generateQuestions(count: number): DrillQuestion[] {
-    // Select random words from rule examples + additional word bank
-    // Mix of all 4 rules, proportionally distributed
-    // Return array of { word, dictionaryPinyin, spokenPinyin, rule, options }
-  }
+interface DrillQuestion {
+  id: string;
+  characters: string;       // e.g. "你好"
+  dictionaryPinyin: string; // e.g. "nǐ hǎo"
+  correctAnswer: string;    // sandhi form, e.g. "ní hǎo"
+  ruleId: string;           // "3-3-sandhi" | "bu-before-4th" | "yi-before-4th" | "yi-before-non4th"
+  options: string[];        // 4 shuffled pinyin options
 }
 ```
 
-### QuizAttempt.quizType Extension
+**Question generation process:**
+1. Query `Word` table for all words with `simplified` not null
+2. Filter to exactly 2-character words via `WordCharacter` (sequenceOrder 0, 1)
+3. Get individual character pinyin and tones via `CharacterReading` (primary reading)
+4. Classify candidates into 4 sandhi rule buckets based on tone patterns
+5. Round-robin across buckets for proportional distribution
+6. Generate 4 options per question (correct sandhi form + dictionary form + 2 plausible distractors)
+7. Shuffle and return
 
-Add `"sandhi-drill"` to the QuizAttempt.quizType enum in the Prisma schema and frontend types.
+### 3. Backend: `SandhiDrillController`
+
+- `GET /v1/quiz/sandhi-drill/questions?count=10` — returns `DrillQuestion[]`
+- Clamps count between 5 and 25
+- Error responses follow `backend-error-messages.instructions.md` format
+
+### 4. Route
+
+Added to `apps/backend/src/modules/quiz/api/quizRoutes.ts`:
+```typescript
+router.get(
+  "/v1/quiz/sandhi-drill/questions",
+  optionalAuth,
+  asyncHandler((req, res) => sandhiDrillController.getQuestions(req, res)),
+);
+```
+
+### 5. QuizService
+
+No changes needed — `createQuizAttempt` already accepts any string `quizType` and stores `metadata` as JSON. `"sandhi-drill"` works without modification.
 
 ## Architecture Integration
 
 ```
 [Story 21.17: Tone Sandhi Practice Quiz]
-├── Frontend — features/foundations/
-│   ├── SandhiDrill — main component (rule cards + drill)
-│   ├── SandhiRuleCard — individual rule explanation card
-│   ├── sandhiDrillService — strategy implementation
-│   └── quizStore — extended QuizAttempt type
+├── Backend — modules/quiz/
+│   ├── SandhiDrillService (strategies/) — question generation engine
+│   ├── SandhiDrillController (api/) — HTTP endpoint
+│   └── quizRoutes — route registration
+├── Shared — packages/shared-utils/
+│   └── toneSandhiUtils — extended with bu/yi sandhi rules + applyToneMark
 └── Dependencies
-    ├── 21.3 ToneSandhiService — sandhi rule data
-    └── 21.16 Neutral Tone Extension — sandhi-aware scoring patterns
+    ├── Prisma models: Word, WordCharacter, Character, CharacterReading
+    └── 21.16 isSandhiAcceptable — tone-level sandhi validation reused
 ```
+
+### Frontend — SandhiDrill Component
+
+The SandhiDrill component lives in `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx` and manages 5 distinct states:
+
+1. **Rules (intro)** — Displays rule explanation cards for the 4 sandhi patterns (3-3 sandhi, bu-before-4th, yi-before-4th, yi-before-non4th) with examples. The learner reviews before starting the drill.
+2. **Drill (active)** — Renders a 10-question multiple-choice drill. Each question shows characters and dictionary pinyin; the learner selects the correct spoken (sandhi) pinyin from 4 options. Tracks progress (question X of 10) and current score.
+3. **Results (complete)** — After all 10 questions, shows the final score (e.g., "8/10"), pass/fail status (≥70% passing threshold defined as a local constant), option to retry, and rule-specific breakdown.
+4. **Loading** — Shows `LoadingScreen` while fetching questions from `GET /v1/quiz/sandhi-drill/questions?count=10`.
+5. **Error** — Shows `ErrorScreen` with retry button if the API call fails.
+
+Component delegates data fetching to `sandhiDrillService.ts` (service layer pattern) and posts results via `submitSandhiDrillAttempt()` to the existing `POST /v1/quiz/attempts` endpoint with `quizType: "sandhi-drill"`.
+
+## Verification
+
+
+- `packages/shared-utils`: 31 tests pass (17 existing + 14 new)
+- `apps/backend` quiz module: 17 tests pass (9 existing + 8 new)
+- `npx tsc --noEmit`: 0 errors
+- Pre-existing `RadicalCharacterService` test failures are unrelated and unchanged
