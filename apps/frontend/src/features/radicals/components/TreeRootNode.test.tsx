@@ -28,13 +28,7 @@ const mockRadical: RadicalData = {
   stroke_count: 1,
   is_recommended: true,
   kangxi_index: 1,
-  metadata: {
-    hsk_characters: [
-      { glyph: "一", pinyin: "yī", meaning: "one" },
-      { glyph: "七", pinyin: "qī", meaning: "seven" },
-      { glyph: "三", pinyin: "sān", meaning: "three" },
-    ],
-  },
+  metadata: {},
 };
 
 const sampleCharacters = [

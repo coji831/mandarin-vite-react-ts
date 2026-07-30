@@ -9,6 +9,7 @@
  *
  * Pass threshold: 85% overall, plus Tier 1 must be 100%.
  */
+import { prisma } from "../../../shared/infrastructure/database/client.js";
 import { readAggregateContent, shuffleArray } from "../../../shared/utils/contentUtils.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 
@@ -21,7 +22,6 @@ interface RadicalFile {
   meaning?: string;
   namePinyin?: string;
   isRecommended?: boolean;
-  hskCharacters?: Array<{ glyph: string; meaning?: string; pinyin?: string }>;
   [key: string]: unknown;
 }
 
@@ -39,20 +39,20 @@ function pickDistractors(arr: RadicalFile[], n: number, exclude: string | string
 
 /**
  * Build a reverse map: character glyph → radical IDs that contain it.
- * @param radicalFiles
+ * Queries the CharacterRadical DB table (source of truth).
  * @returns Map of glyph → radical IDs
  */
-function buildReverseCharMap(radicalFiles: RadicalFile[]): Map<string, string[]> {
+async function buildReverseCharMap(): Promise<Map<string, string[]>> {
+  const dbRecords = await prisma.characterRadical.findMany({
+    include: { character: { select: { glyph: true } } },
+  });
   const map = new Map<string, string[]>();
-  for (const file of radicalFiles) {
-    const hskChars = file.hskCharacters || [];
-    for (const char of hskChars) {
-      const glyph = char.glyph;
-      if (!map.has(glyph)) {
-        map.set(glyph, []);
-      }
-      map.get(glyph)!.push(file.id!);
+  for (const record of dbRecords) {
+    const glyph = record.character?.glyph ?? record.characterGlyph;
+    if (!map.has(glyph)) {
+      map.set(glyph, []);
     }
+    map.get(glyph)!.push(record.radicalId);
   }
   return map;
 }
@@ -115,10 +115,23 @@ export const radicalGateStrategy = {
 
     // ── Tier 2: The Radical Predictor (10 Qs) ────────────────────────────
     // Show an unfamiliar character → predict meaning category from its radical.
-    // Build reverse map: character → radical IDs
-    const reverseMap = buildReverseCharMap(radicalFiles);
+    // Build reverse map: character → radical IDs (from DB)
+    const reverseMap = await buildReverseCharMap();
 
-    // Collect all unique characters that appear in hsk_characters
+    // Collect all unique characters from CharacterRadical DB (source of truth)
+    const dbCharRadicals = await prisma.characterRadical.findMany({
+      include: {
+        character: {
+          include: {
+            characterReadings: {
+              where: { type: "primary" },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
     const allCharEntries: Array<{
       glyph: string;
       pinyin?: string;
@@ -126,20 +139,16 @@ export const radicalGateStrategy = {
       radicalId: string;
       radicalMeaning?: string;
     }> = [];
-    for (const file of radicalFiles) {
-      const hskChars = file.hskCharacters || [];
-      for (const char of hskChars) {
-        const glyph = char.glyph;
-        if (glyph) {
-          allCharEntries.push({
-            glyph,
-            pinyin: char.pinyin,
-            meaning: char.meaning,
-            radicalId: file.id!,
-            radicalMeaning: file.meaning!,
-          });
-        }
-      }
+    for (const record of dbCharRadicals) {
+      if (!record.character) continue;
+      const radical = radicalFiles.find((f) => f.id === record.radicalId);
+      allCharEntries.push({
+        glyph: record.character.glyph,
+        pinyin: record.character.characterReadings[0]?.pinyin ?? "",
+        meaning: record.character.definition ?? "",
+        radicalId: record.radicalId,
+        radicalMeaning: radical?.meaning ?? "",
+      });
     }
 
     // De-duplicate by glyph

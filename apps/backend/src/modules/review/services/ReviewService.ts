@@ -170,12 +170,15 @@ function buildRadicalItem(
   const correctOption = { glyph: radical.glyph!, meaning: radical.meaning!, id: radical.id! };
   const options = shuffleArray([correctOption, ...distractors]);
 
+  // Prefer camelCase namePinyin (radicals.json) over snake_case name_pinyin (tones.json)
+  const radicalName = String(radical["namePinyin"] ?? radical.name_pinyin ?? "");
+
   return {
     id: srs?.id || `radical-${radical.id}`,
     itemType: "radical",
     itemId: radical.id!,
-    front: radical.name_pinyin || "",
-    back: `${radical.glyph} (${radical.name_pinyin || ""}) — ${radical.meaning}`,
+    front: radicalName,
+    back: `${radical.glyph} (${radicalName}) — ${radical.meaning}`,
     category: "radicals",
     character: radical.glyph!,
     pinyinPlain: radical.id!,
@@ -307,15 +310,38 @@ export class ReviewService {
     }
 
     if (includeCharacterRadical) {
+      const dbRecords = await prisma.characterRadical.findMany({
+        include: {
+          character: { select: { glyph: true, definition: true } },
+        },
+      });
+
+      // Group records by radicalId
+      const radicalCharMap = new Map<
+        string,
+        Array<{
+          characterGlyph: string;
+          character?: { glyph: string; definition: string | null } | null;
+        }>
+      >();
+      for (const record of dbRecords) {
+        if (!radicalCharMap.has(record.radicalId)) {
+          radicalCharMap.set(record.radicalId, []);
+        }
+        radicalCharMap.get(record.radicalId)!.push(record);
+      }
+
       const radicals = await readAggregateContent("radicals", "radicals.json");
-      for (const radical of radicals) {
-        const metadata = radical.metadata as
-          { hsk_characters?: Array<{ glyph: string; meaning?: string }> } | undefined;
-        const hskCharacters = metadata?.hsk_characters || [];
-        if (hskCharacters.length === 0) continue;
-        for (const charData of hskCharacters) {
-          const key = `character-radical:${charData.glyph}`;
+      const radicalById = new Map(radicals.map((r: Record<string, unknown>) => [r.id, r]));
+
+      for (const [radicalId, records] of radicalCharMap) {
+        const radical = radicalById.get(radicalId);
+        if (!radical) continue;
+        for (const record of records) {
+          const charGlyph = record.characterGlyph;
+          const key = `character-radical:${charGlyph}`;
           const srs = srsByKey.get(key) ?? null;
+          const charData = { glyph: charGlyph, meaning: record.character?.definition ?? undefined };
           const item = buildCharacterRadicalItem(radical, charData, srs, now, sevenDaysAgo, source);
           if (item) items.push(item);
         }

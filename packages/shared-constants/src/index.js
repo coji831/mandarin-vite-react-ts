@@ -28,6 +28,7 @@ export const ROUTE_PATTERNS = {
   radicals: "/v1/radicals",
   radicalsById: (radicalId) => `/v1/radicals/${radicalId}`,
   radicalsByCharacter: (glyph) => `/v1/radicals/character/${glyph}`,
+  radicalsCharacters: (radicalId) => `/v1/radicals/${radicalId}/characters`,
   foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
   foundationsPinyinCharacterMap: "/v1/foundations/data/pinyin-character-map",
   foundationsStrokes: "/v1/foundations/data/strokes",
@@ -53,6 +54,7 @@ export const ROUTE_PATTERNS = {
   charactersDecomposition: (glyph) => `/v1/characters/${glyph}/decomposition`,
   charactersSearch: "/v1/characters/search",
   charactersFrequency: "/v1/characters/frequency",
+  radicalsCharacters: (radicalId) => `/v1/radicals/${radicalId}/characters`,
 };
 
 // HSK Levels

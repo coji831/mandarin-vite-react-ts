@@ -19,6 +19,9 @@ vi.mock("../../../../shared/infrastructure/database/client.js", () => ({
     pinyinSyllable: {
       findMany: vi.fn().mockResolvedValue([]),
     },
+    characterRadical: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
   },
 }));
 

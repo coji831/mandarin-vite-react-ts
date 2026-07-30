@@ -60,7 +60,7 @@ const mockRadicals: RadicalData[] = [
     is_recommended: true,
     kangxi_index: 1,
     alternate_glyphs: [],
-    metadata: { hsk_characters: [{ glyph: "一", pinyin: "yī", meaning: "one" }] },
+    metadata: {},
   },
   {
     id: "rad_0030",
@@ -86,7 +86,7 @@ const defaultProps = {
   onSearchChange: vi.fn(),
   onChipClick: vi.fn(),
   onRetry: vi.fn(),
-  getCharactersForRadical: vi.fn(() => []),
+  getCharactersForRadical: vi.fn(async () => []),
 };
 
 describe("Phase3TreeView", () => {

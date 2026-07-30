@@ -17,6 +17,7 @@ import {
   type RadicalProgressItem,
 } from "../services/radicalProgressService";
 import type { RadicalData } from "../types";
+import { radicalsService } from "../services/radicalsService";
 import { Phase3TreeView } from "./Phase3TreeView";
 import { Skeleton } from "shared/components";
 import "./RadicalTreesTab.css";
@@ -41,12 +42,27 @@ export function RadicalTreesTab({ radicals, isLoading: radicalsLoading }: Radica
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChipId, setSelectedChipId] = useState<string | null>(null);
 
-  // Build character mapping from radical data
+  // Build character mapping from radical data via API with caching
+  const [charactersCache, setCharactersCache] = useState<
+    Map<string, Array<{ glyph: string; pinyin: string; meaning: string }>>
+  >(new Map());
+
   const getCharactersForRadical = useCallback(
-    (radical: RadicalData): Array<{ glyph: string; pinyin: string; meaning: string }> => {
-      return radical.metadata.hsk_characters ?? [];
+    async (
+      radical: RadicalData,
+    ): Promise<Array<{ glyph: string; pinyin: string; meaning: string }>> => {
+      if (charactersCache.has(radical.id)) {
+        return charactersCache.get(radical.id)!;
+      }
+      try {
+        const result = await radicalsService.getRadicalCharacters(radical.id);
+        setCharactersCache((prev) => new Map(prev).set(radical.id, result.characters));
+        return result.characters;
+      } catch {
+        return [];
+      }
     },
-    [],
+    [charactersCache],
   );
 
   // Filter mastered radicals by search query

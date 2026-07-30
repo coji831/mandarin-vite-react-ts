@@ -34,6 +34,17 @@ async function loadRadicalById(id: string): Promise<RadicalData> {
 }
 
 /**
+ * Load characters associated with a radical via the backend API.
+ */
+async function getRadicalCharacters(radicalId: string): Promise<{
+  radicalId: string;
+  characters: Array<{ glyph: string; pinyin: string; meaning: string }>;
+}> {
+  const response = await apiClient.get(ROUTE_PATTERNS.radicalsCharacters(radicalId));
+  return response.data;
+}
+
+/**
  * Clear all cached radical data (useful for testing).
  */
 function clearCache(): void {
@@ -43,5 +54,6 @@ function clearCache(): void {
 export const radicalsService = {
   loadAllRadicals,
   loadRadicalById,
+  getRadicalCharacters,
   clearCache,
 };

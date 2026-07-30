@@ -27,6 +27,7 @@ export declare const ROUTE_PATTERNS: {
   readonly radicals: string;
   readonly radicalsById: (radicalId: string) => string;
   readonly radicalsByCharacter: (glyph: string) => string;
+  readonly radicalsCharacters: (radicalId: string) => string;
   readonly foundationsPinyinTones: string;
   readonly foundationsPinyinCharacterMap: string;
   readonly foundationsStrokes: string;
@@ -52,6 +53,7 @@ export declare const ROUTE_PATTERNS: {
   readonly charactersDecomposition: (glyph: string) => string;
   readonly charactersSearch: string;
   readonly charactersFrequency: string;
+  readonly radicalsCharacters: (radicalId: string) => string;
 };
 
 // HSK Levels

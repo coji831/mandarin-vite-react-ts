@@ -91,12 +91,7 @@ const mockRadicals: RadicalData[] = [
     stroke_count: 1,
     is_recommended: true,
     kangxi_index: 1,
-    metadata: {
-      hsk_characters: [
-        { glyph: "一", pinyin: "yī", meaning: "one" },
-        { glyph: "七", pinyin: "qī", meaning: "seven" },
-      ],
-    },
+    metadata: {},
   },
   {
     id: "rad_0008",
@@ -107,12 +102,7 @@ const mockRadicals: RadicalData[] = [
     stroke_count: 3,
     is_recommended: true,
     kangxi_index: 8,
-    metadata: {
-      hsk_characters: [
-        { glyph: "水", pinyin: "shuǐ", meaning: "water" },
-        { glyph: "江", pinyin: "jiāng", meaning: "river" },
-      ],
-    },
+    metadata: {},
   },
 ];
 

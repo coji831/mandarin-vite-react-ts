@@ -8,7 +8,7 @@ const API_BASE = "http://localhost:3001/api/v1";
 
 // ─── Shared MSW Handler Constants ──────────────────────────────────────
 
-/** Radicals list that includes radicals matching "好" via hsk_characters */
+/** Radicals list — "白" is a self-match radical and returned via API */
 const radicalsWithHao = () =>
   http.get(`${API_BASE}/radicals`, () =>
     HttpResponse.json([
@@ -25,10 +25,6 @@ const radicalsWithHao = () =>
           frequency_rank: 45,
           notes: "White radical — 好 contains 白 as a component.",
           is_also_character: true,
-          hsk_characters: [
-            { glyph: "好", pinyin: "hǎo", meaning: "good" },
-            { glyph: "白", pinyin: "bái", meaning: "white" },
-          ],
         },
       },
     ]),

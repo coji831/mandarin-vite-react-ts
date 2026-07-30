@@ -16,9 +16,11 @@
  * └───────────────────────────────────────┘
  */
 
+import { useState, useEffect, useCallback } from "react";
 import type { RadicalData } from "../types";
 import { ExampleCharGrid } from "./ExampleCharGrid";
-import { Box, Modal } from "shared/components";
+import { Box, Modal, Skeleton } from "shared/components";
+import { radicalsService } from "../services/radicalsService";
 import "./RadicalDetailCard.css";
 
 interface RadicalDetailCardProps {
@@ -27,7 +29,29 @@ interface RadicalDetailCardProps {
 }
 
 export function RadicalDetailCard({ radical, onClose }: RadicalDetailCardProps) {
-  const hskCharacters = radical.metadata.hsk_characters ?? [];
+  const [characters, setCharacters] = useState<
+    Array<{ glyph: string; pinyin: string; meaning: string }>
+  >([]);
+  const [charsLoading, setCharsLoading] = useState(true);
+  const [charsError, setCharsError] = useState<string | null>(null);
+
+  const fetchCharacters = useCallback(async () => {
+    setCharsLoading(true);
+    setCharsError(null);
+    try {
+      const result = await radicalsService.getRadicalCharacters(radical.id);
+      setCharacters(result.characters);
+    } catch {
+      setCharsError("Failed to load example characters for this radical.");
+    } finally {
+      setCharsLoading(false);
+    }
+  }, [radical.id]);
+
+  useEffect(() => {
+    fetchCharacters();
+  }, [fetchCharacters]);
+
   const hasNameDiffers = radical.name_chinese && radical.name_chinese !== radical.glyph;
   const hasVariants = radical.alternate_glyphs.length > 0;
 
@@ -121,7 +145,24 @@ export function RadicalDetailCard({ radical, onClose }: RadicalDetailCardProps) 
         </div>
 
         {/* ── Example characters ── */}
-        {hskCharacters.length > 0 && <ExampleCharGrid characters={hskCharacters} />}
+        {charsLoading ? (
+          <div className="flex justify-center p-md">
+            <Skeleton variant="custom" height="80px" className="w-full radius-lg" />
+          </div>
+        ) : charsError ? (
+          <div className="flex flex-col items-center gap-sm p-md">
+            <p className="font-sm text-danger">{charsError}</p>
+            <button onClick={fetchCharacters} className="btn btn-sm btn-outline">
+              Retry
+            </button>
+          </div>
+        ) : characters.length > 0 ? (
+          <ExampleCharGrid characters={characters} />
+        ) : (
+          <div className="flex justify-center p-md">
+            <p className="font-sm text-muted">No example characters found for this radical.</p>
+          </div>
+        )}
 
         {/* ── Notes (always visible) — divider via Box, no directional border/padding ── */}
         {radical.metadata?.notes && (

@@ -17,7 +17,7 @@ export interface RadicalData {
   metadata: {
     etymology?: string;
     frequency_rank?: number;
-    hsk_characters?: Array<{ glyph: string; pinyin: string; meaning: string }>;
+    // hsk_characters REMOVED — now fetched from API
     notes?: string;
     is_also_character?: boolean;
     [key: string]: unknown;
