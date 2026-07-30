@@ -23,7 +23,7 @@ Tone sandhi is one of the most challenging aspects of spoken Chinese for learner
 - [x] 0 TypeScript errors across all changed files
 - [x] All backend conventions followed (error message format, service layer pattern, DI via constructor)
 - [x] SandhiDrill section created in TonesTab with rule explanation cards and 10-question drill
-- [x] Storybook stories created covering rules intro, drill active, results, loading, and error states
+- [x] ~~Storybook stories created covering rules intro, drill active, results, loading, and error states~~ **N/A** — feature components don't get Storybook stories per project convention
 - [x] Unit tests for SandhiDrill component (11 tests) and sandhiDrillService (6 tests)
 - [x] MSW handlers created for sandhi-drill questions endpoint
 - [x] 0 lint errors across all changed files
@@ -64,7 +64,7 @@ Tone sandhi is one of the most challenging aspects of spoken Chinese for learner
 - [x] Created `apps/frontend/src/features/foundations/services/sandhiDrillService.ts` — service layer with `getSandhiDrillQuestions()`, `calculateScore()`, `submitSandhiDrillAttempt()`
 - [x] Created `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx` — main drill widget with rules intro, active drill, results, loading, and error states
 - [x] Created `apps/frontend/src/features/foundations/components/tones/SandhiDrill.css` — styles using CSS variables from globals.css
-- [x] Created Storybook stories covering all 6 visual states
+- [x] ~~Created Storybook stories covering all 6 visual states~~ **Removed** — feature components don't get Storybook stories per project convention
 - [x] Created component tests (11 tests) and service tests (6 tests)
 - [x] Created MSW handlers for quiz endpoints in `src/mocks/handlers/quiz-handlers.ts`
 - [x] Added `quizSandhiDrill` route constant to shared-constants

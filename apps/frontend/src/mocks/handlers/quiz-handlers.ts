@@ -128,8 +128,9 @@ export const quizHandlers = {
   },
 
   loading: {
-    sandhiQuestions: http.get(`${API_BASE}/v1/quiz/sandhi-drill/questions`, () =>
-      new Promise(() => {}),
+    sandhiQuestions: http.get(
+      `${API_BASE}/v1/quiz/sandhi-drill/questions`,
+      () => new Promise(() => {}),
     ),
   },
 

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FoundationsPage } from "./FoundationsPage";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
+import { quizHandlers } from "../../../../mocks/handlers/quiz-handlers";
 
 const meta: Meta<typeof FoundationsPage> = {
   title: "Pages/Learn/Foundations",
@@ -23,7 +24,14 @@ export const TonesTab: Story = {
   name: "Tones",
   args: { initialTab: "tones" },
   parameters: {
-    msw: { handlers: [...mswHandlers.foundations.default(), mswHandlers.progression.phaseGate(2)] },
+    msw: {
+      handlers: [
+        ...mswHandlers.foundations.default(),
+        mswHandlers.progression.phaseGate(2),
+        quizHandlers.default.sandhiQuestions,
+        quizHandlers.default.createAttempt,
+      ],
+    },
   },
 };
 
@@ -65,7 +73,11 @@ export const TonesLoading: Story = {
   args: { initialTab: "tones" },
   parameters: {
     msw: {
-      handlers: [...mswHandlers.foundations.loading(), mswHandlers.progression.phaseGate(2)],
+      handlers: [
+        ...mswHandlers.foundations.loading(),
+        mswHandlers.progression.phaseGate(2),
+        quizHandlers.loading.sandhiQuestions,
+      ],
     },
   },
 };
@@ -74,7 +86,11 @@ export const TonesError: Story = {
   args: { initialTab: "tones" },
   parameters: {
     msw: {
-      handlers: [...mswHandlers.foundations.error(), mswHandlers.progression.phaseGate(2)],
+      handlers: [
+        ...mswHandlers.foundations.error(),
+        mswHandlers.progression.phaseGate(2),
+        quizHandlers.error.sandhiQuestions,
+      ],
     },
   },
 };

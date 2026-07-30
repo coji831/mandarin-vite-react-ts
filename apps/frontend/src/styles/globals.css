@@ -183,6 +183,7 @@
   --font-3xl: 28px; /* 28px */
   --font-4xl: 32px; /* 32px */
   --font-5xl: 40px; /* 40px */
+  --font-6xl: 48px; /* 48px */
 
   /* ===== Gradients ===== */
 
@@ -696,6 +697,9 @@ html {
 .font-5xl {
   font-size: var(--font-5xl);
 } /* 2.5rem */
+.font-6xl {
+  font-size: var(--font-6xl);
+} /* 3rem */
 
 /* ═══════════════════════════════════════════════
    Utility: Font Style

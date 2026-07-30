@@ -54,7 +54,7 @@ router.get(
 // ── Sandhi Drill routes (Story 21.17) ──────────────────────────────────────
 
 router.get(
-  "/v1/quiz/sandhi-drill/questions",
+  ROUTE_PATTERNS.quizSandhiDrill,
   optionalAuth,
   asyncHandler((req: Request, res: Response) => sandhiDrillController.getQuestions(req, res)),
 );

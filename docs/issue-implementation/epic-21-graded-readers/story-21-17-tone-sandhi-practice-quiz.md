@@ -8,25 +8,24 @@ Create a backend SandhiDrillService that generates sandhi drill questions from t
 
 **Files:**
 
-| Action | File |
-|---|---|
-| MODIFY | `packages/shared-utils/src/sandhi/toneSandhiUtils.ts` |
-| MODIFY | `packages/shared-utils/src/sandhi/__tests__/toneSandhiUtils.test.ts` |
-| CREATE | `apps/backend/src/modules/quiz/strategies/SandhiDrillService.ts` |
-| CREATE | `apps/backend/src/modules/quiz/strategies/__tests__/SandhiDrillService.test.ts` |
-| CREATE | `apps/backend/src/modules/quiz/api/SandhiDrillController.ts` |
-| MODIFY | `apps/backend/src/modules/quiz/api/quizRoutes.ts` |
-| MODIFY | `packages/shared-constants/src/index.js` |
-| CREATE | `apps/frontend/src/features/foundations/services/sandhiDrillService.ts` |
-| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx` |
-| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.css` |
-| CREATE | `apps/frontend/src/features/foundations/components/tones/__stories__/SandhiDrill.stories.tsx` |
+| Action | File                                                                                     |
+| ------ | ---------------------------------------------------------------------------------------- |
+| MODIFY | `packages/shared-utils/src/sandhi/toneSandhiUtils.ts`                                    |
+| MODIFY | `packages/shared-utils/src/sandhi/__tests__/toneSandhiUtils.test.ts`                     |
+| CREATE | `apps/backend/src/modules/quiz/strategies/SandhiDrillService.ts`                         |
+| CREATE | `apps/backend/src/modules/quiz/strategies/__tests__/SandhiDrillService.test.ts`          |
+| CREATE | `apps/backend/src/modules/quiz/api/SandhiDrillController.ts`                             |
+| MODIFY | `apps/backend/src/modules/quiz/api/quizRoutes.ts`                                        |
+| MODIFY | `packages/shared-constants/src/index.js`                                                 |
+| CREATE | `apps/frontend/src/features/foundations/services/sandhiDrillService.ts`                  |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx`                |
+| CREATE | `apps/frontend/src/features/foundations/components/tones/SandhiDrill.css`                |
 | CREATE | `apps/frontend/src/features/foundations/components/tones/__tests__/SandhiDrill.test.tsx` |
-| CREATE | `apps/frontend/src/features/foundations/services/__tests__/sandhiDrillService.test.ts` |
-| MODIFY | `apps/frontend/src/mocks/handlers/quiz-handlers.ts` |
-| MODIFY | `apps/frontend/src/features/foundations/components/index.ts` |
-| MODIFY | `apps/frontend/src/features/foundations/index.ts` |
-| MODIFY | `apps/frontend/src/pages/learn/foundations/TonesTab.tsx` |
+| CREATE | `apps/frontend/src/features/foundations/services/__tests__/sandhiDrillService.test.ts`   |
+| MODIFY | `apps/frontend/src/mocks/handlers/quiz-handlers.ts`                                      |
+| MODIFY | `apps/frontend/src/features/foundations/components/index.ts`                             |
+| MODIFY | `apps/frontend/src/features/foundations/index.ts`                                        |
+| MODIFY | `apps/frontend/src/pages/learn/foundations/TonesTab.tsx`                                 |
 
 ## Architecture Decisions
 
@@ -48,6 +47,7 @@ Create a backend SandhiDrillService that generates sandhi drill questions from t
 ### 1. shared-utils: `toneSandhiUtils.ts`
 
 Extended `isSandhiAcceptable()` with 3 new sandhi rules:
+
 - `"bu-before-4th"`: `bù` (tone 4) before 4th tone → `bú` (tone 2) — accepts `correctTone=4, selectedTone=2`
 - `"yi-before-4th"`: `yī` (tone 1) before 4th tone → `yí` (tone 2) — accepts `correctTone=1, selectedTone=2`
 - `"yi-before-non4th"`: `yī` (tone 1) before non-4th → `yì` (tone 4) — accepts `correctTone=1, selectedTone=4`
@@ -59,15 +59,16 @@ Also added `applyToneMark(pinyin: string, tone: number): string` helper to conve
 ```typescript
 interface DrillQuestion {
   id: string;
-  characters: string;       // e.g. "你好"
+  characters: string; // e.g. "你好"
   dictionaryPinyin: string; // e.g. "nǐ hǎo"
-  correctAnswer: string;    // sandhi form, e.g. "ní hǎo"
-  ruleId: string;           // "3-3-sandhi" | "bu-before-4th" | "yi-before-4th" | "yi-before-non4th"
-  options: string[];        // 4 shuffled pinyin options
+  correctAnswer: string; // sandhi form, e.g. "ní hǎo"
+  ruleId: string; // "3-3-sandhi" | "bu-before-4th" | "yi-before-4th" | "yi-before-non4th"
+  options: string[]; // 4 shuffled pinyin options
 }
 ```
 
 **Question generation process:**
+
 1. Query `Word` table for all words with `simplified` not null
 2. Filter to exactly 2-character words via `WordCharacter` (sequenceOrder 0, 1)
 3. Get individual character pinyin and tones via `CharacterReading` (primary reading)
@@ -85,6 +86,7 @@ interface DrillQuestion {
 ### 4. Route
 
 Added to `apps/backend/src/modules/quiz/api/quizRoutes.ts`:
+
 ```typescript
 router.get(
   "/v1/quiz/sandhi-drill/questions",
@@ -125,7 +127,6 @@ The SandhiDrill component lives in `apps/frontend/src/features/foundations/compo
 Component delegates data fetching to `sandhiDrillService.ts` (service layer pattern) and posts results via `submitSandhiDrillAttempt()` to the existing `POST /v1/quiz/attempts` endpoint with `quizType: "sandhi-drill"`.
 
 ## Verification
-
 
 - `packages/shared-utils`: 31 tests pass (17 existing + 14 new)
 - `apps/backend` quiz module: 17 tests pass (9 existing + 8 new)

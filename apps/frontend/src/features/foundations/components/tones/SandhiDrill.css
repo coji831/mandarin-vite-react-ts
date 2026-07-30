@@ -32,7 +32,6 @@
 
 .sandhi-drill-rule-formula {
   font-size: var(--font-xs);
-  opacity: 0.7;
 }
 
 .sandhi-drill-rule-examples {
@@ -46,7 +45,7 @@
 }
 
 .sandhi-drill-character {
-  font-size: 3rem;
+  font-size: var(--font-6xl);
   line-height: 1.3;
   letter-spacing: 0.1em;
 }
@@ -63,7 +62,9 @@
   width: 100%;
   min-height: 48px;
   font-size: var(--font-md);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .sandhi-drill-option-btn--correct {
@@ -79,7 +80,7 @@
 }
 
 .sandhi-drill-option-btn--dimmed {
-  opacity: 0.4;
+  /* opacity handled by .op-40 utility class */
 }
 
 .sandhi-drill-feedback {
@@ -143,7 +144,6 @@
 
 .sandhi-drill-results-table th {
   font-weight: 600;
-  opacity: 0.7;
   border-bottom: 1px solid var(--surface-border);
 }
 
@@ -175,7 +175,7 @@
   }
 
   .sandhi-drill-character {
-    font-size: 2.5rem;
+    font-size: var(--font-5xl);
   }
 
   .sandhi-drill-results-actions {

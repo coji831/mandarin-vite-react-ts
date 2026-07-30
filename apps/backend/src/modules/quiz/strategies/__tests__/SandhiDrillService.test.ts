@@ -152,7 +152,7 @@ describe("SandhiDrillService", () => {
       mockWordFindMany.mockResolvedValue([]);
 
       await expect(service.generateQuestions(5)).rejects.toThrow(
-        "No word candidates found for sandhi drill questions",
+        "Failed to load sandhi drill candidates",
       );
     });
   });

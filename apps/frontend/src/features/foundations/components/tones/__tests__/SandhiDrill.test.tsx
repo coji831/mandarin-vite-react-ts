@@ -50,7 +50,9 @@ describe("SandhiDrill", () => {
   it("calls getSandhiDrillQuestions when Start Drill is clicked", async () => {
     const spy = vi.spyOn(service, "getSandhiDrillQuestions").mockResolvedValue(mockQuestions);
     vi.spyOn(service, "calculateScore").mockReturnValue({
-      score: 2, total: 2, ruleScores: {},
+      score: 2,
+      total: 2,
+      ruleScores: {},
     });
     vi.spyOn(service, "submitSandhiDrillAttempt").mockResolvedValue(undefined);
 
@@ -67,7 +69,9 @@ describe("SandhiDrill", () => {
   it("shows loading then active state on 'Start Drill' click", async () => {
     vi.spyOn(service, "getSandhiDrillQuestions").mockResolvedValue(mockQuestions);
     vi.spyOn(service, "calculateScore").mockReturnValue({
-      score: 2, total: 2, ruleScores: {},
+      score: 2,
+      total: 2,
+      ruleScores: {},
     });
     vi.spyOn(service, "submitSandhiDrillAttempt").mockResolvedValue(undefined);
 
@@ -86,7 +90,9 @@ describe("SandhiDrill", () => {
   it("shows correct feedback on correct answer", async () => {
     vi.spyOn(service, "getSandhiDrillQuestions").mockResolvedValue(mockQuestions);
     vi.spyOn(service, "calculateScore").mockReturnValue({
-      score: 2, total: 2, ruleScores: {},
+      score: 2,
+      total: 2,
+      ruleScores: {},
     });
     vi.spyOn(service, "submitSandhiDrillAttempt").mockResolvedValue(undefined);
 
@@ -107,7 +113,9 @@ describe("SandhiDrill", () => {
   it("shows wrong feedback on incorrect answer", async () => {
     vi.spyOn(service, "getSandhiDrillQuestions").mockResolvedValue(mockQuestions);
     vi.spyOn(service, "calculateScore").mockReturnValue({
-      score: 2, total: 2, ruleScores: {},
+      score: 2,
+      total: 2,
+      ruleScores: {},
     });
     vi.spyOn(service, "submitSandhiDrillAttempt").mockResolvedValue(undefined);
 
@@ -128,7 +136,9 @@ describe("SandhiDrill", () => {
   it("completes drill and reaches results phase", async () => {
     vi.spyOn(service, "getSandhiDrillQuestions").mockResolvedValue(mockQuestions);
     vi.spyOn(service, "calculateScore").mockReturnValue({
-      score: 2, total: 2, ruleScores: {},
+      score: 2,
+      total: 2,
+      ruleScores: {},
     });
     vi.spyOn(service, "submitSandhiDrillAttempt").mockResolvedValue(undefined);
 

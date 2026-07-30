@@ -27,12 +27,10 @@ const mockQuestions = [
 
 export const getSandhiDrillQuestions = vi.fn().mockResolvedValue(mockQuestions);
 
-export const calculateScore = vi.fn(
-  (answers: { selected: string; correctAnswer: string }[]) => ({
-    score: answers.filter((a) => a.selected === a.correctAnswer).length,
-    total: answers.length,
-    ruleScores: {},
-  }),
-);
+export const calculateScore = vi.fn((answers: { selected: string; correctAnswer: string }[]) => ({
+  score: answers.filter((a) => a.selected === a.correctAnswer).length,
+  total: answers.length,
+  ruleScores: {},
+}));
 
 export const submitSandhiDrillAttempt = vi.fn().mockResolvedValue(undefined);

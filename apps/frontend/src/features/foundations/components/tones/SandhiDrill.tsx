@@ -12,10 +12,14 @@
  * 5. Error — error screen with retry
  */
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { Box, Button, ErrorScreen, LoadingScreen, ProgressBar } from "shared/components";
 import type { DrillQuestion } from "../../services/sandhiDrillService";
-import { getSandhiDrillQuestions, calculateScore, submitSandhiDrillAttempt } from "../../services/sandhiDrillService";
+import {
+  getSandhiDrillQuestions,
+  calculateScore,
+  submitSandhiDrillAttempt,
+} from "../../services/sandhiDrillService";
 import "./SandhiDrill.css";
 
 // ─── Constants ──────────────────────────────────────────────────────────
@@ -102,7 +106,7 @@ function RuleCardsIntro({ onStart }: { onStart: () => void }) {
         {RULE_CARDS.map((rule) => (
           <Box key={rule.ruleId} variant="card" padding="sm" className="sandhi-drill-rule-card">
             <h4 className="font-sm fw-700 text-secondary m-0">{rule.name}</h4>
-            <p className="sandhi-drill-rule-formula text-primary fw-600 font-xs m-0 mt-xs">
+            <p className="sandhi-drill-rule-formula text-primary fw-600 font-xs m-0 mt-xs op-80">
               {rule.formula}
             </p>
             <p className="font-xs text-tertiary m-0 mt-xs lh-normal">{rule.description}</p>
@@ -160,12 +164,8 @@ function DrillActive({
       {/* Character Display */}
       <Box variant="dark" padding="lg" className="sandhi-drill-active">
         <div className="sandhi-drill-character text-secondary fw-700">{question.characters}</div>
-        <p className="font-xs text-tertiary m-0 mt-xs">
-          Dictionary: {question.dictionaryPinyin}
-        </p>
-        <p className="font-xs text-muted m-0 mt-4px">
-          Which spoken (sandhi) pinyin is correct?
-        </p>
+        <p className="font-xs text-tertiary m-0 mt-xs">Dictionary: {question.dictionaryPinyin}</p>
+        <p className="font-xs text-muted m-0 mt-4px">Which spoken (sandhi) pinyin is correct?</p>
       </Box>
 
       {/* Option Buttons */}
@@ -178,7 +178,7 @@ function DrillActive({
             } else if (option === selectedAnswer && option !== question.correctAnswer) {
               className += " sandhi-drill-option-btn--wrong";
             } else {
-              className += " sandhi-drill-option-btn--dimmed";
+              className += " sandhi-drill-option-btn--dimmed op-40";
             }
           }
           return (
@@ -201,6 +201,7 @@ function DrillActive({
           className={`sandhi-drill-feedback font-sm fw-600 ${
             isCorrect ? "sandhi-drill-feedback--correct" : "sandhi-drill-feedback--wrong"
           }`}
+          role="alert"
         >
           {isCorrect ? "✓ Correct!" : `✗ The sandhi form is: ${question.correctAnswer}`}
         </div>
@@ -256,9 +257,9 @@ function DrillResults({
           <table className="sandhi-drill-results-table">
             <thead>
               <tr>
-                <th>Rule</th>
-                <th>Score</th>
-                <th>%</th>
+                <th className="op-80">Rule</th>
+                <th className="op-80">Score</th>
+                <th className="op-80">%</th>
               </tr>
             </thead>
             <tbody>
@@ -311,6 +312,13 @@ export function SandhiDrill() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const fetchQuestions = useCallback(async () => {
     setPhase("loading");
@@ -352,7 +360,7 @@ export function SandhiDrill() {
       setAnswers(newAnswers);
 
       // Auto-advance after a short delay
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         if (currentIndex < questions.length - 1) {
           setCurrentIndex((prev) => prev + 1);
           setSelectedAnswer(null);
