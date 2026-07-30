@@ -10,7 +10,9 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { Request, Response } from "express";
 import type { WordsService } from "../services/WordsService.js";
+import type { MeasureWordService } from "../services/MeasureWordService.js";
 import { WordNotFoundError } from "../types/words-errors.js";
+import { WordIdNotFoundError } from "../types/words-errors.js";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -24,9 +26,11 @@ const logger = createLogger("WordsController");
  */
 export class WordsController {
   private wordsService: WordsService;
+  private measureWordService: MeasureWordService;
 
-  constructor(wordsService: WordsService) {
+  constructor(wordsService: WordsService, measureWordService: MeasureWordService) {
     this.wordsService = wordsService;
+    this.measureWordService = measureWordService;
   }
 
   /**
@@ -60,6 +64,40 @@ export class WordsController {
       logger.error(`Failed to load word detail for ${req.params.glyph}`, err);
       res.status(500).json({
         error: "Failed to load word detail",
+        code: "INTERNAL_ERROR",
+      });
+    }
+  }
+
+  /**
+   * GET /v1/words/:id/measure-words
+   * Fetch measure words (量词) associated with a given word ID.
+   */
+  async getMeasureWords(req: Request, res: Response): Promise<void> {
+    try {
+      const wordId = String(req.params.id);
+
+      if (!wordId || !/^w_\w+$/.test(wordId)) {
+        res.status(400).json({
+          error: "Failed to load measure words",
+          code: "VALIDATION_ERROR",
+        });
+        return;
+      }
+
+      const result = await this.measureWordService.getMeasureWordsForWord(wordId);
+      res.json(result);
+    } catch (err) {
+      if (err instanceof WordIdNotFoundError) {
+        res.status(404).json({
+          error: "Failed to load measure words",
+          code: "NOT_FOUND",
+        });
+        return;
+      }
+      logger.error(`Failed to load measure words for ${req.params.id}`, err);
+      res.status(500).json({
+        error: "Failed to load measure words",
         code: "INTERNAL_ERROR",
       });
     }

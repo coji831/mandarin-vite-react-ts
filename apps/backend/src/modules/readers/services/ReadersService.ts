@@ -364,12 +364,8 @@ Do not include any text before or after the JSON object.`;
     userId: string,
     passageId: string,
   ): Promise<{ currentSentence: number; isCompleted: boolean }> {
-    const existing = await this.repository.findSession(userId, passageId);
-    if (existing) {
-      return { currentSentence: existing.currentSentence, isCompleted: existing.completed };
-    }
-    const created = await this.repository.createSession(userId, passageId);
-    return { currentSentence: created.currentSentence, isCompleted: created.completed };
+    const session = await this.repository.getOrCreateSession(userId, passageId);
+    return { currentSentence: session.currentSentence, isCompleted: session.completed };
   }
 
   /**

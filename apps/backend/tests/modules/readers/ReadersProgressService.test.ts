@@ -29,8 +29,7 @@ describe("ReadersService — Reading Progress", () => {
 
   beforeEach(() => {
     mockRepository = {
-      findSession: vi.fn(),
-      createSession: vi.fn(),
+      getOrCreateSession: vi.fn(),
       upsertSession: vi.fn(),
       completePassage: vi.fn(),
       createBookmark: vi.fn(),
@@ -54,29 +53,17 @@ describe("ReadersService — Reading Progress", () => {
   });
 
   describe("getOrCreateSession", () => {
-    it("returns existing session when one exists", async () => {
-      vi.mocked(mockRepository.findSession).mockResolvedValue(mockSession);
+    it("returns session from repository", async () => {
+      vi.mocked(mockRepository.getOrCreateSession).mockResolvedValue(mockSession);
 
       const result = await service.getOrCreateSession("user_001", "passage_001");
 
-      expect(mockRepository.findSession).toHaveBeenCalledWith("user_001", "passage_001");
-      expect(mockRepository.createSession).not.toHaveBeenCalled();
-      expect(result).toEqual({ currentSentence: 3, isCompleted: false });
-    });
-
-    it("creates new session when none exists", async () => {
-      vi.mocked(mockRepository.findSession).mockResolvedValue(null);
-      vi.mocked(mockRepository.createSession).mockResolvedValue(mockSession);
-
-      const result = await service.getOrCreateSession("user_001", "passage_001");
-
-      expect(mockRepository.findSession).toHaveBeenCalledWith("user_001", "passage_001");
-      expect(mockRepository.createSession).toHaveBeenCalledWith("user_001", "passage_001");
+      expect(mockRepository.getOrCreateSession).toHaveBeenCalledWith("user_001", "passage_001");
       expect(result).toEqual({ currentSentence: 3, isCompleted: false });
     });
 
     it("propagates repository errors", async () => {
-      vi.mocked(mockRepository.findSession).mockRejectedValue(new Error("DB error"));
+      vi.mocked(mockRepository.getOrCreateSession).mockRejectedValue(new Error("DB error"));
 
       await expect(service.getOrCreateSession("user_001", "passage_001")).rejects.toThrow(
         "DB error",

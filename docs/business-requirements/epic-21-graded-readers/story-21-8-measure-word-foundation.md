@@ -1,6 +1,6 @@
 # Story 21.8: Measure Word Foundation
 
-**Last Update:** July 24, 2026
+**Last Update:** July 30, 2026
 
 ## Description
 
@@ -10,29 +10,39 @@
 
 ## Business Value
 
-Business audit §7 identified measure words as "the single biggest grammar omission" and "#3 difficulty point" for learners. Mandarin requires measure words (量词) between numbers and nouns (e.g., 一个人, 两本书, 三张桌子), and learners frequently produce errors like *一人 or *两书 without them. Creating a dedicated MeasureWord + MeasureWordWord data model, seeding the most common HSK 1-3 measure words, and exposing them via API closes this gap. This story lays the data foundation; the LexicalHub integration (displaying measure words alongside vocabulary lookup) is a sub-AC of Story 21.4.
+Business audit §7 identified measure words as "the single biggest grammar omission" and "#3 difficulty point" for learners. Mandarin requires measure words (量词) between numbers and nouns (e.g., 一个人, 两本书, 三张桌子), and learners frequently produce errors like *一人 or *两书 without them. Exposing the existing MeasureWord + MeasureWordWord data models via API closes this gap. This story lays the data foundation; the LexicalHub integration (displaying measure words alongside vocabulary lookup) is a sub-AC of Story 21.4.
 
 ## Acceptance Criteria
 
-- [ ] MeasureWord model created with permanent content IDs (mw_XXXXX pattern)
-- [ ] MeasureWordWord junction model created for many-to-many noun pairing
-- [ ] Seed script populates ≥50 HSK 1-3 common measure words
-- [ ] Seed populates ≥100 MeasureWordWord noun-pairing records
-- [ ] `GET /api/v1/words/:id/measure-words` endpoint returns array of compatible measure words for a given noun
-- [ ] Endpoint returns 400 for unknown wordId, 200 with empty array for words with no measure words
-- [ ] LexicalHub (Story 21.4) displays measure words in WordHubContent — integration point established
-- [ ] Seed script is idempotent (ON CONFLICT DO NOTHING — safe to re-run)
-- [ ] Measure words include fields: category tag (measure, time, abstract, verb, formal), usage notes, pinyin with tone marks
+- [x] MeasureWord model exists in Prisma schema with permanent content IDs (mw_001 pattern)
+- [x] MeasureWordWord junction model exists for many-to-many noun pairing
+- [x] Seed data has 52 common measure words with `category` and `usageNote` fields populated
+- [x] Seed data has 135 MeasureWordWord noun-pairing records (pre-existing, no changes needed)
+- [x] `GET /api/v1/words/:id/measure-words` endpoint returns array of compatible measure words for a given noun
+- [x] Endpoint returns 400 for unknown wordId, 200 with empty array for words with no measure words
+- [x] LexicalHub (Story 21.4) displays measure words in WordHubContent — integration point established
+- [x] Seed script is idempotent (`skipDuplicates: true` — safe to re-run)
+- [x] Measure words include fields: category tag (general, measure, time, abstract, verb, formal, container), usage notes, pinyin with tone marks
 
 ## Business Rules
 
-1. **Permanent Content IDs** — Every measure word gets a stable business key: `mw_XXXXX`. Never auto-increment integers. IDs are determined by the seed script and never change.
+1. **Permanent Content IDs** — Every measure word gets a stable business key: `mw_001`, `mw_002`, etc. (3-digit, matching Phase 2 data format). Never auto-increment integers. IDs are determined by the seed data and never change.
 2. **Noun Pairing** — MeasureWordWord junction table pairs measure words with Word records. A single measure word (e.g., 个) pairs with many nouns. A single noun (e.g., 书) may pair with multiple measure words (e.g., 本 for books, 张 for pages).
-3. **Category System** — Each measure word has one category tag: `"measure"` (尺寸/重量 — 尺, 斤), `"time"` (小时, 年), `"abstract"` (种, 些), `"verb"` (次, 遍), `"formal"` (位, 座), or `"container"` (杯, 碗). This enables future filtering and pedagogical grouping.
+3. **Category System** — Each measure word has one category tag from 7 possible values:
+   - `"general"` — Fallback measure word (currently only 个)
+   - `"measure"` — Size/weight/quantity (尺, 斤, 块, 条, 张)
+   - `"time"` — Time units (年, 月, 天, 小时 — reserved for future expansion)
+   - `"abstract"` — Abstract categories (种, 些, 点, 点)
+   - `"verb"` — Verbal measure (次, 遍, 下, 回)
+   - `"formal"` — Polite/formal usage (位, 座, 所)
+   - `"container"` — Container measures (杯, 碗, 瓶, 盒)
+
+   This enables future filtering and pedagogical grouping.
+
 4. **Usage Notes** — Each measure word includes learner-facing notes: e.g., "个 is the most common general measure word — can be used as a fallback when unsure which MW to use."
-5. **API Returns Full Measure Word Objects** — `GET /api/v1/words/:id/measure-words` returns `{ measureWords: [{ id, simplified, pinyin, meaning, category, usageNote, isDefault }] }`. The `isDefault` flag indicates the most common measure word for this noun (e.g., 个 for 人).
-6. **HSK 1-3 Focus** — Seed covers the most common measure words encountered by beginners. Expanded to HSK 4+ in a future story.
-7. **Idempotent Seed** — Seed uses `ON CONFLICT (id) DO NOTHING` for both MeasureWord and MeasureWordWord. Re-running the seed does not duplicate records.
+5. **API Returns Full Measure Word Objects** — `GET /api/v1/words/:id/measure-words` returns `{ wordId, simplified, measureWords: [{ id, simplified, pinyin, meaning, category, usageNote, isDefault, exampleSentence }] }`. The `isDefault` flag indicates the most common measure word for this noun (e.g., 个 for 人).
+6. **HSK 1-3 Focus** — Seed data covers the most common measure words encountered by beginners. Expanded to HSK 4+ in a future story.
+7. **Idempotent Seed** — Seed uses `skipDuplicates: true` (equivalent to `ON CONFLICT DO NOTHING`) for both MeasureWord and MeasureWordWord. Re-running the seed does not duplicate records.
 
 ## Related Issues
 
@@ -43,7 +53,7 @@ Business audit §7 identified measure words as "the single biggest grammar omiss
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Complete
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Key Commit**: 51487da7

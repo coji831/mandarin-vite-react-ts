@@ -33,6 +33,7 @@ export const ROUTE_PATTERNS = {
   foundationsStrokes: "/v1/foundations/data/strokes",
   charactersByGlyph: (glyph) => `/v1/characters/${glyph}`,
   wordsByGlyph: (glyph) => `/v1/words/${glyph}`,
+  wordsMeasureWords: (wordId) => `/v1/words/${wordId}/measure-words`,
   mnemonics: "/v1/mnemonics",
   mnemonicsByChar: (glyph) => `/v1/mnemonics/${glyph}`,
   quizConfig: "/v1/quiz/config",

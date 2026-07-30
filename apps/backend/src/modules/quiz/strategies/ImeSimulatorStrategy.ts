@@ -36,7 +36,7 @@ export const imeSimulatorStrategy = {
     }> = [];
 
     for (const file of radicalFiles) {
-      const hskChars = (file as any).hskCharacters as
+      const hskChars = (file as Record<string, unknown>).hskCharacters as
         Array<{ glyph: string; pinyin?: string; meaning?: string }> | undefined;
       for (const char of hskChars || []) {
         const glyph = char.glyph;

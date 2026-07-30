@@ -9,7 +9,9 @@
       "人",
       "朋友",
       "学生"
-    ]
+    ],
+    "category": "general",
+    "usageNote": "The most common and versatile measure word. Can be used as a polite fallback when unsure which measure word to use."
   },
   {
     "id": "mw_002",
@@ -21,7 +23,9 @@
       "书",
       "词典",
       "杂志"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "Used for bound publications — books, notebooks, dictionaries."
   },
   {
     "id": "mw_003",
@@ -34,7 +38,9 @@
       "票",
       "床",
       "桌子"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "Used for flat, sheet-like objects: paper, tickets, tables, beds."
   },
   {
     "id": "mw_004",
@@ -47,7 +53,9 @@
       "路",
       "裤子",
       "河"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For long, slender, flexible objects: fish, roads, pants, rivers."
   },
   {
     "id": "mw_005",
@@ -60,7 +68,9 @@
       "狗",
       "鸟",
       "鞋"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "One of a pair (shoes, hands) or small animals (cats, dogs, birds)."
   },
   {
     "id": "mw_006",
@@ -72,7 +82,9 @@
       "水",
       "茶",
       "咖啡"
-    ]
+    ],
+    "category": "container",
+    "usageNote": "Used for cupfuls or glassfuls of liquid."
   },
   {
     "id": "mw_007",
@@ -84,7 +96,9 @@
       "饭",
       "面",
       "汤"
-    ]
+    ],
+    "category": "container",
+    "usageNote": "Used for bowlfuls of food (rice, noodles, soup)."
   },
   {
     "id": "mw_008",
@@ -96,7 +110,9 @@
       "钱",
       "蛋糕",
       "石头"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For chunks, pieces, or lumps. Also used colloquially for money (kuài = yuan)."
   },
   {
     "id": "mw_009",
@@ -108,7 +124,9 @@
       "衣服",
       "事",
       "礼物"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For individual items, especially clothing (shirt, jacket) and matters (事情)."
   },
   {
     "id": "mw_010",
@@ -120,7 +138,9 @@
       "鞋",
       "筷子",
       "手"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For items that come in pairs: shoes, chopsticks, hands."
   },
   {
     "id": "mw_011",
@@ -132,7 +152,9 @@
       "耳朵",
       "夫妻",
       "眼睛"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For people or things that naturally come in pairs: ears, couples, eyes."
   },
   {
     "id": "mw_012",
@@ -144,7 +166,9 @@
       "面包",
       "药",
       "树叶"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For thin, flat slices or pieces: bread, medicine, leaves."
   },
   {
     "id": "mw_013",
@@ -157,7 +181,9 @@
       "钥匙",
       "椅子",
       "伞"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For objects with handles (knife, key, umbrella) or handfuls of things."
   },
   {
     "id": "mw_014",
@@ -169,7 +195,9 @@
       "车",
       "自行车",
       "公共汽车"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For wheeled vehicles: cars, bicycles, buses."
   },
   {
     "id": "mw_015",
@@ -181,7 +209,9 @@
       "电脑",
       "电视",
       "手机"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For mechanical/electronic devices: computers, TVs, phones."
   },
   {
     "id": "mw_016",
@@ -193,7 +223,9 @@
       "电影",
       "电话",
       "小说"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For films, novels, and telephone numbers. Also used for departments."
   },
   {
     "id": "mw_017",
@@ -205,7 +237,9 @@
       "房间",
       "教室",
       "公司"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For rooms and buildings: classrooms, offices, rooms."
   },
   {
     "id": "mw_018",
@@ -217,7 +251,9 @@
       "学校",
       "医院",
       "房子"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "For institutions and buildings: schools, hospitals, houses."
   },
   {
     "id": "mw_019",
@@ -230,7 +266,9 @@
       "商店",
       "餐厅",
       "人"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For families, businesses, and organizations: companies, restaurants, shops."
   },
   {
     "id": "mw_020",
@@ -242,7 +280,9 @@
       "山",
       "桥",
       "城市"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "For large structures: mountains, bridges, cities."
   },
   {
     "id": "mw_021",
@@ -254,7 +294,9 @@
       "课",
       "语言",
       "技术"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For academic subjects, languages, and branches of knowledge."
   },
   {
     "id": "mw_022",
@@ -265,7 +307,9 @@
     "nouns": [
       "人",
       "水"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For family members (人口) and mouthfuls of liquid."
   },
   {
     "id": "mw_023",
@@ -277,7 +321,9 @@
       "牛",
       "猪",
       "大象"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For larger livestock animals: cows, pigs, elephants."
   },
   {
     "id": "mw_024",
@@ -288,7 +334,9 @@
     "nouns": [
       "马",
       "布"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For horses and bolts of cloth."
   },
   {
     "id": "mw_025",
@@ -299,7 +347,9 @@
     "nouns": [
       "信",
       "邮件"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For sealed items: letters, emails."
   },
   {
     "id": "mw_026",
@@ -311,7 +361,9 @@
       "报纸",
       "工作",
       "礼物"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For portions, copies, or shares: newspapers, jobs, gifts."
   },
   {
     "id": "mw_027",
@@ -322,7 +374,9 @@
     "nouns": [
       "歌",
       "诗"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For poems, songs, and musical pieces."
   },
   {
     "id": "mw_028",
@@ -333,7 +387,9 @@
     "nouns": [
       "文章",
       "日记"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For written compositions: articles, essays, diaries."
   },
   {
     "id": "mw_029",
@@ -344,7 +400,9 @@
     "nouns": [
       "书",
       "纸"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For pages of a book or paper."
   },
   {
     "id": "mw_030",
@@ -355,7 +413,9 @@
     "nouns": [
       "楼",
       "土"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For layers, floors (stories) of a building."
   },
   {
     "id": "mw_031",
@@ -366,7 +426,9 @@
     "nouns": [
       "花",
       "云"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For flowers and clouds."
   },
   {
     "id": "mw_032",
@@ -378,7 +440,9 @@
       "星",
       "牙",
       "心"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For small, round objects: stars, teeth, hearts, pearls."
   },
   {
     "id": "mw_033",
@@ -389,7 +453,9 @@
     "nouns": [
       "米",
       "药"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For small grain-like objects: rice grains, pills, seeds."
   },
   {
     "id": "mw_034",
@@ -401,7 +467,9 @@
       "头发",
       "香蕉",
       "筷子"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For long, thin objects: sticks, hair, fingers, needles."
   },
   {
     "id": "mw_035",
@@ -413,7 +481,9 @@
       "笔",
       "烟",
       "枪"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For long, thin objects like pens, pencils, and songs."
   },
   {
     "id": "mw_036",
@@ -425,7 +495,9 @@
       "时间",
       "路",
       "话"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For sections, segments: periods of time, lengths of road, paragraphs."
   },
   {
     "id": "mw_037",
@@ -436,7 +508,9 @@
     "nouns": [
       "课",
       "车厢"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For class periods, lessons, and sections of content."
   },
   {
     "id": "mw_038",
@@ -448,7 +522,9 @@
       "人",
       "动物",
       "颜色"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For types, kinds, or varieties of things."
   },
   {
     "id": "mw_039",
@@ -459,7 +535,9 @@
     "nouns": [
       "东西",
       "菜"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For kinds, types, and varieties of things."
   },
   {
     "id": "mw_040",
@@ -470,7 +548,9 @@
     "nouns": [
       "问题",
       "活动"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For categories and classes of things."
   },
   {
     "id": "mw_041",
@@ -481,7 +561,9 @@
     "nouns": [
       "台阶",
       "考试"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For levels, grades, and ranks."
   },
   {
     "id": "mw_042",
@@ -491,7 +573,9 @@
     "hskLevel": 3,
     "nouns": [
       "人"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For classes, grades, and ranks of things."
   },
   {
     "id": "mw_043",
@@ -502,7 +586,9 @@
     "nouns": [
       "房间",
       "鞋"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For numbered items, sizes, and room numbers."
   },
   {
     "id": "mw_044",
@@ -514,7 +600,9 @@
       "人",
       "老师",
       "客人"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "Polite measure word for people: guests, teachers, experts."
   },
   {
     "id": "mw_045",
@@ -526,7 +614,9 @@
       "学生",
       "记者",
       "医生"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "For people with professional roles: doctors, students, reporters."
   },
   {
     "id": "mw_046",
@@ -537,7 +627,9 @@
     "nouns": [
       "工作",
       "任务"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For abstract items, tasks, and projects."
   },
   {
     "id": "mw_047",
@@ -548,7 +640,9 @@
     "nouns": [
       "总统",
       "经理"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "For terms of office and political positions."
   },
   {
     "id": "mw_048",
@@ -559,7 +653,9 @@
     "nouns": [
       "会议",
       "学生"
-    ]
+    ],
+    "category": "formal",
+    "usageNote": "For sessions, terms, and installments (conferences, classes)."
   },
   {
     "id": "mw_049",
@@ -570,7 +666,9 @@
     "nouns": [
       "话",
       "台词"
-    ]
+    ],
+    "category": "abstract",
+    "usageNote": "For sentences, phrases, or lines of speech."
   },
   {
     "id": "mw_050",
@@ -581,7 +679,9 @@
     "nouns": [
       "饭",
       "早餐"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For meals: 一顿饭 (one meal)."
   },
   {
     "id": "mw_051",
@@ -592,7 +692,9 @@
     "nouns": [
       "电影",
       "比赛"
-    ]
+    ],
+    "category": "measure",
+    "usageNote": "For events, performances, and matches."
   },
   {
     "id": "mw_052",
@@ -602,6 +704,8 @@
     "hskLevel": 3,
     "nouns": [
       "书"
-    ]
+    ],
+    "category": "verb",
+    "usageNote": "For number of times completing an action from start to finish: read through, watch through."
   }
 ]

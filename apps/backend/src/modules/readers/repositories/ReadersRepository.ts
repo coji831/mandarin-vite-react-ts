@@ -148,28 +148,16 @@ export class ReadersRepository {
   }
 
   /**
-   * Find a reading session by userId and passageId.
+   * Get or create a reading session (atomic upsert — race-condition safe).
    */
-  async findSession(
-    userId: string,
-    passageId: string,
-  ): Promise<{ id: string; currentSentence: number; completed: boolean } | null> {
-    const session = await prisma.readingSession.findUnique({
-      where: { userId_passageId: { userId, passageId } },
-      select: { id: true, currentSentence: true, completed: true },
-    });
-    return session;
-  }
-
-  /**
-   * Create a new reading session with currentSentence = 0.
-   */
-  async createSession(
+  async getOrCreateSession(
     userId: string,
     passageId: string,
   ): Promise<{ id: string; currentSentence: number; completed: boolean }> {
-    return prisma.readingSession.create({
-      data: { userId, passageId, currentSentence: 0 },
+    return prisma.readingSession.upsert({
+      where: { userId_passageId: { userId, passageId } },
+      create: { userId, passageId, currentSentence: 0, completed: false },
+      update: {},
       select: { id: true, currentSentence: true, completed: true },
     });
   }

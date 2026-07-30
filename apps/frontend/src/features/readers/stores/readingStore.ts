@@ -2,6 +2,7 @@
  * @file readingStore.ts
  * @description Scoped Zustand store for the Graded Readers feature session state.
  * Phase 4: Reading session store — popover UI state, current passage, mode.
+ * Phase 1 (Epic 21): Audio state moved to audioStore (currentAudioIndex, pendingPlayIndex).
  * Story 21.7: Reading Progress — currentSentence, completedPassages, bookmarkedPassages,
  *   saveProgress, restoreSession, toggleBookmark, fetchBookmarks.
  *
@@ -34,14 +35,6 @@ interface ReadingStore {
   mode: ReadersMode;
   /** Word popover state */
   popover: PopoverState;
-  /** Currently highlighted/playing sentence index (null = no audio cursor). */
-  currentAudioIndex: number | null;
-  /**
-   * Event signal: when non-null, the audio hook should start playback from this index.
-   * The hook clears it after consuming. Used by SentenceDisplay tap-to-play.
-   */
-  pendingPlayIndex: number | null;
-
   // ── Reading Progress (Story 21.7) ──────────────────────────────────────
 
   /** Current sentence index in the active passage (0-based). */
@@ -61,11 +54,6 @@ interface ReadingStore {
   setMode: (mode: ReadersMode) => void;
   openPopover: (glyph: string, rect: DOMRect) => void;
   closePopover: () => void;
-  /** Thin setter — no engine side-effects. Only updates the cursor position. */
-  setCurrentAudioIndex: (index: number | null) => void;
-  /** Signal the audio hook to begin playback from the given index. */
-  setPendingPlayIndex: (index: number | null) => void;
-
   // ── Progress Actions (Story 21.7) ──────────────────────────────────────
 
   /** Update current sentence index locally. */
@@ -116,8 +104,6 @@ export const useReadingStore = create<ReadingStore>()(
       currentPassageId: null,
       mode: "library",
       popover: { glyph: null, position: null },
-      currentAudioIndex: null,
-      pendingPlayIndex: null,
 
       // ── Progress initial state ──────────────────────────────────────────
       currentSentence: 0,
@@ -143,10 +129,6 @@ export const useReadingStore = create<ReadingStore>()(
         set({
           popover: { glyph: null, position: null },
         }),
-
-      setCurrentAudioIndex: (index) => set({ currentAudioIndex: index }),
-
-      setPendingPlayIndex: (index) => set({ pendingPlayIndex: index }),
 
       // ── Progress actions ────────────────────────────────────────────────
 

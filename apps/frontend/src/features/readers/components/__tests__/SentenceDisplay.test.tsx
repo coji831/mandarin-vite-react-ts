@@ -1,13 +1,15 @@
 /**
  * @file components/SentenceDisplay/__tests__/SentenceDisplay.test.tsx
  * @description Tests for SentenceDisplay component
- * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Phase 2: Audio props removed — reads audioStore directly.
  */
 
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SentenceDisplay } from "../SentenceDisplay";
+import { useAudioStore } from "../../stores";
+import type { AudioStatus } from "../../stores";
 import type { SentenceData } from "../SentenceDisplay";
 
 const SAMPLE_SENTENCE: SentenceData = {
@@ -23,14 +25,22 @@ const SAMPLE_SENTENCE: SentenceData = {
 
 describe("SentenceDisplay", () => {
   const onPopoverOpen = vi.fn();
-  const onSentenceTap = vi.fn();
   const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
 
   const defaultProps = {
     onPopoverOpen,
-    onSentenceTap,
-    currentAudioIndex: null,
   };
+
+  beforeEach(() => {
+    useAudioStore.setState({
+      currentIndex: null,
+      pendingIndex: null,
+      status: "idle" as AudioStatus,
+      error: null,
+      speed: 1,
+      audioUrls: null,
+    });
+  });
 
   afterEach(() => {
     Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
@@ -38,7 +48,6 @@ describe("SentenceDisplay", () => {
 
   it("renders Chinese text as individual word elements", () => {
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
-    // Text is rendered word-by-word, not as a single node
     expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("好")).toBeInTheDocument();
     expect(screen.getByText("。")).toBeInTheDocument();
@@ -71,7 +80,6 @@ describe("SentenceDisplay", () => {
       />,
     );
 
-    // getBoundingClientRect mock
     const mockRect = {
       left: 100,
       bottom: 200,
@@ -84,7 +92,6 @@ describe("SentenceDisplay", () => {
 
     await userEvent.click(screen.getByText("好"));
 
-    // Should have called with glyph and rect
     expect(onPopoverOpen).toHaveBeenCalledWith("好", expect.any(Object));
   });
 
@@ -97,5 +104,27 @@ describe("SentenceDisplay", () => {
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
     const punct = screen.getByText("。");
     expect(punct.className).toContain("sentence-word--punct");
+  });
+
+  it("applies active class when sentence matches audioStore currentIndex", () => {
+    useAudioStore.setState({ currentIndex: 0 });
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+    const container = screen.getByRole("button", { name: "Sentence 1" });
+    expect(container.className).toContain("sentence-display--active");
+  });
+
+  it("does not apply active class when currentIndex differs", () => {
+    useAudioStore.setState({ currentIndex: 1 });
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+    const container = screen.getByRole("button", { name: "Sentence 1" });
+    expect(container.className).not.toContain("sentence-display--active");
+  });
+
+  it("sets pendingIndex in audioStore on tap", async () => {
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Sentence 1" }));
+
+    expect(useAudioStore.getState().pendingIndex).toBe(0);
   });
 });

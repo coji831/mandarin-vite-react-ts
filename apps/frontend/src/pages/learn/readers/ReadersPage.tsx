@@ -1,20 +1,15 @@
 /**
  * @file ReadersPage.tsx
  * @description Page-level container for Graded Readers feature.
- * Story 21.4: Reading UI + LexicalHub Phase 1
- * Phase 4: Migrated popover state, mode, and passageId to readingStore.
- * Story 21.5: Audio Sync — SentenceDisplay reads currentAudioIndex from
- * readingStore directly. SentenceWithTap wrapper removed.
+ * Phase 2: Audio props wiring removed — AudioControlBar rendered inside ReadingView,
+ *   SentenceDisplay reads audioStore directly, useAudioPlayer orchestrator replaces
+ *   useSentenceAudio + useAudioAutoAdvance + useAudioEngine + useBrowserTTS.
  * Story 21.7: Reading Progress — integrates readingStore progress state with
- *   ReaderLibrary and ReadingView. Fetches bookmarks on library mount, sets
- *   isAuthenticated from auth context, handles bookmark toggling, passes
- *   completion/completed state to passage cards, and wires onComplete callback.
+ *   ReaderLibrary and ReadingView.
  *
  * Uses a single code path: always fetches data via hooks, always writes to
  * readingStore. Storybook stories use MSW handlers + withReadingStore decorator
  * instead of prop overrides.
- *
- * Switches between ReaderLibrary (library view) and ReadingView (reading mode).
  *
  * Decision: The `mode` prop sets initial mode; after that, readingStore.setMode
  * handles transitions (library ↔ reading). The prop is kept for SSR/mount parity.
@@ -26,12 +21,11 @@ import {
   ReadingView,
   SentenceDisplay,
   WordPopover,
-  AudioControlBar,
   usePassages,
   usePassageDetail,
   useGeneratePassage,
   usePassageAudio,
-  useSentenceAudio,
+  useAudioPlayer,
   useReadingStore,
 } from "../../../features/readers";
 import { useAuth } from "../../../features/auth";
@@ -108,18 +102,12 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     retry: readRetry,
   } = usePassageDetail(currentPassageId);
 
-  // Audio hooks (Story 21.5)
-  const { audioUrls, isLoading: isAudioLoading } = usePassageAudio(
-    mode === "reading" ? currentPassageId : null,
-  );
-
-  const { currentIndex, isPlaying, hasCompleted, speed, stop, toggle, setSpeed } = useSentenceAudio(
-    {
-      sentenceCount: passage?.sentences.length ?? 0,
-      audioUrls,
-      sentenceTexts: passage?.sentences.map((s) => s.text) ?? [],
-    },
-  );
+  // Audio — fetch URLs + flattened orchestrator
+  usePassageAudio(mode === "reading" ? currentPassageId : null);
+  const { hasJustCompleted, toggle, stop, setSpeed } = useAudioPlayer({
+    sentenceCount: passage?.sentences.length ?? 0,
+    sentenceTexts: passage?.sentences.map((s) => s.text) ?? [],
+  });
 
   // Merge store progress state into passage summaries
   const passagesWithProgress = passages.map((p) => ({
@@ -144,21 +132,16 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     setMode("library");
   };
 
-  /** Story 21.7: Called when the last sentence is reached. */
-  const handleComplete = useCallback(() => {
-    if (currentPassageId) {
+  /** Phase 2: Completion detection from audio hasJustCompleted signal. */
+  useEffect(() => {
+    if (hasJustCompleted && currentPassageId) {
       markCompleted(currentPassageId);
     }
-  }, [currentPassageId, markCompleted]);
+  }, [hasJustCompleted, currentPassageId, markCompleted]);
 
   const handlePopoverOpen = (glyph: string, rect: DOMRect) => {
     openPopover(glyph, rect);
   };
-
-  const handleSentenceTap = useCallback((index: number) => {
-    useReadingStore.getState().setCurrentAudioIndex(index);
-    useReadingStore.getState().setPendingPlayIndex(index);
-  }, []);
 
   const handleGeneratePassage = useCallback(() => {
     generatePassage(selectedLevel ?? undefined);
@@ -201,20 +184,10 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           isLoading={readLoading}
           hasError={readError}
           onRetry={readRetry}
-          onComplete={handleComplete}
-          audioControlBar={
-            <AudioControlBar
-              currentIndex={currentIndex}
-              isPlaying={isPlaying}
-              isLoading={isAudioLoading}
-              hasCompleted={hasCompleted}
-              totalSentences={passage.sentences.length}
-              speed={speed}
-              onTogglePlay={toggle}
-              onStop={stop}
-              onSpeedChange={setSpeed}
-            />
-          }
+          onTogglePlay={toggle}
+          onStop={stop}
+          onSpeedChange={setSpeed}
+          // No onComplete prop — completion handled via hasJustCompleted effect
         >
           {passage.sentences.flatMap((sentence) => {
             const items: React.ReactNode[] = [
@@ -222,8 +195,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
                 key={sentence.index}
                 sentence={sentence}
                 onPopoverOpen={handlePopoverOpen}
-                currentAudioIndex={currentIndex}
-                onSentenceTap={handleSentenceTap}
+                // No currentAudioIndex or onSentenceTap — reads audioStore directly
               />,
             ];
             if (sentence.index < passage.sentences.length - 1) {

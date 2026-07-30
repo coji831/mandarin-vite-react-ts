@@ -17,15 +17,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { Box } from "shared/components";
-import {
-  ReadersPage,
-  ReadingView,
-  AudioControlBar,
-  SentenceDisplay,
-} from "../../../features/readers";
+import { ReadersPage, ReadingView, SentenceDisplay } from "../../../features/readers";
 import type { PassageDetail } from "../../../features/readers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { withReadingStore } from "../../../../.storybook/decorators";
+import { withReadingStore, withAudioStore } from "../../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
@@ -480,7 +475,8 @@ export const ReadingWithAudioComplete: Story = {
     },
   },
   decorators: [
-    withReadingStore({ mode: "reading", currentPassageId: "p-1", currentAudioIndex: null }),
+    withReadingStore({ mode: "reading", currentPassageId: "p-1" }),
+    withAudioStore({ status: "completed" }),
   ],
   render: () => {
     const passage = defaultPassageDetail;
@@ -493,28 +489,9 @@ export const ReadingWithAudioComplete: Story = {
           isLoading={false}
           hasError={false}
           onRetry={() => {}}
-          audioControlBar={
-            <AudioControlBar
-              currentIndex={null}
-              isPlaying={false}
-              isLoading={false}
-              hasCompleted={true}
-              totalSentences={passage.sentences.length}
-              speed={1}
-              onTogglePlay={() => {}}
-              onStop={() => {}}
-              onSpeedChange={() => {}}
-            />
-          }
         >
           {passage.sentences.map((sentence) => (
-            <SentenceDisplay
-              key={sentence.index}
-              sentence={sentence}
-              onPopoverOpen={() => {}}
-              currentAudioIndex={null}
-              onSentenceTap={() => {}}
-            />
+            <SentenceDisplay key={sentence.index} sentence={sentence} onPopoverOpen={() => {}} />
           ))}
         </ReadingView>
       </Box>
@@ -533,7 +510,8 @@ export const ReadingWithAudioPaused: Story = {
     },
   },
   decorators: [
-    withReadingStore({ mode: "reading", currentPassageId: "p-1", currentAudioIndex: 2 }),
+    withReadingStore({ mode: "reading", currentPassageId: "p-1" }),
+    withAudioStore({ currentIndex: 2, status: "paused" }),
   ],
   render: () => {
     const passage = defaultPassageDetail;
@@ -546,28 +524,9 @@ export const ReadingWithAudioPaused: Story = {
           isLoading={false}
           hasError={false}
           onRetry={() => {}}
-          audioControlBar={
-            <AudioControlBar
-              currentIndex={2}
-              isPlaying={false}
-              isLoading={false}
-              hasCompleted={false}
-              totalSentences={passage.sentences.length}
-              speed={1}
-              onTogglePlay={() => {}}
-              onStop={() => {}}
-              onSpeedChange={() => {}}
-            />
-          }
         >
           {passage.sentences.map((sentence) => (
-            <SentenceDisplay
-              key={sentence.index}
-              sentence={sentence}
-              onPopoverOpen={() => {}}
-              currentAudioIndex={2}
-              onSentenceTap={() => {}}
-            />
+            <SentenceDisplay key={sentence.index} sentence={sentence} onPopoverOpen={() => {}} />
           ))}
         </ReadingView>
       </Box>

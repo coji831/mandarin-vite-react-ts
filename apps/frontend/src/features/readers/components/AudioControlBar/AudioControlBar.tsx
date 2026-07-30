@@ -1,40 +1,44 @@
 /**
  * @file AudioControlBar.tsx
  * @description Playback control bar for per-sentence audio.
- * Story 21.5: Audio Sync — Phase 4a
+ * Phase 2: Reads audio state from audioStore directly.
+ *   Receives transport callbacks (onTogglePlay, onStop, onSpeedChange) from parent
+ *   to avoid creating a second useAudioPlayer instance with empty sentenceTexts.
  *
- * Props-only — no logic, no hooks, no API calls.
  * States: Idle, Loading, Playing, Paused, Complete, Error.
  */
 import { Button } from "shared/components";
 import { PLAYBACK_SPEEDS } from "../../constants/audio";
+import { useAudioStore } from "../../stores";
+import type { PlaybackSpeed } from "../../constants/audio";
 import "./AudioControlBar.css";
 
-export interface AudioControlBarProps {
-  currentIndex: number | null;
-  isPlaying: boolean;
-  isLoading: boolean;
-  hasCompleted: boolean;
-  hasError?: boolean;
-  totalSentences: number;
-  speed: number;
-  onTogglePlay: () => void;
-  onStop: () => void;
-  onSpeedChange: (speed: number) => void;
-}
+export type AudioControlBarProps = {
+  /** Number of sentences in the passage (needed for progress display). */
+  totalSentences?: number;
+  /** Play/pause callback from the main useAudioPlayer instance. */
+  onTogglePlay?: () => void;
+  /** Stop callback from the main useAudioPlayer instance. */
+  onStop?: () => void;
+  /** Speed change callback from the main useAudioPlayer instance. */
+  onSpeedChange?: (speed: PlaybackSpeed) => void;
+};
 
 export function AudioControlBar({
-  currentIndex,
-  isPlaying,
-  isLoading,
-  hasCompleted,
-  hasError = false,
-  totalSentences,
-  speed,
+  totalSentences = 0,
   onTogglePlay,
   onStop,
   onSpeedChange,
 }: AudioControlBarProps) {
+  const status = useAudioStore((s) => s.status);
+  const currentIndex = useAudioStore((s) => s.currentIndex);
+  const speed = useAudioStore((s) => s.speed);
+  const error = useAudioStore((s) => s.error);
+
+  const isPlaying = status === "playing";
+  const isLoading = status === "loading";
+  const hasCompleted = status === "completed";
+  const hasError = error !== null;
   const hasStarted = currentIndex !== null || isPlaying || isLoading;
   const isComplete = hasCompleted && !isPlaying && !isLoading;
 
@@ -88,7 +92,7 @@ export function AudioControlBar({
             key={opt}
             variant={speed === opt ? "tag-active" : "tag"}
             size="sm"
-            onClick={() => onSpeedChange(opt)}
+            onClick={() => onSpeedChange?.(opt as PlaybackSpeed)}
             aria-label={`Playback speed ${opt}x`}
             aria-pressed={speed === opt}
             className="audio-control-bar__speed-pill"

@@ -1,10 +1,8 @@
 /**
  * @file index.ts
  * @description Barrel exports for the readers feature.
- * Story 21.4: Reading UI + LexicalHub Phase 1
- * Phase 4: Added store exports.
- * Story 21.5: Added audio hooks and components.
- * Story 21.7: Added reading progress service, auto-save hook.
+ * Phase 2: Replaced useSentenceAudio export with useAudioPlayer.
+ *   Added lib/ exports for AudioEngine and BrowserTTS.
  */
 export {
   PassageCard,
@@ -34,13 +32,13 @@ export {
   usePassageDetail,
   useGeneratePassage,
   usePassageAudio,
-  useSentenceAudio,
+  useAudioPlayer,
   useAutoSaveProgress,
 } from "./hooks";
 
 // Stores
-export { useReadingStore } from "./stores";
-export type { ReadersMode } from "./stores";
+export { useReadingStore, useAudioStore } from "./stores";
+export type { ReadersMode, AudioStatus } from "./stores";
 
 // Services
 export {

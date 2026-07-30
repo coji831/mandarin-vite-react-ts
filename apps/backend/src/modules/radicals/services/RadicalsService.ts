@@ -9,9 +9,7 @@ import { createLogger } from "../../../shared/utils/logger.js";
 import {
   readAggregateContent,
   findInAggregateContent,
-  readAggregateContentWhere,
 } from "../../../shared/utils/contentUtils.js";
-import type { ContentFile } from "../../../shared/utils/contentUtils.js";
 import { RadicalsRepository } from "../repositories/RadicalsRepository.js";
 
 const logger = createLogger("RadicalsService");

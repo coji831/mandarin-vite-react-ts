@@ -14,7 +14,7 @@
  * Never blocks reading — all errors are non-blocking.
  */
 import { useEffect, useRef } from "react";
-import { useReadingStore } from "../stores/readingStore";
+import { useReadingStore } from "../stores";
 
 const DEBOUNCE_MS = 2000;
 

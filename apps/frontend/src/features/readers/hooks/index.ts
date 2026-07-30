@@ -1,19 +1,13 @@
 /**
  * @file index.ts
  * @description Barrel exports for readers feature hooks.
- * Story 21.5: Added audio hooks.
- * Story 21.6: Added useAudioEngine, useBrowserTTS, useAudioAutoAdvance.
- * Story 21.7: Added useAutoSaveProgress.
+ * Phase 2: Replaced useSentenceAudio, useAudioEngine, useBrowserTTS,
+ *   useAudioAutoAdvance with unified useAudioPlayer.
  */
 export { usePassages } from "./usePassages";
 export { usePassageDetail } from "./usePassageDetail";
 export { useGeneratePassage } from "./useGeneratePassage";
 export { usePassageAudio } from "./usePassageAudio";
-export { useSentenceAudio } from "./useSentenceAudio";
-export { useAudioEngine } from "./useAudioEngine";
-export type { UseAudioEngineReturn } from "./useAudioEngine";
-export { useBrowserTTS } from "./useBrowserTTS";
-export type { UseBrowserTTSReturn } from "./useBrowserTTS";
-export { useAudioAutoAdvance } from "./useAudioAutoAdvance";
-export type { UseAudioAutoAdvanceReturn } from "./useAudioAutoAdvance";
+export { useAudioPlayer } from "./useAudioPlayer";
+export type { UseAudioPlayerOptions, UseAudioPlayerReturn } from "./useAudioPlayer";
 export { useAutoSaveProgress } from "./useAutoSaveProgress";

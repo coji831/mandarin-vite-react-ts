@@ -64,4 +64,16 @@ router.get(
   asyncHandler((req: Request, res: Response) => req.wordsController!.getWordDetail(req, res)),
 );
 
+/**
+ * GET /v1/words/:id/measure-words
+ * Returns measure words (量词) associated with a given word ID.
+ * Optional authentication — guests can look up measure words too.
+ */
+router.get(
+  ROUTE_PATTERNS.wordsMeasureWords(":id"),
+  optionalAuth,
+  rateLimitByAuth,
+  asyncHandler((req: Request, res: Response) => req.wordsController!.getMeasureWords(req, res)),
+);
+
 export default router;

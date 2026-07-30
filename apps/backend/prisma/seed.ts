@@ -184,14 +184,14 @@ async function main() {
   // 3. MeasureWord (52) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
   console.log("📏 Step 3/17: Seeding MeasureWord...");
-  // Map Phase 2 fields: glyph→simplified, drop hskLevel and nouns (go to MeasureWordWord)
+  // Map Phase 2 fields: glyph→simplified, category, usageNote; drop hskLevel and nouns (go to MeasureWordWord)
   const measureWordData = phase2.measureWords.map((mw: any) => ({
     id: mw.id,
     simplified: mw.glyph,
     pinyin: mw.pinyin,
     meaning: mw.meaning,
-    category: null as string | null,
-    usageNote: null as string | null,
+    category: mw.category ?? null,
+    usageNote: mw.usageNote ?? null,
   }));
   await seedTable("MeasureWord", "measureWord", measureWordData);
   console.log("");

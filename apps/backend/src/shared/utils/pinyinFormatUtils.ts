@@ -31,7 +31,7 @@ export function numberedToToneMark(numbered: string): string {
   if (!numbered) return "";
 
   // Normalize u: → ü (CC-CEDICT format)
-  let normalized = numbered.replace(/u:/g, "ü").replace(/U:/g, "Ü");
+  const normalized = numbered.replace(/u:/g, "ü").replace(/U:/g, "Ü");
 
   // Extract tone number from the end
   const toneMatch = normalized.match(/^([a-zA-ZüÜ]+)([1-5])$/);

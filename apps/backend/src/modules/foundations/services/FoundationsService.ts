@@ -9,11 +9,7 @@
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import {
-  readAggregateContent,
-  readAggregateContentWhere,
-  readContentFile,
-} from "../../../shared/utils/contentUtils.js";
+import { readAggregateContent, readContentFile } from "../../../shared/utils/contentUtils.js";
 import type { ContentFile } from "../../../shared/utils/contentUtils.js";
 import type {
   ComboPair,
@@ -78,28 +74,28 @@ export class FoundationsService {
         initials: initials.map((i: ContentFile) => ({
           id: i.pinyin!,
           pinyin: i.pinyin!,
-          ipa: (i as any).ipa || null,
-          description: (i as any).pronunciationGuide || i.description || "",
+          ipa: i.ipa || null,
+          description: (i.pronunciationGuide as string) || i.description || "",
         })),
         finals: finals.map((f: ContentFile) => ({
           id: f.pinyin!,
           pinyin: f.pinyin!,
           type:
-            (f as any).type === "simple" || (f as any).type === "simple_final"
+            (f.type as string) === "simple" || (f.type as string) === "simple_final"
               ? "simple"
               : "compound",
-          description: (f as any).pronunciationGuide || "",
+          description: (f.pronunciationGuide as string) || "",
         })),
         combinations: combined,
         toneInfo: toneInfo.map((t: ContentFile) => ({
           number: t.number!,
           name: t.name!,
-          mark: (t as any).mark || "",
-          pinyinExample: (t as any).exampleSyllable || "",
-          chineseExample: (t as any).exampleCharacter || "",
-          description: (t as any).pitchDescription || "",
-          contour: (t as any).contour || null,
-          color: (t as any).color || "",
+          mark: t.mark || "",
+          pinyinExample: (t.exampleSyllable as string) || "",
+          chineseExample: (t.exampleCharacter as string) || "",
+          description: (t.pitchDescription as string) || "",
+          contour: t.contour || null,
+          color: t.color || "",
         })),
         tonePairs: (toneReference.tonePairs as unknown[]) || [],
         toneRules: (toneReference.toneRules as unknown[]) || [],
@@ -194,7 +190,7 @@ export class FoundationsService {
 
       // Fallback: scan aggregate characters file
       const characters = await readAggregateContent("characters", "characters.json");
-      const match = characters.find((c: any) => c.glyph === glyph);
+      const match = characters.find((c: ContentFile) => c.glyph === glyph);
       if (!match) return null;
 
       const readings: CharacterReading[] = (match.readings || []).map(

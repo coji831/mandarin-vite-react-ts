@@ -32,6 +32,7 @@ export declare const ROUTE_PATTERNS: {
   readonly foundationsStrokes: string;
   readonly charactersByGlyph: (glyph: string) => string;
   readonly wordsByGlyph: (glyph: string) => string;
+  readonly wordsMeasureWords: (wordId: string) => string;
   readonly mnemonics: string;
   readonly mnemonicsByChar: (glyph: string) => string;
   readonly quizConfig: string;

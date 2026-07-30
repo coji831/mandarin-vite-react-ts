@@ -2,16 +2,15 @@
  * @file SentenceDisplay.tsx
  * @description Renders one sentence with Chinese text and pinyin below.
  * Each word is tappable — unknown words are highlighted to indicate clickability.
- * Story 21.4: Reading UI + LexicalHub Phase 1
- * Story 21.5: Audio Sync — reads currentAudioIndex from readingStore directly.
+ * Phase 2: Audio cursor read from audioStore directly — no audio props.
  *
  * Only popover position flows through onPopoverOpen prop.
  * The "Open in Word Hub" button inside WordPopover handles hub navigation.
- * Audio cursor is received via props (currentAudioIndex + onSentenceTap).
- * Story 21.6: Removed direct readingStore coupling — container passes props.
+ * Tap-to-play sets pendingIndex in audioStore for useAudioPlayer to consume.
  */
 import { memo, useCallback } from "react";
 import { Button } from "shared/components";
+import { useAudioStore } from "../stores";
 import "./SentenceDisplay.css";
 
 export type SentenceWord = {
@@ -31,10 +30,6 @@ export type SentenceData = {
 export type SentenceDisplayProps = {
   sentence: SentenceData;
   onPopoverOpen: (glyph: string, rect: DOMRect) => void;
-  /** Current audio cursor index (null if no audio is active). */
-  currentAudioIndex: number | null;
-  /** Callback when the sentence is tapped (for audio playback). */
-  onSentenceTap: (index: number) => void;
 };
 
 /** Punctuation characters set for fast lookup */
@@ -139,15 +134,15 @@ function SentenceWord({
 export const SentenceDisplay = memo(function SentenceDisplay({
   sentence,
   onPopoverOpen,
-  currentAudioIndex,
-  onSentenceTap,
 }: SentenceDisplayProps) {
   // Note: Raw <div> is intentional here. No Box variant matches the visual
   // contract of SentenceDisplay (no default bg/border, single-sided active border).
-  const isActive = currentAudioIndex === sentence.index;
+  const currentIndex = useAudioStore((s) => s.currentIndex);
+  const setPendingIndex = useAudioStore((s) => s.setPendingIndex);
+  const isActive = currentIndex === sentence.index;
   const handleTap = useCallback(() => {
-    onSentenceTap(sentence.index);
-  }, [onSentenceTap, sentence.index]);
+    setPendingIndex(sentence.index);
+  }, [setPendingIndex, sentence.index]);
 
   const containerClass = [
     "sentence-display",

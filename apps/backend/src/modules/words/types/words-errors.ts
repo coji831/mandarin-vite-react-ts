@@ -14,3 +14,13 @@ export class WordNotFoundError extends Error {
     this.name = "WordNotFoundError";
   }
 }
+
+/**
+ * Error thrown when no word is found for a given word ID.
+ */
+export class WordIdNotFoundError extends Error {
+  constructor(wordId: string) {
+    super(`No word found for id: ${wordId}`);
+    this.name = "WordIdNotFoundError";
+  }
+}

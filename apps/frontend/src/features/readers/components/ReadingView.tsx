@@ -1,23 +1,20 @@
 /**
  * @file ReadingView.tsx
  * @description Sentence-by-sentence reader for a single passage.
- * Story 21.4: Reading UI + LexicalHub Phase 1
- * Story 21.x: Migrated onWordTap → onPopoverOpen (now only handles popover position;
- *   hub navigation goes directly through Zustand hubStore).
- * Story 21.x Phase 2: Collapsed onPopoverOpen prop chain via component composition.
- *   SentenceDisplay is now rendered as children by the parent (ReadersPage).
- * Story 21.5: Added audioControlBar slot.
+ * Phase 2: AudioControlBar rendered internally — no audioControlBar prop.
+ *   SentenceDisplay is rendered as children by the parent (ReadersPage).
  * Story 21.7: Added restore flow — on mount calls restoreSession, scrolls to saved
  *   sentence. Uses useAutoSaveProgress for debounced auto-save.
  *
- * Props-only — no logic, no hooks, no API calls.
  * Covers: default, loading (skeleton), error (retry).
  */
 import { useEffect, useRef } from "react";
 import { Box, Button, Skeleton, ErrorScreen } from "shared/components";
-import { useReadingStore } from "../stores/readingStore";
-import { useAutoSaveProgress } from "../hooks/useAutoSaveProgress";
+import { useReadingStore } from "../stores";
+import { useAutoSaveProgress } from "../hooks";
+import { AudioControlBar } from "./AudioControlBar";
 import type { SentenceData } from "./SentenceDisplay";
+import type { PlaybackSpeed } from "../constants/audio";
 import "./ReadingView.css";
 
 export interface PassageDetail {
@@ -34,13 +31,17 @@ export type ReadingViewProps = {
   isLoading: boolean;
   hasError: boolean;
   onRetry: () => void;
-  /** AudioControlBar rendered between the divider and sentences. */
-  audioControlBar?: React.ReactNode;
   /**
    * Callback fired when the passage reaches the final sentence.
    * Parent uses this to call readingStore.markCompleted(passageId).
    */
   onComplete?: () => void;
+  /** Play/pause callback from the main useAudioPlayer instance. */
+  onTogglePlay?: () => void;
+  /** Stop callback from the main useAudioPlayer instance. */
+  onStop?: () => void;
+  /** Speed change callback from the main useAudioPlayer instance. */
+  onSpeedChange?: (speed: PlaybackSpeed) => void;
 };
 
 const SKELETON_ROW_COUNT = 5;
@@ -52,8 +53,10 @@ export function ReadingView({
   isLoading,
   hasError,
   onRetry,
-  audioControlBar,
   onComplete,
+  onTogglePlay,
+  onStop,
+  onSpeedChange,
 }: ReadingViewProps) {
   // Story 21.7: Restore session on mount
   const restoreSession = useReadingStore((s) => s.restoreSession);
@@ -149,8 +152,13 @@ export function ReadingView({
 
       <Box variant="divider" />
 
-      {/* AudioControlBar slot — Story 21.5 */}
-      {audioControlBar}
+      {/* AudioControlBar — reads audioStore directly, receives transport callbacks from parent */}
+      <AudioControlBar
+        totalSentences={passage.sentences.length}
+        onTogglePlay={onTogglePlay}
+        onStop={onStop}
+        onSpeedChange={onSpeedChange}
+      />
 
       {/* Sentences — scrollable (rendered from parent via children) */}
       <Box

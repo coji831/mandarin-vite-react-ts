@@ -12,6 +12,7 @@
 .audio-control-bar {
   /* toolbar row layout — bundled (see file header) */
   display: flex;
+  flex-wrap: wrap;
   /* align-items bundled with display:flex */
   align-items: center;
   /* gap bundled with display:flex */

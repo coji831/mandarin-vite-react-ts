@@ -7,6 +7,8 @@
  *
  * Extracted from features/vocabulary/services/audioService.ts (deprecated vocabulary feature).
  * Moved to shared/services/audio/ for cross-feature reuse.
+ *
+ * Phase 3: Uses shared AudioEngine for playback instead of inline HTMLAudioElement.
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
@@ -17,6 +19,7 @@ import type {
   WordAudioRequest,
 } from "@mandarin/shared-types";
 import { apiClient } from "services";
+import { AudioEngine } from "../../lib/audioEngine";
 import type { IAudioBackend, IAudioService } from "./interfaces";
 
 /**
@@ -25,6 +28,8 @@ import type { IAudioBackend, IAudioService } from "./interfaces";
  */
 export class AudioService implements IAudioService {
   constructor(private backend: IAudioBackend = new AudioBackend()) {}
+
+  private engine = new AudioEngine();
 
   async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
     return this.backend.fetchTurnAudio(params);
@@ -37,21 +42,10 @@ export class AudioService implements IAudioService {
   /**
    * Play an audio URL and resolve when playback ends.
    * Components can `await` this to know when playback finished.
+   * Uses shared AudioEngine for reliable lifecycle management.
    */
   async playAudio(audioUrl: string): Promise<void> {
-    if (typeof window === "undefined") return Promise.resolve();
-    return new Promise<void>((resolve, reject) => {
-      const audio = new window.Audio();
-      audio.src = audioUrl;
-      audio.load();
-      // Resolve on ended, reject on error
-      audio.onended = () => resolve();
-      audio.onerror = (e) => reject(e);
-      // Start playback (may reject due to autoplay policies)
-      audio.play().catch((err) => {
-        reject(err);
-      });
-    });
+    await this.engine.playUrl(audioUrl, 1);
   }
 }
 
