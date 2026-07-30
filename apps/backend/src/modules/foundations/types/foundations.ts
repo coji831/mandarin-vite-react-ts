@@ -37,12 +37,41 @@ export interface PinyinTonesPool {
   toneRules: unknown[];
 }
 
-/** Strokes reference shape. */
+/** A single stroke entry (mapped from StrokeCategory DB model). */
+export interface StrokeEntry {
+  id: string;
+  glyph: string;
+  pinyin: string;
+  meaning: string;
+  order: number;
+  strokeCount: number;
+  exampleChars: string[];
+  extendedTypes: StrokeExtendedTypeEntry[];
+}
+
+/** A single extended stroke type entry. */
+export interface StrokeExtendedTypeEntry {
+  id: string;
+  glyph: string;
+  pinyin: string;
+  meaning: string;
+  order: number;
+}
+
+/** A stroke order rule entry. */
+export interface StrokeOrderRuleEntry {
+  id: string;
+  number: number;
+  name: string;
+  description: string;
+  examples: string[];
+}
+
+/** Strokes reference shape — backward-compatible with frontend StrokeData. */
 export interface StrokesReference {
-  strokes: unknown[];
-  strokeOrderRules: unknown[];
-  suggestedCharacters: unknown[];
-  [key: string]: unknown;
+  strokes: StrokeEntry[];
+  strokeOrderRules: StrokeOrderRuleEntry[];
+  suggestedCharacters: string[];
 }
 
 /** Character reading (from content JSON). */

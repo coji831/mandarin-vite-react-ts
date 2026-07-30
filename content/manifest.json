@@ -1,7 +1,16 @@
 {
   "version": 4,
   "created_at": "2026-07-24",
-  "content_types": ["characters", "radicals", "words", "grammar", "chengyu", "pinyin", "tones"],
+  "content_types": [
+    "characters",
+    "radicals",
+    "words",
+    "grammar",
+    "chengyu",
+    "pinyin",
+    "tones",
+    "strokes"
+  ],
   "entity_counts": {
     "characters": 2971,
     "radicals": 20,
@@ -55,5 +64,10 @@
       "clusters": 2,
       "members": 9
     }
+  },
+  "strokes": {
+    "path": "strokes/strokes.json",
+    "entityCount": 21,
+    "description": "Stroke categories (5 PRC), extended types (8), and order rules (5)"
   }
 }

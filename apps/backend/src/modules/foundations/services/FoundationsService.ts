@@ -5,7 +5,7 @@
  * Data sources (Content Registry):
  *   - getPinyinTonesPool: content files (content/pinyin/ + content/tones/) + PinyinCombination (Prisma)
  *   - getPinyinCharacterMap: PinyinCombination (Prisma junction table)
- *   - getStrokesReference: content/references/strokes.json
+ *   - getStrokesReference: prisma.strokeCategory + prisma.strokeOrderRule
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
@@ -128,13 +128,47 @@ export class FoundationsService {
   }
 
   /**
-   * Get the strokes reference data.
+   * Get the strokes reference data from the database.
    * @returns Strokes data (strokes, strokeOrderRules, suggestedCharacters)
    */
   async getStrokesReference(): Promise<StrokesReference> {
     try {
-      const data = await readContentFile("references", "strokes.json");
-      return data as StrokesReference;
+      const categories = await prisma.strokeCategory.findMany({
+        orderBy: { order: "asc" },
+        include: { extendedTypes: { orderBy: { order: "asc" } } },
+      });
+      const orderRules = await prisma.strokeOrderRule.findMany({
+        orderBy: { number: "asc" },
+      });
+
+      return {
+        strokes: categories.map((c) => ({
+          id: c.id,
+          glyph: c.glyph ?? "",
+          pinyin: c.pinyin,
+          meaning: c.meaning,
+          order: c.order,
+          strokeCount: c.strokeCount,
+          exampleChars: c.exampleChars,
+          extendedTypes: c.extendedTypes.map((e) => ({
+            id: e.id,
+            glyph: e.glyph ?? "",
+            pinyin: e.pinyin,
+            meaning: e.meaning,
+            order: e.order,
+          })),
+        })),
+        strokeOrderRules: orderRules.map((r) => ({
+          id: r.id,
+          number: r.number,
+          name: r.name,
+          description: r.description,
+          examples: r.examples,
+          example: r.examples[0] ?? "", // backward compat — frontend expects singular
+          rule: r.description, // backward compat — frontend expects "rule" field
+        })),
+        suggestedCharacters: ["一", "丨", "人", "大", "口", "水", "火", "木", "日", "月"],
+      };
     } catch (err) {
       logger.error("[FoundationsService] Failed to load strokes reference", err);
       throw err;

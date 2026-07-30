@@ -616,3 +616,61 @@ model PhoneticClusterMember {
   @@unique([clusterId, characterId])
   @@map("phonetic_cluster_members")
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Story 21.13: Stroke Content Foundation — DB-backed stroke pipeline
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── StrokeCategory: 5 PRC base stroke categories ──
+model StrokeCategory {
+  id            String   @id // "dian" | "heng" | "shu" | "pie" | "zhe"
+  name          String   // "点"
+  pinyin        String   // "diǎn"
+  meaning       String   // "dot"
+  glyph         String?  // Stroke glyph character (丶, 一, 丨, 丿, ㇍)
+  order         Int      // Display order (1-5)
+  strokeCount   Int      @default(1)
+  exampleChars  String[] // ["主", "州", "为", "头"]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  extendedTypes  StrokeExtendedType[]
+  categoryRules  StrokeCategoryOrderRule[]
+}
+
+model StrokeExtendedType {
+  id              String   @id // "na" | "ti" | "wan" | "gou" | ...
+  name            String   // "捺"
+  pinyin          String   // "nà"
+  meaning         String   // "right-falling"
+  glyph           String?  // Stroke glyph character (㇏, ㇀, 亅, etc.)
+  baseCategoryId  String   // FK → StrokeCategory.id
+  order           Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  baseCategory    StrokeCategory @relation(fields: [baseCategoryId], references: [id])
+  @@index([baseCategoryId])
+}
+
+model StrokeOrderRule {
+  id              String   @id // "rule-1" | "rule-2" | ...
+  number          Int      @unique // 1-5
+  name            String   // "Top to Bottom"
+  description     String   // "Write strokes from top to bottom"
+  examples        String[] // ["三", "王", "立", "章"]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  categoryRules   StrokeCategoryOrderRule[]
+}
+
+model StrokeCategoryOrderRule {
+  id              String   @id @default(uuid())
+  categoryId      String   // FK → StrokeCategory.id
+  ruleId          String   // FK → StrokeOrderRule.id
+  priority        Int      @default(0)
+  createdAt       DateTime @default(now())
+  category        StrokeCategory @relation(fields: [categoryId], references: [id])
+  rule            StrokeOrderRule @relation(fields: [ruleId], references: [id])
+  @@unique([categoryId, ruleId])
+  @@index([categoryId])
+  @@index([ruleId])
+}

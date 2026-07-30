@@ -15,15 +15,21 @@
  *   4. Component              ← no FK deps (empty — skipped)
  *   5. Passage                ← no FK deps
  *   6. Word                   ← no FK deps
- *   7. CharacterReading       ← FK → Character
- *   8. CharacterRadical       ← FK → Character
- *   9. CharacterHskLevel      ← FK → Character
- *   10. WordHskLevel          ← FK → Word
- *   11. WordCharacter         ← FK → Word + Character
- *   12. PinyinCharacterMapping ← FK → PinyinSyllable + Character
- *   13. MeasureWordWord       ← FK → MeasureWord + Word
- *   14. CharacterComponent    ← FK → Character + Component (empty — skipped)
- *   15. Test users            — dev only
+ *   7. StrokeCategory         ← no FK deps
+ *   8. StrokeExtendedType     ← FK → StrokeCategory
+ *   9. StrokeOrderRule        ← no FK deps
+ *   10. StrokeCategoryOrderRule ← FK → StrokeCategory + StrokeOrderRule
+ *   11. CharacterReading      ← FK → Character
+ *   12. CharacterRadical      ← FK → Character
+ *   13. CharacterHskLevel     ← FK → Character
+ *   14. WordHskLevel          ← FK → Word
+ *   15. WordCharacter         ← FK → Word + Character
+ *   16. PinyinCharacterMapping ← FK → PinyinSyllable + Character
+ *   17. MeasureWordWord       ← FK → MeasureWord + Word
+ *   18. CharacterComponent    ← FK → Character + Component (empty — skipped)
+ *   19. PhoneticCluster       ← FK → Component
+ *   20. PhoneticClusterMember ← FK → PhoneticCluster + Character
+ *   21. Test users            — dev only
  */
 
 import path from "path";
@@ -137,9 +143,13 @@ async function main() {
     characterComponents: loadJson<any>("character-components.json"),
     phoneticClusters: loadJson<any>("phonetic-clusters.json"),
     phoneticClusterMembers: loadJson<any>("phonetic-cluster-members.json"),
+    strokeCategories: loadJson<any>("strokes-categories.json"),
+    strokeExtendedTypes: loadJson<any>("strokes-extended-types.json"),
+    strokeOrderRules: loadJson<any>("strokes-order-rules.json"),
+    strokeCategoryRules: loadJson<any>("strokes-category-rules.json"),
   };
   const totalEntries = Object.values(phase2).reduce((sum, arr) => sum + arr.length, 0);
-  console.log(`   Loaded ${totalEntries} total entries across 16 files\n`);
+  console.log(`   Loaded ${totalEntries} total entries across 20 files\n`);
 
   // ──────────────────────────────────────────────────────────────────────────
   // 1. Character (103K — chunked) — no FK deps
@@ -254,20 +264,52 @@ async function main() {
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 7. CharacterReading (15K — chunked) — FK → Character
+  // 7. StrokeCategory (5) — no FK deps
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🔴 Step 7/21: Seeding StrokeCategory...");
+  const strokeCategories = loadJson<any>("strokes-categories.json");
+  await seedTable("StrokeCategory", "strokeCategory", strokeCategories);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 8. StrokeExtendedType (8) — FK → StrokeCategory
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🔴 Step 8/21: Seeding StrokeExtendedType...");
+  const strokeExtendedTypes = loadJson<any>("strokes-extended-types.json");
+  await seedTable("StrokeExtendedType", "strokeExtendedType", strokeExtendedTypes);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 9. StrokeOrderRule (5) — no FK deps
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🔴 Step 9/21: Seeding StrokeOrderRule...");
+  const strokeOrderRules = loadJson<any>("strokes-order-rules.json");
+  await seedTable("StrokeOrderRule", "strokeOrderRule", strokeOrderRules);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 10. StrokeCategoryOrderRule (~10-15) — FK → StrokeCategory + StrokeOrderRule
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🔴 Step 10/21: Seeding StrokeCategoryOrderRule...");
+  const categoryRules = loadJson<any>("strokes-category-rules.json");
+  await seedTable("StrokeCategoryOrderRule", "strokeCategoryOrderRule", categoryRules);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 11. CharacterReading (15K — chunked) — FK → Character
   //    Pre-clear for idempotency (no unique constraint beyond id)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔤 Step 7/17: Seeding CharacterReading...");
+  console.log("🔤 Step 11/21: Seeding CharacterReading...");
   console.log("  🧹 Cleared CharacterReading (pre-clear for idempotency)");
   await prisma.characterReading.deleteMany();
   await seedTable("CharacterReading", "characterReading", phase2.characterReadings);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 8. CharacterRadical (2.8K) — FK → Character
+  // 12. CharacterRadical (2.8K) — FK → Character
   //    @@unique([characterGlyph, radicalId]) requires skip-duplicate logic
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 8/17: Seeding CharacterRadical...");
+  console.log("🔗 Step 12/21: Seeding CharacterRadical...");
   const existingRadicals = new Set(
     (
       await prisma.characterRadical.findMany({
@@ -283,18 +325,18 @@ async function main() {
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 9. CharacterHskLevel (3K) — FK → Character (@id on characterId)
+  // 13. CharacterHskLevel (3K) — FK → Character (@id on characterId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 9/17: Seeding CharacterHskLevel...");
+  console.log("🏷️ Step 13/21: Seeding CharacterHskLevel...");
   await seedTable("CharacterHskLevel", "characterHskLevel", phase2.characterHskLevels, {
     chunkSize: 1_000,
   });
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 10. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
+  // 14. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 10/17: Seeding WordHskLevel...");
+  console.log("🏷️ Step 14/21: Seeding WordHskLevel...");
   const wordHskData = phase2.wordHskLevels.map((whl: any) => ({
     wordId: whl.wordId,
     hskLevel: whl.hskLevel,
@@ -304,17 +346,17 @@ async function main() {
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 11. WordCharacter (22K — chunked) — FK → Word + Character
+  // 15. WordCharacter (22K — chunked) — FK → Word + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 11/17: Seeding WordCharacter...");
+  console.log("🔗 Step 15/21: Seeding WordCharacter...");
   await seedTable("WordCharacter", "wordCharacter", phase2.wordCharacters);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 12. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
+  // 16. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
   //     PinyinCharacterMapping was already cleared in step 2, so just insert
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 12/17: Seeding PinyinCharacterMapping...");
+  console.log("🔗 Step 16/21: Seeding PinyinCharacterMapping...");
   await seedTable(
     "PinyinCharacterMapping",
     "pinyinCharacterMapping",
@@ -323,35 +365,35 @@ async function main() {
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 13. MeasureWordWord (135) — FK → MeasureWord + Word
+  // 17. MeasureWordWord (135) — FK → MeasureWord + Word
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 13/17: Seeding MeasureWordWord...");
+  console.log("🔗 Step 17/21: Seeding MeasureWordWord...");
   await seedTable("MeasureWordWord", "measureWordWord", phase2.measureWordWords);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 14. CharacterComponent (0 — deferred, skip gracefully) — FK → Character + Component
+  // 18. CharacterComponent (0 — deferred, skip gracefully) — FK → Character + Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 14/17: Seeding CharacterComponent...");
+  console.log("🧩 Step 18/21: Seeding CharacterComponent...");
   await seedTable("CharacterComponent", "characterComponent", phase2.characterComponents);
   console.log("");
 
-  // ── 15. PhoneticCluster — FK → Component
+  // ── 19. PhoneticCluster — FK → Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔊 Step 15/17: Seeding PhoneticCluster...");
+  console.log("🔊 Step 19/21: Seeding PhoneticCluster...");
   await seedTable("PhoneticCluster", "phoneticCluster", phase2.phoneticClusters);
   console.log("");
 
-  // ── 16. PhoneticClusterMember — FK → PhoneticCluster + Character
+  // ── 20. PhoneticClusterMember — FK → PhoneticCluster + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 16/17: Seeding PhoneticClusterMember...");
+  console.log("🔗 Step 20/21: Seeding PhoneticClusterMember...");
   await seedTable("PhoneticClusterMember", "phoneticClusterMember", phase2.phoneticClusterMembers);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 17. Test users (dev only)
+  // 21. Test users (dev only)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("👤 Step 17/17: Creating test users...");
+  console.log("👤 Step 21/21: Creating test users...");
   if (process.env.NODE_ENV !== "production") {
     await prisma.user.upsert({
       where: { email: "test@example.com" },
