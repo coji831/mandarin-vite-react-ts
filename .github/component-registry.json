@@ -214,6 +214,23 @@
       "description": "Content placeholder shimmer.",
       "importPath": "shared/components"
     },
+    "ClassificationBadge": {
+      "description": "Pill badge displaying a character's classification type (pictograph, phono-semantic, etc.) with emoji and color coding.",
+      "importPath": "shared/components",
+      "props": {
+        "classification": {
+          "type": "enum",
+          "values": ["pictograph", "phono_semantic", "compound_ideograph", "ideograph", null],
+          "required": true
+        },
+        "etymology": {
+          "type": "string",
+          "description": "Etymology text used for pictograph tooltip"
+        },
+        "showLabel": { "type": "boolean", "default": true },
+        "size": { "type": "enum", "values": ["sm", "md", "lg"], "default": "sm" }
+      }
+    },
     "ContentBrowser": {
       "description": "Full content browsing UI with grid, filters, pagination.",
       "importPath": "shared/components"

@@ -14,16 +14,19 @@ vi.mock("./ExampleCharCell", () => ({
     character,
     pinyin,
     meaning,
+    classification,
   }: {
     character: string;
     pinyin: string;
     meaning: string;
+    classification?: string | null;
   }) => (
     <div
       data-testid="example-char-cell"
       data-character={character}
       data-pinyin={pinyin}
       data-meaning={meaning}
+      data-classification={classification ?? ""}
     >
       {character}
     </div>

@@ -1,6 +1,8 @@
 export { Box } from "./Box/Box";
 export type { BoxVariant } from "./Box/Box";
 export { Button } from "./Button/Button";
+export { ClassificationBadge } from "./ClassificationBadge";
+export type { ClassificationBadgeProps, ClassificationType } from "./ClassificationBadge";
 export type { ButtonVariant } from "./Button/Button";
 export { Card } from "./Card";
 export { ContentBrowser } from "./ContentBrowser";

@@ -12,7 +12,7 @@
  */
 
 import { useCallback } from "react";
-import { Button } from "shared/components";
+import { Button, ClassificationBadge } from "shared/components";
 import { openHub } from "shared/store";
 import { useAudioPlayback } from "shared/hooks";
 import "./ExampleCharCell.css";
@@ -21,9 +21,17 @@ interface ExampleCharCellProps {
   character: string;
   pinyin: string;
   meaning: string;
+  classification?: string | null;
+  etymology?: string | null;
 }
 
-export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellProps) {
+export function ExampleCharCell({
+  character,
+  pinyin,
+  meaning,
+  classification,
+  etymology,
+}: ExampleCharCellProps) {
   const { playWordAudio } = useAudioPlayback();
 
   const handleHubClick = useCallback(() => {
@@ -35,8 +43,22 @@ export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellP
     playWordAudio({ chinese: character, fallbackToBrowserTTS: true });
   }
 
+  const isPictograph = classification === "pictograph";
+  const cellTitle = isPictograph && etymology ? etymology : undefined;
+  const cellClass = [
+    "example-char-row",
+    isPictograph ? "example-char-cell--pictograph" : "",
+    "p-sm",
+    "flex",
+    "items-center",
+    "gap-sm",
+    "radius-sm",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="example-char-row p-sm flex items-center gap-sm radius-sm" role="listitem">
+    <div className={cellClass} role="listitem" title={cellTitle}>
       <span className="example-char-row__glyph text-primary lh-1 text-center font-xl shrink-0">
         {character}
       </span>
@@ -48,6 +70,11 @@ export function ExampleCharCell({ character, pinyin, meaning }: ExampleCharCellP
         <span className="example-char-row__meaning font-sm text-muted whitespace-nowrap overflow-hidden">
           {meaning}
         </span>
+        {classification && (
+          <span className="example-char-row__badge shrink-0">
+            <ClassificationBadge classification={classification} etymology={etymology} size="sm" />
+          </span>
+        )}
       </div>
 
       <div className="example-char-row__actions flex shrink-0 gap-xs">

@@ -14,12 +14,28 @@ vi.mock("./ExampleCharGrid", () => ({
   ExampleCharGrid: ({
     characters,
   }: {
-    characters: Array<{ glyph: string; pinyin: string; meaning: string }>;
-  }) => (
-    <div data-testid="example-char-grid" data-count={characters.length}>
-      ExampleCharGrid
-    </div>
-  ),
+    characters: Array<{
+      glyph: string;
+      pinyin: string;
+      meaning: string;
+      classification?: string | null;
+      etymology?: string | null;
+    }>;
+  }) => {
+    const classifications = characters
+      .filter((c) => c.classification)
+      .map((c) => c.classification)
+      .join(",");
+    return (
+      <div
+        data-testid="example-char-grid"
+        data-count={characters.length}
+        data-classifications={classifications}
+      >
+        ExampleCharGrid
+      </div>
+    );
+  },
 }));
 
 // Mock radicalsService
@@ -204,5 +220,75 @@ describe("RadicalDetailCard", () => {
     render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
 
     expect(screen.getByRole("dialog", { name: "氵 (water radical)" })).toBeInTheDocument();
+  });
+
+  describe("classification badges", () => {
+    it("passes classification data through to ExampleCharGrid", async () => {
+      const charsWithClassification = mockCharacters.map((c, i) => ({
+        ...c,
+        classification: ["pictograph", "phono_semantic", "compound_ideograph", "ideograph"][i % 4],
+        etymology: i === 0 ? "A pictograph of the sun" : undefined,
+      }));
+
+      mockGetRadicalCharacters.mockResolvedValue({
+        radicalId: "rad_0008",
+        characters: charsWithClassification,
+      });
+
+      render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
+
+      await waitFor(() => {
+        const grid = screen.getByTestId("example-char-grid");
+        expect(grid).toBeInTheDocument();
+        expect(grid).toHaveAttribute("data-count", "12");
+        expect(grid).toHaveAttribute("data-classifications");
+      });
+    });
+
+    it("renders with characters that have all four classification types", async () => {
+      const charsWithAllTypes = [
+        { glyph: "日", pinyin: "rì", meaning: "sun", classification: "pictograph" },
+        { glyph: "江", pinyin: "jiāng", meaning: "river", classification: "phono_semantic" },
+        { glyph: "明", pinyin: "míng", meaning: "bright", classification: "compound_ideograph" },
+        { glyph: "上", pinyin: "shàng", meaning: "above", classification: "ideograph" },
+      ];
+
+      mockGetRadicalCharacters.mockResolvedValue({
+        radicalId: "rad_0008",
+        characters: charsWithAllTypes,
+      });
+
+      render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
+
+      await waitFor(() => {
+        const grid = screen.getByTestId("example-char-grid");
+        expect(grid).toBeInTheDocument();
+        expect(grid).toHaveAttribute(
+          "data-classifications",
+          "pictograph,phono_semantic,compound_ideograph,ideograph",
+        );
+      });
+    });
+
+    it("renders characters without classification (null values)", async () => {
+      const charsWithoutClassification = mockCharacters.map((c) => ({
+        ...c,
+        classification: null,
+        etymology: null,
+      }));
+
+      mockGetRadicalCharacters.mockResolvedValue({
+        radicalId: "rad_0008",
+        characters: charsWithoutClassification,
+      });
+
+      render(<RadicalDetailCard radical={mockRadicalWithChars} onClose={vi.fn()} />);
+
+      await waitFor(() => {
+        const grid = screen.getByTestId("example-char-grid");
+        expect(grid).toBeInTheDocument();
+        expect(grid).toHaveAttribute("data-classifications", "");
+      });
+    });
   });
 });

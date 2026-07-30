@@ -38,7 +38,13 @@ async function loadRadicalById(id: string): Promise<RadicalData> {
  */
 async function getRadicalCharacters(radicalId: string): Promise<{
   radicalId: string;
-  characters: Array<{ glyph: string; pinyin: string; meaning: string }>;
+  characters: Array<{
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+    classification?: string | null;
+    etymology?: string | null;
+  }>;
 }> {
   const response = await apiClient.get(ROUTE_PATTERNS.radicalsCharacters(radicalId));
   return response.data;

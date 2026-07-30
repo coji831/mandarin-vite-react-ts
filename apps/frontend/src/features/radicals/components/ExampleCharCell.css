@@ -30,3 +30,15 @@
 .example-char-row__meaning {
   text-overflow: ellipsis;
 }
+
+/* ── Badge ── */
+.example-char-row__badge {
+  display: inline-flex;
+}
+
+/* ── Pictograph golden border ── */
+.example-char-cell--pictograph {
+  border: 2px solid var(--color-xp);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-sm);
+}

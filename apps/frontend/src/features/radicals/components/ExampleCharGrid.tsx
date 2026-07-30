@@ -11,7 +11,13 @@ import { ExampleCharCell } from "./ExampleCharCell";
 import "./ExampleCharGrid.css";
 
 interface ExampleCharGridProps {
-  characters: Array<{ glyph: string; pinyin: string; meaning: string }>;
+  characters: Array<{
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+    classification?: string | null;
+    etymology?: string | null;
+  }>;
 }
 
 export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
@@ -33,6 +39,8 @@ export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
             character={ch.glyph}
             pinyin={ch.pinyin}
             meaning={ch.meaning}
+            classification={ch.classification}
+            etymology={ch.etymology}
           />
         ))}
       </div>

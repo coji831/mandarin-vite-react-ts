@@ -61,7 +61,22 @@ tokens:
         "rgba(255,255,255,0.05)",
       ]
     overlay: ["rgba(0,0,0,0.7)"]
-    xp: ["#FBBF24"]
+    xp:
+      base: ["#FBBF24"]
+      bg: ["rgba(251, 191, 36, 0.15)"]
+      border: ["rgba(251, 191, 36, 0.3)"]
+    blue:
+      base: ["#3B82F6"]
+      bg: ["rgba(59,130,246,0.15)"]
+      border: ["rgba(59,130,246,0.3)"]
+    green:
+      base: ["#34D399"]
+      bg: ["rgba(52,211,153,0.15)"]
+      border: ["rgba(52,211,153,0.3)"]
+    purple:
+      base: ["#A78BFA"]
+      bg: ["rgba(167,139,250,0.15)"]
+      border: ["rgba(167,139,250,0.3)"]
     stroke-demo:
       ["#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#ffeaa7", "#dda0dd", "#f0a500", "#e8a87c"]
     tone-contour:
@@ -157,6 +172,9 @@ components:
   - name: "AnimationCanvas"
     file: "apps/frontend/src/shared/components/CharacterStroke/AnimationCanvas.tsx"
     description: "Canvas-based stroke order animation container."
+  - name: "ClassificationBadge"
+    file: "apps/frontend/src/shared/components/ClassificationBadge.tsx"
+    description: "Pill badge for character classification types (pictograph, phono_semantic, etc.) with color-coded variants."
   - name: "transition-transform"
     file: "apps/frontend/src/styles/animations.css"
     description: "Transition utility for transform property using var(--transition-fast)."

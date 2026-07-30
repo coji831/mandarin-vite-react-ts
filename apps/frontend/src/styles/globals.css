@@ -78,6 +78,19 @@
 
   /* XP/Achievement */
   --color-xp: rgba(251, 191, 36, 1);
+  --color-xp-bg: rgba(251, 191, 36, 0.15);
+  --color-xp-border: rgba(251, 191, 36, 0.3);
+
+  /* ── Badge & accent color tokens ── */
+  --color-blue: rgba(59, 130, 246, 1);
+  --color-blue-bg: rgba(59, 130, 246, 0.15);
+  --color-blue-border: rgba(59, 130, 246, 0.3);
+  --color-green: rgba(52, 211, 153, 1);
+  --color-green-bg: rgba(52, 211, 153, 0.15);
+  --color-green-border: rgba(52, 211, 153, 0.3);
+  --color-purple: rgba(167, 139, 250, 1);
+  --color-purple-bg: rgba(167, 139, 250, 0.15);
+  --color-purple-border: rgba(167, 139, 250, 0.3);
 
   /* Primary hover — lighter amber for link hover states */
   --color-primary-hover: rgba(217, 119, 6, 1);

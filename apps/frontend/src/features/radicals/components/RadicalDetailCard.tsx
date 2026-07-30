@@ -30,7 +30,13 @@ interface RadicalDetailCardProps {
 
 export function RadicalDetailCard({ radical, onClose }: RadicalDetailCardProps) {
   const [characters, setCharacters] = useState<
-    Array<{ glyph: string; pinyin: string; meaning: string }>
+    Array<{
+      glyph: string;
+      pinyin: string;
+      meaning: string;
+      classification?: string | null;
+      etymology?: string | null;
+    }>
   >([]);
   const [charsLoading, setCharsLoading] = useState(true);
   const [charsError, setCharsError] = useState<string | null>(null);

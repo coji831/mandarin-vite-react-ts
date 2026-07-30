@@ -11,6 +11,8 @@ export interface RadicalCharacterEntry {
   pinyin: string;
   meaning: string;
   decompositionType: string | null;
+  classification: string | null;
+  etymology: string | null;
   hskLevel: number | null;
 }
 
@@ -50,6 +52,8 @@ export class RadicalCharacterService {
         pinyin: cr.character.characterReadings[0]?.pinyin ?? "",
         meaning: cr.character.definition ?? "",
         decompositionType: cr.decompositionType,
+        classification: cr.character.classification ?? null,
+        etymology: cr.character.etymology ?? null,
         hskLevel: cr.character.hskLevels[0]?.hskLevel ?? null,
       }));
 
