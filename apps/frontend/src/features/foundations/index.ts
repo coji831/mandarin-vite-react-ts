@@ -31,6 +31,8 @@ export {
   CharacterSearchBar,
   AnimationPanel,
   SuggestionPanel,
+  PictographGallery,
+  PictographMatchGame,
 } from "./components";
 export { useDragToPan } from "./hooks/useDragToPan";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";

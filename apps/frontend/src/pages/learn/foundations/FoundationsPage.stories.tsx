@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FoundationsPage } from "./FoundationsPage";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { quizHandlers } from "../../../../mocks/handlers/quiz-handlers";
+import { quizHandlers } from "../../../mocks/handlers/quiz-handlers";
 
 const meta: Meta<typeof FoundationsPage> = {
   title: "Pages/Learn/Foundations",
@@ -92,5 +92,13 @@ export const TonesError: Story = {
         quizHandlers.error.sandhiQuestions,
       ],
     },
+  },
+};
+
+export const PictographsTab: Story = {
+  name: "Pictographs",
+  args: { initialTab: "pictographs" as const },
+  parameters: {
+    msw: { handlers: [...mswHandlers.foundations.default(), mswHandlers.progression.phaseGate(2)] },
   },
 };

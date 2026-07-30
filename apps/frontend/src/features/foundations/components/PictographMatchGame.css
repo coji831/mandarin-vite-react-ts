@@ -1,0 +1,161 @@
+/**
+ * @file components/PictographMatchGame.css
+ * @description Styles for the Pictograph Match mini-game component
+ * Story 21.21: Pictograph Warmup (Gallery + Mini-game)
+ *
+ * Uses design tokens from globals.css — no hardcoded values.
+ */
+
+.pictograph-match {
+  padding: var(--space-lg) 0;
+}
+
+.pictograph-match__header {
+  margin-bottom: var(--space-lg);
+}
+
+.pictograph-match__title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+.pictograph-match__progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.pictograph-match__question-area {
+  background: var(--surface-dark-alt-2);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.pictograph-match__description {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  line-height: 1.5;
+  text-align: center;
+  margin: 0 0 var(--space-lg);
+}
+
+.pictograph-match__prompt {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0 0 var(--space-md);
+}
+
+.pictograph-match__options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.pictograph-match__option-btn {
+  font-size: var(--font-2xl);
+  padding: var(--space-md);
+  border: 2px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  background: var(--surface-dark);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pictograph-match__option-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--surface-hover);
+}
+
+.pictograph-match__option-btn:disabled {
+  cursor: default;
+}
+
+.pictograph-match__option-btn--correct {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 15%, transparent);
+}
+
+.pictograph-match__option-btn--wrong {
+  border-color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 15%, transparent);
+}
+
+@media (max-width: 480px) {
+  .pictograph-match__options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pictograph-match__result-area {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.pictograph-match__result-text {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-sm);
+}
+
+.pictograph-match__etymology {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  font-style: italic;
+  margin: 0 0 var(--space-md);
+}
+
+.pictograph-match__next-btn {
+  min-width: 120px;
+}
+
+.pictograph-match__end-screen {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.pictograph-match__end-score {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.pictograph-match__end-label {
+  font-size: var(--font-md);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.pictograph-match__end-result {
+  font-size: var(--font-lg);
+  margin: 0 0 var(--space-lg);
+}
+
+.pictograph-match__end-result--pass {
+  color: var(--color-success);
+}
+
+.pictograph-match__end-result--fail {
+  color: var(--color-error);
+}
+
+.pictograph-match__retry-btn {
+  min-width: 160px;
+}
+
+.pictograph-match__empty {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--text-tertiary);
+}

@@ -27,3 +27,5 @@ export { StrokeReferenceContent } from "./strokes/StrokeReferenceContent";
 export { CharacterSearchBar } from "./animations/CharacterSearchBar";
 export { AnimationPanel } from "./animations/AnimationPanel";
 export { SuggestionPanel } from "./animations/SuggestionPanel";
+export { PictographGallery } from "./PictographGallery";
+export { PictographMatchGame } from "./PictographMatchGame";
