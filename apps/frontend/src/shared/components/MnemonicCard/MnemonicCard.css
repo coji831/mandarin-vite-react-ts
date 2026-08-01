@@ -113,7 +113,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 2px 8px;
+  /* horizontal 8px = --space-xs; vertical 2px is structural pill-height math (D4) */
+  padding: 2px var(--space-xs);
   border-radius: var(--radius-pill);
   background: var(--color-primary-bg);
   color: var(--color-primary-light);

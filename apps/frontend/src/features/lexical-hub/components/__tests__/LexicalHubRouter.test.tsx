@@ -52,7 +52,9 @@ vi.mock("../../entityHubRegistry", () => ({
     character: ({ entityId }: { entityId?: string }) => (
       <div data-testid="char-hub-content">CharacterHub: {entityId}</div>
     ),
-    radical: () => <div>Radical detail coming in a future story.</div>,
+    radical: ({ entityId }: { entityId?: string }) => (
+      <div data-testid="radical-hub-content">RadicalHub: {entityId}</div>
+    ),
     chengyu: () => <div>Detail coming in a future story.</div>,
     grammar: () => <div>Detail coming in a future story.</div>,
     phoneticCluster: () => <div>Detail coming in a future story.</div>,
@@ -79,10 +81,11 @@ describe("LexicalHubRouter", () => {
     expect(screen.getByText("CharacterHub: 女")).toBeInTheDocument();
   });
 
-  it("renders radical placeholder for radical entity type", () => {
-    mockCurrentEntity = { entityType: "radical", entityId: "rad_001", label: "yī" };
+  it("renders RadicalHub for radical entity type", () => {
+    mockCurrentEntity = { entityType: "radical", entityId: "rad_0001", label: "一 (yī)" };
     render(<LexicalHubRouter />);
-    expect(screen.getByText(/Radical detail coming in a future story/)).toBeInTheDocument();
+    expect(screen.getByTestId("radical-hub-content")).toBeInTheDocument();
+    expect(screen.getByText("RadicalHub: rad_0001")).toBeInTheDocument();
   });
 
   it("renders NotImplemented placeholder for unknown entity type via registry", () => {

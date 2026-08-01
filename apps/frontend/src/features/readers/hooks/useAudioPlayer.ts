@@ -5,8 +5,10 @@
  * Phase 2: Reads all audio state from audioStore directly (no props for audio state).
  *   Accepts sentenceCount and sentenceTexts as options (passage data, not audio state).
  *
- * Handles: play, pause, stop, seek, auto-advance, tap-to-play (via pendingIndex signal),
- *   popover pause/resume, page visibility, and hasJustCompleted one-shot flag.
+ * Handles: play, pause, stop, seek, auto-advance, single-sentence play (via
+ *   pendingSingleIndex signal — no auto-advance), tap-to-play (via pendingIndex
+ *   signal — auto-advance), popover pause/resume, page visibility, and
+ *   hasJustCompleted one-shot flag.
  */
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { LANGUAGE_CODES } from "@mandarin/shared-constants";
@@ -51,6 +53,7 @@ export function useAudioPlayer({
   const error = useAudioStore((s) => s.error);
   const speed = useAudioStore((s) => s.speed);
   const pendingIndex = useAudioStore((s) => s.pendingIndex);
+  const pendingSingleIndex = useAudioStore((s) => s.pendingSingleIndex);
   const popoverGlyph = useReadingStore((s) => s.popover.glyph);
 
   // ── Refs for mutable callback state (avoids stale closures) ────────────
@@ -91,8 +94,10 @@ export function useAudioPlayer({
       if (entry && entry.source !== "failed" && entry.url) {
         try {
           await audioEngineRef.current.playUrl(entry.url, speedRef.current);
-        } catch (err) {
-          console.error("useAudioPlayer: Audio playback failed, TTS fallback:", err);
+        } catch {
+          // Expected graceful degradation (epic-21): Tier-2 on-demand audio failed
+          // (e.g. 401 for guests) → fall back to Tier-3 browser SpeechSynthesis.
+          // Audio is delivered either way, so no error-level log here.
           await browserTTSRef.current.speak(
             sentenceTexts[index],
             speedRef.current,
@@ -110,10 +115,12 @@ export function useAudioPlayer({
 
       useAudioStore.getState().setStatus("playing");
 
-      // Auto-advance only when still playing and this sequence is still active
+      // Auto-advance only when still playing and this sequence is still active.
+      // Read the live store status (not statusRef — that lags until React's effect
+      // flushes, and must also reflect an immediate pause()/stop() mid-sentence).
       if (
         autoAdvance &&
-        statusRef.current === "playing" &&
+        useAudioStore.getState().status === "playing" &&
         currentIndexRef.current === index &&
         playSequenceRef.current === seq
       ) {
@@ -196,13 +203,29 @@ export function useAudioPlayer({
     audioEngineRef.current.setRate(validSpeed);
   }, []);
 
-  // ── Consume pendingIndex signal (tap-to-play from SentenceDisplay) ────
+  // ── Consume pendingIndex signal (tap-to-play, AUTO-ADVANCE) ────────────────
+  // Legacy tap-to-play signal: starts playback from the given index and continues
+  // through the whole passage. The per-sentence 🔊 button does NOT use this — it
+  // uses pendingSingleIndex below so a single sentence does not auto-advance.
   useEffect(() => {
     if (pendingIndex !== null) {
-      play(pendingIndex);
+      const index = pendingIndex;
       useAudioStore.getState().setPendingIndex(null);
+      play(index);
     }
   }, [pendingIndex, play]);
+
+  // ── Consume pendingSingleIndex signal (single-sentence, NO auto-advance) ────
+  // The per-sentence 🔊 button must play ONLY that sentence — no auto-advance.
+  // Only global play (AudioControlBar → play()) auto-advances the whole passage.
+  useEffect(() => {
+    if (pendingSingleIndex !== null) {
+      const index = pendingSingleIndex;
+      useAudioStore.getState().setPendingSingleIndex(null);
+      stopPlayback();
+      playSentence(index, false);
+    }
+  }, [pendingSingleIndex, playSentence, stopPlayback]);
 
   // ── Popover pause/resume ──────────────────────────────────────────────
   useEffect(() => {

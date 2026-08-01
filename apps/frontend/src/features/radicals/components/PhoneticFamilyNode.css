@@ -6,6 +6,15 @@
  * Only contains rules that cannot be replaced by global utility classes.
  */
 
+/* ─── Family node (item container) ───────────────────────────────── */
+
+.phonetic-family-node {
+  /* Item container must match its content: never flex-shrink the node, or
+     expanded members collapse to header height (overflow:hidden sets
+     min-height:auto -> 0) and get clipped. */
+  flex-shrink: 0;
+}
+
 /* ─── Family node header (clickable toggle) ──────────────────────── */
 
 .phonetic-family-node__header {

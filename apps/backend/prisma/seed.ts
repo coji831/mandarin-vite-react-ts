@@ -10,26 +10,34 @@
  *
  * Seed order (strict dependency):
  *   1. Character              ← no FK deps
- *   2. PinyinSyllable         ← no FK deps (clears + reinserts)
- *   3. MeasureWord            ← no FK deps
- *   4. Component              ← no FK deps (empty — skipped)
- *   5. Passage                ← no FK deps
- *   6. Word                   ← no FK deps
- *   7. StrokeCategory         ← no FK deps
- *   8. StrokeExtendedType     ← FK → StrokeCategory
- *   9. StrokeOrderRule        ← no FK deps
- *   10. StrokeCategoryOrderRule ← FK → StrokeCategory + StrokeOrderRule
- *   11. CharacterReading      ← FK → Character
- *   12. CharacterRadical      ← FK → Character
- *   13. CharacterHskLevel     ← FK → Character
- *   14. WordHskLevel          ← FK → Word
- *   15. WordCharacter         ← FK → Word + Character
- *   16. PinyinCharacterMapping ← FK → PinyinSyllable + Character
- *   17. MeasureWordWord       ← FK → MeasureWord + Word
- *   18. CharacterComponent    ← FK → Character + Component (empty — skipped)
- *   19. PhoneticCluster       ← FK → Component
- *   20. PhoneticClusterMember ← FK → PhoneticCluster + Character
- *   21. Test users            — dev only
+ *   2. Radical                ← no FK deps (20 records)
+ *   3. Tone                   ← no FK deps (5 records)
+ *   4. PinyinPhoneme          ← no FK deps (50 records)
+ *   5. TonePair               ← no FK deps (6 records)
+ *   6. ToneRule               ← no FK deps (3 records)
+ *   7. PinyinSyllable         ← no FK deps (clears + reinserts)
+ *   8. MeasureWord            ← no FK deps
+ *   9. Component              ← no FK deps (1,777 records)
+ *   10. Passage               ← no FK deps
+ *   11. Word                  ← no FK deps
+ *   12. StrokeCategory        ← no FK deps
+ *   13. StrokeExtendedType    ← FK → StrokeCategory
+ *   14. StrokeOrderRule       ← no FK deps
+ *   15. StrokeCategoryOrderRule ← FK → StrokeCategory + StrokeOrderRule
+ *   16. CharacterReading      ← FK → Character
+ *   17. CharacterRadical      ← FK → Character + Radical
+ *   18. CharacterHskLevel     ← FK → Character
+ *   19. WordHskLevel          ← FK → Word
+ *   20. WordCharacter         ← FK → Word + Character
+ *   21. PinyinCharacterMapping ← FK → PinyinSyllable + Character
+ *   22. MeasureWordWord       ← FK → MeasureWord + Word
+ *   23. CharacterComponent    ← FK → Character + Component (15,742 records)
+ *   24. PhoneticCluster       ← FK → Component
+ *   25. PhoneticClusterMember ← FK → PhoneticCluster + Character
+ *   26. Test users            — dev only
+ *
+ *   Post-seed: VALIDATE "CharacterRadical_radicalId_fkey" (created NOT VALID by
+ *   migration 20260731045648_add_reference_tables — see docs/guides/data/seed-pipeline.md §2).
  */
 
 import path from "path";
@@ -128,6 +136,11 @@ async function main() {
   console.log("📂 Loading Phase 2 JSON files...");
   const phase2 = {
     characters: loadJson<Phase2Character>("characters.json"),
+    radicals: loadJson<any>("radicals.json"),
+    tones: loadJson<any>("tones.json"),
+    pinyinPhonemes: loadJson<any>("pinyin-phonemes.json"),
+    tonePairs: loadJson<any>("tone-pairs.json"),
+    toneRules: loadJson<any>("tone-rules.json"),
     pinyinSyllables: loadJson<any>("pinyin-syllables.json"),
     measureWords: loadJson<any>("measure-words.json"),
     componentEntries: loadJson<any>("component-entries.json"),
@@ -149,15 +162,18 @@ async function main() {
     strokeCategoryRules: loadJson<any>("strokes-category-rules.json"),
   };
   const totalEntries = Object.values(phase2).reduce((sum, arr) => sum + arr.length, 0);
-  console.log(`   Loaded ${totalEntries} total entries across 20 files\n`);
+  console.log(`   Loaded ${totalEntries} total entries across 25 files\n`);
 
   // ──────────────────────────────────────────────────────────────────────────
   // 1. Character (103K — chunked) — no FK deps
   //    Map readings format and coreMeaning → definition
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📄 Step 1/17: Seeding Character...");
-  // Note: phoneticComponentId contains glyphs (e.g., "从"), not character IDs.
-  // Skipping until Phase 2 data is corrected to use character IDs.
+  console.log("📄 Step 1/26: Seeding Character...");
+  // phoneticComponentId references another Character by its ch_-prefixed ID
+  // (e.g., "ch_20174"). It is intentionally omitted from the bulk INSERT:
+  // Character is chunked, and a chunked createMany cannot guarantee the
+  // referenced row already exists (cross-chunk FK). We link it in a dedicated
+  // update pass right after seeding (see below).
   const characterData = phase2.characters.map((c) => ({
     id: c.id,
     glyph: c.glyph,
@@ -176,13 +192,77 @@ async function main() {
     commonWords: c.commonWords || [],
   }));
   await seedTable("Character", "character", characterData);
+
+  // ── Link phonetic components (self-referential FK) ───────────────────────
+  // Character.phoneticComponentId → Character.id. Phase 2 characters.json
+  // carries ch_-prefixed target IDs (validated by verify-data-lifecycle.ts
+  // deep check #6). All referenced targets exist in the same file, so once
+  // every Character row is inserted, these updates satisfy the FK. Chunked
+  // transaction keeps the batch below PG parameter limits.
+  //
+  // The default interactive-transaction timeout is 5000 ms — far too short for
+  // 1000 UPDATEs over a remote (Neon pooler) connection. Use a generous
+  // timeout + smaller batches so the linking pass survives live-DB seeds.
+  const withPhonetic = phase2.characters.filter((c) => c.phoneticComponentId != null);
+  if (withPhonetic.length > 0) {
+    console.log(`  🔗 Linking phoneticComponentId for ${withPhonetic.length} characters...`);
+    for (let i = 0; i < withPhonetic.length; i += 500) {
+      const batch = withPhonetic.slice(i, i + 500);
+      await prisma.$transaction(
+        batch.map((c) =>
+          prisma.character.update({
+            where: { id: c.id },
+            data: { phoneticComponentId: c.phoneticComponentId },
+          }),
+        ),
+        { timeout: 120_000 },
+      );
+    }
+    console.log(`  ✅ Linked phoneticComponentId for ${withPhonetic.length} characters`);
+  }
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 2. PinyinSyllable (2K) — no FK deps (clear first for idempotency)
+  // 2. Radical (20) — no FK deps. Reference table (all-in-DB).
+  //    Business-key PK (rad_XXXX) → idempotent via createMany skipDuplicates.
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("📛 Step 2/26: Seeding Radical...");
+  await seedTable("Radical", "radical", phase2.radicals);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 3. Tone (5) — no FK deps. Reference table.
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🎼 Step 3/26: Seeding Tone...");
+  await seedTable("Tone", "tone", phase2.tones);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 4. PinyinPhoneme (50) — no FK deps. Reference table (18 init + 32 fin).
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🔡 Step 4/26: Seeding PinyinPhoneme...");
+  await seedTable("PinyinPhoneme", "pinyinPhoneme", phase2.pinyinPhonemes);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 5. TonePair (6) — no FK deps. Tone-sandhi example pairs.
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("🎚️ Step 5/26: Seeding TonePair...");
+  await seedTable("TonePair", "tonePair", phase2.tonePairs);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 6. ToneRule (3) — no FK deps. Tone-sandhi rules (examples as Json).
+  // ──────────────────────────────────────────────────────────────────────────
+  console.log("📐 Step 6/26: Seeding ToneRule...");
+  await seedTable("ToneRule", "toneRule", phase2.toneRules);
+  console.log("");
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 7. PinyinSyllable (2K) — no FK deps (clear first for idempotency)
   //    Clears PinyinCharacterMapping too (FK depends on PinyinSyllable)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🎵 Step 2/17: Seeding PinyinSyllable...");
+  console.log("🎵 Step 7/26: Seeding PinyinSyllable...");
   await prisma.$executeRawUnsafe('DELETE FROM "PinyinCharacterMapping"');
   console.log("  🧹 Cleared PinyinCharacterMapping");
   await prisma.$executeRawUnsafe('DELETE FROM "PinyinSyllable"');
@@ -193,7 +273,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 3. MeasureWord (52) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📏 Step 3/17: Seeding MeasureWord...");
+  console.log("📏 Step 8/26: Seeding MeasureWord...");
   // Map Phase 2 fields: glyph→simplified, category, usageNote; drop hskLevel and nouns (go to MeasureWordWord)
   const measureWordData = phase2.measureWords.map((mw: any) => ({
     id: mw.id,
@@ -207,9 +287,9 @@ async function main() {
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 4. Component (0 — deferred, skip gracefully) — no FK deps
+  // 4. Component (1,777) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 4/17: Seeding Component...");
+  console.log("🧩 Step 9/26: Seeding Component...");
   await seedTable("Component", "component", phase2.componentEntries);
   console.log("");
 
@@ -217,7 +297,7 @@ async function main() {
   // 5. Passage (6) — no FK deps
   //    Enrich with passageIndex, knownWordRatio, targetHskLevel, sentence index
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📖 Step 5/17: Seeding Passage...");
+  console.log("📖 Step 10/26: Seeding Passage...");
   const passageData = phase2.demoPassages.map((p, i) => {
     const enrichedSentences = (p.content?.sentences || []).map((s, si) => ({
       index: si,
@@ -250,7 +330,7 @@ async function main() {
   // 6. Word (11K — chunked) — no FK deps
   //    Strip extra fields not in Prisma model (characters[], sequenceOrder[], etc.)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📝 Step 6/17: Seeding Word...");
+  console.log("📝 Step 11/26: Seeding Word...");
   const wordData: Phase2Word[] = phase2.words.map((w: any) => ({
     id: w.id,
     simplified: w.simplified,
@@ -266,7 +346,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 7. StrokeCategory (5) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 7/21: Seeding StrokeCategory...");
+  console.log("🔴 Step 12/26: Seeding StrokeCategory...");
   const strokeCategories = loadJson<any>("strokes-categories.json");
   await seedTable("StrokeCategory", "strokeCategory", strokeCategories);
   console.log("");
@@ -274,7 +354,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 8. StrokeExtendedType (8) — FK → StrokeCategory
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 8/21: Seeding StrokeExtendedType...");
+  console.log("🔴 Step 13/26: Seeding StrokeExtendedType...");
   const strokeExtendedTypes = loadJson<any>("strokes-extended-types.json");
   await seedTable("StrokeExtendedType", "strokeExtendedType", strokeExtendedTypes);
   console.log("");
@@ -282,7 +362,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 9. StrokeOrderRule (5) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 9/21: Seeding StrokeOrderRule...");
+  console.log("🔴 Step 14/26: Seeding StrokeOrderRule...");
   const strokeOrderRules = loadJson<any>("strokes-order-rules.json");
   await seedTable("StrokeOrderRule", "strokeOrderRule", strokeOrderRules);
   console.log("");
@@ -290,7 +370,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 10. StrokeCategoryOrderRule (~10-15) — FK → StrokeCategory + StrokeOrderRule
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 10/21: Seeding StrokeCategoryOrderRule...");
+  console.log("🔴 Step 15/26: Seeding StrokeCategoryOrderRule...");
   const categoryRules = loadJson<any>("strokes-category-rules.json");
   await seedTable("StrokeCategoryOrderRule", "strokeCategoryOrderRule", categoryRules);
   console.log("");
@@ -299,7 +379,7 @@ async function main() {
   // 11. CharacterReading (15K — chunked) — FK → Character
   //    Pre-clear for idempotency (no unique constraint beyond id)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔤 Step 11/21: Seeding CharacterReading...");
+  console.log("🔤 Step 16/26: Seeding CharacterReading...");
   console.log("  🧹 Cleared CharacterReading (pre-clear for idempotency)");
   await prisma.characterReading.deleteMany();
   await seedTable("CharacterReading", "characterReading", phase2.characterReadings);
@@ -309,7 +389,7 @@ async function main() {
   // 12. CharacterRadical (2.8K) — FK → Character
   //    @@unique([characterGlyph, radicalId]) requires skip-duplicate logic
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 12/21: Seeding CharacterRadical...");
+  console.log("🔗 Step 17/26: Seeding CharacterRadical...");
   const existingRadicals = new Set(
     (
       await prisma.characterRadical.findMany({
@@ -327,7 +407,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 13. CharacterHskLevel (3K) — FK → Character (@id on characterId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 13/21: Seeding CharacterHskLevel...");
+  console.log("🏷️ Step 18/26: Seeding CharacterHskLevel...");
   await seedTable("CharacterHskLevel", "characterHskLevel", phase2.characterHskLevels, {
     chunkSize: 1_000,
   });
@@ -336,7 +416,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 14. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 14/21: Seeding WordHskLevel...");
+  console.log("🏷️ Step 19/26: Seeding WordHskLevel...");
   const wordHskData = phase2.wordHskLevels.map((whl: any) => ({
     wordId: whl.wordId,
     hskLevel: whl.hskLevel,
@@ -348,7 +428,7 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 15. WordCharacter (22K — chunked) — FK → Word + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 15/21: Seeding WordCharacter...");
+  console.log("🔗 Step 20/26: Seeding WordCharacter...");
   await seedTable("WordCharacter", "wordCharacter", phase2.wordCharacters);
   console.log("");
 
@@ -356,7 +436,7 @@ async function main() {
   // 16. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
   //     PinyinCharacterMapping was already cleared in step 2, so just insert
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 16/21: Seeding PinyinCharacterMapping...");
+  console.log("🔗 Step 21/26: Seeding PinyinCharacterMapping...");
   await seedTable(
     "PinyinCharacterMapping",
     "pinyinCharacterMapping",
@@ -367,33 +447,33 @@ async function main() {
   // ──────────────────────────────────────────────────────────────────────────
   // 17. MeasureWordWord (135) — FK → MeasureWord + Word
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 17/21: Seeding MeasureWordWord...");
+  console.log("🔗 Step 22/26: Seeding MeasureWordWord...");
   await seedTable("MeasureWordWord", "measureWordWord", phase2.measureWordWords);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 18. CharacterComponent (0 — deferred, skip gracefully) — FK → Character + Component
+  // 18. CharacterComponent (15,742) — FK → Character + Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 18/21: Seeding CharacterComponent...");
+  console.log("🧩 Step 23/26: Seeding CharacterComponent...");
   await seedTable("CharacterComponent", "characterComponent", phase2.characterComponents);
   console.log("");
 
   // ── 19. PhoneticCluster — FK → Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔊 Step 19/21: Seeding PhoneticCluster...");
+  console.log("🔊 Step 24/26: Seeding PhoneticCluster...");
   await seedTable("PhoneticCluster", "phoneticCluster", phase2.phoneticClusters);
   console.log("");
 
   // ── 20. PhoneticClusterMember — FK → PhoneticCluster + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 20/21: Seeding PhoneticClusterMember...");
+  console.log("🔗 Step 25/26: Seeding PhoneticClusterMember...");
   await seedTable("PhoneticClusterMember", "phoneticClusterMember", phase2.phoneticClusterMembers);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 21. Test users (dev only)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("👤 Step 21/21: Creating test users...");
+  console.log("👤 Step 26/26: Creating test users...");
   if (process.env.NODE_ENV !== "production") {
     await prisma.user.upsert({
       where: { email: "test@example.com" },
@@ -418,6 +498,31 @@ async function main() {
     console.log("  ✅ Test users created\n");
   } else {
     console.log("  ⏭️  Skipping test users (production)\n");
+  }
+
+  // ── Post-seed FK validation (part of step 26 / post-seed verification) ──
+  // ────────────────────────────────────────────────────────────────────────────
+  // Migration 20260731045648_add_reference_tables created
+  // "CharacterRadical_radicalId_fkey" NOT VALID because Radical was empty at
+  // migration time while CharacterRadical already held rows. Seed step 17 now
+  // guarantees every radicalId maps to one of the 20 curated radicals, so
+  // validate the constraint to enforce referential integrity on the pre-existing
+  // rows. Guarded by the pg_constraint.convalidated flag — PostgreSQL errors if
+  // VALIDATE runs on an already-valid constraint, so this keeps the seed safe
+  // to re-run.
+  console.log("🔐 Post-seed: Validating CharacterRadical_radicalId_fkey...");
+  const [{ convalidated }] = await prisma.$queryRaw<{ convalidated: boolean }[]>`
+    SELECT convalidated
+    FROM pg_constraint
+    WHERE conname = 'CharacterRadical_radicalId_fkey'
+  `;
+  if (convalidated) {
+    console.log("  ⏭️  Already validated — skipping\n");
+  } else {
+    await prisma.$executeRawUnsafe(
+      'ALTER TABLE "CharacterRadical" VALIDATE CONSTRAINT "CharacterRadical_radicalId_fkey"',
+    );
+    console.log("  ✅ CharacterRadical_radicalId_fkey validated\n");
   }
 
   console.log("═══════════════════════════════════════════════");

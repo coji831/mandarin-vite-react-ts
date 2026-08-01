@@ -30,7 +30,9 @@ export interface PinyinTonesPool {
     pinyinExample: string;
     chineseExample: string;
     description: string;
-    contour: string | null;
+    // Tone.contour is a Json column storing the 5-point pitch contour as a
+    // number[] (e.g. [4, 4.5, 5, 5, 5]) — matches the frontend ToneContourCard.
+    contour: number[] | null;
     color: string;
   }>;
   tonePairs: unknown[];

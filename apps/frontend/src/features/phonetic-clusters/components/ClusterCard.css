@@ -6,9 +6,6 @@
 
 .cluster-card {
   gap: 0;
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
 }
 
 .cluster-card:hover {
@@ -23,9 +20,8 @@
   flex-shrink: 0;
 }
 
-.cluster-card__hsk-badge {
-  /* needs inline-block for pill layout */
-  display: inline-block;
-  /* line-height tweak for badge text alignment */
-  line-height: 1.4;
+/* ─── Collapsible toggle header (VisFix W6a) ─────────────────────── */
+
+.cluster-card__toggle:hover {
+  background: var(--color-primary-bg-light); /* :hover pseudo — can't use className utility */
 }

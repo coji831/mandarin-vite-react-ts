@@ -39,6 +39,8 @@ export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
 export { isValidHanzi } from "./hooks/useCharacterSearch";
 export { useStrokeReferenceData } from "./hooks/useStrokeReferenceData";
 export { foundationsService } from "./services/foundationsService";
+export { getSandhiDrillQuestions } from "./services/sandhiDrillService";
+export type { DrillQuestion } from "./services/sandhiDrillService";
 export {
   TONE_COLORS,
   TONE_LABELS,

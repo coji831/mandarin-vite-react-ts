@@ -121,6 +121,7 @@ const defaultProps = {
   isLoading: false,
   error: null as string | null,
   refetch: vi.fn(),
+  treeMode: "radical" as const,
 };
 
 describe("RadicalTreesTab — Phase 2 (currentPhase < 3)", () => {

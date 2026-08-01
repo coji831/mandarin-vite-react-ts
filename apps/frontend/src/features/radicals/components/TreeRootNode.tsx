@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Box, Button } from "shared/components";
+import { Box, Button, Chip } from "shared/components";
 import { openHub } from "shared/store";
 import type { RadicalData } from "../types";
 import { BranchNode } from "./BranchNode";
@@ -34,16 +34,6 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
   const handleRadicalClick = useCallback(() => {
     openHub({ entityType: "character", entityId: radical.glyph, label: radical.name_pinyin });
   }, [radical]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggleExpand();
-      }
-    },
-    [toggleExpand],
-  );
 
   return (
     <Box
@@ -84,9 +74,14 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
           </div>
         </Button>
 
-        <span className="font-xs radius-pill tree-root-node__badge text-muted whitespace-nowrap shrink-0 p-xs bg-surface-light-10">
-          {characters.length} character{characters.length !== 1 ? "s" : ""}
-        </span>
+        {/* Character-count pill — non-interactive shared Chip (count slot) */}
+        <Chip
+          interactive={false}
+          variant="surface"
+          size="sm"
+          count={`${characters.length} character${characters.length !== 1 ? "s" : ""}`}
+          className="shrink-0"
+        />
       </div>
 
       {/* Expandable character branches */}

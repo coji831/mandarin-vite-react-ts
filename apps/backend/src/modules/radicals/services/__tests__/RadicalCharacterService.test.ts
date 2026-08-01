@@ -16,21 +16,18 @@ vi.mock("../../../../shared/utils/logger", () => ({
   })),
 }));
 
-// Mock contentUtils to avoid file system access
-vi.mock("../../../../shared/utils/contentUtils", () => ({
-  findInAggregateContent: vi.fn(),
-}));
-
 // Mock prisma
 vi.mock("../../../../shared/infrastructure/database/client", () => ({
   prisma: {
+    radical: {
+      findUnique: vi.fn(),
+    },
     characterRadical: {
       findMany: vi.fn(),
     },
   },
 }));
 
-import { findInAggregateContent } from "../../../../shared/utils/contentUtils.js";
 import { prisma } from "../../../../shared/infrastructure/database/client.js";
 
 describe("RadicalCharacterService", () => {
@@ -83,7 +80,7 @@ describe("RadicalCharacterService", () => {
 
   describe("getCharactersForRadical", () => {
     it("returns characters for a valid radical ID", async () => {
-      vi.mocked(findInAggregateContent).mockResolvedValue(validRadical);
+      vi.mocked(prisma.radical.findUnique).mockResolvedValue(validRadical as any);
       vi.mocked(prisma.characterRadical.findMany).mockResolvedValue(mockCharacterRadicals as any);
 
       const result = await service.getCharactersForRadical(validRadicalId);
@@ -95,6 +92,8 @@ describe("RadicalCharacterService", () => {
         pinyin: "yī",
         meaning: "one",
         decompositionType: "semantic",
+        classification: null,
+        etymology: null,
         hskLevel: 1,
       });
       expect(result.characters[1]).toEqual({
@@ -102,6 +101,8 @@ describe("RadicalCharacterService", () => {
         pinyin: "sān",
         meaning: "three",
         decompositionType: null,
+        classification: null,
+        etymology: null,
         hskLevel: 1,
       });
       expect(result.characters[2]).toEqual({
@@ -109,15 +110,13 @@ describe("RadicalCharacterService", () => {
         pinyin: "qī",
         meaning: "seven",
         decompositionType: null,
+        classification: null,
+        etymology: null,
         hskLevel: null,
       });
 
-      expect(findInAggregateContent).toHaveBeenCalledWith(
-        "radicals",
-        "radicals.json",
-        "id",
-        validRadicalId,
-      );
+      // Radical existence validated against the Radical reference table (all-in-DB)
+      expect(prisma.radical.findUnique).toHaveBeenCalledWith({ where: { id: validRadicalId } });
       expect(prisma.characterRadical.findMany).toHaveBeenCalledWith({
         where: { radicalId: validRadicalId },
         include: {
@@ -136,7 +135,7 @@ describe("RadicalCharacterService", () => {
     });
 
     it("throws RadicalNotFoundError for an invalid radical ID", async () => {
-      vi.mocked(findInAggregateContent).mockResolvedValue(null);
+      vi.mocked(prisma.radical.findUnique).mockResolvedValue(null);
 
       await expect(service.getCharactersForRadical(invalidRadicalId)).rejects.toThrow(
         RadicalNotFoundError,
@@ -148,7 +147,7 @@ describe("RadicalCharacterService", () => {
     });
 
     it("returns empty characters array when no characters are associated", async () => {
-      vi.mocked(findInAggregateContent).mockResolvedValue(validRadical);
+      vi.mocked(prisma.radical.findUnique).mockResolvedValue(validRadical as any);
       vi.mocked(prisma.characterRadical.findMany).mockResolvedValue([]);
 
       const result = await service.getCharactersForRadical(validRadicalId);
@@ -158,7 +157,7 @@ describe("RadicalCharacterService", () => {
     });
 
     it("handles missing optional fields gracefully", async () => {
-      vi.mocked(findInAggregateContent).mockResolvedValue(validRadical);
+      vi.mocked(prisma.radical.findUnique).mockResolvedValue(validRadical as any);
       vi.mocked(prisma.characterRadical.findMany).mockResolvedValue([
         {
           characterGlyph: "无",
@@ -181,6 +180,8 @@ describe("RadicalCharacterService", () => {
         pinyin: "",
         meaning: "",
         decompositionType: null,
+        classification: null,
+        etymology: null,
         hskLevel: null,
       });
     });

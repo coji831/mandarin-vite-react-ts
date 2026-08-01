@@ -77,6 +77,7 @@ describe("WordPopover", () => {
 
     vi.mocked(useWordDetail).mockReturnValue({
       data: {
+        id: "wd_hao",
         glyph: "好",
         pinyin: "hǎo",
         definitions: ["good", "fine"],
@@ -111,5 +112,50 @@ describe("WordPopover", () => {
       await userEvent.click(backdrop);
       expect(useReadingStore.getState().popover.glyph).toBeNull();
     }
+  });
+
+  it("moves focus into the dialog on open (WCAG 2.4.3)", () => {
+    useReadingStore.getState().openPopover("好", { left: 100, bottom: 200 } as DOMRect);
+
+    vi.mocked(useWordDetail).mockReturnValue({
+      data: null,
+      isLoading: true,
+      isError: false,
+    });
+
+    render(<WordPopover />);
+
+    const dialog = screen.getByRole("dialog", { name: /Word details: 好/ });
+    expect(dialog).toHaveFocus();
+  });
+
+  it("returns focus to the trigger on close", () => {
+    // Simulate a focused word trigger in the reading text before the popover opens.
+    const trigger = document.createElement("button");
+    trigger.textContent = "好";
+    document.body.appendChild(trigger);
+    trigger.focus();
+    expect(trigger).toHaveFocus();
+
+    useReadingStore.getState().openPopover("好", { left: 100, bottom: 200 } as DOMRect);
+
+    vi.mocked(useWordDetail).mockReturnValue({
+      data: null,
+      isLoading: true,
+      isError: false,
+    });
+
+    const { unmount } = render(<WordPopover />);
+
+    // Focus moved away from the trigger into the dialog.
+    expect(trigger).not.toHaveFocus();
+    expect(screen.getByRole("dialog", { name: /Word details: 好/ })).toHaveFocus();
+
+    // Closing the popover unmounts the component → focus returns to the trigger.
+    useReadingStore.getState().closePopover();
+    unmount();
+
+    expect(trigger).toHaveFocus();
+    trigger.remove();
   });
 });

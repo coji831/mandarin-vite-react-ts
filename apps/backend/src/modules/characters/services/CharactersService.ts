@@ -8,7 +8,6 @@
  */
 
 import { createLogger } from "../../../shared/utils/logger.js";
-import { readAggregateContent } from "../../../shared/utils/contentUtils.js";
 import { CharactersRepository } from "../repositories/CharactersRepository.js";
 import {
   CharacterNotFoundError,
@@ -27,15 +26,6 @@ import type {
   PaginatedResponse,
   PhoneticComponentResponse,
 } from "../types/characters.js";
-
-// ── Radical Item Shape (from content/radicals/radicals.json) ──────────────
-
-interface RadicalItem {
-  id: string;
-  glyph: string;
-  meaning: string;
-  [key: string]: unknown;
-}
 
 const logger = createLogger("CharactersService");
 
@@ -254,7 +244,9 @@ export class CharactersService {
 
   /**
    * Resolve the first radical from CharacterRadical records using the
-   * file-based radicals aggregate (content/radicals/radicals.json).
+   * Radical reference table (all-in-DB — seeded from content/seed/phase2/
+   * by prisma/seed.ts). Replaces the former read of
+   * content/radicals/radicals.json at runtime.
    */
   private async resolveRadical(
     radicalRecords: Array<{ radicalId: string; decompositionType: string | null }>,
@@ -262,7 +254,9 @@ export class CharactersService {
     if (radicalRecords.length === 0) return null;
 
     try {
-      const allRadicals = await readAggregateContent<RadicalItem>("radicals", "radicals.json");
+      // Fetch only the referenced radical rows from the DB (repository-backed).
+      const radicalIds = radicalRecords.map((r) => r.radicalId);
+      const allRadicals = await this.repository.findRadicalsByIds(radicalIds);
       const radicalMap = new Map(allRadicals.map((r) => [r.id, r]));
 
       // Use the first radical record
@@ -273,7 +267,7 @@ export class CharactersService {
         return { id: radical.id, glyph: radical.glyph, meaning: radical.meaning };
       }
     } catch (err) {
-      logger.warn(`Failed to resolve radical details from aggregate`, err);
+      logger.warn(`Failed to resolve radical details from the database`, err);
     }
 
     return null;

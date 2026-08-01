@@ -52,6 +52,18 @@ router.get(
 );
 
 /**
+ * GET /api/v1/progression/gates
+ * Fetch COMPUTED gate statuses (Phase 2 IME, character count ≥500, Phase 3→4).
+ * optionalAuth — guest users get all-passed (GUEST) response; authenticated
+ * users get the computed per-user gate status from the controller.
+ */
+router.get(
+  ROUTE_PATTERNS.progressionGates,
+  optionalAuth,
+  asyncHandler((req: Request, res: Response) => req.progressionController!.getGates(req, res)),
+);
+
+/**
  * PUT /api/v1/progression/phase-gate
  * Update phase gate progression after a quiz attempt
  * requireAuth — phase gating requires a registered user

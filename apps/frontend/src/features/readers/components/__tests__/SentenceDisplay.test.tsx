@@ -2,6 +2,8 @@
  * @file components/SentenceDisplay/__tests__/SentenceDisplay.test.tsx
  * @description Tests for SentenceDisplay component
  * Phase 2: Audio props removed — reads audioStore directly.
+ * VisFix: Container is no longer a button — per-sentence play button drives audio;
+ *   word taps only open the popover (never trigger audio).
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
@@ -35,6 +37,7 @@ describe("SentenceDisplay", () => {
     useAudioStore.setState({
       currentIndex: null,
       pendingIndex: null,
+      pendingSingleIndex: null,
       status: "idle" as AudioStatus,
       error: null,
       speed: 1,
@@ -95,9 +98,11 @@ describe("SentenceDisplay", () => {
     expect(onPopoverOpen).toHaveBeenCalledWith("好", expect.any(Object));
   });
 
-  it("renders aria label for sentence", () => {
+  it("renders a per-sentence play button with aria label", () => {
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "Sentence 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Play sentence 1" })).toBeInTheDocument();
+    // Sentence container is no longer a button — word taps must not trigger audio
+    expect(screen.queryByRole("button", { name: "Sentence 1" })).not.toBeInTheDocument();
   });
 
   it("renders punctuation as plain text", () => {
@@ -109,22 +114,42 @@ describe("SentenceDisplay", () => {
   it("applies active class when sentence matches audioStore currentIndex", () => {
     useAudioStore.setState({ currentIndex: 0 });
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
-    const container = screen.getByRole("button", { name: "Sentence 1" });
-    expect(container.className).toContain("sentence-display--active");
+    const container = document.querySelector(".sentence-display");
+    expect(container?.className).toContain("sentence-display--active");
   });
 
   it("does not apply active class when currentIndex differs", () => {
     useAudioStore.setState({ currentIndex: 1 });
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
-    const container = screen.getByRole("button", { name: "Sentence 1" });
-    expect(container.className).not.toContain("sentence-display--active");
+    const container = document.querySelector(".sentence-display");
+    expect(container?.className).not.toContain("sentence-display--active");
   });
 
-  it("sets pendingIndex in audioStore on tap", async () => {
+  it("sets pendingSingleIndex in audioStore when play button is clicked", async () => {
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Sentence 1" }));
+    await userEvent.click(screen.getByRole("button", { name: "Play sentence 1" }));
 
-    expect(useAudioStore.getState().pendingIndex).toBe(0);
+    expect(useAudioStore.getState().pendingSingleIndex).toBe(0);
+    // Single-sentence signal, not the auto-advance tap signal
+    expect(useAudioStore.getState().pendingIndex).toBeNull();
+  });
+
+  it("does not trigger audio when tapping an unknown word (popover only)", async () => {
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+
+    await userEvent.click(screen.getByText("好"));
+
+    expect(useAudioStore.getState().pendingSingleIndex).toBeNull();
+    expect(useAudioStore.getState().pendingIndex).toBeNull();
+  });
+
+  it("reflects active playing state on the audio button", () => {
+    useAudioStore.setState({ currentIndex: 0, status: "playing" as AudioStatus });
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+
+    const playButton = screen.getByRole("button", { name: "Replay sentence 1" });
+    expect(playButton).toBeInTheDocument();
+    expect(playButton.className).toContain("control-active");
   });
 });

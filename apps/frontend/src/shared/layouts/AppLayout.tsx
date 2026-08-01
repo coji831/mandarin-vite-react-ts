@@ -10,8 +10,12 @@
  */
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { login_page, practices_page } from "../constants/paths";
+import { auth_page, login_page, practices_page } from "../constants/paths";
 import { SideNav, Modal } from "shared/components";
+// NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
+// features/lexical-hub to orchestrate the app-wide HubModal — the LexicalHub overlay
+// must be mounted at the app root so it can open from anywhere. This shared → feature
+// inversion is intentional and should NOT be refactored away by future audits.
 import { useAuth } from "features/auth";
 import { LexicalHubRouter } from "features/lexical-hub/components";
 import { useHubStore } from "shared/store";
@@ -47,8 +51,9 @@ function AppLayout() {
     navigate(login_page);
   };
 
-  // Don't show sidebar on auth page
-  const isAuthPage = location.pathname.startsWith(login_page) || location.pathname === "/auth";
+  // Don't show sidebar on auth pages — both login and register render standalone
+  // (previously only login was hidden, so Register showed the nav when authed).
+  const isAuthPage = location.pathname.startsWith(auth_page);
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: "🏠", exact: true },

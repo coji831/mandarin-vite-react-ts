@@ -18,6 +18,7 @@ import "./WordPopover.css";
 
 export function WordPopover() {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const glyph = useReadingStore((s) => s.popover.glyph);
   const position = useReadingStore((s) => s.popover.position);
@@ -26,6 +27,21 @@ export function WordPopover() {
   // Self-fetch word detail (pinyin, definitions) using the same hook as WordHubContent
   const { data: wordDetail, isLoading } = useWordDetail(glyph);
   const [adjustedPos, setAdjustedPos] = useState({ top: 0, left: 0 });
+
+  // Move focus into the dialog on open (WCAG 2.4.3); return it to the trigger on close.
+  // The popover is mounted conditionally ({popover.glyph && <WordPopover />}), so mount
+  // happens right after the word is tapped and unmount when the popover closes.
+  useEffect(() => {
+    triggerRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    popoverRef.current?.focus();
+    return () => {
+      const trigger = triggerRef.current;
+      if (trigger && document.contains(trigger)) {
+        trigger.focus();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!popoverRef.current) return;
@@ -93,6 +109,7 @@ export function WordPopover() {
         padding="md"
         className="word-popover flex-col gap-sm shadow-md animate-fade-in border-1 border-primary-border"
         ref={popoverRef}
+        tabIndex={-1}
         style={{
           position: "fixed",
           top: `${adjustedPos.top}px`,

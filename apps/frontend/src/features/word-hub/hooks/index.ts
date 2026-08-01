@@ -5,3 +5,5 @@
  */
 export { useWordDetail } from "./useWordDetail";
 export type { WordDetailResult } from "./useWordDetail";
+export { useMeasureWords } from "./useMeasureWords";
+export type { MeasureWordsResult } from "./useMeasureWords";

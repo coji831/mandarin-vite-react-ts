@@ -106,7 +106,10 @@ describe("SandhiDrill", () => {
     fireEvent.click(screen.getByText("ní hǎo"));
 
     await waitFor(() => {
-      expect(screen.getByText(/correct/i)).toBeInTheDocument();
+      // Target the feedback alert specifically — the prompt "Which spoken
+      // (sandhi) pinyin is correct?" also matches /correct/i, so getByText
+      // would throw on multiple matches.
+      expect(screen.getByRole("alert")).toHaveTextContent(/correct/i);
     });
   });
 

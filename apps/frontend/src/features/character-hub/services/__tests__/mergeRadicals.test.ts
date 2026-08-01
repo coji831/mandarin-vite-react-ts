@@ -20,38 +20,74 @@ vi.mock("../../../radicals/services", () => ({
   radicalsService: { loadAllRadicals: vi.fn() },
 }));
 
-const mockRadicals = [
+// Real API contract: the backend returns camelCase radical items.
+// loadRadicalsByCharacter maps them into the snake_case RadicalData shape.
+const mockApiRadicals = [
   {
     id: "rad_0001",
     glyph: "⺅",
-    name_pinyin: "rén",
+    alternateGlyphs: [],
+    namePinyin: "rén",
+    nameChinese: "",
     meaning: "person",
-    stroke_count: 2,
-    is_recommended: true,
-    kangxi_index: 9,
-    metadata: {},
+    strokeCount: 2,
+    isRecommended: true,
+    kangxiIndex: 9,
+    etymology: "",
+    frequencyRank: null,
+    notes: null,
+    isAlsoCharacter: null,
+    variants: null,
+    hskCharacters: [],
   },
   {
     id: "rad_0002",
     glyph: "女",
-    name_pinyin: "nǚ",
+    alternateGlyphs: [],
+    namePinyin: "nǚ",
+    nameChinese: "",
     meaning: "woman",
-    stroke_count: 3,
-    is_recommended: true,
-    kangxi_index: 38,
-    metadata: {},
+    strokeCount: 3,
+    isRecommended: true,
+    kangxiIndex: 38,
+    etymology: "",
+    frequencyRank: null,
+    notes: null,
+    isAlsoCharacter: null,
+    variants: null,
+    hskCharacters: [],
   },
   {
     id: "rad_0003",
     glyph: "口",
-    name_pinyin: "kǒu",
+    alternateGlyphs: [],
+    namePinyin: "kǒu",
+    nameChinese: "",
     meaning: "mouth",
-    stroke_count: 3,
-    is_recommended: true,
-    kangxi_index: 30,
-    metadata: {},
+    strokeCount: 3,
+    isRecommended: true,
+    kangxiIndex: 30,
+    etymology: "",
+    frequencyRank: null,
+    notes: null,
+    isAlsoCharacter: null,
+    variants: null,
+    hskCharacters: [],
   },
 ];
+
+// Post-mapping shape (snake_case) — returned by the mocked loadAllRadicals.
+const mockRadicals = mockApiRadicals.map((r) => ({
+  id: r.id,
+  glyph: r.glyph,
+  alternate_glyphs: r.alternateGlyphs,
+  name_pinyin: r.namePinyin,
+  meaning: r.meaning,
+  stroke_count: r.strokeCount,
+  is_recommended: r.isRecommended,
+  kangxi_index: r.kangxiIndex,
+  metadata: {},
+}));
 
 async function fetchMergedRadicals(character: string) {
   const { loadRadicalsByCharacter } = await import("../characterService");
@@ -92,7 +128,7 @@ describe("fetchMergedRadicals", () => {
 
   it("returns radicals from DB when character matches via CharacterRadical table", async () => {
     const { apiClient } = await import("shared/api");
-    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockRadicals[0], mockRadicals[1]] });
+    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockApiRadicals[0], mockApiRadicals[1]] });
 
     const result = await fetchMergedRadicals("好");
 
@@ -112,7 +148,7 @@ describe("fetchMergedRadicals", () => {
   it("deduplicates when DB match and self-match return the same radical", async () => {
     const { apiClient } = await import("shared/api");
     // DB returns "口" as a match, and "口" is also a self-match
-    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockRadicals[2]] });
+    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockApiRadicals[2]] });
 
     const result = await fetchMergedRadicals("口");
 
@@ -126,15 +162,15 @@ describe("fetchMergedRadicals", () => {
     expect(result).toEqual([]);
   });
 
-  it("returns radicals with correct shape", async () => {
+  it("returns radicals with correct shape, mapping camelCase API fields to snake_case", async () => {
     const { apiClient } = await import("shared/api");
-    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockRadicals[0]] });
+    vi.mocked(apiClient.get).mockResolvedValue({ data: [mockApiRadicals[0]] });
 
     const result = await fetchMergedRadicals("好");
 
     expect(result[0]).toHaveProperty("id");
     expect(result[0]).toHaveProperty("glyph");
     expect(result[0]).toHaveProperty("meaning");
-    expect(result[0]).toHaveProperty("name_pinyin");
+    expect(result[0].name_pinyin).toBe("rén");
   });
 });

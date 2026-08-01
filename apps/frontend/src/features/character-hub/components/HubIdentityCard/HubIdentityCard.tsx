@@ -9,7 +9,7 @@
  * Accepts optional props for Storybook/development.
  */
 
-import { Skeleton } from "shared/components";
+import { Badge, Skeleton } from "shared/components";
 import { useCharacterDetail } from "../../hooks";
 import { getToneClass, extractTone } from "../../utils/toneUtils";
 import "./HubIdentityCard.css";
@@ -113,12 +113,9 @@ export function HubIdentityCard({
         {badges.length > 0 && (
           <div className="hub-identity__badges flex gap-xs flex-wrap">
             {badges.map((badge) => (
-              <span
-                key={badge}
-                className="hub-identity__badge font-xs p-xs inline-flex items-center radius-pill text-secondary whitespace-nowrap bg-surface-hover"
-              >
+              <Badge key={badge} variant="surface">
                 {badge}
-              </span>
+              </Badge>
             ))}
           </div>
         )}

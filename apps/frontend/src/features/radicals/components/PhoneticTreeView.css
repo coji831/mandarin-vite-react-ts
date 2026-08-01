@@ -27,8 +27,7 @@
 }
 
 /* ─── Families list container ────────────────────────────────────── */
-
-.phonetic-tree-view__families {
-  max-height: 600px;
-  overflow-y: auto;
-}
+/* No nested scroll here — .radical-trees-tab is the single scroll container
+   for all items. A bounded max-height + overflow-y here combined with
+   flex-shrink caused expanded family nodes to collapse to header height and
+   clip their members. */

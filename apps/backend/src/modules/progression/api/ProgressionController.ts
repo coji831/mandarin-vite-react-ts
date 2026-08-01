@@ -29,6 +29,7 @@ export class ProgressionController {
     // Bind methods for use as Express route handlers
     this.getFoundationProgress = this.getFoundationProgress.bind(this);
     this.getPhaseGate = this.getPhaseGate.bind(this);
+    this.getGates = this.getGates.bind(this);
     this.updatePhaseGate = this.updatePhaseGate.bind(this);
     this.markSectionCompleted = this.markSectionCompleted.bind(this);
     this.getRadicalProgress = this.getRadicalProgress.bind(this);
@@ -83,6 +84,35 @@ export class ProgressionController {
     } catch (error) {
       logger.error("Error fetching phase gate", error);
       return res.status(500).json({ error: "Failed to fetch phase gate", code: "LOAD_FAILED" });
+    }
+  }
+
+  /**
+   * GET /api/v1/progression/gates
+   * Fetch COMPUTED gate statuses for the user (Phase 2 IME, character count,
+   * Phase 3→4 comprehension). Unlike the persisted phase-gate row, this
+   * re-evaluates gates against current data so a character-count gate passed
+   * outside the quiz flow is surfaced.
+   *
+   * @param req - Express request (expects req.userId from auth middleware)
+   * @param res - Express response
+   * @returns
+   */
+  async getGates(req: Request, res: Response): Promise<Response> {
+    try {
+      if (!req.userId) {
+        // Guest — no gating
+        return res.status(200).json({
+          phase2Gate: { passed: true, reason: "GUEST", details: "Guest — no gating" },
+          characterCountGate: { passed: true, reason: "GUEST", details: "Guest — no gating" },
+          phase3To4Gate: { passed: true, reason: "GUEST", details: "Guest — no gating" },
+        });
+      }
+      const gates = await this.progressionService.getGateStatus(req.userId);
+      return res.status(200).json(gates);
+    } catch (error) {
+      logger.error("Error fetching gate status", error);
+      return res.status(500).json({ error: "Failed to load gate status", code: "LOAD_FAILED" });
     }
   }
 

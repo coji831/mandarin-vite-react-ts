@@ -2,20 +2,17 @@
  * @file apps/backend/src/modules/radicals/services/RadicalsService.ts
  * @description Business logic for radical reference data
  *
- * Reads from content/radicals/radicals.json aggregate file via shared contentUtils.
- * No Prisma needed — radicals are static reference data.
+ * Reads from the Radical table (Prisma) via RadicalsRepository — all-in-DB.
+ * The frontend RadicalItem contract is unchanged.
  */
 import { createLogger } from "../../../shared/utils/logger.js";
-import {
-  readAggregateContent,
-  findInAggregateContent,
-} from "../../../shared/utils/contentUtils.js";
-import { RadicalsRepository } from "../repositories/RadicalsRepository.js";
+import { RadicalsRepository, type RadicalRow } from "../repositories/RadicalsRepository.js";
 
 const logger = createLogger("RadicalsService");
 
 /**
- * Radical item shape from the aggregate content file (camelCase fields).
+ * Radical item shape returned to the frontend (camelCase fields).
+ * Matches the legacy aggregate-file shape — frontend contract unchanged.
  */
 interface RadicalItem {
   id: string;
@@ -32,7 +29,31 @@ interface RadicalItem {
   notes: string | null;
   isAlsoCharacter: boolean | null;
   variants: Record<string, unknown> | null;
+  // Legacy field: radicals.json never carried HSK characters; kept for
+  // contract stability (the HSK-character relationship is derived from the
+  // CharacterRadical junction at the quiz layer instead).
   hskCharacters: Array<{ glyph: string; pinyin: string; meaning: string }>;
+}
+
+/** Map a DB Radical row to the frontend RadicalItem shape. */
+function toRadicalItem(r: RadicalRow): RadicalItem {
+  return {
+    id: r.id,
+    glyph: r.glyph,
+    alternateGlyphs: r.alternateGlyphs,
+    namePinyin: r.namePinyin,
+    nameChinese: r.nameChinese ?? "",
+    meaning: r.meaning,
+    strokeCount: r.strokeCount,
+    isRecommended: r.isRecommended,
+    kangxiIndex: r.kangxiIndex ?? 0,
+    etymology: r.etymology ?? "",
+    frequencyRank: r.frequencyRank,
+    notes: r.notes,
+    isAlsoCharacter: r.isAlsoCharacter,
+    variants: (r.variants as Record<string, unknown> | null) ?? null,
+    hskCharacters: [],
+  };
 }
 
 export class RadicalsService {
@@ -43,13 +64,13 @@ export class RadicalsService {
   }
 
   /**
-   * Load all radicals from content/radicals/radicals.json aggregate.
+   * Load all radicals from the Radical table.
    * @returns Array of radical data objects
    */
   async getAllRadicals(): Promise<RadicalItem[]> {
     try {
-      const radicals = await readAggregateContent<RadicalItem>("radicals", "radicals.json");
-      return radicals;
+      const radicals = await this.radicalsRepository.getAllRadicals();
+      return radicals.map(toRadicalItem);
     } catch (err) {
       logger.error("[RadicalsService] Failed to load radicals", err);
       throw err;
@@ -63,13 +84,8 @@ export class RadicalsService {
    */
   async getRadicalById(radicalId: string): Promise<RadicalItem | null> {
     try {
-      const radical = await findInAggregateContent<RadicalItem>(
-        "radicals",
-        "radicals.json",
-        "id",
-        radicalId,
-      );
-      return radical ?? null;
+      const radical = await this.radicalsRepository.getRadicalById(radicalId);
+      return radical ? toRadicalItem(radical) : null;
     } catch (err) {
       logger.error(`[RadicalsService] Failed to load radical ${radicalId}`, err);
       throw err;
@@ -85,12 +101,15 @@ export class RadicalsService {
     try {
       const records = await this.radicalsRepository.getRadicalsByCharacter(glyph);
       if (records.length === 0) return [];
-      // Load each radical's full data from the aggregate
-      const allRadicals = await readAggregateContent<RadicalItem>("radicals", "radicals.json");
-      const radicalMap = new Map(allRadicals.map((r) => [r.id, r]));
+      // Load each referenced radical's full data from the Radical table
+      const radicalRows = await this.radicalsRepository.findManyByIds(
+        records.map((r) => r.radicalId),
+      );
+      const radicalMap = new Map(radicalRows.map((r) => [r.id, r]));
       return records
         .map((r) => radicalMap.get(r.radicalId))
-        .filter((r): r is RadicalItem => r !== undefined);
+        .filter((r): r is RadicalRow => r !== undefined)
+        .map(toRadicalItem);
     } catch (err) {
       logger.error(`[RadicalsService] Failed to load radicals for character ${glyph}`, err);
       throw err;

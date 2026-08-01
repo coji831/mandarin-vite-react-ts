@@ -5,7 +5,9 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "src/test-utils";
 import { ReadersPage } from "../learn/readers/ReadersPage";
 
 // Mock hooks
@@ -21,30 +23,45 @@ vi.mock("features/readers/hooks/useGeneratePassage", () => ({
   useGeneratePassage: vi.fn(),
 }));
 
-// Mock store
-vi.mock("features/readers/stores", () => ({
-  useReadingStore: Object.assign(
-    (selector?: (s: Record<string, unknown>) => unknown) => {
-      const state = {
-        currentPassageId: null,
-        mode: "library",
-        popover: { glyph: null, position: null },
-        openPopover: vi.fn(),
-        closePopover: vi.fn(),
-        setPassageId: vi.fn(),
-        setMode: vi.fn(),
-      };
-      return selector ? selector(state) : state;
-    },
-    {
-      getState: () => ({
-        setPassageId: vi.fn(),
-        setMode: vi.fn(),
-        popover: { glyph: null, position: null },
-      }),
-    },
-  ),
-}));
+// Mock store — pass through real stores (audioStore etc.) and override useReadingStore
+// with a controlled session state so the page renders deterministically.
+vi.mock("features/readers/stores", async () => {
+  const actual =
+    await vi.importActual<typeof import("features/readers/stores")>("features/readers/stores");
+  return {
+    ...actual,
+    useReadingStore: Object.assign(
+      (selector?: (s: Record<string, unknown>) => unknown) => {
+        const state = {
+          currentPassageId: null,
+          mode: "library",
+          popover: { glyph: null, position: null },
+          currentSentence: 0,
+          completedPassages: new Set<string>(),
+          bookmarkedPassages: new Set<string>(),
+          isAuthenticated: false,
+          openPopover: vi.fn(),
+          closePopover: vi.fn(),
+          setPassageId: vi.fn(),
+          setMode: vi.fn(),
+          setCurrentSentence: vi.fn(),
+          markCompleted: vi.fn(),
+          fetchBookmarks: vi.fn(),
+          toggleBookmark: vi.fn(),
+          setIsAuthenticated: vi.fn(),
+        };
+        return selector ? selector(state) : state;
+      },
+      {
+        getState: () => ({
+          setPassageId: vi.fn(),
+          setMode: vi.fn(),
+          popover: { glyph: null, position: null },
+        }),
+      },
+    ),
+  };
+});
 
 import { usePassages, usePassageDetail, useGeneratePassage } from "features/readers";
 
@@ -77,7 +94,7 @@ describe("ReadersPage", () => {
   });
 
   it("renders page title", () => {
-    render(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage mode="library" />);
     expect(screen.getByText("Graded Readers")).toBeInTheDocument();
   });
 
@@ -91,17 +108,80 @@ describe("ReadersPage", () => {
       retry: vi.fn(),
     });
 
-    render(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage mode="library" />);
     expect(screen.getByText("All")).toBeInTheDocument(); // HSK filter
   });
 
   it("renders empty library state", () => {
-    render(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage mode="library" />);
     expect(screen.getByText("No passages yet")).toBeInTheDocument();
   });
 
   it("renders empty library state with generate button", () => {
-    render(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage mode="library" />);
     expect(screen.getByText("Generate your first passage")).toBeInTheDocument();
+  });
+
+  // ── VisFix W6b: Generate flow feedback ──────────────────────────────────
+
+  it("disables the generate CTA while generating (loading spinner state)", () => {
+    vi.mocked(useGeneratePassage).mockReturnValue({
+      isGenerating: true,
+      generatedId: null,
+      hasError: false,
+      generate: vi.fn(),
+      reset: vi.fn(),
+    });
+
+    renderWithProviders(<ReadersPage mode="library" />);
+
+    // Button loading state renders aria-busy on the disabled generate CTA.
+    const generateButton = screen.getByRole("button", { busy: true });
+    expect(generateButton).toBeDisabled();
+  });
+
+  it("refreshes the library when a passage is generated", () => {
+    const retry = vi.fn();
+    const reset = vi.fn();
+
+    vi.mocked(usePassages).mockReturnValue({
+      passages: [],
+      isLoading: false,
+      hasError: false,
+      isEmpty: true,
+      retry,
+    });
+    vi.mocked(useGeneratePassage).mockReturnValue({
+      isGenerating: false,
+      generatedId: "new-passage-id",
+      hasError: false,
+      generate: vi.fn(),
+      reset,
+    });
+
+    renderWithProviders(<ReadersPage mode="library" />);
+
+    // On mount the generatedId effect refreshes the library, then clears it.
+    expect(retry).toHaveBeenCalled();
+    expect(reset).toHaveBeenCalled();
+  });
+
+  it("renders an inline generate error with retry that re-triggers generation", async () => {
+    const generate = vi.fn();
+    vi.mocked(useGeneratePassage).mockReturnValue({
+      isGenerating: false,
+      generatedId: null,
+      hasError: true,
+      generate,
+      reset: vi.fn(),
+    });
+
+    renderWithProviders(<ReadersPage mode="library" />);
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText(/Could not generate a passage/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /try again/i }));
+    expect(generate).toHaveBeenCalledTimes(1);
   });
 });

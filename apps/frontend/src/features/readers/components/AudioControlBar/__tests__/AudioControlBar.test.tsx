@@ -15,6 +15,7 @@ describe("AudioControlBar", () => {
     useAudioStore.setState({
       currentIndex: null,
       pendingIndex: null,
+      pendingSingleIndex: null,
       status: "idle" as AudioStatus,
       error: null,
       speed: 1,

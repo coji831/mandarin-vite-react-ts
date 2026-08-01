@@ -299,7 +299,25 @@ function main(): void {
     // Preserve existing readings & coreMeaning
     const existing = existingCharByGlyph.get(glyph);
     const readings = existing?.readings ?? [];
-    const coreMeaning = existing?.coreMeaning ?? null;
+
+    // Core meaning (definition) source: the make-me-a-hanzi (MMAH) `definition`
+    // field is the authoritative in-repo English gloss for the character. It was
+    // previously never mapped into the seed output, so `Character.definition`
+    // (and the IME simulator's meaning clues) were always empty. Prefer the
+    // manually-curated existing coreMeaning when present, otherwise fall back to
+    // the MMAH definition. Never fabricate a translation ourselves.
+    const mmahDefinition = mmah?.definition?.trim() || null;
+    const coreMeaning = (existing?.coreMeaning ?? "").trim() || mmahDefinition;
+
+    // Mirror the meaning onto the primary reading's gloss so the seeded
+    // `Character.readings[].meaning` is populated too — the IME strategy and
+    // character detail API read meaning from the readings array as well.
+    if (coreMeaning) {
+      const primaryReading = readings.find((r) => r.type === "primary") ?? readings[0];
+      if (primaryReading && !(primaryReading.coreMeaning ?? "").trim()) {
+        primaryReading.coreMeaning = coreMeaning;
+      }
+    }
 
     // If existing has a classification/etymology, prefer that as manually curated
     if (existing?.classification) {
@@ -374,6 +392,9 @@ function main(): void {
   const withStrokeCount = characters.filter((c) => c.strokeCount !== null).length;
   const withHskLevel = characters.filter((c) => c.hskLevel !== null).length;
   const withReadings = characters.filter((c) => c.readings.length > 0).length;
+  const withCoreMeaning = characters.filter(
+    (c) => c.coreMeaning !== null && c.coreMeaning.trim() !== "",
+  ).length;
 
   logger.info("\n═══════════════════════════════════════════");
   logger.info("  ✅ Character Entries Complete");
@@ -384,6 +405,7 @@ function main(): void {
   logger.info(`  With strokeCount: ${withStrokeCount}`);
   logger.info(`  With hskLevel: ${withHskLevel}`);
   logger.info(`  With readings: ${withReadings}`);
+  logger.info(`  With coreMeaning (definition): ${withCoreMeaning}`);
   logger.info("");
 }
 

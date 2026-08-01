@@ -146,6 +146,8 @@ describe("PhoneticClustersContent", () => {
   // ─── Character Chip Click ──────────────────────────────────────────
   it("calls openHub when a character chip is clicked", () => {
     renderWithRouter(<PhoneticClustersContent {...defaultProps} clusters={sampleClusters} />);
+    // Cards are collapsed by default (VisFix W6a) — expand the 青 card first.
+    fireEvent.click(screen.getByRole("button", { name: /Characters containing 青/ }));
     const chip = screen.getByLabelText("请 — qǐng — please");
     fireEvent.click(chip);
     expect(mockOpenHub).toHaveBeenCalledWith({

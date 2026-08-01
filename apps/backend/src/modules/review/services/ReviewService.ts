@@ -3,17 +3,14 @@
  * Review business logic — fetches items from multiple sources,
  * records SRS ratings, and computes next review dates.
  *
- * Data sources (Content Registry):
- *   - Tones: content/tones/tones.json aggregate
- *   - Radicals: content/radicals/radicals.json aggregate
- *   - Pinyin combos: PinyinCombination (Prisma junction table)
+ * Data sources (all-in-DB):
+ *   - Tones: Tone table
+ *   - Radicals: Radical table
+ *   - Pinyin combos: PinyinSyllable (Prisma junction table)
  */
+import type { Tone } from "@prisma/client";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import {
-  readAggregateContent,
-  stripToneMarks,
-  shuffleArray,
-} from "../../../shared/utils/contentUtils.js";
+import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
 import type {
   ContentItem,
   IReviewRepository,
@@ -30,16 +27,16 @@ const MAX_INTERVAL = 60;
 // ── Extracted item-builders ───────────────────────────────────────────
 
 /**
- * Build a review item from a tone content object + SRS state.
+ * Build a review item from a tone row (Tone table) + SRS state.
  * Returns null if the item is filtered out by the source filter.
- * @param tone - Tone data from content/tones/
+ * @param tone - Tone data from the Tone table (camelCase fields)
  * @param srs - SRS record from ReviewItem (or null)
  * @param now - Current timestamp
  * @param sevenDaysAgo - 7 days ago for "recent" filter
  * @param source - "due", "recent", or "all"
  */
 function buildToneItem(
-  tone: ContentItem,
+  tone: Tone,
   srs: SrsRecord | null,
   now: Date,
   sevenDaysAgo: Date,
@@ -57,11 +54,11 @@ function buildToneItem(
     itemType: "tone-syllable",
     itemId: toneNumber,
     front: `${tone.mark} ${tone.name}`,
-    back: `${tone.example_syllable} (${tone.pitch_description}) — e.g., ${tone.example_character || ""}`,
+    back: `${tone.exampleSyllable} (${tone.pitchDescription}) — e.g., ${tone.exampleCharacter || ""}`,
     category: "tones",
-    character: tone.example_character || null,
-    meaning: tone.pitch_description || null,
-    pinyinPlain: stripToneMarks(tone.example_syllable || ""),
+    character: tone.exampleCharacter || null,
+    meaning: tone.pitchDescription || null,
+    pinyinPlain: stripToneMarks(tone.exampleSyllable || ""),
     correctTone: tone.number ?? null,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,
@@ -290,7 +287,7 @@ export class ReviewService {
     const items: ReviewItemOutput[] = [];
 
     if (includeTones) {
-      const tones = await readAggregateContent("tones", "tones.json");
+      const tones = await prisma.tone.findMany({ orderBy: { number: "asc" } });
       for (const tone of tones) {
         const key = `tone-syllable:${String(tone.number)}`;
         const srs = srsByKey.get(key) ?? null;
@@ -300,7 +297,7 @@ export class ReviewService {
     }
 
     if (includeRadicals) {
-      const radicals = await readAggregateContent("radicals", "radicals.json");
+      const radicals = await prisma.radical.findMany();
       for (const radical of radicals) {
         const key = `radical:${radical.id}`;
         const srs = srsByKey.get(key) ?? null;
@@ -331,8 +328,8 @@ export class ReviewService {
         radicalCharMap.get(record.radicalId)!.push(record);
       }
 
-      const radicals = await readAggregateContent("radicals", "radicals.json");
-      const radicalById = new Map(radicals.map((r: Record<string, unknown>) => [r.id, r]));
+      const radicals = await prisma.radical.findMany();
+      const radicalById = new Map(radicals.map((r) => [r.id, r]));
 
       for (const [radicalId, records] of radicalCharMap) {
         const radical = radicalById.get(radicalId);

@@ -9,10 +9,6 @@
   height: 200px; /* fixed height ensures all cards match */
 }
 
-.radical-card:hover {
-  transform: translateY(-2px);
-}
-
 .radical-card__badge {
   top: var(--space-xs);
   right: var(--space-xs);

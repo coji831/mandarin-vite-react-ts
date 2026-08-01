@@ -34,7 +34,9 @@ export function usePassageAudio(passageId: string | null) {
       // Also populate audioStore for downstream consumers (Phase 2)
       loadAudioUrls(data.audioUrls);
     } catch (err) {
-      console.error("usePassageAudio: Failed to fetch audio URLs:", err);
+      // Expected fallback (epic-21): on-demand audio URLs unavailable (e.g. 401 for
+      // guests) → reader falls back to browser SpeechSynthesis. Error is already
+      // surfaced to the UI via `error` state, so keep console noise out.
       setError(err instanceof Error ? err.message : "Failed to load audio");
       setAudioUrls(null);
       clearAudioUrls();

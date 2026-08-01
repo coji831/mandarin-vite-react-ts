@@ -17,7 +17,7 @@ function renderWithRouter(ui: ReactNode) {
 // Mock the radicalsService to avoid actual fetch calls
 // Use vi.hoisted to create the mock fn before vi.mock is hoisted
 const mockLoadAllRadicals = vi.hoisted(() => vi.fn());
-vi.mock("../../features/radicals/services/radicalsService", () => ({
+vi.mock("../../../features/radicals/services/radicalsService", () => ({
   radicalsService: {
     loadAllRadicals: mockLoadAllRadicals,
     clearCache: vi.fn(),
@@ -34,7 +34,7 @@ vi.mock("shared/hooks", () => ({
 
 // Mock RadicalTreesTab to avoid its dependency chain (radicalProgressService, etc.)
 // We test toggle behavior here, not tree content
-vi.mock("../../features/radicals/components/RadicalTreesTab", () => ({
+vi.mock("../../../features/radicals/components/RadicalTreesTab", () => ({
   RadicalTreesTab: () => <div data-testid="mock-radical-trees-tab">Tree view placeholder</div>,
 }));
 
@@ -71,9 +71,7 @@ describe("RadicalsPage", () => {
   it("renders the page title and description", async () => {
     renderWithRouter(<RadicalsPage />);
     expect(screen.getByText("Radicals")).toBeInTheDocument();
-    expect(
-      screen.getByText(/fundamental building blocks of Chinese characters/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/building blocks of Chinese characters/i)).toBeInTheDocument();
     // Wait for loading to finish to avoid act() warnings
     await waitFor(() => {
       expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
@@ -84,7 +82,7 @@ describe("RadicalsPage", () => {
     renderWithRouter(<RadicalsPage />);
     expect(screen.getByPlaceholderText(/search by pinyin/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/stroke count/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/sort by/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/sort radicals/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/reset all filters/i)).toBeInTheDocument();
     // Wait for loading to finish to avoid act() warnings
     await waitFor(() => {
@@ -112,9 +110,9 @@ describe("RadicalsPage", () => {
       const browseBtn = screen.getAllByText("📋 Browse")[0].closest("button")!;
       const treesBtn = screen.getAllByText("🌳 Trees")[0].closest("button")!;
 
-      // Browse is active by default, Trees is not
-      expect(browseBtn.className).toContain("radicals-page__toggle-btn--active");
-      expect(treesBtn.className).not.toContain("radicals-page__toggle-btn--active");
+      // Browse is active by default (shared Button primary-active variant), Trees is not
+      expect(browseBtn.className).toContain("btn-primary-active");
+      expect(treesBtn.className).not.toContain("btn-primary-active");
     });
 
     it('clicking "🌳 Trees" switches heading to "Radical Trees"', async () => {

@@ -41,8 +41,10 @@ describe("mnemonicService", () => {
   });
 
   describe("getMnemonic", () => {
-    it("returns data on success", async () => {
-      mockGet.mockResolvedValue({ data: SAMPLE_MNEMONIC } as AxiosResponse<MnemonicResponse>);
+    it("returns the mnemonic from a 200 { mnemonic } response", async () => {
+      mockGet.mockResolvedValue({
+        data: { mnemonic: SAMPLE_MNEMONIC },
+      } as AxiosResponse<{ mnemonic: MnemonicResponse }>);
 
       const result = await getMnemonic("好");
 
@@ -50,15 +52,17 @@ describe("mnemonicService", () => {
       expect(mockGet).toHaveBeenCalledWith("/v1/mnemonics/好");
     });
 
-    it("returns null on 404", async () => {
-      mockGet.mockRejectedValue({ status: 404 });
+    it("returns null when no mnemonic exists (200 { mnemonic: null })", async () => {
+      mockGet.mockResolvedValue({
+        data: { mnemonic: null },
+      } as AxiosResponse<{ mnemonic: null }>);
 
       const result = await getMnemonic("好");
 
       expect(result).toBeNull();
     });
 
-    it("throws on non-404 errors", async () => {
+    it("throws on network errors", async () => {
       mockGet.mockRejectedValue(new Error("Network error"));
 
       await expect(getMnemonic("好")).rejects.toThrow("Network error");

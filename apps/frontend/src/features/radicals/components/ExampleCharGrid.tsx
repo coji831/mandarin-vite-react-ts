@@ -2,13 +2,16 @@
  * @file components/ExampleCharGrid.tsx
  * @description Scrollable list of example character rows with audio + hub actions
  * Story 19.2: Radical Detail Card
- *
- * The list container has a max-height with overflow-y: auto and
- * custom-scrollbar so it scrolls independently instead of growing the modal.
+ * VisFix W6a: Long lists are paginated — the first PAGE_SIZE rows render with a
+ * "Show more" button that reveals the rest. The custom-scrollbar inner scroll is kept.
  */
 
+import { useEffect, useRef, useState } from "react";
 import { ExampleCharCell } from "./ExampleCharCell";
 import "./ExampleCharGrid.css";
+
+/** Number of example characters shown before the "Show more" reveal. */
+const PAGE_SIZE = 24;
 
 interface ExampleCharGridProps {
   characters: Array<{
@@ -21,6 +24,22 @@ interface ExampleCharGridProps {
 }
 
 export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
+  const [showAll, setShowAll] = useState(false);
+  const hasMore = characters.length > PAGE_SIZE;
+
+  // Reset pagination only when the radical actually changes (tracked by its first
+  // glyph) — not on every re-render, which would undo a "Show more" click.
+  const firstGlyphRef = useRef(characters[0]?.glyph);
+  useEffect(() => {
+    if (characters[0]?.glyph !== firstGlyphRef.current) {
+      firstGlyphRef.current = characters[0]?.glyph;
+      setShowAll(false);
+    }
+  }, [characters]);
+
+  const visibleCharacters = showAll ? characters : characters.slice(0, PAGE_SIZE);
+  const hiddenCount = characters.length - visibleCharacters.length;
+
   return (
     <div className="example-char-section flex flex-col">
       <div className="example-char-section__header">
@@ -33,7 +52,7 @@ export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
         role="list"
         aria-label="Example characters"
       >
-        {characters.map((ch) => (
+        {visibleCharacters.map((ch) => (
           <ExampleCharCell
             key={ch.glyph}
             character={ch.glyph}
@@ -44,6 +63,14 @@ export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
           />
         ))}
       </div>
+
+      {hasMore && !showAll && (
+        <div className="example-char-section__more flex justify-center p-sm">
+          <button type="button" className="btn btn-sm btn-outline" onClick={() => setShowAll(true)}>
+            Show more ({hiddenCount} more)
+          </button>
+        </div>
+      )}
     </div>
   );
 }

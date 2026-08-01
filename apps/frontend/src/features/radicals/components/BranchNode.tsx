@@ -44,16 +44,6 @@ export function BranchNode({
     }
   }, [character]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleClick();
-      }
-    },
-    [handleClick],
-  );
-
   return (
     <Box
       className={`branch-node flex items-center gap-sm p-xs relative ${showConnector ? "branch-node--with-connector" : ""}`}

@@ -1,6 +1,10 @@
 export { Box } from "./Box/Box";
 export type { BoxVariant } from "./Box/Box";
 export { Button } from "./Button/Button";
+export { Chip } from "./Chip/Chip";
+export type { ChipProps, ChipVariant, ChipSize } from "./Chip/Chip";
+export { Badge } from "./Badge/Badge";
+export type { BadgeProps, BadgeVariant } from "./Badge/Badge";
 export { ClassificationBadge } from "./ClassificationBadge";
 export { MnemonicCard } from "./MnemonicCard";
 export type { ClassificationBadgeProps, ClassificationType } from "./ClassificationBadge";

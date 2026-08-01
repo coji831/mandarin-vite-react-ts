@@ -7,6 +7,7 @@ export { toneMap, toneMapKeys, TONE_BUTTONS_BASE } from "./toneMap";
 export {
   root,
   dashboard_page,
+  dashboard_route,
   learn_page,
   learn_foundations,
   learn_radicals,

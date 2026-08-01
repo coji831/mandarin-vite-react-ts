@@ -12,6 +12,20 @@
 
 /* Width/100 migrated to w-full utility class */
 
+/* ─── Tree content scroll container ─────────────────────────────── */
+/* Scroll-chain contract (same as .radicals-page__grid-wrapper): the tree tab
+   fills the content area and is the SINGLE scroll zone for ALL items in both
+   tree modes (radical + phonetic).
+
+   Without min-height:0 + overflow-y:auto, the tab grows past the viewport and
+   expanded phonetic family nodes get flex-shrunk to header height (overflow:
+   hidden sets min-height:auto -> 0) and clipped. */
+.radical-trees-tab {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 /* ─── Initial tab loading state ──────────────────────────────────── */
 /* Used by RadicalTreesTab.tsx directly (not Phase3TreeView) */
 

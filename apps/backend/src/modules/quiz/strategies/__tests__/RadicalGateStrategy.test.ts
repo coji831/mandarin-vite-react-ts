@@ -4,84 +4,147 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock contentUtils before importing the strategy
-const mockReadAggregateContent = vi.fn();
-vi.mock("../../../../shared/utils/contentUtils.js", () => ({
-  readAggregateContent: mockReadAggregateContent,
-  shuffleArray: (arr: any[]) => [...arr].sort(() => Math.random() - 0.5),
+// Mock the Prisma client before importing the strategy (all-in-DB — the
+// strategy now reads radicals + the CharacterRadical junction from the DB).
+const mockRadicalFindMany = vi.fn();
+const mockCharacterRadicalFindMany = vi.fn();
+vi.mock("../../../../shared/infrastructure/database/client.js", () => ({
+  prisma: {
+    radical: { findMany: mockRadicalFindMany },
+    characterRadical: { findMany: mockCharacterRadicalFindMany },
+  },
 }));
 
 const { radicalGateStrategy } = await import("../RadicalGateStrategy.js");
 
-// Sample radical data for testing
+// Sample radical rows — DB shape (Radical table: camelCase columns).
 const mockRadicalFiles = [
+  { id: "rad_0001", glyph: "一", meaning: "one", isRecommended: true, namePinyin: "yī" },
+  { id: "rad_0008", glyph: "氵", meaning: "water", isRecommended: true, namePinyin: "sāndiǎnshuǐ" },
+  { id: "rad_0018", glyph: "口", meaning: "mouth", isRecommended: true, namePinyin: "kǒu" },
+  { id: "rad_0061", glyph: "心", meaning: "heart", isRecommended: true, namePinyin: "xīn" },
+  { id: "rad_0086", glyph: "火", meaning: "fire", isRecommended: false, namePinyin: "huǒ" },
+  { id: "rad_0096", glyph: "犭", meaning: "animal", isRecommended: false, namePinyin: "quǎn" },
+];
+
+// Sample CharacterRadical junction rows — the strategy derives Tier 2 HSK
+// characters from these (CharacterRadical → Character).
+const mockCharacterRadicals = [
   {
-    id: "rad_0001",
-    glyph: "一",
-    meaning: "one",
-    isRecommended: true,
-    namePinyin: "yī",
-    hskCharacters: [
-      { glyph: "一", pinyin: "yī", meaning: "one" },
-      { glyph: "三", pinyin: "sān", meaning: "three" },
-    ],
+    characterGlyph: "一",
+    radicalId: "rad_0001",
+    character: {
+      glyph: "一",
+      definition: "one",
+      characterReadings: [{ pinyin: "yī", type: "primary" }],
+    },
   },
   {
-    id: "rad_0008",
-    glyph: "氵",
-    meaning: "water",
-    isRecommended: true,
-    namePinyin: "sāndiǎnshuǐ",
-    hskCharacters: [
-      { glyph: "河", pinyin: "hé", meaning: "river" },
-      { glyph: "海", pinyin: "hǎi", meaning: "sea" },
-      { glyph: "江", pinyin: "jiāng", meaning: "river" },
-    ],
+    characterGlyph: "三",
+    radicalId: "rad_0001",
+    character: {
+      glyph: "三",
+      definition: "three",
+      characterReadings: [{ pinyin: "sān", type: "primary" }],
+    },
   },
   {
-    id: "rad_0018",
-    glyph: "口",
-    meaning: "mouth",
-    isRecommended: true,
-    namePinyin: "kǒu",
-    hskCharacters: [
-      { glyph: "吃", pinyin: "chī", meaning: "eat" },
-      { glyph: "喝", pinyin: "hē", meaning: "drink" },
-      { glyph: "叫", pinyin: "jiào", meaning: "call" },
-    ],
+    characterGlyph: "河",
+    radicalId: "rad_0008",
+    character: {
+      glyph: "河",
+      definition: "river",
+      characterReadings: [{ pinyin: "hé", type: "primary" }],
+    },
   },
   {
-    id: "rad_0061",
-    glyph: "心",
-    meaning: "heart",
-    isRecommended: true,
-    namePinyin: "xīn",
-    hskCharacters: [
-      { glyph: "想", pinyin: "xiǎng", meaning: "think" },
-      { glyph: "思", pinyin: "sī", meaning: "think" },
-    ],
+    characterGlyph: "海",
+    radicalId: "rad_0008",
+    character: {
+      glyph: "海",
+      definition: "sea",
+      characterReadings: [{ pinyin: "hǎi", type: "primary" }],
+    },
   },
   {
-    id: "rad_0086",
-    glyph: "火",
-    meaning: "fire",
-    isRecommended: false,
-    namePinyin: "huǒ",
-    hskCharacters: [{ glyph: "火", pinyin: "huǒ", meaning: "fire" }],
+    characterGlyph: "江",
+    radicalId: "rad_0008",
+    character: {
+      glyph: "江",
+      definition: "river",
+      characterReadings: [{ pinyin: "jiāng", type: "primary" }],
+    },
   },
   {
-    id: "rad_0096",
-    glyph: "犭",
-    meaning: "animal",
-    isRecommended: false,
-    namePinyin: "quǎn",
-    hskCharacters: [{ glyph: "猫", pinyin: "māo", meaning: "cat" }],
+    characterGlyph: "吃",
+    radicalId: "rad_0018",
+    character: {
+      glyph: "吃",
+      definition: "eat",
+      characterReadings: [{ pinyin: "chī", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "喝",
+    radicalId: "rad_0018",
+    character: {
+      glyph: "喝",
+      definition: "drink",
+      characterReadings: [{ pinyin: "hē", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "叫",
+    radicalId: "rad_0018",
+    character: {
+      glyph: "叫",
+      definition: "call",
+      characterReadings: [{ pinyin: "jiào", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "想",
+    radicalId: "rad_0061",
+    character: {
+      glyph: "想",
+      definition: "think",
+      characterReadings: [{ pinyin: "xiǎng", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "思",
+    radicalId: "rad_0061",
+    character: {
+      glyph: "思",
+      definition: "think",
+      characterReadings: [{ pinyin: "sī", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "火",
+    radicalId: "rad_0086",
+    character: {
+      glyph: "火",
+      definition: "fire",
+      characterReadings: [{ pinyin: "huǒ", type: "primary" }],
+    },
+  },
+  {
+    characterGlyph: "猫",
+    radicalId: "rad_0096",
+    character: {
+      glyph: "猫",
+      definition: "cat",
+      characterReadings: [{ pinyin: "māo", type: "primary" }],
+    },
   },
 ];
 
 describe("RadicalGateStrategy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRadicalFindMany.mockResolvedValue(mockRadicalFiles);
+    mockCharacterRadicalFindMany.mockResolvedValue(mockCharacterRadicals);
   });
 
   it("has correct type and metadata", () => {
@@ -91,8 +154,7 @@ describe("RadicalGateStrategy", () => {
     expect(radicalGateStrategy.timeLimitMinutes).toBe(8);
   });
 
-  it("generates questions from radical content files", async () => {
-    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
+  it("generates questions from the Radical + CharacterRadical DB tables", async () => {
     const questions = await radicalGateStrategy.generateQuestions();
 
     expect(questions.length).toBeGreaterThanOrEqual(10);
@@ -104,10 +166,14 @@ describe("RadicalGateStrategy", () => {
 
     expect(tier1Questions.length).toBeGreaterThanOrEqual(4);
     expect(tier2Questions.length).toBeGreaterThanOrEqual(4);
+
+    // Radicals are read from the Radical table (all-in-DB)
+    expect(mockRadicalFindMany).toHaveBeenCalled();
+    // Tier 2 characters come from the CharacterRadical junction
+    expect(mockCharacterRadicalFindMany).toHaveBeenCalled();
   });
 
   it("all questions have required structure", async () => {
-    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
     const questions = await radicalGateStrategy.generateQuestions();
 
     for (const q of questions) {
@@ -122,7 +188,6 @@ describe("RadicalGateStrategy", () => {
   });
 
   it("Tier 2 questions have a prompt", async () => {
-    mockReadAggregateContent.mockResolvedValue(mockRadicalFiles);
     const questions = await radicalGateStrategy.generateQuestions();
     const tier2 = questions.filter((q) => q.category === "radical-predictor");
 
@@ -132,8 +197,8 @@ describe("RadicalGateStrategy", () => {
     }
   });
 
-  it("throws error when no radical files found", async () => {
-    mockReadAggregateContent.mockResolvedValue([]);
+  it("throws error when no radical rows are found", async () => {
+    mockRadicalFindMany.mockResolvedValue([]);
     await expect(radicalGateStrategy.generateQuestions()).rejects.toThrow(
       "Failed to load radical content files",
     );

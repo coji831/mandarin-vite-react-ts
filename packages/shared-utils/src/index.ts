@@ -3,4 +3,14 @@
  * Exports shared utility functions used across the monorepo.
  */
 
-export { isSandhiAcceptable, applyToneMark } from "./sandhi/toneSandhiUtils";
+export {
+  isSandhiAcceptable,
+  applyToneMark,
+  stripToneMarks,
+  findToneVowel,
+} from "./sandhi/toneSandhiUtils";
+export {
+  normalizeTone,
+  areTonesEquivalent,
+  normalizePinyinForComparison,
+} from "./pinyin/pinyinNormalization";

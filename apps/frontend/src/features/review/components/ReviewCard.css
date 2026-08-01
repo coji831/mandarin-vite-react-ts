@@ -18,20 +18,31 @@
   line-height: 1.4; /* custom line-height — .lh-1-4 utility doesn't convey the meaning semantic */
 }
 
+/* ── Character glyph → Character Hub entry ──────────── */
+/* Reset button chrome so the glyph renders exactly like the previous span. */
+.review-card__character-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+.review-card__character-btn:hover {
+  /* :hover pseudo — token bg tint, no motion */
+  background: var(--surface-light-5);
+}
+
 /* ── Audio button ────────────────────────────────── */
 .review-card__audio-btn {
   width: 56px;
   height: 56px;
-  /* transition migrated to .transition-all on JSX */
   /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
 .review-card__audio-btn:hover {
-  transform: scale(1.1);
-  /* structural: shadow-md — hover lift */
+  /* :hover pseudo — token shadow, no motion */
   box-shadow: var(--shadow-md);
-}
-.review-card__audio-btn:active {
-  transform: scale(0.95);
 }
 
 /* ── Pinyin input ────────────────────────────────── */
@@ -54,12 +65,10 @@
 .review-card__rating-btn {
   min-width: 120px;
   min-height: 68px;
-  /* transition migrated to .transition-all on JSX */
 }
 
 .review-card__rating-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  /* structural: shadow-md — hover lift */
+  /* :hover pseudo — token shadow, no motion */
   box-shadow: var(--shadow-md);
 }
 
@@ -67,8 +76,4 @@
   outline: 2px solid var(--color-primary); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
   /* bundled with outline */
   outline-offset: 2px;
-}
-
-.review-card__rating-btn:active:not(:disabled) {
-  transform: translateY(0);
 }

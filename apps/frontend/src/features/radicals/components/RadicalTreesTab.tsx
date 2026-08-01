@@ -26,8 +26,6 @@ import "./RadicalTreesTab.css";
 interface RadicalTreesTabProps {
   radicals: RadicalData[];
   isLoading: boolean;
-  error: string | null;
-  refetch: () => void;
   treeMode: "radical" | "phonetic";
 }
 

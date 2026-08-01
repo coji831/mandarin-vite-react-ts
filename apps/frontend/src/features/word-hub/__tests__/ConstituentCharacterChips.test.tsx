@@ -5,7 +5,7 @@
  * Story 21.x: Migrated to word-hub feature
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConstituentCharacterChips } from "../components/ConstituentCharacterChips";
@@ -25,6 +25,10 @@ describe("ConstituentCharacterChips", () => {
     render(<ConstituentCharacterChips characters={SAMPLE_CHARS} />);
     expect(screen.getByText("女")).toBeInTheDocument();
     expect(screen.getByText("子")).toBeInTheDocument();
+    // Chips are the shared Chip component (interactive buttons)
+    const chip = screen.getByLabelText("Character: 女");
+    expect(chip).toHaveClass("chip");
+    expect(chip.tagName).toBe("BUTTON");
   });
 
   it("renders pinyin for each char", () => {

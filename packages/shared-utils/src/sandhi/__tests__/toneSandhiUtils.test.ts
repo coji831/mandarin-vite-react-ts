@@ -6,7 +6,12 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { isSandhiAcceptable, applyToneMark } from "../toneSandhiUtils";
+import { isSandhiAcceptable, applyToneMark, stripToneMarks } from "../toneSandhiUtils";
+import {
+  normalizeTone,
+  areTonesEquivalent,
+  normalizePinyinForComparison,
+} from "../../pinyin/pinyinNormalization";
 
 describe("isSandhiAcceptable", () => {
   describe("3-3 Sandhi Rule", () => {
@@ -151,5 +156,127 @@ describe("applyToneMark", () => {
 
   it("handles empty string", () => {
     expect(applyToneMark("", 1)).toBe("");
+  });
+
+  // ── G1: tone mark placement on the correct vowel (Epic 21 E2E) ──────────
+
+  it("marks 'a' in 'bian' (not the 'i')", () => {
+    expect(applyToneMark("bian", 1)).toBe("biān");
+    expect(applyToneMark("bian", 4)).toBe("biàn");
+  });
+
+  it("marks the second vowel in 'shui' (i, not u)", () => {
+    expect(applyToneMark("shui", 3)).toBe("shuǐ");
+  });
+
+  it("marks 'o' in 'guo' (not the 'u')", () => {
+    expect(applyToneMark("guo", 3)).toBe("guǒ");
+  });
+
+  it("marks the second vowel in 'iu' diphthongs", () => {
+    expect(applyToneMark("xiu", 1)).toBe("xiū");
+    expect(applyToneMark("liu", 2)).toBe("liú");
+    expect(applyToneMark("qiu", 4)).toBe("qiù");
+  });
+
+  it("marks the second vowel in 'ui' diphthongs", () => {
+    expect(applyToneMark("hui", 4)).toBe("huì");
+    expect(applyToneMark("gui", 3)).toBe("guǐ");
+  });
+
+  it("marks 'e' in 'lüe'", () => {
+    expect(applyToneMark("lüe", 4)).toBe("lüè");
+    expect(applyToneMark("nüe", 4)).toBe("nüè");
+  });
+
+  it("marks 'a' in yuán-style finals", () => {
+    expect(applyToneMark("yuan", 1)).toBe("yuān");
+    expect(applyToneMark("juan", 4)).toBe("juàn");
+  });
+
+  it("marks 'o' in 'wo'/'shuo' (not the 'u')", () => {
+    expect(applyToneMark("wo", 3)).toBe("wǒ");
+    expect(applyToneMark("shuo", 1)).toBe("shuō");
+  });
+
+  it("marks 'e' in 'wei'", () => {
+    expect(applyToneMark("wei", 4)).toBe("wèi");
+  });
+
+  // ── G1 sandhi single-option collapse fix ────────────────────────────────
+  // The DB stores BOTH plain and tone-marked primary readings. When the
+  // tone-marked row is used, applyToneMark must strip the existing mark and
+  // re-apply, so the sandhi form stays distinct from the dictionary form.
+
+  it("strips a pre-existing tone mark before applying a new tone (bù → bú)", () => {
+    expect(applyToneMark("bù", 2)).toBe("bú");
+  });
+
+  it("strips a pre-existing tone mark before applying a new tone (yī → yí)", () => {
+    expect(applyToneMark("yī", 2)).toBe("yí");
+  });
+
+  it("strips a pre-existing tone mark before applying a new tone (yī → yì)", () => {
+    expect(applyToneMark("yī", 4)).toBe("yì");
+  });
+
+  it("re-applying the same tone to a marked syllable is idempotent", () => {
+    expect(applyToneMark("yī", 1)).toBe("yī");
+    expect(applyToneMark("bù", 4)).toBe("bù");
+  });
+
+  it("handles a marked diphthong final (yàng → yáng)", () => {
+    expect(applyToneMark("yàng", 2)).toBe("yáng");
+    expect(applyToneMark("yàng", 4)).toBe("yàng");
+  });
+
+  it("strips the mark for neutral tone input (bù with tone 0 → bu)", () => {
+    expect(applyToneMark("bù", 0)).toBe("bu");
+  });
+});
+
+describe("stripToneMarks", () => {
+  it("returns plain ASCII for each tone-marked vowel", () => {
+    expect(stripToneMarks("bù")).toBe("bu");
+    expect(stripToneMarks("yī")).toBe("yi");
+    expect(stripToneMarks("hǎo")).toBe("hao");
+    expect(stripToneMarks("shuǐ")).toBe("shui");
+    expect(stripToneMarks("lǜ")).toBe("lü");
+  });
+
+  it("leaves plain pinyin untouched", () => {
+    expect(stripToneMarks("bu")).toBe("bu");
+    expect(stripToneMarks("yi")).toBe("yi");
+  });
+
+  it("strips marks from a full syllable sequence", () => {
+    expect(stripToneMarks("nǐ hǎo")).toBe("ni hao");
+  });
+});
+
+describe("pinyin/tone normalization (G2/G9 helpers)", () => {
+  it("normalizeTone maps 5 to 0 (canonical neutral)", () => {
+    expect(normalizeTone(0)).toBe(0);
+    expect(normalizeTone(5)).toBe(0);
+    expect(normalizeTone(1)).toBe(1);
+    expect(normalizeTone(4)).toBe(4);
+  });
+
+  it("areTonesEquivalent treats neutral 0 and 5 as equal", () => {
+    expect(areTonesEquivalent(0, 5)).toBe(true);
+    expect(areTonesEquivalent(5, 0)).toBe(true);
+    expect(areTonesEquivalent(0, 0)).toBe(true);
+    expect(areTonesEquivalent(5, 5)).toBe(true);
+    expect(areTonesEquivalent(1, 5)).toBe(false);
+    expect(areTonesEquivalent(0, 3)).toBe(false);
+    expect(areTonesEquivalent(1, 1)).toBe(true);
+  });
+
+  it("normalizePinyinForComparison strips tone marks and trailing digits", () => {
+    expect(normalizePinyinForComparison("xiang4")).toBe("xiang");
+    expect(normalizePinyinForComparison("xiang")).toBe("xiang");
+    expect(normalizePinyinForComparison("Xiàng")).toBe("xiang");
+    expect(normalizePinyinForComparison("ma5")).toBe("ma");
+    expect(normalizePinyinForComparison("nǐ hǎo")).toBe("ni hao");
   });
 });

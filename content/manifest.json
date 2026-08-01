@@ -1,6 +1,7 @@
 {
-  "version": 4,
-  "created_at": "2026-07-24",
+  "version": 5,
+  "created_at": "2026-07-31",
+  "note": "All-in-DB: this manifest is an AUTHORING inventory only. At runtime the backend reads radicals, tones, pinyin (and references) exclusively from Prisma tables seeded by content/seed/phase2/*.json via prisma/seed.ts — never from these files. See docs/guides/data/seed-pipeline.md.",
   "content_types": [
     "characters",
     "radicals",
@@ -22,6 +23,7 @@
   },
   "radicals": {
     "files": ["radicals.json", "index.json"],
+    "served_via": "db",
     "top20": [
       "rad_0001",
       "rad_0002",
@@ -53,11 +55,13 @@
   },
   "pinyin": {
     "files": ["pinyin.json", "index.json", "pinyin-character-map.json"],
+    "served_via": "db",
     "initials": 18,
     "finals": 32
   },
   "tones": {
-    "files": ["tones.json"]
+    "files": ["tones.json"],
+    "served_via": "db"
   },
   "phonetic_clusters": {
     "entity_counts": {

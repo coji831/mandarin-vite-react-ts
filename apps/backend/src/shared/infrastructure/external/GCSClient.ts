@@ -104,4 +104,28 @@ export class GCSClient {
     const resolvedBucket = bucket || this.getBucket();
     return `https://storage.googleapis.com/${resolvedBucket}/${filePath}`;
   }
+
+  /**
+   * Get a short-lived signed (read) URL for a GCS file.
+   * Signed URLs are self-authenticating — auth lives in the query string — so
+   * they are directly playable by a browser <audio>/Audio() element, which
+   * cannot attach Authorization headers. Unlike getPublicUrl(), this does NOT
+   * require the bucket or object to be publicly readable.
+   *
+   * Signature mirrors GcsFileStore.getSignedUrl (objectPath, expirySeconds).
+   * @param filePath - Path to file in bucket
+   * @param expirySeconds - Signed URL lifetime (default 3600 = 1 hour)
+   * @param bucket - Optional bucket name; falls back to getBucket()
+   * @returns Signed read URL
+   */
+  async getSignedUrl(
+    filePath: string,
+    expirySeconds: number = 3600,
+    bucket?: string,
+  ): Promise<string> {
+    const file = this.getFile(filePath, bucket);
+    const expires = Date.now() + expirySeconds * 1000;
+    const [url] = await file.getSignedUrl({ action: "read" as const, expires });
+    return url;
+  }
 }

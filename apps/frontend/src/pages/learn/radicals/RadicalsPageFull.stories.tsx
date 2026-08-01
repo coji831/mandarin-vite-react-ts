@@ -9,6 +9,25 @@ const PHASE3 = [
   mswHandlers.progression.radicalProgress.default(),
 ];
 
+/** Radicals marked mastered in the radicalProgress MSW fixture (rad_0030 is NOT mastered). */
+const MASTERED_RADICAL_IDS = ["rad_0001", "rad_0002", "rad_0003", "rad_0008", "rad_0009"];
+
+/** Phase 3 + a characters handler for every mastered radical (populates tree branches). */
+const PHASE3_TREE = [
+  ...PHASE3,
+  ...MASTERED_RADICAL_IDS.map((id) => mswHandlers.radicals.characters(id)),
+];
+
+/**
+ * Forces treeMode before render so each story shows its intended tree regardless
+ * of the localStorage.treeMode persisted by other stories or the live app.
+ */
+function treeModeBeforeEach(mode: "radical" | "phonetic") {
+  return async () => {
+    localStorage.setItem("treeMode", mode);
+  };
+}
+
 const meta: Meta<typeof RadicalsPage> = {
   title: "Pages/Learn/Radicals",
   component: RadicalsPage,
@@ -41,7 +60,14 @@ export const BrowseWithRadical: Story = {
   name: "Browse tab — radical selected",
   parameters: {
     layoutPath: "/learn/radicals?radical=rad_0001",
-    msw: { handlers: PHASE2 },
+    msw: {
+      // Auto-open now routes through the lexical hub — provide hub data handlers.
+      handlers: [
+        ...PHASE2,
+        mswHandlers.radicals.byId(),
+        mswHandlers.radicals.characters("rad_0001"),
+      ],
+    },
   },
 };
 
@@ -49,8 +75,54 @@ export const Trees: Story = {
   name: "Trees tab",
   parameters: {
     layoutPath: "/learn/radicals?view=trees",
-    msw: { handlers: PHASE3 },
+    msw: { handlers: PHASE3_TREE },
   },
+  beforeEach: treeModeBeforeEach("radical"),
+};
+
+export const TreesLoading: Story = {
+  name: "Trees tab — radical progress loading",
+  parameters: {
+    layoutPath: "/learn/radicals?view=trees",
+    msw: {
+      handlers: [
+        mswHandlers.progression.phaseGate(3),
+        mswHandlers.radicals.default(),
+        mswHandlers.progression.radicalProgress.loading(),
+      ],
+    },
+  },
+  beforeEach: treeModeBeforeEach("radical"),
+};
+
+export const TreesEmpty: Story = {
+  name: "Trees tab — no mastered radicals",
+  parameters: {
+    layoutPath: "/learn/radicals?view=trees",
+    msw: {
+      handlers: [
+        mswHandlers.progression.phaseGate(3),
+        mswHandlers.radicals.default(),
+        mswHandlers.progression.radicalProgress.empty(),
+      ],
+    },
+  },
+  beforeEach: treeModeBeforeEach("radical"),
+};
+
+export const TreesError: Story = {
+  name: "Trees tab — radical progress error",
+  parameters: {
+    layoutPath: "/learn/radicals?view=trees",
+    msw: {
+      handlers: [
+        mswHandlers.progression.phaseGate(3),
+        mswHandlers.radicals.default(),
+        mswHandlers.progression.radicalProgress.error(),
+      ],
+    },
+  },
+  beforeEach: treeModeBeforeEach("radical"),
 };
 
 // ─── Phonetic tree stories ──────────────────────────────────────────────
@@ -65,6 +137,7 @@ export const PhoneticTreePhase3: Story = {
     layoutPath: "/learn/radicals?view=trees",
     msw: { handlers: PHONETIC_PHASE3 },
   },
+  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreePhase2: Story = {
@@ -73,6 +146,7 @@ export const PhoneticTreePhase2: Story = {
     layoutPath: "/learn/radicals?view=trees",
     msw: { handlers: PHONETIC_PHASE2 },
   },
+  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeLoading: Story = {
@@ -83,6 +157,7 @@ export const PhoneticTreeLoading: Story = {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.loading()],
     },
   },
+  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeError: Story = {
@@ -93,6 +168,7 @@ export const PhoneticTreeError: Story = {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.error()],
     },
   },
+  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeEmpty: Story = {
@@ -103,4 +179,5 @@ export const PhoneticTreeEmpty: Story = {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.empty()],
     },
   },
+  beforeEach: treeModeBeforeEach("phonetic"),
 };

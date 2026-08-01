@@ -13,6 +13,7 @@ import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { LexicalHubRouter } from "./LexicalHubRouter";
 import { withHubStore } from "../../../../.storybook/decorators";
+import { mswHandlers } from "../../../../.storybook/msw-handlers";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
@@ -277,10 +278,15 @@ export const CharacterEntity: Story = {
 export const RadicalEntity: Story = {
   decorators: [
     withHubStore({
-      currentEntity: { entityType: "radical", entityId: "rad_0001", label: "yī" },
+      currentEntity: { entityType: "radical", entityId: "rad_0001", label: "一 (yī)" },
       isOpen: true,
     }),
   ],
+  parameters: {
+    msw: {
+      handlers: [mswHandlers.radicals.byId(), mswHandlers.radicals.characters("rad_0001")],
+    },
+  },
 };
 
 export const UnknownEntity: Story = {

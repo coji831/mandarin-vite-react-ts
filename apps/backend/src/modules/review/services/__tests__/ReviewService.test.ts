@@ -6,9 +6,9 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-// Mock content utilities
+// Mock content utilities (stripToneMarks + shuffleArray only — the legacy
+// readAggregateContent reader was removed; radicals now come from the DB)
 vi.mock("../../../../shared/utils/contentUtils.js", () => ({
-  readAggregateContent: vi.fn(),
   stripToneMarks: vi.fn((s) => s),
   shuffleArray: vi.fn((arr) => arr),
 }));
@@ -22,10 +22,16 @@ vi.mock("../../../../shared/infrastructure/database/client.js", () => ({
     characterRadical: {
       findMany: vi.fn().mockResolvedValue([]),
     },
+    radical: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
+    tone: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
   },
 }));
 
-import { readAggregateContent } from "../../../../shared/utils/contentUtils.js";
+import { prisma } from "../../../../shared/infrastructure/database/client.js";
 import { ReviewService } from "../ReviewService.js";
 
 describe("ReviewService - buildRadicalItem", () => {
@@ -61,7 +67,7 @@ describe("ReviewService - buildRadicalItem", () => {
   describe("radical item from getReviewItems with type=radical", () => {
     it("should build correct shape for a radical item with source=all", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       const items = await reviewService.getReviewItems("user123", {
         source: "all",
@@ -97,7 +103,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
       // SRS item has nextReview in the future
       const futureDate = new Date(Date.now() + 86400000 * 7); // 7 days from now
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       mockReviewRepository.findByUserAndTypes.mockResolvedValue([
         {
@@ -124,7 +130,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
     it("should return item when filtered by 'due' source and nextReview is in the past", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       // SRS item has nextReview in the past (due for review)
       const pastDate = new Date(Date.now() - 86400000);
@@ -153,7 +159,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
     it("should return null when filtered by 'recent' source and lastReviewed is more than 7 days ago", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       // SRS item with lastReviewed more than 7 days ago
       const oldDate = new Date(Date.now() - 86400000 * 10); // 10 days ago
@@ -181,7 +187,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
     it("should return item when filtered by 'recent' source and lastReviewed is within 7 days", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       // SRS item with lastReviewed within the last 7 days
       const recentDate = new Date(Date.now() - 86400000 * 2); // 2 days ago
@@ -210,7 +216,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
     it("should return item when source is 'all' regardless of SRS state", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       // SRS item with nextReview in the future AND lastReviewed long ago
       // Both conditions would normally filter it out, but source "all" skips filters
@@ -243,7 +249,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
     it("should return item when no SRS record exists (new item) with source=due", async () => {
       const radical = createMockRadical("rad_0001");
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       // No SRS items at all — brand new radical
       mockReviewRepository.findByUserAndTypes.mockResolvedValue([]);
@@ -265,7 +271,7 @@ describe("ReviewService - buildRadicalItem", () => {
         namePinyin: "",
         meaning: "",
       });
-      (readAggregateContent as any).mockResolvedValue([radical]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([radical] as any);
 
       const items = await reviewService.getReviewItems("user123", {
         source: "all",
@@ -283,7 +289,7 @@ describe("ReviewService - buildRadicalItem", () => {
 
   describe("radical type filter in getReviewItems", () => {
     it("should include radicals when type is empty (all types)", async () => {
-      (readAggregateContent as any).mockResolvedValue([createMockRadical("rad_0001")]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([createMockRadical("rad_0001")] as any);
 
       const items = await reviewService.getReviewItems("user123", {
         source: "all",
@@ -297,7 +303,7 @@ describe("ReviewService - buildRadicalItem", () => {
     });
 
     it("should exclude radicals when type is 'tone'", async () => {
-      (readAggregateContent as any).mockResolvedValue([createMockRadical("rad_0001")]);
+      vi.mocked(prisma.radical.findMany).mockResolvedValue([createMockRadical("rad_0001")] as any);
 
       const items = await reviewService.getReviewItems("user123", {
         source: "all",

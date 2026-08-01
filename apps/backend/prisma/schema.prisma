@@ -81,12 +81,117 @@ model CharacterRadical {
   updatedAt         DateTime @updatedAt
 
   character Character? @relation(fields: [characterId], references: [id])
+  // Defensive nullable FK — Radical is seeded BEFORE CharacterRadical (seed step 2 < step 17),
+  // and every CharacterRadical.radicalId maps to one of the 20 curated radicals.
+  radical   Radical?   @relation(fields: [radicalId], references: [id])
 
   @@unique([characterGlyph, radicalId])
   @@unique([characterId, radicalId])
   @@index([characterGlyph])
   @@index([characterId])
   @@index([radicalId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Reference Tables (Epic 21 WS1) — all-in-DB for radicals / tones / pinyin
+// ═══════════════════════════════════════════════════════════════════════════
+// Seeded from content/seed/phase2/{radicals,tones,pinyin-phonemes,tone-pairs,
+// tone-rules}.json via prisma/seed.ts. These replace runtime reads of
+// content/radicals/radicals.json, content/tones/tones.json,
+// content/pinyin/pinyin.json and content/references/tone-reference.json.
+// All-in-DB is now canonical — the legacy file reads are removed from src/.
+
+// ── Radical: Kangxi radical reference (20 curated rows) ──
+// ID format: "rad_XXXX" (Kangxi index, zero-padded). Business-key PK.
+model Radical {
+  id               String   @id // "rad_0001"
+  glyph            String   @unique
+  alternateGlyphs  String[] @default([])
+  namePinyin       String
+  nameChinese      String? // null-normalized (source used "" for absent names)
+  meaning          String
+  strokeCount      Int
+  isRecommended    Boolean  @default(false)
+  kangxiIndex      Int?
+  etymology        String?
+  frequencyRank    Int?
+  notes            String?
+  isAlsoCharacter  Boolean?
+  variants         Json?
+  characterRadicals CharacterRadical[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([kangxiIndex])
+  @@index([isRecommended])
+}
+
+// ── Tone: Mandarin tone reference (5 rows: tn_0..tn_4) ──
+model Tone {
+  id                 String  @id // "tn_0"
+  number             Int     @unique
+  name               String
+  mark               String
+  contour            Json
+  pitchDescription   String
+  exampleSyllable    String?
+  exampleCharacter   String?
+  color              String?
+  pronunciationGuide String?
+  commonIssues       String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([number])
+}
+
+// ── PinyinPhoneme: initials + finals reference (50 rows) ──
+// Initials: 18, Finals: 32. Rows carry phonemeType ("initial" | "final").
+model PinyinPhoneme {
+  id                 String  @id // "init_b" | "fin_a"
+  pinyin             String
+  phonemeType        String // "initial" | "final"
+  type               String?
+  category           String?
+  ipa                String?
+  description        String?
+  mouthPosition      String?
+  voiced             Boolean?
+  aspirated          Boolean?
+  toneVariants       Json?
+  pronunciationGuide String?
+  commonIssues       String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([phonemeType, pinyin])
+  @@index([phonemeType])
+}
+
+// ── TonePair: tone-sandhi example word pairs ──
+// From content/references/tone-reference.json "tonePairs" (6 rows).
+model TonePair {
+  id               String   @id // "pair-1"
+  chinese          String
+  dictionaryPinyin String
+  spokenPinyin     String
+  rule             String
+  pattern          String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ── ToneRule: tone-sandhi rules ──
+// From content/references/tone-reference.json "toneRules" (3 rows).
+// `examples` is a nested array of {chinese, dictionary, spoken} — stored as
+// Json (single-row-per-rule; a junction table would be overkill for 3 rules).
+model ToneRule {
+  id        String   @id // "rule-3rd-sandhi"
+  title     String
+  rule      String
+  examples  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ── Character: Unified character aggregate ──

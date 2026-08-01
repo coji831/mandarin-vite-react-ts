@@ -6,9 +6,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-// Create the mock existsSync function using vi.hoisted so it's available during mock factory hoisting
-const mockExistsSync = vi.hoisted(() => vi.fn());
-
 // Mock Prisma before importing the service
 const mockPrisma = vi.hoisted(() => ({
   characterProgress: {
@@ -20,23 +17,17 @@ const mockPrisma = vi.hoisted(() => ({
   passage: {
     findUnique: vi.fn(),
   },
+  radical: {
+    findUnique: vi.fn(),
+  },
+  quizAttempt: {
+    findFirst: vi.fn(),
+  },
 }));
 
 vi.mock("../../../../shared/infrastructure/database/client", () => ({
   prisma: mockPrisma,
 }));
-
-// Mock fs.existsSync at module level — intercepts ESM import in ProgressionService
-vi.mock("fs", () => {
-  const fsMock: Record<string, any> = {
-    existsSync: mockExistsSync,
-    readdirSync: vi.fn(() => []),
-    readFileSync: vi.fn(() => "{}"),
-    default: undefined as any,
-  };
-  fsMock.default = fsMock;
-  return fsMock;
-});
 
 import { ProgressionService } from "../ProgressionService.js";
 
@@ -53,9 +44,11 @@ describe("ProgressionService", () => {
     mockPrisma.characterProgress.count.mockReset();
     mockPrisma.character.findMany.mockReset();
     mockPrisma.passage.findUnique.mockReset();
+    mockPrisma.radical.findUnique.mockReset();
+    mockPrisma.quizAttempt.findFirst.mockReset();
 
-    // Default: radical content file exists
-    mockExistsSync.mockReturnValue(true);
+    // Default: the radical exists in the Radical reference table (all-in-DB)
+    mockPrisma.radical.findUnique.mockResolvedValue({ id: "rad_0001", glyph: "一" });
 
     // Mock ProgressionRepository
     mockProgressionRepository = {
@@ -191,15 +184,17 @@ describe("ProgressionService", () => {
       });
     });
 
-    it("should throw validation error when radicalId does not exist in content data", async () => {
+    it("should throw validation error when radicalId does not exist in the Radical reference table", async () => {
       const userId = "user123";
       const radicalId = "rad_9999";
-      mockExistsSync.mockReturnValue(false);
+      // Radical not found in the DB → validation fails
+      mockPrisma.radical.findUnique.mockResolvedValue(null);
 
       await expect(
         progressionService.upsertRadicalProgress(userId, radicalId, { memorized: true }),
       ).rejects.toThrow(`Invalid radicalId: ${radicalId}`);
 
+      expect(mockPrisma.radical.findUnique).toHaveBeenCalledWith({ where: { id: radicalId } });
       expect(mockProgressionRepository.upsertRadicalProgress).not.toHaveBeenCalled();
     });
   });
@@ -307,6 +302,86 @@ describe("ProgressionService", () => {
 
       expect(result.passed).toBe(false);
       expect(result.reason).toBe("INSUFFICIENT_CHARACTER_COVERAGE");
+    });
+  });
+
+  describe("getGateStatus (G8 — computed gates endpoint)", () => {
+    const userId = "user123";
+
+    beforeEach(() => {
+      // Default: no passage at level → Phase 3→4 returns NO_PASSAGE_AVAILABLE
+      mockReadersService.getUserKnownLevel.mockResolvedValue(3);
+      mockReadersService.selectPassageForGate.mockResolvedValue(null);
+      // Default: persisted phase gate exists and Phase 2 not yet passed
+      mockProgressionRepository.findPhaseGateByUser.mockResolvedValue({
+        id: "gate-1",
+        userId,
+        currentPhase: 2,
+        phase1Passed: true,
+        phase2Passed: false,
+        phase3Passed: false,
+        phase4Unlocked: false,
+        gateCriteria: "quiz",
+      });
+    });
+
+    it("reports character count gate FAIL at 0 characters", async () => {
+      mockPrisma.characterProgress.count.mockResolvedValue(0);
+      mockPrisma.quizAttempt.findFirst.mockResolvedValue(null);
+
+      const result = await progressionService.getGateStatus(userId);
+
+      expect(result.characterCountGate.passed).toBe(false);
+      expect(result.characterCountGate.reason).toBe("INSUFFICIENT_CHARACTER_COVERAGE");
+      expect(result.characterCountGate.details).toContain("0");
+    });
+
+    it("reports character count gate PASS at ≥500 characters", async () => {
+      mockPrisma.characterProgress.count.mockResolvedValue(500);
+      mockPrisma.quizAttempt.findFirst.mockResolvedValue(null);
+
+      const result = await progressionService.getGateStatus(userId);
+
+      expect(result.characterCountGate.passed).toBe(true);
+    });
+
+    it("reports phase2 gate PASS from the latest IME attempt ≥80%", async () => {
+      mockPrisma.characterProgress.count.mockResolvedValue(0);
+      mockPrisma.quizAttempt.findFirst.mockResolvedValue({
+        id: "att-ime",
+        userId,
+        quizType: "ime-simulator",
+        phase: 2,
+        totalScore: 20,
+        maxScore: 25,
+        passed: true,
+      });
+
+      const result = await progressionService.getGateStatus(userId);
+
+      expect(result.phase2Gate.passed).toBe(true);
+      expect(mockPrisma.quizAttempt.findFirst).toHaveBeenCalledWith({
+        where: { userId, quizType: "ime-simulator" },
+        orderBy: { createdAt: "desc" },
+      });
+    });
+
+    it("reports phase2 gate FAIL when the latest IME attempt is below 80%", async () => {
+      mockPrisma.characterProgress.count.mockResolvedValue(0);
+      mockPrisma.quizAttempt.findFirst.mockResolvedValue({
+        id: "att-ime",
+        userId,
+        quizType: "ime-simulator",
+        phase: 2,
+        totalScore: 15,
+        maxScore: 25,
+        passed: false,
+      });
+
+      const result = await progressionService.getGateStatus(userId);
+
+      expect(result.phase2Gate.passed).toBe(false);
+      expect(result.phase2Gate.reason).toBe("IME_SCORE_TOO_LOW");
     });
   });
 

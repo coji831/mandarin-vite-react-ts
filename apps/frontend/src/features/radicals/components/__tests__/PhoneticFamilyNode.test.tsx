@@ -193,6 +193,16 @@ describe("PhoneticFamilyNode", () => {
     await waitFor(() => {
       expect(enrichSpy).toHaveBeenCalledWith(SAMPLE_FAMILY);
     });
+
+    // Assert the DISPLAY output, not just the fetch: after async enrichment
+    // resolves, the ClassificationBadge must actually render. Regression: the
+    // members render mapped over raw `family.members` (classification null), so
+    // badges never appeared after real enrichment.
+    await waitFor(() => {
+      expect(screen.getAllByTestId("classification-badge")).toHaveLength(2);
+    });
+    const badges = screen.getAllByTestId("classification-badge");
+    expect(badges[0]).toHaveAttribute("data-classification", "phono_semantic");
   });
 
   it("shows classification badges when family has classification data", () => {

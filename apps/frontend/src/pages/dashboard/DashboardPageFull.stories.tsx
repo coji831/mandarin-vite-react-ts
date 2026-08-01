@@ -1,3 +1,11 @@
+/**
+ * DashboardPage stories.
+ *
+ * NOTE (State Parity): DashboardPage fetches the phase gate on mount. On fetch
+ * failure usePhaseGate resolves phaseGate=null (no error surface) and the page
+ * falls through to the Phase 1 welcome — so there is NO error code path to
+ * story. Reachable states: Loading + each phase + Guest (below).
+ */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DashboardPage } from "./DashboardPage";
 import { mswHandlers } from "../../../.storybook/msw-handlers";

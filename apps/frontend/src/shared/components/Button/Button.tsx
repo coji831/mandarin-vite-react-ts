@@ -42,6 +42,8 @@ export type ButtonProps = {
   loading?: boolean;
   disabled?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset";
@@ -49,6 +51,7 @@ export type ButtonProps = {
   title?: string;
   "aria-label"?: string;
   "aria-selected"?: boolean;
+  "aria-expanded"?: boolean;
   role?: string;
   id?: string;
   "aria-controls"?: string;
@@ -63,6 +66,8 @@ export function Button({
   loading = false,
   disabled = false,
   onClick,
+  onKeyDown,
+  onKeyUp,
   children,
   className = "",
   type = "button",
@@ -70,6 +75,7 @@ export function Button({
   title,
   "aria-label": ariaLabel,
   "aria-selected": ariaSelected,
+  "aria-expanded": ariaExpanded,
   role,
   id,
   "aria-controls": ariaControls,
@@ -117,10 +123,13 @@ export function Button({
       type={type}
       className={buttonClass}
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
       disabled={isDisabled}
       aria-busy={loading}
       aria-label={ariaLabel}
       aria-selected={ariaSelected}
+      aria-expanded={ariaExpanded}
       aria-controls={ariaControls}
       data-rating={dataRating}
       title={title}

@@ -16,6 +16,7 @@ vi.mock("../../services", () => ({
 }));
 
 const SAMPLE_WORD = {
+  id: "w_00001",
   glyph: "好",
   pinyin: "hǎo",
   definitions: ["good", "fine", "well"],

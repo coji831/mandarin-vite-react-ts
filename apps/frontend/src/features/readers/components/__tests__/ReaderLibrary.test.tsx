@@ -71,9 +71,7 @@ describe("ReaderLibrary", () => {
   });
 
   it("renders loading skeleton when isLoading", () => {
-    const { container } = render(
-      <ReaderLibrary {...defaultProps} isLoading={true} passages={[]} />,
-    );
+    render(<ReaderLibrary {...defaultProps} isLoading={true} passages={[]} />);
     expect(screen.getByLabelText("Loading passages")).toBeInTheDocument();
     // Should not render content
     expect(screen.queryByText("Passage 1")).not.toBeInTheDocument();
@@ -83,6 +81,73 @@ describe("ReaderLibrary", () => {
     render(<ReaderLibrary {...defaultProps} passages={[]} isEmpty={true} />);
     expect(screen.getByText("No passages yet")).toBeInTheDocument();
     expect(screen.getByText("Generate your first passage")).toBeInTheDocument();
+  });
+
+  it("guest in empty state: hides generate button but keeps the bookmark toggle", () => {
+    render(
+      <ReaderLibrary
+        {...defaultProps}
+        passages={[]}
+        isEmpty={true}
+        isGuest={true}
+        bookmarkFilter="all"
+        onBookmarkFilterChange={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("No passages yet")).toBeInTheDocument();
+    expect(screen.queryByText("Generate your first passage")).not.toBeInTheDocument();
+    expect(screen.getByText("All Passages")).toBeInTheDocument();
+    expect(screen.getByText("Bookmarked")).toBeInTheDocument();
+  });
+
+  it("guest in bookmarked-empty state is NOT trapped: toggle rendered, generate hidden", () => {
+    render(
+      <ReaderLibrary
+        {...defaultProps}
+        passages={SAMPLE_PASSAGES.filter((p) => !p.isBookmarked)}
+        bookmarkFilter="bookmarked"
+        onBookmarkFilterChange={vi.fn()}
+        isGuest={true}
+      />,
+    );
+    // Bookmarked filter empty message + escape hatch
+    expect(screen.getByText(/No bookmarked passages yet/)).toBeInTheDocument();
+    expect(screen.getByText("All Passages")).toBeInTheDocument();
+    expect(screen.getByText("Bookmarked")).toBeInTheDocument();
+    // No dead "Generate HSK ... passage" button that would fire a silent 401
+    expect(screen.queryByText(/Generate HSK/)).not.toBeInTheDocument();
+  });
+
+  it("authenticated user in bookmarked-empty state still gets the generate CTA", () => {
+    render(
+      <ReaderLibrary
+        {...defaultProps}
+        passages={SAMPLE_PASSAGES.filter((p) => !p.isBookmarked)}
+        bookmarkFilter="bookmarked"
+        onBookmarkFilterChange={vi.fn()}
+        isGuest={false}
+      />,
+    );
+    expect(screen.getByText(/No bookmarked passages yet/)).toBeInTheDocument();
+    expect(screen.getByText(/Generate HSK/)).toBeInTheDocument();
+  });
+
+  it("calls onBookmarkFilterChange when the bookmark toggle is clicked", async () => {
+    const onBookmarkFilterChange = vi.fn();
+    render(
+      <ReaderLibrary
+        {...defaultProps}
+        bookmarkFilter="all"
+        onBookmarkFilterChange={onBookmarkFilterChange}
+      />,
+    );
+
+    const bookmarkedChip = screen
+      .getAllByRole("button", { pressed: false })
+      .find((btn) => btn.textContent === "Bookmarked");
+    expect(bookmarkedChip).toBeTruthy();
+    if (bookmarkedChip) await userEvent.click(bookmarkedChip);
+    expect(onBookmarkFilterChange).toHaveBeenCalledWith("bookmarked");
   });
 
   it("renders error screen when hasError", () => {
@@ -111,5 +176,25 @@ describe("ReaderLibrary", () => {
 
     await userEvent.click(passageCards[0]);
     expect(onSelectPassage).toHaveBeenCalledWith("p1");
+  });
+
+  it("renders a clean generate label when no HSK level is selected (no double space)", () => {
+    // VisFix W5: a null level previously rendered "Generate HSK  passage" (double space).
+    // Use the real bookmarked-empty state (selectedLevel=null) so the empty-filter
+    // branch renders, then assert the exact button textContent (no whitespace collapse).
+    render(
+      <ReaderLibrary
+        {...defaultProps}
+        passages={SAMPLE_PASSAGES.filter((p) => !p.isBookmarked)}
+        bookmarkFilter="bookmarked"
+        onBookmarkFilterChange={vi.fn()}
+        isGuest={false}
+      />,
+    );
+
+    const generateBtn = screen.getByRole("button", { name: /Generate HSK/ });
+    expect(generateBtn.textContent).toBe("Generate HSK passage");
+    // And the paragraph must not leak a null level.
+    expect(screen.queryByText(/HSK null/)).not.toBeInTheDocument();
   });
 });

@@ -166,6 +166,9 @@
   --shadow-md: 0 4px 12px rgba(245, 158, 11, 0.2);
   --shadow-lg: 0 6px 20px rgba(245, 158, 11, 0.25);
 
+  /* XP gold glow — pictograph golden border emphasis */
+  --shadow-xp-glow: 0 0 8px rgba(251, 191, 36, 0.3);
+
   /* ===== Transitions ===== */
 
   --transition-fast: 0.2s ease;
@@ -512,6 +515,9 @@ html {
 }
 .h-full {
   height: 100%;
+}
+.h-auto {
+  height: auto;
 }
 .h-8px {
   height: 8px;

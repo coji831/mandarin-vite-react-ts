@@ -29,11 +29,14 @@ export const WithItems: Story = {
     total: 45,
     page: 1,
     pageSize: 20,
-    renderItem: (item: { id: number; title: string; desc: string }) => (
-      <div key={item.id} style={{ width: "100%" }}>
-        <Card title={item.title} subtitle={item.desc} />
-      </div>
-    ),
+    renderItem: (item) => {
+      const it = item as { id: number; title: string; desc: string };
+      return (
+        <div key={it.id} style={{ width: "100%" }}>
+          <Card title={it.title} subtitle={it.desc} />
+        </div>
+      );
+    },
     onPageChange: () => {},
   },
 };
@@ -71,11 +74,14 @@ export const SinglePage: Story = {
     total: 3,
     page: 1,
     pageSize: 20,
-    renderItem: (item: { id: number; title: string; desc: string }) => (
-      <div key={item.id} style={{ width: "100%" }}>
-        <Card title={item.title} subtitle={item.desc} />
-      </div>
-    ),
+    renderItem: (item) => {
+      const it = item as { id: number; title: string; desc: string };
+      return (
+        <div key={it.id} style={{ width: "100%" }}>
+          <Card title={it.title} subtitle={it.desc} />
+        </div>
+      );
+    },
     onPageChange: () => {},
   },
 };
@@ -87,11 +93,14 @@ export const LastPage: Story = {
     total: 45,
     page: 3,
     pageSize: 20,
-    renderItem: (item: { id: number; title: string; desc: string }) => (
-      <div key={item.id} style={{ width: "100%" }}>
-        <Card title={item.title} subtitle={item.desc} />
-      </div>
-    ),
+    renderItem: (item) => {
+      const it = item as { id: number; title: string; desc: string };
+      return (
+        <div key={it.id} style={{ width: "100%" }}>
+          <Card title={it.title} subtitle={it.desc} />
+        </div>
+      );
+    },
     onPageChange: () => {},
   },
 };

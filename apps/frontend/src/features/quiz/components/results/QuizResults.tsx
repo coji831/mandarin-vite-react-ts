@@ -115,7 +115,13 @@ export function QuizResults() {
       </Box>
 
       {/* Category breakdown (only applicable to pinyin/tone quizzes, not IME simulator) */}
-      {strategyType !== "ime-simulator" && <CategoryBreakdown answers={answers} />}
+      {strategyType !== "ime-simulator" && (
+        <CategoryBreakdown
+          answers={answers}
+          categoryBreakdown={completionResult?.categoryBreakdown}
+          total={totalQuestions}
+        />
+      )}
 
       {/* Score by Type (IME Simulator only — classification-based breakdown) */}
       {strategyType === "ime-simulator" && Object.keys(scoreByType).length > 0 && (

@@ -9,6 +9,7 @@
 import React from "react";
 import type { ReviewItem } from "../types";
 import { TONE_BUTTONS_BASE } from "shared/constants";
+import { openHub } from "shared/store";
 import { Box, Button, RadioGroup } from "shared/components";
 import type { ButtonVariant, RadioOption } from "shared/components";
 import "./ReviewCard.css";
@@ -42,7 +43,20 @@ function ReviewCardToneSelectComponent({
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         <div className="review-card__character-display flex-col-center gap-sm">
-          <span className="review-card__character">{displayChar}</span>
+          <button
+            type="button"
+            className="review-card__character review-card__character-btn"
+            onClick={() =>
+              openHub({
+                entityType: "character",
+                entityId: displayChar,
+                label: item.pinyinPlain ?? item.front,
+              })
+            }
+            aria-label={`View details for ${displayChar}`}
+          >
+            {displayChar}
+          </button>
           {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})
@@ -53,7 +67,7 @@ function ReviewCardToneSelectComponent({
         <div className="flex-center gap-md">
           <Button
             variant="circle"
-            className="review-card__audio-btn transition-all"
+            className="review-card__audio-btn"
             onClick={() => onPlayAudio(displayChar)}
             aria-label="Play audio"
           >

@@ -6,7 +6,7 @@ import type { AudioStatus } from "../../src/features/readers/stores";
 type AudioStoreOverrides = Partial<
   Pick<
     ReturnType<typeof useAudioStore.getState>,
-    "currentIndex" | "pendingIndex" | "status" | "speed" | "error"
+    "currentIndex" | "pendingIndex" | "pendingSingleIndex" | "status" | "speed" | "error"
   >
 >;
 
@@ -16,6 +16,7 @@ export function withAudioStore(overrides: AudioStoreOverrides = {}): Decorator {
       useAudioStore.setState({
         currentIndex: null,
         pendingIndex: null,
+        pendingSingleIndex: null,
         status: "idle" as AudioStatus,
         speed: 1,
         error: null,

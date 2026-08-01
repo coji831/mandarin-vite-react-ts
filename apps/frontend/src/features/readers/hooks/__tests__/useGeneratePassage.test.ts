@@ -54,6 +54,36 @@ describe("useGeneratePassage", () => {
     expect(result.current.hasError).toBe(false);
   });
 
+  it("does not start a second generation while one is in flight (double-submit guard)", async () => {
+    let resolveFirst: ((v: { id: string }) => void) | undefined;
+    mockGeneratePassage.mockImplementation(
+      () =>
+        new Promise<{ id: string }>((resolve) => {
+          resolveFirst = resolve;
+        }),
+    );
+
+    const { result } = renderHook(() => useGeneratePassage());
+
+    act(() => {
+      result.current.generate();
+    });
+    act(() => {
+      result.current.generate();
+    });
+
+    // Only the first call reaches the service — the second is ignored.
+    expect(mockGeneratePassage).toHaveBeenCalledTimes(1);
+    expect(result.current.isGenerating).toBe(true);
+
+    await act(async () => {
+      resolveFirst?.({ id: "new-passage-id" });
+    });
+
+    expect(result.current.generatedId).toBe("new-passage-id");
+    expect(result.current.isGenerating).toBe(false);
+  });
+
   it("passes HSK level to service", async () => {
     mockGeneratePassage.mockResolvedValue({ id: "new-passage-id" });
 

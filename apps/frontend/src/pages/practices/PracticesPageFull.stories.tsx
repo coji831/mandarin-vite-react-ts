@@ -1,3 +1,10 @@
+/**
+ * PracticesPage stories.
+ *
+ * NOTE (State Parity): PracticesPage fetches the phase gate via useQuizCard. On
+ * fetch failure usePhaseGate resolves phaseGate=null (no error surface) and the
+ * page renders Phase 1 cards — so there is NO error code path to story.
+ */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import PracticesPage from "./PracticesPage";
 import { mswHandlers } from "../../../.storybook/msw-handlers";

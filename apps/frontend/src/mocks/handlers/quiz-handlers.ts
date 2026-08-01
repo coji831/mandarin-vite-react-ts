@@ -12,7 +12,7 @@
  */
 
 import { http, HttpResponse } from "msw";
-import type { DrillQuestion } from "features/foundations/services/sandhiDrillService";
+import type { DrillQuestion } from "features/foundations";
 
 const API_BASE = "http://localhost:3001";
 

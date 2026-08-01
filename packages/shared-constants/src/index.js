@@ -17,6 +17,7 @@ export const ROUTE_PATTERNS = {
   progressionFoundationProgressSection: (sectionId) =>
     `/v1/progression/foundation-progress/${sectionId}`,
   progressionPhaseGate: "/v1/progression/phase-gate",
+  progressionGates: "/v1/progression/gates",
   progressionRadicalProgress: "/v1/progression/radical-progress",
   progressionRadicalProgressById: (radicalId) => `/v1/progression/radical-progress/${radicalId}`,
   quizAttempts: "/v1/quiz/attempts",

@@ -3,7 +3,6 @@
  * @description Service for looking up characters belonging to a radical via DB.
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import { findInAggregateContent } from "../../../shared/utils/contentUtils.js";
 import { RadicalNotFoundError } from "../types/radicals-errors.js";
 
 export interface RadicalCharacterEntry {
@@ -21,8 +20,8 @@ export class RadicalCharacterService {
     radicalId: string;
     characters: RadicalCharacterEntry[];
   }> {
-    // Validate radical exists in the JSON aggregate (no Radical model in DB)
-    const radical = await findInAggregateContent("radicals", "radicals.json", "id", radicalId);
+    // Validate the radical exists in the Radical reference table (all-in-DB).
+    const radical = await prisma.radical.findUnique({ where: { id: radicalId } });
     if (!radical) {
       throw new RadicalNotFoundError(radicalId);
     }

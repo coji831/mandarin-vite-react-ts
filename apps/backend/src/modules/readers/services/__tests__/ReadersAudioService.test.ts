@@ -50,7 +50,9 @@ describe("ReadersAudioService", () => {
     mockTtsService = { getTtsUrl: vi.fn() };
     mockGcsClient = {
       fileExists: vi.fn(),
-      getPublicUrl: vi.fn((path: string) => `https://storage.example.com/${path}`),
+      getSignedUrl: vi.fn(
+        async (path: string) => `https://storage.example.com/${path}?X-Goog-Signature=test`,
+      ),
     };
 
     service = new ReadersAudioService(mockTtsService as any, mockGcsClient as any);
@@ -78,11 +80,11 @@ describe("ReadersAudioService", () => {
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({
-        url: "https://storage.example.com/tts/6mockedhash/0.mp3",
+        url: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
-        url: "https://storage.example.com/tts/6mockedhash/1.mp3",
+        url: "https://storage.example.com/tts/6mockedhash/1.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
       expect(mockTtsService.getTtsUrl).not.toHaveBeenCalled();
@@ -123,7 +125,7 @@ describe("ReadersAudioService", () => {
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({
-        url: "https://storage.example.com/tts/6mockedhash/0.mp3",
+        url: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
@@ -152,7 +154,7 @@ describe("ReadersAudioService", () => {
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({
-        url: "https://storage.example.com/tts/9mockedhash/0.mp3",
+        url: "https://storage.example.com/tts/9mockedhash/0.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
@@ -163,6 +165,19 @@ describe("ReadersAudioService", () => {
         url: "",
         source: "failed",
       });
+    });
+
+    it("should mark a sentence as failed when GCS signing fails", async () => {
+      const passage = makePassage([{ index: 0, text: "你好。" }]);
+
+      // GCS file exists but signing fails → sentence must not fail the batch
+      mockGcsClient.fileExists.mockResolvedValue(true);
+      mockGcsClient.getSignedUrl.mockRejectedValue(new Error("signing failed"));
+
+      const result = await service.getPassageAudio(passage);
+
+      expect(result.audioUrls[0]).toEqual({ url: "", source: "failed" });
+      expect(mockTtsService.getTtsUrl).not.toHaveBeenCalled();
     });
   });
 });

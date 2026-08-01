@@ -228,7 +228,14 @@ describe("FilterBar", () => {
 
   it("calls onReset when reset button is clicked", () => {
     const handleReset = vi.fn();
-    render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={handleReset} />);
+    // Reset is only enabled when a filter is active (hasActiveFilters).
+    render(
+      <FilterBar
+        filter={{ ...defaultFilter, search: "水" }}
+        onFilterChange={vi.fn()}
+        onReset={handleReset}
+      />,
+    );
 
     fireEvent.click(screen.getByLabelText("Reset all filters"));
     expect(handleReset).toHaveBeenCalledTimes(1);
@@ -237,7 +244,7 @@ describe("FilterBar", () => {
   it("displays top-20 toggle with descriptive text", () => {
     render(<FilterBar filter={defaultFilter} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
-    expect(screen.getByText("Show top 20 only")).toBeInTheDocument();
+    expect(screen.getByText("Top 20 only")).toBeInTheDocument();
   });
 
   it("has search input with correct placeholder", () => {

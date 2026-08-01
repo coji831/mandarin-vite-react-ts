@@ -1,96 +1,98 @@
 /**
  * AppLayout stories
  *
- * Visual stories for the root application layout with left sidebar navigation.
- * Covers logged-in states (Dashboard, Learn active), logged-out state,
- * and mobile viewport.
+ * Visual stories for the REAL AppLayout (left sidebar + HubModal), rendered
+ * inside MemoryRouter + Routes so nav active states work. The global preview
+ * decorator provides the authenticated MockAuthProvider; guest variants use
+ * the withGuestAuth decorator.
  *
- * Uses shared SideNav component instead of inline sidebar code.
+ * States: authenticated (Dashboard / Learn / Practices active) · guest · mobile.
+ * The HubModal stays closed (hubStore default) so no hub content is rendered.
  */
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter } from "react-router-dom";
-import { SideNav } from "shared/components";
+import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
+import type { ReactNode } from "react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { AppLayout } from "./AppLayout";
+import { withGuestAuth } from "../../../.storybook/decorators";
 
-// ──────────────────────────────────────────────
-// Sidebar + Content wrapper
-// ──────────────────────────────────────────────
-
-type WrapperProps = {
-  isAuthenticated?: boolean;
-  activeRoute?: string;
-  userName?: string;
-};
-
-function Wrapper({ isAuthenticated = true, activeRoute = "/", userName = "Alex" }: WrapperProps) {
-  const navItems = [
-    { path: "/", label: "Dashboard", icon: "🏠", exact: true },
-    { path: "/learn", label: "Learn", icon: "📚", exact: false },
-    { path: "/practices", label: "Practices", icon: "🎯", exact: false },
-    { path: "/library", label: "Library", icon: "📖", exact: false },
-    { path: "/progress", label: "Progress", icon: "📊", exact: false },
-  ];
-
+/** Placeholder content for the AppLayout <Outlet />. */
+function PageContent() {
   return (
-    <MemoryRouter initialEntries={[activeRoute]}>
-      <div className="flex">
-        <SideNav
-          navItems={navItems}
-          currentPath={activeRoute}
-          isAuthenticated={isAuthenticated}
-          userName={isAuthenticated ? userName : undefined}
-          onLogout={() => {}}
-          onLogin={() => {}}
-        />
-        <main className="flex flex-col flex-1 bg-surface-dark-alt p-xl text-secondary font-md">
-          {activeRoute === "/" && <p>Dashboard content area</p>}
-          {activeRoute.startsWith("/learn") && <p>Learn content area</p>}
-          {activeRoute.startsWith("/practices") && <p>Practices content area</p>}
-          {!isAuthenticated && <p>Welcome! Please log in.</p>}
-        </main>
-      </div>
+    <div className="p-xl text-secondary font-md">
+      Page content renders in the <code>main</code> area beside the sidebar.
+    </div>
+  );
+}
+
+/**
+ * Renders the REAL AppLayout at the given route with the outlet content.
+ * Used via the withAppLayoutPath decorator so each story controls the active nav item.
+ */
+function AppLayoutShell({ path, children }: { path: string; children: ReactNode }) {
+  return (
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={children} />
+        </Route>
+      </Routes>
     </MemoryRouter>
   );
 }
 
-// ──────────────────────────────────────────────
-// Meta
-// ──────────────────────────────────────────────
+const withAppLayoutPath =
+  (path: string): Decorator =>
+  (Story) => (
+    <AppLayoutShell path={path}>
+      <Story />
+    </AppLayoutShell>
+  );
 
-const meta: Meta<typeof Wrapper> = {
+const meta: Meta<typeof AppLayout> = {
   title: "Layouts/AppLayout",
-  component: Wrapper,
+  component: AppLayout,
   tags: ["autodocs"],
   parameters: {
+    layout: "fullscreen",
     docs: {
       description: {
         component:
-          "**Sidebar Studio** — Dark surface sidebar with amber accent active states. Left sidebar layout with 220px width.",
+          "Root application layout with left sidebar navigation. Renders the production AppLayout (SideNav + Outlet + HubModal).",
       },
     },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof Wrapper>;
+type Story = StoryObj<typeof AppLayout>;
 
 export const LoggedInDashboard: Story = {
-  args: { isAuthenticated: true, activeRoute: "/", userName: "Alex" },
+  decorators: [withAppLayoutPath("/")],
+  render: () => <PageContent />,
 };
 
 export const LoggedInLearnActive: Story = {
-  args: { isAuthenticated: true, activeRoute: "/learn", userName: "Alex" },
+  decorators: [withAppLayoutPath("/learn")],
+  render: () => <PageContent />,
 };
 
 export const LoggedInPracticesActive: Story = {
-  args: { isAuthenticated: true, activeRoute: "/practices", userName: "Alex" },
+  decorators: [withAppLayoutPath("/practices")],
+  render: () => <PageContent />,
 };
 
+/**
+ * LoggedOut — guest user: sidebar hides the user chip and shows a Login CTA.
+ * withGuestAuth overrides the global authenticated MockAuthProvider.
+ */
 export const LoggedOut: Story = {
-  args: { isAuthenticated: false, activeRoute: "/" },
+  decorators: [withGuestAuth, withAppLayoutPath("/")],
+  render: () => <PageContent />,
 };
 
 export const Mobile: Story = {
-  args: { isAuthenticated: true, activeRoute: "/", userName: "Alex" },
+  decorators: [withAppLayoutPath("/")],
+  render: () => <PageContent />,
   parameters: {
     viewport: { defaultViewport: "mobile2" },
   },

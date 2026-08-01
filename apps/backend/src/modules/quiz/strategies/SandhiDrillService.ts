@@ -146,6 +146,11 @@ export class SandhiDrillService {
               include: {
                 characterReadings: {
                   where: { OR: [{ type: "primary" }, { type: null }] },
+                  // Deterministically prefer the PLAIN reading (e.g., "yi" over
+                  // "yī"): plain ASCII sorts before its tone-marked twin, so
+                  // `take: 1` never lands on a pre-marked row whose sandhi form
+                  // would collapse into the dictionary form.
+                  orderBy: { pinyin: "asc" },
                   take: 1,
                 },
               },
@@ -239,7 +244,11 @@ export class SandhiDrillService {
   }
 
   /**
-   * Generate 3 distractor options for a question.
+   * Generate 3 UNIQUE distractor options for a question.
+   *
+   * Options must never contain duplicates (duplicate strings collapse into
+   * duplicated React list keys in the quiz UI) and never contain the
+   * `??? ???` placeholder that made some questions unanswerable.
    */
   private generateDistractors(
     candidate: WordCandidate,
@@ -247,75 +256,98 @@ export class SandhiDrillService {
     correctAnswer: string,
     seed: number,
   ): string[] {
-    const distractors: string[] = [];
     const dictionaryPinyin = `${applyToneMark(candidate.pinyin1Plain, candidate.tone1)} ${applyToneMark(candidate.pinyin2Plain, candidate.tone2)}`;
+
+    const distractorSet = new Set<string>();
+    const add = (variant: string) => {
+      if (variant !== correctAnswer && variant !== dictionaryPinyin) {
+        distractorSet.add(variant);
+      }
+    };
 
     switch (ruleId) {
       case "3-3-sandhi": {
         // Distractor 1: dictionary form (original tones)
-        if (dictionaryPinyin !== correctAnswer) distractors.push(dictionaryPinyin);
+        add(dictionaryPinyin);
         // Distractor 2: swap — apply sandhi to second syllable instead
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 3)} ${applyToneMark(candidate.pinyin2Plain, 2)}`,
         );
         // Distractor 3: both syllables as tone 1
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 1)} ${applyToneMark(candidate.pinyin2Plain, 1)}`,
         );
         break;
       }
       case "bu-before-4th": {
         // Distractor 1: dictionary form
-        if (dictionaryPinyin !== correctAnswer) distractors.push(dictionaryPinyin);
+        add(dictionaryPinyin);
         // Distractor 2: wrong sandhi — change second syllable instead
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 4)} ${applyToneMark(candidate.pinyin2Plain, 2)}`,
         );
         // Distractor 3: both tone 4
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 4)} ${applyToneMark(candidate.pinyin2Plain, 4)}`,
         );
         break;
       }
       case "yi-before-4th": {
         // Distractor 1: dictionary form
-        if (dictionaryPinyin !== correctAnswer) distractors.push(dictionaryPinyin);
+        add(dictionaryPinyin);
         // Distractor 2: wrong sandhi — tone 4 instead of 2
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 4)} ${applyToneMark(candidate.pinyin2Plain, 4)}`,
         );
         // Distractor 3: both tone 1
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 1)} ${applyToneMark(candidate.pinyin2Plain, 1)}`,
         );
         break;
       }
       case "yi-before-non4th": {
         // Distractor 1: dictionary form
-        if (dictionaryPinyin !== correctAnswer) distractors.push(dictionaryPinyin);
+        add(dictionaryPinyin);
         // Distractor 2: wrong sandhi — tone 2 instead of 4
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 2)} ${applyToneMark(candidate.pinyin2Plain, candidate.tone2)}`,
         );
         // Distractor 3: both tone 1
-        distractors.push(
+        add(
           `${applyToneMark(candidate.pinyin1Plain, 1)} ${applyToneMark(candidate.pinyin2Plain, 1)}`,
         );
         break;
       }
     }
 
-    // Fill remaining slots with random variants if we don't have 3 unique ones
-    while (distractors.length < 3) {
-      const fallback = `${applyToneMark(candidate.pinyin1Plain, ((seed + distractors.length) % 4) + 1)} ${applyToneMark(candidate.pinyin2Plain, ((seed + distractors.length + 1) % 4) + 1)}`;
-      if (fallback !== correctAnswer && !distractors.includes(fallback)) {
-        distractors.push(fallback);
-      } else {
-        distractors.push(`??? ???`);
-      }
+    // Fill any remaining slots with deterministic tone variants until we have
+    // 3 unique distractors (16 tone-pair combos guarantee we never fall back
+    // to `??? ???` placeholders).
+    const tonePairs: Array<[number, number]> = [
+      [1, 1],
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [2, 1],
+      [2, 2],
+      [2, 3],
+      [2, 4],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [4, 1],
+      [4, 2],
+      [4, 3],
+      [4, 4],
+    ];
+    for (let offset = 0; distractorSet.size < 3 && offset < tonePairs.length; offset++) {
+      const [t1, t2] = tonePairs[(seed + offset) % tonePairs.length];
+      add(
+        `${applyToneMark(candidate.pinyin1Plain, t1)} ${applyToneMark(candidate.pinyin2Plain, t2)}`,
+      );
     }
 
-    // Ensure all 3 are unique and not equal to correctAnswer
-    return distractors.slice(0, 3).map((d) => (d === correctAnswer ? dictionaryPinyin : d));
+    return Array.from(distractorSet).slice(0, 3);
   }
 }

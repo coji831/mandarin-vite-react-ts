@@ -54,27 +54,33 @@ describe("BranchNode", () => {
   it("calls openHub on Enter key", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
-    fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
-      key: "Enter",
-    });
+    const mainButton = screen.getByRole("button", { name: "水 — shuǐ — water" });
+    // Native <button> fires click on Enter keydown — simulate full browser activation.
+    fireEvent.keyDown(mainButton, { key: "Enter" });
+    fireEvent.click(mainButton);
     expect(mockOpenHub).toHaveBeenCalledWith({
       entityType: "character",
       entityId: "水",
       label: "shuǐ",
     });
+    // Exactly once — no double-fire from redundant onKeyDown + native click.
+    expect(mockOpenHub).toHaveBeenCalledTimes(1);
   });
 
   it("calls openHub on Space key", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
-    fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
-      key: " ",
-    });
+    const mainButton = screen.getByRole("button", { name: "水 — shuǐ — water" });
+    // Native <button> fires click on Space keyup — simulate full browser activation.
+    fireEvent.keyDown(mainButton, { key: " " });
+    fireEvent.keyUp(mainButton, { key: " " });
+    fireEvent.click(mainButton);
     expect(mockOpenHub).toHaveBeenCalledWith({
       entityType: "character",
       entityId: "水",
       label: "shuǐ",
     });
+    expect(mockOpenHub).toHaveBeenCalledTimes(1);
   });
 
   it("has correct aria-label on character section", () => {

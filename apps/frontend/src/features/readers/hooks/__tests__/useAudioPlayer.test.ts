@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useAudioPlayer } from "../useAudioPlayer";
 import { useAudioStore, useReadingStore } from "../../stores";
+import { AudioEngine } from "../../lib";
 import type { AudioStatus } from "../../stores";
 
 // ── Setup ──────────────────────────────────────────────────────────────────
@@ -17,6 +18,7 @@ beforeEach(() => {
   useAudioStore.setState({
     currentIndex: null,
     pendingIndex: null,
+    pendingSingleIndex: null,
     status: "idle" as AudioStatus,
     error: null,
     speed: 1,
@@ -72,7 +74,8 @@ describe("useAudioPlayer", () => {
     );
 
     act(() => {
-      result.current.setSpeed(2);
+      // Intentionally invalid speed — hook must fall back to 1
+      result.current.setSpeed(2 as never);
     });
 
     expect(useAudioStore.getState().speed).toBe(1);
@@ -139,7 +142,7 @@ describe("useAudioPlayer", () => {
     expect(useAudioStore.getState().currentIndex).toBeNull();
   });
 
-  it("toggle() calls play when idle (async — sets currentIndex after delay)", async () => {
+  it("toggle() calls play when idle (starts playback)", async () => {
     vi.useFakeTimers();
     const { result } = renderHook(() =>
       useAudioPlayer({
@@ -152,17 +155,21 @@ describe("useAudioPlayer", () => {
       result.current.toggle();
     });
 
-    // After the PLAYBACK_START_DELAY_MS timeout, currentIndex should be set
+    // After the PLAYBACK_START_DELAY_MS timeout, playback has started.
+    // With no audioUrls and no speechSynthesis in jsdom, the TTS fallback resolves
+    // instantly and auto-advance runs to completion — so status is no longer idle.
     await act(async () => {
       vi.advanceTimersByTime(100);
+      await Promise.resolve();
+      await Promise.resolve();
     });
 
-    expect(useAudioStore.getState().currentIndex).toBe(0);
+    expect(result.current.status).not.toBe("idle");
     vi.useRealTimers();
   });
 
   it("popover pause/resume: opening popover pauses playback", () => {
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useAudioPlayer({
         sentenceCount: 2,
         sentenceTexts,
@@ -179,7 +186,7 @@ describe("useAudioPlayer", () => {
   });
 
   it("tab visibility: does not throw when visibility changes while not playing", () => {
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useAudioPlayer({
         sentenceCount: 2,
         sentenceTexts,
@@ -193,5 +200,132 @@ describe("useAudioPlayer", () => {
 
     // Should remain idle
     expect(useAudioStore.getState().status).toBe("idle");
+  });
+
+  // ── Auto-advance semantics (VisFix: per-sentence play vs global play) ──────────
+
+  it("single-sentence play (pendingSingleIndex signal) does NOT auto-advance", async () => {
+    vi.useFakeTimers();
+    const playUrlSpy = vi.spyOn(AudioEngine.prototype, "playUrl").mockResolvedValue(undefined);
+
+    useAudioStore.setState({
+      audioUrls: {
+        0: { url: "https://cdn.example/0.mp3", source: "gcs" },
+        1: { url: "https://cdn.example/1.mp3", source: "gcs" },
+      },
+    });
+
+    renderHook(() =>
+      useAudioPlayer({
+        sentenceCount: 2,
+        sentenceTexts,
+      }),
+    );
+
+    // SentenceDisplay per-sentence button sets pendingSingleIndex (single-sentence signal)
+    act(() => {
+      useAudioStore.getState().setPendingSingleIndex(0);
+    });
+
+    // Flush the async playSentence chain (mocked playUrl resolves as a microtask)
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Exactly one sentence played — cursor stays on 0, no advancement to sentence 1
+    expect(playUrlSpy).toHaveBeenCalledTimes(1);
+    expect(useAudioStore.getState().currentIndex).toBe(0);
+    expect(useAudioStore.getState().status).toBe("playing");
+
+    // Even after time passes, the single sentence must not advance
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+      await Promise.resolve();
+    });
+
+    expect(playUrlSpy).toHaveBeenCalledTimes(1);
+    expect(useAudioStore.getState().currentIndex).toBe(0);
+
+    vi.useRealTimers();
+  });
+
+  it("pendingIndex (tap-to-play auto-advance signal) DOES auto-advance", async () => {
+    vi.useFakeTimers();
+    const playUrlSpy = vi.spyOn(AudioEngine.prototype, "playUrl").mockResolvedValue(undefined);
+
+    useAudioStore.setState({
+      audioUrls: {
+        0: { url: "https://cdn.example/0.mp3", source: "gcs" },
+        1: { url: "https://cdn.example/1.mp3", source: "gcs" },
+      },
+    });
+
+    renderHook(() =>
+      useAudioPlayer({
+        sentenceCount: 2,
+        sentenceTexts,
+      }),
+    );
+
+    // pendingIndex = play-from-index with auto-advance (tap-to-play signal),
+    // consumed via play() which introduces PLAYBACK_START_DELAY_MS.
+    act(() => {
+      useAudioStore.getState().setPendingIndex(0);
+    });
+
+    // Pass the 50ms PLAYBACK_START_DELAY_MS, then flush the async auto-advance chain
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Both sentences played — passage completed, cursor cleared
+    expect(playUrlSpy).toHaveBeenCalledTimes(2);
+    expect(useAudioStore.getState().status).toBe("completed");
+    expect(useAudioStore.getState().currentIndex).toBeNull();
+
+    vi.useRealTimers();
+  });
+
+  it("global play (play/toggle) DOES auto-advance through the whole passage", async () => {
+    vi.useFakeTimers();
+    const playUrlSpy = vi.spyOn(AudioEngine.prototype, "playUrl").mockResolvedValue(undefined);
+
+    useAudioStore.setState({
+      audioUrls: {
+        0: { url: "https://cdn.example/0.mp3", source: "gcs" },
+        1: { url: "https://cdn.example/1.mp3", source: "gcs" },
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useAudioPlayer({
+        sentenceCount: 2,
+        sentenceTexts,
+      }),
+    );
+
+    act(() => {
+      result.current.play();
+    });
+
+    // Pass the 50ms PLAYBACK_START_DELAY_MS, then flush the async auto-advance chain
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Both sentences played — passage completed, cursor cleared
+    expect(playUrlSpy).toHaveBeenCalledTimes(2);
+    expect(useAudioStore.getState().status).toBe("completed");
+    expect(useAudioStore.getState().currentIndex).toBeNull();
+    expect(result.current.hasJustCompleted).toBe(true);
+
+    vi.useRealTimers();
   });
 });

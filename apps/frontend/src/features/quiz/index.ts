@@ -46,6 +46,16 @@ export { useQuizSessionStore } from "./stores";
 
 // Services
 export { quizService } from "./services/quizService";
-export { getPhoneticHint, getRadicalHint, getCharacterDetail } from "./services/hintService";
-export type { RadicalHint, CharacterDetail } from "./services/hintService";
+export {
+  getPhoneticHint,
+  getRadicalHint,
+  getCharacterDetail,
+  searchPinyinCandidates,
+} from "./services/hintService";
+export type {
+  RadicalHint,
+  CharacterDetail,
+  ImeCandidate,
+  PinyinSearchResponse,
+} from "./services/hintService";
 export type { PhoneticHint } from "./types";

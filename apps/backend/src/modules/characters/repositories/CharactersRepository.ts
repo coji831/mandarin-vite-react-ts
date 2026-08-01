@@ -109,6 +109,24 @@ interface CharacterFrequencyEntry {
  */
 export class CharactersRepository {
   /**
+   * Find radical reference rows by their business-key IDs (rad_XXXX).
+   * Backs CharactersService.resolveRadical — replaces the former file read of
+   * content/radicals/radicals.json (all-in-DB: Radical table).
+   *
+   * @param ids - Radical IDs to fetch (e.g. ["rad_0038"])
+   * @returns Matching Radical rows (id, glyph, meaning)
+   */
+  async findRadicalsByIds(
+    ids: string[],
+  ): Promise<Array<{ id: string; glyph: string; meaning: string }>> {
+    if (ids.length === 0) return [];
+    return prisma.radical.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, glyph: true, meaning: true },
+    });
+  }
+
+  /**
    * Find a character by its glyph, including all related data.
    *
    * @param glyph - The character glyph (e.g., "好")

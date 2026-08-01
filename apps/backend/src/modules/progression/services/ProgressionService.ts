@@ -6,9 +6,6 @@
 
 import type { FoundationProgress, RadicalProgress, PhaseGate, QuizAttempt } from "@prisma/client";
 import { FOUNDATION_SECTIONS } from "@mandarin/shared-constants";
-import fs from "fs";
-import path from "path";
-import { CONTENT_DIR } from "../../../shared/utils/contentUtils.js";
 import { GATE_THRESHOLDS } from "../../../config/gate-thresholds.js";
 import type { IProgressionRepository, GateResult } from "../types/progression.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
@@ -128,6 +125,60 @@ export class ProgressionService {
     }
 
     return { passed: true };
+  }
+
+  /**
+   * Computed gate status for every phase gate — surfaced via
+   * `GET /api/v1/progression/gates`. Unlike the persisted `PhaseGate` row
+   * (which only reflects quiz-pass updates), this re-evaluates the gates
+   * against the current data (e.g. the ≥500 character-count gate), so callers
+   * can see a gate that was passed outside the quiz flow.
+   *
+   * @param userId - User ID
+   * @returns Computed status for the Phase 2 (IME), character-count, and
+   *          Phase 3→4 (comprehension) gates.
+   */
+  async getGateStatus(userId: string): Promise<{
+    phase2Gate: GateResult;
+    characterCountGate: GateResult;
+    phase3To4Gate: GateResult;
+  }> {
+    const [phase2Gate, characterCountGate, phase3To4Gate] = await Promise.all([
+      this.getPhase2GateStatus(userId),
+      this.checkCharacterCountGate(userId),
+      this.checkPhase3To4Gate(userId),
+    ]);
+    return { phase2Gate, characterCountGate, phase3To4Gate };
+  }
+
+  /**
+   * Compute the Phase 2 gate status from the latest IME Simulator attempt
+   * (grandfathered users who already passed are not regressed).
+   */
+  private async getPhase2GateStatus(userId: string): Promise<GateResult> {
+    const gate = await this.getOrCreatePhaseGate(userId);
+    if (gate.phase2Passed) {
+      return {
+        passed: true,
+        reason: "GRANDFATHERED",
+        details: "Already passed Phase 2 under previous thresholds",
+      };
+    }
+
+    const attempt = await prisma.quizAttempt.findFirst({
+      where: { userId, quizType: "ime-simulator" },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!attempt) {
+      return {
+        passed: false,
+        reason: "NO_IME_ATTEMPT",
+        details: `No IME Simulator attempt found (needs ≥${GATE_THRESHOLDS.IME_SIMULATOR_MIN_SCORE} correct)`,
+      };
+    }
+
+    return this.checkPhase2Gate(userId, attempt);
   }
 
   /**
@@ -376,9 +427,11 @@ export class ProgressionService {
     radicalId: string,
     { memorized = false, recognitionLevel = 0 }: RadicalProgressData,
   ): Promise<RadicalProgress> {
-    // Validate radicalId exists in content data
-    const radicalPath = path.join(CONTENT_DIR, "radicals", `${radicalId}.json`);
-    if (!fs.existsSync(radicalPath)) {
+    // Validate radicalId exists in the Radical reference table (all-in-DB).
+    // Replaces the former fs.existsSync check on content/radicals/<id>.json —
+    // those per-radical files never existed, so every upsert threw (latent bug).
+    const radical = await prisma.radical.findUnique({ where: { id: radicalId } });
+    if (!radical) {
       throw new Error(`Invalid radicalId: ${radicalId}`);
     }
 

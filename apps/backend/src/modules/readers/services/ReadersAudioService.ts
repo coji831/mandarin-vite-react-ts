@@ -30,7 +30,7 @@ const logger = createLogger("ReadersAudioService");
  */
 export interface GcsClientLike {
   fileExists(path: string): Promise<boolean>;
-  getPublicUrl(path: string): string;
+  getSignedUrl(path: string, expirySeconds?: number): Promise<string>;
 }
 
 /**
@@ -103,7 +103,11 @@ export class ReadersAudioService {
    * Resolve audio for a single sentence.
    * 1. Check GCS for existing file (fast-path)
    * 2. If miss, delegate to TtsService which handles TTS generation + caching
-   * 3. Return URL + source indicator
+   * 3. Return signed URL + source indicator
+   *
+   * URLs are always SHORT-LIVED SIGNED GCS URLs — directly playable by a
+   * browser <audio>/Audio() element (which cannot attach Authorization headers)
+   * without requiring the bucket to be publicly readable.
    */
   private async processSentence(
     text: string,
@@ -112,22 +116,22 @@ export class ReadersAudioService {
   ): Promise<SentenceAudioResult> {
     const gcsPath = `tts/${passageHash}/${index}.mp3`;
 
-    // ── Tier 1: GCS lookup (fast-path) ─────────────────────────────────
-    const exists = await this.gcsClient.fileExists(gcsPath);
-    if (exists) {
-      logger.debug(`GCS hit: ${gcsPath}`);
-      return {
-        url: this.gcsClient.getPublicUrl(gcsPath),
-        source: "gcs" as AudioSource,
-      };
-    }
-
-    // ── Tier 2: On-demand TTS via TtsService ───────────────────────────
-    // Delegates to the shared TtsService which handles synthesis, GCS upload,
-    // and Redis caching — avoiding duplication of this logic.
-    logger.debug(`GCS miss — generating TTS: "${text.substring(0, 40)}"`);
-
     try {
+      // ── Tier 1: GCS lookup (fast-path) ─────────────────────────────────
+      const exists = await this.gcsClient.fileExists(gcsPath);
+      if (exists) {
+        logger.debug(`GCS hit: ${gcsPath}`);
+        return {
+          url: await this.gcsClient.getSignedUrl(gcsPath),
+          source: "gcs" as AudioSource,
+        };
+      }
+
+      // ── Tier 2: On-demand TTS via TtsService ───────────────────────────
+      // Delegates to the shared TtsService which handles synthesis, GCS upload,
+      // and Redis caching — avoiding duplication of this logic.
+      logger.debug(`GCS miss — generating TTS: "${text.substring(0, 40)}"`);
+
       const result = await this.ttsService.getTtsUrl(text);
       logger.info(`TTS generated via TtsService for sentence ${index}`);
       return {
@@ -135,7 +139,7 @@ export class ReadersAudioService {
         source: "ondemand" as AudioSource,
       };
     } catch (err) {
-      logger.error(`TTS generation failed for sentence ${index}`, err);
+      logger.error(`Audio resolution failed for sentence ${index}`, err);
       return { url: "", source: "failed" as AudioSource };
     }
   }

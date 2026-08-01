@@ -112,7 +112,7 @@ export function PhoneticFamilyNode({ family }: PhoneticFamilyNodeProps) {
           {displayFamily.members.length === 0 ? (
             <p className="text-muted font-sm p-sm">(no members)</p>
           ) : (
-            family.members.map((member) => (
+            displayFamily.members.map((member) => (
               <div
                 key={member.glyph}
                 className="phonetic-family-node__member-row flex items-center gap-sm p-xs"

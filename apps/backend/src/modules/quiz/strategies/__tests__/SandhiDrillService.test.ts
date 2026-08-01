@@ -148,12 +148,61 @@ describe("SandhiDrillService", () => {
       expect(ruleIds.has("yi-before-non4th")).toBe(true);
     });
 
+    it("produces 4 unique options with no '???' placeholders and no duplicate keys", async () => {
+      mockWordFindMany.mockResolvedValue(MOCK_WORDS);
+
+      // Run many questions to exercise all rules (including 一-words whose
+      // "both tone 1" distractor used to duplicate the dictionary form).
+      const questions = await service.generateQuestions(25);
+
+      expect(questions.length).toBeGreaterThan(0);
+      for (const q of questions) {
+        expect(q.options).toHaveLength(4);
+        expect(new Set(q.options).size).toBe(4); // no duplicate strings → no React duplicate keys
+        expect(q.options).toContain(q.correctAnswer);
+        expect(q.options.some((o: string) => o.includes("???"))).toBe(false);
+        // Options must never be empty/blank
+        expect(q.options.every((o: string) => o.trim().length > 0)).toBe(true);
+      }
+    });
+
     it("throws when no candidates are found", async () => {
       mockWordFindMany.mockResolvedValue([]);
 
       await expect(service.generateQuestions(5)).rejects.toThrow(
         "Failed to load sandhi drill candidates",
       );
+    });
+
+    it("produces 4 distinct options for yī/bù words even when the primary reading is tone-marked (G1 collapse fix)", async () => {
+      // DB stores BOTH plain ("yi") and tone-marked ("yī") primary readings.
+      // If the tone-marked row is picked, applyToneMark must strip the mark
+      // before re-applying — otherwise sandhi form == dictionary form and the
+      // distractors collapse into a single option.
+      const markedWords = [
+        makeMockWord("w_m1", "一样", "yī yàng", [
+          { glyph: "一", pinyin: "yī", tone: 1 },
+          { glyph: "样", pinyin: "yàng", tone: 4 },
+        ]),
+        makeMockWord("w_m2", "不大", "bù dà", [
+          { glyph: "不", pinyin: "bù", tone: 4 },
+          { glyph: "大", pinyin: "dà", tone: 4 },
+        ]),
+      ];
+      mockWordFindMany.mockResolvedValue(markedWords);
+
+      const questions = await service.generateQuestions(10);
+      const yiQ = questions.find((q) => q.characters === "一样");
+      const buQ = questions.find((q) => q.characters === "不大");
+
+      for (const q of [yiQ, buQ]) {
+        expect(q).toBeDefined();
+        expect(q!.options).toHaveLength(4);
+        expect(new Set(q!.options).size).toBe(4); // no collapsed single option
+        expect(q!.options).toContain(q!.correctAnswer);
+        // Sandhi form must differ from the dictionary form (the collapse cause)
+        expect(q!.correctAnswer).not.toBe(q!.dictionaryPinyin);
+      }
     });
   });
 

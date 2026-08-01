@@ -58,6 +58,11 @@ export function FoundationsPage({
 
   const lockedTabs = tonesCompleted ? [] : ["pictographs"];
 
+  // Pictographs are a Phase 2 gate requirement (see PictographMatchGame) —
+  // locked until Tones (Phase 1 content) is completed. The <Tabs> component
+  // renders this as a tooltip: "Complete Phase 2 to unlock".
+  const getLockPhase = (id: string): number | null => (id === "pictographs" ? 2 : null);
+
   const handleTabChange = (tabId: string) => {
     if (lockedTabs.includes(tabId)) return; // Do nothing for locked tabs
     setActiveTab(tabId);
@@ -70,6 +75,7 @@ export function FoundationsPage({
         activeTab={activeTab}
         onTabChange={handleTabChange}
         lockedTabs={lockedTabs}
+        getLockPhase={getLockPhase}
         align="center"
       >
         {activeTab === "pinyin" && <PinyinTab />}

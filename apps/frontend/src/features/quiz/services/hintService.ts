@@ -29,6 +29,43 @@ export interface CharacterDetail {
   frequencyRank: number;
 }
 
+/** A single IME candidate character returned by the pinyin search. */
+export interface ImeCandidate {
+  glyph: string;
+  pinyin: string;
+  tone: number;
+  meaning: string | null;
+}
+
+/** Response shape of GET /v1/pinyin/search. */
+export interface PinyinSearchResponse {
+  query: string;
+  totalResults: number;
+  page: number;
+  pageSize: number;
+  results: ImeCandidate[];
+}
+
+/**
+ * Search characters by pinyin prefix — powers the live IME candidate list.
+ * Uses the existing /v1/pinyin/search endpoint (no new endpoint).
+ * Returns null on failure so the caller can degrade gracefully.
+ */
+export async function searchPinyinCandidates(
+  q: string,
+  pageSize = 30,
+): Promise<PinyinSearchResponse | null> {
+  try {
+    const response = await apiClient.get(ROUTE_PATTERNS.pinyinSearch, {
+      params: { q: q.trim(), pageSize },
+      timeout: 10000,
+    });
+    return response.data as PinyinSearchResponse;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Fetch the phonetic component of a character.
  * Returns null if the character has no phonetic component or the API fails.

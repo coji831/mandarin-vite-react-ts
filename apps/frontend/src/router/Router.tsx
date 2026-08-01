@@ -3,14 +3,16 @@
  *
  * Defines the top-level routing structure for the entire application:
  * - Wraps all authenticated routes in AppLayout (global nav)
- * - Routes: / (Dashboard), /learn/* (LearnRoutes), /practices/* (PracticesRoutes),
- *           /library (LibraryPage), /progress (ProgressPage), /auth (login/register)
+ * - Routes: / (Dashboard), /dashboard (Dashboard alias), /learn/* (LearnRoutes),
+ *           /practices/* (PracticesRoutes), /library (LibraryPage),
+ *           /progress (ProgressPage), /auth (login/register)
  *
  * Story 17.7: Added /practices/* and /library routes.
+ * VisFix W6b: Added /dashboard as an alias for the dashboard (index stays at /).
  */
 
 import { Route, Routes } from "react-router-dom";
-import { learn_page, root, login_page, register_page } from "shared/constants";
+import { learn_page, root, dashboard_route, login_page, register_page } from "shared/constants";
 import { LearnRoutes } from "./LearnRoutes";
 import { AppLayout } from "../shared/layouts/AppLayout";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
@@ -25,6 +27,7 @@ function MainRoutes() {
     <Routes>
       <Route path={root} element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
+        <Route path={dashboard_route} element={<DashboardPage />} />
         <Route path={learn_page + "/*"} element={<LearnRoutes />} />
         <Route path="practices/*" element={<PracticesRoutes />} />
         <Route path="library" element={<LibraryPage />} />

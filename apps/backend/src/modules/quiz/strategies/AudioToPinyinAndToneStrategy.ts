@@ -7,7 +7,11 @@
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
-import { isSandhiAcceptable } from "@mandarin/shared-utils";
+import {
+  isSandhiAcceptable,
+  areTonesEquivalent,
+  normalizePinyinForComparison,
+} from "@mandarin/shared-utils";
 
 /**
  * Characters that are typically pronounced with neutral tone (tone 0)
@@ -90,8 +94,12 @@ export const audioToPinyinAndToneStrategy = {
     },
     { pinyin, tone }: { pinyin: string; tone: number },
   ) {
-    const pinyinCorrect = pinyin.trim().toLowerCase() === question.correctPinyin.toLowerCase();
-    const toneCorrect = tone === question.correctTone;
+    // G9: accept both digitless ("xiang") and digit-suffixed ("xiang4")
+    // pinyin for the same syllable.
+    const pinyinCorrect =
+      normalizePinyinForComparison(pinyin) === normalizePinyinForComparison(question.correctPinyin);
+    // G2: neutral tone 0 and 5 are equivalent (轻声).
+    const toneCorrect = areTonesEquivalent(tone, question.correctTone);
 
     // Sandhi-aware: accept tone 2 for 3-3 sandhi contexts
     const sandhiAccepted =

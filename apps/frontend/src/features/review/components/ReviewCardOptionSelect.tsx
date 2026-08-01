@@ -5,6 +5,7 @@
  */
 import React from "react";
 import type { ReviewItem } from "../types";
+import { openHub } from "shared/store";
 import { Box, Button } from "shared/components";
 import "./ReviewCard.css";
 
@@ -27,14 +28,27 @@ function ReviewCardOptionSelectComponent({
       <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         {/* Character / Glyph display */}
         <div className="review-card__character-display flex-col-center gap-md">
-          <span className="review-card__character">{displayChar}</span>
+          <button
+            type="button"
+            className="review-card__character review-card__character-btn"
+            onClick={() =>
+              openHub({
+                entityType: "character",
+                entityId: displayChar,
+                label: item.pinyinPlain ?? item.front,
+              })
+            }
+            aria-label={`View details for ${displayChar}`}
+          >
+            {displayChar}
+          </button>
         </div>
 
         {/* Audio button */}
         <Button
           variant="circle"
           size="sm"
-          className="review-card__audio-btn transition-all"
+          className="review-card__audio-btn"
           onClick={() => onPlayAudio(displayChar)}
           aria-label="Play audio"
         >

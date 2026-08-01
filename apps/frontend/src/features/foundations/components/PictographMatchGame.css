@@ -64,7 +64,6 @@
   border-radius: var(--radius-md);
   background: var(--surface-dark);
   cursor: pointer;
-  transition: all var(--transition-fast);
   min-height: 80px;
   display: flex;
   align-items: center;

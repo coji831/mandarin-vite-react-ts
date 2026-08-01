@@ -5,11 +5,14 @@
  *   SentenceDisplay is rendered as children by the parent (ReadersPage).
  * Story 21.7: Added restore flow — on mount calls restoreSession, scrolls to saved
  *   sentence. Uses useAutoSaveProgress for debounced auto-save.
+ * VisFix W6b: Completion state — when currentSentence reaches the final sentence a
+ *   lightweight "Passage complete 🎉" block renders after the sentences with
+ *   Back-to-Library and a Completed badge (no motion per the no-motion rule).
  *
- * Covers: default, loading (skeleton), error (retry).
+ * Covers: default, loading (skeleton), error (retry), completion.
  */
 import { useEffect, useRef } from "react";
-import { Box, Button, Skeleton, ErrorScreen } from "shared/components";
+import { Badge, Box, Button, Skeleton, ErrorScreen } from "shared/components";
 import { useReadingStore } from "../stores";
 import { useAutoSaveProgress } from "../hooks";
 import { AudioControlBar } from "./AudioControlBar";
@@ -63,6 +66,10 @@ export function ReadingView({
   const currentSentence = useReadingStore((s) => s.currentSentence);
   const sentencesRef = useRef<HTMLDivElement>(null);
   const lastRestoredRef = useRef<string | null>(null);
+
+  // VisFix W6b: Completion reached once the user is on/past the final sentence.
+  const isComplete =
+    passage.sentences.length > 0 && currentSentence >= passage.sentences.length - 1;
 
   // Auto-save hook (Story 21.7)
   useAutoSaveProgress();
@@ -145,9 +152,9 @@ export function ReadingView({
         <h3 className="reading-view__title overflow-hidden whitespace-nowrap text-ellipsis font-xl fw-600 text-primary m-0 flex-1">
           {passage.title}
         </h3>
-        <span className="reading-view__hsk-badge inline-block lh-1 bg-surface-hover radius-pill p-xs font-xs fw-600 text-primary shrink-0">
+        <Badge variant="surface" className="shrink-0">
           HSK {passage.hskLevel}
-        </span>
+        </Badge>
       </div>
 
       <Box variant="divider" />
@@ -167,6 +174,27 @@ export function ReadingView({
         ref={sentencesRef}
       >
         {children}
+
+        {/* VisFix W6b: Completion state — shown after the final sentence */}
+        {isComplete && (
+          <div
+            className="reading-view__completion flex-col-center gap-md p-2xl text-center shrink-0"
+            role="status"
+            aria-label="Passage complete"
+          >
+            <div className="font-3xl op-80" aria-hidden="true">
+              🎉
+            </div>
+            <h4 className="font-lg fw-600 text-primary m-0">Passage complete!</h4>
+            <p className="font-sm text-tertiary m-0">You finished reading “{passage.title}”.</p>
+            <div className="flex-row gap-sm flex-wrap items-center justify-center">
+              <Button variant="primary" size="md" onClick={onBack}>
+                Back to Library
+              </Button>
+              <Badge variant="primary">Completed ✓</Badge>
+            </div>
+          </div>
+        )}
       </Box>
     </Box>
   );

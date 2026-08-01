@@ -3,10 +3,13 @@
  * @description Renders one sentence with Chinese text and pinyin below.
  * Each word is tappable — unknown words are highlighted to indicate clickability.
  * Phase 2: Audio cursor read from audioStore directly — no audio props.
+ * VisFix: Per-sentence audio button replaces container tap-to-play — word taps
+ *   only open the popover and never trigger audio.
  *
  * Only popover position flows through onPopoverOpen prop.
  * The "Open in Word Hub" button inside WordPopover handles hub navigation.
- * Tap-to-play sets pendingIndex in audioStore for useAudioPlayer to consume.
+ * The per-sentence play button sets pendingSingleIndex in audioStore for
+ * useAudioPlayer to consume (single-sentence play — no auto-advance).
  */
 import { memo, useCallback } from "react";
 import { Button } from "shared/components";
@@ -138,11 +141,17 @@ export const SentenceDisplay = memo(function SentenceDisplay({
   // Note: Raw <div> is intentional here. No Box variant matches the visual
   // contract of SentenceDisplay (no default bg/border, single-sided active border).
   const currentIndex = useAudioStore((s) => s.currentIndex);
-  const setPendingIndex = useAudioStore((s) => s.setPendingIndex);
+  const status = useAudioStore((s) => s.status);
+  const setPendingSingleIndex = useAudioStore((s) => s.setPendingSingleIndex);
   const isActive = currentIndex === sentence.index;
-  const handleTap = useCallback(() => {
-    setPendingIndex(sentence.index);
-  }, [setPendingIndex, sentence.index]);
+  const handlePlay = useCallback(() => {
+    setPendingSingleIndex(sentence.index);
+  }, [setPendingSingleIndex, sentence.index]);
+
+  const sentenceNumber = sentence.index + 1;
+  const isLoadingThis = isActive && status === "loading";
+  const isPlayingThis = isActive && status === "playing";
+  const playIcon = isLoadingThis ? "⏳" : isPlayingThis ? "⏸" : "🔊";
 
   const containerClass = [
     "sentence-display",
@@ -156,44 +165,55 @@ export const SentenceDisplay = memo(function SentenceDisplay({
     .join(" ");
 
   return (
-    <div
-      className={containerClass}
-      role="button"
-      aria-label={`Sentence ${sentence.index + 1}`}
-      onClick={handleTap}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleTap();
-        }
-      }}
-      tabIndex={0}
-      aria-current={isActive ? "step" : undefined}
-    >
-      {/* Chinese text with tappable words */}
-      <div className="sentence-display__text font-xl lh-normal">
-        {sentence.words.map((word, idx) => {
-          // Punctuation renders as plain text — never tappable
-          if (isPunctuation(word.glyph)) {
-            return (
-              <span
-                key={`${word.glyph}-${idx}`}
-                className="sentence-word sentence-word--punct text-primary"
-              >
-                {word.glyph}
-              </span>
-            );
+    <div className={containerClass} aria-current={isActive ? "step" : undefined}>
+      <div className="sentence-display__row flex-align-center gap-sm">
+        {/* Chinese text with tappable words + pinyin */}
+        <div className="sentence-display__body flex-col gap-xs flex-1">
+          <div className="sentence-display__text font-xl lh-normal">
+            {sentence.words.map((word, idx) => {
+              // Punctuation renders as plain text — never tappable
+              if (isPunctuation(word.glyph)) {
+                return (
+                  <span
+                    key={`${word.glyph}-${idx}`}
+                    className="sentence-word sentence-word--punct text-primary"
+                  >
+                    {word.glyph}
+                  </span>
+                );
+              }
+
+              return (
+                <SentenceWord
+                  key={`${word.glyph}-${idx}`}
+                  word={word}
+                  onPopoverOpen={onPopoverOpen}
+                />
+              );
+            })}
+          </div>
+
+          {/* Pinyin */}
+          <div
+            className="sentence-display__pinyin font-sm text-tertiary lh-1-4"
+            aria-label="Pinyin"
+          >
+            {sentence.pinyin}
+          </div>
+        </div>
+
+        {/* Per-sentence audio button */}
+        <Button
+          variant={isActive ? "control-active" : "ghost"}
+          size="sm"
+          onClick={handlePlay}
+          aria-label={
+            isActive ? `Replay sentence ${sentenceNumber}` : `Play sentence ${sentenceNumber}`
           }
-
-          return (
-            <SentenceWord key={`${word.glyph}-${idx}`} word={word} onPopoverOpen={onPopoverOpen} />
-          );
-        })}
-      </div>
-
-      {/* Pinyin */}
-      <div className="sentence-display__pinyin font-sm text-tertiary lh-1-4" aria-label="Pinyin">
-        {sentence.pinyin}
+          className="sentence-display__play-btn shrink-0"
+        >
+          {playIcon}
+        </Button>
       </div>
     </div>
   );

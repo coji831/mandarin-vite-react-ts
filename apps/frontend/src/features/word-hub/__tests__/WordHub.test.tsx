@@ -8,7 +8,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { WordHub } from "../components/WordHub";
-import type { WordDetail } from "../components/WordHub";
+import type { WordDetailResponse } from "../services";
 
 // Mock the hooks
 vi.mock("../hooks", () => ({
@@ -26,6 +26,12 @@ vi.mock("../components/ConstituentCharacterChips", () => ({
   ConstituentCharacterChips: () => <div data-testid="char-chips">CharacterChips</div>,
 }));
 
+vi.mock("../components/MeasureWordSection", () => ({
+  MeasureWordSection: ({ wordId }: { wordId?: string | null }) => (
+    <div data-testid="measure-word-section">{wordId ?? "none"}</div>
+  ),
+}));
+
 // Mock character-hub tone utils
 vi.mock("features/character-hub", () => ({
   getToneClass: () => "tone-1",
@@ -34,7 +40,8 @@ vi.mock("features/character-hub", () => ({
 
 import { useWordDetail } from "../hooks";
 
-const MOCK_WORD: WordDetail = {
+const MOCK_WORD: WordDetailResponse = {
+  id: "w_00001",
   glyph: "好",
   pinyin: "hǎo",
   definitions: ["good", "fine"],
@@ -73,6 +80,7 @@ describe("WordHub", () => {
     expect(screen.getByText("HSK 1")).toBeInTheDocument();
     expect(screen.getByTestId("definition-list")).toBeInTheDocument();
     expect(screen.getByTestId("char-chips")).toBeInTheDocument();
+    expect(screen.getByTestId("measure-word-section")).toHaveTextContent("w_00001");
   });
 
   it("renders word from prop directly (Storybook mode)", () => {

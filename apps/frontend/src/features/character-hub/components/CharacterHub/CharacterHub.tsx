@@ -17,7 +17,6 @@
 
 import { useState } from "react";
 import { Box, Tabs } from "shared/components";
-import { useHubStore } from "shared/store";
 import { HubActions } from "../HubActions/HubActions";
 import { HubCharacterCard } from "../HubCharacterCard/HubCharacterCard";
 import { HubCommonWords } from "../HubCommonWords/HubCommonWords";
@@ -51,11 +50,7 @@ export function CharacterHub({ entityId, entityLabel }: CharacterHubProps) {
       <div className="hub-cardinal__middle flex-1 grid gap-sm">
         {/* WEST: Radical decomposition */}
         <Box variant="card" className="hub-cardinal__side-panel h-full p-sm flex-col gap-sm">
-          <HubRadicalSection
-            character={character}
-            onClose={() => useHubStore.getState().close()}
-            loading={loading}
-          />
+          <HubRadicalSection character={character} loading={loading} />
         </Box>
 
         {/* CENTER: Stroke animation */}

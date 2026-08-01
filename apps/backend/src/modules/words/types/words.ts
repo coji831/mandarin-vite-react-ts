@@ -10,6 +10,8 @@
  * Matches the frontend WordDetailResponse shape from wordService.ts.
  */
 export interface WordDetail {
+  /** Internal word ID (e.g., "w_00284") — used to look up measure words. */
+  id: string;
   glyph: string;
   pinyin: string;
   definitions: string[];

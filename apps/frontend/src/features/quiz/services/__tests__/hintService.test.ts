@@ -34,7 +34,12 @@ vi.mock("shared/api", () => ({
 }));
 
 // Re-import after mock is set up
-const { getPhoneticHint, getRadicalHint, getCharacterDetail } = await import("../hintService");
+const {
+  getPhoneticHint,
+  getRadicalHint,
+  getCharacterDetail,
+  searchPinyinCandidates,
+} = await import("../hintService");
 
 // ── getPhoneticHint tests ─────────────────────────────────────────────
 
@@ -117,5 +122,25 @@ describe("getCharacterDetail", () => {
     const result = await getCharacterDetail("不存在的字");
 
     expect(result).toBeNull();
+  });
+});
+
+// ── searchPinyinCandidates tests ─────────────────────────────────────
+
+describe("searchPinyinCandidates", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns null and handles API errors gracefully", async () => {
+    mockApiClient.get.mockRejectedValue(new Error("Network error"));
+
+    const result = await searchPinyinCandidates("qing");
+
+    expect(result).toBeNull();
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      expect.stringContaining("/v1/pinyin/search"),
+      expect.objectContaining({ timeout: 10000 }),
+    );
   });
 });

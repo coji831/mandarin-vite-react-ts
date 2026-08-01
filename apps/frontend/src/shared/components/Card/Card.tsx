@@ -4,7 +4,7 @@
  * A reusable card container with title, subtitle, optional supporting text,
  * icon, badge, and locked state. No business domain dependencies.
  */
-import { Box } from "shared/components";
+import { Badge, Box } from "shared/components";
 import "./Card.css";
 
 export type CardProps = {
@@ -51,7 +51,11 @@ export function Card({
           {icon}
         </span>
       )}
-      {badge && <span className="card__badge bg-primary-bg font-xs radius-pill p-xs">{badge}</span>}
+      {badge && (
+        <Badge variant="primary" className="card__badge">
+          {badge}
+        </Badge>
+      )}
       {isLocked && (
         <span className="card__lock-badge font-md" aria-label="Locked">
           🔒

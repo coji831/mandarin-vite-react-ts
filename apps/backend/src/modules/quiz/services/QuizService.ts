@@ -6,7 +6,11 @@
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { getStrategy, getRegisteredTypes } from "../strategies/index.js";
-import { isSandhiAcceptable } from "@mandarin/shared-utils";
+import {
+  isSandhiAcceptable,
+  areTonesEquivalent,
+  normalizePinyinForComparison,
+} from "@mandarin/shared-utils";
 import type { QuizStrategy } from "../types/quiz.js";
 
 const logger = createLogger("QuizService");
@@ -29,6 +33,16 @@ interface EvaluationResult {
   accuracy: number;
   totalScore: number;
   maxScore: number;
+  /** Correct answers per category — sum always equals totalScore. */
+  categoryBreakdown: CategoryBreakdown;
+}
+
+/** Per-category correct counts, keyed by the question's `category` value. */
+interface CategoryBreakdown {
+  pinyin: number;
+  tones: number;
+  pairs: number;
+  rules: number;
 }
 
 interface QuizConfig {
@@ -71,9 +85,16 @@ export class QuizService {
     quizType: string,
     phase: number = 1,
     metadata?: unknown,
+    passageId?: string | null,
   ): Promise<QuizAttempt> {
     if (!quizType) throw new Error("quizType is required");
-    return this.quizRepository.createQuizAttempt({ userId, quizType, phase, metadata });
+    return this.quizRepository.createQuizAttempt({
+      userId,
+      quizType,
+      phase,
+      metadata,
+      passageId,
+    });
   }
 
   async submitAnswer(attemptId: string, data: QuizAnswerInput): Promise<QuizAttemptAnswer> {
@@ -87,14 +108,20 @@ export class QuizService {
       isSandhiQuestion,
       sandhiRule,
     } = data;
-    const toneCorrect = selectedTone === correctTone;
+    // G2: neutral tone (轻声) is canonically 0 but lexical data may store it
+    // as 5 — treat them as equivalent (0 === 5 for neutral).
+    const toneCorrect = areTonesEquivalent(selectedTone, correctTone);
     const sandhiAccepted = isSandhiAcceptable(
       correctTone,
       selectedTone,
       isSandhiQuestion,
       sandhiRule,
     );
-    const correct = pinyinInput === correctPinyin && (toneCorrect || sandhiAccepted);
+    // G9: accept both digitless ("xiang") and digit-suffixed ("xiang4") pinyin,
+    // plus tone-marked input; NFKC-normalize (IME glyphs, full-width input).
+    const pinyinCorrect =
+      normalizePinyinForComparison(pinyinInput) === normalizePinyinForComparison(correctPinyin);
+    const correct = pinyinCorrect && (toneCorrect || sandhiAccepted);
     return this.quizRepository.createQuizAttemptAnswer({
       attemptId,
       questionIndex,
@@ -136,7 +163,24 @@ export class QuizService {
       }
     }
 
-    return { passed, accuracy, totalScore, maxScore };
+    return { passed, accuracy, totalScore, maxScore, categoryBreakdown: this.computeCategoryBreakdown(answers) };
+  }
+
+  /**
+   * Attribute each correct answer to its category and count per category.
+   * Every question carries exactly one category (e.g. "pinyin" | "tones" for
+   * audio-to-pinyin-tone quizzes), so the breakdown sums to `totalScore` —
+   * no question falls through the breakdown.
+   */
+  private computeCategoryBreakdown(answers: QuizAttemptAnswer[]): CategoryBreakdown {
+    const breakdown: CategoryBreakdown = { pinyin: 0, tones: 0, pairs: 0, rules: 0 };
+    for (const answer of answers) {
+      if (!answer.correct) continue;
+      if (answer.category in breakdown) {
+        breakdown[answer.category as keyof CategoryBreakdown] += 1;
+      }
+    }
+    return breakdown;
   }
 
   async completeQuizAttempt(attemptId: string): Promise<EvaluationResult> {
@@ -148,11 +192,8 @@ export class QuizService {
 
     // Read pass threshold from the strategy instead of hardcoded if/else
     const strategy = getStrategy(attempt.quizType);
-    const { passed, accuracy, totalScore, maxScore } = this.evaluateWithStrategy(
-      attempt,
-      strategy!,
-      answers,
-    );
+    const { passed, accuracy, totalScore, maxScore, categoryBreakdown } =
+      this.evaluateWithStrategy(attempt, strategy!, answers);
 
     await this.quizRepository.completeQuizAttempt(attemptId, { totalScore, maxScore, passed });
 
@@ -168,7 +209,7 @@ export class QuizService {
       }
     }
 
-    return { totalScore, maxScore, passed, accuracy };
+    return { totalScore, maxScore, passed, accuracy, categoryBreakdown };
   }
 
   async getUserQuizAttempts(userId: string): Promise<QuizAttempt[]> {

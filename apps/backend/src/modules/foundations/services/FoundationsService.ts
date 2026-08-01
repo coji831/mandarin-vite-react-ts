@@ -2,22 +2,20 @@
  * @file apps/backend/src/modules/foundations/services/FoundationsService.ts
  * @description Business logic for foundations reference data
  *
- * Data sources (Content Registry):
- *   - getPinyinTonesPool: content files (content/pinyin/ + content/tones/) + PinyinCombination (Prisma)
- *   - getPinyinCharacterMap: PinyinCombination (Prisma junction table)
+ * Data sources (all-in-DB):
+ *   - getPinyinTonesPool: PinyinPhoneme + Tone + TonePair + ToneRule (Prisma)
+ *   - getPinyinCharacterMap: PinyinCharacterMapping (Prisma junction table)
  *   - getStrokesReference: prisma.strokeCategory + prisma.strokeOrderRule
+ *   - getCharacterByGlyph: prisma.character (no JSON fallback)
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import { readAggregateContent, readContentFile } from "../../../shared/utils/contentUtils.js";
-import type { ContentFile } from "../../../shared/utils/contentUtils.js";
 import type {
   ComboPair,
   PinyinComboRow,
   PinyinTonesPool,
   StrokesReference,
   CharacterDetailResponse,
-  CharacterReading,
 } from "../types/foundations.js";
 
 const logger = createLogger("FoundationsService");
@@ -47,22 +45,24 @@ function groupCombosByPair(syllables: PinyinComboRow[]): ComboPair[] {
 
 export class FoundationsService {
   /**
-   * Build the full PinyinTonesPool from content files + PinyinCombination.
-   * Content files provide entity attributes; PinyinCombination provides init×fin×tone mappings.
-   * Tone pairs and tone rules come from a static reference file.
+   * Build the full PinyinTonesPool from the reference tables + PinyinSyllable.
+   * The reference tables (PinyinPhoneme, Tone, TonePair, ToneRule) provide the
+   * entity attributes; PinyinSyllable provides init×fin×tone mappings.
+   * All-in-DB — no content/*.json reads at runtime.
    * @returns Pool-shaped object matching the legacy format
    */
   async getPinyinTonesPool(): Promise<PinyinTonesPool> {
     try {
-      const [allPinyin, toneInfo, toneReference] = await Promise.all([
-        readAggregateContent<ContentFile>("pinyin", "pinyin.json"),
-        readAggregateContent<ContentFile>("tones", "tones.json"),
-        readContentFile("references", "tone-reference.json"),
+      const [allPhonemes, toneInfo, tonePairs, toneRules] = await Promise.all([
+        prisma.pinyinPhoneme.findMany(),
+        prisma.tone.findMany({ orderBy: { number: "asc" } }),
+        prisma.tonePair.findMany(),
+        prisma.toneRule.findMany(),
       ]);
 
-      // Filter by phoneme type — pinyin.json aggregate uses phonemeType field
-      const initials = allPinyin.filter((p) => p.phonemeType === "initial");
-      const finals = allPinyin.filter((p) => p.phonemeType === "final");
+      // Filter by phoneme type
+      const initials = allPhonemes.filter((p) => p.phonemeType === "initial");
+      const finals = allPhonemes.filter((p) => p.phonemeType === "final");
 
       // Read all syllables from PinyinSyllable (replaces deprecated PinyinCombination)
       const syllables = await prisma.pinyinSyllable.findMany();
@@ -71,34 +71,43 @@ export class FoundationsService {
       const combined = groupCombosByPair(syllables);
 
       return {
-        initials: initials.map((i: ContentFile) => ({
-          id: i.pinyin!,
-          pinyin: i.pinyin!,
+        initials: initials.map((i) => ({
+          id: i.pinyin,
+          pinyin: i.pinyin,
           ipa: i.ipa || null,
-          description: (i.pronunciationGuide as string) || i.description || "",
+          description: i.pronunciationGuide || i.description || "",
         })),
-        finals: finals.map((f: ContentFile) => ({
-          id: f.pinyin!,
-          pinyin: f.pinyin!,
-          type:
-            (f.type as string) === "simple" || (f.type as string) === "simple_final"
-              ? "simple"
-              : "compound",
-          description: (f.pronunciationGuide as string) || "",
+        finals: finals.map((f) => ({
+          id: f.pinyin,
+          pinyin: f.pinyin,
+          type: f.type === "simple" || f.type === "simple_final" ? "simple" : "compound",
+          description: f.pronunciationGuide || "",
         })),
         combinations: combined,
-        toneInfo: toneInfo.map((t: ContentFile) => ({
-          number: t.number!,
-          name: t.name!,
+        toneInfo: toneInfo.map((t) => ({
+          number: t.number,
+          name: t.name,
           mark: t.mark || "",
-          pinyinExample: (t.exampleSyllable as string) || "",
-          chineseExample: (t.exampleCharacter as string) || "",
-          description: (t.pitchDescription as string) || "",
-          contour: t.contour || null,
+          pinyinExample: t.exampleSyllable || "",
+          chineseExample: t.exampleCharacter || "",
+          description: t.pitchDescription || "",
+          contour: (t.contour as number[] | null) || null,
           color: t.color || "",
         })),
-        tonePairs: (toneReference.tonePairs as unknown[]) || [],
-        toneRules: (toneReference.toneRules as unknown[]) || [],
+        tonePairs: tonePairs.map((p) => ({
+          id: p.id,
+          chinese: p.chinese,
+          dictionaryPinyin: p.dictionaryPinyin,
+          spokenPinyin: p.spokenPinyin,
+          rule: p.rule,
+          pattern: p.pattern,
+        })),
+        toneRules: toneRules.map((r) => ({
+          id: r.id,
+          title: r.title,
+          rule: r.rule,
+          examples: r.examples,
+        })),
       };
     } catch (err) {
       logger.error("[FoundationsService] Failed to build pinyin-tones pool", err);
@@ -177,78 +186,48 @@ export class FoundationsService {
 
   /**
    * Get character detail data by glyph.
-   * Reads from the Character table (Prisma) first, falls back to scanning
-   * content/characters/ JSON files for backward compatibility.
+   * Reads from the Character table (Prisma) — all-in-DB. The legacy
+   * content/characters/ JSON fallback was removed (DB is always authoritative).
    * @param glyph - The Chinese character glyph (e.g. "好")
    * @returns Character detail or null if not found
    */
   async getCharacterByGlyph(glyph: string): Promise<CharacterDetailResponse | null> {
     try {
-      // Try Prisma Character table first
       const character = await prisma.character.findUnique({
         where: { glyph },
       });
 
-      if (character) {
-        const readings =
-          (character.readings as Array<{
-            pinyin: string;
-            tone: number;
-            type: string;
-            meaning: string;
-          }> | null) || [];
+      if (!character) return null;
 
-        // Load radicals from CharacterRadical table
-        const radicalLinks = await prisma.characterRadical.findMany({
-          where: { characterGlyph: glyph },
-        });
+      const readings =
+        (character.readings as Array<{
+          pinyin: string;
+          tone: number;
+          type: string;
+          meaning: string;
+        }> | null) || [];
 
-        return {
-          glyph: character.glyph,
-          traditional: character.traditional || character.glyph,
-          strokeCount: character.strokeCount,
-          hskLevel: character.hskLevel ?? 0,
-          readings: readings.map((r) => ({
-            pinyin: r.pinyin,
-            tone: r.tone,
-            type: r.type,
-            core_meaning: r.meaning,
-          })),
-          etymology: character.etymology || undefined,
-          frequencyRank: character.frequencyRank || undefined,
-          commonWords: character.commonWords.length > 0 ? character.commonWords : undefined,
-          radicalIds: radicalLinks.map((r) => r.radicalId),
-          definition: character.definition || undefined,
-        };
-      }
-
-      // Fallback: scan aggregate characters file
-      const characters = await readAggregateContent("characters", "characters.json");
-      const match = characters.find((c: ContentFile) => c.glyph === glyph);
-      if (!match) return null;
-
-      const readings: CharacterReading[] = (match.readings || []).map(
-        (r: Record<string, unknown>) => ({
-          pinyin: r.pinyin as string,
-          tone: r.tone as number,
-          type: r.type as string,
-          core_meaning: r.core_meaning as string,
-        }),
-      );
-
-      const meta = (match.metadata || {}) as Record<string, unknown>;
+      // Load radicals from CharacterRadical table
+      const radicalLinks = await prisma.characterRadical.findMany({
+        where: { characterGlyph: glyph },
+      });
 
       return {
-        glyph: match.glyph as string,
-        traditional: (match.traditional as string) || (match.glyph as string),
-        strokeCount: match.stroke_count as number,
-        hskLevel: match.hsk_level as number,
-        readings,
-        etymology: (meta.etymology as string) || undefined,
-        frequencyRank: (meta.frequency_rank as number) || undefined,
-        commonWords: (meta.common_words as string[]) || undefined,
-        radicalIds: (meta.radical_ids as string[]) || undefined,
-        definition: readings[0]?.core_meaning || undefined,
+        glyph: character.glyph,
+        traditional: character.traditional || character.glyph,
+        strokeCount: character.strokeCount,
+        hskLevel: character.hskLevel ?? 0,
+        readings: readings.map((r) => ({
+          pinyin: r.pinyin,
+          tone: r.tone,
+          type: r.type,
+          core_meaning: r.meaning,
+        })),
+        etymology: character.etymology || undefined,
+        frequencyRank: character.frequencyRank || undefined,
+        commonWords: character.commonWords.length > 0 ? character.commonWords : undefined,
+        radicalIds: radicalLinks.map((r) => r.radicalId),
+        definition: character.definition || undefined,
       };
     } catch (err) {
       logger.error(`[FoundationsService] Failed to get character "${glyph}"`, err);

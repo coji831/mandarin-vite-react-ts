@@ -78,7 +78,13 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   }, [isAuthenticated, fetchBookmarks]);
 
   // Production-only: passage generation hook
-  const { generate: generatePassage } = useGeneratePassage();
+  const {
+    generate: generatePassage,
+    isGenerating,
+    generatedId,
+    hasError: generateError,
+    reset: resetGenerate,
+  } = useGeneratePassage();
 
   // Mode: store takes precedence after user action, otherwise use prop for initial mount
   const mode = storeMode === "reading" ? "reading" : modeProp;
@@ -139,6 +145,14 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     }
   }, [hasJustCompleted, currentPassageId, markCompleted]);
 
+  // VisFix W6b: Refresh the library once a new passage has been generated, then
+  // clear generatedId so a subsequent generation re-triggers this effect.
+  useEffect(() => {
+    if (!generatedId) return;
+    libRetry();
+    resetGenerate();
+  }, [generatedId, libRetry, resetGenerate]);
+
   const handlePopoverOpen = (glyph: string, rect: DOMRect) => {
     openPopover(glyph, rect);
   };
@@ -146,6 +160,14 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   const handleGeneratePassage = useCallback(() => {
     generatePassage(selectedLevel ?? undefined);
   }, [generatePassage, selectedLevel]);
+
+  /** VisFix W6b: Mark completed when the final sentence is reached. Idempotent —
+   *  complements the audio hasJustCompleted path (Set-based store dedupes). */
+  const handleComplete = useCallback(() => {
+    if (currentPassageId) {
+      markCompleted(currentPassageId);
+    }
+  }, [currentPassageId, markCompleted]);
 
   /** Story 21.7: Bookmark toggle handler. */
   const handleBookmarkToggle = useCallback(
@@ -171,9 +193,13 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           hasError={libError}
           onRetry={libRetry}
           onGeneratePassage={handleGeneratePassage}
+          isGenerating={isGenerating}
+          generateError={generateError}
+          onRetryGenerate={handleGeneratePassage}
           bookmarkFilter={bookmarkFilter}
           onBookmarkFilterChange={setBookmarkFilter}
           onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
+          isGuest={!isAuthenticated}
         />
       )}
 
@@ -187,7 +213,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           onTogglePlay={toggle}
           onStop={stop}
           onSpeedChange={setSpeed}
-          // No onComplete prop — completion handled via hasJustCompleted effect
+          onComplete={handleComplete}
         >
           {passage.sentences.flatMap((sentence) => {
             const items: React.ReactNode[] = [

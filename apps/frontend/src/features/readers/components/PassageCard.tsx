@@ -8,7 +8,7 @@
  * Props-only — no logic, no hooks, no API calls.
  */
 import { memo } from "react";
-import { Box, ProgressBar } from "shared/components";
+import { Badge, Box, ProgressBar } from "shared/components";
 import "./PassageCard.css";
 
 export type PassageCardProps = {
@@ -56,9 +56,7 @@ export const PassageCard = memo(function PassageCard({
     >
       {/* Top row: HSK badge + indicators */}
       <div className="passage-card__top-row flex-between">
-        <span className="passage-card__hsk-badge inline-block lh-1 bg-primary-bg radius-pill p-xs font-xs fw-600 text-primary">
-          HSK {hskLevel}
-        </span>
+        <Badge>HSK {hskLevel}</Badge>
         <div className="passage-card__indicators flex-row gap-xs items-center">
           {/* Completion checkmark */}
           {isCompleted && (

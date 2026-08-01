@@ -19,10 +19,10 @@ export function StrokeReferenceContent() {
     return (
       <>
         <section className="flex-col">
-          <h3 className="stroke-ref-heading font-sm m-0">The 8 Basic Strokes</h3>
+          <h3 className="stroke-ref-heading font-sm m-0">The 5 Basic Strokes</h3>
           <p className="stroke-ref-subtitle font-xs">Learn by sight — no writing required</p>
           <Box variant="dark-alt" padding="xs" className="stroke-grid flex flex-wrap">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <Box
                 key={i}
                 variant="dark-alt"
@@ -68,7 +68,7 @@ export function StrokeReferenceContent() {
       {/* Basic Strokes */}
       <section className="flex-col">
         <h3 className="stroke-ref-heading font-sm text-secondary fw-600 m-0">
-          The 8 Basic Strokes
+          The {data.strokes.length} Basic Strokes
         </h3>
         <p className="stroke-ref-subtitle font-xs text-muted">
           Learn by sight — no writing required
@@ -79,7 +79,7 @@ export function StrokeReferenceContent() {
       {/* Stroke Order Rules */}
       <section className="flex-col">
         <h3 className="stroke-ref-heading font-sm text-secondary fw-600 m-0">
-          The 4 Stroke Order Rules
+          The {data.strokeOrderRules.length} Stroke Order Rules
         </h3>
         <StrokeRulesList rules={data.strokeOrderRules} />
       </section>

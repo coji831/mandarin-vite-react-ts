@@ -31,3 +31,7 @@
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
   font-size: var(--font-lg); /* ::placeholder pseudo-element */
 }
+
+/* ── Live IME candidates (VisFix W6a) ───────────────────────────────
+   Candidate chips now use the shared Chip component (surface variant,
+   interactive) — styling handled by shared Chip + token utility classes. */

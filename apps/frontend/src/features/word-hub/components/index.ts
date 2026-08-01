@@ -7,3 +7,4 @@ export { WordHub } from "./WordHub";
 export type { WordHubProps, WordDetail } from "./WordHub";
 export { DefinitionList } from "./DefinitionList";
 export { ConstituentCharacterChips } from "./ConstituentCharacterChips";
+export { MeasureWordSection } from "./MeasureWordSection";

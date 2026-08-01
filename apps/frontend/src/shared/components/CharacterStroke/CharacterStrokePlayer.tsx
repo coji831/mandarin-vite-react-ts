@@ -68,7 +68,7 @@ export function CharacterStrokePlayer({
           isReady={isReady}
           error={error}
           character={character}
-          onClick={() => openHub({ entityType: "character", entityId: character })}
+          onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
           placeholderSize={placeholderSize ?? "font-5xl"}
         />
 
@@ -167,7 +167,7 @@ export function CharacterStrokePlayer({
         isReady={isReady}
         error={error}
         character={character}
-        onClick={() => openHub({ entityType: "character", entityId: character })}
+        onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
         placeholderSize={placeholderSize ?? "font-3xl"}
       />
 
@@ -183,7 +183,7 @@ export function CharacterStrokePlayer({
       <Button
         variant="secondary"
         size="sm"
-        onClick={() => openHub({ entityType: "character", entityId: character })}
+        onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
         aria-label="Open in Character Detail Hub"
       >
         📖 Open in Character Hub

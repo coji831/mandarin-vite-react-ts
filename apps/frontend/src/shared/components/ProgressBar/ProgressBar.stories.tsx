@@ -13,8 +13,8 @@ const meta: Meta<typeof ProgressBar> = {
     layout: "padded",
   },
   argTypes: {
-    current: { control: { type: "number", min: 0 } },
-    total: { control: { type: "number", min: 1 } },
+    value: { control: { type: "number", min: 0, max: 100 } },
+    threshold: { control: { type: "number", min: 0, max: 100 } },
   },
 };
 
@@ -23,35 +23,30 @@ type Story = StoryObj<typeof ProgressBar>;
 
 export const QuarterWay: Story = {
   args: {
-    current: 3,
-    total: 12,
+    value: 25,
   },
 };
 
 export const HalfWay: Story = {
   args: {
-    current: 6,
-    total: 12,
+    value: 50,
   },
 };
 
 export const AlmostDone: Story = {
   args: {
-    current: 10,
-    total: 12,
+    value: 83,
   },
 };
 
 export const Complete: Story = {
   args: {
-    current: 12,
-    total: 12,
+    value: 100,
   },
 };
 
 export const Empty: Story = {
   args: {
-    current: 0,
-    total: 10,
+    value: 0,
   },
 };

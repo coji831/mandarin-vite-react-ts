@@ -35,27 +35,6 @@
 
 .pictograph-gallery__card {
   cursor: pointer;
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.pictograph-gallery__card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.pictograph-gallery__skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-md);
-}
-
-.pictograph-gallery__skeleton-card {
-  height: 220px;
-  border-radius: var(--radius-md);
-  background: var(--surface-dark-alt-2);
-  animation: pulse 1.5s ease-in-out infinite;
 }
 
 .pictograph-gallery__empty {
@@ -78,14 +57,4 @@
 .pictograph-gallery__error-message {
   margin: 0 0 var(--space-md);
   font-size: var(--font-sm);
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
 }

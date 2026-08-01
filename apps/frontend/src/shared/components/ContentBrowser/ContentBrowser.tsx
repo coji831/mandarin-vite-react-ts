@@ -21,7 +21,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Box, Button, Dropdown } from "shared/components";
+import { Box, Button, Chip, Dropdown } from "shared/components";
 import { CONTENT_TABS } from "./types";
 import type { ContentItem, ContentSource, ContentType } from "./types";
 import { TabBar } from "./TabBar";
@@ -293,9 +293,7 @@ function ContentBrowser({
             aria-label="Clear all filters"
           >
             {activeFilterCount > 0 && (
-              <span className="content-browser__filter-badge font-xs fw-600 p-xs bg-primary text-white radius-pill whitespace-nowrap lh-1">
-                {activeFilterCount}
-              </span>
+              <Chip interactive={false} variant="primary" size="sm" count={activeFilterCount} />
             )}
             ✕ Clear all
           </Button>

@@ -67,6 +67,7 @@ function ContentCard({
       aria-label={`${title}${subtitle ? ` - ${subtitle}` : ""}${isLocked ? " (locked)" : ""}`}
       disabled={isLocked}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
     >
       {/* Lock badge */}
       {isLocked && (

@@ -11,9 +11,14 @@ async function main() {
   // skipDuplicates: true correctly handles these, so actual counts are lower.
   const expected: Record<string, number> = {
     Character: 103006,
+    Radical: 20,
+    Tone: 5,
+    PinyinPhoneme: 50,
+    TonePair: 6,
+    ToneRule: 3,
     PinyinSyllable: 2045,
     MeasureWord: 52,
-    Component: 0,
+    Component: 1777,
     Passage: 6,
     Word: 10943, // 11092 entries - 149 duplicate IDs
     CharacterReading: 15582,
@@ -23,12 +28,23 @@ async function main() {
     WordCharacter: 21715, // 22047 entries - 332 @@unique violations
     PinyinCharacterMapping: 11797,
     MeasureWordWord: 135,
-    CharacterComponent: 0,
+    CharacterComponent: 15742,
+    PhoneticCluster: 12,
+    PhoneticClusterMember: 254,
+    StrokeCategory: 5,
+    StrokeExtendedType: 8,
+    StrokeOrderRule: 5,
+    StrokeCategoryOrderRule: 9,
     User: 2,
   };
 
   const counts: Record<string, number> = {
     Character: await prisma.character.count(),
+    Radical: await prisma.radical.count(),
+    Tone: await prisma.tone.count(),
+    PinyinPhoneme: await prisma.pinyinPhoneme.count(),
+    TonePair: await prisma.tonePair.count(),
+    ToneRule: await prisma.toneRule.count(),
     PinyinSyllable: await prisma.pinyinSyllable.count(),
     MeasureWord: await prisma.measureWord.count(),
     Component: await prisma.component.count(),
@@ -42,6 +58,12 @@ async function main() {
     PinyinCharacterMapping: await prisma.pinyinCharacterMapping.count(),
     MeasureWordWord: await prisma.measureWordWord.count(),
     CharacterComponent: await prisma.characterComponent.count(),
+    PhoneticCluster: await prisma.phoneticCluster.count(),
+    PhoneticClusterMember: await prisma.phoneticClusterMember.count(),
+    StrokeCategory: await prisma.strokeCategory.count(),
+    StrokeExtendedType: await prisma.strokeExtendedType.count(),
+    StrokeOrderRule: await prisma.strokeOrderRule.count(),
+    StrokeCategoryOrderRule: await prisma.strokeCategoryOrderRule.count(),
     User: await prisma.user.count(),
   };
 

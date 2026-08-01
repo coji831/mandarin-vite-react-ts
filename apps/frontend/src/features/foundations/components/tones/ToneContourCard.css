@@ -3,11 +3,6 @@
  * @description Styles for the ToneContourCard component (Story 18.3)
  */
 
-.tone-contour-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm); /* hover state — utility classes don't apply on :hover */
-}
-
 .tone-contour-svg {
   width: 60px;
   height: 38px;

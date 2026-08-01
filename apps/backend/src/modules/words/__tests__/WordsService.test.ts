@@ -49,6 +49,7 @@ describe("WordsService", () => {
   };
 
   const expectedDetail = {
+    id: "w_00001",
     glyph: "你好",
     pinyin: "nǐ hǎo",
     definitions: ["hello", "hi", "how are you"],

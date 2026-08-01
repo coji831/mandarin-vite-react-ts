@@ -8,7 +8,8 @@
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { apiClient } from "shared/api";
-import type { RadicalData } from "features/radicals/types";
+import { mapRadicalToData } from "features/radicals/utils";
+import type { RadicalApiItem, RadicalData } from "features/radicals/types";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -39,23 +40,6 @@ export interface MnemonicResponse {
   updatedAt: string;
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
-
-/**
- * GET request that returns null specifically on 404, throws on other errors.
- * Use for fetches where 404 has semantic meaning (e.g. "no mnemonic yet").
- */
-async function fetchOptional<T>(url: string): Promise<T | null> {
-  try {
-    const res = await apiClient.get(url);
-    return res.data as T;
-  } catch (error: unknown) {
-    const httpError = error as { status?: number };
-    if (httpError?.status === 404) return null;
-    throw error;
-  }
-}
-
 // ─── Character Detail ──────────────────────────────────────────────────────
 
 /**
@@ -74,13 +58,14 @@ export async function loadCharacterData(glyph: string): Promise<CharacterDetailR
 
 /**
  * Load radicals associated with a character from the backend database.
+ * Maps the backend's camelCase payload into the frontend snake_case shape.
  * Returns empty array if the API call fails (fallback behavior).
  */
 export async function loadRadicalsByCharacter(character: string): Promise<RadicalData[]> {
   try {
     const response = await apiClient.get(ROUTE_PATTERNS.radicalsByCharacter(character));
     if (Array.isArray(response.data)) {
-      return response.data;
+      return (response.data as RadicalApiItem[]).map(mapRadicalToData);
     }
   } catch {
     // Silently fail — caller should fall back to client-side matching
@@ -92,10 +77,13 @@ export async function loadRadicalsByCharacter(character: string): Promise<Radica
 
 /**
  * Fetch a mnemonic story for a character.
- * Returns null if no story exists (404).
+ * Returns null when no story exists (backend returns 200 { mnemonic: null }).
  */
 export async function getMnemonic(character: string): Promise<MnemonicResponse | null> {
-  return fetchOptional<MnemonicResponse>(ROUTE_PATTERNS.mnemonicsByChar(character));
+  const response = await apiClient.get<{ mnemonic: MnemonicResponse | null }>(
+    ROUTE_PATTERNS.mnemonicsByChar(character),
+  );
+  return response.data?.mnemonic ?? null;
 }
 
 /**

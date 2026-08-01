@@ -9,13 +9,16 @@
  * MSW handlers to mock the API response.
  */
 import { extractTone, getToneClass } from "features/character-hub";
-import { Box, ErrorScreen, Skeleton } from "shared/components";
+import { Badge, Box, ErrorScreen, Skeleton } from "shared/components";
 import { useWordDetail } from "../hooks";
 import { ConstituentCharacterChips } from "./ConstituentCharacterChips";
 import { DefinitionList } from "./DefinitionList";
+import { MeasureWordSection } from "./MeasureWordSection";
 import "./WordHub.css";
 
 export type WordDetail = {
+  /** Internal word ID (e.g., "w_00284") — used to look up measure words. */
+  id?: string;
   glyph: string;
   pinyin: string;
   definitions: string[];
@@ -129,9 +132,7 @@ export function WordHub({ entityId, word: wordProp }: WordHubProps) {
 
         {/* HSK badge — next to hero glyph/pinyin */}
         {wordData.hskLevel && (
-          <span className="word-hub__hsk-badge inline-block lh-1 bg-primary-bg radius-pill p-xs font-xs fw-600 text-primary shrink-0">
-            HSK {wordData.hskLevel}
-          </span>
+          <Badge className="shrink-0">HSK {wordData.hskLevel}</Badge>
         )}
       </div>
 
@@ -145,6 +146,9 @@ export function WordHub({ entityId, word: wordProp }: WordHubProps) {
 
       {/* Constituent characters */}
       <ConstituentCharacterChips characters={wordData.constituentCharacters} />
+
+      {/* Measure words (量词) — Story 21.8. key remounts section on word change. */}
+      <MeasureWordSection key={wordData.id ?? "word"} wordId={wordData.id} />
     </Box>
   );
 }

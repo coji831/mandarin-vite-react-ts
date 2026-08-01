@@ -20,14 +20,11 @@
 
 .dashboard-quick-btn {
   text-decoration: none;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .dashboard-quick-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md); /* hover state — utility classes don't apply on :hover */
+  /* :hover pseudo — token shadow, no motion */
+  box-shadow: var(--shadow-md);
 }
 
 /* Mobile Responsive */

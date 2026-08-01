@@ -1,10 +1,15 @@
 {
   "description": "Mandarin-Vite-React-TS shared component registry. The agent MUST check this before creating any UI structure. Do not invent components not listed here.",
+  "scope": "Presentation components only. Feature containers (components that call hooks/services) live in feature folders and are documented in their feature docs/design.md, NOT in this registry. (Architect decision D1)",
   "version": "1.0",
   "components": {
     "Box": {
       "description": "Generic layout container. Preferred over raw <div> for any container with visual treatment.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Box/Box.stories.tsx",
+        "states": ["variant-catalog"]
+      },
       "props": {
         "variant": {
           "type": "enum",
@@ -49,6 +54,10 @@
     "Button": {
       "description": "Standardized button with variants, sizes, and loading state.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Button/Button.stories.tsx",
+        "states": ["variant-catalog", "loading", "disabled"]
+      },
       "props": {
         "variant": {
           "type": "enum",
@@ -83,15 +92,97 @@
         "loading": { "type": "boolean", "default": false },
         "disabled": { "type": "boolean", "default": false },
         "onClick": { "type": "function" },
+        "onKeyDown": {
+          "type": "function",
+          "description": "Keyboard handler forwarded to the underlying <button> (Enter/Space activation)."
+        },
+        "onKeyUp": {
+          "type": "function",
+          "description": "Keyboard handler forwarded to the underlying <button>."
+        },
+        "aria-expanded": {
+          "type": "boolean",
+          "description": "Exposes expand/collapse state for accordion/tree toggle buttons."
+        },
         "children": { "type": "reactNode" },
         "className": { "type": "string" },
         "type": { "type": "enum", "values": ["button", "submit", "reset"], "default": "button" },
         "aria-label": { "type": "string" }
       }
     },
+    "Chip": {
+      "description": "Shared chip with interactive (<button> + aria-pressed + hover/focus-visible) and non-interactive (<span>) modes. Composes glyph/pinyin/label/icon/count slots. No-motion: hover/focus-visible only when interactive; transitions limited to colors.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Chip/Chip.stories.tsx",
+        "states": ["variant-catalog"]
+      },
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "outline",
+            "surface",
+            "solid",
+            "primary",
+            "tone-1",
+            "tone-2",
+            "tone-3",
+            "tone-4",
+            "tone-5"
+          ],
+          "default": "outline"
+        },
+        "interactive": {
+          "type": "boolean",
+          "description": "true → <button>; false → <span>. Defaults to !!onClick."
+        },
+        "active": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Selected/pressed → aria-pressed + active visual (interactive only; purely visual when non-interactive)."
+        },
+        "size": { "type": "enum", "values": ["sm", "md", "lg"], "default": "md" },
+        "glyph": { "type": "reactNode", "description": "Leading large glyph (character)" },
+        "pinyin": { "type": "reactNode", "description": "Italic subtitle" },
+        "label": { "type": "reactNode", "description": "Primary text" },
+        "icon": { "type": "reactNode", "description": "Leading emoji/icon" },
+        "count": { "type": "reactNode", "description": "Trailing count pill (e.g. '5')" },
+        "children": {
+          "type": "reactNode",
+          "description": "Fallback content when no slots provided"
+        },
+        "onClick": { "type": "function", "description": "Click handler; implies interactive" },
+        "ariaLabel": { "type": "string" },
+        "title": { "type": "string" },
+        "className": { "type": "string" }
+      }
+    },
+    "Badge": {
+      "description": "Shared token pill for inline metadata labels (HSK level, tags, counts). Extracted from 3 feature-inlined HSK badge styles (readers, word-hub, phonetic-clusters).",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Badge/Badge.stories.tsx",
+        "states": ["variant-catalog"]
+      },
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": ["primary", "surface", "accent"],
+          "default": "primary",
+          "description": "Token pill color scheme. primary = bg-primary-bg/text-primary, surface = bg-surface-hover/text-primary, accent = bg-primary-bg-medium/text-primary-light"
+        },
+        "className": { "type": "string" },
+        "children": { "type": "reactNode" }
+      }
+    },
     "Input": {
       "description": "Controlled text input. Always use this instead of raw <input>.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Input/Input.stories.tsx",
+        "states": ["default", "error", "disabled"]
+      },
       "props": {
         "value": { "type": "string", "required": true },
         "onChange": { "type": "function", "required": true },
@@ -106,6 +197,10 @@
     "TextLink": {
       "description": "Inline text-style button that looks like a link. For form-switch actions where Router links won't work.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/TextLink/TextLink.stories.tsx",
+        "states": ["default", "disabled"]
+      },
       "props": {
         "onClick": { "type": "function" },
         "disabled": { "type": "boolean", "default": false },
@@ -114,8 +209,12 @@
       }
     },
     "Card": {
-      "description": "Content card with title, subtitle, optional icon/badge/locked state.",
+      "description": "Content card with title, subtitle, optional icon/badge/locked state. The optional badge delegates to the shared Badge component (variant primary).",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Card/Card.stories.tsx",
+        "states": ["default", "edge"]
+      },
       "props": {
         "title": { "type": "string", "required": true },
         "subtitle": { "type": "string" },
@@ -129,6 +228,10 @@
     "Modal": {
       "description": "Controlled overlay dialog with backdrop, close on Escape, size variants.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Modal/Modal.stories.tsx",
+        "states": ["variant-catalog"]
+      },
       "props": {
         "isOpen": { "type": "boolean", "required": true },
         "onClose": { "type": "function", "required": true },
@@ -141,6 +244,10 @@
     "Tabs": {
       "description": "Tab navigation bar with panel content slot. Supports default and underline variants.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Tabs/Tabs.stories.tsx",
+        "states": ["default", "edge"]
+      },
       "props": {
         "tabs": { "type": "TabConfig[]", "required": true },
         "activeTab": { "type": "string", "required": true },
@@ -160,6 +267,10 @@
     "ProgressBar": {
       "description": "Progress bar with optional threshold marker.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/ProgressBar/ProgressBar.stories.tsx",
+        "states": ["default", "empty"]
+      },
       "props": {
         "value": { "type": "number", "required": true, "description": "0-100" },
         "threshold": { "type": "number", "description": "Marker position 0-100" },
@@ -169,6 +280,10 @@
     "ToggleSwitch": {
       "description": "Toggle switch with label.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.stories.tsx",
+        "states": ["default"]
+      },
       "props": {
         "label": { "type": "string", "required": true },
         "checked": { "type": "boolean", "required": true },
@@ -177,8 +292,12 @@
       }
     },
     "FilterChip": {
-      "description": "Toggle chip for filter selection.",
+      "description": "Toggle chip for filter selection; selected state shows a primary tint (bg + border + text) + aria-pressed.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/FilterChip/FilterChip.stories.tsx",
+        "states": ["default"]
+      },
       "props": {
         "label": { "type": "string", "required": true },
         "selected": { "type": "boolean", "required": true },
@@ -188,6 +307,10 @@
     "LoadingScreen": {
       "description": "Full-section loading state with spinner.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/LoadingScreen/LoadingScreen.stories.tsx",
+        "states": ["default"]
+      },
       "props": {
         "message": { "type": "string", "default": "Loading..." }
       }
@@ -195,6 +318,10 @@
     "ErrorScreen": {
       "description": "Full-section error state with retry button.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/ErrorScreen/ErrorScreen.stories.tsx",
+        "states": ["error"]
+      },
       "props": {
         "error": { "type": "string", "required": true },
         "onRetry": { "type": "function", "required": true },
@@ -204,6 +331,10 @@
     "Spinner": {
       "description": "Loading spinner indicator.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Spinner/Spinner.stories.tsx",
+        "states": ["variant-catalog", "loading"]
+      },
       "props": {
         "size": { "type": "enum", "values": ["sm", "md", "lg"] },
         "color": { "type": "string" },
@@ -212,40 +343,128 @@
     },
     "Skeleton": {
       "description": "Content placeholder shimmer.",
-      "importPath": "shared/components"
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Skeleton/Skeleton.stories.tsx",
+        "states": ["variant-catalog"]
+      }
     },
     "ClassificationBadge": {
       "description": "Pill badge displaying a character's classification type (pictograph, phono-semantic, etc.) with emoji and color coding.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/ClassificationBadge.stories.tsx",
+        "states": ["variant-catalog", "edge"]
+      },
       "props": {
         "classification": {
           "type": "enum",
           "values": ["pictograph", "phono_semantic", "compound_ideograph", "ideograph", null],
-          "required": true
+          "required": false,
+          "description": "Classification type; component renders nothing when null/undefined"
         },
         "etymology": {
-          "type": "string",
-          "description": "Etymology text used for pictograph tooltip"
+          "type": "string | null | undefined",
+          "description": "Etymology text used for pictograph tooltip (optional)"
         },
         "showLabel": { "type": "boolean", "default": true },
         "size": { "type": "enum", "values": ["sm", "md", "lg"], "default": "sm" }
       }
     },
+    "MnemonicCard": {
+      "description": "Classification-aware mnemonic story card. Selects among 4 sub-layouts based on character classification; header shows ClassificationBadge, footer shows regeneration guidance.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/MnemonicCard/__stories__/MnemonicCard.stories.tsx",
+        "states": ["variant-catalog", "default", "loading", "error", "empty"]
+      },
+      "props": {
+        "character": {
+          "type": "string",
+          "required": true,
+          "description": "The character glyph the mnemonic is for"
+        },
+        "classification": {
+          "type": "string",
+          "required": true,
+          "description": "Character classification (pictograph, phono_semantic, compound_ideograph, simple_ideograph); null falls back to the default layout"
+        },
+        "radicalIds": {
+          "type": "string[]",
+          "default": "[]",
+          "description": "Radical/component IDs used by phono-semantic and compound layouts"
+        },
+        "story": { "type": "string", "required": true, "description": "The mnemonic story text" },
+        "isEdited": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows an '(edited)' tag on the story"
+        },
+        "onEdit": {
+          "type": "function",
+          "description": "Edit action — renders edit button when provided"
+        },
+        "onRegenerate": {
+          "type": "function",
+          "description": "Regenerate action — renders regenerate button + guidance tip when provided"
+        },
+        "isLoading": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows loading skeleton"
+        },
+        "isGenerating": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Shows generating skeleton with 'Creating mnemonic story…'"
+        }
+      },
+      "subComponents": {
+        "PictographLayout": {
+          "description": "Layout A — large glyph + etymology + 'Try visualizing' note; optional ancientFormUrl for oracle-bone images."
+        },
+        "PhonoSemanticLayout": {
+          "description": "Layout B — two-column meaning clue / sound clue grid splitting radicalIds in half."
+        },
+        "CompoundIdeographLayout": {
+          "description": "Layout C — component breakdown with + and → connectors, then the combined character."
+        },
+        "SimpleIdeographLayout": {
+          "description": "Layout D — concise explanation + AI story; no columns or component breakdown."
+        }
+      }
+    },
     "ContentBrowser": {
-      "description": "Full content browsing UI with grid, filters, pagination.",
-      "importPath": "shared/components"
+      "description": "Full content browsing UI with grid, filters, pagination. The active-filter count badge delegates to the shared Chip component (non-interactive, count slot).",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/ContentBrowser/ContentBrowser.stories.tsx",
+        "states": ["default", "empty"]
+      }
     },
     "SearchInput": {
       "description": "Search input with icon.",
-      "importPath": "shared/components"
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/SearchInput/SearchInput.stories.tsx",
+        "states": ["default", "empty"]
+      }
     },
     "Dropdown": {
       "description": "Dropdown select menu.",
-      "importPath": "shared/components"
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Dropdown/Dropdown.stories.tsx",
+        "states": ["default", "edge"]
+      }
     },
     "RadioGroup": {
       "description": "Radio button group.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/RadioGroup/RadioGroup.stories.tsx",
+        "states": ["default", "disabled"]
+      },
       "props": {
         "options": { "type": "RadioOption[]", "required": true },
         "value": { "type": "string", "required": true },
@@ -255,26 +474,29 @@
     },
     "Grid": {
       "description": "CSS Grid layout container.",
-      "importPath": "shared/components"
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Grid/Grid.stories.tsx",
+        "states": ["variant-catalog", "loading", "empty"]
+      }
     },
     "FilterControls": {
       "description": "Filter bar with multiple FilterChips.",
-      "importPath": "shared/components"
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/FilterControls/FilterControls.stories.tsx",
+        "states": ["default"]
+      }
     },
     "SideNav": {
       "description": "Side navigation panel.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/SideNav/SideNav.stories.tsx",
+        "states": ["default", "edge"]
+      },
       "props": {
         "items": { "type": "NavItem[]", "required": true },
-        "activeId": { "type": "string" },
-        "onNavigate": { "type": "function" }
-      }
-    },
-    "TopNav": {
-      "description": "Top navigation bar.",
-      "importPath": "shared/components",
-      "props": {
-        "items": { "type": "TopNavItem[]", "required": true },
         "activeId": { "type": "string" },
         "onNavigate": { "type": "function" }
       }
@@ -282,6 +504,10 @@
     "CharacterStrokePlayer": {
       "description": "Stroke animation player for Chinese characters. Mini mode for embedding (hub), full mode for dedicated stroke practice.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/CharacterStroke/CharacterStroke.stories.tsx",
+        "states": ["default", "loading", "empty"]
+      },
       "props": {
         "character": { "type": "string", "required": true },
         "mode": { "type": "enum", "values": ["full", "mini"], "default": "full" },
@@ -289,13 +515,12 @@
           "type": "string",
           "description": "Font utility class for placeholder character"
         },
-        "onPlayAudio": { "type": "function" },
         "className": { "type": "string" }
       }
     },
     "CharacterHub": {
       "description": "Character Detail Hub overlay — modal with character info, stroke animation, audio, radicals, and actions.",
-      "importPath": "features/character-hub/components",
+      "importPath": "features/character-hub/components/CharacterHub",
       "props": {},
       "subComponents": {
         "HubCharacterCard": {
@@ -308,7 +533,7 @@
           "description": "Phase-gated radical decomposition with skeleton loading and styled empty state."
         },
         "HubIdentityCard": {
-          "description": "NORTH zone identity card: glyph, pinyin, meaning, badges, etymology."
+          "description": "NORTH zone identity card: glyph, pinyin, meaning, badges, etymology. Metadata badges delegate to the shared Badge component (variant surface)."
         },
         "HubReadings": {
           "description": "All readings with pinyin, tone, audio, and frequency rank."
@@ -321,6 +546,10 @@
     "AnimationCanvas": {
       "description": "Canvas-based animation container for stroke order visualization.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/CharacterStroke/CharacterStroke.stories.tsx",
+        "states": ["default", "loading", "empty"]
+      },
       "props": {
         "character": { "type": "string", "required": true },
         "onComplete": { "type": "function" },
@@ -332,6 +561,10 @@
     "TopNav": {
       "description": "Top-level navigation bar with route-based NavLinks. Phase-gated lock support.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/TopNav/TopNav.stories.tsx",
+        "states": ["default", "edge"]
+      },
       "props": {
         "items": { "type": "TopNavItem[]", "required": true },
         "phaseGate": { "type": "number" },
@@ -343,6 +576,10 @@
     "Textarea": {
       "description": "Controlled multiline text input. Always use this instead of raw <textarea>.",
       "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Textarea/Textarea.stories.tsx",
+        "states": ["default", "disabled"]
+      },
       "props": {
         "value": { "type": "string", "required": true },
         "onChange": { "type": "function", "required": true },
@@ -356,9 +593,64 @@
     },
     "HubMnemonicSection": {
       "description": "Feature component — Phase-gated mnemonic story section for CharacterHub. Displays, generates, and edits AI-powered mnemonic stories.",
-      "importPath": "features/character-hub/components",
+      "importPath": "features/character-hub/components/HubMnemonicSection",
       "props": {
         "character": { "type": "string", "required": true }
+      }
+    },
+    "TreeRootNode": {
+      "description": "Radical tree root node — a mastered radical with expandable character branches. Tree EXCEPTION: chevron rotate(90deg) + grid-rows expand/collapse animation (documented in DESIGN.md). The character-count pill delegates to the shared Chip component (non-interactive, count slot).",
+      "importPath": "features/radicals/components",
+      "props": {
+        "radical": { "type": "RadicalData", "required": true },
+        "characters": {
+          "type": "Array<{glyph, pinyin, meaning}>",
+          "required": true,
+          "description": "Character branches rendered as BranchNode rows"
+        }
+      }
+    },
+    "BranchNode": {
+      "description": "Character branch node in the radical mastery tree — horizontal row with glyph, pinyin, meaning, audio button, and Hub link. Tree EXCEPTION: ::before rail + corner connector tree lines (documented in DESIGN.md).",
+      "importPath": "features/radicals/components",
+      "props": {
+        "character": { "type": "string", "required": true },
+        "pinyin": { "type": "string", "required": true },
+        "meaning": { "type": "string", "required": true },
+        "showConnector": {
+          "type": "boolean",
+          "default": false,
+          "description": "Render tree connector lines via ::before/connector spans"
+        },
+        "ariaRole": { "type": "string", "default": "listitem" }
+      }
+    },
+    "PhoneticFamilyNode": {
+      "description": "Expandable phonetic family node — phonetic glyph, pinyin, meaning, character count, and expandable member list with ClassificationBadge. Tree EXCEPTION: arrow rotate(90deg) + border-left member rail (documented in DESIGN.md).",
+      "importPath": "features/radicals/components",
+      "props": {
+        "family": {
+          "type": "PhoneticFamily",
+          "required": true,
+          "description": "Phonetic family data (phoneticPattern, pinyin, description, members, memberCount)"
+        }
+      }
+    },
+    "ClusterCard": {
+      "description": "Phonetic cluster card — large pattern glyph, pinyin/description, pronunciation note, HSK badges (shared Badge accent variant), a member character grid using the shared Chip component (interactive, opens hub), and a member-count chip using the shared Chip component (non-interactive, count slot).",
+      "importPath": "features/phonetic-clusters/components",
+      "props": {
+        "cluster": { "type": "PhoneticClusterDetail", "required": true }
+      }
+    },
+    "ConstituentCharacterChips": {
+      "description": "Character chips for a word's constituent characters. Each chip is the shared Chip component (interactive, surface variant) — glyph + pinyin + meaning — and opens the Character Detail Hub via openHub.",
+      "importPath": "features/word-hub/components",
+      "props": {
+        "characters": {
+          "type": "Array<{ glyph: string; pinyin: string; meaning: string }>",
+          "required": true
+        }
       }
     }
   },

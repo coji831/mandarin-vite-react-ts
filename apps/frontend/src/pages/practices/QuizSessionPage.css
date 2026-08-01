@@ -22,22 +22,6 @@
 }
 
 /* ═══════════════════════════════════════════════
-   Quiz: Category Breakdown
-   ═══════════════════════════════════════════════ */
-
-.quiz-breakdown__fill {
-  /* height: 100% — migrated to utility class: h-full */
-  transition: width var(--transition-normal);
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Phase Gate Badge
-   ═══════════════════════════════════════════════ */
-.quiz-badge {
-  animation: animate-fade-in 0.5s;
-}
-
-/* ═══════════════════════════════════════════════
    Quiz: Session Page
    ═══════════════════════════════════════════════ */
 .quiz-session-page {

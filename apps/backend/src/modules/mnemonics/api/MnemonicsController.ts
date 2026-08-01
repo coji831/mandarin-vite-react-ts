@@ -54,14 +54,13 @@ export class MnemonicsController {
       }
 
       const result = await this.mnemonicsService.getMnemonic(character, userId);
-      res.json(result);
+      res.json({ mnemonic: result });
     } catch (err) {
       if (err instanceof MnemonicNotFoundError) {
-        res.status(404).json({
-          error: "Failed to fetch mnemonic story",
-          code: "NOT_FOUND",
-          message: err.message,
-        });
+        // "No mnemonic yet" is a valid state (mnemonics are generated
+        // on demand), not a client error — return a well-formed 200 so
+        // clients don't treat it as a failure.
+        res.status(200).json({ mnemonic: null });
         return;
       }
       logger.error("Failed to fetch mnemonic story", err);

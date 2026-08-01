@@ -35,7 +35,11 @@ export const entityHubRegistry: HubRegistry = {
       default: m.WordHub,
     })),
   ),
-  radical: NotImplemented,
+  radical: lazy(() =>
+    import("features/radicals").then((m) => ({
+      default: m.RadicalHub,
+    })),
+  ),
   chengyu: NotImplemented,
   grammar: NotImplemented,
   phoneticCluster: NotImplemented,

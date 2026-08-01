@@ -39,6 +39,6 @@
 /* ── Pictograph golden border ── */
 .example-char-cell--pictograph {
   border: 2px solid var(--color-xp);
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  box-shadow: var(--shadow-xp-glow);
   border-radius: var(--radius-sm);
 }

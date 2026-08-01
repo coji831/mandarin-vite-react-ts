@@ -9,7 +9,3 @@
   flex: 0 0 auto;
   min-width: 0; /* flex item for button layout — .min-w-0 doesn't convey the flex context */
 }
-
-.pinyin-cell-button:active {
-  transform: scale(0.96);
-}

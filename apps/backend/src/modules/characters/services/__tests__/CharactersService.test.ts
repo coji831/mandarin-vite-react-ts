@@ -20,13 +20,6 @@ vi.mock("../../../../shared/utils/logger", () => ({
   })),
 }));
 
-// Mock contentUtils to avoid file system access
-vi.mock("../../../../shared/utils/contentUtils", () => ({
-  readAggregateContent: vi.fn(),
-}));
-
-import { readAggregateContent } from "../../../../shared/utils/contentUtils.js";
-
 describe("CharactersService", () => {
   let service: CharactersService;
   let mockRepository: any;
@@ -171,12 +164,14 @@ describe("CharactersService", () => {
       findDecomposition: vi.fn(),
       searchCharacters: vi.fn(),
       findFrequencyList: vi.fn(),
+      // Radical reference lookup (Radical table — all-in-DB)
+      findRadicalsByIds: vi.fn(),
     };
 
     service = new CharactersService(mockRepository);
 
-    // Mock readAggregateContent to return radicals
-    (readAggregateContent as ReturnType<typeof vi.fn>).mockResolvedValue([
+    // Mock the repository's radical lookup to return the radical for rad_0038
+    mockRepository.findRadicalsByIds.mockResolvedValue([
       { id: "rad_0038", glyph: "女", meaning: "woman" },
     ]);
   });
@@ -201,6 +196,8 @@ describe("CharactersService", () => {
         frequencyRank: 42,
       });
       expect(mockRepository.findByGlyph).toHaveBeenCalledWith(testGlyph);
+      // Radical resolved from the Radical reference table (all-in-DB)
+      expect(mockRepository.findRadicalsByIds).toHaveBeenCalledWith(["rad_0038"]);
     });
 
     it("should return null radical when character has no radicals", async () => {
@@ -210,6 +207,17 @@ describe("CharactersService", () => {
       const result = await service.getCharacter(testGlyph);
 
       expect(result.radical).toBeNull();
+      expect(mockRepository.findRadicalsByIds).not.toHaveBeenCalled();
+    });
+
+    it("should return null radical when the radical reference lookup has no match", async () => {
+      mockRepository.findByGlyph.mockResolvedValue(mockFullCharacter);
+      mockRepository.findRadicalsByIds.mockResolvedValue([]);
+
+      const result = await service.getCharacter(testGlyph);
+
+      expect(result.radical).toBeNull();
+      expect(mockRepository.findRadicalsByIds).toHaveBeenCalledWith(["rad_0038"]);
     });
 
     it("should return null phonetic component when character has none", async () => {

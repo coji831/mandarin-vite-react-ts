@@ -7,16 +7,14 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 import { API_CONFIG } from "config";
-import { clearLogoutCallback, setLogoutCallback } from "services";
+import { clearLogoutCallback, requestAccessToken, setLogoutCallback } from "services";
 import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
+import { authService } from "../services";
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = "accessToken";
 const baseApiUrl = API_CONFIG.baseURL;
-
-// Fallback in case shared-constants not loaded
-const AUTH_ME_ENDPOINT = baseApiUrl + ROUTE_PATTERNS.authMe;
 
 // Helper to decode JWT and check if expired
 function isTokenExpired(token: string): boolean {
@@ -36,27 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshTokens = useCallback(async () => {
-    try {
-      const response = await fetch(baseApiUrl + ROUTE_PATTERNS.authRefresh, {
-        method: "POST",
-        credentials: "include", // Send httpOnly cookie
-      });
-
-      if (!response.ok) {
-        throw new Error("Token refresh failed");
-      }
-
-      const data = await response.json();
-      const { accessToken } = data.data;
-
-      localStorage.setItem(TOKEN_KEY, accessToken);
-      return accessToken;
-    } catch (error) {
-      // If refresh fails, clear tokens
-      localStorage.removeItem(TOKEN_KEY);
-      setUser(null);
-      throw error;
-    }
+    // Delegate to the shared single-flight refresh (`requestAccessToken` in
+    // axiosClient) so bootstrap, the axios interceptor, and background refresh
+    // all share ONE in-flight promise. The backend ROTATES (revokes) the
+    // refresh cookie on every use, so two concurrent refreshes with the same
+    // cookie would otherwise fail 401 INVALID_TOKEN and wrongly log the user
+    // out (F4).
+    //
+    // Failure side effects (localStorage token removal + setUser(null) via the
+    // registered logout callback) happen exactly once inside
+    // requestAccessToken — never duplicated here.
+    return requestAccessToken();
   }, []);
 
   // Check for existing session on mount
@@ -66,23 +54,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initAuth = async () => {
       const accessToken = localStorage.getItem(TOKEN_KEY);
 
-      // If no access token, try to refresh using httpOnly cookie
+      // If no access token, try to refresh using httpOnly cookie.
+      // The shared single-flight dedupe collapses StrictMode's double-mount
+      // into ONE /auth/refresh (guest: single non-fatal 400 MISSING_TOKEN).
       if (!accessToken) {
         try {
           const newToken = await refreshTokens();
           if (newToken && isMounted) {
             // Successfully refreshed, fetch user with new token
-            const response = await fetch(AUTH_ME_ENDPOINT, {
-              headers: {
-                Authorization: `Bearer ${newToken}`,
-              },
-              credentials: "include",
-            });
-            if (response.ok) {
-              const data = await response.json();
-              if (isMounted) {
-                setUser(data.data.user);
-              }
+            const user = await authService.getCurrentUser();
+            if (isMounted) {
+              setUser(user);
             }
           }
         } catch {
@@ -96,51 +78,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        // Fetch current user with the stored token
-        const response = await fetch(AUTH_ME_ENDPOINT, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          credentials: "include", // Include httpOnly cookies
-        });
-
-        if (response.ok) {
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await response.json();
-            if (isMounted) {
-              setUser(data.data.user);
-            }
-          } else {
-            throw new Error("Backend not responding correctly");
-          }
-        } else if (response.status === 401) {
-          // Token invalid or expired, try to refresh
-          try {
-            await refreshTokens();
-            // Try fetching user again after refresh
-            const retryResponse = await fetch(AUTH_ME_ENDPOINT, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
-              },
-              credentials: "include",
-            });
-            if (retryResponse.ok) {
-              const data = await retryResponse.json();
-              if (isMounted) {
-                setUser(data.data.user);
-              }
-            } else {
-              throw new Error("Session expired");
-            }
-          } catch {
-            throw new Error("Session expired");
-          }
-        } else {
-          throw new Error(`Unexpected response: ${response.status}`);
+        // Fetch current user with the stored token. The axios response
+        // interceptor transparently refreshes + retries once on 401 / 403
+        // INVALID_TOKEN (expired/tampered), reusing the shared single-flight
+        // refresh — so a resolution here means the session was restored (F4).
+        const user = await authService.getCurrentUser();
+        if (isMounted) {
+          setUser(user);
         }
       } catch {
-        // Clear invalid tokens
+        // Refresh failed — the shared refresh already cleared the token and
+        // user (via the logout callback). Just ensure no stale local token.
         localStorage.removeItem(TOKEN_KEY);
       } finally {
         if (isMounted) {
@@ -209,8 +157,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem(TOKEN_KEY, accessToken);
       setUser(userData);
-    } catch (error) {
-      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -236,8 +182,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem(TOKEN_KEY, accessToken);
       setUser(userData);
-    } catch (error) {
-      throw error;
     } finally {
       setIsLoading(false);
     }

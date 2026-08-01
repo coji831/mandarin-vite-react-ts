@@ -53,6 +53,7 @@ export class WordsService {
     });
 
     return {
+      id: word.id,
       glyph: word.simplified ?? glyph,
       pinyin: word.pinyin ?? "",
       definitions,

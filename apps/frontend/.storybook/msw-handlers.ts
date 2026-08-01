@@ -326,6 +326,94 @@ const PHONETIC_CLUSTER_FAMILIES = [
   },
 ];
 
+/**
+ * Characters mapped per mastered radical for the radical-tree Storybook stories.
+ * Falls back to a generic two-character list for unmapped ids.
+ */
+const RADICAL_CHARACTERS: Record<
+  string,
+  Array<{ glyph: string; pinyin: string; meaning: string }>
+> = {
+  rad_0001: [
+    { glyph: "一", pinyin: "yī", meaning: "one" },
+    { glyph: "七", pinyin: "qī", meaning: "seven" },
+    { glyph: "三", pinyin: "sān", meaning: "three" },
+    { glyph: "万", pinyin: "wàn", meaning: "ten thousand" },
+  ],
+  rad_0002: [
+    { glyph: "中", pinyin: "zhōng", meaning: "middle" },
+    { glyph: "串", pinyin: "chuàn", meaning: "to string together" },
+  ],
+  rad_0003: [
+    { glyph: "主", pinyin: "zhǔ", meaning: "main; lord" },
+    { glyph: "丸", pinyin: "wán", meaning: "pill" },
+    { glyph: "丹", pinyin: "dān", meaning: "cinnabar" },
+  ],
+  rad_0008: [
+    { glyph: "江", pinyin: "jiāng", meaning: "river" },
+    { glyph: "河", pinyin: "hé", meaning: "river" },
+    { glyph: "海", pinyin: "hǎi", meaning: "sea" },
+    { glyph: "洗", pinyin: "xǐ", meaning: "to wash" },
+  ],
+  rad_0009: [
+    { glyph: "他", pinyin: "tā", meaning: "he; other" },
+    { glyph: "们", pinyin: "men", meaning: "plural marker" },
+    { glyph: "你", pinyin: "nǐ", meaning: "you" },
+    { glyph: "什", pinyin: "shén", meaning: "what" },
+  ],
+};
+
+/**
+ * Pre-built character-detail response bodies for Storybook character hub stories.
+ * Mirrors the GET /v1/characters/:glyph response (`{ data: CharacterDetailResponse }`).
+ */
+const CHARACTER_DETAIL_BODIES: Record<
+  string,
+  {
+    data: {
+      glyph: string;
+      traditional: string;
+      strokeCount: number;
+      hskLevel: number;
+      readings: Array<{ pinyin: string; tone: number; type: string; core_meaning: string }>;
+      etymology?: string;
+      frequencyRank?: number;
+      commonWords?: string[];
+      radicalIds?: string[];
+      definition?: string;
+    };
+  }
+> = {
+  好: {
+    data: {
+      glyph: "好",
+      traditional: "好",
+      strokeCount: 6,
+      hskLevel: 1,
+      readings: [{ pinyin: "hǎo", tone: 3, type: "pinyin", core_meaning: "good" }],
+      etymology: "Pictophonetic: 女 (woman) + 子 (child)",
+      frequencyRank: 5,
+      definition: "good, well",
+      radicalIds: ["rad_0038"],
+      commonWords: ["你好", "好吃"],
+    },
+  },
+  学: {
+    data: {
+      glyph: "学",
+      traditional: "學",
+      strokeCount: 8,
+      hskLevel: 1,
+      readings: [{ pinyin: "xué", tone: 2, type: "pinyin", core_meaning: "study" }],
+      etymology: "Pictophonetic",
+      frequencyRank: 20,
+      definition: "study, learn",
+      radicalIds: ["rad_0034"],
+      commonWords: ["学习", "学生"],
+    },
+  },
+};
+
 export const mswHandlers = {
   auth: [
     // Token refresh — called by AuthProvider on mount
@@ -378,11 +466,40 @@ export const mswHandlers = {
       http.get(`${API_BASE}/radicals/${radicalId}/characters`, () =>
         HttpResponse.json({
           radicalId,
-          characters: [
+          characters: RADICAL_CHARACTERS[radicalId] ?? [
             { glyph: "一", pinyin: "yī", meaning: "one" },
             { glyph: "七", pinyin: "qī", meaning: "seven" },
           ],
         }),
+      ),
+    /** Single radical by id (camelCase RadicalApiItem contract). */
+    byId: () =>
+      http.get(`${API_BASE}/radicals/:radicalId`, ({ params }) => {
+        const radicalId = params.radicalId as string;
+        return HttpResponse.json({
+          id: radicalId,
+          glyph: "口",
+          alternateGlyphs: [],
+          namePinyin: "kǒu",
+          nameChinese: "口",
+          meaning: "mouth",
+          strokeCount: 3,
+          isRecommended: true,
+          kangxiIndex: 30,
+          etymology: "Pictograph of an open mouth",
+          frequencyRank: 4,
+          notes: "One of the most common radicals. Found in hundreds of characters.",
+          isAlsoCharacter: true,
+          variants: null,
+          hskCharacters: [],
+        });
+      }),
+    /** Single radical by id — never resolves (loading state). */
+    byIdLoading: () => http.get(`${API_BASE}/radicals/:radicalId`, () => new Promise(() => {})),
+    /** Single radical by id — 500 error. */
+    byIdError: () =>
+      http.get(`${API_BASE}/radicals/:radicalId`, () =>
+        HttpResponse.json({ error: "Failed to load radicals" }, { status: 500 }),
       ),
     default: () =>
       http.get(`${API_BASE}/radicals`, () =>
@@ -390,168 +507,178 @@ export const mswHandlers = {
           {
             id: "rad_0001",
             glyph: "一",
-            alternate_glyphs: [],
-            name_pinyin: "yī",
-            name_chinese: "一",
+            alternateGlyphs: [],
+            namePinyin: "yī",
+            nameChinese: "一",
             meaning: "one",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 1,
-            metadata: {
-              etymology: "Pictograph of a single horizontal stroke representing the number one",
-              frequency_rank: 1,
-              notes: "The first radical in the Kangxi system. Also a character meaning 'one'.",
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 1,
+            etymology: "Pictograph of a single horizontal stroke representing the number one",
+            frequencyRank: 1,
+            notes: "The first radical in the Kangxi system. Also a character meaning 'one'.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0002",
             glyph: "丨",
-            alternate_glyphs: [],
-            name_pinyin: "gǔn",
-            name_chinese: "丨",
+            alternateGlyphs: [],
+            namePinyin: "gǔn",
+            nameChinese: "丨",
             meaning: "line",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 2,
-            metadata: {
-              etymology: "Pictograph of a vertical line or rod",
-              frequency_rank: 2,
-              notes: "Represents a vertical line. Rarely used alone but common as a component.",
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 2,
+            etymology: "Pictograph of a vertical line or rod",
+            frequencyRank: 2,
+            notes: "Represents a vertical line. Rarely used alone but common as a component.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0003",
             glyph: "丶",
-            alternate_glyphs: [],
-            name_pinyin: "zhǔ",
-            name_chinese: "丶",
+            alternateGlyphs: [],
+            namePinyin: "zhǔ",
+            nameChinese: "丶",
             meaning: "dot",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 3,
-            metadata: {
-              etymology: "Pictograph of a dot or mark",
-              frequency_rank: 3,
-              notes: "Represents a simple dot stroke. Found in many characters as a component.",
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 3,
+            etymology: "Pictograph of a dot or mark",
+            frequencyRank: 3,
+            notes: "Represents a simple dot stroke. Found in many characters as a component.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0008",
             glyph: "氵",
-            alternate_glyphs: ["⺡", "氺"],
-            name_pinyin: "sāndiǎnshuǐ",
+            alternateGlyphs: ["⺡", "氺"],
+            namePinyin: "sāndiǎnshuǐ",
+            nameChinese: "氵",
             meaning: "water radical",
-            stroke_count: 3,
-            is_recommended: true,
-            kangxi_index: 8,
-            metadata: {
-              etymology: "Derived from 水 (shuǐ) — water",
-              frequency_rank: 12,
-              notes: "One of the most common radicals. Appears on the left side of characters.",
-            },
+            strokeCount: 3,
+            isRecommended: true,
+            kangxiIndex: 8,
+            etymology: "Derived from 水 (shuǐ) — water",
+            frequencyRank: 12,
+            notes: "One of the most common radicals. Appears on the left side of characters.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0009",
             glyph: "亻",
-            alternate_glyphs: ["人"],
-            name_pinyin: "rén",
-            name_chinese: "人",
+            alternateGlyphs: ["人"],
+            namePinyin: "rén",
+            nameChinese: "人",
             meaning: "man",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 9,
-            metadata: {
-              etymology:
-                "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
-              frequency_rank: 9,
-              notes:
-                "Common left-side form of the person radical. Appears in characters related to people.",
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 9,
+            etymology:
+              "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
+            frequencyRank: 9,
+            notes:
+              "Common left-side form of the person radical. Appears in characters related to people.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0018",
             glyph: "刂",
-            alternate_glyphs: ["刀"],
-            name_pinyin: "dāo",
-            name_chinese: "刀",
+            alternateGlyphs: ["刀"],
+            namePinyin: "dāo",
+            nameChinese: "刀",
             meaning: "knife",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 18,
-            metadata: {
-              etymology:
-                "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
-              frequency_rank: 10,
-              notes:
-                "Common right-side form. Appears in characters involving cutting or separating.",
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 18,
+            etymology:
+              "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
+            frequencyRank: 10,
+            notes: "Common right-side form. Appears in characters involving cutting or separating.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0019",
             glyph: "力",
-            alternate_glyphs: [],
-            name_pinyin: "lì",
-            name_chinese: "力",
+            alternateGlyphs: [],
+            namePinyin: "lì",
+            nameChinese: "力",
             meaning: "power",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 19,
-            metadata: {
-              etymology: "Pictograph of a muscular arm showing strength",
-              frequency_rank: 11,
-              notes:
-                "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 19,
+            etymology: "Pictograph of a muscular arm showing strength",
+            frequencyRank: 11,
+            notes:
+              "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0025",
             glyph: "白",
-            alternate_glyphs: [],
-            name_pinyin: "bái",
+            alternateGlyphs: [],
+            namePinyin: "bái",
+            nameChinese: "白",
             meaning: "white",
-            stroke_count: 5,
-            is_recommended: true,
-            kangxi_index: 25,
-            metadata: {
-              etymology: "Pictograph of a white rice grain",
-              frequency_rank: 45,
-              is_also_character: true,
-            },
+            strokeCount: 5,
+            isRecommended: true,
+            kangxiIndex: 25,
+            etymology: "Pictograph of a white rice grain",
+            frequencyRank: 45,
+            notes: null,
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0029",
             glyph: "又",
-            alternate_glyphs: [],
-            name_pinyin: "yòu",
-            name_chinese: "又",
+            alternateGlyphs: [],
+            namePinyin: "yòu",
+            nameChinese: "又",
             meaning: "again",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 29,
-            metadata: {
-              etymology: "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
-              frequency_rank: 15,
-              notes:
-                "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 29,
+            etymology: "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
+            frequencyRank: 15,
+            notes:
+              "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0030",
             glyph: "口",
-            alternate_glyphs: [],
-            name_pinyin: "kǒu",
-            name_chinese: "口",
+            alternateGlyphs: [],
+            namePinyin: "kǒu",
+            nameChinese: "口",
             meaning: "mouth",
-            stroke_count: 3,
-            is_recommended: true,
-            kangxi_index: 30,
-            metadata: {
-              etymology: "Pictograph of an open mouth",
-              frequency_rank: 4,
-              notes:
-                "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
-              is_also_character: true,
-            },
+            strokeCount: 3,
+            isRecommended: true,
+            kangxiIndex: 30,
+            etymology: "Pictograph of an open mouth",
+            frequencyRank: 4,
+            notes:
+              "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
         ]),
       ),

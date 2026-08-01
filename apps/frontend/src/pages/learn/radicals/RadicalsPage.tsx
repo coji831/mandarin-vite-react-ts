@@ -1,20 +1,22 @@
 /**
  * @file pages/learn/RadicalsPage.tsx
- * @description Main radicals browsing page with filter bar, responsive grid, detail card, and tree view
+ * @description Main radicals browsing page with filter bar, responsive grid, and tree view.
  * Story 19.1: Radicals Browser Structure
  * Story 19.2: Radical Detail Card
  * Story 19.4: Radical Trees (Phase 3)
+ * Story 21.x (visual wave): Radical detail now opens in the shared LexicalHub via
+ * openHub() — exactly ONE dialog at a time (no local modal).
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
 import { Box, Button } from "shared/components";
+import { openHub } from "shared/store";
 import {
   useRadicals,
   FilterBar,
   RadicalGrid,
-  RadicalDetailCard,
   RadicalTreesTab,
   type RadicalData,
 } from "features/radicals";
@@ -24,22 +26,38 @@ export function RadicalsPage() {
   const { radicals, filteredRadicals, filter, setFilter, resetFilter, isLoading, error, refetch } =
     useRadicals();
   const { phaseGate } = usePhaseGate();
-  const [searchParams] = useSearchParams();
-  const [selectedRadical, setSelectedRadical] = useState<RadicalData | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showTrees, setShowTrees] = useState(() => searchParams.get("view") === "trees");
   const [treeMode, setTreeMode] = useState<"radical" | "phonetic">(
     () => (localStorage.getItem("treeMode") as "radical" | "phonetic") || "radical",
   );
+  // Guards the ?radical deep-link effect against re-open loops — only reacts to NEW param values.
+  const lastAutoOpenedRadicalRef = useRef<string | null>(null);
 
-  // Effect 1: ?radical query param — select radical, switch to browse if in trees
+  // Effect 1: ?radical query param — open the radical in the lexical hub, then clear
+  // the param (replace state) so back-navigation returns to the plain page without re-opening.
   useEffect(() => {
     const radicalParam = searchParams.get("radical");
     if (!radicalParam || radicals.length === 0) return;
+    if (lastAutoOpenedRadicalRef.current === radicalParam) return;
     const found = radicals.find((r) => r.id === radicalParam);
     if (!found) return;
-    setSelectedRadical(found);
+    lastAutoOpenedRadicalRef.current = radicalParam;
+    openHub({
+      entityType: "radical",
+      entityId: found.id,
+      label: `${found.glyph} (${found.name_pinyin})`,
+    });
     setShowTrees((prev) => (prev === true ? false : prev));
-  }, [searchParams, radicals]);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("radical");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [searchParams, radicals, setSearchParams]);
 
   // Persist treeMode to localStorage
   useEffect(() => {
@@ -54,16 +72,15 @@ export function RadicalsPage() {
   const showTreesHeading = showTrees && (treeMode === "radical" ? isPhase3 : true);
 
   const handleRadicalClick = (radical: RadicalData) => {
-    setSelectedRadical(radical);
-  };
-
-  const handleCloseDetail = () => {
-    setSelectedRadical(null);
+    openHub({
+      entityType: "radical",
+      entityId: radical.id,
+      label: `${radical.glyph} (${radical.name_pinyin})`,
+    });
   };
 
   const toggleView = () => {
     setShowTrees((prev) => !prev);
-    setSelectedRadical(null);
   };
 
   const handleTreeModeChange = (mode: "radical" | "phonetic") => {
@@ -73,13 +90,13 @@ export function RadicalsPage() {
   return (
     <div className="radicals-page flex flex-col flex-1 gap-xs p-md">
       <Box variant="dark" padding="md" className="radicals-page__header flex-col gap-xs">
-        <h2 className="font-xl fw-700 text-secondary m-0 flex gap-xs">
+        <h1 className="font-xl fw-700 text-secondary m-0 flex gap-xs">
           {showTrees && treeMode === "phonetic"
             ? "Phonetic Trees"
             : showTreesHeading
               ? "Radical Trees"
               : "Radicals"}
-        </h2>
+        </h1>
         <p className="font-sm text-muted m-0">
           {showTrees && treeMode === "phonetic"
             ? "Explore characters grouped by shared phonetic components."
@@ -93,13 +110,7 @@ export function RadicalsPage() {
 
       <Box variant="dark" padding="md" className="radicals-page__content flex-1 flex-col">
         {showTrees ? (
-          <RadicalTreesTab
-            radicals={filteredRadicals}
-            isLoading={isLoading}
-            error={error}
-            refetch={refetch}
-            treeMode={treeMode}
-          />
+          <RadicalTreesTab radicals={filteredRadicals} isLoading={isLoading} treeMode={treeMode} />
         ) : (
           <div className="radicals-page__grid-wrapper">
             <RadicalGrid
@@ -149,10 +160,6 @@ export function RadicalsPage() {
           </>
         )}
       </Box>
-
-      {selectedRadical && (
-        <RadicalDetailCard radical={selectedRadical} onClose={handleCloseDetail} />
-      )}
     </div>
   );
 }

@@ -8,13 +8,17 @@
  */
 
 import { Box } from "shared/components";
-import type { AnswerResult } from "../../types/engine";
+import type { AnswerResult, CategoryBreakdown as CategoryBreakdownData } from "../../types";
 
 type CategoryBreakdownProps = {
   answers: AnswerResult[];
+  /** Authoritative per-category correct counts returned by the backend on completion. */
+  categoryBreakdown?: CategoryBreakdownData;
+  /** Total questions — used as the denominator alongside the backend breakdown. */
+  total?: number;
 };
 
-/** Compute per-category scores from the answers array */
+/** Compute per-category scores from the answers array (fallback when no backend breakdown). */
 function computeScores(answers: AnswerResult[]) {
   const total = answers.length;
   const pinyinCorrect = answers.filter(
@@ -60,10 +64,28 @@ function CategoryBar({
 }
 
 /** Category breakdown component */
-export function CategoryBreakdown({ answers }: CategoryBreakdownProps) {
-  const { pinyinCorrect, toneCorrect, total } = computeScores(answers);
+export function CategoryBreakdown({ answers, categoryBreakdown, total }: CategoryBreakdownProps) {
+  // Prefer the authoritative backend breakdown (each question attributed to a
+  // category; sum === totalScore). Fall back to local answers-based computation
+  // when the backend result is unavailable (e.g. guest mode / no attempt).
+  const useBackend = categoryBreakdown != null && (total ?? 0) > 0;
 
-  if (total === 0) return null;
+  let pinyinCorrect: number;
+  let toneCorrect: number;
+  let denominator: number;
+
+  if (useBackend) {
+    pinyinCorrect = categoryBreakdown.pinyin;
+    toneCorrect = categoryBreakdown.tones;
+    denominator = total ?? answers.length;
+  } else {
+    const local = computeScores(answers);
+    pinyinCorrect = local.pinyinCorrect;
+    toneCorrect = local.toneCorrect;
+    denominator = local.total;
+  }
+
+  if (denominator === 0) return null;
 
   return (
     <Box variant="dark" padding="md" className="flex-col gap-md" style={{ minWidth: 320 }}>
@@ -73,14 +95,14 @@ export function CategoryBreakdown({ answers }: CategoryBreakdownProps) {
       <CategoryBar
         label="Pinyin recognition"
         correct={pinyinCorrect}
-        total={total}
+        total={denominator}
         color="var(--color-primary-light)"
       />
 
       <CategoryBar
         label="Tone identification"
         correct={toneCorrect}
-        total={total}
+        total={denominator}
         color="var(--color-warning)"
       />
     </Box>

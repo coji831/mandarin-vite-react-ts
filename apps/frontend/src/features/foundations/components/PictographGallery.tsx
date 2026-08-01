@@ -52,7 +52,7 @@ export function PictographGallery() {
           {PICTOGRAPH_SET.map((pictograph) => (
             <div
               key={pictograph.glyph}
-              className="pictograph-gallery__card"
+              className="pictograph-gallery__card hover-lift-sm"
               onClick={() => setDetail({ data: pictograph })}
               role="button"
               tabIndex={0}

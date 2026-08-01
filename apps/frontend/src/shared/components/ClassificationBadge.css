@@ -23,19 +23,21 @@
   line-height: 1;
 }
 
-/* ── Size variants ── */
+/* ── Size variants ──
+   Horizontal padding uses the spacing scale (--space-xs/sm/md = 8/12/16px).
+   Vertical 2/4/6px is structural pill-height math (no scale value) — D4 exception. */
 .classification-badge--sm {
-  padding: 2px 8px;
+  padding: 2px var(--space-xs);
   font-size: var(--font-xs);
 }
 
 .classification-badge--md {
-  padding: 4px 12px;
+  padding: 4px var(--space-sm);
   font-size: var(--font-sm);
 }
 
 .classification-badge--lg {
-  padding: 6px 16px;
+  padding: 6px var(--space-md);
   font-size: var(--font-md);
 }
 

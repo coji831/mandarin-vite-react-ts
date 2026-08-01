@@ -1,3 +1,9 @@
+/**
+ * ProgressPage stories.
+ *
+ * NOTE (State Parity): ProgressPage is a static placeholder (no API fetch on
+ * mount), so Loading/Error/Empty API states would be unreachable. Default-only.
+ */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ProgressPage } from "./ProgressPage";
 

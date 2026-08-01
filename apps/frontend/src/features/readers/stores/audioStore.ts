@@ -20,10 +20,19 @@ interface AudioStore {
   /** Currently highlighted/playing sentence index (null = no audio cursor). */
   currentIndex: number | null;
   /**
-   * Event signal: when non-null, the audio hook should start playback from this index.
-   * The hook clears it after consuming. Used by SentenceDisplay tap-to-play.
+   * Event signal: when non-null, the audio hook should start playback from this
+   * index and AUTO-ADVANCE through the rest of the passage. The hook clears it
+   * after consuming. Used by tap-to-play surfaces that continue the passage —
+   * NOT by the per-sentence 🔊 button (which uses pendingSingleIndex).
    */
   pendingIndex: number | null;
+  /**
+   * Event signal: when non-null, the audio hook should play ONLY this single
+   * sentence (no auto-advance). The hook clears it after consuming. Used by the
+   * per-sentence 🔊 button in SentenceDisplay — distinct from global play
+   * (AudioControlBar ▶) and from pendingIndex (auto-advance tap-to-play).
+   */
+  pendingSingleIndex: number | null;
   status: AudioStatus;
   error: string | null;
   speed: PlaybackSpeed;
@@ -32,6 +41,7 @@ interface AudioStore {
   // Actions
   setCurrentIndex: (index: number | null) => void;
   setPendingIndex: (index: number | null) => void;
+  setPendingSingleIndex: (index: number | null) => void;
   setStatus: (status: AudioStatus) => void;
   setError: (error: string | null) => void;
   setSpeed: (speed: PlaybackSpeed) => void;
@@ -45,6 +55,7 @@ export const useAudioStore = create<AudioStore>()(
     (set) => ({
       currentIndex: null,
       pendingIndex: null,
+      pendingSingleIndex: null,
       status: "idle",
       error: null,
       speed: 1,
@@ -52,6 +63,7 @@ export const useAudioStore = create<AudioStore>()(
 
       setCurrentIndex: (index) => set({ currentIndex: index }),
       setPendingIndex: (index) => set({ pendingIndex: index }),
+      setPendingSingleIndex: (index) => set({ pendingSingleIndex: index }),
       setStatus: (status) => set({ status }),
       setError: (error) => set({ error }),
       setSpeed: (speed) => set({ speed }),
@@ -61,6 +73,7 @@ export const useAudioStore = create<AudioStore>()(
         set({
           currentIndex: null,
           pendingIndex: null,
+          pendingSingleIndex: null,
           status: "idle",
           error: null,
           audioUrls: null,

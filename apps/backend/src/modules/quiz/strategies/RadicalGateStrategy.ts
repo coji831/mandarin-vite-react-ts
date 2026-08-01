@@ -10,12 +10,12 @@
  * Pass threshold: 85% overall, plus Tier 1 must be 100%.
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import { readAggregateContent, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { shuffleArray } from "../../../shared/utils/contentUtils.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 
 const logger = createLogger("RadicalGateStrategy");
 
-/** Shape of a radical item from the radicals.json aggregate (camelCase fields). */
+/** Shape of a radical item used internally (mapped from the Radical table). */
 interface RadicalFile {
   id?: string;
   glyph?: string;
@@ -67,7 +67,16 @@ export const radicalGateStrategy = {
   timeLimitMinutes: 8,
 
   async generateQuestions() {
-    const radicalFiles = await readAggregateContent<RadicalFile>("radicals", "radicals.json");
+    // Load radicals from the Radical table (all-in-DB) and map to the
+    // internal RadicalFile shape used by the question builders below.
+    const radicalRows = await prisma.radical.findMany();
+    const radicalFiles: RadicalFile[] = radicalRows.map((r) => ({
+      id: r.id,
+      glyph: r.glyph,
+      meaning: r.meaning,
+      namePinyin: r.namePinyin,
+      isRecommended: r.isRecommended,
+    }));
 
     if (!radicalFiles || radicalFiles.length === 0) {
       throw new Error("Failed to load radical content files");
