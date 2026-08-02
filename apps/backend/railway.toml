@@ -3,7 +3,7 @@ builder = "RAILPACK"
 buildCommand = "npm install --include=dev && npx prisma generate --schema=apps/backend/prisma/schema.prisma && npm run build --workspace=@mandarin/shared-utils && npm run build --workspace=@mandarin/backend"
 
 [deploy]
-preDeployCommand = ["npx prisma migrate deploy"]
+preDeployCommand = ["npm run db:migrate:deploy --workspace=@mandarin/backend"]
 startCommand = "npm run start --workspace=@mandarin/backend"
 healthcheckPath = "/api/v1/health"
 restartPolicyType = "ON_FAILURE"

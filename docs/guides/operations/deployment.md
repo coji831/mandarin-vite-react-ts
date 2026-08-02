@@ -1,6 +1,6 @@
 # Deployment Guide
 
-**Last Updated:** July 4, 2026
+**Last Updated:** August 3, 2026
 **Purpose:** Step-by-step guide to deploy or add a new deployment environment
 **Audience:** DevOps engineers and developers managing deployments
 
@@ -95,7 +95,7 @@ builder = "RAILPACK"
 buildCommand = "npm install --include=dev && npx prisma generate --schema=apps/backend/prisma/schema.prisma && npm run build --workspace=@mandarin/shared-utils && npm run build --workspace=@mandarin/backend"
 
 [deploy]
-preDeployCommand = ["npx prisma migrate deploy"]
+preDeployCommand = ["npm run db:migrate:deploy --workspace=@mandarin/backend"]
 startCommand = "npm run start --workspace=@mandarin/backend"
 healthcheckPath = "/api/v1/health"
 restartPolicyType = "ON_FAILURE"
@@ -116,7 +116,7 @@ web: npm run start
 > - `npm install --include=dev` guarantees `typescript`/`tsx` (devDependencies) are present even though `NODE_ENV=production` is set at build time — required by the `tsc` build steps (the Railway log confirms `tsc` runs during the root `postinstall`).
 > - `npx prisma generate --schema=apps/backend/prisma/schema.prisma` — the root-relative `--schema` path is required because the build cwd is the repo root; a bare `npx prisma generate` there fails with `Could not find Prisma Schema`. The schema resolves via `apps/backend/prisma.config.ts` only when run from `apps/backend`.
 > - `@mandarin/shared-utils` is built **before** the backend because the backend imports it at runtime (it ships compiled `dist/`, not raw `.ts`).
-> - Prisma migrations run automatically on every deploy via `[deploy] preDeployCommand` (this replaces the former Procfile `release` phase). If a migration fails, the deployment is blocked.
+> - Prisma migrations run automatically on every deploy via `[deploy] preDeployCommand` — `npm run db:migrate:deploy --workspace=@mandarin/backend` (this replaces the former Procfile `release` phase). The workspace form is required because the deploy cwd is the repo root: npm workspace semantics run the script from `apps/backend`, where `prisma.config.ts` resolves the schema — a bare `npx prisma migrate deploy` at the root fails with `Could not find Prisma Schema`. If a migration fails, the deployment is blocked.
 > - Database **seeding** is a one-time manual step (see the infrastructure runbook), **not** run on every deploy.
 
 **Environment Variables (Railway Dashboard):**
@@ -138,7 +138,7 @@ The deployment is not locked to Railway. To deploy to a different platform:
 | Railway Feature               | What it maps to                                     | How to replicate elsewhere                                           |
 | ----------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
 | `railway.toml` build          | Install deps + build shared-utils + generate Prisma | Translate to platform's build config (e.g. `Dockerfile`, `app.yaml`) |
-| `preDeployCommand`            | Pre-deploy migration step                           | Run `npx prisma migrate deploy` before starting the web process      |
+| `preDeployCommand`            | Pre-deploy migration step                           | Run `npm run db:migrate:deploy --workspace=@mandarin/backend` before starting the web process      |
 | `Procfile` web / startCommand | Start the server                                    | Run `node dist/app/index.js` from `apps/backend/`                    |
 | PostgreSQL plugin             | `DATABASE_URL` injection                            | Set `DATABASE_URL` env var to your managed PostgreSQL                |
 | Redis plugin                  | `REDIS_URL` injection                               | Set `REDIS_URL` env var to your managed Redis                        |
@@ -158,7 +158,7 @@ With a separate migration step:
 
 ```bash
 # Run before starting the container
-npx prisma migrate deploy
+npm run db:migrate:deploy --workspace=@mandarin/backend
 ```
 
 ---
@@ -286,7 +286,7 @@ railway login
 railway link <project-id>
 
 # Run migrations
-railway run npx prisma migrate deploy
+railway run npm run db:migrate:deploy --workspace=@mandarin/backend
 ```
 
 **Critical Migrations:** For data-sensitive migrations:
@@ -423,7 +423,7 @@ railway link <project-id>
 railway run npx prisma migrate resolve --rolled-back <migration-name>
 
 # Apply previous migration
-railway run npx prisma migrate deploy
+railway run npm run db:migrate:deploy --workspace=@mandarin/backend
 ```
 
 **Safer Alternative:** Deploy hotfix with migration repair:
@@ -524,7 +524,7 @@ NODE_ENV=preview
 
 1. **Database connection failed:** Check `DATABASE_URL` in Railway dashboard
 2. **Missing environment variables:** Check Railway logs for startup errors
-3. **Migration not applied:** Run `railway run npx prisma migrate deploy`
+3. **Migration not applied:** Run `railway run npm run db:migrate:deploy --workspace=@mandarin/backend`
 
 **Symptom:** Health check failing
 
@@ -611,4 +611,4 @@ The Example Caching feature (Story 16.3) requires additional deployment steps:
 
 ---
 
-**Last Updated:** July 4, 2026
+**Last Updated:** August 3, 2026
