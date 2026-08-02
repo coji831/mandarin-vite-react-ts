@@ -30,6 +30,10 @@ user-invocable: true
 7. **API contract** — response shape matches what the frontend expects? Shared types in `packages/shared-types/` updated?
 
 8. **Security** — authentication/authorization checks on protected endpoints? Input sanitized against XSS? Rate limiting considered?
+   - **Auth intentionality** — for every endpoint with `requireAuth`/`optionalAuth`, is the choice **intentional**? A copy-pasted default that puts `requireAuth` on a guest-facing endpoint (leaving the anon branch as dead code), or that exposes a protected endpoint to guests, is a HIGH severity defect.
+   - **Guest path exercised** — if an endpoint is `optionalAuth`, is the guest/anon branch **exercised by a test** (not dead code)? Severity HIGH if an `optionalAuth` endpoint only has an authed test path, or if a guest branch exists with no test.
+
+9. **API-contract doc truth-check** — documented endpoints exist verbatim in the actual routes (ROUTE_PATTERNS); deprecated/renamed endpoints are not still documented; module names match `src/modules/`.
 
 ## Output Format
 

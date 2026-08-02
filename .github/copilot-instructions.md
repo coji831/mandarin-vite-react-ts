@@ -1,6 +1,6 @@
 ﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** June 25, 2026
+**Last Updated:** August 1, 2026
 
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
@@ -8,17 +8,21 @@ Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
 Install: `npm install`
 Run dev: `npm run dev` (port 5173)
-Run local backend: `npm run start-backend` (port 3001)
+Run local backend: `npm run dev:backend` (port 3001)
 Run tests (changed scope only): `npm test`
 Run full test suite: `npm run test:full`
-Run storybook: `npm run storybook` (port 6006)
-Run story tests: `npm run test-storybook`
-Build storybook: `npm run build-storybook`
+Run storybook: `npm run storybook --workspace=@mandarin/frontend` (port 6006)
+Run story tests: `npm run test-storybook --workspace=@mandarin/frontend` (runs `vitest run --project storybook` via `@storybook/addon-vitest`, no coverage)
+Build storybook: `npm run build-storybook --workspace=@mandarin/frontend`
 Run build (type-check + bundle): `npm run build`
 Run format: `npm run format`
 Run lint: `npm run lint` (0 errors required)
 Run design lint: `npx @google/design.md lint DESIGN.md`
-Read design reasoning: `docs/guides/design-reasoning.md`
+Run design audit (code compliance): `npm run design-audit`
+Run registry-stories check: `npm run check:registry-stories`
+Run backend type-check (full): `npm run typecheck --workspace=@mandarin/backend`
+Quality gates (canonical two-tier): see `project-workflow.instructions.md` — the single source of truth for all gates
+Read design reasoning: `docs/guides/design/design-reasoning.md`
 Run pre-delivery checklist: `.github/instructions/frontend-pre-delivery-checklist.instructions.md`
 See visual design protocol: `.github/instructions/frontend-visual-design-protocol.instructions.md`
 See AGENTS.md for agent roles, behavior rules, and prohibited patterns.
@@ -28,6 +32,7 @@ Epic Implementation: `docs/templates/epic-implementation-template.md`
 Story Implementation: `docs/templates/story-implementation-template.md`
 Code change: follow `docs/guides/conventions/frontend.md` (frontend) or `docs/guides/conventions/backend.md` (backend) + `docs/knowledge-base/practices/solid-principles.md`
 Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
+Doc Truth-Check: before closing, verify docs match the shipped code (endpoints/names/data source/links/dates) — see `documentation-standards.instructions.md`.
 
 ## 🎨 Visual Design Protocol
 
@@ -40,7 +45,7 @@ See `.github/instructions/frontend-visual-design-protocol.instructions.md` for t
 ## 🏗️ Architecture Overview
 
 **Frontend**: React + TypeScript via Vite; feature folders in `apps/frontend/src/features/`.
-**State**: Context + reducers + Zustand; slices: `lists`, `user`, `ui`; persisted via localStorage.
+**State**: Context + reducers + shared Zustand stores: `userStore` (userId/preferences), `uiStore` (loading/error/selectedList), `hubStore` (LexicalHub overlay); plus feature-scoped stores (mnemonicStore, quizSessionStore, readingStore, audioStore). Device identity read from localStorage (deviceUserId); stores are not persisted.
 **Backend**: Express + Prisma in `apps/backend/`; deployed to Railway in production, runs locally on port 3001 for development.
 **Routing**: React Router; constants in `apps/frontend/src/shared/constants/paths.ts`.
 **Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
@@ -130,6 +135,7 @@ Each pitfall category has a dedicated `.instructions.md` file with DO/DON'T exam
 | Storybook-Production drift     | [storybook-production-alignment.instructions.md](./instructions/storybook-production-alignment.instructions.md) |
 | Backend error messages         | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)                 |
 | Design system drift            | [design-system-drift.instructions.md](./instructions/design-system-drift.instructions.md)                       |
+| Documentation drift            | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md)               |
 
 ## 📁 Key Files & Directories
 

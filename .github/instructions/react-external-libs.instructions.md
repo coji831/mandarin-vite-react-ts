@@ -46,6 +46,23 @@ function MyCanvas({ onInit }: { onInit: (lib: ExternalLib) => void }) {
 - Don't conditionally render the container div — keep it mounted
 - Use `useMemo` + `useCallback` for stable ref assignment
 
+## Audio Playback (`<audio>` / `Audio()`)
+
+- **No auth headers** — `new Audio()` / `<audio>` cannot attach `Authorization`
+  headers; only cookies are sent. For authenticated audio use **signed URLs**
+  (short-lived GCS signed URLs, as `ReadersAudioService` returns) or a proxy
+  endpoint. `AudioEngine.playUrl` sets `audio.src = url` directly.
+- **Autoplay policies** — `audio.play()` returns a promise; a rejected promise
+  (autoplay blocked before a user gesture) must be caught and playback should
+  degrade gracefully (e.g. browser `SpeechSynthesis` fallback).
+- **Pause on popover open / Page-Visibility** — pause playback when a popover
+  opens and on `visibilitychange` (`document.hidden`); resume if it was playing
+  before (see `useAudioPlayer`).
+- **Hook decomposition (readers)** — split fetch from playback: `usePassageAudio`
+  loads URLs, `useAudioPlayer` plays them (single responsibility). Use distinct
+  store signals for intent: `pendingIndex` (tap-to-play, auto-advance) vs
+  `pendingSingleIndex` (single sentence, no auto-advance) — see `audioStore.ts`.
+
 ---
 
 **See also:** `frontend-pre-delivery-checklist.instructions.md` (animation rules) • `testing-standards.instructions.md` (test ref interactions)

@@ -11,15 +11,17 @@ Prevents visual drift between Storybook-validated UI and the production page aft
 
 Use these commands when working with Storybook:
 
-| Command                   | Purpose                                 | Port |
-| ------------------------- | --------------------------------------- | ---- |
-| `npm run storybook`       | Start Storybook dev server              | 6006 |
-| `npm run build-storybook` | Build static Storybook output           | —    |
-| `npm run test-storybook`  | Run Storybook test runner with coverage | —    |
+| Command                                                  | Purpose                                                                                    | Port |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---- |
+| `npm run storybook --workspace=@mandarin/frontend`       | Start Storybook dev server                                                                 | 6006 |
+| `npm run build-storybook --workspace=@mandarin/frontend` | Build static Storybook output                                                              | —    |
+| `npm run test-storybook --workspace=@mandarin/frontend`  | Run story tests: vitest run --project storybook (via @storybook/addon-vitest), no coverage | —    |
+
+**cwd note:** `storybook` / `test-storybook` / `build-storybook` live in the `@mandarin/frontend` workspace only. The table shows the canonical repo-root command forms with `--workspace=@mandarin/frontend` (as `storybook-checks.yml` does). Running bare `npm run storybook` at the root fails.
 
 ### How to View Stories in the Browser
 
-After running `npm run storybook`, Storybook opens at `http://localhost:6006`. Use the `open_browser_page` tool to open this URL, then navigate to the story via the sidebar.
+After running `npm run storybook --workspace=@mandarin/frontend`, Storybook opens at `http://localhost:6006`. Use the `open_browser_page` tool to open this URL, then navigate to the story via the sidebar.
 
 Story URLs follow this pattern:
 
@@ -40,7 +42,7 @@ All defined in `.storybook/decorators/`:
 
 ### How to Verify a Story
 
-1. Run `npm run storybook` (keep running in background)
+1. Run `npm run storybook --workspace=@mandarin/frontend` (keep running in background)
 2. Open `http://localhost:6006` in the browser
 3. Navigate to the story via the sidebar or direct URL
 4. Verify all visual states render correctly (default, loading, error, empty)
@@ -329,8 +331,6 @@ When modifying an existing feature component (in `features/*/components/`):
 
 Page-level stories are the visual source of truth. When a sub-component changes, all pages that render it must have their stories updated to match. This prevents visual drift between Storybook and production.
 
-````
-
 ### Exception — Genuinely Reusable Components
 
 If a feature-level component becomes genuinely reusable across multiple features, **move it to `shared/components/` first**, then create its `.stories.tsx` under the `"Shared/..."` prefix.
@@ -343,7 +343,7 @@ const meta: Meta<typeof QuizCard> = {
   title: "Shared/QuizCard",
   component: QuizCard,
 };
-````
+```
 
 ### Rationale
 
@@ -352,7 +352,7 @@ const meta: Meta<typeof QuizCard> = {
 - **Fewer files** — Eliminates ~4+ story files per page. States are expressed as story variants, not separate feature-level story files.
 - **Industry standard** — Leading Storybook projects (Storybook itself, Chakra UI, Radix UI, Adobe React Spectrum) organize by reusable component library + page-level integration stories.
 
-## 5. Design Confirmation Gate
+## 6. Design Confirmation Gate
 
 Before adding any business logic to the container, the Storybook stories must be **confirmed** against the design:
 
@@ -369,7 +369,7 @@ Before adding any business logic to the container, the Storybook stories must be
 
 **If changes are needed:** Update the container's feature components + stories first, reconfirm, then proceed to logic.
 
-## 5. Post-Logic Verification Checklist
+## 7. Post-Logic Verification Checklist
 
 After adding business logic to a container, run this checklist:
 
@@ -378,7 +378,7 @@ After adding business logic to a container, run this checklist:
 - [ ] **Check for orphaned states** — A story state the container cannot produce is "orphaned"
 - [ ] **Screenshot comparison** — Capture production page and compare against Storybook story
 
-## 6. No Business Logic in Stories
+## 8. No Business Logic in Stories
 
 Story files must never contain:
 
@@ -412,7 +412,28 @@ export const Default: Story = {
 };
 ```
 
-## 7. Drift Detection During Code Review
+## 9. Story Test Isolation
+
+`localStorage` and module singletons **leak between stories** — state written by one story
+survives into the next and corrupts the render. Real case: `localStorage.treeMode` persisted
+by a phonetic-tree story leaked into radical-tree stories, so a story rendered the wrong tree.
+
+Rule:
+
+- Reset `localStorage` (and any module-level singletons the component reads/writes) in a
+  per-story `beforeEach` so every story starts deterministic.
+- Use a factory helper instead of repeating raw `localStorage` calls:
+  ```tsx
+  function treeModeBeforeEach(mode: "radical" | "phonetic") {
+    return async () => {
+      localStorage.setItem("treeMode", mode);
+    };
+  }
+  // meta/stories use: beforeEach: treeModeBeforeEach("radical")
+  ```
+- ❌ Never rely on story execution order to "clean up" after itself.
+
+## 10. Drift Detection During Code Review
 
 When reviewing a PR that touches page files:
 
@@ -422,13 +443,96 @@ When reviewing a PR that touches page files:
 4. Flag any `error={null}` or `isLoading={false}` hardcodings in container that orphan a story state
 5. Verify the MSW handler responses match the shape expected by the container's hooks
 
-## 8. Story Scoping — When to Write Stories
+## 11. Which Components Get Stories (Decision Table)
 
-| Category                   | Stories?                                   | Where                                   |
-| -------------------------- | ------------------------------------------ | --------------------------------------- |
-| **Shared components**      | ✅ Each has its own `.stories.tsx`         | `shared/components/<Name>/`             |
-| **Page containers**        | ✅ Single `*PageFull.stories.tsx` per page | `pages/` (targets `*Page.tsx` with MSW) |
-| **Feature sub-components** | ❌ No individual stories                   | `features/*/components/`                |
+This decision table is the **source of truth** for which component gets a story
+and at which target. It formalizes the three-category hierarchy in §4 and is
+machine-checkable via the registry contract below.
+
+| Category                  | Story rule                                                                                                                                               | Target                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `Pages/*`                 | Every page container `*Page.tsx` gets one `<Name>Full.stories.tsx` (all states, MSW)                                                                     | `*Page.tsx` — never a `*PageContent.tsx` split         |
+| `Layouts/*`               | Every real layout gets a story rendering the ACTUAL layout via provider decorators                                                                       | real `AppLayout` / `LearnLayout` — no inline stand-ins |
+| `Shared/*`                | Every shared component in `component-registry.json` gets its own `.stories.tsx`                                                                          | the component                                          |
+| `features/*/components/*` | NO individual stories — feature components are exercised via their page-container story. Reusable candidates must graduate to `shared/components/` first | —                                                      |
+
+### Registry Contract (machine-checkable)
+
+Every shared component in `.github/component-registry.json` must carry a
+`storybook` block:
+
+```jsonc
+"storybook": { "storyFile": "<repo-relative path to .stories.tsx>", "states": ["variant-catalog", "default", "loading", "error", "empty", "disabled", "edge"] }
+```
+
+- `storyFile` — repo-relative path to the component's `.stories.tsx`.
+- `states` — the visual states the story file must expose; pick tokens from the
+  Canonical STATE MATRIX (§12) that apply to the component.
+- **Enforced by** `scripts/check-registry-stories.mjs` and the frontend-audit
+  skill. A registry entry without a `storybook` block — or with a `storyFile`
+  that does not exist, or `states` the story file does not expose — fails the check.
+
+## 12. Canonical STATE MATRIX (Required States)
+
+This section is the **source of truth** for which visual states every story
+surface must expose. It complements the story→container mapping in §3, the
+three-category rules in §4, and the story-who decision table in §11.
+
+### Required States by Surface
+
+| Surface                            | Required states                                                                                    | Mechanism                  |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------- |
+| Page containers                    | Default + Loading + Error + Empty (+ edge where the container has one)                             | MSW only                   |
+| Layouts                            | Authenticated / guest + active-route (sidebar/pill) variants                                       | provider decorators        |
+| Shared presentational (props-only) | Variant catalog (`AllVariants`) + component-relevant states (disabled/loading/empty if they exist) | props; no MSW              |
+| Shared stateful (hooks/context)    | Default / Loading / Error / Empty                                                                  | MSW or provider decorators |
+
+### State Parity Rule (normative)
+
+Extends the mapping in §3 to be **bidirectional**:
+
+- Every story state MUST have a corresponding real container code path.
+- Every container code path that renders a distinct visual state MUST have a
+  corresponding story state. The only escapes are the explicit exemptions below
+  and states annotated as exempt in the story file.
+
+### MSW-Only Rule for Page Containers
+
+- Page-container story states are simulated with **MSW only**.
+- Store-injection (Zustand `setState` in a story) is **prohibited** for
+  simulating API-data states (default/loading/error/empty).
+- Store/context injection is allowed ONLY inside decorators, and only for
+  context (auth/guest, layout) — never for data-fetch states.
+
+### Static-Page Exemption Clause
+
+- A page container that performs NO initial data fetch on mount may ship a
+  **Default-only** story; justify the exemption in the story file.
+- Any page that fetches on mount MUST have Default/Loading/Error/Empty.
+- Approved exemption list:
+  - `LoginPage`, `RegisterPage` (form pages, no initial fetch) — **EXEMPT** (Default-only).
+  - `LibraryPage`, `ProgressPage` (fetch on mount) — **REQUIRE** full states.
+
+### No-Business-Logic Rule (enforces §8)
+
+- Stories must not define parallel implementations (e.g. inline wrappers that
+  re-implement a container's hooks/effects) to reach a state a container code
+  path already produces.
+- Business/timing behavior belongs in **integration tests** (see
+  `testing-standards.instructions.md`), not in stories.
+
+### KNOWN DEFERRED EXCEPTIONS (tech debt — migration deferred)
+
+The following existing `Features/...` story files violate the decision table in
+§11. Their migration into page-container stories is **DEFERRED** by decision —
+they are flagged as tech debt:
+
+- `features/radicals/components/RadicalHub.stories.tsx`
+- `features/character-hub/components/CharacterHub/CharacterHub.stories.tsx`
+- `features/lexical-hub/components/LexicalHubRouter.stories.tsx`
+
+❌ **No NEW `Features/...` story files may be added.** New feature surfaces are
+exercised via their page-container story (see §11).
 
 ---
 

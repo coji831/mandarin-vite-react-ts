@@ -59,6 +59,33 @@ root-container { height: 100vh }           ← MUST be bounded (not min-height)
 } /* scrolls */
 ```
 
+### Flex shrink/clip gotcha (from commit f365dc54)
+
+A flex item with `overflow: hidden` sets `min-height: auto → 0`, so flex **shrinks** expanded
+content — content stays in the DOM but is invisible. Real case: `.phonetic-family-node` was
+rendered at 49px (header height) instead of 357px; the expanded member list was clipped.
+
+Two rules:
+
+1. **`flex-shrink: 0` on the growing child** — never let a dynamic-content item be shrunk
+   below its content height:
+   ```css
+   .phonetic-family-node {
+     flex-shrink: 0;
+   }
+   ```
+2. **ONE unified scroll container, not nested per-item scrollers** — the tab wrapper is the
+   single scroll zone; items inside must NOT each carry `overflow-y: auto` / `max-height`:
+   ```css
+   .radical-trees-tab {
+     flex: 1;
+     min-height: 0;
+     overflow-y: auto;
+   }
+   ```
+   Nested per-item `overflow-y: auto`/`max-height` re-introduces the shrink/clip bug and
+   creates nested scrollbars.
+
 ## CSS Architecture (3-File Split)
 
 | File                    | Purpose                                         | Example content                                                            |
@@ -76,6 +103,16 @@ This project has a machine-readable design token file at the project root: `DESI
 - ✅ ALWAYS read `DESIGN.md` before styling any component
 - ✅ ALWAYS use CSS variables from `apps/frontend/src/styles/globals.css` — they map directly to DESIGN.md tokens
 - ❌ NEVER hardcode hex values, spacing, or font sizes — they all have CSS variables
+
+## Token vs Structural Values (Architect decision D4)
+
+- ✅ Colors, radii, and the spacing scale MUST come from tokens (`var(--*)` / utility classes). No exceptions.
+- ✅ One-off **structural layout values** are acceptable as documented exceptions — do NOT tokenize every px:
+  - min-heights for fixed-state shells (e.g. `.radical-trees-tab__loading { min-height: 200px; }`)
+  - hairline borders / small deltas (e.g. `2px` border-left on `.phonetic-family-node__members`)
+  - fixed widths/paddings that are pure layout math, not a spacing-scale value (e.g. `40px`, `200px`)
+- The epic-21 tree components (`RadicalTreesTab.css`, `PhoneticFamilyNode.css`) are the sanctioned example of the boundary.
+- ❌ Do not invent new tokens for every px — that bloats the token surface and creates token drift.
 
 ## ✅ Utility Classes (in `globals.css` — Single-Property)
 
@@ -163,15 +200,12 @@ These classes live in `components.css` and bundle **multiple properties** into r
 
 ## ✅ Animation Classes (in `animations.css`)
 
-| Class                                    | Effect                                        |
-| ---------------------------------------- | --------------------------------------------- |
-| `.animate-fade-in`                       | Fade-in animation                             |
-| `.animate-slide-up`                      | Slide-up animation                            |
-| `.animate-pulse` / `.animate-pulse-fast` | Pulse opacity                                 |
-| `.skeleton-loading`                      | Skeleton shimmer animation                    |
-| `.transition-all`                        | `transition: all var(--transition-fast)`      |
-| `.transition-colors`                     | `transition: background, border-color, color` |
-| `.transition-opacity`                    | `transition: opacity`                         |
+| Class                | Effect                                        |
+| -------------------- | --------------------------------------------- |
+| `.animate-fade-in`   | Fade-in animation                             |
+| `.skeleton-loading`  | Skeleton shimmer animation                    |
+| `.transition-all`    | `transition: all var(--transition-fast)`      |
+| `.transition-colors` | `transition: background, border-color, color` |
 
 ## ✅ Example
 
@@ -236,23 +270,9 @@ import { Button, Input, FilterChip } from "shared/components";
 
 ## ✅ Component Decomposition
 
-- Keep component files under ~150 lines
-- Extract render branches >30 lines into separate sub-components
-- Each sub-component handles ONE concern
-
-```tsx
-// ✅ DO — Decomposed
-function MyFeature() {
-  if (loading) return <LoadingScreen />;
-  if (error) return <ErrorScreen error={error} />;
-  return <MyFeatureContent />;
-}
-
-// ❌ BAD — Monolithic component
-function MyFeature() {
-  // ... 200+ lines with everything inlined
-}
-```
+Follow the **component-decomposition skill** (`.github/skills/component-decomposition/SKILL.md`)
+for the hierarchy rule and decomposition checklist. Summary: keep component files under ~150 lines;
+extract render branches >30 lines into single-concern sub-components.
 
 ## Global CSS Avoidance
 
@@ -265,7 +285,7 @@ function MyFeature() {
 - ❌ NEVER hardcode color values (`rgba()`, `#hex`, named colors) in component CSS — use CSS variables from `globals.css`
 - ❌ NEVER use arbitrary opacity values like `opacity: 0.35` — use the `op-40`, `op-60`, `op-80`, `op-100` utility classes from `globals.css`
 - ❌ NEVER write `transition` in feature component CSS — transitions belong on shared components (`components.css` or `animations.css`)
-- ✅ Use `className="transition-all"`, `className="transition-opacity"`, etc. from `animations.css` when needed in JSX
+- ✅ Use `className="transition-all"`, `className="transition-colors"`, etc. from `animations.css` when needed in JSX
 
 ## Directional Properties Prohibition
 

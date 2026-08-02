@@ -44,3 +44,4 @@ When modifying the database schema, follow the **Prisma safety checklist** in th
 ## Self-Audit
 
 Before routing to Code Reviewer, run the **[backend-audit skill](../skills/backend-audit/SKILL.md)** to self-review your own code against all backend conventions.
+Verify any API/module doc you touched matches the shipped routes (endpoints exist in ROUTE_PATTERNS, no removed/renamed endpoints still documented).

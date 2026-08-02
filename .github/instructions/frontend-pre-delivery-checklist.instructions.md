@@ -1,5 +1,5 @@
 ---
-description: "Use before reporting any UI code as complete. Run through every item to catch common design violations — token compliance, states coverage, interaction, layout, and quality gates."
+description: "Use before reporting any UI code as complete. Run through every item to catch common design violations — token compliance, states coverage, interaction, layout, and pre-ship gate pointers."
 applyTo: "apps/frontend/src/**/*.tsx"
 ---
 
@@ -11,7 +11,7 @@ Before reporting any UI code as complete, verify every item. Each section cross-
 
 See `frontend-css-styling.instructions.md` for the full styling workflow.
 
-- [ ] Read `docs/guides/design-reasoning.md` — confirm your design aligns with Warm Minimalism
+- [ ] Read `docs/guides/design/design-reasoning.md` — confirm your design aligns with Warm Minimalism
 - [ ] No hardcoded colors (`#xxx`, `rgba()`) in `.tsx` files — use CSS variables only
 - [ ] No hardcoded spacing (`gap:`, `padding:`, `margin:` with raw px) in CSS — use `var(--space-*)`
 - [ ] No hardcoded font sizes — use `var(--font-*)`
@@ -32,7 +32,9 @@ See `ui-composition.instructions.md` for CTA clarity and layout rules.
 
 - [ ] All clickable elements have `cursor: pointer` and hover/press states
 - [ ] All icon-only buttons have `aria-label`
-- [ ] Animations use `transform`/`opacity` only — never `width`/`height`/`top`/`left`
+- [ ] No animation/transition/transform/pseudo-element motion in feature CSS unless a shared component variant or the documented tree exception (see `DESIGN.md` — Global Motion Rule; Radical/Phonetic Trees expand/collapse is the single documented exception)
+- [ ] Dialog focus — focus moves into dialogs on open (`tabIndex={-1}`) and returns to the trigger on close (WCAG 2.4.3)
+- [ ] Long browser/e2e verification runs use **small surgical batches + incremental on-disk ledger** per `docs/knowledge-base/practices/agent-browser-verification.md`
 
 ## Layout
 
@@ -42,15 +44,31 @@ See `ui-composition.instructions.md` for container discipline and `frontend-visu
 - [ ] Verified at 320px, 768px, 1024px
 - [ ] No horizontal scroll
 - [ ] Spacing hierarchy correct — section gaps > item gaps
+- [ ] **Z-index layering** — spot-check at least one modal + one popover/overlay in browser: correct stacking vs page chrome, focus surface not unexpectedly covered
+- [ ] **Layout stability (CLS)** — no measurable layout shift when data resolves (skeleton dimensions match final content; images/media reserve space)
+- [ ] **Mobile/tablet browser spot-check** — at least one 375–390px mobile + one 768px tablet browser pass (complements the existing static 320/768/1024 CSS check); **required when the story changes layout/composition**, otherwise optional
 
-## Quality Gates
+## Quality Gates (Pointer to Canonical Model)
+
+Gates are defined in the canonical two-tier model in
+`project-workflow.instructions.md` (source of truth) — this checklist does not
+redefine them. Tier 2 (full suite) applies on pre-ship:
+
+- **Static (Tier 1):** `npm run build` + `npm run lint`
+- **Full suite (Tier 2):** `npm run test:full` + `npm run test-storybook --workspace=@mandarin/frontend`
+- **Design:** `npx @google/design.md lint DESIGN.md` + `npm run design-audit`
+
+`npm test` is the changed-scope Tier-1 runner only — the full-suite gate is
+`npm run test:full`.
+
+UI-specific non-gate items still required before reporting UI complete:
 
 - [ ] No `console.log`, no commented-out code, no TODO/FIXME comments in production code
 - [ ] Storybook story exists for new components (see `storybook-production-alignment.instructions.md`)
-- [ ] `npx @google/design.md lint DESIGN.md` passes
-- [ ] `npm run lint` — 0 errors (0 warnings preferred)
-- [ ] Existing tests pass — `npm test` (or `npm run test:full` for full suite, see `testing-standards.instructions.md`)
-- [ ] `npm run build` — type-check + bundle succeeds
+- [ ] Feature `docs/design.md` (if changed) matches the shipped component structure — renamed components reflected, no stale sections.
+- [ ] **No new `Features/...` stories** — story placement restricted to Pages/Layouts/Shared (3 grandfathered stories tracked as TD-001..003 in `docs/guides/testing/known-failures.md`)
+- [ ] **`component-registry.json` consulted** before creating UI structure; no reimplemented shared component; no shared-component class on a raw native element
+- [ ] **DESIGN.md ↔ globals.css token parity** — new/changed tokens present in both (reconcile drift)
 
 ---
 

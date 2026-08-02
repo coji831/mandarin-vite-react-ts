@@ -48,7 +48,7 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 3. Follow data-resilient shell principle: fixed container dimensions, inner scroll for dynamic content
 4. Test at 320px for responsive correctness — no horizontal scroll
 5. See `frontend-css-styling.instructions.md` for the full styling workflow
-6. Run `npm run test-storybook` to verify stories render correctly
+6. Run `npm run test-storybook --workspace=@mandarin/frontend` to verify stories render correctly
 
 #### Step 6: User Preview & Approval (Gate)
 

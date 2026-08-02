@@ -1,6 +1,6 @@
 {
   "description": "Mandarin-Vite-React-TS shared component registry. The agent MUST check this before creating any UI structure. Do not invent components not listed here.",
-  "scope": "Presentation components only. Feature containers (components that call hooks/services) live in feature folders and are documented in their feature docs/design.md, NOT in this registry. (Architect decision D1)",
+  "scope": "Catalogs shared presentational components AND registered feature/domain components (e.g. CharacterHub, HubMnemonicSection, TreeRootNode, BranchNode, PhoneticFamilyNode, ClusterCard, ConstituentCharacterChips) documented in their feature docs/design.md. Other feature containers (components that call hooks/services) live in feature folders only. (Architect decision D1)",
   "version": "1.0",
   "components": {
     "Box": {
