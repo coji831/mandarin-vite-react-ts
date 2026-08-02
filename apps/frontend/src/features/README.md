@@ -21,14 +21,19 @@ feature-name/
 
 ## Available Features
 
-| Feature           | Description                                                                             | README                             |
-| ----------------- | --------------------------------------------------------------------------------------- | ---------------------------------- |
-| **auth**          | JWT-based authentication with login, register, and token refresh                        | [`auth/README.md`](auth/README.md) |
-| **character-hub** | Slide-up overlay panel showing character/word details, radical decomposition, mnemonics | —                                  |
-| **foundations**   | Phase 1 learning: pinyin, tones, strokes, animations                                    | —                                  |
-| **quiz**          | Phase-gated assessment via Strategy pattern with multiple quiz modes                    | —                                  |
-| **radicals**      | Radical browser, detail cards, radical trees, character decomposition                   | —                                  |
-| **review**        | SRS flip-card practice with SM-2 scheduling, multiple content types                     | —                                  |
+| Feature               | Description                                                                             | README                             |
+| --------------------- | --------------------------------------------------------------------------------------- | ---------------------------------- |
+| **auth**              | JWT-based authentication with login, register, and token refresh                        | [`auth/README.md`](auth/README.md) |
+| **character-hub**     | Slide-up overlay panel showing character/word details, radical decomposition, mnemonics | —                                  |
+| **foundations**       | Phase 1 learning: pinyin, tones, strokes, animations                                    | —                                  |
+| **quiz**              | Phase-gated assessment via Strategy pattern with multiple quiz modes                    | —                                  |
+| **radicals**          | Radical browser, detail cards, radical trees, character decomposition                   | —                                  |
+| **review**            | SRS flip-card practice with SM-2 scheduling, multiple content types                     | —                                  |
+| **dashboard**         | Learning statistics and activity overview                                               | —                                  |
+| **lexical-hub**       | Entity detail hub — modal overlay hosting entity-specific detail panels                 | —                                  |
+| **phonetic-clusters** | DB-driven phonetic family browsing with HSK filtering                                   | —                                  |
+| **readers**           | Graded readers — passage browsing/reading, sessions, bookmarks, in-text word lookup     | —                                  |
+| **word-hub**          | Word detail panel — pinyin, definitions, HSK, character chips, measure words            | —                                  |
 
 ## Documentation
 

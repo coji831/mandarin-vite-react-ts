@@ -2001,10 +2001,11 @@
     </div>
 
     <div class="ok">
-      <strong>🟢 OK — ContentIndexService auto-syncs on first use:</strong>
-      <span class="code">ContentIndexService.syncManifest()</span> runs on cold start (lazy, via
-      <span class="code">_ensureSynced()</span>). Reads from GCS or local filesystem depending on
-      environment — same as <span class="code">contentUtils.ts</span>.
+      <strong>🟢 OK — Strokes served by FoundationsService (DB-backed):</strong>
+      <span class="code">FoundationsService.getStrokesReference()</span> serves
+      <span class="code">GET /v1/foundations/data/strokes</span>; the frontend calls it via
+      <span class="code">foundationsService.getStrokesReference()</span>. Content is read from the
+      database — the legacy <span class="code">ContentIndexService</span> is dead code and removed.
     </div>
 
     <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08)" />

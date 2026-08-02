@@ -3,6 +3,16 @@
 **Category:** Backend Development  
 **Last Updated:** June 26, 2026
 
+> ⚠️ **SUPERSEDED — All-in-DB (July 2026).** The "file per entity" model
+> described below is **obsolete**. The project moved to an **all-in-DB**
+> architecture: static content (characters, words, radicals, tones, pinyin,
+> references) is bulk-loaded into Prisma tables by the seed pipeline
+> (`content/seed/phase2/*.json → prisma/seed.ts → PostgreSQL`) and **served
+> only through Prisma repositories at runtime** — no JSON file reads.
+> See [Seed Pipeline Guide](../../guides/data/seed-pipeline.md). Keep the
+> **stable business-key IDs** and **content-version** principles from this
+> article; ignore the file-per-entity storage guidance (Rules 4–5).
+
 ---
 
 ## Why

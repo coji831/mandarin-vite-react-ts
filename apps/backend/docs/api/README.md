@@ -1,8 +1,10 @@
 # Backend API Specification
 
-**Last Updated:** July 1, 2026
+**Last Updated:** August 2, 2026
 
-Complete API reference for the Express backend server. Each domain has its own specification file.
+API reference for the Express backend server, covering the following domains. Each domain has its own specification file.
+
+> ⚠️ **Scope note:** This reference is **not** a complete API reference for the whole backend. It covers the 7 domains listed below (auth, health, caching, TTS, AI feedback, error format, environment). The modulith has 13 modules; APIs for the **quiz** (incl. strategies + sandhi drill), **readers** (passages/sessions/bookmarks/audio), **characters**, **radicals**, **phonetic-clusters**, **words** (incl. measure words), **mnemonics**, **progression**, **review**, and **foundations** modules are documented in their respective epic/feature docs and are not yet captured here.
 
 ## Domain Index
 

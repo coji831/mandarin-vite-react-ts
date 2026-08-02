@@ -22,6 +22,8 @@
 - [ ] [Criterion_4]
 - [ ] [Criterion_5]
 
+> Do NOT pre-tick AC boxes; leave `- [ ]` until the code is verified complete. Never leave TBD status post-merge.
+
 ## Business Rules
 
 1. [Business_rule_1]
@@ -30,8 +32,8 @@
 
 ## Related Issues
 
-- #[ISSUE-NUMBER] / **Related Story Title** *(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)* ([Relationship type])
-- #[ISSUE-NUMBER] / **Related Story Title** *(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)* ([Relationship type])
+- #[ISSUE-NUMBER] / **Related Story Title** _(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)_ ([Relationship type])
+- #[ISSUE-NUMBER] / **Related Story Title** _(link to `story-[EPIC-NUM]-[STORY-NUM]-[SHORT-TITLE].md`)_ ([Relationship type])
 
 ## Implementation Status
 
@@ -39,4 +41,3 @@
 - **PR**: #[PR-NUMBER]
 - **Merge Date**: [Date]
 - **Key Commit**: [commit-hash] ([Brief commit description])
-

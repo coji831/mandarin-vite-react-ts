@@ -333,6 +333,7 @@ Solution: Query CharacterProgress.count() with userId filter and confidence > 0 
 - **Key Commit**: `5a136f77`
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

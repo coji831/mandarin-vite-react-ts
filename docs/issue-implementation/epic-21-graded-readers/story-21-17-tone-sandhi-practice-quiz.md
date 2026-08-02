@@ -150,7 +150,9 @@ Component delegates data fetching to `sandhiDrillService.ts` (service layer patt
 **Root Cause:** Questions need genuine 2-character words that exhibit the 4 sandhi rules.
 
 **Solution:** `SandhiDrillService` queries `Word` + `WordCharacter` + `Character` + `CharacterReading`, filters to 2-character words, buckets candidates by tone pattern into the 4 sandhi rules, distributes round-robin, and generates 4 options (sandhi form + dictionary form + 2 distractors).
+
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

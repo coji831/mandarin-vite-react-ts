@@ -223,8 +223,8 @@ The audit of `apps/backend/src/modules/radicals/` found a single character-relat
 
 Add the following to `packages/shared-constants/src/index.js` and `packages/shared-constants/index.d.ts`:
 
-| Constant                  | Value                                     | Used By                |
-| ------------------------- | ----------------------------------------- | ---------------------- |
+| Constant                  | Value                                 | Used By               |
+| ------------------------- | ------------------------------------- | --------------------- |
 | `charactersPhonetic`      | `/v1/characters/:glyph/phonetic`      | `charactersRoutes.ts` |
 | `charactersHomophones`    | `/v1/characters/:glyph/homophones`    | `charactersRoutes.ts` |
 | `charactersDecomposition` | `/v1/characters/:glyph/decomposition` | `charactersRoutes.ts` |
@@ -387,6 +387,7 @@ Solution: Controller returns 400 VALIDATION_ERROR when all params (q, tone, hskL
 ```
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

@@ -309,5 +309,5 @@ The prompt is built dynamically by `ReadersService.buildPrompt(topic, hskLevel)`
 
 1. Selects the topic template
 2. Injects `{LEVEL}` and `{WORD_COUNT}` parameters
-3. Sends the complete prompt to `GeminiService.generatePassage()`
+3. Sends the complete prompt to `GeminiService.generateRaw()`
 4. Parses the JSON response and validates the structure

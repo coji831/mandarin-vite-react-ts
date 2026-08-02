@@ -1,7 +1,7 @@
 # Advanced React Patterns
 
 **Category:** Frontend Development  
-**Last Updated:** December 9, 2025
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -264,6 +264,23 @@ useEffect(() => {
   return () => clearLogoutCallback();
 }, []);
 ```
+
+### Single-Flight Across ALL Refresh Paths (Epic 21 / F4)
+
+The singleton-promise refresh must be shared by **every** path that can trigger a refresh — not just the interceptor. In `apps/frontend/src/shared/api/axiosClient.ts` the **exported** `requestAccessToken()` is the single entry point used by:
+
+- **Auth bootstrap** — `AuthContext` refreshes on mount (guest: single non-fatal `400 MISSING_TOKEN`).
+- **Request interceptor** — proactive refresh when the stored token is expired (30s buffer).
+- **Response interceptor** — reactive refresh on `401` or `403 INVALID_TOKEN`, then retry once.
+- **Background refresh** — `AuthContext` re-checks every 5 minutes (`REFRESH_CHECK_INTERVAL`).
+
+**Why it MUST be shared:** the backend **rotates** the refresh session — every `POST /auth/refresh` deletes the old `Session` row and issues a new cookie (see `backend-authentication.md`). Two concurrent refreshes with the same cookie **race**: the loser's session is already deleted → `401 INVALID_TOKEN` → treated as fatal → the user is wrongly logged out. The module-level `refreshPromise` coalesces every caller into ONE in-flight refresh, and its failure side effects (localStorage token removal + registered logout callback) run **exactly once** — callers must never duplicate them.
+
+Additional Epic 21 hardening:
+
+- Reactive retry now fires on **401 OR 403 with `code === "INVALID_TOKEN"`** (tampered/forged access tokens returned 403 and previously never refreshed).
+- Network-error retry is **GET-only** and can be opted out per request with `_skipRetry: true` (fail-fast browse fetches skip the 1s/2s/4s backoff chain).
+- Never refresh-then-retry the refresh call itself (guarded by the URL containing `auth/refresh`).
 
 ### Network Retry with Exponential Backoff
 

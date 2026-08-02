@@ -265,6 +265,7 @@ Phase D (Character Practice UI/UX, stories 21.13–21.21) operates as three para
 21. **Story 21.21** — Pictograph Warmup (PictographGallery, oracle bone evolution, Pictograph Match mini-game)
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

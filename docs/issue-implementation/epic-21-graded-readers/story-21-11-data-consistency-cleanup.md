@@ -612,6 +612,7 @@ All test files currently use mock data with `hsk_characters`. They must be updat
 - **Key Commit**: `48d0229b`
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

@@ -307,6 +307,7 @@ export type { EntityType, EntityRef } from "./hub";
 **Implementation order:** Create `shared/types/` first, before any other new file in this story, since all other components depend on these type definitions.
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

@@ -24,11 +24,11 @@ Build the backend passage generation system: Gemini API integration, backend seg
 
 ### API Endpoints
 
-| Method | Endpoint                          | Auth     | Description                                     |
-| ------ | --------------------------------- | -------- | ----------------------------------------------- |
+| Method | Endpoint                          | Auth         | Description                                     |
+| ------ | --------------------------------- | ------------ | ----------------------------------------------- |
 | `GET`  | `/v1/readers/passages?hskLevel=N` | optionalAuth | List cached passages at level                   |
 | `GET`  | `/v1/readers/passages/:id`        | optionalAuth | Full passage with segmented result + audio URLs |
-| `POST` | `/v1/readers/generate`            | Required | Generate passage. Body: `{ topic }`. Auth-only  |
+| `POST` | `/v1/readers/generate`            | Required     | Generate passage. Body: `{ topic }`. Auth-only  |
 
 ### SegmenterService
 

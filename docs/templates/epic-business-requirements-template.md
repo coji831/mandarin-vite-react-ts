@@ -61,6 +61,7 @@ Guidance:
 - The checklist may contain 1..N items â€” there is no fixed limit.
 - Map each checklist item to at least one story or test case. Keep items concise (one line) and include a clear verifier (what to check and how).
 - When preparing a PR for this epic, update the checklist status in the PR description to reflect completed items and reference story/issue numbers where applicable.
+- AC checkboxes are never pre-ticked; tick only when verified against shipped code.
 
 ## Architecture Decisions
 

@@ -299,6 +299,7 @@ All tests pass via `npx vitest run --reporter verbose src/modules/words/`.
 - `packages/shared-constants/src/index.d.ts` — type declaration for `wordsMeasureWords`
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

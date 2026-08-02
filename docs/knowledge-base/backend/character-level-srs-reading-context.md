@@ -27,11 +27,11 @@ This pattern applies to all polyphonic characters: 了 (le vs liǎo), 行 (xíng
 
 ### Three-Layer Approach
 
-| Layer | Concept                       | Purpose                                  | Example                                           |
-| ----- | ----------------------------- | ---------------------------------------- | ------------------------------------------------- |
-| 1     | **CharacterProgress**         | One SRS record per glyph per user        | 好 has one progress record, regardless of reading |
-| 2     | **WordStudyContext**          | Which word provided the learning context | When reviewing 好, show context from 爱好 or 很好 |
-| 3     | **Word.spokenPinyinOverride** | Tone sandhi adjustment                   | 你好 = nǐ hǎo (dict) → ní hǎo (spoken)            |
+| Layer | Concept                     | Purpose                                                                                                                                                                  | Example                                           |
+| ----- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| 1     | **CharacterProgress**       | One SRS record per glyph per user                                                                                                                                        | 好 has one progress record, regardless of reading |
+| 2     | **WordStudyContext**        | Which word provided the learning context                                                                                                                                 | When reviewing 好, show context from 爱好 or 很好 |
+| 3     | **Spoken pinyin rendering** | Tone sandhi: quiz scoring via `isSandhiAcceptable()` (shared-utils); TTS renders via Google neural engine. No `spokenPinyinOverride` field — possible future enhancement | 你好 = nǐ hǎo (dict) → ní hǎo (spoken)            |
 
 ### How It Differs from Word-Level SRS
 

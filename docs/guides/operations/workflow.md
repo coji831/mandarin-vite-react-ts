@@ -1,8 +1,12 @@
 # Human-Friendly Epic/Story Workflow Checklist
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** August 2, 2026  
 **Purpose:** Step-by-step development workflow: design, plan, implement, test, review  
 **Audience:** Developers executing epics and stories
+
+> ⚠️ **Canonical gate definitions live elsewhere.** The canonical two-tier gate table lives in
+> `.github/instructions/project-workflow.instructions.md` — this file is a human-friendly checklist
+> only; do not cite it for gate definitions.
 
 **Priority Legend:**
 

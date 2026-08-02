@@ -172,7 +172,9 @@ loadMnemonic(glyph)
 **Root Cause:** Layout components each needed the same story-rendering logic.
 
 **Solution:** Extracted `renderStoryText.tsx` (shared story rendering) and `layoutSelection.ts` (pure `resolveEffectiveClassification`) as testable modules; HubMnemonicSection tests were updated (~151-line diff) from `MnemonicDisplay`/`MnemonicPictograph` to `MnemonicCard`.
+
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

@@ -180,6 +180,7 @@ Tab gating behavior:
 **Solution:** Added the tab locally in `FoundationsPage.tsx` with lock state driven by `useFoundationsProgress` (`tones.completed`), not by `FOUNDATION_SECTIONS` — the tab is always rendered but disabled/locked until Tones is complete.
 
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

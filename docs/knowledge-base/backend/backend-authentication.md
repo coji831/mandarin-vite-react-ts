@@ -1,7 +1,7 @@
 # Authentication & Security
 
 **Category:** Backend Development  
-**Last Updated:** July 3, 2026  
+**Last Updated:** 2026-08-02  
 **Epic 13 Reference:** [Story 13.3 Authentication](../../issue-implementation/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 ## TL;DR Quick Reference
@@ -328,7 +328,46 @@ User authentication, API access control, mobile apps, production web apps requir
 
 ---
 
+## Refresh Token Rotation & Concurrent Refresh
+
+**When Adopted:** Epic 21 (F4 — session refresh race)
+**Why:** Refresh tokens are **single-use** — every refresh deletes the old session, so concurrent refreshes with the same cookie race.
+
+### Token rotation on the backend
+
+`AuthService.refresh(refreshToken)` verifies the JWT **and** that the session still exists in the database, then deletes the old session before issuing new tokens:
+
+```typescript
+// AuthService.refresh (simplified)
+const payload = this.jwtService.verifyRefreshToken(refreshToken);
+const session = await this.repository.findSessionByToken(refreshToken);
+if (!session) throw new Error("Invalid refresh token");
+
+// Delete old session (token rotation) — the token is now single-use
+await this.repository.deleteSession(session.id);
+// ... issue new access + refresh tokens, store the new session
+```
+
+`logout` invalidates by deleting every session matching the token (`deleteSessionsByToken`).
+
+### Why concurrent refreshes race
+
+Because each use **deletes** the old `Session` row, two concurrent `POST /auth/refresh` calls with the same cookie can both pass verification; the first deletes the session, and the second finds nothing → `401 INVALID_TOKEN`. Without coalescing on the client, that losing request is treated as fatal and the user is wrongly logged out.
+
+### The fix is client-side single-flight
+
+The backend must keep rotating (single-use) tokens. The **frontend** is responsible for coalescing every refresh path into one in-flight request — see [Single-Flight Across ALL Refresh Paths](../frontend/frontend-advanced-patterns.md#single-flight-across-all-refresh-paths-epic-21--f4) in the frontend patterns KB.
+
+### Key Lessons
+
+- Refresh tokens are single-use — delete the old `Session` row on every refresh (rotation limits damage if a token is stolen).
+- Concurrent refreshes with the same cookie are a real race; the client MUST single-flight them.
+- Backend rotation + client single-flight together prevent spurious `401 INVALID_TOKEN` logouts.
+
+---
+
 **Related Guides:**
 
 - [Backend Architecture](./backend-architecture.md) — Auth middleware integration
 - [Database & ORM](./backend-database-postgres.md) — User model design
+- [Advanced React Patterns (frontend refresh single-flight)](../frontend/frontend-advanced-patterns.md)

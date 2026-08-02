@@ -29,6 +29,20 @@
 1. <Decision 1 - be specific about technical choices and reasoning>
 2. <Decision 2 - include rationale and alternatives considered>
 
+## Technical Challenges & Solutions
+
+<Technical challenges encountered and how they were addressed. **REQUIRED when non-trivial — debugging >1h, schema issues, architectural decisions. If none, write 'None of note' (one line).**>
+
+### Doc Truth-Check
+
+- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
+- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
+- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code
+- [ ] All relative markdown links resolve
+- [ ] Last Updated / Last Update date is current (same commit as the edit)
+
+> **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
+
 ## Technical Implementation
 
 ### Architecture

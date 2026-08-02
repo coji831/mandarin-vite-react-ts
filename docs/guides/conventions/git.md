@@ -1,6 +1,6 @@
 ﻿# Branch Strategy and Git Workflow
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** 2026-08-02  
 **Purpose:** Branch management strategy, commit conventions (Conventional Commits), and PR workflow  
 **Audience:** All developers
 
@@ -140,9 +140,63 @@ git commit -m "fix(story-5-1): correct form validation error handling"
 git commit -m "refactor(story-5-1): extract form validation to custom hook"
 ```
 
+## Squash / Reset / Reflog Recovery
+
+**When Adopted:** Epic 21 (git history surgery during the epic)
+
+### `git reset` modes
+
+| Command             | Moves HEAD | Resets index (staging) |  Touches worktree  |
+| ------------------- | :--------: | :--------------------: | :----------------: |
+| `git reset --soft`  |     ✅     |           ❌           |         ❌         |
+| `git reset` (mixed) |     ✅     |           ✅           |         ❌         |
+| `git reset --hard`  |     ✅     |           ✅           | ✅ (⚠ destructive) |
+
+- `git reset --soft <ref>` moves HEAD but **keeps the index and worktree** — the staged diff is exactly the combined changes of everything since `<ref>`. This is the safe way to squash multiple commits into one.
+- `git reset` (mixed, the default) additionally **unstages** — files revert to "modified, not staged" while worktree content is untouched.
+- `git reset --hard` also discards worktree changes — only use when you are certain.
+
+### Squash-to-one via soft reset
+
+```bash
+# Combine the last N commits into a single commit (staged diff = all their changes)
+git reset --soft HEAD~N
+git add -A
+git commit -m "feat(epic-N): ..."
+```
+
+### Verify state with actual git commands — never reconstruct from `.git`
+
+After any reset, confirm the real state with git itself instead of reconstructing from `.git` internals:
+
+```bash
+git status --porcelain      # exact staged/unstaged/untracked file list
+# Staged file count:
+git diff --cached --name-only
+# How many commits are actually on the branch:
+git rev-list --count HEAD
+# Current HEAD commit:
+git log -1 --oneline
+```
+
+### Anything reset away is recoverable
+
+- **`git reflog`** — the full history of where HEAD pointed. Every commit you reset away is still reachable by its SHA.
+- **`ORIG_HEAD`** — git records the previous HEAD during `reset`/`merge`/`rebase`, so `git reset --hard ORIG_HEAD` restores the pre-reset state.
+- Only `git gc` (prune) permanently removes unreachable commits — until then, a reset-away commit is not lost.
+
+### Common recovery
+
+```bash
+git reflog                  # find the SHA you need
+git reset --hard <sha>      # restore branch tip to that commit
+# Or restore a single file from a reflog commit:
+git checkout <sha> -- path/to/file
+```
+
 ## Resources
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Feature Flag Best Practices](https://martinfowler.com/articles/feature-toggles.html)
-- [Project Workflow Guide](./workflow.md)
-- [AI Workflow Commands](./structured-ai-prompts.md)
+- [Project Workflow Guide](../operations/workflow.md)
+- [AI Workflow Commands](../../automation/structured-ai-prompts.md)

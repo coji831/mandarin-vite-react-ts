@@ -727,7 +727,7 @@
           <span class="step-desc"
             >CSS variables → utility classes → BEM. Data-resilient shell. Responsive check at 320px.
             See <code>frontend-css-styling.instructions.md</code>. Run
-            <code>npm run test-storybook</code>.</span
+            <code>npm run test-storybook --workspace=@mandarin/frontend</code>.</span
           >
         </div>
 
@@ -840,9 +840,9 @@
           <div class="card-desc">
             Create <code>.stories.tsx</code> for page-level and complex components only. Not every
             atom needs a story — focus on consumer components + organisms. Use MSW mocks. Cover all
-            visual states. Run <code>npm run test-storybook</code>.
+            visual states. Run <code>npm run test-storybook --workspace=@mandarin/frontend</code>.
           </div>
-          <span class="card-code">*Page.stories.tsx → test-storybook</span>
+          <span class="card-code">*Page.stories.tsx → test-storybook (FE workspace)</span>
         </div>
         <div class="detail-card fe">
           <div class="card-title">🎨 CSS Priority</div>
@@ -860,7 +860,7 @@
             scope. E2E: cross-page or auth flows only (Playwright). Role/text queries via RTL. Full
             suite (<code>npm run test:full</code>) before commit.
           </div>
-          <span class="card-code">npm test → test:full → test-storybook</span>
+          <span class="card-code">npm test → test:full → test-storybook (FE workspace)</span>
         </div>
       </div>
 
@@ -914,7 +914,7 @@
           <span class="step-label" style="color: #6ee7b7">🔒 Validation</span>
           <span class="step-desc"
             >Input validation at controller layer. Error responses in
-            <code>{ error, code, message }</code> format. "Failed to {action} {resource}" message
+            <code>{ error, code }</code> format. "Failed to {action} {resource}" message
             convention.</span
           >
         </div>
@@ -1053,7 +1053,7 @@
             frontend (Vercel) calls backend (Railway) directly via API routes.
           </div>
           <div class="int-path">
-            npm run dev (FE :5173) → proxy → npm run start-backend (BE :3001)
+            npm run dev (FE :5173) → proxy → npm run dev:backend (BE :3001)
           </div>
         </div>
       </div>
@@ -1063,17 +1063,53 @@
       <!-- ============================================================ -->
       <h2 id="quality">5. Quality Gates</h2>
       <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
-        All these must pass before any commit. Run in order as part of the pre-commit gate.
+        Two-tier quality model. <strong>Tier 1</strong> runs per-change during development;
+        <strong>Tier 2</strong> runs pre-merge / story close. All gates are manual/local (no CI
+        enforcement).
+      </p>
+      <p
+        style="
+          font-size: 0.72rem;
+          color: rgba(180, 83, 9, 0.9);
+          margin-bottom: 0.75rem;
+          background: rgba(180, 83, 9, 0.08);
+          border: 1px solid rgba(180, 83, 9, 0.25);
+          border-radius: 6px;
+          padding: 0.5rem 0.75rem;
+        "
+      >
+        This is a visual mirror of the canonical gates in
+        <code>.github/instructions/project-workflow.instructions.md</code> — if they differ,
+        project-workflow wins.
       </p>
 
+      <h3 style="margin-top: 0.5rem; color: #93c5fd">Tier 1 — Per-Change (during development)</h3>
       <div class="gates-grid">
         <div class="gate-item">
           <div class="gate-icon" style="background: rgba(52, 211, 153, 0.15); color: #34d399">
             ✓
           </div>
           <div class="gate-info">
-            <div class="gate-name">Format</div>
+            <div class="gate-name">Format (soft)</div>
             <div class="gate-cmd">npm run format</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(239, 107, 107, 0.15); color: #ef6b6b">
+            !
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Lint (0 errors)</div>
+            <div class="gate-cmd">npm run lint</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa">
+            C
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Lint CSS (frontend)</div>
+            <div class="gate-cmd">npm run lint:css --workspace=@mandarin/frontend</div>
           </div>
         </div>
         <div class="gate-item">
@@ -1081,7 +1117,7 @@
             B
           </div>
           <div class="gate-info">
-            <div class="gate-name">Build</div>
+            <div class="gate-name">Build (type-check + bundle)</div>
             <div class="gate-cmd">npm run build</div>
           </div>
         </div>
@@ -1090,7 +1126,20 @@
             T
           </div>
           <div class="gate-info">
-            <div class="gate-name">Full Tests</div>
+            <div class="gate-name">Test (changed scope)</div>
+            <div class="gate-cmd">npm test</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 1.25rem; color: #fcd34d">Tier 2 — Pre-Merge / Story Close</h3>
+      <div class="gates-grid">
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24">
+            F
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Full Tests (NOT npm test)</div>
             <div class="gate-cmd">npm run test:full</div>
           </div>
         </div>
@@ -1100,27 +1149,34 @@
           </div>
           <div class="gate-info">
             <div class="gate-name">Storybook Tests</div>
-            <div class="gate-cmd">npm run test-storybook</div>
-          </div>
-        </div>
-        <div class="gate-item">
-          <div class="gate-icon" style="background: rgba(239, 107, 107, 0.15); color: #ef6b6b">
-            !
-          </div>
-          <div class="gate-info">
-            <div class="gate-name">Lint</div>
-            <div class="gate-cmd">npm run lint</div>
+            <div class="gate-cmd">npm run test-storybook --workspace=@mandarin/frontend</div>
           </div>
         </div>
         <div class="gate-item">
           <div class="gate-icon" style="background: rgba(180, 83, 9, 0.15); color: #d97706">D</div>
           <div class="gate-info">
-            <div class="gate-name">Design Audit</div>
+            <div class="gate-name">Design Lint (spec)</div>
             <div class="gate-cmd">npx @google/design.md lint DESIGN.md</div>
           </div>
         </div>
         <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(180, 83, 9, 0.15); color: #f59e0b">🎨</div>
+          <div class="gate-info">
+            <div class="gate-name">Design Audit (code)</div>
+            <div class="gate-cmd">npm run design-audit</div>
+          </div>
+        </div>
+        <div class="gate-item">
           <div class="gate-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399">
+            BE
+          </div>
+          <div class="gate-info">
+            <div class="gate-name">Backend Typecheck</div>
+            <div class="gate-cmd">npm run typecheck --workspace=@mandarin/backend</div>
+          </div>
+        </div>
+        <div class="gate-item">
+          <div class="gate-icon" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd">
             FE
           </div>
           <div class="gate-info">
@@ -1129,7 +1185,7 @@
           </div>
         </div>
         <div class="gate-item">
-          <div class="gate-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399">
+          <div class="gate-icon" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7">
             BE
           </div>
           <div class="gate-info">
@@ -1138,21 +1194,12 @@
           </div>
         </div>
         <div class="gate-item">
-          <div class="gate-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b">
+          <div class="gate-icon" style="background: rgba(252, 211, 77, 0.15); color: #fcd34d">
             📝
           </div>
           <div class="gate-info">
-            <div class="gate-name">Docs Updated</div>
-            <div class="gate-cmd">BR + implementation + design</div>
-          </div>
-        </div>
-        <div class="gate-item">
-          <div class="gate-icon" style="background: rgba(252, 211, 77, 0.15); color: #fcd34d">
-            📋
-          </div>
-          <div class="gate-info">
-            <div class="gate-name">Pre-Delivery Checklist</div>
-            <div class="gate-cmd">frontend-pre-delivery-checklist</div>
+            <div class="gate-name">Docs + Pre-Delivery + AC</div>
+            <div class="gate-cmd">BR + implementation + checklist + AC done</div>
           </div>
         </div>
       </div>
@@ -1226,9 +1273,8 @@
           <div class="step-body">
             <div class="step-title">🏃 Run Locally</div>
             <div class="step-detail">
-              <code>npm run dev</code> (FE) + <code>npm run start-backend</code> (BE if API
-              touched). Manual sanity check. Exercise UI path for story. Capture discrepancies
-              against AC.
+              <code>npm run dev</code> (FE) + <code>npm run dev:backend</code> (BE if API touched).
+              Manual sanity check. Exercise UI path for story. Capture discrepancies against AC.
             </div>
           </div>
         </div>
@@ -1239,7 +1285,8 @@
             <div class="step-detail">
               Start Storybook + dev server. Wait for full load. Screenshot side-by-side. Compare
               layout, spacing, colors, structure. Fix mismatches. Log findings in
-              <code>verification-artifacts/</code>. Run <code>npm run test-storybook</code>.
+              <code>verification-artifacts/</code>. Run
+              <code>npm run test-storybook --workspace=@mandarin/frontend</code>.
             </div>
           </div>
         </div>
@@ -1259,10 +1306,18 @@
           <div class="step-body">
             <div class="step-title">🚦 Pre-Commit Gate</div>
             <div class="step-detail">
-              Run ALL quality gates: <code>npm run format</code> → <code>npm run build</code> →
-              <code>npm run test:full</code> → <code>npm run test-storybook</code> →
-              <code>npm run lint</code> (0 errors). Design audit. Cross-doc alignment check. No
-              TODO/FIXME/commented-out code.
+              Run the two-tier gates. <strong>Tier 1 (per-change):</strong>
+              <code>npm run format</code> (soft) → <code>npm run lint</code> (0 errors) →
+              <code>npm run lint:css --workspace=@mandarin/frontend</code> →
+              <code>npm run build</code> (type-check + bundle) → <code>npm test</code> (changed
+              scope). <strong>Tier 2 (pre-merge/close):</strong> <code>npm run test:full</code> (NOT
+              <code>npm test</code>) →
+              <code>npm run test-storybook --workspace=@mandarin/frontend</code> →
+              <code>npx @google/design.md lint DESIGN.md</code> (design lint — spec) →
+              <code>npm run design-audit</code> (design audit — code) →
+              <code>npm run typecheck --workspace=@mandarin/backend</code> → frontend-audit skill →
+              backend-audit skill → docs + pre-delivery checklist + AC. Cross-doc alignment check.
+              No TODO/FIXME/commented-out code.
             </div>
           </div>
         </div>
@@ -1360,11 +1415,16 @@
 
 DEV SERVERS:
   npm run dev            →  Frontend  :5173  (Vite dev server)
-  npm run start-backend  →  Backend   :3001  (Express on Railway in prod)
+  npm run dev:backend  →  Backend   :3001  (Express on Railway in prod)
   npm run storybook      →  Storybook :6006  (Component library)
 
-QUALITY GATES (run in order):
-  format  →  build  →  test:full  →  test-storybook  →  lint  →  design audit
+QUALITY GATES (two-tier, manual/local — mirror of project-workflow):
+  Tier 1 (per-change):  format (soft) → lint (0 errors) → lint:css (FE)
+                        → build (type-check + bundle) → npm test (changed scope)
+  Tier 2 (pre-merge):   test:full (NOT npm test) → test-storybook (FE workspace)
+                        → design lint (spec) → design audit (code)
+                        → backend typecheck → FE/BE audit skills
+                        → docs + pre-delivery checklist + AC
 </pre>
       </div>
 
@@ -1374,6 +1434,22 @@ QUALITY GATES (run in order):
       <h2 id="testing" style="margin-top: 2rem">8. Testing Strategy</h2>
       <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
         Vitest across both FE and BE. Storybook addon for visual regression. Scope-based execution.
+      </p>
+      <p
+        style="
+          font-size: 0.72rem;
+          color: rgba(180, 83, 9, 0.9);
+          margin-bottom: 0.75rem;
+          background: rgba(180, 83, 9, 0.08);
+          border: 1px solid rgba(180, 83, 9, 0.25);
+          border-radius: 6px;
+          padding: 0.5rem 0.75rem;
+        "
+      >
+        <strong>Scoping note:</strong> <code>npm test</code> = changed scope only;
+        <code>npm run test:full</code> = full suite. The frontend <code>test:full</code> is scoped
+        <code>--project='!storybook'</code> (jsdom suite only); the <code>storybook</code> project
+        runs exclusively via <code>npm run test-storybook --workspace=@mandarin/frontend</code>.
       </p>
 
       <!-- Tooling Table -->
@@ -1516,9 +1592,11 @@ QUALITY GATES (run in order):
               <td style="padding: 8px 10px">Before commit</td>
             </tr>
             <tr style="border-bottom: 1px solid #2d2925">
-              <td style="padding: 8px 10px"><code>npm run test-storybook</code></td>
-              <td style="padding: 8px 10px">Storybook stories</td>
-              <td style="padding: 8px 10px">After UI changes</td>
+              <td style="padding: 8px 10px">
+                <code>npm run test-storybook --workspace=@mandarin/frontend</code>
+              </td>
+              <td style="padding: 8px 10px">Storybook stories (storybook project)</td>
+              <td style="padding: 8px 10px">Tier 2 — pre-merge, after UI changes</td>
             </tr>
             <tr style="border-bottom: 1px solid #2d2925">
               <td style="padding: 8px 10px"><code>vitest run src/features/myfeature/</code></td>
@@ -1576,9 +1654,10 @@ QUALITY GATES (run in order):
           <div class="card-title">📖 Storybook Tests</div>
           <div class="card-desc">
             Auto-tested by Vitest addon. Cover all visual states. Run
-            <code>npm run test-storybook</code>.
+            <code>npm run test-storybook --workspace=@mandarin/frontend</code>. Manual/local Tier-2
+            gate — not run in CI.
           </div>
-          <span class="card-code">*.stories.tsx → test-storybook</span>
+          <span class="card-code">*.stories.tsx → test-storybook (FE workspace)</span>
         </div>
       </div>
 

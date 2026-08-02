@@ -1,6 +1,6 @@
 # Frontend Testing Guide
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** August 2, 2026  
 **Audience:** Frontend developers writing tests for React components, hooks, and pages
 
 > **When to read this:** When you need to write or run frontend tests using Vitest and React Testing Library.
@@ -111,6 +111,8 @@ afterAll(() => server.close());
 10. Troubleshooting
 
 > **Reference:** See [Troubleshooting Guide](../operations/troubleshooting.md) for comprehensive testing debugging.
+>
+> **Known failures:** Pre-existing failures are triaged in [`known-failures.md`](known-failures.md) — match against it BEFORE re-triaging from scratch.
 >
 > Common testing issues covered:
 >

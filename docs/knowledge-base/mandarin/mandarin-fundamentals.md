@@ -1,7 +1,7 @@
 # Mandarin Chinese Fundamentals
 
 **Purpose:** Central reference for Mandarin language structure to inform app design and architecture decisions.
-**Last Updated:** 2026-07-24
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -178,6 +178,21 @@ The character 永 (yǒng, "eternity") demonstrates the 8 basic stroke principles
 | 一 (yī)   | Final or ordinal          | Remains 1st (yī)  | 第一 dì-yī                 |
 
 > ~15-20% of syllables in writing are unstressed (neutral tone).
+
+#### Tone-Mark Placement Rules (applied in code)
+
+The app's shared utility (`packages/shared-utils/src/sandhi/toneSandhiUtils.ts`) places the tone mark via `findToneVowel` + `applyToneMark`:
+
+1. **"a" always takes the mark** — biān, tiān, guān
+2. **Otherwise "o" or "e", whichever occurs first** — guǒ (o), xuē (e), wèi (e)
+3. **Otherwise the LAST vowel, except the diphthongs `iu` / `ui` where the mark goes on the SECOND vowel** — liú, huì, qiū; but nǐ, shì, lǚ
+4. **`ü` always takes its own mark** — nǚ, lǜ
+
+**Strip before re-marking:** `applyToneMark` strips any pre-existing tone mark first (`stripToneMarks`), then applies the new mark on the plain vowel — this keeps sandhi forms distinct from dictionary forms even when the source reading is already marked (bù → bú).
+
+**Neutral tone:** represented as tone `0` (no mark); tone `5` is accepted as an internal alias for neutral. Only tones 1–4 receive a mark.
+
+**Distractor generation (Set-deduped):** the sandhi drill (`SandhiDrillService.generateDistractors`) generates three distractors (dictionary form, wrong-sandhi variant, etc.) into a `Set<string>` so options never contain duplicates — duplicate strings would collapse into duplicated React list keys — and never the `??? ???` placeholder.
 
 ---
 

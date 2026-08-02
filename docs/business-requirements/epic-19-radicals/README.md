@@ -126,5 +126,4 @@ Detailed acceptance criteria for each story are defined in the individual story 
 Detailed implementation notes are in the individual story implementation documents.
 
 - Follow frontend/backend conventions: `docs/guides/conventions/frontend.md`, `docs/guides/conventions/backend.md`
-- See `verification-artifacts/shared-data-model-v3.md` for the RadicalProgress schema
-- See `verification-artifacts/ui-ux-wireframes-v2.md` Sections 5.1, 5.2, 5.4, 6.1 for wireframes
+- See `docs/knowledge-base/data/shared-data-model.md` for the RadicalProgress schema

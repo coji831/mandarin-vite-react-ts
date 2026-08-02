@@ -535,7 +535,7 @@ curl -H "Origin: https://mandarin-vite-react-ts.vercel.app" -I https://storage.g
 #    Expected: Access-Control-Allow-Origin: *
 ```
 
-> **Note:** See `verification-artifacts/migration/README.md` for the full verification checklist.
+> **Note:** See the Phase 3 verification steps above for the full verification checklist.
 
 ### Phase 4: Vercel
 
@@ -578,7 +578,7 @@ terraform apply
 
 **Backend code changes:** Zero. Same env var names, same build commands, same start commands.
 
-**Full migration doc:** See `verification-artifacts/migration/README.md`
+**Full migration doc:** See the runbook's Migration Plan sections above.
 
 ---
 

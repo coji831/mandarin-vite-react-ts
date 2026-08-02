@@ -362,6 +362,6 @@ Use simpler patterns (`useState` with a 2-3 value union, or Zustand) when:
 
 ## Related
 
-- [Project Workflow: Phase Gating](../guides/project-workflow.md) — how `usePhaseGate` works across features
+- [Project Workflow & Quality Gates](../../../.github/instructions/project-workflow.instructions.md) — how `usePhaseGate` works across features
 - [React useReducer docs](https://react.dev/reference/react/useReducer)
 - [TypeScript Discriminated Unions](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions)

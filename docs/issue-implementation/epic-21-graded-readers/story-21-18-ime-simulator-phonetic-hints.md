@@ -100,7 +100,9 @@ Uses the `ClassificationBadge` component from Story 21.15 for each row.
 **Root Cause:** The IME Simulator scores per answer; a per-hint penalty needed to accumulate across the session.
 
 **Solution:** Tracked `hintsRemaining` (starts at 3) and `maxScorePenalty` (accumulates -5% per radical-hint use) in `quizSessionStore`, and surfaced score-by-character-type breakdown in results via the shared `ClassificationBadge` (Story 21.15).
+
 ### Doc Truth-Check (Verify Against Code)
+
 - [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
 - [x] Feature/module/component names match `src/features/` / `src/modules/` listings
 - [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service

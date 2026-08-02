@@ -38,15 +38,16 @@ mandarin-vite-react-ts/
 │   └── backend/           # Express API (Node.js + Prisma)
 ├── packages/
 │   ├── shared-types/      # Shared TypeScript interfaces
-│   └── shared-constants/  # API routes, HSK levels, regex patterns
+│   ├── shared-constants/  # API routes, HSK levels, regex patterns
+│   └── shared-utils/      # Shared utility functions
 ├── docs/                  # Architecture, guides, business requirements
-├── content/              # Version-controlled content files (one JSON per entity)
-│   ├── manifest.json
-│   ├── characters/
-│   ├── radicals/
-│   ├── words/
-│   ├── grammar/
-│   └── chengyu/
+├── content/              # Version-controlled content (aggregate JSON files)
+│   ├── manifest.json     # Content manifest
+│   ├── characters/       # characters.json + index.json (aggregate, not per-entity)
+│   ├── radicals/         # radicals.json + index.json
+│   ├── words/            # words.json + index.json
+│   ├── pinyin/ strokes/ tones/ references/   # Reference data sets
+│   └── seed/             # Seed pipeline source — phase1/, phase2/ aggregate JSON
 └── terraform/             # Infrastructure as Code (GCS, IAM)
 ```
 
@@ -63,7 +64,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
-  - Current modules: `auth`, `quiz`, `progression`, `review`, `foundations`, `radicals`, `health`, `mnemonics`
+  - Current modules (13): `auth`, `characters`, `foundations`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `tts`, `words`
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
@@ -92,23 +93,26 @@ mandarin-vite-react-ts/
 
 - **Features** (`src/features/`): Self-contained modules
   - **Auth**: User authentication and session management (LoginForm, RegisterForm, AuthContext)
-  - **Dashboard**: Learning statistics and activity overview (LeechWidget, leechService)
+  - **Dashboard**: Learning statistics and activity overview (DashboardGuest, DashboardSections, DashboardWelcome)
   - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
-  - **Gamification**: Streaks, badges, XP progress, mystery box rewards
+  - **PhoneticClusters** (`features/phonetic-clusters`): DB-driven phonetic family browsing — cluster membership from `GET /v1/phonetic-clusters` with HSK filtering
   - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
-  - **Vocabulary**: Flashcard-based vocabulary learning with spaced repetition
-  - **Character Hub**: Character detail overlay with identity card, mnemonics, radicals, readings, common words, and stroke animation
+  - **Radicals** (`features/radicals`): Radical browser, detail cards, and dual radical/phonetic trees (Phase 2 preview / Phase 3 full expansion)
+  - **Character Hub**: Character detail panel with identity card, mnemonics, radicals, readings, common words, and stroke animation
+  - **Word Hub** (`features/word-hub`): Word detail panel — pinyin, definitions, HSK badge, constituent character chips, and measure words (量词) fetched via `GET /v1/words/:id/measure-words`
+  - **LexicalHub** (`features/lexical-hub`): Entity detail hub — modal overlay hosting a registry of entity-specific detail panels (CharacterHub, WordHub); opened from anywhere via `openHub()` in `shared/hub-entry`
+  - **Readers** (`features/readers`): Graded readers — passage browsing/reading, reading sessions, bookmarks, and in-text word lookup via `WordPopover` → LexicalHub
 - **Pages** (`src/pages/`): Route-level page orchestrators
   - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
 - **Router** (`src/router/`): React Router configuration
   - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
-  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, etc.) + `CharacterDetailHub` shared portal overlay for character detail display
+  - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, Skeleton, ClassificationBadge, MnemonicCard, etc.)
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useCharacterHub for CharacterDetailHub overlay)
+  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions)
   - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
 ### Component Hierarchy
@@ -163,7 +167,7 @@ flowchart TD
   BrowserRouter → AuthProvider (auth) → AppLayout → LearnLayout → ProgressProvider (quiz) + UserIdentityProvider (quiz)
   ```
 - **Persistence**: Backend API (PostgreSQL) for progress, localStorage for device identity
-- **Zustand Stores**: `hubStore` for CharacterDetailHub overlay state (isOpen, characterId, position)
+- **Zustand Stores**: shared stores in `src/shared/store/` (`userStore`, `uiStore`, `hubStore`) plus feature-scoped stores (e.g. `mnemonicStore`, `quizSessionStore`, `readingStore`, `audioStore`, dashboard phase-gates/activity)
 - **Architecture**: Reducer composition with normalized state shape
 
 **See detailed documentation:**
@@ -215,29 +219,36 @@ Controller → Service (business logic) → Repository (database)
 Static content (characters, words, radicals, etc.) follows a separate path from dynamic user data:
 
 ```
-┌───────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  content/*.json   │ ──► │  Seed Script /   │ ──► │  Prisma Content  │
-│  (Git — versioned)│     │  Import Pipeline  │     │  Models (DB)     │
-└───────────────────┘     └──────────────────┘     └────────┬────────┘
-                                                            │
-┌───────────────────┐     ┌──────────────────┐              │
-│  review_log table │ ◄── │  CRUD Progress   │              │
-│  (append-only)    │     │  API             │              │
-└───────────────────┘     └──────────────────┘              │
-                                                            ▼
-                                                   ┌─────────────────┐
-                                                   │  Read Model /   │
-                                                   │  Query API      │
-                                                   └─────────────────┘
+┌──────────────────────────┐    ┌──────────────────────┐    ┌──────────────────┐
+│ content/seed/phase2/*.json│ ──►│  prisma/seed.ts       │ ──►│  Prisma Models    │
+│ (aggregate JSON, Git)     │    │  (bulk createMany)   │    │  (PostgreSQL)     │
+└──────────────────────────┘    └──────────────────────┘    └────────┬─────────┘
+                                                                     │
+┌───────────────────┐     ┌──────────────────┐                       │
+│  review_log table │ ◄── │  CRUD Progress   │                       │
+│  (append-only)    │     │  API             │                       │
+└───────────────────┘     └──────────────────┘                       │
+                                                                     ▼
+                                                            ┌───────────────────┐
+                                                            │  Query API        │
+                                                            │  (via Repositories)│
+                                                            └───────────────────┘
 ```
 
 **Key principles:**
 
-- Content is authored in individual JSON files under `content/`, one per entity
-- Entity relationships are stored in DB junction tables (CharacterRadical, WordCharacter, etc.)
+- Content is authored as **aggregate JSON files** under `content/` (e.g., `content/characters/characters.json`, `content/words/words.json`) plus phase-based seed sources in `content/seed/phase2/` — not one JSON file per entity
+- **All-in-DB**: content is bulk-loaded into Prisma tables by the seed pipeline; production reads content via Prisma repositories, never from JSON files at request time
+- Entity relationships are stored in DB junction tables (CharacterRadical, WordCharacter, MeasureWordWord, etc.)
 - Dynamic user data uses CRUD with an append-only `review_log` side-effect table
 - The Read Model pre-joins content + relationships + progress for query optimization
-- `ContentIndexService` syncs `manifest.json` entries into the `ContentItem` table on server start
+- GCS is used for **binary assets only** (TTS audio); the legacy `ContentItem` registry table and its `ContentIndexService` sync were removed in migration `20260724160000_drop_deprecated_models`
+
+#### Seed Pipeline (all-in-DB)
+
+`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and bulk-inserts them into Prisma tables with `prisma.<model>.createMany({ skipDuplicates: true })` (idempotent — safe to re-run). Run via `npx prisma db seed` from `apps/backend`. The pipeline has **26 steps** in strict foreign-key order; the reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
+
+See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.md) (26-step order + FK table, regeneration flow, runbook, verification, idempotency rules).
 
 ## Caching Strategy
 
@@ -245,7 +256,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 
 **Cached Resources:**
 
-- **TTS Audio**: 24-hour TTL, SHA256-keyed, Base64-encoded binary storage
+- **TTS Audio**: Redis stores the GCS **file path** keyed by SHA256 hash (`tts:path:{hash}`, 24-hour TTL); the MP3 audio lives in GCS, and returned signed URLs are short-lived (1-hour TTL, `TTS_SIGNED_URL_TTL_SECONDS = 3600`) and re-signed on every read
 - **AI Feedback**: 24-hour TTL, keyed per word+answer combination
 - **Due Words**: 5-minute TTL per user
 - **Quiz Attempts**: Results cached per user
@@ -304,7 +315,19 @@ The platform has two distinct assessment systems. **Quiz** is a timed, auto-scor
 
 ### Phase Gating
 
-Users progress through 4 learning phases (Blueprint → Core 300 → Network → Advanced Fluidity), each with gate quizzes to unlock the next. Phase gate state is stored server-side.
+Users progress through 4 learning phases (Blueprint → Core 300 → Network → Advanced Fluidity), each with gate quizzes to unlock the next. Phase gate state is stored server-side (persisted `PhaseGate` row, updated when a gate quiz is passed).
+
+#### Progression Gates
+
+Computed per-user gate status is served by `GET /api/v1/progression/gates` (`ROUTE_PATTERNS.progressionGates`). Unlike the persisted `PhaseGate` row (which only reflects quiz-pass updates), this endpoint **re-evaluates each gate against current data**, so it surfaces gates that were passed outside the quiz flow:
+
+- **`phase2Gate`** — IME Simulator score ≥80% (`GATE_THRESHOLDS.IME_SIMULATOR_MIN_SCORE = 20` of 25); already-passed users are grandfathered.
+- **`characterCountGate`** — ≥500 distinct characters learned (`CharacterProgress` rows with `confidence > 0`).
+- **`phase3To4Gate`** — comprehension: ≥60% on the passage comprehension quiz AND ≥90% known-word ratio in a passage at the learner's HSK level; falls back to a 5-question qualification quiz when no passage exists at that level.
+
+The route uses `optionalAuth` — **guest users receive an all-passed response**; authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
+
+> **Known gap (Epic 21):** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
 
 ### Leech Detection
 
@@ -344,11 +367,11 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/shared/infrastructure/database/client.ts`)
 - **Configuration**: `DATABASE_URL`
-- **Key Tables**: `users`, `progress`, `ReviewItem`, `QuizAttempt`, `QuizAttemptAnswer`, `StudyStreak`, `ContentItem`, `PhaseGate`, `Character`, `MnemonicStory`
+- **Key Tables**: `User`, `Session`, `Character`, `CharacterReading`, `CharacterRadical`, `Word`, `WordCharacter`, `MeasureWord`, `MeasureWordWord`, `Passage`, `ReadingSession`, `Bookmark`, `PinyinSyllable`, `MnemonicStory`, `ReviewItem`, `ReviewLog`, `QuizAttempt`, `QuizAttemptAnswer`, `FoundationProgress`, `RadicalProgress`, `PhaseGate`, `StudyStreak`
 
 **Gamification System:**
 
-Streak tracking with freeze currency, milestone badges, XP scoring, and mystery box rewards.
+Gamification (partial): a `StudyStreak` table exists and a ProgressPage placeholder UI renders streak/badge/XP sections, but there is no gamification module or API surface yet.
 
 **AI Feedback System:**
 
@@ -388,9 +411,9 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 - **Unit Tests**: Services, repositories, utilities (mocked dependencies)
 - **Integration Tests**: Full API flows with test database (transactional isolation)
-- **Coverage Target**: >80% for business logic
+- **Coverage**: Testing follows the Testing Trophy (unit → integration → E2E); no hard coverage gate is mandated.
 
-**Frontend (Jest + React Testing Library):**
+**Frontend (Vitest + React Testing Library):**
 
 - **Component Tests**: Render behavior, user interactions, accessibility
 - **Hook Tests**: Custom hooks with `renderHook` utility
@@ -433,4 +456,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** July 22, 2026
+**Last Updated:** August 2, 2026
