@@ -41,7 +41,11 @@ export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
         <h2 className="text-primary font-2xl fw-600 text-center">Login</h2>
 
         {error && (
-          <Box variant="error" className="auth-form-error bg-error-bg text-error font-sm">
+          <Box
+            variant="error"
+            role="alert"
+            className="auth-form-error bg-error-bg text-error font-sm"
+          >
             {error}
           </Box>
         )}

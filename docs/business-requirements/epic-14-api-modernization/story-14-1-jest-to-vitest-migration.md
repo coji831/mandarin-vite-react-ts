@@ -55,7 +55,7 @@ Migrating to Vitest provides immediate and long-term value:
 - [**Story 14.2: Centralized API Config**](./story-14-2-centralized-api-config.md) (Blocks - requires stable test infrastructure)
 - [**Story 14.3: Axios Interceptors**](./story-14-3-axios-interceptors.md) (Blocks - requires test infrastructure)
 - [**Epic 9: State Performance Core**](../epic-9-state-performance-core/README.md) (Related - existing tests to migrate)
-- [**Epic 19: State Refactor**](../epic-19-state-refactor/README.md) (Related - future tests will use Vitest)
+- [**Epic 17: State Restructure**](../epic-17-state-restructure/README.md) (Related - future tests will use Vitest)
 
 ## Implementation Status
 

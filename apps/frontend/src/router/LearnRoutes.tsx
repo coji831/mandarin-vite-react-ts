@@ -13,7 +13,30 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn";
+import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn/foundations";
+import { PhoneticClustersPage } from "../pages/learn/phonetic-clusters/PhoneticClustersPage";
+import { ReadersPage } from "../features/readers";
+import { usePhaseGate } from "shared/hooks";
+import type { ReactNode } from "react";
+
+/**
+ * Route-level phase gate: only renders children if the user's phase >= requiredPhase.
+ * Redirects to foundations if the user hasn't unlocked this content yet.
+ */
+function PhaseGate({ requiredPhase, children }: { requiredPhase: number; children: ReactNode }) {
+  const { phaseGate, isLoading } = usePhaseGate();
+
+  // During loading, render nothing (Layout's Skeleton handles the visual)
+  if (isLoading) return null;
+
+  const currentPhase = phaseGate?.currentPhase ?? 1;
+
+  if (currentPhase < requiredPhase) {
+    return <Navigate to="/learn/foundations" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 export function LearnRoutes() {
   return (
@@ -24,11 +47,15 @@ export function LearnRoutes() {
         {/* Future content type placeholders */}
         <Route path="radicals" element={<RadicalsPage />} />
         <Route path="grammar" element={<ContentPlaceholderPage title="Grammar" />} />
+        <Route path="phonetic-clusters" element={<PhoneticClustersPage />} />
         <Route
-          path="phonetic-clusters"
-          element={<ContentPlaceholderPage title="Phonetic Clusters" />}
+          path="readers"
+          element={
+            <PhaseGate requiredPhase={3}>
+              <ReadersPage mode="library" />
+            </PhaseGate>
+          }
         />
-        <Route path="readers" element={<ContentPlaceholderPage title="Graded Readers" />} />
         <Route path="chengyu" element={<ContentPlaceholderPage title="Chengyu" />} />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />

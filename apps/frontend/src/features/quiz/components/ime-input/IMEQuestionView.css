@@ -12,18 +12,26 @@
 }
 
 /* ── Input area ── */
-.ime-quiz-question__input-area {
-  font-family: inherit;
-}
-
 .ime-quiz-question__input:focus {
   box-shadow: 0 0 0 3px var(--color-primary-bg);
 }
 
-.ime-quiz-question__input::placeholder {
-  color: var(--text-muted);
-  /* structural: font-lg — placeholder */
-  font-size: var(--font-lg);
+.ime-quiz-hint-toggle {
+  border: none;
+  cursor: pointer;
 }
 
-/* ── Submit button ── */
+.ime-quiz-penalty-label {
+  margin-left: var(--space-sm);
+}
+
+.ime-quiz-question__input::placeholder {
+  color: var(
+    --text-muted
+  ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
+  font-size: var(--font-lg); /* ::placeholder pseudo-element */
+}
+
+/* ── Live IME candidates (VisFix W6a) ───────────────────────────────
+   Candidate chips now use the shared Chip component (surface variant,
+   interactive) — styling handled by shared Chip + token utility classes. */

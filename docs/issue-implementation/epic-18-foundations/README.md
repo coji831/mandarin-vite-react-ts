@@ -461,4 +461,3 @@ model PhaseGate {
 
 - [Epic 18 Foundations Audit](docs/audits/epic-18-foundations-audit.md) — Verification and audit results for Epic 18
 - [Shared Content Utilities](apps/backend/src/shared/utils/contentUtils.js) — Centralized content loading, tone mark stripping, and array shuffling
-- [Content Registry Architecture](verification-artifacts/content-registry-architecture.md) — Architecture proposal for the Content Registry system

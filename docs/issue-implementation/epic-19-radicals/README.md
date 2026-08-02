@@ -1,7 +1,7 @@
 # Epic 19: Radicals & Character Composition — Implementation
 
 **BR Reference:** `docs/business-requirements/epic-19-radicals/README.md`
-**Last Updated:** June 29, 2026
+**Last Updated:** August 2, 2026
 
 ---
 
@@ -26,7 +26,7 @@
 
 **Status:** Completed
 
-**Last Update:** June 29, 2026
+**Last Update:** August 2, 2026
 
 ## Story Status
 
@@ -89,11 +89,11 @@ apps/frontend/src/features/radicals/                      apps/backend/src/modul
 │   └── radicalDataUtils.ts     ← content parsing, filtering
 └── index.ts
 
-apps/frontend/src/shared/components/CharacterDetailHub/   content/radicals/
-├── CharacterDetailHub.tsx       ← extend with radical section    ├── rad_0001.json    ← top 20 radicals
-├── HubRadicalSection.tsx        ← NEW: radical decomposition      ├── rad_0002.json
+apps/frontend/src/features/character-hub/components/     content/radicals/
+├── CharacterHub/CharacterHub.tsx ← extend with radical section   ├── rad_0001.json    ← top 20 radicals
+├── HubRadicalSection/            ← NEW: radical decomposition     ├── rad_0002.json
 │                                ← phase-gated                    ├── ... (scalable to 214)
-└── hubStore.ts                  ← extend if needed               └── rad_0214.json
+└── shared/store/hubStore.ts      ← extend if needed              └── rad_0214.json
 ```
 
 ### Story 19.4 — Radical Trees (Phase 3)
@@ -149,7 +149,7 @@ ReviewPicker (existing, updated: +📘 Radicals)
 
 ### Prisma Model to Add
 
-Add `RadicalProgress` to `apps/backend/prisma/schema.prisma` with fields: id, userId, radicalId, memorized, recognitionLevel, reviewedAt, createdAt, updatedAt. See `verification-artifacts/shared-data-model-v3.md` for exact schema. `@@unique([userId, radicalId])` and `@@index([userId])`.
+Add `RadicalProgress` to `apps/backend/prisma/schema.prisma` with fields: id, userId, radicalId, memorized, recognitionLevel, reviewedAt, createdAt, updatedAt. See `docs/knowledge-base/data/shared-data-model.md` for exact schema. `@@unique([userId, radicalId])` and `@@index([userId])`.
 
 ---
 
@@ -160,10 +160,9 @@ Detailed technical challenges for each story are documented in the individual st
 ## Related Documentation
 
 - [Epic 19 BR](docs/business-requirements/epic-19-radicals/README.md) — Business requirements and user stories
-- [Shared Data Model v3](verification-artifacts/shared-data-model-v3.md) — RadicalProgress Prisma model schema
-- [UI/UX Wireframes v2](verification-artifacts/ui-ux-wireframes-v2.md) — Section 5: Radicals Browser, Detail Card, Trees; Section 5.4: IME Quiz
+- [Shared Data Model](docs/knowledge-base/data/shared-data-model.md) — RadicalProgress Prisma model schema and shared entities
 - [Epic 18 Implementation](docs/issue-implementation/epic-18-foundations/README.md) — Reference for progression module pattern, QuizAttempt/PhaseGate models
-- [Character Detail Hub](apps/frontend/src/shared/components/CharacterDetailHub/) — Hub component structure to extend
+- [Character Detail Hub](apps/frontend/src/features/character-hub/) — Hub component structure to extend
 - [Content Registry](content/manifest.json) — Content discovery manifest
 - [Frontend Conventions](docs/guides/conventions/frontend.md) — Feature folder and component patterns
 - [Backend Conventions](docs/guides/conventions/backend.md) — Module and API patterns

@@ -16,6 +16,7 @@ export declare const ROUTE_PATTERNS: {
   readonly progressionFoundationProgress: string;
   readonly progressionFoundationProgressSection: (sectionId: string) => string;
   readonly progressionPhaseGate: string;
+  readonly progressionGates: string;
   readonly progressionRadicalProgress: string;
   readonly progressionRadicalProgressById: (radicalId: string) => string;
   readonly quizAttempts: string;
@@ -27,14 +28,35 @@ export declare const ROUTE_PATTERNS: {
   readonly radicals: string;
   readonly radicalsById: (radicalId: string) => string;
   readonly radicalsByCharacter: (glyph: string) => string;
+  readonly radicalsCharacters: (radicalId: string) => string;
   readonly foundationsPinyinTones: string;
   readonly foundationsPinyinCharacterMap: string;
   readonly foundationsStrokes: string;
   readonly charactersByGlyph: (glyph: string) => string;
+  readonly wordsByGlyph: (glyph: string) => string;
+  readonly wordsMeasureWords: (wordId: string) => string;
   readonly mnemonics: string;
   readonly mnemonicsByChar: (glyph: string) => string;
   readonly quizConfig: string;
   readonly quizQuestions: string;
+  readonly quizSandhiDrill: string;
+  readonly readersPassages: string;
+  readonly readersPassageById: (id: string) => string;
+  readonly readersGenerate: string;
+  readonly readersPassageAudioById: (id: string) => string;
+  readonly readersSessionByPassageId: (id: string) => string;
+  readonly readersSessionCompleteByPassageId: (id: string) => string;
+  readonly readersBookmarks: string;
+  readonly readersBookmarkByPassageId: (id: string) => string;
+  readonly phoneticClusters: string;
+  readonly phoneticClustersById: (id: string) => string;
+  readonly charactersPhonetic: (glyph: string) => string;
+  readonly charactersHomophones: (glyph: string) => string;
+  readonly charactersDecomposition: (glyph: string) => string;
+  readonly charactersSearch: string;
+  readonly charactersFrequency: string;
+  readonly radicalsCharacters: (radicalId: string) => string;
+  readonly pinyinSearch: string;
 };
 
 // HSK Levels

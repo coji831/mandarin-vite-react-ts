@@ -1,7 +1,7 @@
 # Git Workflow & Conventions
 
 **Category:** Getting Started  
-**Last Updated:** December 9, 2025
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -11,8 +11,9 @@ This project follows **Conventional Commits** and a feature-branch workflow.
 
 **Key Files:**
 
-- [Git Convention Guide](../../guides/conventions/git.md) - Full reference
+- [Git Convention Guide](../../guides/conventions/git.md) - Full reference (PR naming + conventions)
 - [Commit Message Template](../../templates/commit-message-template.md) - Examples
+- [Pull Request Template](../../../.github/PULL_REQUEST_TEMPLATE.md) - Canonical PR description checklist
 
 ---
 
@@ -139,7 +140,8 @@ git commit -m "feat(story-11-2): implement AudioService"
 git push origin epic-11-service-layer
 
 # 4. Create pull request (GitHub)
-# - Title: "Epic 11: Service Layer Overhaul"
+# - Epic-level title: "EPIC-11: Service Layer Overhaul"
+# - Story-level title: "[EPIC-11] Story 11.2: <short description>"
 # - Link to epic BR & implementation docs
 
 # 5. After approval, merge to main
@@ -299,44 +301,49 @@ git revert <commit-hash>
 
 ### PR Title
 
-Follow Conventional Commits format:
+PR titles use the project's PR naming convention — Conventional Commits `<type>(<scope>): <summary>` applies to **commits**, not PR titles:
 
-```
-feat(epic-11): Service Layer Overhaul
-fix(reducer): Prevent duplicate word IDs
-docs(cookbook): Add Git workflow guide
-```
+- **Epic-level:** `EPIC-X: <short epic summary>`
+  - Example: `EPIC-11: Service Layer Overhaul`
+- **Story-level:** `[EPIC-X] Story X.Y: <short description>`
+  - Example: `[EPIC-11] Story 11.2: Create Layout Component with Outlet`
+
+> Canonical PR naming: `docs/guides/conventions/git.md`.
 
 ### PR Description Template
+
+Use the canonical template at `.github/PULL_REQUEST_TEMPLATE.md` (auto-loaded for PRs) — its sections are the source of truth: Summary, Stories/Issues, Key Changes, Architecture/Key Decisions, Technical Challenges & Solutions, Acceptance Criteria, Quality Gates (Tier 1 + Tier 2), Doc Truth-Check, Pre-Delivery UI Checklist, and Merge-Readiness.
+
+For a worked example of a story-level PR description:
 
 ```markdown
 ## Summary
 
-Implements service layer with interfaces and fallback mechanisms (Epic 11).
+Implements Story 11.2: AudioService with API + local fallback.
 
-## Changes
+## Stories / Issues
 
-- Add service interfaces (AudioService, ProgressService)
-- Implement AudioService with API + local fallback
-- Update reducers to use services
-- Add service unit tests
+- Story BR: `docs/business-requirements/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
+- Story impl: `docs/issue-implementation/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
+- Closes #XX
 
-## Related Docs
+## Key Changes
 
-- Epic BR: `docs/business-requirements/epic-11-service-layer-overhaul/README.md`
-- Epic Implementation: `docs/issue-implementation/epic-11-service-layer-overhaul/README.md`
+- `apps/frontend/src/features/mandarin/services/audioService.ts` — add AudioService with API + local fallback
+- `...` — update reducers to use the service layer
 
-## Testing
+## Acceptance Criteria
 
-- [x] Unit tests pass
-- [x] Manual testing completed
-- [x] No TypeScript errors
-- [x] Linting clean
+- [ ] All AC in the story docs complete and verified
 
-## Screenshots
+## Quality Gates / Testing
 
-(If UI changes)
+- [ ] `npm run lint` (0 errors)
+- [ ] `npm run build` (type-check + bundle)
+- [ ] `npm test` (changed scope)
 ```
+
+For the full checklist (Tier 1 / Tier 2 gates, Doc Truth-Check, Merge-Readiness), see `.github/PULL_REQUEST_TEMPLATE.md`.
 
 ---
 

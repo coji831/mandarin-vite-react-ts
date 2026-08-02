@@ -70,6 +70,28 @@ if (timeLeft <= 0) return; // silent stop, no UI transition
 
 Untested edge cases in inputs cause the worst UX bugs — partial answers submitted, timers that freeze without feedback. These patterns are easy to miss during development because the "happy path" appears to work.
 
+## Keyboard Single-Activation (Enter/Space)
+
+- Native `<button>` (including the shared `Button`) fires `onClick` on BOTH Enter
+  and Space automatically. NEVER add a redundant `onKeyDown` that also triggers
+  the action — the toggle/action runs twice per keypress (double-toggle
+  anti-pattern). Keep `onClick` only.
+- Use `aria-expanded` on the `Button` for disclosure toggles (e.g. the expand
+  button in `TreeRootNode`).
+- For a non-native `div[role="button"]`, an explicit `onKeyDown` IS required —
+  a `div` never fires `click` on Enter/Space. See `PhoneticFamilyNode`'s header
+  (`role="button" tabIndex={0}` + explicit Enter/Space handler with
+  `e.preventDefault()`).
+
+## Dialog Focus Management (WCAG 2.4.3)
+
+- On open, move focus INTO the dialog: give the container `tabIndex={-1}` and
+  call `.focus()` in a mount effect (see `WordPopover`).
+- On close, return focus to the trigger: capture `document.activeElement` on
+  mount, restore it in the effect cleanup (only if the trigger is still in the
+  document).
+- Close the dialog on Escape.
+
 ---
 
 **See also:** `quiz-architecture.instructions.md` (timer strategies in quiz) • `testing-standards.instructions.md` (test timer edge cases) • `frontend-pre-delivery-checklist.instructions.md` (state coverage)

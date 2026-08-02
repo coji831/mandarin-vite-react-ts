@@ -1,7 +1,7 @@
 # TODO — Project-wide (GitHub-friendly)
 
 **Audience:** Project maintainers, developers tracking tasks  
-**Last Updated:** July 2026
+**Last Updated:** August 2026
 
 This file is a simple, human-editable TODO list compatible with GitHub (checkboxes are interactive in PRs and on GitHub.com).
 
@@ -25,30 +25,24 @@ Sections
 
 ### Learning Roadmap (Epics 18-23)
 
-- [x] **Epic 20: Mnemonic Stories** — Backend: `mnemonics` module (CRUD + Gemini generation), `GeminiService`, `ContentIndexService`, `Character` and `MnemonicStory` Prisma models, mnemonic caching (30-day TTL with stampede prevention)
+- [x] **Epic 20: Mnemonic Stories** — Backend: `mnemonics` module (CRUD + Gemini generation), `GeminiService`, `Character` and `MnemonicStory` Prisma models, mnemonic caching (30-day TTL with stampede prevention)
 - [x] **Epic 20: Mnemonic Stories** — Frontend: `character-hub` feature (HubIdentityCard, HubMnemonicSection, HubRadicalSection, HubReadings, HubCommonWords, HubActions), `mnemonicStore` (Zustand, 10-state machine), `Tabs` underline variant, `Textarea` shared component
-- [x] **Epic 20: Mnemonic Stories** — Content: ch_jiang.json added (11 characters total), prisma.config.ts, run-gcs-upload.js wrapper
+- [x] **Epic 20: Mnemonic Stories** — Content: character content consolidated into aggregate `content/characters/characters.json` + `index.json`, prisma.config.ts, run-gcs-upload.js wrapper
 - [ ] **Onboarding tutorial (deferred)** — Design and implement a first-time onboarding flow for new learners. Not a blocker for UI design. See `verification-artifacts/learning-roadmap-usecases.md` Decision #1.
 
 ### Story 16 — Example Caching & Service Alignment: Infrastructure Verification
 
-- [ ] **[GCP Setup] Verify Google Cloud credentials and Terraform infrastructure** — Create GCS bucket `mandarin-vocab-example-data`, confirm GOOGLE_TTS_CREDENTIALS_RAW service account has Storage Object Creator/Viewer roles. Optional: apply Terraform from `terraform/gcs/examples-bucket.tf` to automate bucket creation, lifecycle policies (30-day auto-delete), service account IAM, and Cloud Audit Logs sink. Manual bucket creation (without Terraform) is sufficient for local testing. Link: [Terraform GCS Example](terraform/gcs/examples-bucket.tf), [Deployment Guide](docs/deployment-guide.md). Priority: Critical (blocks example caching from persisting to GCS).
-
-### Maintenance: Caching Configuration & Service Alignment
-
-- [ ] **[Action 2] Standardize CachedAIFeedbackService TTL** — Replace hardcoded `86400` in `apps/backend/src/core/services/CachedAIFeedbackService.ts` with `cacheConfig.ttl.feedback`. Add `CACHE_TTL_FEEDBACK` env var to `.env.local` and `.env.example`. Update `apps/backend/src/config/redis.ts` to parse feedback TTL. Update unit tests accordingly. Effort: 1–2 hours. Priority: Important.
-
-- [ ] **[Action 4] Monitor & Add Single-Flight Locks to CachedConversationService** — Currently no `RedisLockManager` in conversation caching, which could cause thundering herd on expensive Gemini generation. Add optional lock mechanism (same pattern as `CachedExampleService`) and integration tests. Requires: monitoring metrics first to confirm expensive re-generation happens. Effort: 4–8 hours (code + tests). Priority: Optional (implement only if metrics warrant).
+- [ ] **[GCP Setup] Verify Google Cloud credentials and GCS infrastructure** — Create GCS bucket `mandarin-vocab-example-data`, confirm GOOGLE_TTS_CREDENTIALS_RAW service account has Storage Object Creator/Viewer roles. Manual bucket creation is sufficient for local testing (the legacy `terraform/gcs/examples-bucket.tf` and `docs/deployment-guide.md` were removed). Priority: Critical (blocks example caching from persisting to GCS).
 
 ### Story 15.11 — Quiz Feature Extensions (incomplete AC items)
 
-- [ ] **[Item 10] Multi-meaning word support** — Words like 行 (xíng/háng) and 花 (huā flower/spend) fail validation for the alternate reading. Need `parseWordEntry()` in `validation.ts` to extract all acceptable answers from CSV (semicolons, pipes, parenthetical annotations). Validation should accept ANY matching variant. See story BR AC: "Multi-Meaning/Reading Support".
+- [ ] **[Item 10] Multi-meaning word support** — Words like 行 (xíng/háng) and 花 (huā flower/spend) should accept ANY matching variant for the alternate reading. The old CSV-based `validation.ts`/`parseWordEntry()` approach was removed in the quiz rework to the strategy pattern — multi-meaning support now lives at the strategy/question level (e.g. `AudioToPinyinAndToneStrategy`) and in the results UI. See story BR AC: "Multi-Meaning/Reading Support".
 
-- [ ] **[Item 19] Results page for multi-meaning words** — `ResultsTable.tsx` shows only one expected answer per row. Needs to display which variant user answered + all acceptable forms when word has alternatives. Depends on Item 10.
+- [ ] **[Item 19] Results page for multi-meaning words** — `QuizResults.tsx` / `CategoryBreakdown.tsx` shows only one expected answer per row. Needs to display which variant user answered + all acceptable forms when a question has alternatives. Depends on Item 10.
 
-- [ ] **[Item 23] "Review Mistakes" button on results page** — `ResultsLayout.tsx` has a "New Quiz" path via `handleRetry()` but no way to retry only the incorrect questions. Add a "Review Mistakes" button that starts a new session using only the `wordId`s where `correct: false` from `sessionSummary.allAnswers`.
+- [ ] **[Item 23] "Review Mistakes" button on results page** — `QuizResults.tsx` has a retry path via `quizSessionStore.retry()` but no way to retry only the incorrect questions. Add a "Review Mistakes" button that starts a new session using only the questions where the answer was incorrect.
 
-- [ ] **[Item 26] Execute /mandarin → /learning folder rename** — `apps/frontend/src/features/learning/` is an empty directory placeholder. Actual rename of `mandarin/` with all import updates (~120 imports across ~45 files) and route constant changes deferred. Requires a coordinated zero-downtime migration.
+- [ ] **Add direct unit test for `PhaseGateBadge`** — pass/fail/guest states; currently covered only via page-level `QuizPageFull` stories.
 
 - [ ] **[Item 14] Quiz filter provider (HSK/topic/interest)** — `QuizFilterProvider` interface not created. Needed by Epic 17 (Knowledge Hub) to support filtering quiz questions by HSK level, topic, or user interests. Define interface with default no-op implementation only.
 
@@ -56,11 +50,9 @@ Sections
 
 ## Backlog
 
-- [ ] **(Story 16.3 Tech Debt) HSK Validation Architectural Fix** — Example generation validation was made advisory-only (non-fatal) to unblock multi-character word examples (e.g., "包子"). Root cause: when tokenization falls back to character-level splitting, multi-char target words fail validation because individual characters don't match the multi-char word. Proper fix requires: (1) ensure nodejieba or word-list tokenizer works reliably, (2) implement multi-char word reconstruction logic for character fallback, (3) populate full HSK 1-3 vocabulary (500+ words in hsk-1-3.json), (4) add test coverage for multi-char words. Effort: ~2 hours. Files: `apps/backend/src/services/exampleService.ts` (line ~106), `apps/backend/src/services/examples/hskValidator.ts`, `packages/shared-constants/hsk-1-3.json`. Priority: Medium (examples work now, validation stricter later).
+- [ ] **(Story 16.3 Tech Debt) HSK Validation Architectural Fix** — Example generation validation was made advisory-only (non-fatal) to unblock multi-character word examples (e.g., "包子"). Root cause: when tokenization falls back to character-level splitting, multi-char target words fail validation because individual characters don't match the multi-char word. Proper fix requires: (1) ensure nodejieba or word-list tokenizer works reliably, (2) implement multi-char word reconstruction logic for character fallback, (3) populate full HSK 1-3 vocabulary (500+ words in `packages/shared-constants/hsk-1-3.json`), (4) add test coverage for multi-char words. Effort: ~2 hours. Files: `packages/shared-constants/hsk-1-3.json`. Priority: Medium (examples work now, validation stricter later).
 
-- [ ] **(A7) Move AI prompt/conversation utils out of `utils/`** — `promptUtils.ts` and `conversationUtils.ts` contain AI-domain logic sitting in a generic `utils/` folder. Move to `core/domain/` or `infrastructure/external/`. Blocked by: need to audit all callers (ConversationService, CachedAIFeedbackService, ConversationController). See TODOs in `apps/backend/src/utils/promptUtils.ts` and `apps/backend/src/utils/conversationUtils.ts`.
-
-- [ ] **(A10) Apply `/v1` prefix at mount level in `routes/index.ts`** — currently each route file hardcodes `/v1/` in its path strings. Should be applied once via `router.use('/v1', xRouter)`. Blocked by: `ROUTE_PATTERNS` in `@mandarin/shared-constants` already bake in `/v1/` and are shared with the frontend — requires a coordinated change across both packages. See TODO in `apps/backend/src/api/routes/index.ts`.
+- [ ] **(A10) Apply `/v1` prefix at mount level in `src/app/routes.ts`** — currently each route file hardcodes `/v1/` in its path strings. Should be applied once via `router.use('/v1', xRouter)`. Blocked by: `ROUTE_PATTERNS` in `@mandarin/shared-constants` already bake in `/v1/` and are shared with the frontend — requires a coordinated change across both packages. See `apps/backend/src/app/routes.ts`.
 
 - [ ] Standardize API response structure - Document and enforce consistent response format across all backend endpoints (currently returns data directly; consider standardizing with or without wrapper like `{ success, data }`)
 
@@ -71,16 +63,14 @@ Sections
 
 ### Future Epics (Long-term)
 
-- [ ] **Epic: Advanced Spaced Repetition (FSRS)** - Replace exponential algorithm with ML-powered FSRS v6 (DSR model, 21 parameters, 20-30% fewer reviews for same retention). Requires mathematical modeling + backend refactor. Dependencies: Epic 15. References: `docs/business-requirements/epic-15-learning-retention/Vocabulary-Retention-Feature-Design.md` (FSRS section).
+- [ ] **Epic: Advanced Spaced Repetition (FSRS)** - Replace exponential algorithm with ML-powered FSRS v6 (DSR model, 21 parameters, 20-30% fewer reviews for same retention). Requires mathematical modeling + backend refactor. Dependencies: Epic 15. References: `docs/knowledge-base/learning-theory/spaced-repetition-algorithms.md` (FSRS vs SM-2, DSR model).
 
 - [ ] **Epic: Handwriting Recognition System** - Canvas-based character input (40x40mm) with stroke-order validation and CNN for 30K+ character recognition. Highest retention value for orthographic production. Requires ML model integration (Apple-style CNN or Vision API). Dependencies: Epic 15. Mobile-optimized UI critical.
 
-- [ ] **Epic: Radical-Based Learning** - "Select radical" question type + character decomposition viewer. Builds discrimination learning for similar characters. Requires 214 Kangxi radical database + character breakdown logic. Dependencies: Epic 15, Epic 17 (Knowledge Hub). Optional: AI-generated radical etymology + mnemonics via LLM.
-
-- [ ] **Epic: Progress Visualization Dashboard** - Mastery heatmap (red/green zones), retention curves, weak area identification. Self-efficacy boost through visual progress tracking. Requires data aggregation + charting library (Chart.js/D3). Dependencies: Epic 15. No AI needed.
-
 ## Done
 
+- [x] **Epic: Radical-Based Learning (Epic 19)** — Radical browser, detail cards, and dual radical/phonetic trees shipped in `features/radicals/`
+- [x] **Epic: Progress Visualization Dashboard** — Dashboard feature with learning statistics and activity overview shipped in `features/dashboard/`
 - [x] Fix jest-dom global type setup - Created tsconfig.test.json for proper test file TypeScript configuration with vitest/globals and @testing-library/jest-dom types. Updated setupTests.d.ts to augment vitest globals with jest-dom matchers. Removed explicit imports from all test files (QuizLoading, QuizComplete, DailyReviewQuiz). All 161 tests pass without explicit import statements.
 - [x] Re-organize features - Moved `conversation/` under `mandarin/`
 - [x] Unify data objects - Standardized `Card`, `Word`, `ConversationTurn`

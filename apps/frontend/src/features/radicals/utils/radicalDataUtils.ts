@@ -1,10 +1,10 @@
 /**
  * @file utils/radicalDataUtils.ts
- * @description Pure utility functions for filtering and sorting radicals
+ * @description Pure utility functions for filtering/sorting radicals + API mapping
  * Story 19.1: Radicals Browser Structure
  */
 
-import type { RadicalData, RadicalFilter } from "../types";
+import type { RadicalApiItem, RadicalData, RadicalFilter } from "../types";
 
 /**
  * Case-insensitive substring match on pinyin, meaning, or glyph.
@@ -78,4 +78,31 @@ export function applyFilterPipeline(radicals: RadicalData[], filter: RadicalFilt
   result = filterTop20(result, filter.showTop20Only);
   result = sortRadicals(result, filter.sortBy);
   return result;
+}
+
+/**
+ * Map a radical API item (camelCase, from the backend contract) into the
+ * frontend `RadicalData` shape (snake_case). The backend serializes camelCase
+ * (e.g. `alternateGlyphs`, `namePinyin`); every frontend consumer expects
+ * snake_case (`alternate_glyphs`, `name_pinyin`, ...). Missing/empty optional
+ * fields collapse to `undefined` so consumers can treat them as absent.
+ */
+export function mapRadicalToData(item: RadicalApiItem): RadicalData {
+  return {
+    id: item.id,
+    glyph: item.glyph,
+    alternate_glyphs: item.alternateGlyphs ?? [],
+    name_pinyin: item.namePinyin ?? "",
+    name_chinese: item.nameChinese || undefined,
+    meaning: item.meaning,
+    stroke_count: item.strokeCount,
+    is_recommended: item.isRecommended,
+    kangxi_index: item.kangxiIndex,
+    metadata: {
+      etymology: item.etymology || undefined,
+      frequency_rank: item.frequencyRank ?? undefined,
+      notes: item.notes || undefined,
+      is_also_character: item.isAlsoCharacter ?? undefined,
+    },
+  };
 }

@@ -20,6 +20,7 @@ describe("ProgressionController", () => {
       getRadicalProgress: vi.fn(),
       getRadicalProgressById: vi.fn(),
       upsertRadicalProgress: vi.fn(),
+      getGateStatus: vi.fn(),
     };
 
     // Mock ReviewService
@@ -283,6 +284,79 @@ describe("ProgressionController", () => {
       });
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(mockRecord);
+    });
+  });
+
+  describe("getGates (G8 — computed gate status endpoint)", () => {
+    it("returns 200 with character count gate FAIL at 0 characters", async () => {
+      mockProgressionService.getGateStatus.mockResolvedValue({
+        phase2Gate: {
+          passed: false,
+          reason: "NO_IME_ATTEMPT",
+          details: "No IME Simulator attempt found",
+        },
+        characterCountGate: {
+          passed: false,
+          reason: "INSUFFICIENT_CHARACTER_COVERAGE",
+          details: "Characters learned: 0 (needs ≥500)",
+        },
+        phase3To4Gate: {
+          passed: false,
+          reason: "KNOWN_WORD_RATIO_TOO_LOW",
+          details: "Known word ratio: 0.0%",
+        },
+      });
+
+      await progressionController.getGates(mockReq, mockRes);
+
+      expect(mockProgressionService.getGateStatus).toHaveBeenCalledWith("user123");
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      const body = mockRes.json.mock.calls[0][0];
+      expect(body.characterCountGate.passed).toBe(false);
+      expect(body.characterCountGate.reason).toBe("INSUFFICIENT_CHARACTER_COVERAGE");
+    });
+
+    it("returns 200 with character count gate PASS at ≥500 characters", async () => {
+      mockProgressionService.getGateStatus.mockResolvedValue({
+        phase2Gate: { passed: true, reason: "GRANDFATHERED", details: "Already passed Phase 2" },
+        characterCountGate: { passed: true },
+        phase3To4Gate: {
+          passed: false,
+          reason: "COMPREHENSION_SCORE_TOO_LOW",
+          details: "Score: 0%",
+        },
+      });
+
+      await progressionController.getGates(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      const body = mockRes.json.mock.calls[0][0];
+      expect(body.characterCountGate.passed).toBe(true);
+    });
+
+    it("returns all-passed for guests (no gating)", async () => {
+      mockReq.userId = null;
+
+      await progressionController.getGates(mockReq, mockRes);
+
+      expect(mockProgressionService.getGateStatus).not.toHaveBeenCalled();
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      const body = mockRes.json.mock.calls[0][0];
+      expect(body.characterCountGate.passed).toBe(true);
+      expect(body.phase2Gate.passed).toBe(true);
+      expect(body.phase3To4Gate.passed).toBe(true);
+    });
+
+    it("returns 500 with convention error message on service failure", async () => {
+      mockProgressionService.getGateStatus.mockRejectedValue(new Error("DB error"));
+
+      await progressionController.getGates(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Failed to load gate status",
+        code: "LOAD_FAILED",
+      });
     });
   });
 });

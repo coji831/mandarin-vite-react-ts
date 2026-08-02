@@ -15,9 +15,7 @@
 }
 
 .stroke-breakdown-svg svg {
-  /* structural: SVG child fill */
-  width: 100%;
-  /* structural: SVG child fill */
-  height: 100%;
-  display: block;
+  width: 100%; /* structural: SVG child fill — bundled with the container via descendant selector */
+  height: 100%; /* structural: SVG child fill */
+  display: block; /* SVG display fix — structural, not decorative */
 }

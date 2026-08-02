@@ -23,6 +23,18 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "ax
 import type { NormalizedError } from "@mandarin/shared-types";
 import { API_CONFIG } from "config";
 
+/**
+ * Extend axios request config with an opt-out flag for the automatic
+ * network-error retry. Set `_skipRetry: true` on a request (e.g. fail-fast
+ * browse fetches) to surface the error immediately instead of entering the
+ * 1s/2s/4s backoff retry chain.
+ */
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    _skipRetry?: boolean;
+  }
+}
+
 const TOKEN_KEY = "accessToken";
 let refreshPromise: Promise<string> | null = null;
 let logoutCallback: (() => void) | null = null;
@@ -56,10 +68,21 @@ function isTokenExpired(token: string): boolean {
 }
 
 /**
- * Refresh access token using httpOnly refresh token cookie
- * Prevents multiple simultaneous refresh requests
+ * Refresh access token using httpOnly refresh token cookie.
+ * EXPORTED shared single-flight refresh (F4 fix).
+ *
+ * The module-level `refreshPromise` dedupes every concurrent caller
+ * (AuthContext bootstrap, axios interceptor, background refresh) into ONE
+ * in-flight POST /auth/refresh. The backend ROTATES (revokes) the refresh
+ * cookie on every use, so a second concurrent POST with the same cookie fails
+ * 401 INVALID_TOKEN — without this dedupe the losing racer is treated as
+ * fatal and the user is wrongly logged out.
+ *
+ * Failure side effects happen EXACTLY ONCE here: the localStorage access token
+ * is removed and the registered logout callback (AuthContext → setUser(null))
+ * is invoked. Callers must NOT duplicate these side effects.
  */
-async function refreshAccessToken(): Promise<string> {
+export function requestAccessToken(): Promise<string> {
   if (refreshPromise) {
     return refreshPromise;
   }
@@ -76,7 +99,6 @@ async function refreshAccessToken(): Promise<string> {
       localStorage.setItem(TOKEN_KEY, accessToken);
       return accessToken;
     } catch (error) {
-      console.error("[apiClient] Token refresh failed:", error);
       localStorage.removeItem(TOKEN_KEY);
       if (logoutCallback) {
         logoutCallback();
@@ -115,10 +137,9 @@ apiClient.interceptors.request.use(
       // Refresh token proactively if expired
       if (isTokenExpired(token)) {
         try {
-          token = await refreshAccessToken();
-        } catch (_error) {
+          token = await requestAccessToken();
+        } catch {
           // If refresh fails, continue without token (will get 401)
-          console.warn("[apiClient] Proactive refresh failed, continuing request");
         }
       }
 
@@ -134,8 +155,8 @@ apiClient.interceptors.request.use(
 
 /**
  * Response interceptor: Handle auth errors and retry logic
- * - 401: Refresh token and retry request
- * - Network errors: Retry with exponential backoff
+ * - 401 (missing/expired) or 403 INVALID_TOKEN (tampered): Refresh token and retry request once
+ * - Network errors: Retry with exponential backoff (unless `_skipRetry`)
  */
 apiClient.interceptors.response.use(
   // Pass through successful responses
@@ -146,14 +167,27 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
       _retryCount?: number;
+      _skipRetry?: boolean;
     };
 
-    // Handle 401: Refresh token and retry
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    const status = error.response?.status;
+    // Auth failure: 401 (missing/expired token) or 403 INVALID_TOKEN (forged/tampered token).
+    // The backend returns 403 for tampered access tokens — without this, those never refresh (F4).
+    const isAuthFailure =
+      status === 401 ||
+      (status === 403 && (error.response?.data as { code?: string })?.code === "INVALID_TOKEN");
+
+    if (isAuthFailure && originalRequest && !originalRequest._retry) {
+      // Never try to refresh-then-retry the refresh call itself.
+      const isRefreshRequest = (originalRequest.url ?? "").includes("auth/refresh");
+      if (isRefreshRequest) {
+        return Promise.reject(createNormalizedError(error));
+      }
+
       originalRequest._retry = true;
 
       try {
-        const newToken = await refreshAccessToken();
+        const newToken = await requestAccessToken();
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
       } catch (_refreshError) {
@@ -170,6 +204,7 @@ apiClient.interceptors.response.use(
       isNetworkError &&
       isSafeMethod &&
       originalRequest &&
+      !originalRequest._skipRetry &&
       (originalRequest._retryCount || 0) < 3
     ) {
       originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
@@ -205,15 +240,6 @@ function createNormalizedError(error: AxiosError): NormalizedError {
     code: error.code || (error.response ? undefined : "ERR_NETWORK"),
     originalError: error,
   };
-
-  // Log error for debugging
-  console.error("[apiClient] Request failed:", {
-    url: error.config?.url,
-    method: error.config?.method?.toUpperCase(),
-    status: normalizedError.status,
-    code: normalizedError.code,
-    message: normalizedError.message,
-  });
 
   return normalizedError;
 }

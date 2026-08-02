@@ -1,0 +1,60 @@
+/**
+ * @file SentenceDisplay.css
+ * @description Styles for SentenceDisplay component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ * Story 21.5: Audio Sync — active sentence highlight via audioStore currentIndex.
+ * VisFix: Container is no longer a button — per-sentence play button on the right.
+ */
+
+.sentence-display:last-child {
+  border-bottom: none;
+}
+
+.sentence-display__text {
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+
+.sentence-word {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Stronger specificity (0,2,0) to override .btn-inline-text's color: inherit */
+.sentence-word.sentence-word--unknown {
+  color: var(
+    --color-primary-light
+  ); /* double-class selector for specificity — text-accent/text-primary-light won't match .btn-inline-text's color:inherit */
+}
+
+/* ─── Audio Active State ──────────────────────────────────── */
+
+.sentence-display--active {
+  --active-border-width: 3px;
+  background-color: var(--surface-light-5);
+  border-left: var(--active-border-width) solid var(--color-primary);
+  padding-left: calc(var(--space-sm) - var(--active-border-width));
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ─── Per-sentence audio button ──────────────────────────── */
+
+.sentence-display__row {
+  min-width: 0; /* allow the text body to shrink instead of overflowing */
+}
+
+.sentence-display__body {
+  min-width: 0; /* flex-shrink guard — text wraps within remaining width, no overflow */
+}
+
+.sentence-display__play-btn {
+  /* compact icon button — mirrors AudioControlBar transport button sizing */
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  font-size: var(--font-md);
+  justify-content: center;
+  /* no-motion rule — readers audio UI stays motion-free */
+  transition: none;
+}

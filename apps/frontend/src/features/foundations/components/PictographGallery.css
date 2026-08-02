@@ -1,0 +1,60 @@
+/**
+ * @file components/PictographGallery.css
+ * @description Styles for the PictographGallery tab component
+ * Story 21.21: Pictograph Warmup (Gallery + Mini-game)
+ *
+ * Uses design tokens from globals.css — no hardcoded values.
+ */
+
+.pictograph-gallery {
+  padding: var(--space-lg) 0;
+}
+
+.pictograph-gallery__header {
+  margin-bottom: var(--space-lg);
+}
+
+.pictograph-gallery__title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-lg);
+  color: var(--text-primary);
+}
+
+.pictograph-gallery__subtitle {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+
+.pictograph-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.pictograph-gallery__card {
+  cursor: pointer;
+}
+
+.pictograph-gallery__empty {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--text-tertiary);
+}
+
+.pictograph-gallery__empty-icon {
+  font-size: var(--font-3xl);
+  margin-bottom: var(--space-sm);
+}
+
+.pictograph-gallery__error {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-error);
+}
+
+.pictograph-gallery__error-message {
+  margin: 0 0 var(--space-md);
+  font-size: var(--font-sm);
+}

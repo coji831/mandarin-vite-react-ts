@@ -9,14 +9,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TreeRootNode } from "./TreeRootNode";
 import type { RadicalData } from "../types";
 
-const mockOpenHub = vi.fn();
-vi.mock("shared/hooks", () => ({
-  useCharacterHub: () => ({
-    openHub: mockOpenHub,
-  }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
-// BranchNode is not mocked — it renders with useCharacterHub already mocked above.
+// BranchNode is not mocked — it renders with useHubStore already mocked above.
 // We use text queries to verify expand/collapse behavior.
 
 const mockRadical: RadicalData = {
@@ -29,13 +28,7 @@ const mockRadical: RadicalData = {
   stroke_count: 1,
   is_recommended: true,
   kangxi_index: 1,
-  metadata: {
-    hsk_characters: [
-      { glyph: "一", pinyin: "yī", meaning: "one" },
-      { glyph: "七", pinyin: "qī", meaning: "seven" },
-      { glyph: "三", pinyin: "sān", meaning: "three" },
-    ],
-  },
+  metadata: {},
 };
 
 const sampleCharacters = [
@@ -143,7 +136,11 @@ describe("TreeRootNode", () => {
 
     const radicalButton = screen.getByRole("button", { name: "一 — one — 1 strokes" });
     fireEvent.click(radicalButton);
-    expect(mockOpenHub).toHaveBeenCalledWith("一", "yī");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "一",
+      label: "yī",
+    });
   });
 
   it("shows empty message when no characters", () => {
@@ -155,15 +152,45 @@ describe("TreeRootNode", () => {
     expect(screen.getByText("No characters mapped for this radical.")).toBeInTheDocument();
   });
 
-  it("collapses when toggle is clicked via keyboard", () => {
+  it("toggles exactly once per click (back and forth)", () => {
     render(<TreeRootNode radical={mockRadical} characters={sampleCharacters} />);
 
     const toggleButton = screen.getByRole("button", { name: /expand one/i });
-    fireEvent.keyDown(toggleButton, { key: "Enter" });
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute("aria-expanded", "true");
 
-    fireEvent.keyDown(toggleButton, { key: " " });
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("toggles exactly once when activated via Enter (native button)", () => {
+    render(<TreeRootNode radical={mockRadical} characters={sampleCharacters} />);
+
+    const toggleButton = screen.getByRole("button", { name: /expand one/i });
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+
+    // Native <button> fires click on Enter keydown — simulate full browser activation.
+    fireEvent.keyDown(toggleButton, { key: "Enter" });
+    fireEvent.click(toggleButton);
+
+    // Ends expanded — toggled exactly once (not expand → collapse via double handling).
+    expect(toggleButton).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("toggles exactly once when activated via Space (native button)", () => {
+    render(<TreeRootNode radical={mockRadical} characters={sampleCharacters} />);
+
+    const toggleButton = screen.getByRole("button", { name: /expand one/i });
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+
+    // Native <button> fires click on Space keyup — simulate full browser activation.
+    fireEvent.keyDown(toggleButton, { key: " " });
+    fireEvent.keyUp(toggleButton, { key: " " });
+    fireEvent.click(toggleButton);
+
+    expect(toggleButton).toHaveAttribute("aria-expanded", "true");
   });
 
   it("has correct aria-expanded state on toggle", () => {

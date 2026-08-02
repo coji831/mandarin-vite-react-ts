@@ -10,8 +10,8 @@
  */
 
 import { useCallback } from "react";
-import { useCharacterHub } from "shared/hooks";
 import { Box, Button } from "shared/components";
+import { openHub } from "shared/store";
 import "./BranchNode.css";
 
 interface BranchNodeProps {
@@ -29,11 +29,9 @@ export function BranchNode({
   showConnector = false,
   ariaRole = "listitem",
 }: BranchNodeProps) {
-  const { openHub } = useCharacterHub();
-
   const handleClick = useCallback(() => {
-    openHub(character, pinyin);
-  }, [character, pinyin, openHub]);
+    openHub({ entityType: "character", entityId: character, label: pinyin });
+  }, [character, pinyin]);
 
   const handlePlayAudio = useCallback(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -45,16 +43,6 @@ export function BranchNode({
       window.speechSynthesis.speak(utterance);
     }
   }, [character]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleClick();
-      }
-    },
-    [handleClick],
-  );
 
   return (
     <Box

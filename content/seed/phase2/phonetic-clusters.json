@@ -1,0 +1,98 @@
+[
+  {
+    "id": "pc_0001",
+    "componentId": "cmp_1684",
+    "displayOrder": 1,
+    "description": "Characters containing 青 as phonetic component",
+    "pronunciationNote": "All characters share qing- onset but differ in tone",
+    "phoneticPinyin": "qīng"
+  },
+  {
+    "id": "pc_0002",
+    "componentId": "cmp_282",
+    "displayOrder": 2,
+    "description": "Characters containing 包 as phonetic component",
+    "pronunciationNote": "Most read bāo/bǎo/páo — phonetic drift from original bāo",
+    "phoneticPinyin": "bāo"
+  },
+  {
+    "id": "pc_0003",
+    "componentId": "cmp_137",
+    "displayOrder": 3,
+    "description": "Characters containing 令 as phonetic component",
+    "pronunciationNote": "5 of 28 members keep the lìng reading; the rest show phonetic drift",
+    "phoneticPinyin": "lìng"
+  },
+  {
+    "id": "pc_0004",
+    "componentId": "cmp_391",
+    "displayOrder": 4,
+    "description": "Characters containing 各 as phonetic component",
+    "pronunciationNote": "3 of 26 members keep the gè reading; the rest show phonetic drift",
+    "phoneticPinyin": "gè"
+  },
+  {
+    "id": "pc_0005",
+    "componentId": "cmp_377",
+    "displayOrder": 5,
+    "description": "Characters containing 古 as phonetic component",
+    "pronunciationNote": "5 of 25 members keep the gǔ reading; the rest show phonetic drift",
+    "phoneticPinyin": "gǔ"
+  },
+  {
+    "id": "pc_0006",
+    "componentId": "cmp_1315",
+    "displayOrder": 6,
+    "description": "Characters containing 者 as phonetic component",
+    "pronunciationNote": "25 characters built on the zhě phonetic component, with notable sound drift",
+    "phoneticPinyin": "zhě"
+  },
+  {
+    "id": "pc_0007",
+    "componentId": "cmp_1685",
+    "displayOrder": 7,
+    "description": "Characters containing 非 as phonetic component",
+    "pronunciationNote": "4 of 25 members keep the fēi reading; the rest show phonetic drift",
+    "phoneticPinyin": "fēi"
+  },
+  {
+    "id": "pc_0008",
+    "componentId": "cmp_1293",
+    "displayOrder": 8,
+    "description": "Characters containing 羊 as phonetic component",
+    "pronunciationNote": "5 of 24 members keep the yáng reading; the rest show phonetic drift",
+    "phoneticPinyin": "yáng"
+  },
+  {
+    "id": "pc_0009",
+    "componentId": "cmp_044",
+    "displayOrder": 9,
+    "description": "Characters containing 且 as phonetic component",
+    "pronunciationNote": "23 characters built on the qiě phonetic component, with notable sound drift",
+    "phoneticPinyin": "qiě"
+  },
+  {
+    "id": "pc_0010",
+    "componentId": "cmp_613",
+    "displayOrder": 10,
+    "description": "Characters containing 尚 as phonetic component",
+    "pronunciationNote": "1 of 23 members keep the shàng reading; the rest show phonetic drift",
+    "phoneticPinyin": "shàng"
+  },
+  {
+    "id": "pc_0011",
+    "componentId": "cmp_658",
+    "displayOrder": 11,
+    "description": "Characters containing 工 as phonetic component",
+    "pronunciationNote": "3 of 23 members keep the gōng reading; the rest show phonetic drift",
+    "phoneticPinyin": "gōng"
+  },
+  {
+    "id": "pc_0012",
+    "componentId": "cmp_1404",
+    "displayOrder": 12,
+    "description": "Characters containing 莫 as phonetic component",
+    "pronunciationNote": "5 of 23 members keep the mò reading; the rest show phonetic drift",
+    "phoneticPinyin": "mò"
+  }
+]

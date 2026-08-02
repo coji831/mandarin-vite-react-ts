@@ -19,7 +19,7 @@ web: npm start
 ```
 
 ```json
-// railway.toml (at apps/backend/)
+// railway.toml (at apps/backend/) — illustrative only
 [build]
   builder = "NIXPACKS"
   buildCommand = "npm run build"
@@ -29,6 +29,8 @@ web: npm start
   restartPolicyType = "ON_FAILURE"
   restartPolicyMaxRetries = 10
 ```
+
+> **Note:** The snippet above is an illustrative minimal example. The **live** deployment config is `apps/backend/railway.toml` (RAILPACK builder, `npm install --include=dev`, builds `@mandarin/shared-utils` before the backend, migrations via `preDeployCommand`) — see the [Deployment Guide](../../guides/operations/deployment.md#backend-railway).
 
 ### Deploy Commands
 

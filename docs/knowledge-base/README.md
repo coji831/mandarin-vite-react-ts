@@ -14,16 +14,18 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 
 ## Frontend
 
-| Article                                                                | Description                                                           |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [React Patterns](./frontend/frontend-react-patterns.md)                | Context API, Router, component patterns                               |
-| [State Management](./frontend/frontend-state-management.md)            | Normalized state, reducer composition                                 |
-| [UI & Component Patterns](./frontend/frontend-ui-patterns.md)          | Card grids, search/filter, responsive design, external library canvas |
-| [Advanced Patterns](./frontend/frontend-advanced-patterns.md)          | HTTP client interceptors, error boundaries, performance               |
-| [Data Migration](./frontend/frontend-data-migration.md)                | State migration strategies                                            |
-| [Development Server](./frontend/frontend-development-server.md)        | Vite proxy, HMR, HTTPS setup                                          |
-| [Modular Monolith](./frontend/frontend-modular-monolith.md)            | Frontend architecture patterns                                        |
-| [Strategy Pattern (Frontend)](./frontend/strategy-pattern-frontend.md) | Quiz/review strategy implementations                                  |
+| Article                                                                               | Description                                                           |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [React Patterns](./frontend/frontend-react-patterns.md)                               | Context API, Router, component patterns                               |
+| [State Management](./frontend/frontend-state-management.md)                           | Normalized state, reducer composition                                 |
+| [UI & Component Patterns](./frontend/frontend-ui-patterns.md)                         | Card grids, search/filter, responsive design, external library canvas |
+| [Advanced Patterns](./frontend/frontend-advanced-patterns.md)                         | HTTP client interceptors, error boundaries, performance               |
+| [Data Migration](./frontend/frontend-data-migration.md)                               | State migration strategies                                            |
+| [Development Server](./frontend/frontend-development-server.md)                       | Vite proxy, HMR, HTTPS setup                                          |
+| [Modular Monolith](./frontend/frontend-modular-monolith.md)                           | Frontend architecture patterns                                        |
+| [Strategy Pattern (Frontend)](./frontend/strategy-pattern-frontend.md)                | Quiz/review strategy implementations                                  |
+| [Discriminated Union State Machines](./frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                         |
+| [Storybook MSW Handlers](./frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                       |
 
 ## Backend
 
@@ -40,6 +42,7 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 | [TypeScript Error Handling](./backend/typescript-error-handling.md)                          | Error types, handling patterns                              |
 | [Character-Level SRS with Reading Context](./backend/character-level-srs-reading-context.md) | Polyphone handling, WordStudyContext pattern                |
 | [Pre-Adaptation Rules](./backend/pre-adaptation-static-dynamic-separation.md)                | Content IDs, version, metadata, file-per-entity, review_log |
+| [Module-Level Containers](./backend/module-level-containers.md)                              | Per-module DI containers vs monolithic composition root     |
 
 ## Learning Theory
 
@@ -66,22 +69,30 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 
 ## Testing
 
-| Article                                                                      | Description                           |
-| ---------------------------------------------------------------------------- | ------------------------------------- |
-| [Jest + ES Modules](./testing/testing-es-modules-jest.md)                    | Jest configuration for ESM            |
-| [Vitest + ES Modules](./testing/testing-es-modules-vitest.md)                | Vitest configuration for ESM          |
-| [Monorepo Version Conflicts](./testing/vitest-monorepo-version-conflicts.md) | Diagnosing Vite/Vitest version issues |
+| Article                                                                      | Description                                                 |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| [Vitest + ES Modules](./testing/testing-es-modules-vitest.md)                | Vitest configuration for ESM (covers Epics 13/14 migration) |
+| [Monorepo Version Conflicts](./testing/vitest-monorepo-version-conflicts.md) | Diagnosing Vite/Vitest version issues                       |
+| [Storybook Tests via Vitest](./testing/storybook-addon-vitest.md)            | Running Storybook stories with `@storybook/addon-vitest`    |
 
 ## Practices
 
-| Article                                                                | Description                                      |
-| ---------------------------------------------------------------------- | ------------------------------------------------ |
-| [SOLID Principles](./practices/solid-principles.md)                    | OOP design principles                            |
-| [Documentation Patterns](./practices/documentation-patterns.md)        | Concise visual docs                              |
-| [Git Workflow](./practices/git-workflow.md)                            | Branching, commit conventions                    |
-| [Planning & Estimation](./practices/planning-estimation-strategies.md) | Story estimation techniques                      |
-| [.NET Patterns](./practices/dotnet-patterns.md)                        | .NET migration reference                         |
-| [Integration Gap Diagnosis](./practices/integration-gap-diagnosis.md)  | 3-gap checklist for frontend-backend integration |
+| Article                                                                     | Description                                                                                                                   |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [SOLID Principles](./practices/solid-principles.md)                         | OOP design principles                                                                                                         |
+| [Documentation Patterns](./practices/documentation-patterns.md)             | Concise visual docs                                                                                                           |
+| [Git Workflow](./practices/git-workflow.md)                                 | Branching, commit conventions                                                                                                 |
+| [Planning & Estimation](./practices/planning-estimation-strategies.md)      | Story estimation techniques                                                                                                   |
+| [.NET Patterns](./practices/dotnet-patterns.md)                             | .NET migration reference                                                                                                      |
+| [Integration Gap Diagnosis](./practices/integration-gap-diagnosis.md)       | 3-gap checklist for frontend-backend integration                                                                              |
+| [Async Progressive Enrichment](./practices/async-progressive-enrichment.md) | Lazy per-item enrichment so base data never blocks render                                                                     |
+| [Agent Browser Verification](./practices/agent-browser-verification.md)     | Playwright/Storybook verification: small surgical runs, trust-disk-over-return, UTF-8-safe PowerShell I/O, MSW/axios pitfalls |
+
+## Data
+
+| Article                                          | Description                                           |
+| ------------------------------------------------ | ----------------------------------------------------- |
+| [Shared Data Model](./data/shared-data-model.md) | Content, progress, and junction entities across epics |
 
 ## Related
 

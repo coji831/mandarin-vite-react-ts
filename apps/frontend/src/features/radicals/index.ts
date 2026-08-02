@@ -13,6 +13,8 @@ export {
   RadicalGrid,
   FilterBar,
   RadicalDetailCard,
+  RadicalDetailContent,
+  RadicalHub,
   ExampleCharGrid,
   ExampleCharCell,
   RadicalTreesTab,
@@ -22,7 +24,7 @@ export {
   Phase3TreeView,
   RadicalChipPicker,
 } from "./components";
-export { useRadicals } from "./hooks";
+export { useRadicals, useRadicalById } from "./hooks";
 export { radicalsService, radicalProgressService } from "./services";
 export type { RadicalProgressItem } from "./services";
 export {

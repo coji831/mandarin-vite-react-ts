@@ -15,6 +15,8 @@ import quizRouter from "../modules/quiz/api/quizRoutes.js";
 import reviewRouter from "../modules/review/api/reviewRoutes.js";
 import radicalsRoutes from "../modules/radicals/api/radicalsRoutes.js";
 import mnemonicsRoutes from "../modules/mnemonics/api/mnemonicsRoutes.js";
+import wordsRoutes from "../modules/words/api/WordsRoutes.js";
+import { createReadersRoutes } from "../modules/readers/api/readersRoutes.js";
 import {
   quizController,
   reviewController,
@@ -22,6 +24,8 @@ import {
   foundationsController,
   radicalsController,
   mnemonicsController,
+  wordsController,
+  readersController,
   geminiService,
 } from "./container.js";
 
@@ -89,5 +93,45 @@ router.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 router.use(mnemonicsRoutes);
+
+// Words routes (v1) - Story 21.7
+router.use((req: Request, res: Response, next: NextFunction) => {
+  req.wordsController = wordsController;
+  next();
+});
+router.use(wordsRoutes);
+
+// Readers routes (v1) - Story 21.3
+const readersRoutes = createReadersRoutes(readersController);
+router.use(readersRoutes);
+
+// Phonetic Clusters routes (v1) - Story 21.6
+import phoneticClustersRoutes from "../modules/phonetic-clusters/api/phoneticClustersRoutes.js";
+import { phoneticClustersController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.phoneticClustersController = phoneticClustersController;
+  next();
+});
+router.use(phoneticClustersRoutes);
+
+// Characters routes (v1) — Story 21.10
+import charactersRoutes from "../modules/characters/api/charactersRoutes.js";
+import { charactersController, pinyinController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.charactersController = charactersController;
+  next();
+});
+router.use(charactersRoutes);
+
+// Pinyin search routes (v1) — Story 21.12
+import pinyinRoutes from "../modules/characters/api/pinyinRoutes.js";
+
+router.use((req, res, next) => {
+  req.pinyinController = pinyinController;
+  next();
+});
+router.use(pinyinRoutes);
 
 export default router;

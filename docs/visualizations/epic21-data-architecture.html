@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Epic 21 — Data Architecture</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f8fafc;
+        color: #1e293b;
+        padding: 32px;
+        line-height: 1.5;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+      .subtitle a {
+        color: #2563eb;
+      }
+      .footer {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: 32px;
+        padding-top: 16px;
+        border-top: 2px solid #e2e8f0;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+      }
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        flex-shrink: 0;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .swatch-db {
+        background: #dbeafe;
+        border-color: #93c5fd;
+      }
+      .swatch-json {
+        background: #fef3c7;
+        border-color: #fcd34d;
+      }
+      .swatch-both {
+        background: #ede9fe;
+        border-color: #c4b5fd;
+      }
+      .swatch-calc {
+        background: #fce7f3;
+        border-color: #f9a8d4;
+      }
+      .swatch-dep {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        opacity: 0.6;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .badge-db {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .badge-json {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-both {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .badge-calc {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-none {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+
+      .phase {
+        display: inline-block;
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .phase-a {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .phase-b {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .phase-c {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .phase-p {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px dashed #94a3b8;
+      }
+
+      .tier {
+        margin-bottom: 20px;
+        border: 2px solid;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .tier-hdr {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .tier-hdr .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        font-size: 13px;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .tier-hdr .desc {
+        font-weight: 400;
+        font-size: 13px;
+        opacity: 0.65;
+      }
+      .tier-body {
+        padding: 12px 16px;
+      }
+
+      .tier-1 {
+        border-color: #93c5fd;
+      }
+      .tier-1 .tier-hdr {
+        background: #eff6ff;
+      }
+      .tier-1 .num {
+        background: #3b82f6;
+      }
+      .tier-2 {
+        border-color: #c4b5fd;
+      }
+      .tier-2 .tier-hdr {
+        background: #f5f3ff;
+      }
+      .tier-2 .num {
+        background: #8b5cf6;
+      }
+      .tier-3 {
+        border-color: #fcd34d;
+      }
+      .tier-3 .tier-hdr {
+        background: #fffbeb;
+      }
+      .tier-3 .num {
+        background: #f59e0b;
+      }
+      .tier-4 {
+        border-color: #fca5a5;
+      }
+      .tier-4 .tier-hdr {
+        background: #fff1f2;
+      }
+      .tier-4 .num {
+        background: #ef4444;
+      }
+      .tier-dep {
+        border-color: #cbd5e1;
+        border-style: dashed;
+      }
+      .tier-dep .tier-hdr {
+        background: #f8fafc;
+      }
+      .tier-dep .num {
+        background: #94a3b8;
+      }
+      .tier-dep .tier-body {
+        opacity: 0.6;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 10px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        position: relative;
+      }
+      .card .name {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .card .name s {
+        color: #94a3b8;
+      }
+      .card .meta {
+        font-size: 12px;
+        color: #64748b;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px 6px;
+        margin-bottom: 4px;
+      }
+      .card .meta .label {
+        color: #94a3b8;
+      }
+      .card .conn {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 6px;
+        font-size: 12px;
+        color: #64748b;
+        padding-top: 4px;
+        border-top: 1px solid #f1f5f9;
+        margin-top: 4px;
+      }
+      .card .top-right {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        display: flex;
+        gap: 4px;
+      }
+      .sect {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 12px 0 6px 0;
+      }
+      .sect:first-child {
+        margin-top: 0;
+      }
+
+      .summary {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-top: 20px;
+      }
+      .summary th {
+        text-align: left;
+        padding: 8px 10px;
+        background: #f1f5f9;
+        border-bottom: 2px solid #e2e8f0;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #475569;
+      }
+      .summary td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: top;
+      }
+      .summary tr:hover td {
+        background: #f8fafc;
+      }
+      .summary .entity {
+        font-weight: 600;
+      }
+      .summary .empty {
+        color: #94a3b8;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🏗️ Data Architecture</h1>
+    <div class="subtitle">
+      Epic 21: Graded Readers · <a href="../guides/adr/data-tiering-architecture.md">ADR-006</a> ·
+      July 23, 2026
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="swatch swatch-db"></span> DB (crucial — indexed, queried)
+      </div>
+      <div class="legend-item">
+        <span class="swatch swatch-json"></span> JSON aggregate (enrichment — detail views)
+      </div>
+      <div class="legend-item"><span class="swatch swatch-both"></span> Both</div>
+      <div class="legend-item"><span class="swatch swatch-calc"></span> Computed (not stored)</div>
+      <div class="legend-item"><span class="swatch swatch-dep"></span> Deprecated</div>
+      <span style="width: 1px; height: 20px; background: #e2e8f0; align-self: center"></span>
+      <div class="legend-item"><span class="phase phase-a">A</span> Complete</div>
+      <div class="legend-item"><span class="phase phase-b">B</span> Script ready</div>
+      <div class="legend-item"><span class="phase phase-c">C</span> Deferred</div>
+      <div class="legend-item"><span class="phase phase-p">P</span> Planned</div>
+    </div>
+
+    <!-- ════════════════ TIER 1 ════════════════ -->
+    <div class="tier tier-1">
+      <div class="tier-hdr">
+        <span class="num">1</span> Static Reference
+        <span class="desc"
+          >· foundations, radicals · content JSON + DB · in-memory cache, never evict</span
+        >
+      </div>
+      <div class="tier-body">
+        <div class="sect">Foundations (content/pinyin/, content/tones/)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="name">Pinyin Initials</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">Path:</span> content/pinyin/init_*.json
+            </div>
+            <div class="conn"><span class="arrow">→</span> PinyinCombination</div>
+          </div>
+          <div class="card">
+            <div class="name">Pinyin Finals</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">Path:</span> content/pinyin/fin_*.json
+            </div>
+            <div class="conn"><span class="arrow">→</span> PinyinCombination</div>
+          </div>
+          <div class="card">
+            <div class="name">PinyinCombination</div>
+            <div class="meta">
+              <span class="badge badge-both">BOTH</span>
+              <span class="label">Table:</span> PinyinCombination
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> initials + finals <span class="arrow">→</span> Character
+              (via syllable)
+            </div>
+          </div>
+          <div class="card">
+            <div class="name">Tones</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">Path:</span> content/tones/*.json
+            </div>
+          </div>
+          <div class="card">
+            <div class="name">Strokes</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">Path:</span> content/characters/*.json
+            </div>
+            <div class="conn"><span class="arrow">→</span> Character.strokeCount</div>
+          </div>
+        </div>
+        <div class="sect">Radicals (content/radicals/)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="name">Radicals</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">Path:</span> content/radicals/rad_*.json
+            </div>
+            <div class="conn"><span class="arrow">→</span> CharacterRadical (T2)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ TIER 2 ════════════════ -->
+    <div class="tier tier-2">
+      <div class="tier-hdr">
+        <span class="num">2</span> Master Data
+        <span class="desc"
+          >· characters · DB for crucial fields + 1 aggregate JSON for enrichment · TTL 1h</span
+        >
+      </div>
+      <div class="tier-body">
+        <div class="sect">DB — Crucial (indexed, queried, relational)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Character</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> Character
+            </div>
+            <div class="meta">
+              <span class="label">Fields:</span> id, glyph, strokeCount, content_version, metadata
+            </div>
+            <div class="conn">
+              <span class="arrow">↘</span> CharacterReading
+              <span class="arrow">↘</span> CharacterHskLevel
+              <span class="arrow">↘</span> CharacterRadical
+              <span class="arrow">↘</span> WordCharacter
+              <span class="arrow">↘</span> CharacterProgress
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">CharacterReading</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> CharacterReading
+            </div>
+            <div class="meta">
+              <span class="label">Fields:</span> characterId, pinyin, tone, type, commonality
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> Character <span class="arrow">↘</span> PhoneticClusters
+              (computed)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">CharacterHskLevel</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> CharacterHskLevel
+            </div>
+            <div class="conn"><span class="arrow">←</span> Character</div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">CharacterRadical</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> CharacterRadical
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> Character <span class="arrow">←</span> Radicals (T1)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">MnemonicStory</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> MnemonicStory
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> Character <span class="arrow">←</span> User
+            </div>
+          </div>
+        </div>
+        <div class="sect">JSON Aggregate — Enrichment (1 file, loaded on detail page)</div>
+        <div class="grid">
+          <div class="card" style="border-color: #fcd34d; border-style: dashed">
+            <div class="top-right"><span class="phase phase-p">P</span></div>
+            <div class="name">Character Enrichment</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">File:</span> content/characters/characters.json
+            </div>
+            <div class="meta">
+              <span class="label">Fields:</span> traditional, definition, etymology, frequencyRank,
+              commonWords, radicalIds
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> Character.id (key)
+              <span class="arrow">→</span> LexicalHub detail panel
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ TIER 3 ════════════════ -->
+    <div class="tier tier-3">
+      <div class="tier-hdr">
+        <span class="num">3</span> Produced Content
+        <span class="desc"
+          >· words, passages · DB for structure + aggregate JSON for data · TTL 5-30m</span
+        >
+      </div>
+      <div class="tier-body">
+        <div class="sect">DB — Crucial (registry, relationships)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Word</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> Word
+              <span style="color: #94a3b8">(pure ID-only)</span>
+            </div>
+            <div class="conn">
+              <span class="arrow">↘</span> WordCharacter <span class="arrow">↘</span> WordHskLevel
+              <span class="arrow">↘</span> WordLookupEvent
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">WordCharacter</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Junction:</span> WordCharacter
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> Word <span class="arrow">←</span> Character (T2)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">WordHskLevel</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> WordHskLevel
+            </div>
+            <div class="conn"><span class="arrow">←</span> Word</div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Passage</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> Passage
+              <span style="color: #94a3b8">(JSON content column)</span>
+            </div>
+            <div class="conn">
+              <span class="arrow">↘</span> ReadingSession <span class="arrow">↘</span> Bookmark
+              <span class="arrow">↘</span> WordLookupEvent
+            </div>
+          </div>
+        </div>
+        <div class="sect">
+          JSON Aggregate — Bulk Data (2 files, loaded at startup, used by segmenter)
+        </div>
+        <div class="grid">
+          <div class="card" style="border-color: #93c5fd">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Word Index</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">File:</span> content/words/index.json
+            </div>
+            <div class="meta">
+              <span class="label">Maps:</span> simplified→wordId · wordId→hskLevel
+            </div>
+            <div class="conn">
+              <span class="arrow">→</span> Segmenter (reading) <span class="arrow">→</span> Passage
+              HSK filter
+            </div>
+          </div>
+          <div class="card" style="border-color: #93c5fd">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Words</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span>
+              <span class="label">File:</span> content/words/words.json
+            </div>
+            <div class="meta">
+              <span class="label">Fields:</span> simplified, hskLevel, characters, sequenceOrder
+            </div>
+            <div class="conn"><span class="arrow">←</span> Word.id (key)</div>
+          </div>
+        </div>
+        <div class="sect">Computed (not stored)</div>
+        <div class="grid">
+          <div class="card" style="border-color: #f9a8d4; border-style: dashed">
+            <div class="top-right"><span class="phase phase-p">P</span></div>
+            <div class="name">Phonetic Clusters</div>
+            <div class="meta">
+              <span class="badge badge-calc">⚡ computed</span>
+              <span class="label">From:</span> CharacterReading (T2)
+            </div>
+            <div class="meta">O(n) over ~2700 characters — computed at query time</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ TIER 4 ════════════════ -->
+    <div class="tier tier-4">
+      <div class="tier-hdr">
+        <span class="num">4</span> Transaction / Event Data
+        <span class="desc">· per-user, DB only, append-mostly · no cache or &lt;1m</span>
+      </div>
+      <div class="tier-body">
+        <div class="sect">Event Streams (append-only)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">ReviewLog</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> ReviewLog
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">→</span> CharacterProgress
+              (materialized)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">WordLookupEvent</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> WordLookupEvent
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User/Session <span class="arrow">←</span> Word (T3)
+              <span class="arrow">←</span> Passage (T3)
+            </div>
+          </div>
+        </div>
+        <div class="sect">Mutable State (CRUD / upsert)</div>
+        <div class="grid">
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">CharacterProgress</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> CharacterProgress
+              <span style="color: #16a34a">(materialized view)</span>
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">←</span> Character (T2)
+              <span class="arrow">←</span> ReviewLog
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">ReadingSession</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> ReadingSession
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">←</span> Passage (T3)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">Bookmark</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="label">Table:</span> Bookmark
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">←</span> Passage (T3)
+            </div>
+          </div>
+          <div class="card">
+            <div class="top-right"><span class="phase phase-a">A</span></div>
+            <div class="name">WordStudyContext</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span>
+              <span class="label">Table:</span> WordStudyContext
+            </div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">←</span> Character (T2)
+              <span class="arrow">←</span> Word (T3)
+            </div>
+          </div>
+        </div>
+        <div class="sect">Auth &amp; Existing</div>
+        <div class="grid">
+          <div class="card">
+            <div class="name">User</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn">
+              <span class="arrow">→</span> CharacterProgress <span class="arrow">→</span> ReviewLog
+              <span class="arrow">→</span> ReadingSession <span class="arrow">→</span> Bookmark
+              <span class="arrow">→</span> MnemonicStory
+            </div>
+          </div>
+          <div class="card">
+            <div class="name">Session</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+          <div class="card">
+            <div class="name">FoundationProgress</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+          <div class="card">
+            <div class="name">RadicalProgress</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+          <div class="card">
+            <div class="name">ReviewItem</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+          <div class="card">
+            <div class="name">QuizAttempt</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn">
+              <span class="arrow">←</span> User <span class="arrow">→</span> QuizAttemptAnswer
+            </div>
+          </div>
+          <div class="card">
+            <div class="name">StudyStreak</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+          <div class="card">
+            <div class="name">PhaseGate</div>
+            <div class="meta"><span class="badge badge-db">DB</span></div>
+            <div class="conn"><span class="arrow">←</span> User</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ DEPRECATED ════════════════ -->
+    <div class="tier tier-dep">
+      <div class="tier-hdr"><span class="num">✕</span> Deprecated / Phase-Out</div>
+      <div class="tier-body">
+        <div class="grid">
+          <div class="card">
+            <div class="name"><s>Progress</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-b">B</span>
+              <span class="label">→</span> rename to Progress_old
+            </div>
+            <div class="conn">Replaced by CharacterProgress + ReviewLog</div>
+          </div>
+          <div class="card">
+            <div class="name"><s>VocabularyWord</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-c">C</span>
+            </div>
+            <div class="conn">Replaced by Word</div>
+          </div>
+          <div class="card">
+            <div class="name"><s>VocabularyList</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-c">C</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="name"><s>WordList</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-c">C</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="name"><s>Category</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-c">C</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="name"><s>ContentItem</s></div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-c">C</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="name"><s>ch_hsk_* files</s></div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span> <span class="phase phase-b">B</span>
+              <span class="label">→</span> rename to ch_XXXX
+            </div>
+          </div>
+          <div class="card">
+            <div class="name"><s>Character legacy fields</s></div>
+            <div class="meta">
+              <span class="phase phase-b">B</span> <span class="label">→</span> traditional,
+              hskLevel, frequencyRank, definition, readings(JSON), etymology, commonWords
+            </div>
+            <div class="conn">Migrated to CharacterReading table + characters.json enrichment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ PLANNED ════════════════ -->
+    <div class="tier tier-dep" style="margin-top: 0">
+      <div class="tier-hdr"><span class="num">?</span> Future / Planned</div>
+      <div class="tier-body">
+        <div class="grid">
+          <div class="card" style="border-color: #94a3b8; border-style: dashed; opacity: 1">
+            <div class="name">Chengyu (Idioms)</div>
+            <div class="meta">
+              <span class="badge badge-both">BOTH</span> <span class="phase phase-p">P</span> T3
+            </div>
+            <div class="conn">
+              <span class="arrow">→</span> WordCharacter <span class="arrow">←</span> Character
+            </div>
+          </div>
+          <div class="card" style="border-color: #94a3b8; border-style: dashed; opacity: 1">
+            <div class="name">Grammar Points</div>
+            <div class="meta">
+              <span class="badge badge-json">JSON</span> <span class="phase phase-p">P</span> T1
+            </div>
+          </div>
+          <div class="card" style="border-color: #94a3b8; border-style: dashed; opacity: 1">
+            <div class="name">Word Enrichment</div>
+            <div class="meta">
+              <span class="badge badge-db">DB</span> <span class="phase phase-p">P</span> T3
+            </div>
+            <div class="conn">pinyin, definitions, examples <span class="arrow">←</span> Word</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-size: 16px; font-weight: 600; margin: 28px 0 12px">Storage Decision Summary</h2>
+    <table class="summary">
+      <tr>
+        <th>Entity</th>
+        <th>Tier</th>
+        <th>Storage</th>
+        <th>DB Fields</th>
+        <th>JSON Fields</th>
+      </tr>
+      <tr>
+        <td class="entity">Character</td>
+        <td>T2</td>
+        <td><span class="badge badge-db">DB</span> + <span class="badge badge-json">JSON</span></td>
+        <td>id, glyph, strokeCount, content_version</td>
+        <td>traditional, definition, etymology, frequencyRank, commonWords, radicalIds</td>
+      </tr>
+      <tr>
+        <td class="entity">CharacterReading</td>
+        <td>T2</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>characterId, pinyin, tone, type, commonality</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">CharacterHskLevel</td>
+        <td>T2</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>characterId, hskLevel</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">CharacterRadical</td>
+        <td>T2</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>characterGlyph, radicalId</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">Word</td>
+        <td>T3</td>
+        <td><span class="badge badge-db">DB</span> + <span class="badge badge-json">JSON</span></td>
+        <td>id (pure ID-only)</td>
+        <td>simplified, hskLevel, characters, sequenceOrder</td>
+      </tr>
+      <tr>
+        <td class="entity">WordHskLevel</td>
+        <td>T3</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>wordId, hskLevel, hskVersion</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">WordCharacter</td>
+        <td>T3</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>wordId, characterId, sequenceOrder</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">Passage</td>
+        <td>T3</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>all fields + JSON content column</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">Radicals</td>
+        <td>T1</td>
+        <td><span class="badge badge-json">JSON</span></td>
+        <td class="empty">—</td>
+        <td>all fields (individual files, ~20)</td>
+      </tr>
+      <tr>
+        <td class="entity">ReviewLog</td>
+        <td>T4</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>all fields</td>
+        <td class="empty">—</td>
+      </tr>
+      <tr>
+        <td class="entity">CharacterProgress</td>
+        <td>T4</td>
+        <td><span class="badge badge-db">DB</span></td>
+        <td>all fields</td>
+        <td class="empty">—</td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      Entities: 28 current + 3 planned · Phase A: ✅ Complete · Phase B: 🟡 Scripts ready · Phase C:
+      ⏳ Deferred 2 weeks
+    </div>
+  </body>
+</html>

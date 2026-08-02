@@ -17,11 +17,35 @@ export interface RadicalData {
   metadata: {
     etymology?: string;
     frequency_rank?: number;
-    hsk_characters?: Array<{ glyph: string; pinyin: string; meaning: string }>;
+    // hsk_characters REMOVED — now fetched from API
     notes?: string;
     is_also_character?: boolean;
     [key: string]: unknown;
   };
+}
+
+/**
+ * Shape of a radical as returned by the backend API (camelCase contract).
+ * The backend serializes camelCase (e.g. `alternateGlyphs`, `namePinyin`);
+ * the frontend `RadicalData` type consumes snake_case. Map via
+ * `mapRadicalToData` in `features/radicals/utils`.
+ */
+export interface RadicalApiItem {
+  id: string;
+  glyph: string;
+  alternateGlyphs: string[];
+  namePinyin: string;
+  nameChinese: string;
+  meaning: string;
+  strokeCount: number;
+  isRecommended: boolean;
+  kangxiIndex: number;
+  etymology: string;
+  frequencyRank: number | null;
+  notes: string | null;
+  isAlsoCharacter: boolean | null;
+  variants: Record<string, unknown> | null;
+  hskCharacters: Array<{ glyph: string; pinyin: string; meaning: string }>;
 }
 
 export interface RadicalFilter {

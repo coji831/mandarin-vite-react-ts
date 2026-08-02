@@ -32,7 +32,7 @@ Tone distinction is the hardest skill for Mandarin beginners. The reference sect
    - 3rd+3rd → 2nd+3rd (你好 → ní hǎo)
    - 一 (yī) → yí before 4th tone (一个 → yí gè)
    - 不 (bù) → bú before 4th tone (不是 → bú shì)
-3. Spoken pinyin in tone pair drills uses spokenPinyinOverride values (sandhi applied)
+3. Spoken pinyin in tone pair drills is derived client-side (3rd+3rd → 2nd+3rd, 一/不 changes) and rendered by Google's neural TTS engine, which applies sandhi naturally — there is no `spokenPinyinOverride` data field. Sandhi-aware acceptance in quiz scoring is handled by `isSandhiAcceptable()` in `@mandarin/shared-utils`.
 4. Dictionary pinyin is shown alongside spoken pinyin for educational comparison
 
 ## Related Issues

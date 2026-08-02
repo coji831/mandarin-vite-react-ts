@@ -10,7 +10,7 @@
 
 .example-char-list {
   max-height: 320px;
-  overflow-y: auto;
+  overflow-y: auto; /* scroll zone — bundled with max-height as a size contract */
   /* border via border-1 border-surface utilities in TSX */
   background: var(--surface-dark-alt-2);
 }

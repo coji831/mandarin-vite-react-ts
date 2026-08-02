@@ -10,8 +10,8 @@
 
 .hub-cardinal {
   width: 670px;
-  max-width: 100%;
-  min-height: 0;
+  max-width: 100%; /* bundled with fixed width — part of the cardinal layout contract */
+  min-height: 0; /* flex ancestor — required for internal scroll to work */
 }
 
 /* ── Section sizing ───────────────────────────────────────── */
@@ -22,7 +22,7 @@
 
 .hub-cardinal__identity {
   height: 110px;
-  overflow-y: auto;
+  overflow-y: auto; /* identity scroll — part of the fixed NORTH zone contract */
 }
 
 .hub-cardinal__middle {
@@ -31,7 +31,7 @@
 }
 
 .hub-cardinal__side-panel {
-  overflow-y: auto;
+  overflow-y: auto; /* side panel scroll — part of the cardinal layout contract */
 }
 
 /* ── Tab Area — fixed height, no content jump on tab switch ─ */

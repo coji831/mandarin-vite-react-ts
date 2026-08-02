@@ -1,0 +1,455 @@
+/**
+ * @file apps/backend/src/modules/readers/services/ReadersService.ts
+ * @description Passage management and generation business logic.
+ *
+ * Clean Architecture: Application Service / Use Case.
+ * Orchestrates Gemini API, segmentation, rate limiting, and persistence.
+ */
+
+import { createLogger } from "../../../shared/utils/logger.js";
+import { ReadersRepository } from "../repositories/ReadersRepository.js";
+import { SegmenterService } from "./SegmenterService.js";
+import { PassageGenerationService } from "./PassageGenerationService.js";
+import { ReadersAudioService } from "./ReadersAudioService.js";
+import type { CacheService } from "../../../shared/infrastructure/cache/CacheService.js";
+import {
+  PassageNotFoundError,
+  RateLimitExceededError,
+  PassageGenerationError,
+  ValidationError,
+} from "../types/readers-errors.js";
+import type {
+  PassageRecord,
+  PassageContent,
+  WordSegment,
+  HskProfile,
+  EnrichedSentence,
+} from "../types/readers.js";
+import type { PassageAudioResponse } from "../types/readers-audio.js";
+
+const logger = createLogger("ReadersService");
+
+/** Maximum number of generated passages a user can store. */
+const MAX_USER_PASSAGES = 5;
+
+/** Maximum daily generation requests per user. */
+const MAX_DAILY_GENERATIONS = 5;
+
+/** Passage cache TTL: 1 hour for segmented results. */
+const PASSAGE_CACHE_TTL = 3600;
+
+/**
+ * Readers Service — manages reading passages: listing, retrieval, AI generation, and audio sync.
+ */
+export class ReadersService {
+  private readonly repository: ReadersRepository;
+  private readonly passageGenService: PassageGenerationService;
+  private readonly segmenterService: SegmenterService;
+  private readonly cacheService: CacheService;
+  private readonly readersAudioService: ReadersAudioService;
+
+  constructor(
+    repository: ReadersRepository,
+    passageGenService: PassageGenerationService,
+    segmenterService: SegmenterService,
+    cacheService: CacheService,
+    readersAudioService: ReadersAudioService,
+  ) {
+    this.repository = repository;
+    this.passageGenService = passageGenService;
+    this.segmenterService = segmenterService;
+    this.cacheService = cacheService;
+    this.readersAudioService = readersAudioService;
+    logger.info("Initialized Readers Service");
+  }
+
+  /**
+   * List passages, optionally filtered by HSK level.
+   * Excludes user's own generated passages.
+   */
+  async listPassages(hskLevel?: number, userId?: string): Promise<PassageRecord[]> {
+    const passages = await this.repository.findPassages(hskLevel);
+
+    // If user is authenticated, exclude their own generated passages from public list
+    if (userId) {
+      return passages.filter((p) => p.generatedById !== userId);
+    }
+
+    return passages;
+  }
+
+  /**
+   * Get a full passage with segmented result and HSK profile.
+   * Uses the SegmenterService on first read and caches the result.
+   * Increments access count.
+   * When userId is provided, computes per-word known status.
+   */
+  async getPassage(
+    id: string,
+    userId?: string,
+  ): Promise<{
+    passage: PassageRecord;
+    segments: WordSegment[];
+    hskProfile: HskProfile;
+    enrichedSentences: EnrichedSentence[];
+  }> {
+    const passage = await this.repository.findPassageById(id);
+    if (!passage) {
+      throw new PassageNotFoundError(id);
+    }
+
+    // Increment access counter (fire-and-forget)
+    void this.repository.incrementAccessCount(id).catch((err) => {
+      logger.warn(`Failed to increment access count for passage ${id}`, err);
+    });
+
+    // Try cache for segmented result
+    const content = passage.content as PassageContent;
+    const fullText = content.sentences.map((s) => s.text).join("");
+
+    // Check cache for pre-computed segments
+    const cacheKey = `passage:segments:${id}`;
+    let segments: WordSegment[] | null = null;
+    let hskProfile: HskProfile | null = null;
+
+    try {
+      const cached = await this.cacheService.get(cacheKey);
+      if (cached !== null) {
+        const parsed = JSON.parse(cached) as { segments: WordSegment[]; hskProfile: HskProfile };
+        segments = parsed.segments;
+        hskProfile = parsed.hskProfile;
+      }
+    } catch {
+      logger.warn(`Cache read failed for passage ${id}, re-computing`);
+    }
+
+    // Compute segments if not cached
+    if (!segments || !hskProfile) {
+      segments = this.segmenterService.segment(fullText);
+      hskProfile = await this.segmenterService.getHskProfile(fullText);
+
+      // Cache the result
+      try {
+        await this.cacheService.set(cacheKey, { segments, hskProfile }, PASSAGE_CACHE_TTL);
+      } catch {
+        logger.warn(`Cache write failed for passage ${id}`);
+      }
+    }
+
+    const knownWordIds = userId ? await this.computeKnownWordIds(userId, segments) : undefined;
+    const enrichedSentences = this.segmenterService.enrichSentences(
+      content.sentences,
+      segments,
+      knownWordIds,
+    );
+
+    return { passage, segments, hskProfile, enrichedSentences };
+  }
+
+  /**
+   * Get a raw passage by ID without segmentation or enrichment.
+   * Returns null if not found.
+   */
+  async getRawPassage(id: string): Promise<PassageRecord | null> {
+    return this.repository.findPassageById(id);
+  }
+
+  /**
+   * Get audio URLs for all sentences in a passage.
+   * Validates passage exists, then delegates to ReadersAudioService.
+   */
+  async getPassageAudio(id: string): Promise<PassageAudioResponse> {
+    const passage = await this.repository.findPassageById(id);
+    if (!passage) {
+      throw new PassageNotFoundError(id);
+    }
+
+    return this.readersAudioService.getPassageAudio(passage);
+  }
+
+  /**
+   * Generate a new passage on a given topic for the user.
+   *
+   * Flow:
+   *   1. Check rate limits (daily + total storage)
+   *   2. Derive user's known HSK level from CharacterProgress
+   *   3. Build prompt with level-appropriate vocabulary
+   *   4. Call PassageGenerationService.generatePassage()
+   *   5. Parse, segment, compute HSK profile
+   *   6. Save to database with generatedById = userId
+   *   7. Return the passage with segmented data
+   */
+  async generatePassage(
+    topic: string,
+    userId: string,
+  ): Promise<{
+    passage: PassageRecord;
+    segments: WordSegment[];
+    hskProfile: HskProfile;
+    enrichedSentences: EnrichedSentence[];
+  }> {
+    // Step 1: Check rate limits
+    await this.checkRateLimits(userId);
+
+    // Step 2: Derive user's known HSK level
+    const knownHskLevel = await this.getUserKnownLevel(userId);
+    const targetHskLevel = knownHskLevel;
+
+    // Step 3: Build prompt
+    const prompt = this.buildPrompt(topic, targetHskLevel);
+
+    // Step 4: Generate passage via PassageGenerationService
+    const passageResult = await this.passageGenService.generatePassage(prompt);
+
+    // Validate response has at least one sentence
+    if (!passageResult.sentences || passageResult.sentences.length === 0) {
+      throw new PassageGenerationError("Generated passage has no sentences");
+    }
+
+    // Step 5: Segment and compute HSK profile
+    const fullText = passageResult.sentences.map((s) => s.text).join("");
+    const segments = this.segmenterService.segment(fullText);
+    const hskProfile = await this.segmenterService.getHskProfile(fullText);
+
+    // Build passage content
+    const content: PassageContent = {
+      sentences: passageResult.sentences,
+      metadata: { topic, generatedFromLevel: knownHskLevel },
+    };
+
+    // Step 6: Save to database
+    const nextIndex = (await this.repository.getMaxPassageIndex(targetHskLevel)) + 1;
+    const passage = await this.repository.createPassage({
+      hskLevel: targetHskLevel,
+      passageIndex: nextIndex,
+      title: topic,
+      content,
+      wordCount: segments.length,
+      knownWordRatio: hskProfile.knownWordRatio,
+      targetHskLevel,
+      generatedById: userId,
+    });
+
+    logger.info(
+      `Generated passage for user ${userId}: "${topic}" (HSK ${targetHskLevel}, ${segments.length} words)`,
+    );
+
+    const knownWordIds = await this.computeKnownWordIds(userId, segments);
+    const enrichedSentences = this.segmenterService.enrichSentences(
+      passageResult.sentences,
+      segments,
+      knownWordIds,
+    );
+
+    return { passage, segments, hskProfile, enrichedSentences };
+  }
+
+  /**
+   * Compute a set of known word IDs for a user based on their derived HSK level.
+   * A word is considered "known" if its HSK level <= the user's known HSK level.
+   */
+  private async computeKnownWordIds(userId: string, segments: WordSegment[]): Promise<Set<string>> {
+    const knownHskLevel = await this.getUserKnownLevel(userId);
+    const knownWordIds = new Set<string>();
+
+    for (const seg of segments) {
+      if (seg.wordId) {
+        const hskLevel = this.segmenterService.getWordHskLevel(seg.wordId);
+        if (hskLevel !== null && hskLevel <= knownHskLevel) {
+          knownWordIds.add(seg.wordId);
+        }
+      }
+    }
+
+    return knownWordIds;
+  }
+
+  /**
+   * Check both daily and total storage rate limits for the user.
+   * Throws RateLimitExceededError if either limit is breached.
+   */
+  private async checkRateLimits(userId: string): Promise<void> {
+    // Daily cap
+    const todayCount = await this.repository.countUserGeneratedToday(userId);
+    if (todayCount >= MAX_DAILY_GENERATIONS) {
+      throw new RateLimitExceededError(
+        `Daily generation limit reached (${MAX_DAILY_GENERATIONS}/day)`,
+      );
+    }
+
+    // Total storage cap
+    const totalCount = await this.repository.countUserGenerated(userId);
+    if (totalCount >= MAX_USER_PASSAGES) {
+      throw new RateLimitExceededError(
+        `Storage limit reached (max ${MAX_USER_PASSAGES} generated passages). Delete some to generate more.`,
+      );
+    }
+  }
+
+  /**
+   * Derive the user's known HSK level from CharacterProgress data.
+   *
+   * For each HSK level 1-6, calculate what percentage of characters the user has
+   * studied at confidence >= 0.8. Return the highest level with >= 80% coverage.
+   * If no level meets the threshold, return 1 (safe default for beginners).
+   */
+  async getUserKnownLevel(userId: string): Promise<number> {
+    try {
+      const results = await this.repository.getUserCharacterCoverage(userId);
+
+      // Find the highest level with coverage >= 0.8
+      let knownLevel = 1; // Safe default
+      for (const row of results) {
+        if (row.coverageRatio >= 0.8) {
+          knownLevel = row.hskLevel;
+        }
+      }
+
+      logger.info(`User ${userId} known HSK level: ${knownLevel}`);
+      return knownLevel;
+    } catch (error) {
+      logger.error(`Failed to derive HSK level for user ${userId}, defaulting to 1`, error);
+      return 1;
+    }
+  }
+
+  /**
+   * Build a prompt for Gemini passage generation based on topic and HSK level.
+   */
+  private buildPrompt(topic: string, hskLevel: number): string {
+    return `You are a Chinese language teacher creating a graded reading passage.
+
+Topic: ${topic}
+Target HSK Level: ${hskLevel}
+
+Guidelines:
+- Use vocabulary appropriate for HSK ${hskLevel} level (approximately ${this.getWordCountForLevel(hskLevel)} words)
+- Write 5-8 sentences in simplified Chinese characters
+- Keep sentences short and grammatically simple
+- Include some higher-level vocabulary (HSK ${Math.min(hskLevel + 1, 6)}) for challenge
+
+Respond ONLY with a valid JSON object in this exact format:
+{
+  "sentences": [
+    { "index": 0, "text": "First sentence。" },
+    { "index": 1, "text": "Second sentence。" }
+  ]
+}
+
+Do not include any text before or after the JSON object.`;
+  }
+
+  /**
+   * Estimate appropriate word count for each HSK level.
+   */
+  private getWordCountForLevel(hskLevel: number): number {
+    const counts: Record<number, number> = {
+      1: 30,
+      2: 50,
+      3: 80,
+      4: 120,
+      5: 150,
+      6: 200,
+    };
+    return counts[hskLevel] ?? 50;
+  }
+
+  // ── Reading Session Methods ────────────────────────────────────────────
+
+  /**
+   * Get or create a reading session for a user + passage.
+   * Returns the session with currentSentence and completed status.
+   */
+  async getOrCreateSession(
+    userId: string,
+    passageId: string,
+  ): Promise<{ currentSentence: number; isCompleted: boolean }> {
+    const session = await this.repository.getOrCreateSession(userId, passageId);
+    return { currentSentence: session.currentSentence, isCompleted: session.completed };
+  }
+
+  /**
+   * Update the reading position for a user's passage.
+   * Validates currentSentence >= 0.
+   */
+  async updatePosition(
+    userId: string,
+    passageId: string,
+    currentSentence: number,
+  ): Promise<{ currentSentence: number; isCompleted: boolean }> {
+    if (currentSentence < 0 || !Number.isInteger(currentSentence)) {
+      throw new ValidationError(
+        `updatePosition: currentSentence must be a non-negative integer, got ${currentSentence}`,
+      );
+    }
+    const result = await this.repository.upsertSession(userId, passageId, currentSentence);
+    return { currentSentence: result.currentSentence, isCompleted: result.completed };
+  }
+
+  /**
+   * Mark a passage as completed for the user (idempotent).
+   */
+  async markCompleted(userId: string, passageId: string): Promise<{ passageId: string }> {
+    await this.repository.completePassage(userId, passageId);
+    return { passageId };
+  }
+
+  // ── Phase Gate Methods ──────────────────────────────────────────────────
+
+  /**
+   * Select a passage for the comprehension gate at the given HSK level.
+   * Picks the least-recently-accessed passage at that level to distribute load.
+   * Returns null if no passage exists at the level.
+   *
+   * @param hskLevel - Target HSK level for the gate
+   * @returns Passage record or null if none available
+   */
+  async selectPassageForGate(hskLevel: number): Promise<PassageRecord | null> {
+    const passages = await this.repository.findPassages(hskLevel);
+
+    if (passages.length === 0) return null;
+
+    // Sort by lastAccessedAt ascending (nulls last), so least-recently-accessed comes first
+    passages.sort((a, b) => {
+      if (!a.lastAccessedAt && !b.lastAccessedAt) return 0;
+      if (!a.lastAccessedAt) return -1;
+      if (!b.lastAccessedAt) return 1;
+      return a.lastAccessedAt.getTime() - b.lastAccessedAt.getTime();
+    });
+
+    return passages[0];
+  }
+
+  // ── Bookmark Methods ───────────────────────────────────────────────────
+
+  /**
+   * Add a bookmark for a passage (idempotent).
+   */
+  async addBookmark(userId: string, passageId: string): Promise<{ passageId: string }> {
+    await this.repository.createBookmark(userId, passageId);
+    return { passageId };
+  }
+
+  /**
+   * Remove a bookmark by passage ID (idempotent).
+   */
+  async removeBookmarkByPassage(userId: string, passageId: string): Promise<void> {
+    await this.repository.deleteBookmarkByPassage(userId, passageId);
+  }
+
+  /**
+   * Check if a passage is bookmarked by the user.
+   */
+  async checkBookmarkByPassage(userId: string, passageId: string): Promise<boolean> {
+    const bookmark = await this.repository.findBookmarkByPassage(userId, passageId);
+    return bookmark !== null;
+  }
+
+  /**
+   * List all bookmarked passage IDs for a user.
+   */
+  async listBookmarks(userId: string): Promise<string[]> {
+    const bookmarks = await this.repository.findAllBookmarks(userId);
+    return bookmarks.map((b) => b.passageId);
+  }
+}

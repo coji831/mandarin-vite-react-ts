@@ -31,6 +31,12 @@
 | [Linting](guides/setup/linting.md)                           | ESLint and Prettier setup             |
 | [Redis](guides/setup/redis.md)                               | Redis caching setup                   |
 
+### 🗄️ Data & Content
+
+| Guide                                         | Description                                          |
+| --------------------------------------------- | ---------------------------------------------------- |
+| [Seed Pipeline](guides/data/seed-pipeline.md) | 26-step content seed pipeline, runbook, verification |
+
 ### 📐 Conventions
 
 | Guide                                                      | Description                         |
@@ -44,10 +50,10 @@
 
 ### 🧪 Testing
 
-| Guide                                          | Description               |
-| ---------------------------------------------- | ------------------------- |
-| [Frontend Testing](guides/testing/frontend.md) | Jest + RTL patterns       |
-| [Backend Testing](guides/testing/backend.md)   | Vitest, integration tests |
+| Guide                                          | Description                             |
+| ---------------------------------------------- | --------------------------------------- |
+| [Frontend Testing](guides/testing/frontend.md) | Vitest + React Testing Library patterns |
+| [Backend Testing](guides/testing/backend.md)   | Vitest, integration tests               |
 
 ### 🔗 Integrations
 
@@ -81,7 +87,7 @@
 | ----------------------------------------------------------- | ----------------------------------------- |
 | [Code Conventions](guides/references/code-conventions.md)   | Legacy code conventions (pre-restructure) |
 | [Testing Guide](guides/references/testing-guide.md)         | Legacy testing guide                      |
-| [Tooling Standards](guides/references/tooling-standards.md) | Tooling configuration reference           |
+| [Tooling Standards](guides/setup/tooling-standards.md)      | Tooling configuration reference           |
 | [Supabase Setup](guides/references/supabase-setup-guide.md) | Legacy Supabase guide                     |
 
 ## Knowledge Base
@@ -98,29 +104,32 @@
 
 ### Frontend
 
-| Article                                                                                  | Description                                                                  |
-| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [Frontend React Patterns](knowledge-base/frontend/frontend-react-patterns.md)            | React/TypeScript component and hook patterns                                 |
-| [Frontend State Management](knowledge-base/frontend/frontend-state-management.md)        | Context API, reducers, normalized state                                      |
-| [Frontend UI Patterns](knowledge-base/frontend/frontend-ui-patterns.md)                  | Reusable UI component patterns and conventions                               |
-| [Frontend Development Server](knowledge-base/frontend/frontend-development-server.md)    | Dev proxy mechanics, cookie forwarding, CORS                                 |
-| [Frontend Data Migration](knowledge-base/frontend/frontend-data-migration.md)            | Data migration strategies and patterns                                       |
-| [Strategy Pattern on the Frontend](knowledge-base/frontend/strategy-pattern-frontend.md) | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
+| Article                                                                                            | Description                                                                  |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [Frontend React Patterns](knowledge-base/frontend/frontend-react-patterns.md)                      | React/TypeScript component and hook patterns                                 |
+| [Frontend State Management](knowledge-base/frontend/frontend-state-management.md)                  | Context API, reducers, normalized state                                      |
+| [Frontend UI Patterns](knowledge-base/frontend/frontend-ui-patterns.md)                            | Reusable UI component patterns and conventions                               |
+| [Frontend Development Server](knowledge-base/frontend/frontend-development-server.md)              | Dev proxy mechanics, cookie forwarding, CORS                                 |
+| [Frontend Data Migration](knowledge-base/frontend/frontend-data-migration.md)                      | Data migration strategies and patterns                                       |
+| [Strategy Pattern on the Frontend](knowledge-base/frontend/strategy-pattern-frontend.md)           | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
+| [Discriminated Union State Machines](knowledge-base/frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                                |
+| [Storybook MSW Handlers](knowledge-base/frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                              |
 
 ### Backend
 
-| Article                                                                            | Description                                      |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------ |
-| [Backend Authentication](knowledge-base/backend/backend-authentication.md)         | JWT auth, refresh tokens, cookie-based sessions  |
-| [Backend Database PostgreSQL](knowledge-base/backend/backend-database-postgres.md) | PostgreSQL setup, connection pooling, migrations |
+| Article                                                                            | Description                                                       |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [Backend Authentication](knowledge-base/backend/backend-authentication.md)         | JWT auth, refresh tokens, cookie-based sessions                   |
+| [Backend Database PostgreSQL](knowledge-base/backend/backend-database-postgres.md) | PostgreSQL setup, connection pooling, migrations                  |
+| [Module-Level Containers](knowledge-base/backend/module-level-containers.md)       | Per-module DI containers instead of a monolithic composition root |
 
 ### Testing
 
-| Article                                                                                  | Description                                     |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [Testing ES Modules (Jest)](knowledge-base/testing/testing-es-modules-jest.md)           | Jest ESM configuration and common pitfalls      |
-| [Testing ES Modules (Vitest)](knowledge-base/testing/testing-es-modules-vitest.md)       | Vitest ESM setup and monorepo testing           |
-| [Vitest Monorepo Conflicts](knowledge-base/testing/vitest-monorepo-version-conflicts.md) | Resolving Vitest version conflicts in monorepos |
+| Article                                                                                  | Description                                              |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [Testing ES Modules (Vitest)](knowledge-base/testing/testing-es-modules-vitest.md)       | Vitest ESM setup (covers Epics 13/14 migration)          |
+| [Vitest Monorepo Conflicts](knowledge-base/testing/vitest-monorepo-version-conflicts.md) | Resolving Vitest version conflicts in monorepos          |
+| [Storybook Tests via Vitest](knowledge-base/testing/storybook-addon-vitest.md)           | Running Storybook stories with `@storybook/addon-vitest` |
 
 ### Learning Science
 
@@ -141,14 +150,16 @@
 
 ### Other
 
-| Article                                                                                         | Description                                     |
-| ----------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [Documentation Patterns](knowledge-base/practices/documentation-patterns.md)                    | How business and technical docs work together   |
-| [Planning & Estimation](knowledge-base/practices/planning-estimation-strategies.md)             | Effort estimation and planning strategies       |
-| [TypeScript Error Handling](knowledge-base/backend/typescript-error-handling.md)                | Error handling patterns in TypeScript           |
-| [Git Workflow](knowledge-base/practices/git-workflow.md)                                        | Git branching strategies and workflows          |
-| [Infrastructure Deployment](knowledge-base/infrastructure/infra-deployment.md)                  | Deployment infrastructure and CI/CD patterns    |
-| [Infrastructure Configuration](knowledge-base/infrastructure/infra-configuration-management.md) | Infrastructure-as-code configuration management |
+| Article                                                                                         | Description                                               |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| [Documentation Patterns](knowledge-base/practices/documentation-patterns.md)                    | How business and technical docs work together             |
+| [Planning & Estimation](knowledge-base/practices/planning-estimation-strategies.md)             | Effort estimation and planning strategies                 |
+| [TypeScript Error Handling](knowledge-base/backend/typescript-error-handling.md)                | Error handling patterns in TypeScript                     |
+| [Git Workflow](knowledge-base/practices/git-workflow.md)                                        | Git branching strategies and workflows                    |
+| [Async Progressive Enrichment](knowledge-base/practices/async-progressive-enrichment.md)        | Lazy per-item enrichment so base data never blocks render |
+| [Shared Data Model](knowledge-base/data/shared-data-model.md)                                   | Content, progress, and junction entities across epics     |
+| [Infrastructure Deployment](knowledge-base/infrastructure/infra-deployment.md)                  | Deployment infrastructure and CI/CD patterns              |
+| [Infrastructure Configuration](knowledge-base/infrastructure/infra-configuration-management.md) | Infrastructure-as-code configuration management           |
 
 ## Project Management
 
@@ -162,12 +173,16 @@
 Feature-specific docs live in feature folders under `apps/frontend/src/features/` and `apps/backend/src/modules/`:
 
 - **Auth**: [`apps/frontend/src/features/auth/`](../apps/frontend/src/features/auth/)
+- **CharacterHub**: [`apps/frontend/src/features/character-hub/`](../apps/frontend/src/features/character-hub/)
 - **Dashboard**: [`apps/frontend/src/features/dashboard/`](../apps/frontend/src/features/dashboard/)
 - **Foundations**: [`apps/frontend/src/features/foundations/`](../apps/frontend/src/features/foundations/)
-- **Gamification**: [`apps/frontend/src/features/gamification/`](../apps/frontend/src/features/gamification/)
+- **LexicalHub**: [`apps/frontend/src/features/lexical-hub/`](../apps/frontend/src/features/lexical-hub/)
+- **PhoneticClusters**: [`apps/frontend/src/features/phonetic-clusters/`](../apps/frontend/src/features/phonetic-clusters/)
 - **Quiz**: [`apps/frontend/src/features/quiz/`](../apps/frontend/src/features/quiz/)
+- **Radicals**: [`apps/frontend/src/features/radicals/`](../apps/frontend/src/features/radicals/)
+- **Readers**: [`apps/frontend/src/features/readers/`](../apps/frontend/src/features/readers/)
 - **Review**: [`apps/frontend/src/features/review/`](../apps/frontend/src/features/review/)
-- **Vocabulary**: [`apps/frontend/src/features/vocabulary/`](../apps/frontend/src/features/vocabulary/)
+- **WordHub**: [`apps/frontend/src/features/word-hub/`](../apps/frontend/src/features/word-hub/)
 - **Backend API Spec**: [`apps/backend/docs/api/`](../apps/backend/docs/api/)
 - **Backend Design**: [`apps/backend/docs/design.md`](../apps/backend/docs/design.md)
 
@@ -190,7 +205,7 @@ To contribute to documentation:
 - Follow the [Workflow Guide](guides/operations/workflow.md)
 - Update this index and related READMEs as needed
 
-**Gamification**: XP, streak tracking, milestone rewards, and mystery boxes. See [Gamification Psychology](knowledge-base/learning-theory/gamification-psychology-learning.md).
+**Gamification**: Study streak data model + Progress page placeholder UI; no gamification API yet. See [Gamification Psychology](knowledge-base/learning-theory/gamification-psychology-learning.md).
 
 **AI Feedback**: AI-powered error explanations via Gemini API with Redis caching and timeout protection. See [Google Cloud Integration](knowledge-base/infrastructure/integration-google-cloud.md).
 
@@ -202,7 +217,7 @@ To contribute to documentation:
 | --------- | -------- | ---------------- | --------------------------- |
 | Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build)     |
 | Backend   | Railway  | Push to `main`   | Node.js 20 (Express server) |
-| Database  | Supabase | Manual migration | PostgreSQL 15               |
+| Database  | Neon     | Manual migration | PostgreSQL 17               |
 | Cache     | Upstash  | Always-on        | Redis 7                     |
 
 **Development Environment:**
@@ -228,9 +243,9 @@ To contribute to documentation:
 
 - **Unit Tests**: Services, repositories, utilities (mocked dependencies)
 - **Integration Tests**: Full API flows with test database (transactional isolation)
-- **Coverage Target**: >80% for business logic
+- **Coverage**: No hard coverage gate; follows the Testing Trophy (unit → integration → E2E)
 
-**Frontend (Jest + React Testing Library):**
+**Frontend (Vitest + React Testing Library):**
 
 - **Component Tests**: Render behavior, user interactions, accessibility
 - **Hook Tests**: Custom hooks with `renderHook` utility
@@ -272,4 +287,4 @@ To contribute to documentation:
 
 ---
 
-**Last Updated:** July 3, 2026
+**Last Updated:** August 2, 2026

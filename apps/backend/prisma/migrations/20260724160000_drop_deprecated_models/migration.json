@@ -1,0 +1,53 @@
+{
+  "version": "7.8.0",
+  "steps": [
+    {
+      "tag": "DropForeignKey",
+      "foreignKey": "VocabularyList_createdBy_fkey"
+    },
+    {
+      "tag": "DropForeignKey",
+      "foreignKey": "WordCategory_categoryId_fkey"
+    },
+    {
+      "tag": "DropForeignKey",
+      "foreignKey": "WordCategory_wordId_fkey"
+    },
+    {
+      "tag": "DropForeignKey",
+      "foreignKey": "WordList_listId_fkey"
+    },
+    {
+      "tag": "DropForeignKey",
+      "foreignKey": "WordList_wordId_fkey"
+    },
+    {
+      "tag": "DropTable",
+      "table": "Category"
+    },
+    {
+      "tag": "DropTable",
+      "table": "ContentItem"
+    },
+    {
+      "tag": "DropTable",
+      "table": "PinyinCombination"
+    },
+    {
+      "tag": "DropTable",
+      "table": "VocabularyList"
+    },
+    {
+      "tag": "DropTable",
+      "table": "VocabularyWord"
+    },
+    {
+      "tag": "DropTable",
+      "table": "WordCategory"
+    },
+    {
+      "tag": "DropTable",
+      "table": "WordList"
+    }
+  ]
+}

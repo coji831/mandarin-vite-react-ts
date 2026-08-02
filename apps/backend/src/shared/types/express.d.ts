@@ -16,6 +16,10 @@ import type { ProgressionController } from "../../modules/progression/api/Progre
 import type { FoundationsController } from "../../modules/foundations/api/FoundationsController.js";
 import type { RadicalsController } from "../../modules/radicals/api/RadicalsController.js";
 import type { MnemonicsController } from "../../modules/mnemonics/api/MnemonicsController.js";
+import type { WordsController } from "../../modules/words/api/WordsController.js";
+import type { PhoneticClustersController } from "../../modules/phonetic-clusters/api/PhoneticClustersController.js";
+import type { CharactersController } from "../../modules/characters/api/CharactersController.js";
+import type { PinyinController } from "../../modules/characters/api/PinyinController.js";
 import type { GeminiService } from "../services/GeminiService.js";
 
 declare global {
@@ -50,6 +54,18 @@ declare global {
 
       /** Injected by routes.ts middleware */
       mnemonicsController?: MnemonicsController;
+
+      /** Injected by routes.ts middleware */
+      wordsController?: WordsController;
+
+      /** Injected by routes.ts middleware */
+      phoneticClustersController?: PhoneticClustersController;
+
+      /** Injected by routes.ts middleware */
+      charactersController?: CharactersController;
+
+      /** Injected by routes.ts middleware */
+      pinyinController?: PinyinController;
 
       /** Injected by routes.ts middleware */
       geminiService?: GeminiService;

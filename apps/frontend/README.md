@@ -34,16 +34,56 @@ SRS flip-card practice for pinyin syllables and tone identification. Strategy-dr
 
 Phase-gated audio-to-pinyin-and-tone assessment using the Strategy pattern. 10-question timed quiz evaluating both pinyin spelling and tone selection. Pass threshold (80%) unlocks Phase 2 content. Category breakdown and instant feedback with correct answer reveal.
 
+### Auth
+
+JWT-based authentication and session management (LoginForm, RegisterForm, AuthContext).
+
+### Character Hub
+
+Character detail panel with identity card, mnemonics, radicals, readings, common words, and stroke animation.
+
+### Dashboard
+
+Learning statistics and activity overview — `DashboardWelcome` hero plus `DashboardSections` (activity overview, stats), with a `DashboardGuest` variant for logged-out visitors.
+
+### Lexical Hub
+
+Entity detail hub — modal overlay hosting a registry of entity-specific detail panels (CharacterHub, WordHub), opened via `openHub()`.
+
+### Phonetic Clusters
+
+DB-driven phonetic family browsing with HSK filtering (cluster membership from `GET /v1/phonetic-clusters`).
+
+### Radicals
+
+Radical browser, detail cards, and dual radical/phonetic trees.
+
+### Readers
+
+Graded readers — passage browsing/reading, reading sessions, bookmarks, and in-text word lookup via `WordPopover` → LexicalHub.
+
+### Word Hub
+
+Word detail panel — pinyin, definitions, HSK badge, constituent character chips, and measure words (量词).
+
 ## Available Scripts
 
-| Command                 | Description                      |
-| ----------------------- | -------------------------------- |
-| `npm run dev`           | Start Vite dev server with HMR   |
-| `npm run build`         | Production build to `dist/`      |
-| `npm run preview`       | Preview production build locally |
-| `npm test`              | Run all tests (Vitest + RTL)     |
-| `npm run test:watch`    | Run tests in watch mode          |
-| `npm run test:coverage` | Run tests with coverage report   |
+| Command                   | Description                            |
+| ------------------------- | -------------------------------------- |
+| `npm run dev`             | Start Vite dev server with HMR         |
+| `npm run build`           | Production build to `dist/`            |
+| `npm run preview`         | Preview production build locally       |
+| `npm test`                | Run changed-scope tests (Vitest + RTL) |
+| `npm run test:watch`      | Run tests in watch mode                |
+| `npm run test:coverage`   | Run tests with coverage report         |
+| `npm run test:full`       | Run the full test suite (Vitest + RTL) |
+| `npm run test:ui`         | Run tests in the Vitest UI             |
+| `npm run lint`            | Run ESLint across the frontend         |
+| `npm run lint:css`        | Run Stylelint on CSS files             |
+| `npm run format`          | Format source with Prettier            |
+| `npm run storybook`       | Start Storybook dev server (port 6006) |
+| `npm run build-storybook` | Build the Storybook static site        |
+| `npm run test-storybook`  | Run Storybook story tests              |
 
 ## Environment
 

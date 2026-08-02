@@ -3,5 +3,5 @@
 /* Only the root wrapper — sub-component styles live in their own CSS files */
 
 .hub-mnemonic-section {
-  min-height: 0;
+  min-height: 0; /* flex child — required for internal layout */
 }

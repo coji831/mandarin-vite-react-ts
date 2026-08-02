@@ -8,6 +8,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type { ReviewItem } from "../types";
+import { openHub } from "shared/store";
 import { Box, Button, Input } from "shared/components";
 import "./ReviewCard.css";
 
@@ -35,14 +36,27 @@ function ReviewCardPinyinInputComponent({
     inputRef.current?.focus();
   }, [item.itemId]);
 
+  const handleOpenHub = () => {
+    openHub({
+      entityType: "character",
+      entityId: displayChar,
+      label: item.pinyinPlain ?? item.front,
+    });
+  };
+
   return (
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         {/* Character + Meaning for exposure */}
         <div className="review-card__character-display flex-col-center gap-md">
-          <span className="review-card__character font-5xl lh-tight tracking-wide text-primary fw-700">
+          <button
+            type="button"
+            className="review-card__character review-card__character-btn font-5xl lh-tight tracking-wide text-primary fw-700"
+            onClick={handleOpenHub}
+            aria-label={`View details for ${displayChar}`}
+          >
             {displayChar}
-          </span>
+          </button>
           {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-lg text-center">
               ({item.meaning})
@@ -54,7 +68,7 @@ function ReviewCardPinyinInputComponent({
         <div className="flex-col-center gap-md w-full">
           <Button
             variant="circle"
-            className="review-card__audio-btn bg-surface-dark transition-all"
+            className="review-card__audio-btn bg-surface-dark"
             onClick={() => onPlayAudio(displayChar)}
             aria-label="Play audio"
           >

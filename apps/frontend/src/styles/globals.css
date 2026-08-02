@@ -78,6 +78,19 @@
 
   /* XP/Achievement */
   --color-xp: rgba(251, 191, 36, 1);
+  --color-xp-bg: rgba(251, 191, 36, 0.15);
+  --color-xp-border: rgba(251, 191, 36, 0.3);
+
+  /* ── Badge & accent color tokens ── */
+  --color-blue: rgba(59, 130, 246, 1);
+  --color-blue-bg: rgba(59, 130, 246, 0.15);
+  --color-blue-border: rgba(59, 130, 246, 0.3);
+  --color-green: rgba(52, 211, 153, 1);
+  --color-green-bg: rgba(52, 211, 153, 0.15);
+  --color-green-border: rgba(52, 211, 153, 0.3);
+  --color-purple: rgba(167, 139, 250, 1);
+  --color-purple-bg: rgba(167, 139, 250, 0.15);
+  --color-purple-border: rgba(167, 139, 250, 0.3);
 
   /* Primary hover — lighter amber for link hover states */
   --color-primary-hover: rgba(217, 119, 6, 1);
@@ -107,7 +120,6 @@
   --surface-overlay: rgba(38, 35, 33, 0.3);
   --surface-hover: rgba(61, 57, 53, 0.5);
   --surface-border: rgba(61, 57, 53, 1);
-  --border-white: rgba(255, 255, 255, 0.3);
 
   /* Light surfaces (for semi-transparent overlays) */
   --surface-light-3: rgba(255, 255, 255, 0.03);
@@ -153,6 +165,9 @@
   --shadow-md: 0 4px 12px rgba(245, 158, 11, 0.2);
   --shadow-lg: 0 6px 20px rgba(245, 158, 11, 0.25);
 
+  /* XP gold glow — pictograph golden border emphasis */
+  --shadow-xp-glow: 0 0 8px rgba(251, 191, 36, 0.3);
+
   /* ===== Transitions ===== */
 
   --transition-fast: 0.2s ease;
@@ -170,6 +185,7 @@
   --font-3xl: 28px; /* 28px */
   --font-4xl: 32px; /* 32px */
   --font-5xl: 40px; /* 40px */
+  --font-6xl: 48px; /* 48px */
 
   /* ===== Gradients ===== */
 
@@ -317,6 +333,22 @@ html {
 .p-2xl {
   padding: var(--space-2xl);
 }
+.px-xs {
+  padding-left: var(--space-xs);
+  padding-right: var(--space-xs);
+}
+.py-xs {
+  padding-top: var(--space-xs);
+  padding-bottom: var(--space-xs);
+}
+.py-sm {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+.py-md {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Margin (all sides only — no directional variants)
@@ -347,6 +379,9 @@ html {
 }
 .mt-md {
   margin-top: var(--space-md);
+}
+.mb-md {
+  margin-bottom: var(--space-md);
 }
 .mb-xl {
   margin-bottom: var(--space-xl);
@@ -464,6 +499,9 @@ html {
 .left-0 {
   left: 0;
 }
+.inset-0 {
+  inset: 0;
+}
 
 /* ═══════════════════════════════════════════════
    Utility: Size
@@ -477,8 +515,20 @@ html {
 .h-full {
   height: 100%;
 }
+.h-auto {
+  height: auto;
+}
 .h-8px {
   height: 8px;
+}
+.min-h-0 {
+  min-height: 0;
+}
+.min-w-0 {
+  min-width: 0;
+}
+.max-w-full {
+  max-width: 100%;
 }
 
 /* ═══════════════════════════════════════════════
@@ -487,8 +537,14 @@ html {
 .inline-block {
   display: inline-block;
 }
+.block {
+  display: block;
+}
 .overflow-hidden {
   overflow: hidden;
+}
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 /* ═══════════════════════════════════════════════
@@ -646,6 +702,9 @@ html {
 .font-5xl {
   font-size: var(--font-5xl);
 } /* 2.5rem */
+.font-6xl {
+  font-size: var(--font-6xl);
+} /* 3rem */
 
 /* ═══════════════════════════════════════════════
    Utility: Font Style
@@ -665,6 +724,12 @@ html {
 }
 .lh-normal {
   line-height: 1.5;
+}
+.lh-1-3 {
+  line-height: 1.3;
+}
+.lh-1-4 {
+  line-height: 1.4;
 }
 
 /* ═══════════════════════════════════════════════
@@ -743,6 +808,10 @@ html {
    ═══════════════════════════════════════════════ */
 .outline-none {
   outline: none;
+}
+.focus-ring-primary {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* ═══════════════════════════════════════════════

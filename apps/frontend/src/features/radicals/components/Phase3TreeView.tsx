@@ -7,6 +7,7 @@
  * separator, selected indicator, single expandable tree root node, and tagline.
  */
 
+import { useState, useEffect } from "react";
 import { Button, Input, Skeleton, Box } from "shared/components";
 import type { RadicalData } from "../types";
 import { RadicalChipPicker } from "./RadicalChipPicker";
@@ -25,7 +26,7 @@ interface Phase3TreeViewProps {
   onRetry: () => void;
   getCharactersForRadical: (
     radical: RadicalData,
-  ) => Array<{ glyph: string; pinyin: string; meaning: string }>;
+  ) => Promise<Array<{ glyph: string; pinyin: string; meaning: string }>>;
 }
 
 export function Phase3TreeView({
@@ -40,6 +41,26 @@ export function Phase3TreeView({
   onRetry,
   getCharactersForRadical,
 }: Phase3TreeViewProps) {
+  const [treeCharacters, setTreeCharacters] = useState<
+    Array<{ glyph: string; pinyin: string; meaning: string }>
+  >([]);
+
+  // Fetch characters when activeRadical changes
+  useEffect(() => {
+    if (!activeRadical) {
+      setTreeCharacters([]);
+      return;
+    }
+    let cancelled = false;
+    getCharactersForRadical(activeRadical).then((chars) => {
+      if (!cancelled) {
+        setTreeCharacters(chars);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeRadical, getCharactersForRadical]);
   return (
     <>
       {/* Search bar — compact, inline (always visible in Phase 3) */}
@@ -123,7 +144,7 @@ export function Phase3TreeView({
               <TreeRootNode
                 key={activeRadical.id}
                 radical={activeRadical}
-                characters={getCharactersForRadical(activeRadical)}
+                characters={treeCharacters}
               />
             </div>
           )}

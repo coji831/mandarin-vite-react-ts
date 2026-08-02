@@ -68,12 +68,15 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
           className="tone-contour-mark font-xs whitespace-nowrap fw-600"
           style={{ color: toneColor }}
         >
+          {/* inline: dynamic tone color — matches tone contour color */}
           {shortName}:
         </span>
         <span className="tone-contour-symbol font-sm fw-700" style={{ color: toneColor }}>
+          {/* inline: dynamic tone color */}
           {tone.mark}
         </span>
         <span className="tone-contour-pinyin font-sm fw-600" style={{ color: toneColor }}>
+          {/* inline: dynamic tone color */}
           {tone.pinyinExample}
         </span>
         <span className="tone-contour-description font-xs text-muted whitespace-nowrap">

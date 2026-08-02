@@ -124,6 +124,10 @@ export interface QuizAttempt {
   totalScore: number;
   maxScore: number;
   passed: boolean;
+  metadata?: {
+    neutralToneTested: boolean;
+    sandhiQuestions: number;
+  } | null;
   createdAt: string;
   completedAt: string | null;
 }
@@ -147,6 +151,8 @@ export interface QuizQuestion {
   correctTone: number;
   category: "pinyin" | "tones" | "pairs" | "rules";
   displayPinyin?: string;
+  isSandhiQuestion?: boolean;
+  sandhiRule?: string;
 }
 
 export interface CategoryBreakdown {

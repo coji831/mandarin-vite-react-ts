@@ -51,7 +51,7 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
     <div className="quiz-session-page flex-col gap-lg p-xl mx-auto">
       {/* Header */}
       <Box variant="dark" padding="md" className="flex-between gap-md">
-        <span className="fw-700 text-primary quiz-results__heading font-lg">{phaseLabel}</span>
+        <h1 className="fw-700 text-primary quiz-results__heading font-lg m-0">{phaseLabel}</h1>
         <Timer />
       </Box>
 

@@ -41,7 +41,6 @@ export function useStrokeReferenceData(): UseStrokeReferenceDataReturn {
         setData(json);
       } catch (err) {
         // [Foundations] Failed to load stroke reference data
-        console.error("[StrokeReference] Failed to load strokes data:", err);
         setError(err instanceof Error ? err.message : "Failed to load stroke reference");
       }
     };

@@ -10,7 +10,7 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { Request, Response } from "express";
 import type { MnemonicsService } from "../services/MnemonicsService.js";
-import { MnemonicNotFoundError, PICTOGRAPH_CHARS } from "../types/mnemonics.js";
+import { MnemonicNotFoundError } from "../types/mnemonics.js";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -54,14 +54,13 @@ export class MnemonicsController {
       }
 
       const result = await this.mnemonicsService.getMnemonic(character, userId);
-      res.json(result);
+      res.json({ mnemonic: result });
     } catch (err) {
       if (err instanceof MnemonicNotFoundError) {
-        res.status(404).json({
-          error: "Failed to fetch mnemonic story",
-          code: "NOT_FOUND",
-          message: err.message,
-        });
+        // "No mnemonic yet" is a valid state (mnemonics are generated
+        // on demand), not a client error — return a well-formed 200 so
+        // clients don't treat it as a failure.
+        res.status(200).json({ mnemonic: null });
         return;
       }
       logger.error("Failed to fetch mnemonic story", err);
@@ -98,16 +97,6 @@ export class MnemonicsController {
           error: "Failed to generate mnemonic story",
           code: "VALIDATION_ERROR",
           message: validationError,
-        });
-        return;
-      }
-
-      // Check pictograph (422)
-      if (PICTOGRAPH_CHARS.has(character)) {
-        res.status(422).json({
-          error: "Failed to generate mnemonic story",
-          code: "VALIDATION_ERROR",
-          message: `"${character}" is a pictograph and cannot be decomposed into radicals`,
         });
         return;
       }

@@ -8,7 +8,7 @@
  * Uses shared PinyinCell component.
  */
 
-import { Box } from "../../../../shared/components/Box/Box";
+import { Box } from "shared/components";
 import { type PinyinFinal } from "../../types";
 import { PinyinCell } from "./PinyinCell";
 import "./FinalsGrid.css";

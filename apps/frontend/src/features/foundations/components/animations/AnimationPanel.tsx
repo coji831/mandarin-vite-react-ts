@@ -11,20 +11,13 @@ import { Box, CharacterStrokePlayer } from "shared/components";
 
 type AnimationPanelProps = {
   character: string;
-  onCharacterClick?: (character: string) => void;
-  onPlayAudio?: (character: string) => void;
 };
 
-export function AnimationPanel({ character, onCharacterClick, onPlayAudio }: AnimationPanelProps) {
+export function AnimationPanel({ character }: AnimationPanelProps) {
   return (
     <section className="flex-col">
       <Box variant="dark-alt" padding="sm" className="stroke-anim-card flex-col-center gap-xs">
-        <CharacterStrokePlayer
-          character={character}
-          mode="full"
-          onCharacterClick={onCharacterClick}
-          onPlayAudio={onPlayAudio}
-        />
+        <CharacterStrokePlayer character={character} mode="full" />
       </Box>
     </section>
   );

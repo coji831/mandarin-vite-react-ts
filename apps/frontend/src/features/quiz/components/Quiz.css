@@ -42,15 +42,9 @@
   user-select: none;
 }
 .quiz-results__review summary:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary); /* pseudo-class + pseudo-element selector — focus-ring-primary utility can't target this */
+  /* bundled with outline */
   outline-offset: 2px;
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Phase Gate Badge
-   ═══════════════════════════════════════════════ */
-.quiz-badge {
-  animation: animate-fade-in 0.5s;
 }
 
 /* ═══════════════════════════════════════════════
@@ -58,13 +52,6 @@
    ═══════════════════════════════════════════════ */
 .quiz-breakdown__fill {
   /* height: 100% — migrated to utility class: h-full */
-}
-
-/* ═══════════════════════════════════════════════
-   Quiz: Phase Gate Badge
-   ═══════════════════════════════════════════════ */
-.quiz-badge {
-  animation: animate-fade-in 0.5s;
 }
 
 /* ═══════════════════════════════════════════════

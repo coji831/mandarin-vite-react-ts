@@ -1,14 +1,18 @@
 /**
  * QuizPageFull.stories.tsx
- * Storybook stories for QuizSessionPage — all visual states via Zustand store manipulation.
+ * Storybook stories for the quiz session + routed quiz page.
  *
- * Each story uses withQuizState to pre-populate the Zustand store with mock data,
- * then renders QuizSessionPage directly (bypassing the QuizPage router).
+ * Phase-state stories (Question, Feedback, Results, IME variants) use the
+ * withQuizState decorator to pre-populate the Zustand store with mock data.
+ * Fetch-lifecycle states (Loading, Error, EmptyQuestions) mount the REAL
+ * QuizSessionPage and drive the API via MSW handlers.
  */
 
 import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
+import { http, HttpResponse } from "msw";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "../../shared/layouts/AppLayout";
+import { QuizPage } from "./QuizPage";
 import { QuizSessionPage } from "./QuizSessionPage";
 import { useQuizSessionStore, createInitialSession } from "../../features/quiz";
 import type { QuizQuestion, AnswerResult, QuizSession } from "../../features/quiz";
@@ -79,6 +83,88 @@ function makeCorrectAnswer(question: QuizQuestion): AnswerResult {
   };
 }
 
+// ── IME Simulator mock questions (Story 21.18) ────────────────────
+
+const MOCK_IME_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "ime-q1",
+    audioKey: "hǎo",
+    correctPinyin: "hao",
+    correctTone: 3,
+    category: "ime",
+    displayPinyin: "hǎo",
+    character: "好",
+    meaning: "good",
+  },
+  {
+    id: "ime-q2",
+    audioKey: "nǐ",
+    correctPinyin: "ni",
+    correctTone: 3,
+    category: "ime",
+    displayPinyin: "nǐ",
+    character: "你",
+    meaning: "you",
+  },
+  {
+    id: "ime-q3",
+    audioKey: "mā",
+    correctPinyin: "ma",
+    correctTone: 1,
+    category: "ime",
+    displayPinyin: "mā",
+    character: "妈",
+    meaning: "mother",
+  },
+  {
+    id: "ime-q4",
+    audioKey: "míng",
+    correctPinyin: "ming",
+    correctTone: 2,
+    category: "ime",
+    displayPinyin: "míng",
+    character: "明",
+    meaning: "bright",
+  },
+  {
+    id: "ime-q5",
+    audioKey: "shuō",
+    correctPinyin: "shuo",
+    correctTone: 1,
+    category: "ime",
+    displayPinyin: "shuō",
+    character: "说",
+    meaning: "to speak",
+  },
+];
+
+function makeCorrectIMEAnswer(question: QuizQuestion, classification: string): AnswerResult {
+  return {
+    correct: true,
+    userPinyin: question.character ?? "",
+    userTone: 0,
+    correctPinyin: question.correctPinyin,
+    correctTone: question.correctTone,
+    feedback: `Correct! ${question.character}`,
+    toneDescription: "",
+    classification,
+  };
+}
+
+function makeWrongIMEAnswer(question: QuizQuestion, classification: string): AnswerResult {
+  return {
+    correct: false,
+    userPinyin: "X",
+    userTone: 0,
+    correctPinyin: question.correctPinyin,
+    correctTone: question.correctTone,
+    feedback: `Incorrect. The correct answer was: ${question.character}`,
+    toneDescription: "",
+    classification,
+    phoneticHint: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+  };
+}
+
 function makeWrongAnswer(question: QuizQuestion): AnswerResult {
   const wrongTone = question.correctTone === 1 ? 3 : 1;
   return {
@@ -91,6 +177,40 @@ function makeWrongAnswer(question: QuizQuestion): AnswerResult {
     toneDescription: TONE_DESCS[question.correctTone],
   };
 }
+
+// ── MSW handlers for quiz fetch states ───────────────────────────────
+
+const API_BASE = "http://localhost:3001/api/v1";
+
+const QUIZ_CONFIG_BODY = {
+  type: "audio-to-pinyin-tone",
+  questionCount: 5,
+  passThreshold: 0.6,
+  timeLimitMinutes: 2.5,
+  tierRules: null,
+};
+
+/** GET /quiz/config — returns the backend config (source of truth for counts). */
+const QUIZ_CONFIG_HANDLER = http.get(`${API_BASE}/quiz/config`, () =>
+  HttpResponse.json(QUIZ_CONFIG_BODY, { status: 200 }),
+);
+
+/** GET /quiz/questions — resolves with the given question pool. */
+const quizQuestionsHandler = (questions: QuizQuestion[]) =>
+  http.get(`${API_BASE}/quiz/questions`, () => HttpResponse.json(questions, { status: 200 }));
+
+/** GET /quiz/questions — never resolves (keeps the session in LOADING). */
+const QUIZ_QUESTIONS_LOADING = http.get(`${API_BASE}/quiz/questions`, () => new Promise(() => {}));
+
+/** GET /quiz/questions — 500 error (drives the ERROR phase). */
+const QUIZ_QUESTIONS_ERROR = http.get(`${API_BASE}/quiz/questions`, () =>
+  HttpResponse.json({ error: "Failed to load quiz questions" }, { status: 500 }),
+);
+
+/** POST /quiz/attempts — resolves an attempt id (non-blocking persistence). */
+const QUIZ_ATTEMPT_HANDLER = http.post(`${API_BASE}/quiz/attempts`, () =>
+  HttpResponse.json({ id: "storybook-attempt" }, { status: 200 }),
+);
 
 // ── Meta ───────────────────────────────────────────────────────────
 
@@ -142,24 +262,65 @@ function withQuizState(overrides: Partial<QuizSession>): Decorator {
   };
 }
 
+// Capture the real `initialize` action at module load so MSW-driven stories
+// (Loading / Error / EmptyQuestions) can restore it after a withQuizState
+// story replaces it with a no-op. The Zustand store is shared across stories.
+const REAL_INITIALIZE = useQuizSessionStore.getState().initialize;
+
+/**
+ * withFreshQuizSession — resets the shared quiz store to a clean initial
+ * session and restores the real `initialize` action, so a story can drive
+ * the real fetch lifecycle via MSW.
+ */
+function withFreshQuizSession(): Decorator {
+  return (Story) => {
+    useQuizSessionStore.setState({
+      ...createInitialSession("audio-to-pinyin-tone"),
+      initialize: REAL_INITIALIZE,
+    });
+    return <Story />;
+  };
+}
+
 // ── Stories ────────────────────────────────────────────────────────
 
 /**
- * Loading — shows the LOADING phase with spinner + "Loading quiz..." text.
+ * Loading — real QuizSessionPage mount with a never-resolving question-pool
+ * request (MSW), so the fetch keeps the session in the LOADING phase.
  */
 export const Loading: Story = {
   args: { strategyType: "audio-to-pinyin-tone" },
-  decorators: [
-    withQuizState({
-      phase: "LOADING",
-      questions: [],
-      currentIndex: 0,
-      answers: [],
-      score: 0,
-      timer: 150,
-    }),
-    withAppLayoutAt("/practices/quiz"),
-  ],
+  decorators: [withFreshQuizSession(), withAppLayoutAt("/practices/quiz")],
+  parameters: {
+    msw: { handlers: [QUIZ_CONFIG_HANDLER, QUIZ_QUESTIONS_LOADING] },
+  },
+};
+
+/**
+ * Error — the question-pool fetch fails (500 via MSW), driving the store's
+ * ERROR phase and QuizRouter's ErrorScreen with retry.
+ */
+export const Error: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [withFreshQuizSession(), withAppLayoutAt("/practices/quiz")],
+  parameters: {
+    msw: { handlers: [QUIZ_CONFIG_HANDLER, QUIZ_QUESTIONS_ERROR] },
+  },
+};
+
+/**
+ * EmptyQuestions — the pool endpoint returns [] (MSW). The container has no
+ * dedicated empty UI: an empty pool resolves to the RESULTS phase with 0/0
+ * (0%), which renders the failure state with a "Try Again" button.
+ */
+export const EmptyQuestions: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [withFreshQuizSession(), withAppLayoutAt("/practices/quiz")],
+  parameters: {
+    msw: {
+      handlers: [QUIZ_CONFIG_HANDLER, quizQuestionsHandler([]), QUIZ_ATTEMPT_HANDLER],
+    },
+  },
 };
 
 /**
@@ -328,4 +489,182 @@ export const GuestResultsFailed: Story = {
     withGuestAuth,
     withAppLayoutAt("/practices/quiz"),
   ],
+};
+
+// ─────────────────────────────────────────────────────────────────
+// IME Simulator Stories (Story 21.18)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * IMEQuestion — IME Simulator INPUT phase with meaning clue and IME input.
+ */
+export const IMEQuestion: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "INPUT",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 150,
+      hintsRemaining: 3,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * IMEHintDisplay — IME Simulator question with phonetic hint visible.
+ */
+export const IMEHintDisplay: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "INPUT",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 1,
+      answers: [],
+      score: 0,
+      timer: 130,
+      hintsRemaining: 3,
+      currentPhoneticHint: {
+        data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+        hasPhoneticComponent: true,
+      },
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * IMEHintExhausted — IME Simulator question with 0 hints remaining.
+ */
+export const IMEHintExhausted: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "INPUT",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 2,
+      answers: [],
+      score: 0,
+      timer: 120,
+      hintsRemaining: 0,
+      currentPhoneticHint: {
+        data: null,
+        hasPhoneticComponent: false,
+      },
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * IMEHintRadicalShown — IME Simulator question with radical hint toggled on.
+ */
+export const IMEHintRadicalShown: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "INPUT",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 140,
+      hintsRemaining: 2,
+      showRadicalHint: true,
+      maxScorePenalty: 0.05,
+      currentPhoneticHint: {
+        data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+        hasPhoneticComponent: true,
+      },
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * IMEWrongFeedback — IME Simulator FEEDBACK phase showing phonetic hint after wrong answer.
+ */
+export const IMEWrongFeedback: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "FEEDBACK",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 1,
+      answers: [
+        makeWrongIMEAnswer(MOCK_IME_QUESTIONS[0], "phono_semantic"),
+        makeWrongIMEAnswer(MOCK_IME_QUESTIONS[1], "pictograph"),
+      ],
+      score: 0,
+      timer: 120,
+      hintsRemaining: 2,
+      currentPhoneticHint: {
+        data: { glyph: "子", pinyin: "zǐ", meaning: "child" },
+        hasPhoneticComponent: true,
+      },
+      scoreByType: {
+        phono_semantic: { correct: 0, total: 1 },
+        pictograph: { correct: 0, total: 1 },
+      },
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * IMEResults — IME Simulator RESULTS phase with score-by-type breakdown.
+ */
+export const IMEResults: Story = {
+  args: { strategyType: "ime-simulator" },
+  decorators: [
+    withQuizState({
+      strategyType: "ime-simulator",
+      phase: "RESULTS",
+      questions: MOCK_IME_QUESTIONS,
+      currentIndex: 4,
+      answers: [
+        makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[0], "phono_semantic"),
+        makeWrongIMEAnswer(MOCK_IME_QUESTIONS[1], "pictograph"),
+        makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[2], "phono_semantic"),
+        makeCorrectIMEAnswer(MOCK_IME_QUESTIONS[3], "compound_ideograph"),
+        makeWrongIMEAnswer(MOCK_IME_QUESTIONS[4], "ideograph"),
+      ],
+      score: 3,
+      timer: 90,
+      hintsRemaining: 1,
+      strategyConfig: {
+        type: "ime-simulator",
+        questionCount: 5,
+        passThreshold: 0.6,
+        timeLimitMinutes: 2.5,
+        tierRules: null,
+      },
+      scoreByType: {
+        pictograph: { correct: 0, total: 1 },
+        phono_semantic: { correct: 2, total: 2 },
+        compound_ideograph: { correct: 1, total: 1 },
+        ideograph: { correct: 0, total: 1 },
+      },
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * NoQuizSelected — the routed QuizPage (not QuizSessionPage) with no ?type=
+ * param, so it renders the "Select a quiz type from the practices page to
+ * begin." fallback branch. No fetch occurs in this branch.
+ */
+export const NoQuizSelected: Story = {
+  render: () => <QuizPage />,
+  decorators: [withAppLayoutAt("/practices/quiz")],
 };

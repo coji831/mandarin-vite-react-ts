@@ -96,9 +96,11 @@ All data is fetched on mount via service layer calls. No polling or real-time su
 
 ```
 Page Mount
-  ├── usePhaseGates.fetch()     → GET /api/phase-gates
-  ├── useActivity.fetch()       → GET /api/activity
-  └── useAuth.currentUser       → Context (guest or logged-in)
+  ├── Phase gate data   → GET /v1/progression/phase-gate (ROUTE_PATTERNS.progressionPhaseGate,
+  │                       via shared/services/phaseGateService.ts) — legacy /api/phase-gates no longer exists
+  ├── Recent Activity   → populated from DashboardSections props (activities[]) — legacy GET /api/activity
+  │                       endpoint no longer exists
+  └── useAuth.currentUser → Context (guest or logged-in)
        │
        ▼
   Determine: guest → DashboardGuest | user → DashboardSections

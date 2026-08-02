@@ -6,6 +6,7 @@
 
 import React from "react";
 import { Box, Button } from "shared/components";
+import { openHub } from "shared/store";
 import { getReviewStrategy } from "../engine/strategies";
 import type { Rating, ReviewItem } from "../types";
 import "./ReviewCard.css";
@@ -36,9 +37,20 @@ function ReviewCardResultComponent({
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-lg p-xl w-full">
         <div className="review-card__character-display flex-col-center gap-sm">
-          <span className="review-card__character font-5xl lh-tight tracking-wide text-primary fw-700">
+          <button
+            type="button"
+            className="review-card__character review-card__character-btn font-5xl lh-tight tracking-wide text-primary fw-700"
+            onClick={() =>
+              openHub({
+                entityType: "character",
+                entityId: displayChar,
+                label: item.pinyinPlain ?? item.front,
+              })
+            }
+            aria-label={`View details for ${displayChar}`}
+          >
             {displayChar}
-          </span>
+          </button>
           {item.meaning && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})
@@ -81,7 +93,7 @@ function ReviewCardResultComponent({
                       : "rating-easy"
                 }
                 data-rating={r.value}
-                className="review-card__rating-btn flex-1 transition-all"
+                className="review-card__rating-btn flex-1"
                 onClick={() => onRate(r.value)}
               >
                 <span className="font-lg">

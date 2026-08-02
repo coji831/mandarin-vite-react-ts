@@ -1,27 +1,18 @@
 /**
- * @file apps/backend/src/shared/utils/contentUtils.js
- * @description Shared utilities for reading from the content/ directory
+ * @file apps/backend/src/shared/utils/contentUtils.ts
+ * @description Shared utilities: content-item type, pinyin normalization, shuffle.
  *
- * Centralizes content file reading, path resolution, and pinyin utilities
- * to eliminate duplication across services.
+ * All runtime content reads are DB-backed (all-in-DB) — the legacy
+ * readContentDir / readContentFile / readContentFiles / readAggregateContent /
+ * readAggregateContentWhere / findInAggregateContent functions and the
+ * CONTENT_DIR constant were removed (see docs/guides/data/seed-pipeline.md).
+ * GCS is used for binary TTS audio only (see GCSClient).
  */
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { config } from "../config/index.js";
-import { GCSClient } from "../infrastructure/external/GCSClient.js";
-
-const gcsClient = new GCSClient();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Content directory root (repo root /content/)
-export const CONTENT_DIR = path.resolve(__dirname, "../../../../../content");
 
 /**
  * ContentFile — shape of parsed JSON content files from the content/ directory.
  * Common fields across all content types (radicals, pinyin, tones, characters, etc.).
+ * Kept for legacy type compatibility (e.g. review module's ContentItem).
  */
 export interface ContentFile {
   id?: string;
@@ -47,58 +38,6 @@ export interface ContentFile {
   metadata?: Record<string, unknown>;
   readings?: Array<Record<string, unknown>>;
   [key: string]: unknown;
-}
-
-/**
- * Read all JSON files from a content subdirectory, sorted by filename.
- * @param subDir - e.g. "pinyin", "tones", "references"
- * @returns Parsed JSON objects
- */
-export async function readContentDir(subDir: string): Promise<ContentFile[]> {
-  if (config.nodeEnvironment === "production" && config.gcsBucket) {
-    const prefix = `content/${subDir}/`;
-    const files = await gcsClient.listFiles(prefix);
-    const results = [];
-    for (const filePath of files) {
-      const buffer = await gcsClient.downloadFile(filePath);
-      results.push(JSON.parse(buffer.toString()));
-    }
-    return results.sort((a, b) => (a.id || "").localeCompare(b.id || ""));
-  }
-  const dirPath = path.join(CONTENT_DIR, subDir);
-  const files = fs
-    .readdirSync(dirPath)
-    .filter((f) => f.endsWith(".json"))
-    .sort();
-  return files.map((f) => JSON.parse(fs.readFileSync(path.join(dirPath, f), "utf-8")));
-}
-
-/**
- * Read a single content file.
- * @param subDir - e.g. "pinyin", "tones", "references"
- * @param filename - e.g. "tone-reference.json"
- * @returns Parsed JSON object
- */
-export async function readContentFile(subDir: string, filename: string): Promise<ContentFile> {
-  if (config.nodeEnvironment === "production" && config.gcsBucket) {
-    const buffer = await gcsClient.downloadFile(`content/${subDir}/${filename}`);
-    return JSON.parse(buffer.toString());
-  }
-  const filePath = path.join(CONTENT_DIR, subDir, filename);
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
-}
-
-/**
- * Read content files matching a prefix from a content subdirectory.
- * @param subDir - e.g. "pinyin"
- * @param prefix - e.g. "init_", "fin_", "tn_"
- * @returns Parsed JSON objects sorted by id
- */
-export async function readContentFiles(subDir: string, prefix: string): Promise<ContentFile[]> {
-  const all = await readContentDir(subDir);
-  return all
-    .filter((f) => f.id && String(f.id).startsWith(prefix))
-    .sort((a, b) => String(a.id || "").localeCompare(String(b.id || "")));
 }
 
 /**

@@ -1,6 +1,6 @@
 # Backend Testing Guide
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** August 2, 2026  
 **Purpose:** Patterns, examples, and configuration for testing backend services in this repository (apps/backend)  
 **Audience:** Backend developers writing tests for services, repositories, controllers, and middleware
 
@@ -184,6 +184,7 @@ test("GET /api/v1/progress returns list", async () => {
 
 11. Troubleshooting
 
+- **Known failures:** Pre-existing failures are triaged in [`known-failures.md`](known-failures.md) — match against it BEFORE re-triaging from scratch.
 - Slow tests: reduce bcrypt rounds, mock external network, use in-memory caches.
 - Flaky DB tests: ensure proper isolation and deterministic seeding; prefer truncation or transactions.
 - ESM mocking issues: favor explicit injected mocks rather than heavy module mocking.

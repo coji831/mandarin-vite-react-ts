@@ -12,8 +12,7 @@
 }
 
 .auth-form-label {
-  display: block;
-  /* display:block is a unique styling - keeping */
+  display: block; /* structural: label element is block by intent */
 }
 
 .auth-form-input:focus {
@@ -21,24 +20,9 @@
 }
 
 .auth-form-input::placeholder {
-  color: var(--text-tertiary);
+  color: var(
+    --text-tertiary
+  ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
 }
-
-.auth-form-link {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.auth-form-link:hover:not(:disabled) {
-  color: var(--color-primary-hover);
-  text-decoration: underline;
-}
-
-/* .auth-form-link:disabled — migrated to disabled:op-60 utility */
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
-  .auth-form-title {
-    font-size: 1.5rem;
-  }
-}

@@ -1,0 +1,77 @@
+[
+  {
+    "id": "dian",
+    "name": "点",
+    "pinyin": "diǎn",
+    "meaning": "dot",
+    "glyph": "丶",
+    "order": 1,
+    "strokeCount": 1,
+    "exampleChars": [
+      "主",
+      "州",
+      "为",
+      "头"
+    ]
+  },
+  {
+    "id": "heng",
+    "name": "横",
+    "pinyin": "héng",
+    "meaning": "horizontal",
+    "glyph": "一",
+    "order": 2,
+    "strokeCount": 1,
+    "exampleChars": [
+      "一",
+      "二",
+      "三",
+      "王"
+    ]
+  },
+  {
+    "id": "shu",
+    "name": "竖",
+    "pinyin": "shù",
+    "meaning": "vertical",
+    "glyph": "丨",
+    "order": 3,
+    "strokeCount": 1,
+    "exampleChars": [
+      "十",
+      "中",
+      "丰",
+      "川"
+    ]
+  },
+  {
+    "id": "pie",
+    "name": "撇",
+    "pinyin": "piě",
+    "meaning": "left-falling",
+    "glyph": "丿",
+    "order": 4,
+    "strokeCount": 1,
+    "exampleChars": [
+      "人",
+      "八",
+      "大",
+      "禾"
+    ]
+  },
+  {
+    "id": "zhe",
+    "name": "折",
+    "pinyin": "zhé",
+    "meaning": "bend",
+    "glyph": "㇍",
+    "order": 5,
+    "strokeCount": 1,
+    "exampleChars": [
+      "口",
+      "日",
+      "田",
+      "目"
+    ]
+  }
+]

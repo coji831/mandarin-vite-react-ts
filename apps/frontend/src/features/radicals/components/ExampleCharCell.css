@@ -20,7 +20,7 @@
 
 /* ── Info area ── */
 .example-char-row__info {
-  min-width: 0;
+  min-width: 0; /* flex child — required for text truncation to work in flex layout */
 }
 
 .example-char-row__pinyin {
@@ -29,4 +29,16 @@
 
 .example-char-row__meaning {
   text-overflow: ellipsis;
+}
+
+/* ── Badge ── */
+.example-char-row__badge {
+  display: inline-flex;
+}
+
+/* ── Pictograph golden border ── */
+.example-char-cell--pictograph {
+  border: 2px solid var(--color-xp);
+  box-shadow: var(--shadow-xp-glow);
+  border-radius: var(--radius-sm);
 }

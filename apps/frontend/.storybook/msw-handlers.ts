@@ -147,6 +147,273 @@ const RADICAL_PROGRESS_BODIES = {
   ],
 };
 
+/**
+ * Mock phonetic cluster families for Storybook phonetic tree stories.
+ * Includes families with varying member counts and HSK levels.
+ */
+const PHONETIC_CLUSTER_FAMILIES = [
+  {
+    id: "pc_0001",
+    phoneticPattern: "青",
+    pinyin: "qīng",
+    description: "blue/green",
+    pronunciationNote: "Tones vary by character",
+    memberCount: 4,
+    hskLevels: [2, 3],
+    members: [
+      { glyph: "清", pinyin: "qīng", meaning: "clear", hskLevel: 3 },
+      { glyph: "情", pinyin: "qíng", meaning: "feeling", hskLevel: 2 },
+      { glyph: "请", pinyin: "qǐng", meaning: "request", hskLevel: 2 },
+      { glyph: "晴", pinyin: "qíng", meaning: "clear (sky)", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0002",
+    phoneticPattern: "包",
+    pinyin: "bāo",
+    description: "wrap",
+    pronunciationNote: null,
+    memberCount: 4,
+    hskLevels: [2, 3, 4],
+    members: [
+      { glyph: "包", pinyin: "bāo", meaning: "to wrap", hskLevel: 2 },
+      { glyph: "抱", pinyin: "bào", meaning: "to hug", hskLevel: 3 },
+      { glyph: "跑", pinyin: "pǎo", meaning: "to run", hskLevel: 2 },
+      { glyph: "炮", pinyin: "pào", meaning: "cannon", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0003",
+    phoneticPattern: "方",
+    pinyin: "fāng",
+    description: "square/direction",
+    pronunciationNote: null,
+    memberCount: 5,
+    hskLevels: [2, 3, 4],
+    members: [
+      { glyph: "方", pinyin: "fāng", meaning: "square", hskLevel: 2 },
+      { glyph: "放", pinyin: "fàng", meaning: "to put", hskLevel: 2 },
+      { glyph: "房", pinyin: "fáng", meaning: "house", hskLevel: 2 },
+      { glyph: "访", pinyin: "fǎng", meaning: "to visit", hskLevel: 3 },
+      { glyph: "纺", pinyin: "fǎng", meaning: "to spin", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0004",
+    phoneticPattern: "马",
+    pinyin: "mǎ",
+    description: "horse",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "马", pinyin: "mǎ", meaning: "horse", hskLevel: 1 },
+      { glyph: "吗", pinyin: "ma", meaning: "question particle", hskLevel: 1 },
+      { glyph: "妈", pinyin: "mā", meaning: "mother", hskLevel: 1 },
+    ],
+  },
+  {
+    id: "pc_0005",
+    phoneticPattern: "工",
+    pinyin: "gōng",
+    description: "work",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 4],
+    members: [
+      { glyph: "工", pinyin: "gōng", meaning: "work", hskLevel: 1 },
+      { glyph: "功", pinyin: "gōng", meaning: "achievement", hskLevel: 2 },
+      { glyph: "攻", pinyin: "gōng", meaning: "to attack", hskLevel: 4 },
+    ],
+  },
+  {
+    id: "pc_0006",
+    phoneticPattern: "可",
+    pinyin: "kě",
+    description: "can/may",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "可", pinyin: "kě", meaning: "can", hskLevel: 1 },
+      { glyph: "河", pinyin: "hé", meaning: "river", hskLevel: 2 },
+      { glyph: "何", pinyin: "hé", meaning: "what", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0007",
+    phoneticPattern: "中",
+    pinyin: "zhōng",
+    description: "center",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 4],
+    members: [
+      { glyph: "中", pinyin: "zhōng", meaning: "middle", hskLevel: 1 },
+      { glyph: "钟", pinyin: "zhōng", meaning: "clock", hskLevel: 2 },
+      { glyph: "种", pinyin: "zhǒng", meaning: "type/kind", hskLevel: 2 },
+    ],
+  },
+  {
+    id: "pc_0008",
+    phoneticPattern: "分",
+    pinyin: "fēn",
+    description: "divide",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "分", pinyin: "fēn", meaning: "minute", hskLevel: 1 },
+      { glyph: "份", pinyin: "fèn", meaning: "portion", hskLevel: 2 },
+      { glyph: "粉", pinyin: "fěn", meaning: "powder", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0009",
+    phoneticPattern: "白",
+    pinyin: "bái",
+    description: "white",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "白", pinyin: "bái", meaning: "white", hskLevel: 1 },
+      { glyph: "百", pinyin: "bǎi", meaning: "hundred", hskLevel: 1 },
+      { glyph: "拍", pinyin: "pāi", meaning: "to clap", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0010",
+    phoneticPattern: "丁",
+    pinyin: "dīng",
+    description: "nail/male adult",
+    pronunciationNote: null,
+    memberCount: 4,
+    hskLevels: [2, 3, 5],
+    members: [
+      { glyph: "顶", pinyin: "dǐng", meaning: "top/peak", hskLevel: 3 },
+      { glyph: "订", pinyin: "dìng", meaning: "to book", hskLevel: 2 },
+      { glyph: "钉", pinyin: "dīng", meaning: "nail", hskLevel: 5 },
+      { glyph: "厅", pinyin: "tīng", meaning: "hall", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0011",
+    phoneticPattern: "里",
+    pinyin: "lǐ",
+    description: "inside",
+    pronunciationNote: null,
+    memberCount: 3,
+    hskLevels: [1, 2, 3],
+    members: [
+      { glyph: "里", pinyin: "lǐ", meaning: "inside", hskLevel: 1 },
+      { glyph: "理", pinyin: "lǐ", meaning: "reason", hskLevel: 2 },
+      { glyph: "厘", pinyin: "lí", meaning: "centi-", hskLevel: 3 },
+    ],
+  },
+  {
+    id: "pc_0012",
+    phoneticPattern: "古",
+    pinyin: "gǔ",
+    description: "ancient",
+    pronunciationNote: null,
+    memberCount: 2,
+    hskLevels: [2, 3],
+    members: [
+      { glyph: "古", pinyin: "gǔ", meaning: "ancient", hskLevel: 2 },
+      { glyph: "故", pinyin: "gù", meaning: "therefore", hskLevel: 3 },
+    ],
+  },
+];
+
+/**
+ * Characters mapped per mastered radical for the radical-tree Storybook stories.
+ * Falls back to a generic two-character list for unmapped ids.
+ */
+const RADICAL_CHARACTERS: Record<
+  string,
+  Array<{ glyph: string; pinyin: string; meaning: string }>
+> = {
+  rad_0001: [
+    { glyph: "一", pinyin: "yī", meaning: "one" },
+    { glyph: "七", pinyin: "qī", meaning: "seven" },
+    { glyph: "三", pinyin: "sān", meaning: "three" },
+    { glyph: "万", pinyin: "wàn", meaning: "ten thousand" },
+  ],
+  rad_0002: [
+    { glyph: "中", pinyin: "zhōng", meaning: "middle" },
+    { glyph: "串", pinyin: "chuàn", meaning: "to string together" },
+  ],
+  rad_0003: [
+    { glyph: "主", pinyin: "zhǔ", meaning: "main; lord" },
+    { glyph: "丸", pinyin: "wán", meaning: "pill" },
+    { glyph: "丹", pinyin: "dān", meaning: "cinnabar" },
+  ],
+  rad_0008: [
+    { glyph: "江", pinyin: "jiāng", meaning: "river" },
+    { glyph: "河", pinyin: "hé", meaning: "river" },
+    { glyph: "海", pinyin: "hǎi", meaning: "sea" },
+    { glyph: "洗", pinyin: "xǐ", meaning: "to wash" },
+  ],
+  rad_0009: [
+    { glyph: "他", pinyin: "tā", meaning: "he; other" },
+    { glyph: "们", pinyin: "men", meaning: "plural marker" },
+    { glyph: "你", pinyin: "nǐ", meaning: "you" },
+    { glyph: "什", pinyin: "shén", meaning: "what" },
+  ],
+};
+
+/**
+ * Pre-built character-detail response bodies for Storybook character hub stories.
+ * Mirrors the GET /v1/characters/:glyph response (`{ data: CharacterDetailResponse }`).
+ */
+const CHARACTER_DETAIL_BODIES: Record<
+  string,
+  {
+    data: {
+      glyph: string;
+      traditional: string;
+      strokeCount: number;
+      hskLevel: number;
+      readings: Array<{ pinyin: string; tone: number; type: string; core_meaning: string }>;
+      etymology?: string;
+      frequencyRank?: number;
+      commonWords?: string[];
+      radicalIds?: string[];
+      definition?: string;
+    };
+  }
+> = {
+  好: {
+    data: {
+      glyph: "好",
+      traditional: "好",
+      strokeCount: 6,
+      hskLevel: 1,
+      readings: [{ pinyin: "hǎo", tone: 3, type: "pinyin", core_meaning: "good" }],
+      etymology: "Pictophonetic: 女 (woman) + 子 (child)",
+      frequencyRank: 5,
+      definition: "good, well",
+      radicalIds: ["rad_0038"],
+      commonWords: ["你好", "好吃"],
+    },
+  },
+  学: {
+    data: {
+      glyph: "学",
+      traditional: "學",
+      strokeCount: 8,
+      hskLevel: 1,
+      readings: [{ pinyin: "xué", tone: 2, type: "pinyin", core_meaning: "study" }],
+      etymology: "Pictophonetic",
+      frequencyRank: 20,
+      definition: "study, learn",
+      radicalIds: ["rad_0034"],
+      commonWords: ["学习", "学生"],
+    },
+  },
+};
+
 export const mswHandlers = {
   auth: [
     // Token refresh — called by AuthProvider on mount
@@ -195,311 +462,223 @@ export const mswHandlers = {
     },
   },
   radicals: {
+    characters: (radicalId = "rad_0001") =>
+      http.get(`${API_BASE}/radicals/${radicalId}/characters`, () =>
+        HttpResponse.json({
+          radicalId,
+          characters: RADICAL_CHARACTERS[radicalId] ?? [
+            { glyph: "一", pinyin: "yī", meaning: "one" },
+            { glyph: "七", pinyin: "qī", meaning: "seven" },
+          ],
+        }),
+      ),
+    /** Single radical by id (camelCase RadicalApiItem contract). */
+    byId: () =>
+      http.get(`${API_BASE}/radicals/:radicalId`, ({ params }) => {
+        const radicalId = params.radicalId as string;
+        return HttpResponse.json({
+          id: radicalId,
+          glyph: "口",
+          alternateGlyphs: [],
+          namePinyin: "kǒu",
+          nameChinese: "口",
+          meaning: "mouth",
+          strokeCount: 3,
+          isRecommended: true,
+          kangxiIndex: 30,
+          etymology: "Pictograph of an open mouth",
+          frequencyRank: 4,
+          notes: "One of the most common radicals. Found in hundreds of characters.",
+          isAlsoCharacter: true,
+          variants: null,
+          hskCharacters: [],
+        });
+      }),
+    /** Single radical by id — never resolves (loading state). */
+    byIdLoading: () => http.get(`${API_BASE}/radicals/:radicalId`, () => new Promise(() => {})),
+    /** Single radical by id — 500 error. */
+    byIdError: () =>
+      http.get(`${API_BASE}/radicals/:radicalId`, () =>
+        HttpResponse.json({ error: "Failed to load radicals" }, { status: 500 }),
+      ),
     default: () =>
       http.get(`${API_BASE}/radicals`, () =>
         HttpResponse.json([
           {
             id: "rad_0001",
             glyph: "一",
-            alternate_glyphs: [],
-            name_pinyin: "yī",
-            name_chinese: "一",
+            alternateGlyphs: [],
+            namePinyin: "yī",
+            nameChinese: "一",
             meaning: "one",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 1,
-            metadata: {
-              etymology: "Pictograph of a single horizontal stroke representing the number one",
-              frequency_rank: 1,
-              notes: "The first radical in the Kangxi system. Also a character meaning 'one'.",
-              hsk_characters: [
-                { glyph: "一", pinyin: "yī", meaning: "one" },
-                { glyph: "七", pinyin: "qī", meaning: "seven" },
-                { glyph: "三", pinyin: "sān", meaning: "three" },
-                { glyph: "上", pinyin: "shàng", meaning: "above/up" },
-                { glyph: "下", pinyin: "xià", meaning: "below/down" },
-                { glyph: "不", pinyin: "bù", meaning: "not/no" },
-                { glyph: "世", pinyin: "shì", meaning: "world/generation" },
-                { glyph: "东", pinyin: "dōng", meaning: "east" },
-                { glyph: "丝", pinyin: "sī", meaning: "silk" },
-                { glyph: "两", pinyin: "liǎng", meaning: "two/both" },
-                { glyph: "且", pinyin: "qiě", meaning: "moreover" },
-                { glyph: "丘", pinyin: "qiū", meaning: "mound/hill" },
-              ],
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 1,
+            etymology: "Pictograph of a single horizontal stroke representing the number one",
+            frequencyRank: 1,
+            notes: "The first radical in the Kangxi system. Also a character meaning 'one'.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0002",
             glyph: "丨",
-            alternate_glyphs: [],
-            name_pinyin: "gǔn",
-            name_chinese: "丨",
+            alternateGlyphs: [],
+            namePinyin: "gǔn",
+            nameChinese: "丨",
             meaning: "line",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 2,
-            metadata: {
-              etymology: "Pictograph of a vertical line or rod",
-              frequency_rank: 2,
-              notes: "Represents a vertical line. Rarely used alone but common as a component.",
-              hsk_characters: [
-                { glyph: "中", pinyin: "zhōng", meaning: "middle/center" },
-                { glyph: "串", pinyin: "chuàn", meaning: "string/skewer" },
-                { glyph: "旧", pinyin: "jiù", meaning: "old/former" },
-                { glyph: "北", pinyin: "běi", meaning: "north" },
-                { glyph: "卡", pinyin: "kǎ", meaning: "card/block" },
-                { glyph: "引", pinyin: "yǐn", meaning: "lead/guide" },
-                { glyph: "丰", pinyin: "fēng", meaning: "abundant" },
-                { glyph: "半", pinyin: "bàn", meaning: "half" },
-                { glyph: "申", pinyin: "shēn", meaning: "state/explain" },
-                { glyph: "畅", pinyin: "chàng", meaning: "smooth/unimpeded" },
-                { glyph: "肃", pinyin: "sù", meaning: "solemn" },
-              ],
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 2,
+            etymology: "Pictograph of a vertical line or rod",
+            frequencyRank: 2,
+            notes: "Represents a vertical line. Rarely used alone but common as a component.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0003",
             glyph: "丶",
-            alternate_glyphs: [],
-            name_pinyin: "zhǔ",
-            name_chinese: "丶",
+            alternateGlyphs: [],
+            namePinyin: "zhǔ",
+            nameChinese: "丶",
             meaning: "dot",
-            stroke_count: 1,
-            is_recommended: true,
-            kangxi_index: 3,
-            metadata: {
-              etymology: "Pictograph of a dot or mark",
-              frequency_rank: 3,
-              notes: "Represents a simple dot stroke. Found in many characters as a component.",
-              hsk_characters: [
-                { glyph: "主", pinyin: "zhǔ", meaning: "main/owner" },
-                { glyph: "玉", pinyin: "yù", meaning: "jade" },
-                { glyph: "丹", pinyin: "dān", meaning: "red/cinnabar" },
-                { glyph: "丸", pinyin: "wán", meaning: "pill/ball" },
-                { glyph: "为", pinyin: "wèi", meaning: "for/do" },
-                { glyph: "丽", pinyin: "lì", meaning: "beautiful" },
-                { glyph: "举", pinyin: "jǔ", meaning: "lift/raise" },
-                { glyph: "州", pinyin: "zhōu", meaning: "prefecture/state" },
-                { glyph: "良", pinyin: "liáng", meaning: "good/fine" },
-                { glyph: "求", pinyin: "qiú", meaning: "seek/request" },
-                { glyph: "永", pinyin: "yǒng", meaning: "forever" },
-              ],
-            },
+            strokeCount: 1,
+            isRecommended: true,
+            kangxiIndex: 3,
+            etymology: "Pictograph of a dot or mark",
+            frequencyRank: 3,
+            notes: "Represents a simple dot stroke. Found in many characters as a component.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0008",
             glyph: "氵",
-            alternate_glyphs: ["⺡", "氺"],
-            name_pinyin: "sāndiǎnshuǐ",
+            alternateGlyphs: ["⺡", "氺"],
+            namePinyin: "sāndiǎnshuǐ",
+            nameChinese: "氵",
             meaning: "water radical",
-            stroke_count: 3,
-            is_recommended: true,
-            kangxi_index: 8,
-            metadata: {
-              etymology: "Derived from 水 (shuǐ) — water",
-              frequency_rank: 12,
-              notes: "One of the most common radicals. Appears on the left side of characters.",
-              hsk_characters: [
-                { glyph: "水", pinyin: "shuǐ", meaning: "water" },
-                { glyph: "江", pinyin: "jiāng", meaning: "river" },
-                { glyph: "河", pinyin: "hé", meaning: "river" },
-                { glyph: "湖", pinyin: "hú", meaning: "lake" },
-                { glyph: "海", pinyin: "hǎi", meaning: "sea/ocean" },
-                { glyph: "洗", pinyin: "xǐ", meaning: "wash" },
-                { glyph: "活", pinyin: "huó", meaning: "live/alive" },
-                { glyph: "法", pinyin: "fǎ", meaning: "law/method" },
-                { glyph: "清", pinyin: "qīng", meaning: "clear" },
-                { glyph: "汉", pinyin: "hàn", meaning: "Han/Chinese" },
-                { glyph: "汁", pinyin: "zhī", meaning: "juice" },
-                { glyph: "汗", pinyin: "hàn", meaning: "sweat" },
-              ],
-            },
+            strokeCount: 3,
+            isRecommended: true,
+            kangxiIndex: 8,
+            etymology: "Derived from 水 (shuǐ) — water",
+            frequencyRank: 12,
+            notes: "One of the most common radicals. Appears on the left side of characters.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0009",
             glyph: "亻",
-            alternate_glyphs: ["人"],
-            name_pinyin: "rén",
-            name_chinese: "人",
+            alternateGlyphs: ["人"],
+            namePinyin: "rén",
+            nameChinese: "人",
             meaning: "man",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 9,
-            metadata: {
-              etymology:
-                "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
-              frequency_rank: 9,
-              notes:
-                "Common left-side form of the person radical. Appears in characters related to people.",
-              hsk_characters: [
-                { glyph: "他", pinyin: "tā", meaning: "he/him" },
-                { glyph: "们", pinyin: "men", meaning: "plural marker" },
-                { glyph: "你", pinyin: "nǐ", meaning: "you" },
-                { glyph: "作", pinyin: "zuò", meaning: "make/do" },
-                { glyph: "体", pinyin: "tǐ", meaning: "body" },
-                { glyph: "住", pinyin: "zhù", meaning: "live/reside" },
-                { glyph: "什", pinyin: "shén", meaning: "what" },
-                { glyph: "候", pinyin: "hòu", meaning: "wait/period" },
-                { glyph: "借", pinyin: "jiè", meaning: "borrow/lend" },
-                { glyph: "假", pinyin: "jiǎ", meaning: "false/fake" },
-                { glyph: "价", pinyin: "jià", meaning: "price" },
-                { glyph: "做", pinyin: "zuò", meaning: "do/make" },
-              ],
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 9,
+            etymology:
+              "Derived from 人 (rén) — person. The left-side form of the 'person' radical.",
+            frequencyRank: 9,
+            notes:
+              "Common left-side form of the person radical. Appears in characters related to people.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0018",
             glyph: "刂",
-            alternate_glyphs: ["刀"],
-            name_pinyin: "dāo",
-            name_chinese: "刀",
+            alternateGlyphs: ["刀"],
+            namePinyin: "dāo",
+            nameChinese: "刀",
             meaning: "knife",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 18,
-            metadata: {
-              etymology:
-                "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
-              frequency_rank: 10,
-              notes:
-                "Common right-side form. Appears in characters involving cutting or separating.",
-              hsk_characters: [
-                { glyph: "到", pinyin: "dào", meaning: "arrive" },
-                { glyph: "利", pinyin: "lì", meaning: "sharp/benefit" },
-                { glyph: "制", pinyin: "zhì", meaning: "control/make" },
-                { glyph: "刻", pinyin: "kè", meaning: "carve/moment" },
-                { glyph: "划", pinyin: "huá", meaning: "scratch/row" },
-                { glyph: "刑", pinyin: "xíng", meaning: "punishment" },
-                { glyph: "刚", pinyin: "gāng", meaning: "just/firm" },
-                { glyph: "创", pinyin: "chuàng", meaning: "create" },
-                { glyph: "别", pinyin: "bié", meaning: "other/separate" },
-                { glyph: "判", pinyin: "pàn", meaning: "judge" },
-                { glyph: "刺", pinyin: "cì", meaning: "stab" },
-                { glyph: "刮", pinyin: "guā", meaning: "scrape" },
-              ],
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 18,
+            etymology:
+              "Derived from 刀 (dāo) — knife/sword. The right-side form of the 'knife' radical.",
+            frequencyRank: 10,
+            notes: "Common right-side form. Appears in characters involving cutting or separating.",
+            isAlsoCharacter: false,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0019",
             glyph: "力",
-            alternate_glyphs: [],
-            name_pinyin: "lì",
-            name_chinese: "力",
+            alternateGlyphs: [],
+            namePinyin: "lì",
+            nameChinese: "力",
             meaning: "power",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 19,
-            metadata: {
-              etymology: "Pictograph of a muscular arm showing strength",
-              frequency_rank: 11,
-              notes:
-                "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
-              hsk_characters: [
-                { glyph: "力", pinyin: "lì", meaning: "power/strength" },
-                { glyph: "加", pinyin: "jiā", meaning: "add" },
-                { glyph: "助", pinyin: "zhù", meaning: "help" },
-                { glyph: "动", pinyin: "dòng", meaning: "move/action" },
-                { glyph: "劲", pinyin: "jìn", meaning: "strong/energy" },
-                { glyph: "劳", pinyin: "láo", meaning: "labor" },
-                { glyph: "男", pinyin: "nán", meaning: "male" },
-                { glyph: "勇", pinyin: "yǒng", meaning: "brave" },
-                { glyph: "努", pinyin: "nǔ", meaning: "exert/strive" },
-                { glyph: "势", pinyin: "shì", meaning: "power/situation" },
-                { glyph: "勒", pinyin: "lè", meaning: "restrain" },
-                { glyph: "劣", pinyin: "liè", meaning: "inferior" },
-              ],
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 19,
+            etymology: "Pictograph of a muscular arm showing strength",
+            frequencyRank: 11,
+            notes:
+              "Also a standalone character meaning 'strength' or 'power'. Found in characters related to effort.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0025",
             glyph: "白",
-            alternate_glyphs: [],
-            name_pinyin: "bái",
+            alternateGlyphs: [],
+            namePinyin: "bái",
+            nameChinese: "白",
             meaning: "white",
-            stroke_count: 5,
-            is_recommended: true,
-            kangxi_index: 25,
-            metadata: {
-              etymology: "Pictograph of a white rice grain",
-              frequency_rank: 45,
-              is_also_character: true,
-              hsk_characters: [
-                { glyph: "白", pinyin: "bái", meaning: "white" },
-                { glyph: "百", pinyin: "bǎi", meaning: "hundred" },
-                { glyph: "的", pinyin: "de", meaning: "possessive particle" },
-                { glyph: "皇", pinyin: "huáng", meaning: "emperor" },
-                { glyph: "泉", pinyin: "quán", meaning: "spring/fountain" },
-                { glyph: "皂", pinyin: "zào", meaning: "soap" },
-                { glyph: "皓", pinyin: "hào", meaning: "bright/white" },
-                { glyph: "皈", pinyin: "guī", meaning: "convert" },
-                { glyph: "帛", pinyin: "bó", meaning: "silk" },
-                { glyph: "皆", pinyin: "jiē", meaning: "all/every" },
-                { glyph: "碧", pinyin: "bì", meaning: "green jade" },
-                { glyph: "魄", pinyin: "pò", meaning: "soul" },
-              ],
-            },
+            strokeCount: 5,
+            isRecommended: true,
+            kangxiIndex: 25,
+            etymology: "Pictograph of a white rice grain",
+            frequencyRank: 45,
+            notes: null,
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0029",
             glyph: "又",
-            alternate_glyphs: [],
-            name_pinyin: "yòu",
-            name_chinese: "又",
+            alternateGlyphs: [],
+            namePinyin: "yòu",
+            nameChinese: "又",
             meaning: "again",
-            stroke_count: 2,
-            is_recommended: true,
-            kangxi_index: 29,
-            metadata: {
-              etymology: "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
-              frequency_rank: 15,
-              notes:
-                "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
-              hsk_characters: [
-                { glyph: "又", pinyin: "yòu", meaning: "again" },
-                { glyph: "友", pinyin: "yǒu", meaning: "friend" },
-                { glyph: "取", pinyin: "qǔ", meaning: "take/obtain" },
-                { glyph: "受", pinyin: "shòu", meaning: "receive" },
-                { glyph: "变", pinyin: "biàn", meaning: "change" },
-                { glyph: "双", pinyin: "shuāng", meaning: "pair/double" },
-                { glyph: "反", pinyin: "fǎn", meaning: "opposite/reverse" },
-                { glyph: "发", pinyin: "fā", meaning: "send/emit" },
-                { glyph: "叛", pinyin: "pàn", meaning: "betray" },
-                { glyph: "叙", pinyin: "xù", meaning: "narrate" },
-                { glyph: "叠", pinyin: "dié", meaning: "stack/fold" },
-              ],
-            },
+            strokeCount: 2,
+            isRecommended: true,
+            kangxiIndex: 29,
+            etymology: "Pictograph of a right hand reaching — extended to mean 'again' or 'also'",
+            frequencyRank: 15,
+            notes:
+              "Also a standalone character meaning 'again'. Found in characters related to hands or repetition.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
           {
             id: "rad_0030",
             glyph: "口",
-            alternate_glyphs: [],
-            name_pinyin: "kǒu",
-            name_chinese: "口",
+            alternateGlyphs: [],
+            namePinyin: "kǒu",
+            nameChinese: "口",
             meaning: "mouth",
-            stroke_count: 3,
-            is_recommended: true,
-            kangxi_index: 30,
-            metadata: {
-              etymology: "Pictograph of an open mouth",
-              frequency_rank: 4,
-              notes:
-                "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
-              is_also_character: true,
-              hsk_characters: [
-                { glyph: "口", pinyin: "kǒu", meaning: "mouth" },
-                { glyph: "吃", pinyin: "chī", meaning: "eat" },
-                { glyph: "喝", pinyin: "hē", meaning: "drink" },
-                { glyph: "唱", pinyin: "chàng", meaning: "sing" },
-                { glyph: "吐", pinyin: "tǔ", meaning: "spit/vomit" },
-                { glyph: "叫", pinyin: "jiào", meaning: "call/shout" },
-                { glyph: "吸", pinyin: "xī", meaning: "inhale" },
-                { glyph: "味", pinyin: "wèi", meaning: "taste/flavor" },
-                { glyph: "告", pinyin: "gào", meaning: "tell/inform" },
-                { glyph: "如", pinyin: "rú", meaning: "like/as" },
-                { glyph: "扣", pinyin: "kòu", meaning: "button/deduct" },
-                { glyph: "召", pinyin: "zhào", meaning: "summon" },
-              ],
-            },
+            strokeCount: 3,
+            isRecommended: true,
+            kangxiIndex: 30,
+            etymology: "Pictograph of an open mouth",
+            frequencyRank: 4,
+            notes:
+              "One of the most common radicals. Found in hundreds of characters related to speech, eating, and sound.",
+            isAlsoCharacter: true,
+            variants: null,
+            hskCharacters: [],
           },
         ]),
       ),
@@ -578,6 +757,54 @@ export const mswHandlers = {
       http.post(`${API_BASE}/v1/mnemonics/${character}`, () =>
         HttpResponse.json({ error: "Generation failed" }, { status: 500 }),
       ),
+  },
+  characters: {
+    /** Returns full character detail for a known glyph */
+    default: (glyph: string) =>
+      http.get(`${API_BASE}/characters/${glyph}`, () => {
+        const body = CHARACTER_DETAIL_BODIES[glyph as keyof typeof CHARACTER_DETAIL_BODIES];
+        if (body) return HttpResponse.json(body, { status: 200 });
+        // Fallback: return minimal data for unknown glyphs
+        return HttpResponse.json(
+          {
+            data: {
+              glyph,
+              traditional: glyph,
+              strokeCount: 0,
+              hskLevel: 0,
+              definition: "",
+              readings: [],
+            },
+          },
+          { status: 200 },
+        );
+      }),
+    /** Never resolves (loading state) */
+    loading: () => http.get(new RegExp(`^${API_BASE}/characters/.+`), () => new Promise(() => {})),
+    /** Returns 500 error */
+    error: () =>
+      http.get(new RegExp(`^${API_BASE}/characters/.+`), () =>
+        HttpResponse.json({ error: "Failed to load character detail" }, { status: 500 }),
+      ),
+    /** Catch-all returns minimal data for any glyph */
+    fallback: http.get(new RegExp(`^${API_BASE}/characters/.+`), ({ params }) => {
+      const glyph = params[0] as string;
+      const body = CHARACTER_DETAIL_BODIES[glyph as keyof typeof CHARACTER_DETAIL_BODIES];
+      if (body) return HttpResponse.json(body, { status: 200 });
+      return HttpResponse.json(
+        {
+          data: {
+            glyph,
+            traditional: glyph,
+            strokeCount: 0,
+            hskLevel: 0,
+            definition: "",
+            readings: [],
+          },
+        },
+        { status: 200 },
+      );
+    }),
   },
   foundations: {
     default: () => [
@@ -984,5 +1211,564 @@ export const mswHandlers = {
         HttpResponse.json({ error: "Failed to load pinyin character map" }, { status: 500 }),
       ),
     ],
+  },
+  readers: {
+    passages: {
+      default: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json(
+            {
+              data: [
+                { id: "p1", title: "你好", hskLevel: 1, knownWordRatio: 95, isBookmarked: true },
+                { id: "p2", title: "我的家", hskLevel: 1, knownWordRatio: 88 },
+                {
+                  id: "p3",
+                  title: "学校生活",
+                  hskLevel: 2,
+                  knownWordRatio: 76,
+                  isBookmarked: true,
+                },
+                { id: "p4", title: "中国的节日", hskLevel: 2, knownWordRatio: 70 },
+                { id: "p5", title: "去旅行", hskLevel: 3, knownWordRatio: 65 },
+                { id: "p6", title: "环境保护", hskLevel: 3, knownWordRatio: 58 },
+                { id: "p7", title: "健康饮食", hskLevel: 4, knownWordRatio: 45 },
+                { id: "p8", title: "经济发展", hskLevel: 4, knownWordRatio: 40 },
+                { id: "p9", title: "科技与创新", hskLevel: 5, knownWordRatio: 28 },
+                { id: "p10", title: "社会学研究", hskLevel: 5, knownWordRatio: 22 },
+                { id: "p11", title: "古典文学", hskLevel: 6, knownWordRatio: 15 },
+                {
+                  id: "p12",
+                  title: "哲学思考",
+                  hskLevel: 6,
+                  knownWordRatio: 10,
+                  isBookmarked: true,
+                },
+              ],
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/readers/passages`, () => new Promise(() => {})),
+      empty: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json({ data: [] }, { status: 200 }),
+        ),
+      error: () =>
+        http.get(`${API_BASE}/readers/passages`, () =>
+          HttpResponse.json({ error: "Failed to load passages" }, { status: 500 }),
+        ),
+    },
+    passageDetail: {
+      default: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, ({ params }) =>
+          HttpResponse.json(
+            {
+              data: {
+                id: params.id,
+                title: "学校生活",
+                hskLevel: 2,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "我是学生。",
+                    pinyin: "Wǒ shì xuéshēng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "是", wordId: "w_002", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "学生",
+                        wordId: "w_003",
+                        hskLevel: 1,
+                        pinyin: "xuéshēng",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我每天去学校。",
+                    pinyin: "Wǒ měi tiān qù xuéxiào.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      {
+                        glyph: "每天",
+                        wordId: "w_004",
+                        hskLevel: 2,
+                        pinyin: "měitiān",
+                        isKnown: false,
+                      },
+                      { glyph: "去", wordId: "w_005", hskLevel: 1, pinyin: "qù", isKnown: true },
+                      {
+                        glyph: "学校",
+                        wordId: "w_006",
+                        hskLevel: 1,
+                        pinyin: "xuéxiào",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 2,
+                    text: "我喜欢学中文。",
+                    pinyin: "Wǒ xǐhuān xué zhōngwén.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      {
+                        glyph: "喜欢",
+                        wordId: "w_007",
+                        hskLevel: 2,
+                        pinyin: "xǐhuān",
+                        isKnown: false,
+                      },
+                      { glyph: "学", wordId: "w_008", hskLevel: 1, pinyin: "xué", isKnown: true },
+                      {
+                        glyph: "中文",
+                        wordId: "w_009",
+                        hskLevel: 1,
+                        pinyin: "zhōngwén",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 3,
+                    text: "我的老师很好。",
+                    pinyin: "Wǒ de lǎoshī hěn hǎo.",
+                    words: [
+                      {
+                        glyph: "我的",
+                        wordId: "w_010",
+                        hskLevel: 1,
+                        pinyin: "wǒ de",
+                        isKnown: true,
+                      },
+                      {
+                        glyph: "老师",
+                        wordId: "w_011",
+                        hskLevel: 1,
+                        pinyin: "lǎoshī",
+                        isKnown: true,
+                      },
+                      { glyph: "很", wordId: "w_012", hskLevel: 1, pinyin: "hěn", isKnown: true },
+                      { glyph: "好", wordId: "w_013", hskLevel: 1, pinyin: "hǎo", isKnown: true },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 4,
+                    text: "我有很多朋友。",
+                    pinyin: "Wǒ yǒu hěn duō péngyǒu.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "有", wordId: "w_014", hskLevel: 1, pinyin: "yǒu", isKnown: true },
+                      {
+                        glyph: "很多",
+                        wordId: "w_015",
+                        hskLevel: 1,
+                        pinyin: "hěn duō",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "朋友",
+                        wordId: "w_016",
+                        hskLevel: 1,
+                        pinyin: "péngyǒu",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk1: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk1",
+                title: "你好",
+                hskLevel: 1,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "你好。",
+                    pinyin: "Nǐ hǎo.",
+                    words: [
+                      {
+                        glyph: "你好",
+                        wordId: "w_hello",
+                        hskLevel: 1,
+                        pinyin: "nǐhǎo",
+                        isKnown: true,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我叫小明。",
+                    pinyin: "Wǒ jiào Xiǎomíng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "叫", wordId: "w_call", hskLevel: 1, pinyin: "jiào", isKnown: true },
+                      {
+                        glyph: "小明",
+                        wordId: "w_xm",
+                        hskLevel: 1,
+                        pinyin: "xiǎomíng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 2,
+                    text: "我是学生。",
+                    pinyin: "Wǒ shì xuéshēng.",
+                    words: [
+                      { glyph: "我", wordId: "w_001", hskLevel: 1, pinyin: "wǒ", isKnown: true },
+                      { glyph: "是", wordId: "w_is", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "学生",
+                        wordId: "w_stu",
+                        hskLevel: 1,
+                        pinyin: "xuéshēng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk4: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk4",
+                title: "环境保护",
+                hskLevel: 4,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "环境保护是现代社会的重要议题。",
+                    pinyin: "Huánjìng bǎohù shì xiàndài shèhuì de zhòngyào yìtí.",
+                    words: [
+                      {
+                        glyph: "环境",
+                        wordId: "w_env",
+                        hskLevel: 4,
+                        pinyin: "huánjìng",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "保护",
+                        wordId: "w_protect",
+                        hskLevel: 3,
+                        pinyin: "bǎohù",
+                        isKnown: false,
+                      },
+                      { glyph: "是", wordId: "w_is", hskLevel: 1, pinyin: "shì", isKnown: true },
+                      {
+                        glyph: "现代",
+                        wordId: "w_modern",
+                        hskLevel: 4,
+                        pinyin: "xiàndài",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "社会",
+                        wordId: "w_soc",
+                        hskLevel: 3,
+                        pinyin: "shèhuì",
+                        isKnown: false,
+                      },
+                      { glyph: "的", wordId: "w_de", hskLevel: 1, pinyin: "de", isKnown: true },
+                      {
+                        glyph: "重要",
+                        wordId: "w_imp",
+                        hskLevel: 3,
+                        pinyin: "zhòngyào",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "议题",
+                        wordId: "w_topic",
+                        hskLevel: 5,
+                        pinyin: "yìtí",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "我们应该减少使用塑料袋。",
+                    pinyin: "Wǒmen yīnggāi jiǎnshǎo shǐyòng sùliàodài.",
+                    words: [
+                      {
+                        glyph: "我们",
+                        wordId: "w_we",
+                        hskLevel: 1,
+                        pinyin: "wǒmen",
+                        isKnown: true,
+                      },
+                      {
+                        glyph: "应该",
+                        wordId: "w_should",
+                        hskLevel: 3,
+                        pinyin: "yīnggāi",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "减少",
+                        wordId: "w_reduce",
+                        hskLevel: 4,
+                        pinyin: "jiǎnshǎo",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "使用",
+                        wordId: "w_use",
+                        hskLevel: 3,
+                        pinyin: "shǐyòng",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "塑料",
+                        wordId: "w_plastic",
+                        hskLevel: 4,
+                        pinyin: "sùliào",
+                        isKnown: false,
+                      },
+                      { glyph: "袋", wordId: "w_bag", hskLevel: 5, pinyin: "dài", isKnown: false },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      hsk6: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json(
+            {
+              data: {
+                id: "p-hsk6",
+                title: "古典文学与现代思想",
+                hskLevel: 6,
+                sentences: [
+                  {
+                    index: 0,
+                    text: "古典文学承载着丰富的哲学思想。",
+                    pinyin: "Gǔdiǎn wénxué chéngzài zhe fēngfù de zhéxué sīxiǎng.",
+                    words: [
+                      {
+                        glyph: "古典",
+                        wordId: "w_classic",
+                        hskLevel: 5,
+                        pinyin: "gǔdiǎn",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "文学",
+                        wordId: "w_lit",
+                        hskLevel: 4,
+                        pinyin: "wénxué",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "承载",
+                        wordId: "w_carry",
+                        hskLevel: 6,
+                        pinyin: "chéngzài",
+                        isKnown: false,
+                      },
+                      { glyph: "着", wordId: "w_zhe", hskLevel: 3, pinyin: "zhe", isKnown: false },
+                      {
+                        glyph: "丰富",
+                        wordId: "w_rich",
+                        hskLevel: 3,
+                        pinyin: "fēngfù",
+                        isKnown: false,
+                      },
+                      { glyph: "的", wordId: "w_de", hskLevel: 1, pinyin: "de", isKnown: true },
+                      {
+                        glyph: "哲学",
+                        wordId: "w_phil",
+                        hskLevel: 5,
+                        pinyin: "zhéxué",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "思想",
+                        wordId: "w_thought",
+                        hskLevel: 4,
+                        pinyin: "sīxiǎng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                  {
+                    index: 1,
+                    text: "这些作品对当代社会仍有深远影响。",
+                    pinyin: "Zhèxiē zuòpǐn duì dāngdài shèhuì réng yǒu shēnyuǎn yǐngxiǎng.",
+                    words: [
+                      {
+                        glyph: "这些",
+                        wordId: "w_these",
+                        hskLevel: 2,
+                        pinyin: "zhèxiē",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "作品",
+                        wordId: "w_work",
+                        hskLevel: 4,
+                        pinyin: "zuòpǐn",
+                        isKnown: false,
+                      },
+                      { glyph: "对", wordId: "w_to", hskLevel: 2, pinyin: "duì", isKnown: true },
+                      {
+                        glyph: "当代",
+                        wordId: "w_contemp",
+                        hskLevel: 5,
+                        pinyin: "dāngdài",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "社会",
+                        wordId: "w_soc",
+                        hskLevel: 3,
+                        pinyin: "shèhuì",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "仍",
+                        wordId: "w_still",
+                        hskLevel: 6,
+                        pinyin: "réng",
+                        isKnown: false,
+                      },
+                      { glyph: "有", wordId: "w_have", hskLevel: 1, pinyin: "yǒu", isKnown: true },
+                      {
+                        glyph: "深远",
+                        wordId: "w_deep",
+                        hskLevel: 6,
+                        pinyin: "shēnyuǎn",
+                        isKnown: false,
+                      },
+                      {
+                        glyph: "影响",
+                        wordId: "w_infl",
+                        hskLevel: 3,
+                        pinyin: "yǐngxiǎng",
+                        isKnown: false,
+                      },
+                      { glyph: "。", wordId: null, hskLevel: null, pinyin: null, isKnown: true },
+                    ],
+                  },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/readers/passages/:id`, () => new Promise(() => {})),
+      error: () =>
+        http.get(`${API_BASE}/readers/passages/:id`, () =>
+          HttpResponse.json({ error: "Failed to load passage" }, { status: 500 }),
+        ),
+    },
+    passageAudio: {
+      default: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () =>
+          HttpResponse.json({
+            data: {
+              audioUrls: {
+                0: { url: "https://storage.googleapis.com/example/tts/hash/0.mp3", source: "gcs" },
+                1: { url: "https://storage.googleapis.com/example/tts/hash/1.mp3", source: "gcs" },
+                2: { url: "", source: "failed" },
+                3: {
+                  url: "https://storage.googleapis.com/example/tts/hash/3.mp3",
+                  source: "ondemand",
+                },
+                4: { url: "https://storage.googleapis.com/example/tts/hash/4.mp3", source: "gcs" },
+              },
+            },
+          }),
+        ),
+      loading: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () => new Promise(() => {})),
+      error: () =>
+        http.post(`${API_BASE}/readers/passages/:id/audio`, () =>
+          HttpResponse.json({ error: "Failed to load audio" }, { status: 500 }),
+        ),
+    },
+    wordDetail: {
+      default: () =>
+        http.get(`${API_BASE}/words/:word`, ({ params }) =>
+          HttpResponse.json(
+            {
+              data: {
+                glyph: params.word,
+                pinyin: "xǐhuān",
+                definitions: ["to like; to be fond of", "to love; to be keen on"],
+                hskLevel: 2,
+                constituentCharacters: [
+                  { glyph: "喜", pinyin: "xǐ", meaning: "happy; like" },
+                  { glyph: "欢", pinyin: "huān", meaning: "joy; happy" },
+                ],
+              },
+            },
+            { status: 200 },
+          ),
+        ),
+      loading: () => http.get(`${API_BASE}/words/:word`, () => new Promise(() => {})),
+      error: () =>
+        http.get(`${API_BASE}/words/:word`, () =>
+          HttpResponse.json({ error: "Failed to load word" }, { status: 500 }),
+        ),
+      notFound: () =>
+        http.get(`${API_BASE}/words/:word`, () => HttpResponse.json(null, { status: 404 })),
+    },
+  },
+  phoneticClusters: {
+    /** Returns mock phonetic cluster families for Storybook */
+    default: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json(
+          {
+            data: PHONETIC_CLUSTER_FAMILIES,
+          },
+          { status: 200 },
+        ),
+      ),
+    /** Never resolves (loading state) */
+    loading: () => http.get(`${API_BASE}/phonetic-clusters`, () => new Promise(() => {})),
+    /** Returns empty array (empty state) */
+    empty: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json({ data: [] }, { status: 200 }),
+      ),
+    /** Returns 500 error */
+    error: () =>
+      http.get(`${API_BASE}/phonetic-clusters`, () =>
+        HttpResponse.json({ error: "Failed to load phonetic clusters" }, { status: 500 }),
+      ),
   },
 };

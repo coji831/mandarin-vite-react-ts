@@ -61,13 +61,15 @@ res.status(400).json({
 
 Use SCREAMING_SNAKE_CASE error codes matching the action:
 
-| Code               | When                           |
-| ------------------ | ------------------------------ |
-| `LOAD_ERROR`       | Data loading failures          |
-| `VALIDATION_ERROR` | Input validation failures      |
-| `NOT_FOUND`        | Resource not found             |
-| `AUTH_ERROR`       | Authentication / authorization |
-| `INTERNAL_ERROR`   | Unexpected server errors       |
+| Code               | When                               |
+| ------------------ | ---------------------------------- |
+| `LOAD_ERROR`       | Data loading failures              |
+| `VALIDATION_ERROR` | Input validation failures          |
+| `NOT_FOUND`        | Resource not found                 |
+| `AUTH_ERROR`       | Authentication / authorization     |
+| `RATE_LIMIT`       | Rate limit exceeded                |
+| `GENERATION_ERROR` | External service generation failed |
+| `INTERNAL_ERROR`   | Unexpected server errors           |
 
 ## Reasoning
 

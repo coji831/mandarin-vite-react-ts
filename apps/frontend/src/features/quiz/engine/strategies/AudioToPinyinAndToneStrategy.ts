@@ -7,10 +7,14 @@
  * This replaces the old split AudioToPinyin + AudioToTone strategies.
  *
  * Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS
+ *
+ * Story 21.16: Sandhi-aware scoring — accepts sandhi-compliant tones
+ * (e.g., 3→2 in 3-3 sandhi) without penalizing the user.
  */
 
 import type { QuizStrategy, QuizQuestion, AnswerResult } from "../../types";
 import { quizService } from "../../services/quizService";
+import { isSandhiAcceptable } from "@mandarin/shared-utils";
 import { TONE_DESCRIPTIONS } from "../constants";
 
 export const audioToPinyinAndToneStrategy: QuizStrategy = {
@@ -25,13 +29,24 @@ export const audioToPinyinAndToneStrategy: QuizStrategy = {
 
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult {
     const pinyinCorrect = pinyin.trim().toLowerCase() === question.correctPinyin.toLowerCase();
-    const toneCorrect = tone === question.correctTone;
+
+    // Sandhi-aware tone evaluation: accept sandhi-compliant tones
+    const sandhiAcceptable = isSandhiAcceptable(
+      question.correctTone,
+      tone,
+      question.isSandhiQuestion,
+      question.sandhiRule,
+    );
+    const toneCorrect = tone === question.correctTone || sandhiAcceptable;
     const correct = pinyinCorrect && toneCorrect;
     const toneDescription = TONE_DESCRIPTIONS[question.correctTone] ?? "unknown";
 
     let feedback: string;
     if (correct) {
-      feedback = `Correct! "${question.displayPinyin ?? question.correctPinyin}" (${toneDescription}) — perfect pinyin and tone.`;
+      const sandhiNote = sandhiAcceptable
+        ? ` (sandhi: tone ${question.correctTone}→${tone} accepted)`
+        : "";
+      feedback = `Correct! "${question.displayPinyin ?? question.correctPinyin}" (${toneDescription}) — perfect pinyin and tone.${sandhiNote}`;
     } else {
       const parts: string[] = [];
       if (!pinyinCorrect) parts.push("pinyin");

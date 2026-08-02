@@ -1,6 +1,6 @@
 ﻿# Branch Strategy and Git Workflow
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** 2026-08-02  
 **Purpose:** Branch management strategy, commit conventions (Conventional Commits), and PR workflow  
 **Audience:** All developers
 
@@ -72,47 +72,24 @@ refactor(story-3-1): extract progress logic to custom hook
 
 ### PR Naming Convention
 
-```
-[EPIC-X] Story X.Y: Brief description
-```
+- **Story-level:** `[EPIC-X] Story X.Y: Brief description`
+  - Example: `[EPIC-4] Story 4.2: Create Layout Component with Outlet`
+- **Epic-level:** `EPIC-X: <short epic summary>`
+  - Example: `EPIC-4: Create Layout Component with Outlet`
 
-Example: `[EPIC-4] Story 4.2: Create Layout Component with Outlet`
+> Conventional Commits `<type>(<scope>): <summary>` applies to **commits**, not the PR title.
 
 ### PR Description Template
 
-```markdown
-## Description
-
-Implements Story X.Y: [Story Title]
-
-## Changes
-
-- List of key changes
-- Components added/modified
-- APIs integrated
-
-## Testing
-
-- How was this tested?
-- Any special setup needed?
-
-## Screenshots
-
-[If applicable]
-
-## Related Issues
-
-Closes #XX
-Related to #YY
-```
+Use the canonical template at `.github/PULL_REQUEST_TEMPLATE.md` (auto-loaded for PRs).
 
 ### PR Checklist
 
-- [ ] Code follows project conventions
-- [ ] Documentation is updated
-- [ ] Tests are added/updated
-- [ ] All CI checks pass
-- [ ] Story status is updated in both business requirements and implementation docs
+The PR checklist lives in the canonical template at `.github/PULL_REQUEST_TEMPLATE.md` — its sections are the source of truth:
+
+- **Quality Gates / Testing** — Tier 1 (per-change / pre-commit) and Tier 2 (pre-merge / story-complete / epic-close)
+- **Doc Truth-Check** — docs match shipped code before merge
+- **Merge-Readiness** — review feedback addressed, CI passes, PR number + `Status`/`PR`/`Merge Date`/`Key Commit` backfilled into BR/impl docs (same commit)
 
 ## Branch Naming Conventions
 
@@ -140,9 +117,63 @@ git commit -m "fix(story-5-1): correct form validation error handling"
 git commit -m "refactor(story-5-1): extract form validation to custom hook"
 ```
 
+## Squash / Reset / Reflog Recovery
+
+**When Adopted:** Epic 21 (git history surgery during the epic)
+
+### `git reset` modes
+
+| Command             | Moves HEAD | Resets index (staging) |  Touches worktree  |
+| ------------------- | :--------: | :--------------------: | :----------------: |
+| `git reset --soft`  |     ✅     |           ❌           |         ❌         |
+| `git reset` (mixed) |     ✅     |           ✅           |         ❌         |
+| `git reset --hard`  |     ✅     |           ✅           | ✅ (⚠ destructive) |
+
+- `git reset --soft <ref>` moves HEAD but **keeps the index and worktree** — the staged diff is exactly the combined changes of everything since `<ref>`. This is the safe way to squash multiple commits into one.
+- `git reset` (mixed, the default) additionally **unstages** — files revert to "modified, not staged" while worktree content is untouched.
+- `git reset --hard` also discards worktree changes — only use when you are certain.
+
+### Squash-to-one via soft reset
+
+```bash
+# Combine the last N commits into a single commit (staged diff = all their changes)
+git reset --soft HEAD~N
+git add -A
+git commit -m "feat(epic-N): ..."
+```
+
+### Verify state with actual git commands — never reconstruct from `.git`
+
+After any reset, confirm the real state with git itself instead of reconstructing from `.git` internals:
+
+```bash
+git status --porcelain      # exact staged/unstaged/untracked file list
+# Staged file count:
+git diff --cached --name-only
+# How many commits are actually on the branch:
+git rev-list --count HEAD
+# Current HEAD commit:
+git log -1 --oneline
+```
+
+### Anything reset away is recoverable
+
+- **`git reflog`** — the full history of where HEAD pointed. Every commit you reset away is still reachable by its SHA.
+- **`ORIG_HEAD`** — git records the previous HEAD during `reset`/`merge`/`rebase`, so `git reset --hard ORIG_HEAD` restores the pre-reset state.
+- Only `git gc` (prune) permanently removes unreachable commits — until then, a reset-away commit is not lost.
+
+### Common recovery
+
+```bash
+git reflog                  # find the SHA you need
+git reset --hard <sha>      # restore branch tip to that commit
+# Or restore a single file from a reflog commit:
+git checkout <sha> -- path/to/file
+```
+
 ## Resources
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Feature Flag Best Practices](https://martinfowler.com/articles/feature-toggles.html)
-- [Project Workflow Guide](./workflow.md)
-- [AI Workflow Commands](./structured-ai-prompts.md)
+- [Project Workflow Guide](../operations/workflow.md)
+- [AI Workflow Commands](../../automation/structured-ai-prompts.md)

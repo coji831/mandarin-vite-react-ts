@@ -23,6 +23,30 @@ export interface QuizSession {
   attemptId: string | null; // Backend attempt ID for answer persistence
   completionResult: GateQuizResult | null; // Backend completion result after finalizing
   strategyConfig: QuizStrategyConfig | null; // Config fetched from backend at init
+
+  // ─── Hint system (Story 21.18) ─────────────────────────────────────
+  /** Number of hints remaining for the session (starts at 3) */
+  hintsRemaining: number;
+  /** Current question's phonetic hint — set after wrong answer in IME */
+  currentPhoneticHint: PhoneticHintState | null;
+  /** Whether the user has shown the radical hint for the current question */
+  showRadicalHint: boolean;
+  /** Accumulated max score penalty from radical hint usage */
+  maxScorePenalty: number;
+  /** Per-classification score tracking */
+  scoreByType: Record<string, { correct: number; total: number }>;
+}
+
+/** State for a phonetic hint (what to display and whether data was found) */
+export interface PhoneticHintState {
+  /** The phonetic component data, or null if the character has no phonetic component */
+  data: {
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+  } | null;
+  /** Whether the character has a phonetic component (false = no component found) */
+  hasPhoneticComponent: boolean;
 }
 
 /** Initial state factory */
@@ -39,5 +63,10 @@ export function createInitialSession(strategyType: StrategyType): QuizSession {
     attemptId: null,
     completionResult: null,
     strategyConfig: null,
+    hintsRemaining: 3,
+    currentPhoneticHint: null,
+    showRadicalHint: false,
+    maxScorePenalty: 0,
+    scoreByType: {},
   };
 }

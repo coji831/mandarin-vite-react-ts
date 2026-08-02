@@ -23,7 +23,7 @@ function ProgressPage() {
           <p className="progress-page__card-text text-tertiary">
             Your current learning streak and freeze currency will be displayed here.
           </p>
-          <div className="alert-warning p-md" style={{ marginTop: "var(--space-md)" }}>
+          <div className="alert-warning p-md mt-md">
             <p className="progress-page__xp-badge m-0">
               Backend integration: Story 15.3 (Completed)
             </p>

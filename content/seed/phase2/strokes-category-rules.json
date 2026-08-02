@@ -1,0 +1,47 @@
+[
+  {
+    "categoryId": "dian",
+    "ruleId": "rule-1",
+    "priority": 0
+  },
+  {
+    "categoryId": "dian",
+    "ruleId": "rule-5",
+    "priority": 0
+  },
+  {
+    "categoryId": "heng",
+    "ruleId": "rule-1",
+    "priority": 0
+  },
+  {
+    "categoryId": "heng",
+    "ruleId": "rule-3",
+    "priority": 0
+  },
+  {
+    "categoryId": "shu",
+    "ruleId": "rule-2",
+    "priority": 0
+  },
+  {
+    "categoryId": "shu",
+    "ruleId": "rule-3",
+    "priority": 0
+  },
+  {
+    "categoryId": "pie",
+    "ruleId": "rule-1",
+    "priority": 0
+  },
+  {
+    "categoryId": "pie",
+    "ruleId": "rule-2",
+    "priority": 0
+  },
+  {
+    "categoryId": "zhe",
+    "ruleId": "rule-4",
+    "priority": 0
+  }
+]

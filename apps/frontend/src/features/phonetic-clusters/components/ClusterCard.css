@@ -1,0 +1,27 @@
+/**
+ * @file components/ClusterCard.css
+ * @description Styles for the ClusterCard component
+ * Story 21.6: Phonetic Clusters
+ */
+
+.cluster-card {
+  gap: 0;
+}
+
+.cluster-card:hover {
+  /* :hover pseudo — can't use className utility */
+  border-color: var(--color-primary-border);
+  /* :hover pseudo — paired with border-color above */
+  box-shadow: var(--shadow-sm);
+}
+
+.cluster-card__glyph {
+  /* needs shrink-0 within flex header layout */
+  flex-shrink: 0;
+}
+
+/* ─── Collapsible toggle header (VisFix W6a) ─────────────────────── */
+
+.cluster-card__toggle:hover {
+  background: var(--color-primary-bg-light); /* :hover pseudo — can't use className utility */
+}

@@ -154,25 +154,17 @@ describe("axiosClient", () => {
       }
     });
 
-    it("should log errors to console", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error");
+    it("should not log to console (errors are normalized, not logged)", async () => {
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       mock.onGet("/error").reply(500, { message: "Server error" });
 
       try {
         await apiClient.get("/error");
       } catch {
-        // Expected
+        // Expected — the interceptor rejects with a normalized error.
       }
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[apiClient] Request failed:",
-        expect.objectContaining({
-          url: "/error",
-          method: "GET",
-          status: 500,
-          message: "Server error",
-        }),
-      );
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -306,6 +298,24 @@ describe("axiosClient", () => {
         expect(normalized.code).toBe("ECONNABORTED");
         expect(normalized.message).toContain("timeout");
       }
+    });
+  });
+
+  describe("Network Retry Opt-Out (_skipRetry)", () => {
+    it("should NOT retry network errors when _skipRetry is set (fail-fast)", async () => {
+      mock.onGet("/no-retry").networkError();
+
+      try {
+        await apiClient.get("/no-retry", { _skipRetry: true });
+        expect.fail("Should have thrown error");
+      } catch (error) {
+        const normalized = error as NormalizedError;
+        expect(normalized.code).toBe("ERR_NETWORK");
+      }
+
+      // Exactly one attempt — no exponential-backoff retry chain
+      const attempts = mock.history.get.filter((c) => c.url === "/no-retry").length;
+      expect(attempts).toBe(1);
     });
   });
 });

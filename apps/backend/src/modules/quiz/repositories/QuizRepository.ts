@@ -10,12 +10,18 @@ export class QuizRepository {
     userId,
     quizType,
     phase,
+    passageId,
+    metadata,
   }: {
     userId: string;
     quizType: string;
     phase?: number | null;
+    passageId?: string | null;
+    metadata?: unknown;
   }): Promise<QuizAttempt> {
-    return prisma.quizAttempt.create({ data: { userId, quizType, phase } });
+    return prisma.quizAttempt.create({
+      data: { userId, quizType, phase, passageId, metadata: metadata as Prisma.InputJsonValue },
+    });
   }
 
   async findQuizAttemptById(id: string): Promise<QuizAttempt | null> {
@@ -46,6 +52,22 @@ export class QuizRepository {
     return prisma.quizAttemptAnswer.findMany({
       where: { attemptId },
       orderBy: { questionIndex: "asc" },
+    });
+  }
+
+  /**
+   * Find the latest quiz attempt for a user by quiz type.
+   * Returns the most recent attempt (ordered by createdAt desc).
+   * @param userId - User ID
+   * @param quizType - Quiz type string (e.g., "comprehension", "qualification")
+   */
+  async findQuizAttemptByUserAndType(
+    userId: string,
+    quizType: string,
+  ): Promise<QuizAttempt | null> {
+    return prisma.quizAttempt.findFirst({
+      where: { userId, quizType },
+      orderBy: { createdAt: "desc" },
     });
   }
 }

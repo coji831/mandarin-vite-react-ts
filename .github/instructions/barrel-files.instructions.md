@@ -30,13 +30,6 @@ export function helper() { ... }
 
 ## Import Rule (Consumers)
 
-Files outside the barrel directory MUST import shared components through the barrel, NOT through direct file paths. The ESLint `no-restricted-imports` rule enforces this.
----
-
-**See also:** `frontend-api-client.instructions.md` • `testing-standards.instructions.md`
-
-## Import Rule (Consumers)
-
 Files outside the barrel directory MUST import shared components through the barrel, NOT through direct file paths.
 
 ### ✅ DO
@@ -63,3 +56,7 @@ Barrel files exist as a single entry point for a module. Bypassing them with dir
 2. Makes refactoring harder (moving a component requires updating all import paths)
 3. Creates inconsistency — some imports use the barrel, others don't
 4. Bypasses any lint rules or transforms configured on the barrel
+
+---
+
+**See also:** `frontend-api-client.instructions.md` • `testing-standards.instructions.md`

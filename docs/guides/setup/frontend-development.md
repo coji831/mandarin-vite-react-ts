@@ -1,6 +1,6 @@
 ﻿# Frontend Development Guide
 
-**Last Updated:** June 12, 2026  
+**Last Updated:** 2026-08-02  
 **Purpose:** Comprehensive guide for frontend development with React, TypeScript, and Vite  
 **Audience:** Frontend developers starting work in the `apps/frontend/` directory
 
@@ -29,20 +29,31 @@ npm run dev                    # Start Vite dev server + backend
 apps/frontend/
 â”œâ”€â”€ src/
 â”‚   â”œâ”€â”€ features/              # Feature modules (primary organization)
-â”‚   â”‚   â”œâ”€â”€ auth/              # LoginForm, RegisterForm, AuthContext, ProtectedRoute
-â”‚   â”‚   â”œâ”€â”€ dashboard/         # LeechWidget, leechService
-â”‚   â”‚   â”œâ”€â”€ gamification/      # StreakCounter, XPProgressBar, BadgeDisplay, etc.
-â”‚   â”‚   â”œâ”€â”€ quiz/              # QuizContext, ProgressContext, reducers, hooks, services
-â”‚   â”‚   â””â”€â”€ vocabulary/        # FlashCard, Sidebar, WordDetails, audioService, etc.
-â”‚   â”œâ”€â”€ pages/                 # Route orchestrators (DashboardPage, FlashCardPage, etc.)
-â”‚   â”œâ”€â”€ router/                # Router.tsx, LearnRoutes.tsx
+â”‚   â”‚   â”œâ”€â”€ auth/              # LoginForm, RegisterForm, ProtectedRoute, AuthContext
+â”‚   â”‚   â”œâ”€â”€ character-hub/     # CharacterDetailHub slide-up overlay + mnemonicStore
+â”‚   â”‚   â”œâ”€â”€ dashboard/         # DashboardGuest, DashboardSections, DashboardWelcome
+â”‚   â”‚   â”œâ”€â”€ foundations/       # Pinyin/tones/strokes reference pages, foundationsService
+â”‚   â”‚   â”œâ”€â”€ lexical-hub/       # LexicalHub overlay (entityHubRegistry)
+â”‚   â”‚   â”œâ”€â”€ phonetic-clusters/ # Phonetic cluster reference pages
+â”‚   â”‚   â”œâ”€â”€ quiz/              # Quiz modes/strategies (engine/), quizSessionStore, hooks
+â”‚   â”‚   â”œâ”€â”€ radicals/          # Radical browser, Radical Detail Card, IME simulator quiz
+â”‚   â”‚   â”œâ”€â”€ readers/           # Graded reader pages, readingStore
+â”‚   â”‚   â”œâ”€â”€ review/            # SRS review queue (ReviewCard, ReviewPromptCard, reviewService)
+â”‚   â”‚   â””â”€â”€ word-hub/          # WordHub, DefinitionList, MeasureWordSection
+â”‚   â”œâ”€â”€ pages/                 # Route orchestrators (DashboardPage, LoginPage, ProgressPage, RegisterPage, feature pages)
+â”‚   â”œâ”€â”€ router/                # Router.tsx, LearnRoutes.tsx, PracticesRoutes.tsx
 â”‚   â”œâ”€â”€ shared/
 â”‚   â”‚   â”œâ”€â”€ api/               # axiosClient (aliased as `services`)
 â”‚   â”‚   â”œâ”€â”€ components/        # Button, Input, ToggleSwitch, LoadingScreen, etc.
 â”‚   â”‚   â”œâ”€â”€ config/            # api.ts (API_CONFIG)
 â”‚   â”‚   â”œâ”€â”€ constants/         # paths.ts, toneMap.ts
-â”‚   â”‚   â””â”€â”€ layouts/           # AppLayout, LearnLayout, Root
-â”‚   â”œâ”€â”€ utils/                 # Utilities (csvLoader, formatters)
+â”‚   â”‚   â”œâ”€â”€ hooks/             # usePhaseGate, useReview, useAudioPlayback, usePageTitle
+â”‚   â”‚   â”œâ”€â”€ hub-entry/         # hubEntryPoint
+â”‚   â”‚   â”œâ”€â”€ layouts/           # AppLayout, LearnLayout
+â”‚   â”‚   â”œâ”€â”€ lib/               # audioEngine, browserTTS
+â”‚   â”‚   â”œâ”€â”€ services/          # phaseGateService, mockContentSource, audio/
+â”‚   â”‚   â”œâ”€â”€ store/             # userStore, uiStore, hubStore
+â”‚   â”‚   â””â”€â”€ types/             # shared type definitions (hub.ts)
 â”‚   â”œâ”€â”€ App.tsx                # Root component
 â”‚   â”œâ”€â”€ main.tsx               # Entry point
 â”‚   â””â”€â”€ setupTests.ts          # Test configuration
@@ -142,6 +153,34 @@ VITE_API_URL=http://localhost:3001  # Backend URL (dev)
 **Production (Vercel):**
 
 - Set `VITE_API_URL` to Railway backend URL in Vercel dashboard
+
+---
+
+## Monorepo Dependency Discipline
+
+**When Adopted:** Epic 21 (duplicate `@types` majors breaking `tsc -b`)
+
+In a workspaces monorepo, one package depending on a different major of `@types/react` / `@types/react-dom` than another silently breaks `tsc -b` (the project-references build) with duplicate-symbol errors. Keep **one version** of every shared dependency.
+
+### Prefer explicit root devDependencies over `overrides`
+
+- The `overrides` hammer (forcing one version repo-wide) is a blunt instrument. In Epic 21 it was applied to force React 19 types — and turned out to be **redundant**, because every peer requester already accepted React 19.
+- Current state (root `package.json`): `overrides` contains only `uuid`; the desired majors are declared explicitly as root `devDependencies` (`@types/react` / `@types/react-dom` at `^19.0.0`, matching `react` / `react-dom` at `^19.1.0` in `apps/frontend`).
+- Add the explicit dependency at the desired major first; only reach for `overrides` when a transitive peer genuinely cannot accept that major.
+
+### Diagnose before you force
+
+```bash
+npm ls @types/react            # where does each version come from?
+npm explain @types/react-dom   # why is a package pulling this version?
+npm ls react                   # confirm a single hoisted version
+```
+
+### Rules
+
+- One version of `@types/*`, `react`, and `react-dom` across all workspaces.
+- Declare shared deps at the root `devDependencies` (single source of truth).
+- When a major bump breaks `tsc -b`, check `npm ls` for the conflicting requester before adding `overrides` — the fix is usually an explicit root dependency.
 
 ---
 

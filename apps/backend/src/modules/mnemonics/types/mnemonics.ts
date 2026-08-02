@@ -86,6 +86,7 @@ export interface MnemonicStoryResponse {
   radicalIds: string[];
   isEdited: boolean;
   isPictograph: boolean;
+  classification?: string | null;
   createdAt: string;
   updatedAt: string;
 }

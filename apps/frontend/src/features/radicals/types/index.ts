@@ -6,4 +6,4 @@
  * Only re-exports — no inline definitions.
  */
 
-export type { RadicalData, RadicalFilter, RadicalsIndex } from "./radicals";
+export type { RadicalData, RadicalApiItem, RadicalFilter, RadicalsIndex } from "./radicals";

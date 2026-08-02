@@ -1,0 +1,52 @@
+/**
+ * @file components/PhoneticClustersContent.css
+ * @description Styles for PhoneticClustersContent component
+ * Story 21.6: Phonetic Clusters
+ */
+
+.phonetic-clusters-content {
+  /* w-full ensures full-width in flex/grid parent layouts */
+  width: 100%;
+}
+
+.phonetic-clusters-content__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.phonetic-clusters-content__empty {
+  min-height: 240px;
+}
+
+/* ─── Skeleton Loading ─────────────────────────────────────────────── */
+/* Skeleton CSS — custom dimensions that differ from standard utilities */
+.cluster-card-skeleton {
+  gap: 0;
+}
+
+.cluster-card-skeleton__header {
+  width: 40%;
+  height: 40px;
+  /* custom skeleton spacing, not a standard utility */
+  margin-bottom: var(--space-md);
+  /* custom skeleton pill shape, not standard radius */
+  border-radius: var(--radius-md);
+}
+
+.cluster-card-skeleton__line {
+  height: 14px;
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.cluster-card-skeleton__line-narrow {
+  width: 50%;
+}
+
+.cluster-card-skeleton__chip {
+  width: 64px;
+  height: 52px;
+  /* custom skeleton chip shape, not standard radius */
+  border-radius: var(--radius-md);
+}

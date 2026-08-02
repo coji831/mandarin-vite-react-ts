@@ -11,11 +11,15 @@
  *   const { playTurnAudio, isPlaying, isLoading, error, pauseAudio } = useAudioPlayback();
  *
  * See also: AudioService, ConversationTurns
+ *
+ * Phase 3: Uses shared AudioEngine and BrowserTTS classes instead of inline implementations.
  */
 import { useRef, useState } from "react";
 
 import { API_CONFIG } from "config";
 import { AudioService } from "../services/audio";
+import { AudioEngine } from "../lib/audioEngine";
+import { BrowserTTS } from "../lib/browserTTS";
 import type { WordAudio, WordAudioRequest } from "../services/audio/types";
 
 export function useAudioPlayback() {
@@ -24,7 +28,10 @@ export function useAudioPlayback() {
   const [currentTurn, setCurrentTurn] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Stable class instances (not hooks — plain classes)
+  const audioEngineRef = useRef<AudioEngine>(new AudioEngine());
+  const browserTTSRef = useRef<BrowserTTS>(new BrowserTTS());
 
   // Function to play audio using browser TTS as fallback
   function playBrowserTTS(text: string) {
@@ -32,33 +39,16 @@ export function useAudioPlayback() {
       setError("No text provided for browser TTS.");
       return;
     }
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const utter = new window.SpeechSynthesisUtterance(text);
-      utter.lang = "zh-CN";
-      // Pick a zh-CN voice explicitly for better pronunciation quality
-      const voices = window.speechSynthesis.getVoices();
-      const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
-      if (zhVoice) utter.voice = zhVoice;
-      window.speechSynthesis.speak(utter);
+    browserTTSRef.current.speak(text, 1, "zh-CN").then(() => {
       setError(null);
       setIsPlaying(false);
-    } else {
-      setError("Browser TTS not supported.");
-    }
+    });
   }
 
   // Function to play audio from backend URL
   async function playBackendAudio(audioUrl: string) {
-    // Stop any existing audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    audioRef.current = new window.Audio();
-    audioRef.current.src = audioUrl;
-    audioRef.current.load();
-    await audioRef.current.play();
-    audioRef.current.onended = () => setIsPlaying(false);
+    await audioEngineRef.current.playUrl(audioUrl, 1);
+    setIsPlaying(false);
   }
 
   // Generalized function to fetch and play audio with fallback
@@ -160,9 +150,7 @@ export function useAudioPlayback() {
   // General pause function
   function pauseAudio() {
     setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
+    audioEngineRef.current.stop();
   }
 
   return {

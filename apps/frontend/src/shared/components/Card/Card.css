@@ -20,8 +20,7 @@
   position: absolute;
   top: var(--space-xs);
   right: var(--space-xs);
-  /* background migrated to bg-primary-bg utility in Card.tsx */
-  color: var(--color-primary-light);
+  /* Pill styling (bg/font/radius) + color now come from the shared Badge (variant primary). */
 }
 
 .card__lock-badge {

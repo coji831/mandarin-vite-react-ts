@@ -3,16 +3,14 @@
  * Review business logic — fetches items from multiple sources,
  * records SRS ratings, and computes next review dates.
  *
- * Data sources (Content Registry):
- *   - Tones: content/tones/tn_*.json
- *   - Pinyin combos: PinyinCombination (Prisma junction table)
+ * Data sources (all-in-DB):
+ *   - Tones: Tone table
+ *   - Radicals: Radical table
+ *   - Pinyin combos: PinyinSyllable (Prisma junction table)
  */
+import type { Tone } from "@prisma/client";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import {
-  readContentDir,
-  stripToneMarks,
-  shuffleArray,
-} from "../../../shared/utils/contentUtils.js";
+import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
 import type {
   ContentItem,
   IReviewRepository,
@@ -29,16 +27,16 @@ const MAX_INTERVAL = 60;
 // ── Extracted item-builders ───────────────────────────────────────────
 
 /**
- * Build a review item from a tone content object + SRS state.
+ * Build a review item from a tone row (Tone table) + SRS state.
  * Returns null if the item is filtered out by the source filter.
- * @param tone - Tone data from content/tones/
+ * @param tone - Tone data from the Tone table (camelCase fields)
  * @param srs - SRS record from ReviewItem (or null)
  * @param now - Current timestamp
  * @param sevenDaysAgo - 7 days ago for "recent" filter
  * @param source - "due", "recent", or "all"
  */
 function buildToneItem(
-  tone: ContentItem,
+  tone: Tone,
   srs: SrsRecord | null,
   now: Date,
   sevenDaysAgo: Date,
@@ -56,11 +54,11 @@ function buildToneItem(
     itemType: "tone-syllable",
     itemId: toneNumber,
     front: `${tone.mark} ${tone.name}`,
-    back: `${tone.example_syllable} (${tone.pitch_description}) — e.g., ${tone.example_character || ""}`,
+    back: `${tone.exampleSyllable} (${tone.pitchDescription}) — e.g., ${tone.exampleCharacter || ""}`,
     category: "tones",
-    character: tone.example_character || null,
-    meaning: tone.pitch_description || null,
-    pinyinPlain: stripToneMarks(tone.example_syllable || ""),
+    character: tone.exampleCharacter || null,
+    meaning: tone.pitchDescription || null,
+    pinyinPlain: stripToneMarks(tone.exampleSyllable || ""),
     correctTone: tone.number ?? null,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,
@@ -120,11 +118,17 @@ function buildPinyinItem(
 }
 
 /**
- * Get all available pinyin combos from the PinyinCombination junction table.
+ * Get all available pinyin syllables with character mappings (replaces deprecated PinyinCombination).
  */
 async function fetchPinyinCombos() {
-  return prisma.pinyinCombination.findMany({
-    where: { character: { not: null } },
+  return prisma.pinyinSyllable.findMany({
+    where: { isStandard: true },
+    include: {
+      characterMappings: {
+        include: { character: { select: { glyph: true } } },
+        take: 1,
+      },
+    },
   });
 }
 
@@ -163,12 +167,15 @@ function buildRadicalItem(
   const correctOption = { glyph: radical.glyph!, meaning: radical.meaning!, id: radical.id! };
   const options = shuffleArray([correctOption, ...distractors]);
 
+  // Prefer camelCase namePinyin (radicals.json) over snake_case name_pinyin (tones.json)
+  const radicalName = String(radical["namePinyin"] ?? radical.name_pinyin ?? "");
+
   return {
     id: srs?.id || `radical-${radical.id}`,
     itemType: "radical",
     itemId: radical.id!,
-    front: radical.name_pinyin!,
-    back: `${radical.glyph} (${radical.name_pinyin}) — ${radical.meaning}`,
+    front: radicalName,
+    back: `${radical.glyph} (${radicalName}) — ${radical.meaning}`,
     category: "radicals",
     character: radical.glyph!,
     pinyinPlain: radical.id!,
@@ -280,7 +287,7 @@ export class ReviewService {
     const items: ReviewItemOutput[] = [];
 
     if (includeTones) {
-      const tones = await readContentDir("tones");
+      const tones = await prisma.tone.findMany({ orderBy: { number: "asc" } });
       for (const tone of tones) {
         const key = `tone-syllable:${String(tone.number)}`;
         const srs = srsByKey.get(key) ?? null;
@@ -290,7 +297,7 @@ export class ReviewService {
     }
 
     if (includeRadicals) {
-      const radicals = await readContentDir("radicals");
+      const radicals = await prisma.radical.findMany();
       for (const radical of radicals) {
         const key = `radical:${radical.id}`;
         const srs = srsByKey.get(key) ?? null;
@@ -300,15 +307,38 @@ export class ReviewService {
     }
 
     if (includeCharacterRadical) {
-      const radicals = await readContentDir("radicals");
-      for (const radical of radicals) {
-        const metadata = radical.metadata as
-          { hsk_characters?: Array<{ glyph: string; meaning?: string }> } | undefined;
-        const hskCharacters = metadata?.hsk_characters || [];
-        if (hskCharacters.length === 0) continue;
-        for (const charData of hskCharacters) {
-          const key = `character-radical:${charData.glyph}`;
+      const dbRecords = await prisma.characterRadical.findMany({
+        include: {
+          character: { select: { glyph: true, definition: true } },
+        },
+      });
+
+      // Group records by radicalId
+      const radicalCharMap = new Map<
+        string,
+        Array<{
+          characterGlyph: string;
+          character?: { glyph: string; definition: string | null } | null;
+        }>
+      >();
+      for (const record of dbRecords) {
+        if (!radicalCharMap.has(record.radicalId)) {
+          radicalCharMap.set(record.radicalId, []);
+        }
+        radicalCharMap.get(record.radicalId)!.push(record);
+      }
+
+      const radicals = await prisma.radical.findMany();
+      const radicalById = new Map(radicals.map((r) => [r.id, r]));
+
+      for (const [radicalId, records] of radicalCharMap) {
+        const radical = radicalById.get(radicalId);
+        if (!radical) continue;
+        for (const record of records) {
+          const charGlyph = record.characterGlyph;
+          const key = `character-radical:${charGlyph}`;
           const srs = srsByKey.get(key) ?? null;
+          const charData = { glyph: charGlyph, meaning: record.character?.definition ?? undefined };
           const item = buildCharacterRadicalItem(radical, charData, srs, now, sevenDaysAgo, source);
           if (item) items.push(item);
         }
@@ -320,16 +350,31 @@ export class ReviewService {
       const seenComboKeys = new Set<string>();
 
       for (const combo of combos) {
-        const initialId = combo.initialId?.replace("init_", "") || combo.initialId;
-        const finalId = combo.finalId?.replace("fin_", "") || combo.finalId;
-        const comboKey = `${initialId}-${finalId}`;
+        const initial = combo.initial || "";
+        const final = combo.final || "";
+        const comboKey = `${initial}-${final}`;
 
         if (seenComboKeys.has(comboKey)) continue;
         seenComboKeys.add(comboKey);
 
+        // Extract character and meaning from first character mapping, if available
+        const firstMapping = combo.characterMappings?.[0];
+        const characterGlyph = firstMapping?.character?.glyph ?? null;
+        const meaning = null; // PinyinSyllable doesn't carry meaning directly
+
+        const adapter = {
+          id: combo.id,
+          initialId: initial,
+          finalId: final,
+          tone: combo.tone,
+          syllable: combo.syllable,
+          character: characterGlyph,
+          meaning,
+        };
+
         const key = `pinyin-syllable:${comboKey}`;
         const srs = srsByKey.get(key) ?? null;
-        const item = buildPinyinItem(combo, srs, now, sevenDaysAgo, source, comboKey);
+        const item = buildPinyinItem(adapter, srs, now, sevenDaysAgo, source, comboKey);
         if (item) items.push(item);
       }
     }

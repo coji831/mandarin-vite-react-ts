@@ -1,4 +1,4 @@
 export { useAudioPlayback } from "./useAudioPlayback";
-export { useCharacterHub } from "./useCharacterHub";
+export { usePageTitle } from "./usePageTitle";
 export { usePhaseGate } from "./usePhaseGate";
 export { useReview } from "./useReview";

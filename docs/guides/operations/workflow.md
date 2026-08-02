@@ -1,8 +1,12 @@
 # Human-Friendly Epic/Story Workflow Checklist
 
-**Last Updated:** June 3, 2026  
+**Last Updated:** August 2, 2026  
 **Purpose:** Step-by-step development workflow: design, plan, implement, test, review  
 **Audience:** Developers executing epics and stories
+
+> ⚠️ **Canonical gate definitions live elsewhere.** The canonical two-tier gate table lives in
+> `.github/instructions/project-workflow.instructions.md` — this file is a human-friendly checklist
+> only; do not cite it for gate definitions.
 
 **Priority Legend:**
 
@@ -181,7 +185,7 @@ See [Infrastructure Setup Guide](../operations/infrastructure.md) for complete w
 | Design           | architecture.md, feature design.md               | architecture.md, feature design.md            | architecture.md, feature design.md               |
 | Plan             | business-requirements/README.md, story templates | business-requirements, story templates        | business-requirements/README.md, story templates |
 | Implement        | issue-implementation/README.md, story impl docs  | issue-implementation, feature docs, code      | issue-implementation/README.md, story impl docs  |
-| Open PR          | business-requirements/README.md (PR template)    | PR description, related issues/stories        | PR template, PR description                      |
+| Open PR          | .github/PULL_REQUEST_TEMPLATE.md (PR template)   | PR description, related issues/stories        | PR template, PR description                      |
 | Review & Merge   | PR template, implementation docs, acceptance     | PR comments, implementation docs              | PR template, implementation docs, acceptance     |
 | Close Issue/Epic | implementation docs, status fields               | status fields, cross-links                    | implementation docs, status fields               |
 | Update Docs      | all related docs, README files                   | documentation checklists, README, cross-links | all related docs, README files                   |
@@ -189,7 +193,7 @@ See [Infrastructure Setup Guide](../operations/infrastructure.md) for complete w
 
 ## Commit Message Convention
 
-- [ ] All commits use Conventional Commits format ([Git Convention](../conventions/git.md#commit--pr-guidelines))
+- [ ] All commits use Conventional Commits format ([Git Convention](../conventions/git.md#commit-message-conventions))
 - [ ] Automated checks/code reviews enforce commit message compliance
 - [ ] Always reference this requirement in documentation, PR templates, and commit requests
 

@@ -32,6 +32,17 @@ export interface QuizQuestion {
   meaning?: string | null; // English meaning of the character
   options?: QuizOption[]; // Multiple-choice options (for radical strategies)
   prompt?: string; // Custom prompt text (for radical predictor questions)
+  /** Whether this question involves a tone sandhi pattern */
+  isSandhiQuestion?: boolean;
+  /** The sandhi rule pattern (e.g., "3-3") */
+  sandhiRule?: string;
+}
+
+/** Phonetic component data for a character — used for wrong-answer hints in IME simulator */
+export interface PhoneticHint {
+  glyph: string;
+  pinyin: string;
+  meaning: string;
 }
 
 /** Result of evaluating a user's answer */
@@ -43,6 +54,14 @@ export interface AnswerResult {
   correctTone: number;
   feedback: string;
   toneDescription: string;
+  /** Character classification type (e.g., "pictograph", "phono_semantic") — used for score-by-type breakdowns */
+  classification?: string;
+  /** Phonetic hint data — populated after a wrong answer in IME simulator */
+  phoneticHint?: PhoneticHint | null;
+  /** Whether a radical hint was used for this question */
+  radicalHintUsed?: boolean;
+  /** Penalty applied for using radical hint (0-1) */
+  penalty?: number;
 }
 
 /**

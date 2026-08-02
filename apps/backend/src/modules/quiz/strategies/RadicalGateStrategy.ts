@@ -9,19 +9,19 @@
  *
  * Pass threshold: 85% overall, plus Tier 1 must be 100%.
  */
-import { readContentFiles, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { prisma } from "../../../shared/infrastructure/database/client.js";
+import { shuffleArray } from "../../../shared/utils/contentUtils.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 
 const logger = createLogger("RadicalGateStrategy");
 
-/** Shape of a radical content file loaded from content/radicals/rad_*.json. */
+/** Shape of a radical item used internally (mapped from the Radical table). */
 interface RadicalFile {
   id?: string;
   glyph?: string;
   meaning?: string;
-  name_pinyin?: string;
-  is_recommended?: boolean;
-  metadata?: { hsk_characters?: Array<{ glyph: string; meaning?: string; pinyin?: string }> };
+  namePinyin?: string;
+  isRecommended?: boolean;
   [key: string]: unknown;
 }
 
@@ -39,22 +39,20 @@ function pickDistractors(arr: RadicalFile[], n: number, exclude: string | string
 
 /**
  * Build a reverse map: character glyph → radical IDs that contain it.
- * @param radicalFiles
+ * Queries the CharacterRadical DB table (source of truth).
  * @returns Map of glyph → radical IDs
  */
-function buildReverseCharMap(radicalFiles: RadicalFile[]): Map<string, string[]> {
+async function buildReverseCharMap(): Promise<Map<string, string[]>> {
+  const dbRecords = await prisma.characterRadical.findMany({
+    include: { character: { select: { glyph: true } } },
+  });
   const map = new Map<string, string[]>();
-  for (const file of radicalFiles) {
-    const metadata = file.metadata as
-      { hsk_characters?: Array<{ glyph: string; pinyin: string; meaning: string }> } | undefined;
-    const hskChars = metadata?.hsk_characters || [];
-    for (const char of hskChars) {
-      const glyph = char.glyph;
-      if (!map.has(glyph)) {
-        map.set(glyph, []);
-      }
-      map.get(glyph)!.push(file.id!);
+  for (const record of dbRecords) {
+    const glyph = record.character?.glyph ?? record.characterGlyph;
+    if (!map.has(glyph)) {
+      map.set(glyph, []);
     }
+    map.get(glyph)!.push(record.radicalId);
   }
   return map;
 }
@@ -69,7 +67,16 @@ export const radicalGateStrategy = {
   timeLimitMinutes: 8,
 
   async generateQuestions() {
-    const radicalFiles = await readContentFiles("radicals", "rad_");
+    // Load radicals from the Radical table (all-in-DB) and map to the
+    // internal RadicalFile shape used by the question builders below.
+    const radicalRows = await prisma.radical.findMany();
+    const radicalFiles: RadicalFile[] = radicalRows.map((r) => ({
+      id: r.id,
+      glyph: r.glyph,
+      meaning: r.meaning,
+      namePinyin: r.namePinyin,
+      isRecommended: r.isRecommended,
+    }));
 
     if (!radicalFiles || radicalFiles.length === 0) {
       throw new Error("Failed to load radical content files");
@@ -80,7 +87,7 @@ export const radicalGateStrategy = {
     // ── Tier 1: Core Component Lockdown (10 Qs) ──────────────────────────
     // Show a radical glyph, pick its meaning from 4 options.
     // Focus on recommended radicals (the most important ones).
-    const recommended = radicalFiles.filter((f) => f.is_recommended);
+    const recommended = radicalFiles.filter((f) => f.isRecommended);
     const tier1Pool = recommended.length > 5 ? recommended : radicalFiles;
 
     // Ensure at least 5 unique radicals for Tier 1
@@ -104,23 +111,36 @@ export const radicalGateStrategy = {
 
       questions.push({
         id: `rad-gate-t1-${i}`,
-        audioKey: radical.name_pinyin || "",
+        audioKey: radical.namePinyin || "",
         correctPinyin: radical.id!, // Correct option ID
         correctTone: 0,
         category: "radical-core-lockdown",
         character: radical.glyph!,
         meaning: radical.meaning!,
-        displayPinyin: radical.name_pinyin!,
+        displayPinyin: radical.namePinyin!,
         options,
       });
     }
 
     // ── Tier 2: The Radical Predictor (10 Qs) ────────────────────────────
     // Show an unfamiliar character → predict meaning category from its radical.
-    // Build reverse map: character → radical IDs
-    const reverseMap = buildReverseCharMap(radicalFiles);
+    // Build reverse map: character → radical IDs (from DB)
+    const reverseMap = await buildReverseCharMap();
 
-    // Collect all unique characters that appear in hsk_characters
+    // Collect all unique characters from CharacterRadical DB (source of truth)
+    const dbCharRadicals = await prisma.characterRadical.findMany({
+      include: {
+        character: {
+          include: {
+            characterReadings: {
+              where: { type: "primary" },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
     const allCharEntries: Array<{
       glyph: string;
       pinyin?: string;
@@ -128,23 +148,16 @@ export const radicalGateStrategy = {
       radicalId: string;
       radicalMeaning?: string;
     }> = [];
-    for (const file of radicalFiles) {
-      const metadata = file.metadata as
-        | { hsk_characters?: Array<{ glyph: string; pinyin?: string; meaning?: string }> }
-        | undefined;
-      const hskChars = metadata?.hsk_characters || [];
-      for (const char of hskChars) {
-        const glyph = char.glyph;
-        if (glyph) {
-          allCharEntries.push({
-            glyph,
-            pinyin: char.pinyin,
-            meaning: char.meaning,
-            radicalId: file.id!,
-            radicalMeaning: file.meaning!,
-          });
-        }
-      }
+    for (const record of dbCharRadicals) {
+      if (!record.character) continue;
+      const radical = radicalFiles.find((f) => f.id === record.radicalId);
+      allCharEntries.push({
+        glyph: record.character.glyph,
+        pinyin: record.character.characterReadings[0]?.pinyin ?? "",
+        meaning: record.character.definition ?? "",
+        radicalId: record.radicalId,
+        radicalMeaning: radical?.meaning ?? "",
+      });
     }
 
     // De-duplicate by glyph

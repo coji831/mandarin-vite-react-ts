@@ -44,4 +44,16 @@ router.get(
   ),
 );
 
+/**
+ * GET /v1/radicals/:radicalId/characters
+ * Returns characters associated with the given radical.
+ * No authentication required — static reference data.
+ */
+router.get(
+  ROUTE_PATTERNS.radicalsCharacters(":radicalId"),
+  asyncHandler((req: Request, res: Response) =>
+    req.radicalsController!.getCharactersForRadical(req, res),
+  ),
+);
+
 export default router;

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "na",
+    "name": "捺",
+    "pinyin": "nà",
+    "meaning": "right-falling",
+    "glyph": "㇏",
+    "order": 1,
+    "baseCategoryId": "pie"
+  },
+  {
+    "id": "ti",
+    "name": "提",
+    "pinyin": "tí",
+    "meaning": "rising",
+    "glyph": "㇀",
+    "order": 2,
+    "baseCategoryId": "heng"
+  },
+  {
+    "id": "wan",
+    "name": "弯",
+    "pinyin": "wān",
+    "meaning": "curve",
+    "glyph": "㇁",
+    "order": 3,
+    "baseCategoryId": "zhe"
+  },
+  {
+    "id": "gou",
+    "name": "钩",
+    "pinyin": "gōu",
+    "meaning": "hook",
+    "glyph": "亅",
+    "order": 4,
+    "baseCategoryId": "zhe"
+  },
+  {
+    "id": "xie",
+    "name": "斜",
+    "pinyin": "xié",
+    "meaning": "slant",
+    "glyph": "㇃",
+    "order": 5,
+    "baseCategoryId": "pie"
+  },
+  {
+    "id": "tiao",
+    "name": "挑",
+    "pinyin": "tiǎo",
+    "meaning": "upward-flick",
+    "glyph": "㇒",
+    "order": 6,
+    "baseCategoryId": "heng"
+  },
+  {
+    "id": "zhe-gou",
+    "name": "折钩",
+    "pinyin": "zhé gōu",
+    "meaning": "bend-hook",
+    "glyph": "㇆",
+    "order": 7,
+    "baseCategoryId": "zhe"
+  },
+  {
+    "id": "wan-gou",
+    "name": "弯钩",
+    "pinyin": "wān gōu",
+    "meaning": "curve-hook",
+    "glyph": "㇉",
+    "order": 8,
+    "baseCategoryId": "zhe"
+  }
+]

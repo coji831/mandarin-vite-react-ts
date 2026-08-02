@@ -1,0 +1,43 @@
+/**
+ * @file StrokeAnimationTab.css
+ * @description Styles for the StrokeAnimationTab page component (Story 18.4)
+ */
+
+/* ─── Tab Container ─── */
+
+.stroke-anim-tab {
+  width: 900px;
+}
+
+/* Search + Quick Select merged bar */
+.stroke-anim-search-divider {
+  /* intentional: fixed 1px divider, width/height are layout-specific */
+  width: 1px;
+  height: 24px;
+  background: var(--surface-border);
+  /* flex-shrink migrated to utility class: shrink-0 */
+}
+
+@media (max-width: 640px) {
+  .stroke-anim-search-bar {
+    /* structural: flex-col — responsive */
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stroke-anim-search-divider {
+    width: auto;
+    /* responsive divider height */
+    height: 1px;
+  }
+}
+
+/* Grid removed — no content for right column yet */
+
+/* AnimationPanel residuals */
+.stroke-anim-error {
+  max-width: 100%; /* responsive constraint — .max-w-full utility doesn't convey the error component context */
+}
+
+.stroke-anim-error-hint {
+  font-size: 0.6rem;
+}

@@ -1,0 +1,18 @@
+/**
+ * @file pages/learn/phonetic-clusters/PhoneticClustersPage.css
+ * @description Styles for the Phonetic Clusters page
+ * Story 21.6: Phonetic Clusters
+ */
+
+.phonetic-clusters-page {
+  /* page layout — part of multi-property container, not a standalone utility */
+  padding: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  /* part of page container layout */
+  width: 100%;
+}
+
+.phonetic-clusters-page__header {
+  margin-bottom: var(--space-lg);
+}

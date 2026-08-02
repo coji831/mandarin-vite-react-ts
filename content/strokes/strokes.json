@@ -1,0 +1,171 @@
+{
+  "version": "1.0",
+  "categories": [
+    {
+      "id": "dian",
+      "name": "点",
+      "pinyin": "diǎn",
+      "meaning": "dot",
+      "glyph": "丶",
+      "order": 1,
+      "strokeCount": 1,
+      "exampleChars": ["主", "州", "为", "头"],
+      "orderRules": ["top-first", "center-first"]
+    },
+    {
+      "id": "heng",
+      "name": "横",
+      "pinyin": "héng",
+      "meaning": "horizontal",
+      "glyph": "一",
+      "order": 2,
+      "strokeCount": 1,
+      "exampleChars": ["一", "二", "三", "王"],
+      "orderRules": ["top-to-bottom", "horizontal-before-vertical"]
+    },
+    {
+      "id": "shu",
+      "name": "竖",
+      "pinyin": "shù",
+      "meaning": "vertical",
+      "glyph": "丨",
+      "order": 3,
+      "strokeCount": 1,
+      "exampleChars": ["十", "中", "丰", "川"],
+      "orderRules": ["left-to-right", "horizontal-before-vertical"]
+    },
+    {
+      "id": "pie",
+      "name": "撇",
+      "pinyin": "piě",
+      "meaning": "left-falling",
+      "glyph": "丿",
+      "order": 4,
+      "strokeCount": 1,
+      "exampleChars": ["人", "八", "大", "禾"],
+      "orderRules": ["top-to-bottom", "left-to-right"]
+    },
+    {
+      "id": "zhe",
+      "name": "折",
+      "pinyin": "zhé",
+      "meaning": "bend",
+      "glyph": "㇍",
+      "order": 5,
+      "strokeCount": 1,
+      "exampleChars": ["口", "日", "田", "目"],
+      "orderRules": ["outside-to-inside"]
+    }
+  ],
+  "extendedTypes": [
+    {
+      "id": "na",
+      "name": "捺",
+      "pinyin": "nà",
+      "meaning": "right-falling",
+      "glyph": "㇏",
+      "order": 1,
+      "baseCategory": "pie"
+    },
+    {
+      "id": "ti",
+      "name": "提",
+      "pinyin": "tí",
+      "meaning": "rising",
+      "glyph": "㇀",
+      "order": 2,
+      "baseCategory": "heng"
+    },
+    {
+      "id": "wan",
+      "name": "弯",
+      "pinyin": "wān",
+      "meaning": "curve",
+      "glyph": "㇁",
+      "order": 3,
+      "baseCategory": "zhe"
+    },
+    {
+      "id": "gou",
+      "name": "钩",
+      "pinyin": "gōu",
+      "meaning": "hook",
+      "glyph": "亅",
+      "order": 4,
+      "baseCategory": "zhe"
+    },
+    {
+      "id": "xie",
+      "name": "斜",
+      "pinyin": "xié",
+      "meaning": "slant",
+      "glyph": "㇃",
+      "order": 5,
+      "baseCategory": "pie"
+    },
+    {
+      "id": "tiao",
+      "name": "挑",
+      "pinyin": "tiǎo",
+      "meaning": "upward-flick",
+      "glyph": "㇒",
+      "order": 6,
+      "baseCategory": "heng"
+    },
+    {
+      "id": "zhe-gou",
+      "name": "折钩",
+      "pinyin": "zhé gōu",
+      "meaning": "bend-hook",
+      "glyph": "㇆",
+      "order": 7,
+      "baseCategory": "zhe"
+    },
+    {
+      "id": "wan-gou",
+      "name": "弯钩",
+      "pinyin": "wān gōu",
+      "meaning": "curve-hook",
+      "glyph": "㇉",
+      "order": 8,
+      "baseCategory": "zhe"
+    }
+  ],
+  "orderRules": [
+    {
+      "id": "rule-1",
+      "number": 1,
+      "name": "Top to Bottom",
+      "description": "Write strokes from top to bottom",
+      "examples": ["三", "王", "立", "章"]
+    },
+    {
+      "id": "rule-2",
+      "number": 2,
+      "name": "Left to Right",
+      "description": "Write strokes from left to right",
+      "examples": ["川", "州", "林", "好"]
+    },
+    {
+      "id": "rule-3",
+      "number": 3,
+      "name": "Horizontal Before Vertical",
+      "description": "Write horizontal strokes before vertical ones that cross them",
+      "examples": ["十", "丰", "井", "用"]
+    },
+    {
+      "id": "rule-4",
+      "number": 4,
+      "name": "Outside Before Inside",
+      "description": "Write enclosing strokes before content inside",
+      "examples": ["口", "日", "田", "国"]
+    },
+    {
+      "id": "rule-5",
+      "number": 5,
+      "name": "Middle Before Sides",
+      "description": "Write the center stroke before the side strokes",
+      "examples": ["小", "水", "山", "承"]
+    }
+  ]
+}

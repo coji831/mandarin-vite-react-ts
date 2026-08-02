@@ -1,6 +1,6 @@
 # Backend Design
 
-**Last Updated:** July 3, 2026
+**Last Updated:** August 2, 2026
 
 ## Purpose
 
@@ -26,14 +26,19 @@ src/
 │   └── routes.ts                 ← Route routers registered under /v1/
 ├── modules/                      ← Business modules
 │   ├── auth/                     ← Simple CRUD (login, register, refresh)
-│   ├── quiz/                     ← Clean Architecture (use-cases/, services/, repositories/)
+│   ├── characters/               ← Read-only character detail, phonetic, homophones, search, frequency APIs
 │   ├── foundations/              ← Simple CRUD (pinyin, tones, strokes)
+│   ├── health/                   ← Simple (health check)
+│   ├── mnemonics/                ← AI mnemonic generation (Gemini)
+│   ├── phonetic-clusters/        ← DB-driven phonetic cluster browser
 │   ├── progression/              ← Clean Architecture (learner progression)
+│   ├── quiz/                     ← Clean Architecture (strategies/, services/, repositories/)
 │   ├── radicals/                 ← Simple CRUD (radical data)
+│   ├── readers/                  ← Graded readers: passages, sessions, bookmarks, audio
 │   ├── review/                   ← Clean Architecture (SRS review)
-│   └── health/                   ← Simple (health check)
+│   ├── tts/                      ← TTS endpoints (Redis path cache → GCS → Google TTS)
+│   └── words/                    ← Word + measure-word data APIs
 └── shared/
-    ├── api/                      ← Shared controllers (TTS, etc.)
     ├── config/index.ts           ← Centralized env config with validation
     ├── infrastructure/
     │   ├── cache/                ← CacheService + CacheFactory
@@ -43,17 +48,18 @@ src/
     │   ├── security/             ← JwtService, PasswordService, HmacManager
     │   └── storage/              ← GcsFileStore + StorageFactory
     ├── middleware/               ← asyncHandler, authMiddleware, cacheMiddleware, errorHandler
+    ├── services/                 ← TtsService, GeminiService (shared services)
     └── utils/                    ← logger, errorFactory, hashUtils, dateUtils
 ```
 
 ### Layer Responsibilities
 
-| Layer                  | Responsibility                        | Location                                   |
-| ---------------------- | ------------------------------------- | ------------------------------------------ |
-| **API (Controller)**   | Parse request, call service, respond  | `modules/<name>/api/`                      |
-| **Service / Use-Case** | Business logic, orchestration         | `modules/<name>/services/` or `use-cases/` |
-| **Repository**         | Data access (via Prisma)              | `modules/<name>/repositories/`             |
-| **Infrastructure**     | External APIs, cache, database client | `shared/infrastructure/`                   |
+| Layer                  | Responsibility                        | Location                                    |
+| ---------------------- | ------------------------------------- | ------------------------------------------- |
+| **API (Controller)**   | Parse request, call service, respond  | `modules/<name>/api/`                       |
+| **Service / Use-Case** | Business logic, orchestration         | `modules/<name>/services/` or `strategies/` |
+| **Repository**         | Data access (via Prisma)              | `modules/<name>/repositories/`              |
+| **Infrastructure**     | External APIs, cache, database client | `shared/infrastructure/`                    |
 
 ### Key Components
 
@@ -61,7 +67,7 @@ src/
 
 - Each module self-contains its own `api/` (controllers + routes), `services/` (business logic), `repositories/` (data access), and `__tests__/`
 - Modules expose public API via `index.ts` — only services, never internal files
-- Quiz module is the largest, with dedicated `use-cases/` directory for Clean Architecture
+- Quiz module is the largest, with dedicated `strategies/` directory for Clean Architecture
 
 **Shared Infrastructure** (`shared/infrastructure/`):
 
@@ -90,7 +96,7 @@ src/
 
 ### Key Features
 
-- **Modular Monolith**: 7 self-contained modules, each owning its domain
+- **Modular Monolith**: 13 self-contained modules, each owning its domain
 - **Dependency Injection**: Constructor injection with direct instantiation in `container.ts` — services receive dependencies via constructor
 - **Fail-Open Caching**: Redis failures degrade gracefully to live API calls
 - **Repository Pattern**: All database access through repositories (abstracts Prisma)
@@ -104,7 +110,7 @@ src/
 2. TTS controller validates input and computes cache hash
 3. TTS service checks GCS for cached audio (via `GcsFileStore`)
 4. If cache miss: calls Google TTS API → uploads to GCS
-5. Returns public URL `{ audioUrl, cached }`
+5. Returns a short-lived signed GCS URL (1h TTL) `{ audioUrl, cached }`
 
 ### Quiz Flow
 

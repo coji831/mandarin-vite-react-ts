@@ -1,6 +1,6 @@
 # Project Overview
 
-**Last Updated:** July 22, 2026
+**Last Updated:** August 2, 2026
 **Purpose:** High-level overview of the monorepo structure, tech stack, and development workflow
 **Audience:** New developers joining the project
 
@@ -28,7 +28,7 @@ mandarin-vite-react-ts/
 ├── apps/
 │   ├── frontend/          # React + Vite SPA (port 5173)
 │   │   ├── src/
-│   │   │   ├── features/  # Feature modules (mandarin, quiz, character-hub, review, foundations, etc.)
+│   │   │   ├── features/  # Feature modules (auth, character-hub, dashboard, foundations, lexical-hub, phonetic-clusters, quiz, radicals, readers, review, word-hub)
 │   │   │   ├── shared/
 │   │   │   │   ├── components/  # Shared UI components
 │   │   │   │   ├── hooks/       # Shared custom hooks
@@ -37,15 +37,16 @@ mandarin-vite-react-ts/
 │   │   │   ├── pages/     # Page-level components
 │   │   │   ├── router/    # Route definitions
 │   │   │   └── styles/    # Global CSS variables
-│   │   └── public/data/vocabulary/   # HSK vocabulary CSV files
+│   │   └── public/data/vocabulary/   # HSK vocabulary CSV files (legacy, not read at runtime — no references in src)
 │   └── backend/           # Express API server (port 3001)
 │       ├── src/
 │       │   ├── app/       # Entry point, DI container, routes
-│   │   ├── modules/   # Business modules (auth, quiz, progression, review, foundations, radicals, mnemonics, health, tts)
+│   │   ├── modules/   # Business modules (auth, characters, foundations, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, tts, words)
 │       │   └── shared/    # Cross-cutting: infrastructure, middleware, config, utils
 │       └── prisma/        # Schema, migrations, seeds
 ├── packages/
 │   ├── shared-types/      # TypeScript types shared across apps
+│   ├── shared-utils/      # Shared utility functions
 │   └── shared-constants/  # Constants shared across apps
 ├── docs/
 │   ├── guides/            # Setup, conventions, testing, operations
@@ -58,13 +59,18 @@ mandarin-vite-react-ts/
 
 ## Key Commands
 
-| Command         | Description                                         |
-| --------------- | --------------------------------------------------- |
-| `npm install`   | Install all workspace dependencies                  |
-| `npm run dev`   | Start frontend (5173) + backend (3001) concurrently |
-| `npm test`      | Run all tests (Jest + Vitest)                       |
-| `npm run lint`  | Run ESLint across the monorepo                      |
-| `npm run build` | Build all packages and apps                         |
+| Command                          | Description                                         |
+| -------------------------------- | --------------------------------------------------- |
+| `npm install`                    | Install all workspace dependencies                  |
+| `npm run dev`                    | Start frontend (5173) + backend (3001) concurrently |
+| `npm test`                       | Run changed-scope tests (Vitest only — no Jest)     |
+| `npm run test:full`              | Run the full test suite                             |
+| `npm run typecheck`              | Type-check all workspaces                           |
+| `npm run lint`                   | Run ESLint across the monorepo                      |
+| `npm run format`                 | Format all workspaces with Prettier                 |
+| `npm run design-audit`           | Audit CSS/TSX against design tokens                 |
+| `npm run check:registry-stories` | Verify component registry vs Storybook stories      |
+| `npm run build`                  | Build all packages and apps                         |
 
 ---
 
@@ -108,7 +114,7 @@ See [quickstart.md](./quickstart.md) for setup instructions — clone, install, 
 npm run dev              # Start frontend (localhost:5173)
 
 # Testing
-npm test                 # Run all tests
+npm test                 # Run changed-scope tests
 
 # Production
 npm run build           # Build for production

@@ -10,4 +10,5 @@ export {
   filterTop20,
   sortRadicals,
   applyFilterPipeline,
+  mapRadicalToData,
 } from "./radicalDataUtils";

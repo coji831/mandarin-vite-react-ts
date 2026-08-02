@@ -37,9 +37,9 @@ export function SuggestionPanel({
       try {
         const json = await loadStrokeData();
         setStrokeData(json);
-      } catch (err) {
+      } catch {
         // [Foundations] Failed to load strokes data for suggestion panel
-        console.error("[SuggestionPanel] Failed to load strokes data:", err);
+        // Error is silently handled — component shows empty state
       }
     };
     loadData();

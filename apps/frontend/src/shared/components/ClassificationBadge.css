@@ -1,0 +1,67 @@
+/**
+ * @file components/ClassificationBadge.css
+ * @description Styles for ClassificationBadge — pill badge for character classification types
+ * Story 21.15: Pictograph Classification Badges
+ *
+ * Each classification type gets a distinct color:
+ *   pictograph        → gold (var(--color-xp))
+ *   phono_semantic    → blue
+ *   compound_ideograph → green
+ *   ideograph         → purple
+ *
+ * Three sizes: sm (default pill), md, lg.
+ */
+
+/* ── Base badge ── */
+.classification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* ── Size variants ──
+   Horizontal padding uses the spacing scale (--space-xs/sm/md = 8/12/16px).
+   Vertical 2/4/6px is structural pill-height math (no scale value) — D4 exception. */
+.classification-badge--sm {
+  padding: 2px var(--space-xs);
+  font-size: var(--font-xs);
+}
+
+.classification-badge--md {
+  padding: 4px var(--space-sm);
+  font-size: var(--font-sm);
+}
+
+.classification-badge--lg {
+  padding: 6px var(--space-md);
+  font-size: var(--font-md);
+}
+
+/* ── Classification colors ── */
+.classification-badge--pictograph {
+  background: var(--color-xp-bg);
+  color: var(--color-xp);
+  border: 1px solid var(--color-xp-border);
+}
+
+.classification-badge--phono-semantic {
+  background: var(--color-blue-bg);
+  color: var(--color-blue);
+  border: 1px solid var(--color-blue-border);
+}
+
+.classification-badge--compound-ideograph {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  border: 1px solid var(--color-green-border);
+}
+
+.classification-badge--ideograph {
+  background: var(--color-purple-bg);
+  color: var(--color-purple);
+  border: 1px solid var(--color-purple-border);
+}

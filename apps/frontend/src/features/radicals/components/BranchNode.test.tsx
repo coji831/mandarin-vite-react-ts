@@ -8,12 +8,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BranchNode } from "./BranchNode";
 
-const mockOpenHub = vi.fn();
-vi.mock("shared/hooks", () => ({
-  useCharacterHub: () => ({
-    openHub: mockOpenHub,
-  }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
 describe("BranchNode", () => {
   beforeEach(() => {
@@ -45,25 +44,43 @@ describe("BranchNode", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: "水 — shuǐ — water" }));
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("calls openHub on Enter key", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
-    fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
-      key: "Enter",
+    const mainButton = screen.getByRole("button", { name: "水 — shuǐ — water" });
+    // Native <button> fires click on Enter keydown — simulate full browser activation.
+    fireEvent.keyDown(mainButton, { key: "Enter" });
+    fireEvent.click(mainButton);
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
     });
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    // Exactly once — no double-fire from redundant onKeyDown + native click.
+    expect(mockOpenHub).toHaveBeenCalledTimes(1);
   });
 
   it("calls openHub on Space key", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
-    fireEvent.keyDown(screen.getByRole("button", { name: "水 — shuǐ — water" }), {
-      key: " ",
+    const mainButton = screen.getByRole("button", { name: "水 — shuǐ — water" });
+    // Native <button> fires click on Space keyup — simulate full browser activation.
+    fireEvent.keyDown(mainButton, { key: " " });
+    fireEvent.keyUp(mainButton, { key: " " });
+    fireEvent.click(mainButton);
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
     });
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledTimes(1);
   });
 
   it("has correct aria-label on character section", () => {
@@ -76,7 +93,11 @@ describe("BranchNode", () => {
     render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: /open 水 in character detail hub/i }));
-    expect(mockOpenHub).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("renders with connector class when showConnector is true", () => {

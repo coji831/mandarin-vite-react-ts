@@ -1,0 +1,1272 @@
+[
+  {
+    "clusterId": "pc_0001",
+    "characterId": "请",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0001",
+    "characterId": "情",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0001",
+    "characterId": "清",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0001",
+    "characterId": "晴",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0002",
+    "characterId": "包",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0002",
+    "characterId": "跑",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0002",
+    "characterId": "炮",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0002",
+    "characterId": "抱",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0002",
+    "characterId": "饱",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "伶",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "冷",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "呤",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "囹",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "岭",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "嶺",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "怜",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "拎",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "柃",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "泠",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "玲",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "瓴",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "羚",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "翎",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "聆",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "舲",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "苓",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "蛉",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "邻",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "鈴",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "铃",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "零",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "領",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "领",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "鴒",
+    "sequenceOrder": 25
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "鸰",
+    "sequenceOrder": 26
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "齡",
+    "sequenceOrder": 27
+  },
+  {
+    "clusterId": "pc_0003",
+    "characterId": "龄",
+    "sequenceOrder": 28
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "咯",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "恪",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "格",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "洛",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "烙",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "珞",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "略",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "硌",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "絡",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "络",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "胳",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "袼",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "貉",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "賂",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "路",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "辂",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "酪",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "鉻",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "铬",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "閣",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "阁",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "餎",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "饹",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "駱",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "骆",
+    "sequenceOrder": 25
+  },
+  {
+    "clusterId": "pc_0004",
+    "characterId": "骼",
+    "sequenceOrder": 26
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "估",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "咕",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "嘏",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "固",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "居",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "岵",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "怙",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "故",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "沽",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "牯",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "祜",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "罟",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "胡",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "苦",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "蛄",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "诂",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "軲",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "轱",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "辜",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "酤",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "鈷",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "钴",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "骷",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "鴣",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0005",
+    "characterId": "鸪",
+    "sequenceOrder": 25
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "啫",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "堵",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "奢",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "屠",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "暑",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "楮",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "渚",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "煮",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "猪",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "睹",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "箸",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "緒",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "绪",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "署",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "翥",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "著",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "褚",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "诸",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "諸",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "豬",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "赌",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "賭",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "赭",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "都",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0006",
+    "characterId": "锗",
+    "sequenceOrder": 25
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "俳",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "匪",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "啡",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "徘",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "悱",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "悲",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "扉",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "排",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "斐",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "痱",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "緋",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "绯",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "翡",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "腓",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "菲",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "薤",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "蜚",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "裴",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "誹",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "诽",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "輩",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "辈",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "霏",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "鯡",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0007",
+    "characterId": "鲱",
+    "sequenceOrder": 25
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "佯",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "养",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "庠",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "徉",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "恙",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "样",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "氧",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "洋",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "烊",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "痒",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "祥",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "羌",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "羕",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "羟",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "羥",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "羰",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "翔",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "蛘",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "詳",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "详",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "養",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "鮮",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "鲜",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0008",
+    "characterId": "鯗",
+    "sequenceOrder": 24
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "助",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "咀",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "姐",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "徂",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "殂",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "沮",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "狙",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "疽",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "祖",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "粗",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "組",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "组",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "苴",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "虘",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "蛆",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "詛",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "诅",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "趄",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "阻",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "雎",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "驵",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "齟",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0009",
+    "characterId": "龃",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "倘",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "党",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "嘗",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "堂",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "尝",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "常",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "徜",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "惝",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "掌",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "敞",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "棠",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "淌",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "牚",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "當",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "绱",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "耥",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "裳",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "賞",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "赏",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "趟",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "䠀",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "躺",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0010",
+    "characterId": "黨",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "仝",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "巠",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "巩",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "径",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "攻",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "氢",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "汞",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "江",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "空",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "紅",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "红",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "经",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "缸",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "肛",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "舡",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "虹",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "豇",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "貢",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "贡",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "轻",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "邛",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "項",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0011",
+    "characterId": "项",
+    "sequenceOrder": 23
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "募",
+    "sequenceOrder": 1
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "墓",
+    "sequenceOrder": 2
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "嫫",
+    "sequenceOrder": 3
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "寞",
+    "sequenceOrder": 4
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "幕",
+    "sequenceOrder": 5
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "慕",
+    "sequenceOrder": 6
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "摸",
+    "sequenceOrder": 7
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "摹",
+    "sequenceOrder": 8
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "暮",
+    "sequenceOrder": 9
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "模",
+    "sequenceOrder": 10
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "漠",
+    "sequenceOrder": 11
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "瘼",
+    "sequenceOrder": 12
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "糢",
+    "sequenceOrder": 13
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "膜",
+    "sequenceOrder": 14
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "蓦",
+    "sequenceOrder": 15
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "蟆",
+    "sequenceOrder": 16
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "谟",
+    "sequenceOrder": 17
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "謨",
+    "sequenceOrder": 18
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "貘",
+    "sequenceOrder": 19
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "镆",
+    "sequenceOrder": 20
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "馍",
+    "sequenceOrder": 21
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "饃",
+    "sequenceOrder": 22
+  },
+  {
+    "clusterId": "pc_0012",
+    "characterId": "驀",
+    "sequenceOrder": 23
+  }
+]

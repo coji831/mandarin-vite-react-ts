@@ -21,10 +21,6 @@ export interface SlidingPinyinGridProps {
   combinations: Array<{ initial: string; final: string; tones: (string | null)[] }>;
   /** Pinyin → character mapping (e.g. "ba" → "八") */
   charMap?: Record<string, string>;
-  /** Called when user wants to view a character in CharacterHub */
-  onCharacterHub?: (character: string, pinyin: string) => void;
-  /** Called when user clicks play on a pinyin syllable */
-  onPlayAudio: (character: string) => void;
 }
 
 // ─── Main Component ───
@@ -34,8 +30,6 @@ function SlidingPinyinGridComponent({
   finals,
   combinations,
   charMap,
-  onCharacterHub,
-  onPlayAudio,
 }: SlidingPinyinGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const {
@@ -203,6 +197,7 @@ function SlidingPinyinGridComponent({
                 className="font-sm fw-500"
                 style={{ color: TONE_COLORS[extractToneNumber(firstTone)] ?? TONE_COLORS[0] }}
               >
+                {/* inline: dynamic tone color — depends on cell data */}
                 {firstTone}
               </span>
             ) : (
@@ -257,8 +252,7 @@ function SlidingPinyinGridComponent({
           final={selected.final}
           tones={selected.tones}
           charMap={charMap}
-          onPlayAudio={onPlayAudio}
-          onCharacterHub={onCharacterHub}
+
           onClose={handleDeselect}
         />
       )}

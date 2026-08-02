@@ -11,7 +11,14 @@ export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
 export { getPhaseQuizzes } from "./engine/PhaseStrategyRegistry";
 
 // Types
-export type { QuizStrategy, StrategyType, QuizQuestion, AnswerResult, QuizPhase } from "./types";
+export type {
+  QuizStrategy,
+  StrategyType,
+  QuizQuestion,
+  AnswerResult,
+  QuizPhase,
+  PhoneticHintState,
+} from "./types";
 export type { QuizSession } from "./types";
 export { createInitialSession } from "./types";
 
@@ -39,3 +46,16 @@ export { useQuizSessionStore } from "./stores";
 
 // Services
 export { quizService } from "./services/quizService";
+export {
+  getPhoneticHint,
+  getRadicalHint,
+  getCharacterDetail,
+  searchPinyinCandidates,
+} from "./services/hintService";
+export type {
+  RadicalHint,
+  CharacterDetail,
+  ImeCandidate,
+  PinyinSearchResponse,
+} from "./services/hintService";
+export type { PhoneticHint } from "./types";

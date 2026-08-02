@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "npm run build --workspace=@mandarin/shared-utils",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "npm run dev --workspace=@mandarin/frontend",
     "dev:backend": "npm run dev --workspace=@mandarin/backend",
@@ -18,26 +19,27 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
+    "cleanup:radical-content": "npx tsx scripts/cleanup-radical-content.ts",
+    "validate:radical-content": "npx tsx scripts/validate-radical-content.ts",
     "design-audit": "node tools/design-audit.mjs",
-    "design-audit:feature": "node tools/design-audit.mjs"
+    "design-audit:feature": "node tools/design-audit.mjs",
+    "check:registry-stories": "node scripts/check-registry-stories.mjs"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^5.4.0",
     "concurrently": "^9.1.2",
     "mockdate": "^3.0.5",
-    "msw-storybook-addon": "^2.0.7",
-    "ts-dedent": "^2.0.0",
-    "tsconfig-paths": "^4.2.0"
+    "msw-storybook-addon": "^2.0.7"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "overrides": {
-    "uuid": "^13.0.2"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@google/design.md": "^0.3.0",
-    "@webcontainer/env": "^1.1.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "jsdom": "^24.0.0",
     "prettier": "^3.9.4",
     "typescript": "^5.9.3"

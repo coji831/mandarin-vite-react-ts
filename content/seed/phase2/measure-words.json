@@ -1,0 +1,711 @@
+[
+  {
+    "id": "mw_001",
+    "glyph": "个",
+    "pinyin": "gè",
+    "meaning": "generic individual unit",
+    "hskLevel": 1,
+    "nouns": [
+      "人",
+      "朋友",
+      "学生"
+    ],
+    "category": "general",
+    "usageNote": "The most common and versatile measure word. Can be used as a polite fallback when unsure which measure word to use."
+  },
+  {
+    "id": "mw_002",
+    "glyph": "本",
+    "pinyin": "běn",
+    "meaning": "bound volumes (books, magazines)",
+    "hskLevel": 1,
+    "nouns": [
+      "书",
+      "词典",
+      "杂志"
+    ],
+    "category": "abstract",
+    "usageNote": "Used for bound publications — books, notebooks, dictionaries."
+  },
+  {
+    "id": "mw_003",
+    "glyph": "张",
+    "pinyin": "zhāng",
+    "meaning": "flat objects, sheets",
+    "hskLevel": 1,
+    "nouns": [
+      "纸",
+      "票",
+      "床",
+      "桌子"
+    ],
+    "category": "measure",
+    "usageNote": "Used for flat, sheet-like objects: paper, tickets, tables, beds."
+  },
+  {
+    "id": "mw_004",
+    "glyph": "条",
+    "pinyin": "tiáo",
+    "meaning": "long slender objects",
+    "hskLevel": 1,
+    "nouns": [
+      "鱼",
+      "路",
+      "裤子",
+      "河"
+    ],
+    "category": "measure",
+    "usageNote": "For long, slender, flexible objects: fish, roads, pants, rivers."
+  },
+  {
+    "id": "mw_005",
+    "glyph": "只",
+    "pinyin": "zhǐ",
+    "meaning": "one of a pair; animals",
+    "hskLevel": 1,
+    "nouns": [
+      "猫",
+      "狗",
+      "鸟",
+      "鞋"
+    ],
+    "category": "measure",
+    "usageNote": "One of a pair (shoes, hands) or small animals (cats, dogs, birds)."
+  },
+  {
+    "id": "mw_006",
+    "glyph": "杯",
+    "pinyin": "bēi",
+    "meaning": "cup of",
+    "hskLevel": 1,
+    "nouns": [
+      "水",
+      "茶",
+      "咖啡"
+    ],
+    "category": "container",
+    "usageNote": "Used for cupfuls or glassfuls of liquid."
+  },
+  {
+    "id": "mw_007",
+    "glyph": "碗",
+    "pinyin": "wǎn",
+    "meaning": "bowl of",
+    "hskLevel": 2,
+    "nouns": [
+      "饭",
+      "面",
+      "汤"
+    ],
+    "category": "container",
+    "usageNote": "Used for bowlfuls of food (rice, noodles, soup)."
+  },
+  {
+    "id": "mw_008",
+    "glyph": "块",
+    "pinyin": "kuài",
+    "meaning": "piece, lump; yuan (money)",
+    "hskLevel": 1,
+    "nouns": [
+      "钱",
+      "蛋糕",
+      "石头"
+    ],
+    "category": "measure",
+    "usageNote": "For chunks, pieces, or lumps. Also used colloquially for money (kuài = yuan)."
+  },
+  {
+    "id": "mw_009",
+    "glyph": "件",
+    "pinyin": "jiàn",
+    "meaning": "item, article (clothing, matters)",
+    "hskLevel": 2,
+    "nouns": [
+      "衣服",
+      "事",
+      "礼物"
+    ],
+    "category": "measure",
+    "usageNote": "For individual items, especially clothing (shirt, jacket) and matters (事情)."
+  },
+  {
+    "id": "mw_010",
+    "glyph": "双",
+    "pinyin": "shuāng",
+    "meaning": "pair of",
+    "hskLevel": 2,
+    "nouns": [
+      "鞋",
+      "筷子",
+      "手"
+    ],
+    "category": "measure",
+    "usageNote": "For items that come in pairs: shoes, chopsticks, hands."
+  },
+  {
+    "id": "mw_011",
+    "glyph": "对",
+    "pinyin": "duì",
+    "meaning": "pair, couple",
+    "hskLevel": 2,
+    "nouns": [
+      "耳朵",
+      "夫妻",
+      "眼睛"
+    ],
+    "category": "abstract",
+    "usageNote": "For people or things that naturally come in pairs: ears, couples, eyes."
+  },
+  {
+    "id": "mw_012",
+    "glyph": "片",
+    "pinyin": "piàn",
+    "meaning": "slice, thin piece",
+    "hskLevel": 3,
+    "nouns": [
+      "面包",
+      "药",
+      "树叶"
+    ],
+    "category": "measure",
+    "usageNote": "For thin, flat slices or pieces: bread, medicine, leaves."
+  },
+  {
+    "id": "mw_013",
+    "glyph": "把",
+    "pinyin": "bǎ",
+    "meaning": "handful; objects with handles",
+    "hskLevel": 2,
+    "nouns": [
+      "刀",
+      "钥匙",
+      "椅子",
+      "伞"
+    ],
+    "category": "measure",
+    "usageNote": "For objects with handles (knife, key, umbrella) or handfuls of things."
+  },
+  {
+    "id": "mw_014",
+    "glyph": "辆",
+    "pinyin": "liàng",
+    "meaning": "wheeled vehicles",
+    "hskLevel": 2,
+    "nouns": [
+      "车",
+      "自行车",
+      "公共汽车"
+    ],
+    "category": "measure",
+    "usageNote": "For wheeled vehicles: cars, bicycles, buses."
+  },
+  {
+    "id": "mw_015",
+    "glyph": "台",
+    "pinyin": "tái",
+    "meaning": "machines, devices",
+    "hskLevel": 3,
+    "nouns": [
+      "电脑",
+      "电视",
+      "手机"
+    ],
+    "category": "measure",
+    "usageNote": "For mechanical/electronic devices: computers, TVs, phones."
+  },
+  {
+    "id": "mw_016",
+    "glyph": "部",
+    "pinyin": "bù",
+    "meaning": "department; literary works",
+    "hskLevel": 3,
+    "nouns": [
+      "电影",
+      "电话",
+      "小说"
+    ],
+    "category": "abstract",
+    "usageNote": "For films, novels, and telephone numbers. Also used for departments."
+  },
+  {
+    "id": "mw_017",
+    "glyph": "间",
+    "pinyin": "jiān",
+    "meaning": "room of",
+    "hskLevel": 2,
+    "nouns": [
+      "房间",
+      "教室",
+      "公司"
+    ],
+    "category": "measure",
+    "usageNote": "For rooms and buildings: classrooms, offices, rooms."
+  },
+  {
+    "id": "mw_018",
+    "glyph": "所",
+    "pinyin": "suǒ",
+    "meaning": "institutions, buildings",
+    "hskLevel": 3,
+    "nouns": [
+      "学校",
+      "医院",
+      "房子"
+    ],
+    "category": "formal",
+    "usageNote": "For institutions and buildings: schools, hospitals, houses."
+  },
+  {
+    "id": "mw_019",
+    "glyph": "家",
+    "pinyin": "jiā",
+    "meaning": "family, business",
+    "hskLevel": 1,
+    "nouns": [
+      "公司",
+      "商店",
+      "餐厅",
+      "人"
+    ],
+    "category": "measure",
+    "usageNote": "For families, businesses, and organizations: companies, restaurants, shops."
+  },
+  {
+    "id": "mw_020",
+    "glyph": "座",
+    "pinyin": "zuò",
+    "meaning": "large structures",
+    "hskLevel": 3,
+    "nouns": [
+      "山",
+      "桥",
+      "城市"
+    ],
+    "category": "formal",
+    "usageNote": "For large structures: mountains, bridges, cities."
+  },
+  {
+    "id": "mw_021",
+    "glyph": "门",
+    "pinyin": "mén",
+    "meaning": "subject, branch",
+    "hskLevel": 3,
+    "nouns": [
+      "课",
+      "语言",
+      "技术"
+    ],
+    "category": "abstract",
+    "usageNote": "For academic subjects, languages, and branches of knowledge."
+  },
+  {
+    "id": "mw_022",
+    "glyph": "口",
+    "pinyin": "kǒu",
+    "meaning": "mouthful; family members",
+    "hskLevel": 2,
+    "nouns": [
+      "人",
+      "水"
+    ],
+    "category": "measure",
+    "usageNote": "For family members (人口) and mouthfuls of liquid."
+  },
+  {
+    "id": "mw_023",
+    "glyph": "头",
+    "pinyin": "tóu",
+    "meaning": "head of (animals)",
+    "hskLevel": 3,
+    "nouns": [
+      "牛",
+      "猪",
+      "大象"
+    ],
+    "category": "measure",
+    "usageNote": "For larger livestock animals: cows, pigs, elephants."
+  },
+  {
+    "id": "mw_024",
+    "glyph": "匹",
+    "pinyin": "pǐ",
+    "meaning": "bolt of cloth; horse",
+    "hskLevel": 3,
+    "nouns": [
+      "马",
+      "布"
+    ],
+    "category": "measure",
+    "usageNote": "For horses and bolts of cloth."
+  },
+  {
+    "id": "mw_025",
+    "glyph": "封",
+    "pinyin": "fēng",
+    "meaning": "sealed item (letters)",
+    "hskLevel": 3,
+    "nouns": [
+      "信",
+      "邮件"
+    ],
+    "category": "measure",
+    "usageNote": "For sealed items: letters, emails."
+  },
+  {
+    "id": "mw_026",
+    "glyph": "份",
+    "pinyin": "fèn",
+    "meaning": "portion, copy",
+    "hskLevel": 3,
+    "nouns": [
+      "报纸",
+      "工作",
+      "礼物"
+    ],
+    "category": "measure",
+    "usageNote": "For portions, copies, or shares: newspapers, jobs, gifts."
+  },
+  {
+    "id": "mw_027",
+    "glyph": "首",
+    "pinyin": "shǒu",
+    "meaning": "piece of (poetry, song)",
+    "hskLevel": 3,
+    "nouns": [
+      "歌",
+      "诗"
+    ],
+    "category": "abstract",
+    "usageNote": "For poems, songs, and musical pieces."
+  },
+  {
+    "id": "mw_028",
+    "glyph": "篇",
+    "pinyin": "piān",
+    "meaning": "piece of writing",
+    "hskLevel": 3,
+    "nouns": [
+      "文章",
+      "日记"
+    ],
+    "category": "abstract",
+    "usageNote": "For written compositions: articles, essays, diaries."
+  },
+  {
+    "id": "mw_029",
+    "glyph": "页",
+    "pinyin": "yè",
+    "meaning": "page",
+    "hskLevel": 3,
+    "nouns": [
+      "书",
+      "纸"
+    ],
+    "category": "measure",
+    "usageNote": "For pages of a book or paper."
+  },
+  {
+    "id": "mw_030",
+    "glyph": "层",
+    "pinyin": "céng",
+    "meaning": "layer, floor",
+    "hskLevel": 3,
+    "nouns": [
+      "楼",
+      "土"
+    ],
+    "category": "measure",
+    "usageNote": "For layers, floors (stories) of a building."
+  },
+  {
+    "id": "mw_031",
+    "glyph": "朵",
+    "pinyin": "duǒ",
+    "meaning": "flower, cloud",
+    "hskLevel": 3,
+    "nouns": [
+      "花",
+      "云"
+    ],
+    "category": "measure",
+    "usageNote": "For flowers and clouds."
+  },
+  {
+    "id": "mw_032",
+    "glyph": "颗",
+    "pinyin": "kē",
+    "meaning": "small round objects",
+    "hskLevel": 3,
+    "nouns": [
+      "星",
+      "牙",
+      "心"
+    ],
+    "category": "measure",
+    "usageNote": "For small, round objects: stars, teeth, hearts, pearls."
+  },
+  {
+    "id": "mw_033",
+    "glyph": "粒",
+    "pinyin": "lì",
+    "meaning": "small grain-like objects",
+    "hskLevel": 3,
+    "nouns": [
+      "米",
+      "药"
+    ],
+    "category": "measure",
+    "usageNote": "For small grain-like objects: rice grains, pills, seeds."
+  },
+  {
+    "id": "mw_034",
+    "glyph": "根",
+    "pinyin": "gēn",
+    "meaning": "long slender objects (hair, sticks)",
+    "hskLevel": 3,
+    "nouns": [
+      "头发",
+      "香蕉",
+      "筷子"
+    ],
+    "category": "measure",
+    "usageNote": "For long, thin objects: sticks, hair, fingers, needles."
+  },
+  {
+    "id": "mw_035",
+    "glyph": "支",
+    "pinyin": "zhī",
+    "meaning": "slim rod-like objects",
+    "hskLevel": 3,
+    "nouns": [
+      "笔",
+      "烟",
+      "枪"
+    ],
+    "category": "measure",
+    "usageNote": "For long, thin objects like pens, pencils, and songs."
+  },
+  {
+    "id": "mw_036",
+    "glyph": "段",
+    "pinyin": "duàn",
+    "meaning": "section, segment",
+    "hskLevel": 3,
+    "nouns": [
+      "时间",
+      "路",
+      "话"
+    ],
+    "category": "abstract",
+    "usageNote": "For sections, segments: periods of time, lengths of road, paragraphs."
+  },
+  {
+    "id": "mw_037",
+    "glyph": "节",
+    "pinyin": "jié",
+    "meaning": "class period; section",
+    "hskLevel": 3,
+    "nouns": [
+      "课",
+      "车厢"
+    ],
+    "category": "measure",
+    "usageNote": "For class periods, lessons, and sections of content."
+  },
+  {
+    "id": "mw_038",
+    "glyph": "种",
+    "pinyin": "zhǒng",
+    "meaning": "kind, type, sort",
+    "hskLevel": 1,
+    "nouns": [
+      "人",
+      "动物",
+      "颜色"
+    ],
+    "category": "abstract",
+    "usageNote": "For types, kinds, or varieties of things."
+  },
+  {
+    "id": "mw_039",
+    "glyph": "样",
+    "pinyin": "yàng",
+    "meaning": "kind, type",
+    "hskLevel": 3,
+    "nouns": [
+      "东西",
+      "菜"
+    ],
+    "category": "abstract",
+    "usageNote": "For kinds, types, and varieties of things."
+  },
+  {
+    "id": "mw_040",
+    "glyph": "类",
+    "pinyin": "lèi",
+    "meaning": "category, class",
+    "hskLevel": 3,
+    "nouns": [
+      "问题",
+      "活动"
+    ],
+    "category": "abstract",
+    "usageNote": "For categories and classes of things."
+  },
+  {
+    "id": "mw_041",
+    "glyph": "级",
+    "pinyin": "jí",
+    "meaning": "level, grade, rank",
+    "hskLevel": 3,
+    "nouns": [
+      "台阶",
+      "考试"
+    ],
+    "category": "abstract",
+    "usageNote": "For levels, grades, and ranks."
+  },
+  {
+    "id": "mw_042",
+    "glyph": "等",
+    "pinyin": "děng",
+    "meaning": "class, grade, rank",
+    "hskLevel": 3,
+    "nouns": [
+      "人"
+    ],
+    "category": "abstract",
+    "usageNote": "For classes, grades, and ranks of things."
+  },
+  {
+    "id": "mw_043",
+    "glyph": "号",
+    "pinyin": "hào",
+    "meaning": "number, size",
+    "hskLevel": 2,
+    "nouns": [
+      "房间",
+      "鞋"
+    ],
+    "category": "measure",
+    "usageNote": "For numbered items, sizes, and room numbers."
+  },
+  {
+    "id": "mw_044",
+    "glyph": "位",
+    "pinyin": "wèi",
+    "meaning": "polite person counter",
+    "hskLevel": 2,
+    "nouns": [
+      "人",
+      "老师",
+      "客人"
+    ],
+    "category": "formal",
+    "usageNote": "Polite measure word for people: guests, teachers, experts."
+  },
+  {
+    "id": "mw_045",
+    "glyph": "名",
+    "pinyin": "míng",
+    "meaning": "person (formal)",
+    "hskLevel": 3,
+    "nouns": [
+      "学生",
+      "记者",
+      "医生"
+    ],
+    "category": "formal",
+    "usageNote": "For people with professional roles: doctors, students, reporters."
+  },
+  {
+    "id": "mw_046",
+    "glyph": "项",
+    "pinyin": "xiàng",
+    "meaning": "item (abstract)",
+    "hskLevel": 3,
+    "nouns": [
+      "工作",
+      "任务"
+    ],
+    "category": "abstract",
+    "usageNote": "For abstract items, tasks, and projects."
+  },
+  {
+    "id": "mw_047",
+    "glyph": "任",
+    "pinyin": "rèn",
+    "meaning": "term of office",
+    "hskLevel": 4,
+    "nouns": [
+      "总统",
+      "经理"
+    ],
+    "category": "formal",
+    "usageNote": "For terms of office and political positions."
+  },
+  {
+    "id": "mw_048",
+    "glyph": "届",
+    "pinyin": "jiè",
+    "meaning": "session, term",
+    "hskLevel": 4,
+    "nouns": [
+      "会议",
+      "学生"
+    ],
+    "category": "formal",
+    "usageNote": "For sessions, terms, and installments (conferences, classes)."
+  },
+  {
+    "id": "mw_049",
+    "glyph": "句",
+    "pinyin": "jù",
+    "meaning": "sentence, line",
+    "hskLevel": 2,
+    "nouns": [
+      "话",
+      "台词"
+    ],
+    "category": "abstract",
+    "usageNote": "For sentences, phrases, or lines of speech."
+  },
+  {
+    "id": "mw_050",
+    "glyph": "顿",
+    "pinyin": "dùn",
+    "meaning": "meal",
+    "hskLevel": 3,
+    "nouns": [
+      "饭",
+      "早餐"
+    ],
+    "category": "measure",
+    "usageNote": "For meals: 一顿饭 (one meal)."
+  },
+  {
+    "id": "mw_051",
+    "glyph": "场",
+    "pinyin": "chǎng",
+    "meaning": "event, match",
+    "hskLevel": 3,
+    "nouns": [
+      "电影",
+      "比赛"
+    ],
+    "category": "measure",
+    "usageNote": "For events, performances, and matches."
+  },
+  {
+    "id": "mw_052",
+    "glyph": "遍",
+    "pinyin": "biàn",
+    "meaning": "time (through)",
+    "hskLevel": 3,
+    "nouns": [
+      "书"
+    ],
+    "category": "verb",
+    "usageNote": "For number of times completing an action from start to finish: read through, watch through."
+  }
+]

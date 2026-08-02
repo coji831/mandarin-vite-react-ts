@@ -21,12 +21,25 @@ export type MnemonicState =
   | { type: "Cached"; story: string }
   | { type: "Empty" }
   | { type: "Generating" }
-  | { type: "Display"; story: string; isEdited: boolean }
-  | { type: "Editing"; story: string; previousStory: string; previousIsEdited: boolean }
+  | {
+      type: "Display";
+      story: string;
+      isEdited: boolean;
+      classification: string | null;
+      radicalIds: string[];
+    }
+  | {
+      type: "Editing";
+      story: string;
+      previousStory: string;
+      previousIsEdited: boolean;
+      classification: string | null;
+      radicalIds: string[];
+    }
   | { type: "Error"; message: string }
   | { type: "Timeout" }
   | { type: "Saving"; story: string }
-  | { type: "Pictograph"; character: string };
+  | { type: "Pictograph"; character: string; story?: string };
 
 export const GENERATE_TIMEOUT_MS = 30_000;
 
@@ -71,9 +84,19 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
       if (result === null) {
         set({ state: { type: "Empty" } });
       } else if (result.isPictograph) {
-        set({ state: { type: "Pictograph", character: result.characterGlyph } });
+        set({
+          state: { type: "Pictograph", character: result.characterGlyph, story: result.story },
+        });
       } else if (result.isEdited) {
-        set({ state: { type: "Display", story: result.story, isEdited: true } });
+        set({
+          state: {
+            type: "Display",
+            story: result.story,
+            isEdited: true,
+            classification: result.classification ?? null,
+            radicalIds: result.radicalIds ?? [],
+          },
+        });
       } else {
         set({ state: { type: "Cached", story: result.story } });
       }
@@ -100,7 +123,13 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
 
       if (!timedOut) {
         set({
-          state: { type: "Display", story: result.story, isEdited: result.isEdited },
+          state: {
+            type: "Display",
+            story: result.story,
+            isEdited: result.isEdited,
+            classification: result.classification ?? null,
+            radicalIds: result.radicalIds ?? [],
+          },
         });
       }
     } catch {
@@ -115,7 +144,15 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
     set({ state: { type: "Saving", story } });
     try {
       const result = await updateMnemonic(character, story);
-      set({ state: { type: "Display", story: result.story, isEdited: true } });
+      set({
+        state: {
+          type: "Display",
+          story: result.story,
+          isEdited: true,
+          classification: result.classification ?? null,
+          radicalIds: result.radicalIds ?? [],
+        },
+      });
     } catch {
       set({ state: { type: "Error", message: "Failed to save mnemonic story." } });
     }
@@ -130,6 +167,8 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
           story: currentState.story,
           previousStory: currentState.story,
           previousIsEdited: currentState.isEdited,
+          classification: currentState.classification,
+          radicalIds: currentState.radicalIds,
         },
       });
     } else if (currentState.type === "Cached") {
@@ -139,6 +178,8 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
           story: currentState.story,
           previousStory: currentState.story,
           previousIsEdited: false,
+          classification: null,
+          radicalIds: [],
         },
       });
     }
@@ -159,6 +200,8 @@ export const useMnemonicStore = create<MnemonicStore>()((set, get) => ({
           type: "Display",
           story: currentState.previousStory,
           isEdited: currentState.previousIsEdited,
+          classification: currentState.classification,
+          radicalIds: currentState.radicalIds,
         },
       });
     }

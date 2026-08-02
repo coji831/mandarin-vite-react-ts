@@ -3,18 +3,13 @@
  * @description Styles for the ToneContourCard component (Story 18.3)
  */
 
-.tone-contour-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
 .tone-contour-svg {
   width: 60px;
   height: 38px;
 }
 
 .tone-contour-info {
-  min-width: 0;
+  min-width: 0; /* flex child — required for text truncation */
 }
 
 .tone-contour-pinyin {

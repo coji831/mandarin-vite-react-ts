@@ -6,6 +6,7 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import crypto from "node:crypto";
 import type { Request, Response } from "express";
+import { areTonesEquivalent, normalizePinyinForComparison } from "@mandarin/shared-utils";
 
 const logger = createLogger("QuizController");
 
@@ -38,8 +39,14 @@ export class QuizController {
           userId: null,
         });
       }
-      const { quizType, phase } = req.body;
-      const attempt = await this.quizService.createQuizAttempt(req.userId, quizType, phase);
+      const { quizType, phase, metadata, passageId } = req.body;
+      const attempt = await this.quizService.createQuizAttempt(
+        req.userId,
+        quizType,
+        phase,
+        metadata,
+        passageId,
+      );
       return res.status(201).json(attempt);
     } catch (error) {
       logger.error("Error creating quiz attempt", error);
@@ -62,8 +69,9 @@ export class QuizController {
           correctPinyin: req.body.correctPinyin,
           correctTone: req.body.correctTone,
           correct:
-            req.body.pinyinInput === req.body.correctPinyin &&
-            req.body.selectedTone === req.body.correctTone,
+            normalizePinyinForComparison(req.body.pinyinInput) ===
+              normalizePinyinForComparison(req.body.correctPinyin) &&
+            areTonesEquivalent(req.body.selectedTone, req.body.correctTone),
           category: req.body.category,
           createdAt: new Date().toISOString(),
         });

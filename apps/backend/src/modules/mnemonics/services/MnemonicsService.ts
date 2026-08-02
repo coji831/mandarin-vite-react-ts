@@ -56,7 +56,8 @@ export class MnemonicsService {
       const userEdited = await this.repository.findByCharacterAndUser(characterGlyph, userId, true);
       if (userEdited) {
         logger.info(`Found user-edited mnemonic for ${characterGlyph}`);
-        return this.toResponse(userEdited);
+        const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+        return this.toResponse(userEdited, charData?.classification);
       }
     }
 
@@ -77,25 +78,60 @@ export class MnemonicsService {
     const anyAi = await this.repository.findAnyByCharacter(characterGlyph, false);
     if (anyAi) {
       logger.info(`Found DB AI mnemonic for ${characterGlyph}`);
-      const response = this.toResponse(anyAi);
+      const charDataStep3 = await this.repository.getCharacterByGlyph(characterGlyph);
+      const response = this.toResponse(anyAi, charDataStep3?.classification);
 
       // Populate cache asynchronously (best-effort)
       this.cacheMnemonic(cacheKey, response);
       return response;
     }
 
-    // Step 4: Generate new story via AI
-    // (This is called from generateMnemonic, which orchestrates generation)
+    // Step 4: Check if character is a pictograph — return static note instead of 404
+    const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+    if (charData?.classification === "pictograph") {
+      const etymology = charData.etymology ?? "the object it depicts";
+      logger.info(`Pictograph ${characterGlyph} — returning static note in getMnemonic`);
+      return {
+        id: "",
+        characterGlyph,
+        story: `This is a pictograph — its meaning comes from its visual form. Try to visualize ${etymology} when you see this character.`,
+        radicalIds: [],
+        isEdited: false,
+        isPictograph: true,
+        classification: charData?.classification ?? null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
+
+    // Still nothing — throw
     throw new MnemonicNotFoundError(characterGlyph);
   }
 
   /**
    * Generate a new mnemonic story for a character.
    * Called after the 4-step chain finds nothing.
-   * Note: Pictograph characters are rejected by the controller (422),
-   * so this method only handles non-pictograph AI generation.
    */
   async generateMnemonic(characterGlyph: string, userId: string): Promise<MnemonicStoryResponse> {
+    // Pictograph check — early return for visual-origin characters
+    const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+    if (charData?.classification === "pictograph") {
+      const etymology = charData.etymology ?? "the object it depicts";
+      const response: MnemonicStoryResponse = {
+        id: "",
+        characterGlyph,
+        story: `This is a pictograph — its meaning comes from its visual form. Try to visualize ${etymology} when you see this character.`,
+        radicalIds: [],
+        isEdited: false,
+        isPictograph: true,
+        classification: charData?.classification ?? null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      logger.info(`Pictograph ${characterGlyph} — returning static note`);
+      return response;
+    }
+
     // Cache stampede prevention: simple locking via the cache service.
     // Since CacheService.set() uses setex (no NX), we use a two-phase approach:
     // 1. Check if a lock exists for this glyph
@@ -109,7 +145,8 @@ export class MnemonicsService {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         const existing = await this.repository.findAnyByCharacter(characterGlyph);
         if (existing) {
-          return this.toResponse(existing);
+          const charDataLock = await this.repository.getCharacterByGlyph(characterGlyph);
+          return this.toResponse(existing, charDataLock?.classification);
         }
 
         // If still nothing, proceed despite lock
@@ -139,6 +176,7 @@ export class MnemonicsService {
         radicalIds: radicals.map((r) => r.radicalId),
         isEdited: false,
         isPictograph: false,
+        classification: charData?.classification ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -217,7 +255,8 @@ export class MnemonicsService {
     );
 
     logger.info(`User ${userId} edited mnemonic for ${characterGlyph}`);
-    return this.toResponse(record);
+    const charData = await this.repository.getCharacterByGlyph(characterGlyph);
+    return this.toResponse(record, charData?.classification);
   }
 
   /**
@@ -233,7 +272,29 @@ export class MnemonicsService {
    * @private
    */
   private async generateAIStory(character: string, radicalIds: string[]): Promise<string> {
-    const prompt = buildMnemonicPrompt(character, radicalIds);
+    // Fetch character classification and phonetic component data
+    const charData = await this.repository.getCharacterByGlyph(character);
+    let phoneticComponent: { glyph: string; pinyin: string; meaning: string } | undefined;
+
+    if (charData?.phoneticComponentId) {
+      const comp = await this.repository.getPhoneticComponent(charData.phoneticComponentId);
+      if (comp) phoneticComponent = comp;
+    }
+
+    // Extract pinyin from readings
+    const readings = (charData?.readings as Array<{ pinyin: string; tone: number }> | null) ?? null;
+    const pinyin = readings?.[0]?.pinyin ? `${readings[0].pinyin}${readings[0].tone}` : undefined;
+    const meaning = charData?.definition ?? undefined;
+
+    const prompt = buildMnemonicPrompt({
+      character,
+      radicalIds,
+      classification: charData?.classification ?? undefined,
+      phoneticComponent,
+      etymology: charData?.etymology ?? undefined,
+      pinyin,
+      meaning,
+    });
 
     logger.info(`Calling Gemini API for character: ${character}`);
     logger.info(`Prompt length: ${prompt.length} characters`);
@@ -258,6 +319,7 @@ export class MnemonicsService {
       radicalIds: [],
       isEdited: false,
       isPictograph: false,
+      classification: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -277,16 +339,19 @@ export class MnemonicsService {
   /**
    * Map database record to API response.
    */
-  private toResponse(record: {
-    id: string;
-    characterGlyph: string;
-    story: string;
-    radicalIds: string[];
-    isEdited: boolean;
-    isPictograph: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }): MnemonicStoryResponse {
+  private toResponse(
+    record: {
+      id: string;
+      characterGlyph: string;
+      story: string;
+      radicalIds: string[];
+      isEdited: boolean;
+      isPictograph: boolean;
+      createdAt: Date;
+      updatedAt: Date;
+    },
+    classification?: string | null,
+  ): MnemonicStoryResponse {
     return {
       id: record.id,
       characterGlyph: record.characterGlyph,
@@ -294,6 +359,7 @@ export class MnemonicsService {
       radicalIds: record.radicalIds,
       isEdited: record.isEdited,
       isPictograph: record.isPictograph,
+      classification: classification ?? null,
       createdAt:
         record.createdAt instanceof Date
           ? record.createdAt.toISOString()
@@ -309,21 +375,55 @@ export class MnemonicsService {
 // ── Module-level helpers ───────────────────────────────────────────────────
 
 /**
+ * Context data for building a mnemonic prompt.
+ */
+interface PromptContext {
+  character: string;
+  radicalIds: string[];
+  classification?: string;
+  phoneticComponent?: {
+    glyph: string;
+    pinyin: string;
+    meaning: string;
+  };
+  etymology?: string;
+  pinyin?: string;
+  meaning?: string;
+}
+
+/**
  * Build a prompt for mnemonic story generation via Gemini.
  */
-function buildMnemonicPrompt(character: string, radicalIds: string[]): string {
+function buildMnemonicPrompt(context: PromptContext): string {
+  const { character, radicalIds, classification, phoneticComponent, pinyin, meaning } = context;
   const radicalList =
     radicalIds.length > 0
       ? radicalIds.map((id) => `  - ${id}`).join("\n")
       : "  (no radical decomposition data available)";
 
+  let classificationSection = "";
+  if (classification === "phono_semantic" && phoneticComponent) {
+    classificationSection =
+      `\nCharacter classification: phono-semantic\n` +
+      `The phonetic component is ${phoneticComponent.glyph} (${phoneticComponent.pinyin}, meaning: ${phoneticComponent.meaning}).\n` +
+      `The story should connect both the meaning clue and the sound clue.`;
+  } else if (classification === "compound_ideograph") {
+    classificationSection =
+      `\nCharacter classification: compound ideograph\n` +
+      `The story should explain how the components combine to create the meaning.`;
+  } else if (classification === "ideograph") {
+    classificationSection =
+      `\nCharacter classification: simple ideograph\n` +
+      `The story should focus on the abstract meaning directly.`;
+  }
+
   return `You are a Mandarin Chinese teacher creating memorable mnemonic stories to help students remember how Chinese characters are formed.
 
-Character: ${character}
+Character: ${character}${pinyin ? ` (${pinyin})` : ""}${meaning ? ` — ${meaning}` : ""}
 Radical decomposition:
-${radicalList}
+${radicalList}${classificationSection}
 
-Create a short, memorable mnemonic story (2-4 sentences) connecting these radicals or components to help a beginner student remember "${character}". 
+Create a short, memorable mnemonic story (2-4 sentences) connecting these radicals or components to help a beginner student remember "${character}".
 
 The story should be:
 - Engaging and easy to visualize

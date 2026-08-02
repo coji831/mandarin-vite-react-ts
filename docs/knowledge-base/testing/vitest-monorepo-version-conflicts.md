@@ -1,843 +1,147 @@
-# TypeScript Error Handling Best Practices
+# Vitest Version Conflicts in a Monorepo
 
-**Last Updated:** February 7, 2026  
-**Audience:** TypeScript developers, error handling patterns  
+**Category:** Testing
+**Last Updated:** August 1, 2026
 **Difficulty:** Intermediate
 
----
-
-## Overview
-
-TypeScript's `error: unknown` pattern (introduced in TS 4.4) enables type-safe error handling. Understanding type narrowing, AxiosError guards, and user-friendly messaging is essential for robust production code.
-
-**One-Sentence Summary:** Always declare `error: unknown`, narrow to specific error types with guards, and separate technical logging from user-facing messages.
+> **Scope:** How the `mandarin-vite-react-ts` monorepo keeps a single, consistent Vitest
+> version across all workspaces and the failure modes it guards against.
 
 ---
 
-## The Problem with `error: any`
-
-### Legacy Pattern (TypeScript <4.4)
-
-```typescript
-try {
-  await riskyOperation();
-} catch (error: any) {
-  console.log(error.message); // ❌ No type safety
-  console.log(error.statusCode); // ❌ Typo goes undetected
-  throw error; // ❌ Re-throws technical details to UI
-}
-```
-
-**Issues:**
-
-1. **No autocomplete:** IDE cannot suggest `.message`, `.stack`, etc.
-2. **Runtime errors:** Typos like `.statusCode` (should be `.status`) compile but crash
-3. **Unsafe access:** Assumes every error has `.message` property
-4. **User exposure:** Technical stack traces leak to frontend
-
-### Modern Pattern (TypeScript 4.4+)
-
-```typescript
-try {
-  await riskyOperation();
-} catch (error: unknown) {
-  // ❌ Error: Property 'message' does not exist on type 'unknown'
-  console.log(error.message);
-
-  // ✅ Must narrow type first
-  if (error instanceof Error) {
-    console.log(error.message); // Type-safe access
-  }
-}
-```
-
-**Benefits:**
-
-1. **Compile-time safety:** Must prove error type before accessing properties
-2. **Explicit narrowing:** Developer consciously handles each error type
-3. **Catches typos:** Accessing non-existent properties fails at compile time
-
----
-
-## Type Narrowing Patterns
-
-### 1. `instanceof Error` (Standard Errors)
-
-```typescript
-try {
-  throw new Error("Something failed");
-} catch (error: unknown) {
-  if (error instanceof Error) {
-    console.error("Standard error:", error.message);
-    console.error("Stack trace:", error.stack);
-  } else {
-    console.error("Non-error thrown:", error);
-  }
-}
-```
-
-**Use when:** Handling native JavaScript errors (`Error`, `TypeError`, `RangeError`, etc.)
-
-### 2. `instanceof AxiosError` (HTTP Errors)
-
-```typescript
-import { AxiosError } from "axios";
-
-try {
-  const response = await apiClient.get("/api/data");
-  return response.data;
-} catch (error: unknown) {
-  if (error instanceof AxiosError) {
-    // Type-safe access to Axios-specific properties
-    const status = error.response?.status;
-    const data = error.response?.data;
-    const config = error.config;
-
-    if (status === 404) {
-      return null; // Valid case - resource not found
-    }
-
-    if (status === 401) {
-      console.error("Unauthorized:", data?.message);
-      // Trigger re-auth flow
-    }
-
-    console.error("API error:", { status, endpoint: config?.url, data });
-  } else if (error instanceof Error) {
-    console.error("Non-HTTP error:", error.message);
-  } else {
-    console.error("Unknown error:", error);
-  }
-
-  throw new Error("Failed to load data. Please try again.");
-}
-```
-
-**Use when:** Handling Axios HTTP requests with status-specific logic
-
-### 3. Type Predicate Guards (Custom Errors)
-
-```typescript
-interface ApiError {
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-}
-
-function isApiError(error: unknown): error is ApiError {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    "message" in error &&
-    typeof (error as ApiError).code === "string" &&
-    typeof (error as ApiError).message === "string"
-  );
-}
-
-try {
-  await customApiCall();
-} catch (error: unknown) {
-  if (isApiError(error)) {
-    console.error(`API Error [${error.code}]:`, error.message);
-    if (error.details) {
-      console.error("Details:", error.details);
-    }
-  } else {
-    console.error("Unexpected error:", error);
-  }
-}
-```
-
-**Use when:** Handling custom error formats from backend APIs
-
-### 4. Property Existence Checks
-
-```typescript
-try {
-  await operation();
-} catch (error: unknown) {
-  // Check for specific properties
-  if (typeof error === "object" && error !== null && "message" in error) {
-    const err = error as { message: string };
-    console.error("Error with message:", err.message);
-  }
-}
-```
-
-**Use when:** Handling third-party libraries with unknown error shapes
-
----
-
-## Axios-Specific Patterns
-
-### Distinguishing Error Types
-
-```typescript
-import { AxiosError } from "axios";
-
-try {
-  const response = await apiClient.get("/api/users");
-  return response.data;
-} catch (error: unknown) {
-  if (!(error instanceof AxiosError)) {
-    // Non-HTTP error (e.g., code bug, invalid config)
-    console.error("Non-Axios error:", error);
-    throw new Error("Unexpected error occurred");
-  }
-
-  // Network error (no response received)
-  if (!error.response) {
-    console.error("Network error:", error.message);
-    throw new Error("Network connection failed. Check your internet.");
-  }
-
-  // HTTP error (response received with error status)
-  const { status, data } = error.response;
-
-  switch (status) {
-    case 400:
-      console.error("Bad request:", data);
-      throw new Error("Invalid request. Please check your input.");
-
-    case 401:
-      console.error("Unauthorized");
-      // Trigger logout or token refresh
-      throw new Error("Session expired. Please log in again.");
-
-    case 403:
-      console.error("Forbidden");
-      throw new Error("You don't have permission to access this resource.");
-
-    case 404:
-      console.log("Resource not found (valid case)");
-      return null; // Valid - resource doesn't exist
-
-    case 500:
-      console.error("Server error:", data);
-      throw new Error("Server error. Please try again later.");
-
-    default:
-      console.error("Unexpected status:", status, data);
-      throw new Error("Request failed. Please try again.");
-  }
-}
-```
-
-### Extracting Error Messages
-
-```typescript
-function getErrorMessage(error: unknown): string {
-  // Axios error with response
-  if (error instanceof AxiosError && error.response) {
-    return error.response.data?.message || error.message || "Request failed";
-  }
-
-  // Axios network error
-  if (error instanceof AxiosError) {
-    return "Network error. Check your internet connection.";
-  }
-
-  // Standard error
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  // Unknown error
-  return "An unexpected error occurred";
-}
-
-// Usage
-try {
-  await apiClient.post("/api/users", userData);
-} catch (error: unknown) {
-  console.error("Technical details:", error);
-  alert(getErrorMessage(error)); // User-friendly message
-}
-```
-
-### Logging Technical Details Separately
-
-```typescript
-function handleApiError(error: unknown, context: string): never {
-  // Log technical details for developers
-  console.error(`[${context}] Error:`, {
-    error,
-    type: error?.constructor?.name,
-    message: error instanceof Error ? error.message : "Unknown",
-    stack: error instanceof Error ? error.stack : undefined,
-    response: error instanceof AxiosError ? error.response?.data : undefined,
-    status: error instanceof AxiosError ? error.response?.status : undefined,
-  });
-
-  // Throw user-friendly message
-  if (error instanceof AxiosError && error.response?.status === 404) {
-    throw new Error("Resource not found");
-  }
-
-  throw new Error("Operation failed. Please try again later.");
-}
-
-// Usage
-try {
-  const user = await apiClient.get("/api/users/123");
-  return user.data;
-} catch (error: unknown) {
-  handleApiError(error, "fetchUser");
-}
-```
-
----
-
-## User-Facing Error Messages
-
-### Separation of Concerns
-
-```typescript
-try {
-  await apiClient.post("/api/transfer", { amount: 100, to: "user123" });
-} catch (error: unknown) {
-  // ✅ Technical logging (developers)
-  console.error("Transfer failed:", {
-    endpoint: "/api/transfer",
-    error: error instanceof AxiosError ? error.response?.data : error,
-    timestamp: new Date().toISOString(),
-  });
-
-  // ✅ User-friendly message (end users)
-  if (error instanceof AxiosError) {
-    const status = error.response?.status;
-    const data = error.response?.data;
-
-    if (status === 400 && data?.code === "INSUFFICIENT_FUNDS") {
-      showNotification("Insufficient balance. Please add funds.");
-      return;
-    }
-
-    if (status === 403) {
-      showNotification("Transfer limit exceeded. Try a smaller amount.");
-      return;
-    }
-  }
-
-  // Fallback generic message
-  showNotification("Transfer failed. Please try again.");
-}
-```
-
-**Principles:**
-
-1. **Technical details → console:** Status codes, stack traces, endpoint URLs
-2. **User-friendly messages → UI:** Clear actionable guidance
-3. **Never leak internals:** No "Database connection failed" or stack traces to users
-4. **Provide context:** "Transfer failed" better than generic "Error occurred"
-
-### Message Hierarchy
-
-```typescript
-function createUserFacingError(error: unknown, operation: string): string {
-  // Network errors
-  if (error instanceof AxiosError && !error.response) {
-    return `Unable to ${operation}. Check your internet connection.`;
-  }
-
-  // HTTP errors with backend message
-  if (error instanceof AxiosError && error.response) {
-    const backendMessage = error.response.data?.message;
-    if (backendMessage && typeof backendMessage === "string") {
-      // Trust backend messages for business-level errors
-      return backendMessage; // e.g., "Username already taken"
-    }
-
-    // Generic HTTP error
-    const status = error.response.status;
-    if (status >= 500) {
-      return `Unable to ${operation}. Server error. Try again later.`;
-    }
-    if (status === 404) {
-      return `Resource not found. Unable to ${operation}.`;
-    }
-    if (status === 403) {
-      return `You don't have permission to ${operation}.`;
-    }
-  }
-
-  // Fallback
-  return `Failed to ${operation}. Please try again.`;
-}
-
-// Usage
-try {
-  await apiClient.post("/api/users", { email, password });
-  showSuccess("Account created successfully!");
-} catch (error: unknown) {
-  console.error("Registration error:", error);
-  showError(createUserFacingError(error, "create account"));
-}
-```
-
----
-
-## Testing Error Handling
-
-### Testing with Axios Mocks
-
-```typescript
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import MockAdapter from "axios-mock-adapter";
-import { apiClient } from "./axiosClient";
-import { AxiosError } from "axios";
-
-describe("Error handling", () => {
-  let mock: MockAdapter;
-
-  beforeEach(() => {
-    mock = new MockAdapter(apiClient);
-  });
-
-  afterEach(() => {
-    mock.restore();
-  });
-
-  it("should handle 404 as valid not-found case", async () => {
-    mock.onGet("/api/users/999").reply(404);
-
-    try {
-      await apiClient.get("/api/users/999");
-      expect.fail("Should have thrown error");
-    } catch (error: unknown) {
-      expect(error).toBeInstanceOf(AxiosError);
-      if (error instanceof AxiosError) {
-        expect(error.response?.status).toBe(404);
-      }
-    }
-  });
-
-  it("should provide user-friendly message for network error", async () => {
-    mock.onGet("/api/users").networkError();
-
-    try {
-      await apiClient.get("/api/users");
-      expect.fail("Should have thrown error");
-    } catch (error: unknown) {
-      expect(error).toBeInstanceOf(AxiosError);
-      if (error instanceof AxiosError) {
-        expect(error.response).toBeUndefined(); // No response
-        expect(error.message).toContain("Network Error");
-      }
-    }
-  });
-
-  it("should extract backend error message", async () => {
-    mock.onPost("/api/users").reply(400, {
-      message: "Email already exists",
-      code: "DUPLICATE_EMAIL",
-    });
-
-    try {
-      await apiClient.post("/api/users", { email: "test@example.com" });
-      expect.fail("Should have thrown error");
-    } catch (error: unknown) {
-      expect(error).toBeInstanceOf(AxiosError);
-      if (error instanceof AxiosError) {
-        expect(error.response?.data.message).toBe("Email already exists");
-      }
-    }
-  });
-});
-```
-
-### Testing Error Extraction Utilities
-
-```typescript
-import { getErrorMessage } from "./errorUtils";
-import { AxiosError } from "axios";
-
-describe("getErrorMessage", () => {
-  it("should extract message from AxiosError response", () => {
-    const error = {
-      isAxiosError: true,
-      response: {
-        data: { message: "User not found" },
-        status: 404,
-      },
-      message: "Network Error",
-    } as AxiosError;
-
-    expect(getErrorMessage(error)).toBe("User not found");
-  });
-
-  it("should use fallback for network errors", () => {
-    const error = {
-      isAxiosError: true,
-      response: undefined, // Network error
-      message: "Network Error",
-    } as AxiosError;
-
-    expect(getErrorMessage(error)).toBe("Network error. Check your internet connection.");
-  });
-
-  it("should handle standard Error objects", () => {
-    const error = new Error("Validation failed");
-    expect(getErrorMessage(error)).toBe("Validation failed");
-  });
-
-  it("should handle unknown error types", () => {
-    expect(getErrorMessage("string error")).toBe("An unexpected error occurred");
-    expect(getErrorMessage(null)).toBe("An unexpected error occurred");
-    expect(getErrorMessage({ foo: "bar" })).toBe("An unexpected error occurred");
-  });
-});
-```
-
----
-
-## Common Patterns
-
-### 1. Retry with Type-Safe Error Detection
-
-```typescript
-async function fetchWithRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error: unknown) {
-      lastError = error;
-
-      // Retry only network errors, not HTTP 4xx/5xx
-      if (error instanceof AxiosError && !error.response) {
-        console.warn(`Network error, retrying (${attempt}/${maxRetries})`);
-        await delay(1000 * attempt); // Exponential backoff
-        continue;
-      }
-
-      // Don't retry HTTP errors
-      throw error;
-    }
-  }
-
-  throw lastError;
-}
-
-// Usage
-const users = await fetchWithRetry(() => apiClient.get("/api/users"));
-```
-
-### 2. Centralized Error Handler
-
-```typescript
-export function handleServiceError(error: unknown, operation: string): never {
-  // Log technical details
-  console.error(`[${operation}] Error:`, {
-    error,
-    type: error?.constructor?.name,
-    stack: error instanceof Error ? error.stack : undefined,
-  });
-
-  // Handle specific error types
-  if (error instanceof AxiosError) {
-    const status = error.response?.status;
-
-    if (status === 401) {
-      // Redirect to login
-      window.location.href = "/login";
-      throw new Error("Session expired");
-    }
-
-    if (status === 403) {
-      throw new Error("You don't have permission for this action");
-    }
-
-    if (status === 404) {
-      throw new Error("Resource not found");
-    }
-
-    if (status && status >= 500) {
-      throw new Error("Server error. Please try again later.");
-    }
-
-    // Extract backend message if available
-    const message = error.response?.data?.message;
-    if (message && typeof message === "string") {
-      throw new Error(message);
-    }
-  }
-
-  // Fallback
-  throw new Error(`Failed to ${operation}. Please try again.`);
-}
-
-// Usage
-try {
-  const user = await apiClient.get(`/api/users/${id}`);
-  return user.data;
-} catch (error: unknown) {
-  handleServiceError(error, "fetch user");
-}
-```
-
-### 3. Strongly-Typed Error Response
-
-```typescript
-interface ApiErrorResponse {
-  message: string;
-  code: string;
-  details?: Record<string, string[]>;
-}
-
-function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
-  return (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    "code" in data &&
-    typeof (data as ApiErrorResponse).message === "string" &&
-    typeof (data as ApiErrorResponse).code === "string"
-  );
-}
-
-try {
-  await apiClient.post("/api/users", userData);
-} catch (error: unknown) {
-  if (error instanceof AxiosError && error.response) {
-    const data = error.response.data;
-
-    if (isApiErrorResponse(data)) {
-      console.error(`API Error [${data.code}]:`, data.message);
-
-      // Show validation errors
-      if (data.details) {
-        for (const [field, errors] of Object.entries(data.details)) {
-          console.error(`  ${field}: ${errors.join(", ")}`);
-        }
-      }
-    }
-  }
-}
-```
-
----
-
-## Anti-Patterns to Avoid
-
-### ❌ Using `error: any`
-
-```typescript
-// DON'T
-catch (error: any) {
-  console.log(error.mesage); // Typo goes undetected
-}
-
-// DO
-catch (error: unknown) {
-  if (error instanceof Error) {
-    console.log(error.message); // Type-safe
-  }
-}
-```
-
-### ❌ Assuming Error Type Without Narrowing
-
-```typescript
-// DON'T
-catch (error: unknown) {
-  const err = error as AxiosError; // Unsafe cast
-  console.log(err.response.status); // May crash
-}
-
-// DO
-catch (error: unknown) {
-  if (error instanceof AxiosError && error.response) {
-    console.log(error.response.status); // Safe
-  }
-}
-```
-
-### ❌ Re-Throwing Technical Details
-
-```typescript
-// DON'T
-catch (error: unknown) {
-  throw error; // Leaks stack traces to UI
-}
-
-// DO
-catch (error: unknown) {
-  console.error("Technical details:", error);
-  throw new Error("Failed to load data. Please try again.");
-}
-```
-
-### ❌ Generic Error Messages
-
-```typescript
-// DON'T
-catch (error: unknown) {
-  alert("Error occurred"); // Not actionable
-}
-
-// DO
-catch (error: unknown) {
-  if (error instanceof AxiosError && !error.response) {
-    alert("Check your internet connection and try again.");
-  } else {
-    alert("Failed to save changes. Please try again.");
-  }
-}
-```
-
----
-
-## TypeScript Compiler Options
-
-Ensure strict error handling with these `tsconfig.json` settings:
-
-```json
+## Problem
+
+In an npm-workspaces monorepo, tests suddenly fail with confusing symptoms that all trace
+back to **more than one version of Vitest (or `@vitest/*` helpers) resolving in the tree**:
+
+- Type errors on `defineConfig` — one workspace's config imports `vitest/config` from Vitest 4
+  while another (or a transitive dependency) resolves Vitest 3.
+- `storybookTest()` plugin incompatibility — the `@storybook/addon-vitest` plugin expects a
+  specific Vitest major; a mismatched hoisted copy throws at config evaluation.
+- The Storybook test-runner project (`--project storybook`) fails to start, or the browser
+  provider (`@vitest/browser-playwright`) reports a version skew with the installed `vitest`.
+- `npm ls vitest` shows `vitest@4.x` at the root but a nested `vitest@3.x` (or 2.x) under a
+  workspace's `node_modules`.
+
+In this repo the shared Vitest is **`vitest@^4.1.9`** (both `@mandarin/frontend` and
+`@mandarin/backend`), with aligned `@vitest/ui@^4.0.18`, `@vitest/coverage-v8@^4.0.18`
+(frontend), and `@vitest/browser-playwright@^4.1.9`. The lockfile currently hoists a single
+`vitest@4.1.9` at the root `node_modules/vitest` — that is the state this guide keeps intact.
+
+## Root Cause
+
+1. **npm hoisting is per-range, not per-package.** npm installs one copy per distinct
+   resolvable version. If one workspace writes `"vitest": "^4.1.9"` and a dependency (or a
+   second workspace) pins a non-overlapping range such as `^3.2.0`, npm keeps **both** — the
+   newer one hoisted, the older one nested. Each copy has its own `@vitest/*` transitive set.
+2. **`vitest/config` is version-specific.** Config files import `defineConfig` from
+   `vitest/config`. When two copies exist, a config may silently bind to the wrong copy —
+   `defineConfig` types mismatch (Vitest 3 vs 4 flags) and runtime behavior diverges.
+3. **Plugin/browser provider coupling.** `@storybook/addon-vitest`'s `storybookTest()` and
+   `@vitest/browser-playwright`'s `playwright()` must be paired with the Vitest they were
+   built for. A nested older Vitest breaks the browser-project pipeline even though the
+   default jsdom project still passes.
+4. **Workspace-local config location differences.** The frontend shares `vite.config.ts`
+   (Vitest 4, `envDir` at repo root), the backend uses `vitest.config.ts`. Both must resolve
+   the same hoisted Vitest; otherwise `test.projects[]` and `coverage` behave inconsistently.
+
+## Solution
+
+### 1. Align every `vitest` and `@vitest/*` range to one major
+
+Both workspaces declare overlapping ranges on the same major (currently `^4.1.9`):
+
+```jsonc
+// apps/frontend/package.json  and  apps/backend/package.json
 {
-  "compilerOptions": {
-    "strict": true,
-    "useUnknownInCatchVariables": true, // Force error: unknown (TS 4.4+)
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  }
+  "devDependencies": {
+    "vitest": "^4.1.9",
+    "@vitest/ui": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18", // frontend only
+  },
 }
 ```
 
-**Effect:** Catch blocks default to `error: unknown`, preventing unsafe `any` usage.
+Frontend-only storybook deps stay on the same major:
 
----
-
-## Migration Strategy
-
-### Migrating from `error: any`
-
-**Before:**
-
-```typescript
-try {
-  await operation();
-} catch (error: any) {
-  console.log(error.message);
+```jsonc
+// apps/frontend/package.json
+{
+  "devDependencies": {
+    "@storybook/addon-vitest": "^10.4.6",
+    "@vitest/browser-playwright": "^4.1.9",
+  },
 }
 ```
 
-**After (Step 1: Add narrowing):**
+### 2. Force a single hoisted copy with root `overrides` (if a transitive pins older)
 
-```typescript
-try {
-  await operation();
-} catch (error: any) {
-  if (error instanceof Error) {
-    console.log(error.message);
-  } else {
-    console.error("Unknown error:", error);
-  }
+If `npm ls vitest` ever shows nested copies, add a root-level override instead of bumping
+each workspace:
+
+```jsonc
+// package.json (root)
+{
+  "overrides": {
+    "vitest": "^4.1.9",
+    "@vitest/browser-playwright": "^4.1.9",
+  },
 }
 ```
 
-**After (Step 2: Change to unknown):**
+Then reinstall and confirm:
 
-```typescript
-try {
-  await operation();
-} catch (error: unknown) {
-  if (error instanceof Error) {
-    console.log(error.message);
-  } else {
-    console.error("Unknown error:", error);
-  }
-}
+```bash
+npm install
+npm ls vitest          # expect a single vitest@4.x
+npx vitest --version   # 4.1.x from the hoisted root copy
 ```
 
-**Automated find-replace:**
+### 3. Keep `defineConfig` imports consistent
 
-1. Find: `catch (error: any)`
-2. Replace: `catch (error: unknown)`
-3. Fix type errors by adding narrowing guards
+Always import `defineConfig` from `vitest/config` (never from `vite`) so the config type-checks
+against the installed Vitest. The frontend does exactly this — see `apps/frontend/vite.config.ts`:
 
----
-
-## Real-World Example
-
-**Context:** Migrated 3 services to Axios during API modernization. Improved error handling from `error: any` to `error: unknown` with AxiosError guards.
-
-**Before:**
-
-```typescript
-try {
-  const response = await apiClient.get("/api/progress");
-  return response.data.data;
-} catch (error: any) {
-  console.error("Error:", error.message);
-  throw new Error("Failed to load progress");
-}
+```ts
+import { defineConfig } from "vitest/config";
+// "Type-safe with Vitest 4.x (Vite 6 compatible)"
 ```
 
-**Issues:**
+### 4. Run the storybook test project against the same Vitest
 
-- Assumes all errors have `.message` (may crash)
-- No 404 handling (valid "not found" case)
-- Generic error message (not actionable)
+The frontend registers a second `test.projects[]` entry, `name: "storybook"`, that composes
+`storybookTest({ configDir })` with the `playwright({})` browser provider — see
+`apps/frontend/vite.config.ts`. Invoke it with the dedicated script:
 
-**After:**
-
-```typescript
-try {
-  const response = await apiClient.get<WordProgress[]>("/api/progress");
-  return response.data;
-} catch (error: unknown) {
-  if (error instanceof AxiosError) {
-    // 404 is valid - user hasn't learned any words yet
-    if (error.response?.status === 404) {
-      return null;
-    }
-
-    console.error("API error:", {
-      status: error.response?.status,
-      endpoint: "/api/progress",
-      message: error.message,
-    });
-  } else {
-    console.error("Non-HTTP error:", error);
-  }
-
-  throw new Error("Failed to load your progress. Please try again.");
-}
+```bash
+npm run test-storybook   # = vitest run --project storybook
 ```
 
-**Improvements:**
+A single hoisted Vitest is what lets this project mix the jsdom project and the browser
+project without provider/version drift.
 
-- ✅ Type-safe error access
-- ✅ Handles 404 as valid case
-- ✅ Logs technical details for debugging
-- ✅ User-friendly error message
+## Impact
 
----
+- **One canonical version** in the lockfile → reproducible CI, no "works on my machine".
+- **Type-safe configs** — `defineConfig` from `vitest/config` catches flag/type drift at build.
+- **Stable Storybook test runner** — the `storybook` project reliably boots Chromium via
+  `@vitest/browser-playwright` because the plugin and browser provider share the Vitest major.
+- **Same test DX across workspaces** — `npm test` / `npm run test:full` behave identically in
+  `apps/frontend` and `apps/backend`.
 
-## Related Documentation
+## Alternatives Considered
 
-**Project-Specific Guides:**
+- **Per-workspace lockfiles (pnpm/yarn isolated)** — strongest isolation but a bigger repo
+  restructuring; npm workspaces + a single hoisted Vitest is sufficient here.
+- **Exact-pinning every Vitest package** — prevents drift but blocks minor-version patches and
+  still needs `overrides` to squash transitive copies.
+- **Dropping the storybook project from Vitest** — avoids browser-provider coupling but loses
+  story-level test coverage; not acceptable given the Storybook-first workflow.
 
-- [Code Conventions - Error Handling Standards](../../guides/conventions/backend.md#error-handling-standards)
-- [Backend Setup Guide - Error Middleware](../../guides/setup/backend-development.md)
-- [Testing Guide - Testing Error Handling](../../guides/testing/backend.md#testing-error-handling)
+## See Also
 
-**Knowledge Base:**
-
-- [API Response Patterns](../backend/api-response-patterns.md) - Response structure conventions
-- [Backend Authentication](../backend/backend-authentication.md) - 401/403 error handling
-- [Frontend State Management](../frontend/frontend-state-management.md) - Error state patterns
-
-**External Resources:**
-
-- [TypeScript 4.4 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html) - `error: unknown` introduction
-- [Axios Error Handling](https://axios-http.com/docs/handling_errors)
-- [MDN: Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
-
----
-
-## Summary
-
-**Always use `error: unknown`, narrow with `instanceof` or type guards, log technical details separately, and provide user-friendly messages. Distinguish between network errors (retry) and HTTP errors (handle by status). Test error paths explicitly.**
+- [Storybook Tests via `@storybook/addon-vitest`](./storybook-addon-vitest.md) — wiring the
+  `storybook` project end-to-end.
+- [ES Modules + Testing Patterns](./testing-es-modules-vitest.md) — Jest→Vitest migration
+  context from Epics 13/14.
+- `apps/frontend/vite.config.ts` — the `test.projects[]` configuration this article describes.

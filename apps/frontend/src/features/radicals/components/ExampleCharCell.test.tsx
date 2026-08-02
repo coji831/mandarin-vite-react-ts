@@ -9,11 +9,11 @@ import { describe, it, expect, vi } from "vitest";
 import { ExampleCharCell } from "./ExampleCharCell";
 
 // Mock the hub store
-const mockOpen = vi.fn();
-vi.mock("shared/store", () => ({
-  useHubStore: (selector: (s: { open: typeof mockOpen }) => unknown) =>
-    selector({ open: mockOpen }),
-}));
+const mockOpenHub = vi.hoisted(() => vi.fn());
+vi.mock("shared/store", async () => {
+  const actual = await vi.importActual("shared/store");
+  return { ...actual, openHub: mockOpenHub };
+});
 
 // Mock the audio playback hook
 const mockPlayWordAudio = vi.fn();
@@ -36,11 +36,15 @@ describe("ExampleCharCell", () => {
     expect(screen.getByText("water")).toBeInTheDocument();
   });
 
-  it("calls hubStore.open when clicked", () => {
+  it("calls openHub when clicked", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     fireEvent.click(screen.getByRole("button", { name: "水 — shuǐ — water" }));
-    expect(mockOpen).toHaveBeenCalledWith("水", "shuǐ");
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "水",
+      label: "shuǐ",
+    });
   });
 
   it("calls playWordAudio when audio button is clicked", () => {
@@ -55,18 +59,121 @@ describe("ExampleCharCell", () => {
     });
   });
 
-  it("does not call hubStore.open when audio button is clicked", () => {
+  it("does not call openHub when audio button is clicked", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     const audioButton = screen.getByLabelText("Play audio for 水");
     fireEvent.click(audioButton);
 
-    expect(mockOpen).not.toHaveBeenCalled();
+    expect(mockOpenHub).not.toHaveBeenCalled();
   });
 
   it("has correct aria-label including meaning", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     expect(screen.getByRole("button", { name: "水 — shuǐ — water" })).toBeInTheDocument();
+  });
+
+  describe("classification badge", () => {
+    it("renders pictograph badge with golden border", () => {
+      const { container } = render(
+        <ExampleCharCell character="日" pinyin="rì" meaning="sun" classification="pictograph" />,
+      );
+
+      expect(screen.getByText("🖼️")).toBeInTheDocument();
+      expect(screen.getByText("Pictograph")).toBeInTheDocument();
+      // Check golden border class is applied
+      const row = container.querySelector(".example-char-cell--pictograph");
+      expect(row).toBeInTheDocument();
+    });
+
+    it("renders phono-semantic badge", () => {
+      render(
+        <ExampleCharCell
+          character="江"
+          pinyin="jiāng"
+          meaning="river"
+          classification="phono_semantic"
+        />,
+      );
+
+      expect(screen.getByText("🔤")).toBeInTheDocument();
+      expect(screen.getByText("Phono-semantic")).toBeInTheDocument();
+    });
+
+    it("renders compound ideograph badge", () => {
+      render(
+        <ExampleCharCell
+          character="明"
+          pinyin="míng"
+          meaning="bright"
+          classification="compound_ideograph"
+        />,
+      );
+
+      expect(screen.getByText("🧩")).toBeInTheDocument();
+      expect(screen.getByText("Compound ideograph")).toBeInTheDocument();
+    });
+
+    it("renders simple ideograph badge", () => {
+      render(
+        <ExampleCharCell
+          character="上"
+          pinyin="shàng"
+          meaning="above"
+          classification="ideograph"
+        />,
+      );
+
+      expect(screen.getByText("⚡")).toBeInTheDocument();
+      expect(screen.getByText("Simple ideograph")).toBeInTheDocument();
+    });
+
+    it("renders nothing when classification is null", () => {
+      render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
+
+      expect(screen.queryByText("🖼️")).not.toBeInTheDocument();
+      expect(screen.queryByText("🔤")).not.toBeInTheDocument();
+      expect(screen.queryByText("🧩")).not.toBeInTheDocument();
+      expect(screen.queryByText("⚡")).not.toBeInTheDocument();
+    });
+
+    it("renders nothing when classification is undefined", () => {
+      render(
+        <ExampleCharCell character="水" pinyin="shuǐ" meaning="water" classification={undefined} />,
+      );
+
+      expect(screen.queryByText("🖼️")).not.toBeInTheDocument();
+    });
+
+    it("sets title attribute for pictograph with etymology", () => {
+      render(
+        <ExampleCharCell
+          character="日"
+          pinyin="rì"
+          meaning="sun"
+          classification="pictograph"
+          etymology="A pictograph of the sun"
+        />,
+      );
+
+      const row = screen.getByRole("listitem");
+      expect(row).toHaveAttribute("title", "A pictograph of the sun");
+    });
+
+    it("does not set title for non-pictograph classifications", () => {
+      render(
+        <ExampleCharCell
+          character="江"
+          pinyin="jiāng"
+          meaning="river"
+          classification="phono_semantic"
+          etymology="Some etymology"
+        />,
+      );
+
+      const row = screen.getByRole("listitem");
+      expect(row).not.toHaveAttribute("title");
+    });
   });
 });

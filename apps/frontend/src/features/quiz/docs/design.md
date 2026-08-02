@@ -28,9 +28,10 @@ Quiz sessions use a single-page pattern with phase-based routing. All quiz types
 The quiz system uses the **Strategy Pattern**:
 
 - `QuizStrategy` interface in `types/engine.ts` defines the contract
-- Strategies registered in `engine/strategies/index.ts`:
-  - `audio-to-pinyin-tone`, `audio-to-type`, `ime-simulator`, `pinyin-to-char`, `radical-gate`, etc.
+- Strategies registered in `engine/strategies/quizStrategyRegistry.ts`:
+  - `audio-to-pinyin-tone`, `ime-simulator`, `radical-gate`
 - Each strategy implements `generateQuestions()` and `evaluateAnswer()`
+- **Note:** `audio-to-type` and `pinyin-to-char` are **not** registered strategies — the registry contains only the three above. The tone-sandhi drill (`SandhiDrill`) is a **foundations widget** (`features/foundations/components/tones/SandhiDrill.tsx`) served by its own `GET /v1/quiz/sandhi-drill/questions` endpoint — an explicit non-registry exception, not a quiz strategy (Story 21.17)
 
 ---
 

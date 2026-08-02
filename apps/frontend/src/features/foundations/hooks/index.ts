@@ -6,6 +6,6 @@
  */
 
 export { useFoundationsProgress } from "./useFoundationsProgress";
-export { useHanziWriter } from "shared/components/CharacterStroke/useHanziWriter";
+export { useHanziWriter } from "shared/components";
 export { useStrokeReferenceData } from "./useStrokeReferenceData";
 export { isValidHanzi } from "./useCharacterSearch";

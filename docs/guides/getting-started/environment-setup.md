@@ -333,10 +333,9 @@ npx tsc --noEmit apps/frontend/src/path/to/file.tsx
 The monorepo uses Vitest for testing. Each workspace has its own config:
 
 - **Frontend**: Vitest configured in `vite.config.ts` (shares Vite config)
-- **Backend**: Standalone `vitest.config.js` (Node environment)
-- **Legacy**: Backend also has `jest.config.js` (being phased out)
+- **Backend**: Standalone `vitest.config.ts` (Node environment)
 
-### Backend Vitest Config (`apps/backend/vitest.config.js`)
+### Backend Vitest Config (`apps/backend/vitest.config.ts`)
 
 ```javascript
 import { defineConfig } from "vitest/config";
@@ -394,11 +393,7 @@ npm test --workspace=@mandarin/backend -- tests/unit/core/AuthService.test.js
 | Test files         | `src/**/*.test.{ts,tsx}`  | `tests/**/*.test.js` |
 | Language           | TypeScript                | JavaScript           |
 | Coverage threshold | 40%                       | Not configured       |
-| Config location    | `vite.config.ts` (shared) | `vitest.config.js`   |
-
-### Legacy Jest Config
-
-The backend has a `jest.config.js` from an earlier setup. **All new tests should use Vitest.** The Jest config is maintained for backward compatibility only.
+| Config location    | `vite.config.ts` (shared) | `vitest.config.ts`   |
 
 ---
 
@@ -508,5 +503,5 @@ redis-cli -u "$REDIS_URL" ping
 - [Linting Setup Guide](../setup/linting.md) — Quick-start ESLint/Prettier setup
 - [Frontend Conventions](../conventions/frontend.md) — Code style and patterns
 - [Backend Conventions](../conventions/backend.md) — Backend architecture patterns
-- [Review Checklist](../operations/review-checklist.md) — Pre-commit and PR checks
+- [Project Workflow & Quality Gates](../../../.github/instructions/project-workflow.instructions.md) — Pre-commit and PR checks
 - [Environment Setup Guide](environment-setup.md) — Environment variables

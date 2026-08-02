@@ -6,72 +6,46 @@
  * Responsibilities:
  * - Word CRUD operations against the database
  * - Batch word lookups
- * - Word search with filters
+ * - Word search with filters (simplified, pinyin, meaning, hskLevel)
  * - Unlearned word discovery
  *
  * Originally in modules/word/repositories/ — moved to shared during Epic 18 cleanup
  * for cross-module word data access.
+ * Refactored during Epic 21 Phase C — migrated from deprecated VocabularyWord to Word model.
  */
 
 import { prisma } from "../database/client.js";
-import type { VocabularyWord, Prisma } from "@prisma/client";
-
-// Type aliases for complex include patterns
-
-/** Word with categories (full) and lists (name/difficulty). */
-type WordWithDetails = Prisma.VocabularyWordGetPayload<{
-  include: {
-    categories: { include: { category: true } };
-    lists: { include: { list: { select: { name: true; difficulty: true } } }; take: 3 };
-  };
-}>;
-
-/** Word with category names only. */
-type WordWithCategoryNames = Prisma.VocabularyWordGetPayload<{
-  include: {
-    categories: { include: { category: { select: { name: true } } } };
-  };
-}>;
-
-/** Word with full categories and limited list info (search results). */
-type WordWithSearchDetails = Prisma.VocabularyWordGetPayload<{
-  include: {
-    categories: { include: { category: true } };
-    lists: { include: { list: { select: { name: true; difficulty: true } } }; take: 2 };
-  };
-}>;
-
-/** Word from a list, enriched with sort order. */
-type WordWithSortOrder = VocabularyWord & { sortOrder: number | null };
+import type { Word } from "@prisma/client";
+import type { WordWithDetails, WordWithCategoryNames } from "./IWordRepository.js";
 
 /**
  * WordRepository
- * Infrastructure implementation that retrieves vocabulary word data from the database.
+ * Infrastructure implementation that retrieves word data from the database.
  */
 export class WordRepository {
   /**
-   * Find all vocabulary words
+   * Find all words
    */
-  async findAll(): Promise<VocabularyWord[]> {
-    return await prisma.vocabularyWord.findMany({
+  async findAll(): Promise<Word[]> {
+    return await prisma.word.findMany({
       orderBy: { id: "asc" },
     });
   }
 
   /**
    * Find word by ID (for progress enrichment)
+   * Includes HSK levels, character composition, and study context.
    */
   async findById(wordId: string): Promise<WordWithDetails | null> {
-    return await prisma.vocabularyWord.findUnique({
+    return await prisma.word.findUnique({
       where: { id: wordId },
       include: {
-        categories: {
-          include: { category: true },
+        wordHskLevels: true,
+        wordCharacters: {
+          include: { character: true },
+          orderBy: { sequenceOrder: "asc" },
         },
-        lists: {
-          include: { list: { select: { name: true, difficulty: true } } },
-          take: 3,
-        },
+        wordStudyContext: true,
       },
     });
   }
@@ -82,94 +56,48 @@ export class WordRepository {
   async findByIds(wordIds: string[]): Promise<WordWithCategoryNames[]> {
     if (!wordIds || wordIds.length === 0) return [];
 
-    return await prisma.vocabularyWord.findMany({
+    return await prisma.word.findMany({
       where: { id: { in: wordIds } },
       include: {
-        categories: {
-          include: { category: { select: { name: true } } },
-        },
+        wordHskLevels: true,
       },
     });
   }
 
   /**
-   * Find words belonging to a specific list
-   */
-  async findByList(listId: string): Promise<WordWithSortOrder[]> {
-    const listWithWords = await prisma.vocabularyList.findUnique({
-      where: { id: listId },
-      include: {
-        words: {
-          include: {
-            word: {
-              include: {
-                categories: {
-                  include: { category: true },
-                },
-              },
-            },
-          },
-          orderBy: { sortOrder: "asc" },
-        },
-      },
-    });
-
-    if (!listWithWords) return [];
-
-    return listWithWords.words.map((wl) => ({
-      ...wl.word,
-      sortOrder: wl.sortOrder,
-    }));
-  }
-
-  /**
-   * Search words across vocabulary
+   * Search words across the word corpus
+   * Searches simplified, pinyin, and meaning fields with optional HSK level filter.
    */
   async search(
     query: string,
-    filters: { categories?: string[]; lists?: string[]; limit?: number; offset?: number } = {},
-  ): Promise<WordWithSearchDetails[]> {
-    const whereClause: Prisma.VocabularyWordWhereInput = {
+    filters: { hskLevel?: number; limit?: number; offset?: number } = {},
+  ): Promise<WordWithDetails[]> {
+    const whereClause: {
+      AND: Array<{
+        OR?: Array<{
+          [key: string]: { contains: string; mode?: "insensitive" };
+        }>;
+        hskLevel?: number;
+      }>;
+    } = {
       AND: [
         query
           ? {
               OR: [
-                { pinyin: { contains: query, mode: "insensitive" } },
                 { simplified: { contains: query } },
-                { traditional: { contains: query } },
-                { english: { contains: query, mode: "insensitive" } },
+                { pinyin: { contains: query, mode: "insensitive" } },
+                { meaning: { contains: query, mode: "insensitive" } },
               ],
             }
-          : {},
-        filters.categories?.length
-          ? {
-              categories: {
-                some: {
-                  category: { name: { in: filters.categories } },
-                },
-              },
-            }
-          : {},
-        filters.lists?.length
-          ? {
-              lists: {
-                some: {
-                  list: { id: { in: filters.lists } },
-                },
-              },
-            }
-          : {},
-      ],
+          : { OR: undefined as unknown as never },
+        ...(filters.hskLevel !== undefined ? [{ hskLevel: filters.hskLevel } as const] : []),
+      ].filter(Boolean) as (typeof whereClause)["AND"],
     };
 
-    return await prisma.vocabularyWord.findMany({
+    return await prisma.word.findMany({
       where: whereClause,
       include: {
-        categories: { include: { category: true } },
-        lists: {
-          include: { list: { select: { name: true, difficulty: true } } },
-          take: 2,
-        },
+        wordHskLevels: true,
       },
       take: filters.limit || 50,
       skip: filters.offset || 0,
@@ -177,13 +105,10 @@ export class WordRepository {
   }
 
   /**
-   * Find unlearned vocabulary words (words not in learned set)
+   * Find unlearned words (words not in the learned set)
    */
-  async findUnlearnedWords(
-    learnedWordIds: string[],
-    limit: number = 10,
-  ): Promise<VocabularyWord[]> {
-    return await prisma.vocabularyWord.findMany({
+  async findUnlearnedWords(learnedWordIds: string[], limit: number = 10): Promise<Word[]> {
+    return await prisma.word.findMany({
       where: {
         id: {
           notIn: learnedWordIds,

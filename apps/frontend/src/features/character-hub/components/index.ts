@@ -9,6 +9,7 @@
  * instead of being re-exported from shared.
  */
 export { CharacterHub } from "./CharacterHub/CharacterHub";
+
 export { HubIdentityCard } from "./HubIdentityCard/HubIdentityCard";
 export { HubRadicalSection } from "./HubRadicalSection/HubRadicalSection";
 export { HubMnemonicSection } from "./HubMnemonicSection/HubMnemonicSection";

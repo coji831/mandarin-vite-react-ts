@@ -8,12 +8,17 @@ PinyinPal is an interactive web application designed to help new learners master
 
 - **Quiz System:** Daily review quizzes with spaced repetition algorithm for optimal retention.
 - **Progress Tracking:** Unified spaced repetition supporting both flashcard confidence ratings and quiz results.
-- **Gamification:** Study streaks with backend persistence and progress page for tracking learning momentum.
+- **Gamification:** Study streak data model with a Progress page placeholder (no gamification API yet).
 - **Review System (SRS):** Spaced repetition with flip-card review for pinyin, tones, and character recognition.
 - **Mnemonic Stories (AI-Generated):** AI-powered mnemonic stories to help remember character meanings and readings, with manual editing and 30-day cached generation.
 - **Audio & TTS Integration:** Robust service layer with Google Cloud TTS backend and browser TTS fallback for reliability.
 - **Multi-User Support:** Per-user progress tracking with database persistence and cross-device synchronization via backend API.
 - **Character Hub:** Deep character detail view with identity card, radical decomposition, common words, and AI-powered mnemonic stories.
+- **Radicals:** Radical browser with detail cards and dual radical/phonetic trees.
+- **Phonetic Clusters:** DB-driven phonetic family browsing with HSK filtering.
+- **Graded Readers:** Passage browsing/reading, reading sessions, bookmarks, and in-text word lookup.
+- **Word Hub:** Word detail panel with definitions, HSK level, and measure words (量词).
+- **Lexical Hub:** Entity overlay hosting character and word detail panels, openable from anywhere.
 - **Performance-Optimized State:** Split contexts with normalized state and granular selectors for scalability.
 
 ## 🛠️ Tech Stack
@@ -43,13 +48,20 @@ npm run dev    # Frontend: http://localhost:5173  Backend: http://localhost:3001
 
 ### Useful Commands
 
-| Command                | Description              |
-| ---------------------- | ------------------------ |
-| `npm run dev`          | Start frontend + backend |
-| `npm run dev:frontend` | Frontend only            |
-| `npm run dev:backend`  | Backend only             |
-| `npm run build`        | Build all workspaces     |
-| `npm test`             | Run tests                |
+| Command                          | Description                                    |
+| -------------------------------- | ---------------------------------------------- |
+| `npm run dev`                    | Start frontend + backend                       |
+| `npm run dev:frontend`           | Frontend only                                  |
+| `npm run dev:backend`            | Backend only                                   |
+| `npm run build`                  | Build all workspaces                           |
+| `npm run build:frontend`         | Build frontend only (type-check + bundle)      |
+| `npm test`                       | Run changed-scope tests                        |
+| `npm run test:full`              | Run the full test suite                        |
+| `npm run typecheck`              | Type-check all workspaces                      |
+| `npm run lint`                   | Lint all workspaces (0 errors required)        |
+| `npm run format`                 | Format all workspaces                          |
+| `npm run design-audit`           | Audit CSS/TSX against design tokens            |
+| `npm run check:registry-stories` | Verify component registry vs Storybook stories |
 
 ## 🗺️ Future Vision & Roadmap
 
@@ -76,6 +88,7 @@ mandarin-vite-react-ts/
 │   └── backend/           # Express API (port 3001)
 ├── packages/
 │   ├── shared-types/      # Shared TypeScript types
+│   ├── shared-utils/      # Shared utilities
 │   └── shared-constants/  # Shared constants
 ├── content/               # Mandarin reference data (characters, radicals, pinyin, tones)
 ├── docs/                  # Architecture, guides, KB, BRs
@@ -89,6 +102,7 @@ mandarin-vite-react-ts/
 | `@mandarin/frontend`         | `apps/frontend/`             | React + Vite SPA            |
 | `@mandarin/backend`          | `apps/backend/`              | Express API server          |
 | `@mandarin/shared-types`     | `packages/shared-types/`     | TypeScript type definitions |
+| `@mandarin/shared-utils`     | `packages/shared-utils/`     | Shared utility functions    |
 | `@mandarin/shared-constants` | `packages/shared-constants/` | Shared constants            |
 
 > **Detailed structure:** See [Project Overview → Monorepo Layout](docs/guides/getting-started/project-overview.md#monorepo-layout) for full directory tree.
@@ -107,6 +121,7 @@ mandarin-vite-react-ts/
   - [Foundations](apps/frontend/src/features/foundations/docs/design.md)
   - [Radicals](apps/frontend/src/features/radicals/docs/design.md)
   - [Dashboard](apps/frontend/src/features/dashboard/docs/design.md)
+  - [Readers](apps/frontend/src/features/readers/docs/design.md)
 
 ## 🔧 Environment Variables
 

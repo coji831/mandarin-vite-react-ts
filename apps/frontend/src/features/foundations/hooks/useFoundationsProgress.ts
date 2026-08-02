@@ -23,9 +23,8 @@ export function useFoundationsProgress() {
     foundationsService
       .getFoundationProgress()
       .then(setProgress)
-      .catch((err) => {
+      .catch(() => {
         // [Foundations] Foundation progress fetch failed
-        console.warn("[Foundations] Failed to load foundation progress:", err);
         // Keep default empty array — UI shows 0/4 which is accurate for first visit
       })
       .finally(() => setIsLoading(false));

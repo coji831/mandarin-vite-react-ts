@@ -1,0 +1,812 @@
+[
+  {
+    "measureWordId": "mw_001",
+    "wordId": "w_00284",
+    "exampleSentence": "一个朋友",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_001",
+    "wordId": "w_00305",
+    "exampleSentence": "一个人",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_001",
+    "wordId": "w_00419",
+    "exampleSentence": "一个学生",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_002",
+    "wordId": "w_00341",
+    "exampleSentence": "一本书",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_002",
+    "wordId": "w_00582",
+    "exampleSentence": "一本词典",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_002",
+    "wordId": "w_02147",
+    "exampleSentence": "一本杂志",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_003",
+    "wordId": "w_00052",
+    "exampleSentence": "一张床",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_003",
+    "wordId": "w_00285",
+    "exampleSentence": "一张票",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_003",
+    "wordId": "w_00487",
+    "exampleSentence": "一张桌子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_003",
+    "wordId": "w_01233",
+    "exampleSentence": "一张纸",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_004",
+    "wordId": "w_00221",
+    "exampleSentence": "一条路",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_004",
+    "wordId": "w_00722",
+    "exampleSentence": "一条河",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_004",
+    "wordId": "w_01189",
+    "exampleSentence": "一条鱼",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_004",
+    "wordId": "w_01696",
+    "exampleSentence": "一条裤子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_005",
+    "wordId": "w_00696",
+    "exampleSentence": "一只狗",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_005",
+    "wordId": "w_00875",
+    "exampleSentence": "一只猫",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_005",
+    "wordId": "w_00901",
+    "exampleSentence": "一只鸟",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_005",
+    "wordId": "w_01112",
+    "exampleSentence": "一只鞋",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_006",
+    "wordId": "w_00036",
+    "exampleSentence": "一杯茶",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_006",
+    "wordId": "w_00345",
+    "exampleSentence": "一杯水",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_006",
+    "wordId": "w_01677",
+    "exampleSentence": "一杯咖啡",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_007",
+    "wordId": "w_00099",
+    "exampleSentence": "一碗饭",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_007",
+    "wordId": "w_00877",
+    "exampleSentence": "一碗面",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_007",
+    "wordId": "w_01969",
+    "exampleSentence": "一碗汤",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_008",
+    "wordId": "w_00294",
+    "exampleSentence": "一块钱",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_008",
+    "wordId": "w_01911",
+    "exampleSentence": "一块石头",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_008",
+    "wordId": "w_03425",
+    "exampleSentence": "一块蛋糕",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_009",
+    "wordId": "w_00335",
+    "exampleSentence": "一件事",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_009",
+    "wordId": "w_00428",
+    "exampleSentence": "一件衣服",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_009",
+    "wordId": "w_00846",
+    "exampleSentence": "一件礼物",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_010",
+    "wordId": "w_00339",
+    "exampleSentence": "一双手",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_010",
+    "wordId": "w_00833",
+    "exampleSentence": "一双筷子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_010",
+    "wordId": "w_01112",
+    "exampleSentence": "一双鞋",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_011",
+    "wordId": "w_01135",
+    "exampleSentence": "一对眼睛",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_011",
+    "wordId": "w_02496",
+    "exampleSentence": "一对夫妻",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_011",
+    "wordId": "w_03467",
+    "exampleSentence": "一对耳朵",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_012",
+    "wordId": "w_00243",
+    "exampleSentence": "一片面包",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_012",
+    "wordId": "w_01139",
+    "exampleSentence": "一片药",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_012",
+    "wordId": "w_02913",
+    "exampleSentence": "一片树叶",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_013",
+    "wordId": "w_01159",
+    "exampleSentence": "一把椅子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_013",
+    "wordId": "w_01413",
+    "exampleSentence": "一把刀",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_013",
+    "wordId": "w_02852",
+    "exampleSentence": "一把伞",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_013",
+    "wordId": "w_10303",
+    "exampleSentence": "一把钥匙",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_014",
+    "wordId": "w_00042",
+    "exampleSentence": "一辆车",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_014",
+    "wordId": "w_00688",
+    "exampleSentence": "一辆公共汽车",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_014",
+    "wordId": "w_01252",
+    "exampleSentence": "一辆自行车",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_015",
+    "wordId": "w_00079",
+    "exampleSentence": "一台电脑",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_015",
+    "wordId": "w_00080",
+    "exampleSentence": "一台电视",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_015",
+    "wordId": "w_00340",
+    "exampleSentence": "一台手机",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_016",
+    "wordId": "w_00078",
+    "exampleSentence": "一部电话",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_016",
+    "wordId": "w_00082",
+    "exampleSentence": "一部电影",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_016",
+    "wordId": "w_01105",
+    "exampleSentence": "一部小说",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_017",
+    "wordId": "w_00101",
+    "exampleSentence": "一间房间",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_017",
+    "wordId": "w_00694",
+    "exampleSentence": "一间公司",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_017",
+    "wordId": "w_00779",
+    "exampleSentence": "一间教室",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_018",
+    "wordId": "w_00102",
+    "exampleSentence": "一所房子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_018",
+    "wordId": "w_00421",
+    "exampleSentence": "一所学校",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_018",
+    "wordId": "w_00430",
+    "exampleSentence": "一所医院",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_019",
+    "wordId": "w_00305",
+    "exampleSentence": "一家人",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_019",
+    "wordId": "w_00314",
+    "exampleSentence": "一家商店",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_019",
+    "wordId": "w_00694",
+    "exampleSentence": "一家公司",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_019",
+    "wordId": "w_03321",
+    "exampleSentence": "一家餐厅",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_020",
+    "wordId": "w_00312",
+    "exampleSentence": "一座山",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_020",
+    "wordId": "w_01369",
+    "exampleSentence": "一座城市",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_020",
+    "wordId": "w_01831",
+    "exampleSentence": "一座桥",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_021",
+    "wordId": "w_00199",
+    "exampleSentence": "一门课",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_021",
+    "wordId": "w_01190",
+    "exampleSentence": "一门语言",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_021",
+    "wordId": "w_01598",
+    "exampleSentence": "一门技术",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_022",
+    "wordId": "w_00305",
+    "exampleSentence": "一口人",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_022",
+    "wordId": "w_00345",
+    "exampleSentence": "一口水",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_023",
+    "wordId": "w_01787",
+    "exampleSentence": "一头牛",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_023",
+    "wordId": "w_02207",
+    "exampleSentence": "一头猪",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_023",
+    "wordId": "w_03412",
+    "exampleSentence": "一头大象",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_024",
+    "wordId": "w_01337",
+    "exampleSentence": "一匹布",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_024",
+    "wordId": "w_01744",
+    "exampleSentence": "一匹马",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_025",
+    "wordId": "w_01117",
+    "exampleSentence": "一封信",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_025",
+    "wordId": "w_02128",
+    "exampleSentence": "一封邮件",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_026",
+    "wordId": "w_00124",
+    "exampleSentence": "一份工作",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_026",
+    "wordId": "w_00515",
+    "exampleSentence": "一份报纸",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_026",
+    "wordId": "w_00846",
+    "exampleSentence": "一份礼物",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_027",
+    "wordId": "w_00119",
+    "exampleSentence": "一首歌",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_027",
+    "wordId": "w_02883",
+    "exampleSentence": "一首诗",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_028",
+    "wordId": "w_02035",
+    "exampleSentence": "一篇文章",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_028",
+    "wordId": "w_02848",
+    "exampleSentence": "一篇日记",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_029",
+    "wordId": "w_00341",
+    "exampleSentence": "一页书",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_029",
+    "wordId": "w_01233",
+    "exampleSentence": "一页纸",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_030",
+    "wordId": "w_00218",
+    "exampleSentence": "一层楼",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_030",
+    "wordId": "w_02002",
+    "exampleSentence": "一层土",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_031",
+    "wordId": "w_00150",
+    "exampleSentence": "一朵花",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_031",
+    "wordId": "w_01201",
+    "exampleSentence": "一朵云",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_032",
+    "wordId": "w_02071",
+    "exampleSentence": "一颗心",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_032",
+    "wordId": "w_03082",
+    "exampleSentence": "一颗牙",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_033",
+    "wordId": "w_00876",
+    "exampleSentence": "一粒米",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_033",
+    "wordId": "w_01139",
+    "exampleSentence": "一粒药",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_034",
+    "wordId": "w_00833",
+    "exampleSentence": "一根筷子",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_034",
+    "wordId": "w_01051",
+    "exampleSentence": "一根头发",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_034",
+    "wordId": "w_02064",
+    "exampleSentence": "一根香蕉",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_035",
+    "wordId": "w_00520",
+    "exampleSentence": "一支笔",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_035",
+    "wordId": "w_02096",
+    "exampleSentence": "一支烟",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_035",
+    "wordId": "w_03833",
+    "exampleSentence": "一支枪",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_036",
+    "wordId": "w_00151",
+    "exampleSentence": "一段话",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_036",
+    "wordId": "w_00221",
+    "exampleSentence": "一段路",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_036",
+    "wordId": "w_00334",
+    "exampleSentence": "一段时间",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_037",
+    "wordId": "w_00199",
+    "exampleSentence": "一节课",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_037",
+    "wordId": "w_05877",
+    "exampleSentence": "一节车厢",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_038",
+    "wordId": "w_00305",
+    "exampleSentence": "一种人",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_038",
+    "wordId": "w_00636",
+    "exampleSentence": "一种动物",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_038",
+    "wordId": "w_01133",
+    "exampleSentence": "一种颜色",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_039",
+    "wordId": "w_00035",
+    "exampleSentence": "一样菜",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_039",
+    "wordId": "w_00086",
+    "exampleSentence": "一样东西",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_040",
+    "wordId": "w_00746",
+    "exampleSentence": "一类活动",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_040",
+    "wordId": "w_01078",
+    "exampleSentence": "一类问题",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_041",
+    "wordId": "w_00197",
+    "exampleSentence": "一级考试",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_041",
+    "wordId": "w_02939",
+    "exampleSentence": "一级台阶",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_042",
+    "wordId": "w_00305",
+    "exampleSentence": "一等人",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_043",
+    "wordId": "w_00101",
+    "exampleSentence": "一号房间",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_043",
+    "wordId": "w_01112",
+    "exampleSentence": "一号鞋",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_044",
+    "wordId": "w_00209",
+    "exampleSentence": "一位老师",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_044",
+    "wordId": "w_00305",
+    "exampleSentence": "一位人",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_044",
+    "wordId": "w_00825",
+    "exampleSentence": "一位客人",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_045",
+    "wordId": "w_00419",
+    "exampleSentence": "一名学生",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_045",
+    "wordId": "w_00429",
+    "exampleSentence": "一名医生",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_045",
+    "wordId": "w_01595",
+    "exampleSentence": "一名记者",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_046",
+    "wordId": "w_00124",
+    "exampleSentence": "一项工作",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_046",
+    "wordId": "w_01873",
+    "exampleSentence": "一项任务",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_047",
+    "wordId": "w_00800",
+    "exampleSentence": "一任经理",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_047",
+    "wordId": "w_03238",
+    "exampleSentence": "一任总统",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_048",
+    "wordId": "w_00419",
+    "exampleSentence": "一届学生",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_048",
+    "wordId": "w_01580",
+    "exampleSentence": "一届会议",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_049",
+    "wordId": "w_00151",
+    "exampleSentence": "一句话",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_050",
+    "wordId": "w_00099",
+    "exampleSentence": "一顿饭",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_050",
+    "wordId": "w_01206",
+    "exampleSentence": "一顿早餐",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_051",
+    "wordId": "w_00082",
+    "exampleSentence": "一场电影",
+    "isDefault": true
+  },
+  {
+    "measureWordId": "mw_051",
+    "wordId": "w_01311",
+    "exampleSentence": "一场比赛",
+    "isDefault": false
+  },
+  {
+    "measureWordId": "mw_052",
+    "wordId": "w_00341",
+    "exampleSentence": "一遍书",
+    "isDefault": true
+  }
+]

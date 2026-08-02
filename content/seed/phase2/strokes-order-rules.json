@@ -1,0 +1,62 @@
+[
+  {
+    "id": "rule-1",
+    "number": 1,
+    "name": "Top to Bottom",
+    "description": "Write strokes from top to bottom",
+    "examples": [
+      "三",
+      "王",
+      "立",
+      "章"
+    ]
+  },
+  {
+    "id": "rule-2",
+    "number": 2,
+    "name": "Left to Right",
+    "description": "Write strokes from left to right",
+    "examples": [
+      "川",
+      "州",
+      "林",
+      "好"
+    ]
+  },
+  {
+    "id": "rule-3",
+    "number": 3,
+    "name": "Horizontal Before Vertical",
+    "description": "Write horizontal strokes before vertical ones that cross them",
+    "examples": [
+      "十",
+      "丰",
+      "井",
+      "用"
+    ]
+  },
+  {
+    "id": "rule-4",
+    "number": 4,
+    "name": "Outside Before Inside",
+    "description": "Write enclosing strokes before content inside",
+    "examples": [
+      "口",
+      "日",
+      "田",
+      "国"
+    ]
+  },
+  {
+    "id": "rule-5",
+    "number": 5,
+    "name": "Middle Before Sides",
+    "description": "Write the center stroke before the side strokes",
+    "examples": [
+      "小",
+      "水",
+      "山",
+      "承"
+    ]
+  }
+]

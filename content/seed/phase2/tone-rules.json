@@ -1,0 +1,53 @@
+[
+  {
+    "id": "rule-3rd-sandhi",
+    "title": "3rd Tone Sandhi",
+    "rule": "When two 3rd tones meet, the first becomes 2nd tone",
+    "examples": [
+      {
+        "chinese": "你好",
+        "dictionary": "nǐ hǎo",
+        "spoken": "ní hǎo"
+      },
+      {
+        "chinese": "很好",
+        "dictionary": "hěn hǎo",
+        "spoken": "hén hǎo"
+      }
+    ]
+  },
+  {
+    "id": "rule-yi",
+    "title": "一 (yī) Tone Change",
+    "rule": "yī becomes yí before a 4th tone; yī becomes yì before 1st/2nd/3rd tone",
+    "examples": [
+      {
+        "chinese": "一个",
+        "dictionary": "yī gè",
+        "spoken": "yí gè"
+      },
+      {
+        "chinese": "一起",
+        "dictionary": "yī qǐ",
+        "spoken": "yì qǐ"
+      }
+    ]
+  },
+  {
+    "id": "rule-bu",
+    "title": "不 (bù) Tone Change",
+    "rule": "bù becomes bú before a 4th tone",
+    "examples": [
+      {
+        "chinese": "不是",
+        "dictionary": "bù shì",
+        "spoken": "bú shì"
+      },
+      {
+        "chinese": "不对",
+        "dictionary": "bù duì",
+        "spoken": "bú duì"
+      }
+    ]
+  }
+]

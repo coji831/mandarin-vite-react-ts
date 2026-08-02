@@ -6,21 +6,28 @@
  * controllers handle HTTP mapping; infrastructure handles I/O.
  *
  * Two-tier caching:
- *   L1: Redis — stores the GCS URL (string, safe to JSON-serialize).
+ *   L1: Redis — stores the GCS FILE PATH (string, safe to JSON-serialize).
  *   L2: GCS — stores the audio MP3 (persistent).
  *
+ * The returned URL is always a SHORT-LIVED SIGNED GCS URL, re-signed on every
+ * read. Signed URLs are self-authenticating (auth is in the query string), so
+ * a browser <audio>/Audio() element — which cannot attach Authorization
+ * headers — can play them without requiring the bucket to be publicly
+ * readable. We cache the file path rather than the signed URL because signed
+ * URLs expire and would otherwise be served stale from Redis.
+ *
  * Flow:
- *   1. Redis check (URL string, ~2ms)
- *   2. Verify GCS file exists (validate URL isn't stale)
- *   3. Return URL if valid
+ *   1. Redis check (file path, ~2ms)
+ *   2. Verify GCS file exists (validate path isn't stale)
+ *   3. Re-sign a fresh URL and return it
  *   4. If stale, invalidate Redis, fall through
  *   5. GCS fallback check (Redis lost but file exists)
- *   6. If GCS hit, cache URL in Redis, return URL
- *   7. If GCS miss, call Google TTS API → upload → cache URL → return URL
+ *   6. If GCS hit, cache path in Redis, return signed URL
+ *   7. If GCS miss, call Google TTS API → upload → cache path → return signed URL
  */
 
 import { computeTTSHash } from "../utils/hashUtils.js";
-import { TTS_STORAGE_PATH } from "../config/tts.js";
+import { TTS_STORAGE_PATH, TTS_SIGNED_URL_TTL_SECONDS } from "../config/tts.js";
 import { ttsError, validationError } from "../utils/errorFactory.js";
 import { createLogger } from "../utils/logger.js";
 import { config } from "../config/index.js";
@@ -45,7 +52,7 @@ interface GcsClientLike {
     data: Buffer | Uint8Array | string | undefined,
     contentType: string,
   ): Promise<void>;
-  getPublicUrl(path: string): string;
+  getSignedUrl(path: string, expirySeconds?: number): Promise<string>;
 }
 
 interface TtsClientLike {
@@ -69,7 +76,8 @@ export class TtsService {
 
   /**
    * Get TTS audio URL for the given text and voice.
-   * Two-tier cache: Redis (URL string) → GCS (MP3 file) → Google TTS API.
+   * Two-tier cache: Redis (file path) → GCS (MP3 file) → Google TTS API.
+   * Always returns a freshly signed, browser-playable URL.
    *
    * @param text - Text to synthesize
    * @param voice - Voice name (e.g. "cmn-CN-Wavenet-B")
@@ -87,38 +95,37 @@ export class TtsService {
 
     const hash = computeTTSHash(text, voice);
     const cachePath = TTS_STORAGE_PATH.replace("{hash}", hash);
-    const redisKey = `tts:url:${hash}`;
+    // Redis stores the FILE PATH, not the signed URL — signed URLs expire and
+    // must be re-signed on each read (see header comment).
+    const redisKey = `tts:path:${hash}`;
     const ttl = 86400; // 24 hours
 
     try {
-      // ── Step 1: Check Redis L1 cache ──────────────────────────────────
-      const cachedUrl = await this.cacheService.get(redisKey);
-      if (cachedUrl !== null) {
-        logger.info(`Redis cache hit: ${redisKey}`);
+      // ── Step 1: Redis L1 cache (file path) ───────────────────────────────
+      const cachedPath = await this.cacheService.get(redisKey);
+      const resolvedPath = cachedPath ?? cachePath;
 
-        // ── Step 2: Verify GCS file still exists (stale detection) ────────
-        const exists = await this.gcsClient.fileExists(cachePath);
-        if (exists) {
-          logger.cacheHit?.(cachePath);
-          return { audioUrl: cachedUrl, cached: true };
+      // ── Step 2: Verify GCS file still exists, then sign a fresh URL ──────
+      if (await this.gcsClient.fileExists(resolvedPath)) {
+        logger.cacheHit?.(resolvedPath);
+        const audioUrl = await this.gcsClient.getSignedUrl(
+          resolvedPath,
+          TTS_SIGNED_URL_TTL_SECONDS,
+        );
+        // Backfill Redis if this was a GCS-only hit
+        if (cachedPath === null) {
+          await this.cacheService.set(redisKey, resolvedPath, ttl).catch(() => {});
         }
+        return { audioUrl, cached: true };
+      }
 
-        // ── Step 4: Stale entry — invalidate Redis, regenerate ──────────
-        logger.warn(`Redis cache stale — GCS file missing: ${cachePath}`);
+      // ── Stale entry — invalidate Redis, regenerate ───────────────────────
+      if (cachedPath !== null) {
+        logger.warn(`Redis cache stale — GCS file missing: ${resolvedPath}`);
         await this.cacheService.delete(redisKey).catch(() => {});
       }
 
-      // ── Step 5: GCS L2 fallback check ─────────────────────────────────
-      const gcsExists = await this.gcsClient.fileExists(cachePath);
-      if (gcsExists) {
-        logger.cacheHit?.(cachePath);
-        const url = this.gcsClient.getPublicUrl(cachePath);
-        // Populate Redis for next time
-        await this.cacheService.set(redisKey, url, ttl).catch(() => {});
-        return { audioUrl: url, cached: true };
-      }
-
-      // ── Step 7: Cache miss — generate new audio ───────────────────────
+      // ── Cache miss — synthesize + upload + sign ──────────────────────────
       logger.cacheMiss?.(cachePath);
       logger.info(`Generating TTS audio: "${text.substring(0, 30)}" (voice: ${voice})`);
       const audioBuffer = await this.ttsClient.synthesizeSpeech(text, { voice });
@@ -126,10 +133,10 @@ export class TtsService {
       await this.gcsClient.uploadFile(cachePath, audioBuffer, "audio/mpeg");
       logger.info(`Uploaded to GCS: ${cachePath}`);
 
-      const audioUrl = this.gcsClient.getPublicUrl(cachePath);
+      const audioUrl = await this.gcsClient.getSignedUrl(cachePath, TTS_SIGNED_URL_TTL_SECONDS);
 
-      // Best-effort Redis cache write
-      await this.cacheService.set(redisKey, audioUrl, ttl).catch((err: Error) => {
+      // Best-effort Redis cache write (path, not URL)
+      await this.cacheService.set(redisKey, cachePath, ttl).catch((err: Error) => {
         logger.warn(`Redis cache write failed: ${err.message}`);
       });
 

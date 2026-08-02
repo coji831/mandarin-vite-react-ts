@@ -17,6 +17,7 @@ export const ROUTE_PATTERNS = {
   progressionFoundationProgressSection: (sectionId) =>
     `/v1/progression/foundation-progress/${sectionId}`,
   progressionPhaseGate: "/v1/progression/phase-gate",
+  progressionGates: "/v1/progression/gates",
   progressionRadicalProgress: "/v1/progression/radical-progress",
   progressionRadicalProgressById: (radicalId) => `/v1/progression/radical-progress/${radicalId}`,
   quizAttempts: "/v1/quiz/attempts",
@@ -28,14 +29,35 @@ export const ROUTE_PATTERNS = {
   radicals: "/v1/radicals",
   radicalsById: (radicalId) => `/v1/radicals/${radicalId}`,
   radicalsByCharacter: (glyph) => `/v1/radicals/character/${glyph}`,
+  radicalsCharacters: (radicalId) => `/v1/radicals/${radicalId}/characters`,
   foundationsPinyinTones: "/v1/foundations/data/pinyin-tones",
   foundationsPinyinCharacterMap: "/v1/foundations/data/pinyin-character-map",
   foundationsStrokes: "/v1/foundations/data/strokes",
   charactersByGlyph: (glyph) => `/v1/characters/${glyph}`,
+  wordsByGlyph: (glyph) => `/v1/words/${glyph}`,
+  wordsMeasureWords: (wordId) => `/v1/words/${wordId}/measure-words`,
   mnemonics: "/v1/mnemonics",
   mnemonicsByChar: (glyph) => `/v1/mnemonics/${glyph}`,
   quizConfig: "/v1/quiz/config",
   quizQuestions: "/v1/quiz/questions",
+  quizSandhiDrill: "/v1/quiz/sandhi-drill/questions",
+  readersPassages: "/v1/readers/passages",
+  readersPassageById: (id) => `/v1/readers/passages/${id}`,
+  readersGenerate: "/v1/readers/generate",
+  readersPassageAudioById: (id) => `/v1/readers/passages/${id}/audio`,
+  readersSessionByPassageId: (id) => `/v1/readers/sessions/${id}`,
+  readersSessionCompleteByPassageId: (id) => `/v1/readers/sessions/${id}/complete`,
+  readersBookmarks: "/v1/readers/bookmarks",
+  readersBookmarkByPassageId: (id) => `/v1/readers/bookmarks/by-passage/${id}`,
+  phoneticClusters: "/v1/phonetic-clusters",
+  phoneticClustersById: (id) => `/v1/phonetic-clusters/${id}`,
+  charactersPhonetic: (glyph) => `/v1/characters/${glyph}/phonetic`,
+  charactersHomophones: (glyph) => `/v1/characters/${glyph}/homophones`,
+  charactersDecomposition: (glyph) => `/v1/characters/${glyph}/decomposition`,
+  charactersSearch: "/v1/characters/search",
+  charactersFrequency: "/v1/characters/frequency",
+  radicalsCharacters: (radicalId) => `/v1/radicals/${radicalId}/characters`,
+  pinyinSearch: "/v1/pinyin/search",
 };
 
 // HSK Levels
@@ -126,3 +148,11 @@ export const ERROR_MESSAGES = {
   TTS_ERROR: "Text-to-speech service error",
   CONVERSATION_ERROR: "Conversation service error",
 };
+
+// HSK Word/Character Counts
+export {
+  HSK_WORD_COUNTS,
+  HSK_CHAR_COUNTS,
+  getCumulativeWordCount,
+  getCumulativeCharCount,
+} from "./hsk-word-counts.js";

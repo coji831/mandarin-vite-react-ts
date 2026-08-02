@@ -2,32 +2,28 @@
  * @file HubRadicalSection.tsx
  * @description Character Detail Hub — Radical Decomposition section (Phase 2+)
  * Story 19.5: Character Hub Radical Section
+ * Story 21.x (visual wave): Each chip opens the radical in the SAME lexical hub
+ * dialog via openHub() — replaces the old navigate + onClose close-then-navigate
+ * hack (which also left a dead `?highlight=` param).
  *
  * Displays clickable radical chips that compose the current character.
  * Phase-gated: visible only for Phase 2+ users.
- * Each chip navigates to the radical's detail in the radicals browser.
  */
 
-import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { Box, Button, Skeleton } from "shared/components";
+import { Button, Skeleton } from "shared/components";
+import { openHub } from "shared/store";
 import { useMergedRadicals } from "../../hooks/useMergedRadicals";
 import "./HubRadicalSection.css";
 
 type HubRadicalSectionProps = {
   character: string;
-  onClose: () => void;
   loading?: boolean;
 };
 
-export function HubRadicalSection({
-  character,
-  onClose,
-  loading: externalLoading,
-}: HubRadicalSectionProps) {
-  const navigate = useNavigate();
+export function HubRadicalSection({ character, loading: externalLoading }: HubRadicalSectionProps) {
   const { phaseGate } = usePhaseGate();
-  const { radicals: matchingRadicals, isLoading, error, retry } = useMergedRadicals(character);
+  const { radicals: matchingRadicals, isLoading } = useMergedRadicals(character);
 
   // Phase gate: same pattern as RadicalsPage
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
@@ -72,8 +68,12 @@ export function HubRadicalSection({
             size="sm"
             className="hub-radical-section__chip flex items-center gap-xs"
             onClick={() => {
-              onClose();
-              navigate(`/learn/radicals?highlight=${radical.id}`);
+              // Swap to the radical in the SAME hub dialog (push onto nav stack).
+              openHub({
+                entityType: "radical",
+                entityId: radical.id,
+                label: `${radical.glyph} (${radical.name_pinyin})`,
+              });
             }}
             aria-label={`View radical: ${radical.glyph} ${radical.meaning}`}
           >

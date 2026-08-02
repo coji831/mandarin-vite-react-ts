@@ -1,7 +1,0 @@
-/* MnemonicPictograph.css — Pictograph state for Mnemonic section */
-/* Story 20.2: Mnemonic Display UI */
-/* Intentional multi-property bundle: info box with colored background + border */
-
-.hub-mnemonic-section__pictograph {
-  border: 1px solid var(--color-info-border);
-}

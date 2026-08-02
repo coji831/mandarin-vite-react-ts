@@ -1,0 +1,44 @@
+/**
+ * @file components/FilterChip/FilterChip.css
+ * @description Styles for the shared FilterChip component.
+ *
+ * Token-based pill for filter-group toggles (e.g. HSK level, bookmark filter).
+ * Selected state is a token primary tint (bg + border + text) — no motion,
+ * no transform, no animation; only color transitions.
+ *
+ * Tokens: --radius-pill, --surface-*, --surface-border, --color-primary-*,
+ * --space-*, --font-*, --text-*  (see DESIGN.md / globals.css)
+ */
+
+.filter-chip {
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--surface-border);
+  background: var(--surface-light-5);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.filter-chip:hover {
+  border-color: var(--color-primary-border-hover);
+}
+
+.filter-chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selected (pressed) state — token primary tint */
+.filter-chip--selected {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-light);
+}

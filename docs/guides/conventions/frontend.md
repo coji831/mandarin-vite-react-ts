@@ -1,10 +1,16 @@
 # Frontend Conventions
 
-**Last Updated:** July 22, 2026  
+**Last Updated:** August 2, 2026  
 **Purpose:** Frontend coding standards, conventions, and patterns  
 **Audience:** Frontend developers
 
 > **When to read this:** When you need to follow frontend code style, naming, import patterns, or project structure conventions.
+
+## Shared Component Catalog
+
+> **Authoritative source:** `.github/component-registry.json` — the machine-checked catalog of all shared components, verified via `npm run check:registry-stories` (gate 7 in `.github/instructions/project-workflow.instructions.md`).
+>
+> All shared components live in `apps/frontend/src/shared/components/` and are re-exported through the `shared/components` barrel. This document does NOT maintain a parallel component list — consult the registry for the current catalog.
 
 ## Code Style & Patterns
 
@@ -281,13 +287,15 @@ import { AuthService } from "./services/AuthService";
 
 ## Shared Components
 
-- **Button**, **Input**, **Textarea**, **ToggleSwitch**, **FilterChip**, **LoadingScreen**, **ErrorScreen**, **ProgressBar**, **ContentBrowser**, **SearchInput**, **Dropdown**, **RadioGroup**, **Box**, **Card**, **Modal**, **Tabs**, **Spinner**, **Skeleton**, **SideNav**, **TopNav**, **FilterControls**, **TextLink**, **CharacterStrokePlayer**, **AnimationCanvas** — all in `src/shared/components/`
-- Prefer these over raw HTML elements
-- `Tabs` supports two style variants: `"default"` (filled tabs) and `"underline"` (underline-style tabs)
+> See [Shared Component Catalog](#shared-component-catalog) above — the authoritative catalog is `.github/component-registry.json` (machine-checked via `npm run check:registry-stories`). Do not maintain a parallel list here.
+>
+> All shared components live in `src/shared/components/` and are re-exported via the `shared/components` barrel. Prefer these over raw HTML elements.
+>
+> `Tabs` supports two style variants: `"default"` (filled tabs) and `"underline"` (underline-style tabs).
 
 ## Zustand Stores
 
-- `hubStore` — CharacterDetailHub overlay state (isOpen, characterId, position)
+- `hubStore` — LexicalHub overlay state (isOpen, currentEntity, navigationStack; open/close/back)
 - `mnemonicStore` — Mnemonic story state (10-state machine: idle, loading, cached, empty, generating, display, editing, error, timeout, pictograph)
 
 ## CSS & Styling Conventions

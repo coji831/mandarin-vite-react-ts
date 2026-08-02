@@ -15,6 +15,20 @@ export default defineConfig({
   plugins: [react()],
   envDir: path.resolve(__dirname, "../.."),
   publicDir: path.resolve(__dirname, "public"),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Keep shared/ modules together to prevent circular dependency
+          // warnings when feature chunks import from shared barrels that
+          // re-export from internal source files.
+          if (id.includes("/src/shared/") && !id.includes("node_modules")) {
+            return "shared";
+          }
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       features: path.resolve(__dirname, "src/features"),

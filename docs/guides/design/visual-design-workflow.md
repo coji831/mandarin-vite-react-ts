@@ -1,8 +1,18 @@
 # Visual Design Workflow — Agent Operations Guide
 
-**Last Updated:** 2026-07-08
+**Last Updated:** 2026-08-02
 **Audience:** AI Coding Agents (GitHub Copilot)
 **Purpose:** Concrete, repeatable workflows for designing UI with Storybook as the single source of truth: (1) define tokens in DESIGN.md, (2) build shared components with Storybook stories, (3) compose feature pages, and (4) verify via Playwright screenshots.
+
+> ⚠️ **SUPERSEDED for story rules** by `.github/instructions/storybook-production-alignment.instructions.md`.
+> The 3-category rule (Pages/Layouts/Shared) overrides "every component has a `.stories.tsx`";
+> feature-component stories (`Features/...`) are **PROHIBITED**. This file is kept for its
+> non-story workflow content (e.g. token-change procedure).
+
+> ⚠️ **SUPERSEDED for component selection & styling** — Component selection and styling
+> conventions are authoritative in `.github/instructions/frontend-css-styling.instructions.md`.
+> The component catalog is `.github/component-registry.json` + `DESIGN.md` (NOT the stale
+> catalog in §2.1 below). This file is retained only for the §1.3–1.4 token-change procedure.
 
 ---
 
@@ -24,7 +34,7 @@ User asks for a UI feature
 ├─ STEP 3: Compose feature pages
 │   ├─ Compose shared components into feature components
 │   ├─ Implement with CSS variables only (never hardcoded values)
-│   └─ Create feature-level stories in Storybook
+│   └─ Verify through the page-container story (no standalone Features/... stories)
 │
 └─ STEP 4: Verify & maintain
     ├─ Screenshot via Playwright → compare to Storybook stories
@@ -51,7 +61,8 @@ User asks for a UI feature
 ├──────────────────────────────────────────────────┤
 │  Shared Component CSS + Storybook stories         │
 │  Storybook IS the visual source of truth.         │
-│  Every component has a .stories.tsx file.         │
+│  Stories: Shared/ + Pages/ + Layouts/ only        │
+│  (see storybook-production-alignment rule)        │
 ├──────────────────────────────────────────────────┤
 │  Feature Component CSS files                      │
 │  Use CSS variables + shared component patterns.   │
@@ -134,8 +145,9 @@ Design element (e.g., a submit button)
 │   ├─ YES, exact match → USE IT with variant/size props
 │   │   <Button variant="primary" size="md">Submit</Button>
 │   │
-│   ├─ YES, close match → USE IT with className overrides
-│   │   <Card className="feature-login-card">...</Card>
+│   ├─ YES, close match → USE IT with variant/size props;
+│   │   extend with new props; NEVER override via CSS cascade
+│   │   <Card>...</Card>
 │   │
 │   └─ NO → Continue to Step 2
 │
@@ -158,7 +170,7 @@ import { fn } from "@storybook/test";
 import { MyComponent } from "./MyComponent";
 
 const meta: Meta<typeof MyComponent> = {
-  title: "Shared/MyComponent", // or "Features/Quiz/QuizCard"
+  title: "Shared/MyComponent", // or "Pages/MyPage" or "Layouts/..."
   component: MyComponent,
   tags: ["autodocs"],
 };
@@ -174,11 +186,13 @@ export const LongContent: Story = {}; // ✅ Edge case
 export const AllVariants: Story = {}; // ✅ Visual overview
 ```
 
-**Storybook title conventions:**
+**Storybook title conventions (3-category rule — see `storybook-production-alignment`):**
 
 - Shared components: `"Shared/<ComponentName>"`
-- Feature components: `"Features/<FeatureName>/<ComponentName>"`
 - Pages: `"Pages/<PageName>"`
+- Layouts: `"Layouts/<LayoutName>"`
+- Feature components have NO standalone `Features/...` stories — they are verified through
+  their page-container story.
 
 ---
 
@@ -215,7 +229,7 @@ grep_search "style=\{\{" --includePattern "apps/frontend/src/**/*.tsx"
 file_search "apps/frontend/src/shared/components/**/*.stories.tsx"
 
 # 6. Run Storybook tests
-npm run test-storybook
+npm run test-storybook --workspace=@mandarin/frontend
 ```
 
 ### 3.3 Verification Checklist
@@ -245,11 +259,11 @@ npm run test-storybook
 
 ### 4.2 Commands
 
-| Command                                | Purpose                            |
-| -------------------------------------- | ---------------------------------- |
-| `npm run storybook`                    | Start Storybook (port 6006)        |
-| `npm run test-storybook`               | Run all Storybook tests            |
-| `npx @google/design.md lint DESIGN.md` | Validate DESIGN.md token integrity |
-| `npm run dev`                          | Start dev server (port 5173)       |
-| `npm run build`                        | Type-check + bundle                |
-| `npm run lint`                         | ESLint (0 errors required)         |
+| Command                                                 | Purpose                            |
+| ------------------------------------------------------- | ---------------------------------- |
+| `npm run storybook`                                     | Start Storybook (port 6006)        |
+| `npm run test-storybook --workspace=@mandarin/frontend` | Run all Storybook tests            |
+| `npx @google/design.md lint DESIGN.md`                  | Validate DESIGN.md token integrity |
+| `npm run dev`                                           | Start dev server (port 5173)       |
+| `npm run build`                                         | Type-check + bundle                |
+| `npm run lint`                                          | ESLint (0 errors required)         |

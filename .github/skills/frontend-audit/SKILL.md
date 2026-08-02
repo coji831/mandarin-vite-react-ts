@@ -17,7 +17,13 @@ user-invocable: true
 
 1. **Hardcoded CSS values** — any color, spacing, or typography value that should be a CSS variable (`var(--)`) or utility class? Use `DESIGN.md` tokens and `globals.css` classes.
 
-2. **Shared component reuse** — any reimplementation of Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser instead of importing from `shared/components`?
+2. **Shared component reuse** — no reimplementation of any shared component (Button, Input,
+   LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, ContentBrowser, etc.) instead
+   of importing from `shared/components`. A raw native element carrying shared-component classes
+   (`btn-*`, `input-*`, `card-*`) is a violation — e.g. a past violation was `<button
+className="btn btn-sm btn-outline">` in `features/radicals/` (migrated to
+   `<Button variant="secondary" size="sm">` on 2026-08-02). Use the shared `<Button variant size>`
+   and extend via new props; never CSS-cascade overrides on shared components. Severity: HIGH.
 
 3. **Direct apiClient calls** — any hook/component calling `apiClient.get/post/etc` directly instead of through a service layer?
 
@@ -79,6 +85,54 @@ user-invocable: true
     - Check for "visual noise": are there competing elements that fight for attention without clear hierarchy?
     - Severity: MEDIUM if spacing uses raw values instead of tokens
     - Severity: LOW if hierarchy is present but could be clearer
+
+22. **Flex-shrink overflow clip** — any flex item with `overflow: hidden` / dynamic content
+    that can be shrunk below its content height (`min-height: auto → 0`)? Growing children need
+    `flex-shrink: 0`; there must be ONE unified `flex:1; min-height:0; overflow-y:auto` scroll
+    container, not nested per-item `overflow-y:auto`/`max-height`. Severity: HIGH if content is
+    clipped (present in DOM but invisible).
+
+23. **Async-enrich / display-data rendering** — for components that enrich fetched data
+    (e.g. `displayFamily = enriched ?? raw`), does the render map over the _display_ shape, not
+    the raw fetch shape? Severity: HIGH if derived/enriched fields (badges, classification) are
+    read from the raw object and therefore never render.
+
+24. **Story test isolation** — do stories that read/write `localStorage` or module singletons
+    reset them in a per-story `beforeEach`? Severity: HIGH if one story's persisted state leaks
+    into another and changes the rendered output.
+
+25. **State matrix per container** — for page-container stories, verify Default/Loading/Error/Empty
+    are ALL present (mocked via MSW), unless the static-page exemption applies (no initial fetch on
+    mount — Login/Register are exempt). Library/Progress/Dashboard/Practices require the full state
+    set where the code paths exist. Severity: HIGH if a fetching container lacks a state.
+
+26. **Layout stories target the real layout** — page stories must use the real layout component
+    (`AppLayout`/`LearnLayout`) as `component:`, not an inline stand-in wrapper. Severity: HIGH if
+    a page story renders a hand-rolled layout instead of the shared one.
+
+27. **No `Features/...` stories** — no NEW story files under `features/**` with `Features/...`
+    titles. The 3 grandfathered stories (RadicalHub, CharacterHub, LexicalHubRouter) are tracked
+    as TD-001..003 in `docs/guides/testing/known-failures.md` — do NOT flag them, do NOT extend
+    them; any NEW `Features/...` story is HIGH severity.
+
+28. **MSW-only for page containers** — page-container data states must be mocked via MSW, not
+    Zustand store-injection. Store/context injection is allowed ONLY inside decorators for
+    auth/guest/layout purposes. Severity: HIGH if a data state is produced by injecting a store
+    directly.
+
+29. **No business logic in stories** — stories must not re-implement container hooks/effects in
+    inline wrapper components (no home-grown data fetching/state machines inside a story). Stories
+    are thin visual shells over real data flow. Severity: HIGH if a story duplicates container
+    logic.
+
+30. **Registry storybook metadata** — every shared component declares `storybook.storyFile` (path
+    exists on disk) + `states` (non-empty, valid enum). Enforced via **gate 7** in
+    `project-workflow.instructions.md` (`npm run check:registry-stories`) — not CI. Severity:
+    MEDIUM if metadata is missing/stale; HIGH if the checker fails.
+
+31. **Doc↔code truth-check** — for changed components/features, verify the feature `docs/design.md` +
+    BR/impl still match (renamed components reflected, removed behaviors gone, endpoints accurate).
+    Severity: HIGH if a doc describes structure that no longer exists.
 
 ## Output Format
 

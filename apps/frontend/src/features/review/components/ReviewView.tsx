@@ -91,13 +91,13 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
         <div className="review-view flex-col gap-lg w-full">
           {/* Header */}
           <header className="flex-between">
-            <span className="text-secondary fw-600 font-sm">
+            <h1 className="text-secondary fw-600 font-sm m-0">
               {"\uD83C\uDCCF"} Review
               {contentType
                 ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
                 : ""}{" "}
               · {progress.current} of {progress.total}
-            </span>
+            </h1>
           </header>
 
           {/* Flip card */}

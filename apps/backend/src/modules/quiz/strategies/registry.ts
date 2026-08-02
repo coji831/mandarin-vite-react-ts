@@ -5,6 +5,8 @@
 import { audioToPinyinAndToneStrategy } from "./AudioToPinyinAndToneStrategy.js";
 import { imeSimulatorStrategy } from "./ImeSimulatorStrategy.js";
 import { radicalGateStrategy } from "./RadicalGateStrategy.js";
+import { comprehensionQuizStrategy } from "./ComprehensionQuizStrategy.js";
+import { qualificationQuizStrategy } from "./QualificationQuizStrategy.js";
 import type { QuizStrategy } from "../types/quiz.js";
 
 /**
@@ -17,6 +19,8 @@ export function getStrategy(type: string): QuizStrategy | null {
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
     "ime-simulator": imeSimulatorStrategy,
     "radical-gate": radicalGateStrategy,
+    comprehension: comprehensionQuizStrategy,
+    qualification: qualificationQuizStrategy,
   };
   return strategies[type] ?? null;
 }
@@ -30,5 +34,7 @@ export function getRegisteredTypes(): string[] {
     "audio-to-pinyin-tone": audioToPinyinAndToneStrategy,
     "ime-simulator": imeSimulatorStrategy,
     "radical-gate": radicalGateStrategy,
+    comprehension: comprehensionQuizStrategy,
+    qualification: qualificationQuizStrategy,
   });
 }

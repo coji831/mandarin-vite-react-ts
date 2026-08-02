@@ -10,6 +10,8 @@
 const root = "/";
 
 const dashboard_page = root;
+// VisFix W6b: explicit alias so /dashboard works as well as / (nav keeps using "/").
+const dashboard_route = root + "dashboard";
 const learn_page = root + "learn";
 const learn_basic = learn_page + "/basic";
 const auth_page = root + "auth";
@@ -32,6 +34,7 @@ const practices_quiz = "/practices/quiz";
 export {
   root,
   dashboard_page,
+  dashboard_route,
   learn_page,
   learn_foundations,
   learn_radicals,

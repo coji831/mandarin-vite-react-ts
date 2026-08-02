@@ -1,0 +1,173 @@
+/**
+ * @file components/Chip/Chip.css
+ * @description Styles for the shared Chip component.
+ * Chip-1: chip-extraction refactor (additive).
+ *
+ * No-motion rule: hover/focus-visible styling ONLY applies to `.chip--interactive`
+ * (rendered as <button>). Transitions limited to colors (background/border-color/color)
+ * via the `transition-colors` utility — no transform, no looping animation, no @keyframes.
+ * `active` on a non-interactive chip is purely visual — no hover/press affordance.
+ *
+ * Tokens: --surface-*, --surface-border, --color-primary-*, --tone-1..5,
+ * --radius-pill, --space-*, --font-*, --text-*  (see DESIGN.md / globals.css)
+ */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-light-5);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 0 var(--space-sm);
+}
+
+/* Sizes */
+.chip--sm {
+  height: var(--space-lg);
+  padding: 0 var(--space-xs);
+  font-size: var(--font-xs);
+}
+
+.chip--md {
+  height: var(--space-xl);
+  font-size: var(--font-sm);
+}
+
+.chip--lg {
+  height: var(--space-2xl);
+  padding: 0 var(--space-md);
+  font-size: var(--font-md);
+}
+
+/* Variants */
+.chip--outline {
+  background: transparent;
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+
+.chip--surface {
+  background: var(--surface-light-10);
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+
+.chip--solid {
+  background: var(--surface-light-20);
+  border-color: transparent;
+  color: var(--text-primary);
+}
+
+.chip--primary {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-light);
+}
+
+.chip--tone-1 {
+  background: transparent;
+  border-color: var(--tone-1);
+  color: var(--tone-1);
+}
+
+.chip--tone-2 {
+  background: transparent;
+  border-color: var(--tone-2);
+  color: var(--tone-2);
+}
+
+.chip--tone-3 {
+  background: transparent;
+  border-color: var(--tone-3);
+  color: var(--tone-3);
+}
+
+.chip--tone-4 {
+  background: transparent;
+  border-color: var(--tone-4);
+  color: var(--tone-4);
+}
+
+.chip--tone-5 {
+  background: transparent;
+  border-color: var(--tone-5);
+  color: var(--tone-5);
+}
+
+/* Active (selected/pressed) — applies to any variant */
+.chip--active {
+  background: var(--color-primary-bg-medium);
+  border-color: var(--color-primary-border-strong);
+  color: var(--color-primary-light);
+}
+
+/* Interactive affordances — ONLY when rendered as <button> */
+.chip--interactive {
+  cursor: pointer;
+}
+
+.chip--interactive:hover {
+  border-color: var(--color-primary-border-hover);
+}
+
+.chip--interactive:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Content slots */
+.chip__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-md);
+}
+
+.chip__glyph {
+  font-size: var(--font-xl);
+  line-height: 1;
+}
+
+.chip--sm .chip__glyph {
+  font-size: var(--font-lg);
+}
+
+.chip--md .chip__glyph {
+  font-size: var(--font-xl);
+}
+
+.chip--lg .chip__glyph {
+  font-size: var(--font-2xl);
+}
+
+.chip__text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.chip__label {
+  line-height: 1.2;
+}
+
+.chip__pinyin {
+  font-size: var(--font-xs);
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.chip__count {
+  background: var(--surface-light-10);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-xs);
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}

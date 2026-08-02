@@ -9,16 +9,16 @@
 - Interactive pinyin guide with clickable initials/finals grid (21 initials + 39 finals), tone-colored display (ˉred ˊorange ˇgreen ˋblue ·gray), and TTS audio playback via existing AudioService
 - Tone reference with pitch contour visualization, tone pair drills, and tone change rules (3rd tone sandhi, 一 tone changes, 不 tone changes)
 - 8 basic strokes reference (点横竖撇捺提折钩) + 4 stroke order rules (top-bottom, left-right, outside-inside, close-last) with Hanzi Writer animated demonstrations
-- Character Detail Hub — unified slide-up overlay showing character info (pinyin, audio, stroke animation) as a shared cross-cutting component with progressive phase-gated section disclosure
+- Character Detail Hub — unified slide-up overlay showing character info (pinyin, audio, stroke animation) with progressive phase-gated section disclosure (built in `features/character-hub/`, not a shared component)
 - Audio-to-Type quiz as Phase 1 gate — hear audio → type pinyin → select tone, covers 2 categories (pinyin recognition + tone identification), ≥90% accuracy to unlock Phase 2
 - Flip-card Review module with simple SRS for Phase 1 content reinforcement (pinyin, tones, strokes)
-- Static JSON content in `apps/frontend/public/data/foundations/` for pinyin, tones, strokes reference data — no backend dependency for content
+- Pinyin, tones, and strokes reference data in `content/`, served to the frontend via the backend foundations module (`GET /v1/foundations/data/*`) through `foundationsService`
 - New backend Prisma models (FoundationProgress, QuizAttempt, PhaseGate) + API endpoints for progress persistence and phase gating
 - Phase 1 of the 4-phase learning roadmap (Epics 18–23); must be delivered before character/vocabulary content (Epics 19+)
 
 **Status:** Completed
 
-**Last Update:** June 25, 2026
+**Last Update:** August 2, 2026
 
 ## Background
 
@@ -40,7 +40,7 @@ Business value: Reduced churn for new users, structured progression increases co
 This epic consists of the following user stories:
 
 1. **Story 18.1: Foundations Page Structure** ✅ ([story-18-1-foundations-page-structure.md](story-18-1-foundations-page-structure.md))
-   - As a **learner**, I want to **access the Foundations page from the Learn section with 4 organized sub-tabs (Pinyin, Tones, Strokes, Animations)**, so that **I can navigate between reference materials in a structured way**.
+   - As a **learner**, I want to **access the Foundations page from the Learn section with 5 organized sub-tabs (Pinyin, Tones, Strokes, Animations, Pictographs)**, so that **I can navigate between reference materials in a structured way**.
    - **Status:** Completed
 
 2. **Story 18.2: Pinyin System Guide** ✅ ([story-18-2-pinyin-system-guide.md](story-18-2-pinyin-system-guide.md))
@@ -67,17 +67,17 @@ This epic consists of the following user stories:
 
 This epic is divided into stories based on the following approach:
 
-- **Story 18.1** establishes infrastructure (feature folder, routing, 4-tab layout, navigation, phase-gating) — must be built first as the scaffold for all Foundations content
+- **Story 18.1** establishes infrastructure (feature folder, routing, 5-tab layout, navigation, phase-gating) — must be built first as the scaffold for all Foundations content
 - **Stories 18.2–18.3** focus on pinyin and tones reference content — the most critical skill per the learning roadmap ("master pinyin first"). Tones builds on pinyin knowledge.
 - **Story 18.4** focuses on stroke reference + Hanzi Writer animations — a separate learning domain from pinyin/tones, can be built in parallel with 18.2/18.3
-- **Story 18.5** builds the Character Detail Hub — a shared overlay component used by the stroke animations tab and all future content epics. Depends on Story 18.1 for routing infrastructure.
+- **Story 18.5** builds the Character Detail Hub — an overlay component used by the stroke animations tab and all future content epics. Depends on Story 18.1 for routing infrastructure.
 - **Story 18.6** builds the Phase 1 gate quiz covering 2 categories (pinyin recognition + tone identification) — depends on Stories 18.2–18.3 (quiz uses pinyin/tones content) and 18.1 (quiz page routing). Backend work for QuizAttempt/PhaseGate must be completed first.
 
 Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. Story 18.6 depends on 18.2–18.3 content knowledge being available.
 
 ## Acceptance Criteria
 
-- [x] Foundations page accessible at `/learn/foundations` with 4 sub-tabs: Pinyin, Tones, Strokes, Animations (verify: navigate to route, all 4 tabs render)
+- [x] Foundations page accessible at `/learn/foundations` with 5 sub-tabs: Pinyin, Tones, Strokes, Animations, Pictographs (verify: navigate to route, all 5 tabs render)
 - [x] Phase-gated TabBar shows correct tabs for Phase 1 user (verify: Foundations active, all other Learn tabs locked with 🔒)
 - [x] Pinyin grid renders 21 initials + 39 finals, each cell clickable with TTS audio playback (verify: click b → hear "b", click b+a → hear "ba" in 5 tones)
 - [x] Tone-colored pinyin display follows the scheme: ˉred ˊorange ˇgreen ˋblue ·gray (verify: visual inspection of pinyin rendering)
@@ -107,10 +107,10 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 
 ## Architecture Decisions
 
-- **Decision:** Static JSON for reference content (pinyin, tones, strokes) — not backend API
-  - Rationale: Pinyin initials/finals, stroke definitions, and tone rules are fixed data that never changes. JSON files under `apps/frontend/public/data/foundations/` eliminate backend latency and simplify deployment.
-  - Alternatives considered: Backend API (over-engineered for static data), Database tables (unnecessary complexity for fixed reference), Inline constants (harder to maintain and update)
-  - Implications: Content updates require a frontend deployment. Acceptable for reference data that changes infrequently. Backend is reserved for user-specific progress/quiz data.
+- **Decision:** Reference content served via backend foundations module (initially static JSON, moved to backend API in Story 18.6)
+  - Rationale: Pinyin initials/finals, stroke definitions, and tone rules are fixed data that never changes. Source JSON files live in `content/` (`pinyin.json`, `tones.json`, `strokes.json`) and are served via the backend foundations module (`GET /v1/foundations/data/pinyin-tones`, `/data/strokes`, `/data/pinyin-character-map`).
+  - Alternatives considered: Static JSON in the frontend (initially chosen in Epic 18, later moved to the backend API), Database tables (used to store seeded reference data), Inline constants (harder to maintain and update)
+  - Implications: Content updates require a backend redeploy/reseed. Backend is the single source of truth for both reference data and user-specific progress/quiz data.
 
 - **Decision:** Hanzi Writer npm library for stroke animations
   - Rationale: Handles 9000+ characters, built-in SVG animation with play/pause/step/speed controls, MIT license, no backend dependency.
@@ -135,7 +135,7 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 - **Decision:** Tone change rules stored as static JSON content, rendered as reference cards
   - Rationale: The three tone change rules (3rd sandhi, 一, 不) are fixed linguistic rules with a small, enumerable set of examples. No interactive algorithm needed.
   - Alternatives considered: Algorithmic tone sandhi application (complex, error-prone, needed only for TTS which already handles it), Backend API (no dynamic data to serve)
-  - Implications: Content is reference-only in Phase 1. TTS audio via existing AudioService handles sandhi automatically (Word.spokenPinyinOverride from data model).
+  - Implications: Content is reference-only in Phase 1. TTS audio relies on Google's neural TTS engine, which naturally renders tone sandhi — there is no server-side sandhi transformation and no `Word.spokenPinyinOverride` field. (Future enhancement: a `spokenPinyinOverride` column + TTS text override could be added if TTS output ever needs explicit control.)
 
 - **Decision:** Shared constant array for foundation section definitions (`packages/shared-constants/`)
   - Rationale: Both frontend and backend need to agree on what foundation sections exist (pinyin, tones, strokes, animations). Without shared constants, the backend can't validate progress submissions or auto-initialize records for new users. The existing `packages/shared-constants` package already serves this purpose for API routes and HSK levels.
@@ -150,7 +150,7 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 ## Implementation Plan
 
 1. Create `progression` backend module with Prisma models (FoundationProgress, QuizAttempt, PhaseGate), API endpoints, service layer, and frontend service
-2. Scaffold `foundations` feature folder under `apps/frontend/src/features/` with routing, 4-tab layout, phase-gated LearnLayout updates
+2. Scaffold `foundations` feature folder under `apps/frontend/src/features/` with routing, 5-tab layout, phase-gated LearnLayout updates
 3. Build interactive pinyin chart with initials/finals grid, tone-colored display, TTS audio integration
 4. Build tone reference with contours animation, tone pair drills, tone change rules section
 5. Build stroke reference (8 basic strokes + 4 rules) + stroke animations tab with Hanzi Writer integration
@@ -185,12 +185,12 @@ Stories 18.1–18.4 can be delivered sequentially. Story 18.5 depends on 18.1. S
 - **Conventions:** Follow `docs/guides/references/code-conventions.md` and `docs/knowledge-base/practices/solid-principles.md` for all code
 - **Feature folder:** Create `apps/frontend/src/features/foundations/` with `components/`, `hooks/`, `services/`, `stores/`, `types/`, `utils/`, `index.ts`
 - **Backend module:** Create `apps/backend/src/modules/progression/` following existing module pattern (api/domain/repositories/services/index.js)
-- **Prisma models:** Add FoundationProgress, QuizAttempt, PhaseGate models — see `verification-artifacts/shared-data-model-v3.md` for exact schema
+- **Prisma models:** Add FoundationProgress, QuizAttempt, PhaseGate models — see `docs/knowledge-base/data/shared-data-model.md` for the shared data model
 - **Shared constants:** Add `packages/shared-constants/src/foundations.ts` with `FOUNDATION_SECTIONS` array. Import from `@mandarin/shared-constants` in both frontend and backend. Backend uses it to validate sectionId and auto-initialize FoundationProgress records.
-- **Static JSON data:** Store at `apps/frontend/public/data/foundations/` — separate files for pinyin.json, tones.json, strokes.json
-- **Audio:** Reuse existing AudioService from `apps/frontend/src/features/vocabulary/services/audioService.ts` — no new TTS integration needed
+- **Reference data:** Served via the backend foundations module (`GET /v1/foundations/data/pinyin-tones`, `/data/strokes`, `/data/pinyin-character-map`); source JSON files live in `content/pinyin/`, `content/tones/`, `content/strokes/`
+- **Audio:** Reuse existing AudioService from `apps/frontend/src/shared/services/audio/audioService.ts` — no new TTS integration needed
 - **Hanzi Writer:** Install `hanzi-writer` npm package (MIT license). Wrap in custom React component with play/pause/step/speed controls.
-- **Character Detail Hub:** Build as shared component at `apps/frontend/src/shared/components/CharacterDetailHub/`. Use React Portal for overlay behavior. Store state via simple Context or zustand.
+- **Character Detail Hub:** Build as feature component at `apps/frontend/src/features/character-hub/`. Use React Portal for overlay behavior. Store state via `shared/store/hubStore.ts` (Zustand).
 - **Route constants:** Already defined in `apps/frontend/src/shared/constants/paths.ts` (learn_foundations, etc.). Add any missing constants.
 - **Quiz:** Extend existing QuizSession infrastructure OR build standalone. Prefer standalone for Phase 1 simplicity (fewer integration points).
 - **Testing:** Write tests for FoundationProgress API endpoints, quiz flow, Hub open/close behavior, tone-colored pinyin rendering

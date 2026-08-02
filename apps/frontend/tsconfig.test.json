@@ -1,15 +1,30 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
+    "composite": true,
+    "tsBuildInfoFile": "./tsconfig.test.tsbuildinfo",
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
+    "paths": {
+      "features": ["./src/features"],
+      "features/*": ["./src/features/*"],
+      "shared": ["./src/shared"],
+      "shared/*": ["./src/shared/*"],
+      "utils": ["./src/utils"],
+      "utils/*": ["./src/utils/*"],
+      "config": ["./src/shared/config"],
+      "config/*": ["./src/shared/config/*"],
+      "services": ["./src/shared/api"],
+      "services/*": ["./src/shared/api/*"],
+      "src": ["./src"],
+      "src/*": ["./src/*"]
+    }
   },
   "include": [
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/__tests__/**/*",
+    "src",
     "src/setupTests.ts",
     "src/setupTests.d.ts",
     "src/vite-env.d.ts",
+    ".storybook/**/*",
     "vite.config.ts"
   ],
   "exclude": []

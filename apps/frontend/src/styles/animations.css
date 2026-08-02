@@ -15,53 +15,6 @@
 }
 
 /* ═══════════════════════════════════════════════
-   @keyframes: Motion
-   ═══════════════════════════════════════════════ */
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   @keyframes: Pulse / Opacity
-   ═══════════════════════════════════════════════ */
-@keyframes pulse-opacity {
-  0%,
-  100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-/* ═══════════════════════════════════════════════
    @keyframes: Modal
    ═══════════════════════════════════════════════ */
 @keyframes modal-enter {
@@ -103,18 +56,6 @@
   animation: fade-in 0.2s ease-out;
 }
 
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse-opacity 1.5s ease-in-out infinite;
-}
-
-.animate-pulse-fast {
-  animation: pulse 1s ease-in-out infinite;
-}
-
 .skeleton-loading {
   background: linear-gradient(
     90deg,
@@ -138,10 +79,6 @@
     background var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast);
-}
-
-.transition-opacity {
-  transition: opacity var(--transition-fast);
 }
 
 .transition-border-color {

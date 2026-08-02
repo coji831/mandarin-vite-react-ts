@@ -1,0 +1,10 @@
+/**
+ * @file WordHub.css
+ * @description Styles for WordHub component.
+ * Story 21.4: Reading UI + LexicalHub Phase 1
+ */
+
+.word-hub__definition {
+  margin-left: 1.2em;
+  list-style-position: inside;
+}

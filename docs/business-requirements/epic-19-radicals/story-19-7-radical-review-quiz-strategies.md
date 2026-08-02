@@ -36,13 +36,12 @@ This story adds two complementary mechanics based on `docs/knowledge-base/adult-
 
 ## Notes
 
-- **Mnemonic Recall variant** (proposed in `verification-artifacts/radical-review-quiz-strategy.md`) is deferred — blocked on Epic 20 (Mnemonic Stories) which provides the story data needed for multiple-choice story selection.
+- **Mnemonic Recall variant** (proposed in the original quiz-strategy design) is deferred — blocked on Epic 20 (Mnemonic Stories) which provides the story data needed for multiple-choice story selection.
 
 ## Related Issues
 
 - Epic 19 / **Radicals & Character Composition** ([README.md](README.md)) (Parent epic)
 - Story 19.6 / **IME Simulator Quiz** ([story-19-6-ime-simulator-quiz.md](story-19-6-ime-simulator-quiz.md)) (Related — also uses strategy pattern for Phase 2)
-- `verification-artifacts/radical-review-quiz-strategy.md` (Proposal doc)
 
 ## Implementation Status
 

@@ -1,0 +1,7 @@
+/**
+ * @file services/index.ts
+ * @description Barrel exports for word-hub services.
+ * Story 21.x: Word Hub migration from lexical-hub
+ */
+export { loadWordData, loadMeasureWords } from "./wordService";
+export type { WordDetailResponse, MeasureWord, MeasureWordsResponse } from "./wordService";

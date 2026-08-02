@@ -19,6 +19,7 @@ export default defineConfig({
     include: [
       "tests/**/*.test.ts",
       "!tests/integration/**",
+      "scripts/__tests__/**/*.test.ts",
       "src/modules/**/__tests__/**/*.test.ts",
       "src/shared/infrastructure/**/__tests__/**/*.test.ts",
       "src/shared/**/__tests__/**/*.test.ts",

@@ -1,1 +1,1 @@
-See AGENTS.md for full agent instructions.
+See .github/AGENTS.md for full agent instructions.

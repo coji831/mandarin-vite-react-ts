@@ -39,7 +39,7 @@ describe("MnemonicsRepository", () => {
   const testGlyph = "好";
   const testUserId = "user-1";
   const testStory = "A woman holding a child represents goodness.";
-  const testRadicalIds = ["ch_hsk_hao"];
+  const testRadicalIds = ["ch_1001"];
 
   const mockPrismaRecord = {
     id: "mnemonic-1",
@@ -206,7 +206,7 @@ describe("MnemonicsRepository", () => {
 
   describe("getCharacterRadicals", () => {
     it("should fetch radical decomposition", async () => {
-      const mockRadicals = [{ characterGlyph: testGlyph, radicalId: "ch_hsk_hao" }];
+      const mockRadicals = [{ characterGlyph: testGlyph, radicalId: "ch_1001" }];
       mockPrisma.characterRadical.findMany.mockResolvedValue(mockRadicals);
 
       const result = await repository.getCharacterRadicals(testGlyph);

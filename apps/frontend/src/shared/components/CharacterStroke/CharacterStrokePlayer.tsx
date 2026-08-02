@@ -12,10 +12,12 @@
  * Extracted from features/foundations to shared/components/CharacterStroke.
  */
 
-import { useHanziWriter } from "./useHanziWriter";
+import { Box, Button } from "shared/components";
+import { useAudioPlayback } from "shared/hooks";
+import { openHub } from "shared/store";
 import { AnimationCanvas } from "./AnimationCanvas";
-import { Button, Box } from "shared/components";
 import "./CharacterStrokePlayer.css";
+import { useHanziWriter } from "./useHanziWriter";
 
 export type CharacterStrokeMode = "full" | "mini";
 
@@ -26,10 +28,6 @@ export type CharacterStrokePlayerProps = {
   mode?: CharacterStrokeMode;
   /** Font utility class for the placeholder character (e.g. "font-3xl", "font-5xl") */
   placeholderSize?: string;
-  /** Called when clicking the character/canvas (e.g. to open Character Hub) */
-  onCharacterClick?: (character: string) => void;
-  /** Called when clicking the audio button (full mode only) */
-  onPlayAudio?: (character: string) => void;
   /** Additional class names */
   className?: string;
 };
@@ -38,8 +36,6 @@ export function CharacterStrokePlayer({
   character,
   mode = "full",
   placeholderSize,
-  onCharacterClick,
-  onPlayAudio,
   className = "",
 }: CharacterStrokePlayerProps) {
   const {
@@ -60,6 +56,7 @@ export function CharacterStrokePlayer({
     handleStrokeSelect,
   } = useHanziWriter(character);
 
+  const { playWordAudio } = useAudioPlayback();
   // ── Mini mode: compact player for embedding ──────────────────────
 
   if (mode === "mini") {
@@ -71,7 +68,9 @@ export function CharacterStrokePlayer({
           isReady={isReady}
           error={error}
           character={character}
-          onClick={() => onCharacterClick?.(character)}
+          onClick={() =>
+            openHub({ entityType: "character", entityId: character, label: character })
+          }
           placeholderSize={placeholderSize ?? "font-5xl"}
         />
 
@@ -145,16 +144,16 @@ export function CharacterStrokePlayer({
       {/* Character info — above canvas */}
       <div className="flex-center gap-sm p-xs">
         <span className="font-2xl fw-700 text-primary">{character}</span>
-        {onPlayAudio && (
-          <Button
-            variant="icon"
-            onClick={() => onPlayAudio(character)}
-            title={`Play ${character}`}
-            aria-label={`Play pronunciation for ${character}`}
-          >
-            🔊
-          </Button>
-        )}
+
+        <Button
+          variant="icon"
+          onClick={() => playWordAudio({ chinese: character })}
+          title={`Play ${character}`}
+          aria-label={`Play pronunciation for ${character}`}
+        >
+          🔊
+        </Button>
+
         <span className="font-xs font-italic text-muted">
           {isReady && totalStrokes > 0
             ? isPlaying
@@ -170,7 +169,7 @@ export function CharacterStrokePlayer({
         isReady={isReady}
         error={error}
         character={character}
-        onClick={() => onCharacterClick?.(character)}
+        onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
         placeholderSize={placeholderSize ?? "font-3xl"}
       />
 
@@ -183,16 +182,14 @@ export function CharacterStrokePlayer({
       )}
 
       {/* Open in Character Hub */}
-      {onCharacterClick && (
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => onCharacterClick(character)}
-          aria-label="Open in Character Detail Hub"
-        >
-          📖 Open in Character Hub
-        </Button>
-      )}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
+        aria-label="Open in Character Detail Hub"
+      >
+        📖 Open in Character Hub
+      </Button>
 
       {/* Controls */}
       <div className="flex-center gap-xs flex-wrap">

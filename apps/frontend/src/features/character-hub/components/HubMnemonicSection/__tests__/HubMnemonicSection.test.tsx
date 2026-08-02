@@ -31,56 +31,119 @@ vi.mock("shared/hooks", () => ({
   usePhaseGate: () => mockUsePhaseGate(),
 }));
 
-vi.mock("shared/components", () => ({
-  Button: ({
-    children,
-    onClick,
-    ...props
+vi.mock("shared/components", async () => {
+  const actual = await vi.importActual("shared/components");
+
+  // Create a mock MnemonicCard that renders enough for test assertions
+  const MockMnemonicCard = ({
+    character,
+    classification,
+    story,
+    isEdited,
+    onEdit,
+    onRegenerate,
+    isLoading,
+    isGenerating,
   }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-    [key: string]: unknown;
-  }) => (
-    <button onClick={onClick} {...props}>
-      {children}
-    </button>
-  ),
-  Spinner: ({ size }: { size?: string }) => (
-    <div data-testid="spinner" data-size={size}>
-      Spinner
-    </div>
-  ),
-  Textarea: ({
-    value,
-    onChange,
-    ...props
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-    [key: string]: unknown;
-  }) => <textarea value={value} onChange={(e) => onChange(e.target.value)} {...props} />,
-  Modal: ({
-    isOpen,
-    title,
-    children,
-    footer,
-    onClose,
-  }: {
-    isOpen: boolean;
-    title?: string;
-    children: React.ReactNode;
-    footer?: React.ReactNode;
-    onClose?: () => void;
-  }) =>
-    isOpen ? (
-      <div data-testid="modal" role="dialog">
-        <h2>{title}</h2>
-        <div>{children}</div>
-        {footer && <div data-testid="modal-footer">{footer}</div>}
-        <button onClick={onClose}>Close</button>
+    character: string;
+    classification?: string | null;
+    story: string;
+    isEdited: boolean;
+    onEdit?: () => void;
+    onRegenerate?: () => void;
+    isLoading?: boolean;
+    isGenerating?: boolean;
+  }) => {
+    if (isLoading || isGenerating) {
+      return (
+        <div
+          role="status"
+          aria-label={isGenerating ? "Generating mnemonic story" : "Loading mnemonic story"}
+        >
+          Loading story…
+        </div>
+      );
+    }
+    return (
+      <div>
+        {classification && <span>{classification}</span>}
+        {!story && classification === "pictograph" && (
+          <div>
+            <p>
+              This character (&ldquo;{character}&rdquo;) is a simple pictograph&mdash; its meaning
+              is directly represented by its form.
+            </p>
+          </div>
+        )}
+        {story && <div>{story}</div>}
+        {isEdited && <span>(edited)</span>}
+        {onEdit && (
+          <button aria-label="Edit mnemonic story" onClick={onEdit}>
+            ✏️
+          </button>
+        )}
+        {onRegenerate && (
+          <button aria-label="Regenerate mnemonic story" onClick={onRegenerate}>
+            🔄
+          </button>
+        )}
       </div>
-    ) : null,
-}));
+    );
+  };
+
+  return {
+    ...(typeof actual === "object" && actual !== null ? actual : {}),
+    Button: ({
+      children,
+      onClick,
+      ...props
+    }: {
+      children: React.ReactNode;
+      onClick?: () => void;
+      [key: string]: unknown;
+    }) => (
+      <button onClick={onClick} {...props}>
+        {children}
+      </button>
+    ),
+    Spinner: ({ size }: { size?: string }) => (
+      <div data-testid="spinner" data-size={size}>
+        Spinner
+      </div>
+    ),
+    Textarea: ({
+      value,
+      onChange,
+      ...props
+    }: {
+      value: string;
+      onChange: (v: string) => void;
+      [key: string]: unknown;
+    }) => <textarea value={value} onChange={(e) => onChange(e.target.value)} {...props} />,
+    Modal: ({
+      isOpen,
+      title,
+      children,
+      footer,
+      onClose,
+    }: {
+      isOpen: boolean;
+      title?: string;
+      children: React.ReactNode;
+      footer?: React.ReactNode;
+      onClose?: () => void;
+    }) =>
+      isOpen ? (
+        <div data-testid="modal" role="dialog">
+          <h2>{title}</h2>
+          <div>{children}</div>
+          {footer && <div data-testid="modal-footer">{footer}</div>}
+          <button onClick={onClose}>Close</button>
+        </div>
+      ) : null,
+    MnemonicCard: MockMnemonicCard,
+  };
+});
 
 import { HubMnemonicSection } from "../../HubMnemonicSection/HubMnemonicSection";
 import type { MnemonicResponse } from "../../../services";
@@ -190,9 +253,10 @@ describe("HubMnemonicSection", () => {
 
   // ── Pictograph State ────────────────────────────────
 
-  it("pictograph state shows info message", () => {
+  it("pictograph state shows classification badge", () => {
     render(<HubMnemonicSection character="人" />);
 
-    expect(screen.getByText(/This character.*is a simple pictograph/)).toBeTruthy();
+    // MnemonicCard renders with classification="pictograph" for known pictographs
+    expect(screen.getByText("pictograph")).toBeTruthy();
   });
 });

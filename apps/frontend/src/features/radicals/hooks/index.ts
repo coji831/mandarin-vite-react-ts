@@ -5,3 +5,5 @@
  */
 
 export { useRadicals } from "./useRadicals";
+export { useRadicalById } from "./useRadicalById";
+export type { RadicalByIdResult } from "./useRadicalById";

@@ -9,10 +9,17 @@
  */
 
 import { create } from "zustand";
-import type { StrategyType, QuizPhase, QuizSession, GateQuizResult } from "../types";
+import type {
+  StrategyType,
+  QuizPhase,
+  QuizSession,
+  GateQuizResult,
+  QuizStrategyConfig,
+} from "../types";
 import { createInitialSession } from "../types/session";
 import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
+import { getPhoneticHint, getCharacterDetail } from "../services/hintService";
 
 type QuizSessionStore = QuizSession & {
   /** Initialize a new session with the given strategy */
@@ -35,6 +42,20 @@ type QuizSessionStore = QuizSession & {
 
   /** Decrement timer by 1 second */
   tick: () => void;
+
+  // ─── Hint system actions (Story 21.18) ────────────────────────────
+
+  /** Consume one hint (decrement hintsRemaining) */
+  useHint: () => void;
+
+  /** Reset hints for a new quiz session */
+  resetHints: () => void;
+
+  /** Apply -5% penalty for using a radical hint on the current question */
+  applyRadicalPenalty: () => void;
+
+  /** Record an answer by classification type for score-by-type tracking */
+  recordAnswerByType: (classification: string, correct: boolean) => void;
 };
 
 export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
@@ -46,7 +67,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       const strategy = getStrategy(strategyType);
 
       // Fetch config from backend (source of truth for numeric values)
-      let strategyConfig: import("../types").QuizStrategyConfig | null = null;
+      let strategyConfig: QuizStrategyConfig | null = null;
       try {
         strategyConfig = await quizService.getQuizConfig(strategyType);
       } catch (_apiErr) {
@@ -58,10 +79,19 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       const questions = await quizService.generateQuestionPool(strategyType, questionCount);
       const timer = Math.round(timeLimitMinutes * 60);
 
+      // Compute session metadata for backend tracking
+      const neutralToneTested = questions.some((q) => q.correctTone === 0);
+      const sandhiQuestions = questions.filter((q) => q.isSandhiQuestion).length;
+      const metadata = { neutralToneTested, sandhiQuestions };
+
       // Create a backend attempt record (non-blocking — store attemptId for later use)
       let attemptId: string | null = null;
       try {
-        const attempt = await quizService.createQuizAttempt(strategyType, strategy?.phase ?? 1);
+        const attempt = await quizService.createQuizAttempt(
+          strategyType,
+          strategy?.phase ?? 1,
+          metadata,
+        );
         attemptId = attempt.id;
       } catch (_apiErr) {
         // Backend unavailable — proceed without remote attempt, answers won't be persisted
@@ -78,6 +108,11 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         error: null,
         attemptId,
         strategyConfig,
+        hintsRemaining: 3,
+        currentPhoneticHint: null,
+        showRadicalHint: false,
+        maxScorePenalty: 0,
+        scoreByType: {},
       });
     } catch (err) {
       set({
@@ -98,8 +133,55 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     // Step 1: Local evaluation (optimistic UI — shown immediately)
     const optimisticResult = strategy.evaluateAnswer(question, pinyin, tone);
 
-    // Step 2: Send to backend for authoritative evaluation
-    let backendVerdict = optimisticResult;
+    // Step 2: For IME Simulator, fetch phonetic hint and character detail on wrong answer
+    let augmentedResult = optimisticResult;
+    if (strategyType === "ime-simulator" && !optimisticResult.correct && question.character) {
+      // Fetch phonetic hint and character detail in parallel
+      const [phoneticHintData, charDetail] = await Promise.all([
+        getPhoneticHint(question.character),
+        getCharacterDetail(question.character),
+      ]);
+
+      augmentedResult = {
+        ...optimisticResult,
+        phoneticHint: phoneticHintData,
+        classification: charDetail?.classification ?? undefined,
+      };
+
+      // Update current phonetic hint state in store
+      if (phoneticHintData) {
+        set({
+          currentPhoneticHint: {
+            data: phoneticHintData,
+            hasPhoneticComponent: true,
+          },
+        });
+      } else {
+        set({
+          currentPhoneticHint: {
+            data: null,
+            hasPhoneticComponent: false,
+          },
+        });
+      }
+    } else if (strategyType === "ime-simulator" && question.character) {
+      // Correct answer — still fetch classification for score-by-type tracking
+      const charDetail = await getCharacterDetail(question.character);
+      if (charDetail?.classification) {
+        augmentedResult = {
+          ...optimisticResult,
+          classification: charDetail.classification,
+        };
+      }
+    }
+
+    // Step 3: Record answer by classification type
+    if (augmentedResult.classification) {
+      get().recordAnswerByType(augmentedResult.classification, augmentedResult.correct);
+    }
+
+    // Step 4: Send to backend for authoritative evaluation
+    let backendVerdict = augmentedResult;
     if (attemptId) {
       try {
         const backendAnswer = await quizService.submitAnswer(attemptId, {
@@ -114,9 +196,9 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         // For IME and multiple-choice, trust local evaluation
         // (backend compares pinyin strings; MC strategies use option IDs)
         const trustLocalEval = strategyType === "ime-simulator" || strategyType === "radical-gate";
-        if (!trustLocalEval && backendAnswer.correct !== optimisticResult.correct) {
+        if (!trustLocalEval && backendAnswer.correct !== augmentedResult.correct) {
           backendVerdict = {
-            ...optimisticResult,
+            ...augmentedResult,
             correct: backendAnswer.correct,
           };
         }
@@ -161,6 +243,8 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
 
   nextQuestion: () => {
     const { currentIndex, questions } = get();
+    // Clear per-question hint state
+    set({ currentPhoneticHint: null, showRadicalHint: false });
     if (currentIndex + 1 < questions.length) {
       set({ currentIndex: currentIndex + 1, phase: "QUESTION" });
     } else {
@@ -195,5 +279,45 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     // Re-initialize with the same strategy — generates new questions
     const store = get();
     await store.initialize(strategyType);
+  },
+
+  // ─── Hint system actions (Story 21.18) ────────────────────────────
+
+  useHint: () => {
+    set((s) => ({
+      hintsRemaining: Math.max(0, s.hintsRemaining - 1),
+    }));
+  },
+
+  resetHints: () => {
+    set({
+      hintsRemaining: 3,
+      currentPhoneticHint: null,
+      showRadicalHint: false,
+      maxScorePenalty: 0,
+      scoreByType: {},
+    });
+  },
+
+  applyRadicalPenalty: () => {
+    set((s) => ({
+      maxScorePenalty: s.maxScorePenalty + 0.05,
+      showRadicalHint: true,
+    }));
+  },
+
+  recordAnswerByType: (classification: string, correct: boolean) => {
+    set((s) => {
+      const current = s.scoreByType[classification] ?? { correct: 0, total: 0 };
+      return {
+        scoreByType: {
+          ...s.scoreByType,
+          [classification]: {
+            correct: current.correct + (correct ? 1 : 0),
+            total: current.total + 1,
+          },
+        },
+      };
+    });
   },
 }));
