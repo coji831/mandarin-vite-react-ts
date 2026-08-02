@@ -68,7 +68,9 @@ export function CharacterStrokePlayer({
           isReady={isReady}
           error={error}
           character={character}
-          onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
+          onClick={() =>
+            openHub({ entityType: "character", entityId: character, label: character })
+          }
           placeholderSize={placeholderSize ?? "font-5xl"}
         />
 

@@ -25,13 +25,10 @@ describe("Badge", () => {
     expect(container.querySelector("span.badge--primary")).toBeInTheDocument();
   });
 
-  it.each(["primary", "surface", "accent"] as const)(
-    "applies the %s variant class",
-    (variant) => {
-      const { container } = render(<Badge variant={variant}>HSK 3</Badge>);
-      expect(container.querySelector(`span.badge--${variant}`)).toBeInTheDocument();
-    },
-  );
+  it.each(["primary", "surface", "accent"] as const)("applies the %s variant class", (variant) => {
+    const { container } = render(<Badge variant={variant}>HSK 3</Badge>);
+    expect(container.querySelector(`span.badge--${variant}`)).toBeInTheDocument();
+  });
 
   it("merges a custom className", () => {
     const { container } = render(<Badge className="shrink-0">HSK 4</Badge>);

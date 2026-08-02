@@ -19,7 +19,9 @@ describe("resolveEffectiveClassification", () => {
 
   it("returns compound_ideograph for ideograph with 2+ radicals", () => {
     expect(resolveEffectiveClassification("ideograph", ["日", "月"])).toBe("compound_ideograph");
-    expect(resolveEffectiveClassification("ideograph", ["木", "木", "火"])).toBe("compound_ideograph");
+    expect(resolveEffectiveClassification("ideograph", ["木", "木", "火"])).toBe(
+      "compound_ideograph",
+    );
   });
 
   it("returns simple_ideograph for ideograph with <2 radicals", () => {

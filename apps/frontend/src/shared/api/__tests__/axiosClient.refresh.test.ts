@@ -12,7 +12,12 @@
 import { describe, it, expect, afterEach, afterAll, beforeAll, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "src/mocks/server";
-import { apiClient, requestAccessToken, setLogoutCallback, clearLogoutCallback } from "../axiosClient";
+import {
+  apiClient,
+  requestAccessToken,
+  setLogoutCallback,
+  clearLogoutCallback,
+} from "../axiosClient";
 
 // apiClient baseURL is `http://localhost:3001/api`; MSW handlers need FULL URLs
 // (relative paths are not resolved against an origin in the node test env).

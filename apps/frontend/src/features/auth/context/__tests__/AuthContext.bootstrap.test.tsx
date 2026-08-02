@@ -125,9 +125,7 @@ describe("AuthContext bootstrap (F4 silent-refresh race)", () => {
 
     renderAuth();
 
-    await waitFor(() =>
-      expect(screen.getByTestId("userEmail").textContent).toBe(MOCK_USER.email),
-    );
+    await waitFor(() => expect(screen.getByTestId("userEmail").textContent).toBe(MOCK_USER.email));
 
     expect(counters.refresh).toBe(1);
     expect(counters.me).toBe(2); // initial 403 + interceptor retry
@@ -141,9 +139,7 @@ describe("AuthContext bootstrap (F4 silent-refresh race)", () => {
 
     renderAuth({ strictMode: true });
 
-    await waitFor(() =>
-      expect(screen.getByTestId("userEmail").textContent).toBe(MOCK_USER.email),
-    );
+    await waitFor(() => expect(screen.getByTestId("userEmail").textContent).toBe(MOCK_USER.email));
 
     expect(counters.refresh).toBe(1);
     expect(counters.me).toBe(4); // 2 initial 403s (double mount) + 2 interceptor retries

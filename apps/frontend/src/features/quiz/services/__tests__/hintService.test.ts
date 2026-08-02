@@ -34,12 +34,8 @@ vi.mock("shared/api", () => ({
 }));
 
 // Re-import after mock is set up
-const {
-  getPhoneticHint,
-  getRadicalHint,
-  getCharacterDetail,
-  searchPinyinCandidates,
-} = await import("../hintService");
+const { getPhoneticHint, getRadicalHint, getCharacterDetail, searchPinyinCandidates } =
+  await import("../hintService");
 
 // ── getPhoneticHint tests ─────────────────────────────────────────────
 
@@ -82,10 +78,9 @@ describe("getRadicalHint", () => {
     const result = await getRadicalHint("好");
 
     expect(result).toEqual({ glyph: "女", meaning: "woman" });
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      expect.stringContaining("/v1/characters/好"),
-      { timeout: 10000 },
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining("/v1/characters/好"), {
+      timeout: 10000,
+    });
   });
 
   it("returns null when API fails", async () => {
@@ -110,10 +105,9 @@ describe("getCharacterDetail", () => {
     const result = await getCharacterDetail("好");
 
     expect(result).toEqual(mockCharacterDetail);
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      expect.stringContaining("/v1/characters/好"),
-      { timeout: 10000 },
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining("/v1/characters/好"), {
+      timeout: 10000,
+    });
   });
 
   it("returns null when API fails", async () => {

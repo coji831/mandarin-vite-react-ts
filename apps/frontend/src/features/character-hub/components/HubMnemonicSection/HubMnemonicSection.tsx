@@ -14,11 +14,7 @@ import { useEffect, useState, useCallback } from "react";
 import { usePhaseGate } from "shared/hooks";
 import { Modal, Button, MnemonicCard } from "shared/components";
 import { useMnemonicStore } from "../../stores/mnemonicStore";
-import {
-  MnemonicEditing,
-  MnemonicEmpty,
-  MnemonicError,
-} from "./index";
+import { MnemonicEditing, MnemonicEmpty, MnemonicError } from "./index";
 import "./HubMnemonicSection.css";
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -80,9 +76,27 @@ function MnemonicSectionInner({ character }: { character: string }) {
   const renderContent = () => {
     switch (state.type) {
       case "Loading":
-        return <MnemonicCard character={character} classification={null} radicalIds={[]} story="" isEdited={false} isLoading />;
+        return (
+          <MnemonicCard
+            character={character}
+            classification={null}
+            radicalIds={[]}
+            story=""
+            isEdited={false}
+            isLoading
+          />
+        );
       case "Generating":
-        return <MnemonicCard character={character} classification={null} radicalIds={[]} story="" isEdited={false} isGenerating />;
+        return (
+          <MnemonicCard
+            character={character}
+            classification={null}
+            radicalIds={[]}
+            story=""
+            isEdited={false}
+            isGenerating
+          />
+        );
       case "Empty":
         return (
           <MnemonicEmpty character={character} onGenerate={() => generateMnemonic(character)} />

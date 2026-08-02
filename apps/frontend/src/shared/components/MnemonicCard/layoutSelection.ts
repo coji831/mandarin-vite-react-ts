@@ -7,11 +7,7 @@
  */
 
 export type EffectiveLayout =
-  | "pictograph"
-  | "phono_semantic"
-  | "compound_ideograph"
-  | "simple_ideograph"
-  | "default";
+  "pictograph" | "phono_semantic" | "compound_ideograph" | "simple_ideograph" | "default";
 
 /**
  * Resolve the effective layout for a mnemonic card based on classification and radical count.
@@ -20,7 +16,7 @@ export type EffectiveLayout =
  */
 export function resolveEffectiveClassification(
   classification: string | null | undefined,
-  radicalIds: string[]
+  radicalIds: string[],
 ): EffectiveLayout {
   if (classification === "pictograph") return "pictograph";
   if (classification === "phono_semantic") return "phono_semantic";

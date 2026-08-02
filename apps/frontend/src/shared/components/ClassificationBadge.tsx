@@ -47,9 +47,13 @@ export function ClassificationBadge({
       ? etymology
       : `This character is a ${info.label.toLowerCase()}`;
 
+  // Classification values are snake_case in data (e.g. phono_semantic) but CSS
+  // BEM modifiers must be kebab-case — convert so the modifier class resolves.
+  const modifier = classification.replace(/_/g, "-");
+
   return (
     <span
-      className={`classification-badge classification-badge--${size} classification-badge--${classification}`}
+      className={`classification-badge classification-badge--${size} classification-badge--${modifier}`}
       role="status"
       aria-label={`Classification: ${info.label}`}
       title={titleText}

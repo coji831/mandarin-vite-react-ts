@@ -131,9 +131,7 @@ export function WordHub({ entityId, word: wordProp }: WordHubProps) {
         </div>
 
         {/* HSK badge — next to hero glyph/pinyin */}
-        {wordData.hskLevel && (
-          <Badge className="shrink-0">HSK {wordData.hskLevel}</Badge>
-        )}
+        {wordData.hskLevel && <Badge className="shrink-0">HSK {wordData.hskLevel}</Badge>}
       </div>
 
       <Box variant="divider" />

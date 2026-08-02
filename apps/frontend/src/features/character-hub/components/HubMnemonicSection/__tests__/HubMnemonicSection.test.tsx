@@ -56,7 +56,10 @@ vi.mock("shared/components", async () => {
   }) => {
     if (isLoading || isGenerating) {
       return (
-        <div role="status" aria-label={isGenerating ? "Generating mnemonic story" : "Loading mnemonic story"}>
+        <div
+          role="status"
+          aria-label={isGenerating ? "Generating mnemonic story" : "Loading mnemonic story"}
+        >
           Loading story…
         </div>
       );
@@ -66,14 +69,24 @@ vi.mock("shared/components", async () => {
         {classification && <span>{classification}</span>}
         {!story && classification === "pictograph" && (
           <div>
-            <p>This character (&ldquo;{character}&rdquo;) is a simple pictograph&mdash;
-            its meaning is directly represented by its form.</p>
+            <p>
+              This character (&ldquo;{character}&rdquo;) is a simple pictograph&mdash; its meaning
+              is directly represented by its form.
+            </p>
           </div>
         )}
         {story && <div>{story}</div>}
         {isEdited && <span>(edited)</span>}
-        {onEdit && <button aria-label="Edit mnemonic story" onClick={onEdit}>✏️</button>}
-        {onRegenerate && <button aria-label="Regenerate mnemonic story" onClick={onRegenerate}>🔄</button>}
+        {onEdit && (
+          <button aria-label="Edit mnemonic story" onClick={onEdit}>
+            ✏️
+          </button>
+        )}
+        {onRegenerate && (
+          <button aria-label="Regenerate mnemonic story" onClick={onRegenerate}>
+            🔄
+          </button>
+        )}
       </div>
     );
   };

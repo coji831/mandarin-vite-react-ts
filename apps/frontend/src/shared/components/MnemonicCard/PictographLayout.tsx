@@ -27,7 +27,12 @@ type PictographLayoutProps = {
  * Accepts an optional ancientFormUrl for oracle bone / ancient form illustrations
  * (data-dependent — currently unused until the API provides this data).
  */
-export const PictographLayout = React.memo(function PictographLayout({ character, story, isEdited, ancientFormUrl }: PictographLayoutProps) {
+export const PictographLayout = React.memo(function PictographLayout({
+  character,
+  story,
+  isEdited,
+  ancientFormUrl,
+}: PictographLayoutProps) {
   return (
     <div aria-label={`Pictograph layout for ${character}`}>
       <div className="mnemonic-card__glyph">{character}</div>
@@ -35,15 +40,13 @@ export const PictographLayout = React.memo(function PictographLayout({ character
       {story ? (
         <div className="mnemonic-card__pictograph-info">
           <p className="text-secondary font-sm m-0 lh-normal">{story}</p>
-          {isEdited && (
-            <span className="mnemonic-card__edited-tag">(edited)</span>
-          )}
+          {isEdited && <span className="mnemonic-card__edited-tag">(edited)</span>}
         </div>
       ) : (
         <div className="mnemonic-card__pictograph-info">
           <p className="text-tertiary font-sm m-0 lh-normal">
-            This character (&ldquo;{character}&rdquo;) is a simple pictograph—
-            its meaning is directly represented by its form.
+            This character (&ldquo;{character}&rdquo;) is a simple pictograph— its meaning is
+            directly represented by its form.
           </p>
         </div>
       )}
@@ -59,8 +62,8 @@ export const PictographLayout = React.memo(function PictographLayout({ character
       )}
 
       <div className="mnemonic-card__pictograph-note">
-        Try visualizing the character &ldquo;{character}&rdquo; in your mind.
-        Picture the object or concept it depicts.
+        Try visualizing the character &ldquo;{character}&rdquo; in your mind. Picture the object or
+        concept it depicts.
       </div>
     </div>
   );

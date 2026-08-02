@@ -10,14 +10,11 @@
 const REGENERATION_TIPS: Record<string, string> = {
   pictograph:
     "Ask for a story that emphasizes visual imagery and the object this character depicts.",
-  phono_semantic:
-    "Ask for a story that connects the sound clue to the meaning clue.",
+  phono_semantic: "Ask for a story that connects the sound clue to the meaning clue.",
   compound_ideograph:
     "Ask for a story that explains how the components combine to create the meaning.",
-  simple_ideograph:
-    "Ask for a story that makes the abstract concept concrete and memorable.",
-  default:
-    "Ask for a story that makes this character easier to remember.",
+  simple_ideograph: "Ask for a story that makes the abstract concept concrete and memorable.",
+  default: "Ask for a story that makes this character easier to remember.",
 };
 
 export function getRegenerationTip(classification: string): string {

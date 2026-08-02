@@ -21,8 +21,21 @@ export type MnemonicState =
   | { type: "Cached"; story: string }
   | { type: "Empty" }
   | { type: "Generating" }
-  | { type: "Display"; story: string; isEdited: boolean; classification: string | null; radicalIds: string[] }
-  | { type: "Editing"; story: string; previousStory: string; previousIsEdited: boolean; classification: string | null; radicalIds: string[] }
+  | {
+      type: "Display";
+      story: string;
+      isEdited: boolean;
+      classification: string | null;
+      radicalIds: string[];
+    }
+  | {
+      type: "Editing";
+      story: string;
+      previousStory: string;
+      previousIsEdited: boolean;
+      classification: string | null;
+      radicalIds: string[];
+    }
   | { type: "Error"; message: string }
   | { type: "Timeout" }
   | { type: "Saving"; story: string }

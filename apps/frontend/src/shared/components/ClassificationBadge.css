@@ -48,13 +48,13 @@
   border: 1px solid var(--color-xp-border);
 }
 
-.classification-badge--phono_semantic {
+.classification-badge--phono-semantic {
   background: var(--color-blue-bg);
   color: var(--color-blue);
   border: 1px solid var(--color-blue-border);
 }
 
-.classification-badge--compound_ideograph {
+.classification-badge--compound-ideograph {
   background: var(--color-green-bg);
   color: var(--color-green);
   border: 1px solid var(--color-green-border);

@@ -27,7 +27,8 @@ export const PictographPopulated: Story = {
     character: "日",
     classification: "pictograph",
     radicalIds: [],
-    story: "The character **日** (rì) depicts the sun. The outer rectangle represents the circular shape of the sun, and the horizontal line in the middle represents the sun's equator or a cloud passing across its face.",
+    story:
+      "The character **日** (rì) depicts the sun. The outer rectangle represents the circular shape of the sun, and the horizontal line in the middle represents the sun's equator or a cloud passing across its face.",
     isEdited: false,
   },
 };
@@ -49,7 +50,8 @@ export const PhonoSemanticPopulated: Story = {
     character: "江",
     classification: "phono_semantic",
     radicalIds: ["氵", "工"],
-    story: "The character **江** (jiāng) means 'river'. The **氵** (water radical) on the left gives the meaning clue — it relates to water. The **工** (gōng) on the right gives the sound clue.",
+    story:
+      "The character **江** (jiāng) means 'river'. The **氵** (water radical) on the left gives the meaning clue — it relates to water. The **工** (gōng) on the right gives the sound clue.",
     isEdited: false,
   },
 };
@@ -72,7 +74,8 @@ export const CompoundIdeographPopulated: Story = {
     character: "明",
     classification: "ideograph",
     radicalIds: ["日", "月"],
-    story: "The character **明** (míng) means 'bright'. It combines **日** (sun) and **月** (moon) — the two brightest celestial bodies. Together they represent brightness and light.",
+    story:
+      "The character **明** (míng) means 'bright'. It combines **日** (sun) and **月** (moon) — the two brightest celestial bodies. Together they represent brightness and light.",
     isEdited: false,
   },
 };
@@ -95,7 +98,8 @@ export const SimpleIdeographPopulated: Story = {
     character: "上",
     classification: "ideograph",
     radicalIds: ["一"],
-    story: "The character **上** (shàng) means 'above' or 'up'. The horizontal line represents a reference point, and the short line above it indicates a position above that reference.",
+    story:
+      "The character **上** (shàng) means 'above' or 'up'. The horizontal line represents a reference point, and the short line above it indicates a position above that reference.",
     isEdited: false,
   },
 };
@@ -118,7 +122,8 @@ export const DefaultLayout: Story = {
     character: "猫",
     classification: null,
     radicalIds: [],
-    story: "The character **猫** (māo) means 'cat'. The **犭** (animal radical) hints at its meaning, and **苗** (miáo) provides the pronunciation.",
+    story:
+      "The character **猫** (māo) means 'cat'. The **犭** (animal radical) hints at its meaning, and **苗** (miáo) provides the pronunciation.",
     isEdited: false,
   },
 };

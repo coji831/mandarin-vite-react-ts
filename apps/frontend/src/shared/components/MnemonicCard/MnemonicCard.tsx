@@ -46,7 +46,10 @@ function MnemonicCardSkeleton({ isGenerating = false }: { isGenerating?: boolean
       <div className="mnemonic-card__skeleton-body">
         <Skeleton variant="custom" className="mnemonic-card__skeleton-line" />
         <Skeleton variant="custom" className="mnemonic-card__skeleton-line" />
-        <Skeleton variant="custom" className="mnemonic-card__skeleton-line mnemonic-card__skeleton-line--short" />
+        <Skeleton
+          variant="custom"
+          className="mnemonic-card__skeleton-line mnemonic-card__skeleton-line--short"
+        />
       </div>
       <p className="text-tertiary font-xs m-0 mt-md">
         {isGenerating ? "Creating mnemonic story…" : "Loading story…"}
@@ -55,7 +58,13 @@ function MnemonicCardSkeleton({ isGenerating = false }: { isGenerating?: boolean
   );
 }
 
-function LayoutRenderer({ effectiveLayout, character, story, radicalIds, isEdited }: {
+function LayoutRenderer({
+  effectiveLayout,
+  character,
+  story,
+  radicalIds,
+  isEdited,
+}: {
   effectiveLayout: EffectiveLayout;
   character: string;
   story: string;
@@ -122,9 +131,10 @@ export function MnemonicCard({
   }
 
   const effectiveLayout = resolveEffectiveClassification(classification, radicalIds);
-  const regenerationTip = effectiveLayout === "default"
-    ? getRegenerationTip("default")
-    : getRegenerationTip(effectiveLayout);
+  const regenerationTip =
+    effectiveLayout === "default"
+      ? getRegenerationTip("default")
+      : getRegenerationTip(effectiveLayout);
 
   return (
     <div className="mnemonic-card" aria-label={`Mnemonic for ${character}`}>

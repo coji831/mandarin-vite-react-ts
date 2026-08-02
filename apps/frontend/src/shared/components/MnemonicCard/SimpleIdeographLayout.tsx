@@ -13,7 +13,7 @@ import { renderStoryText } from "./renderStoryText";
 type SimpleIdeographLayoutProps = {
   character: string;
   story: string;
-  isEdited: boolean
+  isEdited: boolean;
 };
 
 /**
@@ -35,8 +35,8 @@ export const SimpleIdeographLayout = React.memo(function SimpleIdeographLayout({
         </div>
       ) : (
         <p className="text-tertiary font-sm m-0 lh-normal">
-          This character (&ldquo;{character}&rdquo;) is an ideograph representing
-          an abstract concept. No mnemonic story is currently available.
+          This character (&ldquo;{character}&rdquo;) is an ideograph representing an abstract
+          concept. No mnemonic story is currently available.
         </p>
       )}
     </div>
