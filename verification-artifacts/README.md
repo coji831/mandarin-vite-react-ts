@@ -39,9 +39,9 @@ Examples:
 - **Agents write artifacts here** when producing structured output during pipeline stages.
 - **The governor references artifacts** when verifying stage exit criteria before advancing the pipeline.
 - **Log-Backpressure Gate**: Pipeline 3 (Bug Fix) may not mark `WORK_PACKAGE_COMPLETE` until a `repro-log-*.txt` artifact confirms the reproduction script no longer produces the original error.
-- **Artifacts are not canon**: They supplement `.ai_ledger.md` but do not replace it. The ledger remains the source of truth for pipeline state.
-- **Retention**: Artifacts older than 30 days for standard stories (90 days for security) may be deleted. The `.gitkeep` placeholder keeps the directory tracked.
+- **Directory is the evidence record**: `verification-artifacts/` is gitignored — verification evidence lives here and per-epic results are recorded in this directory, which serves as the on-disk record of verification output.
+- **Retention**: Artifacts older than 30 days for standard stories (90 days for security) may be deleted. The `.gitkeep` placeholder remains as an anchor within the gitignored directory — it does not affect git tracking.
 
 ## Integration with .github/AGENTS.md
 
-The **Verification Contract** in `.github/AGENTS.md` requires all verification evidence to be present before a `WORK_PACKAGE_COMPLETE` promise is written. Referencing the artifact path in the ledger Completion Notes section satisfies this requirement.
+The **Verification Contract** in `.github/AGENTS.md` requires all verification evidence to be present before a `WORK_PACKAGE_COMPLETE` promise is written. Recording the artifact path with the per-epic results in `verification-artifacts/` satisfies this requirement.
