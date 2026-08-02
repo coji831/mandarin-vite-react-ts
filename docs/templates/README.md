@@ -1,6 +1,6 @@
 # Centralized Conventional Templates & Format Files
 
-**Last Updated:** June 2, 2026
+**Last Updated:** August 2, 2026
 
 This folder contains the single source of truth for all documentation templates and format files used in this project.
 
@@ -12,7 +12,7 @@ This folder contains the single source of truth for all documentation templates 
 ## Usage Instructions
 
 - Always use the templates in this folder when creating new business requirements, implementation docs, or updating workflow/conventions.
-- Do not use or reference templates from any other location.
+- Do not use or reference templates from any other location — with one platform exception: the Pull Request template lives at `.github/PULL_REQUEST_TEMPLATE.md` (GitHub auto-loads only that path) and is indexed here for completeness.
 
 ## Template Index
 
@@ -23,6 +23,7 @@ This folder contains the single source of truth for all documentation templates 
 - [Commit Message Template](commit-message-template.md)
 - [Feature Design Template](feature-design-template.md)
 - [File Summary Template](file-summary-template.md)
+- [Pull Request Template](../../.github/PULL_REQUEST_TEMPLATE.md) — platform-housed (GitHub auto-loads only that path); indexed here for completeness
 
 ## Related Guides
 

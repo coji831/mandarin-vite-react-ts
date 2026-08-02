@@ -1,6 +1,6 @@
 ﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** August 1, 2026
+**Last Updated:** August 2, 2026
 
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
@@ -103,14 +103,15 @@ All `.instructions.md` files auto-attach when editing matching file types. Each 
 
 ## 📦 Templates & Naming
 
-| Item                 | Path                                                                           |
-| -------------------- | ------------------------------------------------------------------------------ |
-| Epic BR              | `docs/business-requirements/epic-<num>-<slug>/README.md`                       |
-| Story BR             | `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md` |
-| Epic Implementation  | `docs/issue-implementation/epic-<num>-<slug>/README.md`                        |
-| Story Implementation | `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`  |
-| Feature code         | `apps/frontend/src/features/<feature>/`                                        |
-| Architecture         | `docs/architecture.md`                                                         |
+| Item                  | Path                                                                           |
+| --------------------- | ------------------------------------------------------------------------------ |
+| Epic BR               | `docs/business-requirements/epic-<num>-<slug>/README.md`                       |
+| Story BR              | `docs/business-requirements/epic-<num>-<slug>/story-<epic>-<story>-<short>.md` |
+| Epic Implementation   | `docs/issue-implementation/epic-<num>-<slug>/README.md`                        |
+| Story Implementation  | `docs/issue-implementation/epic-<num>-<slug>/story-<epic>-<story>-<short>.md`  |
+| Feature code          | `apps/frontend/src/features/<feature>/`                                        |
+| Architecture          | `docs/architecture.md`                                                         |
+| Pull Request template | `.github/PULL_REQUEST_TEMPLATE.md`                                             |
 
 ## 🌿 Git & Branching
 

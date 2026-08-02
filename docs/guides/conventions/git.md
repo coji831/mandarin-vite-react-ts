@@ -72,47 +72,24 @@ refactor(story-3-1): extract progress logic to custom hook
 
 ### PR Naming Convention
 
-```
-[EPIC-X] Story X.Y: Brief description
-```
+- **Story-level:** `[EPIC-X] Story X.Y: Brief description`
+  - Example: `[EPIC-4] Story 4.2: Create Layout Component with Outlet`
+- **Epic-level:** `EPIC-X: <short epic summary>`
+  - Example: `EPIC-4: Create Layout Component with Outlet`
 
-Example: `[EPIC-4] Story 4.2: Create Layout Component with Outlet`
+> Conventional Commits `<type>(<scope>): <summary>` applies to **commits**, not the PR title.
 
 ### PR Description Template
 
-```markdown
-## Description
-
-Implements Story X.Y: [Story Title]
-
-## Changes
-
-- List of key changes
-- Components added/modified
-- APIs integrated
-
-## Testing
-
-- How was this tested?
-- Any special setup needed?
-
-## Screenshots
-
-[If applicable]
-
-## Related Issues
-
-Closes #XX
-Related to #YY
-```
+Use the canonical template at `.github/PULL_REQUEST_TEMPLATE.md` (auto-loaded for PRs).
 
 ### PR Checklist
 
-- [ ] Code follows project conventions
-- [ ] Documentation is updated
-- [ ] Tests are added/updated
-- [ ] All CI checks pass
-- [ ] Story status is updated in both business requirements and implementation docs
+The PR checklist lives in the canonical template at `.github/PULL_REQUEST_TEMPLATE.md` — its sections are the source of truth:
+
+- **Quality Gates / Testing** — Tier 1 (per-change / pre-commit) and Tier 2 (pre-merge / story-complete / epic-close)
+- **Doc Truth-Check** — docs match shipped code before merge
+- **Merge-Readiness** — review feedback addressed, CI passes, PR number + `Status`/`PR`/`Merge Date`/`Key Commit` backfilled into BR/impl docs (same commit)
 
 ## Branch Naming Conventions
 
