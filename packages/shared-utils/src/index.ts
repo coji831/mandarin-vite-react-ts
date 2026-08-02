@@ -8,9 +8,9 @@ export {
   applyToneMark,
   stripToneMarks,
   findToneVowel,
-} from "./sandhi/toneSandhiUtils";
+} from "./sandhi/toneSandhiUtils.js";
 export {
   normalizeTone,
   areTonesEquivalent,
   normalizePinyinForComparison,
-} from "./pinyin/pinyinNormalization";
+} from "./pinyin/pinyinNormalization.js";

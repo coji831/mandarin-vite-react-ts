@@ -397,7 +397,7 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 **CI/CD:**
 
 - Automatic deployments on push to `main`
-- Backend runs Prisma migrations on release (`railway.toml`)
+- Backend runs Prisma migrations before deploy (`railway.toml` `preDeployCommand`)
 - Frontend builds via Vercel with automatic preview URLs
 
 **See deployment guides:**

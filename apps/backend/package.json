@@ -10,7 +10,9 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "scripts": {
+    "predev": "npm run build --workspace=@mandarin/shared-utils",
     "dev": "tsx watch src/app/index.ts",
+    "prebuild": "npm run build --workspace=@mandarin/shared-utils",
     "start": "node dist/app/index.js",
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/shared/docs/openapi.yaml', 'dist/shared/docs/openapi.yaml')\"",
     "typecheck": "tsc --noEmit",
@@ -90,7 +92,7 @@
     "pg": "^8.22.0",
     "prisma": "^7.8.0",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^13.0.1"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
