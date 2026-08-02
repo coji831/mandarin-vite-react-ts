@@ -361,6 +361,88 @@ function findDeadClasses(cssFiles, tsxFiles) {
   return findings;
 }
 
+// ─── Used-but-Undefined Class Detection ──────────────────────────────────────
+
+// Allowlist for classes used in static `className="..."` strings that are injected
+// by third-party libraries at runtime (so they are intentionally NOT defined in
+// repo CSS). Kept minimal — populate ONLY when a full scan proves a real false
+// positive. Static className scanning cannot see template-literal classNames.
+const USED_CLASS_ALLOWLIST = new Set([
+  // (empty until a full scan proves lib-injected classes exist)
+]);
+
+/**
+ * Find classes used in static `className="..."` strings that are NOT defined
+ * anywhere in repo CSS (REVERSE of the dead-class check). Catches typos and
+ * copy-paste leftovers such as `btn-outline`, which silently render unstyled
+ * because no rule defines them.
+ *
+ * Scope (honest limits):
+ *  - Only STATIC className strings are seen (e.g. `className="btn btn-sm"`);
+ *    template-literal / computed classNames (`` `btn ${cond ? "x" : "y"}` ``)
+ *    are out of scope.
+ *  - Classes injected by third-party libs (not in repo CSS) need an entry in
+ *    USED_CLASS_ALLOWLIST to avoid false positives.
+ *
+ * SHIP MODE (approved 2026-08-02): reports at WARNING severity, not error,
+ * because a full scan found 284 pre-existing undefined classes (371 findings,
+ * 94 files) beyond the 2 fixed `.btn-outline` sites. The gate stays green so
+ * the rule can go live; PROMOTE THIS CHECK TO `severity: "error"` once the
+ * pre-existing undefined-class drift (wrong utility names like `text-danger`
+ * vs `text-error`, `mt-sm`/`gap-4px`, and BEM classes used with no CSS rules)
+ * is cleaned up. Matches the existing dead-class check (also warning).
+ */
+function findUsedButUndefinedClasses(tsxFiles, allCssFiles) {
+  // Register every class defined in repo CSS (globals, components, animations,
+  // shared components, feature CSS). No skip list here — unlike the dead-class
+  // check, every defined rule counts as "defined" for this direction.
+  //
+  // Class extraction is deliberately broad: it matches every `.class` token in
+  // the raw CSS (not just `\.name {` rules) so grouped/compound/descendant
+  // selectors (`.a, .b`, `.parent .child`) and CSS-escaped names
+  // (`disabled\:op-40` → `disabled:op-40`) are all registered. Over-registration
+  // is safe here — a class mentioned in ANY selector is "defined" — whereas the
+  // naive rule-only regex produced false positives on grouped selectors.
+  const definedClasses = new Set();
+  const classTokenRegex = /\.((?:\\.|[A-Za-z0-9_-])+)/g;
+  for (const file of allCssFiles) {
+    const content = fs.readFileSync(file, "utf-8");
+    const classMatches = content.matchAll(classTokenRegex);
+    for (const m of classMatches) {
+      // Unescape CSS escapes: `hover\:border-error` → `hover:border-error`
+      definedClasses.add(m[1].replace(/\\(.)/g, "$1"));
+    }
+  }
+
+  const findings = [];
+  for (const file of tsxFiles) {
+    const content = fs.readFileSync(file, "utf-8");
+    const lines = content.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      const usageMatches = lines[i].matchAll(/className="([^"]*)"/g);
+      for (const m of usageMatches) {
+        const classes = m[1].split(/\s+/);
+        for (const c of classes) {
+          if (!c) continue;
+          if (USED_CLASS_ALLOWLIST.has(c)) continue;
+          if (!definedClasses.has(c)) {
+            findings.push({
+              file: path.relative(ROOT, file),
+              line: i + 1,
+              severity: "warning", // see SHIP MODE note above — promote to "error" after drift cleanup
+              check: "used-but-undefined-class",
+              message: `Used CSS class "${c}" is not defined in any CSS file`,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return findings;
+}
+
 // ─── Undefined CSS Variable Detection ────────────────────────────────────────
 
 function findUndefinedVariables(allFiles, registry) {
@@ -589,6 +671,14 @@ async function main() {
   const featureCssFiles = cssFiles.filter((f) => f.includes("features"));
   const deadClassFindings = findDeadClasses(featureCssFiles, tsxFiles);
   findings.push(...deadClassFindings);
+
+  // Used-but-undefined class detection (reverse of dead-class — catches typos
+  // like `btn-outline` where the class is used but never defined in CSS)
+  const undefinedClassFindings = findUsedButUndefinedClasses(tsxFiles, [
+    ...cssFiles,
+    ...allCssFiles,
+  ]);
+  findings.push(...undefinedClassFindings);
 
   // Undefined variable detection
   const undefinedVarFindings = findUndefinedVariables(scanFiles, registry);

@@ -25,7 +25,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { RadicalData } from "../types";
 import { ExampleCharGrid } from "./ExampleCharGrid";
-import { Box, Skeleton } from "shared/components";
+import { Box, Button, Skeleton } from "shared/components";
 import { radicalsService } from "../services/radicalsService";
 import "./RadicalDetailCard.css";
 
@@ -168,9 +168,9 @@ export function RadicalDetailContent({
       ) : effectiveCharsError ? (
         <div className="flex flex-col items-center gap-sm p-md">
           <p className="font-sm text-danger">{effectiveCharsError}</p>
-          <button onClick={fetchCharacters} className="btn btn-sm btn-outline">
+          <Button variant="secondary" size="sm" onClick={fetchCharacters}>
             Retry
-          </button>
+          </Button>
         </div>
       ) : effectiveCharacters.length > 0 ? (
         <ExampleCharGrid characters={effectiveCharacters} />

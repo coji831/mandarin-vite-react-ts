@@ -233,18 +233,13 @@ components:
   - name: "ConstituentCharacterChips"
     file: "apps/frontend/src/features/word-hub/components/ConstituentCharacterChips.tsx"
     description: "Character chips for a word's constituent characters (glyph + pinyin + meaning) — delegates to the shared Chip component (interactive, surface variant) and opens the Character Detail Hub via openHub."
-  - name: "transition-transform"
-    file: "apps/frontend/src/styles/animations.css"
-    description: "Transition utility for transform property using var(--transition-fast)."
-  - name: "transition-width"
-    file: "apps/frontend/src/styles/animations.css"
-    description: "Transition utility for width property with 0.3s ease."
 ---
 
 **Last Updated:** 2026-08-02
 
 ## Changelog
 
+- **2026-08-02** — Removed `transition-transform` / `transition-width` from the `components:` list (they are CSS utilities in `animations.css`, not React components); the scope-note claim that all listed components are registered in `.github/component-registry.json` is accurate again.
 - **2026-08-02** — Clarified catalog scope note: the `components:` list also includes registered feature/domain components (CharacterHub, HubMnemonicSection, TreeRootNode, BranchNode, PhoneticFamilyNode, ClusterCard, ConstituentCharacterChips) documented in their feature docs/design.md (Decision D1).
 - **2026-08-02** — Added top-level **Global Motion Rule** (no animation/transition/transform/pseudo-element except shared component variants + the documented Radical/Phonetic Trees exception).
 - **2026-08-01** — Added `CharacterHub` + `HubMnemonicSection` to the `components:` list (decision D3); clarified registry scope (catalogs shared presentational components only — decision D1).

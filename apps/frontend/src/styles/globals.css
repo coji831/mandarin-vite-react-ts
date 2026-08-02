@@ -120,7 +120,6 @@
   --surface-overlay: rgba(38, 35, 33, 0.3);
   --surface-hover: rgba(61, 57, 53, 0.5);
   --surface-border: rgba(61, 57, 53, 1);
-  --border-white: rgba(255, 255, 255, 0.3);
 
   /* Light surfaces (for semi-transparent overlays) */
   --surface-light-3: rgba(255, 255, 255, 0.03);

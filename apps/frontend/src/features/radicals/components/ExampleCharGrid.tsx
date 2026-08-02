@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { Button } from "shared/components";
 import { ExampleCharCell } from "./ExampleCharCell";
 import "./ExampleCharGrid.css";
 
@@ -66,9 +67,9 @@ export function ExampleCharGrid({ characters }: ExampleCharGridProps) {
 
       {hasMore && !showAll && (
         <div className="example-char-section__more flex justify-center p-sm">
-          <button type="button" className="btn btn-sm btn-outline" onClick={() => setShowAll(true)}>
+          <Button variant="secondary" size="sm" onClick={() => setShowAll(true)}>
             Show more ({hiddenCount} more)
-          </button>
+          </Button>
         </div>
       )}
     </div>
