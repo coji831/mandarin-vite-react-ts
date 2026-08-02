@@ -60,6 +60,6 @@ The technical audit identified that character endpoints are implemented ad-hoc a
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `e4a5ce7d`

@@ -353,9 +353,34 @@ Test scenarios:
 4. Search with no matches returns empty results
 5. Search with page/pageSize paginates correctly
 
+## Technical Challenges & Solutions
+
+### Tone-marked pinyin matching
+
+**Problem:** Users may query pinyin with or without tone marks ("mā" vs "ma"), but `PinyinSyllable.syllable` stores tone-numbered pinyin ("ma1").
+
+**Root Cause:** Query and stored forms differ in representation; a raw substring match fails on accented input.
+
+**Solution:** Normalize the query by stripping tone marks via a regex + tone-map (ā/á/ǎ/à → a, etc.) before matching against `syllable: { startsWith }`, and return the accented form from `syllablePretty`.
+
+### No pinyin/tone fields on the mapping table
+
+**Problem:** `PinyinCharacterMapping` has no `pinyin` or `tone` column — those live on the related `PinyinSyllable` model.
+
+**Root Cause:** The schema keeps syllable metadata on `PinyinSyllable` and joins through `PinyinCharacterMapping`.
+
+**Solution:** Filter and read through the `pinyinSyllable` relation in the Prisma query (`where.pinyinSyllable = { syllable, tone }`, `include.pinyinSyllable`), ordered by syllable + tone. A dedicated `PinyinValidationError` follows the characters-module error pattern.
+
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `af1e83f8`
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

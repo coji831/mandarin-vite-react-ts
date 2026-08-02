@@ -108,4 +108,29 @@ For pictograph characters, the backend passes `etymology: string | null` through
 | Emoji + label mapping    | 🖼️ pictograph, 🔤 phono_semantic, 🧩 compound_ideograph, ⚡ ideograph                                                          |
 | Color tokens per type    | pictograph = `--color-xp`, phono_semantic = `--color-blue`, compound_ideograph = `--color-green`, ideograph = `--color-purple` |
 
+## Technical Challenges & Solutions
+
+### Badge data missing from the API response
+
+**Problem:** The badge needs `classification` (and `etymology` for the pictograph tooltip), but `RadicalCharacterService` returned only glyph/pinyin/meaning/decompositionType/hskLevel.
+
+**Root Cause:** The endpoint predated the badge feature and never selected classification data.
+
+**Solution:** Extended `RadicalCharacterEntry` and the Prisma `.map()` to include `classification` + `etymology`, so the badge data flows through the existing API with no new endpoint.
+
+### Golden border placement
+
+**Problem:** Applying the pictograph highlight to the badge itself looked cluttered and left the cell visually indistinct.
+
+**Root Cause:** The border is a cell-level signal, not a badge-level one.
+
+**Solution:** Rendered the `ClassificationBadge` inside `ExampleCharCell` (not as a separate layer) and applied the golden border (`--color-xp`) to the cell row, with the etymology tooltip on the cell.
+
 ✅ Implemented (July 30, 2026)
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

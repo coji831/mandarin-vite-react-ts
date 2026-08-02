@@ -14,14 +14,14 @@ Progress tracking turns reading from a one-time activity into an ongoing learnin
 
 ## Acceptance Criteria
 
-- [ ] **AC #1 — Auto-save on sentence change**: Reading position auto-saves when advancing or rewinding sentences (debounced 2s via Zustand → backend `PUT`)
-- [ ] **AC #2 — Auto-save on page unload**: Reading position saves on `beforeunload` and component unmount to prevent data loss on unexpected tab close
-- [ ] **AC #3 — Mark passage completed**: Reading a passage's final sentence auto-marks it as completed via `POST /v1/readers/sessions/:passageId/complete`
-- [ ] **AC #4 — Bookmark toggle on PassageCard**: Each passage card in library view shows a bookmark/unbookmark toggle. Toggling adds or removes the bookmark immediately (optimistic update), then syncs to backend
-- [ ] **AC #5 — Bookmark indicator**: Bookmarked passages show a filled bookmark icon in library view. Completed passages show a checkmark indicator
-- [ ] **AC #6 — Guest ephemeral state**: Unauthenticated users see read-only UI. Session state, completion, and bookmarks are ephemeral (in-memory only, lost on tab close)
-- [ ] **AC #7 — Bookmark listing**: Authenticated users see all bookmarked passages via `GET /v1/readers/bookmarks` — used to populate the library filter "Bookmarked"
-- [ ] **AC #8 — Restore on reopen**: When a user re-opens a previously read passage, the reading position is restored and the view scrolls/jumps to the saved sentence
+- [x] **AC #1 — Auto-save on sentence change**: Reading position auto-saves when advancing or rewinding sentences (debounced 2s via Zustand → backend `PUT`)
+- [x] **AC #2 — Auto-save on page unload**: Reading position saves on `beforeunload` and component unmount to prevent data loss on unexpected tab close
+- [x] **AC #3 — Mark passage completed**: Reading a passage's final sentence auto-marks it as completed via `POST /v1/readers/sessions/:passageId/complete`
+- [x] **AC #4 — Bookmark toggle on PassageCard**: Each passage card in library view shows a bookmark/unbookmark toggle. Toggling adds or removes the bookmark immediately (optimistic update), then syncs to backend
+- [x] **AC #5 — Bookmark indicator**: Bookmarked passages show a filled bookmark icon in library view. Completed passages show a checkmark indicator
+- [x] **AC #6 — Guest ephemeral state**: Unauthenticated users see read-only UI. Session state, completion, and bookmarks are ephemeral (in-memory only, lost on tab close)
+- [x] **AC #7 — Bookmark listing**: Authenticated users see all bookmarked passages via `GET /v1/readers/bookmarks` — used to populate the library filter "Bookmarked"
+- [x] **AC #8 — Restore on reopen**: When a user re-opens a previously read passage, the reading position is restored and the view scrolls/jumps to the saved sentence
 
 ## Business Rules
 
@@ -41,6 +41,6 @@ Progress tracking turns reading from a one-time activity into an ongoing learnin
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: TBD
-- **Merge Date**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
 - **Key Commit**: `b0dc2945`

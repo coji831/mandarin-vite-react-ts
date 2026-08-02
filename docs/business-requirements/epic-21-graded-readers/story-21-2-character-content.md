@@ -1,6 +1,6 @@
 # Story 21.2: Character Content Generation
 
-**Last Update:** July 27, 2026
+**Last Update:** 2026-08-01 (Story 21.2 complete — Component scaffold + CharacterComponent decomposition seeded & verified end-to-end)
 
 ## Description
 
@@ -28,9 +28,9 @@ Character enrichment is the second critical prerequisite for the epic — withou
 - [x] Content files regenerated: `content/characters/characters.json` includes classification and phoneticComponentId
 - [x] Seed script is idempotent (safe to re-run — uses `skipDuplicates: true`)
 - [x] Character coverage milestone verified: 500+ characters with classification populated
-- [ ] **Component scaffold seeded** — `content/seed/phase2/component-entries.json` populated via `build-component-entries.ts`
-- [ ] **CharacterComponent decomposition seeded** — `content/seed/phase2/character-components.json` populated via `build-character-components.ts`
-- [ ] **Pipeline verified** — Both new enrich scripts integrated into `script:enrich-all` → `db:seed` and verified end-to-end
+- [x] **Component scaffold seeded** — `content/seed/phase2/component-entries.json` populated via `build-component-entries.ts` (1,777 records)
+- [x] **CharacterComponent decomposition seeded** — `content/seed/phase2/character-components.json` populated via `build-character-components.ts` (15,742 records)
+- [x] **Pipeline verified** — Both new enrich scripts integrated into `script:enrich-all` → `db:seed` and verified end-to-end
 
 ## Business Rules
 
@@ -53,7 +53,7 @@ Character enrichment is the second critical prerequisite for the epic — withou
 
 ## Implementation Status
 
-- **Status**: In Progress
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Complete
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `46ea77ca`

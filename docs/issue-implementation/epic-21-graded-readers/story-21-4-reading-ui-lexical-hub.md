@@ -9,17 +9,17 @@ Build the entire learner-facing reading experience: ReadersPage, ReaderLibrary, 
 **Files:**
 
 - `apps/frontend/src/features/readers/` — Entire feature module (components/, hooks/, services/, stores/, types/, docs/, index.ts)
-- `apps/frontend/src/pages/learn/ReadersPage.tsx` — Page container
+- `apps/frontend/src/pages/learn/readers/ReadersPage.tsx` — Page container
 - `apps/frontend/src/pages/learn/ReadersPageFull.stories.tsx` — Storybook page story
 - `apps/frontend/src/router/LearnRoutes.tsx` — Replace ContentPlaceholderPage with ReadersPage
 - `apps/frontend/.storybook/msw-handlers.ts` — Add readers handlers (6 levels)
 - `apps/frontend/src/shared/store/hubStore.ts` — generalized (was character-only)
-- `apps/frontend/src/shared/hooks/useEntityHub.ts` — new (replaces useCharacterHub)
+- `apps/frontend/src/shared/hooks/useEntityHub.ts` — ~~new (replaces useCharacterHub)~~ **REMOVED during implementation** — consolidated into a single `openHub()` entry point in `shared/hub-entry/hubEntryPoint.ts` (see Post-Implementation Evolution #1)
 - `apps/frontend/src/shared/types/hub.ts` — new: EntityType, EntityRef types
 - `apps/frontend/src/shared/types/index.ts` — new barrel
-- `apps/frontend/src/shared/components/HubEntityCard/` — NEW generalized wrapper. Delegates to HubIdentityCard (character-hub/) for character entities; renders word identity inline for word entities.
-- `apps/frontend/src/shared/components/HubProgressActions/` — NEW generalized wrapper. Delegates to HubActions (character-hub/) for character entities.
-- `apps/frontend/src/shared/components/HubEntityRelationList/` — NEW generalized wrapper. Delegates to HubCommonWords (character-hub/) for character entities.
+- `apps/frontend/src/shared/components/HubEntityCard/` — ~~NEW generalized wrapper. Delegates to HubIdentityCard (character-hub/) for character entities; renders word identity inline for word entities.~~ **REMOVED — dead code (zero consumers), superseded by the entityHub registry** (see Post-Implementation Evolution #5)
+- `apps/frontend/src/shared/components/HubProgressActions/` — ~~NEW generalized wrapper. Delegates to HubActions (character-hub/) for character entities.~~ **REMOVED — dead code (zero consumers), superseded by the entityHub registry** (see Post-Implementation Evolution #5)
+- `apps/frontend/src/shared/components/HubEntityRelationList/` — ~~NEW generalized wrapper. Delegates to HubCommonWords (character-hub/) for character entities.~~ **REMOVED — dead code (zero consumers), superseded by the entityHub registry** (see Post-Implementation Evolution #5)
 - `apps/frontend/src/features/lexical-hub/` — new feature folder
 - `apps/frontend/src/features/lexical-hub/components/LexicalHubRouter.tsx` — new
 - `apps/frontend/src/features/lexical-hub/components/WordHubContent.tsx` — new
@@ -64,7 +64,7 @@ interface HubState {
 ### Backward Compatibility
 
 - `useEntityHub().openHub(glyph, pinyin)` still works for all existing CharacterHub callers via the legacy `open` overload
-- `HubEntityCard`, `HubProgressActions`, `HubEntityRelationList` are **new** shared components — they do not replace or rename existing `HubIdentityCard`, `HubActions`, `HubCommonWords`
+- `HubEntityCard`, `HubProgressActions`, `HubEntityRelationList` are ~~**new** shared components — they do not replace or rename existing `HubIdentityCard`, `HubActions`, `HubCommonWords`~~ — **NOTE: all three were later removed as dead code during implementation; see Post-Implementation Evolution #5**
 - `CharacterHub` stays in `features/character-hub/components/CharacterHub/` — existing imports from `features/character-hub/components` continue to work
 - `CharacterHubContent` is a new adapter in `features/lexical-hub/` — only consumed by `LexicalHubRouter`
 - No backward-compat barrel re-exports needed at the old `features/character-hub/` location
@@ -95,7 +95,7 @@ Thin router that checks `entityType` and renders the correct content component:
 │   ├── LexicalHubRouter
 │   ├── WordHubContent (new)
 │   └── CharacterHubContent (adapter → CharacterHub in character-hub/)
-├── Shared → hubStore (generalized), useEntityHub, HubEntityCard, etc.
+├── Shared → hubStore (generalized), openHub()/closeHub() (shared/hub-entry), entityHubRegistry
 ├── Services → apiClient → Story 21.3 backend API
 ```
 
@@ -305,3 +305,10 @@ export type { EntityType, EntityRef } from "./hub";
 ```
 
 **Implementation order:** Create `shared/types/` first, before any other new file in this story, since all other components depend on these type definitions.
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

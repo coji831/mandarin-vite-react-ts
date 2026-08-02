@@ -1,6 +1,6 @@
 # Story 21.19: Radical Trees — Phonetic Tree Toggle
 
-**Last Update:** July 24, 2026
+**Last Update:** 2026-08-01 (Story 21.19 complete — dual-tree toggle + Phonetic Tree shipped)
 
 ## Description
 
@@ -14,18 +14,18 @@ The Radical Trees feature (Epic 19) currently shows only semantic radical relati
 
 ## Acceptance Criteria
 
-- [ ] Radical Trees feature has a dual-tree toggle switch: "Radical Tree" (semantic, existing) ↔ "Phonetic Tree" (sound-based, new)
-- [ ] Phonetic Tree view shows characters grouped by shared phonetic component (e.g., root = 青/qīng, children = 清/情/请/晴/qíng with tone markings)
-- [ ] Each phonetic family node shows: phonetic component glyph, pinyin, meaning, number of characters in family
-- [ ] Phase 2 preview mode: top 10 phonetic families by character count displayed
-- [ ] Phase 3 support: full expansion to ~100+ phonetic families (gated by PhaseGate model)
-- [ ] Characters Module API (Story 21.10) used for phonetic component data; Phonetic Clusters API (Story 21.6) for cluster membership
-- [ ] Classification badges (from Story 21.15) displayed on character nodes
-- [ ] Clicking a character node opens CharacterHub/LexicalHub for character detail
-- [ ] Loading, empty, and error states handled for both tree views
-- [ ] Storybook stories created for Phonetic Tree view, toggle interaction, Phase 2 vs Phase 3 gating
-- [ ] Unit tests for phonetic tree data generation and clustering logic
-- [ ] 0 lint errors across all changed files
+- [x] Radical Trees feature has a dual-tree toggle switch: "Radical Tree" (semantic, existing) ↔ "Phonetic Tree" (sound-based, new)
+- [x] Phonetic Tree view shows characters grouped by shared phonetic component (e.g., root = 青/qīng, children = 清/情/请/晴/qíng with tone markings)
+- [x] Each phonetic family node shows: phonetic component glyph, pinyin, meaning, number of characters in family
+- [x] Phase 2 preview mode: top 10 phonetic families by character count displayed
+- [x] Phase 3 support: full expansion to ~100+ phonetic families (gated by PhaseGate model)
+- [x] Characters Module API (Story 21.10) used for phonetic component data; Phonetic Clusters API (Story 21.6) for cluster membership
+- [x] Classification badges (from Story 21.15) displayed on character nodes
+- [x] Clicking a character node opens CharacterHub/LexicalHub for character detail
+- [x] Loading, empty, and error states handled for both tree views
+- [x] Storybook stories created for Phonetic Tree view, toggle interaction, Phase 2 vs Phase 3 gating
+- [x] Unit tests for phonetic tree data generation and clustering logic
+- [x] 0 lint errors across all changed files
 
 ## Business Rules
 
@@ -45,7 +45,7 @@ The Radical Trees feature (Epic 19) currently shows only semantic radical relati
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Delivered
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `b4a27888`

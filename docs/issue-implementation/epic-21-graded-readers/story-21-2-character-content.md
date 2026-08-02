@@ -1,6 +1,8 @@
 # Implementation 21-2: Character Content Generation
 
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-2-character-content.md`
+> **Last Updated:** 2026-08-01
+> **Status:** ✅ Complete
 
 ## Technical Scope
 
@@ -13,7 +15,7 @@ Seed the remaining two tables — `Component` and `CharacterComponent` — by bu
 
 **Files — EXISTING (already delivered by Story 21.1, referenced here):**
 
-- `apps/backend/prisma/schema.prisma` — `Component` model (line ~545), `CharacterComponent` model (line ~563) — already created
+- `apps/backend/prisma/schema.prisma` — `Component` model (line ~655), `CharacterComponent` model (line ~674) — already created
 - `apps/backend/prisma/seed.ts` — Step 4 (Component) and Step 14 (CharacterComponent) already ready with `createMany` + `skipDuplicates: true`; just need non-empty JSON
 - `apps/backend/scripts/enrich/build-character-entries.ts` — Already populates `Character.classification` and `Character.phoneticComponentId` from MMAH etymology
 - `apps/backend/scripts/enrich/build-character-radicals.ts` — Already populates `CharacterRadical.decompositionType`
@@ -26,7 +28,7 @@ Seed the remaining two tables — `Component` and `CharacterComponent` — by bu
 
 ### Component Model (Existing)
 
-From `schema.prisma` (line ~545):
+From `schema.prisma` (line ~655):
 
 ```prisma
 model Component {
@@ -44,7 +46,7 @@ model Component {
 
 ### CharacterComponent Model (Existing)
 
-From `schema.prisma` (line ~563):
+From `schema.prisma` (line ~674):
 
 ```prisma
 model CharacterComponent {
@@ -256,3 +258,10 @@ Solution: Only assign top-level position from the outermost IDS operator.
           Nested components get `position: null`. The `function` field is
           inferred from MMAH etymology.type when available.
 ```
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

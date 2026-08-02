@@ -12,7 +12,7 @@ Modify the AI mnemonic prompt template in the backend mnemonic generation servic
 - `apps/backend/src/modules/mnemonics/services/MnemonicsService.ts` — refactor: extend prompt template with classification + phonetic data, add pictograph skip using repository
 - `apps/backend/src/modules/mnemonics/services/__tests__/MnemonicsService.test.ts` — update: tests for enhanced prompt, pictograph skip, and repository method behavior
 - `apps/backend/src/modules/mnemonics/api/MnemonicsController.ts` — remove `PICTOGRAPH_CHARS` 422 check (controller no longer blocks pictographs)
-- `apps/frontend/src/features/character-hub/components/HubMnemonicSection/MnemonicPictograph.tsx` — update: accept dynamic `story` prop from backend response instead of hardcoded message
+- ~~`apps/frontend/src/features/character-hub/components/HubMnemonicSection/MnemonicPictograph.tsx`~~ — **Superseded by Story 21.20:** this file was removed; pictograph rendering now lives inside the shared `MnemonicCard` (`apps/frontend/src/shared/components/MnemonicCard/`, see `PictographLayout.tsx`). The frontend work in this story was folded into 21.20.
 
 ## Implementation Details
 
@@ -126,8 +126,8 @@ Request: mnemonic for character 河 (hé, "river")
 │   └── MnemonicsController (modules/mnemonics/api/)
 │       └── remove PICTOGRAPH_CHARS 422 check — pictographs now return 200 OK
 ├── Frontend
-│   └── MnemonicPictograph component
-│       └── accept dynamic `story` prop from backend response
+│   └── Shared `MnemonicCard` (`apps/frontend/src/shared/components/MnemonicCard/`)
+│       └── `PictographLayout` renders the pictograph story from the backend `isPictograph`/`story` response
 └── Data Sources
     ├── Character.classification (populated by 21.2)
     ├── Character.phoneticComponentId (populated by 21.2)
@@ -150,7 +150,7 @@ Solution: If classification is null/undefined, fall through to normal AI
 Challenge 2: Dual pictograph sources must stay in sync
 ──────────────────────────────────────────────────────
 Problem: The frontend has a hardcoded PICTOGRAPH_CHARS Set (in MnemonicsController
-         or MnemonicPictograph) as a local optimization, while the authoritative
+         or MnemonicCard) as a local optimization, while the authoritative
          source is Character.classification in the database. These can drift.
 Solution: The controller's PICTOGRAPH_CHARS 422 check is removed — the backend
          now determines pictograph status from the database (authoritative).
@@ -162,3 +162,10 @@ Solution: The controller's PICTOGRAPH_CHARS 422 check is removed — the backend
 
 **Status:** ✅ Implemented
 **Date Completed:** July 30, 2026
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

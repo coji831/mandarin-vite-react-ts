@@ -54,6 +54,6 @@ The Radical Detail Card currently displays example characters without any indica
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `f548bf63`

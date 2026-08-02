@@ -38,7 +38,7 @@ Create the full DB-driven Phonetic Clusters feature: two new Prisma models (`Pho
 
 ### Shared Constants
 
-- `packages/shared-constants/src/paths.ts` — update: add `ROUTE_PATTERNS.phoneticClusters` and `ROUTE_PATTERNS.phoneticClustersById`
+- `packages/shared-constants/src/index.js` — update: add `ROUTE_PATTERNS.phoneticClusters` and `ROUTE_PATTERNS.phoneticClustersById`
 
 ### Frontend — `features/phonetic-clusters/`
 
@@ -267,7 +267,7 @@ async findById(id: string): Promise<... | null> {
 
 ### 4. Shared Constants
 
-Add to `packages/shared-constants/src/paths.ts`:
+Add to `packages/shared-constants/src/index.js`:
 
 ```typescript
 export const ROUTE_PATTERNS = {
@@ -339,7 +339,7 @@ Returns `{ clusters, isLoading, error, hskFilter, setHskFilter, retry }`. Fetche
 ### 7. Key Behaviors
 
 - **Data flow:** `apiClient` → `GET /v1/phonetic-clusters` — no static JSON consumed by frontend
-- **HSK filter:** Client-side filtering using `hskLevels` array. Server `?hskLevel=N` available for future optimization
+- **HSK filter:** Implemented server-side — `GET /v1/phonetic-clusters?hskLevel=N` (`PhoneticClustersRepository.findAll(hskLevel)` filters clusters containing a character at that level); the frontend also filters the returned `hskLevels` arrays client-side as a secondary pass
 - **Loading:** Skeleton grid (5 cards) with shimmer during API fetch
 - **Error:** `ErrorScreen` with retry button
 - **Empty:** "No phonetic clusters available yet" message
@@ -464,3 +464,10 @@ Solution: All-in-DB architecture applies uniformly. Seed files are sources only.
 - Filter pills visible and functional
 - Filtered-empty shows "Show all" button
 - Clicking CharacterChip calls openHub with correct characterId
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

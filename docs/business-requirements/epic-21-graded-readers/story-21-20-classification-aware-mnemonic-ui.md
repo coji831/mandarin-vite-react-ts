@@ -62,6 +62,6 @@ When the backend adds `classification` to the mnemonic response (parallel backen
 ## Implementation Status
 
 - **Status**: Delivered
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: `f17a2a5b`
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `e4a4be9a`

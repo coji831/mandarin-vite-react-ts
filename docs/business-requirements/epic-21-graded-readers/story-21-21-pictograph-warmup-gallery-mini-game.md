@@ -56,6 +56,6 @@ Pictographs are the foundation of Chinese writing — the earliest characters we
 ## Implementation Status
 
 - **Status**: Delivered
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: 407d1f87
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `b718299f`

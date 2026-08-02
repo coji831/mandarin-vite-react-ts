@@ -297,3 +297,10 @@ All tests pass via `npx vitest run --reporter verbose src/modules/words/`.
 - `apps/backend/src/modules/words/container.ts` — wired `MeasureWordService` into `createWordsModule`
 - `packages/shared-constants/src/index.js` — added `wordsMeasureWords` route pattern
 - `packages/shared-constants/src/index.d.ts` — type declaration for `wordsMeasureWords`
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

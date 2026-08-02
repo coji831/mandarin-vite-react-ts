@@ -45,9 +45,9 @@ Tone sandhi is one of the most challenging aspects of spoken Chinese for learner
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `6f351892`
 
 ### Completed (Backend)
 

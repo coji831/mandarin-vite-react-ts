@@ -71,7 +71,7 @@ tts/{passageHash}/{sentenceIndex}.mp3
 
 ```typescript
 function useSentenceAudio(sentences: Sentence[]) {
-  // Pre-fetch audio URLs from Passage content JSON
+  // Fetch audio URLs via POST /v1/readers/passages/:id/audio (fetchPassageAudio → audioStore)
   // Manage playback state (playing, paused, stopped)
   // Handle auto-advance to next sentence
   // Handle fallback logic
@@ -82,19 +82,19 @@ function useSentenceAudio(sentences: Sentence[]) {
     pause,
     replay,
     setSpeed,
-    audioUrls, // Pre-fetched
+    audioUrls, // From fetchPassageAudio (also written to audioStore)
   };
 }
 ```
 
 ### Audio Flow
 
-1. Audio URLs loaded from Passage content JSON (pre-fetched, not fetched per-sentence)
+1. Audio URLs fetched via `POST /v1/readers/passages/:id/audio` (`fetchPassageAudio` → `audioStore`) — not embedded in passage content JSON
 2. User taps play → audio starts from current sentence
 3. Auto-advance: plays sentences sequentially, stops after last
 4. Tap any sentence to replay its audio
-5. If pre-generated audio unavailable → on-demand TTS generation
-6. If on-demand fails → browser SpeechSynthesis fallback
+5. If GCS cached audio unavailable → on-demand TTS generation (Tier-2)
+6. If on-demand fails (e.g., 401 for guests) → browser SpeechSynthesis fallback (Tier-3)
 7. Audio pauses when WordPopover is open
 8. Page Visibility API: auto-pause when tab is backgrounded
 
@@ -106,20 +106,21 @@ function useSentenceAudio(sentences: Sentence[]) {
 ├── AudioControlBar component → play/pause, speed, progress
 └── ReadingView integration → sentence highlighting, tap-to-replay
 
-Uses existing: AudioService, useAudioPlayback hook
+Uses existing: fetchPassageAudio (passageService), audioStore (Zustand), useAudioEngine/useBrowserTTS/useAudioAutoAdvance hooks
 ```
 
 ## Technical Challenges & Solutions
 
 ```
-Problem: TTS latency for batch generation would block passage loading.
-Solution: Parallel TTS requests (one per sentence). 5s timeout per sentence.
-         Cache partial results and retry failed.
+Problem: TTS latency on first request would stall the reading flow.
+Solution: On-demand (Tier-2) TTS generation per sentence, generated on first
+         play rather than pre-generated in batch. Tier-1 GCS batch
+         pre-generation is NOT implemented (see epic BR Known Limitations).
 
 Problem: Some sentences may fail TTS generation.
-Solution: Two-flow fallback: (1) pre-generated (GCS), (2) per-sentence on-demand,
-         (3) synthetic browser SpeechSynthesis. Backend orchestrates (1)→(2),
-         frontend only handles (3) as last resort.
+Solution: Three-tier fallback: (1) cached GCS audio, (2) per-sentence on-demand
+         TTS, (3) synthetic browser SpeechSynthesis. Backend orchestrates
+         (1)→(2); the frontend handles (3) as last resort.
 
 Problem: Audio overlap on tap — tapping a sentence while audio was playing
          caused overlapping playback.
@@ -154,5 +155,12 @@ Solution: Added hasCompleted prop to separate idle vs completed states.
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: TBD
+- **PR**: N/A (direct commit — no PR)
 - **Commit**: `6878493f`
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

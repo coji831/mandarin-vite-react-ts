@@ -67,6 +67,6 @@ Together, these changes ensure learners have the foundational knowledge needed t
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `5a136f77`

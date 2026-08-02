@@ -42,7 +42,7 @@ The IME Simulator (Epic 19 feature in `features/quiz/`) currently shows correct/
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
+- **PR**: N/A (direct commit — no PR)
 - **Merge Date**: July 30, 2026
 - **Key Commit**: `d6f6d560`
 

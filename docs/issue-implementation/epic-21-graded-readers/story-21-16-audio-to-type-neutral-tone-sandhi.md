@@ -19,7 +19,7 @@ Extend the Audio-to-Type phase gate quiz with neutral tone (tone 5) support and 
 - `apps/frontend/src/features/quiz/stores/quizSessionStore.ts` — update: track neutralToneTested/sandhiQuestions on init
 - `apps/frontend/src/features/quiz/services/quizService.ts` — update: pass metadata in createQuizAttempt
 - `apps/backend/src/modules/quiz/repositories/QuizRepository.ts` — update: accept metadata in createQuizAttempt
-- `apps/frontend/src/features/quiz/components/PinyinToneInput.tsx` — **no change needed** (tone 5 already exists)
+- `apps/frontend/src/features/quiz/components/PinyinToneInput.tsx` — **no change needed** (neutral-tone 0 button already exists)
 
 ## Implementation Details
 
@@ -95,8 +95,33 @@ quizSessionStore.initialize()
 
 The following components require **no modifications** for this story:
 
-- `PinyinToneInput.tsx` — tone 5 button already exists via `TONE_BUTTONS_BASE`; tone 0 mapping already exists
+- `PinyinToneInput.tsx` — neutral-tone **0** button (label "0") already exists via `TONE_BUTTONS_BASE`; tone 0 mapping already exists
 - Quiz UI components (question display, feedback display) — no layout changes needed
 - Storybook — no new stories needed unless `PinyinToneInput` gets a new variant in a future story
 
+## Technical Challenges & Solutions
+
+### Neutral tone representation (0 vs 5)
+
+**Problem:** The neutral tone is conventionally "tone 5", but the UI tone button is labeled "0" and `correctTone` is stored as `0` for neutral particles.
+
+**Root Cause:** The quiz model uses `0` for neutral; "5" is an internal/legacy convention.
+
+**Solution:** Neutral-tone particles (吗, 了, 的, 着, 过, 们, 子) set `correctTone: 0`; the existing `PinyinToneInput` tone-0 button is reused (no UI change), and tone equivalence is handled internally.
+
+### Sandhi-aware scoring without false positives
+
+**Problem:** Accepting tone-2 for a 3-3 sandhi could wrongly pass any wrong tone-2 answer.
+
+**Root Cause:** Blindly accepting alternate tones rewards incorrect answers on non-sandhi questions.
+
+**Solution:** `isSandhiAcceptable()` only applies when `isSandhiQuestion` is true AND the rule's `spokenTones` contain the user tone AND its `dictionaryTones` contain the expected tone; otherwise strict equality wins.
+
 ✅ Implemented (July 30, 2026)
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

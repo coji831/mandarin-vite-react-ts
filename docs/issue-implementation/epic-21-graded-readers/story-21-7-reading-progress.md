@@ -31,7 +31,6 @@ readersSessionByPassageId: (id) => `/v1/readers/sessions/${id}`,
 readersSessionCompleteByPassageId: (id) => `/v1/readers/sessions/${id}/complete`,
 readersBookmarks: "/v1/readers/bookmarks",
 readersBookmarkByPassageId: (id) => `/v1/readers/bookmarks/by-passage/${id}`,
-readersBookmarkCheckByPassageId: (id) => `/v1/readers/bookmarks/by-passage/${id}`,
 ```
 
 ### Type declarations — Add to `packages/shared-constants/src/index.d.ts`
@@ -41,7 +40,6 @@ readonly readersSessionByPassageId: (id: string) => string;
 readonly readersSessionCompleteByPassageId: (id: string) => string;
 readonly readersBookmarks: string;
 readonly readersBookmarkByPassageId: (id: string) => string;
-readonly readersBookmarkCheckByPassageId: (id: string) => string;
 ```
 
 ### API Endpoints
@@ -278,3 +276,10 @@ Solution: readingStore.isAuthenticated gate prevents any network call for guests
 
 - **Status**: Completed
 - **Last Updated**: July 30, 2026
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

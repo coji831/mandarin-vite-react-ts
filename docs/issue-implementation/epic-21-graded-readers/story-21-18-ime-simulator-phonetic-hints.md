@@ -82,3 +82,27 @@ Uses the `ClassificationBadge` component from Story 21.15 for each row.
     ├── 21.15 ClassificationBadge — score breakdown rows
     └── Epic 19 IME Simulator — existing quiz infrastructure
 ```
+
+## Technical Challenges & Solutions
+
+### Hint data availability
+
+**Problem:** The phonetic hint wants the Characters Module API, but it can be unavailable or the character may lack a phonetic component (e.g., pictographs).
+
+**Root Cause:** Hint generation depends on an external API + data that isn't guaranteed per character.
+
+**Solution:** API-first with graceful fallback — try `GET /api/v1/characters/:glyph/phonetic`, then fall back to local character data (a pictograph note, or a generic sound-association hint). Failures degrade silently.
+
+### Radical hint score penalty
+
+**Problem:** The radical hint should cost the learner without breaking the existing scoring model.
+
+**Root Cause:** The IME Simulator scores per answer; a per-hint penalty needed to accumulate across the session.
+
+**Solution:** Tracked `hintsRemaining` (starts at 3) and `maxScorePenalty` (accumulates -5% per radical-hint use) in `quizSessionStore`, and surfaced score-by-character-type breakdown in results via the shared `ClassificationBadge` (Story 21.15).
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

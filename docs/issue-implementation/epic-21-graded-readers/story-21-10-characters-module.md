@@ -14,7 +14,7 @@ Create a dedicated `modules/characters/` module following the existing modulith 
 - `apps/backend/src/modules/characters/container.ts` — **NEW**: DI registration
 - `apps/backend/src/modules/characters/index.ts` — **NEW**: barrel file (re-exports all types and classes)
 - `apps/backend/src/modules/characters/api/CharactersController.ts` — **NEW**: REST controller (6 endpoints)
-- `apps/backend/src/modules/characters/api/characters.routes.ts` — **NEW**: route definitions
+- `apps/backend/src/modules/characters/api/charactersRoutes.ts` — **NEW**: route definitions
 - `apps/backend/src/modules/characters/services/CharactersService.ts` — **NEW**: business logic layer
 - `apps/backend/src/modules/characters/repositories/CharactersRepository.ts` — **NEW**: Prisma query layer
 - `apps/backend/src/modules/characters/types/characters.ts` — **NEW**: request/response types
@@ -225,42 +225,53 @@ Add the following to `packages/shared-constants/src/index.js` and `packages/shar
 
 | Constant                  | Value                                     | Used By                |
 | ------------------------- | ----------------------------------------- | ---------------------- |
-| `charactersPhonetic`      | `/api/v1/characters/:glyph/phonetic`      | `characters.routes.ts` |
-| `charactersHomophones`    | `/api/v1/characters/:glyph/homophones`    | `characters.routes.ts` |
-| `charactersDecomposition` | `/api/v1/characters/:glyph/decomposition` | `characters.routes.ts` |
-| `charactersSearch`        | `/api/v1/characters/search`               | `characters.routes.ts` |
-| `charactersFrequency`     | `/api/v1/characters/frequency`            | `characters.routes.ts` |
+| `charactersPhonetic`      | `/v1/characters/:glyph/phonetic`      | `charactersRoutes.ts` |
+| `charactersHomophones`    | `/v1/characters/:glyph/homophones`    | `charactersRoutes.ts` |
+| `charactersDecomposition` | `/v1/characters/:glyph/decomposition` | `charactersRoutes.ts` |
+| `charactersSearch`        | `/v1/characters/search`               | `charactersRoutes.ts` |
+| `charactersFrequency`     | `/v1/characters/frequency`            | `charactersRoutes.ts` |
 
-Note: `charactersDetail` (`/api/v1/characters/:glyph`) was added in a prior story or already exists in the path constants.
+Note: `charactersByGlyph` (`/v1/characters/:glyph`) already exists in the path constants.
 
 ### Route Registration
 
 The module is wired through four registration points:
 
-**1. `apps/backend/src/modules/characters/api/characters.routes.ts`** — Defines Express Router with 6 GET routes, each using controller methods:
+**1. `apps/backend/src/modules/characters/api/charactersRoutes.ts`** — Defines Express Router with 6 GET routes, each using controller methods:
 
 ```typescript
-import { Router } from "express";
-import { PATHS } from "@mandarin/shared-constants";
-import { charactersController } from "../container";
+import express from "express";
+import type { Request, Response } from "express";
+import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/:glyph", (req, res) => charactersController.getCharacter(req, res));
-router.get(PATHS.charactersPhonetic.replace("/api/v1/characters/", ""), (req, res) =>
-  charactersController.getPhonetic(req, res),
+router.get(
+  ROUTE_PATTERNS.charactersByGlyph(":glyph"),
+  asyncHandler((req: Request, res: Response) => req.charactersController!.getCharacter(req, res)),
 );
-router.get(PATHS.charactersHomophones.replace("/api/v1/characters/", ""), (req, res) =>
-  charactersController.getHomophones(req, res),
+router.get(
+  ROUTE_PATTERNS.charactersPhonetic(":glyph"),
+  asyncHandler((req: Request, res: Response) => req.charactersController!.getPhonetic(req, res)),
 );
-router.get(PATHS.charactersDecomposition.replace("/api/v1/characters/", ""), (req, res) =>
-  charactersController.getDecomposition(req, res),
+router.get(
+  ROUTE_PATTERNS.charactersHomophones(":glyph"),
+  asyncHandler((req: Request, res: Response) => req.charactersController!.getHomophones(req, res)),
 );
-router.get(PATHS.charactersSearch.replace("/api/v1/characters/", ""), (req, res) =>
-  charactersController.search(req, res),
+router.get(
+  ROUTE_PATTERNS.charactersDecomposition(":glyph"),
+  asyncHandler((req: Request, res: Response) =>
+    req.charactersController!.getDecomposition(req, res),
+  ),
 );
-router.get(PATHS.charactersFrequency.replace("/api/v1/characters/", ""), (req, res) =>
-  charactersController.getFrequency(req, res),
+router.get(
+  ROUTE_PATTERNS.charactersSearch,
+  asyncHandler((req: Request, res: Response) => req.charactersController!.search(req, res)),
+);
+router.get(
+  ROUTE_PATTERNS.charactersFrequency,
+  asyncHandler((req: Request, res: Response) => req.charactersController!.getFrequency(req, res)),
 );
 
 export default router;
@@ -374,3 +385,10 @@ Problem: Search endpoint with empty params would return all 2,971 characters.
 Solution: Controller returns 400 VALIDATION_ERROR when all params (q, tone, hskLevel)
          are empty. Repository also guards against empty queries as defense-in-depth.
 ```
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

@@ -586,9 +586,34 @@ Register in `.storybook/msw-handlers.ts` by importing `radicalsHandlers` and add
 
 All test files currently use mock data with `hsk_characters`. They must be updated to remove that field from test fixtures, and for components that now fetch from the API, tests must be updated to mock the API call instead.
 
+## Technical Challenges & Solutions
+
+### Radical JSON field location drift
+
+**Problem:** The cleanup targeted the wrong field location — the BR described `metadata.hsk_characters`, but the actual data has `hskCharacters` at the **top level** of each radical entry in `content/radicals/radicals.json`.
+
+**Root Cause:** Assumptions about the JSON shape weren't verified against the actual file before writing the cleanup.
+
+**Solution:** Verified the actual shape from the codebase first (single aggregate file, 20 objects, top-level camelCase `hskCharacters`), then wrote `scripts/cleanup-radical-content.ts` + `scripts/validate-radical-content.ts` against the real location, and migrated every consumer (RadicalGateStrategy, ReviewService, RadicalDetailCard, RadicalTreesTab, useMergedRadicals) to the DB/API.
+
+### Synchronous → async character loading in the tree
+
+**Problem:** `RadicalTreesTab`'s `getCharactersForRadical` was synchronous (read from JSON); switching to the API makes it async.
+
+**Root Cause:** The API endpoint returns a Promise; downstream `Phase3TreeView` expected a synchronous array.
+
+**Solution:** Changed the prop type to `() => Promise<Array<...>>`, added a per-radical result cache (`charactersCache` Map) in `RadicalTreesTab`, and `await`ed the result in `Phase3TreeView`.
+
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `48d0229b`
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

@@ -505,3 +505,10 @@ Solution:    Backend types are hardened to strict StrokeEntry, StrokeExtendedTyp
             and StrokeOrderRuleEntry interfaces. The top-level StrokesReference
             keeps the same shape keys so no downstream import breaks.
 ```
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

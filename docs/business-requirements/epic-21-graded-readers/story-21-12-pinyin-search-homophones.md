@@ -56,6 +56,6 @@ The `PinyinSyllable` table (≥1,300 entries, populated by Story 21.2) stores pi
 ## Implementation Status
 
 - **Status**: Implemented
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `af1e83f8`

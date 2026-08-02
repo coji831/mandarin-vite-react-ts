@@ -54,6 +54,6 @@ Business audit §7 identified measure words as "the single biggest grammar omiss
 ## Implementation Status
 
 - **Status**: Complete
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: 51487da7
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `51487da7`

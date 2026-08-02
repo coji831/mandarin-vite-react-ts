@@ -152,3 +152,36 @@ Tab gating behavior:
 - ❌ Do NOT create oracle bone SVG assets (`/images/oracle-bone/*.svg`)
 - ❌ Do NOT modify backend quiz controllers or create new backend endpoints
 - ❌ Do NOT create `QuizAttempt` records — results are local-only for MVP```
+
+## Technical Challenges & Solutions
+
+### Standalone mini-game outside the quiz strategy pattern
+
+**Problem:** The Pictograph Match mini-game looks like a quiz but is explicitly NOT a quiz strategy (no backend, no persistence, no `StrategyType`).
+
+**Root Cause:** `quiz-architecture.instructions.md` mandates the strategy pattern for quiz modes; a local warmup game shouldn't incur quiz plumbing.
+
+**Solution:** Kept it as a documented standalone client-side exception: `pictographMatchStore` (local Zustand) instead of `quizStore`, no strategy registration, results local-only for MVP.
+
+### MVP without oracle-bone image assets
+
+**Problem:** Oracle bone SVGs weren't available, but the gallery needed visual evolution content.
+
+**Root Cause:** No image assets existed for the MVP.
+
+**Solution:** Text-only etymology descriptions for the gallery cards; `MnemonicCard`'s `PictographLayout` renders text-only when no image is provided. `ancientFormUrl` prop is designed and ready for future assets.
+
+### Tab gating without backend progress
+
+**Problem:** The Pictographs tab should unlock only after Tones, but it's not a `FoundationSection` (no backend progress tracking).
+
+**Root Cause:** Adding it to `FOUNDATION_SECTIONS` would create false backend progress expectations.
+
+**Solution:** Added the tab locally in `FoundationsPage.tsx` with lock state driven by `useFoundationsProgress` (`tones.completed`), not by `FOUNDATION_SECTIONS` — the tab is always rendered but disabled/locked until Tones is complete.
+
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current

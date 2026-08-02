@@ -21,7 +21,7 @@ This story builds the entire server-side foundation for the graded readers featu
 - [x] HSK profile computed by segmenter and cached alongside passage
 - [x] Rate limiting: max 5 generation requests per authenticated user per day (UTC midnight reset), 0 for guests
 - [x] Max total passages per user limit enforced (5 passages per user, seeded demos excluded)
-- [x] GeminiService updated with `generatePassage()` method (no 500-char cap)
+- [x] GeminiService updated with `generateRaw()` method (no 500-char cap) — replaces the originally-planned `generatePassage()` approach
 
 ## Business Rules
 
@@ -31,7 +31,7 @@ This story builds the entire server-side foundation for the graded readers featu
 4. **Backend segments at read time** — Passage stores sentence-structured JSON (content: Json). Segmenter identifies word boundaries using in-memory word index at read time.
 5. **HSK profile computed lazily** — `hskProfile` (e.g., 70% HSK 2, 20% HSK 3, 10% unknown) computed by segmenter on first read, cached alongside passage. The passage's `knownWordRatio` field is derived from this cached `hskProfile`.
 6. **Three-tier cache** — Lightweight word index (~500KB) at startup. Full word data loaded lazily for passage words and user-tapped words.
-7. **GeminiService.MAX_OUTPUT_LENGTH = 500** must be increased — Add `generatePassage()` method without the 500-char truncation (do not modify existing `generateText()`).
+7. **GeminiService.MAX_OUTPUT_LENGTH = 500** was too short for passage generation — resolved by adding `generateRaw()` (generic full-output method: no 500-char truncation, `maxTokens` default 1024, 30s timeout). The existing `generateText()` was left unmodified; `generateRaw()` replaces the originally-planned `generatePassage()` approach.
 8. **Error-catching middleware** per external service (Gemini, Segmenter). Typed error classes. Consumers handle at their level. User sees fallback UI per error type.
 9. **API endpoints** — `GET /v1/readers/passages?hskLevel=N` (list cached), `GET /v1/readers/passages/:id` (detail with segmentation + audio), `POST /v1/readers/generate` (generate, auth-only, body: `{ topic }`). All require authentication.
 10. **HSK level derivation** — User's known HSK level derived from CharacterProgress data: the highest HSK level where user has ≥80% character coverage at confidence ≥0.8.
@@ -46,9 +46,9 @@ This story builds the entire server-side foundation for the graded readers featu
 ## Implementation Status
 
 - **Status**: Complete
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `6c7556ab`
 
 **Delivered:**
 

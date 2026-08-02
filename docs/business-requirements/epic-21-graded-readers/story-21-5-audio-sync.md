@@ -38,6 +38,6 @@ Audio sync turns reading into a multi-sensory learning experience. Learners can 
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: TBD
-- **Merge Date**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
 - **Key Commit**: `6878493f`

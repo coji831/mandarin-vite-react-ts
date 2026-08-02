@@ -30,7 +30,7 @@ This story is the **critical prerequisite** for the entire epic — nothing else
 - [x] **NEW: MeasureWordWord junction model** ✅
 - [x] **NEW: CharacterComponent model** ✅
 - [x] **NEW: Component model** ✅
-- [ ] PhoneticCluster + ClusterMembership models ⏳ deferred to Story 21.6
+- [x] PhoneticCluster + ClusterMembership models — delivered by Story 21.6 ✅
 
 ### Data Population (Phase B)
 
@@ -52,8 +52,8 @@ This story is the **critical prerequisite** for the entire epic — nothing else
 - [x] PinyinCharacterMapping table populated (3,391 records via CC-CEDICT import, ≥2,971 target exceeded) ✅
 - [x] MeasureWord table seeded with ≥52 common measure words (target ≥50) ✅
 - [x] MeasureWordWord table populated with ≥136 noun-pairing records (target ≥100) ✅
-- [ ] CharacterComponent decomposition data populated for ≥2,000 characters ⏳ moved to Story 21.2
-- [ ] Component scaffold populated with ≥500 components ⏳ moved to Story 21.2
+- [x] CharacterComponent decomposition data populated for ≥2,000 characters — delivered by Story 21.2 ✅
+- [x] Component scaffold populated with ≥500 components — delivered by Story 21.2 ✅
 - [x] Seed scripts are idempotent (safe to re-run — createMany skipDuplicates / upsert) ✅
 
 ### Content Generation (Phase C)
@@ -106,9 +106,9 @@ This story is the **critical prerequisite** for the entire epic — nothing else
 ## Implementation Status
 
 - **Status**: ✅ **Fully Complete** — All phases (Schema, Data Population, Content Generation) finalized. 3-phase pipeline verified end-to-end. Old seed files archived, all 13 audit findings resolved, all 47/47 verification checks pass. ✅ **Phase B (Data Population) — Fully Complete**: PinyinSyllable (2,045 ✅), PinyinCharacterMapping (3,391 ✅ — ≥2,971 target exceeded), MeasureWord (52 ✅), MeasureWordWord (136 ✅). **Word enrichment**: pinyin+meaning populated for 11,064 words via CC-CEDICT, 28 words via character-reading inference (all 11,092 now enriched) ✅, wordClass inferred for 4,479 words ✅. **Character enrichment**: strokeCount corrected against Unihan kTotalStrokes (2,960 corrections, 0 remaining with strokeCount≤0) ✅, frequencyRank (2,971 ✅), commonWords (2,971 ✅), classification (2,780 ✅), etymology (2,761 ✅), phoneticComponentId (1,315 ✅), CharacterReadings (3,813 records ✅), CharacterRadical (988 records ✅). Component scaffold and CharacterComponent decomposition moved to Story 21.2 (needs Make Me a Hanzi). ✅ **Phase C (Content Generation)**: All content files regenerated with enriched data (stroke counts corrected, all words now have pinyin via CC-CEDICT + character-reading inference). ✅ **MMAH Import Pipeline**: `scripts/enrich/import-make-me-a-hanzi.ts` created — enriches classification, etymology, phoneticComponentId, and CharacterRadical from Make Me a Hanzi data. ✅ **Character Enrichment**: `scripts/enrich/populate-character-enrichment.ts` — computes frequencyRank and commonWords from WordCharacter junctions. ✅ **Polyphone Migration**: `scripts/enrich/populate-character-readings.ts` — migrates Character.readings JSON to CharacterReading model. ✅ **Stroke Count Correction**: `scripts/archive/populate-stroke-counts.ts` — downloads Unihan.zip, extracts kTotalStrokes, corrects all 2,960 mismatched stroke counts. ✅ **Unenriched Words Fix**: `scripts/archive/fix-unenriched-words.ts` — enriches 28 remaining words via character-reading inference. ✅ **Script Migration**: All scripts restructured into subdirectories — `scripts/enrich/`, `scripts/verify/`, `scripts/dev/`, `scripts/generate/`, `scripts/archive/`. Seed pipeline unified into single `prisma/seed.ts`. `_spot-checks.ts` merged into `scripts/verify/verify-data-lifecycle.ts` with `--deep` flag. **Verification**: 17/19 gates pass; 2 failures are expected/deferred (Component, CharacterComponent — moved to Story 21.2). All 7 spot-check queries pass. ✅ **All 21.1 BR items now complete.**
-- **PR**: TBD
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `f9d4593c`
 
 ## Closing Checklist
 

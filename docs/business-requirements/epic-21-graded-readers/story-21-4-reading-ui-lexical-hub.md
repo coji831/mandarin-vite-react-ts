@@ -51,6 +51,6 @@ This story delivers the core learner-facing reading experience. It replaces the 
 ## Implementation Status
 
 - **Status**: Complete
-- **PR**: epic-21-graded-readers
-- **Merge Date**: TBD
-- **Key Commit**: TBD (to be added after commit)
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
+- **Key Commit**: `23747f18`

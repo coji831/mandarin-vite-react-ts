@@ -132,3 +132,27 @@ Component delegates data fetching to `sandhiDrillService.ts` (service layer patt
 - `apps/backend` quiz module: 17 tests pass (9 existing + 8 new)
 - `npx tsc --noEmit`: 0 errors
 - Pre-existing `RadicalCharacterService` test failures are unrelated and unchanged
+
+## Technical Challenges & Solutions
+
+### Sandhi drill as a non-registry exception
+
+**Problem:** The drill is a "quiz" but must NOT be registered as a quiz strategy (no `StrategyType` union, no quiz page routing).
+
+**Root Cause:** It's a standalone micro-widget embedded in `TonesTab`, not a full quiz mode.
+
+**Solution:** Kept it out of the strategy registry with its own `SandhiDrillController` + `GET /v1/quiz/sandhi-drill/questions?count=10` route; results are posted to the existing `POST /v1/quiz/attempts` with `quizType: "sandhi-drill"` (a plain `String` — no enum, no schema change).
+
+### Question generation from the DB word bank
+
+**Problem:** Building 10 balanced multiple-choice sandhi questions from real vocabulary.
+
+**Root Cause:** Questions need genuine 2-character words that exhibit the 4 sandhi rules.
+
+**Solution:** `SandhiDrillService` queries `Word` + `WordCharacter` + `Character` + `CharacterReading`, filters to 2-character words, buckets candidates by tone pattern into the 4 sandhi rules, distributes round-robin, and generates 4 options (sandhi form + dictionary form + 2 distractors).
+### Doc Truth-Check (Verify Against Code)
+- [x] Endpoints documented exist verbatim in `ROUTE_PATTERNS` (`packages/shared-constants/src/index.js`)
+- [x] Feature/module/component names match `src/features/` / `src/modules/` listings
+- [x] Data-source claims (content JSON vs Postgres/API) verified in the backing service
+- [x] Every internal link resolves to an existing file
+- [x] Last Updated date is current
