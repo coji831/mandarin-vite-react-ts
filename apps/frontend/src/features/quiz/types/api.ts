@@ -15,11 +15,21 @@ export type QuizGenerateRequest = {
 export type ApiQuestion = {
   id: string;
   audioKey: string;
+  /**
+   * @deprecated Tri-modal field — see `expectedPinyin` / `correctOptionId` /
+   * `correctGlyph`. Wire name kept (backend payload unchanged).
+   */
   correctPinyin: string;
   correctTone: number;
   category: string;
   displayPinyin?: string;
   character?: string | null;
+  /** Audio-to-pinyin-tone: expected pinyin string. */
+  expectedPinyin?: string;
+  /** Radical-gate: the correct multiple-choice option id. */
+  correctOptionId?: string;
+  /** IME-simulator: the expected Hanzi glyph. */
+  correctGlyph?: string;
 };
 
 /** Response from the quiz generation endpoint */

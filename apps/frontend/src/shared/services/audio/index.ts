@@ -6,3 +6,5 @@
 export { AudioService, AudioBackend } from "./audioService";
 export type { IAudioService, IAudioBackend } from "./interfaces";
 export { BaseService } from "./interfaces";
+export { WordAudioError, classifyWordAudioError } from "./errors";
+export type { WordAudioFailureKind } from "./errors";

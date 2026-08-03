@@ -37,5 +37,5 @@ export function errorHandler(
     stack: err.stack,
   });
 
-  res.status(err.status || 500).json(error);
+  res.status(err.status || err.statusCode || 500).json(error);
 }

@@ -21,6 +21,19 @@ import { withGuestAuth } from "../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
+// ── Word-audio handler ─────────────────────────────────────────────
+// The review session's word audio resolves via useAudioItemPlayback →
+// defaultWordBehavior → AudioService.fetchWordAudio → POST /v1/tts. Provide an
+// MSW handler so clicking a 🔊 in the session stories resolves locally instead
+// of hitting a real backend.
+const ttsHandler = http.post(`${API_BASE}/tts`, () =>
+  HttpResponse.json({
+    audioUrl: "https://cdn/review-item.mp3",
+    text: "nǐ hǎo",
+    languageCode: "zh-CN",
+  }),
+);
+
 // ── Mock data ──────────────────────────────────────────────────────
 
 const MOCK_PINYIN_ITEMS: ReviewItem[] = [
@@ -147,6 +160,7 @@ export const SessionPinyin: Story = {
         http.get(`${API_BASE}/review/items`, () =>
           HttpResponse.json(MOCK_PINYIN_ITEMS, { status: 200 }),
         ),
+        ttsHandler,
       ],
     },
   },
@@ -164,6 +178,7 @@ export const SessionTones: Story = {
         http.get(`${API_BASE}/review/items`, () =>
           HttpResponse.json(MOCK_TONE_ITEMS, { status: 200 }),
         ),
+        ttsHandler,
       ],
     },
   },
@@ -181,6 +196,7 @@ export const SessionRadicals: Story = {
         http.get(`${API_BASE}/review/items`, () =>
           HttpResponse.json(MOCK_RADICAL_ITEMS, { status: 200 }),
         ),
+        ttsHandler,
       ],
     },
   },

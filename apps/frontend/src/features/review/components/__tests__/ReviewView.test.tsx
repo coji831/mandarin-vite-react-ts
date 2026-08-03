@@ -46,7 +46,7 @@ vi.mock("../../hooks/useReview", () => ({
 }));
 
 vi.mock("shared/hooks", () => ({
-  useAudioPlayback: () => ({ playWordAudio: vi.fn() }),
+  useAudioItemPlayback: () => ({ play: vi.fn() }),
 }));
 
 vi.mock("../ReviewCard", () => ({

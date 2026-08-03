@@ -7,6 +7,8 @@
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
+import { stripToneAndDigits } from "@mandarin/shared-utils";
+import type { PinyinCharacterMap } from "@mandarin/shared-utils";
 import { Box } from "shared/components";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import { useDragToPan } from "../../hooks/useDragToPan";
@@ -20,7 +22,7 @@ export interface SlidingPinyinGridProps {
   finals: Array<{ id: string; pinyin: string; type?: string; description: string }>;
   combinations: Array<{ initial: string; final: string; tones: (string | null)[] }>;
   /** Pinyin → character mapping (e.g. "ba" → "八") */
-  charMap?: Record<string, string>;
+  charMap?: PinyinCharacterMap | null;
 }
 
 // ─── Main Component ───
@@ -198,7 +200,7 @@ function SlidingPinyinGridComponent({
                 style={{ color: TONE_COLORS[extractToneNumber(firstTone)] ?? TONE_COLORS[0] }}
               >
                 {/* inline: dynamic tone color — depends on cell data */}
-                {firstTone}
+                {stripToneAndDigits(firstTone)}
               </span>
             ) : (
               <span className="font-xs text-muted">&mdash;</span>

@@ -9,7 +9,7 @@
  */
 
 import { useCallback } from "react";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import { Button, Skeleton } from "shared/components";
 import { useCharacterDetail } from "../../hooks";
 import { getToneClass } from "../../utils/toneUtils";
@@ -36,7 +36,7 @@ export function HubReadings({
   loading: propLoading,
 }: HubReadingsProps) {
   const { data } = useCharacterDetail(glyph ?? "");
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
 
   // Use prop data if provided (Storybook), otherwise self-fetched data
   const readings =
@@ -54,10 +54,10 @@ export function HubReadings({
   const handleAudio = useCallback(
     (_pinyin: string) => {
       if (glyph) {
-        playWordAudio({ chinese: glyph, fallbackToBrowserTTS: true });
+        play(glyph);
       }
     },
-    [glyph, playWordAudio],
+    [glyph, play],
   );
 
   if (loading) {

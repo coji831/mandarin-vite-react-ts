@@ -5,7 +5,7 @@
 import { MnemonicsController } from "./api/MnemonicsController.js";
 import { MnemonicsService } from "./services/MnemonicsService.js";
 import { MnemonicsRepository } from "./repositories/MnemonicsRepository.js";
-import { GeminiService } from "../../shared/services/GeminiService.js";
+import { GeminiService } from "../../shared/infrastructure/external/GeminiService.js";
 import { CacheService } from "../../shared/infrastructure/cache/CacheService.js";
 
 export interface MnemonicsModuleDeps {

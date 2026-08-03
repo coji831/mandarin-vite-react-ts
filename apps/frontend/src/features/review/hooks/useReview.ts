@@ -8,13 +8,16 @@ import { useState, useCallback } from "react";
 import type { ReviewItem, Rating, ReviewSource, ReviewStep, ReviewSessionResult } from "../types";
 import { reviewService } from "../services/reviewService";
 import { getReviewStrategy } from "../engine/strategies";
+import { stripToneAndDigits, extractToneNumber } from "@mandarin/shared-utils";
 
-/** Parse user pinyin input "hao3" into { pinyin: "hao", tone: 3 }. */
-function parsePinyinInput(input: string): { pinyin: string; tone: number } {
+/**
+ * Parse user pinyin input into { pinyin, tone } using the canonical shared parser.
+ * Handles tone-marked ("mà" → 4), digit-suffixed ("hao3" → 3), neutral digit
+ * ("ma5"/"ma0" → tone 0), and plain ("ma" → 0) forms.
+ */
+export function parsePinyinInput(input: string): { pinyin: string; tone: number } {
   const cleaned = input.trim().toLowerCase();
-  const match = cleaned.match(/^([a-z\u00fc]+)([0-4])?$/);
-  if (!match) return { pinyin: cleaned, tone: 0 };
-  return { pinyin: match[1], tone: match[2] ? parseInt(match[2], 10) : 0 };
+  return { pinyin: stripToneAndDigits(cleaned), tone: extractToneNumber(cleaned) };
 }
 
 export function useReview() {

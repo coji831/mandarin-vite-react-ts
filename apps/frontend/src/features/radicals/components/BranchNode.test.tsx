@@ -14,6 +14,14 @@ vi.mock("shared/store", async () => {
   return { ...actual, openHub: mockOpenHub };
 });
 
+// Audio routes through useAudioItemPlayback (shared AudioManager) — mock it to
+// assert play is invoked with the node's character text.
+const mockPlay = vi.hoisted(() => vi.fn());
+vi.mock("shared/hooks", async () => {
+  const actual = await vi.importActual("shared/hooks");
+  return { ...actual, useAudioItemPlayback: () => ({ play: mockPlay }) };
+});
+
 describe("BranchNode", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,6 +46,14 @@ describe("BranchNode", () => {
     expect(
       screen.getByRole("button", { name: /open 水 in character detail hub/i }),
     ).toBeInTheDocument();
+  });
+
+  it("calls play with the character when the audio button is clicked", () => {
+    render(<BranchNode character="水" pinyin="shuǐ" meaning="water" />);
+
+    fireEvent.click(screen.getByRole("button", { name: /play pronunciation for 水/i }));
+    // Routes through the shared AudioManager via useAudioItemPlayback
+    expect(mockPlay).toHaveBeenCalledWith("水");
   });
 
   it("calls openHub when character glyph section is clicked", () => {

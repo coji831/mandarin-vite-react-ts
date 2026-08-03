@@ -2,6 +2,9 @@
  * @file components/SentenceDisplay/__tests__/SentenceDisplay.test.tsx
  * @description Tests for SentenceDisplay component
  * Phase 2: Audio props removed — reads audioStore directly.
+ * Phase D1: Reads the SHARED presentational audio store; the per-sentence 🔊
+ *   button invokes the `onPlay(index)` prop (parent routes `play(index, "single")`
+ *   through the shared AudioManager) — no store signal fields anymore.
  * VisFix: Container is no longer a button — per-sentence play button drives audio;
  *   word taps only open the popover (never trigger audio).
  */
@@ -10,8 +13,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SentenceDisplay } from "../SentenceDisplay";
-import { useAudioStore } from "../../stores";
-import type { AudioStatus } from "../../stores";
+import { useAudioStore } from "shared/store";
 import type { SentenceData } from "../SentenceDisplay";
 
 const SAMPLE_SENTENCE: SentenceData = {
@@ -34,15 +36,7 @@ describe("SentenceDisplay", () => {
   };
 
   beforeEach(() => {
-    useAudioStore.setState({
-      currentIndex: null,
-      pendingIndex: null,
-      pendingSingleIndex: null,
-      status: "idle" as AudioStatus,
-      error: null,
-      speed: 1,
-      audioUrls: null,
-    });
+    useAudioStore.setState(useAudioStore.getInitialState());
   });
 
   afterEach(() => {
@@ -125,27 +119,26 @@ describe("SentenceDisplay", () => {
     expect(container?.className).not.toContain("sentence-display--active");
   });
 
-  it("sets pendingSingleIndex in audioStore when play button is clicked", async () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+  it("calls onPlay with the sentence index when the play button is clicked", async () => {
+    const onPlay = vi.fn();
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} onPlay={onPlay} />);
 
     await userEvent.click(screen.getByRole("button", { name: "Play sentence 1" }));
 
-    expect(useAudioStore.getState().pendingSingleIndex).toBe(0);
-    // Single-sentence signal, not the auto-advance tap signal
-    expect(useAudioStore.getState().pendingIndex).toBeNull();
+    expect(onPlay).toHaveBeenCalledWith(0);
   });
 
   it("does not trigger audio when tapping an unknown word (popover only)", async () => {
-    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
+    const onPlay = vi.fn();
+    render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} onPlay={onPlay} />);
 
     await userEvent.click(screen.getByText("好"));
 
-    expect(useAudioStore.getState().pendingSingleIndex).toBeNull();
-    expect(useAudioStore.getState().pendingIndex).toBeNull();
+    expect(onPlay).not.toHaveBeenCalled();
   });
 
   it("reflects active playing state on the audio button", () => {
-    useAudioStore.setState({ currentIndex: 0, status: "playing" as AudioStatus });
+    useAudioStore.setState({ currentIndex: 0, status: "playing" });
     render(<SentenceDisplay sentence={SAMPLE_SENTENCE} {...defaultProps} />);
 
     const playButton = screen.getByRole("button", { name: "Replay sentence 1" });

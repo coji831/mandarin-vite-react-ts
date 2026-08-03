@@ -1,21 +1,19 @@
 /**
  * @file types/audio.ts
  * @description Audio-related types for the readers feature (Story 21.5).
+ *
+ * The wire shapes (AudioSource / SentenceAudioResult / PassageAudioResponse)
+ * are promoted to @mandarin/shared-types (D5) and re-exported here; the
+ * feature-local `SentenceAudioMap` alias is kept.
  */
 
-/** Source indicator matching the backend response. */
-export type AudioSource = "gcs" | "ondemand" | "failed";
+import type { SentenceAudioResult } from "@mandarin/shared-types";
 
-/** Audio URL info for a single sentence. */
-export type SentenceAudioInfo = {
-  url: string;
-  source: AudioSource;
-};
+export type {
+  AudioSource,
+  SentenceAudioResult,
+  PassageAudioResponse,
+} from "@mandarin/shared-types";
 
 /** Keyed by sentence index (0-based). */
-export type SentenceAudioMap = Record<number, SentenceAudioInfo>;
-
-/** Response shape for POST /v1/readers/passages/:id/audio. */
-export type PassageAudioResponse = {
-  audioUrls: SentenceAudioMap;
-};
+export type SentenceAudioMap = Record<number, SentenceAudioResult>;

@@ -8,6 +8,7 @@
  */
 
 import { Box } from "shared/components";
+import { normalizePinyinForComparison, areTonesEquivalent } from "@mandarin/shared-utils";
 import type { AnswerResult, CategoryBreakdown as CategoryBreakdownData } from "../../types";
 
 type CategoryBreakdownProps = {
@@ -21,10 +22,14 @@ type CategoryBreakdownProps = {
 /** Compute per-category scores from the answers array (fallback when no backend breakdown). */
 function computeScores(answers: AnswerResult[]) {
   const total = answers.length;
+  // Grading parity: the stored correct pinyin may be digit-suffixed ("ba1") or
+  // tone-marked ("bā") while the learner typed plain pinyin ("ba") — canonical
+  // compare strips marks + trailing digits. Tones use equivalence (neutral 0≡5).
   const pinyinCorrect = answers.filter(
-    (a) => a.userPinyin.trim().toLowerCase() === a.correctPinyin.trim().toLowerCase(),
+    (a) =>
+      normalizePinyinForComparison(a.userPinyin) === normalizePinyinForComparison(a.correctPinyin),
   ).length;
-  const toneCorrect = answers.filter((a) => a.userTone === a.correctTone).length;
+  const toneCorrect = answers.filter((a) => areTonesEquivalent(a.userTone, a.correctTone)).length;
   return { pinyinCorrect, toneCorrect, total };
 }
 

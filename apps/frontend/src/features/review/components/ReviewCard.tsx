@@ -10,7 +10,7 @@
  *  - "result" (step="result"): character + meaning + correct answer + ✅/❌ + A/G/E rating → ReviewCardResult
  */
 import React, { useEffect, useRef } from "react";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import { ReviewCardPinyinInput } from "./ReviewCardPinyinInput";
 import { ReviewCardToneSelect } from "./ReviewCardToneSelect";
 import { ReviewCardOptionSelect } from "./ReviewCardOptionSelect";
@@ -29,7 +29,7 @@ type ReviewCardProps = {
   onSelectTone: (tone: number) => void;
   onSelectOption?: (optionId: string) => void;
   onRate: (rating: Rating) => void;
-  /** Optional external audio handler — falls back to internal useAudioPlayback if omitted */
+  /** Optional external audio handler — falls back to internal useAudioItemPlayback if omitted */
   onPlayAudio?: (text: string) => void;
 };
 
@@ -45,7 +45,7 @@ function ReviewCardComponent({
   onRate,
   onPlayAudio: externalOnPlayAudio,
 }: ReviewCardProps) {
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
   const hasUserInteracted = useRef(false);
 
   // Use external handler if provided, otherwise fall back to internal
@@ -53,16 +53,16 @@ function ReviewCardComponent({
     externalOnPlayAudio ??
     ((text: string) => {
       hasUserInteracted.current = true;
-      playWordAudio({ chinese: text, fallbackToBrowserTTS: true });
+      play(text);
     });
 
   // Auto-play audio when step changes (after first user gesture enables browser autoplay)
   useEffect(() => {
     if (hasUserInteracted.current && item) {
       const displayChar = item.character ?? item.front;
-      playWordAudio({ chinese: displayChar, fallbackToBrowserTTS: true });
+      play(displayChar);
     }
-  }, [step, item?.itemId, playWordAudio, item]);
+  }, [step, item?.itemId, play, item]);
 
   if (step === "pinyin") {
     const strategy = getReviewStrategy(item.itemType);

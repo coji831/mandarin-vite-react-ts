@@ -64,8 +64,9 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
-  - Current modules (13): `auth`, `characters`, `foundations`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `tts`, `words`
-- **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`
+  - Current modules (13): `audio`, `auth`, `characters`, `foundations`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
+  - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/api/` and mounts the public `POST /v1/tts` wire path.
+- **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`. **Never contains capability logic**: `shared/infrastructure/external/` holds Tier-0 raw clients (`GCSClient`, `GoogleTTSClient`, `GeminiClient`) and the Tier-1 resilient `GeminiService` (relocated from `shared/services/`). `shared/services/` and `shared/tts/` are retired.
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
 
@@ -109,10 +110,11 @@ mandarin-vite-react-ts/
   - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
+  - **audio/**: Transport-only playback core — `AudioManager` (app-wide singleton), `AudioEngine` (HTMLAudio), `BrowserTTS` (SpeechSynthesis), `AudioUrlCache`, playback strategies, and feature-free `contracts/` (default word `AudioBehavior`). It plays `PlayableItem[]` with ordered candidates; fallback policy is DATA (`candidates`), never a resolver. Never imports features/modules.
   - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, Skeleton, ClassificationBadge, MnemonicCard, etc.)
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions)
+  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useAudioManager / useAudioItemPlayback for audio playback)
   - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
 
 ### Component Hierarchy
@@ -208,6 +210,10 @@ Controller → Service (business logic) → Repository (database)
 ```
 
 **Shared Constants:** `packages/shared-constants` ensures frontend/backend use identical API routes
+
+**FE `shared/audio` ↔ BE `modules/audio` are peers in naming/responsibility only** — there is no cross-app import between them. The real seam is HTTP (`POST /v1/tts`, `POST /v1/readers/passages/:id/audio`) + `@mandarin/shared-types`. Frontend `shared/audio` is a transport adapter (playback + browser-TTS fallback) that plays `PlayableItem[]` and holds **no resolver concept** — fallback policy is expressed as data (ordered `candidates` per item) via feature-owned `AudioBehavior` contracts (the default word contract lives in `shared/audio/contracts/`; the passage contract is readers-owned). Backend `modules/audio` is the synthesis orchestrator (Google TTS + GCS + Redis) behind an HTTP-free capability module. Direction rule: shared never imports features/modules; cross-imports between shared modules go through barrels only (both enforced by `npm run check:module-boundaries`).
+
+The passage-audio wire contract lives in `@mandarin/shared-types`: `AudioSource` (`"gcs" | "ondemand" | "failed"`), `SentenceAudioResult` (`{ url, source }`), and `PassageAudioResponse` (`{ audioUrls: Record<number, SentenceAudioResult> }`) — used by `POST /v1/readers/passages/:id/audio`. On-demand passage audio writes to `tts/{passageHash}/{i}.mp3` (identical to a future pre-gen path, `D4`); older on-demand objects from the word-namespace (`tts/{hash}.mp3`) are no longer referenced — a harmless cold cache, no migration needed.
 
 **See detailed integration:**
 

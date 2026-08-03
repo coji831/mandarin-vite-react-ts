@@ -14,6 +14,16 @@ import { render, screen } from "@testing-library/react";
 import { FoundationsPage } from "../FoundationsPage";
 import { foundationsService } from "features/foundations";
 
+// PinyinTab mounts the shared usePinyinCharacterMap hook (a real fetch). This
+// test has no MSW, so stub it with a resolved empty map to stay hermetic.
+vi.mock("shared/hooks", async () => {
+  const actual = await vi.importActual("shared/hooks");
+  return {
+    ...actual,
+    usePinyinCharacterMap: () => ({ charMap: {}, isLoading: false, error: null }),
+  };
+});
+
 vi.mock("../../../../features/foundations/services/foundationsService", () => ({
   foundationsService: {
     getFoundationProgress: vi.fn(),

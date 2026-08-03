@@ -13,7 +13,7 @@
  */
 
 import { Box, Button } from "shared/components";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
 import { AnimationCanvas } from "./AnimationCanvas";
 import "./CharacterStrokePlayer.css";
@@ -56,7 +56,7 @@ export function CharacterStrokePlayer({
     handleStrokeSelect,
   } = useHanziWriter(character);
 
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
   // ── Mini mode: compact player for embedding ──────────────────────
 
   if (mode === "mini") {
@@ -147,7 +147,7 @@ export function CharacterStrokePlayer({
 
         <Button
           variant="icon"
-          onClick={() => playWordAudio({ chinese: character })}
+          onClick={() => play(character)}
           title={`Play ${character}`}
           aria-label={`Play pronunciation for ${character}`}
         >

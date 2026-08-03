@@ -10,6 +10,7 @@
  */
 import { createLogger } from "../../../shared/utils/logger.js";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
+import type { PinyinCharacterMap } from "@mandarin/shared-utils";
 import type {
   ComboPair,
   PinyinComboRow,
@@ -117,16 +118,22 @@ export class FoundationsService {
 
   /**
    * Get a pinyin-to-character mapping from PinyinCharacterMapping.
+   * Representative = first row per syllablePretty after ordering by
+   * representativeRank asc (nulls LAST) then id asc — deterministic,
+   * independent of physical insert order. `representativeRank` is stamped by
+   * the enrich pipeline (0 = representative); NULLS LAST is required because
+   * Postgres ASC defaults to NULLS FIRST.
    * @returns Map of syllable -> character
    */
-  async getPinyinCharacterMap(): Promise<Record<string, string | null>> {
+  async getPinyinCharacterMap(): Promise<PinyinCharacterMap> {
     const mappings = await prisma.pinyinCharacterMapping.findMany({
+      orderBy: [{ representativeRank: { sort: "asc", nulls: "last" } }, { id: "asc" }],
       include: {
         pinyinSyllable: { select: { syllablePretty: true } },
         character: { select: { glyph: true } },
       },
     });
-    const map: Record<string, string | null> = {};
+    const map: PinyinCharacterMap = {};
     for (const mapping of mappings) {
       const syl = mapping.pinyinSyllable.syllablePretty;
       if (syl && !map[syl]) {

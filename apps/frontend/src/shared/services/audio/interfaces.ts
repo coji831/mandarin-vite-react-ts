@@ -4,21 +4,18 @@
  *
  * Extracted from features/vocabulary/services/interfaces.ts (deprecated vocabulary feature).
  * Defines contracts for audio backend implementations with DI support.
+ *
+ * Phase D2: the dead `fetchTurnAudio` conversation path was removed — the
+ * service surface is now word-audio only.
  */
 
-import type {
-  WordAudio,
-  WordAudioRequest,
-  TurnAudioRequest,
-  TurnAudioResponse,
-} from "@mandarin/shared-types";
+import type { WordAudio, WordAudioRequest } from "@mandarin/shared-types";
 
 /**
  * Interface for audio backend implementations (used by AudioService)
  */
 export interface IAudioBackend {
   fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
-  fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse>;
 }
 
 /**
@@ -26,7 +23,6 @@ export interface IAudioBackend {
  */
 export interface IAudioService {
   fetchWordAudio(params: WordAudioRequest): Promise<WordAudio>;
-  fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse>;
 }
 
 /**

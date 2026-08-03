@@ -1,5 +1,11 @@
 # Implementation 21-5: Audio Sync
 
+> **Historical snapshot** — the per-sentence audio hooks this story shipped
+> (`usePassageAudio`, `useSentenceAudio`, `useAudioEngine`, `useBrowserTTS`,
+> `useAudioAutoAdvance`) were superseded by the shared `AudioManager` +
+> `AudioBehavior` consolidation (TTS detachment). See `shared/audio/` and the
+> readers-owned `PassageAudioBehavior`. Kept for reference.
+>
 > **BR Reference:** `docs/business-requirements/epic-21-graded-readers/story-21-5-audio-sync.md`
 
 ## Technical Scope

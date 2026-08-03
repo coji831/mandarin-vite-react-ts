@@ -1,15 +1,16 @@
 # Caching Strategy
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 3, 2026
 
 The backend implements Redis-based caching to reduce external API calls and improve response times.
 
 ## TTS Caching
 
-- **Cache Key Format**: `tts:path:{SHA256(text + voice)}` — Redis stores the GCS **file path**, not the audio itself
+- **Cache Key Format**: `tts:path:{hash}` where `hash` is the leading path segment (SHA256 of `text + voice` for words, or the passage hash for passages) — Redis stores the GCS **file path**, not the audio itself
 - **Redis TTL**: 24 hours (86400 seconds) for the path entry; the returned signed URL has a 1-hour TTL (`TTS_SIGNED_URL_TTL_SECONDS = 3600`)
 - **Storage**: Redis caches the GCS file path (string); the audio MP3 lives in GCS. Signed URLs are NOT cached — they expire, so a fresh URL is re-signed on every read
-- **Behavior**: First request synthesizes via Google TTS and uploads to GCS; subsequent requests read the cached path, verify the GCS file exists, and return a freshly signed 1h URL. Stale path entries are invalidated and regenerated
+- **Behavior**: The unified `synthesizeToPath` primitive treats **GCS existence as the single source of truth**: a GCS hit re-signs a fresh 1h URL (`cached: true`); a miss synthesizes via Google TTS, uploads to GCS, signs, and records the path in Redis (`cached: false`)
+- **Write-only at runtime**: Redis is a **pre-gen path index** — the only request-path interaction is the best-effort `setPath` on fresh-create. `getPath` is never called at runtime (unit tests / future pre-gen only), and there is no Redis backfill on a cold hit. Therefore **hot cache hit == cold cache hit** (both run `fileExists → getSignedUrl`). A Redis write failure never fails a request.
 
 ## AI Feedback Caching
 

@@ -59,18 +59,19 @@ mandarin-vite-react-ts/
 
 ## Key Commands
 
-| Command                          | Description                                         |
-| -------------------------------- | --------------------------------------------------- |
-| `npm install`                    | Install all workspace dependencies                  |
-| `npm run dev`                    | Start frontend (5173) + backend (3001) concurrently |
-| `npm test`                       | Run changed-scope tests (Vitest only — no Jest)     |
-| `npm run test:full`              | Run the full test suite                             |
-| `npm run typecheck`              | Type-check all workspaces                           |
-| `npm run lint`                   | Run ESLint across the monorepo                      |
-| `npm run format`                 | Format all workspaces with Prettier                 |
-| `npm run design-audit`           | Audit CSS/TSX against design tokens                 |
-| `npm run check:registry-stories` | Verify component registry vs Storybook stories      |
-| `npm run build`                  | Build all packages and apps                         |
+| Command                           | Description                                         |
+| --------------------------------- | --------------------------------------------------- |
+| `npm install`                     | Install all workspace dependencies                  |
+| `npm run dev`                     | Start frontend (5173) + backend (3001) concurrently |
+| `npm test`                        | Run changed-scope tests (Vitest only — no Jest)     |
+| `npm run test:full`               | Run the full test suite                             |
+| `npm run typecheck`               | Type-check all workspaces                           |
+| `npm run lint`                    | Run ESLint across the monorepo                      |
+| `npm run format`                  | Format all workspaces with Prettier                 |
+| `npm run design-audit`            | Audit CSS/TSX against design tokens                 |
+| `npm run check:registry-stories`  | Verify component registry vs Storybook stories      |
+| `npm run check:module-boundaries` | Enforce shared→features/modules direction rule      |
+| `npm run build`                   | Build all packages and apps                         |
 
 ---
 

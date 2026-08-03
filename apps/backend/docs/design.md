@@ -36,19 +36,18 @@ src/
 │   ├── radicals/                 ← Simple CRUD (radical data)
 │   ├── readers/                  ← Graded readers: passages, sessions, bookmarks, audio
 │   ├── review/                   ← Clean Architecture (SRS review)
-│   ├── tts/                      ← TTS endpoints (Redis path cache → GCS → Google TTS)
+│   ├── audio/                    ← Audio (TTS) capability: exists-or-synthesize, Redis path index → GCS → Google TTS
 │   └── words/                    ← Word + measure-word data APIs
 └── shared/
     ├── config/index.ts           ← Centralized env config with validation
     ├── infrastructure/
     │   ├── cache/                ← CacheService + CacheFactory
     │   ├── database/client.ts    ← Prisma client singleton
-    │   ├── external/             ← GCSClient, GeminiClient, GoogleTTSClient
+    │   ├── external/             ← GCSClient, GeminiClient, GoogleTTSClient, GeminiService (T1)
     │   ├── redis/                ← RedisClient + RedisLockManager
     │   ├── security/             ← JwtService, PasswordService, HmacManager
     │   └── storage/              ← GcsFileStore + StorageFactory
     ├── middleware/               ← asyncHandler, authMiddleware, cacheMiddleware, errorHandler
-    ├── services/                 ← TtsService, GeminiService (shared services)
     └── utils/                    ← logger, errorFactory, hashUtils, dateUtils
 ```
 
@@ -192,11 +191,18 @@ Defined in `shared/config/index.ts`. Cache layer with Redis for general caching 
 
 ### Generate TTS Audio
 
+The `AudioService` facade lives in `modules/audio` (constructed at the
+composition root with the shared infra clients via constructor DI):
+
 ```typescript
-import { ttsService } from "./app/container.js";
-const audioBuffer = await ttsService.synthesizeSpeech("你好世界", {
-  voice: "cmn-CN-Wavenet-B",
-});
+import { AudioService } from "./modules/audio/index.js";
+import { CacheFactory } from "./shared/infrastructure/cache/CacheFactory.js";
+import { GCSClient } from "./shared/infrastructure/external/GCSClient.js";
+import { GoogleTTSClient } from "./shared/infrastructure/external/GoogleTTSClient.js";
+
+const cacheService = await CacheFactory.create("default");
+const audioService = new AudioService(cacheService, new GCSClient(), new GoogleTTSClient());
+const { audioUrl, cached } = await audioService.getTtsUrl("你好世界", "cmn-CN-Wavenet-B");
 ```
 
 ### Submit Quiz Attempt

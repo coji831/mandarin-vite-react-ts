@@ -6,12 +6,13 @@
  *
  * Mounted inside FoundationsPage.tsx when activeTab === "tones".
  * Loads tones.json data on mount and caches it in a module-level variable.
- * Uses useAudioPlayback for TTS audio on tone cards, pair drills, and rule examples.
+ * Uses useAudioItemPlayback for TTS audio on tone cards, pair drills, and rule examples.
  */
 
 import { useEffect, useRef, useState } from "react";
 
-import { useAudioPlayback } from "shared/hooks";
+import { resolveHanzi, isHanziText } from "@mandarin/shared-utils";
+import { useAudioItemPlayback, usePinyinCharacterMap } from "shared/hooks";
 import { ErrorScreen, LoadingScreen, Box } from "shared/components";
 import {
   ToneContourCard,
@@ -31,9 +32,10 @@ const TONE_BOX_VARIANTS = ["tone-1", "tone-2", "tone-3", "tone-4", "tone-5"] as 
 export function TonesTab() {
   const [data, setData] = useState<PinyinTonesPool | null>(null);
   const [loadingPinyin, setLoadingPinyin] = useState<string | null>(null);
-  const [charMap, setCharMap] = useState<Record<string, string>>({});
   const [hasError, setHasError] = useState(false);
-  const { playWordAudio } = useAudioPlayback();
+  const { play, isPlaying, isLoading } = useAudioItemPlayback();
+  // Shared pinyin → Hanzi map for TTS lookup (cross-feature, one deduped fetch).
+  const { charMap } = usePinyinCharacterMap();
   const fetchAttempted = useRef(false);
 
   // Fetch tones.json data on mount (once) — cache lives in foundationsService
@@ -54,33 +56,31 @@ export function TonesTab() {
     loadData();
   }, []);
 
-  // Fetch pinyin→character map for TTS audio (avoids per-click API call)
-  useEffect(() => {
-    const loadCharMap = async () => {
-      try {
-        const map = await foundationsService.getPinyinCharacterMap();
-        setCharMap(map);
-      } catch {
-        // Non-critical: audio will still work via browser TTS fallback
-      }
-    };
-    loadCharMap();
-  }, []);
-
-  // Handle playing audio for a pinyin syllable or Chinese word
-  const handlePlay = async (text: string) => {
+  // Handle playing audio for a pinyin syllable or Chinese word.
+  // Phase 1b universalization: Hanzi passes through as-is (never depends on the
+  // charMap being loaded); pinyin resolves → Hanzi before TTS. Silently skip
+  // (no play) when the syllable has no mapped character — never TTS pinyin.
+  const handlePlay = (text: string) => {
+    const audioText = isHanziText(text) ? text : resolveHanzi(text, charMap);
+    if (!audioText) return; // silent skip
     setLoadingPinyin(text);
-    try {
-      // For pinyin syllables, map to Chinese character for better TTS;
-      // for Chinese words (multiple characters), use directly
-      const audioText = /^[a-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]/.test(text) ? charMap[text] || text : text;
-      await playWordAudio({ chinese: audioText, fallbackToBrowserTTS: true });
-    } catch {
-      // Audio playback failed — non-critical, TTS fallback available
-    } finally {
+    play(audioText);
+  };
+
+  // Clear the per-card loading flag only on a transition OUT of a loading/playing
+  // state — never on the same render a new click sets it. `play()` is
+  // fire-and-forget: at click time the manager is still idle (the async word
+  // fetch hasn't resolved yet), so clearing immediately would make the spinner
+  // never display. `prevActiveRef` tracks the previous render's active state and
+  // `loadingPinyin !== null` keeps the no-op guard.
+  const prevActiveRef = useRef(false);
+  useEffect(() => {
+    const active = isLoading || isPlaying;
+    if (prevActiveRef.current && !active && loadingPinyin !== null) {
       setLoadingPinyin(null);
     }
-  };
+    prevActiveRef.current = active;
+  }, [isLoading, isPlaying, loadingPinyin]);
 
   if (hasError) {
     return (

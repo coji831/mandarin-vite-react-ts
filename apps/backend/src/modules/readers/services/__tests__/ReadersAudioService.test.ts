@@ -1,6 +1,12 @@
 /**
  * @file modules/readers/services/__tests__/ReadersAudioService.test.ts
- * @description Unit tests for ReadersAudioService
+ * @description Unit tests for ReadersAudioService — unified passage namespace (D4).
+ *
+ * The service delegates EVERY sentence to `audioService.synthesizeToPath(text,
+ * tts/{passageHash}/{i}.mp3)` and maps the result:
+ *   cached:true  → source "gcs" (file already existed)
+ *   cached:false → source "ondemand" (just synthesized)
+ *   throw        → source "failed" (batch never fails)
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -26,8 +32,7 @@ import type { PassageRecord } from "../../types/readers.js";
 
 describe("ReadersAudioService", () => {
   let service: ReadersAudioService;
-  let mockTtsService: any;
-  let mockGcsClient: any;
+  let mockAudioService: any;
 
   const makePassage = (sentences: Array<{ index: number; text: string }>): PassageRecord => ({
     id: "passage-1",
@@ -47,15 +52,14 @@ describe("ReadersAudioService", () => {
   });
 
   beforeEach(() => {
-    mockTtsService = { getTtsUrl: vi.fn() };
-    mockGcsClient = {
-      fileExists: vi.fn(),
-      getSignedUrl: vi.fn(
-        async (path: string) => `https://storage.example.com/${path}?X-Goog-Signature=test`,
-      ),
+    mockAudioService = {
+      synthesizeToPath: vi.fn(),
+      getSignedUrl: vi.fn(),
+      getTtsUrl: vi.fn(),
+      healthCheck: vi.fn(),
     };
 
-    service = new ReadersAudioService(mockTtsService as any, mockGcsClient as any);
+    service = new ReadersAudioService(mockAudioService as any);
   });
 
   describe("getPassageAudio", () => {
@@ -65,67 +69,81 @@ describe("ReadersAudioService", () => {
       const result = await service.getPassageAudio(passage);
 
       expect(result).toEqual({ audioUrls: {} });
-      expect(mockGcsClient.fileExists).not.toHaveBeenCalled();
-      expect(mockTtsService.getTtsUrl).not.toHaveBeenCalled();
+      expect(mockAudioService.synthesizeToPath).not.toHaveBeenCalled();
     });
 
-    it("should return GCS URLs when all sentences found in GCS", async () => {
+    it("should use the unified passage path and source 'gcs' when the file already exists (cached:true)", async () => {
       const passage = makePassage([
         { index: 0, text: "你好。" },
         { index: 1, text: "世界。" },
       ]);
 
-      mockGcsClient.fileExists.mockResolvedValue(true);
+      mockAudioService.synthesizeToPath.mockResolvedValue({
+        audioUrl: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
+        cached: true,
+      });
 
       const result = await service.getPassageAudio(passage);
 
+      expect(mockAudioService.synthesizeToPath).toHaveBeenCalledWith(
+        "你好。",
+        "tts/6mockedhash/0.mp3",
+      );
+      expect(mockAudioService.synthesizeToPath).toHaveBeenCalledWith(
+        "世界。",
+        "tts/6mockedhash/1.mp3",
+      );
       expect(result.audioUrls[0]).toEqual({
         url: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
-        url: "https://storage.example.com/tts/6mockedhash/1.mp3?X-Goog-Signature=test",
+        url: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
         source: "gcs",
       });
-      expect(mockTtsService.getTtsUrl).not.toHaveBeenCalled();
     });
 
-    it("should call TtsService when GCS misses (full TTS path)", async () => {
+    it("should report source 'ondemand' when the file was just synthesized (cached:false)", async () => {
       const passage = makePassage([{ index: 0, text: "你好。" }]);
 
-      // GCS miss for sentence 0
-      mockGcsClient.fileExists.mockResolvedValue(false);
-      mockTtsService.getTtsUrl.mockResolvedValue({ audioUrl: "https://tts.example.com/audio.mp3" });
+      mockAudioService.synthesizeToPath.mockResolvedValue({
+        audioUrl: "https://tts.example.com/audio.mp3",
+        cached: false,
+      });
 
       const result = await service.getPassageAudio(passage);
 
-      expect(mockGcsClient.fileExists).toHaveBeenCalledWith("tts/3mockedhash/0.mp3");
-      expect(mockTtsService.getTtsUrl).toHaveBeenCalledWith("你好。");
+      expect(mockAudioService.synthesizeToPath).toHaveBeenCalledWith(
+        "你好。",
+        "tts/3mockedhash/0.mp3",
+      );
       expect(result.audioUrls[0]).toEqual({
         url: "https://tts.example.com/audio.mp3",
         source: "ondemand",
       });
     });
 
-    it("should handle mixed GCS hits and misses", async () => {
+    it("should handle mixed cached/existing and just-synthesized sentences", async () => {
       const passage = makePassage([
         { index: 0, text: "你好。" },
         { index: 1, text: "世界。" },
       ]);
 
-      // Sentence 0: GCS hit; Sentence 1: GCS miss → TTS
-      mockGcsClient.fileExists
-        .mockResolvedValueOnce(true) // sentence 0: GCS hit
-        .mockResolvedValueOnce(false); // sentence 1: GCS miss
-
-      mockTtsService.getTtsUrl.mockResolvedValue({
-        audioUrl: "https://tts.example.com/shijie.mp3",
-      });
+      // Sentence 0: file already existed; Sentence 1: just synthesized
+      mockAudioService.synthesizeToPath
+        .mockResolvedValueOnce({
+          audioUrl: "https://storage.example.com/tts/6mockedhash/0.mp3",
+          cached: true,
+        })
+        .mockResolvedValueOnce({
+          audioUrl: "https://tts.example.com/shijie.mp3",
+          cached: false,
+        });
 
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({
-        url: "https://storage.example.com/tts/6mockedhash/0.mp3?X-Goog-Signature=test",
+        url: "https://storage.example.com/tts/6mockedhash/0.mp3",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
@@ -141,20 +159,22 @@ describe("ReadersAudioService", () => {
         { index: 2, text: "测试。" },
       ]);
 
-      // Sentence 0: GCS hit; Sentence 1: GCS miss → TTS success; Sentence 2: GCS miss → TTS fails
-      mockGcsClient.fileExists
-        .mockResolvedValueOnce(true) // sentence 0: hit
-        .mockResolvedValueOnce(false) // sentence 1: miss
-        .mockResolvedValueOnce(false); // sentence 2: miss
-
-      mockTtsService.getTtsUrl
-        .mockResolvedValueOnce({ audioUrl: "https://tts.example.com/shijie.mp3" }) // sentence 1 success
-        .mockRejectedValueOnce(new Error("TTS quota exceeded")); // sentence 2 failure
+      // Sentence 0: existing; Sentence 1: synthesized; Sentence 2: throws
+      mockAudioService.synthesizeToPath
+        .mockResolvedValueOnce({
+          audioUrl: "https://storage.example.com/tts/9mockedhash/0.mp3",
+          cached: true,
+        })
+        .mockResolvedValueOnce({
+          audioUrl: "https://tts.example.com/shijie.mp3",
+          cached: false,
+        })
+        .mockRejectedValueOnce(new Error("TTS quota exceeded"));
 
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({
-        url: "https://storage.example.com/tts/9mockedhash/0.mp3?X-Goog-Signature=test",
+        url: "https://storage.example.com/tts/9mockedhash/0.mp3",
         source: "gcs",
       });
       expect(result.audioUrls[1]).toEqual({
@@ -167,17 +187,14 @@ describe("ReadersAudioService", () => {
       });
     });
 
-    it("should mark a sentence as failed when GCS signing fails", async () => {
+    it("should mark a sentence as failed when the primitive throws", async () => {
       const passage = makePassage([{ index: 0, text: "你好。" }]);
 
-      // GCS file exists but signing fails → sentence must not fail the batch
-      mockGcsClient.fileExists.mockResolvedValue(true);
-      mockGcsClient.getSignedUrl.mockRejectedValue(new Error("signing failed"));
+      mockAudioService.synthesizeToPath.mockRejectedValue(new Error("signing failed"));
 
       const result = await service.getPassageAudio(passage);
 
       expect(result.audioUrls[0]).toEqual({ url: "", source: "failed" });
-      expect(mockTtsService.getTtsUrl).not.toHaveBeenCalled();
     });
   });
 });

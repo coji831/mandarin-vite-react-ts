@@ -6,11 +6,13 @@
  * Data source: PinyinSyllable (replaces deprecated PinyinCombination)
  */
 import { prisma } from "../../../shared/infrastructure/database/client.js";
-import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { shuffleArray } from "../../../shared/utils/contentUtils.js";
 import {
   isSandhiAcceptable,
   areTonesEquivalent,
   normalizePinyinForComparison,
+  normalizeTone,
+  stripToneAndDigits,
 } from "@mandarin/shared-utils";
 
 /**
@@ -38,13 +40,17 @@ export const audioToPinyinAndToneStrategy = {
       throw new Error("PinyinSyllable table is empty — run the seed script first");
     }
 
-    // Get character mappings for syllables that have them
+    // Get character mappings for syllables that have them.
+    // Representative = first row per syllablePretty after ordering by
+    // representativeRank asc (nulls LAST) then id asc. `isDefault` is NOT a
+    // filter here — it marks the primary reading per CHARACTER, not the
+    // per-syllable representative (a syllable can have many isDefault rows).
     const mappings = await prisma.pinyinCharacterMapping.findMany({
+      orderBy: [{ representativeRank: { sort: "asc", nulls: "last" } }, { id: "asc" }],
       select: {
         pinyinSyllable: { select: { syllablePretty: true, syllable: true } },
         character: { select: { glyph: true } },
       },
-      where: { isDefault: true },
     });
 
     const charBySyllable = new Map<string, string>();
@@ -72,8 +78,8 @@ export const audioToPinyinAndToneStrategy = {
       return {
         id: `q-${index + 1}`,
         audioKey: entry.syllable,
-        correctPinyin: stripToneMarks(entry.syllable),
-        correctTone: effectiveTone,
+        correctPinyin: stripToneAndDigits(entry.syllable), // "ba1" → "ba" — payload must be digitless
+        correctTone: normalizeTone(effectiveTone), // lexical neutral (5) → canonical 0
         category: effectiveTone === 0 ? "tones" : Math.random() > 0.5 ? "pinyin" : "tones",
         displayPinyin: entry.syllablePretty,
         character,

@@ -3,13 +3,13 @@
  * @description Module-level DI container factory for the Health module.
  */
 import { HealthController } from "./api/HealthController.js";
-import { TtsService } from "../../shared/services/TtsService.js";
-import { GeminiService } from "../../shared/services/GeminiService.js";
+import type { AudioServiceLike } from "../../modules/audio/index.js";
+import { GeminiService } from "../../shared/infrastructure/external/GeminiService.js";
 import type { RedisClient } from "../../shared/infrastructure/redis/RedisClient.js";
 
 export interface HealthModuleDeps {
   geminiService: GeminiService;
-  ttsService: TtsService;
+  audioService: AudioServiceLike;
   redisClient: RedisClient;
 }
 
@@ -19,6 +19,6 @@ export function createHealthModule(deps: HealthModuleDeps) {
   const redisPing = (rawClient ?? { ping: async () => "NO_REDIS" }) as {
     ping(timeout?: number): Promise<string>;
   };
-  const controller = new HealthController(deps.geminiService, deps.ttsService, redisPing);
+  const controller = new HealthController(deps.geminiService, deps.audioService, redisPing);
   return { controller };
 }

@@ -34,6 +34,11 @@ export default tseslint.config(
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
       ],
+      // NOTE: no-restricted-imports matches ONLY the literal import-specifier
+      // string — relative-path imports (`./x`, `../../shared/...`) bypass it.
+      // The authoritative direction enforcement (shared never imports
+      // features/modules) is `npm run check:module-boundaries`
+      // (scripts/check-module-boundaries.mjs).
       "no-restricted-imports": [
         "error",
         {
@@ -49,6 +54,8 @@ export default tseslint.config(
                 "**/features/*/context/**",
                 "**/features/*/reducers/**",
                 "**/features/*/engine/**",
+                "**/features/*/constants/**",
+                "**/features/*/audio/**",
               ],
               message: "Import from the feature's barrel (index.ts) instead of internal paths.",
             },
@@ -67,8 +74,24 @@ export default tseslint.config(
                 "**/shared/hooks/**",
                 "**/shared/store/**",
                 "**/shared/components/**",
+                "**/shared/context/**", // defensive — no shared/context dir yet
               ],
               message: "Import from the shared/ barrel (index.ts) instead of internal paths.",
+            },
+            // `shared/audio` and `shared/services` use a REGEX group instead of a glob:
+            // gitignore-style globs (`**/shared/audio/**`) cannot express "everything under
+            // X EXCEPT __tests__". Test-helper fixtures live under `__tests__/` and are NOT
+            // barrel-exported, so cross-tree tests import them directly — allowed. The
+            // negative lookahead keeps deep PUBLIC imports blocked (incl. relative paths
+            // containing the literal `shared/audio` / `shared/services` segment).
+            {
+              regex: "shared/audio/(?!__tests__)",
+              message: "Import from the shared/audio barrel (index.ts) instead of internal paths.",
+            },
+            {
+              regex: "shared/services/(?!__tests__)",
+              message:
+                "Import from the shared/services barrel (index.ts) instead of internal paths.",
             },
           ],
         },

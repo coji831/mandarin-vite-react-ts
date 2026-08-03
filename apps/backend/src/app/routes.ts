@@ -7,7 +7,7 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import authRouter from "../modules/auth/api/authRoutes.js";
 import aiFeedbackRouter from "../modules/quiz/api/aiFeedbackRoutes.js";
-import ttsRouter from "../modules/tts/api/ttsRoutes.js";
+import audioRouter from "../modules/audio/api/audioRoutes.js";
 import healthRouter from "../modules/health/api/healthRoutes.js";
 import progressionRouter from "../modules/progression/api/progressionRoutes.js";
 import foundationsRoutes from "../modules/foundations/api/foundationsRoutes.js";
@@ -49,8 +49,8 @@ router.use((req: Request, res: Response, next: NextFunction) => {
 });
 router.use(aiFeedbackRouter);
 
-// TTS routes
-router.use(ttsRouter);
+// Audio (TTS) routes — wire path POST /v1/tts
+router.use(audioRouter);
 
 // Foundations data routes (v1) - Story 18.6
 router.use((req: Request, res: Response, next: NextFunction) => {

@@ -3,17 +3,19 @@
  * @description Renders one sentence with Chinese text and pinyin below.
  * Each word is tappable — unknown words are highlighted to indicate clickability.
  * Phase 2: Audio cursor read from audioStore directly — no audio props.
+ * Phase D1: Reads the SHARED presentational audio store; the per-sentence 🔊
+ *   button calls the parent's `onPlay(index)` which routes `play(index, "single")`
+ *   through the shared AudioManager (no auto-advance). The old
+ *   `pendingSingleIndex` store signal is gone.
  * VisFix: Per-sentence audio button replaces container tap-to-play — word taps
  *   only open the popover and never trigger audio.
  *
  * Only popover position flows through onPopoverOpen prop.
  * The "Open in Word Hub" button inside WordPopover handles hub navigation.
- * The per-sentence play button sets pendingSingleIndex in audioStore for
- * useAudioPlayer to consume (single-sentence play — no auto-advance).
  */
 import { memo, useCallback } from "react";
 import { Button } from "shared/components";
-import { useAudioStore } from "../stores";
+import { useAudioStore } from "shared/store";
 import "./SentenceDisplay.css";
 
 export type SentenceWord = {
@@ -33,6 +35,11 @@ export type SentenceData = {
 export type SentenceDisplayProps = {
   sentence: SentenceData;
   onPopoverOpen: (glyph: string, rect: DOMRect) => void;
+  /**
+   * Per-sentence play: parent routes `play(index, "single")` through the shared
+   * AudioManager (single-sentence play — no auto-advance). Optional for stories.
+   */
+  onPlay?: (index: number) => void;
 };
 
 /** Punctuation characters set for fast lookup */
@@ -137,16 +144,16 @@ function SentenceWord({
 export const SentenceDisplay = memo(function SentenceDisplay({
   sentence,
   onPopoverOpen,
+  onPlay,
 }: SentenceDisplayProps) {
   // Note: Raw <div> is intentional here. No Box variant matches the visual
   // contract of SentenceDisplay (no default bg/border, single-sided active border).
   const currentIndex = useAudioStore((s) => s.currentIndex);
   const status = useAudioStore((s) => s.status);
-  const setPendingSingleIndex = useAudioStore((s) => s.setPendingSingleIndex);
   const isActive = currentIndex === sentence.index;
   const handlePlay = useCallback(() => {
-    setPendingSingleIndex(sentence.index);
-  }, [setPendingSingleIndex, sentence.index]);
+    onPlay?.(sentence.index);
+  }, [onPlay, sentence.index]);
 
   const sentenceNumber = sentence.index + 1;
   const isLoadingThis = isActive && status === "loading";

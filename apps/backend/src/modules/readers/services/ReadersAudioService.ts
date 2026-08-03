@@ -1,22 +1,23 @@
 /**
  * @file apps/backend/src/modules/readers/services/ReadersAudioService.ts
- * @description Orchestrates two-tier audio resolution for passage sentences.
+ * @description Resolves audio for every sentence in a passage via the unified
+ * modules/audio `synthesizeToPath` primitive (D4).
  *
- * Flow per sentence:
- *   1. GCS lookup — check if `tts/{passageHash}/{sentenceIndex}.mp3` exists
- *   2. On-demand TTS — if GCS miss, delegate to TtsService.getTtsUrl()
- *   3. Failed — if TTS throws, mark as failed
+ * Flow per sentence (the two-tier collapses into "exists? cached : synthesize"):
+ *   `synthesizeToPath(text, tts/{passageHash}/{i}.mp3)` — the primitive owns the
+ *   GCS exists-check → re-sign (source: "gcs") or synthesize+upload (source:
+ *   "ondemand"); a throw is reported as `source: "failed"`.
  *
  * Uses Promise.allSettled — per-sentence errors never fail the whole batch.
- *
- * Architecture note: Tier 2 delegates to TtsService instead of calling the
- * TTS client directly, avoiding duplication of GCS upload and TTS synthesis
- * logic that already exists in the shared TtsService.
+ * URLs are always SHORT-LIVED SIGNED GCS URLs — directly playable by a browser
+ * <audio>/Audio() element (which cannot attach Authorization headers) without
+ * requiring the bucket to be publicly readable.
  */
 
 import { createLogger } from "../../../shared/utils/logger.js";
-import { computeHash } from "../../../shared/utils/hashUtils.js";
 import type { PassageRecord, PassageContent } from "../types/readers.js";
+import { passageHashFor, passagePath } from "../../../modules/audio/index.js";
+import type { AudioServiceLike } from "../../../modules/audio/index.js";
 import type {
   PassageAudioResponse,
   SentenceAudioResult,
@@ -26,40 +27,20 @@ import type {
 const logger = createLogger("ReadersAudioService");
 
 /**
- * Minimal GCS client interface expected by ReadersAudioService.
- */
-export interface GcsClientLike {
-  fileExists(path: string): Promise<boolean>;
-  getSignedUrl(path: string, expirySeconds?: number): Promise<string>;
-}
-
-/**
- * Minimal TtsService interface expected by ReadersAudioService.
- * Matches the TtsService.getTtsUrl() contract to avoid tight coupling.
- */
-export interface TtsServiceLike {
-  getTtsUrl(text: string, voice?: string): Promise<{ audioUrl: string }>;
-}
-
-/**
  * ReadersAudioService — resolves audio URLs for all sentences in a passage.
- *
- * Two-tier fallback:
- *   Tier 1: GCS (pre-generated audio from seed/previous runs) — fast-path
- *   Tier 2: On-demand TTS via TtsService (handles generation + caching)
+ * Delegates to the audio service (synthesizeToPath) which owns synthesis,
+ * GCS upload, and signing — no hand-rolled GCS fast-path here.
  */
 export class ReadersAudioService {
-  constructor(
-    private readonly ttsService: TtsServiceLike,
-    private readonly gcsClient: GcsClientLike,
-  ) {
+  constructor(private readonly audioService: AudioServiceLike) {
     logger.info("Initialized ReadersAudioService");
   }
 
   /**
    * Get audio URLs for every sentence in a passage.
-   * Passage hash = SHA256 of concatenated sentence texts.
-   * GCS path format: `tts/{passageHash}/{sentenceIndex}.mp3`
+   * Passage hash = SHA256 of the concatenated sentence texts.
+   * GCS path format: `tts/{passageHash}/{sentenceIndex}.mp3` — identical to
+   * future pre-gen paths (D4).
    *
    * Always returns 200-compatible response — per-sentence failures are
    * reported via `source: "failed"` instead of throwing.
@@ -72,9 +53,8 @@ export class ReadersAudioService {
       return { audioUrls: {} };
     }
 
-    // Compute passage-level hash from concatenated sentence texts
-    const concatenatedText = sentences.map((s) => s.text).join("");
-    const passageHash = computeHash(concatenatedText);
+    // Passage-level hash from concatenated sentence texts
+    const passageHash = passageHashFor(sentences.map((s) => s.text));
 
     logger.info(
       `Resolving audio for passage ${passage.id} (hash: ${passageHash}, ${sentences.length} sentences)`,
@@ -100,43 +80,23 @@ export class ReadersAudioService {
   }
 
   /**
-   * Resolve audio for a single sentence.
-   * 1. Check GCS for existing file (fast-path)
-   * 2. If miss, delegate to TtsService which handles TTS generation + caching
-   * 3. Return signed URL + source indicator
-   *
-   * URLs are always SHORT-LIVED SIGNED GCS URLs — directly playable by a
-   * browser <audio>/Audio() element (which cannot attach Authorization headers)
-   * without requiring the bucket to be publicly readable.
+   * Resolve audio for a single sentence via the unified primitive:
+   * file already existed → `cached:true` → source "gcs";
+   * just synthesized → `cached:false` → source "ondemand"; throw → "failed".
    */
   private async processSentence(
     text: string,
     index: number,
     passageHash: string,
   ): Promise<SentenceAudioResult> {
-    const gcsPath = `tts/${passageHash}/${index}.mp3`;
-
     try {
-      // ── Tier 1: GCS lookup (fast-path) ─────────────────────────────────
-      const exists = await this.gcsClient.fileExists(gcsPath);
-      if (exists) {
-        logger.debug(`GCS hit: ${gcsPath}`);
-        return {
-          url: await this.gcsClient.getSignedUrl(gcsPath),
-          source: "gcs" as AudioSource,
-        };
-      }
-
-      // ── Tier 2: On-demand TTS via TtsService ───────────────────────────
-      // Delegates to the shared TtsService which handles synthesis, GCS upload,
-      // and Redis caching — avoiding duplication of this logic.
-      logger.debug(`GCS miss — generating TTS: "${text.substring(0, 40)}"`);
-
-      const result = await this.ttsService.getTtsUrl(text);
-      logger.info(`TTS generated via TtsService for sentence ${index}`);
+      const result = await this.audioService.synthesizeToPath(
+        text,
+        passagePath(passageHash, index),
+      );
       return {
         url: result.audioUrl,
-        source: "ondemand" as AudioSource,
+        source: result.cached ? ("gcs" as AudioSource) : ("ondemand" as AudioSource),
       };
     } catch (err) {
       logger.error(`Audio resolution failed for sentence ${index}`, err);

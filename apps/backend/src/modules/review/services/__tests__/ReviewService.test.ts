@@ -6,8 +6,11 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-// Mock content utilities (stripToneMarks + shuffleArray only — the legacy
-// readAggregateContent reader was removed; radicals now come from the DB)
+// Mock content utilities: shuffleArray is identity for deterministic option
+// ordering. stripToneMarks (marks-only, tone-item path) is mocked as identity.
+// The pinyin path uses the REAL @mandarin/shared-utils stripToneAndDigits /
+// normalizeTone (not mocked), so the Phase-1 assertions verify actual
+// digit-stripping + neutral-tone normalization.
 vi.mock("../../../../shared/utils/contentUtils.js", () => ({
   stripToneMarks: vi.fn((s) => s),
   shuffleArray: vi.fn((arr) => arr),
@@ -313,6 +316,57 @@ describe("ReviewService - buildRadicalItem", () => {
 
       const radicalItems = items.filter((i) => i.itemType === "radical");
       expect(radicalItems).toHaveLength(0);
+    });
+  });
+
+  describe("pinyin items (Phase 1 — digitless pinyinPlain + normalized tone)", () => {
+    it("emits digitless pinyinPlain and normalizes lexical neutral tone (5 → 0)", async () => {
+      vi.mocked(prisma.pinyinSyllable.findMany).mockResolvedValue([
+        {
+          id: "syl-neutral",
+          initial: "b",
+          final: "a",
+          tone: 5,
+          syllable: "ba5",
+          isStandard: true,
+          characterMappings: [{ character: { glyph: "吧" } }],
+        },
+      ] as any);
+
+      const items = await reviewService.getReviewItems("user123", {
+        source: "all",
+        type: "pinyin",
+        limit: 10,
+      });
+
+      expect(items).toHaveLength(1);
+      expect(items[0].itemType).toBe("pinyin-syllable");
+      expect(items[0].pinyinPlain).toBe("ba"); // stripToneAndDigits("ba5")
+      expect(items[0].correctTone).toBe(0); // normalizeTone(5) → canonical 0
+    });
+
+    it("emits digitless pinyinPlain for a tone-3 syllable", async () => {
+      vi.mocked(prisma.pinyinSyllable.findMany).mockResolvedValue([
+        {
+          id: "syl-t3",
+          initial: "b",
+          final: "a",
+          tone: 3,
+          syllable: "ba3",
+          isStandard: true,
+          characterMappings: [{ character: { glyph: "把" } }],
+        },
+      ] as any);
+
+      const items = await reviewService.getReviewItems("user123", {
+        source: "all",
+        type: "pinyin",
+        limit: 10,
+      });
+
+      expect(items).toHaveLength(1);
+      expect(items[0].pinyinPlain).toBe("ba"); // stripToneAndDigits("ba3")
+      expect(items[0].correctTone).toBe(3); // normalizeTone(3) unchanged
     });
   });
 });

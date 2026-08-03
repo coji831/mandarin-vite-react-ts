@@ -16,7 +16,7 @@
 import { createLogger } from "../../../shared/utils/logger.js";
 import { MnemonicsRepository } from "../repositories/MnemonicsRepository.js";
 import { MnemonicNotFoundError } from "../types/mnemonics.js";
-import { GeminiService } from "../../../shared/services/GeminiService.js";
+import { GeminiService } from "../../../shared/infrastructure/external/GeminiService.js";
 import type { MnemonicStoryResponse } from "../types/mnemonics.js";
 import type { CacheService } from "../../../shared/infrastructure/cache/CacheService.js";
 

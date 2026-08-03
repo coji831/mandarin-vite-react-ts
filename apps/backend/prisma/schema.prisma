@@ -605,7 +605,10 @@ model PinyinCharacterMapping {
   characterId      String
   readingType      String   @default("primary") // "primary" | "literary" | "colloquial" | "variant"
   isDefault        Boolean  @default(false) // Is this the default reading for this character?
-  createdAt        DateTime @default(now())
+  // Deterministic per-syllable representative ordering (set by Enrich):
+  // 0 = representative, 1..n = rank order within the syllable, null = unranked.
+  representativeRank Int? // set by build-pinyin-representatives.ts
+  createdAt          DateTime @default(now())
 
   pinyinSyllable PinyinSyllable @relation(fields: [pinyinSyllableId], references: [id])
   character      Character      @relation(fields: [characterId], references: [id])

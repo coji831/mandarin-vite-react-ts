@@ -14,7 +14,7 @@
 import { useCallback } from "react";
 import { Button, ClassificationBadge } from "shared/components";
 import { openHub } from "shared/store";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import "./ExampleCharCell.css";
 
 interface ExampleCharCellProps {
@@ -32,7 +32,7 @@ export function ExampleCharCell({
   classification,
   etymology,
 }: ExampleCharCellProps) {
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
 
   const handleHubClick = useCallback(() => {
     openHub({ entityType: "character", entityId: character, label: pinyin });
@@ -40,7 +40,7 @@ export function ExampleCharCell({
 
   function handleAudioClick(e: React.MouseEvent) {
     e.stopPropagation();
-    playWordAudio({ chinese: character, fallbackToBrowserTTS: true });
+    play(character);
   }
 
   const isPictograph = classification === "pictograph";

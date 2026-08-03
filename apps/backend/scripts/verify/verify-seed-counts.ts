@@ -26,7 +26,7 @@ async function main() {
     CharacterHskLevel: 2971,
     WordHskLevel: 10943, // 11092 entries - 149 duplicate wordIds
     WordCharacter: 21715, // 22047 entries - 332 @@unique violations
-    PinyinCharacterMapping: 11797,
+    PinyinCharacterMapping: 11798, // 11797 genuine CEDICT-derived + 1 synthesized curated row (bai → 掰)
     MeasureWordWord: 135,
     CharacterComponent: 15742,
     PhoneticCluster: 12,

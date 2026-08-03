@@ -26,7 +26,8 @@ export const radicalGateQuizStrategy: QuizStrategy = {
   evaluateAnswer(question: QuizQuestion, pinyin: string, _tone: number): AnswerResult {
     // pinyin contains the selected option ID
     const selectedId = (pinyin ?? "").trim();
-    const correctId = question.correctPinyin;
+    // Phase 3: prefer the typed `correctOptionId`; keep `correctPinyin` (wire) back-compat.
+    const correctId = question.correctOptionId ?? question.correctPinyin;
     const correct = selectedId === correctId;
 
     // Find correct option for feedback

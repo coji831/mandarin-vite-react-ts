@@ -13,4 +13,10 @@ export {
   normalizeTone,
   areTonesEquivalent,
   normalizePinyinForComparison,
+  stripToneAndDigits,
+  extractToneNumber,
+  isHanziText,
+  toneMarkToPlain,
 } from "./pinyin/pinyinNormalization.js";
+export { resolveHanzi } from "./pinyin/pinyinToHanzi.js";
+export type { PinyinCharacterMap } from "./pinyin/pinyinToHanzi.js";

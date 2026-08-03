@@ -9,6 +9,8 @@
  * GCS is used for binary TTS audio only (see GCSClient).
  */
 
+import { stripToneMarks as stripToneMarksShared } from "@mandarin/shared-utils";
+
 /**
  * ContentFile — shape of parsed JSON content files from the content/ directory.
  * Common fields across all content types (radicals, pinyin, tones, characters, etc.).
@@ -46,13 +48,10 @@ export interface ContentFile {
  * @returns Plain pinyin (e.g., "ma")
  */
 export function stripToneMarks(syllable: string): string {
-  return syllable
-    .replace(/[āáǎà]/g, "a")
-    .replace(/[ōóǒò]/g, "o")
-    .replace(/[ēéěè]/g, "e")
-    .replace(/[īíǐì]/g, "i")
-    .replace(/[ūúǔù]/g, "u")
-    .replace(/[ǖǘǚǜ]/g, "ü");
+  // Delegate to the canonical marks-ONLY helper in @mandarin/shared-utils
+  // (single source of truth). Marks-only by contract: a trailing tone digit is
+  // NOT stripped here — use stripToneAndDigits for comparison/TTS/display.
+  return stripToneMarksShared(syllable);
 }
 
 /**

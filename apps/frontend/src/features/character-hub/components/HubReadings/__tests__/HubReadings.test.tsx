@@ -5,15 +5,16 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { HubReadings } from "../../HubReadings/HubReadings";
 import type { ReadingInfo } from "../../HubReadings/HubReadings";
 
 // Mock the audio playback hook
+const mockPlay = vi.hoisted(() => vi.fn());
 vi.mock("shared/hooks", () => ({
-  useAudioPlayback: () => ({
-    playWordAudio: vi.fn(),
+  useAudioItemPlayback: () => ({
+    play: mockPlay,
   }),
 }));
 
@@ -67,5 +68,12 @@ describe("HubReadings", () => {
     render(<HubReadings glyph="好" readings={mockReadings} frequencyRank={42} />);
 
     expect(screen.getByText("Frequency rank: #42")).toBeInTheDocument();
+  });
+
+  it("plays the glyph audio when a reading is clicked", () => {
+    render(<HubReadings glyph="好" readings={mockReadings} />);
+
+    fireEvent.click(screen.getByLabelText("Play pronunciation for hǎo"));
+    expect(mockPlay).toHaveBeenCalledWith("好");
   });
 });

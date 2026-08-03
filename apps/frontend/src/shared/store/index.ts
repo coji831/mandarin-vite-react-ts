@@ -5,3 +5,5 @@ export type { UserState } from "./userStore";
 export { useHubStore } from "./hubStore";
 export type { HubState } from "./hubStore";
 export { openHub, closeHub } from "../hub-entry";
+export { useAudioStore } from "./audioStore";
+export type { AudioStoreState } from "./audioStore";

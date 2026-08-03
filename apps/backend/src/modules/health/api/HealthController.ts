@@ -25,21 +25,21 @@ function createHealthResponse() {
  */
 export class HealthController {
   private geminiService: { healthCheck(): Promise<boolean> };
-  private ttsService: { healthCheck(): Promise<boolean> };
+  private audioService: { healthCheck(): Promise<boolean> };
   private redisClient: { ping(timeout?: number): Promise<string> };
 
   /**
    * @param geminiService - Gemini AI service
-   * @param ttsService - Text-to-speech service
+   * @param audioService - Audio (TTS) service
    * @param redisClient - Redis client instance
    */
   constructor(
     geminiService: { healthCheck(): Promise<boolean> },
-    ttsService: { healthCheck(): Promise<boolean> },
+    audioService: { healthCheck(): Promise<boolean> },
     redisClient: { ping(timeout?: number): Promise<string> },
   ) {
     this.geminiService = geminiService;
-    this.ttsService = ttsService;
+    this.audioService = audioService;
     this.redisClient = redisClient;
   }
 
@@ -53,7 +53,7 @@ export class HealthController {
 
       // Check external services
       const geminiOk = await this.geminiService.healthCheck().catch(() => false);
-      const ttsOk = await this.ttsService.healthCheck().catch(() => false);
+      const audioOk = await this.audioService.healthCheck().catch(() => false);
 
       // Check Redis connection
       let redisHealthy = false;
@@ -71,7 +71,7 @@ export class HealthController {
         ...base,
         services: {
           gemini: geminiOk,
-          tts: ttsOk,
+          tts: audioOk,
         },
         cache: {
           redis: { connected: redisHealthy },

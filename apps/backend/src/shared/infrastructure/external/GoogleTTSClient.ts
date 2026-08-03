@@ -1,6 +1,8 @@
 // GoogleTTSClient.ts
-// Google Cloud Text-to-Speech (TTS) infrastructure client
-// Low-level API client - business logic belongs in core/services/
+// Google Cloud Text-to-Speech (TTS) infrastructure client (Tier 0 — raw client)
+// Low-level transport/auth/parse, ZERO policy. No capability config lives here:
+// the modules/audio AudioSynthesizer passes { voice, languageCode, audioEncoding }
+// explicitly; this client only falls back to inline SDK defaults.
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
 import { config } from "../../config/index.js";
 
@@ -58,11 +60,11 @@ export class GoogleTTSClient {
     const request: Record<string, unknown> = {
       input: { text },
       voice: {
-        languageCode: options.languageCode || config.tts.languageCode,
-        name: options.voice || config.tts.voiceDefault,
+        languageCode: options.languageCode || "cmn-CN",
+        name: options.voice || "cmn-CN-Wavenet-B",
       },
       audioConfig: {
-        audioEncoding: options.audioEncoding || config.tts.audioEncoding,
+        audioEncoding: options.audioEncoding || "MP3",
       },
     };
     const [response] = await client.synthesizeSpeech(request);

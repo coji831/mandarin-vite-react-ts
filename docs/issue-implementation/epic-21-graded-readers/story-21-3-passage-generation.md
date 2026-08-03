@@ -14,7 +14,7 @@ Build the backend passage generation system: Gemini API integration, backend seg
 - `apps/backend/src/modules/readers/types/readers-errors.ts` — typed error classes for Gemini, Segmenter, and reader-specific failures
 - `apps/backend/src/app/container.ts` — wire readersModule with dependencies (geminiService, segmenterService, progressionService)
 - `apps/backend/src/app/routes.ts` — register readers middleware + routes
-- `apps/backend/src/shared/services/GeminiService.ts` — add `generateRaw()` method
+- `apps/backend/src/shared/infrastructure/external/GeminiService.ts` — add `generateRaw()` method (relocated from `shared/services/`)
 - `apps/backend/src/modules/readers/services/SegmenterService.ts` — new: backend segmenter with word index
 - `packages/shared-constants/src/index.js` — add readers route patterns
 - `packages/shared-constants/src/index.d.ts` — add type declarations

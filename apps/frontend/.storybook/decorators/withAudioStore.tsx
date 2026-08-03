@@ -1,12 +1,18 @@
+/**
+ * withAudioStore — Storybook decorator for the SHARED presentational audio store
+ * (`shared/store/audioStore.ts`). Phase D1: the readers feature audio store was
+ * migrated to this shared snapshot store, so the decorator now sets snapshot
+ * values only (status/currentIndex/rate/error/hasCompleted — no signal fields).
+ */
 import { useEffect } from "react";
 import type { Decorator } from "@storybook/react-vite";
-import { useAudioStore } from "../../src/features/readers/stores";
-import type { AudioStatus } from "../../src/features/readers/stores";
+import { useAudioStore } from "../../src/shared/store";
+import type { AudioStatus } from "../../src/shared/audio";
 
 type AudioStoreOverrides = Partial<
   Pick<
     ReturnType<typeof useAudioStore.getState>,
-    "currentIndex" | "pendingIndex" | "pendingSingleIndex" | "status" | "speed" | "error"
+    "currentIndex" | "status" | "rate" | "error" | "hasCompleted"
   >
 >;
 
@@ -15,11 +21,10 @@ export function withAudioStore(overrides: AudioStoreOverrides = {}): Decorator {
     useEffect(() => {
       useAudioStore.setState({
         currentIndex: null,
-        pendingIndex: null,
-        pendingSingleIndex: null,
         status: "idle" as AudioStatus,
-        speed: 1,
+        rate: 1,
         error: null,
+        hasCompleted: false,
         ...overrides,
       });
     }, []);

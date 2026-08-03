@@ -1,7 +1,7 @@
 # TODO — Project-wide (GitHub-friendly)
 
 **Audience:** Project maintainers, developers tracking tasks  
-**Last Updated:** August 2026
+**Last Updated:** 2026-08-03
 
 This file is a simple, human-editable TODO list compatible with GitHub (checkboxes are interactive in PRs and on GitHub.com).
 
@@ -20,6 +20,8 @@ Sections
 ---
 
 ## Bugs (urgent)
+
+- [ ] **Production: guest users hit the backend directly with no fallback → 404** — Some features call backend endpoints directly for anonymous/guest users instead of falling back (to hardcoded/local data or a gated UI), surfacing a not-found (404) error. Desired pattern: service-layer guest fallback like the quiz's local strategy-based generation (`features/quiz/services/quizService.ts` `generateQuestionPool`) or readers' 6 demo passages. Light scan suggests likely-affected: `features/review/services/reviewService.ts` (`GET /v1/review/items` + rating POST — no fallback), `features/readers/services/readingProgressService.ts` (sessions/bookmarks/complete — only `readingStore.saveProgress()` no-ops for guests), and static-content detail lookups `features/word-hub/services/wordService.ts` / `features/character-hub/services/characterService.ts` (`/v1/words/:glyph`, `/v1/characters/:glyph` while local `content/*.json` exists). Action: audit guest-facing features for fallback gaps.
 
 ## Todo (near-term)
 
@@ -69,6 +71,7 @@ Sections
 
 ## Done
 
+- [x] **Production: audio playback — four overlapping systems, hang on pause/stop, no teardown/caching/tests** — RESOLVED by the audio-consolidation / TTS-detachment refactor. Shipped: shared `AudioManager` (pure transport over `PlayableItem[]`, `PlaybackStrategy` single/sequence, typed event emitter, abort token; `playUrl` settles with `PlaybackEndReason` — never hangs), `AudioBehavior` contracts (candidates-as-data with `onUrlFailed` verdicts), `useAudioManager`/`useAudioItemPlayback`, readers `PassageAudioBehavior`/`buildPassageAudioBehavior`, `defaultWordBehavior` in `shared/audio/contracts/`, `AudioService` in `shared/services/audio`, with unit/component coverage. Legacy `useAudioPlayer.ts`, `useAudioPlayback.ts`, `shared/lib/audioEngine.ts`, and the `SourceResolver` were removed. See `verification-artifacts/audio-playback-redesign.md`.
 - [x] **Epic: Radical-Based Learning (Epic 19)** — Radical browser, detail cards, and dual radical/phonetic trees shipped in `features/radicals/`
 - [x] **Epic: Progress Visualization Dashboard** — Dashboard feature with learning statistics and activity overview shipped in `features/dashboard/`
 - [x] Fix jest-dom global type setup - Created tsconfig.test.json for proper test file TypeScript configuration with vitest/globals and @testing-library/jest-dom types. Updated setupTests.d.ts to augment vitest globals with jest-dom matchers. Removed explicit imports from all test files (QuizLoading, QuizComplete, DailyReviewQuiz). All 161 tests pass without explicit import statements.
@@ -108,4 +111,4 @@ Then reference the issue number in TODO.md: `- [ ] Task summary (#123)`
 
 ---
 
-Last updated: July 2026
+Last updated: 2026-08-03

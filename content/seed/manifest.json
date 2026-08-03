@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-27T07:43:58.977Z",
+  "generatedAt": "2026-08-03T17:36:46.088Z",
   "phase1": {
     "cc-cedict-entries.json": {
       "entries": 124457,
@@ -49,7 +49,7 @@
     },
     "characters.json": {
       "entries": 103006,
-      "sha256": "f4e573e4cf483d244da3f59870237a38f5e7b906c2e43ed5598857738bf63149"
+      "sha256": "a64a484465d86d9a0804c1b11e15b6b1011a2e5f81346b28a0922503b8abba3c"
     },
     "component-entries.json": {
       "entries": 1777,
@@ -65,15 +65,59 @@
     },
     "measure-words.json": {
       "entries": 52,
-      "sha256": "94c699bd0fc13ff90bb71ceb3566d39e6ff6611e1fefdc1d1f174553dbb53a67"
+      "sha256": "a5046c1eb76e5ab09ff70d94631d02d2c56ea09229a8387c4023ebb0d3214b72"
+    },
+    "phonetic-cluster-members.json": {
+      "entries": 254,
+      "sha256": "f11368e9e7edb935af5ec6324c9b03e745695a64893988f005e1db084cd2f6c0"
+    },
+    "phonetic-clusters.json": {
+      "entries": 12,
+      "sha256": "d71aef55ad1980524414c6143c0c4b854d402f37041cc864dee059c18f5081b4"
     },
     "pinyin-character-mappings.json": {
-      "entries": 11797,
-      "sha256": "ecd25a9a21c9830f1ccf2067093cda4a66e17cd6e90adfea28bc1ab34bfa51cf"
+      "entries": 11798,
+      "sha256": "d2d3feea4a8a3ab3d098a2fd7ca7e54c44a61c879dd010b8f659ccc4e790ceea"
+    },
+    "pinyin-phonemes.json": {
+      "entries": 50,
+      "sha256": "f12d3777942024fa9c4eefa4a66c74f82934332b5e6221e9dab26ed2d774c30f"
     },
     "pinyin-syllables.json": {
       "entries": 2045,
       "sha256": "1bf0b8dc8b339c6fc82549e617e87499432eaa5b54160162b6c67f1490306886"
+    },
+    "radicals.json": {
+      "entries": 20,
+      "sha256": "ac0e6812b7ddb91ef8e6e4a5bf653cb7029248de3d91702b866b6e2325462f5e"
+    },
+    "strokes-categories.json": {
+      "entries": 5,
+      "sha256": "0f74f6a9b37588f3db991092e7774e00daa84360d3b7cfebf6dfbbd365a3cff0"
+    },
+    "strokes-category-rules.json": {
+      "entries": 9,
+      "sha256": "e049ed7e90c273742f5391d7b64f8869cf8bd4fa808df62127db403644d9b28e"
+    },
+    "strokes-extended-types.json": {
+      "entries": 8,
+      "sha256": "9ae7a5b63303d5d06afcb0d22096cf60f1f657a6ec32864fe49f11946ee5272a"
+    },
+    "strokes-order-rules.json": {
+      "entries": 5,
+      "sha256": "ca20d6eec2e6b84b62e5638bd0d70c982abd9ff4b2277287274b4288c997b2a1"
+    },
+    "tone-pairs.json": {
+      "entries": 6,
+      "sha256": "d8f28699229eb9b2c41221a327444739cdb37b0fd7876009d971de58554a6d4f"
+    },
+    "tone-rules.json": {
+      "entries": 3,
+      "sha256": "5cce549b5783e3e44f717e05af020c5565d8461cdebe186113fd1490a31f91a5"
+    },
+    "tones.json": {
+      "entries": 5,
+      "sha256": "439572204b26753d6ab51070df28d70eb04980f88c970021e370d2fa3126107c"
     },
     "word-characters.json": {
       "entries": 21715,
@@ -86,6 +130,12 @@
     "words.json": {
       "entries": 10943,
       "sha256": "364d85a8d35c3d8d466038cfa5c4c58ccbcf30f2aa75fe2bbdfe9e3e5fd49b38"
+    }
+  },
+  "curated": {
+    "pinyin-representatives.json": {
+      "entries": 4,
+      "sha256": "0024e7a8a298acd06e3cbdf42e70ca500f21016be58e298b946ca8ea3f8e1ff7"
     }
   }
 }

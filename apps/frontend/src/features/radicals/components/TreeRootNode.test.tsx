@@ -15,6 +15,14 @@ vi.mock("shared/store", async () => {
   return { ...actual, openHub: mockOpenHub };
 });
 
+// BranchNode renders for real and now calls useAudioItemPlayback (which reads
+// useAuth) — mock it so the tree renders without an AuthProvider.
+const mockPlay = vi.hoisted(() => vi.fn());
+vi.mock("shared/hooks", async () => {
+  const actual = await vi.importActual("shared/hooks");
+  return { ...actual, useAudioItemPlayback: () => ({ play: mockPlay }) };
+});
+
 // BranchNode is not mocked — it renders with useHubStore already mocked above.
 // We use text queries to verify expand/collapse behavior.
 

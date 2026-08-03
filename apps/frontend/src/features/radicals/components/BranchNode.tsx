@@ -4,13 +4,15 @@
  * Story 19.4: Radical Trees (Phase 3)
  *
  * Shows character glyph, pinyin, and meaning in a compact horizontal row.
- * Audio button plays pronunciation via SpeechSynthesis.
+ * Audio button plays pronunciation through the shared AudioManager
+ * (useAudioItemPlayback → default word contract) — one audio app-wide.
  * Character glyph clickable → opens Character Detail Hub.
  * Optional tree connector line via showConnector prop.
  */
 
 import { useCallback } from "react";
 import { Box, Button } from "shared/components";
+import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
 import "./BranchNode.css";
 
@@ -29,20 +31,24 @@ export function BranchNode({
   showConnector = false,
   ariaRole = "listitem",
 }: BranchNodeProps) {
+  const { play } = useAudioItemPlayback();
+
   const handleClick = useCallback(() => {
     openHub({ entityType: "character", entityId: character, label: pinyin });
   }, [character, pinyin]);
 
+  /**
+   * Phase D3 — audio now routes through the shared AudioManager with the
+   * default word contract (the same manager every other surface uses, so there
+   * is one audio app-wide). The hand-rolled SpeechSynthesisUtterance path is gone.
+   *
+   * Intended behavior change: playing this node cancels any other active audio,
+   * and any other play cancels this one — deliberate, kills the "two audios at
+   * once" bug. (Confirmed acceptable by the user.)
+   */
   const handlePlayAudio = useCallback(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(character);
-      utterance.lang = "zh-CN";
-      const voices = window.speechSynthesis.getVoices();
-      const zhVoice = voices.find((v) => v.lang.startsWith("zh"));
-      if (zhVoice) utterance.voice = zhVoice;
-      window.speechSynthesis.speak(utterance);
-    }
-  }, [character]);
+    play(character);
+  }, [play, character]);
 
   return (
     <Box

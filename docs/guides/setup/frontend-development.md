@@ -47,10 +47,10 @@ apps/frontend/
 â”‚   â”‚   â”œâ”€â”€ components/        # Button, Input, ToggleSwitch, LoadingScreen, etc.
 â”‚   â”‚   â”œâ”€â”€ config/            # api.ts (API_CONFIG)
 â”‚   â”‚   â”œâ”€â”€ constants/         # paths.ts, toneMap.ts
-â”‚   â”‚   â”œâ”€â”€ hooks/             # usePhaseGate, useReview, useAudioPlayback, usePageTitle
+â”‚   â”‚   â”œâ”€â”€ hooks/             # usePhaseGate, useReview, useAudioManager, useAudioItemPlayback, usePageTitle
 â”‚   â”‚   â”œâ”€â”€ hub-entry/         # hubEntryPoint
 â”‚   â”‚   â”œâ”€â”€ layouts/           # AppLayout, LearnLayout
-â”‚   â”‚   â”œâ”€â”€ lib/               # audioEngine, browserTTS
+â”‚   â”‚   â”œâ”€â”€ audio/             # AudioManager, AudioEngine, BrowserTTS, strategies, resolvers
 â”‚   â”‚   â”œâ”€â”€ services/          # phaseGateService, mockContentSource, audio/
 â”‚   â”‚   â”œâ”€â”€ store/             # userStore, uiStore, hubStore
 â”‚   â”‚   â””â”€â”€ types/             # shared type definitions (hub.ts)

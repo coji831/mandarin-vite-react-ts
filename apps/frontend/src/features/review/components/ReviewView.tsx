@@ -7,7 +7,7 @@
 import { useCallback, useEffect } from "react";
 import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
@@ -41,13 +41,13 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     source,
   } = useReview();
 
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
 
   const handlePlayAudio = useCallback(
     (text: string) => {
-      playWordAudio({ chinese: text, fallbackToBrowserTTS: true });
+      play(text);
     },
-    [playWordAudio],
+    [play],
   );
 
   // Auto-start review when BOTH presetType AND presetSource are provided

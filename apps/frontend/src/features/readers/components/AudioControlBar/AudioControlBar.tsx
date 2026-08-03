@@ -2,25 +2,27 @@
  * @file AudioControlBar.tsx
  * @description Playback control bar for per-sentence audio.
  * Phase 2: Reads audio state from audioStore directly.
- *   Receives transport callbacks (onTogglePlay, onStop, onSpeedChange) from parent
- *   to avoid creating a second useAudioPlayer instance with empty sentenceTexts.
+ * Phase D1: Re-pointed at the SHARED presentational snapshot store
+ *   (`shared/store/audioStore.ts` — status/currentIndex/rate/error/hasCompleted),
+ *   migrated off the readers feature store. Transport callbacks (onTogglePlay,
+ *   onStop, onSpeedChange) come from the parent's `useAudioManager` instance.
  *
- * States: Idle, Loading, Playing, Paused, Complete, Error.
+ * States: Idle, Loading, Playing, Paused, Blocked ("tap to play"), Complete, Error.
  */
 import { Button } from "shared/components";
 import { PLAYBACK_SPEEDS } from "../../constants/audio";
-import { useAudioStore } from "../../stores";
+import { useAudioStore } from "shared/store";
 import type { PlaybackSpeed } from "../../constants/audio";
 import "./AudioControlBar.css";
 
 export type AudioControlBarProps = {
   /** Number of sentences in the passage (needed for progress display). */
   totalSentences?: number;
-  /** Play/pause callback from the main useAudioPlayer instance. */
+  /** Play/pause callback from the main useAudioManager instance. */
   onTogglePlay?: () => void;
-  /** Stop callback from the main useAudioPlayer instance. */
+  /** Stop callback from the main useAudioManager instance. */
   onStop?: () => void;
-  /** Speed change callback from the main useAudioPlayer instance. */
+  /** Speed change callback from the main useAudioManager instance. */
   onSpeedChange?: (speed: PlaybackSpeed) => void;
 };
 
@@ -32,14 +34,15 @@ export function AudioControlBar({
 }: AudioControlBarProps) {
   const status = useAudioStore((s) => s.status);
   const currentIndex = useAudioStore((s) => s.currentIndex);
-  const speed = useAudioStore((s) => s.speed);
+  const rate = useAudioStore((s) => s.rate);
   const error = useAudioStore((s) => s.error);
+  const hasCompleted = useAudioStore((s) => s.hasCompleted);
 
   const isPlaying = status === "playing";
   const isLoading = status === "loading";
-  const hasCompleted = status === "completed";
+  const isBlocked = status === "blocked";
   const hasError = error !== null;
-  const hasStarted = currentIndex !== null || isPlaying || isLoading;
+  const hasStarted = currentIndex !== null || isPlaying || isLoading || isBlocked;
   const isComplete = hasCompleted && !isPlaying && !isLoading;
 
   // Progress display
@@ -47,7 +50,7 @@ export function AudioControlBar({
   const progressLabel = `${currentDisplay} / ${totalSentences}`;
 
   // Play/pause button icon
-  const playIcon = isLoading ? "⏳" : isPlaying ? "⏸" : "▶";
+  const playIcon = isLoading ? "⏳" : isPlaying ? "⏸" : isBlocked ? "🔇" : "▶";
 
   return (
     <div className="audio-control-bar" role="toolbar" aria-label="Audio playback controls">
@@ -58,7 +61,7 @@ export function AudioControlBar({
           size="sm"
           onClick={onTogglePlay}
           disabled={isLoading || totalSentences === 0}
-          aria-label={isPlaying ? "Pause audio" : "Play audio"}
+          aria-label={isPlaying ? "Pause audio" : isBlocked ? "Tap to play audio" : "Play audio"}
           className="audio-control-bar__transport-btn"
         >
           {playIcon}
@@ -90,11 +93,11 @@ export function AudioControlBar({
         {PLAYBACK_SPEEDS.map((opt) => (
           <Button
             key={opt}
-            variant={speed === opt ? "tag-active" : "tag"}
+            variant={rate === opt ? "tag-active" : "tag"}
             size="sm"
             onClick={() => onSpeedChange?.(opt as PlaybackSpeed)}
             aria-label={`Playback speed ${opt}x`}
-            aria-pressed={speed === opt}
+            aria-pressed={rate === opt}
             className="audio-control-bar__speed-pill"
           >
             {opt}x

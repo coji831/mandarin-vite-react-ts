@@ -35,7 +35,7 @@ function ReviewCardOptionSelectComponent({
               openHub({
                 entityType: "character",
                 entityId: displayChar,
-                label: item.pinyinPlain ?? item.front,
+                label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
               })
             }
             aria-label={`View details for ${displayChar}`}

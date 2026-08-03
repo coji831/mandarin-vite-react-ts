@@ -40,7 +40,7 @@ function ReviewCardPinyinInputComponent({
     openHub({
       entityType: "character",
       entityId: displayChar,
-      label: item.pinyinPlain ?? item.front,
+      label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
     });
   };
 

@@ -19,6 +19,7 @@ import path from "path";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import { writeJsonAtomic } from "../utils.js";
+import { checkRepresentativeInvariant } from "./representative-invariant.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,7 @@ const CONTENT_DIR = path.join(REPO_ROOT, "content");
 const PHASE1_DIR = path.join(CONTENT_DIR, "seed", "phase1");
 const PHASE2_DIR = path.join(CONTENT_DIR, "seed", "phase2");
 const RADICALS_FILE = path.join(CONTENT_DIR, "radicals", "radicals.json");
+const CURATED_DIR = path.join(CONTENT_DIR, "seed", "curated");
 
 // ── CLI Flags ────────────────────────────────────────────────────────────────
 
@@ -170,7 +172,11 @@ interface Phase2Context {
   radicals: Set<string>;
   wordCharacters: Array<{ wordId: string; characterId: string; sequenceOrder: number }>;
   characterReadings: Array<{ characterId: string }>;
-  pinyinMappings: Array<{ pinyinSyllableId: string; characterId: string }>;
+  pinyinMappings: Array<{
+    pinyinSyllableId: string;
+    characterId: string;
+    representativeRank: number | null;
+  }>;
   characterRadicals: Array<{ characterId: string; radicalId: string }>;
   measureWordWords: Array<{ measureWordId: string; wordId: string }>;
   componentEntries: Map<string, { glyph: string }>;
@@ -264,6 +270,7 @@ function buildPhase2Context(): Phase2Context {
   ) as Array<{
     pinyinSyllableId: string;
     characterId: string;
+    representativeRank: number | null;
   }>;
 
   // ── character-radicals.json ──
@@ -433,6 +440,36 @@ function runPhase2Checks(): Record<string, number> {
       2,
       "P2: pinyin-mappings → pinyin-syllables",
       `${badPinyinRefs} pinyinSyllableId values not found in pinyin-syllables.json`,
+    );
+  }
+
+  // Representative invariant (deterministic rep selection): exactly one
+  // representativeRank=0 per syllable AND ranks contiguous 0..n.
+  const repInvariant = checkRepresentativeInvariant(ctx.pinyinMappings);
+  if (repInvariant.ok) {
+    pass(
+      2,
+      "P2: exactly one representativeRank=0 per pinyin syllable",
+      `${repInvariant.syllablesChecked} syllables each have exactly one rank-0 representative`,
+    );
+  } else {
+    fail(
+      2,
+      "P2: exactly one representativeRank=0 per pinyin syllable",
+      repInvariant.violations.join("; "),
+    );
+  }
+  if (repInvariant.ok) {
+    pass(
+      2,
+      "P2: representativeRank contiguous 0..n per syllable",
+      "All ranked rows are contiguous 0..n within their syllable",
+    );
+  } else {
+    fail(
+      2,
+      "P2: representativeRank contiguous 0..n per syllable",
+      repInvariant.violations.join("; "),
     );
   }
 
@@ -854,6 +891,34 @@ async function runPhase3Checks(phase2Counts: Record<string, number>): Promise<vo
     }
   }
 
+  // Representative-rank invariant against the DB table (same structural rule
+  // as Phase 2, now enforced on the runtime source of truth).
+  try {
+    const dbRows = (await prisma.pinyinCharacterMapping.findMany({
+      select: { pinyinSyllableId: true, representativeRank: true },
+    })) as Array<{ pinyinSyllableId: string; representativeRank: number | null }>;
+    const dbInvariant = checkRepresentativeInvariant(dbRows);
+    if (dbInvariant.ok) {
+      pass(
+        3,
+        "P3: representativeRank invariant (one rank-0 + contiguous 0..n per syllable)",
+        `DB: ${dbInvariant.syllablesChecked} syllables each have exactly one rank-0 and contiguous ranks`,
+      );
+    } else {
+      fail(
+        3,
+        "P3: representativeRank invariant (one rank-0 + contiguous 0..n per syllable)",
+        dbInvariant.violations.join("; "),
+      );
+    }
+  } catch (e) {
+    fail(
+      3,
+      "P3: representativeRank invariant (one rank-0 + contiguous 0..n per syllable)",
+      `DB query failed: ${(e as Error).message}`,
+    );
+  }
+
   await prisma.$disconnect();
 }
 
@@ -866,6 +931,7 @@ function runChecksumGeneration(): void {
 
   const manifest: {
     generatedAt: string;
+    curated?: Record<string, { entries: number; sha256: string }>;
     phase1: Record<string, { entries: number; sha256: string }>;
     phase2: Record<string, { entries: number; sha256: string }>;
   } = {
@@ -873,6 +939,22 @@ function runChecksumGeneration(): void {
     phase1: {},
     phase2: {},
   };
+
+  // Curated authoring files (never runtime-read; tracked for integrity).
+  if (fs.existsSync(CURATED_DIR)) {
+    manifest.curated = {};
+    const curatedFiles = fs.readdirSync(CURATED_DIR).filter((f) => f.endsWith(".json"));
+    for (const file of curatedFiles) {
+      const filePath = path.join(CURATED_DIR, file);
+      const data = readJsonFile(filePath);
+      const entries = Array.isArray(data) ? data.length : 0;
+      const hash = sha256(filePath);
+      manifest.curated[file] = { entries, sha256: hash };
+      console.log(
+        `  📄 curated/${file}: ${entries.toLocaleString()} entries, SHA256=${hash.substring(0, 16)}...`,
+      );
+    }
+  }
 
   // Phase 1 files
   const phase1Files = fs.readdirSync(PHASE1_DIR).filter((f) => f.endsWith(".json"));

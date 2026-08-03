@@ -6,13 +6,31 @@
 
 import { useState } from "react";
 
+import {
+  applyToneMark,
+  extractToneNumber,
+  normalizePinyinForComparison,
+  resolveHanzi,
+  stripToneAndDigits,
+} from "@mandarin/shared-utils";
+import type { PinyinCharacterMap } from "@mandarin/shared-utils";
 import { Box, Button, ButtonVariant } from "shared/components";
-import { useAudioPlayback } from "shared/hooks";
+import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
-import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
+import { TONE_COLORS } from "../../utils/pinyinUtils";
 import "./DetailPanel.css";
 
 // ─── Constants ───
+
+/**
+ * Convert ANY pinyin format (tone-number "ba1", marked "bā", plain "ba") to its
+ * tone-marked display form ("bā"). Neutral/no-tone input stays plain.
+ * Used for the big display span and the character-link label so the panel
+ * never shows raw tone numbers like "bai1".
+ */
+function toToneMarked(pinyin: string): string {
+  return applyToneMark(stripToneAndDigits(pinyin), extractToneNumber(pinyin));
+}
 
 const TONE_MARKS: Record<number, string> = {
   1: "\u02C9", // Macron ˉ
@@ -74,7 +92,7 @@ interface DetailPanelProps {
   initial: string;
   final: string;
   tones: string[];
-  charMap?: Record<string, string>;
+  charMap?: PinyinCharacterMap | null;
   onClose: () => void;
 }
 
@@ -83,13 +101,18 @@ interface DetailPanelProps {
 export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailPanelProps) {
   const defaultTone = tones[0] ?? "";
   const [activeTone, setActiveTone] = useState(defaultTone);
-  const { playWordAudio } = useAudioPlayback();
+  const { play } = useAudioItemPlayback();
   const toneNum = extractToneNumber(activeTone);
   const toneColor = TONE_COLORS[toneNum] ?? TONE_COLORS[0];
+  // Display form: always tone-marked ("bai1" → "bāi"), never raw tone numbers.
+  const displayPinyin = toToneMarked(activeTone);
 
-  const stripTone = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const plainPinyin = stripTone(activeTone);
-  const chineseChar = charMap?.[activeTone] ?? charMap?.[plainPinyin] ?? "";
+  // Phase 1b universalization: resolve ANY pinyin format ("ba1" / "bā" / "ba")
+  // to a Hanzi glyph via the canonical resolver (idempotent for Hanzi input).
+  const chineseChar = resolveHanzi(activeTone, charMap) ?? "";
+  // EXAMPLE_WORDS is keyed by marked/plain pinyin — normalize tone-number forms
+  // ("ba1" → "ba") for the meaning lookup only.
+  const plainPinyin = normalizePinyinForComparison(activeTone);
   const meaning = EXAMPLE_WORDS[activeTone] ?? EXAMPLE_WORDS[plainPinyin] ?? "";
 
   return (
@@ -115,7 +138,7 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
       <div className="pinyin-detail-main flex-col-center gap-sm flex-1 p-0">
         <span className="font-3xl fw-700" style={{ color: toneColor }}>
           {/* inline: dynamic tone color — toneColor is computed at render time */}
-          {activeTone}
+          {displayPinyin}
         </span>
 
         <div className="flex-center gap-sm">
@@ -127,7 +150,7 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
                 openHub({
                   entityType: "character",
                   entityId: chineseChar,
-                  label: activeTone,
+                  label: displayPinyin,
                 })
               }
               title="View character details"
@@ -173,7 +196,9 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
         <Button
           variant="primary"
           className="gap-sm"
-          onClick={() => playWordAudio({ chinese: chineseChar })}
+          disabled={!chineseChar}
+          title={chineseChar ? undefined : "No character available for this syllable"}
+          onClick={() => play(chineseChar)}
         >
           🔊 <span>Play</span>
         </Button>

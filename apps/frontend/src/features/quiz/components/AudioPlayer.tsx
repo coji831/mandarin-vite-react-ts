@@ -1,12 +1,17 @@
 /**
  * AudioPlayer.tsx
- * Phase 1 Gate Quiz — Audio playback using shared TTS hook
+ * Phase 1 Gate Quiz — Audio playback using shared per-item audio hook
  *
  * Plays audio for quiz questions using character from question data.
+ * Routes through useAudioItemPlayback → the shared AudioManager with the
+ * default word contract (guest + user POST /v1/tts; network/5xx → browser-TTS
+ * candidate; auth/rate-limit → empty candidates silent skip; blocked autoplay
+ * → "Tap to play" affordance).
  */
 
 import { useState, useCallback } from "react";
-import { useAudioPlayback } from "shared/hooks";
+import { resolveHanzi } from "@mandarin/shared-utils";
+import { useAudioItemPlayback, usePinyinCharacterMap } from "shared/hooks";
 import { Button } from "shared/components";
 
 type AudioPlayerProps = {
@@ -18,18 +23,23 @@ type AudioPlayerProps = {
   label?: string;
 };
 
-/** Audio playback button using shared TTS hook */
+/** Audio playback button using shared per-item audio hook */
 export function AudioPlayer({ audioKey, character, label = "Play Audio" }: AudioPlayerProps) {
   const [hasPlayed, setHasPlayed] = useState(false);
-  const { playWordAudio, isPlaying, isLoading, error } = useAudioPlayback();
+  const { play, isPlaying, isLoading, error, status } = useAudioItemPlayback();
+  const { charMap } = usePinyinCharacterMap();
 
-  const handlePlay = useCallback(async () => {
-    // Use character directly if provided, otherwise fall back to plain pinyin
-    const chineseText = character || audioKey;
-    await playWordAudio({ chinese: chineseText, fallbackToBrowserTTS: true });
+  const handlePlay = useCallback(() => {
+    // Phase 1b universalization: use the Hanzi character directly when provided
+    // (never depends on the charMap being loaded); otherwise resolve the pinyin
+    // audio key → Hanzi before TTS. Silently skip when no glyph is available.
+    const chineseText = character || resolveHanzi(audioKey, charMap);
+    if (!chineseText) return;
+    play(chineseText);
     setHasPlayed(true);
-  }, [audioKey, character, playWordAudio]);
+  }, [audioKey, character, charMap, play]);
 
+  const isBlocked = status === "blocked";
   const buttonDisabled = isPlaying || isLoading;
 
   return (
@@ -39,12 +49,28 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
         size="md"
         onClick={handlePlay}
         disabled={buttonDisabled}
-        title={isPlaying ? "Playing audio..." : hasPlayed ? "Replay audio" : "Play audio"}
+        title={
+          isBlocked
+            ? "Tap to play audio"
+            : isPlaying
+              ? "Playing audio..."
+              : hasPlayed
+                ? "Replay audio"
+                : "Play audio"
+        }
         className="quiz-audio-btn hover-lift disabled:op-60"
       >
-        <span className="font-xl">{isLoading ? "⏳" : isPlaying ? "🔊" : "🔊"}</span>
+        <span className="font-xl">{isLoading ? "⏳" : "🔊"}</span>
         <span className="font-md">
-          {error ? "⚠️ Error" : isLoading ? "Loading..." : isPlaying ? "Playing..." : label}
+          {isBlocked
+            ? "Tap to play"
+            : error
+              ? "⚠️ Error"
+              : isLoading
+                ? "Loading..."
+                : isPlaying
+                  ? "Playing..."
+                  : label}
         </span>
       </Button>
     </div>

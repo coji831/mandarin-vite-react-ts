@@ -11,12 +11,13 @@
 import { apiClient } from "shared/api";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import type { FoundationProgress, PhaseGate } from "@mandarin/shared-types";
+import type { PinyinCharacterMap } from "@mandarin/shared-utils";
+import { fetchPinyinCharacterMap } from "shared/services";
 import type { PinyinTonesPool } from "../types/pool";
 import type { StrokeData } from "../types";
 
 // ─── Module-level cache ────────────────────────────────────────────────
 let cachedPool: PinyinTonesPool | null = null;
-let cachedCharMap: Record<string, string> | null = null;
 let cachedStrokeData: StrokeData | null = null;
 
 /**
@@ -52,15 +53,13 @@ async function getPinyinTonesPool(): Promise<PinyinTonesPool> {
 
 /**
  * Fetch the pinyin-to-character mapping.
- * Used for TTS audio lookup without per-click API calls.
- * Cached module-level so PinyinTab and TonesTab share same map.
+ * Phase 2 (universalization): DELEGATES to the shared service so review/quiz
+ * (and the shared audio contract resolver) share ONE implementation without a
+ * cross-feature dependency on foundations. The shared service memoizes the
+ * module-level promise (dedupe across all consumers).
  */
-async function getPinyinCharacterMap(): Promise<Record<string, string>> {
-  if (cachedCharMap) return cachedCharMap;
-  const response = await apiClient.get(ROUTE_PATTERNS.foundationsPinyinCharacterMap);
-  const data: Record<string, string> = response.data;
-  cachedCharMap = data;
-  return data;
+async function getPinyinCharacterMap(): Promise<PinyinCharacterMap> {
+  return fetchPinyinCharacterMap();
 }
 
 /**

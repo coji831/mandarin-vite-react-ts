@@ -14,7 +14,11 @@
 
 import type { QuizStrategy, QuizQuestion, AnswerResult } from "../../types";
 import { quizService } from "../../services/quizService";
-import { isSandhiAcceptable } from "@mandarin/shared-utils";
+import {
+  isSandhiAcceptable,
+  normalizePinyinForComparison,
+  areTonesEquivalent,
+} from "@mandarin/shared-utils";
 import { TONE_DESCRIPTIONS } from "../constants";
 
 export const audioToPinyinAndToneStrategy: QuizStrategy = {
@@ -28,16 +32,23 @@ export const audioToPinyinAndToneStrategy: QuizStrategy = {
   },
 
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult {
-    const pinyinCorrect = pinyin.trim().toLowerCase() === question.correctPinyin.toLowerCase();
+    // Grading parity: the expected pinyin may be digit-suffixed ("ba1") or
+    // tone-marked ("bā") while the learner types plain pinyin ("ba"). Canonical
+    // compare strips marks + trailing digits on BOTH sides. Phase 3: prefer the
+    // typed `expectedPinyin` field, fall back to the wire `correctPinyin`.
+    const expectedPinyin = question.expectedPinyin ?? question.correctPinyin;
+    const pinyinCorrect =
+      normalizePinyinForComparison(pinyin) === normalizePinyinForComparison(expectedPinyin);
 
-    // Sandhi-aware tone evaluation: accept sandhi-compliant tones
+    // Sandhi-aware tone evaluation: accept sandhi-compliant tones. Neutral tone
+    // is canonically 0 (lexical data may encode 5) — areTonesEquivalent handles 0≡5.
     const sandhiAcceptable = isSandhiAcceptable(
       question.correctTone,
       tone,
       question.isSandhiQuestion,
       question.sandhiRule,
     );
-    const toneCorrect = tone === question.correctTone || sandhiAcceptable;
+    const toneCorrect = areTonesEquivalent(tone, question.correctTone) || sandhiAcceptable;
     const correct = pinyinCorrect && toneCorrect;
     const toneDescription = TONE_DESCRIPTIONS[question.correctTone] ?? "unknown";
 

@@ -16,10 +16,10 @@ vi.mock("shared/store", async () => {
 });
 
 // Mock the audio playback hook
-const mockPlayWordAudio = vi.fn();
+const mockPlay = vi.hoisted(() => vi.fn());
 vi.mock("shared/hooks", () => ({
-  useAudioPlayback: () => ({
-    playWordAudio: mockPlayWordAudio,
+  useAudioItemPlayback: () => ({
+    play: mockPlay,
   }),
 }));
 
@@ -47,16 +47,13 @@ describe("ExampleCharCell", () => {
     });
   });
 
-  it("calls playWordAudio when audio button is clicked", () => {
+  it("calls play when audio button is clicked", () => {
     render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
 
     const audioButton = screen.getByLabelText("Play audio for 水");
     fireEvent.click(audioButton);
 
-    expect(mockPlayWordAudio).toHaveBeenCalledWith({
-      chinese: "水",
-      fallbackToBrowserTTS: true,
-    });
+    expect(mockPlay).toHaveBeenCalledWith("水");
   });
 
   it("does not call openHub when audio button is clicked", () => {

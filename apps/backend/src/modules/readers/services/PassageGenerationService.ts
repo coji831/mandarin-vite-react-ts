@@ -6,7 +6,7 @@
  * delegating the raw Gemini API call to the generic shared GeminiService.
  */
 
-import { GeminiService } from "../../../shared/services/GeminiService.js";
+import { GeminiService } from "../../../shared/infrastructure/external/GeminiService.js";
 import { PassageGenerationError } from "../types/readers-errors.js";
 import { createLogger } from "../../../shared/utils/logger.js";
 

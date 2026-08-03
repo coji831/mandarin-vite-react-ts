@@ -10,6 +10,12 @@
  *
  * Writes: content/seed/phase2/pinyin-character-mappings.json
  *
+ * Emits PLAIN deterministic mappings (pinyinSyllableId, characterId,
+ * readingType, isDefault) sorted by syllableId then characterId. The
+ * per-syllable representative (rank 0) is NOT chosen here — it is stamped by
+ * the later build-pinyin-representatives.ts enrich step (which owns the
+ * curated authoring input + deterministic tiebreak).
+ *
  * Idempotent: pure JSON-to-JSON transform.
  *
  * Run: cd apps/backend && npx tsx scripts/enrich/build-pinyin-mappings.ts
@@ -103,24 +109,17 @@ async function main(): Promise<void> {
   // The pinyin-syllables.json has no IDs yet, so we generate them:
   // ps_XXXXX (pinyin syllable, 5-digit zero-padded index)
   const syllableToId = new Map<string, string>();
-  const syllableById = new Map<string, PinyinSyllableEntry>();
-
-  // Also build a lookup by initial+final+tone combination
-  const comboToId = new Map<string, string>();
 
   for (let i = 0; i < pinyinSyllables.length; i++) {
     const syl = pinyinSyllables[i];
     const id = `ps_${String(i + 1).padStart(5, "0")}`;
     const key = `${syl.syllable}`;
-    const comboKey = `${syl.initial}_${syl.final}_${syl.tone}`;
 
     syllableToId.set(key, id);
-    comboToId.set(comboKey, id);
-    syllableById.set(id, syl);
   }
   logger.info(`  📄 Built syllable lookup: ${syllableToId.size} entries`);
 
-  // ── Build character glyph → ID map ──
+  // ── Build character id set ──
 
   const charIdSet = new Set<string>();
   for (const ch of characters) {
@@ -196,7 +195,8 @@ async function main(): Promise<void> {
     matched++;
   }
 
-  // Sort for deterministic output
+  // Sort for deterministic output: syllableId then characterId.
+  // (Representative selection is owned by build-pinyin-representatives.ts.)
   mappings.sort((a, b) => {
     if (a.pinyinSyllableId !== b.pinyinSyllableId) {
       return a.pinyinSyllableId.localeCompare(b.pinyinSyllableId);

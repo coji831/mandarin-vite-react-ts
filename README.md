@@ -48,20 +48,21 @@ npm run dev    # Frontend: http://localhost:5173  Backend: http://localhost:3001
 
 ### Useful Commands
 
-| Command                          | Description                                    |
-| -------------------------------- | ---------------------------------------------- |
-| `npm run dev`                    | Start frontend + backend                       |
-| `npm run dev:frontend`           | Frontend only                                  |
-| `npm run dev:backend`            | Backend only                                   |
-| `npm run build`                  | Build all workspaces                           |
-| `npm run build:frontend`         | Build frontend only (type-check + bundle)      |
-| `npm test`                       | Run changed-scope tests                        |
-| `npm run test:full`              | Run the full test suite                        |
-| `npm run typecheck`              | Type-check all workspaces                      |
-| `npm run lint`                   | Lint all workspaces (0 errors required)        |
-| `npm run format`                 | Format all workspaces                          |
-| `npm run design-audit`           | Audit CSS/TSX against design tokens            |
-| `npm run check:registry-stories` | Verify component registry vs Storybook stories |
+| Command                           | Description                                    |
+| --------------------------------- | ---------------------------------------------- |
+| `npm run dev`                     | Start frontend + backend                       |
+| `npm run dev:frontend`            | Frontend only                                  |
+| `npm run dev:backend`             | Backend only                                   |
+| `npm run build`                   | Build all workspaces                           |
+| `npm run build:frontend`          | Build frontend only (type-check + bundle)      |
+| `npm test`                        | Run changed-scope tests                        |
+| `npm run test:full`               | Run the full test suite                        |
+| `npm run typecheck`               | Type-check all workspaces                      |
+| `npm run lint`                    | Lint all workspaces (0 errors required)        |
+| `npm run format`                  | Format all workspaces                          |
+| `npm run design-audit`            | Audit CSS/TSX against design tokens            |
+| `npm run check:registry-stories`  | Verify component registry vs Storybook stories |
+| `npm run check:module-boundaries` | Enforce shared→features/modules direction rule |
 
 ## 🗺️ Future Vision & Roadmap
 

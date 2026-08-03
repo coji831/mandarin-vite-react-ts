@@ -11,6 +11,7 @@
 import type { Tone } from "@prisma/client";
 import { prisma } from "../../../shared/infrastructure/database/client.js";
 import { stripToneMarks, shuffleArray } from "../../../shared/utils/contentUtils.js";
+import { normalizeTone, stripToneAndDigits } from "@mandarin/shared-utils";
 import type {
   ContentItem,
   IReviewRepository,
@@ -53,12 +54,16 @@ function buildToneItem(
     id: srs?.id || `tone-${toneNumber}`,
     itemType: "tone-syllable",
     itemId: toneNumber,
+    // Display-only front (e.g. "ˉ First Tone") is NOT Hanzi — it must never be
+    // used as TTS text. If audio is needed, resolve `exampleCharacter` (a real
+    // glyph) first; the FE TTS guard silent-skips non-Hanzi, but keep the
+    // intent explicit: `front` is for display only.
     front: `${tone.mark} ${tone.name}`,
     back: `${tone.exampleSyllable} (${tone.pitchDescription}) — e.g., ${tone.exampleCharacter || ""}`,
     category: "tones",
     character: tone.exampleCharacter || null,
     meaning: tone.pitchDescription || null,
-    pinyinPlain: stripToneMarks(tone.exampleSyllable || ""),
+    pinyinPlain: stripToneMarks(tone.exampleSyllable || ""), // marks-only: exampleSyllable is tone-marked ("mā")
     correctTone: tone.number ?? null,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,
@@ -107,8 +112,8 @@ function buildPinyinItem(
     back: `${combo.character || combo.syllable} (${combo.syllable}) — ${combo.meaning || "no definition"}`,
     category: "pinyin",
     character: combo.character || null,
-    pinyinPlain: stripToneMarks(combo.syllable),
-    correctTone: combo.tone,
+    pinyinPlain: stripToneAndDigits(combo.syllable), // "ba1" → "ba" — digits must never leak to FE/TTS
+    correctTone: normalizeTone(combo.tone), // lexical neutral (5) → canonical 0
     meaning: combo.meaning || null,
     studyCount: srs?.studyCount || 0,
     correctCount: srs?.correctCount || 0,

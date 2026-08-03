@@ -18,6 +18,7 @@ import {
   TONE_SYMBOLS,
 } from "features/foundations";
 import { Box, ErrorScreen, LoadingScreen } from "shared/components";
+import { usePinyinCharacterMap } from "shared/hooks";
 import "./PinyinTab.css";
 
 /** Count valid combinations in the pool */
@@ -33,22 +34,21 @@ const TONE_BOX_VARIANTS = ["tone-1", "tone-2", "tone-3", "tone-4", "tone-5"] as 
 
 export function PinyinTab() {
   const [data, setData] = useState<PinyinTonesPool | null>(null);
-  const [charMap, setCharMap] = useState<Record<string, string>>({});
   const [hasError, setHasError] = useState(false);
   const fetchAttempted = useRef(false);
-  // Fetch pinyin data and character map on mount (once)
+  // Shared pinyin → Hanzi map (cross-feature, one deduped fetch). Non-fatal: a
+  // failed map load leaves charMap null and the grid simply skips pinyin TTS.
+  const { charMap } = usePinyinCharacterMap();
+
+  // Fetch pinyin reference data on mount (once)
   useEffect(() => {
     if (fetchAttempted.current) return;
     fetchAttempted.current = true;
 
     const loadData = async () => {
       try {
-        const [pool, map] = await Promise.all([
-          foundationsService.getPinyinTonesPool(),
-          foundationsService.getPinyinCharacterMap(),
-        ]);
+        const pool = await foundationsService.getPinyinTonesPool();
         setData(pool);
-        setCharMap(map);
       } catch {
         // Failed to load pinyin data — error state shown
         fetchAttempted.current = false; // Allow retry

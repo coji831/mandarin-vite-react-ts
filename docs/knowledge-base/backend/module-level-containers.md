@@ -1,7 +1,7 @@
 # Module-Level Container Pattern
 
 **Category:** Backend Development
-**Last Updated:** July 21, 2026
+**Last Updated:** August 3, 2026
 
 ---
 
@@ -100,22 +100,27 @@ export function createAuthModule(deps: AuthModuleDeps) {
 }
 ```
 
-#### Thin Module (TTS — Passes a Shared Service)
+#### Thin Module (Audio — Capability Passed In)
 
 ```typescript
-// modules/tts/container.ts
-import { TtsService } from "../../shared/services/TtsService.js";
-import TtsController from "./api/TtsController.js";
+// modules/audio/container.ts
+import AudioController from "./api/AudioController.js";
+import type { AudioServiceLike } from "./types/audio.js";
 
-export interface TtsModuleDeps {
-  ttsService: TtsService;
+export interface AudioModuleDeps {
+  audioService: AudioServiceLike;
 }
 
-export function createTtsModule(deps: TtsModuleDeps) {
-  const controller = new TtsController(deps.ttsService);
+export function createAudioModule(deps: AudioModuleDeps) {
+  const controller = new AudioController(deps.audioService);
   return { controller };
 }
 ```
+
+The `AudioService` instance itself is constructed at the composition root
+(`new AudioService(cacheService, gcsClient, ttsClient)` in `app/container.ts`)
+and injected through the module's `AudioServiceLike` port — the module never
+imports shared capability logic (`shared/` holds zero capability code).
 
 ---
 

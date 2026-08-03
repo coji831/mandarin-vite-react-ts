@@ -66,7 +66,7 @@
 ### Tier 2 — pre-merge / story-complete / epic-close
 
 - [ ] `npm run test:full` (NEVER `npm test` for the full suite)
-- [ ] `npm run test-storybook --workspace=@mandarin/frontend` + `npm run check:registry-stories` (stories changed / always at merge)
+- [ ] `npm run test-storybook --workspace=@mandarin/frontend` + `npm run check:registry-stories` + `npm run check:module-boundaries` (stories changed / always at merge)
 - [ ] `npx @google/design.md lint DESIGN.md` (DESIGN.md changes)
 - [ ] `npm run design-audit` (frontend changes)
 - [ ] `npm run typecheck --workspace=@mandarin/backend` (backend changes)

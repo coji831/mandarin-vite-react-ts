@@ -86,10 +86,11 @@ export function createReadersRoutes(readersController: ReadersController): expre
    * Get audio URLs for all sentences in a passage.
    * Two-tier fallback: GCS → on-demand TTS.
    * Uses POST because this endpoint may trigger TTS generation as a side-effect.
+   * optionalAuth — user and guest share identical audio access (GCS cold-cache is the cost protector).
    */
   router.post(
     ROUTE_PATTERNS.readersPassageAudioById(":id"),
-    requireAuth,
+    optionalAuth,
     asyncHandler((req: Request, res: Response) => readersController.getPassageAudio(req, res)),
   );
 

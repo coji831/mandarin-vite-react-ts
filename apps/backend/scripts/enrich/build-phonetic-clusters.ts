@@ -35,6 +35,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { writeJsonAtomic, ensureDir } from "../utils.js";
 import { scriptLogger } from "../logger.js";
+import { stripToneMarks } from "@mandarin/shared-utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,16 +100,8 @@ interface PhoneticClusterMember {
 
 // ── Helpers ──
 
-/** Strip tone marks so readings can be compared tone-insensitively. */
-function stripToneMarks(syllable: string): string {
-  return syllable
-    .replace(/[āáǎà]/g, "a")
-    .replace(/[ōóǒò]/g, "o")
-    .replace(/[ēéěè]/g, "e")
-    .replace(/[īíǐì]/g, "i")
-    .replace(/[ūúǔù]/g, "u")
-    .replace(/[ǖǘǚǜ]/g, "ü");
-}
+// stripToneMarks is the canonical marks-only helper from @mandarin/shared-utils
+// (strips tone marks so readings can be compared tone-insensitively).
 
 /**
  * Build a data-derived pronunciation note for a generated family.

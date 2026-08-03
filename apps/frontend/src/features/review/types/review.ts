@@ -43,7 +43,12 @@ export type ReviewItem = {
   intervalDays?: number;
   /** The hanzi character for display (falls back to `front`) */
   character?: string;
-  /** Pinyin without tone marks (e.g., "hao") */
+  /** Pinyin without tone marks (e.g., "hao"). Phase 3: prefer `plainPinyin`. */
+  plainPinyin?: string;
+  /**
+   * @deprecated Use `plainPinyin` instead (wire name unchanged; kept as a
+   * back-compat alias so legacy payloads keep working).
+   */
   pinyinPlain?: string;
   /** Correct tone number (0-4) */
   correctTone?: number;

@@ -135,14 +135,14 @@ The deployment is not locked to Railway. To deploy to a different platform:
 
 ### What to port
 
-| Railway Feature               | What it maps to                                     | How to replicate elsewhere                                           |
-| ----------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
-| `railway.toml` build          | Install deps + build shared-utils + generate Prisma | Translate to platform's build config (e.g. `Dockerfile`, `app.yaml`) |
-| `preDeployCommand`            | Pre-deploy migration step                           | Run `npm run db:migrate:deploy --workspace=@mandarin/backend` before starting the web process      |
-| `Procfile` web / startCommand | Start the server                                    | Run `node dist/app/index.js` from `apps/backend/`                    |
-| PostgreSQL plugin             | `DATABASE_URL` injection                            | Set `DATABASE_URL` env var to your managed PostgreSQL                |
-| Redis plugin                  | `REDIS_URL` injection                               | Set `REDIS_URL` env var to your managed Redis                        |
-| Auto-injected `PORT`          | Runtime port assignment                             | Most platforms inject `PORT` — the server reads it from config       |
+| Railway Feature               | What it maps to                                     | How to replicate elsewhere                                                                    |
+| ----------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `railway.toml` build          | Install deps + build shared-utils + generate Prisma | Translate to platform's build config (e.g. `Dockerfile`, `app.yaml`)                          |
+| `preDeployCommand`            | Pre-deploy migration step                           | Run `npm run db:migrate:deploy --workspace=@mandarin/backend` before starting the web process |
+| `Procfile` web / startCommand | Start the server                                    | Run `node dist/app/index.js` from `apps/backend/`                                             |
+| PostgreSQL plugin             | `DATABASE_URL` injection                            | Set `DATABASE_URL` env var to your managed PostgreSQL                                         |
+| Redis plugin                  | `REDIS_URL` injection                               | Set `REDIS_URL` env var to your managed Redis                                                 |
+| Auto-injected `PORT`          | Runtime port assignment                             | Most platforms inject `PORT` — the server reads it from config                                |
 
 ### Example: Docker-based deployment
 

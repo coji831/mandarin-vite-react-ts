@@ -53,6 +53,17 @@ export function isPhaseGate(value: unknown): value is PhaseGate {
   );
 }
 
+// Pinyin universalization types (Phase 3)
+/** A Hanzi glyph (a single Chinese character string). */
+export type HanziGlyph = string;
+
+/**
+ * Pinyin syllable → Hanzi glyph map (e.g. "ba" → "八", null = unresolvable).
+ * Re-declared here to keep shared-types dependency-free (mirrors the canonical
+ * `PinyinCharacterMap` exported from @mandarin/shared-utils).
+ */
+export type PinyinCharacterMap = Record<string, string | null>;
+
 // TTS types
 export interface TTSRequest {
   text: string;
@@ -73,6 +84,8 @@ export interface WordAudio {
   text: string;
   languageCode?: string;
   voiceName?: string;
+  /** True when the backend served a pre-synthesized (cached) file; false when just synthesized. */
+  cached?: boolean;
 }
 
 export interface WordAudioRequest {
@@ -115,6 +128,24 @@ export interface ConversationAudioRequest {
   text?: string;
 }
 
+// Passage audio wire shapes (Epic 21 — graded readers, D5 promotion)
+/** Source indicator for a passage sentence audio URL. */
+export type AudioSource = "gcs" | "ondemand" | "failed";
+
+/** Result for a single passage sentence. */
+export interface SentenceAudioResult {
+  /** Publicly accessible audio URL (empty string if failed). */
+  url: string;
+  /** How this URL was resolved. */
+  source: AudioSource;
+}
+
+/** Response body for POST /v1/readers/passages/:id/audio. */
+export interface PassageAudioResponse {
+  /** Keyed by sentence index (0-based). */
+  audioUrls: Record<number, SentenceAudioResult>;
+}
+
 // Quiz types (Story 18.6)
 export interface QuizAttempt {
   id: string;
@@ -138,21 +169,43 @@ export interface QuizAttemptAnswer {
   questionIndex: number;
   pinyinInput: string;
   selectedTone: number;
+  /**
+   * @deprecated Tri-modal field — use `expectedPinyin` (audio-to-pinyin-tone),
+   * `correctOptionId` (radical-gate), or `correctGlyph` (ime-simulator). Kept
+   * as the WIRE name (DB column unchanged — do not rename).
+   */
   correctPinyin: string;
   correctTone: number;
   correct: boolean;
   category: string;
+  /** Audio-to-pinyin-tone: expected pinyin string (marks/digits tolerated). */
+  expectedPinyin?: string;
+  /** Radical-gate: the correct multiple-choice option id. */
+  correctOptionId?: string;
+  /** IME-simulator: the expected Hanzi glyph. */
+  correctGlyph?: string;
 }
 
 export interface QuizQuestion {
   id: string;
   audioKey: string;
+  /**
+   * @deprecated Tri-modal field — use `expectedPinyin` (audio-to-pinyin-tone),
+   * `correctOptionId` (radical-gate), or `correctGlyph` (ime-simulator). Kept
+   * as the WIRE name (DB column unchanged — do not rename).
+   */
   correctPinyin: string;
   correctTone: number;
   category: "pinyin" | "tones" | "pairs" | "rules";
   displayPinyin?: string;
   isSandhiQuestion?: boolean;
   sandhiRule?: string;
+  /** Audio-to-pinyin-tone: expected pinyin string (marks/digits tolerated). */
+  expectedPinyin?: string;
+  /** Radical-gate: the correct multiple-choice option id. */
+  correctOptionId?: string;
+  /** IME-simulator: the expected Hanzi glyph. */
+  correctGlyph?: string;
 }
 
 export interface CategoryBreakdown {

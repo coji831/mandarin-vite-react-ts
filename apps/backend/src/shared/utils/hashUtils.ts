@@ -46,19 +46,8 @@ export function computeConversationAudioHash(turns: Turn[]): string {
   return computeHash(concatenated);
 }
 
-/**
- * Generate consistent cache key for TTS audio
- * @param text - Text to synthesize
- * @param voice - TTS voice name
- * @returns SHA256 hash
- */
-export function computeTTSHash(text: string, voice: string): string {
-  return computeHash(`${text}-${voice}`);
-}
-
 export default {
   computeHash,
   computeConversationTextHash,
   computeConversationAudioHash,
-  computeTTSHash,
 };

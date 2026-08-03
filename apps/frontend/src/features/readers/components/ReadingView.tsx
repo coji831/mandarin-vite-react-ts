@@ -3,6 +3,9 @@
  * @description Sentence-by-sentence reader for a single passage.
  * Phase 2: AudioControlBar rendered internally — no audioControlBar prop.
  *   SentenceDisplay is rendered as children by the parent (ReadersPage).
+ * Phase D1: AudioControlBar reads the SHARED presentational audio store; the
+ *   transport callbacks (onTogglePlay/onStop/onSpeedChange) come from the
+ *   parent's useAudioManager instance.
  * Story 21.7: Added restore flow — on mount calls restoreSession, scrolls to saved
  *   sentence. Uses useAutoSaveProgress for debounced auto-save.
  * VisFix W6b: Completion state — when currentSentence reaches the final sentence a
@@ -39,11 +42,11 @@ export type ReadingViewProps = {
    * Parent uses this to call readingStore.markCompleted(passageId).
    */
   onComplete?: () => void;
-  /** Play/pause callback from the main useAudioPlayer instance. */
+  /** Play/pause callback from the main useAudioManager instance. */
   onTogglePlay?: () => void;
-  /** Stop callback from the main useAudioPlayer instance. */
+  /** Stop callback from the main useAudioManager instance. */
   onStop?: () => void;
-  /** Speed change callback from the main useAudioPlayer instance. */
+  /** Speed change callback from the main useAudioManager instance. */
   onSpeedChange?: (speed: PlaybackSpeed) => void;
 };
 
@@ -159,7 +162,7 @@ export function ReadingView({
 
       <Box variant="divider" />
 
-      {/* AudioControlBar — reads audioStore directly, receives transport callbacks from parent */}
+      {/* AudioControlBar — reads the shared audio store, receives transport callbacks from parent */}
       <AudioControlBar
         totalSentences={passage.sentences.length}
         onTogglePlay={onTogglePlay}

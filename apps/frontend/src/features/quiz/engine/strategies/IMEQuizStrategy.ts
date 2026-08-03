@@ -24,12 +24,15 @@ export const imeQuizStrategy: QuizStrategy = {
   evaluateAnswer(question: QuizQuestion, pinyin: string, tone: number): AnswerResult {
     // For IME, "pinyin" param contains the user-typed character glyph
     const userGlyph = (pinyin ?? "").trim().normalize("NFKC");
-    const correctGlyph = (question.character ?? "").normalize("NFKC");
+    // Phase 3: prefer the typed `correctGlyph`; keep `character` (wire) back-compat.
+    const correctGlyph = (question.correctGlyph ?? question.character ?? "").normalize("NFKC");
     const correct = userGlyph === correctGlyph;
+    const displayPinyin =
+      question.displayPinyin ?? question.expectedPinyin ?? question.correctPinyin;
 
     const feedback = correct
-      ? `Correct! ${correctGlyph} (${question.displayPinyin ?? question.correctPinyin}${question.meaning ? ` \u2014 ${question.meaning}` : ""})`
-      : `Incorrect. The correct answer was: ${correctGlyph} (${question.displayPinyin ?? question.correctPinyin}${question.meaning ? ` \u2014 ${question.meaning}` : ""})`;
+      ? `Correct! ${correctGlyph} (${displayPinyin}${question.meaning ? ` \u2014 ${question.meaning}` : ""})`
+      : `Incorrect. The correct answer was: ${correctGlyph} (${displayPinyin}${question.meaning ? ` \u2014 ${question.meaning}` : ""})`;
 
     return {
       correct,

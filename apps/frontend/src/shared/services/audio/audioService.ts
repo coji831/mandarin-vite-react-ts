@@ -8,18 +8,16 @@
  * Extracted from features/vocabulary/services/audioService.ts (deprecated vocabulary feature).
  * Moved to shared/services/audio/ for cross-feature reuse.
  *
- * Phase 3: Uses shared AudioEngine for playback instead of inline HTMLAudioElement.
+ * Phase D2: `playAudio` + the internal AudioEngine (subsystem D) and the dead
+ * `fetchTurnAudio`/`playTurnAudio` conversation path were removed. Playback now
+ * lives in the shared AudioManager (shared/audio/); this service only fetches
+ * word audio and preserves typed failure info for the fallback policy.
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
-import type {
-  TurnAudioRequest,
-  TurnAudioResponse,
-  WordAudio,
-  WordAudioRequest,
-} from "@mandarin/shared-types";
+import type { WordAudio, WordAudioRequest } from "@mandarin/shared-types";
 import { apiClient } from "services";
-import { AudioEngine } from "../../lib/audioEngine";
+import { classifyWordAudioError } from "./errors";
 import type { IAudioBackend, IAudioService } from "./interfaces";
 
 /**
@@ -29,23 +27,8 @@ import type { IAudioBackend, IAudioService } from "./interfaces";
 export class AudioService implements IAudioService {
   constructor(private backend: IAudioBackend = new AudioBackend()) {}
 
-  private engine = new AudioEngine();
-
-  async fetchTurnAudio(params: TurnAudioRequest): Promise<TurnAudioResponse> {
-    return this.backend.fetchTurnAudio(params);
-  }
-
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
     return this.backend.fetchWordAudio(params);
-  }
-
-  /**
-   * Play an audio URL and resolve when playback ends.
-   * Components can `await` this to know when playback finished.
-   * Uses shared AudioEngine for reliable lifecycle management.
-   */
-  async playAudio(audioUrl: string): Promise<void> {
-    await this.engine.playUrl(audioUrl, 1);
   }
 }
 
@@ -54,19 +37,17 @@ export class AudioService implements IAudioService {
  */
 export class AudioBackend implements IAudioBackend {
   async fetchWordAudio(params: WordAudioRequest): Promise<WordAudio> {
+    const { chinese } = params;
     try {
-      const { chinese } = params;
       // Backend returns { audioUrl, cached } directly (not wrapped in ApiResponse)
       const response = await apiClient.post<WordAudio>(ROUTE_PATTERNS.ttsAudio, {
         text: chinese,
       });
       return response.data;
-    } catch {
-      throw new Error("Failed to generate audio. Please try again.");
+    } catch (err) {
+      // Preserve typed failure info (auth / rate-limit / network / server) so the
+      // resolver can apply the fallback policy (see WordAudioError in ./errors).
+      throw classifyWordAudioError(err);
     }
-  }
-
-  async fetchTurnAudio(_params: TurnAudioRequest): Promise<TurnAudioResponse> {
-    throw new Error("Conversation audio is no longer supported. Use fetchWordAudio instead.");
   }
 }

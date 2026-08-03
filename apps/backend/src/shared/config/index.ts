@@ -74,14 +74,6 @@ export const config = {
   // ── Local data (dev fallback) ─────────────────────────────────────────
   localDataPath: path.resolve(__dirname, "../../../data"),
 
-  // ── TTS (Google Cloud Text-to-Speech) ─────────────────────────────────
-  tts: {
-    voiceDefault: "cmn-CN-Wavenet-B",
-    languageCode: "cmn-CN",
-    maxWords: 15,
-    audioEncoding: "MP3" as const,
-  },
-
   // ── Gemini AI ─────────────────────────────────────────────────────────
   gemini: {
     model: process.env.GEMINI_MODEL || "models/gemini-3.1-flash-lite",

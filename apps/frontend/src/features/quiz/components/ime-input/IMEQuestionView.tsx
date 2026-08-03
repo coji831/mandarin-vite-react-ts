@@ -6,6 +6,7 @@
  * Story 21.18: Added phonetic hint display and radical hint toggle.
  */
 import { useState, useCallback, useEffect, useRef } from "react";
+import { stripToneMarks } from "@mandarin/shared-utils";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { getRadicalHint, searchPinyinCandidates } from "../../services/hintService";
 import type { ImeCandidate } from "../../services/hintService";
@@ -94,10 +95,7 @@ export function IMEQuestionView() {
 
   /** Strip tone marks from pinyin (shè → she) for prefix matching. */
   const normalizePinyin = useCallback((p: string): string => {
-    return p
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
+    return stripToneMarks(p).toLowerCase();
   }, []);
 
   /**

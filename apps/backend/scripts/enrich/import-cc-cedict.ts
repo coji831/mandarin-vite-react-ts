@@ -1,7 +1,6 @@
 /**
  * @file apps/backend/scripts/database/import-cc-cedict.ts
- * @description Import CC-CEDICT data to enrich Word, Character readings,
- *   and PinyinCharacterMapping tables.
+ * @description Import CC-CEDICT data to enrich Word and Character readings.
  *
  * Dual mode:
  *   Standalone: npx tsx scripts/database/import-cc-cedict.ts (from apps/backend)
@@ -45,7 +44,6 @@ interface ImportResult {
   wordsEnrichedMeaning: number;
   wordsEnrichedWordClass: number;
   charactersEnriched: number;
-  pinyinMappingsCreated: number;
   errors: string[];
 }
 
@@ -293,8 +291,7 @@ export function decomposePinyin(simplified: string, pinyinRaw: string): Decompos
  * 2. Fetch DB maps: Word (by simplified), Character (by glyph), PinyinSyllable (by syllable)
  * 3. Word enrichment: Match simplified → update pinyin, meaning, wordClass
  * 4. Character decomposition: Decompose pinyin → character readings
- * 5. PinyinCharacterMapping: Upsert each character×syllable combo
- * 6. Reporting: Print and return summary
+ * 5. Reporting: Print and return summary
  */
 export async function importCcCedict(
   prisma: any,
@@ -311,7 +308,6 @@ export async function importCcCedict(
     wordsEnrichedMeaning: 0,
     wordsEnrichedWordClass: 0,
     charactersEnriched: 0,
-    pinyinMappingsCreated: 0,
     errors: [],
   };
 
@@ -391,11 +387,7 @@ export async function importCcCedict(
   const allSyllables = await prisma.pinyinSyllable.findMany({
     select: { id: true, syllable: true },
   });
-  const syllableById = new Map<string, string>();
-  for (const s of allSyllables) {
-    syllableById.set(s.syllable, s.id);
-  }
-  console.log(`  🎵 ${syllableById.size} pinyin syllables in DB`);
+  console.log(`  🎵 ${allSyllables.length} pinyin syllables in DB`);
 
   // ── Step 3: Word enrichment ──
 
@@ -460,8 +452,8 @@ export async function importCcCedict(
   console.log(`  ✅ Enriched ${result.wordsEnrichedWordClass} words with word class`);
 
   // ── Step 4: Character decomposition ──
-  // For each matched word, decompose pinyin → character readings
-  // Then collect unique (character, syllable) pairs for PinyinCharacterMapping
+  // For each matched word, decompose pinyin → per-glyph reading counts
+  // (feeds Step 5's Character.readings JSON update)
 
   console.log("🔤 Decomposing character pinyin readings...");
 
@@ -542,71 +534,6 @@ export async function importCcCedict(
 
   console.log(`  ✅ Updated readings for ${result.charactersEnriched} characters`);
 
-  // ── Step 6: Create PinyinCharacterMapping records ──
-
-  console.log("🔗 Creating pinyin character mappings...");
-
-  const mappingsToCreate: Array<{
-    pinyinSyllableId: string;
-    characterId: string;
-    readingType: string;
-    isDefault: boolean;
-  }> = [];
-
-  for (const [glyph, readings] of charReadings) {
-    const char = charByGlyph.get(glyph);
-    if (!char) continue;
-
-    let index = 0;
-    for (const [syllable] of readings) {
-      const syllableId = syllableById.get(syllable);
-      if (!syllableId) continue;
-
-      mappingsToCreate.push({
-        pinyinSyllableId: syllableId,
-        characterId: char.id,
-        readingType: index === 0 ? "primary" : "secondary",
-        isDefault: index === 0,
-      });
-      index++;
-    }
-  }
-
-  // Remove existing mappings for affected characters to avoid unique constraint conflicts,
-  // then batch-insert fresh ones.
-  if (mappingsToCreate.length > 0) {
-    // Collect unique character IDs
-    const affectedCharIds = [...new Set(mappingsToCreate.map((m) => m.characterId))];
-
-    // Clear existing mappings for these characters
-    const deleteResult = await prisma.pinyinCharacterMapping.deleteMany({
-      where: { characterId: { in: affectedCharIds } },
-    });
-    console.log(
-      `  🗑️ Cleared ${deleteResult.count} existing mappings for ${affectedCharIds.length} characters`,
-    );
-
-    // Batch insert fresh mappings
-    let insertedCount = 0;
-    for (let i = 0; i < mappingsToCreate.length; i += BATCH_SIZE) {
-      const batch = mappingsToCreate.slice(i, i + BATCH_SIZE);
-      try {
-        await prisma.pinyinCharacterMapping.createMany({
-          data: batch,
-          skipDuplicates: true,
-        });
-        insertedCount += batch.length;
-      } catch (err) {
-        const msg = `Failed to insert mapping batch starting at ${i}: ${err}`;
-        result.errors.push(msg);
-        console.error(`  ⚠️ ${msg}`);
-      }
-    }
-    result.pinyinMappingsCreated = insertedCount;
-  }
-
-  console.log(`  ✅ Created/updated ${result.pinyinMappingsCreated} pinyin character mappings`);
-
   // ── Summary ──
 
   console.log("\n═══════════════════════════════════════════════════════");
@@ -617,7 +544,6 @@ export async function importCcCedict(
   console.log(`  📝 Words enriched meaning:   ${result.wordsEnrichedMeaning}`);
   console.log(`  📝 Words enriched wordClass: ${result.wordsEnrichedWordClass}`);
   console.log(`  🔤 Characters enriched:      ${result.charactersEnriched}`);
-  console.log(`  🔗 Mappings created:         ${result.pinyinMappingsCreated}`);
   if (result.errors.length > 0) {
     console.log(`  ⚠️ Errors: ${result.errors.length}`);
     for (const err of result.errors.slice(0, 5)) {

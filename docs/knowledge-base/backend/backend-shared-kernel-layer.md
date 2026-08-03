@@ -1,7 +1,7 @@
 # Shared / Kernel Layer in a Modular Monolith
 
 **KB Category:** Architecture Patterns
-**Last Updated:** June 13, 2026
+**Last Updated:** August 3, 2026
 
 When building a Modular Monolith, deciding where to put cross-cutting concerns like authentication, caching, databases, and third-party APIs is the ultimate test of the architecture. If you get this wrong, your modules will accidentally tangle together, defeating the whole purpose of the Modulith.
 
@@ -80,7 +80,34 @@ How you structure external services depends entirely on **who uses them**:
 
 ---
 
-## 4. Visualizing the Dependency Flow
+## 4. The 5-Criteria Capability Test (when does an integration leave `shared/`?)
+
+`shared/` must **never contain business logic** — but "external integration" is not the same as "capability". The decision rule is the **5-criteria test**: if an integration trips **any** criterion, it is a Tier-2 **capability module** (`modules/<capability>/`), not a shared wrapper:
+
+1. **Delivery semantics** — streaming, TTS QoS, playback guarantees
+2. **Storage/cache contracts** — paths, TTL, signed URLs, single-flight
+3. **Domain knowledge** — passages, words, pinyin, segmenting
+4. **Feature-specific policy** — guest short-circuit, fallback rules, auth
+5. **Orchestration** — composes primitives into a product outcome
+
+The settled matrix:
+
+| Integration     | Choice                                                              | Where                                             |
+| --------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
+| **Audio (TTS)** | **Forced module** (trips all 5)                                     | `modules/audio`                                   |
+| **AI (Gemini)** | Shared Tier-1 wrapper today; `modules/ai` future when criteria trip | `shared/infrastructure/external/GeminiService.ts` |
+| Cache + Storage | Shared infra, always                                                | `shared/infrastructure/`                          |
+
+**Gemini vs Audio — the contrast:**
+
+- **Gemini** is a business-free, parametric wrapper (`generateText`/`generateRaw`/`healthCheck`) around the raw client — no storage contracts, no domain knowledge, no product orchestration. It stays a shared **Tier-1** resilient wrapper (`shared/infrastructure/external/GeminiService.ts`), consumed via DI.
+- **Audio** owns delivery semantics (signed-URL TTL, browser playability), storage/cache contracts (`tts/{hash}.mp3`, `tts/{passageHash}/{i}.mp3`, Redis path index, single-flight), domain knowledge (passages, sentence indices), feature policy (the shared `optionalAuth` guest/user fetch path — guests and users get real URLs through the same `synthesizeToPath`; GCS cold-cache is the cost protector), and orchestration (the exists-or-synthesize primitive). It is a **forced `modules/audio` capability**.
+
+**The naming rule:** _name capabilities, never providers_. Capability modules are named after what they DO — `modules/audio`, not `modules/tts`; a future AI module is `modules/ai`, not `modules/gemini`. Provider names (`tts`, `gemini`) belong only to the Tier-0 raw clients in `shared/infrastructure/external/` (`GoogleTTSClient`, `GeminiClient`). The repo guard enforces this: `scripts/check-module-boundaries.mjs` fails on `modules/tts`, `modules/gemini`, `shared/services`, `shared/tts`.
+
+---
+
+## 5. Visualizing the Dependency Flow
 
 To keep the system highly maintainable, dependencies must strictly flow downward.
 

@@ -9,7 +9,7 @@
  */
 
 import { ContentBrowser } from "shared/components";
-import { createMockContentSource } from "../shared/services/mockContentSource";
+import { createMockContentSource } from "shared/services";
 
 const libraryContentSource = createMockContentSource();
 

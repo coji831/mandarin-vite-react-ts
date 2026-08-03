@@ -24,6 +24,11 @@ export interface QuizOption {
 export interface QuizQuestion {
   id: string;
   audioKey: string; // e.g., "bā" — for TTS
+  /**
+   * @deprecated Tri-modal field — use `expectedPinyin` (audio-to-pinyin-tone),
+   * `correctOptionId` (radical-gate), or `correctGlyph` (ime-simulator). Kept
+   * as the WIRE name (backend payload unchanged — do not rename).
+   */
   correctPinyin: string; // pinyin without tone marks for comparison (or correct option ID for MC)
   correctTone: number; // 0-4 (0=neutral)
   category: string; // e.g., "pinyin" | "tones" | "pairs" | "rules" | "ime" | "radical-core-lockdown" | "radical-predictor"
@@ -36,6 +41,12 @@ export interface QuizQuestion {
   isSandhiQuestion?: boolean;
   /** The sandhi rule pattern (e.g., "3-3") */
   sandhiRule?: string;
+  /** Audio-to-pinyin-tone: expected pinyin string (marks/digits tolerated for grading). */
+  expectedPinyin?: string;
+  /** Radical-gate: the correct multiple-choice option id. */
+  correctOptionId?: string;
+  /** IME-simulator: the expected Hanzi glyph. */
+  correctGlyph?: string;
 }
 
 /** Phonetic component data for a character — used for wrong-answer hints in IME simulator */

@@ -62,7 +62,7 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 | 18   | `CharacterHskLevel`       | 2,971             | → `Character`                          | `skipDuplicates`                     |
 | 19   | `WordHskLevel`            | 10,943            | → `Word`                               | `skipDuplicates`                     |
 | 20   | `WordCharacter`           | 21,715            | → `Word` + `Character`                 | `skipDuplicates`                     |
-| 21   | `PinyinCharacterMapping`  | 11,797            | → `PinyinSyllable` + `Character`       | `skipDuplicates` (cleared in step 7) |
+| 21   | `PinyinCharacterMapping`  | 11,798            | → `PinyinSyllable` + `Character`       | `skipDuplicates` (cleared in step 7) |
 | 22   | `MeasureWordWord`         | 135               | → `MeasureWord` + `Word`               | `skipDuplicates`                     |
 | 23   | `CharacterComponent`      | 15,742            | → `Character` + `Component`            | `skipDuplicates`                     |
 | 24   | `PhoneticCluster`         | 12                | → `Component`                          | `skipDuplicates`                     |
@@ -133,9 +133,13 @@ scripts/generate/*   (raw extracts from source data)
 scripts/enrich/*     (JSON→JSON transforms — pure, no DB, idempotent)
   build-character-entries.ts      → phase2/characters.json
   build-character-readings.ts     → phase2/character-readings.json
-  build-pinyin-mappings.ts        → phase2/pinyin-character-mappings.json
+  build-pinyin-mappings.ts        → phase2/pinyin-character-mappings.json (plain)
   build-word-entries.ts           → phase2/words.json, word-hsk-levels.json
   build-word-character-junction.ts→ phase2/word-characters.json, character-hsk-levels.json
+  build-pinyin-representatives.ts 🆕→ stamps representativeRank (0=rep, 1..n order) on
+                                     phase2/pinyin-character-mappings.json — curated authoring
+                                     input from content/seed/curated/pinyin-representatives.json
+                                     + deterministic tiebreak (hsk asc → freq asc → primary → charId)
   build-character-radicals.ts     → phase2/character-radicals.json
   build-measure-word-words.ts     → phase2/measure-word-words.json
   build-component-entries.ts      → phase2/component-entries.json
@@ -168,7 +172,10 @@ legacy paths is read at runtime**.
 > `populate-character-enrichment.ts`, `populate-character-readings.ts`, plus
 > `import-make-me-a-hanzi.ts`, `seed-character-classification.ts`) mutates the
 > database in place instead of emitting phase2 JSON — superseded by the
-> transform scripts above.
+> transform scripts above. **`import-cc-cedict.ts` no longer writes
+> `PinyinCharacterMapping`** (removed — `prisma/seed.ts` step 21 is the single
+> deterministic writer of that table, populated via
+> `build-pinyin-representatives.ts`).
 
 Run an enrich script individually (e.g.):
 
@@ -238,7 +245,7 @@ npx tsx scripts/verify/health-check.ts         # env, migrations, schema, counts
 | `CharacterHskLevel`      | 2,971   |
 | `WordHskLevel`           | 10,943  |
 | `WordCharacter`          | 21,715  |
-| `PinyinCharacterMapping` | 11,797  |
+| `PinyinCharacterMapping` | 11,798  |
 | `MeasureWordWord`        | 135     |
 | `CharacterComponent`     | 15,742  |
 | `User`                   | 2       |

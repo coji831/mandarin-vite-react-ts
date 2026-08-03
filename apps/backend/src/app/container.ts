@@ -19,8 +19,8 @@ import { GeminiClient } from "../shared/infrastructure/external/GeminiClient.js"
 import { GCSClient } from "../shared/infrastructure/external/GCSClient.js";
 import { GoogleTTSClient } from "../shared/infrastructure/external/GoogleTTSClient.js";
 import { redisClient } from "../shared/infrastructure/redis/RedisClient.js";
-import { TtsService } from "../shared/services/TtsService.js";
-import { GeminiService } from "../shared/services/GeminiService.js";
+import { AudioService } from "../modules/audio/index.js";
+import { GeminiService } from "../shared/infrastructure/external/GeminiService.js";
 
 // Repositories
 import { AuthRepository } from "../modules/auth/repositories/AuthRepository.js";
@@ -38,7 +38,7 @@ import { createProgressionModule } from "../modules/progression/container.js";
 import { createQuizModule } from "../modules/quiz/container.js";
 import type { QuizService } from "../modules/quiz/index.js";
 import { createHealthModule } from "../modules/health/container.js";
-import { createTtsModule } from "../modules/tts/container.js";
+import { createAudioModule } from "../modules/audio/container.js";
 import { createReadersModule } from "../modules/readers/container.js";
 import { createWordsModule } from "../modules/words/container.js";
 import { SegmenterService } from "../modules/readers/services/SegmenterService.js";
@@ -61,7 +61,7 @@ const geminiClient = new GeminiClient();
 const gcsClient = new GCSClient();
 const ttsClient = new GoogleTTSClient();
 
-const ttsService = new TtsService(cacheService, gcsClient, ttsClient);
+const audioService = new AudioService(cacheService, gcsClient, ttsClient);
 export const geminiService = new GeminiService(geminiClient);
 
 // ── 3. Module Factory Calls ────────────────────────────────────────────────
@@ -76,7 +76,7 @@ const authModule = createAuthModule({ authRepository, jwtService, passwordServic
 // Readers module — uses SegmenterService, PassageGenerationService, and ReadersAudioService singletons
 export const segmenterService = new SegmenterService(cacheService);
 export const passageGenerationService = new PassageGenerationService(geminiService);
-export const readersAudioService = new ReadersAudioService(ttsService, gcsClient);
+export const readersAudioService = new ReadersAudioService(audioService);
 
 const readersModule = createReadersModule({
   passageGenerationService,
@@ -103,9 +103,9 @@ const quizModule = createQuizModule({
 // Break circular dependency: inject quizService into progressionService
 progressionModule.service.setQuizService(quizModule.service);
 
-const ttsModule = createTtsModule({ ttsService });
+const audioModule = createAudioModule({ audioService });
 
-const healthModule = createHealthModule({ geminiService, ttsService, redisClient });
+const healthModule = createHealthModule({ geminiService, audioService, redisClient });
 
 // Phonetic Clusters module — no cross-module deps, pure reference data
 import { createPhoneticClustersModule } from "../modules/phonetic-clusters/container.js";
@@ -120,7 +120,7 @@ const charactersModule = createCharactersModule();
 const pinyinModule = createPinyinModule();
 
 // ── 4. Exports ─────────────────────────────────────────────────────────────
-export const ttsController = ttsModule.controller;
+export const audioController = audioModule.controller;
 export const foundationsController = foundationsModule.controller;
 export const radicalsController = radicalsModule.controller;
 export const mnemonicsController = mnemonicsModule.controller;

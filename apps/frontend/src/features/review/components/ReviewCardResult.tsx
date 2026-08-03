@@ -31,7 +31,9 @@ function ReviewCardResultComponent({
   onRate,
 }: ReviewCardResultProps) {
   const displayChar = item.character ?? item.front;
-  const correctPinyin = item.front;
+  // Display the plain (digitless) pinyin when available — item.front may carry
+  // a trailing tone digit ("ba1") that reads as noise in the answer line.
+  const correctPinyin = item.plainPinyin ?? item.pinyinPlain ?? item.front;
 
   return (
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
@@ -44,7 +46,7 @@ function ReviewCardResultComponent({
               openHub({
                 entityType: "character",
                 entityId: displayChar,
-                label: item.pinyinPlain ?? item.front,
+                label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
               })
             }
             aria-label={`View details for ${displayChar}`}

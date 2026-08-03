@@ -17,6 +17,12 @@ describe("errorHandler middleware", () => {
       err.code = "TEAPOT";
       next(err);
     });
+    app.get("/fail-statuscode", (req, res, next) => {
+      const err: any = new Error("Validation failed");
+      err.statusCode = 400;
+      err.code = "VALIDATION_ERROR";
+      next(err);
+    });
     app.use(errorHandler);
   });
 
@@ -33,5 +39,12 @@ describe("errorHandler middleware", () => {
   test("should generate requestId if not provided", async () => {
     const res = await request(app).get("/fail");
     expect(res.body.requestId).toBeDefined();
+  });
+
+  test("should honor statusCode when status is not set (ApiError from errorFactory)", async () => {
+    const res = await request(app).get("/fail-statuscode");
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("code", "VALIDATION_ERROR");
+    expect(res.body).toHaveProperty("message", "Validation failed");
   });
 });

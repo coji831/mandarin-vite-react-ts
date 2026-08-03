@@ -1,30 +1,21 @@
 /**
  * @file AudioControlBar/__tests__/AudioControlBar.test.tsx
  * @description Tests for AudioControlBar component.
- * Phase 2: Reads audio state from audioStore directly — no props.
+ * Phase D1: Reads the SHARED presentational audio store (`shared/store/audioStore.ts`).
  *   Tests set up store state via useAudioStore.setState.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AudioControlBar } from "../AudioControlBar";
-import { useAudioStore } from "../../../stores";
-import type { AudioStatus } from "../../../stores";
+import { useAudioStore } from "shared/store";
 
 describe("AudioControlBar", () => {
   beforeEach(() => {
-    useAudioStore.setState({
-      currentIndex: null,
-      pendingIndex: null,
-      pendingSingleIndex: null,
-      status: "idle" as AudioStatus,
-      error: null,
-      speed: 1,
-      audioUrls: null,
-    });
+    useAudioStore.setState(useAudioStore.getInitialState());
   });
 
   it("renders play/pause button, stop button, progress, and speed controls", () => {
-    useAudioStore.setState({ currentIndex: 0, status: "playing" as AudioStatus });
+    useAudioStore.setState({ currentIndex: 0, status: "playing" });
     render(<AudioControlBar totalSentences={5} />);
 
     // Play button
@@ -43,7 +34,7 @@ describe("AudioControlBar", () => {
   });
 
   it("shows pause icon when playing", () => {
-    useAudioStore.setState({ status: "playing" as AudioStatus, currentIndex: 0 });
+    useAudioStore.setState({ status: "playing", currentIndex: 0 });
     render(<AudioControlBar totalSentences={5} />);
 
     expect(screen.getByRole("button", { name: /pause audio/i })).toBeInTheDocument();
@@ -56,21 +47,30 @@ describe("AudioControlBar", () => {
   });
 
   it("shows current position in progress label", () => {
-    useAudioStore.setState({ currentIndex: 2, status: "playing" as AudioStatus });
+    useAudioStore.setState({ currentIndex: 2, status: "playing" });
     render(<AudioControlBar totalSentences={5} />);
 
     expect(screen.getByText("3 / 5")).toBeInTheDocument();
   });
 
   it("shows total count in progress when completed", () => {
-    useAudioStore.setState({ status: "completed" as AudioStatus });
+    useAudioStore.setState({ status: "stopped", hasCompleted: true });
     render(<AudioControlBar totalSentences={5} />);
 
     expect(screen.getByText("5 / 5")).toBeInTheDocument();
   });
 
+  it("exposes a tap-to-play affordance when autoplay is blocked", () => {
+    useAudioStore.setState({ status: "blocked" });
+    render(<AudioControlBar totalSentences={5} />);
+
+    expect(screen.getByRole("button", { name: /tap to play audio/i })).toBeInTheDocument();
+    // The blocked play button is still clickable — tapping re-attempts playback.
+    expect(screen.getByRole("button", { name: /tap to play audio/i })).not.toBeDisabled();
+  });
+
   it("disables play button when loading", () => {
-    useAudioStore.setState({ status: "loading" as AudioStatus });
+    useAudioStore.setState({ status: "loading" });
     render(<AudioControlBar totalSentences={5} />);
 
     expect(screen.getByRole("button", { name: /play audio/i })).toBeDisabled();
@@ -96,10 +96,34 @@ describe("AudioControlBar", () => {
   });
 
   it("marks active speed button with active variant", () => {
-    useAudioStore.setState({ speed: 1.25 });
+    useAudioStore.setState({ rate: 1.25 });
     render(<AudioControlBar totalSentences={5} />);
 
     const activeBtn = screen.getByRole("button", { name: /playback speed 1\.25x/i });
     expect(activeBtn.className).toContain("tag-active");
+  });
+
+  it("calls onTogglePlay, onStop, and onSpeedChange callbacks", () => {
+    const onTogglePlay = vi.fn();
+    const onStop = vi.fn();
+    const onSpeedChange = vi.fn();
+    useAudioStore.setState({ status: "playing", currentIndex: 0 });
+    render(
+      <AudioControlBar
+        totalSentences={5}
+        onTogglePlay={onTogglePlay}
+        onStop={onStop}
+        onSpeedChange={onSpeedChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /pause audio/i }));
+    expect(onTogglePlay).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: /stop audio/i }));
+    expect(onStop).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: /playback speed 1\.25x/i }));
+    expect(onSpeedChange).toHaveBeenCalledWith(1.25);
   });
 });

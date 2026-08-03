@@ -1,6 +1,6 @@
 # Frontend Conventions
 
-**Last Updated:** August 2, 2026  
+**Last Updated:** August 3, 2026  
 **Purpose:** Frontend coding standards, conventions, and patterns  
 **Audience:** Frontend developers
 
@@ -116,6 +116,17 @@ function Display({ text }: { text: string }) {
 // ❌ DANGEROUS — Never render unsanitized HTML
 // <div dangerouslySetInnerHTML={{ __html: userInput }} />
 ```
+
+## Audio Conventions
+
+> **Core principle:** the shared `AudioManager` is a **pure transport** — it plays whatever `PlayableItem[]` it is given and holds **no resolver concept**. Fallback policy is expressed as **data** (an ordered `candidates` list per item), and consumer intent is supplied via **`AudioBehavior` contracts**.
+
+- **Manager = pure transport** — `shared/audio` (`AudioManager` + `AudioEngine` + `BrowserTTS` + `AudioUrlCache` + strategies) only plays items and walks candidate lists. It never calls APIs and never decides what to play.
+- **Fallback = data** — each `PlayableItem` carries an ordered `candidates` array (`{kind:"url"}` → `{kind:"tts"}` …). `candidates: []` means silent skip (advance, never a spinner). A URL that plays-but-errors calls `behavior.onUrlFailed` (→ `"fallback"`) and the manager advances to the next candidate.
+- **Features own `AudioBehavior` contracts** — the passage behavior is readers-owned (`features/readers/audio/PassageAudioBehavior.ts`, `buildPassageAudioBehavior`); the default **word** contract is feature-free and lives in `shared/audio/contracts/` (`defaultWordBehavior`). `shared/audio` itself stays feature-free.
+- **Barrel rule covers `features/readers/audio`** — `features/readers/audio/index.ts` is a re-export-only barrel, re-exported by the readers feature barrel (`features/readers/index.ts`).
+- **No `useAuth` / `apiClient` in shared audio** — HTTP stays in the service layer (`shared/services/audio` for words, `features/readers/services/passageService.ts` for passages). `shared/audio` and its contracts never touch auth state or the HTTP client.
+- **Hooks** — `useAudioManager({ behavior })` (behavior-driven orchestration; `shared/hooks/useAudioManager.ts`) and `useAudioItemPlayback` (per-item default word contract; `shared/hooks/useAudioItemPlayback.ts`).
 
 ---
 

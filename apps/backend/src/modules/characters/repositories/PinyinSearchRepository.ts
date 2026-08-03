@@ -7,6 +7,7 @@
  */
 
 import { prisma } from "../../../shared/infrastructure/database/client.js";
+import { stripToneAndDigits } from "@mandarin/shared-utils";
 
 export interface PinyinSearchParams {
   q: string;
@@ -33,36 +34,11 @@ export interface PinyinSearchResponse {
 export class PinyinSearchRepository {
   async searchByPinyin(params: PinyinSearchParams): Promise<PinyinSearchResponse> {
     const { q, tone, page, pageSize } = params;
-    const normalizedQuery = q.toLowerCase().replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/g, (c) => {
-      const toneMap: Record<string, string> = {
-        ā: "a",
-        á: "a",
-        ǎ: "a",
-        à: "a",
-        ē: "e",
-        é: "e",
-        ě: "e",
-        è: "e",
-        ī: "i",
-        í: "i",
-        ǐ: "i",
-        ì: "i",
-        ō: "o",
-        ó: "o",
-        ǒ: "o",
-        ò: "o",
-        ū: "u",
-        ú: "u",
-        ǔ: "u",
-        ù: "u",
-        ǖ: "ü",
-        ǘ: "ü",
-        ǚ: "ü",
-        ǜ: "ü",
-        ü: "ü",
-      };
-      return toneMap[c] || c;
-    });
+    // Normalize tone marks AND a trailing tone digit via the canonical shared
+    // helper — "mā", "ma" and "ma1" all reduce to "ma". The indexed
+    // pinyinSyllable.syllable column is tone-NUMBER ("ba1"), so stripping both
+    // makes every input form match the same syllable prefix.
+    const normalizedQuery = stripToneAndDigits(q);
 
     const where: Record<string, unknown> = {
       pinyinSyllable: {

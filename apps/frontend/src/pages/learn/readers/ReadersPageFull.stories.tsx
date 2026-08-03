@@ -20,7 +20,7 @@ import { Box } from "shared/components";
 import { ReadersPage, ReadingView, SentenceDisplay } from "../../../features/readers";
 import type { PassageDetail } from "../../../features/readers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { withReadingStore, withAudioStore } from "../../../../.storybook/decorators";
+import { withGuestAuth, withReadingStore, withAudioStore } from "../../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
@@ -464,6 +464,28 @@ export const ReadingWithAudioLoading: Story = {
   },
 };
 
+/**
+ * Reading — Audio Guest (optionalAuth): `withGuestAuth` forces the AuthContext
+ * to logged-out. Guests and users share ONE fetch path —
+ * `buildPassageAudioBehavior` POSTs `POST /v1/readers/passages/:id/audio`
+ * (optionalAuth) and renders REAL signed-URL items for every sentence. The
+ * audio bar renders URL items off the shared `passageAudio.default()` handler
+ * — no TTS short-circuit, no network exemption for guests.
+ */
+export const ReadingWithAudioGuest: Story = {
+  name: "Reading — Audio Guest (optionalAuth, real URLs)",
+  args: { mode: "reading" },
+  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" }), withGuestAuth],
+  parameters: {
+    msw: {
+      handlers: [
+        mswHandlers.readers.passageDetail.default(),
+        mswHandlers.readers.passageAudio.default(),
+      ],
+    },
+  },
+};
+
 export const ReadingWithAudioComplete: Story = {
   name: "Reading — Audio Complete",
   parameters: {
@@ -476,7 +498,7 @@ export const ReadingWithAudioComplete: Story = {
   },
   decorators: [
     withReadingStore({ mode: "reading", currentPassageId: "p-1" }),
-    withAudioStore({ status: "completed" }),
+    withAudioStore({ status: "stopped", hasCompleted: true }),
   ],
   render: () => {
     const passage = defaultPassageDetail;

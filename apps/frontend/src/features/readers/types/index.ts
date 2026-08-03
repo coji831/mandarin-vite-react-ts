@@ -11,7 +11,7 @@ export type { PassageDetail } from "../components/ReadingView";
 // Audio types (Story 21.5)
 export type {
   AudioSource,
-  SentenceAudioInfo,
+  SentenceAudioResult,
   SentenceAudioMap,
   PassageAudioResponse,
 } from "./audio";

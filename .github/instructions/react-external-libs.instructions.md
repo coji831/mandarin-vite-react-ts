@@ -50,18 +50,32 @@ function MyCanvas({ onInit }: { onInit: (lib: ExternalLib) => void }) {
 
 - **No auth headers** — `new Audio()` / `<audio>` cannot attach `Authorization`
   headers; only cookies are sent. For authenticated audio use **signed URLs**
-  (short-lived GCS signed URLs, as `ReadersAudioService` returns) or a proxy
-  endpoint. `AudioEngine.playUrl` sets `audio.src = url` directly.
+  (short-lived GCS signed URLs returned by the backend TTS capability) or a proxy
+  endpoint. The shared engine sets `audio.src = url` directly; `AudioManager` is
+  a pure transport and never touches the HTTP/service layer.
 - **Autoplay policies** — `audio.play()` returns a promise; a rejected promise
   (autoplay blocked before a user gesture) must be caught and playback should
-  degrade gracefully (e.g. browser `SpeechSynthesis` fallback).
+  degrade gracefully (e.g. browser `SpeechSynthesis` fallback). The engine
+  contract `playUrl(url, rate, signal): Promise<PlaybackEndReason>` always
+  settles (`ended`/`paused`/`aborted`/`error`) — never a dangling promise.
 - **Pause on popover open / Page-Visibility** — pause playback when a popover
   opens and on `visibilitychange` (`document.hidden`); resume if it was playing
-  before (see `useAudioPlayer`).
-- **Hook decomposition (readers)** — split fetch from playback: `usePassageAudio`
-  loads URLs, `useAudioPlayer` plays them (single responsibility). Use distinct
-  store signals for intent: `pendingIndex` (tap-to-play, auto-advance) vs
-  `pendingSingleIndex` (single sentence, no auto-advance) — see `audioStore.ts`.
+  before. This behavior is FEATURE-OWNED, not a shared-hook behavior: the
+  popover pause/resume wiring and the `visibilitychange` listener live in the
+  consuming page/feature (e.g. `ReadersPage` — popover-resume via the manager's
+  `restart()`, plus a `document.addEventListener("visibilitychange", …)` that
+  pauses when hidden). The shared `useAudioManager` / `useAudioItemPlayback`
+  hooks only expose transport primitives (`pause`/`stop`/`restart`) — they do
+  NOT install page-visibility or popover listeners.
+- **Candidates-as-data (`AudioBehavior` contracts)** — consumers express intent
+  as a contract, not imperative calls: an ordered `PlayableSource[]` candidate
+  list per item, built from the service layer (URL candidates via
+  `AudioService.fetchWordAudio`), a browser-TTS fallback candidate, or an empty
+  list = skip. `AudioManager` plays `PlayableItem[]` and consults `onUrlFailed`
+  (verdicts `"retry" | "fallback" | "skip"`) so arbitration lives in one place —
+  no `SourceResolver`. Default word contract: `defaultWordBehavior` in
+  `shared/audio/contracts/`; the passage contract is readers-owned
+  (`PassageAudioBehavior` / `buildPassageAudioBehavior` in `features/readers/audio`).
 
 ---
 

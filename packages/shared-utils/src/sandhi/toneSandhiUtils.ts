@@ -4,6 +4,8 @@
  * Handles tone sandhi rules including 3-3 sandhi, bù sandhi, and yī sandhi.
  */
 
+import { toneMarkToPlain } from "../pinyin/pinyinNormalization.js";
+
 /**
  * Determine whether a selected tone is acceptable given the correct tone
  * and an optional sandhi rule.
@@ -92,29 +94,23 @@ export function findToneVowel(pinyin: string): { vowel: string; index: number } 
 }
 
 /**
- * Tone-mark → plain vowel lookup (precomposed tone letters used in pinyin).
- */
-const TONE_MARK_TO_PLAIN: Record<string, string> = {
-  ā: "a", á: "a", ǎ: "a", à: "a",
-  ē: "e", é: "e", ě: "e", è: "e",
-  ī: "i", í: "i", ǐ: "i", ì: "i",
-  ō: "o", ó: "o", ǒ: "o", ò: "o",
-  ū: "u", ú: "u", ǔ: "u", ù: "u",
-  ǖ: "ü", ǘ: "ü", ǚ: "ü", ǜ: "ü",
-};
-
-/**
  * Strip tone marks from a pinyin syllable, returning plain ASCII/ü.
  * Handles already-marked input so tone operations are idempotent.
+ *
+ * Marks-ONLY: the input must not carry a trailing tone digit — `applyToneMark`
+ * re-marks from this marks-only result. For the marks+digits variant used in
+ * comparison/TTS/display, use `stripToneAndDigits` (pinyinNormalization).
  *
  * @param pinyin - Pinyin possibly carrying tone marks (e.g., "bù", "yī")
  * @returns Plain pinyin (e.g., "bu", "yi")
  */
 export function stripToneMarks(pinyin: string): string {
-  return pinyin.replace(
-    /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g,
-    (ch) => TONE_MARK_TO_PLAIN[ch] ?? ch,
-  );
+  // Delegate to the canonical tone-mark → plain map in pinyinNormalization.
+  let plain = "";
+  for (const ch of pinyin) {
+    plain += toneMarkToPlain[ch] ?? ch;
+  }
+  return plain;
 }
 
 /**
