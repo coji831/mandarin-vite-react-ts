@@ -154,13 +154,28 @@ describe("readingStore", () => {
       expect(useReadingStore.getState().completedPassages.has("passage-1")).toBe(true);
     });
 
-    it("calls completePassage API", async () => {
+    it("calls completePassage API when authenticated", async () => {
+      useReadingStore.setState({ isAuthenticated: true });
       useReadingStore.getState().markCompleted("passage-1");
 
       // Wait for the silent retry to trigger the API call
       await vi.waitFor(() => {
         expect(readingProgressService.completePassage).toHaveBeenCalledWith("passage-1");
       });
+    });
+
+    it("does NOT call completePassage API for guests but keeps the local badge", async () => {
+      useReadingStore.setState({ isAuthenticated: false });
+      useReadingStore.getState().markCompleted("passage-1");
+
+      // Local completion badge is still added (session-local).
+      expect(useReadingStore.getState().completedPassages.has("passage-1")).toBe(true);
+
+      // Give any accidental async call a chance to fire before asserting none.
+      await vi.waitFor(() => {
+        expect(useReadingStore.getState().completedPassages.has("passage-1")).toBe(true);
+      });
+      expect(readingProgressService.completePassage).not.toHaveBeenCalled();
     });
   });
 

@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { CharacterHub } from "./CharacterHub";
 import { mswHandlers } from "../../../../../.storybook/msw-handlers";
+import { withGuestAuth } from "../../../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
@@ -54,6 +55,15 @@ const mnemonicForHao = () =>
 /** Mnemonic handler: returns 404 for other characters (empty state) */
 const mnemonicNotFound = http.get(new RegExp(`^${API_BASE}/v1/mnemonics/.+`), () =>
   HttpResponse.json(null, { status: 404 }),
+);
+
+/** Mnemonic handler: 200 { mnemonic: null } — the guest-visible empty state
+ * (backend GET is optionalAuth; no story exists yet). Uses the correct route
+ * path: API_BASE already ends in /api/v1, so the mnemonic route is
+ * /api/v1/mnemonics/:char (NOT .../v1/mnemonics — the sibling handlers above
+ * carry a pre-existing duplicate /v1 and never match the real request). */
+const mnemonicNull = http.get(new RegExp(`^${API_BASE}/mnemonics/.+`), () =>
+  HttpResponse.json({ mnemonic: null }),
 );
 
 /** Mnemonic POST handler: returns a generated story */
@@ -185,6 +195,27 @@ export const MnemonicDisplay: Story = {
 
 export const MnemonicEmpty: Story = {
   name: "好 — No Mnemonic Story Yet",
+  render: () => <CharacterHub entityId="好" />,
+};
+
+/** Bug 2: guest session — mnemonic tab shows the sign-in upsell (no
+ * Generate/Edit), and HubActions are hidden (no fake Save/Learned success). */
+export const GuestMnemonicUpsell: Story = {
+  name: "Guest — Mnemonic upsell, no actions",
+  decorators: [withGuestAuth],
+  parameters: {
+    msw: {
+      handlers: [
+        ...mswHandlers.auth,
+        mswHandlers.progression.phaseGate(3),
+        ...mswHandlers.foundations.default(),
+        mswHandlers.characters.fallback,
+        radicalsWithHao(),
+        radicalsByCharacterFallback,
+        mnemonicNull,
+      ],
+    },
+  },
   render: () => <CharacterHub entityId="好" />,
 };
 

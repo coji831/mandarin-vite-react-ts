@@ -12,7 +12,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { usePhaseGate } from "shared/hooks";
-import { Modal, Button, MnemonicCard } from "shared/components";
+import { Modal, Button, MnemonicCard, GuestUpsell } from "shared/components";
+import { useAuth } from "features/auth";
 import { useMnemonicStore } from "../../stores/mnemonicStore";
 import { MnemonicEditing, MnemonicEmpty, MnemonicError } from "./index";
 import "./HubMnemonicSection.css";
@@ -43,6 +44,11 @@ function MnemonicSectionInner({ character }: { character: string }) {
   const startEdit = useMnemonicStore((s) => s.startEdit);
   const cancelEdit = useMnemonicStore((s) => s.cancelEdit);
   const retry = useMnemonicStore((s) => s.retry);
+
+  // Bug 2: guests may READ shared/cached mnemonic stories (backend GET is
+  // now optionalAuth) but the write actions (Generate/Edit/Regenerate) are
+  // gated behind sign-in.
+  const { isAuthenticated } = useAuth();
 
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
@@ -98,6 +104,17 @@ function MnemonicSectionInner({ character }: { character: string }) {
           />
         );
       case "Empty":
+        // Guests: upsell instead of the Generate button — they can read shared
+        // stories but cannot generate their own until they sign in.
+        if (!isAuthenticated) {
+          return (
+            <GuestUpsell
+              icon="✨"
+              title="Mnemonic stories"
+              description="Register to generate and save your own mnemonic stories for characters."
+            />
+          );
+        }
         return (
           <MnemonicEmpty character={character} onGenerate={() => generateMnemonic(character)} />
         );
@@ -109,8 +126,8 @@ function MnemonicSectionInner({ character }: { character: string }) {
             radicalIds={state.radicalIds}
             story={state.story}
             isEdited={state.isEdited}
-            onEdit={startEdit}
-            onRegenerate={handleRegenerate}
+            onEdit={isAuthenticated ? startEdit : undefined}
+            onRegenerate={isAuthenticated ? handleRegenerate : undefined}
           />
         );
       case "Cached":
@@ -121,8 +138,8 @@ function MnemonicSectionInner({ character }: { character: string }) {
             radicalIds={[]}
             story={state.story}
             isEdited={false}
-            onEdit={startEdit}
-            onRegenerate={handleRegenerate}
+            onEdit={isAuthenticated ? startEdit : undefined}
+            onRegenerate={isAuthenticated ? handleRegenerate : undefined}
           />
         );
       case "Editing":

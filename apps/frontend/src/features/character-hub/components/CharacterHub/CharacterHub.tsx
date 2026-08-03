@@ -9,7 +9,7 @@
  *   NORTH: HubIdentityCard (glyph, pinyin, meaning, badges, etymology)
  *   MIDDLE: West (radicals) | Center (stroke) | East (readings)
  *   TABS: Common Words | Mnemonic Story (user selects which to view)
- *   ACTIONS: Save to Review / Mark Learned (always visible at bottom)
+ *   ACTIONS: registered-only — HubActions renders null for guests (no fake Save/Learned)
  *
  * Each section fetches its own detail data independently.
  * Tabs reduce SOUTH-zone density while keeping all content accessible.
@@ -84,7 +84,7 @@ export function CharacterHub({ entityId, entityLabel }: CharacterHubProps) {
         </Tabs>
       </Box>
 
-      {/* ACTIONS: Always visible at bottom */}
+      {/* ACTIONS: registered-only — HubActions renders null for guests (no fake Save/Learned) */}
       <div className="flex-center p-sm">
         <HubActions character={character} />
       </div>

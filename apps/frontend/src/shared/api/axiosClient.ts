@@ -22,6 +22,7 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "ax
 
 import type { NormalizedError } from "@mandarin/shared-types";
 import { API_CONFIG } from "config";
+import { isAuthFailure } from "./errors";
 
 /**
  * Extend axios request config with an opt-out flag for the automatic
@@ -170,18 +171,17 @@ apiClient.interceptors.response.use(
       _skipRetry?: boolean;
     };
 
-    const status = error.response?.status;
+    // Normalize once up front so the shared auth-failure classifier reads a
+    // canonical shape (single source of truth — see shared/api/errors.ts).
+    const normalized = createNormalizedError(error);
+
     // Auth failure: 401 (missing/expired token) or 403 INVALID_TOKEN (forged/tampered token).
     // The backend returns 403 for tampered access tokens — without this, those never refresh (F4).
-    const isAuthFailure =
-      status === 401 ||
-      (status === 403 && (error.response?.data as { code?: string })?.code === "INVALID_TOKEN");
-
-    if (isAuthFailure && originalRequest && !originalRequest._retry) {
+    if (isAuthFailure(normalized) && originalRequest && !originalRequest._retry) {
       // Never try to refresh-then-retry the refresh call itself.
       const isRefreshRequest = (originalRequest.url ?? "").includes("auth/refresh");
       if (isRefreshRequest) {
-        return Promise.reject(createNormalizedError(error));
+        return Promise.reject(normalized);
       }
 
       originalRequest._retry = true;
@@ -192,7 +192,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (_refreshError) {
         // Refresh failed, user will be logged out via callback
-        return Promise.reject(createNormalizedError(error));
+        return Promise.reject(normalized);
       }
     }
 
@@ -215,7 +215,7 @@ apiClient.interceptors.response.use(
     }
 
     // No retry applicable, return normalized error
-    return Promise.reject(createNormalizedError(error));
+    return Promise.reject(normalized);
   },
 );
 

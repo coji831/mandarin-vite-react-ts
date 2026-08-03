@@ -11,9 +11,10 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Use vi.hoisted for variables that vi.mock factories reference
-const { mockGetMnemonic, mockUsePhaseGate } = vi.hoisted(() => ({
+const { mockGetMnemonic, mockUsePhaseGate, mockUseAuth } = vi.hoisted(() => ({
   mockGetMnemonic: vi.fn(),
   mockUsePhaseGate: vi.fn(),
+  mockUseAuth: vi.fn(),
 }));
 
 vi.mock("../../../services", () => ({
@@ -29,6 +30,10 @@ vi.mock("../../../constants", () => ({
 
 vi.mock("shared/hooks", () => ({
   usePhaseGate: () => mockUsePhaseGate(),
+}));
+
+vi.mock("features/auth", () => ({
+  useAuth: () => mockUseAuth(),
 }));
 
 vi.mock("shared/components", async () => {
@@ -106,6 +111,12 @@ vi.mock("shared/components", async () => {
         {children}
       </button>
     ),
+    GuestUpsell: ({ title, description }: { title: string; description: string }) => (
+      <div data-testid="guest-upsell">
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </div>
+    ),
     Spinner: ({ size }: { size?: string }) => (
       <div data-testid="spinner" data-size={size}>
         Spinner
@@ -164,6 +175,7 @@ describe("HubMnemonicSection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUsePhaseGate.mockReturnValue({ phaseGate: { currentPhase: 3 } });
+    mockUseAuth.mockReturnValue({ isAuthenticated: true });
   });
 
   // ── Phase Gate ──────────────────────────────────────
@@ -218,6 +230,48 @@ describe("HubMnemonicSection", () => {
 
     expect(screen.getByLabelText("Edit mnemonic story")).toBeTruthy();
     expect(screen.getByLabelText("Regenerate mnemonic story")).toBeTruthy();
+  });
+
+  // ── Guest Gating (Bug 2) ───────────────────────────
+
+  it("guest empty state shows GuestUpsell instead of the Generate button", async () => {
+    mockUseAuth.mockReturnValue({ isAuthenticated: false });
+    mockGetMnemonic.mockResolvedValue(null);
+    render(<HubMnemonicSection character="好" />);
+
+    await waitFor(() => {
+      expect(mockGetMnemonic).toHaveBeenCalledWith("好");
+    });
+
+    expect(screen.getByTestId("guest-upsell")).toBeTruthy();
+    expect(screen.getByText("Mnemonic stories")).toBeTruthy();
+    expect(screen.queryByText("✨ Generate Story")).toBeNull();
+  });
+
+  it("guest display state renders the shared story but hides edit/regenerate", async () => {
+    mockUseAuth.mockReturnValue({ isAuthenticated: false });
+    mockGetMnemonic.mockResolvedValue(SAMPLE_RESPONSE);
+    render(<HubMnemonicSection character="好" />);
+
+    // Story text still renders for guests (backend GET is optionalAuth).
+    await waitFor(() => {
+      expect(screen.getByText(SAMPLE_STORY)).toBeTruthy();
+    });
+
+    expect(screen.queryByLabelText("Edit mnemonic story")).toBeNull();
+    expect(screen.queryByLabelText("Regenerate mnemonic story")).toBeNull();
+    expect(screen.queryByTestId("guest-upsell")).toBeNull();
+  });
+
+  it("authenticated empty state keeps the Generate button", async () => {
+    mockUseAuth.mockReturnValue({ isAuthenticated: true });
+    mockGetMnemonic.mockResolvedValue(null);
+    render(<HubMnemonicSection character="好" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("✨ Generate Story")).toBeTruthy();
+    });
+    expect(screen.queryByTestId("guest-upsell")).toBeNull();
   });
 
   // ── Editing State ───────────────────────────────────

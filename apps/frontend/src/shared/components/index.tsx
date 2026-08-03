@@ -17,6 +17,8 @@ export { ErrorScreen } from "./ErrorScreen/ErrorScreen";
 export { FilterChip } from "./FilterChip/FilterChip";
 export { FilterControls } from "./FilterControls";
 export { Grid } from "./Grid";
+export { GuestUpsell } from "./GuestUpsell/GuestUpsell";
+export type { GuestUpsellProps } from "./GuestUpsell/GuestUpsell";
 export { Input } from "./Input";
 export { LoadingScreen } from "./LoadingScreen/LoadingScreen";
 export { Modal } from "./Modal";

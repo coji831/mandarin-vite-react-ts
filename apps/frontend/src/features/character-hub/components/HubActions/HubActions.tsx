@@ -11,6 +11,7 @@
 import { Button } from "shared/components";
 import { useState } from "react";
 import { useReview } from "shared/hooks";
+import { useAuth } from "features/auth";
 
 type HubActionsProps = {
   character: string;
@@ -26,6 +27,13 @@ export function HubActions({ character }: HubActionsProps) {
   const [marked, setMarked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [failedAction, setFailedAction] = useState<FailedAction>(null);
+  const { isAuthenticated } = useAuth();
+
+  // Bug 2: these actions are backed by a stub (no backend call) — showing
+  // "✅ Saved!"/"✓ Learned!" to guests would be fake success. Hide the
+  // registered-only actions for guests entirely (the mnemonic tab already
+  // carries the sign-in upsell within this modal).
+  if (!isAuthenticated) return null;
 
   const handleSaveToReview = async () => {
     if (saved || isSaving) return;

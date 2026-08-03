@@ -3,13 +3,15 @@
  * @description Routes for mnemonic story CRUD operations.
  *
  * Controller is injected via req.mnemonicsController middleware.
- * All routes require authentication.
+ * GET uses optionalAuth so guests can read shared/cached stories (the 4-step
+ * chain skips the user-edited branch when no userId is present). POST/PUT/DELETE
+ * require authentication — they trigger AI generation and user-edited persistence.
  */
 
 import express from "express";
 import type { Request, Response } from "express";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
-import { requireAuth } from "../../../shared/middleware/authMiddleware.js";
+import { optionalAuth, requireAuth } from "../../../shared/middleware/authMiddleware.js";
 import { asyncHandler } from "../../../shared/middleware/asyncHandler.js";
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 
@@ -75,10 +77,11 @@ const deleteLimiter = rateLimit({
  * GET /v1/mnemonics/:character
  * Fetch a mnemonic story for a character.
  * Uses 4-step lookup chain: user-edited → cache → DB(AI) → generate.
+ * optionalAuth: guests can read shared/cached stories (step 1 skipped for guests).
  */
 router.get(
   ROUTE_PATTERNS.mnemonicsByChar(":character"),
-  requireAuth,
+  optionalAuth,
   getLimiter,
   asyncHandler((req: Request, res: Response) => req.mnemonicsController!.getMnemonic(req, res)),
 );

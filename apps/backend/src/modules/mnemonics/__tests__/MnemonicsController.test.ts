@@ -66,6 +66,29 @@ describe("MnemonicsController", () => {
       expect(mockRes.status).not.toHaveBeenCalled();
     });
 
+    it("handles a guest request (undefined userId) without crashing — passes undefined to service", async () => {
+      const story = {
+        id: "m1",
+        characterGlyph: "好",
+        story: "A woman (女) holding a child (子) represents goodness.",
+        radicalIds: ["ch_1001"],
+        isEdited: false,
+        isPictograph: false,
+        classification: null,
+        createdAt: "2026-07-01T00:00:00.000Z",
+        updatedAt: "2026-07-01T00:00:00.000Z",
+      };
+      mockReq.userId = undefined; // optionalAuth leaves userId unset for guests
+      mockReq.params = { character: "好" };
+      mockService.getMnemonic.mockResolvedValue(story);
+
+      await controller.getMnemonic(mockReq, mockRes);
+
+      expect(mockService.getMnemonic).toHaveBeenCalledWith("好", undefined);
+      expect(mockRes.json).toHaveBeenCalledWith({ mnemonic: story });
+      expect(mockRes.status).not.toHaveBeenCalled();
+    });
+
     it("returns 200 with { mnemonic: null } when no story exists (no 404)", async () => {
       mockReq.params = { character: "卟" };
       mockService.getMnemonic.mockRejectedValue(new MnemonicNotFoundError("卟"));

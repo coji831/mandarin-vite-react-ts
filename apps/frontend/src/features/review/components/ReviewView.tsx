@@ -8,11 +8,13 @@ import { useCallback, useEffect } from "react";
 import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
 import { useAudioItemPlayback } from "shared/hooks";
+import { isAuthFailure } from "shared/api";
 import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
-import { Button, ErrorScreen, LoadingScreen, ProgressBar } from "shared/components";
+import { Button, ErrorScreen, LoadingScreen, ProgressBar, GuestUpsell } from "shared/components";
+import { login_page } from "shared/constants";
 
 type ReviewViewProps = {
   onBack: () => void;
@@ -64,7 +66,22 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
   }
 
   if (error) {
-    return <ErrorScreen error={error} onRetry={() => startReview(source, contentType)} />;
+    // Bug 2: mid-page session expiry (401 / 403 INVALID_TOKEN) → sign-in upsell
+    // instead of a dead-end generic error screen. Non-auth errors keep ErrorScreen.
+    if (isAuthFailure(error)) {
+      return (
+        <div className="error-screen flex-col-center gap-lg p-2xl">
+          <GuestUpsell
+            icon="🔒"
+            title="Your session expired"
+            description="Your session expired — sign in again to continue reviewing."
+            ctaLabel="Sign in again ▸"
+            to={login_page}
+          />
+        </div>
+      );
+    }
+    return <ErrorScreen error={error.message} onRetry={() => startReview(source, contentType)} />;
   }
 
   if (step === "complete" && totalItems === 0 && !loading) {

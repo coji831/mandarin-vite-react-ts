@@ -9,6 +9,8 @@ import type { ReviewItem, Rating, ReviewSource, ReviewStep, ReviewSessionResult 
 import { reviewService } from "../services/reviewService";
 import { getReviewStrategy } from "../engine/strategies";
 import { stripToneAndDigits, extractToneNumber } from "@mandarin/shared-utils";
+import { toNormalizedError } from "shared/api";
+import type { NormalizedError } from "@mandarin/shared-types";
 
 /**
  * Parse user pinyin input into { pinyin, tone } using the canonical shared parser.
@@ -25,7 +27,9 @@ export function useReview() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [step, setStep] = useState<ReviewStep>("pick");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Bug 2: keep the full NormalizedError so ReviewView can classify an
+  // auth failure (session expiry) via isAuthFailure instead of a bare string.
+  const [error, setError] = useState<NormalizedError | null>(null);
   const [source, setSource] = useState<ReviewSource>("due");
 
   /* ── Per-item state ────────────────────────────── */
@@ -87,7 +91,7 @@ export function useReview() {
           setStep(strategy?.initialStep ?? "pinyin");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load review items");
+        setError(toNormalizedError(err, "Failed to load review items"));
         setItems([]);
       } finally {
         setLoading(false);

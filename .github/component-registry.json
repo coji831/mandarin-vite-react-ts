@@ -480,6 +480,32 @@
         "states": ["variant-catalog", "loading", "empty"]
       }
     },
+    "GuestUpsell": {
+      "description": "Presentational sign-in upsell card for guest-gated features. Callers gate on useAuth().isAuthenticated; the card itself has no auth logic and its CTA navigates to the register page by default.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/GuestUpsell/GuestUpsell.stories.tsx",
+        "states": ["default"]
+      },
+      "props": {
+        "title": { "type": "string", "required": true, "description": "Card heading" },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "Supporting copy explaining the registered-user benefit"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Leading emoji/icon glyph shown before the title"
+        },
+        "ctaLabel": { "type": "string", "default": "Create an account to unlock ▸" },
+        "to": {
+          "type": "string",
+          "default": "register_page",
+          "description": "Route to navigate to on CTA click"
+        }
+      }
+    },
     "FilterControls": {
       "description": "Filter bar with multiple FilterChips.",
       "importPath": "shared/components",

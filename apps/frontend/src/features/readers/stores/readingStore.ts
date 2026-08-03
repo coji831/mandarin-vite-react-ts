@@ -139,6 +139,11 @@ export const useReadingStore = create<ReadingStore>()(
         next.add(passageId);
         set({ completedPassages: next });
 
+        // Bug 2: guests keep the session-local completion badge but do NOT
+        // POST to the backend (optionalAuth would 401 and burn a refresh
+        // attempt per completion). Only authenticated users persist.
+        if (!get().isAuthenticated) return;
+
         // Async backend sync — silent retry, never block reading
         silentRetry(() => readingProgressService.completePassage(passageId));
       },
