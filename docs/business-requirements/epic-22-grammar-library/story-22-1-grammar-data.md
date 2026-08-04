@@ -1,6 +1,6 @@
 # Story 22.1: Grammar Data
 
-**Last Update:** August 4, 2026
+**Last Update:** August 5, 2026 (Story 22.1 complete — grammar data authored + hash-gated seed delta-sync delivered)
 
 ## Description
 
@@ -14,12 +14,12 @@ This is the data-first story of the epic. It converts the platform's authoritati
 
 ## Acceptance Criteria
 
-- [ ] ≥21 grammar patterns authored in `content/seed/phase2/grammar-patterns.json`, matching the KB-sourced family in the epic BR Background table (Phases 2/3/4 per `adult-mandarin-learning-roadmap.md`, HSK tags).
-- [ ] Each pattern has ≥3 example sentences with Chinese, pinyin, and English; each example carries a `segments` array of clickable tokens (`text`, `pinyin`, `gloss`, `entityType`, `entityId`) where `entityId` references the target entity's `content_id` (e.g., `ch_XXXX` / `w_XXXXX`).
-- [ ] Prisma models `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` added via migration (`npm run db:migrate`, never `db push`) per `prisma-schema-changes.instructions.md`.
-- [ ] Pre-adaptation fields present on all three models: internal `id` (uuid) + unique `content_id` (`gr_XXXX`) + `content_version Int @default(1)` + `metadata Json?`; example/junction rows reference `content_id`, not internal auto IDs.
-- [ ] Seed steps added in dependency order (GrammarPattern → GrammarExample → GrammarPatternRelation) and idempotent (`skipDuplicates` keyed on the unique `content_id`); post-seed verification passes (SQL counts ≥ 21 / ≥ 63 / ≥ 0 and zero orphan examples).
-- [ ] `content/manifest.json` updated in full by 22.1: declare the `grammar` block (`files: ["grammar-patterns.json"]`, `served_via: "db"`) and bump `entity_counts.grammar` to ≥21 after the seed populates (Story 22.2 only verifies the count/files — no edit there).
+- [x] ≥21 grammar patterns authored in `content/seed/phase2/grammar-patterns.json`, matching the KB-sourced family in the epic BR Background table (Phases 2/3/4 per `adult-mandarin-learning-roadmap.md`, HSK tags).
+- [x] Each pattern has ≥3 example sentences with Chinese, pinyin, and English; each example carries a `segments` array of clickable tokens (`text`, `pinyin`, `gloss`, `entityType`, `entityId`) where `entityId` references the target entity's `content_id` (e.g., `ch_XXXX` / `w_XXXXX`).
+- [x] Prisma models `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` added via migration (`npm run db:migrate`, never `db push`) per `prisma-schema-changes.instructions.md`.
+- [x] Pre-adaptation fields present on all three models: internal `id` (uuid) + unique `content_id` (`gr_XXXX`) + `content_version Int @default(1)` + `metadata Json?`; example/junction rows reference `content_id`, not internal auto IDs.
+- [x] Seed steps added in dependency order (GrammarPattern → GrammarExample → GrammarPatternRelation) and idempotent via the **hash-gated delta sync** (`syncGrammar` — unchanged rows write 0, edits propagate and bump `content_version`); post-seed verification passes (SQL counts ≥ 21 / ≥ 63 / ≥ 0 and zero orphan examples).
+- [x] `content/manifest.json` updated in full by 22.1: declare the `grammar` block (`files: ["grammar-patterns.json"]`, `served_via: "db"`) and bump `entity_counts.grammar` to ≥21 after the seed populates (Story 22.2 only verifies the count/files — no edit there).
 
 ## Business Rules
 
@@ -40,7 +40,7 @@ This is the data-first story of the epic. It converts the platform's authoritati
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
-- **Merge Date**: TBD
+- **Status**: Complete
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
 - **Key Commit**: TBD

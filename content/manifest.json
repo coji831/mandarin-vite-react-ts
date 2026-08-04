@@ -16,7 +16,7 @@
     "characters": 2971,
     "radicals": 20,
     "words": 11092,
-    "grammar": 0,
+    "grammar": 21,
     "chengyu": 0,
     "pinyin": 50,
     "tones": 5
@@ -52,6 +52,10 @@
   },
   "words": {
     "files": ["index.json", "words.json"]
+  },
+  "grammar": {
+    "files": ["grammar-patterns.json"],
+    "served_via": "db"
   },
   "pinyin": {
     "files": ["pinyin.json", "index.json", "pinyin-character-map.json"],

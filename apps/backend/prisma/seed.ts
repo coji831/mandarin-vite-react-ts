@@ -3,7 +3,8 @@
  * @description Database seed script — Phase 3 bulk-insert pipeline.
  *
  * Reads per-table JSON files from content/seed/phase2/ and bulk-inserts
- * into the database using prisma.<model>.createMany().
+ * into the database using the hash-gated delta sync (syncTable / syncDerived /
+ * syncGrammar) — see sync-helpers.ts. Steady-state re-runs write 0 rows.
  *
  * Run via: npx prisma db seed (from apps/backend) — uses "seed" config in package.json
  * Or:       npx tsx prisma/seed.ts (with DATABASE_URL set)
@@ -15,7 +16,7 @@
  *   4. PinyinPhoneme          ← no FK deps (50 records)
  *   5. TonePair               ← no FK deps (6 records)
  *   6. ToneRule               ← no FK deps (3 records)
- *   7. PinyinSyllable         ← no FK deps (clears + reinserts)
+ *   7. PinyinSyllable         ← no FK deps (hash-gated delta sync)
  *   8. MeasureWord            ← no FK deps
  *   9. Component              ← no FK deps (1,777 records)
  *   10. Passage               ← no FK deps
@@ -35,9 +36,14 @@
  *   24. PhoneticCluster       ← FK → Component
  *   25. PhoneticClusterMember ← FK → PhoneticCluster + Character
  *   26. Test users            — dev only
+ *   27. GrammarPattern          ← no FK deps (21 KB-sourced patterns; unique content_id "gr_XXXX")
+ *   28. GrammarExample          ← FK → GrammarPattern.content_id ("gr_XXXX_exN")
+ *   29. GrammarPatternRelation  ← FK → GrammarPattern.content_id (both ends)
  *
  *   Post-seed: VALIDATE "CharacterRadical_radicalId_fkey" (created NOT VALID by
  *   migration 20260731045648_add_reference_tables — see docs/guides/data/seed-pipeline.md §2).
+ *   Post-seed: Grammar verification (patterns ≥ 21 / examples ≥ 63 / relations ≥ 0
+ *   + FK-orphan check) — see the SQL block near the end of main().
  */
 
 import path from "path";
@@ -45,13 +51,36 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import bcrypt from "bcrypt";
 import { prisma } from "../scripts/client.js";
+import {
+  syncTable,
+  syncDerived,
+  syncCharacter,
+  syncGrammar,
+  mapWordHskLevels,
+  mapWordRows,
+  wordCfg,
+  characterRadicalCfg,
+  componentCfg,
+  derivedConfigs,
+  measureWordCfg,
+  measureWordWordCfg,
+  passageCfg,
+  phoneticClusterCfg,
+  pinyinPhonemeCfg,
+  pinyinSyllableCfg,
+  radicalCfg,
+  strokeCategoryCfg,
+  strokeCategoryOrderRuleCfg,
+  strokeExtendedTypeCfg,
+  strokeOrderRuleCfg,
+  toneCfg,
+  tonePairCfg,
+  toneRuleCfg,
+} from "./sync-helpers.js";
 
 // ── Paths ──────────────────────────────────────────────────────────────────
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PHASE2_DIR = path.resolve(__dirname, "../../../content/seed/phase2/");
-
-// ── Config ─────────────────────────────────────────────────────────────────
-const CHUNK_SIZE = 5_000;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -64,31 +93,13 @@ function loadJson<T>(filename: string): T[] {
   return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T[];
 }
 
-async function seedTable<T>(
-  label: string,
-  prismaModel: keyof typeof prisma,
-  data: T[],
-  options?: { chunkSize?: number },
-): Promise<number> {
-  if (data.length === 0) {
-    console.log(`  ⏭️  ${label}: 0 records — skipping`);
-    return 0;
+function loadJsonObject<T>(filename: string): T | null {
+  const filePath = path.join(PHASE2_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    console.warn(`  ⚠️  File not found: ${filename} — treating as empty`);
+    return null;
   }
-
-  const chunk = options?.chunkSize ?? CHUNK_SIZE;
-  let total = 0;
-
-  for (let i = 0; i < data.length; i += chunk) {
-    const batch = data.slice(i, i + chunk);
-    await (prisma[prismaModel] as any).createMany({
-      data: batch,
-      skipDuplicates: true,
-    });
-    total += batch.length;
-  }
-
-  console.log(`  ✅ ${label}: ${total} records`);
-  return total;
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T;
 }
 
 // ── Data interfaces (Phase 2 file shapes) ──────────────────────────────────
@@ -115,14 +126,36 @@ interface Phase2Passage {
   metadata: { wordCount: number; uniqueChars: number };
 }
 
-interface Phase2Word {
-  id: string;
-  simplified: string;
-  pinyin: string | null;
-  meaning: string | null;
+// ── Phase 2 grammar file shape (Epic 22 — Story 22.1) ──
+// grammar-patterns.json = { patterns: GrammarPatternRow[], relations: GrammarRelationRow[] }
+// where each pattern nests its own examples (GrammarExampleRow). The seed flattens
+// these into the three Prisma tables in dependency order.
+interface GrammarPatternRow {
+  content_id: string;
+  name: string;
+  structure: string;
+  explanation: string;
+  phase: number;
   hskLevel: number | null;
-  frequencyRank: number | null;
-  wordClass: string | null;
+  sortOrder: number;
+  metadata?: Record<string, unknown> | null;
+  examples?: GrammarExampleRow[];
+}
+
+interface GrammarExampleRow {
+  content_id: string;
+  chinese: string;
+  pinyin: string;
+  english: string;
+  sortOrder: number;
+  segments: unknown[];
+}
+
+interface GrammarRelationRow {
+  fromPatternContentId: string;
+  toPatternContentId: string;
+  relationType: string;
+  metadata?: Record<string, unknown> | null;
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -165,115 +198,65 @@ async function main() {
   console.log(`   Loaded ${totalEntries} total entries across 25 files\n`);
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 1. Character (103K — chunked) — no FK deps
-  //    Map readings format and coreMeaning → definition
+  // 1. Character (103K — bulk hash-gate) — no FK deps.
+  //    Routed through syncCharacter: syncTable's bulk path (>5K threshold →
+  //    chunked raw INSERT ... ON CONFLICT DO UPDATE gated on content_hash),
+  //    then the deferred 2-pass phonetic linking (which does NOT touch
+  //    content_hash). Map readings format and coreMeaning → definition.
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📄 Step 1/26: Seeding Character...");
-  // phoneticComponentId references another Character by its ch_-prefixed ID
-  // (e.g., "ch_20174"). It is intentionally omitted from the bulk INSERT:
-  // Character is chunked, and a chunked createMany cannot guarantee the
-  // referenced row already exists (cross-chunk FK). We link it in a dedicated
-  // update pass right after seeding (see below).
-  const characterData = phase2.characters.map((c) => ({
-    id: c.id,
-    glyph: c.glyph,
-    strokeCount: c.strokeCount ?? 0,
-    classification: c.classification,
-    hskLevel: c.hskLevel,
-    frequencyRank: c.frequencyRank,
-    definition: c.coreMeaning || null,
-    readings: (c.readings || []).map((r) => ({
-      pinyin: r.pinyin,
-      tone: r.tone,
-      type: r.type,
-      meaning: r.coreMeaning || null,
-    })),
-    etymology: c.etymology,
-    commonWords: c.commonWords || [],
-  }));
-  await seedTable("Character", "character", characterData);
-
-  // ── Link phonetic components (self-referential FK) ───────────────────────
-  // Character.phoneticComponentId → Character.id. Phase 2 characters.json
-  // carries ch_-prefixed target IDs (validated by verify-data-lifecycle.ts
-  // deep check #6). All referenced targets exist in the same file, so once
-  // every Character row is inserted, these updates satisfy the FK. Chunked
-  // transaction keeps the batch below PG parameter limits.
-  //
-  // The default interactive-transaction timeout is 5000 ms — far too short for
-  // 1000 UPDATEs over a remote (Neon pooler) connection. Use a generous
-  // timeout + smaller batches so the linking pass survives live-DB seeds.
-  const withPhonetic = phase2.characters.filter((c) => c.phoneticComponentId != null);
-  if (withPhonetic.length > 0) {
-    console.log(`  🔗 Linking phoneticComponentId for ${withPhonetic.length} characters...`);
-    for (let i = 0; i < withPhonetic.length; i += 500) {
-      const batch = withPhonetic.slice(i, i + 500);
-      await prisma.$transaction(
-        batch.map((c) =>
-          prisma.character.update({
-            where: { id: c.id },
-            data: { phoneticComponentId: c.phoneticComponentId },
-          }),
-        ),
-        { timeout: 120_000 },
-      );
-    }
-    console.log(`  ✅ Linked phoneticComponentId for ${withPhonetic.length} characters`);
-  }
+  console.log("📄 Step 1/29: Syncing Character (hash-gated delta sync)...");
+  await syncCharacter(prisma, phase2.characters);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 2. Radical (20) — no FK deps. Reference table (all-in-DB).
-  //    Business-key PK (rad_XXXX) → idempotent via createMany skipDuplicates.
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📛 Step 2/26: Seeding Radical...");
-  await seedTable("Radical", "radical", phase2.radicals);
+  console.log("📛 Step 2/29: Syncing Radical...");
+  await syncTable(prisma, radicalCfg, phase2.radicals);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 3. Tone (5) — no FK deps. Reference table.
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🎼 Step 3/26: Seeding Tone...");
-  await seedTable("Tone", "tone", phase2.tones);
+  console.log("🎼 Step 3/29: Syncing Tone...");
+  await syncTable(prisma, toneCfg, phase2.tones);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 4. PinyinPhoneme (50) — no FK deps. Reference table (18 init + 32 fin).
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔡 Step 4/26: Seeding PinyinPhoneme...");
-  await seedTable("PinyinPhoneme", "pinyinPhoneme", phase2.pinyinPhonemes);
+  console.log("🔡 Step 4/29: Syncing PinyinPhoneme...");
+  await syncTable(prisma, pinyinPhonemeCfg, phase2.pinyinPhonemes);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 5. TonePair (6) — no FK deps. Tone-sandhi example pairs.
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🎚️ Step 5/26: Seeding TonePair...");
-  await seedTable("TonePair", "tonePair", phase2.tonePairs);
+  console.log("🎚️ Step 5/29: Syncing TonePair...");
+  await syncTable(prisma, tonePairCfg, phase2.tonePairs);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
   // 6. ToneRule (3) — no FK deps. Tone-sandhi rules (examples as Json).
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📐 Step 6/26: Seeding ToneRule...");
-  await seedTable("ToneRule", "toneRule", phase2.toneRules);
+  console.log("📐 Step 6/29: Syncing ToneRule...");
+  await syncTable(prisma, toneRuleCfg, phase2.toneRules);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 7. PinyinSyllable (2K) — no FK deps (clear first for idempotency)
-  //    Clears PinyinCharacterMapping too (FK depends on PinyinSyllable)
+  // 7. PinyinSyllable (2K) — no FK deps (hash-gated delta sync)
+  //    (PinyinCharacterMapping is a Bucket-B derived projection, rebuilt at step 21)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🎵 Step 7/26: Seeding PinyinSyllable...");
-  await prisma.$executeRawUnsafe('DELETE FROM "PinyinCharacterMapping"');
-  console.log("  🧹 Cleared PinyinCharacterMapping");
-  await prisma.$executeRawUnsafe('DELETE FROM "PinyinSyllable"');
-  console.log("  🧹 Cleared PinyinSyllable");
-  await seedTable("PinyinSyllable", "pinyinSyllable", phase2.pinyinSyllables);
+  console.log("🎵 Step 7/29: Syncing PinyinSyllable...");
+  // No pre-clear needed — the hash-gated diff handles additions/edits, and
+  // PinyinCharacterMapping (a Bucket-B derived projection) is rebuilt at step 21.
+  await syncTable(prisma, pinyinSyllableCfg, phase2.pinyinSyllables);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 3. MeasureWord (52) — no FK deps
+  // 8. MeasureWord (52) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📏 Step 8/26: Seeding MeasureWord...");
+  console.log("📏 Step 8/29: Syncing MeasureWord...");
   // Map Phase 2 fields: glyph→simplified, category, usageNote; drop hskLevel and nouns (go to MeasureWordWord)
   const measureWordData = phase2.measureWords.map((mw: any) => ({
     id: mw.id,
@@ -283,21 +266,21 @@ async function main() {
     category: mw.category ?? null,
     usageNote: mw.usageNote ?? null,
   }));
-  await seedTable("MeasureWord", "measureWord", measureWordData);
+  await syncTable(prisma, measureWordCfg, measureWordData);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 4. Component (1,777) — no FK deps
+  // 9. Component (1,777) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 9/26: Seeding Component...");
-  await seedTable("Component", "component", phase2.componentEntries);
+  console.log("🧩 Step 9/29: Syncing Component...");
+  await syncTable(prisma, componentCfg, phase2.componentEntries);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 5. Passage (6) — no FK deps
+  // 10. Passage (6) — no FK deps
   //    Enrich with passageIndex, knownWordRatio, targetHskLevel, sentence index
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📖 Step 10/26: Seeding Passage...");
+  console.log("📖 Step 10/29: Seeding Passage...");
   const passageData = phase2.demoPassages.map((p, i) => {
     const enrichedSentences = (p.content?.sentences || []).map((s, si) => ({
       index: si,
@@ -323,157 +306,126 @@ async function main() {
       targetHskLevel: p.hskLevel,
     };
   });
-  await seedTable("Passage", "passage", passageData);
+  await syncTable(prisma, passageCfg, passageData);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 6. Word (11K — chunked) — no FK deps
-  //    Strip extra fields not in Prisma model (characters[], sequenceOrder[], etc.)
+  // 11. Word (11K) — no FK deps.
+  //     Hash-gated delta sync. First run backfills content_hash (bulk path —
+  //     10,943 > 5,000 threshold); steady state writes 0.
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("📝 Step 11/26: Seeding Word...");
-  const wordData: Phase2Word[] = phase2.words.map((w: any) => ({
-    id: w.id,
-    simplified: w.simplified,
-    pinyin: w.pinyin,
-    meaning: w.meaning,
-    hskLevel: w.hskLevel,
-    frequencyRank: w.frequencyRank,
-    wordClass: w.wordClass,
-  }));
-  await seedTable("Word", "word", wordData);
+  console.log("📝 Step 11/29: Syncing Word (hash-gated delta sync)...");
+  const wordData = mapWordRows(phase2.words);
+  await syncTable(prisma, wordCfg, wordData);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 7. StrokeCategory (5) — no FK deps
+  // 12. StrokeCategory (5) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 12/26: Seeding StrokeCategory...");
+  console.log("🔴 Step 12/29: Syncing StrokeCategory...");
   const strokeCategories = loadJson<any>("strokes-categories.json");
-  await seedTable("StrokeCategory", "strokeCategory", strokeCategories);
+  await syncTable(prisma, strokeCategoryCfg, strokeCategories);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 8. StrokeExtendedType (8) — FK → StrokeCategory
+  // 13. StrokeExtendedType (8) — FK → StrokeCategory
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 13/26: Seeding StrokeExtendedType...");
+  console.log("🔴 Step 13/29: Syncing StrokeExtendedType...");
   const strokeExtendedTypes = loadJson<any>("strokes-extended-types.json");
-  await seedTable("StrokeExtendedType", "strokeExtendedType", strokeExtendedTypes);
+  await syncTable(prisma, strokeExtendedTypeCfg, strokeExtendedTypes);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 9. StrokeOrderRule (5) — no FK deps
+  // 14. StrokeOrderRule (5) — no FK deps
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 14/26: Seeding StrokeOrderRule...");
+  console.log("🔴 Step 14/29: Syncing StrokeOrderRule...");
   const strokeOrderRules = loadJson<any>("strokes-order-rules.json");
-  await seedTable("StrokeOrderRule", "strokeOrderRule", strokeOrderRules);
+  await syncTable(prisma, strokeOrderRuleCfg, strokeOrderRules);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 10. StrokeCategoryOrderRule (~10-15) — FK → StrokeCategory + StrokeOrderRule
+  // 15. StrokeCategoryOrderRule (~10-15) — FK → StrokeCategory + StrokeOrderRule
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔴 Step 15/26: Seeding StrokeCategoryOrderRule...");
+  console.log("🔴 Step 15/29: Syncing StrokeCategoryOrderRule...");
   const categoryRules = loadJson<any>("strokes-category-rules.json");
-  await seedTable("StrokeCategoryOrderRule", "strokeCategoryOrderRule", categoryRules);
+  await syncTable(prisma, strokeCategoryOrderRuleCfg, categoryRules);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 11. CharacterReading (15K — chunked) — FK → Character
+  // 16. CharacterReading (15K — chunked) — FK → Character
   //    Pre-clear for idempotency (no unique constraint beyond id)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔤 Step 16/26: Seeding CharacterReading...");
-  console.log("  🧹 Cleared CharacterReading (pre-clear for idempotency)");
-  await prisma.characterReading.deleteMany();
-  await seedTable("CharacterReading", "characterReading", phase2.characterReadings);
+  console.log("🔤 Step 16/29: Syncing CharacterReading (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.characterReading, phase2.characterReadings);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 12. CharacterRadical (2.8K) — FK → Character
+  // 17. CharacterRadical (2.8K) — FK → Character
   //    @@unique([characterGlyph, radicalId]) requires skip-duplicate logic
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 17/26: Seeding CharacterRadical...");
-  const existingRadicals = new Set(
-    (
-      await prisma.characterRadical.findMany({
-        select: { characterGlyph: true, radicalId: true },
-      })
-    ).map((r) => `${r.characterGlyph}_${r.radicalId}`),
-  );
-  const newRadicals = phase2.characterRadicals.filter(
-    (r: { characterGlyph: string; radicalId: string }) =>
-      !existingRadicals.has(`${r.characterGlyph}_${r.radicalId}`),
-  );
-  await seedTable("CharacterRadical", "characterRadical", newRadicals);
+  console.log("🔗 Step 17/29: Syncing CharacterRadical (composite key)...");
+  await syncTable(prisma, characterRadicalCfg, phase2.characterRadicals);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 13. CharacterHskLevel (3K) — FK → Character (@id on characterId)
+  // 18. CharacterHskLevel (3K) — FK → Character (@id on characterId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 18/26: Seeding CharacterHskLevel...");
-  await seedTable("CharacterHskLevel", "characterHskLevel", phase2.characterHskLevels, {
-    chunkSize: 1_000,
-  });
+  console.log("🏷️ Step 18/29: Syncing CharacterHskLevel (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.characterHskLevel, phase2.characterHskLevels);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 14. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
+  // 19. WordHskLevel (11K — chunked) — FK → Word (@id on wordId)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🏷️ Step 19/26: Seeding WordHskLevel...");
-  const wordHskData = phase2.wordHskLevels.map((whl: any) => ({
-    wordId: whl.wordId,
-    hskLevel: whl.hskLevel,
-    hskVersion: whl.hskVersion || "3.0",
-  }));
-  await seedTable("WordHskLevel", "wordHskLevel", wordHskData);
+  console.log("🏷️ Step 19/29: Syncing WordHskLevel (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.wordHskLevel, mapWordHskLevels(phase2.wordHskLevels));
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 15. WordCharacter (22K — chunked) — FK → Word + Character
+  // 20. WordCharacter (22K — chunked) — FK → Word + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 20/26: Seeding WordCharacter...");
-  await seedTable("WordCharacter", "wordCharacter", phase2.wordCharacters);
+  console.log("🔗 Step 20/29: Syncing WordCharacter (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.wordCharacter, phase2.wordCharacters);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 16. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
-  //     PinyinCharacterMapping was already cleared in step 2, so just insert
+  // 21. PinyinCharacterMapping (11K — chunked) — FK → PinyinSyllable + Character
+  //     Bucket-B derived projection — SeedCheckpoint-gated delete+rebuild (no pre-clear needed)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 21/26: Seeding PinyinCharacterMapping...");
-  await seedTable(
-    "PinyinCharacterMapping",
-    "pinyinCharacterMapping",
-    phase2.pinyinCharacterMappings,
-  );
+  console.log("🔗 Step 21/29: Syncing PinyinCharacterMapping (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.pinyinCharacterMapping, phase2.pinyinCharacterMappings);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 17. MeasureWordWord (135) — FK → MeasureWord + Word
+  // 22. MeasureWordWord (135) — FK → MeasureWord + Word
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 22/26: Seeding MeasureWordWord...");
-  await seedTable("MeasureWordWord", "measureWordWord", phase2.measureWordWords);
+  console.log("🔗 Step 22/29: Syncing MeasureWordWord (composite key)...");
+  await syncTable(prisma, measureWordWordCfg, phase2.measureWordWords);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 18. CharacterComponent (15,742) — FK → Character + Component
+  // 23. CharacterComponent (15,742) — FK → Character + Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🧩 Step 23/26: Seeding CharacterComponent...");
-  await seedTable("CharacterComponent", "characterComponent", phase2.characterComponents);
+  console.log("🧩 Step 23/29: Syncing CharacterComponent (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.characterComponent, phase2.characterComponents);
   console.log("");
 
   // ── 19. PhoneticCluster — FK → Component
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔊 Step 24/26: Seeding PhoneticCluster...");
-  await seedTable("PhoneticCluster", "phoneticCluster", phase2.phoneticClusters);
+  console.log("🔊 Step 24/29: Syncing PhoneticCluster...");
+  await syncTable(prisma, phoneticClusterCfg, phase2.phoneticClusters);
   console.log("");
 
   // ── 20. PhoneticClusterMember — FK → PhoneticCluster + Character
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("🔗 Step 25/26: Seeding PhoneticClusterMember...");
-  await seedTable("PhoneticClusterMember", "phoneticClusterMember", phase2.phoneticClusterMembers);
+  console.log("🔗 Step 25/29: Syncing PhoneticClusterMember (derived rebuild)...");
+  await syncDerived(prisma, derivedConfigs.phoneticClusterMember, phase2.phoneticClusterMembers);
   console.log("");
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 21. Test users (dev only)
+  // 26. Test users (dev only)
   // ──────────────────────────────────────────────────────────────────────────
-  console.log("👤 Step 26/26: Creating test users...");
+  console.log("👤 Step 26/29: Creating test users...");
   if (process.env.NODE_ENV !== "production") {
     await prisma.user.upsert({
       where: { email: "test@example.com" },
@@ -498,6 +450,71 @@ async function main() {
     console.log("  ✅ Test users created\n");
   } else {
     console.log("  ⏭️  Skipping test users (production)\n");
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 22. Grammar (Epic 22 — Story 22.1) — Steps 27–29 via the hash-gated delta
+  //     sync (syncGrammar). Patterns → Examples → Relations in ONE interactive
+  //     transaction. Replaces the blind createMany skipDuplicates path (which
+  //     silently kept stale edits — the Story 22.1 bug) with a content-hash
+  //     diff: unchanged rows write 0, edited rows propagate + bump
+  //     content_version, NULL-hash rows reconcile without a version bump.
+  // ──────────────────────────────────────────────────────────────────────────
+  const grammar = loadJsonObject<{
+    patterns: GrammarPatternRow[];
+    relations: GrammarRelationRow[];
+  }>("grammar-patterns.json");
+
+  if (grammar) {
+    console.log("📚 Steps 27–29/29: Syncing Grammar (Pattern → Example → Relation)...");
+    await syncGrammar(prisma, grammar);
+    console.log("");
+  } else {
+    console.log("  ⏭️  grammar-patterns.json not found — skipping grammar sync\n");
+  }
+
+  // ── Post-seed grammar verification (counts + FK integrity) ──
+  // Counts are informational — the seed stays safe to re-run regardless. The
+  // FK-orphan check must return 0 rows or the seed data has a referential bug.
+  console.log("📊 Post-seed: Grammar counts + FK integrity...");
+  const grammarCounts = await prisma.$queryRaw<
+    Array<{
+      patternCount: bigint;
+      exampleCount: bigint;
+      relationCount: bigint;
+      orphanCount: bigint;
+    }>
+  >`
+    SELECT
+      (SELECT COUNT(*) FROM "GrammarPattern") AS "patternCount",
+      (SELECT COUNT(*) FROM "GrammarExample") AS "exampleCount",
+      (SELECT COUNT(*) FROM "GrammarPatternRelation") AS "relationCount",
+      (SELECT COUNT(*) FROM "GrammarExample" e
+        LEFT JOIN "GrammarPattern" p ON e."patternContentId" = p."content_id"
+        WHERE p."content_id" IS NULL) AS "orphanCount"
+  `;
+  const gc = grammarCounts[0] ?? {
+    patternCount: 0n,
+    exampleCount: 0n,
+    relationCount: 0n,
+    orphanCount: 0n,
+  };
+  const toNum = (v: bigint): number => Number(v);
+  if (toNum(gc.patternCount) < 21 || toNum(gc.exampleCount) < 63) {
+    console.warn(
+      `  ⚠️  Grammar below authoring targets (patterns=${toNum(gc.patternCount)}, examples=${toNum(gc.exampleCount)}) — expected ≥21 / ≥63`,
+    );
+  } else {
+    console.log(
+      `  ✅ Grammar counts OK: patterns=${toNum(gc.patternCount)}, examples=${toNum(gc.exampleCount)}, relations=${toNum(gc.relationCount)}`,
+    );
+  }
+  if (toNum(gc.orphanCount) > 0) {
+    console.warn(
+      `  ⚠️  ${toNum(gc.orphanCount)} orphan GrammarExample rows (patternContentId has no GrammarPattern)`,
+    );
+  } else {
+    console.log("  ✅ Grammar FK integrity OK: 0 orphan examples\n");
   }
 
   // ── Post-seed FK validation (part of step 26 / post-seed verification) ──

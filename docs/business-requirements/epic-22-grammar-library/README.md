@@ -34,29 +34,29 @@ No grammar content belongs to Phase 1 (Blueprint = pinyin/strokes only). Within 
 
 **KB-sourced pattern set.** The seed dataset authorizes the following pattern family — **19 patterns directly sourced from §7 / the roadmap + 2 supplementary HSK-tier advanced patterns (比, 是...的) = 21 across the three grammar phases**. The story 22.1 authoring agent may expand within these families (e.g., per-HSK sub-splits) but must not introduce families outside §7 / the roadmap:
 
-| Phase                                  | Family (KB source)                          | Pattern                                             | Example                      |
-| -------------------------------------- | ------------------------------------------- | --------------------------------------------------- | ---------------------------- |
-| 2 — Core 300 (basic structures)        | Word order & tense (§7)                     | SVO basic word order                                | 我打人                       |
-|                                        |                                             | No inflection — context/time words carry tense (§7) | 我昨天吃 (吃 = eat/eats/ate) |
-|                                        |                                             | Topic-comment (§7)                                  | 这本书我看过                 |
-|                                        |                                             | Time placement (roadmap Phase 2)                    | 我今天去学校                 |
-|                                        | Questions (§7 + roadmap)                    | 吗 yes/no questions                                 | 你好吗?                      |
-|                                        |                                             | A-not-A (V不V)                                      | 你吃不吃?                    |
-|                                        | Measure words (§7)                          | 个 general + noun-specific (本/张...)               | 一个人 / 一本书              |
-|                                        | Serial verb constructions (§7)              |                                                     | 我去买东西                   |
-|                                        | Pro-drop (§7)                               |                                                     | (我)来了                     |
-| 3 — Network (particles & conjunctions) | Aspect particles (§7 + roadmap)             | 了 perfective                                       | 我吃了                       |
-|                                        |                                             | 着 durative                                         | 他吃着饭                     |
-|                                        |                                             | 过 experiential                                     | 我看过                       |
-|                                        |                                             | 正在 progressive                                    | 我正在学习                   |
-|                                        | 的/地/得 (§7)                               | 的 possessive/modifier                              | 我的书                       |
-|                                        |                                             | 地 adverb marker                                    | 慢慢地走                     |
-|                                        |                                             | 得 resultative complement                           | 做得很好                     |
-|                                        | Conjunctions (roadmap Phase 3)              | 因为...所以 cause-consequence                       | 因为我累，所以不去           |
-| 4 — Advanced Fluidity (complex syntax) | Disposal & passive (roadmap Phase 4)        | 把 (bǎ) disposal                                    | 我把书放在桌子上             |
-|                                        |                                             | 被 (bèi) passive                                    | 他被打了                     |
-|                                        | Supplementary HSK-tier (same advanced tier) | 比 (bǐ) comparison                                  | 我比他高                     |
-|                                        |                                             | 是...的 emphasis                                    | 我是昨天来的                 |
+| Phase                                  | Family (KB source)                          | Pattern                                             | Example                                          |
+| -------------------------------------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------------ |
+| 2 — Core 300 (basic structures)        | Word order & tense (§7)                     | SVO basic word order                                | 我打人                                           |
+|                                        |                                             | No inflection — context/time words carry tense (§7) | 我昨天吃饭了 (吃 = eat/eats/ate; 了 = completed) |
+|                                        |                                             | Topic-comment (§7)                                  | 这本书我看过                                     |
+|                                        |                                             | Time placement (roadmap Phase 2)                    | 我今天去学校                                     |
+|                                        | Questions (§7 + roadmap)                    | 吗 yes/no questions                                 | 你好吗?                                          |
+|                                        |                                             | A-not-A (V不V)                                      | 你吃不吃?                                        |
+|                                        | Measure words (§7)                          | 个 general + noun-specific (本/张...)               | 一个人 / 一本书                                  |
+|                                        | Serial verb constructions (§7)              |                                                     | 我去买东西                                       |
+|                                        | Pro-drop (§7)                               |                                                     | (我)来了                                         |
+| 3 — Network (particles & conjunctions) | Aspect particles (§7 + roadmap)             | 了 perfective                                       | 我吃了                                           |
+|                                        |                                             | 着 durative                                         | 他吃着饭                                         |
+|                                        |                                             | 过 experiential                                     | 我看过                                           |
+|                                        |                                             | 正在 progressive                                    | 我正在学习                                       |
+|                                        | 的/地/得 (§7)                               | 的 possessive/modifier                              | 我的书                                           |
+|                                        |                                             | 地 adverb marker                                    | 慢慢地走                                         |
+|                                        |                                             | 得 resultative complement                           | 做得很好                                         |
+|                                        | Conjunctions (roadmap Phase 3)              | 因为...所以 cause-consequence                       | 因为我累，所以不去                               |
+| 4 — Advanced Fluidity (complex syntax) | Disposal & passive (roadmap Phase 4)        | 把 (bǎ) disposal                                    | 我把书放在桌子上                                 |
+|                                        |                                             | 被 (bèi) passive                                    | 他被打了                                         |
+|                                        | Supplementary HSK-tier (same advanced tier) | 比 (bǐ) comparison                                  | 我比他高                                         |
+|                                        |                                             | 是...的 emphasis                                    | 我是昨天来的                                     |
 
 **Market context.** Grammar references (e.g., Chinese Grammar Wiki, HSK grammar lists) are typically static tables. This feature differentiates by integrating with existing systems: HSK/phase tagging, Character Detail Hub cross-linking, and TTS audio — so grammar is discovered in context, not in isolation.
 

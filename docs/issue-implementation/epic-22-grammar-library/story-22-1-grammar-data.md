@@ -1,22 +1,27 @@
 # Implementation 22-1: Grammar Data
 
 > **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-1-grammar-data.md`
-> **Status:** Planned
-> **Last Update:** August 4, 2026
+> **Status:** ✅ Complete
+> **Last Update:** August 5, 2026
 
 ## Technical Scope
 
-Author the KB-sourced grammar dataset, add the three Prisma models with pre-adaptation fields and `gr_XXXX` business keys, generate the migration, add idempotent seed steps, wire authoring-time content validation, and own the full `content/manifest.json` edit (declare the `grammar` block + bump `entity_counts.grammar` after the seed populates). This story does **not** touch the backend module, routes, or any frontend code (those are 22.2 / 22.3).
+Author the KB-sourced grammar dataset, add the three Prisma models with pre-adaptation fields and `gr_XXXX` business keys, generate the migration, wire grammar into the **hash-gated delta sync** (`syncGrammar` in `apps/backend/prisma/sync-helpers.ts`), add authoring-time content validation, and own the full `content/manifest.json` edit (declare the `grammar` block + bump `entity_counts.grammar` after the seed populates). This story does **not** touch the backend module, routes, or any frontend code (those are 22.2 / 22.3).
 
 **Files:**
 
 - `content/seed/phase2/grammar-patterns.json` — **NEW**: authoring source (21 KB-sourced patterns, ≥3 examples each, `segments`, phase/HSK tags).
-- `apps/backend/prisma/schema.prisma` — **UPDATE**: add `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` (see "Complete Prisma Model Definitions" in the epic IMP).
-- `apps/backend/prisma/migrations/<timestamp>_add_grammar_models/` — **NEW** (generated via `npx prisma migrate dev --name add_grammar_models`).
-- `apps/backend/prisma/seed.ts` — **UPDATE**: 3 seed steps in dependency order (Pattern → Example → Relation) + post-seed SQL verification.
+- `apps/backend/prisma/schema.prisma` — **UPDATE**: add `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` (pre-adaptation fields) + `content_hash`/`content_version` on the grammar models (see "Complete Prisma Model Definitions" in the epic IMP).
+- `apps/backend/prisma/migrations/20260804154553_add_grammar_models/` + 5 hash-gate migrations — **NEW** (generated via `npx prisma migrate dev`; additive only — `content_hash CHAR(64)` on 21 tables + `SeedCheckpoint`).
+- `apps/backend/prisma/sync-helpers.ts` — **NEW**: `syncGrammar` (Patterns → Examples → Relations in ONE interactive transaction) + the generic hash-gated `syncTable`/`syncDerived` delta-sync shared with the rest of the seed pipeline.
+- `apps/backend/prisma/seed.ts` — **UPDATE**: steps 27–29 route through `syncGrammar` (hash-gated, all-or-nothing) + post-seed SQL verification.
 - `content/manifest.json` — **UPDATE**: declare `grammar.files: ["grammar-patterns.json"]` + `served_via: "db"` **and** bump `entity_counts.grammar` to ≥21 after the seed populates (full manifest edit owned by 22.1; 22.2 only verifies). `served_via: "db"` is non-normative (was only stamped on the WS1 reference tables).
 - `scripts/validate-grammar-content.ts` — **NEW**: authoring-time validation (mirrors `scripts/validate-radical-content.ts`).
+- `apps/backend/scripts/__tests__/validate-grammar-content.test.ts` — **NEW**: unit tests for the pure validators in `scripts/validate-grammar-content.ts`.
 - `apps/backend/tests/integration/grammar-seed.test.ts` — **NEW**: seed idempotency + schema-shape integration tests.
+- `apps/backend/tests/integration/grammar-delta.test.ts` — **NEW**: hash-gated delta integration tests (the Story 22.1 edit-propagates regression, `content_version` bump, NULL-hash reconcile, log-only removal).
+- `apps/backend/tests/integration/character-bulk-delta.test.ts` + `word-delta.test.ts` + `derived-delta.test.ts` — **NEW**: bulk/per-row/derived delta-sync integration tests (shared hash-gate machinery).
+- `apps/backend/prisma/__tests__/sync-helpers.test.ts` — **NEW**: unit tests for the hash/diff/classify/bulk-SQL logic.
 
 ## Implementation Details
 
@@ -95,20 +100,30 @@ npx prisma migrate dev --name add_grammar_models
 
 Never `prisma db push` (per `prisma-schema-changes.instructions.md`).
 
-### Seed steps (dependency order + idempotency)
+### Seed steps (hash-gated delta sync, dependency order)
 
-Append three steps to `apps/backend/prisma/seed.ts` using the existing `seedTable()` helper, in strict dependency order:
+Steps 27–29 route through `syncGrammar` in `apps/backend/prisma/sync-helpers.ts`
+— a **hash-gated delta sync** that replaces the old blind
+`createMany({ skipDuplicates })` write path (which silently kept stale edits —
+the Story 22.1 regression). It runs in strict dependency order inside ONE
+interactive transaction (a crash can't leave examples pointing at a missing
+pattern):
 
 ```typescript
 // GrammarPattern            ← no FK deps; unique content_id "gr_0001"
-await seedTable("GrammarPattern", "grammarPattern", patterns);
+await syncTable(tx, grammarPatternCfg, patterns, { ...opts, log });
 // GrammarExample            ← FK → GrammarPattern.content_id ("gr_0001_ex1")
-await seedTable("GrammarExample", "grammarExample", examples);
+await syncTable(tx, grammarExampleCfg, examples, { ...opts, log });
 // GrammarPatternRelation    ← FK → GrammarPattern.content_id (both ends)
-await seedTable("GrammarPatternRelation", "grammarPatternRelation", relations);
+await syncTable(tx, grammarRelationCfg, relations, { ...opts, log });
 ```
 
-Idempotency: the helper already calls `createMany({ data, skipDuplicates: true })`. Grammar has a **uuid PK + unique `content_id`**, so `skipDuplicates` keys on the unique `content_id` constraint — equivalent idempotency to the Radical business-key-PK approach, and a re-run of `npm run db:seed` is safe. Re-seeding after a content edit updates only new/changed rows.
+Idempotency: `syncGrammar` computes a per-row SHA-256 `content_hash` over the
+DB-bound payload and writes only the delta. **Unchanged rows → 0 writes**;
+edited rows propagate **and bump `content_version`**; NULL-hash rows
+(post-migration first run) reconcile without a version bump. A re-run of
+`npm run db:seed` is safe and idempotent, and re-seeding after a content edit
+updates exactly the changed rows.
 
 **Post-seed verification (SQL):**
 
@@ -150,7 +165,8 @@ metadata        Json?
 ├── Schema → GrammarPattern / GrammarExample / GrammarPatternRelation
 │   └── pre-adaptation: uuid id + unique content_id (gr_XXXX) + content_version + metadata
 ├── Migration → apps/backend/prisma/migrations/<ts>_add_grammar_models/
-├── Seed → prisma/seed.ts — 3 appended steps (idempotent, skipDuplicates on content_id)
+├── Seed → prisma/seed.ts steps 27–29 via syncGrammar (hash-gated delta sync,
+│         one interactive transaction — unchanged rows write 0, edits bump content_version)
 ├── Validation → scripts/validate-grammar-content.ts (authoring-time)
 └── Manifest → content/manifest.json grammar block declared + entity_counts.grammar bumped to ≥21 (full edit owned by 22.1; 22.2 verifies)
 
@@ -175,10 +191,13 @@ Solution: Grammar models follow the pre-adaptation spec exactly (uuid id + uniqu
          Radical/Character are NOT refactored here; the drift is flagged to the
          platform's data-architecture owner.
 
-Problem: Seed idempotency without a business-key PK (skipDuplicates traditionally keys
-         on the PK for Radical).
-Solution: skipDuplicates keys on the unique content_id constraint — createMany skips any
-         row that would violate a unique constraint. Re-running `npm run db:seed` is safe.
+Problem: Seed idempotency without a business-key PK — the old createMany({ skipDuplicates })
+         path silently kept stale edits (the Story 22.1 regression: an edited example never
+         reached the DB).
+Solution: Hash-gated delta sync — syncGrammar computes a per-row SHA-256 content_hash over
+         the DB-bound payload and writes only the delta (unchanged → 0 writes, edited →
+         update + content_version bump, NULL-hash → reconcile without bump). One interactive
+         transaction keeps Patterns → Examples → Relations all-or-nothing.
 
 Problem: Linguistic accuracy of explanations/examples (Severity: High).
 Solution: Author exclusively from KB §7 "Grammar Essentials" and the roadmap's phase
@@ -199,15 +218,16 @@ Solution: scripts/validate-grammar-content.ts cross-checks every non-null entity
 - [ ] All relative markdown links resolve (this story → `../README.md`, `story-22-2-grammar-backend-api.md`, `story-22-3-grammar-ui.md`, IMP twin)
 - [ ] Last Updated / Last Update date is current (August 4, 2026 — same commit as the edit)
 
-> **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
+> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — direct commit, no PR).
 
 ## Testing Implementation
 
 Per `testing-standards.instructions.md` (Testing Trophy):
 
 - **Unit** — validation-helper functions in `scripts/validate-grammar-content.ts`: phase-domain check, hskLevel bounds, `gr_XXXX` regex, segments-schema validator (happy path + 1 edge each).
-- **Integration (DB)** — `apps/backend/tests/integration/grammar-seed.test.ts`:
-  - seed idempotency: run the grammar seed steps twice → identical row counts;
+- **Integration (DB)** — `apps/backend/tests/integration/grammar-seed.test.ts` (schema shape + DB-level idempotency via the legacy createMany mechanism) and `apps/backend/tests/integration/grammar-delta.test.ts` (the real hash-gated path via `syncGrammar`):
+  - edit-propagates regression (Story 22.1): an edited example reaches the DB + `content_version` bumps to 2; unchanged rows untouched;
+  - seed idempotency: re-syncing an identical payload writes 0 rows and leaves `content_version`/`updatedAt` stable;
   - schema shape: seeded `GrammarPattern` rows expose uuid `id` + unique `content_id` (`gr_XXXX`) + `content_version = 1` + `metadata` nullable; examples carry `segments` and reference `patternContentId`;
   - post-seed counts ≥ 21 / ≥ 63 / ≥ 0 and zero orphan examples (FK integrity query);
   - cascade: deleting a pattern removes its examples and relation rows.
