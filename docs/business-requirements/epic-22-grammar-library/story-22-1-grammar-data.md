@@ -43,4 +43,4 @@ This is the data-first story of the epic. It converts the platform's authoritati
 - **Status**: Complete
 - **PR**: N/A (direct commit — no PR)
 - **Merge Date**: N/A
-- **Key Commit**: TBD
+- **Key Commit**: `ddf9236f`
