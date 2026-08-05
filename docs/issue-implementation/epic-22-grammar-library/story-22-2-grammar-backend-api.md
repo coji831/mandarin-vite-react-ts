@@ -166,7 +166,7 @@ async findByContentId(contentId: string): Promise<GrammarPatternDetail | null> {
 
 ### Service layer (`GrammarService`)
 
-Thin orchestration + validation + errors. All error messages follow `backend-error-messages.instructions.md` (`Failed to {action} {resource}`).
+Thin orchestration + validation + errors. All error messages follow `backend-error-messages.instructions.md` (`Failed to {action} {resource}`). The detail mapper is hardened for the 22.3 Grammar Hub (see the two guards below).
 
 ```typescript
 class GrammarService {
@@ -189,6 +189,41 @@ class GrammarService {
     if (!pattern) throw new NotFoundError("Failed to load grammar pattern", "NOT_FOUND");
     return mapDetail(pattern);
   }
+}
+
+// Detail mapping — 22.3 hardening (consumed by GrammarHub):
+// - `relatedFrom.filter((r) => r.toPattern !== null)` → relatedPatterns can never
+//   contain a null-id entry (a dead hub nav would throw on `toPattern!.content_id`).
+// - `Array.isArray(example.segments) ? ... : []` → segments is always an array
+//   (Postgres JSON null would crash the hub's `example.segments.map(...)`).
+function mapDetail(row: GrammarPatternDetailRow): GrammarPatternDetail {
+  return {
+    id: row.content_id,
+    name: row.name,
+    structure: row.structure,
+    explanation: row.explanation,
+    phase: row.phase,
+    hskLevel: row.hskLevel,
+    sortOrder: row.sortOrder,
+    examples: row.examples.map(mapExample),
+    relatedPatterns: row.relatedFrom
+      .filter((r) => r.toPattern !== null)
+      .map((r) => ({
+        id: r.toPattern!.content_id,
+        name: r.toPattern!.name,
+        relationType: r.relationType,
+      })),
+  };
+}
+
+function mapExample(example: GrammarPatternDetailRow["examples"][number]): GrammarExample {
+  return {
+    id: example.content_id,
+    chinese: example.chinese,
+    pinyin: example.pinyin,
+    english: example.english,
+    segments: Array.isArray(example.segments) ? (example.segments as GrammarSegment[]) : [],
+  };
 }
 ```
 

@@ -120,7 +120,11 @@ describe("GrammarController", () => {
   describe("getById (GET /v1/grammar/patterns/:id)", () => {
     it("returns the pattern detail with 200 for a valid gr_XXXX id", async () => {
       const res = makeRes();
-      mockService.getPattern.mockResolvedValue({ id: "gr_0018", examples: [], relatedPatterns: [] });
+      mockService.getPattern.mockResolvedValue({
+        id: "gr_0018",
+        examples: [],
+        relatedPatterns: [],
+      });
 
       await controller.getById(makeReq({}, { id: "gr_0018" }), res);
 
@@ -132,10 +136,7 @@ describe("GrammarController", () => {
     it("rejects a non-gr_XXXX id (e.g. an internal uuid) with 400 and never calls the service", async () => {
       const res = makeRes();
 
-      await controller.getById(
-        makeReq({}, { id: "550e8400-e29b-41d4-a716-446655440000" }),
-        res,
-      );
+      await controller.getById(makeReq({}, { id: "550e8400-e29b-41d4-a716-446655440000" }), res);
 
       expect(mockService.getPattern).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(400);
@@ -184,15 +185,13 @@ describe("grammarRoutes — route wiring + ROUTE_PATTERNS constants", () => {
     }
   });
 
-  it("binds ROUTE_PATTERNS.grammarPatterns and grammarPatternById(\":id\") verbatim", () => {
+  it('binds ROUTE_PATTERNS.grammarPatterns and grammarPatternById(":id") verbatim', () => {
     const paths = grammarRoutes.stack
       .map((layer) => layer.route?.path)
       .filter((p): p is string => typeof p === "string");
 
     expect(ROUTE_PATTERNS.grammarPatterns).toBe("/v1/grammar/patterns");
-    expect(ROUTE_PATTERNS.grammarPatternById("gr_0018")).toBe(
-      "/v1/grammar/patterns/gr_0018",
-    );
+    expect(ROUTE_PATTERNS.grammarPatternById("gr_0018")).toBe("/v1/grammar/patterns/gr_0018");
     expect(paths).toContain(ROUTE_PATTERNS.grammarPatterns);
     expect(paths).toContain(ROUTE_PATTERNS.grammarPatternById(":id"));
   });

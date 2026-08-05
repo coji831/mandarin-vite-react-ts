@@ -14,7 +14,10 @@
 
 import { createLogger } from "../../../shared/utils/logger.js";
 import { PAGINATION } from "@mandarin/shared-constants";
-import { GrammarRepository, type GrammarPatternDetailRow } from "../repositories/GrammarRepository.js";
+import {
+  GrammarRepository,
+  type GrammarPatternDetailRow,
+} from "../repositories/GrammarRepository.js";
 import {
   GrammarNotFoundError,
   GrammarValidationError,
@@ -84,10 +87,9 @@ export class GrammarService {
    * single source of truth, unit-tested); the controller only coerces raw
    * query strings.
    */
-  private validateListQuery(query: GrammarListQuery): Required<
-    Pick<GrammarListQuery, "page" | "pageSize">
-  > &
-    GrammarListQuery {
+  private validateListQuery(
+    query: GrammarListQuery,
+  ): Required<Pick<GrammarListQuery, "page" | "pageSize">> & GrammarListQuery {
     const { search, hskLevel, phase } = query;
     const page = query.page ?? MIN_PAGE;
     const pageSize = query.pageSize ?? DEFAULT_PAGE_SIZE;

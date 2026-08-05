@@ -82,9 +82,7 @@ describe("GrammarService", () => {
     });
 
     it.each([0, 1, 5])("rejects phase %d (∉ {2,3,4}) with VALIDATION_ERROR", async (phase) => {
-      await expect(service.listPatterns({ phase })).rejects.toBeInstanceOf(
-        GrammarValidationError,
-      );
+      await expect(service.listPatterns({ phase })).rejects.toBeInstanceOf(GrammarValidationError);
       expect(mockRepository.findPatterns).not.toHaveBeenCalled();
     });
 
@@ -112,9 +110,9 @@ describe("GrammarService", () => {
       await expect(service.listPatterns({ pageSize: 0 })).rejects.toBeInstanceOf(
         GrammarValidationError,
       );
-      await expect(service.listPatterns({ pageSize: PAGINATION.MAX_PAGE_SIZE + 1 })).rejects.toBeInstanceOf(
-        GrammarValidationError,
-      );
+      await expect(
+        service.listPatterns({ pageSize: PAGINATION.MAX_PAGE_SIZE + 1 }),
+      ).rejects.toBeInstanceOf(GrammarValidationError);
     });
 
     it("rejects non-integer page/pageSize with VALIDATION_ERROR", async () => {
@@ -127,9 +125,9 @@ describe("GrammarService", () => {
     });
 
     it("rejects an invalid value even when other valid filters are present", async () => {
-      await expect(service.listPatterns({ search: "好", phase: 5, page: 1 })).rejects.toBeInstanceOf(
-        GrammarValidationError,
-      );
+      await expect(
+        service.listPatterns({ search: "好", phase: 5, page: 1 }),
+      ).rejects.toBeInstanceOf(GrammarValidationError);
     });
   });
 
@@ -192,7 +190,13 @@ describe("GrammarService", () => {
             pinyin: "wǒ bǎ shū fàng zài zhuōzi shàng",
             english: "I put the book on the table.",
             segments: [
-              { text: "我", pinyin: "wǒ", gloss: "I", entityType: "character", entityId: "ch_25105" },
+              {
+                text: "我",
+                pinyin: "wǒ",
+                gloss: "I",
+                entityType: "character",
+                entityId: "ch_25105",
+              },
             ],
           },
           {
