@@ -44,4 +44,4 @@ This story delivers grammar through the platform's canonical API layer and unblo
 - **Status**: Complete
 - **PR**: N/A (direct commit — no PR)
 - **Merge Date**: N/A
-- **Key Commit**: TBD
+- **Key Commit**: `83aa048f`
