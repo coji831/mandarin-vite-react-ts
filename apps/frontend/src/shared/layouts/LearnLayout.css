@@ -1,18 +1,9 @@
-/* LearnLayout.css - Learn section layout */
+/* LearnLayout.css - Learn section layout
+   Story 22.4: the TopNav tab bar was removed (tabs live in the sidebar Learn
+   group); this layout is now a scroll container around the outlet. */
 
 .learn-layout {
   min-height: 0; /* flex ancestor — required for internal scroll to work (scroll chain rule) */
-}
-
-.learn-nav-bar {
-  overflow-x: auto;
-  scrollbar-width: none;
-  /* Directional border — replaces removed global utility border-b-1 */
-  border-bottom: 1px solid var(--surface-border);
-}
-
-.learn-nav-bar::-webkit-scrollbar {
-  display: none;
 }
 
 .learn-content {

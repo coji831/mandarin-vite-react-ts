@@ -9,6 +9,10 @@
 
 const root = "/";
 
+// Account pages (Story 22.4) — thin placeholder routes reachable from the UserMenu.
+const profile_page = root + "profile";
+const settings_page = root + "settings";
+
 const dashboard_page = root;
 // VisFix W6b: explicit alias so /dashboard works as well as / (nav keeps using "/").
 const dashboard_route = root + "dashboard";
@@ -33,6 +37,8 @@ const practices_quiz = "/practices/quiz";
 
 export {
   root,
+  profile_page,
+  settings_page,
   dashboard_page,
   dashboard_route,
   learn_page,

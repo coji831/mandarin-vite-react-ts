@@ -187,10 +187,16 @@ components:
     description: "Search input with search icon and clear button."
   - name: "SideNav"
     file: "apps/frontend/src/shared/components/SideNav/SideNav.tsx"
-    description: "Side navigation panel with active state tracking."
+    description: "Side navigation panel. Nav-only since Story 22.4 (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail (icons only, no auth chrome)."
+  - name: "UserMenu"
+    file: "apps/frontend/src/shared/components/UserMenu/UserMenu.tsx"
+    description: "Single account control (login/user-info/logout) — avatar trigger + popover (account header, Profile, Settings, Logout); guest state = Login/Register CTAs. Hosted in the AppTopBar so it is reachable at every breakpoint."
+  - name: "AppTopBar"
+    file: "apps/frontend/src/shared/components/AppTopBar/AppTopBar.tsx"
+    description: "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu), no feature import."
   - name: "TopNav"
     file: "apps/frontend/src/shared/components/TopNav/TopNav.tsx"
-    description: "Top navigation bar with route-based NavLinks. Phase-gated lock support."
+    description: "Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned since Story 22.4 — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)"
   - name: "FilterControls"
     file: "apps/frontend/src/shared/components/FilterControls/FilterControls.tsx"
     description: "Filter bar with multiple FilterChips, search, and reset."
@@ -242,6 +248,8 @@ components:
 
 ## Changelog
 
+- **2026-08-05** — Story 22.4 review fixes (N1/N4): `UserMenu`/`AppTopBar` are now auth-free (auth threaded via props from `AppLayout`); removed dead `SideNav` `onNavigate`/`mobile` props and `AppTopBar` `leading` slot; popover is a disclosure-style `role="list"` (N6).
+- **2026-08-05** — Story 22.4: added `UserMenu` + `AppTopBar` to the `components:` list (single account control + slim top bar); updated `SideNav` (nav-only, phase-gated Learn group + collapsed rail) and flagged `TopNav` as orphaned (Learn tabs moved to the sidebar Learn group).
 - **2026-08-02** — Removed `transition-transform` / `transition-width` from the `components:` list (they are CSS utilities in `animations.css`, not React components); the scope-note claim that all listed components are registered in `.github/component-registry.json` is accurate again.
 - **2026-08-02** — Clarified catalog scope note: the `components:` list also includes registered feature/domain components (CharacterHub, HubMnemonicSection, TreeRootNode, BranchNode, PhoneticFamilyNode, ClusterCard, ConstituentCharacterChips) documented in their feature docs/design.md (Decision D1).
 - **2026-08-02** — Added top-level **Global Motion Rule** (no animation/transition/transform/pseudo-element except shared component variants + the documented Radical/Phonetic Trees exception).

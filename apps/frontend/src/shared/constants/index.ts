@@ -6,6 +6,8 @@
 export { toneMap, toneMapKeys, TONE_BUTTONS_BASE } from "./toneMap";
 export {
   root,
+  profile_page,
+  settings_page,
   dashboard_page,
   dashboard_route,
   learn_page,
@@ -23,3 +25,5 @@ export {
   login_page,
   register_page,
 } from "./paths";
+export { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "./learnNav";
+export type { LearnNavItem } from "./learnNav";

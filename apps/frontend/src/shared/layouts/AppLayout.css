@@ -1,8 +1,15 @@
-/* AppLayout.css - Root layout with left sidebar navigation */
+/* AppLayout.css - Root layout with left sidebar navigation
+   Story 22.4: sidebar + right column (AppTopBar over main content). */
 
 .app-layout {
   height: 100vh;
   flex-direction: row;
+}
+
+/* Right column: AppTopBar (slim, fixed) over the scrolling main content */
+.app-main {
+  min-width: 0; /* flex ancestor — required for internal scroll to work (scroll chain rule) */
+  min-height: 0; /* flex ancestor — required for internal scroll to work (scroll chain rule) */
 }
 
 /* Main Content Area */

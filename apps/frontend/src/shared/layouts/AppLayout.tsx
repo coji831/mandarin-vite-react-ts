@@ -1,27 +1,37 @@
 /**
  * AppLayout component
  *
- * Root layout with left sidebar navigation for the entire application.
- * Provides global navigation: Dashboard, Learn, Practices, Library, Progress.
- * Sidebar fills full viewport height; page content renders beside it.
+ * Root layout for the entire application.
  *
- * Phase 2: Sidebar redesign — replaces top navbar with left sidebar.
- * Uses shared SideNav component for the sidebar.
+ * Story 22.4: composes AppTopBar (account UserMenu) + SideNav (phase-gated
+ * Learn group, desktop-collapsible rail) + <main> Outlet + HubModal. The
+ * sidebar is hidden on /auth/* (standalone auth pages), but the TopBar +
+ * UserMenu remain so auth pages are never a dead-end. Sidebar collapse state
+ * is persisted via localStorage.
+ *
+ * Phase 2 (original note): Sidebar redesign — replaces top navbar with left
+ * sidebar. Uses shared SideNav component for the sidebar.
  */
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 
-import { auth_page, login_page, practices_page } from "../constants/paths";
-import { SideNav, Modal } from "shared/components";
+import { auth_page, practices_page } from "../constants/paths";
+import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "../constants/learnNav";
+import { AppTopBar, SideNav, Modal } from "shared/components";
 // NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
-// features/lexical-hub to orchestrate the app-wide HubModal — the LexicalHub overlay
-// must be mounted at the app root so it can open from anywhere. This shared → feature
-// inversion is intentional and should NOT be refactored away by future audits.
+// features/lexical-hub to orchestrate the app-wide HubModal and phase gating —
+// these overlays/gates must be mounted at the app root so they work everywhere.
+// This shared → feature inversion is intentional and should NOT be refactored
+// away by future audits.
 import { useAuth } from "features/auth";
+import { usePhaseGate } from "shared/hooks";
 import { LexicalHubRouter } from "features/lexical-hub/components";
 import { useHubStore } from "shared/store";
 import "./AppLayout.css";
 
 export { AppLayout };
+
+const SIDEBAR_COLLAPSE_KEY = "mandarin:sidebar-collapsed";
 
 function HubModal() {
   const { isOpen, currentEntity, close } = useHubStore();
@@ -37,19 +47,38 @@ function HubModal() {
   );
 }
 
-function AppLayout() {
+function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   const { user, isAuthenticated, logout } = useAuth();
+  const { phaseGate } = usePhaseGate();
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
+  // Sidebar collapse state (desktop rail) — persisted so the user's choice sticks.
+  // `initialCollapsed` overrides the stored value (used by stories/tests).
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (initialCollapsed !== undefined) return initialCollapsed;
+    try {
+      return localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const handleToggleCollapse = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(SIDEBAR_COLLAPSE_KEY, String(next));
+      } catch {
+        // Storage unavailable — collapse still applies for this session.
+      }
+      return next;
+    });
   };
 
-  const handleLogin = () => {
-    navigate(login_page);
-  };
+  // Phase gate for the sidebar Learn group (moved from LearnLayout — guests see all unlocked).
+  // Review N7: while the gate fetch is in-flight or failed (`phaseGate` is null), default authed
+  // users to "all unlocked" (Infinity) instead of a misleading phase-1 lock app-wide.
+  const effectivePhase = isAuthenticated ? (phaseGate?.currentPhase ?? Infinity) : 4;
 
   // Don't show sidebar on auth pages — both login and register render standalone
   // (previously only login was hidden, so Register showed the nav when authed).
@@ -57,7 +86,13 @@ function AppLayout() {
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: "🏠", exact: true },
-    { path: "/learn", label: "Learn", icon: "📚", exact: false },
+    {
+      path: "/learn",
+      label: "Learn",
+      icon: "📚",
+      exact: false,
+      children: LEARN_NAV_ITEMS,
+    },
     { path: practices_page, label: "Practices", icon: "🎯", exact: false },
     { path: "/library", label: "Library", icon: "📖", exact: false },
     { path: "/progress", label: "Progress", icon: "📊", exact: false },
@@ -69,16 +104,19 @@ function AppLayout() {
         <SideNav
           navItems={navItems}
           currentPath={location.pathname}
-          isAuthenticated={isAuthenticated}
-          userName={user?.displayName || user?.email}
-          onLogout={handleLogout}
-          onLogin={handleLogin}
+          phaseGate={effectivePhase}
+          requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
+          collapsed={collapsed}
+          onToggleCollapse={handleToggleCollapse}
         />
       )}
 
-      <main className="app-content flex flex-col flex-1">
-        <Outlet />
-      </main>
+      <div className="app-main flex flex-col flex-1">
+        <AppTopBar user={user} isAuthenticated={isAuthenticated} logout={logout} />
+        <main className="app-content flex flex-col flex-1">
+          <Outlet />
+        </main>
+      </div>
       <HubModal />
     </div>
   );

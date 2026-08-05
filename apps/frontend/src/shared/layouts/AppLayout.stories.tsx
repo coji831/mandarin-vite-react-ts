@@ -1,12 +1,14 @@
 /**
  * AppLayout stories
  *
- * Visual stories for the REAL AppLayout (left sidebar + HubModal), rendered
- * inside MemoryRouter + Routes so nav active states work. The global preview
- * decorator provides the authenticated MockAuthProvider; guest variants use
- * the withGuestAuth decorator.
+ * Visual stories for the REAL AppLayout (AppTopBar + auth-free SideNav with
+ * the phase-gated Learn group + Outlet + HubModal), rendered inside
+ * MemoryRouter + Routes so nav active states work. The global preview
+ * decorator provides the authenticated MockAuthProvider + a default phase-4
+ * MSW handler; guest/phase variants override via decorators/parameters.
  *
- * States: authenticated (Dashboard / Learn / Practices active) · guest · mobile.
+ * States: authenticated (Dashboard / Learn active) · collapsed rail ·
+ * phase-locked Learn group · guest · mobile.
  * The HubModal stays closed (hubStore default) so no hub content is rendered.
  */
 import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
@@ -14,6 +16,10 @@ import type { ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
 import { withGuestAuth } from "../../../.storybook/decorators";
+import { mswHandlers } from "../../../.storybook/msw-handlers";
+
+/** Args accepted by AppLayout (optional `initialCollapsed` prop). */
+type AppLayoutArgs = { initialCollapsed?: boolean };
 
 /** Placeholder content for the AppLayout <Outlet />. */
 function PageContent() {
@@ -26,13 +32,22 @@ function PageContent() {
 
 /**
  * Renders the REAL AppLayout at the given route with the outlet content.
- * Used via the withAppLayoutPath decorator so each story controls the active nav item.
+ * Used via the withAppLayoutPath decorator so each story controls the active
+ * nav item (and the desktop collapsed-rail initial state).
  */
-function AppLayoutShell({ path, children }: { path: string; children: ReactNode }) {
+function AppLayoutShell({
+  path,
+  initialCollapsed,
+  children,
+}: {
+  path: string;
+  initialCollapsed?: boolean;
+  children: ReactNode;
+}) {
   return (
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route element={<AppLayout />}>
+        <Route element={<AppLayout initialCollapsed={initialCollapsed} />}>
           <Route index element={children} />
         </Route>
       </Routes>
@@ -41,14 +56,14 @@ function AppLayoutShell({ path, children }: { path: string; children: ReactNode 
 }
 
 const withAppLayoutPath =
-  (path: string): Decorator =>
+  (path: string, initialCollapsed?: boolean): Decorator<AppLayoutArgs> =>
   (Story) => (
-    <AppLayoutShell path={path}>
+    <AppLayoutShell path={path} initialCollapsed={initialCollapsed}>
       <Story />
     </AppLayoutShell>
   );
 
-const meta: Meta<typeof AppLayout> = {
+const meta: Meta<AppLayoutArgs> = {
   title: "Layouts/AppLayout",
   component: AppLayout,
   tags: ["autodocs"],
@@ -57,14 +72,14 @@ const meta: Meta<typeof AppLayout> = {
     docs: {
       description: {
         component:
-          "Root application layout with left sidebar navigation. Renders the production AppLayout (SideNav + Outlet + HubModal).",
+          "Root application layout — AppTopBar (UserMenu) + SideNav (phase-gated Learn group, collapsible rail) + Outlet + HubModal.",
       },
     },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof AppLayout>;
+type Story = StoryObj<AppLayoutArgs>;
 
 export const LoggedInDashboard: Story = {
   decorators: [withAppLayoutPath("/")],
@@ -72,18 +87,39 @@ export const LoggedInDashboard: Story = {
 };
 
 export const LoggedInLearnActive: Story = {
-  decorators: [withAppLayoutPath("/learn")],
+  decorators: [withAppLayoutPath("/learn/grammar")],
   render: () => <PageContent />,
+  parameters: {
+    msw: { handlers: [mswHandlers.progression.phaseGate(2)] },
+  },
 };
 
-export const LoggedInPracticesActive: Story = {
-  decorators: [withAppLayoutPath("/practices")],
+/**
+ * CollapsedRail — desktop mini-rail (the 22.4 bug scenario). Auth chrome is
+ * gone from the rail entirely (it lives in the AppTopBar UserMenu), so there
+ * is no oversized button / stray border / overlap.
+ */
+export const CollapsedRail: Story = {
+  decorators: [withAppLayoutPath("/", true)],
   render: () => <PageContent />,
 };
 
 /**
- * LoggedOut — guest user: sidebar hides the user chip and shows a Login CTA.
- * withGuestAuth overrides the global authenticated MockAuthProvider.
+ * PhaseLocked — authed user at phase 1: Grammar/Phonetic/Readers/Chengyu
+ * show locked states in the sidebar Learn group.
+ */
+export const PhaseLocked: Story = {
+  decorators: [withAppLayoutPath("/learn/foundations")],
+  render: () => <PageContent />,
+  parameters: {
+    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
+  },
+};
+
+/**
+ * LoggedOut — guest user: the sidebar renders no auth chrome; the AppTopBar
+ * UserMenu shows Login/Register CTAs. withGuestAuth overrides the global
+ * authenticated MockAuthProvider.
  */
 export const LoggedOut: Story = {
   decorators: [withGuestAuth, withAppLayoutPath("/")],

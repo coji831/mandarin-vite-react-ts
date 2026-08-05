@@ -3,6 +3,7 @@
 .side-nav {
   width: 220px;
   min-height: 100vh;
+  transition: width var(--transition-normal);
 }
 
 /* Brand */
@@ -13,24 +14,54 @@
   justify-content: flex-start;
 }
 
+/* Desktop collapse toggle (brand row) */
+.side-nav__collapse-toggle {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  border: 1px solid var(--surface-border);
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+  transition: all var(--transition-fast);
+}
+
+.side-nav__collapse-toggle:hover {
+  background: var(--surface-light-10);
+  color: var(--text-primary);
+}
+
 /* Navigation links */
 .side-nav__links {
   gap: var(--space-xs);
 }
 
-.side-nav__link {
+.side-nav__link,
+.side-nav__group-header,
+.side-nav__child {
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
 
-.side-nav__link:hover {
+.side-nav__link:hover,
+.side-nav__group-header:hover,
+.side-nav__child:hover {
   background: var(--surface-light-8);
   color: var(--text-secondary);
 }
 
-.side-nav__icon {
+/* Learn group header — row button */
+.side-nav__group-header {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  width: 100%;
+  cursor: pointer;
+}
+
+.side-nav__icon,
+.side-nav__child-icon {
   width: 24px;
 }
 
@@ -38,33 +69,63 @@
   text-overflow: ellipsis;
 }
 
-/* User section */
-.side-nav__user {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+/* Learn group children — indented under the group header */
+.side-nav__group-children {
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
 }
 
-.side-nav__user-avatar {
-  width: 28px;
-  height: 28px;
-  /* background migrated to bg-surface-light-20 utility in SideNav.tsx */
+.side-nav__child {
+  padding-left: calc(var(--space-md) + 24px); /* icon column + indent */
 }
 
-.side-nav__user-name {
-  text-overflow: ellipsis;
-  min-width: 0;
+.side-nav__group-chevron {
+  margin-left: auto;
+  transition: transform var(--transition-fast);
 }
 
-.side-nav__login {
-  /* background migrated to bg-primary utility in SideNav.tsx */
-  color: white;
+.side-nav__group-chevron--open {
+  transform: rotate(180deg);
 }
-
-/* .side-nav__login:hover — migrated to hover:op-90 utility */
 
 /* ===========================
-   Mobile Responsive
+   Collapsed rail (desktop, via `collapsed` prop)
+   =========================== */
+
+.side-nav--collapsed {
+  width: 60px;
+  align-items: center;
+}
+
+.side-nav--collapsed .side-nav__title {
+  display: none;
+}
+
+.side-nav--collapsed .side-nav__brand {
+  justify-content: center;
+}
+
+.side-nav--collapsed .side-nav__link,
+.side-nav--collapsed .side-nav__group-header {
+  justify-content: center;
+}
+
+.side-nav--collapsed .side-nav__icon,
+.side-nav--collapsed .side-nav__child-icon {
+  width: auto;
+  font-size: var(--font-lg);
+}
+
+.side-nav--collapsed .side-nav__label,
+.side-nav--collapsed .side-nav__group-children,
+.side-nav--collapsed .side-nav__group-chevron {
+  display: none;
+}
+
+/* ===========================
+   Narrow viewport fallback (≤768px) — icon rail
+   (kept for the current no-mobile-layout state; the collapsed rail is
+   auth-free since Story 22.4, so nothing overflows or overlaps)
    =========================== */
 
 @media (max-width: 768px) {
@@ -73,32 +134,28 @@
     align-items: center;
   }
 
-  .side-nav__title {
+  .side-nav .side-nav__title {
     display: none;
   }
 
-  .side-nav__link {
+  .side-nav .side-nav__brand {
     justify-content: center;
   }
 
-  .side-nav__icon {
+  .side-nav .side-nav__link,
+  .side-nav .side-nav__group-header {
+    justify-content: center;
+  }
+
+  .side-nav .side-nav__icon,
+  .side-nav .side-nav__child-icon {
     width: auto;
     font-size: var(--font-lg);
   }
 
-  .side-nav__label {
-    display: none;
-  }
-
-  .side-nav__user-name {
-    display: none;
-  }
-
-  .side-nav__user {
-    justify-content: center;
-  }
-
-  .side-nav__logout {
+  .side-nav .side-nav__label,
+  .side-nav .side-nav__group-children,
+  .side-nav .side-nav__group-chevron {
     display: none;
   }
 }

@@ -6,6 +6,7 @@ import { AppLayout } from "../src/shared/layouts/AppLayout";
 import { LearnLayout } from "../src/shared/layouts/LearnLayout";
 import { AuthContext } from "../src/features/auth";
 import type { AuthContextValue } from "../src/features/auth";
+import { mswHandlers } from "./msw-handlers";
 import "../src/index.css";
 
 initialize({ onUnhandledRequest: "bypass" });
@@ -81,6 +82,12 @@ const preview: Preview = {
   ],
   loaders: [mswLoader],
   parameters: {
+    // Default phase-gate handler: AppLayout now consumes `usePhaseGate()` to
+    // lock the sidebar Learn group, so every layout story resolves the phase
+    // gate as "all unlocked" (phase 4) unless a story overrides it.
+    msw: {
+      handlers: [mswHandlers.progression.phaseGate(4)],
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

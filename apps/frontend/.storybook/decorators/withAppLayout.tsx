@@ -1,9 +1,11 @@
 /**
  * withAppLayout — Storybook decorator for full AppLayout context
  *
- * Renders the story inside the production AppLayout (left sidebar
- * navigation). Uses MemoryRouter at "/learn/radicals" as default
- * path so nav active states render correctly.
+ * Renders the story inside the production AppLayout (Story 22.4 composition:
+ * AppTopBar + auth-free SideNav with the phase-gated Learn group + Outlet +
+ * HubModal). Uses MemoryRouter at "/learn/radicals" as default path so nav
+ * active states render correctly. AppLayout consumes `usePhaseGate()` — the
+ * global preview provides a default phase-4 MSW handler.
  *
  * @example
  * // Page story with full app layout

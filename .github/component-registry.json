@@ -515,16 +515,45 @@
       }
     },
     "SideNav": {
-      "description": "Side navigation panel.",
+      "description": "Side navigation panel. Nav-only since Story 22.4 (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail.",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/SideNav/SideNav.stories.tsx",
         "states": ["default", "edge"]
       },
       "props": {
-        "items": { "type": "NavItem[]", "required": true },
-        "activeId": { "type": "string" },
-        "onNavigate": { "type": "function" }
+        "navItems": { "type": "NavItem[]", "required": true },
+        "currentPath": { "type": "string", "required": true },
+        "phaseGate": { "type": "number", "description": "Current user phase for lock logic" },
+        "requiredPhase": {
+          "type": "function",
+          "description": "Maps a Learn child id to the phase required to unlock it"
+        },
+        "collapsed": { "type": "boolean", "description": "Desktop icon-rail mode" },
+        "onToggleCollapse": { "type": "function" }
+      }
+    },
+    "UserMenu": {
+      "description": "Single account control (login/user-info/logout) — avatar trigger + popover (Profile/Settings/Logout); guest state = Login/Register CTAs. Hosted in the AppTopBar.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/UserMenu/UserMenu.stories.tsx",
+        "states": ["default", "edge"]
+      },
+      "props": {}
+    },
+    "AppTopBar": {
+      "description": "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu).",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/AppTopBar/AppTopBar.stories.tsx",
+        "states": ["default"]
+      },
+      "props": {
+        "user": { "type": "UserMenuUser | null", "required": true },
+        "isAuthenticated": { "type": "boolean", "required": true },
+        "logout": { "type": "function", "required": true },
+        "className": { "type": "string" }
       }
     },
     "CharacterStrokePlayer": {
