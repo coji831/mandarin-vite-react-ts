@@ -1,6 +1,6 @@
 # Story 22.4: Sidebar Navigation and Account
 
-**Last Update:** August 5, 2026 (Story 22.4 scoped extension — frontend-only)
+**Last Update:** August 5, 2026 (Story 22.4 scoped extension — frontend-only; follow-up round: 4 fixes + review fixes N1–N6, committed)
 
 ## Description
 
@@ -26,6 +26,13 @@ This story is a scope extension of Epic 22 (Grammar Pattern Library). It fixes a
 - [x] Tests updated/added (`UserMenu`, `AppTopBar`, `SideNav`, `AppLayout`, `LoginPage`, `RegisterPage`) per `testing-standards.instructions.md`; all quality gates pass (`npm run build`, `npm run lint` 0 errors, design lint, `npm run design-audit`, `npm run check:registry-stories`, `npm run test-storybook --workspace=@mandarin/frontend`, `npm test` changed scope).
 - [x] Mini-rail bug verified fixed in the browser (no oversized button, no stray border around the user container, no overlap with user info); evidence saved in `verification-artifacts/`.
 
+### Follow-up round ACs (4 fixes — Aug 5, 2026)
+
+- [x] **Fix 1 — effect-driven auth navigation**: `LoginPage`/`RegisterPage` perform exactly one navigation via a `useEffect` keyed on `isAuthenticated` (no `<Navigate>`), honor `location.state.from` (sanitized: must start with `/`, must not start with `//`, must not target `/auth/*`), fall back to the dashboard, and forward `location.state` when switching Login⇄Register; rewritten tests use a mutable auth mock that flips `isAuthenticated` false→true on success.
+- [x] **Fix 2 — collapse toggle in the footer slot**: the desktop collapse control moved from the brand row to a bottom footer slot (`margin-top:auto`); expanded = `◂ Collapse` (icon + label, bottom-left), collapsed = centered icon-only `▸`; hidden on the ≤768px forced mobile icon rail.
+- [x] **Fix 3 — child hierarchy**: Learn group children are visually distinct from the group header — `font-xs` + `text-tertiary` + 2px left rail (`border-left` on `side-nav__child`); active child carries `aria-current="page"`; locked children use `side-nav__child--locked` (dimmed, non-navigable).
+- [x] **Fix 4 — search-params convention**: new `shared/constants/searchParams.ts` (`SEARCH_PARAMS` names + `withSearchParams` URL builder) and `shared/hooks/useSearchParamState.ts` (+ tests) — typed, validated (parse → default on invalid), functional `setSearchParams(prev ⇒ …)`, omit-when-default, `replace: true` default. Migrated: `FoundationsPage` (`?tab=`), `RadicalsPage` (`?view=`/`?mode=`, `treeMode` localStorage dropped, self-clearing `radical` kept), `QuizPage` (`?type=` validated via `getStrategy`), `ReviewPage` (`?type=`+`?filter=`), `DashboardSections`/`useQuizCard` (`withSearchParams`).
+
 ## Business Rules
 
 1. **Single account surface** — `UserMenu` (in `AppTopBar`) is the only login/user-info/logout control; `SideNav` must not render auth chrome in any mode.
@@ -35,6 +42,9 @@ This story is a scope extension of Epic 22 (Grammar Pattern Library). It fixes a
 5. **Barrels re-export only** — `shared/components/index.tsx` and `shared/constants/index.ts` only re-export; `learnNav.ts` is a constants file, not a barrel.
 6. **Collapse persistence** — sidebar collapse state persists via localStorage (not a Zustand store); no stores created inside components/.
 7. **`TopNav` stays** — `TopNav` remains in the barrel/registry this story (orphaned after the `LearnLayout` change); its removal is a flagged follow-up, not in scope.
+8. **Collapse toggle placement** — the desktop collapse control lives in the `SideNav` bottom footer slot (icon + `Collapse` label when expanded, icon-only centered when collapsed, hidden ≤768px); the brand row shows logo + title only.
+9. **Child hierarchy** — Learn children render as `side-nav__child` (`font-xs` + `text-tertiary` + 2px left rail) beneath a `side-nav__group-header` (`font-sm` + `fw-600` + `text-secondary`); the active child carries `aria-current="page"`; locked = `--locked` (dimmed, non-navigable, no navigation).
+10. **Search-params convention** — route query params use canonical names from `SEARCH_PARAMS` and are read/written through `useSearchParamState` (validated parse→default, functional updater preserving sibling params, omit-when-default, `replace: true`); shareable deep-links use `withSearchParams`; query strings are never hand-built.
 
 ## Related Issues
 
@@ -46,7 +56,7 @@ This story is a scope extension of Epic 22 (Grammar Pattern Library). It fixes a
 - **Status**: Complete
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: `6fdb51c9`
+- **Key Commit**: `6fdb51c9` (+ follow-up fix commit `47200b37` — review fixes N1–N5)
 
 ## Implementation Notes (Code Review Fixes — Aug 5, 2026)
 
@@ -62,3 +72,29 @@ The Code Reviewer audit returned **APPROVE-WITH-NITS** (0 blockers, 2 medium, 5 
 - **N8 (nit)** — Added `AppTopBar.test.tsx` smoke test (authed + guest).
 
 All gates re-run after the fixes pass (exit code 0) — see `verification-artifacts/story-22-4-gate-results.md`.
+
+### Follow-up Review Fixes (N1–N6) — Aug 5, 2026
+
+The follow-up round passed the Code Reviewer with **APPROVE-WITH-NITS** (0 blockers). All actionable findings were resolved and committed:
+
+- **N1 (medium)** — Added `QuizPage.test.tsx`: `?type=ime-simulator` renders the session; `?type=bogus`/absent renders the fallback CTA.
+- **N2 (medium)** — Docs overclaimed replace-vs-push coverage; fixed by adding the tests — `useSearchParamState.test.tsx` asserts `REPLACE` (default) vs `PUSH` (`replace: false`) via `useNavigationType`.
+- **N3 (low)** — Locked `SideNav` Learn children are no longer keyboard-focusable (`tabIndex=-1`; `aria-disabled` + title kept).
+- **N4 (low)** — Raw `28px` touch target → `--size-touch: 28px` token in `globals.css` (Size Scale), documented in `DESIGN.md`; `design.md lint` + `design-audit` re-run.
+- **N5 (nit)** — `SearchParamName` now types `withSearchParams`' `params` arg.
+- **N6 (nit)** — raw `<button>` footer toggle: no action (matches accepted pattern). Skipped.
+
+All 7 gates re-run after the fixes pass (exit code 0) — see `verification-artifacts/story-22-4-followup-gate-results.md`.
+
+## Follow-up Fixes (4 Issues) — Aug 5, 2026
+
+Code review + browser findings surfaced 4 follow-up issues, all implemented frontend-only and **committed** (verification + review-fixes round):
+
+- **Fix 1 — auth navigation race (Login/Register)**: a single effect-driven navigation (see AC above). Removes double-nav / flicker and sanitizes `from` so it can never redirect to `//` or back to `/auth/*`; Login⇄Register switch preserves the intended origin via forwarded `location.state`.
+- **Fix 2 — collapse toggle placement**: the toggle was in the brand row; it now lives in a bottom footer slot so the brand row stays clean and the rail bottom hosts the control (matches the mini-rail convention).
+- **Fix 3 — child hierarchy**: Learn children were visually ambiguous vs the group header; now a strict type scale (children `font-xs`/`text-tertiary` + 2px left rail vs header `font-sm`/`fw-600`/`text-secondary`), with `aria-current="page"` on the active child and a `--locked` dim state for locked children.
+- **Fix 4 — search-params convention**: introduced `SEARCH_PARAMS` + `withSearchParams` + `useSearchParamState` as the single URL-state convention; migrated the four URL-driven pages (Foundations, Radicals, Quiz, Review) and the dashboard/quiz-card entry points. `RadicalsPage` dropped its `treeMode` localStorage in favor of `?mode=`; the transient `radical` param keeps its self-clear `replace` behavior.
+
+Deferred (out of scope, tracked): ContentBrowser/TabBar refactor onto the hook, Grammar filter URL seeding (`?q`/`?hsk`/`?phase`), Readers mode migration, TopNav orphan cleanup.
+
+See `verification-artifacts/story-22-4-followup-gate-results.md` and `verification-artifacts/story-22-4-followup-browser-check.md`.

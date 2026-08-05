@@ -1,7 +1,7 @@
 # Implementation 22-4: Sidebar Navigation and Account
 
 > **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-4-sidebar-navigation-and-account.md`
-> **Last Updated:** August 5, 2026
+> **Last Updated:** August 5, 2026 (follow-up round — 4 fixes + review fixes N1–N6, committed)
 > **Status:** ✅ Complete
 
 ## Technical Scope
@@ -123,7 +123,7 @@ type SideNavProps = {
 
 - Auth section removed entirely — no `isAuthenticated`/`userName`/`onLogout`/`onLogin`.
 - Learn group: when a top-level item has `children`, it renders as an expandable group (chevron toggle, default open); children are phase-gated via `requiredPhase(id) > phaseGate` (locked = 🔒, `aria-disabled`, non-navigable, title "Complete Phase N to unlock").
-- Collapsed rail (`collapsed`): icons only — brand label, link labels, Learn children, and the collapse control's label are hidden via CSS; `onToggleCollapse` rendered as an icon button in the brand row.
+- Collapsed rail (`collapsed`): icons only — brand label, link labels, Learn children, and the collapse control's label are hidden via CSS; `onToggleCollapse` renders as the **bottom footer toggle** (icon + `Collapse` label when expanded, icon-only centered when collapsed, hidden ≤768px) — moved out of the brand row in the follow-up round (Fix 2).
 
 ### `UserMenu` — single account control (auth-free)
 
@@ -229,3 +229,48 @@ The Code Reviewer audit returned **APPROVE-WITH-NITS** (0 blockers, 2 medium, 5 
 ## Key Commits
 
 - `6fdb51c9` — `feat(epic-22): implement story 22.4 sidebar navigation and account` (recorded in this `chore(docs)` commit, matching the 22.2/22.3 convention).
+- `47200b37` — `fix(epic-22): story 22.4 follow-up round + reviewer fixes (N1-N5)` (follow-up round — search-params convention, auth navigation, collapse footer, child hierarchy — plus review fixes N1–N5; recorded in this `chore(docs)` commit).
+
+## Follow-up Fixes (4 Issues) — Aug 5, 2026
+
+Frontend-only follow-up round surfaced by code review + browser findings. **Committed** — see `verification-artifacts/story-22-4-followup-gate-results.md` (incl. the review-fixes N1–N6 round); browser evidence in `verification-artifacts/story-22-4-followup-browser-check.md`.
+
+### New files
+
+- `apps/frontend/src/shared/constants/searchParams.ts` — **NEW** (Fix 4): `SEARCH_PARAMS` canonical param names + `withSearchParams` URL builder (omits empty/null/undefined; appends to an existing query safely).
+- `apps/frontend/src/shared/hooks/useSearchParamState.ts` — **NEW** (Fix 4): typed, validated `useSearchParamState(key, { defaultValue, parse, serialize, replace = true, omitWhenDefault = true, debounceMs })` → `[value, setValue]`; reads `searchParams.get(key)` with parse→default on invalid; writes via functional `setSearchParams(prev ⇒ …)` so sibling params survive; `replace: true` by default (Back exits the page); optional write debounce.
+- `apps/frontend/src/shared/hooks/__tests__/useSearchParamState.test.tsx` — **NEW** (Fix 4): URL seed, default fallback, invalid→default, omit-when-default, replace-vs-push, functional updater, sibling-param preservation.
+
+> Note: `UseSearchParamStateOptions` does **not** include `key` — the key is the hook's first positional argument (single source of truth). One build failure (TS2345/TS2353 on `ReviewPage` + the hook test) was fixed in-round by removing the redundant `key` option.
+
+### Updated files
+
+- `apps/frontend/src/pages/LoginPage.tsx` / `RegisterPage.tsx` (Fix 1) — effect-driven single navigation keyed on `isAuthenticated` (no `<Navigate>`); sanitized `from` (`startsWith("/") && !startsWith("//") && !startsWith(auth_page)`); dashboard fallback; `location.state` forwarded on Login⇄Register switch.
+- `apps/frontend/src/pages/__tests__/LoginPage.test.tsx` / `RegisterPage.test.tsx` (Fix 1) — rewritten with a mutable auth mock that flips `isAuthenticated` false→true on `onSuccess` (single-nav, `from` honored, fallback, switch-forward).
+- `apps/frontend/src/shared/components/SideNav/SideNav.tsx` + `SideNav.css` (Fixes 2–3) — footer-slot collapse toggle (`side-nav__footer` / `side-nav__collapse-toggle`, hidden ≤768px); child hierarchy (`side-nav__child` = `font-xs` + `text-tertiary` + 2px left rail; header = `font-sm` + `fw-600` + `text-secondary`); `aria-current="page"` on active child (NavLink); `side-nav__child--locked` dim state.
+- `apps/frontend/src/shared/components/SideNav/__tests__/SideNav.test.tsx` (Fixes 2–3) — expanded/collapsed toggle, active child `aria-current`, locked non-navigable.
+- `apps/frontend/src/shared/components/SideNav/SideNav.stories.tsx` (Fixes 2–3) — updated states.
+- `apps/frontend/src/pages/learn/foundations/FoundationsPage.tsx` + test + stories (Fix 4) — `?tab=` via `useSearchParamState` (URL wins over `initialTab`); new `TonesDeepLink` story.
+- `apps/frontend/src/pages/learn/radicals/RadicalsPage.tsx` + test + `RadicalsPageFull.stories.tsx` (Fix 4) — `?view=`/`?mode=` via hook; **dropped `treeMode` localStorage** (stories switched from `beforeEach` localStorage writes to `layoutPath` deep-links `?view=trees&mode=phonetic`); self-clearing `radical` param kept.
+- `apps/frontend/src/pages/practices/QuizPage.tsx` (Fix 4) — `?type=` validated via `getStrategy` (invalid → no session).
+- `apps/frontend/src/pages/practices/ReviewPage.tsx` (Fix 4) — `?type=` + `?filter=` via hook; session start pushes via `withSearchParams`.
+- `apps/frontend/src/features/dashboard/components/DashboardSections.tsx` + `apps/frontend/src/features/quiz/hooks/useQuizCard.ts` (Fix 4) — entry-point deep-links via `withSearchParams`.
+- `apps/frontend/src/shared/constants/index.ts` + `apps/frontend/src/shared/hooks/index.ts` (Fix 4) — barrels re-export `SEARCH_PARAMS`/`withSearchParams` and `useSearchParamState` (re-export only).
+
+### Deferred follow-ups (out of scope, tracked)
+
+- ContentBrowser / TabBar refactor onto `useSearchParamState`.
+- Grammar filter URL seeding (`?q` / `?hsk` / `?phase`).
+- Readers mode migration to the search-params convention.
+- TopNav orphan cleanup (kept in barrel/registry).
+
+## Review Fixes (Follow-up N1–N6) — Aug 5, 2026
+
+The follow-up round passed the Code Reviewer with **APPROVE-WITH-NITS** (0 blockers). All actionable findings were resolved and committed (see Key Commits):
+
+- **N1 (medium)** — Added `apps/frontend/src/pages/practices/__tests__/QuizPage.test.tsx`: `?type=ime-simulator` renders the quiz session (child mocked), `?type=bogus` and absent `?type=` render the fallback CTA.
+- **N2 (medium)** — Docs previously overclaimed replace-vs-push coverage. Resolved by adding the tests (recommended path): `useSearchParamState.test.tsx` now asserts `useNavigationType()` is `REPLACE` for the default write and `PUSH` for `replace: false`. The claim is now accurate (not struck).
+- **N3 (low)** — `SideNav.tsx`: locked Learn children get `tabIndex={isLocked ? -1 : undefined}` so they aren't keyboard-focusable (`aria-disabled` + title kept). `SideNav.test.tsx` asserts `tabindex="-1"` on locked children, none on unlocked.
+- **N4 (low)** — `SideNav.css` raw `28px` touch target → new `--size-touch: 28px` token in `globals.css` (Size Scale) used via `var(--size-touch)`; documented in `DESIGN.md` (`tokens.size.touch`). `design.md lint` + `design-audit` re-run (pass).
+- **N5 (nit)** — `SearchParamName` (unused export) now types `withSearchParams`' `params` arg (`Partial<Record<SearchParamName, …>>`); export + barrel line kept.
+- **N6 (nit)** — raw `<button>` footer toggle: no action required (matches accepted pattern). **Skipped.**
