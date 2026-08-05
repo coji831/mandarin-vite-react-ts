@@ -119,6 +119,10 @@ import { createCharactersModule, createPinyinModule } from "../modules/character
 const charactersModule = createCharactersModule();
 const pinyinModule = createPinyinModule();
 
+// Grammar module — no cross-module deps, pure reference data
+import { createGrammarModule } from "../modules/grammar/container.js";
+const grammarModule = createGrammarModule();
+
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const audioController = audioModule.controller;
 export const foundationsController = foundationsModule.controller;
@@ -134,4 +138,5 @@ export const wordsController = wordsModule.controller;
 export const phoneticClustersController = phoneticClustersModule.controller;
 export const charactersController = charactersModule.controller;
 export const pinyinController = pinyinModule.controller;
+export const grammarController = grammarModule.controller;
 export { readersModule };

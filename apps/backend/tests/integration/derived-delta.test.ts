@@ -85,6 +85,23 @@ describe.skipIf(!db.available)("Derived rebuild — Bucket-B (integration)", () 
     expect(cp!.rowCount).toBe(realRows.length);
   });
 
+  it("empty payload with a populated checkpoint → SKIPS (C1 guard: no deleteMany, no rowCount:0 stamp)", async () => {
+    // Precondition: the table is populated and the checkpoint records it.
+    expect(await prisma.phoneticClusterMember.count()).toBe(realRows.length);
+
+    const result = await syncDerived(prisma, cfg, [], { log: silentLog });
+    expect(result.skipped).toBe(true);
+    expect(result.writes).toBe(0);
+
+    // Table is untouched — no deleteMany on a populated derived table.
+    expect(await prisma.phoneticClusterMember.count()).toBe(realRows.length);
+
+    // Checkpoint keeps its real row count — no rowCount:0 stamp.
+    const cp = await prisma.seedCheckpoint.findUnique({ where: { id: LABEL } });
+    expect(cp).not.toBeNull();
+    expect(cp!.rowCount).toBe(realRows.length);
+  });
+
   it("changed payload → rebuild happens (stale rows removed, checkpoint updated)", async () => {
     const doctored = realRows.map((r) => ({
       ...r,

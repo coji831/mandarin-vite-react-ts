@@ -1,6 +1,6 @@
 # Story 22.2: Grammar Backend API
 
-**Last Update:** August 4, 2026
+**Last Update:** August 5, 2026 (Story 22.2 complete — grammar backend API delivered)
 
 ## Description
 
@@ -14,13 +14,13 @@ This story delivers grammar through the platform's canonical API layer and unblo
 
 ## Acceptance Criteria
 
-- [ ] Backend `modules/grammar/` module created following the modulith pattern (`container.ts`, `index.ts`, `api/`, `services/`, `repositories/`, `types/`) and registered in the app container.
-- [ ] `GET /v1/grammar/patterns` implemented with filters `search`, `hskLevel`, `phase` plus pagination `page`/`pageSize`; returns `{ items, total, page, pageSize }`.
-- [ ] `GET /v1/grammar/patterns/:id` implemented — returns pattern + `examples[]` (with `segments[]`) + `relatedPatterns[]`; `:id` resolves by `content_id` `gr_XXXX` (internal uuid is never a valid identifier).
-- [ ] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById`) + `.d.ts` declarations.
-- [ ] Verify `content/manifest.json` `grammar` count ≥21 and the `grammar` section lists `grammar-patterns.json` (updated by 22.1; no edit here).
-- [ ] Error responses follow `backend-error-messages.instructions.md` (`{ error, code }`; `VALIDATION_ERROR` 400 / `NOT_FOUND` 404 / `INTERNAL_ERROR` 500; `"Failed to load grammar pattern(s)"` messages).
-- [ ] Backend tests per `testing-standards.instructions.md` (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`).
+- [x] Backend `modules/grammar/` module created following the modulith pattern (`container.ts`, `index.ts`, `api/`, `services/`, `repositories/`, `types/`) and registered in the app container.
+- [x] `GET /v1/grammar/patterns` implemented with filters `search`, `hskLevel`, `phase` plus pagination `page`/`pageSize`; returns `{ items, total, page, pageSize }`.
+- [x] `GET /v1/grammar/patterns/:id` implemented — returns pattern + `examples[]` (with `segments[]`) + `relatedPatterns[]`; `:id` resolves by `content_id` `gr_XXXX` (internal uuid is never a valid identifier).
+- [x] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById`) + `.d.ts` declarations.
+- [x] Verify `content/manifest.json` `grammar` count ≥21 and the `grammar` section lists `grammar-patterns.json` (updated by 22.1; no edit here).
+- [x] Error responses follow `backend-error-messages.instructions.md` (`{ error, code }`; `VALIDATION_ERROR` 400 / `NOT_FOUND` 404 / `INTERNAL_ERROR` 500; `"Failed to load grammar pattern(s)"` messages).
+- [x] Backend tests per `testing-standards.instructions.md` (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`).
 
 ## Business Rules
 
@@ -41,7 +41,7 @@ This story delivers grammar through the platform's canonical API layer and unblo
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
-- **Merge Date**: TBD
+- **Status**: Complete
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
 - **Key Commit**: TBD

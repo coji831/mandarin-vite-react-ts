@@ -134,4 +134,14 @@ router.use((req, res, next) => {
 });
 router.use(pinyinRoutes);
 
+// Grammar routes (v1) — Story 22.2
+import grammarRoutes from "../modules/grammar/api/grammarRoutes.js";
+import { grammarController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.grammarController = grammarController;
+  next();
+});
+router.use(grammarRoutes);
+
 export default router;

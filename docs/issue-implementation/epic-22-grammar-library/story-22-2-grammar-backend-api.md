@@ -1,8 +1,8 @@
 # Implementation 22-2: Grammar Backend API
 
 > **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-2-grammar-backend-api.md`
-> **Status:** Planned
-> **Last Update:** August 4, 2026
+> **Status:** ✅ Complete
+> **Last Update:** August 5, 2026
 
 ## Technical Scope
 
@@ -12,7 +12,7 @@ Create the `modules/grammar/` backend module following the modulith pattern, imp
 
 - `apps/backend/src/modules/grammar/container.ts` — **NEW**: DI registration (Repository → Service → Controller).
 - `apps/backend/src/modules/grammar/index.ts` — **NEW**: barrel (re-exports types + classes).
-- `apps/backend/src/modules/grammar/api/GrammarController.ts` — **NEW**: 2 GET endpoints, Zod validation, error mapping.
+- `apps/backend/src/modules/grammar/api/GrammarController.ts` — **NEW**: 2 GET endpoints, manual query coercion + service-side range validation, error mapping.
 - `apps/backend/src/modules/grammar/api/grammarRoutes.ts` — **NEW**: route definitions using `ROUTE_PATTERNS`.
 - `apps/backend/src/modules/grammar/services/GrammarService.ts` — **NEW**: orchestration, validation, errors, optional module-level cache.
 - `apps/backend/src/modules/grammar/repositories/GrammarRepository.ts` — **NEW**: Prisma queries (filters + pagination + detail includes).
@@ -139,7 +139,11 @@ async findPatterns(params: GrammarListParams): Promise<{ items: GrammarPatternSu
   const [rows, total] = await Promise.all([
     prisma.grammarPattern.findMany({
       where,
-      include: { _count: { select: { examples: true } } },
+      include: {
+        _count: { select: { examples: true } },
+        // First example only — powers the summary `previewExample`.
+        examples: { orderBy: { sortOrder: "asc" }, take: 1, select: { chinese: true } },
+      },
       orderBy: [{ phase: "asc" }, { sortOrder: "asc" }],
       skip: (params.page - 1) * params.pageSize,
       take: params.pageSize,
@@ -190,7 +194,7 @@ class GrammarService {
 
 ### Controller layer (`GrammarController`)
 
-Express handlers with Zod validation. `phase` ∈ {2,3,4}; `hskLevel` ∈ 1–6; `page` ≥ 1; `pageSize` ∈ 1–100 (bounds from shared-constants `PAGINATION`). Invalid → 400 `VALIDATION_ERROR`. Unexpected → 500 `INTERNAL_ERROR`.
+Express handlers with manual query coercion (`Number()`) + service-side range validation (mirrors characters/phonetic-clusters/words). `phase` ∈ {2,3,4}; `hskLevel` ∈ 1–6; `page` ≥ 1; `pageSize` ∈ 1–100 (bounds from shared-constants `PAGINATION`). Invalid → 400 `VALIDATION_ERROR`. Unexpected → 500 `INTERNAL_ERROR`.
 
 ### Route registration (four wiring points, mirroring story 21.10)
 
@@ -229,7 +233,7 @@ Add verbatim to `packages/shared-constants/src/index.js` **and** `packages/share
 ```
 [Story 22.2: Grammar Backend API]
 ├── modules/grammar/ → container.ts registered in app/container.ts
-├── api/ → GrammarController + grammarRoutes (2 GET, Zod validation)
+├── api/ → GrammarController + grammarRoutes (2 GET, manual query coercion + service-side validation)
 ├── services/ → GrammarService (validation, errors, optional cache)
 ├── repositories/ → GrammarRepository (Prisma queries against 22.1 tables)
 │   ├── GrammarPattern / GrammarExample / GrammarPatternRelation (seeded by 22.1)
@@ -270,9 +274,9 @@ Solution: All filters are optional and additive; no "at least one filter" 400. E
 - [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` (`modules/grammar/` new; no `features/grammar` yet)
 - [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code — Prisma-only, all-in-DB
 - [ ] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-3-grammar-ui.md`, IMP twin)
-- [ ] Last Updated / Last Update date is current (August 4, 2026 — same commit as the edit)
+- [ ] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
 
-> **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
+> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — direct commit, no PR).
 
 ## Testing Implementation
 

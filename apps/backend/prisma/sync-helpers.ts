@@ -521,6 +521,18 @@ export async function syncDerived(
   const rowCount = rows.length;
 
   const checkpoint = await db.seedCheckpoint.findUnique({ where: { id: cfg.label } });
+
+  // C1 guard: an EMPTY payload arriving when the table is known to be
+  // populated (checkpoint.rowCount > 0) is almost always an authoring error
+  // (missing file / bad parse), NOT a legitimate full-clear. Skip instead of
+  // deleteMany-ing a populated table or stamping a rowCount:0 checkpoint.
+  if (rowCount === 0 && checkpoint && checkpoint.rowCount > 0) {
+    log(
+      `  ⚠️ ${cfg.label}: empty payload (0 rows) but checkpoint has ${checkpoint.rowCount} rows — SKIPPING (guard)`,
+    );
+    return { writes: 0, skipped: true };
+  }
+
   if (checkpoint && checkpoint.contentHash === contentHash && checkpoint.rowCount === rowCount) {
     log(`  ⏭️ ${cfg.label}: unchanged (checkpoint match, ${rowCount} rows) — 0 writes`);
     return { writes: 0, skipped: true };
