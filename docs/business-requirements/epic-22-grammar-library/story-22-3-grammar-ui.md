@@ -45,4 +45,4 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 - **Status**: Complete
 - **PR**: N/A (direct commit — no PR)
 - **Merge Date**: N/A
-- **Key Commit**: TBD
+- **Key Commit**: `49d29f36`

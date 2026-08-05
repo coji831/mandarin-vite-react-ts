@@ -39,4 +39,4 @@ re-triaged. Do not extend these items; migrate them when the component is next t
 | TD-001 | RadicalHub       | `features/radicals/components/RadicalHub.stories.tsx`                     | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
 | TD-002 | CharacterHub     | `features/character-hub/components/CharacterHub/CharacterHub.stories.tsx` | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
 | TD-003 | LexicalHubRouter | `features/lexical-hub/components/LexicalHubRouter.stories.tsx`            | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
-| TD-004 | GrammarHub       | `features/grammar/components/GrammarHub.stories.tsx`                       | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
+| TD-004 | GrammarHub       | `features/grammar/components/GrammarHub.stories.tsx`                      | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
