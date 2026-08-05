@@ -1,8 +1,8 @@
 # Implementation 22-3: Grammar UI
 
 > **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-3-grammar-ui.md`
-> **Status:** Planned
-> **Last Update:** August 4, 2026
+> **Status:** ✅ Complete
+> **Last Update:** August 5, 2026
 
 ## Technical Scope
 
@@ -12,8 +12,10 @@ Build the `features/grammar` frontend feature (service → hooks → components 
 
 - `apps/frontend/src/features/grammar/index.ts` — **NEW**: barrel.
 - `apps/frontend/src/features/grammar/types/grammar.ts` — **NEW**: frontend data types (`GrammarPattern`, `GrammarPatternSummary`, `GrammarExample`, `GrammarSegment`).
+- `apps/frontend/src/features/grammar/constants/grammarPhases.ts` — **NEW**: `GRAMMAR_PHASES = [2, 3, 4]` (readers `constants/audio.ts` precedent), re-exported via the feature barrel.
+- `apps/frontend/src/features/grammar/utils/grammarData.ts` — **NEW**: pure helpers `mapGrammarApiToData`, `isPatternLocked`, `segmentToEntityRef` (unit-tested).
 - `apps/frontend/src/features/grammar/services/grammarService.ts` — **NEW**: the ONLY file importing `apiClient`; uses `ROUTE_PATTERNS.grammarPatterns` / `grammarPatternById`; module-level cache (pattern: `radicalsService`).
-- `apps/frontend/src/features/grammar/hooks/useGrammar.ts` — **NEW**: list/detail load, loading/error/refetch, filter state (search/hsk/phase).
+- `apps/frontend/src/features/grammar/hooks/useGrammar.ts` — **NEW**: `useGrammar` (list + debounced 500ms search + filter state) + `useGrammarDetail` (detail self-fetch for the hub); request-seq ref drops stale responses.
 - `apps/frontend/src/features/grammar/components/GrammarFilterBar.tsx` — **NEW**: `SearchInput` + `FilterChip` (HSK + Phase).
 - `apps/frontend/src/features/grammar/components/GrammarList.tsx` — **NEW**: card list + loading/empty/error+retry shells.
 - `apps/frontend/src/features/grammar/components/GrammarCard.tsx` — **NEW**: pattern card (name, structure, HSK badge, phase lock badge).
@@ -171,11 +173,11 @@ Solution: MSW handlers (grammar-handlers.ts, owned by 22.2 and registered in
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById` — added in 22.2; `grammarService.ts` calls these verbatim)
-- [ ] Feature/module/component names verified against `apps/frontend/src/features/` (`features/grammar/` new; `entityHubRegistry` `grammar` key wired to `GrammarHub`)
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code — API-driven via `apiClient` (all-in-DB)
-- [ ] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-2-grammar-backend-api.md`, IMP twin)
-- [ ] Last Updated / Last Update date is current (August 4, 2026 — same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById` — added in 22.2; `grammarService.ts` calls these verbatim)
+- [x] Feature/module/component names verified against `apps/frontend/src/features/` (`features/grammar/` new; `entityHubRegistry` `grammar` key wired to `GrammarHub`)
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — API-driven via `apiClient` (all-in-DB)
+- [x] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-2-grammar-backend-api.md`, IMP twin)
+- [x] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
 
 > **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
 

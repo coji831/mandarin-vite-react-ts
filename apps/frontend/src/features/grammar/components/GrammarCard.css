@@ -1,0 +1,41 @@
+/**
+ * @file GrammarCard.css
+ * @description GrammarCard feature styles (Story 22.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ * No-motion: hover changes border color only (no transition/animation).
+ */
+.grammar-card {
+  cursor: pointer;
+}
+
+.grammar-card:hover {
+  border-color: var(--color-primary-border);
+}
+
+.grammar-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.grammar-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.grammar-card__name {
+  margin: 0;
+}
+
+.grammar-card__lock {
+  white-space: nowrap;
+}
+
+.grammar-card__structure {
+  margin: 0;
+}
+
+.grammar-card__preview {
+  margin: 0;
+}

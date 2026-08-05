@@ -1,0 +1,84 @@
+/**
+ * @file GrammarHub.css
+ * @description GrammarHub feature styles (Story 22.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ * No-motion: hover changes border/background color only (no transition).
+ */
+.grammar-hub {
+  width: 100%;
+}
+
+.grammar-hub__title {
+  line-height: 1.2;
+}
+
+.grammar-hub__structure {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-bg-light);
+}
+
+.grammar-hub__explanation {
+  line-height: 1.6;
+}
+
+.grammar-hub__example-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.grammar-hub__example-chinese {
+  line-height: 1.4;
+}
+
+.grammar-hub__play-btn {
+  width: 28px;
+  height: 28px;
+  font-size: var(--font-sm);
+}
+
+.grammar-hub__segments {
+  border-top: 1px solid var(--surface-border);
+  padding-top: var(--space-sm);
+}
+
+.grammar-hub__segment-text {
+  color: var(--text-secondary);
+}
+
+/* Linked word/character token — clickable, opens the hub. */
+.grammar-hub__segment-token {
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.grammar-hub__segment-token:hover {
+  color: var(--text-primary);
+}
+
+.grammar-hub__segment-token:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.grammar-hub__related-link {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.grammar-hub__related-link:hover {
+  border-color: var(--color-primary-border-strong);
+  background: var(--color-primary-bg-light);
+}
+
+.grammar-hub__related-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

@@ -1,6 +1,6 @@
 # Story 22.3: Grammar UI
 
-**Last Update:** August 4, 2026
+**Last Update:** August 5, 2026 (Story 22.3 complete — grammar UI delivered)
 
 ## Description
 
@@ -14,15 +14,15 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 
 ## Acceptance Criteria
 
-- [ ] `features/grammar` feature created (service → hooks → components → types); `apiClient` used only in `features/grammar/services/grammarService.ts` (per `frontend-api-client.instructions.md`).
-- [ ] `/learn/grammar` renders the real Grammar page (`pages/learn/grammar/GrammarPage.tsx`, replaces `ContentPlaceholderPage`) wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3).
-- [ ] Search by English keyword or pattern name; HSK level filter; phase filter with locked/preview states for higher-phase patterns (`isLocked` when `pattern.phase > currentPhase`).
-- [ ] Pattern card list → detail view showing `structure`, `explanation`, and examples (Chinese, pinyin, English).
-- [ ] `grammar` registered in `entityHubRegistry` → lazy-loaded `GrammarHub` detail panel (replaces the `NotImplemented` placeholder).
-- [ ] Example word tokens clickable → Character Detail Hub via `openHub({ entityType: "character", entityId, label })`.
-- [ ] Example sentences playable via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth); no stored audio fields in the data model.
-- [ ] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
-- [ ] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
+- [x] `features/grammar` feature created (service → hooks → components → types); `apiClient` used only in `features/grammar/services/grammarService.ts` (per `frontend-api-client.instructions.md`).
+- [x] `/learn/grammar` renders the real Grammar page (`pages/learn/grammar/GrammarPage.tsx`, replaces `ContentPlaceholderPage`) wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3).
+- [x] Search by English keyword or pattern name; HSK level filter; phase filter with locked/preview states for higher-phase patterns (`isLocked` when `pattern.phase > currentPhase`).
+- [x] Pattern card list → detail view showing `structure`, `explanation`, and examples (Chinese, pinyin, English).
+- [x] `grammar` registered in `entityHubRegistry` → lazy-loaded `GrammarHub` detail panel (replaces the `NotImplemented` placeholder).
+- [x] Example word tokens clickable → Character Detail Hub via `openHub({ entityType: "character", entityId, label })`.
+- [x] Example sentences playable via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth); no stored audio fields in the data model.
+- [x] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
+- [x] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
 
 ## Business Rules
 
@@ -42,7 +42,7 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD
-- **Merge Date**: TBD
+- **Status**: Complete
+- **PR**: N/A (direct commit — no PR)
+- **Merge Date**: N/A
 - **Key Commit**: TBD
