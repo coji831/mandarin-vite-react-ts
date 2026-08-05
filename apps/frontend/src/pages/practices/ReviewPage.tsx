@@ -7,17 +7,32 @@
  *   /practices/review?type=T&filter=F    → shows ReviewView (session)
  *   /practices/review?type=T             → shows ReviewPicker with type pre-selected
  *   /practices/review?filter=F           → shows ReviewPicker (no type pre-selected)
+ *
+ * Story 22.4 follow-up (Issue 4): `type` + `filter` read via useSearchParamState
+ * (validated, URL-driven); starting a session PUSHES via withSearchParams so Back
+ * exits the session.
  */
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { practices_page, practices_review } from "shared/constants";
+import { useNavigate } from "react-router-dom";
+import {
+  SEARCH_PARAMS,
+  practices_page,
+  practices_review,
+  withSearchParams,
+} from "shared/constants";
+import { useSearchParamState } from "shared/hooks";
 import { ReviewView, ReviewPicker } from "../../features/review";
 import type { ReviewSource } from "../../features/review";
 
 export function ReviewPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const presetType = searchParams.get("type");
-  const presetSource = searchParams.get("filter");
+  const [presetType] = useSearchParamState<string | null>(SEARCH_PARAMS.type, {
+    defaultValue: null,
+    parse: (raw) => (raw ? raw : null),
+  });
+  const [presetSource] = useSearchParamState<string | null>(SEARCH_PARAMS.filter, {
+    defaultValue: null,
+    parse: (raw) => (raw ? raw : null),
+  });
 
   // Only auto-start when BOTH type and filter are explicitly provided
   const hasBothParams = presetType && presetSource;
@@ -40,7 +55,7 @@ export function ReviewPage() {
       <ReviewPicker
         presetType={presetType}
         onStart={(source: ReviewSource, type: string) =>
-          navigate(`${practices_review}?type=${type}&filter=${source}`)
+          navigate(withSearchParams(practices_review, { type, filter: source }))
         }
       />
     </div>

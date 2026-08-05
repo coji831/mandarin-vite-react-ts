@@ -37,7 +37,7 @@ type SideNavProps = {
   requiredPhase?: (id: string) => number;
   /** Desktop icon-rail mode (labels + Learn children hidden). */
   collapsed?: boolean;
-  /** Toggle desktop collapse (rendered in the brand row). */
+  /** Toggle desktop collapse (rendered in the bottom footer slot). */
   onToggleCollapse?: () => void;
 };
 
@@ -62,24 +62,12 @@ function SideNav({
         collapsed ? "side-nav--collapsed" : ""
       }`}
     >
-      {/* Brand + desktop collapse toggle */}
+      {/* Brand row — logo + title only (collapse toggle lives in the footer) */}
       <div className="side-nav__brand gap-xs font-lg fw-700 p-xs">
         <span className="side-nav__logo font-2xl" aria-hidden="true">
           🏮
         </span>
         <span className="side-nav__title text-accent flex-1">Mandarin</span>
-        {onToggleCollapse && (
-          <button
-            type="button"
-            className="side-nav__collapse-toggle flex-center bg-surface-light-5 radius-sm"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            aria-expanded={!collapsed}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <span aria-hidden="true">{collapsed ? "▸" : "◂"}</span>
-          </button>
-        )}
       </div>
 
       {/* Navigation links — always visible */}
@@ -87,10 +75,10 @@ function SideNav({
         {navItems.map((item) =>
           item.children && item.children.length > 0 ? (
             <div key={item.path} className="side-nav__group flex flex-col">
-              {/* Group header: toggle button (desktop) or static row (collapsed rail) */}
+              {/* Group header (parent): toggle button (desktop) or static row (collapsed rail) */}
               {collapsed ? (
                 <div
-                  className={`side-nav__group-header gap-sm radius-sm text-tertiary font-sm p-sm transition-all ${
+                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all ${
                     isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
                   }`}
                 >
@@ -104,7 +92,7 @@ function SideNav({
               ) : (
                 <button
                   type="button"
-                  className={`side-nav__group-header gap-sm radius-sm text-tertiary font-sm p-sm transition-all ${
+                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all ${
                     isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
                   }`}
                   onClick={() => setLearnOpen((prev) => !prev)}
@@ -140,18 +128,19 @@ function SideNav({
                     return (
                       <NavLink
                         key={child.id}
-                        to={isLocked ? "#" : child.path}
+                        to={child.path}
                         onClick={(e) => {
                           if (isLocked) {
                             e.preventDefault();
                           }
                         }}
+                        tabIndex={isLocked ? -1 : undefined}
                         aria-disabled={isLocked || undefined}
                         title={isLocked ? `Complete Phase ${required} to unlock` : child.label}
                         className={({ isActive }) =>
-                          `side-nav__child gap-sm radius-sm text-tertiary font-sm p-sm transition-all ${
+                          `side-nav__child gap-sm radius-sm text-tertiary font-xs p-sm transition-all ${
                             isActive && !isLocked ? ACTIVE_LINK_CLASS : ""
-                          }`
+                          } ${isLocked ? "side-nav__child--locked" : ""}`
                         }
                       >
                         <span
@@ -195,6 +184,27 @@ function SideNav({
           ),
         )}
       </nav>
+
+      {/* Bottom footer slot — desktop collapse toggle pinned to the rail bottom.
+          Icon + "Collapse" label when expanded, icon-only centered when collapsed.
+          Hidden on the ≤768px forced mobile icon rail (collapse is desktop-only). */}
+      {onToggleCollapse && (
+        <div className="side-nav__footer">
+          <button
+            type="button"
+            className="side-nav__collapse-toggle flex-center bg-surface-light-5 radius-sm"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <span aria-hidden="true">{collapsed ? "▸" : "◂"}</span>
+            <span className="side-nav__footer-label font-xs text-muted">
+              {collapsed ? "" : "Collapse"}
+            </span>
+          </button>
+        </div>
+      )}
     </aside>
   );
 }

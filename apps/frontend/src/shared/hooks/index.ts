@@ -11,3 +11,5 @@ export type {
 } from "./useAudioItemPlayback";
 export { usePinyinCharacterMap } from "./usePinyinCharacterMap";
 export type { UsePinyinCharacterMapReturn } from "./usePinyinCharacterMap";
+export { useSearchParamState } from "./useSearchParamState";
+export type { UseSearchParamStateOptions, SetSearchParamState } from "./useSearchParamState";

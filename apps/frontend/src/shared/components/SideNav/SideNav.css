@@ -6,7 +6,7 @@
   transition: width var(--transition-normal);
 }
 
-/* Brand */
+/* Brand row — logo + title only (collapse toggle moved to the footer) */
 .side-nav__brand {
   cursor: default;
   display: flex;
@@ -14,10 +14,23 @@
   justify-content: flex-start;
 }
 
-/* Desktop collapse toggle (brand row) */
+/* ===========================
+   Desktop collapse toggle — bottom footer slot (Story 22.4 follow-up Issue 2)
+   =========================== */
+
+.side-nav__footer {
+  margin-top: auto; /* pins to the rail bottom */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--space-xs) 0;
+}
+
 .side-nav__collapse-toggle {
-  width: 28px;
-  height: 28px;
+  min-width: var(--size-touch);
+  min-height: var(--size-touch);
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
   cursor: pointer;
   border: 1px solid var(--surface-border);
   color: var(--text-tertiary);
@@ -28,6 +41,21 @@
 .side-nav__collapse-toggle:hover {
   background: var(--surface-light-10);
   color: var(--text-primary);
+}
+
+.side-nav--collapsed .side-nav__footer {
+  justify-content: center;
+}
+
+.side-nav--collapsed .side-nav__footer-label {
+  display: none;
+}
+
+/* Collapse is desktop-only — hide the footer on the forced mobile icon rail */
+@media (max-width: 768px) {
+  .side-nav__footer {
+    display: none;
+  }
 }
 
 /* Navigation links */
@@ -51,7 +79,9 @@
   color: var(--text-secondary);
 }
 
-/* Learn group header — row button */
+/* Learn group header — row button (parent: font-sm fw-600 text-secondary via
+   utility classes; the font-weight/color live on the JSX classes so the shared
+   token utilities win over this structural rule) */
 .side-nav__group-header {
   border: none;
   background: transparent;
@@ -69,7 +99,9 @@
   text-overflow: ellipsis;
 }
 
-/* Learn group children — indented under the group header */
+/* Learn group children — indented under the group header (Story 22.4 follow-up
+   Issue 3): children step down to font-xs + text-tertiary (utility classes)
+   with a 2px left rail for the parent/child hierarchy. */
 .side-nav__group-children {
   gap: var(--space-xs);
   margin-top: var(--space-xs);
@@ -77,6 +109,15 @@
 
 .side-nav__child {
   padding-left: calc(var(--space-md) + 24px); /* icon column + indent */
+  border-left: 2px solid var(--surface-light-10); /* hierarchy rail */
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; /* rail hugs the left */
+}
+
+/* Locked children — dimmed, non-interactive affordance (parity with TabBar op-40) */
+.side-nav__child--locked {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .side-nav__group-chevron {

@@ -66,6 +66,7 @@ describe("SideNav", () => {
       const grammar = screen.getByRole("link", { name: /Grammar/ });
       expect(grammar).toHaveAttribute("aria-disabled", "true");
       expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
+      expect(grammar).toHaveAttribute("tabindex", "-1");
       expect(within(grammar).getByLabelText("locked")).toBeInTheDocument();
     });
 
@@ -91,6 +92,7 @@ describe("SideNav", () => {
       renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
       const foundations = screen.getByRole("link", { name: /Foundations/ });
       expect(foundations).not.toHaveAttribute("aria-disabled");
+      expect(foundations).not.toHaveAttribute("tabindex");
       expect(foundations).toHaveAttribute("href", "/learn/foundations");
     });
   });
@@ -107,6 +109,44 @@ describe("SideNav", () => {
       renderSideNav({ onToggleCollapse });
       fireEvent.click(screen.getByRole("button", { name: "Collapse sidebar" }));
       expect(onToggleCollapse).toHaveBeenCalled();
+    });
+  });
+
+  describe("bottom collapse toggle (footer slot)", () => {
+    it("shows the icon + Collapse label when expanded", () => {
+      renderSideNav();
+      const toggle = screen.getByRole("button", { name: "Collapse sidebar" });
+      expect(toggle).toHaveAttribute("aria-expanded", "true");
+      expect(within(toggle).getByText("Collapse")).toBeInTheDocument();
+      expect(within(toggle).getByText("◂")).toBeInTheDocument();
+    });
+
+    it("shows an icon-only toggle (no label) when collapsed", () => {
+      renderSideNav({ collapsed: true });
+      const toggle = screen.getByRole("button", { name: "Expand sidebar" });
+      expect(toggle).toHaveAttribute("aria-expanded", "false");
+      expect(within(toggle).getByText("▸")).toBeInTheDocument();
+      expect(within(toggle).queryByText("Collapse")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("child hierarchy", () => {
+    it('marks the active child with aria-current="page"', () => {
+      renderSideNav({ currentPath: "/learn/grammar" });
+      const grammar = screen.getByRole("link", { name: /Grammar/ });
+      expect(grammar).toHaveAttribute("aria-current", "page");
+    });
+
+    it("dims locked children (locked class) and does not mark them current", () => {
+      renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
+      const grammar = screen.getByRole("link", { name: /Grammar/ });
+      expect(grammar).toHaveClass("side-nav__child--locked");
+      expect(grammar).toHaveAttribute("aria-disabled", "true");
+      expect(grammar).not.toHaveAttribute("aria-current");
+      // The unlocked, active Foundations child is NOT dimmed and IS current.
+      const foundations = screen.getByRole("link", { name: /Foundations/ });
+      expect(foundations).not.toHaveClass("side-nav__child--locked");
+      expect(foundations).toHaveAttribute("aria-current", "page");
     });
   });
 });

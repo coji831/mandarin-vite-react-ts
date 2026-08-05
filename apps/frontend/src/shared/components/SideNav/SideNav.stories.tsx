@@ -5,8 +5,9 @@
  * account surface lives in the AppTopBar UserMenu). Uses withRouter for
  * NavLink active states.
  *
- * Covers: expanded (Dashboard/Learn active), collapsed rail, and phase-gated
- * Learn locks.
+ * Covers: expanded (Dashboard/Learn active), collapsed rail with the bottom
+ * collapse toggle, child hierarchy (active + locked children, Story 22.4
+ * follow-ups Issue 2/3), and phase-gated Learn locks.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { SideNavProps } from "./SideNav";
@@ -67,11 +68,20 @@ export const ExpandedLearnActive: Story = {
 };
 
 export const CollapsedRail: Story = {
-  name: "Collapsed rail (desktop)",
+  name: "Collapsed rail (desktop) — bottom icon-only toggle",
   decorators: [withRouter(["/"])],
   args: {
     currentPath: "/",
     collapsed: true,
+  },
+};
+
+export const ChildHierarchy: Story = {
+  name: "Learn — active + locked children (Issue 3)",
+  decorators: [withRouter(["/learn/grammar"])],
+  args: {
+    currentPath: "/learn/grammar",
+    phaseGate: 2,
   },
 };
 

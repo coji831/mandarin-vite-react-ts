@@ -35,6 +35,23 @@ export const TonesTab: Story = {
   },
 };
 
+export const TonesDeepLink: Story = {
+  name: "Tones — deep-linked (?tab=tones)",
+  parameters: {
+    // Story 22.4 follow-up (Issue 4): the URL seeds the tab (URL wins over the
+    // `initialTab` default) via useSearchParamState.
+    layoutPath: "/learn/foundations?tab=tones",
+    msw: {
+      handlers: [
+        ...mswHandlers.foundations.default(),
+        mswHandlers.progression.phaseGate(2),
+        quizHandlers.default.sandhiQuestions,
+        quizHandlers.default.createAttempt,
+      ],
+    },
+  },
+};
+
 export const Strokes: Story = {
   name: "Strokes",
   args: { initialTab: "strokes" },

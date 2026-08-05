@@ -105,6 +105,8 @@ tokens:
       box-variant: "box-tone-5"
       button-variant: "btn-tone-5"
   spacing: ["8px", "12px", "16px", "24px", "32px", "40px"]
+  size:
+    touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
   radii: ["4px", "8px", "12px", "20px"]
   shadows:
     sm: "0 2px 8px rgba(0,0,0,0.3)"
