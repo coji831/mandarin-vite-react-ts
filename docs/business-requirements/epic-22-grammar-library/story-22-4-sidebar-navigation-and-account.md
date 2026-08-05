@@ -46,7 +46,7 @@ This story is a scope extension of Epic 22 (Grammar Pattern Library). It fixes a
 - **Status**: Complete
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: `<key-commit-hash>` (recorded in the `chore(docs): record story 22.4 key commit hash` commit, same as 22.2/22.3)
+- **Key Commit**: `6fdb51c9`
 
 ## Implementation Notes (Code Review Fixes — Aug 5, 2026)
 

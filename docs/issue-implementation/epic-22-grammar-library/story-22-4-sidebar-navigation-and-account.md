@@ -228,4 +228,4 @@ The Code Reviewer audit returned **APPROVE-WITH-NITS** (0 blockers, 2 medium, 5 
 
 ## Key Commits
 
-- `feat(epic-22): implement story 22.4 sidebar navigation and account` — recorded in the BR after commit (chore(docs) record-hash commit, matching the 22.2/22.3 convention).
+- `6fdb51c9` — `feat(epic-22): implement story 22.4 sidebar navigation and account` (recorded in this `chore(docs)` commit, matching the 22.2/22.3 convention).
