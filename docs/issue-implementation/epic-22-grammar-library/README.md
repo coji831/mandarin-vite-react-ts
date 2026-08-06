@@ -150,7 +150,7 @@ model GrammarPatternRelation {
    - Alternatives considered: Implementing a real `ContentSource` for `ContentBrowser` (rejected — would require extending `ContentItem`/`ContentCard`/detail flow; `ContentBrowser` stays the freeroam `/library` surface).
    - Implications: New feature folder `apps/frontend/src/features/grammar/`; page at `apps/frontend/src/pages/learn/grammar/GrammarPage.tsx`; route in `LearnRoutes.tsx` swaps `ContentPlaceholderPage` for `GrammarPage` wrapped in `PhaseGate requiredPhase={2}`.
 
-6. **Detail view via LexicalHub `GrammarHub`** — register `grammar` in `entityHubRegistry` (lazy `import("features/grammar")`) so `openHub({ entityType: "grammar", entityId, label })` opens the pattern detail; example-word tokens call `openHub({ entityType: "character", entityId: <content_id>, label: <pinyin> })`.
+6. **Detail view via LexicalHub `GrammarHub`** — register `grammar` in `entityHubRegistry` (lazy `import("features/grammar")`) so `openHub({ entityType: "grammar", entityId, label })` opens the pattern detail; example-word tokens call `openHub({ entityType: "character", entityId: <glyph>, label: <pinyin> })` — `segmentToEntityRef` translates the seed's content_id (`ch_20070`) → `segment.text` (the glyph 书) for `character`/`word`; other entity types stay content_id-keyed.
    - Rationale: The hub already owns entity detail with modal + navigation stack; `grammar` is already a valid `EntityType` with a `NotImplemented` placeholder.
    - Alternatives considered: Local expandable detail panel (rejected — duplicates hub; breaks word→character cross-linking).
    - Implications: All hub opens go through `openHub()` from `shared/hub-entry` — never direct `useHubStore` calls.

@@ -83,7 +83,7 @@ describe("GrammarHub (integration + MSW)", () => {
     expect(mockPlay).toHaveBeenCalledWith("我把书放在桌子上。", { textIsChinese: true });
   });
 
-  it("opens the Character hub when a linked character token is clicked", async () => {
+  it("opens the Character hub with the GLYPH entityId when a linked character token is clicked", async () => {
     server.use(...grammarHandlers.default());
 
     render(<GrammarHub entityId="gr_0018" />);
@@ -95,14 +95,15 @@ describe("GrammarHub (integration + MSW)", () => {
     // "我" is a linked character token in example 1 (aria-label = text — pinyin — gloss)
     fireEvent.click(screen.getByRole("button", { name: /我 — wǒ — I/ }));
 
+    // openHub receives the GLYPH (我), not the seed's content_id (ch_25105)
     expect(mockOpenHub).toHaveBeenCalledWith({
       entityType: "character",
-      entityId: "ch_25105",
+      entityId: "我",
       label: "wǒ",
     });
   });
 
-  it("opens the Word hub when a linked word token is clicked", async () => {
+  it("opens the Character hub with the GLYPH entityId for the bug-report token 书", async () => {
     server.use(...grammarHandlers.default());
 
     render(<GrammarHub entityId="gr_0018" />);
@@ -111,14 +112,49 @@ describe("GrammarHub (integration + MSW)", () => {
       expect(screen.getByText("把 (bǎ) disposal construction")).toBeInTheDocument(),
     );
 
-    // "桌子" is a linked word token in example 1
+    // "书" is the token from the Epic 22 bug report (seed content_id ch_20070)
+    fireEvent.click(screen.getByRole("button", { name: /书 — shū — book/ }));
+
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "书",
+      label: "shū",
+    });
+  });
+
+  it("opens the Word hub with the GLYPH entityId when a linked word token is clicked", async () => {
+    server.use(...grammarHandlers.default());
+
+    render(<GrammarHub entityId="gr_0018" />);
+
+    await waitFor(() =>
+      expect(screen.getByText("把 (bǎ) disposal construction")).toBeInTheDocument(),
+    );
+
+    // "桌子" is a linked word token in example 1 (seed content_id w_00487)
     fireEvent.click(screen.getByRole("button", { name: /桌子 — zhuōzi — table/ }));
 
     expect(mockOpenHub).toHaveBeenCalledWith({
       entityType: "word",
-      entityId: "w_00487",
+      entityId: "桌子",
       label: "zhuōzi",
     });
+  });
+
+  it("does NOT open the hub when a plain-text (non-linked) segment is clicked", async () => {
+    server.use(...grammarHandlers.default());
+
+    render(<GrammarHub entityId="gr_0018" />);
+
+    await waitFor(() =>
+      expect(screen.getByText("把 (bǎ) disposal construction")).toBeInTheDocument(),
+    );
+
+    // "。" is punctuation with entityType/entityId null → renders as a plain
+    // span (not a button). Clicking it must not open any hub.
+    fireEvent.click(screen.getByText("。"));
+
+    expect(mockOpenHub).not.toHaveBeenCalled();
   });
 
   it("renders the error screen when the detail fetch fails", async () => {

@@ -7,8 +7,9 @@
  *  - `mapGrammarApiToData` — API summary → display model (happy path + missing
  *    optional fields, so cards never render `undefined`).
  *  - `isPatternLocked` — phase-lock boundaries (equal → unlocked; greater → locked).
- *  - `segmentToEntityRef` — linked token → hub EntityRef; plain/null-entity
- *    tokens → null (skip hub navigation).
+ *  - `segmentToEntityRef` — linked token → hub EntityRef; character/word tokens
+ *    translate content_id → glyph (书/桌子); grammar/radical keep content_id;
+ *    plain/null-entity tokens → null (skip hub navigation).
  */
 import { describe, it, expect } from "vitest";
 import { mapGrammarApiToData, isPatternLocked, segmentToEntityRef } from "../grammarData";
@@ -77,19 +78,35 @@ describe("isPatternLocked", () => {
 });
 
 describe("segmentToEntityRef", () => {
-  it("maps a linked segment to a hub EntityRef using pinyin as the label", () => {
+  it("maps a linked character segment to the hub using the GLYPH (书) as entityId", () => {
     const segment: GrammarSegment = {
-      text: "我",
-      pinyin: "wǒ",
-      gloss: "I",
+      text: "书",
+      pinyin: "shū",
+      gloss: "book",
       entityType: "character",
-      entityId: "ch_25105",
+      entityId: "ch_20070",
     };
 
     expect(segmentToEntityRef(segment)).toEqual({
       entityType: "character",
-      entityId: "ch_25105",
-      label: "wǒ",
+      entityId: "书",
+      label: "shū",
+    });
+  });
+
+  it("maps a linked word segment to the hub using the GLYPH (桌子) as entityId", () => {
+    const segment: GrammarSegment = {
+      text: "桌子",
+      pinyin: "zhuōzi",
+      gloss: "table",
+      entityType: "word",
+      entityId: "w_00487",
+    };
+
+    expect(segmentToEntityRef(segment)).toEqual({
+      entityType: "word",
+      entityId: "桌子",
+      label: "zhuōzi",
     });
   });
 
@@ -104,8 +121,40 @@ describe("segmentToEntityRef", () => {
 
     expect(segmentToEntityRef(segment)).toEqual({
       entityType: "word",
-      entityId: "w_00487",
+      entityId: "桌子",
       label: "桌子",
+    });
+  });
+
+  it("returns null for a glyph-keyed token with an empty text (blank hub id guard)", () => {
+    const segment: GrammarSegment = {
+      text: "",
+      pinyin: "shū",
+      gloss: "book",
+      entityType: "character",
+      entityId: "ch_20070",
+    };
+
+    expect(segmentToEntityRef(segment)).toBeNull();
+  });
+
+  it("keeps the content_id for non-glyph entity types (grammar/radical are content_id-keyed)", () => {
+    // The declared GrammarSegment union is character|word|null today; the glyph
+    // translation is scoped to character/word, so any other entity type passes
+    // segment.entityId (content_id) through unchanged. Cast documents the
+    // future-proofed branch.
+    const segment = {
+      text: "吗",
+      pinyin: "ma",
+      gloss: "question particle",
+      entityType: "grammar",
+      entityId: "gr_0005",
+    } as unknown as GrammarSegment;
+
+    expect(segmentToEntityRef(segment)).toEqual({
+      entityType: "grammar",
+      entityId: "gr_0005",
+      label: "ma",
     });
   });
 

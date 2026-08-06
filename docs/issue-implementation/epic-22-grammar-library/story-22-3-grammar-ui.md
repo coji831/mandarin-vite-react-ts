@@ -2,7 +2,7 @@
 
 > **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-3-grammar-ui.md`
 > **Status:** ✅ Complete
-> **Last Update:** August 5, 2026
+> **Last Update:** August 6, 2026
 
 ## Technical Scope
 
@@ -75,17 +75,20 @@ export function isPatternLocked(patternPhase: number, currentPhase: number): boo
 
 ### Segment → token click → openHub
 
-Each example renders `segments[]`; tokens with `entityId` are clickable and open the Character Hub through the single entry point:
+Each example renders `segments[]`; tokens with `entityId` are clickable and open the hub through the single entry point. `segmentToEntityRef` (pure util, unit-tested) maps a segment to the hub `EntityRef`:
 
 ```typescript
 import { openHub } from "shared/hub-entry";
+import { segmentToEntityRef } from "../utils";
 
 // inside GrammarHub example segment render
 function onTokenClick(seg: GrammarSegment) {
-  if (!seg.entityId || !seg.entityType) return; // plain text / non-linked token
-  openHub({ entityType: seg.entityType, entityId: seg.entityId, label: seg.pinyin ?? seg.text });
+  const ref = segmentToEntityRef(seg);
+  if (ref) openHub(ref); // null → plain text / non-linked token
 }
 ```
+
+**Bug fix (2026-08-06): grammar→hub glyph contract.** The grammar seed/API stores `entityId` as the DB content_id (`ch_20070`, `w_00487`) while the character/word hubs + APIs are **glyph-keyed** (书, 桌子). `segmentToEntityRef` now translates content_id → glyph (`segment.text`) for `character`/`word`; other entity types (grammar/radical/…) keep content_id. Re-verified in-browser: character 书 + word 桌子 hubs load (`/v1/characters/书` 200, `/v1/words/桌子` 200, hanzi-writer `书.json` 200); related-pattern grammar hub (`gr_XXXX`) unchanged.
 
 Token clicks navigate the existing hub stack (word→character), never a bespoke modal. Non-linked tokens render as plain text.
 
@@ -177,7 +180,7 @@ Solution: MSW handlers (grammar-handlers.ts, owned by 22.2 and registered in
 - [x] Feature/module/component names verified against `apps/frontend/src/features/` (`features/grammar/` new; `entityHubRegistry` `grammar` key wired to `GrammarHub`)
 - [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — API-driven via `apiClient` (all-in-DB)
 - [x] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-2-grammar-backend-api.md`, IMP twin)
-- [x] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
+- [x] Last Updated / Last Update date is current (August 6, 2026 — same commit as the edit)
 
 > **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
 

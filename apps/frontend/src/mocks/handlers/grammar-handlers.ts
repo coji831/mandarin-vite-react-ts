@@ -140,6 +140,8 @@ const sampleDetail: GrammarPatternDetail = {
           entityId: "w_00487",
         },
         { text: "上", pinyin: "shàng", gloss: "on", entityType: "character", entityId: "ch_19978" },
+        // Punctuation — no linked entity → renders as plain, non-clickable text
+        { text: "。", pinyin: "", gloss: "period", entityType: null, entityId: null },
       ],
     },
     {
