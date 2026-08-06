@@ -4,6 +4,9 @@
   width: 220px;
   min-height: 100vh;
   transition: width var(--transition-normal);
+  /* Component-scoped token for the icon column (24px) — shared by the
+     brand/row icons and the child indent math so the 24px is not duplicated. */
+  --side-nav-icon-w: 24px;
 }
 
 /* Brand row — logo + title only (collapse toggle moved to the footer) */
@@ -79,12 +82,29 @@
   color: var(--text-secondary);
 }
 
+/* Active state — single deterministic source for the pill. Driven by
+   `aria-current="page"` (specificity 3 beats any bare utility and the shared
+   :hover rule above, so an active pill stays active under the cursor). Same
+   tokens as ACTIVE_LINK_CLASS (fw-600 bg-primary-bg border-primary-border
+   text-primary-light); the JSX keeps ACTIVE_LINK_CLASS for parity + tests.
+   NavLink auto-sets `aria-current="page"` on ANY matching URL — including a
+   deep-linked locked child — so the child branch excludes
+   `.side-nav__child--locked` to keep locked children dimmed/non-highlighted. */
+.side-nav .side-nav__link[aria-current="page"],
+.side-nav .side-nav__group-header[aria-current="page"],
+.side-nav .side-nav__child[aria-current="page"]:not(.side-nav__child--locked) {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
 /* Learn group header — row button (parent: font-sm fw-600 text-secondary via
    utility classes; the font-weight/color live on the JSX classes so the shared
-   token utilities win over this structural rule) */
+   token utilities win over this structural rule). The header's transparent
+   background now comes from the `bg-transparent` utility in JSX so the
+   `bg-primary-bg` active pill wins by stylesheet order. */
 .side-nav__group-header {
-  border: none;
-  background: transparent;
   font-family: inherit;
   width: 100%;
   cursor: pointer;
@@ -92,25 +112,30 @@
 
 .side-nav__icon,
 .side-nav__child-icon {
-  width: 24px;
+  width: var(--side-nav-icon-w);
 }
 
 .side-nav__label {
   text-overflow: ellipsis;
 }
 
-/* Learn group children — indented under the group header (Story 22.4 follow-up
-   Issue 3): children step down to font-xs + text-tertiary (utility classes)
-   with a 2px left rail for the parent/child hierarchy. */
+/* Learn group children — indented under the group header (hierarchy fixes):
+   children step down to font-xs + text-tertiary (utility classes) and are
+   subordinated by a label-alignment indent — the child icon sits directly
+   under the parent's label (12 + 24 + 12 = 48px). Indentation is the sole
+   structural cue; the 2px left rail was removed so children share the same
+   base shape (radius-sm, transition, flex row) as parents/links. */
 .side-nav__group-children {
   gap: var(--space-xs);
   margin-top: var(--space-xs);
 }
 
-.side-nav__child {
-  padding-left: calc(var(--space-md) + 24px); /* icon column + indent */
-  border-left: 2px solid var(--surface-light-10); /* hierarchy rail */
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; /* rail hugs the left */
+/* Scoped (`.side-nav .side-nav__child`) so this padding-left beats the `p-sm`
+   utility in globals.css by specificity — (0,2,0) vs `.p-sm`'s (0,1,0) — and
+   wins regardless of load order; the label-alignment indent must win or
+   children collapse back to 12px. */
+.side-nav .side-nav__child {
+  padding-left: calc(var(--space-sm) + var(--side-nav-icon-w) + var(--space-sm)); /* 48px label-alignment indent */
 }
 
 /* Locked children — dimmed, non-interactive affordance (parity with TabBar op-40) */

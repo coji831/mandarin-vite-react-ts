@@ -104,6 +104,17 @@ describe("SideNav", () => {
       expect(screen.getByRole("button", { name: "Expand sidebar" })).toBeInTheDocument();
     });
 
+    it("marks the collapsed group header current and titles it with the active child", () => {
+      const { container } = renderSideNav({ currentPath: "/learn/grammar", collapsed: true });
+      // Collapsed rail renders the group header as a static div (not a button).
+      const header = container.querySelector(".side-nav__group-header");
+      expect(header).toHaveAttribute("aria-current", "page");
+      expect(header).toHaveAttribute("title", "Learn — Grammar");
+      // Children are unmounted in rail mode — the active child is only
+      // recoverable via the header's title tooltip.
+      expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
+    });
+
     it("calls onToggleCollapse when the collapse toggle is clicked", () => {
       const onToggleCollapse = vi.fn();
       renderSideNav({ onToggleCollapse });
@@ -137,6 +148,20 @@ describe("SideNav", () => {
       expect(grammar).toHaveAttribute("aria-current", "page");
     });
 
+    it('marks the Learn group header current when a child is active (expanded)', () => {
+      renderSideNav({ currentPath: "/learn/grammar" });
+      const header = screen.getByRole("button", { name: /Learn/ });
+      expect(header).toHaveAttribute("aria-current", "page");
+      const grammar = screen.getByRole("link", { name: /Grammar/ });
+      expect(grammar).toHaveAttribute("aria-current", "page");
+    });
+
+    it("does not mark the Learn group header current on unrelated routes", () => {
+      renderSideNav({ currentPath: "/library" });
+      const header = screen.getByRole("button", { name: /Learn/ });
+      expect(header).not.toHaveAttribute("aria-current");
+    });
+
     it("dims locked children (locked class) and does not mark them current", () => {
       renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
       const grammar = screen.getByRole("link", { name: /Grammar/ });
@@ -147,6 +172,19 @@ describe("SideNav", () => {
       const foundations = screen.getByRole("link", { name: /Foundations/ });
       expect(foundations).not.toHaveClass("side-nav__child--locked");
       expect(foundations).toHaveAttribute("aria-current", "page");
+    });
+
+    it("keeps a deep-linked locked child dimmed (no active pill) even when aria-current is set", () => {
+      // Deep-link to a locked URL: Grammar (Phase 2) at phaseGate 1. NavLink
+      // auto-sets aria-current="page" on the matching URL, but the locked guard
+      // must keep it dimmed — no ACTIVE_LINK_CLASS pill classes. The CSS
+      // `:not(.side-nav__child--locked)` guard backs this up in real styles.
+      renderSideNav({ currentPath: "/learn/grammar", phaseGate: 1 });
+      const grammar = screen.getByRole("link", { name: /Grammar/ });
+      expect(grammar).toHaveAttribute("aria-current", "page");
+      expect(grammar).toHaveClass("side-nav__child--locked");
+      expect(grammar).not.toHaveClass("bg-primary-bg");
+      expect(grammar).not.toHaveClass("fw-600");
     });
   });
 });

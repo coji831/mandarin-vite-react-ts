@@ -6,8 +6,9 @@
  * NavLink active states.
  *
  * Covers: expanded (Dashboard/Learn active), collapsed rail with the bottom
- * collapse toggle, child hierarchy (active + locked children, Story 22.4
- * follow-ups Issue 2/3), and phase-gated Learn locks.
+ * collapse toggle, child hierarchy (indent-only, no left rail; active child +
+ * active parent pill), collapsed rail active pill + tooltip, and phase-gated
+ * Learn locks.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { SideNavProps } from "./SideNav";
@@ -60,7 +61,7 @@ export const ExpandedDashboard: Story = {
 };
 
 export const ExpandedLearnActive: Story = {
-  name: "Expanded — Learn active",
+  name: "Expanded — Learn active (hierarchy fixes)",
   decorators: [withRouter(["/learn/grammar"])],
   args: {
     currentPath: "/learn/grammar",
@@ -76,8 +77,17 @@ export const CollapsedRail: Story = {
   },
 };
 
+export const CollapsedRailActive: Story = {
+  name: "Collapsed rail — active Learn group (pill + tooltip)",
+  decorators: [withRouter(["/learn/grammar"])],
+  args: {
+    currentPath: "/learn/grammar",
+    collapsed: true,
+  },
+};
+
 export const ChildHierarchy: Story = {
-  name: "Learn — active + locked children (Issue 3)",
+  name: "Learn — active + locked children (indent-only, no rail)",
   decorators: [withRouter(["/learn/grammar"])],
   args: {
     currentPath: "/learn/grammar",

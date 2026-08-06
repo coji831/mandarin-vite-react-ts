@@ -72,15 +72,28 @@ function SideNav({
 
       {/* Navigation links — always visible */}
       <nav className="side-nav__links flex flex-col" aria-label="Main navigation">
-        {navItems.map((item) =>
-          item.children && item.children.length > 0 ? (
+        {navItems.map((item) => {
+          // Active Learn child (for the collapsed rail's title) — only
+          // meaningful when a child path matches; guards the title against a
+          // dangling em-dash when currentPath is the group root with no child.
+          const activeChild = item.children?.find((ch) => currentPath.startsWith(ch.path));
+
+          return item.children && item.children.length > 0 ? (
             <div key={item.path} className="side-nav__group flex flex-col">
               {/* Group header (parent): toggle button (desktop) or static row (collapsed rail) */}
               {collapsed ? (
                 <div
-                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all ${
+                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all border-1 border-transparent bg-transparent ${
                     isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
                   }`}
+                  aria-current={isGroupActive(item.path) ? "page" : undefined}
+                  title={
+                    isGroupActive(item.path)
+                      ? activeChild
+                        ? `${item.label} — ${activeChild.label}`
+                        : item.label
+                      : item.label
+                  }
                 >
                   <span className="side-nav__icon font-md text-center shrink-0" aria-hidden="true">
                     {item.icon}
@@ -92,10 +105,11 @@ function SideNav({
               ) : (
                 <button
                   type="button"
-                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all ${
+                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all border-1 border-transparent bg-transparent ${
                     isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
                   }`}
                   onClick={() => setLearnOpen((prev) => !prev)}
+                  aria-current={isGroupActive(item.path) ? "page" : undefined}
                   aria-expanded={learnOpen}
                   aria-controls={`side-nav-group-${item.label.toLowerCase()}`}
                 >
@@ -138,7 +152,7 @@ function SideNav({
                         aria-disabled={isLocked || undefined}
                         title={isLocked ? `Complete Phase ${required} to unlock` : child.label}
                         className={({ isActive }) =>
-                          `side-nav__child gap-sm radius-sm text-tertiary font-xs p-sm transition-all ${
+                          `side-nav__child gap-sm radius-sm text-tertiary font-xs p-sm transition-all border-1 border-transparent ${
                             isActive && !isLocked ? ACTIVE_LINK_CLASS : ""
                           } ${isLocked ? "side-nav__child--locked" : ""}`
                         }
@@ -169,7 +183,7 @@ function SideNav({
               to={item.path}
               end={item.exact}
               className={({ isActive }) =>
-                `side-nav__link gap-sm radius-sm text-tertiary font-sm p-sm transition-all ${
+                `side-nav__link gap-sm radius-sm text-tertiary font-sm p-sm transition-all border-1 border-transparent ${
                   isActive ? ACTIVE_LINK_CLASS : ""
                 }`
               }
@@ -181,8 +195,8 @@ function SideNav({
                 {item.label}
               </span>
             </NavLink>
-          ),
-        )}
+          );
+        })}
       </nav>
 
       {/* Bottom footer slot — desktop collapse toggle pinned to the rail bottom.
