@@ -42,6 +42,6 @@ This story delivers grammar through the platform's canonical API layer and unblo
 ## Implementation Status
 
 - **Status**: Complete
-- **PR**: N/A (direct commit — no PR)
+- **PR**: TBD (pending)
 - **Merge Date**: N/A
 - **Key Commit**: `83aa048f`

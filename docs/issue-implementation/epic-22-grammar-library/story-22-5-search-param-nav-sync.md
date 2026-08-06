@@ -1,8 +1,9 @@
 # Implementation 22-5: Search-Param Nav Sync
 
-> **BR Reference:** `docs/business-requirements/epic-22-grammar-library/README.md` (Story 22.5 — nav/URL sync, per Architect proposal; frontend-only, no dedicated BR file)
+> **BR Reference:** `docs/business-requirements/epic-22-grammar-library/story-22-5-search-param-nav-sync.md` (Story 22.5 — nav/URL sync, per Architect proposal)
 > **Last Updated:** August 6, 2026
 > **Status:** ✅ Complete (gates + browser verified)
+> **PR:** TBD (pending)
 
 ## Technical Scope
 
@@ -11,7 +12,7 @@ Frontend-only fix for the missing sync between the tab system and side-menu navi
 **The persistence rule (canonical, documented in `searchParams.ts` header):**
 
 - Params are **route-scoped** — no cross-route persistence. Leaving a route drops its params (sidebar links land on the canonical bare path).
-- **Sub-state writes** (`tab`/`view`/`mode`/`page`/`q`/`hsk`/`phase`) use `replace: true` so Back *exits the page* instead of rewinding tabs.
+- **Sub-state writes** (`tab`/`view`/`mode`/`page`/`q`/`hsk`/`phase`) use `replace: true` so Back _exits the page_ instead of rewinding tabs.
 - **Session starts** (quiz/review/dashboard CTAs) use `push`.
 - **Same-page sidebar clicks** are a no-op that preserves the current sub-state.
 

@@ -305,13 +305,13 @@ Solution: All filters are optional and additive; no "at least one filter" 400. E
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns` = `/v1/grammar/patterns`, `grammarPatternById(id)` = `/v1/grammar/patterns/:id`; verbs GET, copied verbatim)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` (`modules/grammar/` new; no `features/grammar` yet)
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code — Prisma-only, all-in-DB
-- [ ] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-3-grammar-ui.md`, IMP twin)
-- [ ] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns` = `/v1/grammar/patterns`, `grammarPatternById(id)` = `/v1/grammar/patterns/:id`; verbs GET, copied verbatim)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` (`modules/grammar/` new; no `features/grammar` yet)
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — Prisma-only, all-in-DB
+- [x] All relative markdown links resolve (this story → `../README.md`, `story-22-1-grammar-data.md`, `story-22-3-grammar-ui.md`, IMP twin)
+- [x] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
 
-> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — direct commit, no PR).
+> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — PR `TBD (pending)` until the branch is pushed).
 
 ## Testing Implementation
 

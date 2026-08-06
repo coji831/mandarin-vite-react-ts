@@ -14,9 +14,9 @@
 - **Detail view is a new `GrammarHub`** in the LexicalHub; each example word is clickable and opens the Character Detail Hub via the shared `openHub()` entry point.
 - **Example-sentence audio** is generated on demand via the shared TTS manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no stored audio fields in the data model.
 
-**Status:** Planned
+**Status:** Completed
 
-**Last Update:** August 4, 2026
+**Last Update:** August 6, 2026
 
 ## Background
 
@@ -82,6 +82,12 @@ This epic consists of the following user stories:
 3. #ISSUE-22.3 / **Grammar UI** _(story-22-3-grammar-ui.md)_
    - As a **learner**, I want to **browse and search grammar patterns with detail views, audio, and character cross-linking**, so that **I can reference sentence structures while studying**.
 
+4. #ISSUE-22.4 / **Sidebar Navigation and Account** _(story-22-4-sidebar-navigation-and-account.md)_
+   - As a **learner**, I want to **reach every Learn section from a persistent sidebar and manage my account (Profile, Settings, Logout) from a top-bar user menu**, so that **navigation is unified in one place and account controls survive the collapsed sidebar rail**.
+
+5. #ISSUE-22.5 / **Search-Param Nav Sync** _(story-22-5-search-param-nav-sync.md)_
+   - As a **learner**, I want to **navigate between Learn sections without losing my current sub-state (tabs/filters) and share deep links**, so that **sidebar navigation stays in sync with the URL and Back exits the page instead of rewinding tabs**.
+
 ## Story Breakdown Logic
 
 This epic is divided into stories based on a data-first approach that mirrors the platform's layered pipeline (content → DB → API → UI):
@@ -96,31 +102,31 @@ Data and API are completed first so the UI can be developed and tested against r
 
 **Story 22.1 — Grammar Data**
 
-- [ ] Prisma models `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` added via migration (follow `prisma-schema-changes.instructions.md`; use `npm run db:migrate`, never `db push`).
-- [ ] ≥21 grammar patterns authored in `content/seed/phase2/grammar-patterns.json`, matching the KB-sourced family in the Background table (Phases 2/3/4 per `adult-mandarin-learning-roadmap.md`); each pattern has ≥3 example sentences (Chinese, pinyin, English) and an HSK level tag.
-- [ ] Business keys follow the `gr_XXXX` convention (e.g., `gr_0001`) per `pre-adaptation-static-dynamic-separation.md` Rule 1; `GrammarPattern`/`GrammarExample` carry internal `id` + unique `content_id` + `content_version Int @default(1)` + `metadata Json?`; example/junction rows reference `content_id`, not internal auto IDs.
-- [ ] Each example sentence carries pre-segmented clickable tokens (`segments`: text, pinyin, gloss, entityType, entityId) where `entityId` references the target entity's `content_id` (e.g., `ch_XXXX` / `w_XXXXX`) per `modeling-chinese-knowledge-graph.md` (`USED_IN_PATTERN` Word→GrammarPattern edge).
-- [ ] Grammar data seeded idempotently per `docs/guides/data/seed-pipeline.md` (business-key PK + `skipDuplicates`/pre-clear rules); seed verification passes (SQL counts match targets).
+- [x] Prisma models `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` added via migration (follow `prisma-schema-changes.instructions.md`; use `npm run db:migrate`, never `db push`).
+- [x] ≥21 grammar patterns authored in `content/seed/phase2/grammar-patterns.json`, matching the KB-sourced family in the Background table (Phases 2/3/4 per `adult-mandarin-learning-roadmap.md`); each pattern has ≥3 example sentences (Chinese, pinyin, English) and an HSK level tag.
+- [x] Business keys follow the `gr_XXXX` convention (e.g., `gr_0001`) per `pre-adaptation-static-dynamic-separation.md` Rule 1; `GrammarPattern`/`GrammarExample` carry internal `id` + unique `content_id` + `content_version Int @default(1)` + `metadata Json?`; example/junction rows reference `content_id`, not internal auto IDs.
+- [x] Each example sentence carries pre-segmented clickable tokens (`segments`: text, pinyin, gloss, entityType, entityId) where `entityId` references the target entity's `content_id` (e.g., `ch_XXXX` / `w_XXXXX`) per `modeling-chinese-knowledge-graph.md` (`USED_IN_PATTERN` Word→GrammarPattern edge).
+- [x] Grammar data seeded idempotently per `docs/guides/data/seed-pipeline.md` (business-key PK + `skipDuplicates`/pre-clear rules); seed verification passes (SQL counts match targets).
 
 **Story 22.2 — Grammar Backend API**
 
-- [ ] Backend `modules/grammar/` module created (types → repositories → services → api → container → index) following the modulith pattern; registered in the app container.
-- [ ] `GET /v1/grammar/patterns` (filters: `search`, `hskLevel`, `phase`, plus `page`/`pageSize`) and `GET /v1/grammar/patterns/:id` (pattern + examples + related patterns; `:id` resolves by `content_id` `gr_XXXX`) implemented.
-- [ ] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById`).
-- [ ] Verify `content/manifest.json` `grammar` count ≥21 and the `grammar` section lists `grammar-patterns.json` (updated by 22.1; no edit here).
-- [ ] Backend tests per `testing-standards.instructions.md` (repository, service, controller) + seed verification.
+- [x] Backend `modules/grammar/` module created (types → repositories → services → api → container → index) following the modulith pattern; registered in the app container.
+- [x] `GET /v1/grammar/patterns` (filters: `search`, `hskLevel`, `phase`, plus `page`/`pageSize`) and `GET /v1/grammar/patterns/:id` (pattern + examples + related patterns; `:id` resolves by `content_id` `gr_XXXX`) implemented.
+- [x] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`grammarPatterns`, `grammarPatternById`).
+- [x] Verify `content/manifest.json` `grammar` count ≥21 and the `grammar` section lists `grammar-patterns.json` (updated by 22.1; no edit here).
+- [x] Backend tests per `testing-standards.instructions.md` (repository, service, controller) + seed verification.
 
 **Story 22.3 — Grammar UI**
 
-- [ ] `features/grammar` feature created (service → hooks → components → types); `apiClient` used only in `grammarService.ts` (per `frontend-api-client.instructions.md`).
-- [ ] `/learn/grammar` renders the real Grammar page (replaces `ContentPlaceholderPage`), wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3); LearnLayout tab gating already present.
-- [ ] Search by English keyword or pattern name; HSK level filter; phase filter with locked/preview states for higher-phase patterns (Phase 3/4 visible as locked/preview to Phase-2 users).
-- [ ] Pattern card list → detail view showing `structure`, `explanation`, and examples (Chinese, pinyin, English).
-- [ ] `grammar` registered in `entityHubRegistry` → lazy-loaded `GrammarHub` detail panel (replaces the `NotImplemented` placeholder).
-- [ ] Example words clickable → Character Detail Hub via `openHub({ entityType: "character", entityId, label })`.
-- [ ] Example sentences playable via the shared audio manager (`useAudioItemPlayback` → `/v1/tts`, optionalAuth); no stored audio fields in the data model.
-- [ ] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
-- [ ] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
+- [x] `features/grammar` feature created (service → hooks → components → types); `apiClient` used only in `grammarService.ts` (per `frontend-api-client.instructions.md`).
+- [x] `/learn/grammar` renders the real Grammar page (replaces `ContentPlaceholderPage`), wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3); LearnLayout tab gating already present.
+- [x] Search by English keyword or pattern name; HSK level filter; phase filter with locked/preview states for higher-phase patterns (Phase 3/4 visible as locked/preview to Phase-2 users).
+- [x] Pattern card list → detail view showing `structure`, `explanation`, and examples (Chinese, pinyin, English).
+- [x] `grammar` registered in `entityHubRegistry` → lazy-loaded `GrammarHub` detail panel (replaces the `NotImplemented` placeholder).
+- [x] Example words clickable → Character Detail Hub via `openHub({ entityType: "character", entityId, label })`.
+- [x] Example sentences playable via the shared audio manager (`useAudioItemPlayback` → `/v1/tts`, optionalAuth); no stored audio fields in the data model.
+- [x] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
+- [x] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
 
 ## Architecture Decisions
 

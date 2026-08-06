@@ -212,13 +212,13 @@ Solution: scripts/validate-grammar-content.ts cross-checks every non-null entity
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim) — N/A this story (no endpoints; 22.2 owns `grammarPatterns`/`grammarPatternById`)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — N/A this story (data layer only)
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code — grammar is all-in-DB via Prisma (seed source only; no runtime JSON reads)
-- [ ] All relative markdown links resolve (this story → `../README.md`, `story-22-2-grammar-backend-api.md`, `story-22-3-grammar-ui.md`, IMP twin)
-- [ ] Last Updated / Last Update date is current (August 4, 2026 — same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim) — N/A this story (no endpoints; 22.2 owns `grammarPatterns`/`grammarPatternById`)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — N/A this story (data layer only)
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — grammar is all-in-DB via Prisma (seed source only; no runtime JSON reads)
+- [x] All relative markdown links resolve (this story → `../README.md`, `story-22-2-grammar-backend-api.md`, `story-22-3-grammar-ui.md`, IMP twin)
+- [x] Last Updated / Last Update date is current (August 5, 2026 — same commit as the edit)
 
-> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — direct commit, no PR).
+> **Note:** PR / Merge Date / Key Commit are filled in the BR's Implementation Status (same commit as this refresh — PR `TBD (pending)` until the branch is pushed).
 
 ## Testing Implementation
 

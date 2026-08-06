@@ -2,9 +2,9 @@
 
 **BR Reference:** `../../business-requirements/epic-22-grammar-library/README.md`
 
-**Status:** Planned
+**Status:** Completed
 
-**Last Update:** August 4, 2026
+**Last Update:** August 6, 2026
 
 ## Epic Summary
 
@@ -21,9 +21,9 @@
 - **Audio is on-demand** via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no audio fields in the data model.
 - **Phase gating reuses numeric Phase 2/3/4** + the existing Phase-2 grammar tab unlock in `LearnLayout`/`ContentBrowser`/`TabBar`; Phase 3/4 patterns show as locked/preview cards.
 
-**Status:** Planned
+**Status:** Completed
 
-**Last Update:** August 4, 2026
+**Last Update:** August 6, 2026
 
 ## Technical Overview
 
@@ -180,7 +180,7 @@ No other notable technical challenges (pre-implementation).
 - [x] Business-key convention is `gr_XXXX` (e.g., `gr_0001`) per `pre-adaptation-static-dynamic-separation.md` Rule 1 — **no stale `gram_001` references remain**.
 - [x] KB links resolve from this doc: `../../knowledge-base/mandarin/mandarin-fundamentals.md`, `../../knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md`, `../../knowledge-base/backend/pre-adaptation-static-dynamic-separation.md`, `../../knowledge-base/data/shared-data-model.md`, `../../knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md`; guides/conventions/practices links resolve.
 - [x] All relative markdown links resolve (BR/IMP/story links; story files to be scaffolded at kickoff).
-- [x] Last Update is current (August 4, 2026, same commit as the edit).
+- [x] Last Update is current (August 6, 2026, same commit as the edit).
 
 ## Technical Implementation
 
@@ -429,7 +429,17 @@ Per `testing-standards.instructions.md` (Testing Trophy):
 - **Key changes:** `searchParams.ts` — `SearchParamInput` + `buildSearchParams` (pure, omit logic extracted); `useSearchParamState.ts` — `useSearchParamsBatch()` (`replaceParams`/`pushParams`, atomic multi-param write); `learnNav.ts` — optional `defaultParams` (bare-canonical landing, no values today); `SideNav.tsx` — `location` prop + same-path guard (`guardSamePath`), Learn child `to = withSearchParams(path, defaultParams)`, Learn group header label → `/learn/foundations` (chevron stays the toggle); `AppLayout.tsx` passes full `location`.
 - **Custom history rejected** (Architect): RR `replace: true` already coalesces param changes into one entry — "Back exits page" is the correct built-in semantic.
 - **Gates:** all 6 pass (build / lint / design-audit / check:registry-stories / `npm test` / test-storybook) — see `verification-artifacts/story-22-5-gate-results.md`. **Browser check:** 5/5 pass — `verification-artifacts/story-22-5-browser-check.md` (+ screenshots).
-- **Deferred (locked):** ContentBrowser/TabBar bypass, Grammar `?q`/`?hsk`/`?phase` seeding, Readers `?mode`, TopNav removal, rail sub-state title.
+
+## Deferred
+
+Deferred work recorded at close — none blocks the epic; each is appropriate follow-up work:
+
+1. **ContentBrowser / TabBar migration** — refactor `ContentBrowser` + `TabBar` onto the search-param convention (`useSearchParamState` / `useSearchParamsBatch`) so they stop bypassing it.
+2. **Grammar `?q` / `?hsk` / `?phase` seeding** — seed Grammar filter state from the URL (`q`/`hsk`/`phase` search params).
+3. **Readers `?mode`** — migrate the Readers mode to the search-param convention.
+4. **TopNav removal** — the orphaned `TopNav` (kept in barrel/registry after the `LearnLayout` change) removed from the codebase.
+5. **Rail sub-state title** — the collapsed `SideNav` rail does not yet surface the current Learn sub-state title.
+6. **Mobile drawer** — the mobile navigation drawer (≤768px icon rail) is future-proofed in the shell but not implemented; the `AppTopBar`/`UserMenu` shell is desktop-first.
 
 ## Implementation notes
 

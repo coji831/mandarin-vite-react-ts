@@ -246,6 +246,114 @@ Authorization: Bearer <access_token>
 
 ---
 
+## Grammar
+
+Grammar pattern reference endpoints — searchable, HSK/phase-tagged grammar patterns served by the `modules/grammar` modulith module (seeded from `content/seed/phase2/grammar-patterns.json`; `gr_XXXX` content keys). Auth: `optionalAuth` (guests and users both work). Errors use the standard `{ error, code }` shape (`backend-error-messages.instructions.md`) with codes `VALIDATION_ERROR` (400) | `NOT_FOUND` (404) | `INTERNAL_ERROR` (500).
+
+### GET /v1/grammar/patterns
+
+List patterns. Query params all optional and additive (AND); an empty query returns the full library paginated:
+
+| Param      | Type   | Rules                                                                                                    | Default |
+| ---------- | ------ | -------------------------------------------------------------------------------------------------------- | ------- |
+| `search`   | string | case-insensitive substring against `name` / `structure` / `explanation` and example `english` / `pinyin` | —       |
+| `hskLevel` | int    | 1–6; outside range → 400 `VALIDATION_ERROR`                                                              | —       |
+| `phase`    | int    | 2\|3\|4; outside set → 400 `VALIDATION_ERROR`                                                            | —       |
+| `page`     | int    | ≥1                                                                                                       | 1       |
+| `pageSize` | int    | 1–100                                                                                                    | 20      |
+
+**Response 200** — `{ items: GrammarPatternSummary[], total, page, pageSize }`:
+
+```json
+{
+  "items": [
+    {
+      "id": "gr_0005",
+      "name": "吗 yes/no questions",
+      "structure": "Statement + 吗？",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 5,
+      "exampleCount": 3,
+      "previewExample": "你好吗？"
+    }
+  ],
+  "total": 21,
+  "page": 1,
+  "pageSize": 20
+}
+```
+
+**Errors:**
+
+```json
+// 400 — invalid filter (e.g. phase=5, hskLevel=0, page=0, pageSize=500)
+{ "error": "Failed to load grammar patterns", "code": "VALIDATION_ERROR" }
+
+// 500 — unexpected server error
+{ "error": "Failed to load grammar patterns", "code": "INTERNAL_ERROR" }
+```
+
+### GET /v1/grammar/patterns/:id
+
+Pattern detail — `:id` resolves by **`content_id`** (`gr_XXXX`); the internal uuid is never a valid identifier.
+
+**Response 200** — `{ id, name, structure, explanation, phase, hskLevel, sortOrder, examples[] (with segments[]), relatedPatterns[] }`:
+
+```json
+{
+  "id": "gr_0018",
+  "name": "把 (bǎ) disposal construction",
+  "structure": "Subj + 把 + Obj + Verb + Complement",
+  "explanation": "把 (bǎ) moves the object before the verb and marks it as the topic of disposal…",
+  "phase": 4,
+  "hskLevel": 4,
+  "sortOrder": 18,
+  "examples": [
+    {
+      "id": "gr_0018_ex1",
+      "chinese": "我把书放在桌子上",
+      "pinyin": "wǒ bǎ shū fàng zài zhuōzi shàng",
+      "english": "I put the book on the table",
+      "segments": [
+        {
+          "text": "我",
+          "pinyin": "wǒ",
+          "gloss": "I",
+          "entityType": "character",
+          "entityId": "ch_25105"
+        },
+        {
+          "text": "把",
+          "pinyin": "bǎ",
+          "gloss": "BA (disposal marker)",
+          "entityType": "character",
+          "entityId": null
+        }
+      ]
+    }
+  ],
+  "relatedPatterns": [
+    { "id": "gr_0019", "name": "被 (bèi) passive construction", "relationType": "CONTRASTS_WITH" }
+  ]
+}
+```
+
+**Errors:**
+
+```json
+// 400 — invalid / malformed gr_XXXX identifier
+{ "error": "Failed to load grammar pattern", "code": "VALIDATION_ERROR" }
+
+// 404 — unknown gr_XXXX
+{ "error": "Failed to load grammar pattern", "code": "NOT_FOUND" }
+
+// 500 — unexpected server error
+{ "error": "Failed to load grammar pattern", "code": "INTERNAL_ERROR" }
+```
+
+---
+
 ## Other Endpoints
 
 See the [`api/`](api/) directory for complete specifications of remaining domains:

@@ -54,7 +54,7 @@ This story is a scope extension of Epic 22 (Grammar Pattern Library). It fixes a
 ## Implementation Status
 
 - **Status**: Complete
-- **PR**: TBD
+- **PR**: TBD (pending)
 - **Merge Date**: TBD
 - **Key Commit**: `6fdb51c9` (+ follow-up fix commit `47200b37` — review fixes N1–N5)
 
@@ -95,6 +95,6 @@ Code review + browser findings surfaced 4 follow-up issues, all implemented fron
 - **Fix 3 — child hierarchy**: Learn children were visually ambiguous vs the group header; now a strict type scale (children `font-xs`/`text-tertiary` + 2px left rail vs header `font-sm`/`fw-600`/`text-secondary`), with `aria-current="page"` on the active child and a `--locked` dim state for locked children.
 - **Fix 4 — search-params convention**: introduced `SEARCH_PARAMS` + `withSearchParams` + `useSearchParamState` as the single URL-state convention; migrated the four URL-driven pages (Foundations, Radicals, Quiz, Review) and the dashboard/quiz-card entry points. `RadicalsPage` dropped its `treeMode` localStorage in favor of `?mode=`; the transient `radical` param keeps its self-clear `replace` behavior.
 
-Deferred (out of scope, tracked): ContentBrowser/TabBar refactor onto the hook, Grammar filter URL seeding (`?q`/`?hsk`/`?phase`), Readers mode migration, TopNav orphan cleanup.
+Deferred (out of scope, tracked): ContentBrowser/TabBar refactor onto the hook, Grammar filter URL seeding (`?q`/`?hsk`/`?phase`), Readers mode migration, TopNav orphan cleanup, rail sub-state title, mobile drawer.
 
 See `verification-artifacts/story-22-4-followup-gate-results.md` and `verification-artifacts/story-22-4-followup-browser-check.md`.

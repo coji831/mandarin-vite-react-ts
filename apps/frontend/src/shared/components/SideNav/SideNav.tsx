@@ -188,14 +188,15 @@ function SideNav({
                       Same-path guard preserves sub-state on a no-op click. */}
                   <Link
                     to={foundationsTo}
-                    onClick={(e) =>
-                      guardSamePath(e, foundationsTo, foundationsItem?.defaultParams)
-                    }
+                    onClick={(e) => guardSamePath(e, foundationsTo, foundationsItem?.defaultParams)}
                     aria-current={isGroupActive(item.path) ? "page" : undefined}
                     title={item.label}
                     className="side-nav__group-label flex flex-1 items-center gap-sm"
                   >
-                    <span className="side-nav__icon font-md text-center shrink-0" aria-hidden="true">
+                    <span
+                      className="side-nav__icon font-md text-center shrink-0"
+                      aria-hidden="true"
+                    >
                       {item.icon}
                     </span>
                     <span className="side-nav__label whitespace-nowrap overflow-hidden">

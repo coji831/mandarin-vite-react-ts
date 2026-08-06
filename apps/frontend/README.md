@@ -54,6 +54,10 @@ Entity detail hub — modal overlay hosting a registry of entity-specific detail
 
 DB-driven phonetic family browsing with HSK filtering (cluster membership from `GET /v1/phonetic-clusters`).
 
+### Grammar
+
+Searchable HSK/phase-tagged grammar pattern reference — `/learn/grammar` page (`GrammarPage`, `PhaseGate` 2) with search/filter and locked higher-phase cards, TTS example-sentence audio, and `GrammarHub` detail panel with clickable word tokens → Character Hub cross-linking (data via `GET /v1/grammar/patterns`).
+
 ### Radicals
 
 Radical browser, detail cards, and dual radical/phonetic trees.
@@ -65,6 +69,10 @@ Graded readers — passage browsing/reading, reading sessions, bookmarks, and in
 ### Word Hub
 
 Word detail panel — pinyin, definitions, HSK badge, constituent character chips, and measure words (量词).
+
+### Navigation & Account
+
+Persistent collapsible `SideNav` (phase-gated "Learn" group with locked children); single account surface via `AppTopBar` → `UserMenu` (Profile/Settings/Logout; guest Login/Register); thin `/profile` + `/settings` pages; shareable search-param deep links via `SEARCH_PARAMS`/`buildSearchParams`/`useSearchParamState`/`useSearchParamsBatch`.
 
 ## Available Scripts
 

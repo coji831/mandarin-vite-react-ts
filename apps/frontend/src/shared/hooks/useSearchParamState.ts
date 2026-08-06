@@ -127,9 +127,9 @@ export function useSearchParamState<T>(
       const write = () => {
         // Shared writer: omit-on-default is expressed as a `null` update
         // (buildSearchParams drops null), preserving sibling params.
-        const updates = (shouldOmit
-          ? { [key]: null }
-          : { [key]: serialize(resolved) }) as SearchParamInput;
+        const updates = (
+          shouldOmit ? { [key]: null } : { [key]: serialize(resolved) }
+        ) as SearchParamInput;
         writeSearchParams(setSearchParams, updates, replace);
       };
 

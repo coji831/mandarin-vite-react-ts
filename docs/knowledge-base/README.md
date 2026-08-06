@@ -1,6 +1,6 @@
 # Knowledge Base
 
-**Last Updated:** July 20, 2026
+**Last Updated:** August 6, 2026
 
 Central repository for deep-dive concepts, patterns, and reference materials.
 
@@ -26,6 +26,8 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 | [Strategy Pattern (Frontend)](./frontend/strategy-pattern-frontend.md)                | Quiz/review strategy implementations                                  |
 | [Discriminated Union State Machines](./frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                         |
 | [Storybook MSW Handlers](./frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                       |
+| [URL Search-Param Persistence Rule](./frontend/frontend-url-search-params.md)         | Route-scoped URL sub-state, replace/push, shareable deep links        |
+| [Hub Entity-ID Contract](./frontend/hub-entity-id-contract.md)                        | content_id vs glyph-keyed hub/API entity identifiers                  |
 
 ## Backend
 
