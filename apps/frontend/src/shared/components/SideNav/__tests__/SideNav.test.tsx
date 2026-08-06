@@ -16,7 +16,7 @@ const navItems: SideNavProps["navItems"] = [
   { path: "/practices", label: "Practices", icon: "🎯", exact: false },
 ];
 
-function renderSideNav(props: Partial<SideNavProps> = {}) {
+function renderSideNav(props: Partial<SideNavProps> = {}, entries?: string[]) {
   const merged: SideNavProps = {
     navItems,
     currentPath: "/",
@@ -26,7 +26,7 @@ function renderSideNav(props: Partial<SideNavProps> = {}) {
     ...props,
   };
   return render(
-    <MemoryRouter initialEntries={[merged.currentPath]}>
+    <MemoryRouter initialEntries={entries ?? [merged.currentPath]}>
       <SideNav {...merged} />
     </MemoryRouter>,
   );
@@ -36,6 +36,12 @@ function renderSideNav(props: Partial<SideNavProps> = {}) {
 function LocationProbe() {
   const location = useLocation();
   return <span data-testid="location">{location.pathname}</span>;
+}
+
+/** Renders the full URL (pathname + search) so tests can assert sub-state. */
+function UrlProbe() {
+  const location = useLocation();
+  return <span data-testid="url">{location.pathname + location.search}</span>;
 }
 
 describe("SideNav", () => {
@@ -55,8 +61,9 @@ describe("SideNav", () => {
 
   it("collapses the Learn children when the group header is toggled", () => {
     renderSideNav();
-    const header = screen.getByRole("button", { name: /Learn/ });
-    fireEvent.click(header);
+    // Story 22.5: the chevron is the accordion toggle (the label navigates).
+    const chevron = screen.getByRole("button", { name: /Learn section/ });
+    fireEvent.click(chevron);
     expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
   });
 
@@ -148,18 +155,20 @@ describe("SideNav", () => {
       expect(grammar).toHaveAttribute("aria-current", "page");
     });
 
-    it('marks the Learn group header current when a child is active (expanded)', () => {
+    it("marks the Learn group header current when a child is active (expanded)", () => {
       renderSideNav({ currentPath: "/learn/grammar" });
-      const header = screen.getByRole("button", { name: /Learn/ });
-      expect(header).toHaveAttribute("aria-current", "page");
+      // Story 22.5: aria-current lives on the label link (default landing);
+      // the chevron button is the accordion toggle and carries aria-expanded.
+      const label = screen.getByRole("link", { name: /Learn/ });
+      expect(label).toHaveAttribute("aria-current", "page");
       const grammar = screen.getByRole("link", { name: /Grammar/ });
       expect(grammar).toHaveAttribute("aria-current", "page");
     });
 
     it("does not mark the Learn group header current on unrelated routes", () => {
       renderSideNav({ currentPath: "/library" });
-      const header = screen.getByRole("button", { name: /Learn/ });
-      expect(header).not.toHaveAttribute("aria-current");
+      const label = screen.getByRole("link", { name: /Learn/ });
+      expect(label).not.toHaveAttribute("aria-current");
     });
 
     it("dims locked children (locked class) and does not mark them current", () => {
@@ -185,6 +194,78 @@ describe("SideNav", () => {
       expect(grammar).toHaveClass("side-nav__child--locked");
       expect(grammar).not.toHaveClass("bg-primary-bg");
       expect(grammar).not.toHaveClass("fw-600");
+    });
+  });
+
+  describe("Story 22.5 — nav/URL sync", () => {
+    // Full-location harness: `location` prop mirrors the router entry so the
+    // same-path guard compares against the real sub-state.
+    function renderUrlAware(entry: string) {
+      const url = new URL(entry, "http://localhost");
+      return render(
+        <MemoryRouter initialEntries={[entry]}>
+          <SideNav
+            navItems={navItems}
+            currentPath={url.pathname}
+            location={{ pathname: url.pathname, search: url.search }}
+            phaseGate={4}
+            requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
+          />
+          <UrlProbe />
+        </MemoryRouter>,
+      );
+    }
+
+    it("builds Learn child `to` from defaultParams (bare canonical today)", () => {
+      renderSideNav({ currentPath: "/learn/foundations" });
+      const foundations = screen.getByRole("link", { name: /Foundations/ });
+      expect(foundations).toHaveAttribute("href", "/learn/foundations");
+      const radicals = screen.getByRole("link", { name: /Radicals/ });
+      expect(radicals).toHaveAttribute("href", "/learn/radicals");
+    });
+
+    it("same-path child click is a no-op that preserves the sub-state", () => {
+      renderUrlAware("/learn/foundations?tab=tones");
+      const foundations = screen.getByRole("link", { name: /Foundations/ });
+      fireEvent.click(foundations);
+      // No navigation performed — `?tab=tones` is preserved, nothing stacked.
+      expect(screen.getByTestId("url")).toHaveTextContent("/learn/foundations?tab=tones");
+    });
+
+    it("cross-item child click lands on the bare canonical path (sub-state dropped)", () => {
+      renderUrlAware("/learn/foundations?tab=tones");
+      fireEvent.click(screen.getByRole("link", { name: /Radicals/ }));
+      expect(screen.getByTestId("url")).toHaveTextContent("/learn/radicals");
+    });
+
+    it("keeps the active child highlight regardless of search params", () => {
+      renderUrlAware("/learn/foundations?tab=tones");
+      const foundations = screen.getByRole("link", { name: /Foundations/ });
+      expect(foundations).toHaveAttribute("aria-current", "page");
+    });
+
+    it("Learn group header label navigates to /learn/foundations (default landing)", () => {
+      renderUrlAware("/learn/radicals");
+      const label = screen.getByRole("link", { name: /Learn/ });
+      expect(label).toHaveAttribute("href", "/learn/foundations");
+      fireEvent.click(label);
+      expect(screen.getByTestId("url")).toHaveTextContent("/learn/foundations");
+    });
+
+    it("Learn group header label same-page click preserves the sub-state", () => {
+      renderUrlAware("/learn/foundations?tab=tones");
+      fireEvent.click(screen.getByRole("link", { name: /Learn/ }));
+      expect(screen.getByTestId("url")).toHaveTextContent("/learn/foundations?tab=tones");
+    });
+
+    it("chevron button is the accordion toggle (aria-expanded stays on the toggle)", () => {
+      renderSideNav();
+      const chevron = screen.getByRole("button", { name: /Learn section/ });
+      expect(chevron).toHaveAttribute("aria-expanded", "true");
+      expect(chevron).toHaveAttribute("aria-controls", "side-nav-group-learn");
+      // Toggling collapses the children without navigating.
+      fireEvent.click(chevron);
+      expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
     });
   });
 });

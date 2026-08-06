@@ -7,10 +7,12 @@
  *
  * Covers: expanded (Dashboard/Learn active), collapsed rail with the bottom
  * collapse toggle, child hierarchy (indent-only, no left rail; active child +
- * active parent pill), collapsed rail active pill + tooltip, and phase-gated
- * Learn locks.
+ * active parent pill), collapsed rail active pill + tooltip, phase-gated
+ * Learn locks, and the Story 22.5 split Learn header (label default-landing
+ * link + chevron accordion toggle) with URL-aware sub-state preservation.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MemoryRouter } from "react-router-dom";
 import type { SideNavProps } from "./SideNav";
 import { SideNav } from "./SideNav";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
@@ -101,5 +103,27 @@ export const PhaseLocked: Story = {
   args: {
     currentPath: "/learn/foundations",
     phaseGate: 1,
+  },
+};
+
+/**
+ * Story 22.5 — split Learn header: the LABEL is the default-landing link
+ * (navigates to /learn/foundations) and the CHEVRON is the accordion toggle.
+ * Rendered URL-aware (full `location` prop) with sub-state in the URL so the
+ * same-path guard is in play: clicking "Foundations" while already on
+ * `/learn/foundations?tab=tones` is a no-op that preserves the tab.
+ */
+export const LearnHeaderSplit: Story = {
+  name: "Learn — split header (label link + chevron toggle)",
+  decorators: [
+    (Story) => (
+      <MemoryRouter initialEntries={["/learn/foundations?tab=tones"]}>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  args: {
+    currentPath: "/learn/foundations",
+    location: { pathname: "/learn/foundations", search: "?tab=tones" },
   },
 };

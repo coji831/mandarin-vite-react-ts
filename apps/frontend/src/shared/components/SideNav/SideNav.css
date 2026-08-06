@@ -99,15 +99,51 @@
   font-weight: 600;
 }
 
-/* Learn group header — row button (parent: font-sm fw-600 text-secondary via
-   utility classes; the font-weight/color live on the JSX classes so the shared
-   token utilities win over this structural rule). The header's transparent
-   background now comes from the `bg-transparent` utility in JSX so the
-   `bg-primary-bg` active pill wins by stylesheet order. */
+/* Learn group header — row container (parent: font-sm fw-600 text-secondary
+   via utility classes; the font-weight/color live on the JSX classes so the
+   shared token utilities win over this structural rule). The header's
+   transparent background now comes from the `bg-transparent` utility in JSX
+   so the `bg-primary-bg` active pill wins by stylesheet order.
+   Story 22.5: the expanded header is split — the LABEL is a default-landing
+   link (flex-1, navigates to the group's default child) and the CHEVRON is
+   the accordion toggle button. */
 .side-nav__group-header {
   font-family: inherit;
   width: 100%;
   cursor: pointer;
+}
+
+/* Default-landing label link (Story 22.5) — inherits the header's
+   text/weight so the active pill reads correctly; flex-1 fills the row so
+   the whole label area is clickable. */
+.side-nav__group-label {
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+/* Chevron accordion toggle (Story 22.5) — the only interactive part of the
+   header that expands/collapses the group; `aria-expanded` lives here. */
+.side-nav__group-chevron-btn {
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  margin-left: auto;
+  padding: var(--space-xs);
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-nav__group-chevron-btn:hover {
+  color: var(--text-primary);
+}
+
+.side-nav__group-chevron-btn .side-nav__group-chevron {
+  margin-left: 0; /* the chevron span's auto margin belonged to the old single-button header row */
 }
 
 .side-nav__icon,
@@ -135,7 +171,9 @@
    wins regardless of load order; the label-alignment indent must win or
    children collapse back to 12px. */
 .side-nav .side-nav__child {
-  padding-left: calc(var(--space-sm) + var(--side-nav-icon-w) + var(--space-sm)); /* 48px label-alignment indent */
+  padding-left: calc(
+    var(--space-sm) + var(--side-nav-icon-w) + var(--space-sm)
+  ); /* 48px label-alignment indent */
 }
 
 /* Locked children — dimmed, non-interactive affordance (parity with TabBar op-40) */

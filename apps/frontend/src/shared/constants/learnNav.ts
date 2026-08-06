@@ -9,6 +9,9 @@
  *
  * `LearnLayout` and any future gating surface consume this same constant so
  * lock logic is never duplicated.
+ *
+ * Story 22.5: each item may carry optional `defaultParams` for its landing
+ * URL (see SideNav — `to = withSearchParams(path, defaultParams)`).
  */
 import {
   learn_foundations,
@@ -18,6 +21,7 @@ import {
   learn_readers,
   learn_chengyu,
 } from "./paths";
+import type { SearchParamInput } from "./searchParams";
 
 export type LearnNavItem = {
   id: string;
@@ -25,6 +29,16 @@ export type LearnNavItem = {
   icon: string;
   path: string;
   requiredPhase: number;
+  /**
+   * Optional default query params for the item's landing URL.
+   *
+   * The bare canonical path is the landing rule — NO values today (leaving
+   * this undefined is correct). When set in the future, SideNav builds
+   * `to = withSearchParams(path, defaultParams)` and the same-path guard
+   * becomes: no-op only if the full current URL already equals `to`, else
+   * replace-to-`to` (canonical landing).
+   */
+  defaultParams?: SearchParamInput;
 };
 
 export const LEARN_NAV_ITEMS: LearnNavItem[] = [

@@ -104,6 +104,10 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
         <SideNav
           navItems={navItems}
           currentPath={location.pathname}
+          // Full location (pathname + search) so SideNav can apply the
+          // same-path guard (Story 22.5) — preserves `?tab`/`?view` sub-state
+          // on same-page sidebar clicks.
+          location={{ pathname: location.pathname, search: location.search }}
           phaseGate={effectivePhase}
           requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
           collapsed={collapsed}

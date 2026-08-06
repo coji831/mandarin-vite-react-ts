@@ -416,6 +416,21 @@ Per `testing-standards.instructions.md` (Testing Trophy):
 | **Storybook (MSW)** | —                                                                                                                                         | `grammar-handlers.ts` scaffolded + registered in `src/mocks/server.ts` (consumed by 22.3)                                                             | `GrammarPageFull` + `GrammarHub` stories (mirror `ReadersPageFull.stories.tsx`); `npm run test-storybook`                                                                                                                                                             |
 | **Static**          | `npm run build` (type-check incl. test graph), `npm run lint`                                                                             | `npm run build`, `npm run lint`, backend type-check                                                                                                   | `npm run build`, `npm run lint`, `npx @google/design.md lint DESIGN.md`, `npm run design-audit`, `frontend-pre-delivery-checklist.instructions.md`                                                                                                                    |
 
+## Stories 22.4 & 22.5 (frontend follow-ups)
+
+> These two frontend-only stories land after 22.1–22.3 and each have their own implementation doc.
+
+**Story 22.4 — Sidebar Navigation and Account** — **Status: ✅ Complete** (Aug 5, 2026). See `story-22-4-sidebar-navigation-and-account.md`. Moved Learn tabs from the `LearnLayout` TopNav into a phase-gated "Learn" group in `SideNav`; introduced `UserMenu` + `AppTopBar` as the single account surface; added `/profile`, `/settings`; auth return-to-origin/redirect affordances.
+
+**Story 22.5 — Search-Param Nav Sync** — **Status: ✅ Complete** (Aug 6, 2026). See `story-22-5-search-param-nav-sync.md`.
+
+- **Problem:** tabs and side-menu navigation were out of sync — sidebar Learn links were path-only, so navigating from a sub-state (`?tab=tones`) dropped it, and cross-route sub-state leaked.
+- **Persistence rule (canonical, in `searchParams.ts` header):** params are route-scoped (no cross-route persistence); sub-state writes (`tab`/`view`/`mode`/`page`/`q`/`hsk`/`phase`) use `replace: true` (Back exits the page); session starts `push`; same-page sidebar clicks are a no-op that preserves sub-state.
+- **Key changes:** `searchParams.ts` — `SearchParamInput` + `buildSearchParams` (pure, omit logic extracted); `useSearchParamState.ts` — `useSearchParamsBatch()` (`replaceParams`/`pushParams`, atomic multi-param write); `learnNav.ts` — optional `defaultParams` (bare-canonical landing, no values today); `SideNav.tsx` — `location` prop + same-path guard (`guardSamePath`), Learn child `to = withSearchParams(path, defaultParams)`, Learn group header label → `/learn/foundations` (chevron stays the toggle); `AppLayout.tsx` passes full `location`.
+- **Custom history rejected** (Architect): RR `replace: true` already coalesces param changes into one entry — "Back exits page" is the correct built-in semantic.
+- **Gates:** all 6 pass (build / lint / design-audit / check:registry-stories / `npm test` / test-storybook) — see `verification-artifacts/story-22-5-gate-results.md`. **Browser check:** 5/5 pass — `verification-artifacts/story-22-5-browser-check.md` (+ screenshots).
+- **Deferred (locked):** ContentBrowser/TabBar bypass, Grammar `?q`/`?hsk`/`?phase` seeding, Readers `?mode`, TopNav removal, rail sub-state title.
+
 ## Implementation notes
 
 - Conventions: follow `docs/guides/conventions/frontend.md`, `docs/guides/conventions/backend.md`, and `docs/knowledge-base/practices/solid-principles.md`.

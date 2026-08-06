@@ -27,5 +27,5 @@ export {
 } from "./paths";
 export { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "./learnNav";
 export type { LearnNavItem } from "./learnNav";
-export { SEARCH_PARAMS, withSearchParams } from "./searchParams";
-export type { SearchParamName } from "./searchParams";
+export { SEARCH_PARAMS, withSearchParams, buildSearchParams } from "./searchParams";
+export type { SearchParamName, SearchParamInput, BuildSearchParamsOptions } from "./searchParams";
