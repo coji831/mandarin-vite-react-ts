@@ -2,7 +2,7 @@
 
 **BR Reference:** `../../business-requirements/epic-23-idiom-database/README.md`
 
-**Status:** In Progress (Stories 23.1 + 23.2 complete; Story 23.3 pending)
+**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
 
 **Last Update:** August 8, 2026
 
@@ -21,7 +21,7 @@
 - **Audio is on-demand** via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no audio fields in the data model.
 - **Phase gating reuses numeric Phase 4** + the existing sidebar Chengyu item; the route gains `PhaseGate requiredPhase={4}` (mirrors readers at 3, grammar at 2).
 
-**Status:** In Progress (Stories 23.1 + 23.2 complete; Story 23.3 pending)
+**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
 
 **Last Update:** August 8, 2026
 

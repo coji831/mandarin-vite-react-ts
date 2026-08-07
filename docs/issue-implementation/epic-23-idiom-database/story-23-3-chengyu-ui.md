@@ -2,8 +2,8 @@
 
 > **BR Reference:** `docs/business-requirements/epic-23-idiom-database/story-23-3-chengyu-ui.md`
 > **Epic IMP:** `docs/issue-implementation/epic-23-idiom-database/README.md`
-> **Status:** Planned
-> **Last Update:** August 7, 2026
+> **Status:** Complete
+> **Last Update:** August 8, 2026
 
 ## Technical Scope
 
@@ -12,7 +12,7 @@ Build the `features/chengyu` frontend feature (service → hooks → components 
 **Files:**
 
 - `apps/frontend/src/features/chengyu/index.ts` — **NEW**: barrel.
-- `apps/frontend/src/features/chengyu/types/chengyu.ts` — **NEW**: frontend data types (`Chengyu`, `ChengyuSummary`, `ChengyuExample`, `ChengyuSegment`, `ChengyuRelatedIdiom`).
+- `apps/frontend/src/features/chengyu/types/chengyu.ts` — **NEW**: frontend data types (`ChengyuSegmentEntityType`, `ChengyuSegment`, `ChengyuExample`, `ChengyuRelatedIdiom`, `ChengyuSummary`, `ChengyuDetail`, `ChengyuListResponse`, `ChengyuData`, `ChengyuFilter`).
 - `apps/frontend/src/features/chengyu/services/chengyuService.ts` — **NEW**: the ONLY file importing `apiClient`; uses `ROUTE_PATTERNS.chengyuIdioms` / `chengyuIdiomById`; module-level cache (pattern: `radicalsService`).
 - `apps/frontend/src/features/chengyu/hooks/useChengyu.ts` — **NEW**: `useChengyu` (list + debounced search + filter state) + `useChengyuDetail` (detail self-fetch for the hub); request-seq ref drops stale responses.
 - `apps/frontend/src/features/chengyu/utils/chengyuData.ts` — **NEW**: pure helpers `mapChengyuApiToData`, `segmentToEntityRef` (unit-tested).
@@ -163,15 +163,43 @@ Solution: 23.2's detail mapper guards null segments / null related rows (see sto
          in-browser after 23.2 lands.
 ```
 
-None of note otherwise (pre-implementation) — all mechanics mirror Epic 22's shipped grammar UI.
+Post-implementation deviations (recorded August 8, 2026):
+
+```
+Problem: Every idiom carries a UNIQUE theme (55 themes, 0 shared) while eras are compact
+         (7: Warring States 32, Spring & Autumn 10, Qin–Han 4, Han 3, Three Kingdoms 4,
+         Wei–Jin 1, Qin 1) — a FilterChip group for 55 themes would be unusable and each
+         chip would select exactly one idiom.
+Solution: Data-fact-driven split (documented in constants/chengyuFilters.ts): Theme = the
+         shared `Dropdown` (55 options + "All themes"), Era = `FilterChip` group (7).
+         Deviation from the IMP's "FilterChip (Theme + Era)" plan; both filter server-side
+         via `?theme=` / `?era=` and are covered by ChengyuPage integration tests (era-chip
+         + theme-dropdown filter paths).
+
+Problem: `ChengyuHub.stories.tsx` lives in the feature folder (title `Features/Chengyu/...`),
+         not under Pages/ — a Storybook location deviation.
+Solution: Grandfathered as TD-005 in docs/guides/testing/known-failures.md (mirrors TD-004
+         GrammarHub); do not flag or extend; migrate to a Pages/Layouts/Shared story when
+         touched.
+
+Problem: The Storybook iframe stays on `sb-preparing` for every story in this environment
+         (confirmed identical for the pre-existing GrammarPage story) — the manager→preview
+         channel never handshakes on a plain browser load, so pixel screenshots of the new
+         chengyu stories could not be captured.
+Solution: Environmental limitation, not a chengyu defect. Rendering is proven at the DOM
+         level instead: 7/7 addon-vitest Storybook tests (ChengyuPageFull 4 + ChengyuHub 3)
+         pass headlessly, asserting populated/loading/empty/error states and hub navigation.
+```
 
 ### Doc Truth-Check
 
-- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — `chengyuIdioms`/`chengyuIdiomById` are **proposed**, added verbatim by 23.2; `chengyuService.ts` calls them; `ttsAudio` = `/v1/tts` verified present
-- [x] Feature/module/component names verified against `apps/frontend/src/features/` — `features/chengyu/` new (no `chengyu` feature exists today); `entityHubRegistry` `chengyu: NotImplemented` verified; `LearnRoutes.tsx` `/learn/chengyu` = `ContentPlaceholderPage` verified; `learnNav.ts` chengyu item `requiredPhase: 4` verified; `EntityType` includes `"chengyu"` (`apps/frontend/src/shared/types/hub.ts`)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — `chengyuIdioms: "/v1/chengyu/idioms"` and `chengyuIdiomById: (id) => `/v1/chengyu/idioms/${id}`` now **EXIST verbatim** (shipped by story 23.2); `chengyuService.ts` calls both (list composes search/theme/era params, detail via `chengyuIdiomById(id)`); `ttsAudio` = `/v1/tts` verified present
+- [x] Feature/module/component names verified against `apps/frontend/src/features/` — **pre-implementation baseline** (superseded by the Shipped-state actuals below): no `chengyu` feature existed; `entityHubRegistry` `chengyu: NotImplemented`; `LearnRoutes.tsx` `/learn/chengyu` = `ContentPlaceholderPage`; `learnNav.ts` chengyu item `requiredPhase: 4` (still true); `EntityType` includes `"chengyu"` (`apps/frontend/src/shared/types/hub.ts`)
 - [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — API-driven via `apiClient` (all-in-DB)
 - [x] All relative markdown links resolve (this story → `../README.md`, `story-23-1-chengyu-data.md`, `story-23-2-chengyu-backend-api.md`, IMP twin)
-- [x] Last Updated / Last Update date is current (August 7, 2026 — same commit as the edit)
+- [x] Last Updated / Last Update date is current (August 8, 2026 — same commit as the edit)
+
+- [x] Shipped-state actuals (August 8, 2026) — feature folder `features/chengyu/` ships `index.ts` barrel + `types/`, `services/`, `hooks/`, `utils/`, `constants/` (incl. `chengyuFilters.ts`: 55 themes / 7 eras) + `components/` (ChengyuFilterBar, ChengyuList, ChengyuCard, ChengyuHub + per-component CSS + `ChengyuHub.stories.tsx`); page `pages/learn/chengyu/ChengyuPage.tsx` (+ `ChengyuPage.css` + `ChengyuPageFull.stories.tsx`) re-exported via `pages/learn/foundations/index.ts`; `LearnRoutes.tsx` `/learn/chengyu` = `<PhaseGate requiredPhase={4}><ChengyuPage /></PhaseGate>`; `entityHubRegistry.tsx` `chengyu` = `lazy(() => import("features/chengyu").then((m) => ({ default: m.ChengyuHub })))`. Tests: 37 unit/integration (chengyuData 9, useChengyu 5, chengyuService 8, ChengyuHub 7, ChengyuPage.integration 6, LearnRoutes.chengyu 2) + 7 Storybook (ChengyuPageFull 4 + ChengyuHub 3) all pass. Gates: `npm run build` (ChengyuHub own lazy chunk 14.01 kB), `npm run lint` 0 errors, design lint clean, `npm run design-audit` 0 errors, pre-delivery checklist compliant. Glyph contract confirmed: `segmentToEntityRef` translates character/word `content_id` → `segment.text` glyph (unit + hub integration DOM tests); the IMP's data-mapping spec and segment→hub contract match shipped code.
 
 > **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
 

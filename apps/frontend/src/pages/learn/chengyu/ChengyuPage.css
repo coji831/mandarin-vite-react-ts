@@ -1,0 +1,31 @@
+/**
+ * @file pages/learn/chengyu/ChengyuPage.css
+ * @description Styles for the Chengyu idiom library page.
+ * Story 23.3: Chengyu UI
+ */
+
+/* ═══════════════════════════════════════════════
+   Page Layout
+   ═══════════════════════════════════════════════ */
+
+.chengyu-page {
+  width: 900px;
+  margin: 0 auto;
+  min-height: 300px;
+}
+
+/* ═══════════════════════════════════════════════
+   Content Area (scrollable)
+   ═══════════════════════════════════════════════ */
+
+.chengyu-page__content {
+  min-height: 0; /* flex ancestor — required for internal overflow to work (scroll chain rule) */
+}
+
+/* List wrapper card — scrolls internally, fills content space */
+.chengyu-page__list-wrapper {
+  padding: 0; /* list-wrapper padding reset — part of the scroll chain contract */
+  overflow-y: auto; /* scroll zone — part of the scroll chain contract */
+  min-height: 0; /* flex child — part of the scroll chain contract */
+  flex: 1; /* flex fill — part of the scroll chain contract */
+}

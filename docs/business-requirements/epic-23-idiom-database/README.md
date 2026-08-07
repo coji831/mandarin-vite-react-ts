@@ -15,7 +15,7 @@
 - **Audio on demand** — full idiom + example sentences via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth); no stored audio fields.
 - **No progress tracking** — pure reference and cultural learning; `content_version` + `metadata` pre-adaptation fields are the seam for future progress work.
 
-**Status:** In Progress (Stories 23.1 + 23.2 complete; Story 23.3 pending)
+**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
 
 **Last Update:** August 8, 2026
 
@@ -25,7 +25,7 @@ Learners can study characters, radicals, pinyin/tones/strokes, words, grammar pa
 
 **Pedagogical foundation (authoring authority).** The platform's authoritative Mandarin reference for idioms is §6 "Chengyu (Idioms)" of the Mandarin fundamentals KB (`docs/knowledge-base/mandarin/mandarin-fundamentals.md`): chengyu are traditional idiomatic expressions, **typically 4 characters**, derived from classical Chinese literature; ~5,000 in common use; structured as 并列 (parallel), 主谓 (subject-predicate), 动宾 (verb-object), or 偏正 (modifier-head). Its §6.2 example table (破釜沉舟, 画蛇添足, 瓜田李下) seeds the idiom family this epic authors (the KB is the **family-seed authority** for the set), and §6.3 distinguishes the related forms (惯用语 / 歇后语 / 谚语) that are **out of scope**. Its §8 "Typical Learning Order" places **chengyu & classical Chinese at step 7** — after passages — which is exactly why the sidebar Learn-group Chengyu item unlocks at **Phase 4** (Advanced Fluidity) rather than earlier. The idiom strings, pinyin, and literal/figurative English are **extracted from CC-CEDICT** (`content/seed/phase1/cc-cedict-entries.json`, CC BY-SA 4.0), and origin stories are authored from **Chinese Wiktionary 詞源 quotes verified against zh Wikisource** (CC BY-SA 4.0) — attribution is carried in `content/seed/ATTRIBUTION.md`.
 
-**Phase staging.** Per the 4-phase roadmap (`docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md` — Blueprint → Core 300 → Network → Advanced Fluidity), chengyu is a **Phase 4** item ("Chengyu (Idiom) Narratives: 4-character idioms taught through storytelling — 70% historical context story, 30% linguistic application"). The sidebar Learn group already lists Chengyu at `requiredPhase: 4` (`apps/frontend/src/shared/constants/learnNav.ts`), and the `/learn/chengyu` route already exists as a `ContentPlaceholderPage` (`apps/frontend/src/router/LearnRoutes.tsx`) — this epic wires the real page behind a route-level `PhaseGate requiredPhase={4}`.
+**Phase staging.** Per the 4-phase roadmap (`docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md` — Blueprint → Core 300 → Network → Advanced Fluidity), chengyu is a **Phase 4** item ("Chengyu (Idiom) Narratives: 4-character idioms taught through storytelling — 70% historical context story, 30% linguistic application"). The sidebar Learn group already lists Chengyu at `requiredPhase: 4` (`apps/frontend/src/shared/constants/learnNav.ts`), and the `/learn/chengyu` route already exists as a `ContentPlaceholderPage` (`apps/frontend/src/router/LearnRoutes.tsx`) — this epic wires the real page behind a route-level `PhaseGate requiredPhase={4}` (**shipped in Story 23.3**: the route is now `<PhaseGate requiredPhase={4}><ChengyuPage /></PhaseGate>`).
 
 **Data-sourced idiom set (CC-CEDICT + Wikimedia).** The seed dataset authors the following idiom family — **50+ common idioms (target ≥50)** curated from a **shortlist of 60–80** seeded by the KB §6.2 example idioms plus common chengyu, with idiom strings, pinyin, and literal/figurative English **extracted from CC-CEDICT by the phase-1 generator** (`cc-cedict-entries.ts` → `content/seed/phase1/cc-cedict-entries.json`), then **filtered/curated in the phase-2 enrich stage** by `extract-chengyu-candidates.ts` (exactly-4-char filter widening on `lit.`/`fig.` beyond the incomplete `(idiom)` tag). Each idiom carries a **narrative origin story** (`story`) authored from the idiom's Chinese Wiktionary 詞源 quote **verified against zh Wikisource**, with a `storySource` citation in the canonical `《<work>·<juan>·<chapter>》(zh.wikisource.org/wiki/<path>)` form (the authoring agent must verify each narrative against the primary text; no unverifiable origin stories). The story-23.1 authoring agent may expand within this shortlist but must not introduce non-chengyu forms (惯用语 / 歇后语 / 谚语 are explicitly out of scope).
 
@@ -41,10 +41,10 @@ Themes are tagged per idiom (e.g., Self-deception, Perseverance, Love, Wisdom, A
 
 **Data conventions.** Chengyu is a recognized content entity in the shared data model (`docs/knowledge-base/data/shared-data-model.md`) and the knowledge graph (`docs/knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md` — the `(:Chengyu)` node, "4-character idiom with origin story and theme"). Per the pre-adaptation rules (`docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md`, Rule 1), idioms use the **`cy_XXXX`** business-key convention (e.g., `cy_0005`) with the pre-adaptation field pattern (canonical in story-23.1 BR Business Rule 2). This epic **adopts the all-in-DB architecture (Option A) exactly as Epic 22 did for grammar** — no static JSON delivery in `public/data/` (the original static-JSON plan is dead, user-confirmed).
 
-**Codebase readiness.** All integration points already exist and only need real content + a real page:
+**Codebase readiness.** All integration points already exist and only need real content + a real page (both now shipped across Stories 23.1–23.3 — the `ContentPlaceholderPage`/`NotImplemented` states below are the pre-epic baseline):
 
 - `/learn/chengyu` route (currently `ContentPlaceholderPage title="Chengyu"`, no phase gate) — `apps/frontend/src/router/LearnRoutes.tsx`; sidebar Learn-group Chengyu item (`requiredPhase: 4`) — `apps/frontend/src/shared/constants/learnNav.ts`; `learn_chengyu` path constant — `apps/frontend/src/shared/constants/paths.ts`
-- LexicalHub `chengyu` entity type (currently `NotImplemented`; `EntityType` already includes `"chengyu"`) — `apps/frontend/src/features/lexical-hub/entityHubRegistry.tsx`, `apps/frontend/src/shared/types/hub.ts`
+- LexicalHub `chengyu` entity type (currently `NotImplemented`; `EntityType` already includes `"chengyu"`) — `apps/frontend/src/features/lexical-hub/entityHubRegistry.tsx`, `apps/frontend/src/shared/types/hub.ts` (both shipped in Story 23.3 — route now `<PhaseGate requiredPhase={4}><ChengyuPage /></PhaseGate>` and hub is a lazy `ChengyuHub`.)
 - Shared audio (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) and hub entry (`openHub`) — `apps/frontend/src/shared/audio/`, `apps/frontend/src/shared/hooks/useAudioItemPlayback.ts`, `apps/frontend/src/shared/hub-entry/`
 - All-in-DB template: Epic 22's `grammar` pipeline (`content/seed/phase2/grammar-patterns.json` → `GrammarPattern`/`GrammarExample`/`GrammarPatternRelation` → `modules/grammar/` → `/v1/grammar/*`) is the direct precedent for `chengyu`.
 
@@ -79,19 +79,19 @@ High-level epic acceptance criteria — short, testable outcomes per story. Deta
 
 **Story 23.1 — Chengyu Data**
 
-- [ ] 50+ idioms extracted from CC-CEDICT, curated from the KB §6.2 + common-chengyu shortlist, and enriched with sourced origin stories (narrative `story` + `storySource`, era/theme, ≥1 segmented modern-usage example each) authored in `content/seed/phase2/chengyu.json` and seeded into Prisma (`Chengyu`/`ChengyuExample`/`ChengyuRelation`, `cy_XXXX` business keys) via idempotent, hash-gated steps; validation script passes; `content/manifest.json` declares the block and bumps its count to ≥50.
-- [ ] `content/seed/ATTRIBUTION.md` exists and carries the CC BY-SA 4.0 attribution (CC-CEDICT + Chinese Wiktionary 詞源 + zh Wikisource); authored `story`/`example` prose is original project work, not verbatim copy.
-- [ ] Post-seed SQL verification shows model counts matching targets (examples and relation rows included).
+- [x] 50+ idioms extracted from CC-CEDICT, curated from the KB §6.2 + common-chengyu shortlist, and enriched with sourced origin stories (narrative `story` + `storySource`, era/theme, ≥1 segmented modern-usage example each) authored in `content/seed/phase2/chengyu.json` and seeded into Prisma (`Chengyu`/`ChengyuExample`/`ChengyuRelation`, `cy_XXXX` business keys) via idempotent, hash-gated steps; validation script passes; `content/manifest.json` declares the block and bumps its count to ≥50.
+- [x] `content/seed/ATTRIBUTION.md` exists and carries the CC BY-SA 4.0 attribution (CC-CEDICT + Chinese Wiktionary 詞源 + zh Wikisource); authored `story`/`example` prose is original project work, not verbatim copy.
+- [x] Post-seed SQL verification shows model counts matching targets (examples and relation rows included).
 
 **Story 23.2 — Chengyu Backend API**
 
-- [ ] Backend `modules/chengyu/` module serves `GET /v1/chengyu/idioms` (search/theme/era + pagination) and `GET /v1/chengyu/idioms/:id` (idiom + examples + related idioms); both paths registered verbatim in `ROUTE_PATTERNS`.
-- [ ] Backend tests pass (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`); `content/manifest.json` chengyu count verified.
+- [x] Backend `modules/chengyu/` module serves `GET /v1/chengyu/idioms` (search/theme/era + pagination) and `GET /v1/chengyu/idioms/:id` (idiom + examples + related idioms); both paths registered verbatim in `ROUTE_PATTERNS`.
+- [x] Backend tests pass (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`); `content/manifest.json` chengyu count verified.
 
 **Story 23.3 — Chengyu UI**
 
-- [ ] `/learn/chengyu` is a Phase-4-gated real page with search/theme/era filters and a narrative-first `ChengyuHub` detail panel (story, literal/figurative meanings, modern-usage examples, audio).
-- [ ] Related-idiom and character cross-links work in the hub; UI tests + Storybook stories with MSW pass; BR ↔ IMP ↔ story files linked bidirectionally.
+- [x] `/learn/chengyu` is a Phase-4-gated real page with search/theme/era filters and a narrative-first `ChengyuHub` detail panel (story, literal/figurative meanings, modern-usage examples, audio).
+- [x] Related-idiom and character cross-links work in the hub; UI tests + Storybook stories with MSW pass; BR ↔ IMP ↔ story files linked bidirectionally.
 
 ## Architecture Decisions
 

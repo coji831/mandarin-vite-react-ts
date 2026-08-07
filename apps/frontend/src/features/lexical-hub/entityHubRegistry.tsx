@@ -40,7 +40,11 @@ export const entityHubRegistry: HubRegistry = {
       default: m.RadicalHub,
     })),
   ),
-  chengyu: NotImplemented,
+  chengyu: lazy(() =>
+    import("features/chengyu").then((m) => ({
+      default: m.ChengyuHub,
+    })),
+  ),
   grammar: lazy(() =>
     import("features/grammar").then((m) => ({
       default: m.GrammarHub,

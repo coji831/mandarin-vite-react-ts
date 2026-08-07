@@ -16,9 +16,9 @@ import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
 import {
   FoundationsPage,
-  ContentPlaceholderPage,
   RadicalsPage,
   GrammarPage,
+  ChengyuPage,
 } from "../pages/learn/foundations";
 import { PhoneticClustersPage } from "../pages/learn/phonetic-clusters/PhoneticClustersPage";
 import { ReadersPage } from "../features/readers";
@@ -69,7 +69,14 @@ export function LearnRoutes() {
             </PhaseGate>
           }
         />
-        <Route path="chengyu" element={<ContentPlaceholderPage title="Chengyu" />} />
+        <Route
+          path="chengyu"
+          element={
+            <PhaseGate requiredPhase={4}>
+              <ChengyuPage />
+            </PhaseGate>
+          }
+        />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />
         <Route path="quiz" element={<Navigate to={practices_quiz} replace />} />

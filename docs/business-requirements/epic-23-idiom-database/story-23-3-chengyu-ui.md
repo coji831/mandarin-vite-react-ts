@@ -1,6 +1,6 @@
 # Story 23.3: Chengyu UI
 
-**Last Update:** August 7, 2026
+**Last Update:** August 8, 2026
 
 ## Description
 
@@ -14,16 +14,16 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 
 ## Acceptance Criteria
 
-- [ ] `features/chengyu` feature created (service → hooks → components → types); `apiClient` used only in `chengyuService.ts` (per `frontend-api-client.instructions.md`).
-- [ ] `pages/learn/chengyu/ChengyuPage.tsx` created; `/learn/chengyu` route replaced from `ContentPlaceholderPage` to `<PhaseGate requiredPhase={4}><ChengyuPage /></PhaseGate>` in `LearnRoutes.tsx`; sidebar Learn-group item already `requiredPhase: 4` (no nav change).
-- [ ] Search by idiom/pinyin/English keyword; theme filter and era filter (server-side via `GET /v1/chengyu/idioms`).
-- [ ] Idiom card list → detail view showing `story` (narrative), `literalMeaning`, `figurativeMeaning`, pinyin, era/theme, and modern-usage examples (Chinese, pinyin, English).
-- [ ] `chengyu` registered in `entityHubRegistry` → lazy-loaded `ChengyuHub` detail panel (replaces the `NotImplemented` placeholder); opened via `openHub({ entityType: "chengyu", entityId, label })` from `shared/hub-entry`.
-- [ ] **Related-idiom cross-links** shown in `ChengyuHub` (from `ChengyuRelation` rows; each shows the related idiom + `relationType`) — consistent with the BR's related-idioms plan.
-- [ ] The idiom's 4 characters are clickable → Character Hub via `openHub({ entityType: "character", entityId, label })`; modern-usage example tokens clickable per `segments`.
-- [ ] Full idiom + example sentences playable via the shared audio manager (`useAudioItemPlayback` → `/v1/tts`, optionalAuth); no stored audio fields in the data model.
-- [ ] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
-- [ ] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
+- [x] `features/chengyu` feature created (service → hooks → components → types); `apiClient` used only in `chengyuService.ts` (per `frontend-api-client.instructions.md`).
+- [x] `pages/learn/chengyu/ChengyuPage.tsx` created; `/learn/chengyu` route replaced from `ContentPlaceholderPage` to `<PhaseGate requiredPhase={4}><ChengyuPage /></PhaseGate>` in `LearnRoutes.tsx`; sidebar Learn-group item already `requiredPhase: 4` (no nav change).
+- [x] Search by idiom/pinyin/English keyword; theme filter and era filter (server-side via `GET /v1/chengyu/idioms`).
+- [x] Idiom card list → detail view showing `story` (narrative), `literalMeaning`, `figurativeMeaning`, pinyin, era/theme, and modern-usage examples (Chinese, pinyin, English).
+- [x] `chengyu` registered in `entityHubRegistry` → lazy-loaded `ChengyuHub` detail panel (replaces the `NotImplemented` placeholder); opened via `openHub({ entityType: "chengyu", entityId, label })` from `shared/hub-entry`.
+- [x] **Related-idiom cross-links** shown in `ChengyuHub` (from `ChengyuRelation` rows; each shows the related idiom + `relationType`) — consistent with the BR's related-idioms plan.
+- [x] The idiom's 4 characters are clickable → Character Hub via `openHub({ entityType: "character", entityId, label })`; modern-usage example tokens clickable per `segments`.
+- [x] Full idiom + example sentences playable via the shared audio manager (`useAudioItemPlayback` → `/v1/tts`, optionalAuth); no stored audio fields in the data model.
+- [x] Tests + Storybook stories with MSW per `testing-standards.instructions.md`; static gates pass (`npm run build`, `npm run lint`, design lint, `frontend-pre-delivery-checklist.instructions.md`).
+- [x] BR ↔ IMP ↔ story files linked bidirectionally; all relative links resolve; Last Update current in the same commit.
 
 ## Business Rules
 
@@ -45,7 +45,11 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Key Commit**: TBD (final story-commit hash filled same-commit)
+
+## Risks
+
+- **Scope creep in the UI story (Severity: Medium)** + **Storybook iframe verification limitation** (environmental — pixel screenshots unavailable; rendering proven via addon-vitest DOM tests) — full write-up in the story-23.3 IMP Technical Challenges & Solutions: `../../issue-implementation/epic-23-idiom-database/story-23-3-chengyu-ui.md`
