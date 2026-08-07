@@ -48,7 +48,7 @@ This is the data-first story of the epic. It converts the platform's curated idi
 - **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: 5770c1ea
+- **Key Commit**: a49eb278
 
 ## Risks
 
