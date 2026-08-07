@@ -2,7 +2,7 @@
 
 > **BR Reference:** `docs/business-requirements/epic-23-idiom-database/story-23-1-chengyu-data.md`
 > **Epic IMP:** `docs/issue-implementation/epic-23-idiom-database/README.md`
-> **Status:** Planned
+> **Status:** Complete
 > **Last Update:** August 7, 2026
 
 ## Technical Scope
@@ -167,7 +167,7 @@ WHERE c."content_id" IS NULL;
   ```
   The filter widens on `lit.`/`fig.` **or** the `(idiom)` tag — **never the tag alone** (CC-CEDICT tagging is incomplete: 光明正大, 自相矛盾, 卧薪尝胆 [variant], 瓜田李下 [abbr.] are untagged). Research yield: 4,960 four-char `(idiom)`-tagged rows → **~5,000–6,000 raw candidates**.
 - **Curated shortlist (60–80)** — a typed `CURATED_SHORTLIST` constant inside the script (no third JSON artifact): the mandatory KB §6.2 family seed (破釜沉舟, 画蛇添足, 瓜田李下) + a common-chengyu starter list (守株待兔, 叶公好龙, 亡羊补牢, 塞翁失马, 三顾茅庐, 井底之蛙, 自相矛盾, 掩耳盗铃, 滥竽充数, 画龙点睛, 刻舟求剑, 对牛弹琴, 狐假虎威, 胸有成竹, 卧薪尝胆, 望梅止渴, 纸上谈兵, 东施效颦, 邯郸学步, …). Sized 60–80 so curation dropping lands safely at **≥50**. The script intersects candidates with the shortlist and reports per-member found/not-found coverage (regression guard). **Reject:** CC-CEDICT "variant of …" rows and pure "abbr. for …" stubs (a row with no `lit.`/`fig.` gloss), rare/archaic idioms with no Chinese Wiktionary 詞源, any 惯用语/歇后语/谚语 (KB §6.3).
-- **Per-row pre-fill** — `chengyu` = simplified; `pinyin` = `numberedToToneMark(pinyinNumbered)` (from `apps/backend/src/shared/utils/pinyinFormatUtils.ts`; handles `u:`→`ü`, tone digits→marks, neutral = unmarked); `literalMeaning` = `lit.` gloss (strip the `(idiom)` suffix); `figurativeMeaning` = `fig.` gloss (fallback: second def line); `metadata.source = "CC-CEDICT"`. `content_id` assigned sequentially `cy_0001…`; `sortOrder` = list order.
+- **Per-row pre-fill** — `chengyu` = simplified; `pinyin` = `pinyinStringToToneMarks(pinyinNumbered)` (from `apps/backend/src/shared/utils/pinyinFormatUtils.ts` — the space-split wrapper that internally calls `numberedToToneMark`, which handles `u:`→`ü`, tone digits→marks, neutral = unmarked); `literalMeaning` = `lit.` gloss (strip the `(idiom)` suffix); `figurativeMeaning` = `fig.` gloss (fallback: second def line); `metadata.source = "CC-CEDICT"`. `content_id` assigned sequentially `cy_0001…`; `sortOrder` = list order.
 - **Console** — candidate-pool count + shortlist coverage report.
 - ⚠️ **`ch_` id gotcha** — `characters.json` `ch_` ids are **not reliably codepoints** (釜 = `ch_46225`, not U+91DC/`ch_37340`; 好 = `ch_1001`). Segments' `entityId` must be **copied from `characters.json` by glyph→id lookup, never computed** from a codepoint.
 
@@ -315,6 +315,32 @@ Solution: Attribution via content/seed/ATTRIBUTION.md (CC-CEDICT + Wikimedia cit
          CC BY-SA 4.0); authored story/example prose written in our own words (not
          verbatim), explicitly recorded as original project work in ATTRIBUTION.md;
          no restricted-source (ctext.org / zdic / pwxcoo) text shipped.
+
+Problem: KNOWN_WORKS expansion (post-planning deviation) — the mandatory KB §6.2
+         family and the shortlist include idioms whose canonical classical sources
+         are outside the IMP's 16-row era table (瓜田李下→乐府诗集, 叶公好龙→新序,
+         画龙点睛→历代名画记, 对牛弹琴→牟子理惑论), so a strict 16-row prefix
+         check would fail to truthfully cite them.
+Solution: The validator's KNOWN_WORKS list is expanded by 4 works — 新序, 乐府诗集,
+         牟子理惑论, 历代名画记 (20 total) — keeping storySource citations truthful;
+         the expansion is commented in scripts/validate-chengyu-content.ts and covered
+         by a unit test ("accepts an expanded KNOWN_WORKS work").
+
+Problem: Data-quality exclusions (post-planning deviation) — 塞翁失马 is excluded
+         because its `weng` syllable is missing from content/seed/phase2/
+         pinyin-syllables.json, and 胸有成竹 is excluded because its Song-era setting
+         is outside the era value set (Spring & Autumn … Wei–Jin).
+Solution: Both are dropped from the authored set so the era/syllable validation stays
+         strict (no per-idiom exception carving). The authored set lands at 55 idioms
+         (≥ 50 target) — 55 idioms / 55 examples / 18 relations / 0 orphans.
+
+Problem: Extractor shortlist coverage shortfall (post-planning deviation — regression
+         guard, not a blocker) — 3 of the 69 CURATED_SHORTLIST members are absent from
+         CC-CEDICT (庖丁解牛, 七步成诗, 五十步笑百步) → 66 draft rows.
+Solution: The extractor reports per-member found/not-found coverage on every run; the
+         3 absent members are surfaced in the console report as a regression guard for
+         the next curation pass. The curated 55-idiom authored set is unaffected by
+         the shortfall.
 ```
 
 ### Doc Truth-Check
@@ -322,10 +348,11 @@ Solution: Attribution via content/seed/ATTRIBUTION.md (CC-CEDICT + Wikimedia cit
 - [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim) — N/A this story (no endpoints; 23.2 owns `chengyuIdioms`/`chengyuIdiomById`)
 - [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — N/A this story (data layer only); `content/seed/` has `curated/`, `phase1/`, `phase2/` — `chengyu.json` is added to the existing `phase2/` (no new directory)
 - [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — chengyu is all-in-DB via Prisma (seed source only; no runtime JSON reads); hash-gated delta sync confirmed in `apps/backend/prisma/sync-helpers.ts` (`syncTable`/`syncGrammar`) + `docs/guides/data/seed-pipeline.md`
-- [x] Source/license claims verified: `data/CC-CEDICT/cedict_1_0_ts_utf-8_mdbg.txt` + `content/seed/phase1/cc-cedict-entries.json` (CC-CEDICT, CC BY-SA 4.0) exist; `numberedToToneMark` exists in `apps/backend/src/shared/utils/pinyinFormatUtils.ts`; `content/seed/phase2/` has `characters.json` + `pinyin-syllables.json` (glyph→id lookup; 釜 = `ch_46225`); validator precedent `scripts/validate-grammar-content.ts` + `apps/backend/scripts/__tests__/validate-grammar-content.test.ts` exist; `content/seed/ATTRIBUTION.md` (NEW) + `apps/backend/scripts/enrich/extract-chengyu-candidates.ts` (NEW) documented as to-be-created
+- [x] Source/license claims verified: `data/CC-CEDICT/cedict_1_0_ts_utf-8_mdbg.txt` + `content/seed/phase1/cc-cedict-entries.json` (CC-CEDICT, CC BY-SA 4.0) exist; `numberedToToneMark` exists in `apps/backend/src/shared/utils/pinyinFormatUtils.ts` (line 30); `content/seed/phase2/` has `characters.json` + `pinyin-syllables.json` (glyph→id lookup; 釜 = `ch_46225` — verified); validator precedent `scripts/validate-grammar-content.ts` + `apps/backend/scripts/__tests__/validate-grammar-content.test.ts` exist; `content/seed/ATTRIBUTION.md` (created — CC BY-SA 4.0 sources + original-prose note, no restricted sources) + `apps/backend/scripts/enrich/extract-chengyu-candidates.ts` (created — `CURATED_SHORTLIST` 69 members, reads `content/seed/phase1/cc-cedict-entries.json` read-only) verified in place
 - [x] No restricted-source text (ctext.org / zdic/漢典 / pwxcoo) is specified to ship — only CC-CEDICT + Wikimedia are named; original `story`/`example` prose is authored (not verbatim)
 - [x] All relative markdown links resolve (this story → `../README.md`, `story-23-2-chengyu-backend-api.md`, `story-23-3-chengyu-ui.md`, IMP twin, KB links)
 - [x] Last Updated / Last Update date is current (August 7, 2026 — same commit as the edit)
+- [x] **Shipped-state actuals (post-implementation):** `content/seed/phase2/chengyu.json` = **55 idioms** (`cy_0001`–`cy_0055`) / **55 examples** (≥1 per idiom) / **18 relations**, **0 orphan examples**; `scripts/validate-chengyu-content.ts` passes with **0 violations**; re-seed 2nd run = **0 writes** (idempotent); migration = `20260807164512_add_chengyu_models/`; `content/manifest.json` `entity_counts.chengyu` = **55**; root aliases `validate:chengyu-content` + `extract:chengyu-candidates` registered; tests = extractor 21 + validator 35 + sync-helpers 25 (**81 unit**) + **14 integration** — all pass.
 
 > **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
 

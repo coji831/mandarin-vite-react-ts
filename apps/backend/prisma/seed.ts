@@ -39,10 +39,15 @@
  *   27. GrammarPattern          ← no FK deps (21 KB-sourced patterns; unique content_id "gr_XXXX")
  *   28. GrammarExample          ← FK → GrammarPattern.content_id ("gr_XXXX_exN")
  *   29. GrammarPatternRelation  ← FK → GrammarPattern.content_id (both ends)
+ *   30. Chengyu                 ← no FK deps (50+ CC-CEDICT-extracted + curated idioms; unique content_id "cy_XXXX")
+ *   31. ChengyuExample          ← FK → Chengyu.content_id ("cy_XXXX_exN")
+ *   32. ChengyuRelation         ← FK → Chengyu.content_id (both ends)
  *
  *   Post-seed: VALIDATE "CharacterRadical_radicalId_fkey" (created NOT VALID by
  *   migration 20260731045648_add_reference_tables — see docs/guides/data/seed-pipeline.md §2).
  *   Post-seed: Grammar verification (patterns ≥ 21 / examples ≥ 63 / relations ≥ 0
+ *   + FK-orphan check) — see the SQL block near the end of main().
+ *   Post-seed: Chengyu verification (idioms ≥ 50 / examples ≥ 50 / relations ≥ 0
  *   + FK-orphan check) — see the SQL block near the end of main().
  */
 
@@ -56,6 +61,7 @@ import {
   syncDerived,
   syncCharacter,
   syncGrammar,
+  syncChengyu,
   mapWordHskLevels,
   mapWordRows,
   wordCfg,
@@ -154,6 +160,42 @@ interface GrammarExampleRow {
 interface GrammarRelationRow {
   fromPatternContentId: string;
   toPatternContentId: string;
+  relationType: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+// ── Phase 2 chengyu file shape (Epic 23 — Story 23.1) ──
+// chengyu.json = { idioms: ChengyuRow[], relations: ChengyuRelationRow[] }
+// where each idiom nests its own modern-usage examples (ChengyuExampleRow). The
+// seed flattens these into the three Prisma tables in dependency order via
+// syncChengyu (hash-gated delta sync, mirroring syncGrammar).
+interface ChengyuExampleRow {
+  content_id: string;
+  chinese: string;
+  pinyin: string;
+  english: string;
+  sortOrder: number;
+  segments: unknown[];
+}
+
+interface ChengyuRow {
+  content_id: string;
+  chengyu: string;
+  pinyin: string;
+  literalMeaning: string;
+  figurativeMeaning: string;
+  story: string;
+  storySource: string;
+  era: string;
+  theme: string;
+  sortOrder: number;
+  metadata?: Record<string, unknown> | null;
+  examples?: ChengyuExampleRow[];
+}
+
+interface ChengyuRelationRow {
+  fromChengyuContentId: string;
+  toChengyuContentId: string;
   relationType: string;
   metadata?: Record<string, unknown> | null;
 }
@@ -471,6 +513,69 @@ async function main() {
     console.log("");
   } else {
     console.log("  ⏭️  grammar-patterns.json not found — skipping grammar sync\n");
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 30–32. Chengyu (Epic 23 — Story 23.1) via the hash-gated delta sync
+  //     (syncChengyu). Idioms → Examples → Relations in ONE interactive
+  //     transaction. Mirrors syncGrammar: unchanged rows write 0, edited rows
+  //     propagate + bump content_version, NULL-hash rows reconcile without a
+  //     version bump. Post-seed SQL verification (counts + FK integrity) below.
+  // ──────────────────────────────────────────────────────────────────────────
+  const chengyu = loadJsonObject<{
+    idioms: ChengyuRow[];
+    relations: ChengyuRelationRow[];
+  }>("chengyu.json");
+
+  if (chengyu) {
+    console.log("📚 Steps 30–32/32: Syncing Chengyu (Idiom → Example → Relation)...");
+    await syncChengyu(prisma, chengyu);
+    console.log("");
+  } else {
+    console.log("  ⏭️  chengyu.json not found — skipping chengyu sync\n");
+  }
+
+  // ── Post-seed chengyu verification (counts + FK integrity) ──
+  // Counts are informational — the seed stays safe to re-run regardless. The
+  // FK-orphan check must return 0 rows or the seed data has a referential bug.
+  console.log("📊 Post-seed: Chengyu counts + FK integrity...");
+  const chengyuCounts = await prisma.$queryRaw<
+    Array<{
+      idiomCount: bigint;
+      exampleCount: bigint;
+      relationCount: bigint;
+      orphanCount: bigint;
+    }>
+  >`
+    SELECT
+      (SELECT COUNT(*) FROM "Chengyu") AS "idiomCount",
+      (SELECT COUNT(*) FROM "ChengyuExample") AS "exampleCount",
+      (SELECT COUNT(*) FROM "ChengyuRelation") AS "relationCount",
+      (SELECT COUNT(*) FROM "ChengyuExample" e
+        LEFT JOIN "Chengyu" c ON e."chengyuContentId" = c."content_id"
+        WHERE c."content_id" IS NULL) AS "orphanCount"
+  `;
+  const cc = chengyuCounts[0] ?? {
+    idiomCount: 0n,
+    exampleCount: 0n,
+    relationCount: 0n,
+    orphanCount: 0n,
+  };
+  if (Number(cc.idiomCount) < 50 || Number(cc.exampleCount) < 50) {
+    console.warn(
+      `  ⚠️  Chengyu below authoring targets (idioms=${Number(cc.idiomCount)}, examples=${Number(cc.exampleCount)}) — expected ≥50 / ≥50`,
+    );
+  } else {
+    console.log(
+      `  ✅ Chengyu counts OK: idioms=${Number(cc.idiomCount)}, examples=${Number(cc.exampleCount)}, relations=${Number(cc.relationCount)}`,
+    );
+  }
+  if (Number(cc.orphanCount) > 0) {
+    console.warn(
+      `  ⚠️  ${Number(cc.orphanCount)} orphan ChengyuExample rows (chengyuContentId has no Chengyu)`,
+    );
+  } else {
+    console.log("  ✅ Chengyu FK integrity OK: 0 orphan examples\n");
   }
 
   // ── Post-seed grammar verification (counts + FK integrity) ──

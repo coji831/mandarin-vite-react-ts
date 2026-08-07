@@ -882,6 +882,85 @@ model GrammarPatternRelation {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// Epic 23: Chengyu (Idiom) Narratives — Story 23.1 (Chengyu Data)
+// ═══════════════════════════════════════════════════════════════════════════
+// Chengyu content models follow the pre-adaptation field pattern
+// (docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md,
+// Rules 1-3): internal uuid id PK + unique content_id business key
+// ("cy_XXXX") + content_version Int @default(1) + metadata Json?.
+//
+// ⚠️ DIFFERS FROM Radical / Character (which store the business key as the PK,
+//    e.g. "rad_0001" / "ch_1001") — the pre-adaptation target (and this epic)
+//    use uuid PK + unique content_id. See the reconciliation note in the epic
+//    IMP Decision 2. Example and junction rows reference content_id, never the
+//    internal uuid id. Radical/Character drift is FLAGGED (not fixed in-scope).
+
+// ── Chengyu: 4-character idiom with narrative origin story (50+ CC-CEDICT-extracted + curated rows) ──
+// content_id = "cy_XXXX" (pre-adaptation Rule 1 business key, e.g. "cy_0005").
+// Mirrors GrammarPattern (Epic 22): uuid id PK + unique content_id + content_version + content_hash + metadata Json?.
+model Chengyu {
+  id                String  @id @default(uuid()) // internal PK — never exposed in the API
+  content_id        String  @unique              // stable business key: "cy_0005"
+  chengyu           String                       // the 4-char idiom, e.g. "破釜沉舟"
+  pinyin            String                       // "pò fǔ chén zhōu"
+  literalMeaning    String                       // "Break pots, sink ships"
+  figurativeMeaning String                       // "Burning one's bridges"
+  story             String                       // narrative origin story (historical/cultural context)
+  storySource       String                       // citation for the narrative's source
+  era               String                       // e.g. "Warring States", "Han"
+  theme             String                       // e.g. "self-deception", "perseverance"
+  sortOrder         Int                          // stable library ordering
+  content_version   Int     @default(1)
+  content_hash      String? @db.Char(64)         // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata          Json?                        // e.g. {"family": "determination", "deprecated": false}
+  examples          ChengyuExample[]
+  relatedFrom       ChengyuRelation[] @relation("ChengyuFrom")
+  relatedTo         ChengyuRelation[] @relation("ChengyuTo")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([theme])
+  @@index([era])
+  @@index([sortOrder])
+}
+
+model ChengyuExample {
+  id               String  @id @default(uuid())
+  content_id       String  @unique              // e.g. "cy_0005_ex1"
+  chengyuContentId String                        // FK → Chengyu.content_id ("cy_0005")
+  chinese          String                       // modern-usage sentence
+  pinyin           String
+  english          String
+  segments         Json                         // [{ text, pinyin, gloss, entityType, entityId }] — entityId = target content_id
+  sortOrder        Int     @default(0)
+  content_version  Int     @default(1)
+  content_hash     String? @db.Char(64)         // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  chengyu          Chengyu @relation(fields: [chengyuContentId], references: [content_id], onDelete: Cascade)
+
+  @@index([chengyuContentId])
+}
+
+// Related-idiom cross-links — mirrors GrammarPatternRelation (Epic 22).
+model ChengyuRelation {
+  id                  String @id @default(uuid())
+  fromChengyuContentId String   // references Chengyu.content_id
+  toChengyuContentId   String   // references Chengyu.content_id
+  relationType         String  @default("RELATED") // RELATED | CONTRASTS_WITH | PREREQUISITE
+  content_version      Int     @default(1)
+  content_hash         String? @db.Char(64) // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata             Json?
+  fromChengyu          Chengyu @relation("ChengyuFrom", fields: [fromChengyuContentId], references: [content_id], onDelete: Cascade)
+  toChengyu            Chengyu @relation("ChengyuTo", fields: [toChengyuContentId], references: [content_id], onDelete: Cascade)
+  createdAt            DateTime @default(now())
+
+  @@unique([fromChengyuContentId, toChengyuContentId])
+  @@index([toChengyuContentId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // Seed delta-sync (Epic 22 — full-pipeline hash-gated delta sync)
 // ═══════════════════════════════════════════════════════════════════════════
 // Single-row gate for the derived-recompute (Bucket-B) tables and the optional

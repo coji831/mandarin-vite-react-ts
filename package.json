@@ -22,6 +22,8 @@
     "cleanup:radical-content": "npx tsx scripts/cleanup-radical-content.ts",
     "validate:radical-content": "npx tsx scripts/validate-radical-content.ts",
     "validate:grammar-content": "npx tsx scripts/validate-grammar-content.ts",
+    "validate:chengyu-content": "npx tsx scripts/validate-chengyu-content.ts",
+    "extract:chengyu-candidates": "npx tsx apps/backend/scripts/enrich/extract-chengyu-candidates.ts",
     "design-audit": "node tools/design-audit.mjs",
     "design-audit:feature": "node tools/design-audit.mjs",
     "check:registry-stories": "node scripts/check-registry-stories.mjs",

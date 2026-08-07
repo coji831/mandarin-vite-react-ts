@@ -14,13 +14,13 @@ This is the data-first story of the epic. It converts the platform's curated idi
 
 ## Acceptance Criteria
 
-- [ ] Prisma models `Chengyu`, `ChengyuExample`, `ChengyuRelation` added via migration (follow `prisma-schema-changes.instructions.md`; use `npm run db:migrate`, never `db push`).
-- [ ] ≥50 idioms authored in `content/seed/phase2/chengyu.json` (in the canonical `content/seed/phase2/` seed directory), matching the curated shortlist in the epic BR Background table (KB §6.2 family seed + common chengyu, extracted from CC-CEDICT and enriched); each idiom has a 4-character `chengyu`, pinyin, `literalMeaning`, `figurativeMeaning`, narrative `story`, `storySource`, `era`, `theme`, and ≥1 modern-usage example (Chinese, pinyin, English, `segments`) — example cardinality is ≥1/idiom (vs grammar's ≥3) because the idiom itself is the primary learning object, while the pipeline mirrors Epic 22's architecture exactly.
-- [ ] Business keys follow the `cy_XXXX` convention (e.g., `cy_0005`) per `pre-adaptation-static-dynamic-separation.md` Rule 1; `Chengyu`/`ChengyuExample` follow the pre-adaptation field pattern (Business Rule 2); example/junction rows reference `content_id`, not internal auto IDs.
-- [ ] Modern-usage example `segments` tokens carry pre-segmented clickable tokens (`text`, `pinyin`, `gloss`, `entityType`, `entityId`) where `entityId` references the target entity's `content_id` (`ch_XXXXX` / `w_XXXXX`); the idiom's 4 characters resolve to `ch_XXXXX` for Character Hub cross-linking.
-- [ ] `scripts/validate-chengyu-content.ts` created (mirrors `scripts/validate-grammar-content.ts`): count ≥50, `cy_XXXX` regex, required fields, era/theme present, `segments` schema, dead-entity cross-check; registered as `npm run validate:chengyu-content`; passes before seed.
-- [ ] Seed steps added in dependency order (Chengyu → ChengyuExample → ChengyuRelation) + re-seed + post-seed SQL verification (counts match targets); idempotent per `../../guides/data/seed-pipeline.md` (hash-gated delta sync).
-- [ ] `content/manifest.json` declares the `chengyu` block (`files: ["chengyu.json"]`, `served_via: "db"`) **and** bumps `entity_counts.chengyu` from 0 to ≥50 after the seed populates.
+- [x] Prisma models `Chengyu`, `ChengyuExample`, `ChengyuRelation` added via migration (follow `prisma-schema-changes.instructions.md`; use `npm run db:migrate`, never `db push`).
+- [x] ≥50 idioms authored in `content/seed/phase2/chengyu.json` (in the canonical `content/seed/phase2/` seed directory), matching the curated shortlist in the epic BR Background table (KB §6.2 family seed + common chengyu, extracted from CC-CEDICT and enriched); each idiom has a 4-character `chengyu`, pinyin, `literalMeaning`, `figurativeMeaning`, narrative `story`, `storySource`, `era`, `theme`, and ≥1 modern-usage example (Chinese, pinyin, English, `segments`) — example cardinality is ≥1/idiom (vs grammar's ≥3) because the idiom itself is the primary learning object, while the pipeline mirrors Epic 22's architecture exactly.
+- [x] Business keys follow the `cy_XXXX` convention (e.g., `cy_0005`) per `pre-adaptation-static-dynamic-separation.md` Rule 1; `Chengyu`/`ChengyuExample` follow the pre-adaptation field pattern (Business Rule 2); example/junction rows reference `content_id`, not internal auto IDs.
+- [x] Modern-usage example `segments` tokens carry pre-segmented clickable tokens (`text`, `pinyin`, `gloss`, `entityType`, `entityId`) where `entityId` references the target entity's `content_id` (`ch_XXXXX` / `w_XXXXX`); the idiom's 4 characters resolve to `ch_XXXXX` for Character Hub cross-linking.
+- [x] `scripts/validate-chengyu-content.ts` created (mirrors `scripts/validate-grammar-content.ts`): count ≥50, `cy_XXXX` regex, required fields, era/theme present, `segments` schema, dead-entity cross-check; registered as `npm run validate:chengyu-content`; passes before seed.
+- [x] Seed steps added in dependency order (Chengyu → ChengyuExample → ChengyuRelation) + re-seed + post-seed SQL verification (counts match targets); idempotent per `../../guides/data/seed-pipeline.md` (hash-gated delta sync).
+- [x] `content/manifest.json` declares the `chengyu` block (`files: ["chengyu.json"]`, `served_via: "db"`) **and** bumps `entity_counts.chengyu` from 0 to ≥50 after the seed populates.
 
 ## Business Rules
 
@@ -45,7 +45,11 @@ This is the data-first story of the epic. It converts the platform's curated idi
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Key Commit**: 5770c1ea
+
+## Risks
+
+- **Cultural/historical accuracy of the idiom origin stories (Severity: High)** + **a ≥50-idiom set feeling thin for a Phase 4 learner** (the authored set lands at exactly 55) — full write-up in the story-23.1 IMP Technical Challenges & Solutions: `../../issue-implementation/epic-23-idiom-database/story-23-1-chengyu-data.md`

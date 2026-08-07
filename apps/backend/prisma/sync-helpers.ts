@@ -680,6 +680,148 @@ export async function syncGrammar(
   return { patterns, examples, relations };
 }
 
+// ── Chengyu orchestrator (Epic 23 — Story 23.1, one interactive tx) ────────
+
+export interface ChengyuExampleRow {
+  content_id: string;
+  chinese: string;
+  pinyin: string;
+  english: string;
+  sortOrder: number;
+  segments: unknown[];
+}
+
+export interface ChengyuRow {
+  content_id: string;
+  chengyu: string;
+  pinyin: string;
+  literalMeaning: string;
+  figurativeMeaning: string;
+  story: string;
+  storySource: string;
+  era: string;
+  theme: string;
+  sortOrder: number;
+  metadata?: Record<string, unknown> | null;
+  examples?: ChengyuExampleRow[];
+}
+
+export interface ChengyuRelationRow {
+  fromChengyuContentId: string;
+  toChengyuContentId: string;
+  relationType: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface ChengyuFile {
+  idioms: ChengyuRow[];
+  relations: ChengyuRelationRow[];
+}
+
+/** Map the chengyu authoring file into the three DB-bound payload arrays. */
+export function mapChengyuRows(chengyu: ChengyuFile): {
+  idioms: SyncRow[];
+  examples: SyncRow[];
+  relations: SyncRow[];
+} {
+  return {
+    idioms: (chengyu.idioms ?? []).map((c) => ({
+      content_id: c.content_id,
+      chengyu: c.chengyu,
+      pinyin: c.pinyin,
+      literalMeaning: c.literalMeaning,
+      figurativeMeaning: c.figurativeMeaning,
+      story: c.story,
+      storySource: c.storySource,
+      era: c.era,
+      theme: c.theme,
+      sortOrder: c.sortOrder,
+      metadata: c.metadata ?? null,
+    })),
+    examples: (chengyu.idioms ?? []).flatMap((c) =>
+      (c.examples ?? []).map((e) => ({
+        content_id: e.content_id,
+        chengyuContentId: c.content_id,
+        chinese: e.chinese,
+        pinyin: e.pinyin,
+        english: e.english,
+        segments: e.segments,
+        sortOrder: e.sortOrder,
+      })),
+    ),
+    relations: (chengyu.relations ?? []).map((r) => ({
+      fromChengyuContentId: r.fromChengyuContentId,
+      toChengyuContentId: r.toChengyuContentId,
+      relationType: r.relationType,
+      metadata: r.metadata ?? null,
+    })),
+  };
+}
+
+export const chengyuCfg: SyncTableConfig = {
+  label: "Chengyu",
+  prismaModel: "chengyu",
+  keySpec: singleKey("content_id"),
+  hashFields: [
+    "chengyu",
+    "pinyin",
+    "literalMeaning",
+    "figurativeMeaning",
+    "story",
+    "storySource",
+    "era",
+    "theme",
+    "sortOrder",
+    "metadata",
+  ],
+  hasVersion: true,
+  txMode: "interactive",
+};
+
+export const chengyuExampleCfg: SyncTableConfig = {
+  label: "ChengyuExample",
+  prismaModel: "chengyuExample",
+  keySpec: singleKey("content_id"),
+  hashFields: ["chengyuContentId", "chinese", "pinyin", "english", "segments", "sortOrder"],
+  hasVersion: true,
+  txMode: "interactive",
+};
+
+export const chengyuRelationCfg: SyncTableConfig = {
+  label: "ChengyuRelation",
+  prismaModel: "chengyuRelation",
+  keySpec: compositeKey("fromChengyuContentId", "toChengyuContentId"),
+  hashFields: ["relationType", "metadata"],
+  hasVersion: true,
+  txMode: "interactive",
+};
+
+/**
+ * Sync the chengyu file atomically: Idioms → Examples → Relations inside ONE
+ * interactive transaction (a crash can't leave examples pointing at a missing
+ * idiom). Mirrors syncGrammar (Epic 22). Returns the per-table diff results.
+ */
+export async function syncChengyu(
+  db: DbClient,
+  chengyu: ChengyuFile,
+  opts: SyncOptions = {},
+): Promise<{ idioms: SyncResult; examples: SyncResult; relations: SyncResult }> {
+  const mapped = mapChengyuRows(chengyu);
+  const log = opts.log ?? defaultLog;
+  let idioms!: SyncResult;
+  let examples!: SyncResult;
+  let relations!: SyncResult;
+  await db.$transaction(
+    async (tx) => {
+      idioms = await syncTable(tx, chengyuCfg, mapped.idioms, { ...opts, log });
+      examples = await syncTable(tx, chengyuExampleCfg, mapped.examples, { ...opts, log });
+      relations = await syncTable(tx, chengyuRelationCfg, mapped.relations, { ...opts, log });
+    },
+    { timeout: 120_000 },
+  );
+  return { idioms, examples, relations };
+}
+
 // ── Character orchestrator (bulk + deferred phonetic linking) ──────────────
 
 export interface Phase2Character {

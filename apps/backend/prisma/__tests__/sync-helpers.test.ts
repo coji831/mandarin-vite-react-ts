@@ -21,6 +21,8 @@ import {
   computeContentHash,
   syncTable,
   syncDerived,
+  syncChengyu,
+  mapChengyuRows,
   singleKey,
   compositeKey,
   buildBulkUpsertQuery,
@@ -438,5 +440,223 @@ describe("syncDerived (Bucket-B checkpoint rebuild)", () => {
     expect(result.skipped).toBe(false);
     expect(result.writes).toBe(1);
     expect(model.deleteMany).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ── syncChengyu orchestrator (Epic 23 — Story 23.1) ────────────────────────
+
+describe("mapChengyuRows", () => {
+  it("maps idioms → examples → relations payloads with FK by content_id", () => {
+    const mapped = mapChengyuRows({
+      idioms: [
+        {
+          content_id: "cy_0001",
+          chengyu: "破釜沉舟",
+          pinyin: "pò fǔ chén zhōu",
+          literalMeaning: "Break pots, sink ships",
+          figurativeMeaning: "Burning one's bridges",
+          story: "Xiang Yu crossed the river and destroyed his escape route.",
+          storySource: "《史记·卷七·项羽本纪》(zh.wikisource.org/wiki/史記/卷007)",
+          era: "Qin–Han transition",
+          theme: "determination",
+          sortOrder: 1,
+          metadata: { source: "CC-CEDICT" },
+          examples: [
+            {
+              content_id: "cy_0001_ex1",
+              chinese: "他破釜沉舟。",
+              pinyin: "tā pò fǔ chén zhōu",
+              english: "He burned his bridges.",
+              sortOrder: 1,
+              segments: [
+                {
+                  text: "破",
+                  pinyin: "pò",
+                  gloss: "break",
+                  entityType: "character",
+                  entityId: "ch_30772",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      relations: [
+        { fromChengyuContentId: "cy_0001", toChengyuContentId: "cy_0042", relationType: "RELATED" },
+      ],
+    });
+
+    expect(mapped.idioms).toEqual([
+      expect.objectContaining({
+        content_id: "cy_0001",
+        chengyu: "破釜沉舟",
+        story: expect.stringContaining("Xiang Yu"),
+        metadata: { source: "CC-CEDICT" },
+      }),
+    ]);
+    expect(mapped.examples).toEqual([
+      expect.objectContaining({
+        content_id: "cy_0001_ex1",
+        chengyuContentId: "cy_0001",
+        segments: expect.any(Array),
+      }),
+    ]);
+    expect(mapped.relations).toEqual([
+      {
+        fromChengyuContentId: "cy_0001",
+        toChengyuContentId: "cy_0042",
+        relationType: "RELATED",
+        metadata: null,
+      },
+    ]);
+  });
+});
+
+describe("syncChengyu (orchestrator — one interactive transaction)", () => {
+  /** Fake DB that supports the interactive $transaction callback form and persists state. */
+  function createChengyuFake() {
+    const state: Record<string, Array<Record<string, unknown>>> = {
+      chengyu: [],
+      chengyuExample: [],
+      chengyuRelation: [],
+    };
+    const calls: { createMany: any[]; update: any[] } = { createMany: [], update: [] };
+    const mkModel = (name: string) => ({
+      findMany: vi.fn(async () => state[name]),
+      createMany: vi.fn(async (args: any) => {
+        state[name].push(...args.data);
+        calls.createMany.push(args);
+        return { count: args.data.length };
+      }),
+      update: vi.fn(async (args: any) => {
+        calls.update.push(args);
+        return { ...args.data };
+      }),
+      deleteMany: vi.fn(async () => ({ count: 0 })),
+    });
+    const db: any = {
+      chengyu: mkModel("chengyu"),
+      chengyuExample: mkModel("chengyuExample"),
+      chengyuRelation: mkModel("chengyuRelation"),
+      $executeRaw: vi.fn(async () => 1),
+      seedCheckpoint: { findUnique: vi.fn(async () => null), upsert: vi.fn(async () => ({})) },
+    };
+    // Interactive form: $transaction(callback, opts) → runs the callback with the tx handle.
+    db.$transaction = vi.fn(async (cb: any) => cb(db));
+    return { db, calls, state };
+  }
+
+  const baseFile = (): Parameters<typeof syncChengyu>[1] => ({
+    idioms: [
+      {
+        content_id: "cy_0001",
+        chengyu: "破釜沉舟",
+        pinyin: "pò fǔ chén zhōu",
+        literalMeaning: "Break pots, sink ships",
+        figurativeMeaning: "Burning one's bridges",
+        story: "Xiang Yu crossed the river.",
+        storySource: "《史记·卷七·项羽本纪》(zh.wikisource.org/wiki/史記/卷007)",
+        era: "Qin–Han transition",
+        theme: "determination",
+        sortOrder: 1,
+        metadata: { source: "CC-CEDICT" },
+        examples: [
+          {
+            content_id: "cy_0001_ex1",
+            chinese: "他破釜沉舟。",
+            pinyin: "tā pò fǔ chén zhōu",
+            english: "He burned his bridges.",
+            sortOrder: 1,
+            segments: [
+              {
+                text: "破",
+                pinyin: "pò",
+                gloss: "break",
+                entityType: "character",
+                entityId: "ch_30772",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    relations: [
+      { fromChengyuContentId: "cy_0001", toChengyuContentId: "cy_0002", relationType: "RELATED" },
+    ],
+  });
+
+  it("runs Chengyu → ChengyuExample → ChengyuRelation inside ONE interactive transaction", async () => {
+    const { db, calls } = createChengyuFake();
+    const result = await syncChengyu(db, baseFile(), { log: () => undefined });
+
+    expect(db.$transaction).toHaveBeenCalledTimes(1);
+    expect(result.idioms.inserted).toBe(1);
+    expect(result.examples.inserted).toBe(1);
+    expect(result.relations.inserted).toBe(1);
+
+    // Dependency order: idiom first, then example, then relation.
+    const models = calls.createMany.map(
+      (c) =>
+        (c.data[0] as any).content_id ??
+        (c.data[0] as any).chengyuContentId ??
+        (c.data[0] as any).fromChengyuContentId,
+    );
+    expect(models).toEqual(["cy_0001", "cy_0001_ex1", "cy_0001"]);
+    // Relation payload references both ends.
+    expect(calls.createMany[2].data[0].fromChengyuContentId).toBe("cy_0001");
+    expect(calls.createMany[2].data[0].toChengyuContentId).toBe("cy_0002");
+    // content_hash stamped on all three.
+    for (const c of calls.createMany) {
+      expect(c.data[0].content_hash).toMatch(/^[0-9a-f]{64}$/);
+    }
+  });
+
+  it("edit-propagates: an edited example reaches the DB + bumps content_version; the unchanged idiom stays at version 1", async () => {
+    const { db } = createChengyuFake();
+    await syncChengyu(db, baseFile(), { log: () => undefined });
+
+    // Second run: the example's Chinese changed; the idiom is unchanged.
+    const edited = baseFile();
+    (edited.idioms[0].examples![0] as any).chinese = "他背水一战。";
+    (edited.idioms[0].examples![0] as any).pinyin = "tā bèi shuǐ yī zhàn";
+
+    const result = await syncChengyu(db, edited, { log: () => undefined });
+    expect(result.examples.updated).toBe(1);
+    expect(result.idioms.updated).toBe(0);
+    expect(result.idioms.unchanged).toBe(1);
+
+    const update = (db.chengyuExample.update as any).mock.calls[0][0];
+    expect(update.data.chinese).toBe("他背水一战。");
+    expect(update.data.content_version).toEqual({ increment: 1 });
+  });
+
+  it("is idempotent: re-syncing an identical payload writes 0 rows", async () => {
+    const { db } = createChengyuFake();
+    await syncChengyu(db, baseFile(), { log: () => undefined });
+    (db.chengyu.update as any).mockClear();
+    (db.chengyuExample.update as any).mockClear();
+    (db.chengyuRelation.update as any).mockClear();
+
+    const result = await syncChengyu(db, baseFile(), { log: () => undefined });
+    expect(result.idioms.inserted).toBe(0);
+    expect(result.idioms.updated).toBe(0);
+    expect(result.examples.updated).toBe(0);
+    expect(result.relations.updated).toBe(0);
+    expect(db.chengyu.update).not.toHaveBeenCalled();
+    expect(db.chengyuExample.update).not.toHaveBeenCalled();
+  });
+
+  it("removal: a row dropped from the JSON stays in the DB (log-only)", async () => {
+    const { db } = createChengyuFake();
+    await syncChengyu(db, baseFile(), { log: () => undefined });
+
+    const dropped = baseFile();
+    dropped.relations = [];
+    const logs: string[] = [];
+    await syncChengyu(db, dropped, { log: (m) => logs.push(m) });
+
+    // Relation row still in DB (no auto-delete).
+    expect(db.chengyuRelation.deleteMany).not.toHaveBeenCalled();
+    expect(logs.join("\n")).toContain("in DB but not in JSON");
   });
 });
