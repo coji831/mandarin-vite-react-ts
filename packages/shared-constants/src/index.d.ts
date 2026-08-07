@@ -59,6 +59,8 @@ export declare const ROUTE_PATTERNS: {
   readonly pinyinSearch: string;
   readonly grammarPatterns: string;
   readonly grammarPatternById: (id: string) => string;
+  readonly chengyuIdioms: string;
+  readonly chengyuIdiomById: (id: string) => string;
 };
 
 // HSK Levels

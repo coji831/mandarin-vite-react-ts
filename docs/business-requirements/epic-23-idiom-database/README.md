@@ -15,9 +15,9 @@
 - **Audio on demand** — full idiom + example sentences via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth); no stored audio fields.
 - **No progress tracking** — pure reference and cultural learning; `content_version` + `metadata` pre-adaptation fields are the seam for future progress work.
 
-**Status:** Planned
+**Status:** In Progress (Stories 23.1 + 23.2 complete; Story 23.3 pending)
 
-**Last Update:** August 7, 2026
+**Last Update:** August 8, 2026
 
 ## Background
 
@@ -128,7 +128,7 @@ High-level epic acceptance criteria — short, testable outcomes per story. Deta
 The normative per-story specs moved out of this epic BR into the story IMP docs (single-residence — the epic docs never duplicate them):
 
 - **Prisma models** — `Chengyu`/`ChengyuExample`/`ChengyuRelation` DDL + `segments` token schema + migration → story-23.1 IMP: `../../issue-implementation/epic-23-idiom-database/story-23-1-chengyu-data.md`
-- **API endpoint contracts** — `GET /v1/chengyu/idioms` + `GET /v1/chengyu/idioms/:id` (**proposed**; full request/response JSON, error convention) → story-23.2 IMP: `../../issue-implementation/epic-23-idiom-database/story-23-2-chengyu-backend-api.md`
+- **API endpoint contracts** — `GET /v1/chengyu/idioms` + `GET /v1/chengyu/idioms/:id` (**shipped in story 23.2**, added verbatim to `ROUTE_PATTERNS`; full request/response JSON, error convention) → story-23.2 IMP: `../../issue-implementation/epic-23-idiom-database/story-23-2-chengyu-backend-api.md`
 - **Seed / manifest touchpoints** — authoring source `content/seed/phase2/chengyu.json` (canonical seed dir), seed steps (hash-gated delta sync), manifest declare + count bump → story-23.1 IMP
 - **Frontend component inventory / hub wiring** → story-23.3 IMP: `../../issue-implementation/epic-23-idiom-database/story-23-3-chengyu-ui.md`
 

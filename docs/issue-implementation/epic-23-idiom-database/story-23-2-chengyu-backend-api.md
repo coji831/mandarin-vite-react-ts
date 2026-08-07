@@ -2,12 +2,12 @@
 
 > **BR Reference:** `docs/business-requirements/epic-23-idiom-database/story-23-2-chengyu-backend-api.md`
 > **Epic IMP:** `docs/issue-implementation/epic-23-idiom-database/README.md`
-> **Status:** Planned
-> **Last Update:** August 7, 2026
+> **Status:** Complete
+> **Last Update:** August 8, 2026
 
 ## Technical Scope
 
-Create the `modules/chengyu/` backend module following the modulith pattern, implement the two PROPOSED read-only endpoints against the tables seeded by Story 23.1, register both paths verbatim in `ROUTE_PATTERNS`, register the module in the app container, and verify `content/manifest.json` (the `chengyu` block + count are declared/bumped by 23.1 — no manifest edit here). No frontend feature code in this story (23.3); MSW handlers are scaffolded here for 23.3's Storybook/Vitest use and registered in `apps/frontend/src/mocks/server.ts`.
+Create the `modules/chengyu/` backend module following the modulith pattern, implement the two read-only endpoints against the tables seeded by Story 23.1, register both paths verbatim in `ROUTE_PATTERNS`, register the module in the app container, and verify `content/manifest.json` (the `chengyu` block + count are declared/bumped by 23.1 — no manifest edit here). No frontend feature code in this story (23.3); MSW handlers are scaffolded here for 23.3's Storybook/Vitest use and registered in `apps/frontend/src/mocks/server.ts`.
 
 **Files:**
 
@@ -35,7 +35,7 @@ Create the `modules/chengyu/` backend module following the modulith pattern, imp
 | Method | Endpoint                 | Auth         | Description                                                                                                                                                                                                                                                                     |
 | ------ | ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GET`  | `/v1/chengyu/idioms`     | optionalAuth | List idioms. Query: `search` (matches idiom/pinyin/literal/figurative meanings/story + example english/pinyin), `theme`, `era`, `page`, `pageSize`. Response: `{ items: ChengyuSummary[], total, page, pageSize }` (mirrors the grammar list contract).                         |
-| `GET`  | `/v1/chengyu/idioms/:id` | optionalAuth | Idiom detail — `:id` resolves by `content_id` `cy_XXXX`. Response: `{ id: "cy_0005", chengyu, pinyin, literalMeaning, figurativeMeaning, story, storySource, era, theme, examples: [{ chinese, pinyin, english, segments }], relatedIdioms: [{ id, chengyu, relationType }] }`. |
+| `GET`  | `/v1/chengyu/idioms/:id` | optionalAuth | Idiom detail — `:id` resolves by `content_id` `cy_XXXX`. Response: `{ id: "cy_0001", chengyu, pinyin, literalMeaning, figurativeMeaning, story, storySource, era, theme, examples: [{ chinese, pinyin, english, segments }], relatedIdioms: [{ id, chengyu, relationType }] }`. |
 
 ### API Contract Details
 
@@ -57,16 +57,16 @@ Response `200`:
 {
   "items": [
     {
-      "id": "cy_0005",
+      "id": "cy_0001",
       "chengyu": "破釜沉舟",
       "pinyin": "pò fǔ chén zhōu",
       "literalMeaning": "Break pots, sink ships",
       "figurativeMeaning": "Burning one's bridges",
       "era": "Qin–Han transition",
       "theme": "determination",
-      "sortOrder": 5,
-      "exampleCount": 2,
-      "previewExample": "这次我们只能破釜沉舟了。"
+      "sortOrder": 1,
+      "exampleCount": 1,
+      "previewExample": "他已经决定要破釜沉舟，全力投入新的工作。"
     }
   ],
   "total": 50,
@@ -93,7 +93,7 @@ Response `200`:
 
 ```json
 {
-  "id": "cy_0005",
+  "id": "cy_0001",
   "chengyu": "破釜沉舟",
   "pinyin": "pò fǔ chén zhōu",
   "literalMeaning": "Break pots, sink ships",
@@ -102,7 +102,7 @@ Response `200`:
   "storySource": "《史记·卷七·项羽本纪》(zh.wikisource.org/wiki/史記/卷007)",
   "era": "Qin–Han transition",
   "theme": "determination",
-  "sortOrder": 5,
+  "sortOrder": 1,
   "examples": [
     {
       "id": "cy_0005_ex1",
@@ -127,7 +127,10 @@ Response `200`:
       ]
     }
   ],
-  "relatedIdioms": [{ "id": "cy_0012", "chengyu": "背水一战", "relationType": "RELATED" }]
+  "relatedIdioms": [
+    { "id": "cy_0016", "chengyu": "卧薪尝胆", "relationType": "RELATED" },
+    { "id": "cy_0042", "chengyu": "背水一战", "relationType": "RELATED" }
+  ]
 }
 ```
 
@@ -170,7 +173,7 @@ router.get(
 3. `apps/backend/src/app/container.ts` — imports and invokes the chengyu module's registration.
 4. `apps/backend/src/app/routes.ts` — mounts `chengyuRoutes`; `apps/backend/src/shared/types/express.d.ts` adds the `ChengyuController` augmentation.
 
-### Shared constants — 2 new route constants (proposed)
+### Shared constants — 2 new route constants (shipped)
 
 Add verbatim to `packages/shared-constants/src/index.js` **and** `packages/shared-constants/src/index.d.ts` (naming mirrors the existing `grammarPatterns` / `grammarPatternById` constants):
 
@@ -227,15 +230,40 @@ Implementation note for 23.3 (Epic 22 hardening pattern): the grammar module (22
          an array (Postgres JSON null would crash the hub's segments.map) — and (b) a
          null-`toPattern` filter — related rows can never contain a null-id entry. Apply
          the same guards to chengyu's `examples[].segments` and `relatedIdioms[]` mapping.
+         (Applied in 23.2: `mapExample` coerces non-array `segments` → `[]`, `mapDetail`
+         filters null `toChengyu` rows out of `relatedIdioms[]`.)
+
+Post-implementation deviations (recorded August 8, 2026):
+
+Problem: BR Rule 3 permits an optional module-level list cache, but a cache adds a
+         stale-data invalidation surface with no measurable win for static reference data.
+Solution: The module-level list cache is deliberately omitted — matches the grammar
+         precedent (nothing cached) and keeps the detail endpoint always current. A
+         short-TTL list cache can be added later with no contract change.
+
+Problem: BR Rule 6 says invalid `theme`/`era` values → 400 but does not distinguish a
+         provided-but-empty value from an unknown-but-non-empty one.
+Solution: Interpreted as: provided-but-empty / whitespace / non-string → 400
+         VALIDATION_ERROR (invalid input); unknown-but-non-empty → empty result list
+         (exact-match filter, no 400). Both paths live in `ChengyuService.ts` and are
+         covered by unit tests.
+
+Problem: Asserting app-container registration normally means booting the full container,
+         which initializes Redis/GCS/TTS/Gemini (heavy and not unit-testable).
+Solution: The container-registration test is a source-level assertion — `readFileSync` on
+         `app/container.ts`, `app/routes.ts`, `express.d.ts` — checking the wiring strings
+         verbatim. Documented in `ChengyuController.test.ts`; real boot + request paths are
+         covered by the live DB smoke tests.
 ```
 
 ### Doc Truth-Check
 
-- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — chengyu paths are **proposed** (do not exist yet; verified `grammarPatterns`/`grammarPatternById` present, no chengyu paths); `chengyuIdioms`/`chengyuIdiomById` added verbatim during 23.2 before any frontend call
-- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — `modules/chengyu/` new (no `chengyu` module exists today); no `features/chengyu` yet (23.3)
-- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — Prisma-only, all-in-DB (tables seeded by 23.1)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — `chengyuIdioms: "/v1/chengyu/idioms"` and `chengyuIdiomById: (id) => \`/v1/chengyu/idioms/${id}\``now **EXIST verbatim** (added during 23.2, before any frontend call);`index.d.ts`declares`readonly chengyuIdioms: string`+`readonly chengyuIdiomById: (id: string) => string`
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — `modules/chengyu/` shipped with `api/ChengyuController.ts` + `chengyuRoutes.ts`, `services/ChengyuService.ts`, `repositories/ChengyuRepository.ts`, `types/chengyu.ts`, `container.ts`, `index.ts`; no `features/chengyu` yet (23.3); MSW `apps/frontend/src/mocks/handlers/chengyu-handlers.ts` (with `chengyuHandlers.default()` factory) registered in `apps/frontend/src/mocks/server.ts`
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — Prisma-only, all-in-DB (`Chengyu`/`ChengyuExample`/`ChengyuRelation` seeded by 23.1; no JSON file reads in the module)
 - [x] All relative markdown links resolve (this story → `../README.md`, `story-23-1-chengyu-data.md`, `story-23-3-chengyu-ui.md`, IMP twin)
-- [x] Last Updated / Last Update date is current (August 7, 2026 — same commit as the edit)
+- [x] Last Updated / Last Update date is current (August 8, 2026 — same commit as the edit)
+- [x] **Shipped-state actuals (post-implementation):** module at `apps/backend/src/modules/chengyu/`; wiring in `apps/backend/src/app/container.ts` (`createChengyuModule()` → exported `chengyuController`), `apps/backend/src/app/routes.ts` (mounts `chengyuRoutes` + injects `req.chengyuController`), `apps/backend/src/shared/types/express.d.ts` (`ChengyuController` augmentation); smoke (real DB): `GET /v1/chengyu/idioms` → 200 `{ items: 20, total: 55, page: 1, pageSize: 20 }`, `GET /v1/chengyu/idioms/cy_0001` → 200 full detail (examples[] with segments[] + relatedIdioms[]), `cy_9999` → 404 `{ error: "Failed to load chengyu idiom", code: "NOT_FOUND" }`, `?page=0` → 400 `{ error: "Failed to load chengyu idioms", code: "VALIDATION_ERROR" }`; tests = **39 unit + 14 integration** (all pass); route-registration assertions pass; backend type-check 0 errors; root build exit 0; lint 0 errors (pre-existing frontend warnings only).
 
 > **Note:** PR / Merge Date / Key Commit stay literal `TBD` until commit, filled same-commit; never merge with TBD.
 

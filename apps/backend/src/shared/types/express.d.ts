@@ -21,6 +21,7 @@ import type { PhoneticClustersController } from "../../modules/phonetic-clusters
 import type { CharactersController } from "../../modules/characters/api/CharactersController.js";
 import type { PinyinController } from "../../modules/characters/api/PinyinController.js";
 import type { GrammarController } from "../../modules/grammar/api/GrammarController.js";
+import type { ChengyuController } from "../../modules/chengyu/api/ChengyuController.js";
 import type { GeminiService } from "../infrastructure/external/GeminiService.js";
 
 declare global {
@@ -70,6 +71,9 @@ declare global {
 
       /** Injected by routes.ts middleware */
       grammarController?: GrammarController;
+
+      /** Injected by routes.ts middleware */
+      chengyuController?: ChengyuController;
 
       /** Injected by routes.ts middleware */
       geminiService?: GeminiService;

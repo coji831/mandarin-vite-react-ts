@@ -60,6 +60,8 @@ export const ROUTE_PATTERNS = {
   pinyinSearch: "/v1/pinyin/search",
   grammarPatterns: "/v1/grammar/patterns",
   grammarPatternById: (id) => `/v1/grammar/patterns/${id}`,
+  chengyuIdioms: "/v1/chengyu/idioms",
+  chengyuIdiomById: (id) => `/v1/chengyu/idioms/${id}`,
 };
 
 // HSK Levels

@@ -1,6 +1,6 @@
 # Story 23.2: Chengyu Backend API
 
-**Last Update:** August 7, 2026
+**Last Update:** August 8, 2026
 
 ## Description
 
@@ -10,17 +10,17 @@
 
 ## Business Value
 
-This story delivers chengyu through the platform's canonical API layer and unblocks **any** consumer of idiom data, not just the Chengyu UI. It follows the proven modulith precedent of `modules/grammar/` (Epic 22): a single-responsibility module with typed repositories/services/controllers, server-side search/filter/pagination, and consistent error codes. Without it, 23.3 would have no typed API to consume and chengyu would fall back to non-canonical delivery, violating the all-in-DB decision. It also registers the two PROPOSED endpoints verbatim in `ROUTE_PATTERNS` so the frontend service layer can call them through the shared constants — the contract both sides compile against.
+This story delivers chengyu through the platform's canonical API layer and unblocks **any** consumer of idiom data, not just the Chengyu UI. It follows the proven modulith precedent of `modules/grammar/` (Epic 22): a single-responsibility module with typed repositories/services/controllers, server-side search/filter/pagination, and consistent error codes. Without it, 23.3 would have no typed API to consume and chengyu would fall back to non-canonical delivery, violating the all-in-DB decision. It also registers the two endpoints verbatim in `ROUTE_PATTERNS` so the frontend service layer can call them through the shared constants — the contract both sides compile against.
 
 ## Acceptance Criteria
 
-- [ ] Backend `modules/chengyu/` module created (types → repositories → services → api → container → index) following the modulith pattern (mirrors `modules/grammar/`); registered in the app container.
-- [ ] `GET /v1/chengyu/idioms` implemented with filters `search`, `theme`, `era` plus pagination `page`/`pageSize`; returns `{ items, total, page, pageSize }`.
-- [ ] `GET /v1/chengyu/idioms/:id` implemented — returns idiom + `examples[]` (with `segments[]`) + `relatedIdioms[]`; `:id` resolves by `content_id` `cy_XXXX` (internal uuid is never a valid identifier).
-- [ ] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`chengyuIdioms`, `chengyuIdiomById`) + `.d.ts` declarations.
-- [ ] Verify `content/manifest.json` `chengyu` count ≥50 and the `chengyu` section lists `chengyu.json` (declare + bump owned by 23.1; no edit here).
-- [ ] Error responses follow `backend-error-messages.instructions.md` (`{ error, code }`; `VALIDATION_ERROR` 400 / `NOT_FOUND` 404 / `INTERNAL_ERROR` 500; `"Failed to load chengyu idiom(s)"` messages).
-- [ ] Backend tests per `testing-standards.instructions.md` (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`).
+- [x] Backend `modules/chengyu/` module created (types → repositories → services → api → container → index) following the modulith pattern (mirrors `modules/grammar/`); registered in the app container.
+- [x] `GET /v1/chengyu/idioms` implemented with filters `search`, `theme`, `era` plus pagination `page`/`pageSize`; returns `{ items, total, page, pageSize }`.
+- [x] `GET /v1/chengyu/idioms/:id` implemented — returns idiom + `examples[]` (with `segments[]`) + `relatedIdioms[]`; `:id` resolves by `content_id` `cy_XXXX` (internal uuid is never a valid identifier).
+- [x] Both paths added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (`chengyuIdioms`, `chengyuIdiomById`) + `.d.ts` declarations.
+- [x] Verify `content/manifest.json` `chengyu` count ≥50 and the `chengyu` section lists `chengyu.json` (declare + bump owned by 23.1; no edit here).
+- [x] Error responses follow `backend-error-messages.instructions.md` (`{ error, code }`; `VALIDATION_ERROR` 400 / `NOT_FOUND` 404 / `INTERNAL_ERROR` 500; `"Failed to load chengyu idiom(s)"` messages).
+- [x] Backend tests per `testing-standards.instructions.md` (repository filters + pagination, service validation, controller route registration, detail-by-`content_id`).
 
 ## Business Rules
 
@@ -42,7 +42,11 @@ This story delivers chengyu through the platform's canonical API layer and unblo
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: N/A
+- **Key Commit**: TBD (final story-commit hash filled same-commit)
+
+## Risks
+
+- **Backend API failure mode vs. static JSON (Severity: Low)** + **the `segments`/`related` null-guard hardening** — full write-up in the story-23.2 IMP Technical Challenges & Solutions: `../../issue-implementation/epic-23-idiom-database/story-23-2-chengyu-backend-api.md`
