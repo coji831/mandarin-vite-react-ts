@@ -48,7 +48,7 @@ This story delivers the learner-facing value of the epic. It replaces the `/lear
 - **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: TBD (final story-commit hash filled same-commit)
+- **Key Commit**: `56867bb2`
 
 ## Risks
 
