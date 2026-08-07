@@ -45,7 +45,7 @@ This story delivers chengyu through the platform's canonical API layer and unblo
 - **Status**: Complete
 - **PR**: TBD (pending)
 - **Merge Date**: N/A
-- **Key Commit**: TBD (final story-commit hash filled same-commit)
+- **Key Commit**: `ed18a530`
 
 ## Risks
 
