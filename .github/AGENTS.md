@@ -5,7 +5,7 @@ roles:
   - "Frontend-focused developer (React, hooks, stores, UI)"
   - "Backend-focused developer (Express, Prisma, API, DB)"
   - "Code reviewer (cross-cutting conventions)"
-  - "Documentation writer"
+  - "Documentation writer (Docs Writer agent — BR/impl docs, KB, guides, verification artifacts, truth-check)"
 instructions:
   - file: ".github/copilot-instructions.md"
     description: "Quick start, architecture overview, rule index"
@@ -53,6 +53,8 @@ instructions:
     description: "Frontend audit checklist — CSS, API, stores, accessibility, edge cases"
   - file: ".github/skills/backend-audit/SKILL.md"
     description: "Backend audit checklist — error format, architecture, Prisma, security"
+  - file: ".github/skills/docs-audit/SKILL.md"
+    description: "Docs audit checklist — template compliance, truth-check, rename hygiene, cross-linking"
   - file: ".github/skills/add-instruction/SKILL.md"
     description: "Extract a lesson from recent agent struggles and create a .instructions.md file to prevent recurrence"
   - file: ".github/skills/prisma-migration/SKILL.md"
@@ -61,6 +63,7 @@ skills:
   - ".github/skills/component-decomposition/SKILL.md"
   - ".github/skills/frontend-audit/SKILL.md"
   - ".github/skills/backend-audit/SKILL.md"
+  - ".github/skills/docs-audit/SKILL.md"
   - ".github/skills/add-instruction/SKILL.md"
   - ".github/skills/prisma-migration/SKILL.md"
 prohibitions:

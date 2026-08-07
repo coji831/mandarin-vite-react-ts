@@ -98,6 +98,7 @@ Run through `.github/instructions/frontend-pre-delivery-checklist.instructions.m
 | Add a new quiz mode              | `quiz-architecture.instructions.md`                                                  |
 | Create Storybook stories         | `storybook-production-alignment.instructions.md`                                     |
 | Pre-ship UI quality check        | `frontend-pre-delivery-checklist.instructions.md`                                    |
+| Write/audit docs, truth-check    | Docs Writer agent + `docs-audit` skill (`.github/skills/docs-audit/SKILL.md`)        |
 
 All `.instructions.md` files auto-attach when editing matching file types. Each has **numbered how-to steps** and cross-references to related files. See also the agent files in `.github/agents/` and audit skills in `.github/skills/`.
 

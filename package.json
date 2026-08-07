@@ -25,7 +25,9 @@
     "design-audit": "node tools/design-audit.mjs",
     "design-audit:feature": "node tools/design-audit.mjs",
     "check:registry-stories": "node scripts/check-registry-stories.mjs",
-    "check:module-boundaries": "node scripts/check-module-boundaries.mjs"
+    "check:module-boundaries": "node scripts/check-module-boundaries.mjs",
+    "logs:capture": "node scripts/capture-log.mjs",
+    "logs:prune": "node scripts/capture-log.mjs --prune"
   },
   "dependencies": {
     "concurrently": "^9.1.2",

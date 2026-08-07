@@ -208,6 +208,42 @@ A gate may appear in **exactly one place** in the canonical table below. Any oth
 - **Storybook tests** run via the `@storybook/addon-vitest` project; frontend `test:full` is scoped `--project='!storybook'` so the browser storybook project only runs via `test-storybook`.
 - **Known-failures triage** — At every `test:full`/type-check failure, match against `docs/guides/testing/known-failures.md` FIRST; re-triaging a known failure from scratch is prohibited — update its last-verified date + one-line confirm instead. New failures open a new entry; do not auto-fix unrelated failures inside a story.
 
+## Log Capture Convention
+
+All raw command output that must be captured to a file (gate runs, seed runs, browser checks) is written to the central `logs/` directory — **never to the repo root**. Raw capture logs are disposable by design; the curated summaries in `verification-artifacts/` are the source of truth.
+
+### Capture a run
+
+```bash
+npm run logs:capture -- <name> -- <command...>
+```
+
+Examples:
+
+```bash
+npm run logs:capture -- gate-build -- npm run build
+npm run logs:capture -- seed -- npm run db:seed --workspace=@mandarin/backend
+```
+
+- Output is written to `logs/<name>-<yyyyMMdd-HHmmss>.log` (stdout + stderr merged).
+- The log path and the command's exit code are echoed on completion.
+- Every capture auto-prunes logs older than `LOG_RETENTION_DAYS` (default 30).
+
+### Prune manually
+
+```bash
+npm run logs:prune
+```
+
+### Rules
+
+- ✅ DO capture via `npm run logs:capture -- <name> -- <cmd>` so logs land in `logs/` with a timestamp.
+- ✅ DO treat `logs/*.log` as transient — retention is 30 days; do not commit or reference them by path.
+- ❌ DON'T redirect output to `*.log` at the repo root (e.g. `*> build.log`) — that is what caused the root pile-up.
+- ❌ DON'T reference raw `logs/` files from docs — summarize results in `verification-artifacts/*-gate-results.md` instead.
+
+---
+
 ## Cross-Doc Alignment Checklist
 
 - BR ↔ implementation ↔ stories all cross-link
