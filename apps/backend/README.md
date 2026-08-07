@@ -1,6 +1,6 @@
 # Backend Server
 
-Express server for PinyinPal, providing TTS, content data (characters/words/radicals), progression, quiz, review, mnemonics, and graded readers.
+Express server for PinyinPal, providing TTS, content data (characters/words/radicals/grammar), progression, quiz, review, mnemonics, and graded readers.
 
 > **For detailed setup, architecture, environment variables, and troubleshooting:** See [Backend Development Guide](../../docs/guides/setup/backend-development.md).
 
@@ -41,49 +41,51 @@ npm start
 
 ## API Endpoints
 
-| Endpoint                                                                   | Description                                                                   |
-| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `GET /api/v1/health`                                                       | Server health check                                                           |
-| `POST /api/v1/auth/*`                                                      | Authentication (register, login, refresh, logout)                             |
-| `GET /api/v1/progression/foundation-progress(/:sectionId)`                 | Foundation progress                                                           |
-| `GET /api/v1/progression/phase-gate`                                       | Phase gate status                                                             |
-| `GET /api/v1/progression/gates`                                            | Phase gates                                                                   |
-| `GET /api/v1/progression/radical-progress(/:radicalId)`                    | Radical progress                                                              |
-| `POST /api/v1/quiz/attempts`                                               | Create quiz attempt                                                           |
-| `POST /api/v1/quiz/attempts/:id/answers`                                   | Submit answer for a quiz attempt                                              |
-| `PUT /api/v1/quiz/attempts/:id/complete`                                   | Complete a quiz attempt                                                       |
-| `GET /api/v1/quiz/attempts`                                                | List quiz attempts                                                            |
-| `GET /api/v1/quiz/config`                                                  | Quiz configuration                                                            |
-| `GET /api/v1/quiz/questions`                                               | Quiz questions                                                                |
-| `GET /api/v1/quiz/sandhi-drill/questions`                                  | Sandhi drill questions                                                        |
-| `POST /api/v1/quiz/feedback`                                               | AI feedback                                                                   |
-| `GET /api/v1/review/items`                                                 | Review items (SRS due cards)                                                  |
-| `POST /api/v1/review/result`                                               | Review result submission                                                      |
-| `GET /api/v1/review/due-count`                                             | Review due count                                                              |
-| `GET /api/v1/foundations/data/{pinyin-tones,pinyin-character-map,strokes}` | Foundations reference data                                                    |
-| `GET /api/v1/characters/:glyph`                                            | Character detail                                                              |
-| `GET /api/v1/characters/:glyph/{phonetic,homophones,decomposition}`        | Character phonetic / homophones / decomposition                               |
-| `GET /api/v1/characters/search`                                            | Character search                                                              |
-| `GET /api/v1/characters/frequency`                                         | Character frequency                                                           |
-| `GET /api/v1/pinyin/search`                                                | Pinyin search                                                                 |
-| `GET /api/v1/phonetic-clusters(/:id)`                                      | Phonetic cluster families                                                     |
-| `GET /api/v1/radicals(/:id)`                                               | Radical data                                                                  |
-| `GET /api/v1/radicals/:radicalId/characters`                               | Characters associated with a radical                                          |
-| `GET /api/v1/words/:glyph`                                                 | Word data                                                                     |
-| `GET /api/v1/words/:glyph/measure-words`                                   | Measure words (量词)                                                          |
-| `GET /api/v1/mnemonics(/:glyph)`                                           | Mnemonic stories                                                              |
-| `GET /api/v1/readers/passages`                                             | Reading passages                                                              |
-| `GET /api/v1/readers/passages/:id`                                         | Full passage (segmentation + HSK profile)                                     |
-| `POST /api/v1/readers/passages/:id/audio`                                  | Passage sentence audio URLs (GCS → on-demand TTS)                             |
-| `POST /api/v1/readers/generate`                                            | Generate passage                                                              |
-| `GET /api/v1/readers/sessions/:passageId`                                  | Get or create reading session                                                 |
-| `PUT /api/v1/readers/sessions/:passageId`                                  | Update reading position                                                       |
-| `POST /api/v1/readers/sessions/:passageId/complete`                        | Mark passage completed                                                        |
-| `GET /api/v1/readers/bookmarks`                                            | Reading bookmarks                                                             |
-| `POST /api/v1/readers/bookmarks`                                           | Add reading bookmark                                                          |
-| `GET /api/v1/readers/bookmarks/by-passage/:passageId`                      | Check if passage is bookmarked                                                |
-| `DELETE /api/v1/readers/bookmarks/by-passage/:passageId`                   | Remove bookmark by passage                                                    |
-| `POST /api/v1/tts`                                                         | TTS audio (returns `audioUrl` — signed GCS URL, ~1h TTL — plus `cached` flag) |
+| Endpoint                                                                   | Description                                                                             |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `GET /api/v1/health`                                                       | Server health check                                                                     |
+| `POST /api/v1/auth/*`                                                      | Authentication (register, login, refresh, logout)                                       |
+| `GET /api/v1/progression/foundation-progress(/:sectionId)`                 | Foundation progress                                                                     |
+| `GET /api/v1/progression/phase-gate`                                       | Phase gate status                                                                       |
+| `GET /api/v1/progression/gates`                                            | Phase gates                                                                             |
+| `GET /api/v1/progression/radical-progress(/:radicalId)`                    | Radical progress                                                                        |
+| `POST /api/v1/quiz/attempts`                                               | Create quiz attempt                                                                     |
+| `POST /api/v1/quiz/attempts/:id/answers`                                   | Submit answer for a quiz attempt                                                        |
+| `PUT /api/v1/quiz/attempts/:id/complete`                                   | Complete a quiz attempt                                                                 |
+| `GET /api/v1/quiz/attempts`                                                | List quiz attempts                                                                      |
+| `GET /api/v1/quiz/config`                                                  | Quiz configuration                                                                      |
+| `GET /api/v1/quiz/questions`                                               | Quiz questions                                                                          |
+| `GET /api/v1/quiz/sandhi-drill/questions`                                  | Sandhi drill questions                                                                  |
+| `POST /api/v1/quiz/feedback`                                               | AI feedback                                                                             |
+| `GET /api/v1/review/items`                                                 | Review items (SRS due cards)                                                            |
+| `POST /api/v1/review/result`                                               | Review result submission                                                                |
+| `GET /api/v1/review/due-count`                                             | Review due count                                                                        |
+| `GET /api/v1/foundations/data/{pinyin-tones,pinyin-character-map,strokes}` | Foundations reference data                                                              |
+| `GET /api/v1/characters/:glyph`                                            | Character detail                                                                        |
+| `GET /api/v1/characters/:glyph/{phonetic,homophones,decomposition}`        | Character phonetic / homophones / decomposition                                         |
+| `GET /api/v1/characters/search`                                            | Character search                                                                        |
+| `GET /api/v1/characters/frequency`                                         | Character frequency                                                                     |
+| `GET /api/v1/pinyin/search`                                                | Pinyin search                                                                           |
+| `GET /api/v1/phonetic-clusters(/:id)`                                      | Phonetic cluster families                                                               |
+| `GET /api/v1/radicals(/:id)`                                               | Radical data                                                                            |
+| `GET /api/v1/radicals/:radicalId/characters`                               | Characters associated with a radical                                                    |
+| `GET /api/v1/words/:glyph`                                                 | Word data                                                                               |
+| `GET /api/v1/words/:glyph/measure-words`                                   | Measure words (量词)                                                                    |
+| `GET /api/v1/mnemonics(/:glyph)`                                           | Mnemonic stories                                                                        |
+| `GET /v1/grammar/patterns`                                                 | Grammar pattern list (additive `search`/`hskLevel`/`phase` filters + `page`/`pageSize`) |
+| `GET /v1/grammar/patterns/:id`                                             | Grammar pattern detail by `content_id` (`gr_XXXX`)                                      |
+| `GET /api/v1/readers/passages`                                             | Reading passages                                                                        |
+| `GET /api/v1/readers/passages/:id`                                         | Full passage (segmentation + HSK profile)                                               |
+| `POST /api/v1/readers/passages/:id/audio`                                  | Passage sentence audio URLs (GCS → on-demand TTS)                                       |
+| `POST /api/v1/readers/generate`                                            | Generate passage                                                                        |
+| `GET /api/v1/readers/sessions/:passageId`                                  | Get or create reading session                                                           |
+| `PUT /api/v1/readers/sessions/:passageId`                                  | Update reading position                                                                 |
+| `POST /api/v1/readers/sessions/:passageId/complete`                        | Mark passage completed                                                                  |
+| `GET /api/v1/readers/bookmarks`                                            | Reading bookmarks                                                                       |
+| `POST /api/v1/readers/bookmarks`                                           | Add reading bookmark                                                                    |
+| `GET /api/v1/readers/bookmarks/by-passage/:passageId`                      | Check if passage is bookmarked                                                          |
+| `DELETE /api/v1/readers/bookmarks/by-passage/:passageId`                   | Remove bookmark by passage                                                              |
+| `POST /api/v1/tts`                                                         | TTS audio (returns `audioUrl` — signed GCS URL, ~1h TTL — plus `cached` flag)           |
 
 > **Full specification:** See [`docs/api-spec.md`](./docs/api-spec.md) for complete request/response schemas and error handling.
 

@@ -32,6 +32,7 @@ import { radicalsHandlers } from "./handlers/radicals-handlers";
 import { quizHandlers } from "./handlers/quiz-handlers";
 import { charactersHandlers } from "./handlers/characters-handlers";
 import { phoneticClustersHandlers } from "./handlers/phonetic-clusters-handlers";
+import { grammarHandlers } from "./handlers/grammar-handlers";
 
 /** Default (populated) handlers from every endpoint module, flattened. */
 export const handlers: HttpHandler[] = [
@@ -43,10 +44,18 @@ export const handlers: HttpHandler[] = [
   ...Object.values(charactersHandlers.default),
   // phonetic-clusters-handlers exports factory functions
   phoneticClustersHandlers.default(),
+  // grammar-handlers exports a default() factory returning an array of handlers
+  ...grammarHandlers.default(),
 ];
 
 /** MSW node server preloaded with the default handlers. */
 export const server: SetupServer = setupServer(...handlers);
 
 // Re-export the per-endpoint modules so tests can reference them (e.g. `server.use(radicalsErrorHandler)`).
-export { radicalsHandlers, quizHandlers, charactersHandlers, phoneticClustersHandlers };
+export {
+  radicalsHandlers,
+  quizHandlers,
+  charactersHandlers,
+  phoneticClustersHandlers,
+  grammarHandlers,
+};

@@ -1,0 +1,16 @@
+/**
+ * @file GrammarFilterBar.css
+ * @description GrammarFilterBar feature styles (Story 22.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ */
+.grammar-filter-bar {
+  width: 100%;
+}
+
+.grammar-filter-bar__group {
+  width: 100%;
+}
+
+.grammar-filter-bar__label {
+  min-width: var(--space-xl);
+}

@@ -1,0 +1,90 @@
+/* UserMenu.css — account control (BEM: .user-menu) */
+
+.user-menu {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Compact trigger — overrides .btn-ghost/.btn-sm metrics for the top bar */
+.user-menu__trigger {
+  min-width: 0;
+  min-height: 36px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-sm);
+  border-radius: var(--radius-pill);
+}
+
+.user-menu__avatar {
+  width: 28px;
+  height: 28px;
+}
+
+.user-menu__name {
+  max-width: 140px;
+  text-overflow: ellipsis;
+}
+
+.user-menu__chevron {
+  transition: transform var(--transition-fast);
+}
+
+.user-menu__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Popover — anchored under the trigger, right-aligned (role="list" disclosure) */
+.user-menu__popover {
+  position: absolute;
+  top: calc(100% + var(--space-xs));
+  right: 0;
+  min-width: 220px;
+  z-index: 100;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xs);
+  margin: 0;
+  list-style: none;
+}
+
+/* List-item rows wrapping the action buttons */
+.user-menu__action {
+  list-style: none;
+}
+
+.user-menu__action .user-menu__item {
+  width: 100%;
+}
+
+.user-menu__header {
+  width: 100%;
+}
+
+.user-menu__identity {
+  min-width: 0;
+}
+
+.user-menu__truncate {
+  text-overflow: ellipsis;
+}
+
+.user-menu__divider {
+  height: 0;
+  border: none;
+  border-top: 1px solid var(--surface-border);
+  margin: var(--space-xs) 0;
+}
+
+/* Compact menu-item rows — overrides .btn-ghost/.btn-sm metrics */
+.user-menu__item {
+  min-width: 0;
+  min-height: 36px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-sm);
+  justify-content: flex-start;
+}
+
+.user-menu__item--logout:hover:not(:disabled) {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}

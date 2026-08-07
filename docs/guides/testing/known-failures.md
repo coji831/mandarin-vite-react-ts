@@ -1,6 +1,6 @@
 # Known Failures Registry
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 5, 2026
 **Purpose:** A maintained, versioned list of KNOWN pre-existing failures (tests / type-check / lint errors that exist in the repo independent of current work) so agents don't re-triage the same known-broken items from scratch every session.
 
 ## How to Use (Triage Rule)
@@ -39,3 +39,4 @@ re-triaged. Do not extend these items; migrate them when the component is next t
 | TD-001 | RadicalHub       | `features/radicals/components/RadicalHub.stories.tsx`                     | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
 | TD-002 | CharacterHub     | `features/character-hub/components/CharacterHub/CharacterHub.stories.tsx` | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
 | TD-003 | LexicalHubRouter | `features/lexical-hub/components/LexicalHubRouter.stories.tsx`            | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |
+| TD-004 | GrammarHub       | `features/grammar/components/GrammarHub.stories.tsx`                      | Grandfathered | Do not flag, do not extend; migrate to a Pages/Layouts/Shared story when touched. |

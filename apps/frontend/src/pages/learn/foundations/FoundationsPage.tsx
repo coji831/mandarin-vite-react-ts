@@ -5,8 +5,11 @@
  * Uses <Tabs> for the tab bar with panel wrapper.
  * Story 18.1: Foundations Page Structure
  * Story 21.21: Pictograph Warmup (Gallery + Mini-game)
+ * Story 22.4 follow-up (Issue 4): active tab is now URL-driven via
+ * useSearchParamState — `?tab=` seeds the tab (URL wins over the `initialTab`
+ * default), writes use replace so Back exits the page, and the param is
+ * omitted when it matches the default (canonical URL).
  */
-import { useState } from "react";
 import {
   FOUNDATION_SECTIONS,
   FOUNDATION_SECTION_LABELS,
@@ -14,6 +17,8 @@ import {
 } from "@mandarin/shared-constants";
 import { Tabs } from "shared/components";
 import type { TabConfig } from "shared/components";
+import { SEARCH_PARAMS } from "shared/constants";
+import { useSearchParamState } from "shared/hooks";
 import {
   FoundationsProgressBar,
   PictographGallery,
@@ -47,12 +52,19 @@ const TABS_CONFIG: TabConfig[] = [
   PICTOGRAPH_TAB,
 ];
 
+/** Whitelist of valid tab ids — anything else (or absent) falls back to the default. */
+const TAB_IDS = new Set<string>(TABS_CONFIG.map((tab) => tab.id));
+
 export function FoundationsPage({
   initialTab = "pinyin",
 }: {
   initialTab?: FoundationSectionId | "pictographs";
 }) {
-  const [activeTab, setActiveTab] = useState<string>(initialTab);
+  // URL wins in prod (`?tab=tones`); `initialTab` is the story/default fallback.
+  const [activeTab, setActiveTab] = useSearchParamState<string>(SEARCH_PARAMS.tab, {
+    defaultValue: initialTab,
+    parse: (raw) => (raw && TAB_IDS.has(raw) ? raw : null),
+  });
   const { progress } = useFoundationsProgress();
   const tonesCompleted = progress?.find((p) => p.sectionId === "tones")?.completed ?? false;
 

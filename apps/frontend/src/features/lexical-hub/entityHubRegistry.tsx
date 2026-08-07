@@ -41,6 +41,10 @@ export const entityHubRegistry: HubRegistry = {
     })),
   ),
   chengyu: NotImplemented,
-  grammar: NotImplemented,
+  grammar: lazy(() =>
+    import("features/grammar").then((m) => ({
+      default: m.GrammarHub,
+    })),
+  ),
   phoneticCluster: NotImplemented,
 };

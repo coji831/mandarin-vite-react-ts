@@ -151,6 +151,11 @@
   --space-xl: 32px; /* 32px */
   --space-2xl: 40px; /* 40px */
 
+  /* ===== Size Scale ===== */
+
+  /* px-based size tokens (fixed dimensions, touch targets) */
+  --size-touch: 28px; /* 28px — minimum touch-target dimension (WCAG 2.5.8) */
+
   /* ===== Border Radius ===== */
 
   --radius-sm: 4px;

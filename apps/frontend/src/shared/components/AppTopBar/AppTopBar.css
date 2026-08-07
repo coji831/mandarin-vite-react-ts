@@ -1,0 +1,10 @@
+/* AppTopBar.css — slim global top bar (BEM: .app-top-bar) */
+
+.app-top-bar {
+  height: 56px;
+  flex-shrink: 0;
+  padding: 0 var(--space-md);
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-dark);
+  gap: var(--space-sm);
+}

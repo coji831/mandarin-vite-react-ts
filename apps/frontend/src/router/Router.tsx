@@ -12,7 +12,15 @@
  */
 
 import { Route, Routes } from "react-router-dom";
-import { learn_page, root, dashboard_route, login_page, register_page } from "shared/constants";
+import {
+  learn_page,
+  root,
+  dashboard_route,
+  login_page,
+  register_page,
+  profile_page,
+  settings_page,
+} from "shared/constants";
 import { LearnRoutes } from "./LearnRoutes";
 import { AppLayout } from "../shared/layouts/AppLayout";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
@@ -21,6 +29,8 @@ import LibraryPage from "../pages/LibraryPage";
 import { ProgressPage } from "../pages/ProgressPage";
 import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
+import { ProfilePage } from "../pages/ProfilePage";
+import { SettingsPage } from "../pages/SettingsPage";
 
 function MainRoutes() {
   return (
@@ -32,6 +42,8 @@ function MainRoutes() {
         <Route path="practices/*" element={<PracticesRoutes />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="progress" element={<ProgressPage />} />
+        <Route path={profile_page} element={<ProfilePage />} />
+        <Route path={settings_page} element={<SettingsPage />} />
         <Route path={login_page} element={<LoginPage />} />
         <Route path={register_page} element={<RegisterPage />} />
       </Route>

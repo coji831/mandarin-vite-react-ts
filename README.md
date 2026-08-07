@@ -17,8 +17,10 @@ PinyinPal is an interactive web application designed to help new learners master
 - **Radicals:** Radical browser with detail cards and dual radical/phonetic trees.
 - **Phonetic Clusters:** DB-driven phonetic family browsing with HSK filtering.
 - **Graded Readers:** Passage browsing/reading, reading sessions, bookmarks, and in-text word lookup.
+- **Grammar Pattern Library:** DB-driven searchable reference of 21 KB-sourced grammar patterns with HSK/phase filtering, example-sentence TTS audio, and character cross-linking via the LexicalHub.
 - **Word Hub:** Word detail panel with definitions, HSK level, and measure words (量词).
 - **Lexical Hub:** Entity overlay hosting character and word detail panels, openable from anywhere.
+- **Unified Navigation & Account:** persistent collapsible sidebar Learn group, single top-bar user menu, and shareable search-param deep links.
 - **Performance-Optimized State:** Split contexts with normalized state and granular selectors for scalability.
 
 ## 🛠️ Tech Stack

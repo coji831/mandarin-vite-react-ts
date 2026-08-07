@@ -18,16 +18,6 @@ const PHASE3_TREE = [
   ...MASTERED_RADICAL_IDS.map((id) => mswHandlers.radicals.characters(id)),
 ];
 
-/**
- * Forces treeMode before render so each story shows its intended tree regardless
- * of the localStorage.treeMode persisted by other stories or the live app.
- */
-function treeModeBeforeEach(mode: "radical" | "phonetic") {
-  return async () => {
-    localStorage.setItem("treeMode", mode);
-  };
-}
-
 const meta: Meta<typeof RadicalsPage> = {
   title: "Pages/Learn/Radicals",
   component: RadicalsPage,
@@ -77,7 +67,6 @@ export const Trees: Story = {
     layoutPath: "/learn/radicals?view=trees",
     msw: { handlers: PHASE3_TREE },
   },
-  beforeEach: treeModeBeforeEach("radical"),
 };
 
 export const TreesLoading: Story = {
@@ -92,7 +81,6 @@ export const TreesLoading: Story = {
       ],
     },
   },
-  beforeEach: treeModeBeforeEach("radical"),
 };
 
 export const TreesEmpty: Story = {
@@ -107,7 +95,6 @@ export const TreesEmpty: Story = {
       ],
     },
   },
-  beforeEach: treeModeBeforeEach("radical"),
 };
 
 export const TreesError: Story = {
@@ -122,7 +109,6 @@ export const TreesError: Story = {
       ],
     },
   },
-  beforeEach: treeModeBeforeEach("radical"),
 };
 
 // ─── Phonetic tree stories ──────────────────────────────────────────────
@@ -134,50 +120,45 @@ const PHONETIC_PHASE2 = [...PHASE2, mswHandlers.phoneticClusters.default()];
 export const PhoneticTreePhase3: Story = {
   name: "Phonetic Tree — Phase 3",
   parameters: {
-    layoutPath: "/learn/radicals?view=trees",
+    layoutPath: "/learn/radicals?view=trees&mode=phonetic",
     msw: { handlers: PHONETIC_PHASE3 },
   },
-  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreePhase2: Story = {
   name: "Phonetic Tree — Phase 2 Preview",
   parameters: {
-    layoutPath: "/learn/radicals?view=trees",
+    layoutPath: "/learn/radicals?view=trees&mode=phonetic",
     msw: { handlers: PHONETIC_PHASE2 },
   },
-  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeLoading: Story = {
   name: "Phonetic Tree — Loading",
   parameters: {
-    layoutPath: "/learn/radicals?view=trees",
+    layoutPath: "/learn/radicals?view=trees&mode=phonetic",
     msw: {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.loading()],
     },
   },
-  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeError: Story = {
   name: "Phonetic Tree — Error",
   parameters: {
-    layoutPath: "/learn/radicals?view=trees",
+    layoutPath: "/learn/radicals?view=trees&mode=phonetic",
     msw: {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.error()],
     },
   },
-  beforeEach: treeModeBeforeEach("phonetic"),
 };
 
 export const PhoneticTreeEmpty: Story = {
   name: "Phonetic Tree — Empty",
   parameters: {
-    layoutPath: "/learn/radicals?view=trees",
+    layoutPath: "/learn/radicals?view=trees&mode=phonetic",
     msw: {
       handlers: [...PHASE3, mswHandlers.phoneticClusters.empty()],
     },
   },
-  beforeEach: treeModeBeforeEach("phonetic"),
 };

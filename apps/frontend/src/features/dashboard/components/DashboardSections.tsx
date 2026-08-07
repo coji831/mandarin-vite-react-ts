@@ -7,7 +7,12 @@
  */
 import { useNavigate } from "react-router-dom";
 import { Box, Button, ProgressBar } from "shared/components";
-import { practices_review, practices_quiz, learn_radicals } from "shared/constants";
+import {
+  practices_review,
+  practices_quiz,
+  learn_radicals,
+  withSearchParams,
+} from "shared/constants";
 
 export type ActivityItem = {
   icon: string;
@@ -63,7 +68,7 @@ export function DashboardSections({
           <Button
             variant="tag"
             className="dashboard-quick-btn flex-col gap-sm text-center"
-            onClick={() => navigate(`${practices_review}?type=character`)}
+            onClick={() => navigate(withSearchParams(practices_review, { type: "character" }))}
           >
             <span className="font-2xl">🃏</span>
             <span className="font-sm fw-600 text-primary">Review Characters</span>
@@ -71,7 +76,9 @@ export function DashboardSections({
           <Button
             variant="tag"
             className="dashboard-quick-btn flex-col gap-sm text-center"
-            onClick={() => navigate(`${practices_quiz}?type=audio-to-pinyin-tone`)}
+            onClick={() =>
+              navigate(withSearchParams(practices_quiz, { type: "audio-to-pinyin-tone" }))
+            }
           >
             <span className="font-2xl">📝</span>
             <span className="font-sm fw-600 text-primary">Take Phase Quiz</span>

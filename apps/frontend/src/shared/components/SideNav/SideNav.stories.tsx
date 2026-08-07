@@ -1,30 +1,37 @@
 /**
  * SideNav stories
  *
- * Visual stories for the shared SideNav component.
- * Covers logged-in states (Dashboard, Learn, Practices active),
- * logged-out state, and mobile viewport.
+ * Visual stories for the shared SideNav (nav-only since Story 22.4 — the
+ * account surface lives in the AppTopBar UserMenu). Uses withRouter for
+ * NavLink active states.
+ *
+ * Covers: expanded (Dashboard/Learn active), collapsed rail with the bottom
+ * collapse toggle, child hierarchy (indent-only, no left rail; active child +
+ * active parent pill), collapsed rail active pill + tooltip, phase-gated
+ * Learn locks, and the Story 22.5 split Learn header (label default-landing
+ * link + chevron accordion toggle) with URL-aware sub-state preservation.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MemoryRouter } from "react-router-dom";
 import type { SideNavProps } from "./SideNav";
 import { SideNav } from "./SideNav";
+import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
 import { withRouter } from "../../../../.storybook/decorators";
 
-const defaultNavItems = [
+const navItems = [
   { path: "/", label: "Dashboard", icon: "🏠", exact: true },
-  { path: "/learn", label: "Learn", icon: "📚", exact: false },
+  { path: "/learn", label: "Learn", icon: "📚", exact: false, children: LEARN_NAV_ITEMS },
   { path: "/practices", label: "Practices", icon: "🎯", exact: false },
   { path: "/library", label: "Library", icon: "📖", exact: false },
   { path: "/progress", label: "Progress", icon: "📊", exact: false },
 ];
 
 const defaultArgs: SideNavProps = {
-  navItems: defaultNavItems,
+  navItems,
   currentPath: "/",
-  isAuthenticated: true,
-  userName: "Alex",
-  onLogout: () => {},
-  onLogin: () => {},
+  phaseGate: 4,
+  requiredPhase: (id) => LEARN_REQUIRED_PHASE[id] ?? 1,
+  onToggleCollapse: () => {},
 };
 
 const meta: Meta<typeof SideNav> = {
@@ -37,10 +44,9 @@ const meta: Meta<typeof SideNav> = {
   argTypes: {
     navItems: { control: "object" },
     currentPath: { control: "text" },
-    isAuthenticated: { control: "boolean" },
-    userName: { control: "text" },
-    onLogout: { action: "logout" },
-    onLogin: { action: "login" },
+    phaseGate: { control: "number" },
+    collapsed: { control: "boolean" },
+    onToggleCollapse: { action: "toggle-collapse" },
   },
   args: defaultArgs,
 };
@@ -48,41 +54,76 @@ const meta: Meta<typeof SideNav> = {
 export default meta;
 type Story = StoryObj<typeof SideNav>;
 
-export const LoggedInDashboard: Story = {
+export const ExpandedDashboard: Story = {
+  name: "Expanded — Dashboard active",
   decorators: [withRouter(["/"])],
   args: {
     currentPath: "/",
   },
 };
 
-export const LoggedInLearnActive: Story = {
-  decorators: [withRouter(["/learn"])],
+export const ExpandedLearnActive: Story = {
+  name: "Expanded — Learn active (hierarchy fixes)",
+  decorators: [withRouter(["/learn/grammar"])],
   args: {
-    currentPath: "/learn",
+    currentPath: "/learn/grammar",
   },
 };
 
-export const LoggedInPracticesActive: Story = {
-  decorators: [withRouter(["/practices"])],
-  args: {
-    currentPath: "/practices",
-  },
-};
-
-export const LoggedOut: Story = {
-  decorators: [withRouter(["/"])],
-  args: {
-    isAuthenticated: false,
-    userName: undefined,
-  },
-};
-
-export const Mobile: Story = {
+export const CollapsedRail: Story = {
+  name: "Collapsed rail (desktop) — bottom icon-only toggle",
   decorators: [withRouter(["/"])],
   args: {
     currentPath: "/",
+    collapsed: true,
   },
-  parameters: {
-    viewport: { defaultViewport: "mobile2" },
+};
+
+export const CollapsedRailActive: Story = {
+  name: "Collapsed rail — active Learn group (pill + tooltip)",
+  decorators: [withRouter(["/learn/grammar"])],
+  args: {
+    currentPath: "/learn/grammar",
+    collapsed: true,
+  },
+};
+
+export const ChildHierarchy: Story = {
+  name: "Learn — active + locked children (indent-only, no rail)",
+  decorators: [withRouter(["/learn/grammar"])],
+  args: {
+    currentPath: "/learn/grammar",
+    phaseGate: 2,
+  },
+};
+
+export const PhaseLocked: Story = {
+  name: "Phase 1 — Learn children locked",
+  decorators: [withRouter(["/learn/foundations"])],
+  args: {
+    currentPath: "/learn/foundations",
+    phaseGate: 1,
+  },
+};
+
+/**
+ * Story 22.5 — split Learn header: the LABEL is the default-landing link
+ * (navigates to /learn/foundations) and the CHEVRON is the accordion toggle.
+ * Rendered URL-aware (full `location` prop) with sub-state in the URL so the
+ * same-path guard is in play: clicking "Foundations" while already on
+ * `/learn/foundations?tab=tones` is a no-op that preserves the tab.
+ */
+export const LearnHeaderSplit: Story = {
+  name: "Learn — split header (label link + chevron toggle)",
+  decorators: [
+    (Story) => (
+      <MemoryRouter initialEntries={["/learn/foundations?tab=tones"]}>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  args: {
+    currentPath: "/learn/foundations",
+    location: { pathname: "/learn/foundations", search: "?tab=tones" },
   },
 };

@@ -11,22 +11,27 @@
  *              Phase 1 migration: routes to QuizSessionPage for registered strategies
  * Phase 2 cleanup: Removed old SRS quiz fallback (features/review dependency)
  *              Shows "select a quiz type" message for unregistered strategies
+ * Story 22.4 follow-up (Issue 4): `?type=` is validated through `parse` against
+ * the strategy registry (invalid → no session), via useSearchParamState.
  */
 
 import "./QuizPage.css";
 import type { StrategyType } from "features/quiz";
 import { getStrategy } from "features/quiz";
-import { useSearchParams } from "react-router-dom";
-import { practices_page } from "shared/constants";
+import { SEARCH_PARAMS, practices_page } from "shared/constants";
+import { useSearchParamState } from "shared/hooks";
 import { QuizSessionPage } from "./QuizSessionPage";
 import { Button } from "shared/components";
 
 export function QuizPage() {
-  const [searchParams] = useSearchParams();
-  const quizType = searchParams.get("type");
+  // Validate ?type= against the strategy registry — invalid/absent → null.
+  const [quizType] = useSearchParamState<string | null>(SEARCH_PARAMS.type, {
+    defaultValue: null,
+    parse: (raw) => (raw && getStrategy(raw) ? raw : null),
+  });
 
   // Route to strategy-based quiz if type matches registry
-  if (quizType && getStrategy(quizType)) {
+  if (quizType) {
     return <QuizSessionPage strategyType={quizType as StrategyType} />;
   }
 

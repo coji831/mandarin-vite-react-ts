@@ -1,7 +1,7 @@
 # Seed Pipeline (All-in-DB)
 
 **Category:** Data & Content  
-**Last Updated:** July 31, 2026
+**Last Updated:** August 5, 2026
 
 > Canonical reference for how static learning content gets into PostgreSQL and
 > how it is regenerated. Applies to the **all-in-DB** architecture: production
@@ -15,8 +15,8 @@
 ```
 ┌──────────────────────────────┐   ┌──────────────────┐   ┌───────────────────┐   ┌──────────────────┐
 │ content/seed/phase2/*.json   │──►│ prisma/seed.ts    │──►│ Prisma Models     │──►│ Repositories     │
-│ (aggregate JSON, committed)  │   │ (26-step,         │   │ (PostgreSQL)      │   │ (Prisma queries) │
-│  = authoring source          │   │  bulk createMany) │   │  = runtime source │   │  → services/API  │
+│ (aggregate JSON, committed)  │   │ (29-step,         │   │ (PostgreSQL)      │   │ (Prisma queries) │
+│  = authoring source          │   │ hash-gated delta) │   │  = runtime source │   │  → services/API  │
 └──────────────────────────────┘   └──────────────────┘   └───────────────────┘   └──────────────────┘
 ```
 
@@ -34,40 +34,43 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 
 ---
 
-## 2. Seed Order (26 Steps) + FK Dependencies
+## 2. Seed Order (29 Steps) + FK Dependencies
 
 `apps/backend/prisma/seed.ts` runs in strict dependency order. Steps 2–6
 (**marked 🆕**) are the reference tables added by the WS1 all-in-DB migration
 (`20260731045648_add_reference_tables`).
 
-| #    | Table                     | Records (approx.) | FK deps                                | Idempotency                          |
-| ---- | ------------------------- | ----------------- | -------------------------------------- | ------------------------------------ |
-| 1    | `Character`               | 103,006           | none                                   | `skipDuplicates` (business-key PK)   |
-| 2 🆕 | `Radical`                 | 20                | none                                   | `skipDuplicates` (business-key PK)   |
-| 3 🆕 | `Tone`                    | 5                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 4 🆕 | `PinyinPhoneme`           | 50                | none                                   | `skipDuplicates` (business-key PK)   |
-| 5 🆕 | `TonePair`                | 6                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 6 🆕 | `ToneRule`                | 3                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 7    | `PinyinSyllable`          | 2,045             | none                                   | **pre-clear** + reinsert             |
-| 8    | `MeasureWord`             | 52                | none                                   | `skipDuplicates` (business-key PK)   |
-| 9    | `Component`               | 1,777             | none                                   | `skipDuplicates` (business-key PK)   |
-| 10   | `Passage`                 | 6                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 11   | `Word`                    | 10,943            | none                                   | `skipDuplicates` (business-key PK)   |
-| 12   | `StrokeCategory`          | 5                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 13   | `StrokeExtendedType`      | 8                 | → `StrokeCategory`                     | `skipDuplicates` (business-key PK)   |
-| 14   | `StrokeOrderRule`         | 5                 | none                                   | `skipDuplicates` (business-key PK)   |
-| 15   | `StrokeCategoryOrderRule` | 9                 | → `StrokeCategory` + `StrokeOrderRule` | `skipDuplicates` (business-key PK)   |
-| 16   | `CharacterReading`        | 15,582            | → `Character`                          | **pre-clear** + reinsert             |
-| 17   | `CharacterRadical`        | 2,798             | → `Character` + `Radical`              | **pre-filter** (check existing)      |
-| 18   | `CharacterHskLevel`       | 2,971             | → `Character`                          | `skipDuplicates`                     |
-| 19   | `WordHskLevel`            | 10,943            | → `Word`                               | `skipDuplicates`                     |
-| 20   | `WordCharacter`           | 21,715            | → `Word` + `Character`                 | `skipDuplicates`                     |
-| 21   | `PinyinCharacterMapping`  | 11,798            | → `PinyinSyllable` + `Character`       | `skipDuplicates` (cleared in step 7) |
-| 22   | `MeasureWordWord`         | 135               | → `MeasureWord` + `Word`               | `skipDuplicates`                     |
-| 23   | `CharacterComponent`      | 15,742            | → `Character` + `Component`            | `skipDuplicates`                     |
-| 24   | `PhoneticCluster`         | 12                | → `Component`                          | `skipDuplicates`                     |
-| 25   | `PhoneticClusterMember`   | 254               | → `PhoneticCluster` + `Character`      | `skipDuplicates`                     |
-| 26   | Test users                | 2                 | none                                   | dev only                             |
+| #     | Table                     | Records (approx.) | FK deps                                | Sync / Idempotency                   |
+| ----- | ------------------------- | ----------------- | -------------------------------------- | ------------------------------------ |
+| 1     | `Character`               | 103,006           | none                                   | hash-gate diff (bulk >5K)            |
+| 2 🆕  | `Radical`                 | 20                | none                                   | hash-gate diff                       |
+| 3 🆕  | `Tone`                    | 5                 | none                                   | hash-gate diff                       |
+| 4 🆕  | `PinyinPhoneme`           | 50                | none                                   | hash-gate diff                       |
+| 5 🆕  | `TonePair`                | 6                 | none                                   | hash-gate diff                       |
+| 6 🆕  | `ToneRule`                | 3                 | none                                   | hash-gate diff                       |
+| 7     | `PinyinSyllable`          | 2,045             | none                                   | hash-gate diff                       |
+| 8     | `MeasureWord`             | 52                | none                                   | hash-gate diff                       |
+| 9     | `Component`               | 1,777             | none                                   | hash-gate diff                       |
+| 10    | `Passage`                 | 6                 | none                                   | hash-gate diff                       |
+| 11    | `Word`                    | 10,943            | none                                   | hash-gate diff (bulk >5K)            |
+| 12    | `StrokeCategory`          | 5                 | none                                   | hash-gate diff                       |
+| 13    | `StrokeExtendedType`      | 8                 | → `StrokeCategory`                     | hash-gate diff                       |
+| 14    | `StrokeOrderRule`         | 5                 | none                                   | hash-gate diff                       |
+| 15    | `StrokeCategoryOrderRule` | 9                 | → `StrokeCategory` + `StrokeOrderRule` | hash-gate diff (composite)           |
+| 16    | `CharacterReading`        | 15,582            | → `Character`                          | SeedCheckpoint rebuild               |
+| 17    | `CharacterRadical`        | 2,798             | → `Character` + `Radical`              | hash-gate diff (composite)           |
+| 18    | `CharacterHskLevel`       | 2,971             | → `Character`                          | SeedCheckpoint rebuild               |
+| 19    | `WordHskLevel`            | 10,943            | → `Word`                               | SeedCheckpoint rebuild               |
+| 20    | `WordCharacter`           | 21,715            | → `Word` + `Character`                 | SeedCheckpoint rebuild               |
+| 21    | `PinyinCharacterMapping`  | 11,798            | → `PinyinSyllable` + `Character`       | SeedCheckpoint rebuild               |
+| 22    | `MeasureWordWord`         | 135               | → `MeasureWord` + `Word`               | hash-gate diff (composite)           |
+| 23    | `CharacterComponent`      | 15,742            | → `Character` + `Component`            | SeedCheckpoint rebuild               |
+| 24    | `PhoneticCluster`         | 12                | → `Component`                          | hash-gate diff                       |
+| 25    | `PhoneticClusterMember`   | 254               | → `PhoneticCluster` + `Character`      | SeedCheckpoint rebuild               |
+| 26    | Test users                | 2                 | none                                   | dev only (upsert)                    |
+| 27 🆕 | `GrammarPattern`          | 21                | none                                   | hash-gate diff (+ `content_version`) |
+| 28 🆕 | `GrammarExample`          | 63                | → `GrammarPattern.content_id`          | hash-gate diff (+ `content_version`) |
+| 29 🆕 | `GrammarPatternRelation`  | 12                | → `GrammarPattern.content_id` (both)   | hash-gate diff (+ `content_version`) |
 
 > **New reference tables (steps 2–6)** back the refactored read sites:
 >
@@ -77,7 +80,19 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 > - `Tone` → `ReviewService` (tone items), `FoundationsService.getPinyinTonesPool`.
 > - `PinyinPhoneme` (+ `TonePair`, `ToneRule`) → `FoundationsService.getPinyinTonesPool`.
 
-> **Post-seed FK validation (part of step 26 / post-seed verification):** Step 17
+> **Grammar steps (27–29, Story 22.1):** `grammar-patterns.json` is a single
+> object `{ patterns, relations }` whose patterns **nest their own examples**.
+> `syncGrammar` flattens it and syncs Patterns → Examples → Relations inside
+> ONE interactive transaction (all-or-nothing, FK-safe). Real edits propagate
+> and bump `content_version`; unchanged rows write 0. Post-seed verification
+> asserts `patterns ≥ 21`, `examples ≥ 63`, `relations ≥ 0` and **0 FK-orphan
+> examples**.
+
+> **Hash-gate (Story 22.1):** since this change the whole pipeline is a
+> deterministic content diff — see §3. Steady-state re-runs make **0 writes**
+> to every content table (~8s total).
+
+> **Post-seed FK validation (post-seed verification, after step 29):** Step 17
 > (`CharacterRadical`) is the only step whose foreign key was created `NOT VALID`
 > (migration `20260731045648_add_reference_tables`) — `Radical` is empty at
 > migration time, so a validated FK would fail on the 2,798 pre-existing rows.
@@ -90,29 +105,53 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 
 ---
 
-## 3. Idempotency Rules
+## 3. Idempotency Rules (Hash-Gated Delta Sync)
 
-`prisma/seed.ts` is safe to re-run (`npx prisma db seed`) because of these rules:
+`prisma/seed.ts` is safe to re-run (`npx prisma db seed`). Since the hash-gate
+(Story 22.1, August 2026) it no longer blind-inserts with
+`createMany({ skipDuplicates })`. Instead every run is a **hash-gated delta
+sync** — it computes a per-row SHA-256 `content_hash` over the DB-bound payload
+and writes only what actually changed. Tables fall into three buckets:
 
-1. **Business-key PK tables need no pre-clear.** Every model whose `@id` is a
-   stable business key (`rad_0001`, `tn_0`, `init_b`, `ch_1001`, `w_00001`, …)
-   uses `createMany({ skipDuplicates: true })` — re-running updates nothing and
-   skips existing rows. This covers the new `Radical`, `Tone`, `PinyinPhoneme`,
-   `TonePair`, and `ToneRule` tables.
-2. **`PinyinSyllable` is cleared + reinserted.** It has no stable unique
-   constraint beyond `id`, so step 7 `DELETE`s `PinyinCharacterMapping` first
-   (FK depends on `PinyinSyllable`), then `PinyinSyllable`, then reinserts.
-3. **`CharacterReading` is pre-cleared** (`deleteMany`) because it has no
-   unique constraint beyond its autoincrement `id`.
-4. **`CharacterRadical` is pre-filtered.** Its `@@unique([characterGlyph, radicalId])`
-   is not covered by `skipDuplicates` on an autoincrement `@id`, so step 17
-   fetches existing pairs and inserts only the new ones.
-5. **`Character` is chunked** (5,000/batch) — a chunked `createMany` cannot
-   guarantee atomicity, but `skipDuplicates` keeps it idempotent.
-6. **Post-seed FK VALIDATE is guarded.** The `CharacterRadical_radicalId_fkey`
-   constraint is validated after seeding only when `pg_constraint.convalidated`
-   is `false` — a second VALIDATE of an already-valid constraint would error,
-   so the guard keeps `prisma db seed` safe to re-run.
+1. **Bucket A — hash-gated diff (`syncTable`).** Every content table carries a
+   `content_hash CHAR(64)` column (21 tables: `Character`, `Word`, the small
+   reference tables, composites, and grammar). Each run:
+   - reads only the stored `content_hash` (narrow 2-column scan),
+   - computes `computeContentHash` over the key-sorted canonical payload,
+   - **unchanged** (hash equal) → 0 writes · **new** → insert · **changed**
+     (non-NULL hash differs) → update · **NULL hash** (post-migration first
+     run / backfill) → reconcile write + stamp hash with **no**
+     `content_version` bump,
+   - `Character` / `Word` (write-sets >5,000) route through a chunked raw
+     `INSERT … ON CONFLICT (key) DO UPDATE … WHERE "T"."content_hash" IS
+DISTINCT FROM EXCLUDED."content_hash"` bulk path (2,000/statement,
+     autocommit per chunk — never one long transaction, Neon-pooled safe).
+2. **Bucket B — SeedCheckpoint-gated rebuild (`syncDerived`).** Derived
+   projection tables (`CharacterReading`, `CharacterHskLevel`, `WordHskLevel`,
+   `WordCharacter`, `PinyinCharacterMapping`, `CharacterComponent`,
+   `PhoneticClusterMember`) carry **no** per-row hash. A `SeedCheckpoint` row
+   stores the canonical payload hash + row count; when both match the table is
+   skipped (0 writes). On any change the table is deleted + rebuilt, then the
+   checkpoint is updated **only after success** (a mid-way crash leaves no
+   checkpoint, so the next run re-rebuilds).
+3. **Bucket C — test users.** Dev-only `upsert` on email (unchanged).
+4. **Grammar (steps 27–29)** run in ONE interactive transaction
+   (`syncGrammar`) — Patterns → Examples → Relations all-or-nothing, FK-safe.
+   Real edits propagate **and bump `content_version`** (grammar models carry
+   the column); unchanged rows write 0.
+5. **`Character.phoneticComponentId`** is excluded from the content hash (it is
+   the deferred 2-pass FK) and linked separately on an (id → value) diff that
+   never touches `content_hash`.
+6. **Prune is log-only by default.** Rows in the DB but absent from JSON are
+   reported (`⚠️ in DB but not in JSON (kept)`), never deleted. Prune is opt-in
+   (`prune: true`) and requires an explicit `confirm: true` gate — `dryRun:
+true` only previews (rows kept) and never deletes — and **`Character` /
+   `Word` never auto-prune** (non-cascading FK risk). The >5% abort threshold
+   is not yet wired, and `seed.ts` exposes no prune CLI flag — prune is
+   currently log-only in practice.
+7. **Post-seed FK VALIDATE is guarded.** The `CharacterRadical_radicalId_fkey`
+   constraint is validated only when `pg_constraint.convalidated` is `false`, so
+   re-running the seed is safe.
 
 ---
 
@@ -154,7 +193,7 @@ scripts/enrich/*     (JSON→JSON transforms — pure, no DB, idempotent)
 content/seed/phase2/*.json  (committed seed sources)
         │
         ▼
-prisma/seed.ts  (26-step bulk insert — see §2)
+prisma/seed.ts  (29-step hash-gated delta — see §2)
 ```
 
 **`build-reference-tables.ts` (WS1):** converts the legacy authoring files
@@ -197,7 +236,7 @@ lives in `apps/backend/.env` (copied from the root `.env.local`); Prisma's
 | -------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
 | `npx prisma migrate dev --name <desc>` | `npm run db:migrate`        | Apply schema changes + create a migration (dev). **Always use this, never `db push`.**         |
 | `npx prisma migrate deploy`            | `npm run db:migrate:deploy` | Apply pending migrations in order (CI/production).                                             |
-| `npx prisma db seed`                   | `npm run db:seed`           | Run the 26-step seed (uses `"seed"` config in `package.json` → `tsx prisma/seed.ts`).          |
+| `npx prisma db seed`                   | `npm run db:seed`           | Run the 29-step seed (uses `"seed"` config in `package.json` → `tsx prisma/seed.ts`).          |
 | `npx prisma migrate reset`             | `npm run db:reset`          | Drop + recreate DB, re-apply migrations, re-run seed (⚠️ destructive — dev/test only).         |
 | `npx prisma generate`                  | —                           | Regenerate the Prisma client after a schema change (required before type-checking new models). |
 
@@ -209,6 +248,13 @@ npx prisma generate
 npx prisma migrate dev --name <desc>   # or migrate deploy on CI
 npx prisma db seed
 ```
+
+> **Type-check gate for the Prisma seed code:** `prisma/seed.ts` and
+> `prisma/sync-helpers.ts` sit outside the `src/**` graph that the root
+> `npm run typecheck` covers — run `npm run typecheck:prisma` to type-check
+> them (parallel to the pre-existing `typecheck:scripts` for the enrich/verify
+> scripts). Wiring `typecheck:prisma` into an aggregate/CI gate is a documented
+> follow-up.
 
 ---
 
@@ -250,6 +296,16 @@ npx tsx scripts/verify/health-check.ts         # env, migrations, schema, counts
 | `CharacterComponent`     | 15,742  |
 | `User`                   | 2       |
 
+**Grammar (Story 22.1):** the post-seed verification in `seed.ts` asserts
+`GrammarPattern ≥ 21`, `GrammarExample ≥ 63`, `GrammarPatternRelation ≥ 0`, and
+**0 FK-orphan examples** (an example whose `patternContentId` has no matching
+`GrammarPattern`). Current authored counts: **21 / 63 / 12**.
+
+**Hash-gate spot-check:** after a full seed every Bucket-A row has a non-NULL
+`content_hash` (e.g. `SELECT COUNT(*) FROM "Character" WHERE "content_hash" IS
+NOT NULL` → 103,006), and a `SeedCheckpoint` row exists for every Bucket-B
+table. A steady-state re-run writes 0 rows to every content table.
+
 ---
 
 ## 7. Integration Tests (DB-backed)
@@ -259,7 +315,10 @@ and run via `npm run test:integration` (`vitest.integration.config.ts`). They
 require a reachable, **seeded test database** — never point them at dev/prod
 (see `tests/integration/helpers/db.ts`). When no DB is reachable they skip
 gracefully. Coverage: `RadicalsService`, `FoundationsService.getPinyinTonesPool`,
-`ReviewService` (tone/radical building), `ImeSimulatorStrategy` smoke.
+`ReviewService` (tone/radical building), `ImeSimulatorStrategy` smoke, plus the
+hash-gated delta-sync suites: `grammar-seed`, `grammar-delta`, `word-delta`,
+`derived-delta`, `character-bulk-delta` (backed by the `sync-helpers.test.ts`
+unit tests for the diff/classify/bulk-SQL logic).
 
 ---
 

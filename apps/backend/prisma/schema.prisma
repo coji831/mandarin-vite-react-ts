@@ -77,6 +77,7 @@ model CharacterRadical {
   characterId       String? // FK to Character.id — nullable for Phase A, will be made required in Phase B
   radicalId         String // The radical ID, e.g. "rad_0034" (references Kangxi radical ID from content/radicals/)
   decompositionType String? // "semantic" | "phonetic" | "remaining" | null
+  content_hash     String?  @db.Char(64) // delta-sync diff key
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -118,6 +119,7 @@ model Radical {
   notes            String?
   isAlsoCharacter  Boolean?
   variants         Json?
+  content_hash     String? @db.Char(64) // delta-sync diff key
   characterRadicals CharacterRadical[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -139,6 +141,7 @@ model Tone {
   color              String?
   pronunciationGuide String?
   commonIssues       String?
+  content_hash       String? @db.Char(64) // delta-sync diff key
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -161,6 +164,7 @@ model PinyinPhoneme {
   toneVariants       Json?
   pronunciationGuide String?
   commonIssues       String?
+  content_hash       String? @db.Char(64) // delta-sync diff key
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -177,6 +181,7 @@ model TonePair {
   spokenPinyin     String
   rule             String
   pattern          String
+  content_hash     String? @db.Char(64) // delta-sync diff key
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -190,6 +195,7 @@ model ToneRule {
   title     String
   rule      String
   examples  Json
+  content_hash String? @db.Char(64) // delta-sync diff key
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -212,6 +218,7 @@ model Character {
   etymology           String? // Story of character origin
   commonWords         String[] @default([]) // ["很好", "爱好"]
   content_version     Int      @default(1)
+  content_hash        String?  @db.Char(64) // delta-sync diff key (EXCLUDES phoneticComponentId — deferred 2-pass FK)
   metadata            Json? // Flexible metadata from content/characters/*.json
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -378,6 +385,7 @@ model Word {
   hskLevel      Int? // Direct HSK level for fast filtering
   frequencyRank Int? // Corpus frequency rank
   wordClass     String? // POS tag: "noun", "verb", etc.
+  content_hash  String? @db.Char(64) // delta-sync diff key
 
   wordCharacters   WordCharacter[]
   wordHskLevels    WordHskLevel[]
@@ -528,6 +536,7 @@ model Passage {
   generatedAt    DateTime  @default(now())
   accessCount    Int       @default(0)
   lastAccessedAt DateTime?
+  content_hash   String?   @db.Char(64) // delta-sync diff key
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -588,6 +597,7 @@ model PinyinSyllable {
   syllable       String // Full pinyin with tone number, e.g., "ma1"
   syllablePretty String // Full pinyin with tone mark, e.g., "mā"
   isStandard     Boolean  @default(true) // part of standard Mandarin inventory
+  content_hash   String?  @db.Char(64) // delta-sync diff key
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -627,6 +637,7 @@ model MeasureWord {
   meaning    String? // "general individual", "for long slender objects"
   category   String? // "measure", "time", "abstract", "verb", "formal"
   usageNote  String? // "Used for people, general objects"
+  content_hash String? @db.Char(64) // delta-sync diff key
   nouns      MeasureWordWord[]
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
@@ -643,6 +654,7 @@ model MeasureWordWord {
   wordId          String // "w_00001" — FK to Word table (noun)
   exampleSentence String? // "一个人" — illustrative example
   isDefault       Boolean     @default(false) // true if this is the default MW for this noun
+  content_hash    String?     @db.Char(64) // delta-sync diff key
   measureWord     MeasureWord @relation(fields: [measureWordId], references: [id])
   word            Word        @relation(fields: [wordId], references: [id])
 
@@ -662,6 +674,7 @@ model Component {
   type             String? // "radical" | "phonetic" | "both"
   variantOf        String? // References another Component ID (e.g., 氵 is variant of 水)
   strokes          Int? // Stroke count for this component
+  content_hash     String? @db.Char(64) // delta-sync diff key
   characters       CharacterComponent[]
   phoneticClusters PhoneticCluster[]
   createdAt        DateTime             @default(now())
@@ -703,6 +716,7 @@ model PhoneticCluster {
   description       String
   pronunciationNote String?
   phoneticPinyin    String? // Pinyin reading of the phonetic component glyph (e.g., "qīng" for 青)
+  content_hash      String? @db.Char(64) // delta-sync diff key
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -740,6 +754,7 @@ model StrokeCategory {
   order         Int      // Display order (1-5)
   strokeCount   Int      @default(1)
   exampleChars  String[] // ["主", "州", "为", "头"]
+  content_hash  String?  @db.Char(64) // delta-sync diff key
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   extendedTypes  StrokeExtendedType[]
@@ -754,6 +769,7 @@ model StrokeExtendedType {
   glyph           String?  // Stroke glyph character (㇏, ㇀, 亅, etc.)
   baseCategoryId  String   // FK → StrokeCategory.id
   order           Int
+  content_hash    String?  @db.Char(64) // delta-sync diff key
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   baseCategory    StrokeCategory @relation(fields: [baseCategoryId], references: [id])
@@ -766,6 +782,7 @@ model StrokeOrderRule {
   name            String   // "Top to Bottom"
   description     String   // "Write strokes from top to bottom"
   examples        String[] // ["三", "王", "立", "章"]
+  content_hash    String?  @db.Char(64) // delta-sync diff key
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   categoryRules   StrokeCategoryOrderRule[]
@@ -776,10 +793,105 @@ model StrokeCategoryOrderRule {
   categoryId      String   // FK → StrokeCategory.id
   ruleId          String   // FK → StrokeOrderRule.id
   priority        Int      @default(0)
+  content_hash    String?  @db.Char(64) // delta-sync diff key
   createdAt       DateTime @default(now())
   category        StrokeCategory @relation(fields: [categoryId], references: [id])
   rule            StrokeOrderRule @relation(fields: [ruleId], references: [id])
   @@unique([categoryId, ruleId])
   @@index([categoryId])
   @@index([ruleId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Epic 22: Grammar Pattern Library (Story 22.1) — grammar reference content
+// ═══════════════════════════════════════════════════════════════════════════
+// Seeded from content/seed/phase2/grammar-patterns.json via prisma/seed.ts.
+// All-in-DB — no runtime JSON reads. Content models follow the pre-adaptation
+// field pattern (docs/knowledge-base/backend/pre-adaptation-static-dynamic-
+// separation.md, Rules 1-3): internal uuid id PK + unique content_id business
+// key ("gr_XXXX") + content_version Int @default(1) + metadata Json?.
+//
+// ⚠️ DIFFERS FROM Radical / Character (which store the business key as the PK,
+//    e.g. "rad_0001" / "ch_1001") — the pre-adaptation target (and this epic)
+//    use uuid PK + unique content_id. See the reconciliation note in the epic
+//    IMP Decision 2. Example and junction rows reference content_id, never the
+//    internal uuid id.
+
+// ── GrammarPattern: grammar reference pattern (21 KB-sourced rows) ──
+// content_id = "gr_XXXX" (pre-adaptation Rule 1 business key, e.g. "gr_0001").
+// ⚠️ DIFFERS FROM Radical / Character (which store the business key as the PK,
+//    e.g. "rad_0001" / "ch_1001") — see reconciliation note in Decision 2.
+model GrammarPattern {
+  id              String  @id @default(uuid()) // internal PK — never exposed in the API
+  content_id      String  @unique              // stable business key: "gr_0001"
+  name            String                       // e.g. "把 (bǎ) disposal construction"
+  structure       String                       // e.g. "Subj + 把 + Obj + Verb + Complement"
+  explanation     String                       // plain-language rule + usage note (KB §7-grounded)
+  phase           Int                          // 2 | 3 | 4 — roadmap placement (Core 300 / Network / Advanced Fluidity)
+  hskLevel        Int?                         // 1–6 — nullable in schema (house convention); 22.1 populates all 21
+  // (deferred: if HSK-version filtering ever lands, add a GrammarPatternHskLevel junction mirroring WordHskLevel)
+  sortOrder       Int                          // stable library ordering within the phase
+  content_version Int     @default(1)
+  content_hash    String? @db.Char(64)         // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata        Json?                        // e.g. {"family": "complex-syntax", "deprecated": false}
+  examples        GrammarExample[]
+  relatedFrom     GrammarPatternRelation[] @relation("PatternFrom")
+  relatedTo       GrammarPatternRelation[] @relation("PatternTo")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([phase])
+  @@index([hskLevel])
+  @@index([sortOrder])
+}
+
+model GrammarExample {
+  id               String  @id @default(uuid())
+  content_id       String  @unique              // e.g. "gr_0001_ex1"
+  patternContentId String                         // FK → GrammarPattern.content_id ("gr_0001")
+  chinese          String                       // "我把书放在桌子上"
+  pinyin           String                       // "wǒ bǎ shū fàng zài zhuōzi shàng"
+  english          String                       // "I put the book on the table"
+  segments         Json                         // [{ text, pinyin, gloss, entityType, entityId }] — entityId = target content_id
+  sortOrder        Int     @default(0)          // deterministic example ordering within the pattern
+  content_version  Int     @default(1)
+  content_hash     String? @db.Char(64)         // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  pattern          GrammarPattern @relation(fields: [patternContentId], references: [content_id], onDelete: Cascade)
+
+  @@index([patternContentId])
+}
+
+// First self-referential junction in the schema (two FKs → GrammarPattern) — Prisma requires named relations (PatternFrom/PatternTo).
+model GrammarPatternRelation {
+  id                   String @id @default(uuid())
+  fromPatternContentId String   // references GrammarPattern.content_id
+  toPatternContentId   String   // references GrammarPattern.content_id
+  relationType         String  @default("RELATED") // RELATED | CONTRASTS_WITH | PREREQUISITE
+  content_version      Int     @default(1)
+  content_hash         String? @db.Char(64) // SHA-256 hex of canonical payload (delta-sync diff key; NULL until first sync)
+  metadata             Json?
+  fromPattern          GrammarPattern @relation("PatternFrom", fields: [fromPatternContentId], references: [content_id], onDelete: Cascade)
+  toPattern            GrammarPattern @relation("PatternTo", fields: [toPatternContentId], references: [content_id], onDelete: Cascade)
+  createdAt            DateTime @default(now())
+
+  @@unique([fromPatternContentId, toPatternContentId])
+  @@index([toPatternContentId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Seed delta-sync (Epic 22 — full-pipeline hash-gated delta sync)
+// ═══════════════════════════════════════════════════════════════════════════
+// Single-row gate for the derived-recompute (Bucket-B) tables and the optional
+// coarse file gate. `contentHash` is the SHA-256 of the canonicalized mapped
+// payload; `rowCount` guards against identical-hash-but-different-count drift.
+// The checkpoint row is written ONLY after a successful rebuild, so a crash
+// mid-rebuild leaves no checkpoint and the next seed re-rebuilds.
+model SeedCheckpoint {
+  id          String   @id // stable label, e.g. "CharacterReading"
+  contentHash String   @db.Char(64)
+  rowCount    Int
+  updatedAt   DateTime @default(now())
 }

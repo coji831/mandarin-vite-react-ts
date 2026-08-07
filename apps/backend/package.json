@@ -17,6 +17,7 @@
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/shared/docs/openapi.yaml', 'dist/shared/docs/openapi.yaml')\"",
     "typecheck": "tsc --noEmit",
     "typecheck:scripts": "tsc --noEmit --project tsconfig.scripts.json",
+    "typecheck:prisma": "tsc --noEmit --project tsconfig.prisma.json",
     "lint": "eslint .",
     "test": "vitest run --changed",
     "test:full": "vitest run",

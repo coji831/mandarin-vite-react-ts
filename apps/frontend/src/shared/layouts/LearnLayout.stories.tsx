@@ -1,35 +1,29 @@
 /**
  * LearnLayout stories
  *
- * Visual stories for the REAL LearnLayout (TopNav pill tabs + phase gating),
- * rendered inside MemoryRouter + Routes so the active pill reflects the URL.
+ * Visual stories for the REAL LearnLayout. Since Story 22.4 the phase-gated
+ * pill tab bar (TopNav) was removed — the Learn tabs live in the sidebar's
+ * Learn group (AppLayout), so LearnLayout is a nav-less scroll container
+ * around the outlet.
  *
- * The phase-gate is fetched via MSW (`/progression/phase-gate`); the
- * authenticated global MockAuthProvider means guests render all tabs unlocked
- * via the withGuestAuth decorator (effectivePhase = 4).
- *
- * States: Phase 1 (foundations only) · Phase 2 (radicals unlocked) ·
- *         Phase 3 · Phase 4 (all unlocked) · Guest (all unlocked) · Mobile.
+ * States: default content + mobile viewport.
  */
 import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { LearnLayout } from "./LearnLayout";
-import { withGuestAuth } from "../../../.storybook/decorators";
-import { mswHandlers } from "../../../.storybook/msw-handlers";
 
 /** Placeholder content for the LearnLayout <Outlet />. */
 function PageContent() {
   return (
     <div className="p-xl text-secondary font-md">
-      Learn page content renders below the pill tab bar.
+      Learn page content renders inside the LearnLayout scroll container.
     </div>
   );
 }
 
 /**
  * Renders the REAL LearnLayout at the given route with the outlet content.
- * The route also determines which pill is active (NavLink match).
  */
 function LearnLayoutShell({ path, children }: { path: string; children: ReactNode }) {
   return (
@@ -60,7 +54,7 @@ const meta: Meta<typeof LearnLayout> = {
     docs: {
       description: {
         component:
-          "Learn section layout with phase-gated pill tabs (TopNav) and an outlet below. Phase comes from the phase-gate API (MSW in stories).",
+          "Learn section layout — nav-less scroll container around the outlet (Learn tabs live in the sidebar's Learn group since Story 22.4).",
       },
     },
   },
@@ -69,49 +63,9 @@ const meta: Meta<typeof LearnLayout> = {
 export default meta;
 type Story = StoryObj<typeof LearnLayout>;
 
-export const Phase1: Story = {
+export const Default: Story = {
   decorators: [withLearnLayoutPath("/learn/foundations")],
   render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
-  },
-};
-
-export const Phase2Radicals: Story = {
-  decorators: [withLearnLayoutPath("/learn/radicals")],
-  render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(2)] },
-  },
-};
-
-export const Phase3: Story = {
-  decorators: [withLearnLayoutPath("/learn/readers")],
-  render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(3)] },
-  },
-};
-
-export const Phase4: Story = {
-  decorators: [withLearnLayoutPath("/learn/chengyu")],
-  render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(4)] },
-  },
-};
-
-/**
- * GuestMode — all tabs unlocked. Guest users see effectivePhase = 4
- * (withGuestAuth overrides the authenticated MockAuthProvider).
- */
-export const GuestMode: Story = {
-  decorators: [withGuestAuth, withLearnLayoutPath("/learn/foundations")],
-  render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
-  },
-  name: "Guest mode — all tabs unlocked",
 };
 
 export const Mobile: Story = {
@@ -119,6 +73,5 @@ export const Mobile: Story = {
   render: () => <PageContent />,
   parameters: {
     viewport: { defaultViewport: "mobile2" },
-    msw: { handlers: [mswHandlers.progression.phaseGate(2)] },
   },
 };

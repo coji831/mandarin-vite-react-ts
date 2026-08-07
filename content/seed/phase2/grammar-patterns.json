@@ -1,0 +1,2777 @@
+{
+  "_comment": "Epic 22 Grammar Pattern Library — authoring source (Story 22.1). Seeded into Prisma (GrammarPattern / GrammarExample / GrammarPatternRelation) by apps/backend/prisma/seed.ts. Authored EXCLUSIVELY from the platform KB: §7 'Grammar Essentials' (docs/knowledge-base/mandarin/mandarin-fundamentals.md) + adult-mandarin-learning-roadmap.md phase placement + modeling-chinese-knowledge-graph.md USED_IN_PATTERN edge. 21 patterns = 19 §7/roadmap + 2 supplementary HSK-tier advanced (比, 是...的). Segment entityType: single char → 'character' (ch_XXXXX); multi-char word → 'word' (w_XXXXX); no linked entity → null. No runtime JSON reads — DB only.",
+  "patterns": [
+    {
+      "content_id": "gr_0001",
+      "name": "SVO basic word order",
+      "structure": "Subject + Verb + Object",
+      "explanation": "Chinese declarative sentences follow a strict Subject-Verb-Object order, just like English. Nouns carry no case marking and verbs never conjugate, so word order — not inflection — is the primary signal of who does what to whom. Keep the subject before the verb and the object after it; time and place phrases go before the verb.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 1,
+      "metadata": {
+        "family": "word-order-tense",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0001_ex1",
+          "chinese": "我打人。",
+          "pinyin": "wǒ dǎ rén",
+          "english": "I hit the person.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "打",
+              "pinyin": "dǎ",
+              "gloss": "hit",
+              "entityType": "character",
+              "entityId": "ch_25171"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "person",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0001_ex2",
+          "chinese": "他喝茶。",
+          "pinyin": "tā hē chá",
+          "english": "He drinks tea.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "喝",
+              "pinyin": "hē",
+              "gloss": "drink",
+              "entityType": "character",
+              "entityId": "ch_21917"
+            },
+            {
+              "text": "茶",
+              "pinyin": "chá",
+              "gloss": "tea",
+              "entityType": "character",
+              "entityId": "ch_33590"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0001_ex3",
+          "chinese": "我爱妈妈。",
+          "pinyin": "wǒ ài māma",
+          "english": "I love Mom.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "爱",
+              "pinyin": "ài",
+              "gloss": "love",
+              "entityType": "character",
+              "entityId": "ch_1002"
+            },
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0002",
+      "name": "No inflection — context/time words carry tense",
+      "structure": "Subject + Verb (+ Object) (+ Time word)",
+      "explanation": "Chinese verbs have no tense, number, or gender inflection: 吃 (chī) can mean eat, eats, ate, or eating depending on context. Tense is understood from time words (昨天 yesterday, 明天 tomorrow), surrounding context, or aspect particles such as 了. The verb form never changes.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 2,
+      "metadata": {
+        "family": "word-order-tense",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0002_ex1",
+          "chinese": "我昨天吃饭了。",
+          "pinyin": "wǒ zuótiān chī fàn le",
+          "english": "I ate (a meal) yesterday.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "昨天",
+              "pinyin": "zuótiān",
+              "gloss": "yesterday",
+              "entityType": "word",
+              "entityId": "w_00495"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "饭",
+              "pinyin": "fàn",
+              "gloss": "rice/meal",
+              "entityType": "character",
+              "entityId": "ch_39277"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0002_ex2",
+          "chinese": "他明天来。",
+          "pinyin": "tā míngtiān lái",
+          "english": "He will come tomorrow.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "明天",
+              "pinyin": "míngtiān",
+              "gloss": "tomorrow",
+              "entityType": "word",
+              "entityId": "w_00248"
+            },
+            {
+              "text": "来",
+              "pinyin": "lái",
+              "gloss": "come",
+              "entityType": "character",
+              "entityId": "ch_26469"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0002_ex3",
+          "chinese": "妈妈现在工作。",
+          "pinyin": "māma xiànzài gōngzuò",
+          "english": "Mom works now.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            },
+            {
+              "text": "现在",
+              "pinyin": "xiànzài",
+              "gloss": "now",
+              "entityType": "word",
+              "entityId": "w_00399"
+            },
+            {
+              "text": "工作",
+              "pinyin": "gōngzuò",
+              "gloss": "work",
+              "entityType": "word",
+              "entityId": "w_00124"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0003",
+      "name": "Topic-comment",
+      "structure": "Topic + Comment",
+      "explanation": "Chinese is topic-prominent: a sentence often starts with the topic — what the sentence is about, frequently the object — followed by a comment about it. The topic is usually old or known information, and the comment (subject + predicate) supplies the new information. This lets speakers put known information first.",
+      "phase": 2,
+      "hskLevel": 2,
+      "sortOrder": 3,
+      "metadata": {
+        "family": "word-order-tense",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0003_ex1",
+          "chinese": "这本书我看过。",
+          "pinyin": "zhè běn shū wǒ kàn guò",
+          "english": "This book, I have read.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "这",
+              "pinyin": "zhè",
+              "gloss": "this",
+              "entityType": "character",
+              "entityId": "ch_36825"
+            },
+            {
+              "text": "本",
+              "pinyin": "běn",
+              "gloss": "measure word (books)",
+              "entityType": "character",
+              "entityId": "ch_26412"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "看",
+              "pinyin": "kàn",
+              "gloss": "read",
+              "entityType": "character",
+              "entityId": "ch_30475"
+            },
+            {
+              "text": "过",
+              "pinyin": "guò",
+              "gloss": "experiential particle",
+              "entityType": "character",
+              "entityId": "ch_36807"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0003_ex2",
+          "chinese": "咖啡我喜欢。",
+          "pinyin": "kāfēi wǒ xǐhuan",
+          "english": "Coffee, I like.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "咖啡",
+              "pinyin": "kāfēi",
+              "gloss": "coffee",
+              "entityType": "word",
+              "entityId": "w_01677"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "喜欢",
+              "pinyin": "xǐhuan",
+              "gloss": "like",
+              "entityType": "word",
+              "entityId": "w_00388"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0003_ex3",
+          "chinese": "中文很难。",
+          "pinyin": "zhōngwén hěn nán",
+          "english": "Chinese is hard. (As for Chinese, it is difficult.)",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "中文",
+              "pinyin": "zhōngwén",
+              "gloss": "Chinese (language)",
+              "entityType": "word",
+              "entityId": "w_00479"
+            },
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "难",
+              "pinyin": "nán",
+              "gloss": "hard",
+              "entityType": "character",
+              "entityId": "ch_38590"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0004",
+      "name": "Time placement",
+      "structure": "Time + Subject + Verb (+ Object)",
+      "explanation": "Time words come before the verb — usually at the very start of the sentence (before the subject) or right after the subject. Unlike English, they never appear at the end after the object.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 4,
+      "metadata": {
+        "family": "word-order-tense",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0004_ex1",
+          "chinese": "我今天去学校。",
+          "pinyin": "wǒ jīntiān qù xuéxiào",
+          "english": "I am going to school today.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "今天",
+              "pinyin": "jīntiān",
+              "gloss": "today",
+              "entityType": "word",
+              "entityId": "w_00181"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            },
+            {
+              "text": "学校",
+              "pinyin": "xuéxiào",
+              "gloss": "school",
+              "entityType": "word",
+              "entityId": "w_00421"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0004_ex2",
+          "chinese": "明天他回家。",
+          "pinyin": "míngtiān tā huíjiā",
+          "english": "Tomorrow he goes home.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "明天",
+              "pinyin": "míngtiān",
+              "gloss": "tomorrow",
+              "entityType": "word",
+              "entityId": "w_00248"
+            },
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "回家",
+              "pinyin": "huíjiā",
+              "gloss": "go home",
+              "entityType": "word",
+              "entityId": "w_00157"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0004_ex3",
+          "chinese": "我们早上喝咖啡。",
+          "pinyin": "wǒmen zǎoshang hē kāfēi",
+          "english": "We drink coffee in the morning.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我们",
+              "pinyin": "wǒmen",
+              "gloss": "we",
+              "entityType": "word",
+              "entityId": "w_00381"
+            },
+            {
+              "text": "早上",
+              "pinyin": "zǎoshang",
+              "gloss": "morning",
+              "entityType": "word",
+              "entityId": "w_00459"
+            },
+            {
+              "text": "喝",
+              "pinyin": "hē",
+              "gloss": "drink",
+              "entityType": "character",
+              "entityId": "ch_21917"
+            },
+            {
+              "text": "咖啡",
+              "pinyin": "kāfēi",
+              "gloss": "coffee",
+              "entityType": "word",
+              "entityId": "w_01677"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0005",
+      "name": "吗 (ma) yes/no questions",
+      "structure": "Statement + 吗",
+      "explanation": "To turn a statement into a yes/no question, simply add the particle 吗 (ma) at the end. The word order stays exactly the same — there is no auxiliary verb and no inversion.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 5,
+      "metadata": {
+        "family": "questions",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0005_ex1",
+          "chinese": "你好吗？",
+          "pinyin": "nǐ hǎo ma",
+          "english": "How are you? (lit. 'Are you well?')",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "好",
+              "pinyin": "hǎo",
+              "gloss": "well",
+              "entityType": "character",
+              "entityId": "ch_1001"
+            },
+            {
+              "text": "吗",
+              "pinyin": "ma",
+              "gloss": "question particle",
+              "entityType": "character",
+              "entityId": "ch_21527"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0005_ex2",
+          "chinese": "你吃吗？",
+          "pinyin": "nǐ chī ma",
+          "english": "Are you eating? / Do you want to eat?",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "吗",
+              "pinyin": "ma",
+              "gloss": "question particle",
+              "entityType": "character",
+              "entityId": "ch_21527"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0005_ex3",
+          "chinese": "这是你的书吗？",
+          "pinyin": "zhè shì nǐ de shū ma",
+          "english": "Is this your book?",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "这",
+              "pinyin": "zhè",
+              "gloss": "this",
+              "entityType": "character",
+              "entityId": "ch_36825"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "is",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "possessive particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            },
+            {
+              "text": "吗",
+              "pinyin": "ma",
+              "gloss": "question particle",
+              "entityType": "character",
+              "entityId": "ch_21527"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0006",
+      "name": "A-not-A (V不V) questions",
+      "structure": "Verb + 不 + Verb",
+      "explanation": "Yes/no questions can also be formed with the A-not-A pattern: state the verb, then 不 (bù), then the verb again — 你吃不吃? 'Are you eating (or not)?' This is direct and common in everyday speech. 是 (to be) and 有 (to have) use 是不是 / 有没有.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 6,
+      "metadata": {
+        "family": "questions",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0006_ex1",
+          "chinese": "你吃不吃？",
+          "pinyin": "nǐ chī bu chī",
+          "english": "Are you eating (or not)?",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "不",
+              "pinyin": "bu",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0006_ex2",
+          "chinese": "你去不去？",
+          "pinyin": "nǐ qù bu qù",
+          "english": "Are you going (or not)?",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            },
+            {
+              "text": "不",
+              "pinyin": "bu",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0006_ex3",
+          "chinese": "他是不是老师？",
+          "pinyin": "tā shì bu shì lǎoshī",
+          "english": "Is he a teacher (or not)?",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "is",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "不",
+              "pinyin": "bu",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "is",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "老师",
+              "pinyin": "lǎoshī",
+              "gloss": "teacher",
+              "entityType": "word",
+              "entityId": "w_00209"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0007",
+      "name": "Measure words (个 general + noun-specific)",
+      "structure": "Numeral + Measure word + Noun",
+      "explanation": "Chinese nouns must be counted with a measure word (classifier) placed between the number and the noun. 个 (gè) is the general measure word for people and many everyday objects; specific nouns take specific measure words, such as 本 (běn) for books and 张 (zhāng) for flat objects like paper and tables.",
+      "phase": 2,
+      "hskLevel": 1,
+      "sortOrder": 7,
+      "metadata": {
+        "family": "measure-words",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0007_ex1",
+          "chinese": "一个人。",
+          "pinyin": "yī gè rén",
+          "english": "one person",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "个",
+              "pinyin": "gè",
+              "gloss": "measure word (general)",
+              "entityType": "character",
+              "entityId": "ch_20010"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "person",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0007_ex2",
+          "chinese": "一本书。",
+          "pinyin": "yī běn shū",
+          "english": "one book",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "本",
+              "pinyin": "běn",
+              "gloss": "measure word (books)",
+              "entityType": "character",
+              "entityId": "ch_26412"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0007_ex3",
+          "chinese": "三张桌子。",
+          "pinyin": "sān zhāng zhuōzi",
+          "english": "three tables",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "三",
+              "pinyin": "sān",
+              "gloss": "three",
+              "entityType": "character",
+              "entityId": "ch_19977"
+            },
+            {
+              "text": "张",
+              "pinyin": "zhāng",
+              "gloss": "measure word (flat objects)",
+              "entityType": "character",
+              "entityId": "ch_24352"
+            },
+            {
+              "text": "桌子",
+              "pinyin": "zhuōzi",
+              "gloss": "table",
+              "entityType": "word",
+              "entityId": "w_00487"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0008",
+      "name": "Serial verb constructions",
+      "structure": "Subject + Verb1 + Object1 + Verb2 + Object2",
+      "explanation": "Chinese allows two or more verbs to appear one after another in a single sentence, sharing the same subject, with no conjunction in between. Common uses are go-and-do and come-and-do patterns, such as 我去买东西 ('I go buy things').",
+      "phase": 2,
+      "hskLevel": 2,
+      "sortOrder": 8,
+      "metadata": {
+        "family": "serial-verbs",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0008_ex1",
+          "chinese": "我去买东西。",
+          "pinyin": "wǒ qù mǎi dōngxi",
+          "english": "I am going to buy things.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            },
+            {
+              "text": "买",
+              "pinyin": "mǎi",
+              "gloss": "buy",
+              "entityType": "character",
+              "entityId": "ch_20080"
+            },
+            {
+              "text": "东西",
+              "pinyin": "dōngxi",
+              "gloss": "things",
+              "entityType": "word",
+              "entityId": "w_00086"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0008_ex2",
+          "chinese": "我去学校学习。",
+          "pinyin": "wǒ qù xuéxiào xuéxí",
+          "english": "I go to school to study.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            },
+            {
+              "text": "学校",
+              "pinyin": "xuéxiào",
+              "gloss": "school",
+              "entityType": "word",
+              "entityId": "w_00421"
+            },
+            {
+              "text": "学习",
+              "pinyin": "xuéxí",
+              "gloss": "study",
+              "entityType": "word",
+              "entityId": "w_00420"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0008_ex3",
+          "chinese": "妈妈回家做饭。",
+          "pinyin": "māma huíjiā zuòfàn",
+          "english": "Mom goes home to cook.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            },
+            {
+              "text": "回家",
+              "pinyin": "huíjiā",
+              "gloss": "go home",
+              "entityType": "word",
+              "entityId": "w_00157"
+            },
+            {
+              "text": "做饭",
+              "pinyin": "zuòfàn",
+              "gloss": "cook",
+              "entityType": "word",
+              "entityId": "w_01272"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0009",
+      "name": "Pro-drop (omitted subject)",
+      "structure": "(Subject) + Verb (+ Object)",
+      "explanation": "When the subject is clear from context, Chinese often omits it entirely — especially pronouns such as I, you, and he. This is called pro-drop. English requires an explicit subject in every clause; Chinese leaves it out when the listener can infer it.",
+      "phase": 2,
+      "hskLevel": 2,
+      "sortOrder": 9,
+      "metadata": {
+        "family": "pro-drop",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0009_ex1",
+          "chinese": "来了。",
+          "pinyin": "lái le",
+          "english": "(I/He/She) has come.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "来",
+              "pinyin": "lái",
+              "gloss": "come",
+              "entityType": "character",
+              "entityId": "ch_26469"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0009_ex2",
+          "chinese": "回家了。",
+          "pinyin": "huíjiā le",
+          "english": "(I) have gone home.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "回家",
+              "pinyin": "huíjiā",
+              "gloss": "go home",
+              "entityType": "word",
+              "entityId": "w_00157"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0009_ex3",
+          "chinese": "很高兴。",
+          "pinyin": "hěn gāoxìng",
+          "english": "(I am) very happy.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "高兴",
+              "pinyin": "gāoxìng",
+              "gloss": "happy",
+              "entityType": "word",
+              "entityId": "w_00116"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0010",
+      "name": "了 (le) perfective aspect",
+      "structure": "Verb + 了",
+      "explanation": "The aspect particle 了 (le) marks a completed action or a change of state — something that has already happened. Chinese has no past-tense conjugation; 了 placed after the verb signals completion.",
+      "phase": 3,
+      "hskLevel": 1,
+      "sortOrder": 10,
+      "metadata": {
+        "family": "aspect-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0010_ex1",
+          "chinese": "我吃了。",
+          "pinyin": "wǒ chī le",
+          "english": "I have eaten.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0010_ex2",
+          "chinese": "他来了。",
+          "pinyin": "tā lái le",
+          "english": "He has come.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "来",
+              "pinyin": "lái",
+              "gloss": "come",
+              "entityType": "character",
+              "entityId": "ch_26469"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0010_ex3",
+          "chinese": "我买书了。",
+          "pinyin": "wǒ mǎi shū le",
+          "english": "I bought the book.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "买",
+              "pinyin": "mǎi",
+              "gloss": "buy",
+              "entityType": "character",
+              "entityId": "ch_20080"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0011",
+      "name": "着 (zhe) durative aspect",
+      "structure": "Verb + 着",
+      "explanation": "The particle 着 (zhe) marks an ongoing or continuous state — an action or state that is in progress or holding. It often describes a static posture or an activity continuing in the background, as in 他吃着饭 ('he is in the middle of eating').",
+      "phase": 3,
+      "hskLevel": 3,
+      "sortOrder": 11,
+      "metadata": {
+        "family": "aspect-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 3)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0011_ex1",
+          "chinese": "他吃着饭。",
+          "pinyin": "tā chī zhe fàn",
+          "english": "He is eating (in the middle of a meal).",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "着",
+              "pinyin": "zhe",
+              "gloss": "durative particle",
+              "entityType": "character",
+              "entityId": "ch_30528"
+            },
+            {
+              "text": "饭",
+              "pinyin": "fàn",
+              "gloss": "meal",
+              "entityType": "character",
+              "entityId": "ch_39277"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0011_ex2",
+          "chinese": "门开着。",
+          "pinyin": "mén kāi zhe",
+          "english": "The door is open.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "门",
+              "pinyin": "mén",
+              "gloss": "door",
+              "entityType": "character",
+              "entityId": "ch_38376"
+            },
+            {
+              "text": "开",
+              "pinyin": "kāi",
+              "gloss": "open",
+              "entityType": "character",
+              "entityId": "ch_24320"
+            },
+            {
+              "text": "着",
+              "pinyin": "zhe",
+              "gloss": "durative particle",
+              "entityType": "character",
+              "entityId": "ch_30528"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0011_ex3",
+          "chinese": "我等着你。",
+          "pinyin": "wǒ děng zhe nǐ",
+          "english": "I am waiting for you.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "等",
+              "pinyin": "děng",
+              "gloss": "wait",
+              "entityType": "character",
+              "entityId": "ch_31561"
+            },
+            {
+              "text": "着",
+              "pinyin": "zhe",
+              "gloss": "durative particle",
+              "entityType": "character",
+              "entityId": "ch_30528"
+            },
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0012",
+      "name": "过 (guò) experiential aspect",
+      "structure": "Verb + 过",
+      "explanation": "The particle 过 (guò) marks an experience — something that has happened at least once in the past ('have ever done'). Use it when asking or stating whether someone has experienced an action.",
+      "phase": 3,
+      "hskLevel": 2,
+      "sortOrder": 12,
+      "metadata": {
+        "family": "aspect-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0012_ex1",
+          "chinese": "我看过。",
+          "pinyin": "wǒ kàn guò",
+          "english": "I have read/seen it.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "看",
+              "pinyin": "kàn",
+              "gloss": "read/see",
+              "entityType": "character",
+              "entityId": "ch_30475"
+            },
+            {
+              "text": "过",
+              "pinyin": "guò",
+              "gloss": "experiential particle",
+              "entityType": "character",
+              "entityId": "ch_36807"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0012_ex2",
+          "chinese": "你去过北京吗？",
+          "pinyin": "nǐ qù guò Běijīng ma",
+          "english": "Have you ever been to Beijing?",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "你",
+              "pinyin": "nǐ",
+              "gloss": "you",
+              "entityType": "character",
+              "entityId": "ch_20320"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            },
+            {
+              "text": "过",
+              "pinyin": "guò",
+              "gloss": "experiential particle",
+              "entityType": "character",
+              "entityId": "ch_36807"
+            },
+            {
+              "text": "北京",
+              "pinyin": "Běijīng",
+              "gloss": "Beijing",
+              "entityType": "word",
+              "entityId": "w_00021"
+            },
+            {
+              "text": "吗",
+              "pinyin": "ma",
+              "gloss": "question particle",
+              "entityType": "character",
+              "entityId": "ch_21527"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0012_ex3",
+          "chinese": "我喝过茶。",
+          "pinyin": "wǒ hē guò chá",
+          "english": "I have drunk tea (before).",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "喝",
+              "pinyin": "hē",
+              "gloss": "drink",
+              "entityType": "character",
+              "entityId": "ch_21917"
+            },
+            {
+              "text": "过",
+              "pinyin": "guò",
+              "gloss": "experiential particle",
+              "entityType": "character",
+              "entityId": "ch_36807"
+            },
+            {
+              "text": "茶",
+              "pinyin": "chá",
+              "gloss": "tea",
+              "entityType": "character",
+              "entityId": "ch_33590"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0013",
+      "name": "正在 (zhèngzài) progressive aspect",
+      "structure": "正在 + Verb",
+      "explanation": "The adverb 正在 (zhèngzài) marks an action in progress right now — equivalent to the English '-ing' / 'am/is/are doing'. It comes before the verb; 在 or 正 alone can carry the same progressive meaning.",
+      "phase": 3,
+      "hskLevel": 2,
+      "sortOrder": 13,
+      "metadata": {
+        "family": "aspect-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0013_ex1",
+          "chinese": "我正在学习。",
+          "pinyin": "wǒ zhèngzài xuéxí",
+          "english": "I am studying (right now).",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "正在",
+              "pinyin": "zhèngzài",
+              "gloss": "progressive marker",
+              "entityType": "word",
+              "entityId": "w_00473"
+            },
+            {
+              "text": "学习",
+              "pinyin": "xuéxí",
+              "gloss": "study",
+              "entityType": "word",
+              "entityId": "w_00420"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0013_ex2",
+          "chinese": "他在看电视。",
+          "pinyin": "tā zài kàn diànshì",
+          "english": "He is watching TV.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "在",
+              "pinyin": "zài",
+              "gloss": "in progress",
+              "entityType": "character",
+              "entityId": "ch_22312"
+            },
+            {
+              "text": "看",
+              "pinyin": "kàn",
+              "gloss": "watch",
+              "entityType": "character",
+              "entityId": "ch_30475"
+            },
+            {
+              "text": "电视",
+              "pinyin": "diànshì",
+              "gloss": "TV",
+              "entityType": "word",
+              "entityId": "w_00080"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0013_ex3",
+          "chinese": "妈妈正在做饭。",
+          "pinyin": "māma zhèngzài zuòfàn",
+          "english": "Mom is cooking right now.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            },
+            {
+              "text": "正在",
+              "pinyin": "zhèngzài",
+              "gloss": "progressive marker",
+              "entityType": "word",
+              "entityId": "w_00473"
+            },
+            {
+              "text": "做饭",
+              "pinyin": "zuòfàn",
+              "gloss": "cook",
+              "entityType": "word",
+              "entityId": "w_01272"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0014",
+      "name": "的 (de) possessive / modifier",
+      "structure": "Modifier + 的 + Noun",
+      "explanation": "The particle 的 (de) links a modifier to a noun: possession (我的书 'my book'), description, or relationship. It marks that the first element modifies the second. Pronoun + 的 + noun is the standard way to say 'my / your / his...'.",
+      "phase": 3,
+      "hskLevel": 1,
+      "sortOrder": 14,
+      "metadata": {
+        "family": "de-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 1)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0014_ex1",
+          "chinese": "我的书。",
+          "pinyin": "wǒ de shū",
+          "english": "my book",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I/my",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "possessive particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0014_ex2",
+          "chinese": "这是妈妈的衣服。",
+          "pinyin": "zhè shì māma de yīfu",
+          "english": "This is Mom's clothing.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "这",
+              "pinyin": "zhè",
+              "gloss": "this",
+              "entityType": "character",
+              "entityId": "ch_36825"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "is",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "possessive particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            },
+            {
+              "text": "衣服",
+              "pinyin": "yīfu",
+              "gloss": "clothes",
+              "entityType": "word",
+              "entityId": "w_00428"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0014_ex3",
+          "chinese": "老师的书。",
+          "pinyin": "lǎoshī de shū",
+          "english": "the teacher's book",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "老师",
+              "pinyin": "lǎoshī",
+              "gloss": "teacher",
+              "entityType": "word",
+              "entityId": "w_00209"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "possessive particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0015",
+      "name": "地 (de) adverb marker",
+      "structure": "Adverb/Adjective + 地 + Verb",
+      "explanation": "The particle 地 (de) turns an adjective or descriptive phrase into an adverb that modifies a verb — 慢慢地走 means 'walk slowly'. 地 sits between the adverbial phrase and the verb. (Written 地 but pronounced the same as 的 and 得.)",
+      "phase": 3,
+      "hskLevel": 2,
+      "sortOrder": 15,
+      "metadata": {
+        "family": "de-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0015_ex1",
+          "chinese": "慢慢地走。",
+          "pinyin": "màn màn de zǒu",
+          "english": "walk slowly",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "慢慢",
+              "pinyin": "mànmàn",
+              "gloss": "slowly",
+              "entityType": "word",
+              "entityId": "w_01746"
+            },
+            {
+              "text": "地",
+              "pinyin": "de",
+              "gloss": "adverb marker",
+              "entityType": "character",
+              "entityId": "ch_22320"
+            },
+            {
+              "text": "走",
+              "pinyin": "zǒu",
+              "gloss": "walk",
+              "entityType": "character",
+              "entityId": "ch_36208"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0015_ex2",
+          "chinese": "他高兴地说。",
+          "pinyin": "tā gāoxìng de shuō",
+          "english": "He says happily.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "高兴",
+              "pinyin": "gāoxìng",
+              "gloss": "happy",
+              "entityType": "word",
+              "entityId": "w_00116"
+            },
+            {
+              "text": "地",
+              "pinyin": "de",
+              "gloss": "adverb marker",
+              "entityType": "character",
+              "entityId": "ch_22320"
+            },
+            {
+              "text": "说",
+              "pinyin": "shuō",
+              "gloss": "say",
+              "entityType": "character",
+              "entityId": "ch_35828"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0015_ex3",
+          "chinese": "他很快地跑。",
+          "pinyin": "tā hěn kuài de pǎo",
+          "english": "He runs very fast.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "快",
+              "pinyin": "kuài",
+              "gloss": "fast",
+              "entityType": "character",
+              "entityId": "ch_24555"
+            },
+            {
+              "text": "地",
+              "pinyin": "de",
+              "gloss": "adverb marker",
+              "entityType": "character",
+              "entityId": "ch_22320"
+            },
+            {
+              "text": "跑",
+              "pinyin": "pǎo",
+              "gloss": "run",
+              "entityType": "character",
+              "entityId": "ch_36305"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0016",
+      "name": "得 (de) resultative complement",
+      "structure": "Verb + 得 + Adjective/Complement",
+      "explanation": "The particle 得 (de) links a verb to a complement describing how well or to what degree the action is done — 做得很好 means 'done very well'. It is used to evaluate performance or describe the result of an action.",
+      "phase": 3,
+      "hskLevel": 2,
+      "sortOrder": 16,
+      "metadata": {
+        "family": "de-particles",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0016_ex1",
+          "chinese": "做得很好。",
+          "pinyin": "zuò de hěn hǎo",
+          "english": "done very well",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "做",
+              "pinyin": "zuò",
+              "gloss": "do",
+              "entityType": "character",
+              "entityId": "ch_20570"
+            },
+            {
+              "text": "得",
+              "pinyin": "de",
+              "gloss": "complement marker",
+              "entityType": "character",
+              "entityId": "ch_24471"
+            },
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "好",
+              "pinyin": "hǎo",
+              "gloss": "good",
+              "entityType": "character",
+              "entityId": "ch_1001"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0016_ex2",
+          "chinese": "他跑得很快。",
+          "pinyin": "tā pǎo de hěn kuài",
+          "english": "He runs very fast.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "跑",
+              "pinyin": "pǎo",
+              "gloss": "run",
+              "entityType": "character",
+              "entityId": "ch_36305"
+            },
+            {
+              "text": "得",
+              "pinyin": "de",
+              "gloss": "complement marker",
+              "entityType": "character",
+              "entityId": "ch_24471"
+            },
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "快",
+              "pinyin": "kuài",
+              "gloss": "fast",
+              "entityType": "character",
+              "entityId": "ch_24555"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0016_ex3",
+          "chinese": "我吃得很多。",
+          "pinyin": "wǒ chī de hěn duō",
+          "english": "I eat a lot.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "得",
+              "pinyin": "de",
+              "gloss": "complement marker",
+              "entityType": "character",
+              "entityId": "ch_24471"
+            },
+            {
+              "text": "很",
+              "pinyin": "hěn",
+              "gloss": "very",
+              "entityType": "character",
+              "entityId": "ch_24456"
+            },
+            {
+              "text": "多",
+              "pinyin": "duō",
+              "gloss": "much/many",
+              "entityType": "character",
+              "entityId": "ch_22810"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0017",
+      "name": "因为...所以 cause-consequence",
+      "structure": "因为 + Reason，所以 + Result",
+      "explanation": "因为 (yīnwèi, 'because') introduces the reason and 所以 (suǒyǐ, 'so / therefore') introduces the result. Both halves usually appear together: 因为我累，所以不去 — 'Because I am tired, (so) I am not going.'",
+      "phase": 3,
+      "hskLevel": 2,
+      "sortOrder": 17,
+      "metadata": {
+        "family": "conjunctions",
+        "hskSource": "HSK 3.0 standard grammar point (level 2)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0017_ex1",
+          "chinese": "因为我累，所以不去。",
+          "pinyin": "yīnwèi wǒ lèi, suǒyǐ bù qù",
+          "english": "Because I am tired, I am not going.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "因为",
+              "pinyin": "yīnwèi",
+              "gloss": "because",
+              "entityType": "word",
+              "entityId": "w_01167"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "累",
+              "pinyin": "lèi",
+              "gloss": "tired",
+              "entityType": "character",
+              "entityId": "ch_32047"
+            },
+            {
+              "text": "所以",
+              "pinyin": "suǒyǐ",
+              "gloss": "so",
+              "entityType": "word",
+              "entityId": "w_01013"
+            },
+            {
+              "text": "不",
+              "pinyin": "bù",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0017_ex2",
+          "chinese": "因为天气不好，所以我们不去。",
+          "pinyin": "yīnwèi tiānqì bù hǎo, suǒyǐ wǒmen bù qù",
+          "english": "Because the weather is bad, we are not going.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "因为",
+              "pinyin": "yīnwèi",
+              "gloss": "because",
+              "entityType": "word",
+              "entityId": "w_01167"
+            },
+            {
+              "text": "天气",
+              "pinyin": "tiānqì",
+              "gloss": "weather",
+              "entityType": "word",
+              "entityId": "w_00360"
+            },
+            {
+              "text": "不",
+              "pinyin": "bù",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "好",
+              "pinyin": "hǎo",
+              "gloss": "good",
+              "entityType": "character",
+              "entityId": "ch_1001"
+            },
+            {
+              "text": "所以",
+              "pinyin": "suǒyǐ",
+              "gloss": "so",
+              "entityType": "word",
+              "entityId": "w_01013"
+            },
+            {
+              "text": "我们",
+              "pinyin": "wǒmen",
+              "gloss": "we",
+              "entityType": "word",
+              "entityId": "w_00381"
+            },
+            {
+              "text": "不",
+              "pinyin": "bù",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "去",
+              "pinyin": "qù",
+              "gloss": "go",
+              "entityType": "character",
+              "entityId": "ch_21435"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0017_ex3",
+          "chinese": "因为他喜欢中文，所以他学习。",
+          "pinyin": "yīnwèi tā xǐhuan zhōngwén, suǒyǐ tā xuéxí",
+          "english": "Because he likes Chinese, he studies it.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "因为",
+              "pinyin": "yīnwèi",
+              "gloss": "because",
+              "entityType": "word",
+              "entityId": "w_01167"
+            },
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "喜欢",
+              "pinyin": "xǐhuan",
+              "gloss": "like",
+              "entityType": "word",
+              "entityId": "w_00388"
+            },
+            {
+              "text": "中文",
+              "pinyin": "zhōngwén",
+              "gloss": "Chinese (language)",
+              "entityType": "word",
+              "entityId": "w_00479"
+            },
+            {
+              "text": "所以",
+              "pinyin": "suǒyǐ",
+              "gloss": "so",
+              "entityType": "word",
+              "entityId": "w_01013"
+            },
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "学习",
+              "pinyin": "xuéxí",
+              "gloss": "study",
+              "entityType": "word",
+              "entityId": "w_00420"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0018",
+      "name": "把 (bǎ) disposal construction",
+      "structure": "Subject + 把 + Object + Verb + Complement",
+      "explanation": "The 把 (bǎ) construction moves the object before the verb and marks it as the thing being disposed of or affected, emphasizing the result of the action on the object: 我把书放在桌子上 — 'I put the book on the table.' Use it when the verb is followed by a complement describing what happens to the object.",
+      "phase": 4,
+      "hskLevel": 4,
+      "sortOrder": 18,
+      "metadata": {
+        "family": "disposal-passive",
+        "hskSource": "HSK 3.0 standard grammar point (level 4)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0018_ex1",
+          "chinese": "我把书放在桌子上。",
+          "pinyin": "wǒ bǎ shū fàng zài zhuōzi shàng",
+          "english": "I put the book on the table.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "把",
+              "pinyin": "bǎ",
+              "gloss": "disposal marker",
+              "entityType": "character",
+              "entityId": "ch_25226"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            },
+            {
+              "text": "放",
+              "pinyin": "fàng",
+              "gloss": "put",
+              "entityType": "character",
+              "entityId": "ch_25918"
+            },
+            {
+              "text": "在",
+              "pinyin": "zài",
+              "gloss": "at",
+              "entityType": "character",
+              "entityId": "ch_22312"
+            },
+            {
+              "text": "桌子",
+              "pinyin": "zhuōzi",
+              "gloss": "table",
+              "entityType": "word",
+              "entityId": "w_00487"
+            },
+            {
+              "text": "上",
+              "pinyin": "shàng",
+              "gloss": "on",
+              "entityType": "character",
+              "entityId": "ch_19978"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0018_ex2",
+          "chinese": "他把衣服洗了。",
+          "pinyin": "tā bǎ yīfu xǐ le",
+          "english": "He washed the clothes.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "把",
+              "pinyin": "bǎ",
+              "gloss": "disposal marker",
+              "entityType": "character",
+              "entityId": "ch_25226"
+            },
+            {
+              "text": "衣服",
+              "pinyin": "yīfu",
+              "gloss": "clothes",
+              "entityType": "word",
+              "entityId": "w_00428"
+            },
+            {
+              "text": "洗",
+              "pinyin": "xǐ",
+              "gloss": "wash",
+              "entityType": "character",
+              "entityId": "ch_27927"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0018_ex3",
+          "chinese": "我把钱给他。",
+          "pinyin": "wǒ bǎ qián gěi tā",
+          "english": "I give the money to him.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "把",
+              "pinyin": "bǎ",
+              "gloss": "disposal marker",
+              "entityType": "character",
+              "entityId": "ch_25226"
+            },
+            {
+              "text": "钱",
+              "pinyin": "qián",
+              "gloss": "money",
+              "entityType": "word",
+              "entityId": "w_00294"
+            },
+            {
+              "text": "给",
+              "pinyin": "gěi",
+              "gloss": "give",
+              "entityType": "character",
+              "entityId": "ch_32473"
+            },
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "him",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0019",
+      "name": "被 (bèi) passive construction",
+      "structure": "Subject + 被 + (Agent) + Verb",
+      "explanation": "The 被 (bèi) construction forms the passive: the subject is the receiver of the action, and 被 introduces the agent, which may be omitted. 他被打了 — 'He was hit.' It is especially common for negative or unfortunate events.",
+      "phase": 4,
+      "hskLevel": 4,
+      "sortOrder": 19,
+      "metadata": {
+        "family": "disposal-passive",
+        "hskSource": "HSK 3.0 standard grammar point (level 4)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0019_ex1",
+          "chinese": "他被打了。",
+          "pinyin": "tā bèi dǎ le",
+          "english": "He was hit.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "被",
+              "pinyin": "bèi",
+              "gloss": "passive marker",
+              "entityType": "character",
+              "entityId": "ch_34987"
+            },
+            {
+              "text": "打",
+              "pinyin": "dǎ",
+              "gloss": "hit",
+              "entityType": "character",
+              "entityId": "ch_25171"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0019_ex2",
+          "chinese": "苹果被我吃了。",
+          "pinyin": "píngguǒ bèi wǒ chī le",
+          "english": "The apple was eaten by me.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "苹果",
+              "pinyin": "píngguǒ",
+              "gloss": "apple",
+              "entityType": "word",
+              "entityId": "w_01811"
+            },
+            {
+              "text": "被",
+              "pinyin": "bèi",
+              "gloss": "passive marker",
+              "entityType": "character",
+              "entityId": "ch_34987"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "吃",
+              "pinyin": "chī",
+              "gloss": "eat",
+              "entityType": "character",
+              "entityId": "ch_21507"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0019_ex3",
+          "chinese": "他被妈妈骂了。",
+          "pinyin": "tā bèi māma mà le",
+          "english": "He was scolded by Mom.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "he",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "被",
+              "pinyin": "bèi",
+              "gloss": "passive marker",
+              "entityType": "character",
+              "entityId": "ch_34987"
+            },
+            {
+              "text": "妈妈",
+              "pinyin": "māma",
+              "gloss": "mom",
+              "entityType": "word",
+              "entityId": "w_00224"
+            },
+            {
+              "text": "骂",
+              "pinyin": "mà",
+              "gloss": "scold",
+              "entityType": "character",
+              "entityId": "ch_39554"
+            },
+            {
+              "text": "了",
+              "pinyin": "le",
+              "gloss": "perfective particle",
+              "entityType": "character",
+              "entityId": "ch_20102"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0020",
+      "name": "比 (bǐ) comparison",
+      "structure": "A + 比 + B + Adjective",
+      "explanation": "The 比 (bǐ) construction expresses comparison: 'A 比 B + adjective' means 'A is more adjective than B'. The adjective follows both items; there is no separate comparative word like English '-er / more'. Add 更 (gèng, 'even more') for degree.",
+      "phase": 4,
+      "hskLevel": 3,
+      "sortOrder": 20,
+      "metadata": {
+        "family": "comparison",
+        "hskSource": "HSK 3.0 standard grammar point (level 3)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0020_ex1",
+          "chinese": "我比他高。",
+          "pinyin": "wǒ bǐ tā gāo",
+          "english": "I am taller than him.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "比",
+              "pinyin": "bǐ",
+              "gloss": "comparison marker",
+              "entityType": "character",
+              "entityId": "ch_27604"
+            },
+            {
+              "text": "他",
+              "pinyin": "tā",
+              "gloss": "him",
+              "entityType": "character",
+              "entityId": "ch_20182"
+            },
+            {
+              "text": "高",
+              "pinyin": "gāo",
+              "gloss": "tall",
+              "entityType": "character",
+              "entityId": "ch_39640"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0020_ex2",
+          "chinese": "今天比昨天热。",
+          "pinyin": "jīntiān bǐ zuótiān rè",
+          "english": "Today is hotter than yesterday.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "今天",
+              "pinyin": "jīntiān",
+              "gloss": "today",
+              "entityType": "word",
+              "entityId": "w_00181"
+            },
+            {
+              "text": "比",
+              "pinyin": "bǐ",
+              "gloss": "comparison marker",
+              "entityType": "character",
+              "entityId": "ch_27604"
+            },
+            {
+              "text": "昨天",
+              "pinyin": "zuótiān",
+              "gloss": "yesterday",
+              "entityType": "word",
+              "entityId": "w_00495"
+            },
+            {
+              "text": "热",
+              "pinyin": "rè",
+              "gloss": "hot",
+              "entityType": "character",
+              "entityId": "ch_28909"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0020_ex3",
+          "chinese": "中文比英语难。",
+          "pinyin": "zhōngwén bǐ yīngyǔ nán",
+          "english": "Chinese is harder than English.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "中文",
+              "pinyin": "zhōngwén",
+              "gloss": "Chinese (language)",
+              "entityType": "word",
+              "entityId": "w_00479"
+            },
+            {
+              "text": "比",
+              "pinyin": "bǐ",
+              "gloss": "comparison marker",
+              "entityType": "character",
+              "entityId": "ch_27604"
+            },
+            {
+              "text": "英语",
+              "pinyin": "yīngyǔ",
+              "gloss": "English",
+              "entityType": "word",
+              "entityId": "w_01177"
+            },
+            {
+              "text": "难",
+              "pinyin": "nán",
+              "gloss": "hard",
+              "entityType": "character",
+              "entityId": "ch_38590"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "gr_0021",
+      "name": "是...的 (shì...de) emphasis construction",
+      "structure": "是 + Emphasized element + 的",
+      "explanation": "The 是...的 construction emphasizes a specific detail about a past event — often when, where, or how something happened: 我是昨天来的 — 'It was yesterday that I came.' The emphasized word goes between 是 and 的.",
+      "phase": 4,
+      "hskLevel": 4,
+      "sortOrder": 21,
+      "metadata": {
+        "family": "emphasis",
+        "hskSource": "HSK 3.0 standard grammar point (level 4)"
+      },
+      "examples": [
+        {
+          "content_id": "gr_0021_ex1",
+          "chinese": "我是昨天来的。",
+          "pinyin": "wǒ shì zuótiān lái de",
+          "english": "It was yesterday that I came.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "emphasis marker",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "昨天",
+              "pinyin": "zuótiān",
+              "gloss": "yesterday",
+              "entityType": "word",
+              "entityId": "w_00495"
+            },
+            {
+              "text": "来",
+              "pinyin": "lái",
+              "gloss": "come",
+              "entityType": "character",
+              "entityId": "ch_26469"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "final particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0021_ex2",
+          "chinese": "她是坐地铁来的。",
+          "pinyin": "tā shì zuò dìtiě lái de",
+          "english": "She came by subway.",
+          "sortOrder": 2,
+          "segments": [
+            {
+              "text": "她",
+              "pinyin": "tā",
+              "gloss": "she",
+              "entityType": "character",
+              "entityId": "ch_22905"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "emphasis marker",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "坐",
+              "pinyin": "zuò",
+              "gloss": "ride",
+              "entityType": "character",
+              "entityId": "ch_22352"
+            },
+            {
+              "text": "地铁",
+              "pinyin": "dìtiě",
+              "gloss": "subway",
+              "entityType": "word",
+              "entityId": "w_00625"
+            },
+            {
+              "text": "来",
+              "pinyin": "lái",
+              "gloss": "come",
+              "entityType": "character",
+              "entityId": "ch_26469"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "final particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            }
+          ]
+        },
+        {
+          "content_id": "gr_0021_ex3",
+          "chinese": "这本书是我买的。",
+          "pinyin": "zhè běn shū shì wǒ mǎi de",
+          "english": "It was me who bought this book.",
+          "sortOrder": 3,
+          "segments": [
+            {
+              "text": "这",
+              "pinyin": "zhè",
+              "gloss": "this",
+              "entityType": "character",
+              "entityId": "ch_36825"
+            },
+            {
+              "text": "本",
+              "pinyin": "běn",
+              "gloss": "measure word (books)",
+              "entityType": "character",
+              "entityId": "ch_26412"
+            },
+            {
+              "text": "书",
+              "pinyin": "shū",
+              "gloss": "book",
+              "entityType": "character",
+              "entityId": "ch_20070"
+            },
+            {
+              "text": "是",
+              "pinyin": "shì",
+              "gloss": "emphasis marker",
+              "entityType": "character",
+              "entityId": "ch_26159"
+            },
+            {
+              "text": "我",
+              "pinyin": "wǒ",
+              "gloss": "I",
+              "entityType": "character",
+              "entityId": "ch_25105"
+            },
+            {
+              "text": "买",
+              "pinyin": "mǎi",
+              "gloss": "buy",
+              "entityType": "character",
+              "entityId": "ch_20080"
+            },
+            {
+              "text": "的",
+              "pinyin": "de",
+              "gloss": "final particle",
+              "entityType": "character",
+              "entityId": "ch_30364"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "fromPatternContentId": "gr_0005",
+      "toPatternContentId": "gr_0006",
+      "relationType": "RELATED",
+      "metadata": {
+        "note": "Both form yes/no questions — 吗 particle vs A-not-A (V不V)."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0010",
+      "toPatternContentId": "gr_0011",
+      "relationType": "CONTRASTS_WITH",
+      "metadata": {
+        "note": "了 perfective (completed) vs 着 durative (ongoing) — the two most-confused aspect particles."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0010",
+      "toPatternContentId": "gr_0012",
+      "relationType": "CONTRASTS_WITH",
+      "metadata": {
+        "note": "了 marks completion of a specific action; 过 marks experience ('have ever done')."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0010",
+      "toPatternContentId": "gr_0013",
+      "relationType": "CONTRASTS_WITH",
+      "metadata": {
+        "note": "了 = completed; 正在 = in progress right now."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0011",
+      "toPatternContentId": "gr_0013",
+      "relationType": "RELATED",
+      "metadata": {
+        "note": "着 and 正在 both express continuous / progressive aspect."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0014",
+      "toPatternContentId": "gr_0015",
+      "relationType": "RELATED",
+      "metadata": {
+        "note": "的 and 地 are the same written-de family: possessive/modifier vs adverb marker."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0014",
+      "toPatternContentId": "gr_0016",
+      "relationType": "RELATED",
+      "metadata": {
+        "note": "的 (modifier) and 得 (resultative complement) share the de pronunciation."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0015",
+      "toPatternContentId": "gr_0016",
+      "relationType": "CONTRASTS_WITH",
+      "metadata": {
+        "note": "地 marks adverbs before verbs; 得 links a verb to a result/degree complement."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0003",
+      "toPatternContentId": "gr_0018",
+      "relationType": "PREREQUISITE",
+      "metadata": {
+        "note": "The 把 construction is built on topic-prominence — understand topic-comment first."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0010",
+      "toPatternContentId": "gr_0018",
+      "relationType": "PREREQUISITE",
+      "metadata": {
+        "note": "把-sentences commonly complete with 了 (他把衣服洗了) — know 了 before 把."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0018",
+      "toPatternContentId": "gr_0019",
+      "relationType": "CONTRASTS_WITH",
+      "metadata": {
+        "note": "把 = disposal (agent acts on object); 被 = passive (subject receives the action). The advanced-tier pair."
+      }
+    },
+    {
+      "fromPatternContentId": "gr_0020",
+      "toPatternContentId": "gr_0021",
+      "relationType": "RELATED",
+      "metadata": {
+        "note": "比 (comparison) and 是...的 (emphasis) — the supplementary advanced-HSK-tier patterns."
+      }
+    }
+  ]
+}

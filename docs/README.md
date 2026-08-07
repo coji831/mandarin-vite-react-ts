@@ -33,9 +33,9 @@
 
 ### 🗄️ Data & Content
 
-| Guide                                         | Description                                          |
-| --------------------------------------------- | ---------------------------------------------------- |
-| [Seed Pipeline](guides/data/seed-pipeline.md) | 26-step content seed pipeline, runbook, verification |
+| Guide                                         | Description                                                   |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| [Seed Pipeline](guides/data/seed-pipeline.md) | 29-step hash-gated delta seed pipeline, runbook, verification |
 
 ### 📐 Conventions
 
@@ -114,6 +114,8 @@
 | [Strategy Pattern on the Frontend](knowledge-base/frontend/strategy-pattern-frontend.md)           | Using the Strategy pattern for per-type evaluation logic in React/TypeScript |
 | [Discriminated Union State Machines](knowledge-base/frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                                |
 | [Storybook MSW Handlers](knowledge-base/frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                              |
+| [URL Search-Param Persistence Rule](knowledge-base/frontend/frontend-url-search-params.md)         | Route-scoped URL sub-state, replace/push, shareable deep links               |
+| [Hub Entity-ID Contract](knowledge-base/frontend/hub-entity-id-contract.md)                        | content_id vs glyph-keyed hub/API entity identifiers                         |
 
 ### Backend
 

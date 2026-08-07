@@ -1,0 +1,31 @@
+/**
+ * @file pages/learn/grammar/GrammarPage.css
+ * @description Styles for the Grammar pattern library page.
+ * Story 22.3: Grammar UI
+ */
+
+/* ═══════════════════════════════════════════════
+   Page Layout
+   ═══════════════════════════════════════════════ */
+
+.grammar-page {
+  width: 900px;
+  margin: 0 auto;
+  min-height: 300px;
+}
+
+/* ═══════════════════════════════════════════════
+   Content Area (scrollable)
+   ═══════════════════════════════════════════════ */
+
+.grammar-page__content {
+  min-height: 0; /* flex ancestor — required for internal overflow to work (scroll chain rule) */
+}
+
+/* List wrapper card — scrolls internally, fills content space */
+.grammar-page__list-wrapper {
+  padding: 0; /* list-wrapper padding reset — part of the scroll chain contract */
+  overflow-y: auto; /* scroll zone — part of the scroll chain contract */
+  min-height: 0; /* flex child — part of the scroll chain contract */
+  flex: 1; /* flex fill — part of the scroll chain contract */
+}

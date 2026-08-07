@@ -2,7 +2,8 @@
  * LearnRoutes.tsx
  *
  * Defines the routing for the Learn section (/learn/* routes):
- * - Uses LearnLayout with phase-gated tab bar
+ * - Uses LearnLayout (nav-less since Story 22.4 — Learn tabs live in the
+ *   sidebar's phase-gated Learn group)
  * - Index route redirects to /learn/foundations
  * - Each content type has its own route (dedicated page or placeholder)
  * - Old routes (flashcards, basic) redirect to /learn/foundations
@@ -13,7 +14,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { FoundationsPage, ContentPlaceholderPage, RadicalsPage } from "../pages/learn/foundations";
+import {
+  FoundationsPage,
+  ContentPlaceholderPage,
+  RadicalsPage,
+  GrammarPage,
+} from "../pages/learn/foundations";
 import { PhoneticClustersPage } from "../pages/learn/phonetic-clusters/PhoneticClustersPage";
 import { ReadersPage } from "../features/readers";
 import { usePhaseGate } from "shared/hooks";
@@ -46,7 +52,14 @@ export function LearnRoutes() {
         <Route path="foundations" element={<FoundationsPage />} />
         {/* Future content type placeholders */}
         <Route path="radicals" element={<RadicalsPage />} />
-        <Route path="grammar" element={<ContentPlaceholderPage title="Grammar" />} />
+        <Route
+          path="grammar"
+          element={
+            <PhaseGate requiredPhase={2}>
+              <GrammarPage />
+            </PhaseGate>
+          }
+        />
         <Route path="phonetic-clusters" element={<PhoneticClustersPage />} />
         <Route
           path="readers"

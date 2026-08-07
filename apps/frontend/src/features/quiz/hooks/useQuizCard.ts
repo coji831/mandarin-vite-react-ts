@@ -6,7 +6,7 @@
  * Quizzes are read from PHASE_CONFIGS (single source of truth).
  */
 import { useNavigate } from "react-router-dom";
-import { practices_quiz } from "shared/constants";
+import { practices_quiz, withSearchParams } from "shared/constants";
 import { usePhaseGate } from "shared/hooks";
 import { getPhaseQuizzes } from "features/quiz";
 
@@ -43,7 +43,7 @@ export function useQuizCard() {
   }));
 
   const takeQuiz = (type: string) => {
-    navigate(`${practices_quiz}?type=${type}`);
+    navigate(withSearchParams(practices_quiz, { type }));
   };
 
   const timeline = [1, 2, 3, 4].map((p) => ({
