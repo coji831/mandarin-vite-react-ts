@@ -1,7 +1,7 @@
 # Seed Pipeline (All-in-DB)
 
 **Category:** Data & Content  
-**Last Updated:** August 5, 2026
+**Last Updated:** August 7, 2026
 
 > Canonical reference for how static learning content gets into PostgreSQL and
 > how it is regenerated. Applies to the **all-in-DB** architecture: production
@@ -187,6 +187,10 @@ scripts/enrich/*     (JSON→JSON transforms — pure, no DB, idempotent)
   build-phonetic-clusters.ts      → phase2/phonetic-clusters.json, phonetic-cluster-members.json
   build-reference-tables.ts  🆕  → phase2/radicals.json, tones.json,
                                    pinyin-phonemes.json, tone-pairs.json, tone-rules.json
+  extract-chengyu-candidates.ts 🆕→ phase2/chengyu.json — chengyu enrich stage (JSON→JSON):
+                                     reads phase1/cc-cedict-entries.json read-only, scaffolds the
+                                     chengyu authoring draft (chengyu-draft.json → chengyu.json on
+                                     completion) — enrich-phase only, no new pipeline stage
   pass-through.ts                 → pinyin-syllables.json, demo-passages.json
         │
         ▼

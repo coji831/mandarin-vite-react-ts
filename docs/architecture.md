@@ -96,6 +96,7 @@ mandarin-vite-react-ts/
   - **Auth**: User authentication and session management (LoginForm, RegisterForm, AuthContext)
   - **Dashboard**: Learning statistics and activity overview (DashboardGuest, DashboardSections, DashboardWelcome)
   - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
+  - **Grammar** (`features/grammar`): searchable, HSK/phase-tagged grammar pattern reference — list/detail via `GET /v1/grammar/patterns` (+ `/patterns/:id`), detail panel in the LexicalHub `GrammarHub`, example-sentence audio, and word→Character Hub cross-linking
   - **PhoneticClusters** (`features/phonetic-clusters`): DB-driven phonetic family browsing — cluster membership from `GET /v1/phonetic-clusters` with HSK filtering
   - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
@@ -116,7 +117,7 @@ mandarin-vite-react-ts/
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
   - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useAudioManager / useAudioItemPlayback for audio playback)
-  - **layouts/**: AppLayout, LearnLayout (phase-gated route navigation with locked tab indicators)
+  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group — Story 22.4)
 
 ### Component Hierarchy
 
@@ -464,4 +465,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 7, 2026

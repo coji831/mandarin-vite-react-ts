@@ -10,13 +10,13 @@
 - **20+ grammar patterns** (21 in the KB-sourced reference set), each with **3+ example sentences** (Chinese, pinyin, English), an HSK level tag, and **pre-segmented clickable word tokens**.
 - **Searchable** by English keyword or pattern name; **filterable** by HSK level and phase.
 - **All-in-DB content pipeline**: patterns are authored in `content/seed/phase2/grammar-patterns.json`, seeded into Prisma, and served by a new backend `grammar` module via API — consistent with the platform's canonical all-in-DB architecture and the shared data model's content-entity conventions (stable `gr_XXXX` business keys + `content_version` + `metadata`).
-- **Grammar is already scaffolded at every layer** — the `/learn/grammar` route, `LearnLayout` tab (Phase 2), `ContentBrowser` `grammar` content type, and LexicalHub `grammar` entity type all exist as placeholders. This epic replaces the placeholder with real content, API, and UI.
+- **Grammar is already scaffolded at every layer** — the `/learn/grammar` route, sidebar Learn-group item (`requiredPhase: 2`, `learnNav.ts`), `ContentBrowser` `grammar` content type, and LexicalHub `grammar` entity type all exist as placeholders. This epic replaces the placeholder with real content, API, and UI.
 - **Detail view is a new `GrammarHub`** in the LexicalHub; each example word is clickable and opens the Character Detail Hub via the shared `openHub()` entry point.
 - **Example-sentence audio** is generated on demand via the shared TTS manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no stored audio fields in the data model.
 
 **Status:** Completed
 
-**Last Update:** August 6, 2026
+**Last Update:** August 7, 2026
 
 ## Background
 
@@ -64,7 +64,7 @@ No grammar content belongs to Phase 1 (Blueprint = pinyin/strokes only). Within 
 
 **Codebase readiness.** All integration points already exist and only need real content + a real page:
 
-- `/learn/grammar` route + `LearnLayout` Grammar tab (phase 2) — `apps/frontend/src/router/LearnRoutes.tsx` (L49, currently `ContentPlaceholderPage`), `apps/frontend/src/shared/layouts/LearnLayout.tsx`
+- `/learn/grammar` route + sidebar Learn-group item (phase 2, `requiredPhase: 2`) — `apps/frontend/src/router/LearnRoutes.tsx`, `apps/frontend/src/shared/constants/learnNav.ts`
 - `ContentBrowser` `grammar` content type + tab + phase gate — `apps/frontend/src/shared/components/ContentBrowser/`
 - LexicalHub `grammar` entity type (currently `NotImplemented`) — `apps/frontend/src/features/lexical-hub/entityHubRegistry.tsx` (L44)
 - Shared audio (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) and hub entry (`openHub`) — `apps/frontend/src/shared/hooks/useAudioItemPlayback.ts`, `apps/frontend/src/shared/hub-entry/hubEntryPoint.ts`
@@ -106,7 +106,7 @@ Data and API are completed first so the UI can be developed and tested against r
 - [x] ≥21 grammar patterns authored in `content/seed/phase2/grammar-patterns.json`, matching the KB-sourced family in the Background table (Phases 2/3/4 per `adult-mandarin-learning-roadmap.md`); each pattern has ≥3 example sentences (Chinese, pinyin, English) and an HSK level tag.
 - [x] Business keys follow the `gr_XXXX` convention (e.g., `gr_0001`) per `pre-adaptation-static-dynamic-separation.md` Rule 1; `GrammarPattern`/`GrammarExample` carry internal `id` + unique `content_id` + `content_version Int @default(1)` + `metadata Json?`; example/junction rows reference `content_id`, not internal auto IDs.
 - [x] Each example sentence carries pre-segmented clickable tokens (`segments`: text, pinyin, gloss, entityType, entityId) where `entityId` references the target entity's `content_id` (e.g., `ch_XXXX` / `w_XXXXX`) per `modeling-chinese-knowledge-graph.md` (`USED_IN_PATTERN` Word→GrammarPattern edge).
-- [x] Grammar data seeded idempotently per `docs/guides/data/seed-pipeline.md` (business-key PK + `skipDuplicates`/pre-clear rules); seed verification passes (SQL counts match targets).
+- [x] Grammar data seeded idempotently per `docs/guides/data/seed-pipeline.md` (uuid `id` + unique `content_id` `gr_XXXX`; **hash-gated delta sync** via `syncGrammar` — unchanged rows write 0, edits bump `content_version`); seed verification passes (SQL counts match targets).
 
 **Story 22.2 — Grammar Backend API**
 
@@ -119,7 +119,7 @@ Data and API are completed first so the UI can be developed and tested against r
 **Story 22.3 — Grammar UI**
 
 - [x] `features/grammar` feature created (service → hooks → components → types); `apiClient` used only in `grammarService.ts` (per `frontend-api-client.instructions.md`).
-- [x] `/learn/grammar` renders the real Grammar page (replaces `ContentPlaceholderPage`), wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3); LearnLayout tab gating already present.
+- [x] `/learn/grammar` renders the real Grammar page (replaces `ContentPlaceholderPage`), wrapped in route-level `PhaseGate requiredPhase={2}` (mirrors the readers route at Phase 3); sidebar Learn-group gating already present (`learnNav.ts` `requiredPhase: 2`).
 - [x] Search by English keyword or pattern name; HSK level filter; phase filter with locked/preview states for higher-phase patterns (Phase 3/4 visible as locked/preview to Phase-2 users).
 - [x] Pattern card list → detail view showing `structure`, `explanation`, and examples (Chinese, pinyin, English).
 - [x] `grammar` registered in `entityHubRegistry` → lazy-loaded `GrammarHub` detail panel (replaces the `NotImplemented` placeholder).
@@ -140,8 +140,8 @@ Data and API are completed first so the UI can be developed and tested against r
   - Alternatives considered: 2 stories (22.1 data+backend combined, 22.2 UI — the original doc split) — rejected because it couples schema/module/route work with data authoring and makes review large; 1 story (monolith) — too large.
   - Implications: Strict dependency chain 22.1 → 22.2 → 22.3; one extra story file; 22.2 unblocks any future consumer of grammar data, not just the grammar UI.
 
-- Decision: Phase gating — Numeric Phase 2/3/4 + tab unlock at Phase 2, locked/preview cards for higher phases (chosen)
-  - Rationale: The platform uses numeric phases sourced from the backend `PhaseGate` (`usePhaseGate()` → `/v1/progression/phase-gate`); Grammar is already gated at Phase 2 in `LearnLayout`, `ContentBrowser`, and `TabBar`; the platform's "discovery, not gate" stance (cf. HSK discovery) favors showing higher-phase content as locked/preview rather than hiding it. Pattern placement (Phase 2 basic structures → Phase 3 particles/conjunctions → Phase 4 complex syntax) follows the 4-phase progression in `docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md` (Core 300 → Network → Advanced Fluidity; no grammar in Phase 1 Blueprint).
+- Decision: Phase gating — Numeric Phase 2/3/4 + sidebar Learn-group unlock at Phase 2, locked/preview cards for higher phases (chosen)
+  - Rationale: The platform uses numeric phases sourced from the backend `PhaseGate` (`usePhaseGate()` → `/v1/progression/phase-gate`); Grammar is already gated at Phase 2 via the sidebar Learn-group item (`learnNav.ts` `requiredPhase: 2`) and `ContentBrowser`/`TabBar`; the platform's "discovery, not gate" stance (cf. HSK discovery) favors showing higher-phase content as locked/preview rather than hiding it. Pattern placement (Phase 2 basic structures → Phase 3 particles/conjunctions → Phase 4 complex syntax) follows the 4-phase progression in `docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md` (Core 300 → Network → Advanced Fluidity; no grammar in Phase 1 Blueprint).
   - Alternatives considered: "Basics / Advanced / Mastery" sub-tabs (rejected — no such convention exists in the codebase); strict server-side hiding of Phase 3/4 patterns (rejected — contradicts the discovery stance).
   - Implications: Patterns carry `phase` (2|3|4) for filtering and locked/preview states (`isLocked` when `pattern.phase > currentPhase`); no new phase vocabulary introduced.
 
@@ -180,7 +180,7 @@ The normative, complete Prisma definitions live in the IMP doc (`docs/issue-impl
 **Seed / manifest touchpoints:**
 
 - Authoring source: `content/seed/phase2/grammar-patterns.json` (NEW — Story 22.1).
-- Seed steps: `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` (dependency order; `skipDuplicates` keyed on the unique `content_id`).
+- Seed steps: `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` (dependency order; **hash-gated delta sync** via `syncGrammar`, keyed on the unique `content_id`).
 - `content/manifest.json`: `grammar` content type already declared (count 0); Story 22.1 declares the `grammar` block (`files: ["grammar-patterns.json"]`, `served_via: "db"`) **and** bumps `entity_counts.grammar` to ≥21 after the seed populates; Story 22.2 verifies the count/files (no edit).
 
 ## Out of Scope ➕ ADDED
