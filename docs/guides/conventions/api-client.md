@@ -1,6 +1,6 @@
 # API Client & Integration Patterns
 
-**Last Updated:** June 3, 2026
+**Last Updated:** August 7, 2026
 **Purpose:** API client conventions, error handling, and service layer patterns for frontend-backend communication
 
 **Audience:** Frontend developers making API calls and integrating with backend services
@@ -220,33 +220,34 @@ await apiClient.get("/api/v1/words", {
 **Create typed API clients for feature areas:**
 
 ```typescript
-// services/examplesApi.ts
-import { apiClient } from "./axiosClient";
-import type { Example } from "@mandarin/shared-types";
+// services/radicalsService.ts — real module: apps/frontend/src/features/radicals/services/radicalsService.ts
+import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
+import { apiClient } from "shared/api";
+import { API_CONFIG } from "config";
+import type { RadicalData } from "features/radicals";
 
-export const examplesApi = {
-  async getExamples(word: string, hskLevel?: number, language?: string): Promise<Example[]> {
-    try {
-      const response = await apiClient.get<Example[]>(`/api/v1/examples`, {
-        params: { word, hskLevel, language },
-      });
-      return response.data; // Direct access — no wrapper
-    } catch (error) {
-      console.error("Failed to fetch examples:", error);
-      throw error;
-    }
+export const radicalsService = {
+  async loadAllRadicals(): Promise<RadicalData[]> {
+    const response = await apiClient.get(ROUTE_PATTERNS.radicals, {
+      timeout: API_CONFIG.timeouts.sync,
+      _skipRetry: true,
+    });
+    return (response.data ?? []) as RadicalData[]; // Direct access — no wrapper
   },
 
-  async createExample(example: NewExample): Promise<Example> {
-    const response = await apiClient.post<Example>(`/api/v1/examples`, example);
-    return response.data; // Direct access — no wrapper
+  async loadRadicalById(id: string): Promise<RadicalData> {
+    const response = await apiClient.get(ROUTE_PATTERNS.radicalsById(id), {
+      timeout: API_CONFIG.timeouts.sync,
+      _skipRetry: true,
+    });
+    return response.data as RadicalData; // Direct access — no wrapper
   },
 };
 
 // Usage in components/hooks
-import { examplesApi } from "@/services/examplesApi";
+import { radicalsService } from "features/radicals/services";
 
-const examples = await examplesApi.getExamples("你好");
+const radicals = await radicalsService.loadAllRadicals();
 ```
 
 **Benefits:**
@@ -264,36 +265,34 @@ const examples = await examplesApi.getExamples("你好");
 **For frontend API errors, use error states in UI:**
 
 ```typescript
-function ExamplesPanel({ word }: Props) {
-  const [data, setData] = useState<Example[] | null>(null);
+function RadicalsPanel() {
+  const [data, setData] = useState<RadicalData[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!word) return;
-
     const fetch = async () => {
       try {
         setLoading(true);
         setError(null);
-        const examples = await examplesApi.getExamples(word);
-        setData(examples);
+        const radicals = await radicalsService.loadAllRadicals();
+        setData(radicals);
       } catch (err) {
         const normalized = err as NormalizedError;
-        setError(normalized.message || "Failed to load examples");
+        setError(normalized.message || "Failed to load radicals");
       } finally {
         setLoading(false);
       }
     };
 
     fetch();
-  }, [word]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div role="alert">Error: {error}</div>;
-  if (!data) return <div>No examples</div>;
+  if (!data) return <div>No radicals</div>;
 
-  return <ExampleList examples={data} />;
+  return <RadicalGrid radicals={data} />;
 }
 ```
 
@@ -306,35 +305,35 @@ function ExamplesPanel({ word }: Props) {
 **Mock API calls in tests with Vitest manual mocks or MSW:**
 
 ```typescript
-import { examplesApi } from "@/services/examplesApi";
+import { radicalsService } from "features/radicals/services";
 
-vi.mock("@/services/examplesApi", () => ({
-  examplesApi: {
-    getExamples: vi.fn(),
-    createExample: vi.fn(),
+vi.mock("features/radicals/services", () => ({
+  radicalsService: {
+    loadAllRadicals: vi.fn(),
+    loadRadicalById: vi.fn(),
   }
 }));
 
-it("displays examples when API succeeds", async () => {
+it("displays radicals when API succeeds", async () => {
   // Mock returns the exact shape the backend returns (no wrapper)
-  const mockExamples = [
-    { id: "1", text: "你好", meaning: "Hello" }
+  const mockRadicals = [
+    { id: "1", glyph: "木", pinyin: "mù", meaning: "tree" }
   ];
 
-  vi.mocked(examplesApi.getExamples).mockResolvedValue(mockExamples);
+  vi.mocked(radicalsService.loadAllRadicals).mockResolvedValue(mockRadicals);
 
-  render(<ExamplesPanel word="你好" />);
+  render(<RadicalsPanel />);
 
   await waitFor(() => {
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(screen.getByText("木")).toBeInTheDocument();
   });
 });
 
 it("shows error when API fails", async () => {
   const error = new Error("Network error");
-  vi.mocked(examplesApi.getExamples).mockRejectedValue(error);
+  vi.mocked(radicalsService.loadAllRadicals).mockRejectedValue(error);
 
-  render(<ExamplesPanel word="你好" />);
+  render(<RadicalsPanel />);
 
   await waitFor(() => {
     expect(screen.getByRole("alert")).toHaveTextContent("Network error");

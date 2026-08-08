@@ -33,6 +33,7 @@ import { quizHandlers } from "./handlers/quiz-handlers";
 import { charactersHandlers } from "./handlers/characters-handlers";
 import { phoneticClustersHandlers } from "./handlers/phonetic-clusters-handlers";
 import { grammarHandlers } from "./handlers/grammar-handlers";
+import { chengyuHandlers } from "./handlers/chengyu-handlers";
 
 /** Default (populated) handlers from every endpoint module, flattened. */
 export const handlers: HttpHandler[] = [
@@ -46,6 +47,8 @@ export const handlers: HttpHandler[] = [
   phoneticClustersHandlers.default(),
   // grammar-handlers exports a default() factory returning an array of handlers
   ...grammarHandlers.default(),
+  // chengyu-handlers exports a default() factory returning an array of handlers
+  ...chengyuHandlers.default(),
 ];
 
 /** MSW node server preloaded with the default handlers. */
@@ -58,4 +61,5 @@ export {
   charactersHandlers,
   phoneticClustersHandlers,
   grammarHandlers,
+  chengyuHandlers,
 };

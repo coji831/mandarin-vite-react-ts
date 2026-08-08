@@ -1,6 +1,6 @@
 # Project Overview
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 7, 2026
 **Purpose:** High-level overview of the monorepo structure, tech stack, and development workflow
 **Audience:** New developers joining the project
 
@@ -28,7 +28,7 @@ mandarin-vite-react-ts/
 ├── apps/
 │   ├── frontend/          # React + Vite SPA (port 5173)
 │   │   ├── src/
-│   │   │   ├── features/  # Feature modules (auth, character-hub, dashboard, foundations, lexical-hub, phonetic-clusters, quiz, radicals, readers, review, word-hub)
+│   │   │   ├── features/  # Feature modules (auth, character-hub, dashboard, foundations, grammar, lexical-hub, phonetic-clusters, quiz, radicals, readers, review, word-hub)
 │   │   │   ├── shared/
 │   │   │   │   ├── components/  # Shared UI components
 │   │   │   │   ├── hooks/       # Shared custom hooks
@@ -41,7 +41,7 @@ mandarin-vite-react-ts/
 │   └── backend/           # Express API server (port 3001)
 │       ├── src/
 │       │   ├── app/       # Entry point, DI container, routes
-│   │   ├── modules/   # Business modules (auth, characters, foundations, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, tts, words)
+│       │   ├── modules/   # Business modules (audio, auth, characters, foundations, grammar, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, words)
 │       │   └── shared/    # Cross-cutting: infrastructure, middleware, config, utils
 │       └── prisma/        # Schema, migrations, seeds
 ├── packages/

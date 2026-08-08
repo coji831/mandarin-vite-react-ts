@@ -1,0 +1,22 @@
+/**
+ * @file ChengyuFilterBar.css
+ * @description ChengyuFilterBar feature styles (Story 23.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ */
+.chengyu-filter-bar {
+  width: 100%;
+}
+
+.chengyu-filter-bar__row,
+.chengyu-filter-bar__group {
+  width: 100%;
+}
+
+.chengyu-filter-bar__label {
+  min-width: var(--space-xl);
+}
+
+.chengyu-filter-bar__theme {
+  flex: 1;
+  min-width: var(--space-2xl);
+}

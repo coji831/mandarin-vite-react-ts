@@ -1,0 +1,40 @@
+/**
+ * @file ChengyuCard.css
+ * @description ChengyuCard feature styles (Story 23.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ * No-motion: hover changes border color only (no transition/animation).
+ */
+.chengyu-card {
+  cursor: pointer;
+}
+
+.chengyu-card:hover {
+  border-color: var(--color-primary-border);
+}
+
+.chengyu-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.chengyu-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.chengyu-card__chengyu {
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.chengyu-card__count {
+  white-space: nowrap;
+}
+
+.chengyu-card__pinyin,
+.chengyu-card__meaning,
+.chengyu-card__preview {
+  margin: 0;
+}

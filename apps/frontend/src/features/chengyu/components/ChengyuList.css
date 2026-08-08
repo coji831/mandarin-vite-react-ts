@@ -1,0 +1,46 @@
+/**
+ * @file ChengyuList.css
+ * @description ChengyuList feature styles (Story 23.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ * Skeleton tokens reuse the shared `.skeleton-loading` animation from
+ * animations.css (no motion added here).
+ */
+.chengyu-list {
+  width: 100%;
+}
+
+.chengyu-list__grid {
+  list-style: none;
+  width: 100%;
+}
+
+.chengyu-list__item {
+  width: 100%;
+}
+
+/* ─── Skeleton (mirrors the ChengyuCard footprint) ───────────────────── */
+.chengyu-list__skeleton-card {
+  width: 100%;
+}
+
+.chengyu-list__skeleton-header {
+  width: 40%;
+  height: var(--font-lg);
+  border-radius: var(--radius-sm);
+}
+
+.chengyu-list__skeleton-line {
+  width: 100%;
+  height: var(--font-sm);
+  border-radius: var(--radius-sm);
+}
+
+.chengyu-list__skeleton-line-narrow {
+  width: 70%;
+}
+
+.chengyu-list__skeleton-chip {
+  width: 72px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+}

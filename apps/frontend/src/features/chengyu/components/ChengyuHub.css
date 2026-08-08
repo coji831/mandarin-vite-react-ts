@@ -1,0 +1,131 @@
+/**
+ * @file ChengyuHub.css
+ * @description ChengyuHub feature styles (Story 23.3).
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ * No-motion: hover changes border/background color only (no transition).
+ */
+.chengyu-hub {
+  width: 100%;
+}
+
+.chengyu-hub__title {
+  line-height: 1.2;
+}
+
+.chengyu-hub__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.chengyu-hub__pinyin {
+  line-height: 1.4;
+}
+
+/* Clickable idiom-character strip → Character Hub. */
+.chengyu-hub__chars {
+  flex-wrap: wrap;
+}
+
+.chengyu-hub__char {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-bg-light);
+  color: var(--color-primary);
+  font-size: var(--font-md);
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.chengyu-hub__char:hover {
+  border-color: var(--color-primary-border-strong);
+}
+
+.chengyu-hub__char:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.chengyu-hub__story {
+  line-height: 1.6;
+}
+
+.chengyu-hub__literal {
+  line-height: 1.6;
+}
+
+.chengyu-hub__figurative {
+  line-height: 1.6;
+}
+
+.chengyu-hub__source {
+  line-height: 1.4;
+}
+
+.chengyu-hub__example-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.chengyu-hub__example-chinese {
+  line-height: 1.4;
+}
+
+.chengyu-hub__play-btn {
+  width: 28px;
+  height: 28px;
+  font-size: var(--font-sm);
+}
+
+.chengyu-hub__segments {
+  border-top: 1px solid var(--surface-border);
+  padding-top: var(--space-sm);
+}
+
+.chengyu-hub__segment-text {
+  color: var(--text-secondary);
+}
+
+/* Linked word/character token — clickable, opens the hub. */
+.chengyu-hub__segment-token {
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.chengyu-hub__segment-token:hover {
+  color: var(--text-primary);
+}
+
+.chengyu-hub__segment-token:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.chengyu-hub__related-link {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.chengyu-hub__related-link:hover {
+  border-color: var(--color-primary-border-strong);
+  background: var(--color-primary-bg-light);
+}
+
+.chengyu-hub__related-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.chengyu-hub__relation-type {
+  margin-left: var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

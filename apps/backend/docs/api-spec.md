@@ -15,7 +15,7 @@ The API specification is now organized by domain:
 | Error Format          | [`api/errors.md`](api/errors.md)           | Standardized error response schema        |
 | Environment Variables | [`api/env.md`](api/env.md)                 | Required and optional configuration       |
 
-**Last Updated:** June 8, 2026
+**Last Updated:** August 8, 2026
 
 ## Authentication
 
@@ -350,6 +350,120 @@ Pattern detail — `:id` resolves by **`content_id`** (`gr_XXXX`); the internal 
 
 // 500 — unexpected server error
 { "error": "Failed to load grammar pattern", "code": "INTERNAL_ERROR" }
+```
+
+---
+
+## Chengyu
+
+Chengyu idiom reference endpoints — searchable idioms served by the `modules/chengyu` modulith module (seeded from `content/seed/phase2/chengyu.json`; `cy_XXXX` content keys). Auth: **public** — no authentication required (chengyu is static reference content). Errors use the standard `{ error, code }` shape (`backend-error-messages.instructions.md`) with codes `VALIDATION_ERROR` (400) | `NOT_FOUND` (404) | `INTERNAL_ERROR` (500).
+
+### GET /v1/chengyu/idioms
+
+List idioms. Query params all optional and additive (AND); an empty query returns the full library paginated:
+
+| Param      | Type   | Rules                                                                                                                                       | Default |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `search`   | string | case-insensitive substring against `chengyu` / `pinyin` / `literalMeaning` / `figurativeMeaning` / `story` and example `english` / `pinyin` | —       |
+| `theme`    | string | exact match against `theme`; provided-but-empty value → 400 `VALIDATION_ERROR`                                                              | —       |
+| `era`      | string | exact match against `era`; provided-but-empty value → 400 `VALIDATION_ERROR`                                                                | —       |
+| `page`     | int    | ≥1                                                                                                                                          | 1       |
+| `pageSize` | int    | 1–100                                                                                                                                       | 20      |
+
+**Response 200** — `{ items: ChengyuSummary[], total, page, pageSize }`:
+
+```json
+{
+  "items": [
+    {
+      "id": "cy_0001",
+      "chengyu": "破釜沉舟",
+      "pinyin": "pò fǔ chén zhōu",
+      "literalMeaning": "Break the pots and sink the boats",
+      "figurativeMeaning": "To burn one's bridges; to commit totally to a course of action with no way back",
+      "era": "Qin–Han transition",
+      "theme": "determination",
+      "sortOrder": 1,
+      "exampleCount": 1,
+      "previewExample": "他已经决定要破釜沉舟，全力投入新的工作。"
+    }
+  ],
+  "total": 55,
+  "page": 1,
+  "pageSize": 20
+}
+```
+
+**Errors:**
+
+```json
+// 400 — invalid filter (e.g. theme=, era=, page=0, pageSize=500)
+{ "error": "Failed to load chengyu idioms", "code": "VALIDATION_ERROR" }
+
+// 500 — unexpected server error
+{ "error": "Failed to load chengyu idioms", "code": "INTERNAL_ERROR" }
+```
+
+### GET /v1/chengyu/idioms/:id
+
+Idiom detail — `:id` resolves by **`content_id`** (`cy_XXXX`); the internal uuid (or any non-`cy_XXXX` value) is rejected with a 400.
+
+**Response 200** — `{ id, chengyu, pinyin, literalMeaning, figurativeMeaning, story, storySource, era, theme, sortOrder, examples[] (with segments[]), relatedIdioms[] }`:
+
+```json
+{
+  "id": "cy_0001",
+  "chengyu": "破釜沉舟",
+  "pinyin": "pò fǔ chén zhōu",
+  "literalMeaning": "Break the pots and sink the boats",
+  "figurativeMeaning": "To burn one's bridges; to commit totally to a course of action with no way back",
+  "story": "In 207 BCE, the rebel general Xiang Yu led his army across the Yellow River to attack the mighty Qin forces at Julu…",
+  "storySource": "《史记·卷七·项羽本纪》",
+  "era": "Qin–Han transition",
+  "theme": "determination",
+  "sortOrder": 1,
+  "examples": [
+    {
+      "id": "cy_0001_ex1",
+      "chinese": "他已经决定要破釜沉舟，全力投入新的工作。",
+      "pinyin": "tā yǐ jīng jué dìng yào pò fǔ chén zhōu quán lì tóu rù xīn de gōng zuò",
+      "english": "He has decided to burn his bridges and throw all his energy into the new job.",
+      "segments": [
+        {
+          "text": "破",
+          "pinyin": "pò",
+          "gloss": "break",
+          "entityType": "character",
+          "entityId": "ch_30772"
+        },
+        {
+          "text": "釜",
+          "pinyin": "fǔ",
+          "gloss": "cauldron",
+          "entityType": "character",
+          "entityId": "ch_46225"
+        }
+      ]
+    }
+  ],
+  "relatedIdioms": [
+    { "id": "cy_0042", "chengyu": "背水一战", "relationType": "RELATED" },
+    { "id": "cy_0016", "chengyu": "卧薪尝胆", "relationType": "RELATED" }
+  ]
+}
+```
+
+**Errors:**
+
+```json
+// 400 — invalid / malformed cy_XXXX identifier
+{ "error": "Failed to load chengyu idiom", "code": "VALIDATION_ERROR" }
+
+// 404 — unknown cy_XXXX
+{ "error": "Failed to load chengyu idiom", "code": "NOT_FOUND" }
+
+// 500 — unexpected server error
+{ "error": "Failed to load chengyu idiom", "code": "INTERNAL_ERROR" }
 ```
 
 ---

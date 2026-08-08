@@ -144,4 +144,14 @@ router.use((req, res, next) => {
 });
 router.use(grammarRoutes);
 
+// Chengyu routes (v1) — Story 23.2
+import chengyuRoutes from "../modules/chengyu/api/chengyuRoutes.js";
+import { chengyuController } from "./container.js";
+
+router.use((req, res, next) => {
+  req.chengyuController = chengyuController;
+  next();
+});
+router.use(chengyuRoutes);
+
 export default router;

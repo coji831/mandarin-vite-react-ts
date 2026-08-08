@@ -1,7 +1,7 @@
 # Shared Data Model
 
 **Category:** Data Architecture
-**Last Updated:** August 1, 2026
+**Last Updated:** August 7, 2026
 **Difficulty:** Intermediate
 
 > **Source material:** `verification-artifacts/shared-data-model-v3.md` (gitignored) and the
@@ -27,16 +27,18 @@ architecture. Feature teams would interpret the same concept (e.g., "a radical")
 
 ### Content entities
 
-| Entity               | Purpose                                                             | Notes                                       |
-| -------------------- | ------------------------------------------------------------------- | ------------------------------------------- |
-| `Character`          | A CJK glyph with readings, classification, etymology                | ≥2,971 seeded; enriched fields              |
-| `Word`               | Vocabulary entry (simplified, pinyin, meaning, hskLevel, wordClass) | All-in-DB; content/ files are seed source   |
-| `Radical`            | Kangxi radical entity                                               | 20 seeded                                   |
-| `Component`          | Reusable sub-character component (semantic or phonetic)             | `cmp_XXXX` ids                              |
-| `CharacterComponent` | Character ↔ Component decomposition junction (position, function)   | e.g., 河 → 氵 (left) + 可 (right, phonetic) |
-| `PinyinSyllable`     | Syllable reference data                                             | ≥1,300                                      |
-| `MeasureWord`        | Measure word entity (量词) with permanent `mw_XXXXX` ids            | ≥50 seeded                                  |
-| `Passage`            | Graded reader passage (plain text + cached segmentation)            | Story 21.3                                  |
+| Entity               | Purpose                                                                                  | Notes                                       |
+| -------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `Character`          | A CJK glyph with readings, classification, etymology                                     | ≥2,971 seeded; enriched fields              |
+| `Word`               | Vocabulary entry (simplified, pinyin, meaning, hskLevel, wordClass)                      | All-in-DB; content/ files are seed source   |
+| `Radical`            | Kangxi radical entity                                                                    | 20 seeded                                   |
+| `Component`          | Reusable sub-character component (semantic or phonetic)                                  | `cmp_XXXX` ids                              |
+| `CharacterComponent` | Character ↔ Component decomposition junction (position, function)                        | e.g., 河 → 氵 (left) + 可 (right, phonetic) |
+| `PinyinSyllable`     | Syllable reference data                                                                  | 2,045 seeded                                |
+| `MeasureWord`        | Measure word entity (量词) with permanent `mw_XXXXX` ids                                 | ≥50 seeded                                  |
+| `Passage`            | Graded reader passage (plain text + cached segmentation)                                 | Story 21.3                                  |
+| `GrammarPattern`     | Grammar pattern with structure, usage rules, and curated examples                        | `gr_XXXX` ids; 21 KB-sourced patterns       |
+| `Chengyu`            | 4-character idiom with narrative origin story, theme/era tags, and modern-usage examples | `cy_XXXX` ids; 50+ idioms (Epic 23)         |
 
 ### Junction tables
 

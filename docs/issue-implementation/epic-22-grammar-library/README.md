@@ -4,7 +4,7 @@
 
 **Status:** Completed
 
-**Last Update:** August 6, 2026
+**Last Update:** August 7, 2026
 
 ## Epic Summary
 
@@ -16,14 +16,14 @@
 - **All-in-DB (not static JSON):** authoring source `content/seed/phase2/grammar-patterns.json` → `prisma/seed.ts` → Prisma tables → backend `grammar` module → API. No runtime JSON reads.
 - **New models (Story 22.1):** `GrammarPattern`, `GrammarExample` (with pre-segmented clickable tokens), `GrammarPatternRelation` (explicit junction, matches `WordCharacter`/`CharacterRadical` convention). Content models follow the pre-adaptation field pattern: internal `id` + unique `content_id` (`gr_XXXX`) + `content_version` + `metadata Json?`.
 - **Proposed endpoints (Story 22.2):** `GET /v1/grammar/patterns` and `GET /v1/grammar/patterns/:id` (resolves by `content_id` `gr_XXXX`), added verbatim to `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js`. The `content/manifest.json` `grammar` block + count (0 → ≥21) are declared/bumped by Story 22.1; 22.2 verifies them (no edit).
-- **Frontend is a custom feature (Story 22.3):** `features/grammar` (service → hooks → components → types) rendered by `pages/learn/grammar/GrammarPage.tsx`, replacing the `ContentPlaceholderPage` at `/learn/grammar`. The route, `LearnLayout` tab, `ContentBrowser` content type, and hub `grammar` entity already exist as placeholders.
+- **Frontend is a custom feature (Story 22.3):** `features/grammar` (service → hooks → components → types) rendered by `pages/learn/grammar/GrammarPage.tsx`, replacing the `ContentPlaceholderPage` at `/learn/grammar`. The route, sidebar Learn-group item, `ContentBrowser` content type, and hub `grammar` entity already exist as placeholders.
 - **Detail view is a `GrammarHub`** registered in `entityHubRegistry` (hub `grammar` key currently `NotImplemented`); example words open the `character` hub via `openHub()`.
 - **Audio is on-demand** via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no audio fields in the data model.
-- **Phase gating reuses numeric Phase 2/3/4** + the existing Phase-2 grammar tab unlock in `LearnLayout`/`ContentBrowser`/`TabBar`; Phase 3/4 patterns show as locked/preview cards.
+- **Phase gating reuses numeric Phase 2/3/4** + the existing Phase-2 grammar unlock in the sidebar Learn-group item (`learnNav.ts` `requiredPhase: 2`) / `ContentBrowser`/`TabBar`; Phase 3/4 patterns show as locked/preview cards.
 
 **Status:** Completed
 
-**Last Update:** August 6, 2026
+**Last Update:** August 7, 2026
 
 ## Technical Overview
 
@@ -35,7 +35,7 @@ This epic implements grammar reference content across data, backend, and fronten
 
 **Story 22.3 (UI)** adds a `features/grammar` feature (service → hooks → components), a page at `/learn/grammar` gated at Phase 2, a `GrammarHub` detail panel in the LexicalHub, TTS example-sentence audio, and clickable example words that open the Character Hub.
 
-All existing scaffolding (route, tab, content type, hub entity) is reused — only the placeholder is replaced.
+All existing scaffolding (route, sidebar Learn-group item, content type, hub entity) is reused — only the placeholder is replaced.
 
 ## Complete Prisma Model Definitions ➕ ADDED (normative spec for Story 22.1)
 
@@ -128,7 +128,7 @@ model GrammarPatternRelation {
    - Implications: Requires schema migration, seed steps, and a backend module + tests; enables server-side search/filter and future relational growth (e.g., pattern ↔ word links via `content_id`).
 
 2. **New Prisma models `GrammarPattern`, `GrammarExample`, `GrammarPatternRelation` (Story 22.1)** — content models follow the pre-adaptation field pattern (`docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md`, Rules 1–3): internal `id` (uuid, never exposed) + unique `content_id` business key (`gr_XXXX`) + `content_version Int @default(1)` + `metadata Json?`. Example and junction rows reference `content_id`, not internal auto IDs. 🛠 UPGRADED: the complete normative definitions live in the **"Complete Prisma Model Definitions"** section above (decision 2 here retains the rationale + reconciliation note).
-   - Rationale: Stable `gr_XXXX` business keys keep progress/junction references intact across content edits (pre-adaptation Rule 1); explicit junction tables seed cleanly with `skipDuplicates`/pre-filter (see seed-pipeline idempotency rules); pre-segmented tokens avoid a runtime segmenter for a small curated dataset. A word token's `entityId` references the target Character/Word `content_id`, matching the `USED_IN_PATTERN` Word→GrammarPattern edge in `docs/knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md`.
+   - Rationale: Stable `gr_XXXX` business keys keep progress/junction references intact across content edits (pre-adaptation Rule 1); explicit junction tables seed cleanly through the hash-gated delta sync (`syncGrammar`; see seed-pipeline idempotency rules); pre-segmented tokens avoid a runtime segmenter for a small curated dataset. A word token's `entityId` references the target Character/Word `content_id`, matching the `USED_IN_PATTERN` Word→GrammarPattern edge in `docs/knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md`.
    - Alternatives considered: `relatedIds` JSON array (rejected — not relational); runtime segmentation via the readers `Segmenter` (rejected — overkill for reference examples).
    - Implications: Migration follows `prisma-schema-changes.instructions.md` (`npm run db:migrate`); seed steps must be added in dependency order. ⚠️ **Reconciliation note:** the current `Radical` model in `schema.prisma` stores its business key directly as `id` (`"rad_0001"`), and `Character` does the same (`"ch_1001"`), whereas the pre-adaptation target (and this spec) uses a uuid `id` + unique `content_id`. **Grammar models follow the pre-adaptation spec (user-confirmed).** The 22.1 backend engineer must (a) NOT mirror the Radical business-key-PK pattern for grammar, (b) FK grammar relations by `content_id` (not `id`), and (c) flag the Radical/Character drift to the platform's data-architecture owner — do **not** refactor Radical/Character within this story.
 
@@ -160,10 +160,10 @@ model GrammarPatternRelation {
    - Alternatives considered: Stored/pre-generated audio fields in the data model (rejected — asset lifecycle complexity for a small reference dataset).
    - Implications: No data-model audio fields; audio is a pure UI concern in story 22.3.
 
-8. **Phase gating: numeric Phase 2/3/4 + tab unlock at Phase 2** — patterns carry `phase`; the `/learn/grammar` route is wrapped in `PhaseGate requiredPhase={2}` (mirrors readers at 3); the `LearnLayout`/`ContentBrowser`/`TabBar` phase maps already gate the tab at 2. Higher-phase patterns render as locked/preview cards (`isLocked` when `pattern.phase > currentPhase`) — the platform's "discovery, not gate" stance.
+8. **Phase gating: numeric Phase 2/3/4 + sidebar Learn-group unlock at Phase 2** — patterns carry `phase`; the `/learn/grammar` route is wrapped in `PhaseGate requiredPhase={2}` (mirrors readers at 3); the sidebar Learn-group item (`learnNav.ts` `requiredPhase: 2`) and `ContentBrowser`/`TabBar` phase maps already gate grammar at 2. Higher-phase patterns render as locked/preview cards (`isLocked` when `pattern.phase > currentPhase`) — the platform's "discovery, not gate" stance.
    - Rationale: The platform's phase model is numeric (backend `PhaseGate.currentPhase` via `usePhaseGate()`); "Basics/Advanced/Mastery" is not a codebase concept. Pattern placement follows the 4-phase progression in `docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md` (Core 300 → Network → Advanced Fluidity): Phase 2 = basic structures, Phase 3 = particles & conjunctions, Phase 4 = complex syntax (把/被); no grammar in Phase 1 (Blueprint).
    - Alternatives considered: "Basics/Advanced/Mastery" sub-tab switcher (rejected); strict server-side hiding of higher-phase patterns (rejected — platform favors discovery with lock states over hard gates).
-   - Implications: No new phase vocabulary; reuses `usePhaseGate` and the existing tab gating.
+   - Implications: No new phase vocabulary; reuses `usePhaseGate` and the existing sidebar Learn-group gating.
 
 ## Technical Challenges & Solutions
 
@@ -180,7 +180,7 @@ No other notable technical challenges (pre-implementation).
 - [x] Business-key convention is `gr_XXXX` (e.g., `gr_0001`) per `pre-adaptation-static-dynamic-separation.md` Rule 1 — **no stale `gram_001` references remain**.
 - [x] KB links resolve from this doc: `../../knowledge-base/mandarin/mandarin-fundamentals.md`, `../../knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md`, `../../knowledge-base/backend/pre-adaptation-static-dynamic-separation.md`, `../../knowledge-base/data/shared-data-model.md`, `../../knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md`; guides/conventions/practices links resolve.
 - [x] All relative markdown links resolve (BR/IMP/story links; story files to be scaffolded at kickoff).
-- [x] Last Update is current (August 6, 2026, same commit as the edit).
+- [x] Last Update is current (August 7, 2026, same commit as the edit).
 
 ## Technical Implementation
 

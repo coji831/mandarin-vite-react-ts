@@ -1,0 +1,27 @@
+/**
+ * @file ChengyuPagination.css
+ * @description ChengyuPagination feature styles (Story 23.3) — the detached
+ * footer bar that hosts the results summary + pager OUTSIDE the scrolling
+ * list region.
+ * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ */
+.chengyu-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-md);
+  flex-shrink: 0; /* never collapse when the scrollable list wrapper flexes */
+  border-top: 1px solid var(--surface-border);
+  padding-top: var(--space-md);
+}
+
+.chengyu-pagination__results-info {
+  /* Typography/spacing come from utility classes (font-sm text-muted); the
+     block class keeps the audit's used-but-undefined check green. */
+}
+
+.chengyu-pagination__page-info {
+  min-width: 96px;
+  text-align: center;
+}

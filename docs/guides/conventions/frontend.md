@@ -1,6 +1,6 @@
 # Frontend Conventions
 
-**Last Updated:** August 3, 2026  
+**Last Updated:** August 7, 2026  
 **Purpose:** Frontend coding standards, conventions, and patterns  
 **Audience:** Frontend developers
 
@@ -25,7 +25,7 @@
 - Keep each feature in its own folder under `apps/frontend/src/features/`
 - Put route constants in `apps/frontend/src/shared/constants/paths.ts`
 - Use React Router for navigation and routing
-- Use the CSV-based vocabulary system with `csvLoader.ts`
+- Consume vocabulary through the backend words API via the service layer (`apiClient`) — all vocabulary lives in the database; local CSV files are not read at runtime
 
 ## API Client & Integration Patterns
 
@@ -238,12 +238,11 @@ resolve: {
 
 ```typescript
 // ✅ Preferred - Vite alias
-import { examplesApi } from "services/examplesApi";
+import { apiClient } from "services";
 import { API_CONFIG } from "config/api";
-import { csvLoader } from "utils/csvLoader";
 
 // ❌ Avoid - Relative paths (harder to maintain)
-import { examplesApi } from "../../../services/examplesApi";
+import { apiClient } from "../../../services";
 import { API_CONFIG } from "../../../config/api";
 ```
 
@@ -276,14 +275,11 @@ import { AuthService } from "./services/AuthService";
 
 ## Project Structure
 
-- `apps/frontend/src/features/`: Feature modules (auth, character-hub, dashboard, foundations, gamification, quiz, review, vocabulary)
+- `apps/frontend/src/features/`: Feature modules (auth, character-hub, dashboard, foundations, grammar, lexical-hub, phonetic-clusters, quiz, radicals, readers, review, word-hub)
 - `apps/frontend/src/pages/`: Route-level page orchestrators
 - `apps/frontend/src/router/`: React Router configuration
 - `apps/frontend/src/shared/`: Cross-cutting layer (api, components, config, constants, layouts)
-- `apps/frontend/public/data/`: Static data files
-  - `apps/frontend/public/data/vocabulary/`: CSV vocabulary files (HSK3.0)
-  - `apps/frontend/public/data/examples/`: Example sentences and usage
-- `apps/frontend/src/utils/`: Utility functions (includes `csvLoader.ts`)
+- `apps/frontend/public/data/vocabulary/`: HSK3.0 CSV files (legacy — not read at runtime)
 
 ## Testing Practices
 
@@ -318,13 +314,6 @@ import { AuthService } from "./services/AuthService";
 
 - Use [docs/business-requirements/](../../business-requirements/) for business requirements and planning
 - Use [docs/issue-implementation/](../../issue-implementation/) for technical implementation docs
-
-## CSV Vocabulary Format
-
-- Store CSV vocabulary files in `../public/data/vocabulary/hsk3.0/band1/`
-- Follow the standard format: `No,Chinese,Pinyin,English`
-- Process with `csvLoader.ts` utility in `../src/utils/`
-- Document any structure changes in implementation docs
 
 ## Commit Message & Pull Request Standards
 

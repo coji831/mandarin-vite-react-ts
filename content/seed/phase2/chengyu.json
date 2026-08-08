@@ -1,0 +1,3910 @@
+{
+  "_comment": "Epic 23 Chengyu (Idiom) Narratives — Story 23.1 authoring source. 55 idioms extracted from CC-CEDICT (content/seed/phase1/cc-cedict-entries.json) and enriched with narrative origin stories grounded in Chinese Wiktionary 詞源 verified against zh Wikisource. Source/license: CC BY-SA 4.0 — see content/seed/ATTRIBUTION.md. Seeded into Prisma (Chengyu / ChengyuExample / ChengyuRelation) by apps/backend/prisma/seed.ts via syncChengyu. No runtime JSON reads — DB only.",
+  "idioms": [
+    {
+      "content_id": "cy_0001",
+      "chengyu": "破釜沉舟",
+      "pinyin": "pò fǔ chén zhōu",
+      "literalMeaning": "Break the pots and sink the boats",
+      "figurativeMeaning": "To burn one's bridges; to commit totally to a course of action with no way back",
+      "story": "In 207 BCE, the rebel general Xiang Yu led his army across the Yellow River to attack the mighty Qin forces at Julu. To show his men there would be no retreat, he ordered the boats sunk, the cooking cauldrons smashed, and the camp burned, keeping only three days of rations. With every escape route destroyed, his soldiers fought with desperate courage and crushed the Qin army, changing the course of the war that ended the Qin dynasty.",
+      "storySource": "《史记·卷七·项羽本纪》(zh.wikisource.org/wiki/史記/卷007)",
+      "era": "Qin–Han transition",
+      "theme": "determination",
+      "sortOrder": 1,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "determination",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/破釜沉舟"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0001_ex1",
+          "chinese": "他已经决定要破釜沉舟，全力投入新的工作。",
+          "pinyin": "tā yǐ jīng jué dìng yào pò fǔ chén zhōu quán lì tóu rù xīn de gōng zuò",
+          "english": "He has decided to burn his bridges and throw all his energy into the new job.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "破",
+              "pinyin": "pò",
+              "gloss": "break",
+              "entityType": "character",
+              "entityId": "ch_30772"
+            },
+            {
+              "text": "釜",
+              "pinyin": "fǔ",
+              "gloss": "cauldron",
+              "entityType": "character",
+              "entityId": "ch_46225"
+            },
+            {
+              "text": "沉",
+              "pinyin": "chén",
+              "gloss": "sink",
+              "entityType": "character",
+              "entityId": "ch_27785"
+            },
+            {
+              "text": "舟",
+              "pinyin": "zhōu",
+              "gloss": "boat",
+              "entityType": "character",
+              "entityId": "ch_33311"
+            },
+            {
+              "text": "全力",
+              "pinyin": "quán lì",
+              "gloss": "with all one's strength",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "投入",
+              "pinyin": "tóu rù",
+              "gloss": "invest",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "工作",
+              "pinyin": "gōng zuò",
+              "gloss": "work",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0002",
+      "chengyu": "画蛇添足",
+      "pinyin": "huà shé tiān zú",
+      "literalMeaning": "Draw a snake and add feet",
+      "figurativeMeaning": "To gild the lily; to ruin something by adding unnecessary detail",
+      "story": "In the state of Chu, a group of men competed to draw a snake, with a cup of wine as the prize. The man who finished first, seeing others still drawing, added feet to his snake to show off. Before he could finish, another man completed a real snake and took the wine, pointing out that snakes have no feet — and that adding them destroyed the drawing. The extra flourish turned victory into defeat.",
+      "storySource": "《战国策·齐策二》(zh.wikisource.org/wiki/戰國策/卷九)",
+      "era": "Warring States",
+      "theme": "self-defeating excess",
+      "sortOrder": 2,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "self-defeating-excess",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/画蛇添足"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0002_ex1",
+          "chinese": "你的报告已经写得很好了，不要再画蛇添足。",
+          "pinyin": "nǐ de bào gào yǐ jīng xiě de hěn hǎo le bú yào zài huà shé tiān zú",
+          "english": "Your report is already very good — don't gild the lily.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "画",
+              "pinyin": "huà",
+              "gloss": "draw",
+              "entityType": "character",
+              "entityId": "ch_30011"
+            },
+            {
+              "text": "蛇",
+              "pinyin": "shé",
+              "gloss": "snake",
+              "entityType": "character",
+              "entityId": "ch_34503"
+            },
+            {
+              "text": "添",
+              "pinyin": "tiān",
+              "gloss": "add",
+              "entityType": "character",
+              "entityId": "ch_28155"
+            },
+            {
+              "text": "足",
+              "pinyin": "zú",
+              "gloss": "foot",
+              "entityType": "character",
+              "entityId": "ch_36275"
+            },
+            {
+              "text": "报告",
+              "pinyin": "bào gào",
+              "gloss": "report",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "已经",
+              "pinyin": "yǐ jīng",
+              "gloss": "already",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0003",
+      "chengyu": "瓜田李下",
+      "pinyin": "guā tián lǐ xià",
+      "literalMeaning": "In the melon field, under the plum tree",
+      "figurativeMeaning": "To avoid situations that invite suspicion",
+      "story": "The Han-era folk poem 'The Conduct of a Gentleman' (君子行) offered simple advice for staying above suspicion: in a melon field, do not bend down to adjust your shoes, and beneath a plum tree, do not raise your hand to straighten your hat — because innocent gestures can look like theft. The idiom reminds us that even upright people should steer clear of circumstances where their good name could be doubted.",
+      "storySource": "《乐府诗集·卷三十二·相和歌辞·君子行》(zh.wikisource.org/wiki/樂府詩集/032卷)",
+      "era": "Han",
+      "theme": "propriety",
+      "sortOrder": 3,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "propriety",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/瓜田李下"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0003_ex1",
+          "chinese": "他做事非常小心，从不让自己处在瓜田李下的地方。",
+          "pinyin": "tā zuò shì fēi cháng xiǎo xīn cóng bú ràng zì jǐ chǔ zài guā tián lǐ xià de dì fang",
+          "english": "He is very careful in everything and never puts himself in a position that invites suspicion.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "瓜",
+              "pinyin": "guā",
+              "gloss": "melon",
+              "entityType": "character",
+              "entityId": "ch_29916"
+            },
+            {
+              "text": "田",
+              "pinyin": "tián",
+              "gloss": "field",
+              "entityType": "character",
+              "entityId": "ch_30000"
+            },
+            {
+              "text": "李",
+              "pinyin": "lǐ",
+              "gloss": "plum",
+              "entityType": "character",
+              "entityId": "ch_26446"
+            },
+            {
+              "text": "下",
+              "pinyin": "xià",
+              "gloss": "under",
+              "entityType": "character",
+              "entityId": "ch_19979"
+            },
+            {
+              "text": "小心",
+              "pinyin": "xiǎo xīn",
+              "gloss": "careful",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "地方",
+              "pinyin": "dì fang",
+              "gloss": "place",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0004",
+      "chengyu": "守株待兔",
+      "pinyin": "shǒu zhū dài tù",
+      "literalMeaning": "Guard the tree stump, waiting for rabbits",
+      "figurativeMeaning": "To wait passively for good fortune instead of working for it; to persist in an outdated approach",
+      "story": "A farmer in the state of Song saw a rabbit dash into a stump on his field and break its neck. Delighted, he put down his plow and waited by the stump day after day, expecting another rabbit to come. No rabbit ever came again, and his fields went to waste. The fable, told by the legalist thinker Han Fei, mocks those who expect past luck to repeat instead of adapting to change.",
+      "storySource": "《韩非子·五蠹》(zh.wikisource.org/wiki/韓非子/五蠹)",
+      "era": "Warring States",
+      "theme": "misguided persistence",
+      "sortOrder": 4,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "misguided-persistence",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/守株待兔"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0004_ex1",
+          "chinese": "成功不能靠守株待兔，要主动去发现机会。",
+          "pinyin": "chéng gōng bù néng kào shǒu zhū dài tù yào zhǔ dòng qù fā xiàn jī huì",
+          "english": "You can't achieve success by waiting passively; you have to actively look for opportunities.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "守",
+              "pinyin": "shǒu",
+              "gloss": "guard",
+              "entityType": "character",
+              "entityId": "ch_23432"
+            },
+            {
+              "text": "株",
+              "pinyin": "zhū",
+              "gloss": "tree stump",
+              "entityType": "character",
+              "entityId": "ch_26666"
+            },
+            {
+              "text": "待",
+              "pinyin": "dài",
+              "gloss": "wait for",
+              "entityType": "character",
+              "entityId": "ch_24453"
+            },
+            {
+              "text": "兔",
+              "pinyin": "tù",
+              "gloss": "rabbit",
+              "entityType": "character",
+              "entityId": "ch_20820"
+            },
+            {
+              "text": "成功",
+              "pinyin": "chéng gōng",
+              "gloss": "success",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "机会",
+              "pinyin": "jī huì",
+              "gloss": "opportunity",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0005",
+      "chengyu": "叶公好龙",
+      "pinyin": "yè gōng hào lóng",
+      "literalMeaning": "Lord Ye loves dragons",
+      "figurativeMeaning": "To profess love for something one actually fears; to be insincere about one's stated interests",
+      "story": "Lord Ye of Chu was famous for loving dragons: he painted them on his walls, carved them into his beams, and decorated his tools with them. When a real dragon heard of his devotion and descended through his window, Lord Ye fled in terror, so frightened he lost his wits. The fable from the New Prefaces (新序) shows that a taste for symbols is not the same as embracing the real thing.",
+      "storySource": "《新序·杂事五》(zh.wikisource.org/wiki/新序/雜事/卷五)",
+      "era": "Spring & Autumn",
+      "theme": "hypocrisy",
+      "sortOrder": 5,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "hypocrisy",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/叶公好龙"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0005_ex1",
+          "chinese": "他嘴上说喜欢爬山，其实叶公好龙，一次也没去过。",
+          "pinyin": "tā zuǐ shàng shuō xǐ huān pá shān qí shí yè gōng hào lóng yí cì yě méi qù guò",
+          "english": "He says he loves hiking, but it's just lip service — he has never actually gone once.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "叶",
+              "pinyin": "yè",
+              "gloss": "Ye (surname)",
+              "entityType": "character",
+              "entityId": "ch_21494"
+            },
+            {
+              "text": "公",
+              "pinyin": "gōng",
+              "gloss": "lord",
+              "entityType": "character",
+              "entityId": "ch_20844"
+            },
+            {
+              "text": "好",
+              "pinyin": "hào",
+              "gloss": "to be fond of",
+              "entityType": "character",
+              "entityId": "ch_1001"
+            },
+            {
+              "text": "龙",
+              "pinyin": "lóng",
+              "gloss": "dragon",
+              "entityType": "character",
+              "entityId": "ch_40857"
+            },
+            {
+              "text": "喜欢",
+              "pinyin": "xǐ huān",
+              "gloss": "like",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "爬山",
+              "pinyin": "pá shān",
+              "gloss": "climb mountains",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0006",
+      "chengyu": "亡羊补牢",
+      "pinyin": "wáng yáng bǔ láo",
+      "literalMeaning": "After losing the sheep, mend the pen",
+      "figurativeMeaning": "It is not too late to fix a mistake and prevent further loss",
+      "story": "A shepherd's sheep were repeatedly stolen because the pen had a hole. A neighbor advised him to repair it, but he ignored the warning until more sheep were lost. He then mended the pen, and no sheep were lost again. An advisor in the state of Chu used this image to persuade a ruler to correct course after a defeat: as the saying goes, it is not too late to mend the fold after losing the sheep.",
+      "storySource": "《战国策·楚策四》(zh.wikisource.org/wiki/戰國策/卷十七)",
+      "era": "Warring States",
+      "theme": "remedy",
+      "sortOrder": 6,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "remedy",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/亡羊补牢"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0006_ex1",
+          "chinese": "虽然这次失败了，但亡羊补牢，下次我们会做得更好。",
+          "pinyin": "suī rán zhè cì shī bài le dàn wáng yáng bǔ láo xià cì wǒ men huì zuò de gèng hǎo",
+          "english": "We failed this time, but it's never too late to fix things — next time we'll do better.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "亡",
+              "pinyin": "wáng",
+              "gloss": "lose",
+              "entityType": "character",
+              "entityId": "ch_20129"
+            },
+            {
+              "text": "羊",
+              "pinyin": "yáng",
+              "gloss": "sheep",
+              "entityType": "character",
+              "entityId": "ch_32650"
+            },
+            {
+              "text": "补",
+              "pinyin": "bǔ",
+              "gloss": "mend",
+              "entityType": "character",
+              "entityId": "ch_34917"
+            },
+            {
+              "text": "牢",
+              "pinyin": "láo",
+              "gloss": "pen",
+              "entityType": "character",
+              "entityId": "ch_29282"
+            },
+            {
+              "text": "失败",
+              "pinyin": "shī bài",
+              "gloss": "fail",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "我们",
+              "pinyin": "wǒ men",
+              "gloss": "we",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0007",
+      "chengyu": "三顾茅庐",
+      "pinyin": "sān gù máo lú",
+      "literalMeaning": "Visit the thatched cottage three times",
+      "figurativeMeaning": "To earnestly and repeatedly seek out a worthy person; to show sincere respect for talent",
+      "story": "During the late Han dynasty, the warlord Liu Bei sought the reclusive strategist Zhuge Liang, who lived in a humble thatched cottage. Liu Bei called on him three times before Zhuge Liang finally received him and agreed to serve. This act of patience and sincerity won over one of history's greatest advisers and helped found the state of Shu.",
+      "storySource": "《三国志·蜀书·诸葛亮传》(zh.wikisource.org/wiki/三國志/卷35)",
+      "era": "Three Kingdoms",
+      "theme": "sincerity",
+      "sortOrder": 7,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "sincerity",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/三顾茅庐"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0007_ex1",
+          "chinese": "为了请到这位专家，他三顾茅庐，终于感动了对方。",
+          "pinyin": "wèi le qǐng dào zhè wèi zhuān jiā tā sān gù máo lú zhōng yú gǎn dòng le duì fāng",
+          "english": "To recruit this expert, he visited him again and again until his sincerity won the man over.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "三",
+              "pinyin": "sān",
+              "gloss": "three",
+              "entityType": "character",
+              "entityId": "ch_19977"
+            },
+            {
+              "text": "顾",
+              "pinyin": "gù",
+              "gloss": "visit",
+              "entityType": "character",
+              "entityId": "ch_39038"
+            },
+            {
+              "text": "茅",
+              "pinyin": "máo",
+              "gloss": "thatched",
+              "entityType": "character",
+              "entityId": "ch_33541"
+            },
+            {
+              "text": "庐",
+              "pinyin": "lú",
+              "gloss": "cottage",
+              "entityType": "character",
+              "entityId": "ch_42113"
+            },
+            {
+              "text": "专家",
+              "pinyin": "zhuān jiā",
+              "gloss": "expert",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "终于",
+              "pinyin": "zhōng yú",
+              "gloss": "finally",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0008",
+      "chengyu": "井底之蛙",
+      "pinyin": "jǐng dǐ zhī wā",
+      "literalMeaning": "A frog at the bottom of a well",
+      "figurativeMeaning": "A person with a very narrow outlook; someone who cannot imagine a world beyond their own experience",
+      "story": "In the Zhuangzi, a frog living at the bottom of a well boasted to a sea turtle about how wonderful his home was. The turtle described the vastness of the ocean, which is greater than any well and cannot be measured. The frog, who had never seen beyond the well's rim, could not grasp a world that large. The fable warns against mistaking one's limited experience for the whole of reality.",
+      "storySource": "《庄子·秋水》(zh.wikisource.org/wiki/莊子/秋水)",
+      "era": "Warring States",
+      "theme": "narrow-mindedness",
+      "sortOrder": 8,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "narrow-mindedness",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/井底之蛙"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0008_ex1",
+          "chinese": "别做井底之蛙，要多出去看看世界。",
+          "pinyin": "bié zuò jǐng dǐ zhī wā yào duō chū qù kàn kan shì jiè",
+          "english": "Don't be a frog at the bottom of a well — get out and see the world.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "井",
+              "pinyin": "jǐng",
+              "gloss": "well",
+              "entityType": "character",
+              "entityId": "ch_20117"
+            },
+            {
+              "text": "底",
+              "pinyin": "dǐ",
+              "gloss": "bottom",
+              "entityType": "character",
+              "entityId": "ch_24213"
+            },
+            {
+              "text": "之",
+              "pinyin": "zhī",
+              "gloss": "of",
+              "entityType": "character",
+              "entityId": "ch_20043"
+            },
+            {
+              "text": "蛙",
+              "pinyin": "wā",
+              "gloss": "frog",
+              "entityType": "character",
+              "entityId": "ch_34521"
+            },
+            {
+              "text": "世界",
+              "pinyin": "shì jiè",
+              "gloss": "world",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0009",
+      "chengyu": "自相矛盾",
+      "pinyin": "zì xiāng máo dùn",
+      "literalMeaning": "One's own spear against one's own shield",
+      "figurativeMeaning": "To contradict oneself; to be logically inconsistent",
+      "story": "A merchant in the state of Chu sold both spears and shields. He first boasted that his shields were so strong nothing could pierce them, then that his spears were so sharp they could pierce anything. A bystander asked what would happen if he used his spear on his own shield. The man could not answer, because his two claims could not both be true.",
+      "storySource": "《韩非子·难一》(zh.wikisource.org/wiki/韓非子/難一)",
+      "era": "Warring States",
+      "theme": "self-contradiction",
+      "sortOrder": 9,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "self-contradiction",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/自相矛盾"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0009_ex1",
+          "chinese": "他说的话前后不一，完全是自相矛盾。",
+          "pinyin": "tā shuō de huà qián hòu bù yī wán quán shì zì xiāng máo dùn",
+          "english": "What he said was inconsistent from start to finish — a complete self-contradiction.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "自",
+              "pinyin": "zì",
+              "gloss": "self",
+              "entityType": "character",
+              "entityId": "ch_33258"
+            },
+            {
+              "text": "相",
+              "pinyin": "xiāng",
+              "gloss": "each other",
+              "entityType": "character",
+              "entityId": "ch_30456"
+            },
+            {
+              "text": "矛",
+              "pinyin": "máo",
+              "gloss": "spear",
+              "entityType": "character",
+              "entityId": "ch_30683"
+            },
+            {
+              "text": "盾",
+              "pinyin": "dùn",
+              "gloss": "shield",
+              "entityType": "character",
+              "entityId": "ch_30462"
+            },
+            {
+              "text": "完全",
+              "pinyin": "wán quán",
+              "gloss": "completely",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "说话",
+              "pinyin": "shuō huà",
+              "gloss": "speak",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0010",
+      "chengyu": "掩耳盗铃",
+      "pinyin": "yǎn ěr dào líng",
+      "literalMeaning": "Cover one's ears while stealing a bell",
+      "figurativeMeaning": "To deceive oneself while thinking others are deceived; to ignore obvious consequences",
+      "story": "After the Fan family was destroyed, a thief tried to carry off one of their great bells, but it was too heavy. He decided to break it into pieces with a hammer — yet the moment he struck it, the bell rang loudly. Afraid others would hear and take the bell, he covered his own ears, believing that if he could not hear the sound, no one else could either.",
+      "storySource": "《吕氏春秋·自知》(zh.wikisource.org/wiki/呂氏春秋/自知)",
+      "era": "Warring States",
+      "theme": "self-deception",
+      "sortOrder": 10,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "self-deception",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/掩耳盗铃"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0010_ex1",
+          "chinese": "问题就摆在那里，掩耳盗铃解决不了任何事。",
+          "pinyin": "wèn tí jiù bǎi zài nà lǐ yǎn ěr dào líng jiě jué bù liǎo rèn hé shì",
+          "english": "The problem is right there; covering your ears won't solve anything.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "掩",
+              "pinyin": "yǎn",
+              "gloss": "cover",
+              "entityType": "character",
+              "entityId": "ch_25513"
+            },
+            {
+              "text": "耳",
+              "pinyin": "ěr",
+              "gloss": "ear",
+              "entityType": "character",
+              "entityId": "ch_32819"
+            },
+            {
+              "text": "盗",
+              "pinyin": "dào",
+              "gloss": "steal",
+              "entityType": "character",
+              "entityId": "ch_30423"
+            },
+            {
+              "text": "铃",
+              "pinyin": "líng",
+              "gloss": "bell",
+              "entityType": "character",
+              "entityId": "ch_38083"
+            },
+            {
+              "text": "问题",
+              "pinyin": "wèn tí",
+              "gloss": "problem",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "解决",
+              "pinyin": "jiě jué",
+              "gloss": "solve",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0011",
+      "chengyu": "滥竽充数",
+      "pinyin": "làn yú chōng shù",
+      "literalMeaning": "To pass oneself off as a yu player though unable to play",
+      "figurativeMeaning": "To hold a position without the skill, pretending to contribute; to be a hanger-on",
+      "story": "King Xuan of Qi loved to hear a large orchestra of yu players, so he paid three hundred musicians to play together. A man named Nanguo, who could not play at all, joined the group and collected a salary by pretending to play. When the next king preferred solo performances, Nanguo could no longer hide and quietly fled.",
+      "storySource": "《韩非子·内储说上》(zh.wikisource.org/wiki/韓非子/內儲說上)",
+      "era": "Warring States",
+      "theme": "pretension",
+      "sortOrder": 11,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "pretension",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/滥竽充数"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0011_ex1",
+          "chinese": "他不熟悉这个领域，只能算滥竽充数。",
+          "pinyin": "tā bù shú xī zhè gè lǐng yù zhǐ néng suàn làn yú chōng shù",
+          "english": "He doesn't really know this field — he's just filling a seat.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "滥",
+              "pinyin": "làn",
+              "gloss": "indiscriminate",
+              "entityType": "character",
+              "entityId": "ch_28389"
+            },
+            {
+              "text": "竽",
+              "pinyin": "yú",
+              "gloss": "yu (reed instrument)",
+              "entityType": "character",
+              "entityId": "ch_44180"
+            },
+            {
+              "text": "充",
+              "pinyin": "chōng",
+              "gloss": "fill",
+              "entityType": "character",
+              "entityId": "ch_20805"
+            },
+            {
+              "text": "数",
+              "pinyin": "shù",
+              "gloss": "count",
+              "entityType": "character",
+              "entityId": "ch_25968"
+            },
+            {
+              "text": "领域",
+              "pinyin": "lǐng yù",
+              "gloss": "field",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "熟悉",
+              "pinyin": "shú xī",
+              "gloss": "be familiar with",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0012",
+      "chengyu": "画龙点睛",
+      "pinyin": "huà lóng diǎn jīng",
+      "literalMeaning": "Draw a dragon and dot in the eyes",
+      "figurativeMeaning": "To add a finishing touch that brings a work to life; to hit the crucial point",
+      "story": "The painter Zhang Sengyou decorated the walls of the Anle Temple in Jinling with four dragons, leaving all their eyes unpainted. When asked why, he explained that if he added the eyes, the dragons would fly away. People laughed at him, but the moment he dotted in the eyes of two dragons, lightning flashed and they soared into the sky, leaving the unfinished pair on the wall.",
+      "storySource": "《历代名画记·卷七》(zh.wikisource.org/wiki/歷代名畫記/卷七)",
+      "era": "Wei–Jin",
+      "theme": "finishing touch",
+      "sortOrder": 12,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "finishing-touch",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/画龙点睛"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0012_ex1",
+          "chinese": "这句话起到了画龙点睛的作用，让全文生动起来。",
+          "pinyin": "zhè jù huà qǐ dào le huà lóng diǎn jīng de zuò yòng ràng quán wén shēng dòng qǐ lái",
+          "english": "This sentence is the finishing touch that brings the whole piece to life.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "画",
+              "pinyin": "huà",
+              "gloss": "draw",
+              "entityType": "character",
+              "entityId": "ch_30011"
+            },
+            {
+              "text": "龙",
+              "pinyin": "lóng",
+              "gloss": "dragon",
+              "entityType": "character",
+              "entityId": "ch_40857"
+            },
+            {
+              "text": "点",
+              "pinyin": "diǎn",
+              "gloss": "dot",
+              "entityType": "character",
+              "entityId": "ch_28857"
+            },
+            {
+              "text": "睛",
+              "pinyin": "jīng",
+              "gloss": "eye",
+              "entityType": "character",
+              "entityId": "ch_30555"
+            },
+            {
+              "text": "作用",
+              "pinyin": "zuò yòng",
+              "gloss": "function",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "生动",
+              "pinyin": "shēng dòng",
+              "gloss": "lively",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0013",
+      "chengyu": "刻舟求剑",
+      "pinyin": "kè zhōu qiú jiàn",
+      "literalMeaning": "Mark the boat to find the fallen sword",
+      "figurativeMeaning": "To be inflexible and ignore changed circumstances; to solve a new problem with old methods",
+      "story": "A man from the state of Chu dropped his sword into the river while crossing by boat. Instead of stopping, he calmly carved a notch on the boat at the spot where the sword fell in, saying he would find the sword there later. When the boat reached the shore, he searched beside the notch — but the boat had moved while the sword had stayed at the bottom of the river.",
+      "storySource": "《吕氏春秋·察今》(zh.wikisource.org/wiki/呂氏春秋/察今)",
+      "era": "Warring States",
+      "theme": "rigidity",
+      "sortOrder": 13,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "rigidity",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/刻舟求剑"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0013_ex1",
+          "chinese": "市场已经变了，你还用老办法，简直是刻舟求剑。",
+          "pinyin": "shì chǎng yǐ jīng biàn le nǐ hái yòng lǎo bàn fǎ jiǎn zhí shì kè zhōu qiú jiàn",
+          "english": "The market has changed, but you still use the old methods — that's like marking the boat to find the sword.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "刻",
+              "pinyin": "kè",
+              "gloss": "carve",
+              "entityType": "character",
+              "entityId": "ch_21051"
+            },
+            {
+              "text": "舟",
+              "pinyin": "zhōu",
+              "gloss": "boat",
+              "entityType": "character",
+              "entityId": "ch_33311"
+            },
+            {
+              "text": "求",
+              "pinyin": "qiú",
+              "gloss": "seek",
+              "entityType": "character",
+              "entityId": "ch_27714"
+            },
+            {
+              "text": "剑",
+              "pinyin": "jiàn",
+              "gloss": "sword",
+              "entityType": "character",
+              "entityId": "ch_21073"
+            },
+            {
+              "text": "市场",
+              "pinyin": "shì chǎng",
+              "gloss": "market",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "办法",
+              "pinyin": "bàn fǎ",
+              "gloss": "method",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0014",
+      "chengyu": "对牛弹琴",
+      "pinyin": "duì niú tán qín",
+      "literalMeaning": "Play the zither to a cow",
+      "figurativeMeaning": "To explain or present something to an audience that cannot appreciate it; to waste effort",
+      "story": "The musician Gongming Yi once played the refined tune 'Qingjiao' for a cow, but the animal calmly went on eating grass, unmoved. The cow was not being stubborn — the music was simply not suited to it. Gongming Yi then imitated the buzzing of flies and the lowing of a calf, and the cow began to flick its tail and prick up its ears, responding at last.",
+      "storySource": "《牟子理惑论》(zh.wikisource.org/wiki/牟子理惑論)",
+      "era": "Han",
+      "theme": "wasted effort",
+      "sortOrder": 14,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "wasted-effort",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/对牛弹琴"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0014_ex1",
+          "chinese": "跟一个完全不懂行的人解释技术问题，就是对牛弹琴。",
+          "pinyin": "gēn yí gè wán quán bù dǒng háng de rén jiě shì jì shù wèn tí jiù shì duì niú tán qín",
+          "english": "Explaining technical problems to someone who knows nothing about the field is like playing the zither to a cow.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "对",
+              "pinyin": "duì",
+              "gloss": "to; toward",
+              "entityType": "character",
+              "entityId": "ch_23545"
+            },
+            {
+              "text": "牛",
+              "pinyin": "niú",
+              "gloss": "cow",
+              "entityType": "character",
+              "entityId": "ch_29275"
+            },
+            {
+              "text": "弹",
+              "pinyin": "tán",
+              "gloss": "pluck/play",
+              "entityType": "character",
+              "entityId": "ch_24377"
+            },
+            {
+              "text": "琴",
+              "pinyin": "qín",
+              "gloss": "zither",
+              "entityType": "character",
+              "entityId": "ch_29748"
+            },
+            {
+              "text": "技术",
+              "pinyin": "jì shù",
+              "gloss": "technology",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "问题",
+              "pinyin": "wèn tí",
+              "gloss": "problem",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0015",
+      "chengyu": "狐假虎威",
+      "pinyin": "hú jiǎ hǔ wēi",
+      "literalMeaning": "The fox borrows the tiger's might",
+      "figurativeMeaning": "To bully others by relying on someone more powerful; to use borrowed authority",
+      "story": "A tiger caught a fox, but the fox claimed the gods had made it the king of all beasts and dared the tiger to follow and see. As the two walked through the forest, every animal fled in terror — but they fled from the tiger, not the fox. The fox merely borrowed the tiger's fearsome reputation, a trick recounted in the Stratagems of the Warring States.",
+      "storySource": "《战国策·楚策一》(zh.wikisource.org/wiki/戰國策/卷十四)",
+      "era": "Warring States",
+      "theme": "borrowed power",
+      "sortOrder": 15,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "borrowed-power",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/狐假虎威"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0015_ex1",
+          "chinese": "他没有真正的能力，只会狐假虎威，仗着老板的名声吓人。",
+          "pinyin": "tā méi yǒu zhēn zhèng de néng lì zhǐ huì hú jiǎ hǔ wēi zhàng zhe lǎo bǎn de míng shēng xià rén",
+          "english": "He has no real ability; he just uses the boss's name to bully others.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "狐",
+              "pinyin": "hú",
+              "gloss": "fox",
+              "entityType": "character",
+              "entityId": "ch_43558"
+            },
+            {
+              "text": "假",
+              "pinyin": "jiǎ",
+              "gloss": "borrow",
+              "entityType": "character",
+              "entityId": "ch_20551"
+            },
+            {
+              "text": "虎",
+              "pinyin": "hǔ",
+              "gloss": "tiger",
+              "entityType": "character",
+              "entityId": "ch_34382"
+            },
+            {
+              "text": "威",
+              "pinyin": "wēi",
+              "gloss": "might",
+              "entityType": "character",
+              "entityId": "ch_23041"
+            },
+            {
+              "text": "本事",
+              "pinyin": "běn shì",
+              "gloss": "ability",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "老板",
+              "pinyin": "lǎo bǎn",
+              "gloss": "boss",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0016",
+      "chengyu": "卧薪尝胆",
+      "pinyin": "wò xīn cháng dǎn",
+      "literalMeaning": "Sleep on firewood and taste gall",
+      "figurativeMeaning": "To endure hardship in order to achieve a goal of revenge or recovery",
+      "story": "After King Goujian of Yue was defeated and humiliated by the state of Wu, he was forced to serve his conqueror for years. Released at last, he returned home and never let himself forget his shame: he slept on brushwood and hung a gall bladder above his seat, tasting its bitterness before every meal. His patience and self-discipline rebuilt Yue's strength until it finally destroyed Wu.",
+      "storySource": "《史记·卷四十一·越王勾践世家》(zh.wikisource.org/wiki/史記/卷041)",
+      "era": "Spring & Autumn",
+      "theme": "endurance",
+      "sortOrder": 16,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "endurance",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/卧薪尝胆"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0016_ex1",
+          "chinese": "为了考上理想的大学，他卧薪尝胆，刻苦学习了三年。",
+          "pinyin": "wèi le kǎo shàng lǐ xiǎng de dà xué tā wò xīn cháng dǎn kè kǔ xué xí le sān nián",
+          "english": "To get into his ideal university, he endured three hard years of grueling study.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "卧",
+              "pinyin": "wò",
+              "gloss": "lie down",
+              "entityType": "character",
+              "entityId": "ch_21351"
+            },
+            {
+              "text": "薪",
+              "pinyin": "xīn",
+              "gloss": "firewood",
+              "entityType": "character",
+              "entityId": "ch_34218"
+            },
+            {
+              "text": "尝",
+              "pinyin": "cháng",
+              "gloss": "taste",
+              "entityType": "character",
+              "entityId": "ch_23581"
+            },
+            {
+              "text": "胆",
+              "pinyin": "dǎn",
+              "gloss": "gall bladder",
+              "entityType": "character",
+              "entityId": "ch_32966"
+            },
+            {
+              "text": "大学",
+              "pinyin": "dà xué",
+              "gloss": "university",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "学习",
+              "pinyin": "xué xí",
+              "gloss": "study",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0017",
+      "chengyu": "望梅止渴",
+      "pinyin": "wàng méi zhǐ kě",
+      "literalMeaning": "Look at plums to quench thirst",
+      "figurativeMeaning": "To comfort oneself with illusions; to satisfy a need in imagination only",
+      "story": "During a long march, Cao Cao's army found no water and the soldiers were exhausted with thirst. Cao Cao pointed ahead and announced that a great grove of sour plum trees lay just ahead, whose fruit would quench their thirst. At the very thought of the sour plums, the soldiers' mouths watered, and the army pressed on until real water was found.",
+      "storySource": "《世说新语·假谲》(zh.wikisource.org/wiki/世說新語/假譎)",
+      "era": "Three Kingdoms",
+      "theme": "wishful thinking",
+      "sortOrder": 17,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "wishful-thinking",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/望梅止渴"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0017_ex1",
+          "chinese": "现在连房租都付不起，别望梅止渴地计划买房子了。",
+          "pinyin": "xiàn zài lián fáng zū dōu fù bù qǐ bié wàng méi zhǐ kě de jì huà mǎi fáng zi le",
+          "english": "You can't even pay the rent now — stop making wishful plans to buy a house.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "望",
+              "pinyin": "wàng",
+              "gloss": "gaze at",
+              "entityType": "character",
+              "entityId": "ch_26395"
+            },
+            {
+              "text": "梅",
+              "pinyin": "méi",
+              "gloss": "plum",
+              "entityType": "character",
+              "entityId": "ch_26757"
+            },
+            {
+              "text": "止",
+              "pinyin": "zhǐ",
+              "gloss": "stop",
+              "entityType": "character",
+              "entityId": "ch_27490"
+            },
+            {
+              "text": "渴",
+              "pinyin": "kě",
+              "gloss": "thirst",
+              "entityType": "character",
+              "entityId": "ch_28212"
+            },
+            {
+              "text": "房租",
+              "pinyin": "fáng zū",
+              "gloss": "rent",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "计划",
+              "pinyin": "jì huà",
+              "gloss": "plan",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0018",
+      "chengyu": "纸上谈兵",
+      "pinyin": "zhǐ shàng tán bīng",
+      "literalMeaning": "Discuss warfare only on paper",
+      "figurativeMeaning": "To talk about strategy in theory without practical experience",
+      "story": "Zhao Kuo, son of the famed general Zhao She, could recite the art of war flawlessly and loved to debate tactics, yet his father worried that he saw battle only as theory. When Zhao Kuo was put in command during the battle of Changping, he ignored the realities of the field, followed the book rigidly, and led his entire army to ruin. His name became a byword for armchair generalship.",
+      "storySource": "《史记·卷八十一·廉颇蔺相如列传》(zh.wikisource.org/wiki/史記/卷081)",
+      "era": "Warring States",
+      "theme": "armchair strategy",
+      "sortOrder": 18,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "armchair-strategy",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/纸上谈兵"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0018_ex1",
+          "chinese": "他只会纸上谈兵，从来没有真正做过生意。",
+          "pinyin": "tā zhǐ huì zhǐ shàng tán bīng cóng lái méi yǒu zhēn zhèng zuò guò shēng yì",
+          "english": "He only talks theory — he has never actually run a business.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "纸",
+              "pinyin": "zhǐ",
+              "gloss": "paper",
+              "entityType": "character",
+              "entityId": "ch_32440"
+            },
+            {
+              "text": "上",
+              "pinyin": "shàng",
+              "gloss": "on",
+              "entityType": "character",
+              "entityId": "ch_19978"
+            },
+            {
+              "text": "谈",
+              "pinyin": "tán",
+              "gloss": "discuss",
+              "entityType": "character",
+              "entityId": "ch_35848"
+            },
+            {
+              "text": "兵",
+              "pinyin": "bīng",
+              "gloss": "warfare",
+              "entityType": "character",
+              "entityId": "ch_20853"
+            },
+            {
+              "text": "生意",
+              "pinyin": "shēng yì",
+              "gloss": "business",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "真正",
+              "pinyin": "zhēn zhèng",
+              "gloss": "really",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0019",
+      "chengyu": "东施效颦",
+      "pinyin": "dōng shī xiào pín",
+      "literalMeaning": "Dongshi imitates the frown",
+      "figurativeMeaning": "To imitate others awkwardly and make things worse",
+      "story": "Xishi, a famously beautiful woman, once frowned and pressed her hand to her heart because of chest pain, and people found her even lovelier. An ugly woman from the same village, known as Dongshi, copied the gesture, hoping for the same effect. Her forced frown looked so dreadful that the rich shut their doors and the poor moved away, and her clumsy imitation became a warning against copying without understanding.",
+      "storySource": "《庄子·天运》(zh.wikisource.org/wiki/莊子/天運)",
+      "era": "Warring States",
+      "theme": "blind imitation",
+      "sortOrder": 19,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "blind-imitation",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/东施效颦"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0019_ex1",
+          "chinese": "别学他熬夜工作，那不过是东施效颦。",
+          "pinyin": "bié xué tā áo yè gōng zuò nà bú guò shì dōng shī xiào pín",
+          "english": "Don't copy his habit of working late — that's just mindless imitation.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "东",
+              "pinyin": "dōng",
+              "gloss": "east",
+              "entityType": "character",
+              "entityId": "ch_19996"
+            },
+            {
+              "text": "施",
+              "pinyin": "shī",
+              "gloss": "Shi (surname)",
+              "entityType": "character",
+              "entityId": "ch_26045"
+            },
+            {
+              "text": "效",
+              "pinyin": "xiào",
+              "gloss": "imitate",
+              "entityType": "character",
+              "entityId": "ch_25928"
+            },
+            {
+              "text": "颦",
+              "pinyin": "pín",
+              "gloss": "frown",
+              "entityType": "character",
+              "entityId": "ch_46837"
+            },
+            {
+              "text": "熬夜",
+              "pinyin": "áo yè",
+              "gloss": "stay up late",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "工作",
+              "pinyin": "gōng zuò",
+              "gloss": "work",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0020",
+      "chengyu": "邯郸学步",
+      "pinyin": "hán dān xué bù",
+      "literalMeaning": "Learn the walk of Handan",
+      "figurativeMeaning": "To lose one's own identity while imitating others",
+      "story": "A young man from Shouling traveled to Handan, whose residents were said to have the most graceful way of walking. He tried to copy their gait so intently that he forgot how to walk in his own style, and in the end had to crawl back home. The tale from the Zhuangzi warns that slavish imitation can cost a person the very thing they started with.",
+      "storySource": "《庄子·秋水》(zh.wikisource.org/wiki/莊子/秋水)",
+      "era": "Warring States",
+      "theme": "losing identity",
+      "sortOrder": 20,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "losing-identity",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/邯郸学步"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0020_ex1",
+          "chinese": "学习别人的经验很好，但不要邯郸学步，失去自己的特色。",
+          "pinyin": "xué xí bié rén de jīng yàn hěn hǎo dàn bú yào hán dān xué bù shī qù zì jǐ de tè sè",
+          "english": "Learning from others is good, but don't lose your own style in the process.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "邯",
+              "pinyin": "hán",
+              "gloss": "Handan (city)",
+              "entityType": "character",
+              "entityId": "ch_46113"
+            },
+            {
+              "text": "郸",
+              "pinyin": "dān",
+              "gloss": "Handan (city)",
+              "entityType": "character",
+              "entityId": "ch_46145"
+            },
+            {
+              "text": "学",
+              "pinyin": "xué",
+              "gloss": "learn",
+              "entityType": "character",
+              "entityId": "ch_23398"
+            },
+            {
+              "text": "步",
+              "pinyin": "bù",
+              "gloss": "walk; step",
+              "entityType": "character",
+              "entityId": "ch_27493"
+            },
+            {
+              "text": "经验",
+              "pinyin": "jīng yàn",
+              "gloss": "experience",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "特色",
+              "pinyin": "tè sè",
+              "gloss": "characteristic",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0021",
+      "chengyu": "完璧归赵",
+      "pinyin": "wán bì guī zhào",
+      "literalMeaning": "Return the jade intact to Zhao",
+      "figurativeMeaning": "To return something to its rightful owner in perfect condition",
+      "story": "The king of Qin offered fifteen cities for the fabled jade of He, and the king of Zhao sent the minister Lin Xiangru to carry it. When Lin saw that Qin meant to seize the jade without paying, he threatened to smash it and himself against a pillar, forcing the Qin king to back down. He then smuggled the jade back to Zhao, returning it to its owner completely unharmed.",
+      "storySource": "《史记·卷八十一·廉颇蔺相如列传》(zh.wikisource.org/wiki/史記/卷081)",
+      "era": "Warring States",
+      "theme": "integrity",
+      "sortOrder": 21,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "integrity",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/完璧归赵"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0021_ex1",
+          "chinese": "请放心，我们一定会把这批文件完璧归赵。",
+          "pinyin": "qǐng fàng xīn wǒ men yí dìng huì bǎ zhè pī wén jiàn wán bì guī zhào",
+          "english": "Don't worry — we will return these documents to you intact.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "完",
+              "pinyin": "wán",
+              "gloss": "complete",
+              "entityType": "character",
+              "entityId": "ch_23436"
+            },
+            {
+              "text": "璧",
+              "pinyin": "bì",
+              "gloss": "jade disc",
+              "entityType": "character",
+              "entityId": "ch_43701"
+            },
+            {
+              "text": "归",
+              "pinyin": "guī",
+              "gloss": "return",
+              "entityType": "character",
+              "entityId": "ch_24402"
+            },
+            {
+              "text": "赵",
+              "pinyin": "zhào",
+              "gloss": "Zhao (state)",
+              "entityType": "character",
+              "entityId": "ch_45840"
+            },
+            {
+              "text": "文件",
+              "pinyin": "wén jiàn",
+              "gloss": "documents",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0022",
+      "chengyu": "负荆请罪",
+      "pinyin": "fù jīng qǐng zuì",
+      "literalMeaning": "Carry brambles and ask for punishment",
+      "figurativeMeaning": "To openly admit a wrong and sincerely apologize",
+      "story": "The general Lian Po, jealous of the rising minister Lin Xiangru, repeatedly insulted him. Lin, putting the state's interest first, avoided the clash. When Lian Po learned why — that Lin feared their internal feud would let Qin destroy Zhao — he was deeply ashamed. He stripped to the waist, strapped brambles to his back, and went to Lin's house to ask for punishment, and the two became close allies.",
+      "storySource": "《史记·卷八十一·廉颇蔺相如列传》(zh.wikisource.org/wiki/史記/卷081)",
+      "era": "Warring States",
+      "theme": "reconciliation",
+      "sortOrder": 22,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "reconciliation",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/负荆请罪"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0022_ex1",
+          "chinese": "他意识到自己错了，马上登门负荆请罪。",
+          "pinyin": "tā yì shí dào zì jǐ cuò le mǎ shàng dēng mén fù jīng qǐng zuì",
+          "english": "Realizing he was wrong, he went straight to the door to make a sincere apology.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "负",
+              "pinyin": "fù",
+              "gloss": "carry on back",
+              "entityType": "character",
+              "entityId": "ch_36127"
+            },
+            {
+              "text": "荆",
+              "pinyin": "jīng",
+              "gloss": "brambles",
+              "entityType": "character",
+              "entityId": "ch_33606"
+            },
+            {
+              "text": "请",
+              "pinyin": "qǐng",
+              "gloss": "request",
+              "entityType": "character",
+              "entityId": "ch_35831"
+            },
+            {
+              "text": "罪",
+              "pinyin": "zuì",
+              "gloss": "punishment",
+              "entityType": "character",
+              "entityId": "ch_32618"
+            },
+            {
+              "text": "道歉",
+              "pinyin": "dào qiàn",
+              "gloss": "apologize",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "马上",
+              "pinyin": "mǎ shàng",
+              "gloss": "immediately",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0023",
+      "chengyu": "四面楚歌",
+      "pinyin": "sì miàn chǔ gē",
+      "literalMeaning": "Chu songs on all four sides",
+      "figurativeMeaning": "To be surrounded by enemies with no way out; to be isolated and doomed",
+      "story": "At the end of his life, Xiang Yu was besieged by Liu Bang's forces at Gaixia. To break his soldiers' spirit, Liu Bang's army sang songs of Chu from every side, making Xiang Yu's troops believe their homeland had fallen and their families were lost. Hearing the Chu songs all around, even Xiang Yu despaired, and his army's will collapsed — the final blow in his downfall.",
+      "storySource": "《史记·卷七·项羽本纪》(zh.wikisource.org/wiki/史記/卷007)",
+      "era": "Qin–Han transition",
+      "theme": "isolation",
+      "sortOrder": 23,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "isolation",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/四面楚歌"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0023_ex1",
+          "chinese": "公司陷入四面楚歌的困境，很难再坚持下去了。",
+          "pinyin": "gōng sī xiàn rù sì miàn chǔ gē de kùn jìng hěn nán zài jiān chí xià qù le",
+          "english": "The company is surrounded by trouble on all sides and can hardly keep going.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "四",
+              "pinyin": "sì",
+              "gloss": "four",
+              "entityType": "character",
+              "entityId": "ch_22235"
+            },
+            {
+              "text": "面",
+              "pinyin": "miàn",
+              "gloss": "side",
+              "entityType": "character",
+              "entityId": "ch_38754"
+            },
+            {
+              "text": "楚",
+              "pinyin": "chǔ",
+              "gloss": "Chu (state)",
+              "entityType": "character",
+              "entityId": "ch_26970"
+            },
+            {
+              "text": "歌",
+              "pinyin": "gē",
+              "gloss": "song",
+              "entityType": "character",
+              "entityId": "ch_27468"
+            },
+            {
+              "text": "困境",
+              "pinyin": "kùn jìng",
+              "gloss": "predicament",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "公司",
+              "pinyin": "gōng sī",
+              "gloss": "company",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0024",
+      "chengyu": "指鹿为马",
+      "pinyin": "zhǐ lù wéi mǎ",
+      "literalMeaning": "Point at a deer and call it a horse",
+      "figurativeMeaning": "To deliberately distort the truth; to force others to accept a lie",
+      "story": "The eunuch Zhao Gao, who had seized power at the end of the Qin dynasty, presented a deer to the young Second Emperor but called it a horse. When the emperor doubted him, Zhao Gao had the courtiers back up the claim. Those who said it was a deer were later punished, while those who echoed the lie survived. The incident exposed who would obey him and who dared tell the truth.",
+      "storySource": "《史记·卷六·秦始皇本纪》(zh.wikisource.org/wiki/史記/卷006)",
+      "era": "Qin",
+      "theme": "distorting truth",
+      "sortOrder": 24,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "distorting-truth",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/指鹿为马"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0024_ex1",
+          "chinese": "在事实面前还指鹿为马，这样的人不可信。",
+          "pinyin": "zài shì shí miàn qián hái zhǐ lù wéi mǎ zhè yàng de rén bù kě xìn",
+          "english": "Someone who calls a deer a horse in the face of the facts is not to be trusted.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "指",
+              "pinyin": "zhǐ",
+              "gloss": "point at",
+              "entityType": "character",
+              "entityId": "ch_25351"
+            },
+            {
+              "text": "鹿",
+              "pinyin": "lù",
+              "gloss": "deer",
+              "entityType": "character",
+              "entityId": "ch_40575"
+            },
+            {
+              "text": "为",
+              "pinyin": "wéi",
+              "gloss": "call as",
+              "entityType": "character",
+              "entityId": "ch_20026"
+            },
+            {
+              "text": "马",
+              "pinyin": "mǎ",
+              "gloss": "horse",
+              "entityType": "character",
+              "entityId": "ch_39532"
+            },
+            {
+              "text": "事实",
+              "pinyin": "shì shí",
+              "gloss": "fact",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "相信",
+              "pinyin": "xiāng xìn",
+              "gloss": "trust",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0025",
+      "chengyu": "一鼓作气",
+      "pinyin": "yī gǔ zuò qì",
+      "literalMeaning": "At the first drumbeat, rouse the spirit",
+      "figurativeMeaning": "To do something in one determined push while morale is high",
+      "story": "Before the battle of Changshao, Duke Zhuang of Lu asked his minister Cao Gui when to attack. Cao Gui answered: at the first drumbeat, an army's courage is at its peak; by the second it weakens, and by the third it is spent. The enemy had beaten their drums three times and their spirit had drained, so Lu struck on its own first beat and won the battle.",
+      "storySource": "《左传·庄公十年》(zh.wikisource.org/wiki/左傳/莊公十年)",
+      "era": "Spring & Autumn",
+      "theme": "momentum",
+      "sortOrder": 25,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "momentum",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/一鼓作气"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0025_ex1",
+          "chinese": "趁着大家热情高涨，我们一鼓作气完成任务。",
+          "pinyin": "chèn zhe dà jiā rè qíng gāo zhǎng wǒ men yī gǔ zuò qì wán chéng rèn wu",
+          "english": "While everyone's enthusiasm is high, let's push through and finish the task in one go.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "鼓",
+              "pinyin": "gǔ",
+              "gloss": "drum",
+              "entityType": "character",
+              "entityId": "ch_40723"
+            },
+            {
+              "text": "作",
+              "pinyin": "zuò",
+              "gloss": "rouse",
+              "entityType": "character",
+              "entityId": "ch_20316"
+            },
+            {
+              "text": "气",
+              "pinyin": "qì",
+              "gloss": "spirit",
+              "entityType": "character",
+              "entityId": "ch_27668"
+            },
+            {
+              "text": "热情",
+              "pinyin": "rè qíng",
+              "gloss": "enthusiasm",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "任务",
+              "pinyin": "rèn wu",
+              "gloss": "task",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0026",
+      "chengyu": "唇亡齿寒",
+      "pinyin": "chún wáng chǐ hán",
+      "literalMeaning": "When the lips are gone, the teeth feel cold",
+      "figurativeMeaning": "Two parties share a common fate; the ruin of one endangers the other",
+      "story": "The ruler of Jin wanted to march through the state of Yu to attack the state of Guo, and offered treasure to win Yu's cooperation. The minister Gong Zhiqi warned that Yu and Guo were like lips and teeth: if Guo fell, Yu would be left exposed and would soon follow. His advice was ignored, Jin took Guo, and on the way home destroyed Yu as well — exactly as he had predicted.",
+      "storySource": "《左传·僖公五年》(zh.wikisource.org/wiki/左傳/僖公五年)",
+      "era": "Spring & Autumn",
+      "theme": "interdependence",
+      "sortOrder": 26,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "interdependence",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/唇亡齿寒"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0026_ex1",
+          "chinese": "这两个公司唇亡齿寒，一方倒了，另一方也难生存。",
+          "pinyin": "zhè liǎng gè gōng sī chún wáng chǐ hán yì fāng dǎo le lìng yì fāng yě nán shēng cún",
+          "english": "The two companies share the same fate — if one falls, the other can hardly survive.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "唇",
+              "pinyin": "chún",
+              "gloss": "lip",
+              "entityType": "character",
+              "entityId": "ch_21767"
+            },
+            {
+              "text": "亡",
+              "pinyin": "wáng",
+              "gloss": "perish",
+              "entityType": "character",
+              "entityId": "ch_20129"
+            },
+            {
+              "text": "齿",
+              "pinyin": "chǐ",
+              "gloss": "tooth",
+              "entityType": "character",
+              "entityId": "ch_40831"
+            },
+            {
+              "text": "寒",
+              "pinyin": "hán",
+              "gloss": "cold",
+              "entityType": "character",
+              "entityId": "ch_23506"
+            },
+            {
+              "text": "生存",
+              "pinyin": "shēng cún",
+              "gloss": "survive",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "公司",
+              "pinyin": "gōng sī",
+              "gloss": "company",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0027",
+      "chengyu": "愚公移山",
+      "pinyin": "yú gōng yí shān",
+      "literalMeaning": "The Foolish Old Man moves the mountains",
+      "figurativeMeaning": "To persist in a seemingly impossible task through determination and steady effort",
+      "story": "Two great mountains blocked the path in front of the home of the Foolish Old Man of the North Mountain. At nearly ninety, he resolved to level them and began carrying away rocks and earth with his family. When a wise man mocked the impossibility, the old man replied that though he would die, his sons and grandsons would continue, generation after generation — and so the mountains could not stand forever. Moved, the gods finally carried the peaks away.",
+      "storySource": "《列子·汤问》(zh.wikisource.org/wiki/列子/湯問)",
+      "era": "Warring States",
+      "theme": "perseverance",
+      "sortOrder": 27,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "perseverance",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/愚公移山"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0027_ex1",
+          "chinese": "学习中文要有愚公移山的精神，坚持就会成功。",
+          "pinyin": "xué xí zhōng wén yào yǒu yú gōng yí shān de jīng shén jiān chí jiù huì chéng gōng",
+          "english": "Learning Chinese takes the Foolish Old Man's spirit — persist and you will succeed.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "愚",
+              "pinyin": "yú",
+              "gloss": "foolish",
+              "entityType": "character",
+              "entityId": "ch_24858"
+            },
+            {
+              "text": "公",
+              "pinyin": "gōng",
+              "gloss": "old man",
+              "entityType": "character",
+              "entityId": "ch_20844"
+            },
+            {
+              "text": "移",
+              "pinyin": "yí",
+              "gloss": "move",
+              "entityType": "character",
+              "entityId": "ch_31227"
+            },
+            {
+              "text": "山",
+              "pinyin": "shān",
+              "gloss": "mountain",
+              "entityType": "character",
+              "entityId": "ch_23665"
+            },
+            {
+              "text": "中文",
+              "pinyin": "zhōng wén",
+              "gloss": "Chinese language",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "坚持",
+              "pinyin": "jiān chí",
+              "gloss": "persist",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0028",
+      "chengyu": "杞人忧天",
+      "pinyin": "qǐ rén yōu tiān",
+      "literalMeaning": "The man of Qi worries the sky will fall",
+      "figurativeMeaning": "To worry needlessly about things that will not happen",
+      "story": "A man in the state of Qi worried endlessly that the sky might fall and the earth give way, leaving no place for him to stand. He fretted so much that he could neither eat nor sleep. A friend reassured him that the sky is nothing but gathered air, the earth is solid ground beneath our feet, and neither can simply fall on us — and the anxious man finally relaxed.",
+      "storySource": "《列子·天瑞》(zh.wikisource.org/wiki/列子/天瑞)",
+      "era": "Warring States",
+      "theme": "groundless worry",
+      "sortOrder": 28,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "groundless-worry",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/杞人忧天"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0028_ex1",
+          "chinese": "别杞人忧天了，这些风险绝对不会发生。",
+          "pinyin": "bié qǐ rén yōu tiān le zhè xiē fēng xiǎn jué duì bú huì fā shēng",
+          "english": "Stop worrying needlessly — these risks will never happen.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "杞",
+              "pinyin": "qǐ",
+              "gloss": "Qi (state)",
+              "entityType": "character",
+              "entityId": "ch_42716"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "person",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            },
+            {
+              "text": "忧",
+              "pinyin": "yōu",
+              "gloss": "worry",
+              "entityType": "character",
+              "entityId": "ch_24551"
+            },
+            {
+              "text": "天",
+              "pinyin": "tiān",
+              "gloss": "sky",
+              "entityType": "character",
+              "entityId": "ch_22825"
+            },
+            {
+              "text": "风险",
+              "pinyin": "fēng xiǎn",
+              "gloss": "risk",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "发生",
+              "pinyin": "fā shēng",
+              "gloss": "happen",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0029",
+      "chengyu": "朝三暮四",
+      "pinyin": "zhāo sān mù sì",
+      "literalMeaning": "Three in the morning, four in the evening",
+      "figurativeMeaning": "To change one's position constantly; to be inconsistent or deceptive",
+      "story": "A monkey keeper told his monkeys that their ration of chestnuts would be three in the morning and four in the evening. The monkeys flew into a rage. He then offered the reverse — four in the morning and three in the evening — and the monkeys, delighted by the larger morning share, were satisfied. The total was identical, yet the trick changed their mood, and the Zhuangzi used it to mock those fooled by appearances.",
+      "storySource": "《庄子·齐物论》(zh.wikisource.org/wiki/莊子/齊物論)",
+      "era": "Warring States",
+      "theme": "deception",
+      "sortOrder": 29,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "deception",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/朝三暮四"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0029_ex1",
+          "chinese": "他的想法总是朝三暮四，让人很难相信他。",
+          "pinyin": "tā de xiǎng fǎ zǒng shì zhāo sān mù sì ràng rén hěn nán xiāng xìn tā",
+          "english": "He keeps changing his mind, which makes him hard to trust.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "朝",
+              "pinyin": "zhāo",
+              "gloss": "morning",
+              "entityType": "character",
+              "entityId": "ch_26397"
+            },
+            {
+              "text": "三",
+              "pinyin": "sān",
+              "gloss": "three",
+              "entityType": "character",
+              "entityId": "ch_19977"
+            },
+            {
+              "text": "暮",
+              "pinyin": "mù",
+              "gloss": "evening",
+              "entityType": "character",
+              "entityId": "ch_26286"
+            },
+            {
+              "text": "四",
+              "pinyin": "sì",
+              "gloss": "four",
+              "entityType": "character",
+              "entityId": "ch_22235"
+            },
+            {
+              "text": "想法",
+              "pinyin": "xiǎng fǎ",
+              "gloss": "idea",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0030",
+      "chengyu": "鹬蚌相争",
+      "pinyin": "yù bàng xiāng zhēng",
+      "literalMeaning": "The sandpiper and the clam fight",
+      "figurativeMeaning": "When two parties fight each other, a third party profits",
+      "story": "A sandpiper tried to eat a clam that had opened its shell on the riverbank. The clam clamped shut on the bird's beak, and the two struggled, neither willing to let go. A fisherman came along and easily scooped them both up. A strategist told this fable to the king of Yan to warn him that if Yan and Zhao kept fighting, Qin would be the fisherman who took them both.",
+      "storySource": "《战国策·燕策二》(zh.wikisource.org/wiki/戰國策/卷三十)",
+      "era": "Warring States",
+      "theme": "mutual harm",
+      "sortOrder": 30,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "mutual-harm",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/鹬蚌相争"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0030_ex1",
+          "chinese": "两家公司鹬蚌相争，最后让第三者得了利。",
+          "pinyin": "liǎng jiā gōng sī yù bàng xiāng zhēng zuì hòu ràng dì sān zhě dé le lì",
+          "english": "The two companies fought each other, and in the end a third party reaped the benefit.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "鹬",
+              "pinyin": "yù",
+              "gloss": "sandpiper",
+              "entityType": "character",
+              "entityId": "ch_47350"
+            },
+            {
+              "text": "蚌",
+              "pinyin": "bàng",
+              "gloss": "clam",
+              "entityType": "character",
+              "entityId": "ch_45192"
+            },
+            {
+              "text": "相",
+              "pinyin": "xiāng",
+              "gloss": "mutually",
+              "entityType": "character",
+              "entityId": "ch_30456"
+            },
+            {
+              "text": "争",
+              "pinyin": "zhēng",
+              "gloss": "fight",
+              "entityType": "character",
+              "entityId": "ch_20105"
+            },
+            {
+              "text": "最后",
+              "pinyin": "zuì hòu",
+              "gloss": "finally",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "公司",
+              "pinyin": "gōng sī",
+              "gloss": "company",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0031",
+      "chengyu": "南辕北辙",
+      "pinyin": "nán yuán běi zhé",
+      "literalMeaning": "South-going chariot tracks, northbound",
+      "figurativeMeaning": "To act in a way that works against one's stated goal; to head in the wrong direction",
+      "story": "A man told the king of Wei that he was setting out for the state of Chu — in the far south — while driving his chariot north. When asked why, he insisted his horse was fast, his provisions ample, and his driver skilled, as if these could make a northbound journey reach a southern destination. His stubborn logic showed that the faster he traveled, the farther from Chu he got.",
+      "storySource": "《战国策·魏策四》(zh.wikisource.org/wiki/戰國策/卷二十五)",
+      "era": "Warring States",
+      "theme": "self-defeating direction",
+      "sortOrder": 31,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "self-defeating-direction",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/南辕北辙"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0031_ex1",
+          "chinese": "他的努力和目标是南辕北辙，做得越多离目标越远。",
+          "pinyin": "tā de nǔ lì hé mù biāo shì nán yuán běi zhé zuò de yuè duō lí mù biāo yuè yuǎn",
+          "english": "His efforts and his goal pull in opposite directions — the more he does, the farther he gets from it.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "南",
+              "pinyin": "nán",
+              "gloss": "south",
+              "entityType": "character",
+              "entityId": "ch_21335"
+            },
+            {
+              "text": "辕",
+              "pinyin": "yuán",
+              "gloss": "chariot shaft",
+              "entityType": "character",
+              "entityId": "ch_46022"
+            },
+            {
+              "text": "北",
+              "pinyin": "běi",
+              "gloss": "north",
+              "entityType": "character",
+              "entityId": "ch_21271"
+            },
+            {
+              "text": "辙",
+              "pinyin": "zhé",
+              "gloss": "wheel track",
+              "entityType": "character",
+              "entityId": "ch_36761"
+            },
+            {
+              "text": "目标",
+              "pinyin": "mù biāo",
+              "gloss": "goal",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "努力",
+              "pinyin": "nǔ lì",
+              "gloss": "effort",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0032",
+      "chengyu": "画饼充饥",
+      "pinyin": "huà bǐng chōng jī",
+      "literalMeaning": "Draw a cake to satisfy hunger",
+      "figurativeMeaning": "To comfort oneself with empty promises or illusions",
+      "story": "When Emperor Ming of Wei asked his minister Lu Yu to recommend worthy men for office, Lu Yu's standard was character and integrity, not showy talent. The emperor compared such carefully verified appointments to drawing a cake to satisfy hunger — real, or a picture that cannot feed anyone. The phrase warns against settling for appearances that can never meet real needs.",
+      "storySource": "《三国志·魏书·卢毓传》(zh.wikisource.org/wiki/三國志/卷22)",
+      "era": "Three Kingdoms",
+      "theme": "empty promise",
+      "sortOrder": 32,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "empty-promise",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/画饼充饥"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0032_ex1",
+          "chinese": "老板只给画饼充饥式的承诺，从不加工资。",
+          "pinyin": "lǎo bǎn zhǐ gěi huà bǐng chōng jī shì de chéng nuò cóng bù jiā gōng zī",
+          "english": "The boss only offers empty promises and never raises salaries.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "画",
+              "pinyin": "huà",
+              "gloss": "draw",
+              "entityType": "character",
+              "entityId": "ch_30011"
+            },
+            {
+              "text": "饼",
+              "pinyin": "bǐng",
+              "gloss": "cake",
+              "entityType": "character",
+              "entityId": "ch_39292"
+            },
+            {
+              "text": "充",
+              "pinyin": "chōng",
+              "gloss": "fill",
+              "entityType": "character",
+              "entityId": "ch_20805"
+            },
+            {
+              "text": "饥",
+              "pinyin": "jī",
+              "gloss": "hunger",
+              "entityType": "character",
+              "entityId": "ch_39269"
+            },
+            {
+              "text": "承诺",
+              "pinyin": "chéng nuò",
+              "gloss": "promise",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "工资",
+              "pinyin": "gōng zī",
+              "gloss": "salary",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0033",
+      "chengyu": "望洋兴叹",
+      "pinyin": "wàng yáng xīng tàn",
+      "literalMeaning": "Gaze at the ocean and sigh",
+      "figurativeMeaning": "To feel powerless or inadequate in the face of something vast",
+      "story": "When the autumn floods swelled, the river god of the Yellow River was delighted by his own grandeur. But when he followed the current to the sea and saw its boundless waters, he turned his gaze across the ocean and sighed, realizing how small his pride had been. The Zhuangzi tells this to show that even great things are limited, and that recognizing one's limits is the beginning of wisdom.",
+      "storySource": "《庄子·秋水》(zh.wikisource.org/wiki/莊子/秋水)",
+      "era": "Warring States",
+      "theme": "inadequacy",
+      "sortOrder": 33,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "inadequacy",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/望洋兴叹"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0033_ex1",
+          "chinese": "看到别人的成就，他只能望洋兴叹。",
+          "pinyin": "kàn dào bié rén de chéng jiù tā zhǐ néng wàng yáng xīng tàn",
+          "english": "Looking at others' achievements, all he can do is sigh at how far they are from him.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "望",
+              "pinyin": "wàng",
+              "gloss": "gaze",
+              "entityType": "character",
+              "entityId": "ch_26395"
+            },
+            {
+              "text": "洋",
+              "pinyin": "yáng",
+              "gloss": "ocean",
+              "entityType": "character",
+              "entityId": "ch_27915"
+            },
+            {
+              "text": "兴",
+              "pinyin": "xīng",
+              "gloss": "raise",
+              "entityType": "character",
+              "entityId": "ch_20852"
+            },
+            {
+              "text": "叹",
+              "pinyin": "tàn",
+              "gloss": "sigh",
+              "entityType": "character",
+              "entityId": "ch_21497"
+            },
+            {
+              "text": "成就",
+              "pinyin": "chéng jiù",
+              "gloss": "achievement",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "别人",
+              "pinyin": "bié rén",
+              "gloss": "others",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0034",
+      "chengyu": "老马识途",
+      "pinyin": "lǎo mǎ shí tú",
+      "literalMeaning": "The old horse knows the way",
+      "figurativeMeaning": "Experience and wisdom are valuable guides in unfamiliar situations",
+      "story": "When Duke Huan of Qi led his army on an expedition, they became lost in a vast, trackless region. The minister Guan Zhong suggested letting the army's old horses take the lead, trusting that veteran animals would find the way home. The old horses picked out the route, and the troops were saved. The story honors the value of seasoned experience.",
+      "storySource": "《韩非子·说林上》(zh.wikisource.org/wiki/韓非子/說林上)",
+      "era": "Spring & Autumn",
+      "theme": "experience",
+      "sortOrder": 34,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "experience",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/老马识途"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0034_ex1",
+          "chinese": "这位老员工经验丰富，真是老马识途。",
+          "pinyin": "zhè wèi lǎo yuán gōng jīng yàn fēng fù zhēn shì lǎo mǎ shí tú",
+          "english": "This veteran employee has rich experience — truly an old horse who knows the way.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "老",
+              "pinyin": "lǎo",
+              "gloss": "old",
+              "entityType": "character",
+              "entityId": "ch_32769"
+            },
+            {
+              "text": "马",
+              "pinyin": "mǎ",
+              "gloss": "horse",
+              "entityType": "character",
+              "entityId": "ch_39532"
+            },
+            {
+              "text": "识",
+              "pinyin": "shí",
+              "gloss": "know",
+              "entityType": "character",
+              "entityId": "ch_35782"
+            },
+            {
+              "text": "途",
+              "pinyin": "tú",
+              "gloss": "way",
+              "entityType": "character",
+              "entityId": "ch_36884"
+            },
+            {
+              "text": "经验",
+              "pinyin": "jīng yàn",
+              "gloss": "experience",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "丰富",
+              "pinyin": "fēng fù",
+              "gloss": "rich",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0035",
+      "chengyu": "买椟还珠",
+      "pinyin": "mǎi dú huán zhū",
+      "literalMeaning": "Buy the box and return the pearl",
+      "figurativeMeaning": "To miss the truly valuable thing for its attractive packaging; to grasp at the trivial",
+      "story": "A merchant from the state of Chu displayed a pearl in a beautifully decorated casket, carved with fragrant wood and trimmed with gems. A buyer from Zheng was so charmed by the box that he took it and handed back the pearl inside. The fable, told by Han Fei, mocks people who are dazzled by surface trappings and discard what is truly precious.",
+      "storySource": "《韩非子·外储说左上》(zh.wikisource.org/wiki/韓非子/外儲說左上)",
+      "era": "Warring States",
+      "theme": "missing the point",
+      "sortOrder": 35,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "missing-the-point",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/买椟还珠"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0035_ex1",
+          "chinese": "只看包装不看内容，那就是买椟还珠。",
+          "pinyin": "zhǐ kàn bāo zhuāng bú kàn nèi róng nà jiù shì mǎi dú huán zhū",
+          "english": "Judging only the packaging and ignoring the content is like buying the box and returning the pearl.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "买",
+              "pinyin": "mǎi",
+              "gloss": "buy",
+              "entityType": "character",
+              "entityId": "ch_20080"
+            },
+            {
+              "text": "椟",
+              "pinyin": "dú",
+              "gloss": "casket",
+              "entityType": "character",
+              "entityId": "ch_42833"
+            },
+            {
+              "text": "还",
+              "pinyin": "huán",
+              "gloss": "return",
+              "entityType": "character",
+              "entityId": "ch_36824"
+            },
+            {
+              "text": "珠",
+              "pinyin": "zhū",
+              "gloss": "pearl",
+              "entityType": "character",
+              "entityId": "ch_29664"
+            },
+            {
+              "text": "包装",
+              "pinyin": "bāo zhuāng",
+              "gloss": "packaging",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "内容",
+              "pinyin": "nèi róng",
+              "gloss": "content",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0036",
+      "chengyu": "郑人买履",
+      "pinyin": "zhèng rén mǎi lǚ",
+      "literalMeaning": "The man of Zheng buys shoes",
+      "figurativeMeaning": "To follow rigid rules or measurements instead of using common sense",
+      "story": "A man of Zheng measured his foot for a pair of shoes, then left the measurement at home before going to market. At the shop he realized he had forgotten the note, so he hurried home to fetch it — but when he returned, the market had closed. Asked why he had not simply tried the shoes on, he replied that he trusted the measurement, not his own feet.",
+      "storySource": "《韩非子·外储说左上》(zh.wikisource.org/wiki/韓非子/外儲說左上)",
+      "era": "Warring States",
+      "theme": "inflexibility",
+      "sortOrder": 36,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "inflexibility",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/郑人买履"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0036_ex1",
+          "chinese": "做事不能像郑人买履一样，只知道按规矩来。",
+          "pinyin": "zuò shì bù néng xiàng zhèng rén mǎi lǚ yí yàng zhǐ zhī dào àn guī ju lái",
+          "english": "In doing things you can't be like the man of Zheng, following the rules without thinking.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "郑",
+              "pinyin": "zhèng",
+              "gloss": "Zheng (state)",
+              "entityType": "character",
+              "entityId": "ch_37073"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "person",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            },
+            {
+              "text": "买",
+              "pinyin": "mǎi",
+              "gloss": "buy",
+              "entityType": "character",
+              "entityId": "ch_20080"
+            },
+            {
+              "text": "履",
+              "pinyin": "lǚ",
+              "gloss": "shoe",
+              "entityType": "character",
+              "entityId": "ch_23653"
+            },
+            {
+              "text": "规矩",
+              "pinyin": "guī ju",
+              "gloss": "rules",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0037",
+      "chengyu": "一鸣惊人",
+      "pinyin": "yī míng jīng rén",
+      "literalMeaning": "One cry startles everyone",
+      "figurativeMeaning": "To remain quiet at first and then achieve something remarkable all at once",
+      "story": "King Wei of Qi had neglected his duties for years, indulging in pleasure while his state decayed. The jester Chunyu Kun told him a riddle: there is a great bird in the courtyard that neither flies nor sings — what kind of bird is it? The king understood at once, rose to action, and reformed the state so decisively that every neighboring state was taken by surprise. Such was the 'one cry' that startled the world.",
+      "storySource": "《史记·卷一百二十六·滑稽列传》(zh.wikisource.org/wiki/史記/卷126)",
+      "era": "Warring States",
+      "theme": "surprise success",
+      "sortOrder": 37,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "surprise-success",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/一鸣惊人"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0037_ex1",
+          "chinese": "她平时很低调，这次比赛却一鸣惊人，拿了第一名。",
+          "pinyin": "tā píng shí hěn dī diào zhè cì bǐ sài què yī míng jīng rén ná le dì yī míng",
+          "english": "She's usually low-key, but this time she startled everyone by winning the championship.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "鸣",
+              "pinyin": "míng",
+              "gloss": "cry",
+              "entityType": "character",
+              "entityId": "ch_40483"
+            },
+            {
+              "text": "惊",
+              "pinyin": "jīng",
+              "gloss": "startle",
+              "entityType": "character",
+              "entityId": "ch_24778"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "people",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            },
+            {
+              "text": "比赛",
+              "pinyin": "bǐ sài",
+              "gloss": "competition",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "冠军",
+              "pinyin": "guàn jūn",
+              "gloss": "champion",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0038",
+      "chengyu": "毛遂自荐",
+      "pinyin": "máo suì zì jiàn",
+      "literalMeaning": "Mao Sui recommends himself",
+      "figurativeMeaning": "To volunteer one's own services; to offer to take on a task",
+      "story": "When the state of Zhao was besieged, the prince of Pingyuan needed twenty able men to accompany him on a mission to Chu. He found only nineteen, so a man named Mao Sui stepped forward and volunteered himself. Once in Chu, when the talks stalled, Mao Sui pressed the case so forcefully that Chu agreed to send aid, saving Zhao. His bold self-recommendation became a model of taking initiative.",
+      "storySource": "《史记·卷七十六·平原君虞卿列传》(zh.wikisource.org/wiki/史記/卷076)",
+      "era": "Warring States",
+      "theme": "self-recommendation",
+      "sortOrder": 38,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "self-recommendation",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/毛遂自荐"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0038_ex1",
+          "chinese": "没人愿意负责这个项目，他只好毛遂自荐。",
+          "pinyin": "méi rén yuàn yì fù zé zhè gè xiàng mù tā zhǐ hǎo máo suì zì jiàn",
+          "english": "No one wanted to take charge of the project, so he had to volunteer himself.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "毛",
+              "pinyin": "máo",
+              "gloss": "Mao (surname)",
+              "entityType": "character",
+              "entityId": "ch_27611"
+            },
+            {
+              "text": "遂",
+              "pinyin": "suì",
+              "gloss": "Sui (given name)",
+              "entityType": "character",
+              "entityId": "ch_36930"
+            },
+            {
+              "text": "自",
+              "pinyin": "zì",
+              "gloss": "oneself",
+              "entityType": "character",
+              "entityId": "ch_33258"
+            },
+            {
+              "text": "荐",
+              "pinyin": "jiàn",
+              "gloss": "recommend",
+              "entityType": "character",
+              "entityId": "ch_33616"
+            },
+            {
+              "text": "项目",
+              "pinyin": "xiàng mù",
+              "gloss": "project",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "负责",
+              "pinyin": "fù zé",
+              "gloss": "be responsible",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0039",
+      "chengyu": "脱颖而出",
+      "pinyin": "tuō yǐng ér chū",
+      "literalMeaning": "The awl point emerges from the bag",
+      "figurativeMeaning": "To stand out from the crowd; for talent to reveal itself",
+      "story": "When Mao Sui volunteered to join the prince of Pingyuan's mission, the prince doubted his ability, noting that a sharp man would have stood out long ago, like an awl in a bag. Mao Sui replied that he had never been placed in the bag — had he been, his point would not merely have shown, the whole awl would have emerged. On the mission to Chu, he proved exactly that, saving Zhao through his eloquence.",
+      "storySource": "《史记·卷七十六·平原君虞卿列传》(zh.wikisource.org/wiki/史記/卷076)",
+      "era": "Warring States",
+      "theme": "standing out",
+      "sortOrder": 39,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "standing-out",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/脱颖而出"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0039_ex1",
+          "chinese": "在这个行业里，只有真正优秀的人才能脱颖而出。",
+          "pinyin": "zài zhè gè háng yè lǐ zhǐ yǒu zhēn zhèng yōu xiù de rén cái néng tuō yǐng ér chū",
+          "english": "In this industry, only truly outstanding people can stand out from the crowd.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "脱",
+              "pinyin": "tuō",
+              "gloss": "emerge",
+              "entityType": "character",
+              "entityId": "ch_33073"
+            },
+            {
+              "text": "颖",
+              "pinyin": "yǐng",
+              "gloss": "awl point",
+              "entityType": "character",
+              "entityId": "ch_39062"
+            },
+            {
+              "text": "而",
+              "pinyin": "ér",
+              "gloss": "and then",
+              "entityType": "character",
+              "entityId": "ch_32780"
+            },
+            {
+              "text": "出",
+              "pinyin": "chū",
+              "gloss": "come out",
+              "entityType": "character",
+              "entityId": "ch_20986"
+            },
+            {
+              "text": "行业",
+              "pinyin": "háng yè",
+              "gloss": "industry",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "优秀",
+              "pinyin": "yōu xiù",
+              "gloss": "outstanding",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0040",
+      "chengyu": "围魏救赵",
+      "pinyin": "wéi wèi jiù zhào",
+      "literalMeaning": "Besiege Wei to rescue Zhao",
+      "figurativeMeaning": "To relieve pressure on one front by attacking another; an indirect strategy",
+      "story": "When the state of Wei besieged the Zhao capital of Handan, the general Tian Ji and the strategist Sun Bin were sent to help Zhao. Instead of marching straight to the siege, Sun Bin led his army to attack Wei's own capital, forcing the Wei army to rush home to defend it. As they hurried back, Sun Bin ambushed them at Guiling and defeated them, lifting the siege of Zhao without ever fighting there.",
+      "storySource": "《史记·卷六十五·孙子吴起列传》(zh.wikisource.org/wiki/史記/卷065)",
+      "era": "Warring States",
+      "theme": "indirect strategy",
+      "sortOrder": 40,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "indirect-strategy",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/围魏救赵"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0040_ex1",
+          "chinese": "与其正面竞争，不如围魏救赵，从别的方向突破。",
+          "pinyin": "yǔ qí zhèng miàn jìng zhēng bù rú wéi wèi jiù zhào cóng bié de fāng xiàng tū pò",
+          "english": "Rather than competing head-on, it's better to attack indirectly and break through from another direction.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "围",
+              "pinyin": "wéi",
+              "gloss": "besiege",
+              "entityType": "character",
+              "entityId": "ch_22260"
+            },
+            {
+              "text": "魏",
+              "pinyin": "wèi",
+              "gloss": "Wei (state)",
+              "entityType": "character",
+              "entityId": "ch_47077"
+            },
+            {
+              "text": "救",
+              "pinyin": "jiù",
+              "gloss": "rescue",
+              "entityType": "character",
+              "entityId": "ch_25937"
+            },
+            {
+              "text": "赵",
+              "pinyin": "zhào",
+              "gloss": "Zhao (state)",
+              "entityType": "character",
+              "entityId": "ch_45840"
+            },
+            {
+              "text": "竞争",
+              "pinyin": "jìng zhēng",
+              "gloss": "compete",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "方向",
+              "pinyin": "fāng xiàng",
+              "gloss": "direction",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0041",
+      "chengyu": "三令五申",
+      "pinyin": "sān lìng wǔ shēn",
+      "literalMeaning": "Order three times, repeat five times",
+      "figurativeMeaning": "To give orders or instructions repeatedly for emphasis",
+      "story": "The military theorist Sun Wu was asked by the king of Wu to train a company of palace ladies. When the ladies laughed and ignored his commands, Sun Wu repeated the orders clearly several times, and still they disobeyed. He then executed the two captains leading them, after which the troupe marched with perfect discipline. His repeated, firm commands taught a lesson about the seriousness of orders.",
+      "storySource": "《史记·卷六十五·孙子吴起列传》(zh.wikisource.org/wiki/史記/卷065)",
+      "era": "Spring & Autumn",
+      "theme": "discipline",
+      "sortOrder": 41,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "discipline",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/三令五申"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0041_ex1",
+          "chinese": "学校三令五申，禁止学生在考试中作弊。",
+          "pinyin": "xué xiào sān lìng wǔ shēn jìn zhǐ xué shēng zài kǎo shì zhōng zuò bì",
+          "english": "The school has repeatedly and clearly forbidden students from cheating on exams.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "三",
+              "pinyin": "sān",
+              "gloss": "three",
+              "entityType": "character",
+              "entityId": "ch_19977"
+            },
+            {
+              "text": "令",
+              "pinyin": "lìng",
+              "gloss": "order",
+              "entityType": "character",
+              "entityId": "ch_20196"
+            },
+            {
+              "text": "五",
+              "pinyin": "wǔ",
+              "gloss": "five",
+              "entityType": "character",
+              "entityId": "ch_20116"
+            },
+            {
+              "text": "申",
+              "pinyin": "shēn",
+              "gloss": "repeat",
+              "entityType": "character",
+              "entityId": "ch_30003"
+            },
+            {
+              "text": "考试",
+              "pinyin": "kǎo shì",
+              "gloss": "exam",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "学校",
+              "pinyin": "xué xiào",
+              "gloss": "school",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0042",
+      "chengyu": "背水一战",
+      "pinyin": "bèi shuǐ yī zhàn",
+      "literalMeaning": "Fight with one's back to the river",
+      "figurativeMeaning": "To make a last stand; to fight with no possibility of retreat",
+      "story": "At the battle of Jingxing, the general Han Xin placed his army with their backs to the river, a position usually considered disastrous because there was no room to retreat. His officers were baffled, but Han Xin knew his men would fight desperately when retreat was impossible, while the enemy would grow careless with apparent victory at hand. His gamble worked: his troops fought ferociously and won a decisive victory.",
+      "storySource": "《史记·卷九十二·淮阴侯列传》(zh.wikisource.org/wiki/史記/卷092)",
+      "era": "Qin–Han transition",
+      "theme": "do-or-die",
+      "sortOrder": 42,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "do-or-die",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/背水一战"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0042_ex1",
+          "chinese": "决赛就是背水一战，没有退路，只能全力一搏。",
+          "pinyin": "jué sài jiù shì bèi shuǐ yī zhàn méi yǒu tuì lù zhǐ néng quán lì yī bó",
+          "english": "The final is a do-or-die battle — there's no retreat, so we can only give it everything.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "背",
+              "pinyin": "bèi",
+              "gloss": "back",
+              "entityType": "character",
+              "entityId": "ch_32972"
+            },
+            {
+              "text": "水",
+              "pinyin": "shuǐ",
+              "gloss": "water",
+              "entityType": "character",
+              "entityId": "ch_27698"
+            },
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "战",
+              "pinyin": "zhàn",
+              "gloss": "fight",
+              "entityType": "character",
+              "entityId": "ch_25112"
+            },
+            {
+              "text": "决赛",
+              "pinyin": "jué sài",
+              "gloss": "final",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "退路",
+              "pinyin": "tuì lù",
+              "gloss": "way of retreat",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0043",
+      "chengyu": "温故知新",
+      "pinyin": "wēn gù zhī xīn",
+      "literalMeaning": "Review the old and know the new",
+      "figurativeMeaning": "To gain new understanding by reviewing what one has already learned",
+      "story": "Confucius taught that a person who can review what they have already studied and draw fresh insight from it is fit to be a teacher. For him, learning was not a matter of piling up facts but of deepening understanding through reflection on familiar material. Reviewing the old is how new meaning is found.",
+      "storySource": "《论语·为政》(zh.wikisource.org/wiki/論語/為政)",
+      "era": "Spring & Autumn",
+      "theme": "review",
+      "sortOrder": 43,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "review",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/温故知新"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0043_ex1",
+          "chinese": "复习以前学过的内容，可以温故知新。",
+          "pinyin": "fù xí yǐ qián xué guò de nèi róng kě yǐ wēn gù zhī xīn",
+          "english": "Reviewing what you learned before lets you gain new understanding from it.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "温",
+              "pinyin": "wēn",
+              "gloss": "review",
+              "entityType": "character",
+              "entityId": "ch_28201"
+            },
+            {
+              "text": "故",
+              "pinyin": "gù",
+              "gloss": "old",
+              "entityType": "character",
+              "entityId": "ch_25925"
+            },
+            {
+              "text": "知",
+              "pinyin": "zhī",
+              "gloss": "know",
+              "entityType": "character",
+              "entityId": "ch_30693"
+            },
+            {
+              "text": "新",
+              "pinyin": "xīn",
+              "gloss": "new",
+              "entityType": "character",
+              "entityId": "ch_26032"
+            },
+            {
+              "text": "复习",
+              "pinyin": "fù xí",
+              "gloss": "review",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "内容",
+              "pinyin": "nèi róng",
+              "gloss": "content",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0044",
+      "chengyu": "不耻下问",
+      "pinyin": "bù chǐ xià wèn",
+      "literalMeaning": "Not ashamed to ask one's inferiors",
+      "figurativeMeaning": "To be humble enough to learn from anyone, regardless of status",
+      "story": "Confucius praised his disciple Zi Gong, who showed that he was not ashamed to ask questions of those beneath him in rank. Confucius regarded the willingness to learn from anyone as a mark of true cultivation, for knowledge does not care about status. The Analects hold up such humility as a virtue for scholars and rulers alike.",
+      "storySource": "《论语·公冶长》(zh.wikisource.org/wiki/論語/公冶長)",
+      "era": "Spring & Autumn",
+      "theme": "humility",
+      "sortOrder": 44,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "humility",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/不耻下问"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0044_ex1",
+          "chinese": "他很谦虚，经常不耻下问，向年轻人学习新知识。",
+          "pinyin": "tā hěn qiān xū jīng cháng bù chǐ xià wèn xiàng nián qīng rén xué xí xīn zhī shi",
+          "english": "He is very modest and often humbles himself to learn new things from younger people.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "不",
+              "pinyin": "bù",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "耻",
+              "pinyin": "chǐ",
+              "gloss": "be ashamed",
+              "entityType": "character",
+              "entityId": "ch_32827"
+            },
+            {
+              "text": "下",
+              "pinyin": "xià",
+              "gloss": "inferior",
+              "entityType": "character",
+              "entityId": "ch_19979"
+            },
+            {
+              "text": "问",
+              "pinyin": "wèn",
+              "gloss": "ask",
+              "entityType": "character",
+              "entityId": "ch_38382"
+            },
+            {
+              "text": "谦虚",
+              "pinyin": "qiān xū",
+              "gloss": "modest",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "知识",
+              "pinyin": "zhī shi",
+              "gloss": "knowledge",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0045",
+      "chengyu": "任重道远",
+      "pinyin": "rèn zhòng dào yuǎn",
+      "literalMeaning": "The burden is heavy and the road is long",
+      "figurativeMeaning": "To bear a great responsibility that requires long, sustained effort",
+      "story": "The disciple Zengzi taught that a man of true purpose must be strong and resolute, for his burden is heavy and his road is long. The burden is benevolence — nothing heavier — and the road ends only in death — nothing longer. The Analects use the image to describe the lifelong commitment of the exemplary person to a noble ideal.",
+      "storySource": "《论语·泰伯》(zh.wikisource.org/wiki/論語/泰伯)",
+      "era": "Spring & Autumn",
+      "theme": "responsibility",
+      "sortOrder": 45,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "responsibility",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/任重道远"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0045_ex1",
+          "chinese": "教育改革任重道远，需要长期努力。",
+          "pinyin": "jiào yù gǎi gé rèn zhòng dào yuǎn xū yào cháng qī nǔ lì",
+          "english": "Educational reform carries a heavy burden and a long road; it needs sustained effort.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "任",
+              "pinyin": "rèn",
+              "gloss": "bear",
+              "entityType": "character",
+              "entityId": "ch_20219"
+            },
+            {
+              "text": "重",
+              "pinyin": "zhòng",
+              "gloss": "heavy",
+              "entityType": "character",
+              "entityId": "ch_37325"
+            },
+            {
+              "text": "道",
+              "pinyin": "dào",
+              "gloss": "road",
+              "entityType": "character",
+              "entityId": "ch_36947"
+            },
+            {
+              "text": "远",
+              "pinyin": "yuǎn",
+              "gloss": "far",
+              "entityType": "character",
+              "entityId": "ch_36828"
+            },
+            {
+              "text": "教育",
+              "pinyin": "jiào yù",
+              "gloss": "education",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "改革",
+              "pinyin": "gǎi gé",
+              "gloss": "reform",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0046",
+      "chengyu": "三人成虎",
+      "pinyin": "sān rén chéng hǔ",
+      "literalMeaning": "Three people make a tiger",
+      "figurativeMeaning": "A rumor repeated by enough people comes to be believed as fact",
+      "story": "When Pang Gong went on a mission to the state of Zhao, he asked the king of Wei whether he would believe that a tiger was roaming the market if one person said so. The king said no. If two said so? Still doubtful. If three? The king admitted he would believe it. But no tiger is in the market — it is only rumor. Yet when slanderers later spoke of Pang Gong, the king indeed came to doubt his loyalty, exactly as the fable warned.",
+      "storySource": "《战国策·魏策二》(zh.wikisource.org/wiki/戰國策/卷二十三)",
+      "era": "Warring States",
+      "theme": "rumor",
+      "sortOrder": 46,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "rumor",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/三人成虎"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0046_ex1",
+          "chinese": "网上到处传，三人成虎，很多人就信了。",
+          "pinyin": "wǎng shàng dào chù chuán sān rén chéng hǔ hěn duō rén jiù xìn le",
+          "english": "The rumor spread all over the internet, and once enough people repeated it, many began to believe it.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "三",
+              "pinyin": "sān",
+              "gloss": "three",
+              "entityType": "character",
+              "entityId": "ch_19977"
+            },
+            {
+              "text": "人",
+              "pinyin": "rén",
+              "gloss": "people",
+              "entityType": "character",
+              "entityId": "ch_20154"
+            },
+            {
+              "text": "成",
+              "pinyin": "chéng",
+              "gloss": "become",
+              "entityType": "character",
+              "entityId": "ch_25104"
+            },
+            {
+              "text": "虎",
+              "pinyin": "hǔ",
+              "gloss": "tiger",
+              "entityType": "character",
+              "entityId": "ch_34382"
+            },
+            {
+              "text": "网上",
+              "pinyin": "wǎng shàng",
+              "gloss": "online",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0047",
+      "chengyu": "惊弓之鸟",
+      "pinyin": "jīng gōng zhī niǎo",
+      "literalMeaning": "A bird startled by the bowstring",
+      "figurativeMeaning": "Someone traumatized by past experience who panics at the slightest reminder",
+      "story": "The archer Geng Lei was boasting before the king of Wei that he could bring down a bird with a bow but no arrow. When a wild goose flew over, he drew his bow without loosing a shaft, and the bird fell. The goose had been injured by an arrow before and still flew with fear; the mere twang of the bowstring startled it so badly that its wound reopened and it fell from the sky.",
+      "storySource": "《战国策·楚策四》(zh.wikisource.org/wiki/戰國策/卷十七)",
+      "era": "Warring States",
+      "theme": "trauma",
+      "sortOrder": 47,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "trauma",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/惊弓之鸟"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0047_ex1",
+          "chinese": "经历过那次失败，他就像惊弓之鸟，一点小问题就怕。",
+          "pinyin": "jīng lì guò nà cì shī bài tā jiù xiàng jīng gōng zhī niǎo yì diǎn xiǎo wèn tí jiù pà",
+          "english": "After that failure, he's like a bird startled by a bowstring — he panics at the smallest problem.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "惊",
+              "pinyin": "jīng",
+              "gloss": "startled",
+              "entityType": "character",
+              "entityId": "ch_24778"
+            },
+            {
+              "text": "弓",
+              "pinyin": "gōng",
+              "gloss": "bow",
+              "entityType": "character",
+              "entityId": "ch_24339"
+            },
+            {
+              "text": "之",
+              "pinyin": "zhī",
+              "gloss": "of",
+              "entityType": "character",
+              "entityId": "ch_20043"
+            },
+            {
+              "text": "鸟",
+              "pinyin": "niǎo",
+              "gloss": "bird",
+              "entityType": "character",
+              "entityId": "ch_40479"
+            },
+            {
+              "text": "失败",
+              "pinyin": "shī bài",
+              "gloss": "failure",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "经历",
+              "pinyin": "jīng lì",
+              "gloss": "experience",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0048",
+      "chengyu": "乐不思蜀",
+      "pinyin": "lè bù sī shǔ",
+      "literalMeaning": "So happy as to forget Shu",
+      "figurativeMeaning": "To be so content with one's present comfort that one forgets home or duty",
+      "story": "After the state of Shu fell to Wei, its ruler Liu Shan was brought to the Wei capital and given a comfortable life. When asked whether he missed Shu, he cheerfully replied that he was so happy here that he did not think of Shu at all. His own minister quietly urged him to weep and speak of longing instead, but the simple-minded ruler's careless answer made him a byword for complacent forgetfulness.",
+      "storySource": "《三国志·蜀书·后主传》(zh.wikisource.org/wiki/三國志/卷33)",
+      "era": "Three Kingdoms",
+      "theme": "complacency",
+      "sortOrder": 48,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "complacency",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/乐不思蜀"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0048_ex1",
+          "chinese": "在国外生活久了，他有些乐不思蜀，不想回国了。",
+          "pinyin": "zài guó wài shēng huó jiǔ le tā yǒu xiē lè bù sī shǔ bù xiǎng huí guó le",
+          "english": "After living abroad so long, he's grown so comfortable that he no longer wants to go home.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "乐",
+              "pinyin": "lè",
+              "gloss": "happy",
+              "entityType": "character",
+              "entityId": "ch_20048"
+            },
+            {
+              "text": "不",
+              "pinyin": "bù",
+              "gloss": "not",
+              "entityType": "character",
+              "entityId": "ch_19981"
+            },
+            {
+              "text": "思",
+              "pinyin": "sī",
+              "gloss": "think of",
+              "entityType": "character",
+              "entityId": "ch_24605"
+            },
+            {
+              "text": "蜀",
+              "pinyin": "shǔ",
+              "gloss": "Shu",
+              "entityType": "character",
+              "entityId": "ch_45242"
+            },
+            {
+              "text": "生活",
+              "pinyin": "shēng huó",
+              "gloss": "life",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "国外",
+              "pinyin": "guó wài",
+              "gloss": "abroad",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0049",
+      "chengyu": "前车之鉴",
+      "pinyin": "qián chē zhī jiàn",
+      "literalMeaning": "The overturned cart ahead as a warning",
+      "figurativeMeaning": "To learn from the mistakes of those who came before",
+      "story": "The Han scholar Jia Yi warned that the lessons of the fallen Qin dynasty were like the tracks of an overturned cart on the road ahead: those who follow can see the wreck and avoid the same fate. He urged the Han court to govern with virtue and mercy rather than repeat Qin's harshness. The phrase reminds us that history is a warning we ignore at our peril.",
+      "storySource": "《汉书·贾谊传》(zh.wikisource.org/wiki/漢書/卷048)",
+      "era": "Han",
+      "theme": "caution",
+      "sortOrder": 49,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "caution",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/前车之鉴"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0049_ex1",
+          "chinese": "以前公司的失败就是我们今天的前车之鉴。",
+          "pinyin": "yǐ qián gōng sī de shī bài jiù shì wǒ men jīn tiān de qián chē zhī jiàn",
+          "english": "The company's past failures are a warning we should heed today.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "前",
+              "pinyin": "qián",
+              "gloss": "ahead",
+              "entityType": "character",
+              "entityId": "ch_21069"
+            },
+            {
+              "text": "车",
+              "pinyin": "chē",
+              "gloss": "cart",
+              "entityType": "character",
+              "entityId": "ch_36710"
+            },
+            {
+              "text": "之",
+              "pinyin": "zhī",
+              "gloss": "of",
+              "entityType": "character",
+              "entityId": "ch_20043"
+            },
+            {
+              "text": "鉴",
+              "pinyin": "jiàn",
+              "gloss": "warning",
+              "entityType": "character",
+              "entityId": "ch_37492"
+            },
+            {
+              "text": "公司",
+              "pinyin": "gōng sī",
+              "gloss": "company",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "今天",
+              "pinyin": "jīn tiān",
+              "gloss": "today",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0050",
+      "chengyu": "居安思危",
+      "pinyin": "jū ān sī wēi",
+      "literalMeaning": "In times of safety, think of danger",
+      "figurativeMeaning": "To stay vigilant and prepare for trouble even when things are going well",
+      "story": "The minister Wei Jiang of Jin offered this advice to Duke Dao of Jin after a military success: to be prepared for danger in times of peace is the way to guard against harm. The duke praised the counsel and rewarded him. The Analects-era ideal of constant vigilance — never growing complacent in good fortune — has made the phrase a classic guide for rulers.",
+      "storySource": "《左传·襄公十一年》(zh.wikisource.org/wiki/左傳/襄公十一年)",
+      "era": "Spring & Autumn",
+      "theme": "vigilance",
+      "sortOrder": 50,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "vigilance",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/居安思危"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0050_ex1",
+          "chinese": "生意好的时候也要居安思危，为未来做准备。",
+          "pinyin": "shēng yì hǎo de shí hou yě yào jū ān sī wēi wèi wèi lái zuò zhǔn bèi",
+          "english": "Even when business is good, you must stay vigilant and prepare for the future.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "居",
+              "pinyin": "jū",
+              "gloss": "dwell in",
+              "entityType": "character",
+              "entityId": "ch_23621"
+            },
+            {
+              "text": "安",
+              "pinyin": "ān",
+              "gloss": "safety",
+              "entityType": "character",
+              "entityId": "ch_23433"
+            },
+            {
+              "text": "思",
+              "pinyin": "sī",
+              "gloss": "think of",
+              "entityType": "character",
+              "entityId": "ch_24605"
+            },
+            {
+              "text": "危",
+              "pinyin": "wēi",
+              "gloss": "danger",
+              "entityType": "character",
+              "entityId": "ch_21361"
+            },
+            {
+              "text": "生意",
+              "pinyin": "shēng yì",
+              "gloss": "business",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "未来",
+              "pinyin": "wèi lái",
+              "gloss": "future",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0051",
+      "chengyu": "学富五车",
+      "pinyin": "xué fù wǔ chē",
+      "literalMeaning": "Learned enough to fill five carts",
+      "figurativeMeaning": "To be extremely learned; to have read a vast amount",
+      "story": "In the Zhuangzi, the philosopher Hui Shi is described as a man of many talents and knowledge so vast that his books filled five carts. The image of cartloads of writing came to stand for immense erudition. Though Zhuangzi sometimes mocked Hui Shi's cleverness, the idiom celebrates the ideal of deep, wide learning.",
+      "storySource": "《庄子·天下》(zh.wikisource.org/wiki/莊子/天下)",
+      "era": "Warring States",
+      "theme": "erudition",
+      "sortOrder": 51,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "erudition",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/学富五车"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0051_ex1",
+          "chinese": "这位教授学富五车，讲起课来旁征博引。",
+          "pinyin": "zhè wèi jiào shòu xué fù wǔ chē jiǎng qǐ kè lái páng zhēng bó yǐn",
+          "english": "This professor is deeply learned and draws on all kinds of sources in his lectures.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "学",
+              "pinyin": "xué",
+              "gloss": "learning",
+              "entityType": "character",
+              "entityId": "ch_23398"
+            },
+            {
+              "text": "富",
+              "pinyin": "fù",
+              "gloss": "rich",
+              "entityType": "character",
+              "entityId": "ch_23500"
+            },
+            {
+              "text": "五",
+              "pinyin": "wǔ",
+              "gloss": "five",
+              "entityType": "character",
+              "entityId": "ch_20116"
+            },
+            {
+              "text": "车",
+              "pinyin": "chē",
+              "gloss": "cart",
+              "entityType": "character",
+              "entityId": "ch_36710"
+            },
+            {
+              "text": "教授",
+              "pinyin": "jiào shòu",
+              "gloss": "professor",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0052",
+      "chengyu": "出类拔萃",
+      "pinyin": "chū lèi bá cuì",
+      "literalMeaning": "Stand out from the crowd and rise above the rest",
+      "figurativeMeaning": "To be exceptionally outstanding among one's peers",
+      "story": "Mencius's disciple Gong Sun Chou asked how his master compared with the sages of old. Mencius replied that Confucius surpassed all others in his grasp of the Way, standing above the crowd the way ordinary men and women rise above animals — head and shoulders beyond his kind. The phrase came to describe anyone whose excellence sets them apart.",
+      "storySource": "《孟子·公孙丑上》(zh.wikisource.org/wiki/孟子/公孫丑上)",
+      "era": "Warring States",
+      "theme": "excellence",
+      "sortOrder": 52,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "excellence",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/出类拔萃"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0052_ex1",
+          "chinese": "在所有申请者中，他的能力出类拔萃。",
+          "pinyin": "zài suǒ yǒu shēn qǐng zhě zhōng tā de néng lì chū lèi bá cuì",
+          "english": "Among all the applicants, his ability stands head and shoulders above the rest.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "出",
+              "pinyin": "chū",
+              "gloss": "emerge",
+              "entityType": "character",
+              "entityId": "ch_20986"
+            },
+            {
+              "text": "类",
+              "pinyin": "lèi",
+              "gloss": "kind",
+              "entityType": "character",
+              "entityId": "ch_31867"
+            },
+            {
+              "text": "拔",
+              "pinyin": "bá",
+              "gloss": "rise above",
+              "entityType": "character",
+              "entityId": "ch_25300"
+            },
+            {
+              "text": "萃",
+              "pinyin": "cuì",
+              "gloss": "the select",
+              "entityType": "character",
+              "entityId": "ch_44994"
+            },
+            {
+              "text": "能力",
+              "pinyin": "néng lì",
+              "gloss": "ability",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "所有",
+              "pinyin": "suǒ yǒu",
+              "gloss": "all",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0053",
+      "chengyu": "缘木求鱼",
+      "pinyin": "yuán mù qiú yú",
+      "literalMeaning": "Climb a tree to look for fish",
+      "figurativeMeaning": "To go about something in a way that can never work; to seek the impossible",
+      "story": "Mencius asked King Xuan of Qi, who wished to dominate all the states by military force, whether such a goal was attainable. When the king grew uneasy, Mencius compared his ambition to climbing a tree in search of fish: the method guarantees failure. Fish live in water, not in trees, and so no amount of effort spent climbing will ever produce a catch.",
+      "storySource": "《孟子·梁惠王上》(zh.wikisource.org/wiki/孟子/梁惠王上)",
+      "era": "Warring States",
+      "theme": "wrong approach",
+      "sortOrder": 53,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "wrong-approach",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/缘木求鱼"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0053_ex1",
+          "chinese": "不改变方法就想成功，那是缘木求鱼。",
+          "pinyin": "bù gǎi biàn fāng fǎ jiù xiǎng chéng gōng nà shì yuán mù qiú yú",
+          "english": "Expecting success without changing your methods is like climbing a tree to catch fish.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "缘",
+              "pinyin": "yuán",
+              "gloss": "climb along",
+              "entityType": "character",
+              "entityId": "ch_32536"
+            },
+            {
+              "text": "木",
+              "pinyin": "mù",
+              "gloss": "tree",
+              "entityType": "character",
+              "entityId": "ch_26408"
+            },
+            {
+              "text": "求",
+              "pinyin": "qiú",
+              "gloss": "seek",
+              "entityType": "character",
+              "entityId": "ch_27714"
+            },
+            {
+              "text": "鱼",
+              "pinyin": "yú",
+              "gloss": "fish",
+              "entityType": "character",
+              "entityId": "ch_40060"
+            },
+            {
+              "text": "方法",
+              "pinyin": "fāng fǎ",
+              "gloss": "method",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0054",
+      "chengyu": "一诺千金",
+      "pinyin": "yī nuò qiān jīn",
+      "literalMeaning": "One promise worth a thousand gold pieces",
+      "figurativeMeaning": "A person of absolute trustworthiness whose word can be relied upon",
+      "story": "Ji Bu of Chu was famous for keeping his word so faithfully that people said a promise from him was worth more than a hundred catties of gold. Even his enemies respected his integrity, and his reputation for reliability shielded him when he was hunted. The Records of the Grand Historian preserve the saying that his single pledge outweighed a fortune.",
+      "storySource": "《史记·卷一百·季布栾布列传》(zh.wikisource.org/wiki/史記/卷100)",
+      "era": "Qin–Han transition",
+      "theme": "trustworthiness",
+      "sortOrder": 54,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "trustworthiness",
+        "eraBasis": "passage",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/一诺千金"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0054_ex1",
+          "chinese": "他是个一诺千金的人，答应的事一定做到。",
+          "pinyin": "tā shì gè yī nuò qiān jīn de rén dā yìng de shì yí dìng zuò dào",
+          "english": "He's a man of his word — whatever he promises, he delivers.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "一",
+              "pinyin": "yī",
+              "gloss": "one",
+              "entityType": "character",
+              "entityId": "ch_19968"
+            },
+            {
+              "text": "诺",
+              "pinyin": "nuò",
+              "gloss": "promise",
+              "entityType": "character",
+              "entityId": "ch_35834"
+            },
+            {
+              "text": "千",
+              "pinyin": "qiān",
+              "gloss": "thousand",
+              "entityType": "character",
+              "entityId": "ch_21315"
+            },
+            {
+              "text": "金",
+              "pinyin": "jīn",
+              "gloss": "gold",
+              "entityType": "character",
+              "entityId": "ch_37329"
+            },
+            {
+              "text": "答应",
+              "pinyin": "dā yìng",
+              "gloss": "promise",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "content_id": "cy_0055",
+      "chengyu": "悬梁刺股",
+      "pinyin": "xuán liáng cì gǔ",
+      "literalMeaning": "Tie one's hair to a beam and prick one's thigh with an awl",
+      "figurativeMeaning": "To study with extreme diligence, even denying oneself rest",
+      "story": "Two scholars' devotion to study became legendary. Sun Jing tied his hair to the roof beam so that if he nodded off, the tug would wake him. Su Qin pricked his own thigh with an awl to drive away drowsiness while studying late into the night, going on to become a celebrated strategist. Their harsh self-discipline made them models of relentless effort.",
+      "storySource": "《战国策·秦策一》(zh.wikisource.org/wiki/戰國策/卷三)",
+      "era": "Warring States",
+      "theme": "diligence",
+      "sortOrder": 55,
+      "metadata": {
+        "source": "CC-CEDICT",
+        "family": "diligence",
+        "wiktionaryUrl": "https://zh.wiktionary.org/wiki/悬梁刺股"
+      },
+      "examples": [
+        {
+          "content_id": "cy_0055_ex1",
+          "chinese": "他悬梁刺股地学习，终于考上了最好的大学。",
+          "pinyin": "tā xuán liáng cì gǔ de xué xí zhōng yú kǎo shàng le zuì hǎo de dà xué",
+          "english": "He studied with tireless diligence and finally got into the best university.",
+          "sortOrder": 1,
+          "segments": [
+            {
+              "text": "悬",
+              "pinyin": "xuán",
+              "gloss": "hang",
+              "entityType": "character",
+              "entityId": "ch_24748"
+            },
+            {
+              "text": "梁",
+              "pinyin": "liáng",
+              "gloss": "beam",
+              "entityType": "character",
+              "entityId": "ch_26753"
+            },
+            {
+              "text": "刺",
+              "pinyin": "cì",
+              "gloss": "prick",
+              "entityType": "character",
+              "entityId": "ch_21050"
+            },
+            {
+              "text": "股",
+              "pinyin": "gǔ",
+              "gloss": "thigh",
+              "entityType": "character",
+              "entityId": "ch_32929"
+            },
+            {
+              "text": "大学",
+              "pinyin": "dà xué",
+              "gloss": "university",
+              "entityType": null,
+              "entityId": null
+            },
+            {
+              "text": "学习",
+              "pinyin": "xué xí",
+              "gloss": "study",
+              "entityType": null,
+              "entityId": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "fromChengyuContentId": "cy_0001",
+      "toChengyuContentId": "cy_0042",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0042",
+      "toChengyuContentId": "cy_0001",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0001",
+      "toChengyuContentId": "cy_0016",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0016",
+      "toChengyuContentId": "cy_0027",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0019",
+      "toChengyuContentId": "cy_0020",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0020",
+      "toChengyuContentId": "cy_0019",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0009",
+      "toChengyuContentId": "cy_0010",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0018",
+      "toChengyuContentId": "cy_0004",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0002",
+      "toChengyuContentId": "cy_0036",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0035",
+      "toChengyuContentId": "cy_0036",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0008",
+      "toChengyuContentId": "cy_0051",
+      "relationType": "CONTRASTS_WITH"
+    },
+    {
+      "fromChengyuContentId": "cy_0048",
+      "toChengyuContentId": "cy_0050",
+      "relationType": "CONTRASTS_WITH"
+    },
+    {
+      "fromChengyuContentId": "cy_0006",
+      "toChengyuContentId": "cy_0049",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0049",
+      "toChengyuContentId": "cy_0006",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0017",
+      "toChengyuContentId": "cy_0032",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0032",
+      "toChengyuContentId": "cy_0017",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0023",
+      "toChengyuContentId": "cy_0001",
+      "relationType": "RELATED"
+    },
+    {
+      "fromChengyuContentId": "cy_0030",
+      "toChengyuContentId": "cy_0026",
+      "relationType": "RELATED"
+    }
+  ]
+}

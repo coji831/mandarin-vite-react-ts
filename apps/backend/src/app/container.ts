@@ -123,6 +123,10 @@ const pinyinModule = createPinyinModule();
 import { createGrammarModule } from "../modules/grammar/container.js";
 const grammarModule = createGrammarModule();
 
+// Chengyu module — no cross-module deps, pure reference data
+import { createChengyuModule } from "../modules/chengyu/container.js";
+const chengyuModule = createChengyuModule();
+
 // ── 4. Exports ─────────────────────────────────────────────────────────────
 export const audioController = audioModule.controller;
 export const foundationsController = foundationsModule.controller;
@@ -139,4 +143,5 @@ export const phoneticClustersController = phoneticClustersModule.controller;
 export const charactersController = charactersModule.controller;
 export const pinyinController = pinyinModule.controller;
 export const grammarController = grammarModule.controller;
+export const chengyuController = chengyuModule.controller;
 export { readersModule };
