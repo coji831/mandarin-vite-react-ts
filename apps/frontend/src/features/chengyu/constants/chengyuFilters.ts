@@ -84,3 +84,10 @@ export const CHENGYU_ERAS: string[] = [
   "Warring States",
   "Wei–Jin",
 ];
+
+/**
+ * Default page size for the idiom list — matches the Story 23.2 backend
+ * default (`pageSize` 1–100, default 20). The chengyu UI keeps the backend
+ * default so pagination controls only appear once the list exceeds one page.
+ */
+export const CHENGYU_PAGE_SIZE = 20;

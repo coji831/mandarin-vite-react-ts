@@ -21,6 +21,36 @@ const CHENGYU_URL = "http://localhost:3001/api/v1/chengyu/idioms";
 
 const SEARCH_LABEL = "Search idioms by keyword, pinyin, or meaning...";
 
+/** Minimal summary item factory for paginated datasets (25 idioms, 2 pages). */
+function makeIdiom(n: number) {
+  return {
+    id: `cy_${String(n).padStart(4, "0")}`,
+    chengyu: `成语${n}`,
+    pinyin: `pīn yīn ${n}`,
+    literalMeaning: `Literal ${n}`,
+    figurativeMeaning: `Figurative ${n}`,
+    era: "Han",
+    theme: "determination",
+    sortOrder: n,
+    exampleCount: 1,
+    previewExample: `例句${n}`,
+  };
+}
+
+/** MSW list handler that slices a dataset by the requested page/pageSize. */
+function paginatedListHandler(all: ReturnType<typeof makeIdiom>[]) {
+  return http.get(CHENGYU_URL, ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get("page") ?? 1);
+    const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
+    const start = (page - 1) * pageSize;
+    return HttpResponse.json(
+      { items: all.slice(start, start + pageSize), total: all.length, page, pageSize },
+      { status: 200 },
+    );
+  });
+}
+
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {
   server.resetHandlers();
@@ -36,6 +66,11 @@ describe("ChengyuPage (integration + MSW)", () => {
 
     // Loading skeleton first
     expect(screen.getByLabelText("Loading chengyu idioms")).toBeInTheDocument();
+
+    // Pagination footer is hidden during loading (rendered only once populated).
+    expect(
+      screen.queryByRole("region", { name: "Chengyu list pagination" }),
+    ).not.toBeInTheDocument();
 
     // Grid populated from the MSW-mocked API data
     await waitFor(() => expect(screen.getByText("破釜沉舟")).toBeInTheDocument());
@@ -132,12 +167,68 @@ describe("ChengyuPage (integration + MSW)", () => {
     expect(screen.getByText("叶公好龙")).toBeInTheDocument();
   });
 
+  it("renders pagination controls and advances to the next page", async () => {
+    const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
+    server.use(paginatedListHandler(all));
+
+    renderWithProviders(<ChengyuPage />, { route: "/learn/chengyu" });
+
+    // Page 1: 20 cards + results summary + page indicator; prev disabled, next enabled.
+    await waitFor(() => expect(screen.getByText("成语1")).toBeInTheDocument());
+    expect(screen.getByText("Showing 1–20 of 25")).toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+    const prev = screen.getByRole("button", { name: "Previous page" });
+    const next = screen.getByRole("button", { name: "Next page" });
+    expect(prev).toBeDisabled();
+    expect(next).toBeEnabled();
+
+    // The pagination footer is OUTSIDE the scrolling list region — a flex
+    // sibling of the scroll wrapper, never rendered inside it (so it stays
+    // visible while the idiom cards scroll).
+    const pagination = screen.getByRole("region", { name: "Chengyu list pagination" });
+    const listWrapper = document.querySelector(".chengyu-page__list-wrapper");
+    expect(listWrapper).not.toBeNull();
+    expect(listWrapper!.contains(pagination)).toBe(false);
+    expect(pagination.parentElement).toBe(listWrapper!.parentElement);
+
+    // Next → page 2 renders the later slice; prev enabled, next disabled.
+    fireEvent.click(next);
+    await waitFor(() => expect(screen.getByText("成语21")).toBeInTheDocument());
+    expect(screen.getByText("Showing 21–25 of 25")).toBeInTheDocument();
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous page" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
+    expect(screen.queryByText("成语1")).not.toBeInTheDocument();
+  });
+
+  it("resets to page 1 when a filter changes while on a later page", async () => {
+    const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
+    server.use(paginatedListHandler(all));
+
+    renderWithProviders(<ChengyuPage />, { route: "/learn/chengyu" });
+    await waitFor(() => expect(screen.getByText("成语1")).toBeInTheDocument());
+
+    // Advance to page 2.
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    await waitFor(() => expect(screen.getByText("Page 2 of 2")).toBeInTheDocument());
+
+    // Changing the era filter resets pagination back to page 1.
+    fireEvent.click(screen.getByRole("button", { name: "Han" }));
+    await waitFor(() => expect(screen.getByText("Page 1 of 2")).toBeInTheDocument());
+    expect(screen.getByText("成语1")).toBeInTheDocument();
+  });
+
   it("renders the empty state when no idioms match", async () => {
     server.use(...chengyuHandlers.empty());
 
     renderWithProviders(<ChengyuPage />, { route: "/learn/chengyu" });
 
     await waitFor(() => expect(screen.getByText("No idioms found")).toBeInTheDocument());
+
+    // Pagination footer hidden in the empty state (nothing to paginate).
+    expect(
+      screen.queryByRole("region", { name: "Chengyu list pagination" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the error state with a working retry", async () => {
@@ -151,6 +242,11 @@ describe("ChengyuPage (integration + MSW)", () => {
       ).toBeInTheDocument(),
     );
     expect(screen.getByText("Try Again")).toBeInTheDocument();
+
+    // Pagination footer hidden in the error state.
+    expect(
+      screen.queryByRole("region", { name: "Chengyu list pagination" }),
+    ).not.toBeInTheDocument();
 
     // Retry after switching to the populated handlers → data loads
     server.use(...chengyuHandlers.default());

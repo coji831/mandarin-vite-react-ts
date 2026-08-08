@@ -78,6 +78,19 @@ export interface ChengyuListResponse {
 }
 
 /**
+ * Service-level page result: mapped display items + pagination metadata.
+ * Produced by `chengyuService.loadIdioms` so consumers get `total` (and can
+ * derive `totalPages`) alongside the current page's items — the raw envelope
+ * (`ChengyuListResponse`) stays API-shaped and never leaves the service.
+ */
+export interface ChengyuListResult {
+  items: ChengyuData[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+/**
  * Display model for list cards (mapped from a `ChengyuSummary`).
  * `examples?` / `relatedIdioms?` are reserved for a future richer card that
  * may embed detail data; the summary mapping never populates them.

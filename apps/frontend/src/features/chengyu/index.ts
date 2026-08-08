@@ -6,14 +6,21 @@
  * Only re-exports — no inline definitions.
  */
 
-export { CHENGYU_THEMES, CHENGYU_ERAS } from "./constants";
+export { CHENGYU_THEMES, CHENGYU_ERAS, CHENGYU_PAGE_SIZE } from "./constants";
 
-export { ChengyuFilterBar, ChengyuCard, ChengyuList, ChengyuHub } from "./components";
+export {
+  ChengyuFilterBar,
+  ChengyuCard,
+  ChengyuList,
+  ChengyuHub,
+  ChengyuPagination,
+} from "./components";
 export type {
   ChengyuFilterBarProps,
   ChengyuCardProps,
   ChengyuListProps,
   ChengyuHubProps,
+  ChengyuPaginationProps,
 } from "./components";
 
 export { useChengyu, useChengyuDetail } from "./hooks";
@@ -32,6 +39,7 @@ export type {
   ChengyuSummary,
   ChengyuDetail,
   ChengyuListResponse,
+  ChengyuListResult,
   ChengyuData,
   ChengyuFilter,
 } from "./types";

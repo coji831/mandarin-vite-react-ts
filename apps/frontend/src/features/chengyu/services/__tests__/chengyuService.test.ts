@@ -26,18 +26,23 @@ describe("chengyuService (integration + MSW)", () => {
   it("loads the full idiom list and maps summaries to the display model", async () => {
     server.use(...chengyuHandlers.default());
 
-    const idioms = await chengyuService.loadIdioms();
+    const result = await chengyuService.loadIdioms();
+    const idioms = result.items;
 
     expect(idioms.map((i) => i.id)).toEqual(["cy_0001", "cy_0005", "cy_0016"]);
     expect(idioms[0].chengyu).toBe("破釜沉舟");
     expect(idioms[0].previewExample).toContain("破釜沉舟");
     expect(idioms[0].exampleCount).toBe(1);
+    // Pagination metadata surfaces from the envelope so the UI can render controls.
+    expect(result.total).toBe(3);
+    expect(result.page).toBe(1);
+    expect(result.pageSize).toBe(20);
   });
 
   it("composes the theme filter param and returns matching idioms", async () => {
     server.use(...chengyuHandlers.default());
 
-    const idioms = await chengyuService.loadIdioms({ theme: "hypocrisy" });
+    const idioms = (await chengyuService.loadIdioms({ theme: "hypocrisy" })).items;
 
     expect(idioms.map((i) => i.id)).toEqual(["cy_0005"]);
     expect(idioms[0].chengyu).toBe("叶公好龙");
@@ -46,7 +51,7 @@ describe("chengyuService (integration + MSW)", () => {
   it("composes the era filter param and returns matching idioms", async () => {
     server.use(...chengyuHandlers.default());
 
-    const idioms = await chengyuService.loadIdioms({ era: "Han" });
+    const idioms = (await chengyuService.loadIdioms({ era: "Han" })).items;
 
     expect(idioms.map((i) => i.id)).toEqual(["cy_0016"]);
   });
@@ -119,6 +124,58 @@ describe("chengyuService (integration + MSW)", () => {
     chengyuService.clearCache();
     await chengyuService.loadIdioms({ theme: "determination" });
     expect(calls).toBe(2); // refetched after invalidation
+  });
+
+  it("forwards page/pageSize params and scopes the list cache by page", async () => {
+    // 3-item dataset, pageSize 2 → page 1 = [1,2], page 2 = [3]. The handler
+    // records the received params so we can assert the service forwarded them.
+    const makeIdiom = (n: number) => ({
+      id: `cy_${String(n).padStart(4, "0")}`,
+      chengyu: `成语${n}`,
+      pinyin: `pīn yīn ${n}`,
+      literalMeaning: `Literal ${n}`,
+      figurativeMeaning: `Figurative ${n}`,
+      era: "Han",
+      theme: "determination",
+      sortOrder: n,
+      exampleCount: 1,
+      previewExample: `例句${n}`,
+    });
+    const all = [1, 2, 3].map(makeIdiom);
+    const requested: Array<{ page: number; pageSize: number }> = [];
+
+    server.use(
+      http.get(LIST_URL, ({ request }) => {
+        const url = new URL(request.url);
+        const page = Number(url.searchParams.get("page") ?? 1);
+        const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
+        requested.push({ page, pageSize });
+        const start = (page - 1) * pageSize;
+        return HttpResponse.json(
+          { items: all.slice(start, start + pageSize), total: all.length, page, pageSize },
+          { status: 200 },
+        );
+      }),
+    );
+
+    const pageOne = await chengyuService.loadIdioms({ page: 1, pageSize: 2 });
+    const pageTwo = await chengyuService.loadIdioms({ page: 2, pageSize: 2 });
+
+    // page + pageSize are forwarded as query params.
+    expect(requested).toEqual([
+      { page: 1, pageSize: 2 },
+      { page: 2, pageSize: 2 },
+    ]);
+    // Page 2 is NOT served page-1 data (cache key includes page).
+    expect(pageOne.items.map((i) => i.id)).toEqual(["cy_0001", "cy_0002"]);
+    expect(pageTwo.items.map((i) => i.id)).toEqual(["cy_0003"]);
+    expect(pageOne.total).toBe(3);
+    expect(pageTwo.total).toBe(3);
+
+    // Repeating the exact page-1 call is served from the module cache.
+    const cached = await chengyuService.loadIdioms({ page: 1, pageSize: 2 });
+    expect(requested).toHaveLength(2);
+    expect(cached).toEqual(pageOne);
   });
 
   it("serves detail results from the module cache keyed by id", async () => {

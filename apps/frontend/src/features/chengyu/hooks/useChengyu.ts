@@ -3,10 +3,15 @@
  * @description Data hooks for the Chengyu feature — list + detail.
  * Story 23.3: Chengyu UI
  *
- * - `useChengyu`       — list load with filter state `{ search, theme, era }`,
- *                        loading/error/refetch. Search is debounced on typing
- *                        pause (500ms — single-token keyword) and the API
- *                        refetches on filter change.
+ * - `useChengyu`       — paginated list load with filter state
+ *                        `{ search, theme, era }` + `page`, loading/error/
+ *                        refetch. Search is debounced on typing pause (500ms —
+ *                        single-token keyword) and the API refetches on filter
+ *                        or page change. `page` resets to 1 whenever the
+ *                        committed filters change; `total` / `totalPages` are
+ *                        derived from the page result so the UI can render
+ *                        pagination controls (BUG-1: previously discarded
+ *                        `total`, so 35 of 55 idioms were unreachable).
  * - `useChengyuDetail` — single-idiom self-fetch for the ChengyuHub detail
  *                        panel (mirrors `useGrammarDetail` / `useRadicalById`).
  *
@@ -14,6 +19,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { chengyuService } from "../services/chengyuService";
+import { CHENGYU_PAGE_SIZE } from "../constants";
 import type { ChengyuData, ChengyuDetail, ChengyuFilter } from "../types";
 
 const DEFAULT_FILTER: ChengyuFilter = { search: "", theme: null, era: null };
@@ -29,6 +35,16 @@ export interface UseChengyuReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
+  /** Current 1-based list page (1 = first). */
+  page: number;
+  /** Navigate to an exact page, clamped to [1, totalPages]. */
+  setPage: (page: number) => void;
+  /** Total matching idioms across all pages (from the page envelope). */
+  total: number;
+  /** Total pages for the current page size (never < 1). */
+  totalPages: number;
+  /** Items per page (matches the backend default). */
+  pageSize: number;
 }
 
 export function useChengyu(): UseChengyuReturn {
@@ -36,53 +52,102 @@ export function useChengyu(): UseChengyuReturn {
   const [filter, setFilterState] = useState<ChengyuFilter>(DEFAULT_FILTER);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPageState] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  const pageSize = CHENGYU_PAGE_SIZE;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   // Debounced search value — the input updates immediately, the fetch waits for
-  // a typing pause so multi-character searches don't fire per keystroke.
+  // a typing pause so multi-character searches don't fire per keystroke. A
+  // committed search always restarts from page 1.
   const [debouncedSearch, setDebouncedSearch] = useState("");
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(filter.search), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(filter.search);
+      setPageState(1);
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [filter.search]);
 
   // Monotonic request id — drops stale responses so a slow earlier request can
-  // never overwrite the result of a newer filter change.
+  // never overwrite the result of a newer filter/page change.
   const requestIdRef = useRef(0);
 
-  const load = useCallback(async (search: string, theme: string | null, era: string | null) => {
-    const requestId = ++requestIdRef.current;
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await chengyuService.loadIdioms({ search, theme, era });
-      if (requestId !== requestIdRef.current) return; // stale response
-      setIdioms(data);
-    } catch (err) {
-      if (requestId !== requestIdRef.current) return; // stale error
-      const message = err instanceof Error ? err.message : "Failed to load chengyu idioms";
-      setError(message);
-    } finally {
-      if (requestId === requestIdRef.current) setIsLoading(false);
-    }
-  }, []);
+  const load = useCallback(
+    async (search: string, theme: string | null, era: string | null, targetPage: number) => {
+      const requestId = ++requestIdRef.current;
+      setIsLoading(true);
+      setError(null);
+      try {
+        const result = await chengyuService.loadIdioms({
+          search,
+          theme,
+          era,
+          page: targetPage,
+          pageSize: CHENGYU_PAGE_SIZE,
+        });
+        if (requestId !== requestIdRef.current) return; // stale response
+        setIdioms(result.items);
+        setTotal(result.total);
+      } catch (err) {
+        if (requestId !== requestIdRef.current) return; // stale error
+        const message = err instanceof Error ? err.message : "Failed to load chengyu idioms";
+        setError(message);
+      } finally {
+        if (requestId === requestIdRef.current) setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
-    void load(debouncedSearch, filter.theme, filter.era);
-  }, [debouncedSearch, filter.theme, filter.era, load]);
+    void load(debouncedSearch, filter.theme, filter.era, page);
+  }, [debouncedSearch, filter.theme, filter.era, page, load]);
 
   const setFilter = useCallback((partial: Partial<ChengyuFilter>) => {
     setFilterState((prev) => ({ ...prev, ...partial }));
+    // Theme/era apply immediately (not debounced) — restart from page 1 so the
+    // filtered list is browsed from the top. Search resets the page when its
+    // debounced value commits (see the debounce effect above).
+    if (partial.theme !== undefined || partial.era !== undefined) {
+      setPageState(1);
+    }
   }, []);
 
   const resetFilter = useCallback(() => {
     setFilterState(DEFAULT_FILTER);
+    setPageState(1);
   }, []);
 
-  const refetch = useCallback(() => {
-    void load(debouncedSearch, filter.theme, filter.era);
-  }, [load, debouncedSearch, filter.theme, filter.era]);
+  const setPage = useCallback(
+    (nextPage: number) => {
+      setPageState((prev) => {
+        const clamped = Math.min(Math.max(nextPage, 1), totalPages);
+        return clamped === prev ? prev : clamped;
+      });
+    },
+    [totalPages],
+  );
 
-  return { idioms, filter, setFilter, resetFilter, isLoading, error, refetch };
+  const refetch = useCallback(() => {
+    void load(debouncedSearch, filter.theme, filter.era, page);
+  }, [load, debouncedSearch, filter.theme, filter.era, page]);
+
+  return {
+    idioms,
+    filter,
+    setFilter,
+    resetFilter,
+    isLoading,
+    error,
+    refetch,
+    page,
+    setPage,
+    total,
+    totalPages,
+    pageSize,
+  };
 }
 
 export interface UseChengyuDetailReturn {

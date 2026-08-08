@@ -17,6 +17,36 @@ import { chengyuService } from "../../services/chengyuService";
 
 const LIST_URL = `http://localhost:3001/api${ROUTE_PATTERNS.chengyuIdioms}`;
 
+/** Minimal summary item factory for paginated datasets. */
+function makeIdiom(n: number) {
+  return {
+    id: `cy_${String(n).padStart(4, "0")}`,
+    chengyu: `成语${n}`,
+    pinyin: `pīn yīn ${n}`,
+    literalMeaning: `Literal ${n}`,
+    figurativeMeaning: `Figurative ${n}`,
+    era: "Han",
+    theme: "determination",
+    sortOrder: n,
+    exampleCount: 1,
+    previewExample: `例句${n}`,
+  };
+}
+
+/** MSW list handler that slices a dataset by the requested page/pageSize (20). */
+function paginatedListHandler(all: ReturnType<typeof makeIdiom>[]) {
+  return http.get(LIST_URL, ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get("page") ?? 1);
+    const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
+    const start = (page - 1) * pageSize;
+    return HttpResponse.json(
+      { items: all.slice(start, start + pageSize), total: all.length, page, pageSize },
+      { status: 200 },
+    );
+  });
+}
+
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {
   server.resetHandlers();
@@ -36,6 +66,11 @@ describe("useChengyu (integration + MSW)", () => {
     expect(result.current.error).toBeNull();
     expect(result.current.idioms.map((i) => i.id)).toEqual(["cy_0001", "cy_0005", "cy_0016"]);
     expect(result.current.filter).toEqual({ search: "", theme: null, era: null });
+    // Pagination state defaults: page 1, total from the envelope, one page.
+    expect(result.current.page).toBe(1);
+    expect(result.current.total).toBe(3);
+    expect(result.current.totalPages).toBe(1);
+    expect(result.current.pageSize).toBe(20);
   });
 
   it("refetches with the new filters when a non-debounced filter changes", async () => {
@@ -70,6 +105,69 @@ describe("useChengyu (integration + MSW)", () => {
     await waitFor(() => expect(result.current.idioms).toHaveLength(1), { timeout: 2000 });
     expect(result.current.idioms[0].id).toBe("cy_0005");
     expect(result.current.filter.search).toBe("叶公好龙");
+  });
+
+  it("loads page 2 via setPage and exposes total/totalPages", async () => {
+    const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
+    server.use(paginatedListHandler(all));
+
+    const { result } = renderHook(() => useChengyu());
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.page).toBe(1);
+    expect(result.current.total).toBe(25);
+    expect(result.current.totalPages).toBe(2);
+    expect(result.current.idioms).toHaveLength(20);
+
+    // Navigate to page 2 → refetch and render the later slice of the dataset.
+    act(() => result.current.setPage(2));
+    await waitFor(() =>
+      expect(result.current.idioms.map((i) => i.id)).toEqual([
+        "cy_0021",
+        "cy_0022",
+        "cy_0023",
+        "cy_0024",
+        "cy_0025",
+      ]),
+    );
+    expect(result.current.page).toBe(2);
+    expect(result.current.total).toBe(25);
+    expect(result.current.totalPages).toBe(2);
+  });
+
+  it("resets to page 1 when a filter (era) changes", async () => {
+    const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
+    const requested: Array<{ page: number; era: string | null }> = [];
+    server.use(
+      http.get(LIST_URL, ({ request }) => {
+        const url = new URL(request.url);
+        const page = Number(url.searchParams.get("page") ?? 1);
+        const era = url.searchParams.get("era");
+        requested.push({ page, era });
+        const pageSize = 20;
+        const start = (page - 1) * pageSize;
+        return HttpResponse.json(
+          { items: all.slice(start, start + pageSize), total: all.length, page, pageSize },
+          { status: 200 },
+        );
+      }),
+    );
+
+    const { result } = renderHook(() => useChengyu());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.page).toBe(1);
+
+    // Advance to page 2 (page-2 slice of the dataset).
+    act(() => result.current.setPage(2));
+    await waitFor(() => expect(result.current.idioms[0].id).toBe("cy_0021"));
+    expect(result.current.page).toBe(2);
+
+    // Era change is immediate (not debounced) → page resets to 1 and refetches.
+    act(() => result.current.setFilter({ era: "Han" }));
+    await waitFor(() => expect(result.current.page).toBe(1));
+    await waitFor(() => expect(result.current.idioms[0].id).toBe("cy_0001"));
+    expect(result.current.filter.era).toBe("Han");
+    expect(requested[requested.length - 1]).toEqual({ page: 1, era: "Han" });
   });
 
   it("surfaces an error and clears loading when the list fetch fails", async () => {

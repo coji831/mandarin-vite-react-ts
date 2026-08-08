@@ -4,6 +4,12 @@
  * loading (skeleton), error (+ retry), empty, and populated. Pure
  * presentational shell — no hooks/API.
  * Story 23.3: Chengyu UI
+ *
+ * Populated state renders only the idiom card grid. The results summary and
+ * pagination controls live in the sibling `ChengyuPagination` footer, which
+ * `ChengyuPage` renders OUTSIDE the scrolling list region so they stay
+ * visible while cards scroll. BUG-1 fix: `useChengyu`/`chengyuService`
+ * surface `total`/`totalPages` so all idioms are reachable by browsing.
  */
 import { ErrorScreen } from "shared/components";
 import { ChengyuCard } from "./ChengyuCard";
@@ -86,18 +92,16 @@ export function ChengyuList({
 
   // ─── Populated State ────────────────────────────────────────────────────
   return (
-    <div className="chengyu-list">
-      <ul
-        className="chengyu-list__grid flex-col gap-sm m-0 p-0"
-        role="list"
-        aria-label="Chengyu idioms"
-      >
-        {idioms.map((idiom) => (
-          <li key={idiom.id} className="chengyu-list__item" role="listitem">
-            <ChengyuCard idiom={idiom} onClick={() => onIdiomClick(idiom)} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul
+      className="chengyu-list__grid flex-col gap-sm m-0 p-0"
+      role="list"
+      aria-label="Chengyu idioms"
+    >
+      {idioms.map((idiom) => (
+        <li key={idiom.id} className="chengyu-list__item" role="listitem">
+          <ChengyuCard idiom={idiom} onClick={() => onIdiomClick(idiom)} />
+        </li>
+      ))}
+    </ul>
   );
 }

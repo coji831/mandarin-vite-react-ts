@@ -12,5 +12,7 @@ export { ChengyuCard } from "./ChengyuCard";
 export type { ChengyuCardProps } from "./ChengyuCard";
 export { ChengyuList } from "./ChengyuList";
 export type { ChengyuListProps } from "./ChengyuList";
+export { ChengyuPagination } from "./ChengyuPagination";
+export type { ChengyuPaginationProps } from "./ChengyuPagination";
 export { ChengyuHub } from "./ChengyuHub";
 export type { ChengyuHubProps } from "./ChengyuHub";

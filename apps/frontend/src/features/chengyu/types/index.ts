@@ -14,6 +14,7 @@ export type {
   ChengyuSummary,
   ChengyuDetail,
   ChengyuListResponse,
+  ChengyuListResult,
   ChengyuData,
   ChengyuFilter,
 } from "./chengyu";
