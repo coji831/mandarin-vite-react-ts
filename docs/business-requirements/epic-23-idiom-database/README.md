@@ -9,13 +9,13 @@
 - **CC-CEDICT-extracted + curated idiom set (KB-seeded).** The dataset is extracted from **CC-CEDICT** (idiom string, pinyin, literal + figurative English; CC BY-SA 4.0), curated to a common **50+ shortlist seeded from KB §6.2** of the Mandarin fundamentals KB (`docs/knowledge-base/mandarin/mandarin-fundamentals.md` — the **family-seed authority**, not the data source), and enriched with narrative `story` authored from the Chinese Wiktionary 詞源 quote verified against zh Wikisource, plus authored `era`/`theme`/`example`; staged at **Phase 4** per the adult-learning roadmap (`docs/knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md`), which defines "Chengyu (Idiom) Narratives" as 70% story / 30% linguistic application.
 - **50+ common idioms** (target ≥50), each with a 4-character `chengyu`, pinyin, literal + figurative English meanings, a **narrative origin story** (`story`) with a `storySource` citation, `era` + `theme` tags, and ≥1 modern-usage example sentence (Chinese, pinyin, English, pre-segmented clickable tokens) — example cardinality is ≥1/idiom (vs grammar's ≥3) because the idiom itself is the primary learning object, while the pipeline mirrors Epic 22's architecture exactly.
 - **Narrative-first detail view** — a new `ChengyuHub` in the LexicalHub presents historical context → literal meaning → figurative meaning → modern usage, with related-idiom cross-links (junction mirrors `GrammarPatternRelation`).
-- **Theme and era filters** (e.g., Self-deception, Spring & Autumn period, Love stories) with server-side `search`/`theme`/`era` filtering + pagination.
+- **Theme and era filters** (e.g., self-deception, Spring & Autumn period, love stories) with server-side `search`/`theme`/`era` filtering + pagination.
 - **All-in-DB content pipeline (adopted — mirrors Epic 22):** idioms are authored in `content/seed/phase2/chengyu.json` (in the canonical `content/seed/phase2/` seed directory), seeded into Prisma (`Chengyu`/`ChengyuExample`/`ChengyuRelation`), validated by `scripts/validate-chengyu-content.ts`, and served by a new backend `chengyu` module via API — consistent with the platform's canonical all-in-DB architecture and the shared data model's `cy_XXXX` business-key convention.
 - **Phase 4 content** — requires the Simplified Chinese foundation from Phases 1–3; the `/learn/chengyu` route is gated with `PhaseGate requiredPhase={4}` and the sidebar Learn-group Chengyu item is already `requiredPhase: 4`.
 - **Audio on demand** — full idiom + example sentences via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth); no stored audio fields.
 - **No progress tracking** — pure reference and cultural learning; `content_version` + `metadata` pre-adaptation fields are the seam for future progress work.
 
-**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
+**Status:** Complete
 
 **Last Update:** August 8, 2026
 
@@ -31,11 +31,11 @@ Learners can study characters, radicals, pinyin/tones/strokes, words, grammar pa
 
 | Example idiom | Pinyin          | Literal meaning          | Figurative meaning    | Theme                 | Era                |
 | ------------- | --------------- | ------------------------ | --------------------- | --------------------- | ------------------ |
-| 破釜沉舟      | pò fǔ chén zhōu | Break pots, sink ships   | Burning one's bridges | Determination         | Qin–Han transition |
-| 画蛇添足      | huà shé tiān zú | Draw a snake, add feet   | Gilding the lily      | Self-defeating excess | Warring States     |
-| 瓜田李下      | guā tián lǐ xià | Melon field, under plums | Avoiding suspicion    | Propriety             | Han                |
+| 破釜沉舟      | pò fǔ chén zhōu | Break pots, sink ships   | Burning one's bridges | determination         | Qin–Han transition |
+| 画蛇添足      | huà shé tiān zú | Draw a snake, add feet   | Gilding the lily      | self-defeating excess | Warring States     |
+| 瓜田李下      | guā tián lǐ xià | Melon field, under plums | Avoiding suspicion    | propriety             | Han                |
 
-Themes are tagged per idiom (e.g., Self-deception, Perseverance, Love, Wisdom, Ambition) and eras follow the idiom's source period (e.g., Spring & Autumn, Warring States, Han, Three Kingdoms) — both become filter dimensions. **Authoring note:** the `theme` and `era` tags are **new authoring decisions** for this epic — grounded in each idiom's classical source text and `storySource` — not facts lifted from KB §6.2 (which records only the idiom family, pinyin, and literal/figurative meanings).
+Themes are tagged per idiom (e.g., self-deception, perseverance, love, wisdom, ambition) and eras follow the idiom's source period (e.g., Spring & Autumn, Warring States, Han, Three Kingdoms) — both become filter dimensions. **Authoring note:** the `theme` and `era` tags are **new authoring decisions** for this epic — grounded in each idiom's classical source text and `storySource` — not facts lifted from KB §6.2 (which records only the idiom family, pinyin, and literal/figurative meanings).
 
 **Market context.** Chengyu references (dictionaries, static idiom lists) typically present idioms as flat dictionary entries. This feature differentiates by integrating with existing systems: narrative-first detail, theme/era discovery, Character Hub cross-linking (each of the 4 characters clickable), related-idiom cross-links, and TTS audio — so idioms are discovered in context, not in isolation.
 
@@ -173,3 +173,5 @@ The normative per-story specs moved out of this epic BR into the story IMP docs 
 - Phase gating: source is `usePhaseGate()` → `/v1/progression/phase-gate` (numeric), not `userStore`.
 - Testing: `testing-standards.instructions.md` (Testing Trophy) — unit for pure logic, integration (MSW) for services/pages/hub, Storybook stories for pages.
 - Story files scaffolded from templates: `story-23-1-chengyu-data.md`, `story-23-2-chengyu-backend-api.md`, `story-23-3-chengyu-ui.md` (BR + IMP variants), linked bidirectionally (epic BR ↔ epic IMP ↔ story files).
+
+> **Closure note (2026-08-08):** Epic closed — all 3 stories complete (23.1 `a49eb278`, 23.2 `ed18a530`, 23.3 `56867bb2`); post-story pagination refinement in `c1b1c7b2` (see epic IMP closure actuals).

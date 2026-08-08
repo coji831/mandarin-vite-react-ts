@@ -64,7 +64,7 @@ mandarin-vite-react-ts/
 
 - **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
-  - Current modules (14): `audio`, `auth`, `characters`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
+  - Current modules (15): `audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
   - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/api/` and mounts the public `POST /v1/tts` wire path.
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`. **Never contains capability logic**: `shared/infrastructure/external/` holds Tier-0 raw clients (`GCSClient`, `GoogleTTSClient`, `GeminiClient`) and the Tier-1 resilient `GeminiService` (relocated from `shared/services/`). `shared/services/` and `shared/tts/` are retired.
 
@@ -97,6 +97,7 @@ mandarin-vite-react-ts/
   - **Dashboard**: Learning statistics and activity overview (DashboardGuest, DashboardSections, DashboardWelcome)
   - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
   - **Grammar** (`features/grammar`): searchable, HSK/phase-tagged grammar pattern reference — list/detail via `GET /v1/grammar/patterns` (+ `/patterns/:id`), detail panel in the LexicalHub `GrammarHub`, example-sentence audio, and word→Character Hub cross-linking
+  - **Chengyu** (`features/chengyu`): searchable idiom (成语) reference — list/detail via `GET /v1/chengyu/idioms` (+ `/idioms/:id`), detail panel in the LexicalHub `ChengyuHub`, and the Phase-4-gated `/learn/chengyu` library page
   - **PhoneticClusters** (`features/phonetic-clusters`): DB-driven phonetic family browsing — cluster membership from `GET /v1/phonetic-clusters` with HSK filtering
   - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
@@ -254,9 +255,9 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 
 #### Seed Pipeline (all-in-DB)
 
-`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **29-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). Since the hash-gate (Story 22.1) the pipeline no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (21 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
+`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **32-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). Since the hash-gate (Story 22.1) the pipeline no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (24 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe); **Chengyu (steps 30–32)** — `syncChengyu` syncs `Chengyu` → `ChengyuExample` → `ChengyuRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
 
-See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.md) (29-step order + FK table, regeneration flow, runbook, verification, idempotency rules).
+See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.md) (32-step order + FK table, regeneration flow, runbook, verification, idempotency rules).
 
 ## Caching Strategy
 
@@ -348,6 +349,7 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 - **Progression module**: Handles phase gating, foundation progress tracking, quiz attempt coordination with pass threshold evaluation
 - **Review module**: Builds review items from content files and SRS state, manages SM-2 scheduling
 - **Grammar module**: searchable, HSK/phase-tagged grammar pattern reference — `GET /v1/grammar/patterns` (list with additive `search`/`hskLevel`/`phase` filters + `page`/`pageSize`) and `GET /v1/grammar/patterns/:id` (detail by `content_id` `gr_XXXX`, with `examples[].segments[]` + `relatedPatterns[]`); `optionalAuth`. Seeded from `content/seed/phase2/grammar-patterns.json` (21 patterns, `gr_XXXX` business keys) via `syncGrammar`.
+- **Chengyu module**: searchable idiom reference — `GET /v1/chengyu/idioms` (list with additive `search`/`theme`/`era` filters + `page`/`pageSize`) and `GET /v1/chengyu/idioms/:id` (detail by `content_id` `cy_XXXX`, with `examples[].segments[]` + `relatedIdioms[]`); public (no auth). Seeded from `content/seed/phase2/chengyu.json` (55 idioms, `cy_XXXX` business keys) via `syncChengyu`.
 
 **See detailed documentation:**
 
@@ -376,7 +378,7 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 - **Purpose**: User accounts, progress tracking, authentication, gamification
 - **Client**: Prisma ORM (`src/shared/infrastructure/database/client.ts`)
 - **Configuration**: `DATABASE_URL`
-- **Key Tables**: `User`, `Session`, `Character`, `CharacterReading`, `CharacterRadical`, `Word`, `WordCharacter`, `MeasureWord`, `MeasureWordWord`, `Passage`, `ReadingSession`, `Bookmark`, `PinyinSyllable`, `MnemonicStory`, `ReviewItem`, `ReviewLog`, `QuizAttempt`, `QuizAttemptAnswer`, `FoundationProgress`, `RadicalProgress`, `PhaseGate`, `StudyStreak`
+- **Key Tables**: `User`, `Session`, `Character`, `CharacterReading`, `CharacterRadical`, `Word`, `WordCharacter`, `MeasureWord`, `MeasureWordWord`, `Passage`, `ReadingSession`, `Bookmark`, `PinyinSyllable`, `MnemonicStory`, `ReviewItem`, `ReviewLog`, `QuizAttempt`, `QuizAttemptAnswer`, `FoundationProgress`, `RadicalProgress`, `PhaseGate`, `StudyStreak`, `Chengyu`, `ChengyuExample`, `ChengyuRelation`
 
 **Gamification System:**
 
@@ -465,4 +467,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** August 7, 2026
+**Last Updated:** August 8, 2026

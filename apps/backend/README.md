@@ -1,6 +1,6 @@
 # Backend Server
 
-Express server for PinyinPal, providing TTS, content data (characters/words/radicals/grammar), progression, quiz, review, mnemonics, and graded readers.
+Express server for PinyinPal, providing TTS, content data (characters/words/radicals/grammar/chengyu), progression, quiz, review, mnemonics, and graded readers.
 
 > **For detailed setup, architecture, environment variables, and troubleshooting:** See [Backend Development Guide](../../docs/guides/setup/backend-development.md).
 
@@ -74,6 +74,8 @@ npm start
 | `GET /api/v1/mnemonics(/:glyph)`                                           | Mnemonic stories                                                                        |
 | `GET /v1/grammar/patterns`                                                 | Grammar pattern list (additive `search`/`hskLevel`/`phase` filters + `page`/`pageSize`) |
 | `GET /v1/grammar/patterns/:id`                                             | Grammar pattern detail by `content_id` (`gr_XXXX`)                                      |
+| `GET /v1/chengyu/idioms`                                                   | Chengyu idiom list (additive `search`/`theme`/`era` filters + `page`/`pageSize`)        |
+| `GET /v1/chengyu/idioms/:id`                                               | Chengyu idiom detail by `content_id` (`cy_XXXX`)                                        |
 | `GET /api/v1/readers/passages`                                             | Reading passages                                                                        |
 | `GET /api/v1/readers/passages/:id`                                         | Full passage (segmentation + HSK profile)                                               |
 | `POST /api/v1/readers/passages/:id/audio`                                  | Passage sentence audio URLs (GCS → on-demand TTS)                                       |

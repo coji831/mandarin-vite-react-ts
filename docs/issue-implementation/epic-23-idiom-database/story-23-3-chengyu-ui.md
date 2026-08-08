@@ -191,6 +191,23 @@ Solution: Environmental limitation, not a chengyu defect. Rendering is proven at
          pass headlessly, asserting populated/loading/empty/error states and hub navigation.
 ```
 
+Post-implementation — pagination & pager-detach (commit `c1b1c7b2`, August 8, 2026):
+
+```
+Problem: Browser full-flow test (PASS-with-issues) surfaced BUG-1 — the idiom list
+         endpoint was already paginated server-side (page/pageSize), but the UI ignored
+         it and the info + pager rendered inside the scrolling list region, scrolling
+         out of view with the cards.
+Solution: The UI now forwards page/pageSize with a page-scoped module cache, resets to
+         page 1 on filter change, and renders a presentational ChengyuPagination footer
+         as a flex sibling of the scroll container inside the page content Box — always
+         visible while idioms scroll (populated state only; role="region" + aria-label
+         "Chengyu list pagination"). No backend/MSW changes; ChengyuPage integration
+         tests extended (footer sibling of scroll region; hidden in loading/empty/error);
+         40 chengyu unit/integration + 5 Storybook tests pass. BUG-2 (900px responsive)
+         is a pre-existing app-wide pattern, deferred (see epic IMP closure actuals).
+```
+
 ### Doc Truth-Check
 
 - [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — `chengyuIdioms: "/v1/chengyu/idioms"` and `chengyuIdiomById: (id) => `/v1/chengyu/idioms/${id}`` now **EXIST verbatim** (shipped by story 23.2); `chengyuService.ts` calls both (list composes search/theme/era params, detail via `chengyuIdiomById(id)`); `ttsAudio` = `/v1/tts` verified present

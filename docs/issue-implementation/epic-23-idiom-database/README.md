@@ -2,7 +2,7 @@
 
 **BR Reference:** `../../business-requirements/epic-23-idiom-database/README.md`
 
-**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
+**Status:** Complete
 
 **Last Update:** August 8, 2026
 
@@ -21,7 +21,7 @@
 - **Audio is on-demand** via the shared audio manager (`useAudioItemPlayback` → `POST /v1/tts`, optionalAuth) — no audio fields in the data model.
 - **Phase gating reuses numeric Phase 4** + the existing sidebar Chengyu item; the route gains `PhaseGate requiredPhase={4}` (mirrors readers at 3, grammar at 2).
 
-**Status:** In Progress (Stories 23.1–23.3 complete; epic closure pending)
+**Status:** Complete
 
 **Last Update:** August 8, 2026
 
@@ -73,6 +73,22 @@ The primary pre-implementation challenge is **cultural/historical accuracy of id
 - [x] KB links resolve from this doc: `../../knowledge-base/mandarin/mandarin-fundamentals.md`, `../../knowledge-base/learning-theory/adult-mandarin-learning-roadmap.md`, `../../knowledge-base/backend/pre-adaptation-static-dynamic-separation.md`, `../../knowledge-base/data/shared-data-model.md`, `../../knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md`; guides/conventions/practices links resolve.
 - [x] All relative markdown links resolve (BR/IMP/story links; the 3 story files exist in both BR and IMP folders).
 - [x] Last Update is current (August 8, 2026, same commit as the edit).
+
+### Epic closure & shipped actuals (August 8, 2026)
+
+All three stories are **Complete** and committed on `epic-23-idiom-database`:
+
+- **Story 23.1 — Chengyu Data** (`a49eb278`) — 55 idioms / 55 examples / 18 relations in `content/seed/phase2/chengyu.json`; models + migration + validator + hash-gated seed; manifest `chengyu: 55`.
+- **Story 23.2 — Chengyu Backend API** (`ed18a530`) — `modules/chengyu/`; `GET /v1/chengyu/idioms` (search/theme/era + pagination) + `GET /v1/chengyu/idioms/:id`, verbatim in `ROUTE_PATTERNS`.
+- **Story 23.3 — Chengyu UI** (`56867bb2`) — Phase-4-gated `/learn/chengyu` page + `ChengyuHub`; search/theme/era filters, audio, related-idiom + character cross-links.
+- **Post-story pagination refinement** (`c1b1c7b2`) — BUG-1 fix: the list endpoint was already paginated server-side; the UI now forwards `page`/`pageSize` with a page-scoped cache, resets to page 1 on filter change, and renders a `ChengyuPagination` footer detached from the scroll container (always visible while scrolling). Details in the story-23.3 IMP post-implementation entry.
+
+**Browser full-flow test: PASS-with-issues** (screenshots in `verification-artifacts/epic23-browser-test/`) — BUG-1 (pagination) fixed in `c1b1c7b2`; BUG-2 (900px responsive) is a pre-existing app-wide pattern, deferred.
+
+**Known deferred follow-ups (recorded at close; non-blocking):**
+
+- `tsconfig.test.json` integration-test strict errors — repair-or-drop is an epic-owner decision; a non-canonical gate, not closure-blocking.
+- BUG-2 — 900px responsive layout — pre-existing app-wide pattern, not a chengyu defect.
 
 ## Technical Implementation
 

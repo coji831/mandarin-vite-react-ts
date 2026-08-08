@@ -35,7 +35,7 @@
 
 | Guide                                         | Description                                                   |
 | --------------------------------------------- | ------------------------------------------------------------- |
-| [Seed Pipeline](guides/data/seed-pipeline.md) | 29-step hash-gated delta seed pipeline, runbook, verification |
+| [Seed Pipeline](guides/data/seed-pipeline.md) | 32-step hash-gated delta seed pipeline, runbook, verification |
 
 ### 📐 Conventions
 
@@ -176,8 +176,10 @@ Feature-specific docs live in feature folders under `apps/frontend/src/features/
 
 - **Auth**: [`apps/frontend/src/features/auth/`](../apps/frontend/src/features/auth/)
 - **CharacterHub**: [`apps/frontend/src/features/character-hub/`](../apps/frontend/src/features/character-hub/)
+- **Chengyu**: [`apps/frontend/src/features/chengyu/`](../apps/frontend/src/features/chengyu/)
 - **Dashboard**: [`apps/frontend/src/features/dashboard/`](../apps/frontend/src/features/dashboard/)
 - **Foundations**: [`apps/frontend/src/features/foundations/`](../apps/frontend/src/features/foundations/)
+- **Grammar**: [`apps/frontend/src/features/grammar/`](../apps/frontend/src/features/grammar/)
 - **LexicalHub**: [`apps/frontend/src/features/lexical-hub/`](../apps/frontend/src/features/lexical-hub/)
 - **PhoneticClusters**: [`apps/frontend/src/features/phonetic-clusters/`](../apps/frontend/src/features/phonetic-clusters/)
 - **Quiz**: [`apps/frontend/src/features/quiz/`](../apps/frontend/src/features/quiz/)
