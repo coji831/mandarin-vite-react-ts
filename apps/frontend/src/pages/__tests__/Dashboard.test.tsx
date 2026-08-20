@@ -5,7 +5,7 @@
  * Tests Dashboard phase-aware display:
  * - Phase 1 empty state: welcome prompt with "Start with Pinyin Basics" CTA
  * - Phase 2+: phase progress, quick access buttons, recent activity
- * - Loading state via LoadingScreen
+ * - Loading state via the Skeleton shell (D.8 — no CLS)
  * - Navigation via quick access buttons
  */
 
@@ -49,15 +49,23 @@ describe("Dashboard Page", () => {
     vi.clearAllMocks();
   });
 
-  it("should show loading state when phase gate is loading", () => {
+  it("should show loading skeleton when phase gate is loading", () => {
     (usePhaseGate as ReturnType<typeof vi.fn>).mockReturnValue({
       phaseGate: null,
       isLoading: true,
     });
 
-    renderWithProviders(<DashboardPage />);
+    const { container } = renderWithProviders(<DashboardPage />);
 
-    expect(screen.getByText(/Loading your dashboard/i)).toBeInTheDocument();
+    // Loading branch renders the data-resilient Skeleton shell (D.8), not the
+    // old LoadingScreen. Assert the shell (aria-busy) + status skeletons exist.
+    expect(container.querySelector(".dashboard[aria-busy='true']")).not.toBeNull();
+    expect(screen.getAllByRole("status", { name: "Loading" }).length).toBeGreaterThan(0);
+
+    // A11y (axe page-has-heading-one): the loading branch keeps exactly one
+    // <h1> — the sr-only "Dashboard" title — so the page never loses its
+    // single heading while loading (Storybook Loading story a11y check).
+    expect(screen.getByRole("heading", { level: 1, name: "Dashboard" })).toBeInTheDocument();
   });
 
   it("should show Phase 1 empty state by default", async () => {

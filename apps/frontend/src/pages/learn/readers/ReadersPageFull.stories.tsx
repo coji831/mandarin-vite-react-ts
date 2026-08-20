@@ -197,6 +197,7 @@ const longPassageDetail: PassageDetail = {
 const meta = {
   title: "Pages/Learn/ReadersPage",
   component: ReadersPage,
+  tags: ["pages-browse-index"],
   parameters: {
     layout: "fullscreen",
     msw: { handlers: [mswHandlers.readers.passages.default()] },

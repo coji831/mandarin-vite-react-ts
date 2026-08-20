@@ -43,6 +43,7 @@ function makeSummary(n: number) {
 const meta = {
   title: "Pages/Learn/ChengyuPage",
   component: ChengyuPage,
+  tags: ["pages-browse-index"],
   decorators: [withAppLayout("/learn/chengyu"), withLearnLayout()],
   parameters: {
     layout: "fullscreen",

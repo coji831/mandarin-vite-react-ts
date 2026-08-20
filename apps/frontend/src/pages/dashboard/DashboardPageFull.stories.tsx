@@ -3,8 +3,10 @@
  *
  * NOTE (State Parity): DashboardPage fetches the phase gate on mount. On fetch
  * failure usePhaseGate resolves phaseGate=null (no error surface) and the page
- * falls through to the Phase 1 welcome — so there is NO error code path to
- * story. Reachable states: Loading + each phase + Guest (below).
+ * falls through to the Phase 1 welcome — so the `Error` story below documents
+ * that graceful degradation (no crash). A dedicated inline error+retry
+ * surface is a Phase-B decision (needs container logic — out of this pass).
+ * Reachable states: Loading + each phase + Error + Guest.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DashboardPage } from "./DashboardPage";
@@ -14,8 +16,13 @@ import { withGuestAuth } from "../../../.storybook/decorators";
 const meta: Meta<typeof DashboardPage> = {
   title: "Pages/Dashboard",
   component: DashboardPage,
+  tags: ["pages-hub-launcher"],
   decorators: [],
-  parameters: { layout: "fullscreen", layoutType: "app", layoutPath: "/" },
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "app",
+    layoutPath: "/",
+  },
 };
 
 export default meta;
@@ -27,15 +34,15 @@ export const Loading: Story = {
   },
 };
 
-export const Phase1Welcome: Story = {
-  name: "Phase 1 - Welcome",
+export const Empty: Story = {
+  name: "Empty (Phase 1)",
   parameters: {
     msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
   },
 };
 
-export const Phase2Active: Story = {
-  name: "Phase 2 - Active",
+export const Default: Story = {
+  name: "Default (Phase 2)",
   parameters: {
     msw: { handlers: [mswHandlers.progression.phaseGate(2)] },
   },
@@ -48,15 +55,25 @@ export const Phase3Active: Story = {
   },
 };
 
-export const Phase4Complete: Story = {
-  name: "Phase 4 - Complete",
+export const Edge: Story = {
+  name: "Edge (Phase 4)",
   parameters: {
     msw: { handlers: [mswHandlers.progression.phaseGate(4)] },
   },
 };
 
 /**
- * Guest — unauthenticated user sees DashboardGuest (welcome + phase previews + signup CTA).
+ * Error — phase-gate fetch fails (500). Documents current behavior: usePhaseGate
+ * resolves phaseGate=null → the page degrades to the phase-1 welcome (no crash).
+ */
+export const Error: Story = {
+  parameters: {
+    msw: { handlers: [mswHandlers.progression.phaseGateError()] },
+  },
+};
+
+/**
+ * Guest — unauthenticated user sees DashboardGuest (header CTA + hero + phase previews).
  * Uses withGuestAuth decorator to override global MockAuthProvider with isAuthenticated: false.
  */
 export const Guest: Story = {

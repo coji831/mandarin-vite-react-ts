@@ -21,7 +21,12 @@ const PHASE3_TREE = [
 const meta: Meta<typeof RadicalsPage> = {
   title: "Pages/Learn/Radicals",
   component: RadicalsPage,
-  parameters: { layout: "fullscreen", layoutType: "learn", layoutPath: "/learn/radicals" },
+  tags: ["pages-browse-index"],
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "learn",
+    layoutPath: "/learn/radicals",
+  },
 };
 
 export default meta;

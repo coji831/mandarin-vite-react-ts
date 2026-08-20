@@ -6,7 +6,11 @@ import { quizHandlers } from "../../../mocks/handlers/quiz-handlers";
 const meta: Meta<typeof FoundationsPage> = {
   title: "Pages/Learn/Foundations",
   component: FoundationsPage,
-  parameters: { layout: "fullscreen", layoutType: "learn", layoutPath: "/learn" },
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "learn",
+    layoutPath: "/learn",
+  },
 };
 
 export default meta;

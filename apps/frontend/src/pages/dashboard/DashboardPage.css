@@ -1,17 +1,30 @@
-/* Dashboard.css - Main landing page styles */
-/* Wireframe Sections 8.3/8.5 */
+/* Dashboard.css - Main landing page styles (hub-launcher archetype)
+   Phase A D.6 token map — precision-minimal. Desktop-only scope: the
+   mobile @media blocks below are UNTOUCHED (Phase A out-of-scope). */
 
 .dashboard {
-  max-width: 900px;
-  min-height: calc(100vh - 120px);
-  overflow-x: hidden;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+  min-height: 0; /* no viewport-based floor — content grows inside .app-content */
+  overflow-x: clip; /* clip (non-scrollable) — kills the accidental scroller without coercing overflow-y */
 }
 
-.max-w-480 {
-  max-width: 480px;
+/* ── Card surface family (D.6) ────────────────────
+   Box `dark` cards on the dashboard get the hairline + shallow neutral
+   elevation instead of the shared --surface-border/--shadow-sm. Scoped
+   override beats the shared .box-dark regardless of stylesheet order. */
+.dashboard-card.box-dark {
+  /* hairline (A.7): every elevated surface gets --surface-border-subtle */
+  border-color: var(--surface-border-subtle);
+  /* shallow neutral elevation (A.2) — amber is hover/XP-only */
+  box-shadow: var(--shadow-elevated-1);
 }
 
-/* ── Current Phase ───────────────────────────── */
+/* Focal current-phase card: radius-lg (D.6) */
+.dashboard-focal-card.box-dark {
+  border-radius: var(--radius-lg);
+}
 
 /* ── Quick Access Grid ────────────────────────── */
 .dashboard-quick-grid {
@@ -22,9 +35,28 @@
   text-decoration: none;
 }
 
-.dashboard-quick-btn:hover {
-  /* :hover pseudo — token shadow, no motion */
+/* Quick tiles (D.6): Button `tag` restyled as precision-minimal cards —
+   surface-dark + hairline + elevated-1 at rest. */
+.dashboard-quick-btn.btn-tag {
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevated-1);
+}
+
+/* Tile hover-lift (D.6 + A.3 hover-lift bucket): shadow + border emphasis only.
+   The -2px lift is delegated to the shared .hover-lift utility (components.css
+   owns transform per the Global Motion Rule) — added on the quick-tile Buttons. */
+.dashboard-quick-btn.btn-tag:hover:not(:disabled) {
   box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-border);
+}
+
+/* Loading skeleton — dims equal final content (D.8: no CLS).
+   Matches the PageHeader block height on this page. */
+.skeleton-dashboard-header {
+  width: 100%;
+  height: 88px;
 }
 
 /* Mobile Responsive */

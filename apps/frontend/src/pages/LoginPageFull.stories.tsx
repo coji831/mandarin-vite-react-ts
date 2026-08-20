@@ -16,7 +16,12 @@ import { withGuestAuth } from "../../.storybook/decorators";
 const meta: Meta<typeof LoginPage> = {
   title: "Pages/Login",
   component: LoginPage,
-  parameters: { layout: "fullscreen", layoutType: "app", layoutPath: "/auth/login" },
+  tags: ["pages-auth"],
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "app",
+    layoutPath: "/auth/login",
+  },
 };
 
 export default meta;

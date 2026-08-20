@@ -12,7 +12,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { LoadingScreen } from "shared/components";
+import { Skeleton } from "shared/components";
+import type { IconName } from "shared/components";
 import { learn_page } from "shared/constants";
 import { DashboardWelcome, DashboardSections } from "features/dashboard";
 import { DashboardGuest } from "features/dashboard";
@@ -22,7 +23,7 @@ import "./DashboardPage.css";
 export { DashboardPage };
 
 type ActivityItem = {
-  icon: string;
+  icon: IconName;
   text: string;
 };
 
@@ -61,7 +62,35 @@ function DashboardPage() {
     currentPhase < 4 ? (PHASE_NEXT[currentPhase] ?? "") : "You've completed all phases! 🎉";
 
   if (phaseLoading || authLoading) {
-    return <LoadingScreen message="Loading your dashboard..." />;
+    // Loading skeleton — dims equal final content (D.8: no CLS).
+    // A11y: keep exactly one <h1> per page even while loading (axe
+    // page-has-heading-one) via the visually-hidden title; the region is
+    // aria-busy with a descriptive label (Skeletons below stay aria-hidden
+    // placeholders / role=status live regions).
+    return (
+      <div
+        className="dashboard flex-col gap-lg"
+        role="region"
+        aria-busy="true"
+        aria-label="Loading dashboard"
+      >
+        <h1 className="sr-only">Dashboard</h1>
+        <Skeleton variant="custom" className="skeleton-dashboard-header" />
+        <Skeleton variant="card" height="180px" />
+        <div className="flex-col gap-sm">
+          <Skeleton variant="line" width="160px" height="20px" />
+          <div className="dashboard-quick-grid grid gap-md">
+            {Array.from({ length: 4 }, (_, i) => (
+              <Skeleton key={i} variant="card" height="96px" />
+            ))}
+          </div>
+        </div>
+        <div className="flex-col gap-sm">
+          <Skeleton variant="line" width="160px" height="20px" />
+          <Skeleton variant="card" height="72px" />
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

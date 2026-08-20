@@ -16,7 +16,12 @@ import { withGuestAuth } from "../../.storybook/decorators";
 const meta: Meta<typeof RegisterPage> = {
   title: "Pages/Register",
   component: RegisterPage,
-  parameters: { layout: "fullscreen", layoutType: "app", layoutPath: "/auth/register" },
+  tags: ["pages-auth"],
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "app",
+    layoutPath: "/auth/register",
+  },
 };
 
 export default meta;

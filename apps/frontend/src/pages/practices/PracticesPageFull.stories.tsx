@@ -13,7 +13,12 @@ import { withGuestAuth } from "../../../.storybook/decorators";
 const meta: Meta<typeof PracticesPage> = {
   title: "Pages/Practices",
   component: PracticesPage,
-  parameters: { layout: "fullscreen", layoutType: "app", layoutPath: "/practices" },
+  tags: ["pages-hub-launcher"],
+  parameters: {
+    layout: "fullscreen",
+    layoutType: "app",
+    layoutPath: "/practices",
+  },
 };
 
 export default meta;

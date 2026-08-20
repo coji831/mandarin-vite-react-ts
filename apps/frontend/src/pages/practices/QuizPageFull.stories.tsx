@@ -217,7 +217,10 @@ const QUIZ_ATTEMPT_HANDLER = http.post(`${API_BASE}/quiz/attempts`, () =>
 const meta: Meta<typeof QuizSessionPage> = {
   title: "Pages/Practices/Quiz",
   component: QuizSessionPage,
-  parameters: { layout: "fullscreen" },
+  tags: ["pages-focus-task"],
+  parameters: {
+    layout: "fullscreen",
+  },
 };
 
 export default meta;

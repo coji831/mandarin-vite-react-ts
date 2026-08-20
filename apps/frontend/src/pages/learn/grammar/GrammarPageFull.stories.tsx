@@ -17,6 +17,7 @@ import { withAppLayout, withLearnLayout } from "../../../../.storybook/decorator
 const meta = {
   title: "Pages/Learn/GrammarPage",
   component: GrammarPage,
+  tags: ["pages-browse-index"],
   decorators: [withAppLayout("/learn/grammar"), withLearnLayout()],
   parameters: {
     layout: "fullscreen",
