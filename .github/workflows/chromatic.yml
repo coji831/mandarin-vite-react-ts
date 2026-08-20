@@ -2,8 +2,17 @@
 # Every story is snapshotted against the accepted "last known good" baseline on
 # each push; the per-diff accept/deny decision IS the human manual-test gate
 # (see docs/guides/testing/visual-qa.md). The Visual Tests addon
-# (@chromatic-com/storybook, already registered in .storybook/main.ts) powers
-# local accept/deny once the project is linked.
+# (@chromatic-com/storybook, registered in .storybook/main.ts) powers local
+# accept/deny once the project is linked.
+#
+# 2026-08-21 — aligned with Chromatic's current GitHub Actions standard:
+#   • `fetch-depth: 0` — Chromatic needs the FULL git history to resolve the
+#     visual-regression baseline; a shallow checkout fails with
+#     "Found only one commit" (the 2026-08-20 CI failure).
+#   • Node 24 — Node 20 is EOL (Apr 2026) and removed from runners (fall 2026).
+#   • `chromaui/action@latest` — the old `@v1` pin bundled CLI v11.x (outdated).
+#     @latest runs the current CLI. To freeze the CLI instead, pin the action
+#     tag to a major (`@vX`) or a full version (`@vX.Y.Z`).
 #
 # NOTE — `on: push` (NOT `pull_request`): TurboSnap (`onlyChanged`) is
 # incompatible with the `pull_request` trigger, and it unlocks only after 10
@@ -33,16 +42,20 @@ jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: 20
+          # Chromatic requires the FULL git history to resolve the baseline
+          # commit (a shallow checkout fails: "Found only one commit").
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
           cache: "npm"
       - run: npm ci
       - name: Build Storybook
         run: npm run build-storybook --workspace=@mandarin/frontend
       - name: Chromatic (visual regression)
-        uses: chromaui/action@v1
+        uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           workingDir: apps/frontend
