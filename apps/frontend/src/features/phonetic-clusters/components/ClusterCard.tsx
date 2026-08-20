@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useCallback } from "react";
-import { Badge, Chip } from "shared/components";
+import { Badge, Chip, Icon } from "shared/components";
 import { openHub } from "shared/store";
 import type { PhoneticClusterDetail } from "../types";
 import "./ClusterCard.css";
@@ -83,8 +83,8 @@ export const ClusterCard = React.memo(function ClusterCard({ cluster }: ClusterC
       {/* Pronunciation Note (if present) — visible in both states */}
       {cluster.pronunciationNote && (
         <div className="cluster-card__pronunciation-note flex items-center gap-sm p-sm radius-sm bg-primary-bg-light mb-md">
-          <span className="font-sm text-accent" aria-label="Pronunciation note">
-            🔊
+          <span className="text-accent" aria-label="Pronunciation note">
+            <Icon name="audio" size={16} aria-hidden />
           </span>
           <span className="font-sm text-tertiary font-italic">{cluster.pronunciationNote}</span>
         </div>

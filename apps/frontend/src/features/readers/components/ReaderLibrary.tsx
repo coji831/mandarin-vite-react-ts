@@ -11,7 +11,7 @@
  * Covers: populated, loading (skeleton), empty (CTA), error (retry), filtered states.
  */
 import { useMemo } from "react";
-import { FilterChip, Skeleton, Button, ErrorScreen } from "shared/components";
+import { EmptyState, ErrorScreen, FilterChip, Icon, Skeleton, Button } from "shared/components";
 import { PassageCard } from "./PassageCard";
 import "./ReaderLibrary.css";
 
@@ -193,25 +193,24 @@ export function ReaderLibrary({
           <GenerateErrorBanner isGenerating={isGenerating} onRetryGenerate={onRetryGenerate} />
         )}
         <div className="reader-library w-full flex-col-center gap-lg p-2xl text-center">
-          <div className="font-3xl op-80" aria-hidden="true">
-            📖
-          </div>
-          <h3 className="font-xl fw-600 text-secondary m-0">No passages yet</h3>
-          <p className="font-sm text-tertiary m-0 max-w-450">
-            Generate your first graded reading passage tailored to your HSK level. Passages are
-            created based on the characters and words you already know.
-          </p>
-          {!isGuest && (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={onGeneratePassage}
-              loading={isGenerating}
-              disabled={isGenerating}
-            >
-              Generate your first passage
-            </Button>
-          )}
+          <EmptyState
+            icon="book"
+            title="No passages yet"
+            description="Generate your first graded reading passage tailored to your HSK level. Passages are created based on the characters and words you already know."
+            action={
+              !isGuest && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={onGeneratePassage}
+                  loading={isGenerating}
+                  disabled={isGenerating}
+                >
+                  Generate your first passage
+                </Button>
+              )
+            }
+          />
         </div>
       </div>
     );

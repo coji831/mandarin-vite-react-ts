@@ -1,3 +1,10 @@
+---
+purpose: Design spec for login/register pages and JWT token-based authentication UI
+status: active
+last-verified: 2026-07-20
+type: design
+---
+
 # Feature: Auth — Design Spec
 
 **Last Updated:** 2026-07-20

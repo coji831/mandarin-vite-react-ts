@@ -5,5 +5,11 @@
  */
 
 .word-popover__backdrop {
-  z-index: 999;
+  z-index: var(--z-popover);
+}
+
+.word-popover {
+  /* z-index above the backdrop; width clamped to viewport — was inline magic */
+  z-index: var(--z-popover);
+  width: clamp(240px, 320px, calc(100vw - 32px));
 }

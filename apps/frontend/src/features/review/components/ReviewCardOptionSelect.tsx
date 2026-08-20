@@ -6,7 +6,7 @@
 import React from "react";
 import type { ReviewItem } from "../types";
 import { openHub } from "shared/store";
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 import "./ReviewCard.css";
 
 type ReviewCardOptionSelectProps = {
@@ -25,12 +25,12 @@ function ReviewCardOptionSelectComponent({
 
   return (
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
-      <div className="review-card__side flex-col-center gap-lg p-xl w-full">
+      <div className="review-card__side flex-col-center gap-md p-xl w-full">
         {/* Character / Glyph display */}
         <div className="review-card__character-display flex-col-center gap-md">
           <button
             type="button"
-            className="review-card__character review-card__character-btn"
+            className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
             onClick={() =>
               openHub({
                 entityType: "character",
@@ -52,7 +52,7 @@ function ReviewCardOptionSelectComponent({
           onClick={() => onPlayAudio(displayChar)}
           aria-label="Play audio"
         >
-          🔊
+          <Icon name="audio" size={16} aria-hidden />
         </Button>
 
         {/* Option buttons */}

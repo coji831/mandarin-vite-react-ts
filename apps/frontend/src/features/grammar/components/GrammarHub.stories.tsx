@@ -14,7 +14,9 @@ import { grammarHandlers } from "../../../mocks/handlers/grammar-handlers";
 const meta = {
   title: "Features/Grammar/GrammarHub",
   component: GrammarHub,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+  },
 } satisfies Meta<typeof GrammarHub>;
 
 export default meta;

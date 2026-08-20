@@ -37,6 +37,7 @@ export function QuizProgressBar({
       <ProgressBar
         value={pct}
         threshold={isPractice ? undefined : thresholdPct}
+        aria-label="Quiz score progress"
         className="bg-surface-dark-alt radius-pill"
       />
 

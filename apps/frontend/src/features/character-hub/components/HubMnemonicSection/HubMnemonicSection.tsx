@@ -109,7 +109,7 @@ function MnemonicSectionInner({ character }: { character: string }) {
         if (!isAuthenticated) {
           return (
             <GuestUpsell
-              icon="✨"
+              icon="sparkles"
               title="Mnemonic stories"
               description="Register to generate and save your own mnemonic stories for characters."
             />

@@ -93,8 +93,7 @@ export function CategoryBreakdown({ answers, categoryBreakdown, total }: Categor
   if (denominator === 0) return null;
 
   return (
-    <Box variant="dark" padding="md" className="flex-col gap-md" style={{ minWidth: 320 }}>
-      {/* inline: fixed minWidth for breakdown card — no utility class for 320px */}
+    <Box variant="dark" padding="md" className="flex-col gap-md quiz-breakdown__card">
       <h3 className="quiz-breakdown__heading font-lg text-primary m-0">📊 Category Breakdown</h3>
 
       <CategoryBar

@@ -13,7 +13,14 @@ import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
-import { Button, ErrorScreen, LoadingScreen, ProgressBar, GuestUpsell } from "shared/components";
+import {
+  Button,
+  ErrorScreen,
+  LoadingScreen,
+  ProgressBar,
+  GuestUpsell,
+  Icon,
+} from "shared/components";
 import { login_page } from "shared/constants";
 
 type ReviewViewProps = {
@@ -72,7 +79,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
       return (
         <div className="error-screen flex-col-center gap-lg p-2xl">
           <GuestUpsell
-            icon="🔒"
+            icon="lock"
             title="Your session expired"
             description="Your session expired — sign in again to continue reviewing."
             ctaLabel="Sign in again ▸"
@@ -106,15 +113,22 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "result":
       return (
         <div className="review-view flex-col gap-lg w-full">
-          {/* Header */}
-          <header className="flex-between">
-            <h1 className="text-secondary fw-600 font-sm m-0">
-              {"\uD83C\uDCCF"} Review
-              {contentType
-                ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
-                : ""}{" "}
-              · {progress.current} of {progress.total}
+          {/* Header — precision-minimal focus-task header (golden template C.2):
+              h1 font-lg fw-600 text-primary; progress count is font-sm text-muted meta
+              (Tier-0: 🀄 → shared Icon "book" — no Lucide mahjong tile exists). */}
+          <header className="flex-between gap-lg">
+            <h1 className="text-primary fw-600 font-lg m-0 flex-center gap-xs">
+              <Icon name="book" size={16} aria-hidden />
+              <span>
+                Review
+                {contentType
+                  ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
+                  : ""}
+              </span>
             </h1>
+            <span className="font-sm text-muted">
+              {progress.current} of {progress.total}
+            </span>
           </header>
 
           {/* Flip card */}
@@ -132,7 +146,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
           />
 
           {/* Progress bar */}
-          <ProgressBar value={progress.current / progress.total} />
+          <ProgressBar value={progress.current / progress.total} aria-label="Review progress" />
         </div>
       );
 

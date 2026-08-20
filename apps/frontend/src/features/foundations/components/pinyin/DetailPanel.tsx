@@ -14,7 +14,7 @@ import {
   stripToneAndDigits,
 } from "@mandarin/shared-utils";
 import type { PinyinCharacterMap } from "@mandarin/shared-utils";
-import { Box, Button, ButtonVariant } from "shared/components";
+import { Box, Button, ButtonVariant, Icon } from "shared/components";
 import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
 import { TONE_COLORS } from "../../utils/pinyinUtils";
@@ -156,7 +156,9 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
               title="View character details"
             >
               <span className="font-2xl text-primary">{chineseChar}</span>
-              <span className="font-xs">🔍</span>
+              <span className="flex-center">
+                <Icon name="search" size={16} aria-hidden />
+              </span>
             </Button>
           ) : (
             <span className="font-xs text-muted">&mdash;</span>

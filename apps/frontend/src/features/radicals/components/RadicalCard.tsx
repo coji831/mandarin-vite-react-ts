@@ -4,7 +4,7 @@
  * Story 19.1: Radicals Browser Structure
  */
 
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import type { RadicalData } from "../types";
 import "./RadicalCard.css";
 
@@ -23,11 +23,11 @@ export function RadicalCard({ radical, onClick }: RadicalCardProps) {
     >
       {radical.is_recommended && (
         <span
-          className="radical-card__badge absolute text-warning font-lg lh-1"
+          className="radical-card__badge absolute text-warning lh-1"
           aria-label="Recommended radical"
           title="Top 20 — covers 70% of common characters"
         >
-          ★
+          <Icon name="star" size={16} aria-hidden />
         </span>
       )}
       {radical.metadata?.frequency_rank !== undefined && radical.metadata.frequency_rank <= 20 && (

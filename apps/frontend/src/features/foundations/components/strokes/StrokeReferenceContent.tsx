@@ -23,12 +23,7 @@ export function StrokeReferenceContent() {
           <p className="stroke-ref-subtitle font-xs">Learn by sight — no writing required</p>
           <Box variant="dark-alt" padding="xs" className="stroke-grid flex flex-wrap">
             {[1, 2, 3, 4, 5].map((i) => (
-              <Box
-                key={i}
-                variant="dark-alt"
-                padding="xs"
-                className="stroke-card flex-col gap-xs op-60"
-              >
+              <Box key={i} variant="dark-alt" padding="xs" className="stroke-card flex-col gap-xs">
                 <span className="stroke-glyph font-3xl lh-1 fw-600 text-muted">?</span>
                 <span className="stroke-pinyin font-xs text-muted">loading...</span>
                 <span className="stroke-meaning font-xs text-muted">loading...</span>

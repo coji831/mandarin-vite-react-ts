@@ -4,7 +4,7 @@
  * Story 19.1: Radicals Browser Structure
  */
 
-import { Box, Button, Dropdown, Input, ToggleSwitch } from "shared/components";
+import { Box, Button, Dropdown, Icon, Input, ToggleSwitch } from "shared/components";
 import type { RadicalFilter } from "../types";
 
 interface FilterBarProps {
@@ -85,9 +85,9 @@ export function FilterBar({ filter, onFilterChange, onReset }: FilterBarProps) {
       </div>
 
       {/* Legend */}
-      <div className="radicals-page__legend flex items-center gap-xs font-xs text-subtle">
-        <span aria-hidden="true" className="font-sm text-warning">
-          ★
+      <div className="radicals-page__legend flex items-center gap-xs font-xs text-muted">
+        <span aria-hidden="true" className="text-warning">
+          <Icon name="star" size={16} />
         </span>
         <span className="font-xs">Recommended (top 20 — covers 70% of common characters)</span>
       </div>

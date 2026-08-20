@@ -8,6 +8,14 @@
   min-height: 300px;
 }
 
+/* Task surface (golden template C.2): the Box `dark` border is a hairline —
+   focus-task cards stay FLAT (no elevation, ADR-004). Scoped to
+   .box-dark.review-card so it beats the shared .box-dark border regardless of
+   stylesheet order. */
+.review-card.box-dark {
+  border-color: var(--surface-border-subtle);
+}
+
 /* review-card__side: width migrated to utility class w-full */
 
 .review-card__character-display {
@@ -15,7 +23,7 @@
 }
 
 .review-card__meaning {
-  line-height: 1.4; /* custom line-height — .lh-1-4 utility doesn't convey the meaning semantic */
+  line-height: var(--lh-1-4); /* legacy meaning line-height — kept exact via --lh-1-4 token */
 }
 
 /* ── Character glyph → Character Hub entry ──────────── */
@@ -41,8 +49,13 @@
   /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
 .review-card__audio-btn:hover {
-  /* :hover pseudo — token shadow, no motion */
+  /* :hover pseudo — token shadow, no motion (amber hover-lift bucket, A.3) */
   box-shadow: var(--shadow-md);
+}
+.review-card__audio-btn:focus-visible {
+  /* focus parity with rating buttons (C.2) */
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* ── Pinyin input ────────────────────────────────── */

@@ -33,7 +33,9 @@ const MOCK_RADICAL: RadicalData = {
 const meta = {
   title: "Features/Radicals/RadicalHub",
   component: RadicalHub,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+  },
 } satisfies Meta<typeof RadicalHub>;
 
 export default meta;

@@ -6,4 +6,13 @@
   max-width: 520px;
 }
 
+/* Stat cards (golden template C.2): Box `dark-accent` + hairline; the 3px
+   `--color-primary-border` left accent is kept. Scoped to
+   .box-dark-accent.review-complete__stat-card so it beats the shared
+   .box-dark-accent border regardless of stylesheet order. */
+.review-complete__stat-card.box-dark-accent {
+  border-color: var(--surface-border-subtle);
+  border-left-color: var(--color-primary-border);
+}
+
 /* Font sizes migrated to utility classes in JSX */

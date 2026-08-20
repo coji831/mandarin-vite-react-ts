@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Box, Button, Chip } from "shared/components";
+import { Box, Button, Chip, Icon } from "shared/components";
 import { openHub } from "shared/store";
 import type { RadicalData } from "../types";
 import { BranchNode } from "./BranchNode";
@@ -114,7 +114,8 @@ export function TreeRootNode({ radical, characters }: TreeRootNodeProps) {
             padding="md"
           >
             <Button variant="secondary" size="sm" onClick={handleCollapse}>
-              🌲 Collapse
+              <Icon name="tree" size={16} aria-hidden />
+              Collapse
             </Button>
             <Button variant="secondary" size="sm" disabled title="Coming in Epic 20">
               Generate stories for all ▸

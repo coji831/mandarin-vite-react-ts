@@ -96,14 +96,7 @@ export function QuizResults() {
         </div>
 
         {/* Score visualization bar */}
-        <div
-          className="quiz-results__bar-wrapper bg-surface-dark radius-pill"
-          style={{
-            width: "100%",
-            height: 8,
-            overflow: "hidden",
-          }}
-        >
+        <div className="quiz-results__bar-wrapper bg-surface-dark radius-pill w-full overflow-hidden h-8px">
           <div
             className={`quiz-results__bar-fill radius-pill transition-width ${passed ? "bg-success" : "bg-error"}`}
             style={{

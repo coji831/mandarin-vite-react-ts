@@ -40,14 +40,15 @@ describe("PassageCard", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onClick on Enter key", () => {
+  it("calls onClick on Enter key", async () => {
     const onClick = vi.fn();
     render(<PassageCard {...defaultProps} onClick={onClick} />);
 
+    // The card body is now a real <button> — Enter is handled natively, so
+    // simulate the full keyboard interaction instead of a raw keydown.
     const card = screen.getByRole("button");
     card.focus();
-    // Use fireEvent.keyDown to avoid native button Enter behavior
-    fireEvent.keyDown(card, { key: "Enter" });
+    await userEvent.keyboard("{Enter}");
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
@@ -75,12 +76,14 @@ describe("PassageCard", () => {
 
   it("shows completion checkmark when isCompleted is true", () => {
     render(<PassageCard {...defaultProps} isCompleted={true} />);
-    expect(screen.getByLabelText("Completed")).toBeInTheDocument();
+    // Decorative glyph (aria-hidden) — the completed state is also exposed via
+    // the open-button's aria-label (asserted below).
+    expect(screen.getByText("✓")).toBeInTheDocument();
   });
 
   it("hides completion checkmark when isCompleted is false", () => {
     render(<PassageCard {...defaultProps} isCompleted={false} />);
-    expect(screen.queryByLabelText("Completed")).not.toBeInTheDocument();
+    expect(screen.queryByText("✓")).not.toBeInTheDocument();
   });
 
   it("shows empty star when not bookmarked but onBookmarkToggle is provided", () => {

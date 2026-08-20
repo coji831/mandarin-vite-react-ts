@@ -39,7 +39,7 @@
 .pictograph-match__description {
   font-size: var(--font-md);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: var(--lh-normal);
   text-align: center;
   margin: 0 0 var(--space-lg);
 }
@@ -109,7 +109,7 @@
 .pictograph-match__etymology {
   font-size: var(--font-sm);
   color: var(--text-tertiary);
-  line-height: 1.5;
+  line-height: var(--lh-normal);
   font-style: italic;
   margin: 0 0 var(--space-md);
 }
@@ -125,7 +125,7 @@
 
 .pictograph-match__end-score {
   font-size: var(--font-2xl);
-  font-weight: 700;
+  font-weight: var(--fw-700);
   color: var(--text-primary);
   margin: 0 0 var(--space-xs);
 }

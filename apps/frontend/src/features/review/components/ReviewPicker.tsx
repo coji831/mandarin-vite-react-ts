@@ -5,12 +5,14 @@
 import React from "react";
 import type { ReviewSource } from "../types";
 import { useReviewSources } from "../hooks/useReviewSources";
-import { Button, RadioGroup, Spinner } from "shared/components";
+import { Button, Icon, RadioGroup, Spinner } from "shared/components";
+import { isIconName } from "shared/components";
 import "./ReviewPicker.css";
 
 type ContentTypeOption = {
   type: string;
   label: string;
+  /** Mapped IconName where available; unmapped emoji (e.g. 🎵) kept as-is. */
   icon: string;
   description: string;
 };
@@ -19,7 +21,7 @@ const CONTENT_TYPES: ContentTypeOption[] = [
   {
     type: "pinyin",
     label: "Pinyin",
-    icon: "🔤",
+    icon: "letters",
     description: "Initials, finals, and combinations",
   },
   {
@@ -31,13 +33,13 @@ const CONTENT_TYPES: ContentTypeOption[] = [
   {
     type: "radicals",
     label: "Radicals",
-    icon: "📘",
+    icon: "radicals",
     description: "Kangxi radicals",
   },
   {
     type: "char-radical",
     label: "Char→Radical",
-    icon: "🔍",
+    icon: "search",
     description: "Character radical decomposition",
   },
 ];
@@ -70,7 +72,10 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
       <div className="flex-col gap-xs">
-        <h2 className="review-picker__title text-primary font-xl m-0">🃏 Review</h2>
+        <h2 className="review-picker__title text-primary font-xl m-0 flex-center gap-xs">
+          <Icon name="review" size={20} aria-hidden />
+          <span>Review</span>
+        </h2>
         <p className="review-picker__description text-muted font-sm m-0">
           No timer, no scoring. Self-rated: Again / Good / Easy.
         </p>
@@ -92,7 +97,9 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
                 onClick={() => setSelectedType(ct.type)}
                 aria-pressed={isSelected}
               >
-                <span className="review-picker__card-icon font-2xl">{ct.icon}</span>
+                <span className="review-picker__card-icon flex-center" aria-hidden="true">
+                  {isIconName(ct.icon) ? <Icon name={ct.icon} size={24} /> : ct.icon}
+                </span>
                 <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
                 <span className="review-picker__card-desc text-muted font-sm">
                   {ct.description}

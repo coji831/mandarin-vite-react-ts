@@ -1,3 +1,10 @@
+---
+purpose: Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words)
+status: active
+last-verified: 2026-07-22
+type: design
+---
+
 # Character Hub — Design Spec
 
 **Last Updated:** 2026-07-22

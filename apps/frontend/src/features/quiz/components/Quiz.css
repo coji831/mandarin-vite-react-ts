@@ -50,6 +50,9 @@
 /* ═══════════════════════════════════════════════
    Quiz: Category Breakdown
    ═══════════════════════════════════════════════ */
+.quiz-breakdown__card {
+  min-width: 320px;
+}
 .quiz-breakdown__fill {
   /* height: 100% — migrated to utility class: h-full */
 }

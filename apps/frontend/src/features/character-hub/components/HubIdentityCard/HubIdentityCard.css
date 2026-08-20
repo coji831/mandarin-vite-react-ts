@@ -3,6 +3,10 @@
 
 .hub-identity {
   min-height: 0; /* flex child — required for internal layout */
+  /* Chromatic demo tweak (2026-08-20): hairline card treatment — visible + reversible */
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
 }
 
 /* ── Header Row: large glyph + pinyin + meaning ────────── */
@@ -10,7 +14,7 @@
    font-size, font-weight, color, flex-shrink moved to utility classes in TSX. */
 
 .hub-identity__meaning {
-  line-height: 1.3; /* custom meaning line-height — .lh-1-3 utility doesn't convey the meaning semantic */
+  line-height: var(--lh-1-3); /* legacy meaning line-height — kept exact via --lh-1-3 token */
   opacity: 0.9;
 }
 

@@ -11,7 +11,7 @@ import { GuestUpsell } from "shared/components";
 export function ReviewPromptCard() {
   return (
     <GuestUpsell
-      icon="🔒"
+      icon="lock"
       title="Spaced Repetition Review"
       description="Master characters long-term with smart flashcards that adapt to your learning pace."
     />

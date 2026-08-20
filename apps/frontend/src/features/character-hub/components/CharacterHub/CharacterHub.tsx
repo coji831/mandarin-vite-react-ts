@@ -68,8 +68,8 @@ export function CharacterHub({ entityId, entityLabel }: CharacterHubProps) {
       <Box variant="card" className="hub-tab-area shrink-0 p-0 overflow-hidden flex-col">
         <Tabs
           tabs={[
-            { id: "words", label: "Common Words", icon: "📖" },
-            { id: "story", label: "Mnemonic Story", icon: "📝" },
+            { id: "words", label: "Common Words", icon: "book" },
+            { id: "story", label: "Mnemonic Story", icon: "edit" },
           ]}
           activeTab={activeTab}
           onTabChange={(id) => setActiveTab(id as HubTab)}

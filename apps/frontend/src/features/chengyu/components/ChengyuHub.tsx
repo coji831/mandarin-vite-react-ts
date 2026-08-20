@@ -10,7 +10,7 @@
  * direct `useHubStore` calls. Audio uses the shared manager via
  * `useAudioItemPlayback().play(chinese, { textIsChinese: true })` → POST /v1/tts.
  */
-import { Badge, Box, Button, ErrorScreen, Skeleton } from "shared/components";
+import { Badge, Box, Button, ErrorScreen, Icon, Skeleton } from "shared/components";
 import { openHub } from "shared/hub-entry";
 import { useAudioItemPlayback } from "shared/hooks";
 import { useChengyuDetail } from "../hooks";
@@ -48,7 +48,7 @@ function ExampleBlock({
           aria-label={`Play example audio: ${example.chinese}`}
           onClick={onPlay}
         >
-          {audioLoading ? "…" : "🔊"}
+          {audioLoading ? "…" : <Icon name="audio" size={16} aria-hidden />}
         </Button>
       </div>
       <p className="chengyu-hub__example-pinyin font-sm text-primary-light font-italic m-0">

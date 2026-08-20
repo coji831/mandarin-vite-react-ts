@@ -9,7 +9,7 @@
  *
  * States: Idle, Loading, Playing, Paused, Blocked ("tap to play"), Complete, Error.
  */
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import { PLAYBACK_SPEEDS } from "../../constants/audio";
 import { useAudioStore } from "shared/store";
 import type { PlaybackSpeed } from "../../constants/audio";
@@ -49,8 +49,16 @@ export function AudioControlBar({
   const currentDisplay = currentIndex !== null ? currentIndex + 1 : isComplete ? totalSentences : 0;
   const progressLabel = `${currentDisplay} / ${totalSentences}`;
 
-  // Play/pause button icon
-  const playIcon = isLoading ? "⏳" : isPlaying ? "⏸" : isBlocked ? "🔇" : "▶";
+  // Play/pause button icon (Tier-0: media glyphs → shared Icon play/pause/volume-mute)
+  const playIcon = isLoading ? (
+    "…"
+  ) : isPlaying ? (
+    <Icon name="pause" size={16} aria-hidden />
+  ) : isBlocked ? (
+    <Icon name="volume-mute" size={16} aria-hidden />
+  ) : (
+    <Icon name="play" size={16} aria-hidden />
+  );
 
   return (
     <div className="audio-control-bar" role="toolbar" aria-label="Audio playback controls">
@@ -75,7 +83,7 @@ export function AudioControlBar({
           aria-label="Stop audio"
           className="audio-control-bar__transport-btn"
         >
-          ⏹
+          <Icon name="stop" size={16} aria-hidden />
         </Button>
       </div>
 

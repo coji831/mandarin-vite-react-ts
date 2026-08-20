@@ -74,7 +74,7 @@ export function RegisterForm({ onSwitchToLogin, onSuccess }: RegisterFormProps) 
   return (
     <form className="auth-form flex-center p-xl" onSubmit={handleSubmit}>
       <Box variant="elevated" padding="xl" className="auth-form-container w-full flex-col gap-lg">
-        <h2 className="text-primary font-2xl fw-600 text-center">Create Account</h2>
+        <h2 className="text-primary font-2xl fw-600 tracking-tight text-center">Create Account</h2>
 
         {error && (
           <Box variant="error" className="auth-form-error bg-error-bg text-error font-sm">

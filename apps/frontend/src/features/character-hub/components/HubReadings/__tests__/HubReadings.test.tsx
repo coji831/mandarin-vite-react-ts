@@ -28,6 +28,7 @@ vi.mock("shared/components", () => ({
       {children as React.ReactNode}
     </button>
   ),
+  Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }));
 
 const mockReadings: ReadingInfo[] = [

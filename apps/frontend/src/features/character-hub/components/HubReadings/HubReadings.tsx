@@ -10,7 +10,7 @@
 
 import { useCallback } from "react";
 import { useAudioItemPlayback } from "shared/hooks";
-import { Button, Skeleton } from "shared/components";
+import { Button, Icon, Skeleton } from "shared/components";
 import { useCharacterDetail } from "../../hooks";
 import { getToneClass } from "../../utils/toneUtils";
 import "./HubReadings.css";
@@ -93,9 +93,9 @@ export function HubReadings({
                   <span className={`font-sm fw-500 ${getToneClass(r.tone)}`}>{r.pinyin}</span>
                   <span className="font-xs text-muted">{r.coreMeaning}</span>
                 </span>
-                <span className="font-xs text-subtle text-left">({r.type})</span>
+                <span className="font-xs text-muted text-left">({r.type})</span>
               </span>
-              <span>🔊</span>
+              <Icon name="audio" size={16} aria-hidden />
             </div>
           </Button>
         ))}

@@ -46,6 +46,13 @@ vi.mock("shared/components", () => ({
       </div>
     ),
   ),
+  EmptyState: vi.fn(({ title, description }: { title: string; description?: string }) => (
+    <div data-testid="mock-empty-state">
+      <p>{title}</p>
+      {description && <p>{description}</p>}
+    </div>
+  )),
+  Icon: vi.fn(({ name }: { name: string }) => <span data-testid={`icon-${name}`} />),
 }));
 
 const SAMPLE_FAMILIES = [

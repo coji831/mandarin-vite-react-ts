@@ -90,6 +90,7 @@ vi.mock("shared/components", () => ({
       </div>
     );
   },
+  Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }));
 
 const defaultFilter: RadicalFilter = {

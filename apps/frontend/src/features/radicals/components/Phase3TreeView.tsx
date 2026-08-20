@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { Button, Input, Skeleton, Box } from "shared/components";
+import { Box, Button, Icon, Input, Skeleton } from "shared/components";
 import type { RadicalData } from "../types";
 import { RadicalChipPicker } from "./RadicalChipPicker";
 import { TreeRootNode } from "./TreeRootNode";
@@ -66,8 +66,8 @@ export function Phase3TreeView({
       {/* Search bar — compact, inline (always visible in Phase 3) */}
       <div className="flex-end p-sm bg-surface-dark phase3-tree-view__search-bar">
         <div className="flex-center gap-xs">
-          <span className="font-sm text-muted" aria-hidden="true">
-            🔍
+          <span className="text-muted" aria-hidden="true">
+            <Icon name="search" size={16} />
           </span>
           <Input
             className="phase3-tree-view__search-input font-sm p-xs"

@@ -35,7 +35,7 @@ function FeedbackCard({ correct, children }: { correct: boolean; children: React
       className="quiz-feedback__card flex-col gap-md"
     >
       <Box
-        className={`quiz-feedback__badge fw-700 flex-center font-md p-xs radius-pill text-white self-start ${correct ? "bg-success" : "bg-error"}`}
+        className={`quiz-feedback__badge fw-700 flex-center font-md p-xs radius-pill text-white self-start ${correct ? "bg-success-bg" : "bg-error-bg"}`}
       >
         <span>{correct ? "✅ Correct!" : "❌ Incorrect"}</span>
       </Box>

@@ -16,7 +16,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Skeleton, ErrorScreen } from "shared/components";
+import { Box, EmptyState, ErrorScreen, Icon, Skeleton } from "shared/components";
 import { PhoneticFamilyNode } from "./PhoneticFamilyNode";
 import { getPhoneticFamilies, type PhoneticFamily } from "../services/phoneticTreeService";
 import "./PhoneticTreeView.css";
@@ -86,11 +86,11 @@ export function PhoneticTreeView({ isPhase3 }: PhoneticTreeViewProps) {
     return (
       <div className="phonetic-tree-view w-full">
         <div className="phonetic-tree-view__empty flex-col flex-center p-xl gap-sm">
-          <span className="font-3xl" aria-hidden="true">
-            🏠
-          </span>
-          <p className="text-muted font-lg">No phonetic families found.</p>
-          <p className="text-muted font-sm">Phonetic cluster data may not be available yet.</p>
+          <EmptyState
+            icon="home"
+            title="No phonetic families found."
+            description="Phonetic cluster data may not be available yet."
+          />
         </div>
       </div>
     );

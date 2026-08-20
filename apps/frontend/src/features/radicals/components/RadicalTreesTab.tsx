@@ -20,7 +20,7 @@ import type { RadicalData } from "../types";
 import { radicalsService } from "../services/radicalsService";
 import { Phase3TreeView } from "./Phase3TreeView";
 import { PhoneticTreeView } from "./PhoneticTreeView";
-import { Skeleton } from "shared/components";
+import { EmptyState, Skeleton } from "shared/components";
 import "./RadicalTreesTab.css";
 
 interface RadicalTreesTabProps {
@@ -155,13 +155,11 @@ export function RadicalTreesTab({
     return (
       <div className="radical-trees-tab w-full">
         <div className="flex-col flex-center p-xl gap-md">
-          <span className="font-3xl" aria-hidden="true">
-            🔒
-          </span>
-          <p className="text-muted font-lg">Radical Trees</p>
-          <p className="text-muted font-sm text-center">
-            Master radicals and pass the Phase 2 quiz to unlock tree visualization.
-          </p>
+          <EmptyState
+            icon="lock"
+            title="Radical Trees"
+            description="Master radicals and pass the Phase 2 quiz to unlock tree visualization."
+          />
         </div>
       </div>
     );

@@ -4,7 +4,7 @@
  * Story 20.2: Mnemonic Display UI
  */
 
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 
 type MnemonicEmptyProps = {
   character: string;
@@ -22,7 +22,8 @@ export function MnemonicEmpty({ character, onGenerate }: MnemonicEmptyProps) {
           onClick={onGenerate}
           aria-label="Generate mnemonic story"
         >
-          ✨ Generate Story
+          <Icon name="sparkles" size={16} aria-hidden />
+          Generate Story
         </Button>
       </div>
     </div>

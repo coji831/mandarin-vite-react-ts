@@ -41,6 +41,7 @@ vi.mock("shared/components", () => ({
       {loading ? "Loading..." : children}
     </button>
   ),
+  Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }));
 
 describe("HubActions", () => {
@@ -51,8 +52,8 @@ describe("HubActions", () => {
   it("renders Save to Review and Mark Learned buttons for authenticated users", () => {
     render(<HubActions character="好" />);
 
-    expect(screen.getByText("💾 Save to Review")).toBeInTheDocument();
-    expect(screen.getByText("✓ Mark Learned")).toBeInTheDocument();
+    expect(screen.getByText("Save to Review")).toBeInTheDocument();
+    expect(screen.getByText("Mark Learned")).toBeInTheDocument();
   });
 
   it("hides the registered-only actions for guests (no fake success)", () => {
@@ -60,7 +61,7 @@ describe("HubActions", () => {
     const { container } = render(<HubActions character="好" />);
 
     expect(container.innerHTML).toBe("");
-    expect(screen.queryByText("💾 Save to Review")).toBeNull();
-    expect(screen.queryByText("✓ Mark Learned")).toBeNull();
+    expect(screen.queryByText("Save to Review")).toBeNull();
+    expect(screen.queryByText("Mark Learned")).toBeNull();
   });
 });

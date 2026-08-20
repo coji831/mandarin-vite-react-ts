@@ -131,9 +131,9 @@ describe("RadicalTreesTab — Phase 2 (currentPhase < 3)", () => {
   });
 
   it("shows locked teaser instead of browse grid", () => {
-    render(<RadicalTreesTab {...defaultProps} />);
+    const { container } = render(<RadicalTreesTab {...defaultProps} />);
 
-    expect(screen.getByText("🔒")).toBeInTheDocument();
+    expect(container.querySelector("svg")).toBeInTheDocument();
     expect(screen.getByText("Radical Trees")).toBeInTheDocument();
     expect(
       screen.getByText("Master radicals and pass the Phase 2 quiz to unlock tree visualization."),

@@ -120,7 +120,7 @@ describe("TreeRootNode", () => {
     fireEvent.click(toggleButton);
 
     // Collapse button should be visible
-    expect(screen.getByText("🌲 Collapse")).toBeInTheDocument();
+    expect(screen.getByText("Collapse")).toBeInTheDocument();
     // Generate stories button should be visible and disabled
     const storyBtn = screen.getByText("Generate stories for all ▸");
     expect(storyBtn).toBeInTheDocument();
@@ -135,7 +135,7 @@ describe("TreeRootNode", () => {
     fireEvent.click(toggleButton);
     expect(screen.getByText("七")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("🌲 Collapse"));
+    fireEvent.click(screen.getByText("Collapse"));
     expect(toggleButton).toHaveAttribute("aria-expanded", "false");
   });
 

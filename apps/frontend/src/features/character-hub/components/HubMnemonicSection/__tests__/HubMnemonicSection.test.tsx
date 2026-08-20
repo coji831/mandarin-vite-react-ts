@@ -204,7 +204,7 @@ describe("HubMnemonicSection", () => {
 
   // ── Empty State ─────────────────────────────────────
 
-  it("empty state shows '✨ Generate Story' button", async () => {
+  it("empty state shows 'Generate Story' button", async () => {
     mockGetMnemonic.mockResolvedValue(null);
     render(<HubMnemonicSection character="好" />);
 
@@ -214,7 +214,7 @@ describe("HubMnemonicSection", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("✨ Generate Story")).toBeTruthy();
+      expect(screen.getByText("Generate Story")).toBeTruthy();
     });
   });
 
@@ -245,7 +245,7 @@ describe("HubMnemonicSection", () => {
 
     expect(screen.getByTestId("guest-upsell")).toBeTruthy();
     expect(screen.getByText("Mnemonic stories")).toBeTruthy();
-    expect(screen.queryByText("✨ Generate Story")).toBeNull();
+    expect(screen.queryByText("Generate Story")).toBeNull();
   });
 
   it("guest display state renders the shared story but hides edit/regenerate", async () => {
@@ -269,7 +269,7 @@ describe("HubMnemonicSection", () => {
     render(<HubMnemonicSection character="好" />);
 
     await waitFor(() => {
-      expect(screen.getByText("✨ Generate Story")).toBeTruthy();
+      expect(screen.getByText("Generate Story")).toBeTruthy();
     });
     expect(screen.queryByTestId("guest-upsell")).toBeNull();
   });
@@ -289,8 +289,8 @@ describe("HubMnemonicSection", () => {
     await waitFor(() => {
       expect(screen.getByLabelText("Mnemonic story editor")).toBeTruthy();
     });
-    expect(screen.getByText("💾 Save")).toBeTruthy();
-    expect(screen.getByText("✖ Cancel")).toBeTruthy();
+    expect(screen.getByText("Save")).toBeTruthy();
+    expect(screen.getByText("Cancel")).toBeTruthy();
   });
 
   // ── Error State ─────────────────────────────────────

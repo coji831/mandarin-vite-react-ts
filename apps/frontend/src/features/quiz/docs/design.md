@@ -1,3 +1,10 @@
+---
+purpose: Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes
+status: active
+last-verified: 2026-07-01
+type: design
+---
+
 # Feature: Quiz — Design Spec
 
 **Last Updated:** 2026-07-01

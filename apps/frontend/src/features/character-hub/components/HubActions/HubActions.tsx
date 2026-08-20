@@ -8,7 +8,7 @@
  * manages local UI state for loading/success transitions.
  */
 
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import { useState } from "react";
 import { useReview } from "shared/hooks";
 import { useAuth } from "features/auth";
@@ -88,7 +88,15 @@ export function HubActions({ character }: HubActionsProps) {
           loading={isSaving}
           disabled={saved}
         >
-          {saved ? "✅ Saved!" : "💾 Save to Review"}
+          {saved ? (
+            <>
+              <Icon name="check" size={16} aria-hidden /> Saved!
+            </>
+          ) : (
+            <>
+              <Icon name="save" size={16} aria-hidden /> Save to Review
+            </>
+          )}
         </Button>
         <Button
           variant="secondary"
@@ -97,7 +105,8 @@ export function HubActions({ character }: HubActionsProps) {
           loading={isMarking}
           disabled={marked}
         >
-          {marked ? "✓ Learned!" : "✓ Mark Learned"}
+          <Icon name="check" size={16} aria-hidden />
+          {marked ? "Learned!" : "Mark Learned"}
         </Button>
       </div>
       {error && (

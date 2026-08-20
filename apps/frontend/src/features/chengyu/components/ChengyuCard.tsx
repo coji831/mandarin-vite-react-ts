@@ -4,7 +4,7 @@
  * era/theme badges, and example count/preview sentence.
  * Story 23.3: Chengyu UI
  *
- * Follows preview-detail-separation: the card is a TEASER (figurative meaning +
+ * Follows ui-composition §7 (preview vs detail): the card is a TEASER (figurative meaning +
  * preview example) — the narrative story, literal meaning, and full examples
  * live only in the detail hub, so the learner is rewarded for clicking.
  *

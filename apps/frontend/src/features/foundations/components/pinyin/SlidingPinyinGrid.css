@@ -42,16 +42,26 @@
 .sliding-pinyin-grid__corner-spacer {
   position: sticky;
   /* top-0, left-0 migrated to className */
-  z-index: 10;
+  /* frozen chrome corner — stays above both sticky header rows (chrome tier) */
+  z-index: var(--z-chrome);
   width: var(--grid-cell-width);
   height: var(--grid-cell-height);
-  background-image: linear-gradient(
-    to top right,
-    var(--surface-dark-alt-2) calc(50% - 1.5px),
-    var(--surface-dark) calc(50% - 1.5px),
-    var(--surface-dark) calc(50% + 1.5px),
-    var(--surface-dark-alt-2) calc(50% + 1.5px)
-  );
+  background-color: var(--surface-dark-alt-2);
+}
+
+/* Diagonal divider between the I/F corner labels — re-expressed without
+   linear-gradient (anti-slop): a 3px bar rotated onto the 60×40 corner's
+   anti-diagonal (~33.7°). Surface tokens only. */
+.sliding-pinyin-grid__corner-spacer::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* > sqrt(60² + 40²) ≈ 72px so the seam spans the full diagonal */
+  width: 80px;
+  height: 3px;
+  background-color: var(--surface-dark);
+  transform: translate(-50%, -50%) rotate(33.7deg);
 }
 
 .sliding-pinyin-grid__corner-init {
@@ -71,7 +81,7 @@
 .sliding-pinyin-grid__col-header {
   position: sticky;
   /* top-0 migrated to className */
-  z-index: 2;
+  z-index: var(--z-content);
   /* flex-center applied via className */
   height: var(--grid-cell-height);
 }
@@ -96,7 +106,7 @@
 .sliding-pinyin-grid__row-header {
   position: sticky;
   /* left-0 migrated to className */
-  z-index: 3;
+  z-index: var(--z-content);
   /* flex-center applied via className */
   height: var(--grid-cell-height);
 }
@@ -126,7 +136,7 @@
 
 .sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):hover {
   outline: 1px solid var(--color-primary-bg);
-  z-index: 1;
+  z-index: var(--z-content);
   /* structural: relative — hover outline layer */
   position: relative;
 }
@@ -134,7 +144,7 @@
 .sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):focus-visible {
   outline: 2px solid var(--color-primary-light);
   outline-offset: -2px;
-  z-index: 1;
+  z-index: var(--z-content);
   /* structural: relative — focus outline layer */
   position: relative;
 }
@@ -146,7 +156,7 @@
 .sliding-pinyin-grid__cell--selected {
   outline: 2px solid var(--color-primary-light);
   outline-offset: -2px;
-  z-index: 1;
+  z-index: var(--z-content);
 }
 
 /* ─── Responsive ─── */

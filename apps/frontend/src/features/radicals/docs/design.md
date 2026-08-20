@@ -1,3 +1,10 @@
+---
+purpose: Design spec for the radicals browser, trees, and detail views (phase 2/3)
+status: active
+last-verified: 2026-07-08
+type: design
+---
+
 # Feature: Radicals — Design Spec
 
 **Last Updated:** 2026-07-08

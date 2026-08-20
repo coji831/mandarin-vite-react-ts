@@ -33,18 +33,18 @@ describe("DashboardGuest", () => {
     expect(screen.getByText(/Phase 4: Advanced/i)).toBeInTheDocument();
   });
 
-  it("renders sign-up CTA button", () => {
+  it("renders sign-up CTA button in the header", () => {
     renderWithRouter();
     expect(screen.getByText(/Sign Up Free/i)).toBeInTheDocument();
   });
 
-  it("renders start learning button", () => {
+  it("renders start learning button (hero secondary)", () => {
     renderWithRouter();
     expect(screen.getByText(/Start with Pinyin Basics/i)).toBeInTheDocument();
   });
 
-  it("renders save progress heading", () => {
+  it("renders a single h1 page header", () => {
     renderWithRouter();
-    expect(screen.getByRole("heading", { name: /Save Your Progress/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
 });

@@ -238,7 +238,7 @@ function SlidingPinyinGridComponent({
             className="sliding-pinyin-grid grid gap-xs"
             style={{
               gridTemplateColumns: gridCols,
-              gridTemplateRows: `40px repeat(${initials.length}, 40px)`,
+              gridTemplateRows: `var(--grid-cell-height) repeat(${initials.length}, var(--grid-cell-height))`,
             }}
           >
             {gridCells}

@@ -47,6 +47,7 @@ vi.mock("shared/components", () => ({
   Skeleton: vi.fn(({ variant, ...props }) => (
     <div data-testid="skeleton" data-variant={variant} {...props} />
   )),
+  Icon: vi.fn(({ name }: { name: string }) => <span data-testid={`icon-${name}`} />),
 }));
 
 const mockRadicals: RadicalData[] = [

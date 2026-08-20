@@ -1,3 +1,10 @@
+---
+purpose: Design spec for strategy-pattern SRS review sessions — flip-card practice across content types
+status: active
+last-verified: 2026-07-20
+type: design
+---
+
 # Feature: Review — Design Spec
 
 **Last Updated:** 2026-07-20

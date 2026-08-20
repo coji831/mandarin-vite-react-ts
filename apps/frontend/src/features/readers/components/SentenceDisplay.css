@@ -12,7 +12,8 @@
 
 .sentence-display__text {
   overflow-wrap: anywhere;
-  line-height: 1.8;
+  /* reading prose — closest sanctioned tier is --lh-relaxed (1.6); airier 1.8 would need a new ADR token */
+  line-height: var(--lh-relaxed);
 }
 
 .sentence-word {
@@ -24,7 +25,7 @@
 /* Stronger specificity (0,2,0) to override .btn-inline-text's color: inherit */
 .sentence-word.sentence-word--unknown {
   color: var(
-    --color-primary-light
+    --color-primary-lighter
   ); /* double-class selector for specificity — text-accent/text-primary-light won't match .btn-inline-text's color:inherit */
 }
 

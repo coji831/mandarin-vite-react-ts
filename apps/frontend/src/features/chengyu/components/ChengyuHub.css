@@ -9,7 +9,7 @@
 }
 
 .chengyu-hub__title {
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .chengyu-hub__title-row {
@@ -20,7 +20,7 @@
 }
 
 .chengyu-hub__pinyin {
-  line-height: 1.4;
+  line-height: var(--lh-1-4);
 }
 
 /* Clickable idiom-character strip → Character Hub. */
@@ -35,7 +35,7 @@
   background: var(--color-primary-bg-light);
   color: var(--color-primary);
   font-size: var(--font-md);
-  line-height: 1.2;
+  line-height: var(--lh-tight);
   cursor: pointer;
 }
 
@@ -49,19 +49,19 @@
 }
 
 .chengyu-hub__story {
-  line-height: 1.6;
+  line-height: var(--lh-relaxed);
 }
 
 .chengyu-hub__literal {
-  line-height: 1.6;
+  line-height: var(--lh-relaxed);
 }
 
 .chengyu-hub__figurative {
-  line-height: 1.6;
+  line-height: var(--lh-relaxed);
 }
 
 .chengyu-hub__source {
-  line-height: 1.4;
+  line-height: var(--lh-1-4);
 }
 
 .chengyu-hub__example-head {
@@ -71,7 +71,7 @@
 }
 
 .chengyu-hub__example-chinese {
-  line-height: 1.4;
+  line-height: var(--lh-1-4);
 }
 
 .chengyu-hub__play-btn {

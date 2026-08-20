@@ -83,7 +83,9 @@ describe("ReviewView", () => {
     const heading = screen.getByRole("heading", { level: 1 });
     expect(heading).toHaveTextContent("Review");
     expect(heading).toHaveTextContent("Radicals");
-    expect(heading).toHaveTextContent("1 of 10");
+    // Golden template C.2: progress count is a separate font-sm text-muted
+    // meta element beside the h1, not inside it.
+    expect(screen.getByText("1 of 10")).toBeInTheDocument();
   });
 
   // ── Bug 2: session-expiry upsell ────────────────────────────────────

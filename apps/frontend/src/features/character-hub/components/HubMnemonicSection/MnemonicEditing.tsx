@@ -4,7 +4,7 @@
  * Story 20.2: Mnemonic Display UI
  */
 
-import { Button, Textarea } from "shared/components";
+import { Button, Icon, Textarea } from "shared/components";
 import { useMnemonicStore } from "../../stores/mnemonicStore";
 
 type MnemonicEditingProps = {
@@ -44,7 +44,8 @@ export function MnemonicEditing({
           loading={isSaving}
           disabled={isSaving}
         >
-          {isSaving ? "💾 Saving…" : "💾 Save"}
+          <Icon name="save" size={16} aria-hidden />
+          {isSaving ? "Saving…" : "Save"}
         </Button>
         <Button
           variant="secondary"
@@ -53,7 +54,8 @@ export function MnemonicEditing({
           aria-label="Cancel editing"
           disabled={isSaving}
         >
-          ✖ Cancel
+          <Icon name="cross" size={16} aria-hidden />
+          Cancel
         </Button>
       </div>
     </div>

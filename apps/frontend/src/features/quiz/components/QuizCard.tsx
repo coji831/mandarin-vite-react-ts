@@ -82,7 +82,7 @@ function PhaseTimeline({
         return (
           <span
             key={p.phase}
-            className={`phase-timeline-item ${effectiveLocked ? "phase-locked op-40" : "op-100"} ${p.isPassed ? "phase-passed" : ""} ${p.isCurrent ? "phase-current" : ""}`}
+            className={`phase-timeline-item ${effectiveLocked ? "phase-locked text-muted" : ""} ${p.isPassed ? "phase-passed" : ""} ${p.isCurrent ? "phase-current" : ""}`}
           >
             {p.isPassed ? "✅" : p.isCurrent ? "📌" : effectiveLocked ? "🔒" : "🔓"} Phase {p.phase}
           </span>

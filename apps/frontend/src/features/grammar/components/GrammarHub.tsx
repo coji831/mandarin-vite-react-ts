@@ -13,7 +13,7 @@
  * - Related patterns open the Grammar hub for that pattern (cross-entity stack).
  * Story 22.3: Grammar UI
  */
-import { Badge, Box, Button, ErrorScreen, Skeleton } from "shared/components";
+import { Badge, Box, Button, ErrorScreen, Icon, Skeleton } from "shared/components";
 import { openHub } from "shared/hub-entry";
 import { useAudioItemPlayback } from "shared/hooks";
 import { useGrammarDetail } from "../hooks";
@@ -51,7 +51,7 @@ function ExampleBlock({
           aria-label={`Play example audio: ${example.chinese}`}
           onClick={onPlay}
         >
-          {audioLoading ? "…" : "🔊"}
+          {audioLoading ? "…" : <Icon name="audio" size={16} aria-hidden />}
         </Button>
       </div>
       <p className="grammar-hub__example-pinyin font-sm text-primary-light font-italic m-0">

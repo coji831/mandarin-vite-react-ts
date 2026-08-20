@@ -34,7 +34,9 @@ function ReviewCompleteComponent({
   return (
     <div className="review-complete flex-col-center gap-lg mx-auto">
       <span className="review-complete__emoji font-5xl">{"\uD83C\uDF89"}</span>
-      <h2 className="review-complete__title text-primary font-3xl m-0">Review Complete!</h2>
+      <h2 className="review-complete__title text-primary font-3xl fw-700 tracking-tight m-0">
+        Review Complete!
+      </h2>
       <p className="review-complete__subtitle text-muted text-center font-lg m-0">
         You reviewed {totalItems} item{totalItems !== 1 ? "s" : ""}.
       </p>

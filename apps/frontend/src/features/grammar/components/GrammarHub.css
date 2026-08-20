@@ -9,7 +9,7 @@
 }
 
 .grammar-hub__title {
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .grammar-hub__structure {
@@ -20,7 +20,7 @@
 }
 
 .grammar-hub__explanation {
-  line-height: 1.6;
+  line-height: var(--lh-relaxed);
 }
 
 .grammar-hub__example-head {
@@ -30,7 +30,7 @@
 }
 
 .grammar-hub__example-chinese {
-  line-height: 1.4;
+  line-height: var(--lh-1-4);
 }
 
 .grammar-hub__play-btn {
@@ -51,7 +51,7 @@
 /* Linked word/character token — clickable, opens the hub. */
 .grammar-hub__segment-token {
   padding: 0;
-  color: var(--color-primary);
+  color: var(--color-primary-lighter);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;

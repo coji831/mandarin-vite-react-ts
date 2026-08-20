@@ -77,7 +77,7 @@ describe("ExampleCharCell", () => {
         <ExampleCharCell character="日" pinyin="rì" meaning="sun" classification="pictograph" />,
       );
 
-      expect(screen.getByText("🖼️")).toBeInTheDocument();
+      expect(container.querySelector(".classification-badge svg")).toBeInTheDocument();
       expect(screen.getByText("Pictograph")).toBeInTheDocument();
       // Check golden border class is applied
       const row = container.querySelector(".example-char-cell--pictograph");
@@ -85,7 +85,7 @@ describe("ExampleCharCell", () => {
     });
 
     it("renders phono-semantic badge", () => {
-      render(
+      const { container } = render(
         <ExampleCharCell
           character="江"
           pinyin="jiāng"
@@ -94,12 +94,12 @@ describe("ExampleCharCell", () => {
         />,
       );
 
-      expect(screen.getByText("🔤")).toBeInTheDocument();
+      expect(container.querySelector(".classification-badge svg")).toBeInTheDocument();
       expect(screen.getByText("Phono-semantic")).toBeInTheDocument();
     });
 
     it("renders compound ideograph badge", () => {
-      render(
+      const { container } = render(
         <ExampleCharCell
           character="明"
           pinyin="míng"
@@ -108,12 +108,12 @@ describe("ExampleCharCell", () => {
         />,
       );
 
-      expect(screen.getByText("🧩")).toBeInTheDocument();
+      expect(container.querySelector(".classification-badge svg")).toBeInTheDocument();
       expect(screen.getByText("Compound ideograph")).toBeInTheDocument();
     });
 
     it("renders simple ideograph badge", () => {
-      render(
+      const { container } = render(
         <ExampleCharCell
           character="上"
           pinyin="shàng"
@@ -122,25 +122,24 @@ describe("ExampleCharCell", () => {
         />,
       );
 
-      expect(screen.getByText("⚡")).toBeInTheDocument();
+      expect(container.querySelector(".classification-badge svg")).toBeInTheDocument();
       expect(screen.getByText("Simple ideograph")).toBeInTheDocument();
     });
 
     it("renders nothing when classification is null", () => {
-      render(<ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />);
+      const { container } = render(
+        <ExampleCharCell character="水" pinyin="shuǐ" meaning="water" />,
+      );
 
-      expect(screen.queryByText("🖼️")).not.toBeInTheDocument();
-      expect(screen.queryByText("🔤")).not.toBeInTheDocument();
-      expect(screen.queryByText("🧩")).not.toBeInTheDocument();
-      expect(screen.queryByText("⚡")).not.toBeInTheDocument();
+      expect(container.querySelector(".classification-badge")).not.toBeInTheDocument();
     });
 
     it("renders nothing when classification is undefined", () => {
-      render(
+      const { container } = render(
         <ExampleCharCell character="水" pinyin="shuǐ" meaning="water" classification={undefined} />,
       );
 
-      expect(screen.queryByText("🖼️")).not.toBeInTheDocument();
+      expect(container.querySelector(".classification-badge")).not.toBeInTheDocument();
     });
 
     it("sets title attribute for pictograph with etymology", () => {

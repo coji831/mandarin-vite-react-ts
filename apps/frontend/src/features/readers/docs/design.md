@@ -1,3 +1,10 @@
+---
+purpose: Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave
+status: active
+last-verified: 2026-08-03
+type: design
+---
+
 # Feature: Readers — Design Spec
 
 **Last Updated:** 2026-08-03

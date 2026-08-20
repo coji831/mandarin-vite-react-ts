@@ -69,7 +69,7 @@ export function PinyinToneInput({
                   {btn.mark}
                   {btn.label}
                 </span>
-                <span className="pinyin-tone-input__btn-example font-sm op-80">{btn.example}</span>
+                <span className="pinyin-tone-input__btn-example font-sm">{btn.example}</span>
               </Button>
             );
           })}

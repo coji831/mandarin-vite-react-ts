@@ -11,7 +11,7 @@
  */
 
 import { useCallback } from "react";
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
 import "./BranchNode.css";
@@ -83,7 +83,7 @@ export function BranchNode({
         aria-label={`Play pronunciation for ${character}`}
         title="Play pronunciation"
       >
-        🔊
+        <Icon name="audio" size={16} aria-hidden />
       </Button>
 
       {/* Hub link */}

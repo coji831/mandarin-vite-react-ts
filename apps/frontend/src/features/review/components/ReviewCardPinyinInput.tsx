@@ -46,12 +46,12 @@ function ReviewCardPinyinInputComponent({
 
   return (
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
-      <div className="review-card__side flex-col-center gap-lg p-xl w-full">
+      <div className="review-card__side flex-col-center gap-md p-xl w-full">
         {/* Character + Meaning for exposure */}
         <div className="review-card__character-display flex-col-center gap-md">
           <button
             type="button"
-            className="review-card__character review-card__character-btn font-5xl lh-tight tracking-wide text-primary fw-700"
+            className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
             onClick={handleOpenHub}
             aria-label={`View details for ${displayChar}`}
           >

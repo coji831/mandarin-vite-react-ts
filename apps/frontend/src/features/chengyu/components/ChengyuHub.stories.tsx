@@ -19,7 +19,9 @@ import { chengyuHandlers } from "../../../mocks/handlers/chengyu-handlers";
 const meta = {
   title: "Features/Chengyu/ChengyuHub",
   component: ChengyuHub,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+  },
 } satisfies Meta<typeof ChengyuHub>;
 
 export default meta;

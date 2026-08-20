@@ -1,3 +1,10 @@
+---
+purpose: Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs
+status: active
+last-verified: 2026-07-20
+type: design
+---
+
 # Foundations Feature Design
 
 **Last Updated:** 2026-07-20

@@ -12,7 +12,7 @@
 import { useState, useCallback } from "react";
 import { resolveHanzi } from "@mandarin/shared-utils";
 import { useAudioItemPlayback, usePinyinCharacterMap } from "shared/hooks";
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 
 type AudioPlayerProps = {
   /** Pinyin audio key (e.g., "bā") */
@@ -60,7 +60,9 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
         }
         className="quiz-audio-btn hover-lift disabled:op-60"
       >
-        <span className="font-xl">{isLoading ? "⏳" : "🔊"}</span>
+        <span className="flex-center">
+          {isLoading ? "…" : <Icon name="audio" size={24} aria-hidden />}
+        </span>
         <span className="font-md">
           {isBlocked
             ? "Tap to play"

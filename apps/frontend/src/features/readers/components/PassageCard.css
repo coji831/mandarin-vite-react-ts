@@ -8,6 +8,28 @@
   min-height: 24px;
 }
 
+/* Clickable body — separate <button> (axe nested-interactive: must not nest
+   the bookmark toggle inside another interactive element). Transparent,
+   full-width, left-aligned so it visually reads as the whole card surface. */
+.passage-card__open {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  min-height: 0;
+}
+
+.passage-card__open:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 .passage-card__ratio {
   margin-top: auto;
 }
