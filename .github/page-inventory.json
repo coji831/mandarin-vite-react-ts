@@ -1,0 +1,249 @@
+{
+  "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot (M0 seed). One entry per page container, seeded from the 12 <Page>Full.stories.tsx files + router/paths.ts. A page is 'conforms' when it has a Full story, declared states, and a registry-clean composition map matching its archetype. 'diverges' surfaces the gap (missing Full story, unassigned archetype, or anatomy not yet audited against the archetype library). Enforced by scripts/check-page-inventory.mjs.",
+  "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component; composition maps may only name component-registry.json components. Archetype ids come from page-archetypes.md (hub-launcher, browse-index, focus-task, focus-chat, focus-timed, focus-media, utility, auth).",
+  "version": "1.0",
+  "archetypes": [
+    "hub-launcher",
+    "browse-index",
+    "focus-task",
+    "focus-chat",
+    "focus-timed",
+    "focus-media",
+    "utility",
+    "auth"
+  ],
+  "pages": [
+    {
+      "route": "/",
+      "component": "DashboardPage",
+      "archetype": "hub-launcher",
+      "story": "apps/frontend/src/pages/dashboard/DashboardPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error", "edge"],
+      "status": "conforms",
+      "composition": {
+        "header": "PageHeader",
+        "focal-card": "Box",
+        "quick-access": "Button",
+        "progress": "ProgressBar",
+        "loading": "Skeleton"
+      },
+      "note": "Precision-minimal hub-launcher exemplar."
+    },
+    {
+      "route": "/learn",
+      "component": null,
+      "archetype": "hub-launcher",
+      "story": null,
+      "states": [],
+      "status": "diverges",
+      "note": "Learn home — redirects to /learn/foundations (no page container). BLOCKED on epic-26 hub-launcher page before this can conform."
+    },
+    {
+      "route": "/practices",
+      "component": "PracticesPage",
+      "archetype": "hub-launcher",
+      "story": "apps/frontend/src/pages/practices/PracticesPageFull.stories.tsx",
+      "states": ["loading", "default", "edge"],
+      "status": "conforms",
+      "composition": {
+        "header": "PageHeader",
+        "focal-card": "Box",
+        "quick-access": "Button",
+        "guest-gate": "GuestUpsell"
+      },
+      "note": "Hub-launcher: Review + Quiz launch cards; guest variant (edge) renders ReviewPromptCard."
+    },
+    {
+      "route": "/library",
+      "component": "LibraryPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/LibraryPageFull.stories.tsx",
+      "states": ["default"],
+      "status": "conforms",
+      "composition": {
+        "content": "ContentBrowser",
+        "search": "SearchInput",
+        "filters": "FilterControls"
+      },
+      "note": "Dry-run adoption candidate for the browse-index archetype (registry-clean composition)."
+    },
+    {
+      "route": "/learn/readers",
+      "component": "ReadersPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error", "edge"],
+      "status": "diverges",
+      "note": "Dual-mode (library/reading) page straddles browse-index and focus-media; archetype split pending — do not force a split decision."
+    },
+    {
+      "route": "/learn/radicals",
+      "component": "RadicalsPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error", "edge"],
+      "status": "conforms",
+      "composition": {
+        "header": "Box",
+        "filters": "FilterControls",
+        "list": "Box",
+        "items": "Card",
+        "view-toggle": "Button",
+        "loading": "Skeleton"
+      },
+      "note": "Browse-index with radical/phonetic tree views (edge); empty = no mastered radicals."
+    },
+    {
+      "route": "/learn/grammar",
+      "component": "GrammarPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error"],
+      "status": "conforms",
+      "composition": {
+        "header": "Box",
+        "filters": "FilterControls",
+        "list": "Box",
+        "items": "Card",
+        "loading": "Skeleton"
+      },
+      "note": "Browse-index pattern library; card click opens the shared LexicalHub."
+    },
+    {
+      "route": "/learn/chengyu",
+      "component": "ChengyuPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error", "edge"],
+      "status": "conforms",
+      "composition": {
+        "header": "Box",
+        "filters": "FilterControls",
+        "list": "Box",
+        "items": "Card",
+        "pager": "Button",
+        "loading": "Skeleton"
+      },
+      "note": "Browse-index idiom library; edge = paginated list (3 pages)."
+    },
+    {
+      "route": "/practices/review",
+      "component": "ReviewPage",
+      "archetype": "focus-task",
+      "story": "apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error"],
+      "status": "conforms",
+      "composition": {
+        "progress": "ProgressBar",
+        "rating": "Button",
+        "card": "Card",
+        "shell": "Box"
+      },
+      "note": "Golden Template candidate (focus-task). ReviewView hosts the canonical review session."
+    },
+    {
+      "route": "/practices/quiz",
+      "component": "QuizPage",
+      "archetype": "focus-task",
+      "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
+      "states": ["loading", "default", "edge"],
+      "status": "conforms",
+      "note": "Session UI (QuizSessionPage) shares the focus-task skeleton with Review."
+    },
+    {
+      "route": "/progress",
+      "component": "ProgressPage",
+      "archetype": "utility",
+      "story": "apps/frontend/src/pages/ProgressPageFull.stories.tsx",
+      "states": ["default"],
+      "status": "conforms",
+      "composition": {
+        "section": "Box"
+      },
+      "note": "Static utility shell composed of Box sections."
+    },
+    {
+      "route": "/auth/login",
+      "component": "LoginPage",
+      "archetype": "auth",
+      "story": "apps/frontend/src/pages/LoginPageFull.stories.tsx",
+      "states": ["default", "edge"],
+      "status": "diverges",
+      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending shell family (epic 25/39)."
+    },
+    {
+      "route": "/auth/register",
+      "component": "RegisterPage",
+      "archetype": "auth",
+      "story": "apps/frontend/src/pages/RegisterPageFull.stories.tsx",
+      "states": ["default", "edge"],
+      "status": "diverges",
+      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending shell family (epic 25/39)."
+    },
+    {
+      "route": "/settings",
+      "component": "SettingsPage",
+      "archetype": "utility",
+      "story": "apps/frontend/src/pages/SettingsPageFull.stories.tsx",
+      "states": ["default"],
+      "status": "conforms",
+      "composition": {
+        "section": "Box"
+      },
+      "note": "Thin utility placeholder (Box card section); full settings shell is epic 25/39."
+    },
+    {
+      "route": "/profile",
+      "component": "ProfilePage",
+      "archetype": "utility",
+      "story": "apps/frontend/src/pages/ProfilePageFull.stories.tsx",
+      "states": ["default"],
+      "status": "conforms",
+      "composition": {
+        "section": "Box"
+      },
+      "note": "Thin utility placeholder (Box card section); full profile shell is epic 25/39."
+    },
+    {
+      "route": "/learn/foundations",
+      "component": "FoundationsPage",
+      "archetype": "hub-launcher",
+      "story": "apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx",
+      "states": ["loading", "default", "error", "edge"],
+      "status": "conforms",
+      "composition": {
+        "tabs": "Tabs",
+        "focal-point": "Box",
+        "progress": "ProgressBar",
+        "section": "Box",
+        "items": "Card",
+        "loading": "Skeleton"
+      },
+      "note": "De-facto Learn home; hub-launcher with tabbed focal point + progress. Edge = tones deep-link."
+    },
+    {
+      "route": "/learn/phonetic-clusters",
+      "component": "PhoneticClustersPage",
+      "archetype": "browse-index",
+      "story": "apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx",
+      "states": ["loading", "default", "empty", "error"],
+      "status": "conforms",
+      "composition": {
+        "header": "Box",
+        "list": "Box",
+        "items": "Card",
+        "loading": "Skeleton"
+      },
+      "note": "Browse-index over phonetic cluster families (HSK filter)."
+    },
+    {
+      "route": "/learn/basic",
+      "component": null,
+      "archetype": null,
+      "story": null,
+      "states": [],
+      "status": "diverges",
+      "note": "Legacy redirect → /learn/foundations (no page container). BLOCKED: no page container to conform until epic-26 removes/rebuilds it."
+    }
+  ]
+}

@@ -1,10 +1,78 @@
+---
+purpose: "Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them"
+status: active
+last-verified: 2026-08-18
+type: design
+audience: agents
+---
+
 # PinyinPal Design Reasoning Guide
 
-**Last Updated:** 2026-07-18  
+**Last Updated:** 2026-08-18  
 **Audience:** AI Coding Agents  
 **Purpose:** Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them.
 
 > **How to use this file:** Read it at the start of any UI task. It replaces guesswork with ground rules. If you make a non-obvious design choice, add an ADR entry (see Appendix).
+
+---
+
+## 0. UI Paradigm & Consistency (Focus-First)
+
+**PinyinPal is a Focus-First app — a dual-mode consumer learning app.** Every minute the user is either **(a) choosing the next session (Browse)** or **(b) inside a session (Focus)**; there is no third kind of moment. The page archetype library in `docs/guides/design/page-archetypes.md` is the structural contract that makes consistency _by construction_: a finite set of named page skeletons, and every page is a parameterization of one archetype. The dual-mode rule, the 5 non-negotiables, the mode/page table, and all 8 archetype YAML blocks live there — read it before designing any page.
+
+### Token Freeze (standing rule)
+
+**New design tokens are only added via the `DESIGN.md` + `globals.css` + `design-audit` ADR path** (gates #8/#9 in `project-workflow.instructions.md` enforce token parity — this makes the rule explicit). Concretely:
+
+- A new token must land in **both** `DESIGN.md` (spec) and `apps/frontend/src/styles/globals.css` (CSS var) — parity.
+- It must pass `npx @google/design.md lint DESIGN.md` and `npm run design-audit`.
+- It must be recorded as an ADR (see ADR-005). Never add a token unilaterally inside a feature.
+- **No runtime theming** — direction exploration is pre-commit design selection only (see ADR-001: dark mode is a single identity); never build a runtime theme/accent switcher.
+
+### Token change procedure
+
+**Adding a new token** (see Token Freeze above — the ADR/gate path is mandatory):
+
+1. Identify the gap (new color, spacing, etc.).
+2. Add it to the `DESIGN.md` tokens section **and** the matching CSS variable in `apps/frontend/src/styles/globals.css` `:root` — parity.
+3. Run `npx @google/design.md lint DESIGN.md` and `npm run design-audit`.
+4. Check Storybook — all existing components still render correctly; add/update a story that showcases the new token.
+
+**Modifying an existing token** — ⚠️ a changed value affects **every** component that uses it:
+
+1. Grep all usages of the CSS variable across the project before changing.
+2. Verify the new value works in ALL contexts (buttons, cards, icons, …).
+3. Update `DESIGN.md` first, then `globals.css`.
+4. Run Storybook → visually check ALL components using that token.
+5. Run `npx @google/design.md lint DESIGN.md`.
+
+> Folded from the retired `visual-design-workflow.md` (§1.3–1.4) in the 2026-08-18 tree-map N1 cleanup; its story/component rules were superseded by `storybook-production-alignment.instructions.md` + `frontend-css-styling.instructions.md` + `component-registry.json`.
+
+### External Borrowing Protocol (patterns only — never code)
+
+PinyinPal borrows **patterns and principles** from external sources, re-expressed in PinyinPal tokens + registry components through an explicit protocol. Never import code wholesale; import the _why_:
+
+1. **Extract** — state the principle in one sentence, free of the source's visual language (e.g. "the rating decision must cost <1s and one glance").
+2. **Translate** — map it onto `DESIGN.md`/`globals.css` tokens (`--space-*`, `--font-*`, `--color-*`) + registry components (`Button variant='rating-again/good/easy'`, `Card`, `ProgressBar`) — "none invented".
+3. **Register + story + test + a11y** — if the pattern needs a new shared component, it takes the exact internal path: `component-registry.json` entry + story + states + tests + a11y.
+4. **Gate** — `design-audit` · `check:registry-stories` · `check:page-inventory` · `test-storybook` · addon-a11y · pre-delivery · user preview. Record the borrow's origin in the design spec's `provenance:` field (`per-epic-design-spec.md`).
+
+**Eligibility filter:** a borrow must map onto an existing archetype's anatomy/CTA-slot/composition map (or it forces an _archetype change_ = a bigger decision) and serve a Browse or Focus moment — anything that straddles or invents a third mode is rejected.
+
+### Curated external-borrow shortlist
+
+| Source                                   | Mine (the _why_)                                                                                                           | Reject                                               | PinyinPal landing                                                                      |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **Duolingo**                             | Session structure — one micro-task per screen, progress at top, next-action always visible; the retention loop             | Confetti, streak celebrations, mascot, candy palette | `focus-task` anatomy (progress → task → rating → next) — largely owned by `ReviewView` |
+| **Anki**                                 | Rating-decision ergonomics — decisions must cost <1s and one glance                                                        | Bare utilitarian chrome                              | `ReviewView`'s `rating-again/good/easy` cluster                                        |
+| **Quizlet / Memrise**                    | Study-mode switching; mnemonic + example pairing with the target                                                           | Busy layouts, gamification noise                     | `MnemonicCard` + library mode switching (`browse-index`)                               |
+| **HelloChinese / Skritter**              | Consumer Chinese session flow; stroke-practice pacing (same domain as `CharacterStrokePlayer`/`AnimationCanvas`)           | Gamified candy aesthetics                            | practice-session pacing for epics 26/28/36                                             |
+| **Pleco**                                | Word-detail _information hierarchy_ (a pure utility)                                                                       | —                                                    | word-hub / `ContentBrowser` detail layout                                              |
+| **LingQ / Readlang**                     | Tap-word-to-reveal reading interaction                                                                                     | —                                                    | the readers feature's reading-detail surface                                           |
+| **Linear / Stripe**                      | **Quality bar only**: focus-visible rings, hover/press states, empty states with a next step, microcopy, skeleton fidelity | Enterprise layout, density, command-bar chrome       | the polish bar applied to _every_ page                                                 |
+| **shadcn/ui**                            | Component _API ergonomics_ (compound/controlled patterns) + the open-code registry model (which PinyinPal already mirrors) | Its Tailwind styling                                 | registry + component API design                                                        |
+| **Radix**                                | **a11y behavioral specs** — focus management, keyboard nav, ARIA patterns                                                  | Its code (unless vendored via ADR)                   | the a11y checklists for `Modal`/`Dropdown`/`Tabs`                                      |
+| **Material 3 / Apple HIG / Carbon docs** | Documentation _model_: per-component states, elevation, usage guidance                                                     | Their visual language                                | enriching the archetype YAML blocks + registry entries                                 |
 
 ---
 
@@ -398,3 +466,68 @@ Before reporting any UI code as complete, verify every item:
 **Context:** Earlier quiz implementations used elevated cards with shadows (`--shadow-md`).  
 **Decision:** Quiz cards use `--surface-dark` with `--surface-border` — no shadows.  
 **Rationale:** Shadows create visual depth that competes with the quiz content for attention. During a quiz, the user should focus on the question, not the card.
+
+### ADR-005: Token Freeze
+
+**Date:** 2026-08-17  
+**Context:** The design system's tokens (`--color-*`, `--space-*`, `--font-*`, `--surface-*`, `--shadow-*`) are 1:1 CSS variables enforced by `DESIGN.md ↔ globals.css` parity + `design-audit`. Generated/feature UI drifts by inventing ad hoc colors, spacing, or shadows, which silently re-opens the "many random colors" slop and the "AI glow" adjacency.  
+**Decision:** New design tokens are added only through the `DESIGN.md` + `globals.css` + `design-audit` ADR path — recorded in an ADR, landed in both files in the same change, and gated by gates #8/#9. No runtime theming; direction exploration is pre-commit selection only, and the winner becomes the _only_ identity.  
+**Rationale:** Theme-lock makes token discipline the single remaining valve against visual divergence. Explicitly freezing the token surface (with a clear addition path) prevents "exploration" that quietly becomes permanent random accents.  
+**Consequences:** Any new token need must be raised via an ADR before it lands. Feature code must never introduce raw color/spacing/type values; the forbiddance list in §6 stands. `--shadow-xp-glow` is XP-completion-only; amber shadows (`--shadow-md/lg`) are restricted to elevated/hover surfaces only (glow restraint).
+
+> **ADR-006** lives in its own file: [`docs/guides/adr/data-tiering-architecture.md`](../adr/data-tiering-architecture.md).
+
+### ADR-007: North-Star Visual Identity (precision-minimal)
+
+**Date:** 2026-08-18  
+**Status:** Ratified (owner vote, 2026-08-18 — Wave-1 UIUX; previously pending)  
+**Context:** Warm Minimalism was defined, but the two north-star exemplars (ReviewView = focus-task, DashboardPage = hub-launcher) were canonized by choice, never measured; resting Browse surfaces used the amber-tinted `--shadow-md/lg` (glow family), creating an "amber glow adjacency" on surfaces meant to read as neutral; the amber budget (≤1 filled amber per viewport) was policy prose only, enforced nowhere.  
+**Decision:** Ratify the precision-minimal north-star identity: (a) a neutral elevation shadow family `--shadow-elevated-1/2/3` for all resting Browse surfaces; (b) `--surface-border-subtle` hairline on every elevated surface (elevation-no-hairline rule); (c) amber `--shadow-md/lg` + `--shadow-xp-glow` restricted to hover-lift feedback and XP-completion only (the Amber Restriction); (d) a single shared typography role map (DESIGN.md § Typography Role Map); (e) the saturation budget — ≤1 filled saturated element per viewport, extended to all hues (Q10). North-star exemplars are validated by the 8-gate canonization protocol, not declared.  
+**Rationale:** Vercel-refined precision-minimalism keeps the content-first focus, removes the glow adjacency from resting surfaces, and makes "north star" a measured claim (rubric + a11y + visual baseline + owner sign-off) instead of a chosen one.  
+**Consequences:** Resting amber shadows are forbidden (hover/XP only); new pages are built and reviewed against the exemplars; exemplar retro-validation is recorded in `verification-artifacts/northstar-canonization-review.md`; Vercel joins the curated external-borrow shortlist (quality-bar row, alongside Linear/Stripe).
+
+### ADR-008: Text-Role Contrast Tiers
+
+**Date:** 2026-08-18  
+**Status:** Ratified (owner vote — Q4)  
+**Context:** The `--text-*` ladder was a relative opacity scale (0.95/0.85/0.7/0.5/0.2/0.05) unverified against `--surface-dark` (#262321). `text-muted` (0.5 white) was used for information-bearing body meta in many features and likely landed ~3.5–4:1 → failed WCAG small-text AA. WCAG 2.2 SC 1.4.3 explicitly covers placeholder text, so a "placeholder-exempt" tier was not available.  
+**Decision:** Reclassify text into **role tiers** — `text-primary`/`text-secondary` = body (≥4.5:1); `text-muted` = information-bearing meta, **bumped to ≥4.5:1** (`rgba(255,255,255,0.6)` ≈ 6.5:1 on `--surface-dark`); `text-subtle`/`text-ghost` = **decorative-only + large**, never placeholder text. Placeholder text must use `muted` (≥4.5:1).  
+**Rationale:** Contrast is a token-pair property; every information-bearing text must meet AA. A small decorative-only tier is exempt by role (audited per usage), preserving the faint-text affordance where it carries no meaning.  
+**Consequences:** Existing `text-subtle`/`text-ghost` usages are re-audited (decorative vs. information-bearing); the axe gate on `<Page>Full` stories (non-blocking → hard) enforces it; `text-muted` is now AA-safe.
+
+### ADR-009: Fluid Display Type Scale
+
+**Date:** 2026-08-18  
+**Status:** Ratified (owner vote — Q5)  
+**Context:** The typography scale was 10 fixed sizes (12–48px) with no shared role map (per-feature tables in `radicals`/`review`/`quiz` `docs/design.md`); hardcoded `line-height`/`font-weight` literals still slipped through (no audit rule); fixed-rem display sizes overflowed or shrank awkwardly at viewport extremes.  
+**Decision:** Display tiers `--font-3xl..6xl` become **fluid `clamp()` values** (names stable, values scale with the viewport — Utopia-style). Consolidate the per-feature type tables into **one shared role map** in DESIGN.md § Typography Role Map (display/h1/h2/body/meta/micro → `--font-*` + `--lh-*` + `--fw-*` + `--tracking-tight` on Latin display). Line-height and font-weight must come from the `--lh-*` / `--fw-*` ladders. Pruning the 10-size ladder to ~6–7 role-mapped sizes is a **follow-up** (audit actual usage first — ADR-gated, do not silently delete).  
+**Rationale:** Fluid display scales hold legibility across viewports; role-mapped weights (`fw-800` hero / `700` display / `600` semibold / `500` medium / `400` body) replace ad-hoc literals and match Polaris-style discipline.  
+**Consequences:** `design-audit` gains `hardcoded-line-height` / `hardcoded-font-weight` error rules (Wave 1b FE); `--lh-1` / `--lh-1-3` / `--lh-1-4` legacy tiers are retained for existing surfaces only.
+
+### ADR-010: Vibrancy Amplification (Tier 0/1)
+
+**Date:** 2026-08-18  
+**Status:** Ratified (owner vote — Q8/Q9/Q10)  
+**Context:** Emoji served as the app's icon system (SideNav nav items, Review header, GuestUpsell); the gradient set was frozen at `--gradient-primary/success`; saturated fills (blue/green/purple) sat outside the amber budget with no check; no `Icon` component or icon contract existed.  
+**Decision:** (Q8) Ship a **Lucide-wrapped `Icon` shared component** — `currentColor`, 1.5px stroke, 16–24px, `aria-hidden` when decorative, `role="img"` + `title` when meaningful; **emoji forbidden once a surface is covered**. (Q9) Sanction **gradient additions** (accent-underlay on the focal card + data-viz gradients) behind the existing whitelist; data-viz carries labels/values. (Q10) **≤1 filled saturated element per viewport** (all hues) as advisory + rubric, hardened later. Depth-via-color; motion stays consistent (transitions only).  
+**Rationale:** A concentrated saturated accent + depth-via-color replaces decorative chrome while preserving precision-minimalism; Lucide is ISC/tree-shakable and keeps the icon set consistent and accessible.  
+**Consequences:** FE implements `Icon/` and adds the `lucide-react` dependency (Tier 0); emoji migrates surface-by-surface in the same change as coverage; the saturation budget is advisory + rubric today, hard gate later; gradient additions stay behind the token/whitelist path (ADR-005).
+
+### Wave-1 UIUX ratification (2026-08-18)
+
+**Status:** Ratified (owner vote — all 12 Qs as recommended; source record: `wip/research/2026/uiux-fundamentals-application-proposal.md` Decision log — gitignored, never a link target). The full per-question record lives there; this file anchors the ratified decisions in the committed tree (see `.github/decision-log.json` entries `UIUX-Q1..Q12` + `UIUX-W1`).
+
+| Q#  | Decision (owner-confirmed 2026-08-18)                                                                                                          |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1  | Visual regression — **Chromatic free tier** (Visual Tests addon, CI on `push`, TurboSnap after 10 builds)                                      |
+| Q2  | **Radix primitives at epic 31**; no `useFocusTrap` extraction now; a11y gate covers current Modal/Dropdown (deferred — epic-31-gated)          |
+| Q3  | a11y-gate scope — `<Page>Full` + registered `Full` states; fix-first `'todo'` markers; `runOnly` → WCAG 2.2; Chromatic a11y = regression layer |
+| Q4  | **Text ladder** — `text-muted` ≥4.5:1, decorative-only tier documented, placeholders ≥4.5:1 (**ADR-008**)                                      |
+| Q5  | **Type ladder** — ~6–7 role-mapped sizes + fluid `clamp()` display tiers (**ADR-009**); audit usage first                                      |
+| Q6  | Epic-close consistency snapshot — DW runs/records; CR reviews; template ships now; Owner signs at close                                        |
+| Q7  | Visual QA loop — baseline evidence = Chromatic accept history; Playwright = supported fallback only                                            |
+| Q8  | **Lucide-wrapped `Icon` component**; ban emoji fallback once covered (**ADR-010**)                                                             |
+| Q9  | Gradient additions via the Vibrancy ADR, behind the whitelist (**ADR-010**)                                                                    |
+| Q10 | ≤1 filled saturated element per viewport (all hues) — advisory + rubric now (**ADR-007/010**)                                                  |
+| Q11 | Retro-validation — keep 2 exemplars (ReviewView, DashboardPage); browse-index canonization at epic 36/37                                       |
+| Q12 | Baseline acceptance — routine PR diffs self-accept; exemplar baselines + canonization + quarterly = Owner preview + sign-off                   |

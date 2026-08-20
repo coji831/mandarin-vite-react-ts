@@ -1,0 +1,42 @@
+---
+description: "PinyinPal design system — token & registry compliance for all UI work"
+globs: ["apps/frontend/src/**/*.tsx", "apps/frontend/src/**/*.css", "**/*.stories.tsx"]
+alwaysApply: true
+---
+
+# PinyinPal Design System (Amber Stone) — READ FIRST, then edit
+
+## Ground truth (non-optional reads before any UI change)
+
+- DESIGN.md — tokens, component specs, Elevation Usage Ladder, Amber Restriction, typography role map
+- .github/component-registry.json — the ONLY allowed component list; check it before creating any UI structure
+- apps/frontend/src/styles/globals.css — token values (CSS variables)
+- docs/guides/design/uiux-fundamentals.md — the 12 UIUX fundamentals + QA pyramid + AI-slop checklist (READ before composing any new UI)
+- .github/instructions/uiux-design-protocol.instructions.md — the Storybook-first pipeline + fundamentals pointers
+
+## AI-Slop checklist (non-negotiable — see uiux-fundamentals.md §3)
+
+- Gradient only on sanctioned surfaces (whitelist). No glass/backdrop-filter. No glow/blur.
+- Shadows tokenized (--shadow-elevated-* / amber ladder); resting amber shadows forbidden (hover/XP only).
+- Emoji only where the Icon component doesn't cover the surface; banned once covered.
+- No decorative animation/transition/transform in feature CSS (Global Motion Rule).
+- ≤1 filled saturated element per viewport; display headings carry tracking-tight.
+- No confetti/particles/orbs/glow gradients; microcopy gives a next step, never placeholder slop.
+
+## Non-negotiable rules
+
+1. **No raw primitives / magic values.** Never hex, rgba(), px, em, rem, or numeric font-weight in .tsx or feature CSS.
+   Use var(--_) only: --space-_, --font-_, --lh-_, --radius-_, --surface-_, --text-_, --shadow-elevated-_, --tone-_, --gradient-_.
+   `design-audit` rules hardcoded-color / hardcoded-spacing / hardcoded-font-size / inline-style-magic-value are errors.
+2. **Registry-first.** Reuse Box, Button, Chip, ProgressBar, PageHeader, ErrorScreen, LoadingScreen, ContentBrowser.
+   Do NOT invent components not listed in component-registry.json. Do not reimplement shared primitives.
+3. **No Tailwind.** Utility-first via globals.css utilities + local CSS classes. Never Tailwind classes or tailwind-like arbitrary values.
+4. **Elevation & layering.** Resting elevation = --shadow-elevated-1/2/3 only; amber --shadow-md/lg are hover/XP-only.
+   Elevated surfaces carry the --surface-border-subtle hairline. z-index only from the documented ladder.
+5. **Typography roles.** Map text to DESIGN.md's role map; font-weight via fw-* utilities; never raw size/line-height/weight literals.
+6. **Amber budget.** Amber = brand/CTA/XP only. Feedback/status use success/error/warning/info tokens, never amber.
+7. **Accessibility (WCAG 2.2 AA).** 4.5:1 text contrast, 28px touch targets, focus-visible on every interactive,
+   aria-label on icon-only buttons, exactly one <h1> per page (use PageHeader).
+8. **Composition.** Three tiers only: thin page container (~≤100 JSX lines) → feature components → shared primitives.
+   State colocated; logic in hooks/services/stores; Props Down, Events Up. No feature logic in shared/.
+9. **Storybook MCP.** Use the Storybook MCP tools to read existing stories/component props before writing new UI.

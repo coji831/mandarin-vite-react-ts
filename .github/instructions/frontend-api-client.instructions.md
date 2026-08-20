@@ -95,4 +95,4 @@ if (error) return <p>Error!</p>; // user stuck with no recovery
 
 ---
 
-**See also:** `testing-standards.instructions.md` (test your services) • `frontend-pre-delivery-checklist.instructions.md` (verify error states) • `barrel-files.instructions.md` (barrel exports)
+**See also:** `testing-standards.instructions.md` (test your services) • `frontend-pre-delivery-checklist.instructions.md` (verify error states) • `frontend-component-architecture.instructions.md` (barrel exports)

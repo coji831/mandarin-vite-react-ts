@@ -1,0 +1,302 @@
+{
+  "description": "PinyinPal decision log — the machine catalog of every tracked decision across the repo (ADR records, tech-mapping D-tracker, planning OI record, business BM register). One record per decision: { id, title, status, file, date }. Sibling of component-registry.json and page-inventory.json. Validated by check:system-map; the human ADR/decision index is generated from this JSON (never a second hand-maintained list). Status vocab: proposed | ratified | superseded.",
+  "scope": "Decisions that are anchored in a committed doc (status: ratified) or tracked as pending (status: proposed). D-items whose committed home is the ratified epic plan (docs/planning/epics-25-40.md); OI items are the plan's decision record; ADR records live in design-reasoning.md / guides/adr; BM-1 is the ratified business model. The gitignored working tracker (wip/tech-mapping.md) is the content source for D1-D8 but is never a link target.",
+  "version": "1.0",
+  "decisions": [
+    {
+      "id": "ADR-001",
+      "title": "Dark Mode Only — No Light Mode",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-07-18"
+    },
+    {
+      "id": "ADR-002",
+      "title": "Fixed-Height Data Shells",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-07-18"
+    },
+    {
+      "id": "ADR-003",
+      "title": "No Decorative Animation",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-07-18"
+    },
+    {
+      "id": "ADR-004",
+      "title": "Quiz Cards Are Flat (No Shadows)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-07-18"
+    },
+    {
+      "id": "ADR-005",
+      "title": "Token Freeze — new tokens only via DESIGN.md + globals.css + design-audit",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "ADR-006",
+      "title": "Data Tiering Architecture — 4 data tiers (storage/cache/dependency rules)",
+      "status": "proposed",
+      "file": "docs/guides/adr/data-tiering-architecture.md",
+      "date": "2026-07-23"
+    },
+    {
+      "id": "D1",
+      "title": "Backend framework — NestJS 11 (owner-approved)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D2",
+      "title": "Package manager — pnpm + Turborepo (npm workspaces acceptable)",
+      "status": "proposed",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D3",
+      "title": "Database vendor — Lakebase Postgres (Neon rebrand); pgvector vs Lakebase Search sub-decision (FV14 default)",
+      "status": "proposed",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D4",
+      "title": "Prisma version — stay 7.x (7.9+), adopt Prisma 8 after GA",
+      "status": "proposed",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D5",
+      "title": "AI client inside IAIGateway — @google/genai 2.x vs raw GeminiClient",
+      "status": "proposed",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D6",
+      "title": "Quota-number final sign-off — ASR 3+3 · AI 5/3/1/1 · conv 1×≤5 · TTS 2/day (closes via OI-2)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D7",
+      "title": "Migrate vs rebuild — NestJS 11 shell-swap early, parallel with epics 25-28 (owner-approved)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "D8",
+      "title": "Storybook/Node hygiene — Node 24, Vite 8, React 19.2, SB 10.5, Prisma 7.9 on next touch",
+      "status": "proposed",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-1",
+      "title": "D7 home + epic-24 name collision — re-scope epic-24 to NestJS shell; renumber traditional-characters to epic-41",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-2",
+      "title": "Quota-number final sign-off — confirm committed defaults at planning time (closes D6)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-3",
+      "title": "TTS guest mechanics — read/cache path verified in epic-25; generated-audio quota + counter in epic-29 M2",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-4",
+      "title": "AICallLog retention window — 6-mo full payload / 24-mo aggregate + continuous fine-tune harvest",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-5",
+      "title": "Global guest-spend cap ($10/day) + cross-feature per-user budget (100k/50k tokens)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-6",
+      "title": "P9/G7 funnel capture — deferred to costing feature; seam kept alive (experimentId + account_registered)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-7",
+      "title": "Q11 ASR test run — parallel track; pre-registered pedagogically-safe de-gate record",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-8",
+      "title": "Milestone-promotion rule — M2 → own epic iff >13 SP / distinct surface / hard dependency",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-9",
+      "title": "27-M2 HSK 2025-rebase scope + migration order (data → seed → code → labels → ratio)",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "OI-10",
+      "title": "Health-probe change — Gemini off /live; liveness/readiness split in epic-39",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-17"
+    },
+    {
+      "id": "BM-1",
+      "title": "Demo-Guest + Data-Driven Learning Road — ratified business model",
+      "status": "ratified",
+      "file": "docs/business/business-model.md",
+      "date": "2026-08-14"
+    },
+    {
+      "id": "UIUX-Q1",
+      "title": "Q1 · Visual regression — Chromatic free tier (Visual Tests addon, CI on push, TurboSnap after 10 builds)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q2",
+      "title": "Q2 · Radix primitives at epic 31 — no useFocusTrap extraction now; a11y gate covers current Modal/Dropdown",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18",
+      "note": "Deferred to epic 31 — epic-gated change; no ADR yet (recorded as a decision-log entry per Wave 1b-1)."
+    },
+    {
+      "id": "UIUX-Q3",
+      "title": "Q3 · a11y-gate scope — <Page>Full + registered Full states; fix-first 'todo' markers; runOnly → WCAG 2.2; Chromatic a11y = regression layer",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q4",
+      "title": "Q4 · Text ladder — text-muted ≥4.5:1, decorative-only tier documented, placeholders ≥4.5:1 (ADR-008)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q5",
+      "title": "Q5 · Type ladder — ~6–7 role-mapped sizes + fluid clamp() display tiers (ADR-009); audit usage first",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q6",
+      "title": "Q6 · Epic-close consistency snapshot — DW runs/records; CR reviews; template ships now; Owner signs at close",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q7",
+      "title": "Q7 · Visual QA loop — baseline evidence = Chromatic accept history; Playwright = supported fallback only",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q8",
+      "title": "Q8 · Icon system — Lucide-wrapped Icon component (ISC, 1.5px stroke); ban emoji fallback once covered (ADR-010)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q9",
+      "title": "Q9 · Gradient additions via the Vibrancy ADR — accent-underlay + data-viz gradients behind the whitelist (ADR-010)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q10",
+      "title": "Q10 · ≤1 filled saturated element per viewport (all hues) — advisory + rubric now, harden later (ADR-007/010)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q11",
+      "title": "Q11 · Retro-validation scope — keep 2 exemplars (ReviewView, DashboardPage); browse-index canonization at epic 36/37",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-Q12",
+      "title": "Q12 · Baseline acceptance — routine PR diffs self-accept; exemplar baselines + canonization + quarterly = Owner preview + sign-off",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "ADR-007",
+      "title": "North-Star Visual Identity — precision-minimal (elevation ladder + amber restriction + ≤1 saturated fill; Q10)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "ADR-008",
+      "title": "Text-Role Contrast Tiers — text-muted ≥4.5:1; subtle/ghost decorative-only; placeholders ≥4.5:1 (Q4)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "ADR-009",
+      "title": "Fluid Display Type Scale — display tiers → clamp(); role-mapped sizes; pruning follow-up (Q5)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "ADR-010",
+      "title": "Vibrancy Amplification (Tier 0/1) — Lucide Icon system + concentrated saturated accent ≤1/viewport + gradient whitelist (Q8/Q9/Q10)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    },
+    {
+      "id": "UIUX-W1",
+      "title": "Wave-1 UIUX decision record — owner-voted Q1–Q12 2026-08-18 (source: uiux-fundamentals-application-proposal.md Decision log)",
+      "status": "ratified",
+      "file": "docs/guides/design/design-reasoning.md",
+      "date": "2026-08-18"
+    }
+  ]
+}

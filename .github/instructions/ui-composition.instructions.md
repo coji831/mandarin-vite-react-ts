@@ -24,7 +24,7 @@ Prevent "AI slop" UI — generic, cluttered, no-hierarchy layouts. These rules t
 
 ## 2. Spacing Rhythm
 
-- **Use gap utilities, never raw margins between children:** `gap-xs` (4px), `gap-sm` (8px), `gap-md` (16px), `gap-lg` (24px). Stacking sections use `gap-sm` or `gap-md` on the parent flex container.
+- **Use gap utilities, never raw margins between children:** `gap-xs` (8px), `gap-sm` (12px), `gap-md` (16px), `gap-lg` (24px). Stacking sections use `gap-sm` or `gap-md` on the parent flex container.
 - **No raw `margin` properties in CSS** — use utility classes (`mx-auto`, `p-*`, `gap-*`) or `Box` component `padding` prop.
 - **Inner padding:** Use `Box` `padding` prop consistently: `"xs"` for dense toolbars, `"sm"` for card content, `"md"` for section containers.
 - **Breathing room:** Leave at least `gap-sm` between distinct visual sections. If two sections feel stuck together, add `gap-md`.
@@ -64,6 +64,38 @@ Prevent "AI slop" UI — generic, cluttered, no-hierarchy layouts. These rules t
 - **Subtle borders:** `border-1 border-surface` on panels and cards. Avoid thick borders.
 - **Minimal text colors:** `text-primary` for headings, `text-secondary` for body, `text-tertiary` for secondary info, `text-muted` for hints/metadata. Don't invent other colors.
 
+## 7. Preview vs Detail Separation (Master-Detail Law)
+
+**A card is a teaser. A detail panel is a reward.** The learner clicks the card because it promises value; the detail panel delivers value the card did NOT already show. (Folded in from the retired `preview-detail-separation.instructions.md`.)
+
+1. **Identify the preview surface** — the card/list item and its purpose.
+2. **List all elements on it**, then classify each as preview (stays) or reward (moves to detail):
+
+| Preview (stays on card) | Reward (move to detail panel)        |
+| ----------------------- | ------------------------------------ |
+| Glyph (hero)            | Etymology (story)                    |
+| Pinyin (how to say it)  | Variant forms (new discovery)        |
+| Meaning (what it means) | Full character list (the main event) |
+| Strokes (metadata)      | Notes (extra context)                |
+| ★ badge (priority)      | Similar radicals (comparison)        |
+
+3. **Remove reward elements from the card** — duplicating detail content on the card makes the detail panel feel redundant ("I already saw this on the card").
+4. **Verify the reward loop** — after clicking through, the learner finds NEW content.
+
+### Anti-patterns
+
+- Variant forms on the card (discovery of "扌 is also 手" is the reward for clicking)
+- Character preview strip on the card (small characters look clickable but aren't — WAGC violation)
+- Etymology on the card (deep-read element belongs in the detail panel)
+- Duplicating any detail-panel section on the card
+
+### Best practices
+
+- **One priority indicator per card** — a ★ badge is enough; don't stack colored border + elevated shadow + wider column (one signal, not three).
+- **Every card element helps scanning** — Glyph → "Is this the shape?", Meaning → "What is this?", ★ → "Important?", Strokes → "How complex?"
+- **Design for current architecture, not future-state** — don't pre-implement a richer card that belongs to a future redesign.
+- **WAGC + density + clarity** before adding anything to a card.
+
 ---
 
-**See also:** `frontend-css-styling.instructions.md` (styling workflow) • `frontend-pre-delivery-checklist.instructions.md` (layout audit) • `preview-detail-separation.instructions.md` (card/detail patterns)
+**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-css-styling.instructions.md` (styling workflow) • `frontend-pre-delivery-checklist.instructions.md` (layout audit)

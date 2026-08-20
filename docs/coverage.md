@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-08-20 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-08-21 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 

@@ -86,6 +86,30 @@ Two rules:
    Nested per-item `overflow-y: auto`/`max-height` re-introduces the shrink/clip bug and
    creates nested scrollbars.
 
+### Layout-Breakage Playbook (min-w-0, flex-basis, overflow knobs, stacking contexts)
+
+Quick recipes for the most common layout breakages — reach for these before re-architecting a layout.
+Reference sources: Tailwind docs (layout / flexbox / overflow / grid sections) + Josh Comeau's CSS
+layout articles. These are reference sources only — this repo is **no-Tailwind**; apply the _recipes_,
+never Tailwind classes or arbitrary values.
+
+1. **Content won't shrink / flex item overflows** → add `min-width: 0` to the flex child. Flex items
+   default to `min-width: auto`, which refuses to shrink below content — the horizontal sibling of the
+   scroll-chain `min-height: 0` rule above.
+2. **Wrapping vs truncation** → set an explicit `flex-basis` (or `width`) on the child, then apply the
+   overflow knobs on the text node (`overflow: hidden`, `text-overflow: ellipsis`, `whitespace-nowrap`).
+   Without a basis, an item sizes to its content and the overflow knobs have nothing to clip.
+3. **Overflow knobs** — `overflow: hidden` / `clip` / `auto` must sit on the element that owns the
+   scroll/clip, with `min-height: 0` / `min-width: 0` on every flex ancestor (see Scroll Chain Rule).
+   `overflow-x: clip` kills an accidental horizontal scroller without creating a scroll container
+   (the `DashboardPage.css` pattern) — don't reach for `overflow-x: hidden` (it creates a scroll
+   container and can trap focus).
+4. **Stacking contexts** — never use a raw `z-index` value; use the documented `--z-*` ladder
+   (`--z-content` < `--z-chrome` < `--z-popover` < `--z-modal` < `--z-toast`, in `globals.css`).
+   A `position` / `transform` / `opacity` / `will-change` on an ancestor creates a stacking context —
+   if an element won't layer above a sibling, find the nearest context owner instead of cranking
+   `z-index` (use `isolate`/`isolation: isolate` to start a fresh context).
+
 ## CSS Architecture (3-File Split)
 
 | File                    | Purpose                                         | Example content                                                            |
@@ -238,7 +262,16 @@ npm run design-audit              # Scan entire frontend
 npm run design-audit:feature apps/frontend/src/features/<name>/  # Scan a specific feature
 ```
 
-This checks: hardcoded colors/spacing/font-sizes, console.log, inline styles, TODO comments, missing aria-labels, and CSS that duplicates global utility classes without a clarifying comment.
+This checks:
+
+- **Class hygiene** — `used-but-undefined-class`: an **error** for any NEW undefined `className` (in any file); pre-existing undefined classes are frozen in the class baseline (`tools/design-audit.class-baseline.json`) and reported as **warnings** until the cleanup track empties the baseline (then the rule is fully `error`)
+- **Inline-style gate** — `inline-style-magic-value` (error) + `inline-style-static` (warning): static magic values / static-only `style={{}}` blocks are flagged (see §Inline Style Prohibition)
+- hardcoded colors/spacing/font-sizes, console.log, TODO comments, missing aria-labels, and CSS that duplicates global utility classes without a clarifying comment
+- **Typography tokens (P0)** — `hardcoded-line-height` (error) + `hardcoded-font-weight` (error): raw `line-height` / `font-weight` literals must come from the `--lh-*` / `--fw-*` ladders in `globals.css` (never `font-weight: 500/600` literals or ad-hoc line-heights)
+- **Semantic color roles** — `tone-outside-sanctioned-surface` (error): pinyin `--tone-*` colors only inside sanctioned `box-tone-*` / `btn-tone-*` surfaces; `resting-amber-shadow` (error): the amber `--shadow-md/lg` family only in `:hover` / `.hover-lift` / XP rules — makes the DESIGN.md Amber Restriction (A.3) a machine rule
+- **Elevation & layering** — `z-index-raw` (error): raw `z-index` outside the `--z-*` ladder (content < chrome < popover < modal < toast); `elevation-no-hairline` (error): an elevation token with no `--surface-border-subtle` hairline in the same rule
+- **Motion & vibrancy** — `transition-token-only` (advisory): raw `transition:` duration literals instead of `--transition-*`; `display-tracking` (advisory): a display-size heading class without `tracking-tight`; `saturated-fill-overflow` (advisory): >1 filled saturated element per viewport (amber budget extended to all saturated fills — see rubric one-CLA)
+- **Spacing rhythm** — `nesting-inversion` (advisory): a child gap ≥ its parent gap (violates the nesting-tightens table in DESIGN.md §Spacing)
 
 **Shared component CSS (`shared/components/`) is exempt** from the utility-duplicate check — those files define intentionally multi-property variant classes (e.g., `box-dark`, `btn-primary`) that bundle background, border, radius, shadow, and padding together by design. Feature CSS files should still prefer utility classes or add clarifying comments for intentional overrides.
 
@@ -270,7 +303,7 @@ import { Button, Input, FilterChip } from "shared/components";
 
 ## ✅ Component Decomposition
 
-Follow the **component-decomposition skill** (`.github/skills/component-decomposition/SKILL.md`)
+Follow the **frontend-audit skill** (`.github/skills/frontend-audit/SKILL.md`) — §Part 2 Architecture & Data
 for the hierarchy rule and decomposition checklist. Summary: keep component files under ~150 lines;
 extract render branches >30 lines into single-concern sub-components.
 
@@ -406,33 +439,57 @@ import './styles.css';
 <button className="tab" onClick={...}>{label}</button>
 ```
 
-## ✅ Inline Style Prohibition
+## ✅ Inline Style Prohibition (2026 rule)
 
-- ❌ NEVER use `style={{}}` inline style props on React elements
-- ✅ Use global utility classes in `className` for repeated token-driven properties
-- ✅ Use local CSS file (co-located `.css`) for unique component-specific properties
+**Utility-first by default.** Reach for a utility class first, a co-located `.css` class for component structure/state, and inline `style={{}}` **only** for values that are dynamic or var-driven. **Static magic values are forbidden** — the audit enforces this.
 
-### ✅ DO
+- ✅ Default — global utility classes in `className` (`.flex-center`, `.gap-sm`, `.text-primary`)
+- ✅ Component structure/state — co-located local `.css` file (one per component)
+- ✅ Inline `style={{}}` — ONLY for dynamic/var-driven values that a class can't express: computed percentages, runtime identifiers, theme-token keys
+- ❌ **Static magic values** in `style={{}}` — literal lengths/numbers are a machine **error** (`inline-style-magic-value`); a block with zero dynamic content is a **warning** (`inline-style-static`)
+
+### Decision table — what the audit enforces per property
+
+| Case                                                                                                                                                                                                                                       | Verdict                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Key starts with `--` (`--accent-color`)                                                                                                                                                                                                    | ✅ pass                                                           |
+| Value contains `var(--`                                                                                                                                                                                                                    | ✅ pass                                                           |
+| Value is **dynamic** — contains `${`, is an identifier (`color`, `pct`), a member/call (`TONE_COLORS[i]`, `Math.max(value, 4)`), a ternary (`align === "center" ? a : b`), or a `%` string (`"100%"`, `${pct}%`)                           | ✅ pass                                                           |
+| Value contains a **static** length/number literal — `\d+px`/`\d+rem`/`\d+em`, a bare `\d+` (`8`, `320`, `1000`), a quoted length (`"0.25rem"`, `"40px"`), or `clamp()/calc()/min()/max()/repeat()` with a px arg — **even alongside `${`** | ❌ **error** (`inline-style-magic-value`)                         |
+| No magic literal but **zero** dynamic content (`display: "flex"`, `overflow: "hidden"`)                                                                                                                                                    | ⚠️ warning (`inline-style-static`) — prefer a utility/local class |
+
+### ✅ DO — utilities + local CSS for structure/state
 
 ```tsx
 <div className="flex-center gap-sm p-md text-primary">Content</div>
 ```
 
-### ❌ DON'T
+```css
+/* MyComponent.css — co-located structure/state */
+.my-component__bar {
+  height: 8px;
+  border-radius: var(--radius-pill);
+}
+```
+
+### ✅ DO — inline `style` for dynamic / var-driven values only
 
 ```tsx
+// ✅ PASS — dynamic: `${pct}%` string + `color` identifier (CategoryBreakdown fill)
 <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "var(--space-sm)",
-    padding: "var(--space-md)",
-    color: "var(--text-primary)",
-  }}
->
-  Content
-</div>
+  className="quiz-breakdown__fill radius-pill h-full"
+  style={{ width: `${pct}%`, background: color }}
+/>
 ```
+
+### ❌ DON'T — static magic values in `style={{}}`
+
+```tsx
+// ❌ ERROR (inline-style-magic-value) — static height + quoted length
+<div style={{ height: 8, gap: "0.25rem" }}>Content</div>
+```
+
+If you find a fixed value that has no utility/class yet, add it to `globals.css` or the component's local `.css` — never leave it as a magic number in `style={{}}`.
 
 ## ✅ Dynamic States (Active, Disabled, Error)
 
@@ -464,4 +521,4 @@ const getStyle = (isActive) => ({
 
 ---
 
-**See also:** `ui-composition.instructions.md` (layout rules) • `frontend-visual-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (token compliance check)
+**See also:** `ui-composition.instructions.md` (layout rules) • `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (token compliance check)

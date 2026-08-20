@@ -468,7 +468,7 @@ Every shared component in `.github/component-registry.json` must carry a
 - `storyFile` — repo-relative path to the component's `.stories.tsx`.
 - `states` — the visual states the story file must expose; pick tokens from the
   Canonical STATE MATRIX (§12) that apply to the component.
-- **Enforced by** `scripts/check-registry-stories.mjs` and the frontend-audit
+- **Enforced by** `scripts/check-registry-stories.mjs` and the frontend-audit skill
   skill. A registry entry without a `storybook` block — or with a `storyFile`
   that does not exist, or `states` the story file does not expose — fails the check.
 
@@ -536,4 +536,4 @@ exercised via their page-container story (see §11).
 
 ---
 
-**See also:** `frontend-visual-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (UI gate) • `project-workflow.instructions.md` (commit gates)
+**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (UI gate) • `project-workflow.instructions.md` (commit gates)

@@ -506,6 +506,44 @@
         }
       }
     },
+    "Icon": {
+      "description": "Lucide-wrapped shared icon (ADR-010/Q8). Explicit name→component map (currentColor, 1.5px stroke, 16–24px). Decorative by default (aria-hidden); role=img + <title> when a label is provided. Emoji is banned as an icon once a surface is covered.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/Icon/Icon.stories.tsx",
+        "states": ["default", "decorative", "with-title"]
+      },
+      "props": {
+        "name": {
+          "type": "IconName",
+          "required": true,
+          "description": "Sanctioned icon name from the explicit map in Icon.tsx"
+        },
+        "size": { "type": "enum", "values": [16, 20, 24], "default": 20 },
+        "strokeWidth": { "type": "number", "default": 1.5 },
+        "label": {
+          "type": "string",
+          "description": "Accessible label → role=img + <title>. Omit for decorative."
+        }
+      }
+    },
+    "EmptyState": {
+      "description": "Iconographic empty state (Tier-0 vibrancy, 2B.1 d). Precision-minimal: optional decorative icon, title, description, and action slot. Presentational only.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/EmptyState/EmptyState.stories.tsx",
+        "states": ["default", "with-icon", "with-action"]
+      },
+      "props": {
+        "icon": { "type": "IconName", "description": "Decorative leading icon (optional)" },
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string" },
+        "action": {
+          "type": "reactNode",
+          "description": "Action slot — typically one secondary Button"
+        }
+      }
+    },
     "FilterControls": {
       "description": "Filter bar with multiple FilterChips.",
       "importPath": "shared/components",
@@ -554,6 +592,20 @@
         "isAuthenticated": { "type": "boolean", "required": true },
         "logout": { "type": "function", "required": true },
         "className": { "type": "string" }
+      }
+    },
+    "PageHeader": {
+      "description": "Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/PageHeader/PageHeader.stories.tsx",
+        "states": ["default", "with-description", "with-cta", "with-eyebrow"]
+      },
+      "props": {
+        "title": { "type": "string", "required": true },
+        "eyebrow": { "type": "string" },
+        "description": { "type": "string" },
+        "children": { "type": "reactNode" }
       }
     },
     "CharacterStrokePlayer": {

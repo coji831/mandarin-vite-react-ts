@@ -203,4 +203,4 @@ static tier is satisfied AND the right slice of tests exists and passes.
 
 ---
 
-**See also:** `frontend-api-client.instructions.md` (service layer to test) • `quiz-architecture.instructions.md` (strategy pattern testing) • `frontend-input-handling.instructions.md` (timer edge case tests) • `barrel-files.instructions.md` (import rules tests enforce)
+**See also:** `frontend-api-client.instructions.md` (service layer to test) • `quiz-architecture.instructions.md` (strategy pattern testing) • `frontend-input-handling.instructions.md` (timer edge case tests) • `frontend-component-architecture.instructions.md` (import/barrel rules tests enforce)

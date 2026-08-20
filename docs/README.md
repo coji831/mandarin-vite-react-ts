@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 18, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-08-20 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-08-21 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -391,7 +391,7 @@ _14 instruction leaves · 15 on disk — project-workflow is the control-plane g
 | Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | active | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
 | Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | active | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
 | Use when: starting a new task, coordinating multi-step workflows, routing work to specialist agents, managing execution flow, or determining which agent to use for a request. | active | [.github/agents/orchestrator.agent.md](../.github/agents/orchestrator.agent.md) |
-| Use when: designing UI — wireframes, Storybook Phase A (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | active | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
+| Use when: designing UI — wireframes, Storybook Step 1 (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | active | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
 
 #### Skills
 

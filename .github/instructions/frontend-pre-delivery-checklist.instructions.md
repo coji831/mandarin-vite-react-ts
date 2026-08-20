@@ -38,7 +38,7 @@ See `ui-composition.instructions.md` for CTA clarity and layout rules.
 
 ## Layout
 
-See `ui-composition.instructions.md` for container discipline and `frontend-visual-design-protocol.instructions.md` for data-resilient shell rules.
+See `ui-composition.instructions.md` for container discipline and `uiux-design-protocol.instructions.md` for data-resilient shell rules.
 
 - [ ] Data-resilient shell — container uses fixed `height`/`width`, inner scroll for overflow
 - [ ] Verified at 320px, 768px, 1024px
@@ -48,6 +48,13 @@ See `ui-composition.instructions.md` for container discipline and `frontend-visu
 - [ ] **Layout stability (CLS)** — no measurable layout shift when data resolves (skeleton dimensions match final content; images/media reserve space)
 - [ ] **Mobile/tablet browser spot-check** — at least one 375–390px mobile + one 768px tablet browser pass (complements the existing static 320/768/1024 CSS check); **required when the story changes layout/composition**, otherwise optional
 
+## Visual QA
+
+See `docs/guides/testing/visual-qa.md` for the per-surface procedure and the evidence contract. These two items strengthen gate #13 (no new gate number).
+
+- [ ] **Chromatic/Playwright baseline diff accepted** for this PR's story changes (or no visual change) — the accept/deny decision recorded
+- [ ] **Per-surface visual QA script run at epic close** — pass/fail + date recorded in `verification-artifacts/` (never per-commit; the automated Chromatic layer covers per-PR)
+
 ## Quality Gates (Pointer to Canonical Model)
 
 Gates are defined in the canonical two-tier model in
@@ -55,11 +62,17 @@ Gates are defined in the canonical two-tier model in
 redefine them. Tier 2 (full suite) applies on pre-ship:
 
 - **Static (Tier 1):** `npm run build` + `npm run lint`
-- **Full suite (Tier 2):** `npm run test:full` + `npm run test-storybook --workspace=@mandarin/frontend`
+- **Full suite (Tier 2):** `npm run test:full` + `npm run test-storybook --workspace=@mandarin/frontend` + `npm run check:page-inventory`
 - **Design:** `npx @google/design.md lint DESIGN.md` + `npm run design-audit`
 
 `npm test` is the changed-scope Tier-1 runner only — the full-suite gate is
 `npm run test:full`.
+
+Scoring companion (not a gate): at epic close, run the design-quality rubric
+human pass (`docs/guides/design/design-quality-rubric.md`) as the per-epic
+consistency snapshot against the archetype's Golden Template
+(`docs/guides/design/page-archetypes.md`). Point, don't duplicate — the
+criteria live in the rubric and the canonical gate table above.
 
 UI-specific non-gate items still required before reporting UI complete:
 

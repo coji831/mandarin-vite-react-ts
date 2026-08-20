@@ -34,7 +34,7 @@ applyTo: "docs/**/*.md, apps/frontend/src/features/**/docs/**/*.md, apps/backend
 
 1. Open the template at `docs/templates/` to cross-check current structure
 2. Update content — do NOT add sections not in the template
-3. Update "Last Updated" date
+3. Bump `last-verified` (frontmatter) and the body `**Last Updated:**` footer — both in the same commit (see the Freshness rule below)
 4. For high-level docs (`docs/architecture.md`, `README.md`): use descriptive feature names, never story/epic numbers
 
 ### Extracting Knowledge Base Articles
@@ -80,9 +80,106 @@ Before writing or updating any doc, verify every claim against the actual codeba
    - ✅ DO grep the old name across `docs/` + `apps/**/docs/` and fix all hits.
    - ❌ DON'T leave stale references to renamed items in any doc.
 
+## Leaf Front-Matter Standard (Tracked Leaves)
+
+**Frontmatter is THE standard.** Every active, tracked `docs/` leaf MUST carry the YAML block below. The map (`docs/README.md`), the freshness scan (`docs/coverage.md`, A10), and the per-class status vocabulary are all generated/derived from it. Prose markers (`**Status:**`, `**Last Updated:**`, `**Purpose:**`, `**Last Update:**`) are **legacy/archive-only** — the parser still reads them for archive leaves (exempt, untouched), and swept leaves may keep a body `**Last Updated:**` footer (see Freshness rule), but never use prose markers for new active leaves.
+
+The repo uses a **Map-and-Leaves** docs model: `docs/README.md` is the generated system **map** (root → 7 layers → small branches → leaf rows); the **leaves** hold all depth and are loaded just-in-time. **The map is generated; the leaves are authored.** Humans hand-maintain exactly two things per tracked leaf — its one-line `purpose:` and its `status:` (+ `last-verified`) — and the generator (`scripts/generate-system-map.mjs`) emits the map rows from those sources of truth. Never hand-sync the map; a committed map that disagrees with its sources is a build failure (`check:system-map`), not a TODO.
+
+**Tracked leaves** (active epics' READMEs, decision records, flagship design/architecture docs, feature `design.md` files, area indexes, guides, conventions, KB/README leaves) carry a YAML front-matter block at the very top of the file:
+
+```yaml
+---
+purpose: <one sentence — feeds the map row>
+status: <per-class vocabulary below>
+last-verified: YYYY-MM-DD
+type: <one of the 12 types below>
+audience: <optional — new-dev | frontend | backend | agents | all>
+covers: <optional — comma-separated list of the units this doc inventories; opt-in for the count-truth linkage check>
+tags: <optional — free-form>
+---
+```
+
+**Required:** `purpose`, `status`, `last-verified`, `type`. **Optional:** `audience`, `covers`, `tags`. **There is no `title` field** — the H1 heading is canonical; never duplicate it in frontmatter.
+
+Rules:
+
+1. **`purpose:` is one sentence.** It becomes the map row's one-line purpose. If it needs two sentences, shorten it.
+2. **`status:` uses the per-class vocabulary verbatim** — adopt the repo's existing vocab, never invent new words:
+
+   | Class              | Vocabulary                                                                                      |
+   | ------------------ | ----------------------------------------------------------------------------------------------- |
+   | Epics              | `planned` · `in-progress` · `completed` · `parked` · `retired` · `deferred`                     |
+   | Docs / guides / KB | `active` · `superseded` · `retired` · `review` (machine-derived when `last-verified` > 6 weeks) |
+   | Pages              | `conforms` · `diverges`                                                                         |
+   | Components         | `green` · `red`                                                                                 |
+   | Decisions          | `proposed` · `ratified` · `superseded`                                                          |
+   | Business           | `ratified` · `open` · `deferred`                                                                |
+   | Research briefs    | `review` · `promoted` · `superseded`                                                            |
+
+3. **`type:` is required for new leaves.** It selects the status-vocabulary class, the freshness scan group, and sort order — the generator no longer classifies by path alone. The taxonomy:
+
+   | `type`         | Meaning                          | Status vocab class | Typical path                                          |
+   | -------------- | -------------------------------- | ------------------ | ----------------------------------------------------- |
+   | `epic`         | active epic README               | Epics              | `docs/business-requirements/epic-<N>-*/README.md`     |
+   | `design`       | feature/design spec              | Docs/guides        | `features/*/docs/design.md`, `guides/design/*.md`     |
+   | `convention`   | coding convention                | Docs/guides        | `guides/conventions/*.md`                             |
+   | `guide`        | how-to guide                     | Docs/guides        | `guides/**/*.md`                                      |
+   | `template`     | copyable template                | Docs/guides        | `docs/templates/*-template.md`                        |
+   | `area-index`   | directory index                  | Docs/guides        | `*/README.md` that indexes a dir                      |
+   | `readme`       | component/package/feature README | Docs/guides        | `shared/components/README.md`, `packages/*/README.md` |
+   | `architecture` | system design doc                | Docs/guides        | `docs/architecture.md`, backend `design.md`           |
+   | `decision`     | ADR / decision record            | Decisions          | `guides/adr/*.md`, decision rows in `epics-25-40.md`  |
+   | `business`     | business model / research        | Business           | `docs/business/**`                                    |
+   | `planning`     | epic plan / roadmap              | Decisions          | `planning/epics-25-40.md`                             |
+   | `data-doc`     | data/content pipeline doc        | Docs/guides        | `guides/data/seed-pipeline.md`                        |
+
+   `type` classifies a leaf; it does NOT assign its layer or branch — that comes from `LAYER_ROOTS` (see Tree/branch below).
+
+4. **`review` is machine-derived, not typed.** A docs-class leaf whose `last-verified` is older than **6 weeks** flips to `review` at map generation; a linkage/count-truth failure (see rule 7) also forces `review`. A human only sets `active` / `superseded` / `retired`.
+5. **`last-verified: YYYY-MM-DD`** — the date the status was last truth-checked against the code. Bump it in the same commit as the edit/truth-check.
+6. **`audience:` / `tags:` are optional** — routing/search sugar, not machine inputs. `audience` is one of `new-dev | frontend | backend | agents | all`.
+7. **`covers:` is optional and opt-in** — a comma list of the units the doc inventories (backend modules, feature names, components). Opting in enables the machine **count-truth** linkage check: the generator diffs the declared list against the actual directories and flags a mismatch (e.g. a `design.md` that names 13 modules when the `modules/` dir has 15).
+8. **≤1 line per map row.** A row is `What | one-line purpose | status | link`, nothing more. Never paste leaf prose into the map — the deep-link is the content primitive (the map routes, it never hoards).
+9. **Archive/story files are exempt.** Only tracked leaves carry front-matter; the ~500 archive/story files stay untouched.
+
+### Tree / branch structure (the map)
+
+The generated tree in `docs/README.md` is the map: **root → 7 layers → small branches → leaf rows**.
+
+- **Root** (authored): intro, mermaid, TL;DR, "What are you here for?" routes, status-vocab pointer — navigation, not inventory.
+- **Layers 1–7** (large branches): layer membership is assigned by **`LAYER_ROOTS`** — a single deterministic root→layer table in `scripts/generate-system-map.mjs` (the generator owns it, not per-file fields). Each layer renders as a collapsed `<details id="layer-N">` with an aggregate status + leaf count.
+- **Small branches**: subdirectories under a layer's roots (e.g. L5 → getting-started / setup / operations / testing / integrations / data / conventions / knowledge-base / templates / audits / automation / visualizations). A flat layer has none.
+- **Leaves**: one row per tracked leaf — `purpose | status | link` — emitted automatically from frontmatter. A leaf missing frontmatter renders with a `⚠️ no frontmatter` linkage note (never a hard fail until the M3 hardening).
+- **`branch:` override (rare)**: if a leaf's natural root placement is wrong, `branch: <layer-or-small-branch>` frontmatter moves it; the generator emits a **linkage note** whenever an override is used so overrides stay exceptional. Prefer fixing the file's placement over an override.
+
+Don't hand-write or re-derive the tree — if layer membership is wrong, edit `LAYER_ROOTS`; if the tree disagrees with the leaves, that's a `check:system-map` failure.
+
+### `.github/` special format (agentic layer)
+
+Instructions, agents, and skills do **NOT** carry docs frontmatter — `.github/` is excluded from the sweep by decision (their frontmatter serves the agent runtime, not the map). The agentic layer is tracked layer-level from **`.github/AGENTS.md`**, the single enumerator: `instructions:` / `agents:` / `skills:` lists + `last-verified:`. Per-leaf purpose in the map's L6 (Agentic) branch comes from:
+
+- **instructions:** `AGENTS.md` `description:` verbatim
+- **agents / skills:** each file's native `description:` frontmatter (`.agent.md` / `SKILL.md`)
+- **control-plane:** generator constants (AGENTS.md, `copilot-instructions.md`, `project-workflow.instructions.md`, `dev-flow-visualization.html`)
+
+Layer-level freshness = `AGENTS.md` `last-verified`. Missing description → unit name + linkage note, never a hard fail. Do not retrofit the docs schema onto `.github/` files.
+
+### Freshness rule
+
+- `last-verified` > **6 weeks** → machine-derived `review` (docs/guides/KB class) at map generation.
+- `last-verified` = **truth-check date** (when content was verified against code); the body footer **`Last Updated:`** = **last edit** (when prose changed).
+- **Both bump in the same commit** as the edit/truth-check.
+- A doc whose claims are now wrong bumps `last-verified` (it flips `review`); a doc whose claims were re-verified bumps both.
+
+## Doc Change History & Business Docs
+
+- **Git is the authoritative audit trail** — every doc edit is a Conventional Commit `docs(<scope>): …`; `Last Updated` is bumped in the same commit.
+- **Decision-linked standing docs** (e.g., `docs/business/business-model.md`) MAY carry an in-doc **Change Log** (`Date | Change | Decision ID | Approval`) for owner-approved changes only; typos/formatting are git-only. Business research/reference (`docs/business/research/`) is freely editable with `Last Updated` + git only; supersede via banner, never rewrite cited evidence. Committed docs are the source of record and stand on their own — never cite a gitignored `wip/` doc as their **Source**, never link into `wip/`, and never direct readers to it for content. At most, a single one-line **history note** may de-authorize the origin (e.g., "originally a gitignored working spec, NOT official documentation — do not reference").
+
 ---
 
-**See also:** `project-workflow.instructions.md` (when doc updates happen in the pipeline) • `docs/templates/` (all templates) • `docs/knowledge-base/` (existing articles)
+**See also:** `project-workflow.instructions.md` (when doc updates happen in the pipeline) • `docs/templates/` (all templates) • `docs/knowledge-base/` (existing articles) • `docs/business/` (business model + research)
 
 ## Technical Challenges & Solutions Format
 
