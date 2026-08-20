@@ -44,6 +44,9 @@ terraform/.terraform/
 
 # Verification artifacts (design docs, not source code)
 verification-artifacts/
+
+# WIP working docs (calibration/planning/research/tracking)
+wip/
 *storybook.log
 storybook-static
 

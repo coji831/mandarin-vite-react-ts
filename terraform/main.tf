@@ -20,7 +20,6 @@
 #   3. Replace Railway-Vercel integration with direct VITE_API_URL in vercel.tf
 #   4. Optionally keep Neon for DB branching, or use Render Postgres
 #   5. Replace Upstash with Render Key Value, or keep Upstash
-#   See: verification-artifacts/migration/README.md for full plan
 
 terraform {
   required_version = ">= 1.5"
