@@ -1,3 +1,10 @@
+---
+purpose: Central index of all documentation templates and format files
+status: active
+last-verified: 2026-08-02
+type: area-index
+---
+
 # Centralized Conventional Templates & Format Files
 
 **Last Updated:** August 2, 2026
@@ -21,7 +28,7 @@ This folder contains the single source of truth for all documentation templates 
 - [Implementation Epic Template](epic-implementation-template.md)
 - [Implementation Story Template](story-implementation-template.md)
 - [Commit Message Template](commit-message-template.md)
-- [Feature Design Template](feature-design-template.md)
+- [Feature Design Spec Template](feature-design-spec-template.md)
 - [File Summary Template](file-summary-template.md)
 - [Pull Request Template](../../.github/PULL_REQUEST_TEMPLATE.md) — platform-housed (GitHub auto-loads only that path); indexed here for completeness
 

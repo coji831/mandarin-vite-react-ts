@@ -1,3 +1,10 @@
+---
+purpose: Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md`
+status: active
+last-verified: 2026-08-18
+type: template
+---
+
 # Feature: [Feature Name] — Design Spec
 
 **Last Updated:** YYYY-MM-DD
@@ -97,9 +104,9 @@
 
 ## References
 
-- **Visual Design Workflow:** `docs/guides/visual-design-workflow.md` — step-by-step agent operations
+- **Design Reasoning (incl. token change procedure):** `docs/guides/design/design-reasoning.md` — paradigm + token freeze + token change procedure
 - **Figma Token Mapping:** `docs/guides/figma-token-mapping.md` — exact Figma→CSS mappings
 - **Design Tokens:** `DESIGN.md` — canonical token reference
 - **CSS Variables:** `apps/frontend/src/styles/globals.css` — `:root {}` definitions
 - **Shared Components:** `apps/frontend/src/shared/components/index.tsx` — barrel file
-- **Component Decomposition:** `.github/skills/component-decomposition/SKILL.md` — hierarchy rules
+- **Component Decomposition:** `.github/skills/frontend-audit/SKILL.md` — hierarchy rules (Part 2)

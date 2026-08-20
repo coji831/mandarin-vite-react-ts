@@ -1,4 +1,11 @@
-﻿# Template For Story Business Requirements
+﻿---
+purpose: Copyable story business-requirements template
+status: active
+last-verified: 2026-06-02
+type: template
+---
+
+# Template For Story Business Requirements
 
 **Last Updated:** June 2, 2026
 

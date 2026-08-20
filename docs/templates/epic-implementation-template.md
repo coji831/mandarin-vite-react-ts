@@ -1,3 +1,10 @@
+---
+purpose: Copyable epic implementation template
+status: active
+last-verified: 2026-06-02
+type: template
+---
+
 # Template For Epic Implementation
 
 **Last Updated:** June 2, 2026

@@ -1,4 +1,11 @@
-﻿```markdown
+﻿---
+purpose: Copyable epic business-requirements template
+status: active
+last-verified: 2026-08-18
+type: template
+---
+
+```markdown
 # Template For Epic Business Requirements
 
 # Epic [EPIC-NUMBER]: [Epic-Title]

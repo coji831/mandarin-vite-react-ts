@@ -1,3 +1,10 @@
+---
+purpose: Copyable file-summary template
+status: active
+last-verified: 2026-06-02
+type: template
+---
+
 # File Summary Template
 
 **Last Updated:** June 2, 2026

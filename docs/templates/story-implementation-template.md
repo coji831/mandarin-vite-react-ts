@@ -1,3 +1,10 @@
+---
+purpose: Copyable story implementation template
+status: active
+last-verified: 2026-06-02
+type: template
+---
+
 # Template For Story Implementation
 
 **Last Updated:** June 2, 2026
