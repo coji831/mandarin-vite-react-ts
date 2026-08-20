@@ -208,9 +208,9 @@ const CHECKS = {
   },
   utilityDuplicate: {
     name: "utility-duplicate",
-    severity: "warning",
+    severity: "error",
     description:
-      "CSS property duplicates a global utility class — use className instead, or add a comment explaining why local override is needed",
+      "CSS property duplicates a global utility class — use className instead, or add a comment explaining why local override is needed (custom cases); shared-component CSS is exempt",
     // Built at startup by parseGlobalsUtilityMap() — see function below
     propertyMap: null,
     test: function (line, file, context) {

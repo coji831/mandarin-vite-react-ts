@@ -289,6 +289,8 @@ components:
 
 ## Changelog
 
+- **2026-08-21** — Audit-rule promotion: `utility-duplicate` moved from advisory to **machine-enforced error** in `tools/design-audit.mjs` — local/feature CSS may NOT repeat a global utility class (use `className` instead); shared-component CSS is exempt, and a preceding comment documents an intentional custom override. 252 existing findings queued for later epics (see note under § Utility Classes Added).
+
 - **2026-08-20** — Audit-rule promotion: `z-index-raw` + `elevation-no-hairline` moved from advisory to **machine-enforced errors** in `tools/design-audit.mjs`; noted in § Z-Index Ladder and § Elevation Usage Ladder & Amber Restriction.
 
 - **2026-08-18** — Wave-3 (Icon FE + dashboard demo reconciliation): § Icon System status → **implemented** (shared `Icon` component + `lucide-react ^1.32.0` in `apps/frontend/package.json`); Typography Role Map `h1`/`h2` rows aligned to shipped usage (`h1 = font-2xl/3xl`, `4xl/5xl` reserved hero; `h2 = font-lg/xl`); Global Motion Rule now lists both documented exceptions (Radical/Phonetic Trees + Dashboard quick-tile hover-lift) and adds `--transition-slow` (0.4s — ToggleSwitch) to the motion-resources list.
@@ -453,6 +455,8 @@ Rules:
 | `.lh-1` / `.lh-tight` / `.lh-normal` / `.lh-1-3` / `.lh-1-4` / `.lh-relaxed` / `.lh-display` | `line-height: var(--lh-*)` ladder (ADR-009)                                                                 |
 | `.fw-400` … `.fw-800`                                                                        | `font-weight: var(--fw-*)` ladder — 400 body / 500 medium / 600 semibold / 700 display / 800 hero (ADR-009) |
 | `.font-3xl` … `.font-6xl`                                                                    | `font-size: var(--font-*)` fluid display tiers (`clamp()`) — ADR-009                                        |
+
+> **Machine-enforced (error):** `utility-duplicate` in `tools/design-audit.mjs` reports any local CSS property that repeats one of the global utility classes above as an **error** — prefer the global `className`, don't re-declare tokens in local CSS. Two sanctioned escapes: (1) **shared-component CSS** (`shared/components/`) bundles multi-property variant classes and is exempt; (2) a **custom case** may carry a preceding comment explaining why the local override is needed.
 
 ---
 
