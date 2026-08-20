@@ -7,7 +7,7 @@ type: business
 
 # PinyinPal System Feature Inventory — Registered-User Full-Access View
 
-> ⚠️ This document is the official, ratified feature inventory — Class 2 research source data for the [RATIFIED business model](../business-model.md). It was originally developed as a gitignored working spec (in `wip/`) that is NOT official documentation and may be deleted; do not treat it as authoritative or reference it. See [Business Index](../README.md).
+> ⚠️ This document is the official, ratified feature inventory — Class 2 research source data for the [RATIFIED business model](../business-model.md). See [Business Index](../README.md).
 
 **Purpose**: post-calibration feature set for a registered user with full access (all phases unlocked); all decision IDs reconcile (P1–P18, D2/D6/D7/D8/D9/D10/D14/D15, R3/R4/R6/R7/R8/R10, S5/S8/S9/S11, T2–T7/T13/T14/T15/T17, P0-1/P0-2, overrides 1–2, **RAG-1, AS12, S15-amended**).
 **Last Updated:** August 17, 2026 — promoted to `docs/business/research/` (2026-08-15, verbatim); final validation §23 applied (F2 3,088; B19/C7/C16/C18 notes; no status changes)

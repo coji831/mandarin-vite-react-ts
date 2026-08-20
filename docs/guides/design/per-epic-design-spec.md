@@ -14,7 +14,7 @@ audience: agents
 
 > **Copyable file:** the fill-in design-spec template lives at [`docs/templates/feature-design-spec-template.md`](../../templates/feature-design-spec-template.md); this guide carries the operative per-epic spec body (archetype/provenance-led) that feature `docs/design.md` files follow.
 
-> **Source of record:** This committed copy supersedes the earlier working-copy template (originally in the gitignored `wip/research/2026/ui-design-workflow.md` §(b)). Extend **this** template, never the wip copy. It now requires two fields the wip copy did not have: `archetype:` (from `page-archetypes.md`) and `provenance:` (any external borrow's origin).
+> **Source of record:** This committed template is the operative per-epic spec body. It requires two fields: `archetype:` (from `page-archetypes.md`) and `provenance:` (any external borrow's origin).
 
 ## How to use
 

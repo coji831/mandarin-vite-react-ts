@@ -2,7 +2,7 @@
 
 **Last Updated:** August 18, 2026
 
-Completed epics archived here per the docs reorg (see `wip/research/2026/docs-reorg-archive.md`). Content is preserved **verbatim** — this index is a curated outcome/decision record, not a rewrite. Active epics (24, 41) remain in [../](../README.md).
+Completed epics archived here per the docs reorg. Content is preserved **verbatim** — this index is a curated outcome/decision record, not a rewrite. Active epics (24, 41) remain in [../](../README.md).
 
 ## Epic Status Vocabulary
 

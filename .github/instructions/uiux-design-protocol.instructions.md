@@ -25,7 +25,7 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 
 #### 1.1 — Gather Context (Research)
 
-1. **Business need → User need → Research**: Start with business requirements and user needs, not code. Read design docs, `docs/design.md`, proposals in `wip/`.
+1. **Business need → User need → Research**: Start with business requirements and user needs, not code. Read design docs and `docs/design.md`.
 2. **Map user flow**: For each action the user takes, determine: what do they see? (visual state), what do they think? (interpretation), what do they want to do next? (intent).
 3. **Establish preview/reward boundary**: Identify preview surfaces (cards, list items) vs detail surfaces (modals, panels, expandable sections). Detail content must NOT appear on the preview surface. See `ui-composition.instructions.md` §Preview-vs-Detail.
 4. **Check source for every design decision**: If you propose adding a UI element, verify it works with the CURRENT architecture, not just proposed future states.

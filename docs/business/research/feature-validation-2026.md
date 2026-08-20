@@ -7,7 +7,7 @@ type: business
 
 # PinyinPal Feature Validation 2026 — 2026 Trend/Standard Fact-Check × LLM/RAG Readiness
 
-> ⚠️ This document is the official, ratified record of the 2026 trend/standard fact-check × LLM/RAG-readiness audit (Axes 1–2) — Class 2 research source data for the [RATIFIED business model](../business-model.md). It was originally developed as a gitignored working spec (in `wip/`) that is NOT official documentation and may be deleted; do not treat it as authoritative or reference it. See [Business Index](../README.md).
+> ⚠️ This document is the official, ratified record of the 2026 trend/standard fact-check × LLM/RAG-readiness audit (Axes 1–2) — Class 2 research source data for the [RATIFIED business model](../business-model.md). See [Business Index](../README.md).
 
 **Purpose**: 2026 trend/standard fact-check + LLM/RAG-readiness audit of the 71-feature inventory — the Architect's three-axis validation, **Axes 1–2**. Axis 1 re-verifies every load-bearing external claim in the calibration against primary 2026 sources; Axis 2 assesses the §19 progress/gating/tracking design (T1–T20) as the LLM/RAG/adaptive substrate.
 

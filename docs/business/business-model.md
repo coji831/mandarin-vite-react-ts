@@ -21,7 +21,7 @@ type: business
 
 ## 1. Purpose & Scope
 
-This document is the **RATIFIED business model** for PinyinPal, owner-approved **2026-08-14** — the official, ratified source of truth. It was originally developed as a gitignored working spec (in `wip/`) that is NOT official documentation and may be deleted; do not treat it as authoritative or reference it. It is **fully self-contained**: every ratified rule below stands alone.
+This document is the **RATIFIED business model** for PinyinPal, owner-approved **2026-08-14** — the official, ratified source of truth. It is **fully self-contained**: every ratified rule below stands alone.
 
 **In scope:** product positioning, tiers & access, pricing, funnel & conversion, cost model, unit economics, risk posture, the locked business rules (L1–L8, P11-AMEND), the retirements/re-framings, and the ratified-vs-open-vs-deferred register.
 

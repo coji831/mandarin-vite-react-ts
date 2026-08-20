@@ -10,7 +10,7 @@ tags: [uiux, resources, research, reference]
 # UIUX Resources — Study-Card Reference Index
 
 **Last Updated:** 2026-08-20
-**Provenance:** distilled from the verified study cards in `wip/research/2026/uiux-materials/` (review-only working copies) and the authoritative checklist `wip/research/2026/ui-consistency-bydos-materials.md` §(i). All URLs were live-verified 2026-08-18. The applied fundamentals live in `uiux-fundamentals.md`; this file is the **source/provenance index** for future reference.
+**Provenance:** distilled from verified study cards and the authoritative consistency checklist. All URLs were live-verified 2026-08-18. The applied fundamentals live in `uiux-fundamentals.md`; this file is the **source/provenance index** for future reference.
 
 > **Disposition legend:** ✅ **Adopted** (its principle is baked into the repo) · 📎 **Reference** (consult for layout/inspiration; never adopt Tailwind output) · ⏳ **Deferred** (gated on a future epic) · ⚠️ **Moved** (source renamed/rebranded).
 
@@ -61,4 +61,3 @@ tags: [uiux, resources, research, reference]
 - `uiux-fundamentals.md` — the applied fundamentals + QA pyramid + AI-slop checklist (this index's companion)
 - `docs/guides/design/design-reasoning.md` — curated external-borrow shortlist (§External Borrowing Protocol) and ADR-007..010
 - `docs/guides/design/page-archetypes.md` — the 8 archetypes these resources inform
-- `wip/research/2026/uiux-materials/` + `wip/research/2026/ui-consistency-bydos-materials.md` — the review-only full cards and verified checklist (working copies)

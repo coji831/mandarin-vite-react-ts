@@ -30,7 +30,7 @@ user-invocable: true
 
 7. **High-level claims** — README / `docs/architecture.md` claims (counts, commands, state pattern) re-derived from code: list dirs, diff `package.json` scripts, confirm Context/reducer vs Zustand in the actual feature. Severity HIGH if a high-level claim is stale.
 
-8. **Rename hygiene** — after any code rename, grep the old name across `docs/` + `apps/**/docs/` + `verification-artifacts/` + `wip/`; no stale references to renamed items may survive. Severity HIGH if stale references remain.
+8. **Rename hygiene** — after any code rename, grep the old name across `docs/` + `apps/**/docs/` + `verification-artifacts/`; no stale references to renamed items may survive. Severity HIGH if stale references remain.
 
 9. **Cross-linking** — epic BR ↔ epic Implementation ↔ story files linked bidirectionally; story docs ↔ guides ↔ KB articles cross-linked; PR number referenced in both docs; per-story struggle extraction recorded same-day. Severity MEDIUM if a bidirectional link is missing.
 

@@ -213,11 +213,6 @@ const LAYER_ROOTS = {
     flat: true,
     roots: [
       {
-        path: "wip/README.md",
-        branch: null,
-        pointer: "Working docs (WIP) — gitignored working/tracking folder; pointers only",
-      },
-      {
         path: "verification-artifacts/README.md",
         branch: null,
         pointer: "Verification artifacts — gate results, browser checks, proposals",

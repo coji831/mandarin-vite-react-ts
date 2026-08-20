@@ -7,7 +7,7 @@ type: business
 
 # PinyinPal 2026 Research Round — Parsed Findings (M1–M19)
 
-> ⚠️ This document is the official, ratified record of the 2026 research round — Class 2 research source data for the [RATIFIED business model](../business-model.md). It was originally developed as a gitignored working spec (in `wip/`) that is NOT official documentation and may be deleted; do not treat it as authoritative or reference it. See [Business Index](../README.md).
+> ⚠️ This document is the official, ratified record of the 2026 research round — Class 2 research source data for the [RATIFIED business model](../business-model.md). See [Business Index](../README.md).
 
 **Purpose**: 2026 research round **source data** for the final business/AI validation — to update **V10** (pricing), **V11** (conversion 4.5% / churn 8% / $0.12-hr-voice), **Q11** (ASR vendor/budget — de-gates **B19**), **RAG-1** (C16), and to feed the feature/calibration docs. Maps each theme to the [feature inventory](feature-inventory.md) and the decision IDs of the [feature validation 2026](feature-validation-2026.md) / calibration rounds.
 

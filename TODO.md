@@ -6,7 +6,7 @@
 > **Status vocabulary:** Planned / In Progress / Completed / Parked / Retired / Deferred.
 > Plan/epic references point to the current source of record: ratified business model
 > (`docs/business/business-model.md`, BM-1), ratified epic plan (`docs/planning/epics-25-40.md`),
-> backend decisions D1=NestJS 11 + D7=shell-swap (`wip/tech-mapping.md` §6),
+> backend decisions D1=NestJS 11 + D7=shell-swap,
 > re-scoped `epic-24-nestjs-shell-migration`, and `epic-41-traditional-characters`.
 
 This file is a simple, human-editable TODO list compatible with GitHub (checkboxes are interactive in PRs and on GitHub.com).
@@ -27,7 +27,7 @@ Sections
 
 ## Bugs (urgent)
 
-- [ ] **Production: guest users hit the backend directly with no fallback → 404** — Some features call backend endpoints directly for anonymous/guest users instead of falling back (to hardcoded/local data or a gated UI), surfacing a not-found (404) error. Desired pattern: service-layer guest fallback like the quiz's local strategy-based generation (`features/quiz/services/quizService.ts` `generateQuestionPool`) or readers' 6 demo passages. Light scan suggests likely-affected: `features/review/services/reviewService.ts` (`GET /v1/review/items` + rating POST — no fallback), `features/readers/services/readingProgressService.ts` (sessions/bookmarks/complete — only `readingStore.saveProgress()` no-ops for guests), and static-content detail lookups `features/word-hub/services/wordService.ts` / `features/character-hub/services/characterService.ts` (`/v1/words/:glyph`, `/v1/characters/:glyph` while local `content/*.json` exists). Action: audit guest-facing features for fallback gaps. **Still open (verified 2026-08-17)** — files + routes (`/v1/review/items`, `/v1/words/:glyph`, `/v1/characters/:glyph`) confirmed current. Now governed by the ratified guest calibration: guest identity + route gating land in **epic-25**, guest session-local review in **epic-28** (`docs/planning/epics-25-40.md`); see also `wip/guest-access-calibration.md`.
+- [ ] **Production: guest users hit the backend directly with no fallback → 404** — Some features call backend endpoints directly for anonymous/guest users instead of falling back (to hardcoded/local data or a gated UI), surfacing a not-found (404) error. Desired pattern: service-layer guest fallback like the quiz's local strategy-based generation (`features/quiz/services/quizService.ts` `generateQuestionPool`) or readers' 6 demo passages. Light scan suggests likely-affected: `features/review/services/reviewService.ts` (`GET /v1/review/items` + rating POST — no fallback), `features/readers/services/readingProgressService.ts` (sessions/bookmarks/complete — only `readingStore.saveProgress()` no-ops for guests), and static-content detail lookups `features/word-hub/services/wordService.ts` / `features/character-hub/services/characterService.ts` (`/v1/words/:glyph`, `/v1/characters/:glyph` while local `content/*.json` exists). Action: audit guest-facing features for fallback gaps. **Still open (verified 2026-08-17)** — files + routes (`/v1/review/items`, `/v1/words/:glyph`, `/v1/characters/:glyph`) confirmed current. Now governed by the ratified guest calibration: guest identity + route gating land in **epic-25**, guest session-local review in **epic-28** (`docs/planning/epics-25-40.md`).
 
 ## Todo (near-term)
 
@@ -36,7 +36,7 @@ Sections
 - [x] **Epic 20: Mnemonic Stories** — Backend: `mnemonics` module (CRUD + Gemini generation), `GeminiService`, `Character` and `MnemonicStory` Prisma models, mnemonic caching (30-day TTL with stampede prevention) _(done — verified 2026-08-17)_
 - [x] **Epic 20: Mnemonic Stories** — Frontend: `character-hub` feature (HubIdentityCard, HubMnemonicSection, HubRadicalSection, HubReadings, HubCommonWords, HubActions), `mnemonicStore` (Zustand, 10-state machine), `Tabs` underline variant, `Textarea` shared component _(done — verified 2026-08-17)_
 - [x] **Epic 20: Mnemonic Stories** — Content: character content consolidated into aggregate `content/characters/characters.json` + `index.json`, `prisma.config.ts` _(done — verified 2026-08-17; the `run-gcs-upload.js` wrapper no longer exists on disk)_
-- [ ] **Onboarding tutorial — Status: Deferred** — Design and implement a first-time onboarding flow for new learners. Not a blocker for UI design; not in the ratified 25–40 arc. See `wip/learning-roadmap-usecases.md` Decision #1.
+- [ ] **Onboarding tutorial — Status: Deferred** — Design and implement a first-time onboarding flow for new learners. Not a blocker for UI design; not in the ratified 25–40 arc.
 
 ### Story 16 — Example Caching & Service Alignment: Infrastructure Verification
 
@@ -66,7 +66,7 @@ Sections
 
 ## Done
 
-- [x] **Production: audio playback — four overlapping systems, hang on pause/stop, no teardown/caching/tests** — RESOLVED by the audio-consolidation / TTS-detachment refactor. Shipped: shared `AudioManager` (pure transport over `PlayableItem[]`, `PlaybackStrategy` single/sequence, typed event emitter, abort token; `playUrl` settles with `PlaybackEndReason` — never hangs), `AudioBehavior` contracts (candidates-as-data with `onUrlFailed` verdicts), `useAudioManager`/`useAudioItemPlayback`, readers `PassageAudioBehavior`/`buildPassageAudioBehavior`, `defaultWordBehavior` in `shared/audio/contracts/`, `AudioService` in `shared/services/audio`, with unit/component coverage. Legacy `useAudioPlayer.ts`, `useAudioPlayback.ts`, `shared/lib/audioEngine.ts`, and the `SourceResolver` were removed. See `wip/audio-playback-redesign.md`.
+- [x] **Production: audio playback — four overlapping systems, hang on pause/stop, no teardown/caching/tests** — RESOLVED by the audio-consolidation / TTS-detachment refactor. Shipped: shared `AudioManager` (pure transport over `PlayableItem[]`, `PlaybackStrategy` single/sequence, typed event emitter, abort token; `playUrl` settles with `PlaybackEndReason` — never hangs), `AudioBehavior` contracts (candidates-as-data with `onUrlFailed` verdicts), `useAudioManager`/`useAudioItemPlayback`, readers `PassageAudioBehavior`/`buildPassageAudioBehavior`, `defaultWordBehavior` in `shared/audio/contracts/`, `AudioService` in `shared/services/audio`, with unit/component coverage. Legacy `useAudioPlayer.ts`, `useAudioPlayback.ts`, `shared/lib/audioEngine.ts`, and the `SourceResolver` were removed.
 - [x] **Epic: Radical-Based Learning (Epic 19)** — Radical browser, detail cards, and dual radical/phonetic trees shipped in `features/radicals/`
 - [x] **Epic: Progress Visualization Dashboard** — Dashboard feature with learning statistics and activity overview shipped in `features/dashboard/`
 - [x] Fix jest-dom global type setup - Created tsconfig.test.json for proper test file TypeScript configuration with vitest/globals and @testing-library/jest-dom types. Updated setupTests.d.ts to augment vitest globals with jest-dom matchers. Removed explicit imports from all test files (QuizLoading, QuizComplete, DailyReviewQuiz). All 161 tests pass without explicit import statements.

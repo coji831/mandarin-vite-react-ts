@@ -175,7 +175,7 @@ Layer-level freshness = `AGENTS.md` `last-verified`. Missing description → uni
 ## Doc Change History & Business Docs
 
 - **Git is the authoritative audit trail** — every doc edit is a Conventional Commit `docs(<scope>): …`; `Last Updated` is bumped in the same commit.
-- **Decision-linked standing docs** (e.g., `docs/business/business-model.md`) MAY carry an in-doc **Change Log** (`Date | Change | Decision ID | Approval`) for owner-approved changes only; typos/formatting are git-only. Business research/reference (`docs/business/research/`) is freely editable with `Last Updated` + git only; supersede via banner, never rewrite cited evidence. Committed docs are the source of record and stand on their own — never cite a gitignored `wip/` doc as their **Source**, never link into `wip/`, and never direct readers to it for content. At most, a single one-line **history note** may de-authorize the origin (e.g., "originally a gitignored working spec, NOT official documentation — do not reference").
+- **Decision-linked standing docs** (e.g., `docs/business/business-model.md`) MAY carry an in-doc **Change Log** (`Date | Change | Decision ID | Approval`) for owner-approved changes only; typos/formatting are git-only. Business research/reference (`docs/business/research/`) is freely editable with `Last Updated` + git only; supersede via banner, never rewrite cited evidence. Committed docs are the source of record and stand on their own — they must **never** mention the gitignored `wip/` working area (no citations, links, or history/provenance notes); `wip/` is a local working area only and is not part of the committed record.
 
 ---
 

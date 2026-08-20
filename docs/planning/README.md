@@ -20,7 +20,7 @@ Ratified planning documents for the 25+ epic arc (calibration + AI roadmap). The
 ## Ratified anchors
 
 - **BM-1** — the ratified business model (demo-guest + data-driven learning road): [`docs/business/business-model.md`](../business/business-model.md)
-- **D1/D7** — backend-framework + migrate-vs-rebuild decisions (**NestJS 11**, owner-approved 2026-08-17): decision tracker in [`wip/tech-mapping.md`](../../wip/tech-mapping.md) §6
+- **D1/D7** — backend-framework + migrate-vs-rebuild decisions (**NestJS 11**, owner-approved 2026-08-17)
 
 ## Where BRs live
 

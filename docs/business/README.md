@@ -44,7 +44,7 @@ Statuses used consistently across the business docs:
 
 ## Provenance
 
-> **History:** These documents are the official, ratified source of truth. They were originally developed as gitignored working specs (in `wip/`) that are NOT official documentation and may be deleted — do not treat them as authoritative or reference them. Ratified docs do not link into `wip/`.
+> **History:** These documents are the official, ratified source of truth. They are fully self-contained; the committed copies are the only source of record.
 
 ## See also
 

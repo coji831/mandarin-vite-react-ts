@@ -12,7 +12,7 @@ Follow this sequence when implementing or updating a story:
 
 1.5 **Design Thinking & User Flow** — Before planning any code, establish the user's mental model. See `docs/guides/dev-flow-visualization.html` for the full flow diagram and `uiux-design-protocol.instructions.md` for the detailed frontend pipeline:
 
-- **Read the research** — Open design docs, proposals, competitor analysis, domain research under `docs/` and `wip/`. If the feature has a `docs/design.md`, read it. Don't design UI without understanding the domain context.
+- **Read the research** — Open design docs, proposals, competitor analysis, domain research under `docs/`. If the feature has a `docs/design.md`, read it. Don't design UI without understanding the domain context.
 - **Map the user's flow step by step** — For each action the user takes, ask:
   - What do they see? (visual state)
   - What do they think? (interpretation)

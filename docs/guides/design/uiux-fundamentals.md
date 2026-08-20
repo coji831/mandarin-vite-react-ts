@@ -11,7 +11,7 @@ tags: [uiux, fundamentals, qa, a11y, design-system]
 
 **Last Updated:** 2026-08-20
 **Audience:** AI Coding Agents + Code Reviewer + Docs Writer
-**Purpose:** the single committed reference for **what "good UI" means operationally** for this repo — the 12 fundamentals, the QA pyramid, the AI-slop forbiddance list, and the 2026-verified corrections to prior research. This is the distilled, committed source of record for the WIP application proposal (`wip/research/2026/uiux-fundamentals-application-proposal.md`, review-only) and the 30 study-card library (`wip/research/2026/uiux-materials/`). See the companion resource index: `uiux-resources.md`.
+**Purpose:** the single committed reference for **what "good UI" means operationally** for this repo — the 12 fundamentals, the QA pyramid, the AI-slop forbiddance list, and the 2026-verified corrections to prior research. This is the distilled, committed source of record. See the companion resource index: `uiux-resources.md`.
 
 > **Read-before-UI rule:** any agent writing UI must read this guide + `docs/guides/design/design-reasoning.md` + `DESIGN.md` + `component-registry.json` before composing. The `frontend-audit` skill (`frontend-audit/SKILL.md`) operationalizes this guide as a runnable audit procedure (Part 1 = the fundamentals + AI-slop).
 

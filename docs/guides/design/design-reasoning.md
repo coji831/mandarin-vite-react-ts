@@ -515,7 +515,7 @@ Before reporting any UI code as complete, verify every item:
 
 ### Wave-1 UIUX ratification (2026-08-18)
 
-**Status:** Ratified (owner vote — all 12 Qs as recommended; source record: `wip/research/2026/uiux-fundamentals-application-proposal.md` Decision log — gitignored, never a link target). The full per-question record lives there; this file anchors the ratified decisions in the committed tree (see `.github/decision-log.json` entries `UIUX-Q1..Q12` + `UIUX-W1`).
+**Status:** Ratified (owner vote — all 12 Qs as recommended). This file anchors the ratified decisions in the committed tree (see `.github/decision-log.json` entries `UIUX-Q1..Q12` + `UIUX-W1`).
 
 | Q#  | Decision (owner-confirmed 2026-08-18)                                                                                                          |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
