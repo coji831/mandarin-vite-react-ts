@@ -1,3 +1,10 @@
+---
+purpose: Hub entity-ID contract
+status: active
+last-verified: 2026-08-06
+type: guide
+---
+
 # Hub Entity-ID Contract
 
 **Category:** Frontend Development

@@ -1,3 +1,10 @@
+---
+purpose: Vitest version conflicts in a monorepo
+status: active
+last-verified: 2026-08-01
+type: guide
+---
+
 # Vitest Version Conflicts in a Monorepo
 
 **Category:** Testing

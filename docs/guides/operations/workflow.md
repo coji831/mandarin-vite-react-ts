@@ -1,3 +1,10 @@
+---
+purpose: "Step-by-step development workflow — design, plan, implement, test, review"
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Human-Friendly Epic/Story Workflow Checklist
 
 **Last Updated:** August 2, 2026  

@@ -1,3 +1,11 @@
+---
+purpose: Mandatory security standards for all backend and frontend code across the monorepo
+status: active
+last-verified: 2026-06-07
+type: convention
+audience: all
+---
+
 # Security Conventions
 
 **Last Updated:** June 7, 2026

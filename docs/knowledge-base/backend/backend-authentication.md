@@ -1,8 +1,15 @@
+---
+purpose: Authentication & security — auth patterns in the backend
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Authentication & Security
 
 **Category:** Backend Development  
 **Last Updated:** 2026-08-02  
-**Epic 13 Reference:** [Story 13.3 Authentication](../../issue-implementation/epic-13-production-backend-architecture/story-13-3-authentication.md)
+**Epic 13 Reference:** [Story 13.3 Authentication](../../issue-implementation/archive/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 ## TL;DR Quick Reference
 

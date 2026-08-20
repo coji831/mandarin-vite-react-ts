@@ -1,3 +1,10 @@
+---
+purpose: Integration gap diagnosis checklist
+status: active
+last-verified: 2026-06-26
+type: guide
+---
+
 # Integration Gap Diagnosis Checklist
 
 **Category:** Practices  
@@ -137,9 +144,7 @@ router.post(
 
 ```typescript
 // Frontend — BAD
-const response = await axios.post("/api/examples", {
-  /* ... */
-});
+const response = await axios.post("/api/examples", {/* ... */});
 //              ↑ hardcoded path, raw axios — will break if backend changes
 ```
 

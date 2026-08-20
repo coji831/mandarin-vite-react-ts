@@ -1,3 +1,10 @@
+---
+purpose: Advanced backend patterns
+status: active
+last-verified: 2025-12-09
+type: guide
+---
+
 # Advanced Backend Patterns
 
 **Category:** Backend Development  

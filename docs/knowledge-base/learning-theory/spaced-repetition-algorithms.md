@@ -1,3 +1,10 @@
+---
+purpose: Spaced repetition algorithms — SM-2 vs FSRS
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # Spaced Repetition Algorithms
 
 **Last Updated:** June 2, 2026
@@ -12,7 +19,7 @@
 
 ## Overview
 
-Spaced repetition is a learning technique where review intervals increase exponentially as material becomes better learned. The core insight: review items *just before* you're about to forget them, maximizing retention while minimizing review time.
+Spaced repetition is a learning technique where review intervals increase exponentially as material becomes better learned. The core insight: review items _just before_ you're about to forget them, maximizing retention while minimizing review time.
 
 **Goal**: Schedule reviews at the optimal point where memory is still strong enough for successful retrieval, but weak enough that retrieval effort strengthens the memory trace (desirable difficulty).
 
@@ -33,16 +40,16 @@ Where:
 - e ≈ 2.718 (Euler's number)
 ```
 
-**Key Insight**: Without review, most information is forgotten within days. However, each successful review *extends* the time until the next review is needed.
+**Key Insight**: Without review, most information is forgotten within days. However, each successful review _extends_ the time until the next review is needed.
 
 ### Spacing Effect
 
 Reviewing material at increasing intervals produces better long-term retention than massed practice (cramming):
 
-| Review Schedule | 1-Week Retention | 1-Month Retention |
-|---|---|---|
-| **Massed** (all reviews in 1 day) | 85% | 20% |
-| **Spaced** (reviews at 1d, 3d, 7d, 14d) | 75% | 65% |
+| Review Schedule                         | 1-Week Retention | 1-Month Retention |
+| --------------------------------------- | ---------------- | ----------------- |
+| **Massed** (all reviews in 1 day)       | 85%              | 20%               |
+| **Spaced** (reviews at 1d, 3d, 7d, 14d) | 75%              | 65%               |
 
 **Mechanism**: Each review "resets" the forgetting curve to begin from a higher stability baseline, creating progressively longer intervals between necessary reviews.
 
@@ -79,18 +86,18 @@ def sm2_schedule(quality: int, ease_factor: float, interval: int, repetitions: i
     interval: Current interval in days
     repetitions: Consecutive correct answers
     """
-    
+
     # Update ease factor based on quality
     ease_factor = ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
     ease_factor = max(1.3, ease_factor)  # Clamp minimum
-    
+
     # Failed card (quality < 3): reset
     if quality < 3:
         repetitions = 0
         interval = 1  # Review tomorrow
     else:
         repetitions += 1
-        
+
         # Calculate new interval
         if repetitions == 1:
             interval = 1  # Day 1
@@ -98,7 +105,7 @@ def sm2_schedule(quality: int, ease_factor: float, interval: int, repetitions: i
             interval = 6  # Day 6
         else:
             interval = interval * ease_factor  # Exponential growth
-    
+
     return interval, ease_factor, repetitions
 ```
 
@@ -138,14 +145,14 @@ FSRS (2023-2024) represents a modern evolution in memory modeling, using machine
 
 **Three Components**:
 
-1. **Difficulty (D)**: How hard it is to *increase stability* for this specific card
+1. **Difficulty (D)**: How hard it is to _increase stability_ for this specific card
    - Range: 0 (easiest) to 10 (hardest)
    - High-difficulty cards require more exposures to reach long intervals
-   
+
 2. **Stability (S)**: Time required for retrievability to drop from 100% → 90%
    - Measured in days
    - Increases with each successful review
-   
+
 3. **Retrievability (R)**: Current probability of successfully recalling the card
    - Range: 0% (forgotten) to 100% (perfect retention)
    - Decays exponentially over time according to forgetting curve
@@ -182,22 +189,22 @@ def fsrs_update_stability(D: float, S: float, grade: int, r: float):
     grade: Review outcome (1=Again, 2=Hard, 3=Good, 4=Easy)
     r: Retrievability at time of review
     """
-    
+
     # Successful review: increase stability
     if grade >= 3:
         S_new = S * (1 + exponential_growth(D, r, grade))
     else:
         # Failed review: reduce stability but keep some residual memory
         S_new = S * recall_decay_factor(D, r)
-    
+
     return S_new
 ```
 
-**Key Insight**: Stability increases *faster* when you review at lower retrievability (harder retrieval → stronger memory consolidation). FSRS automatically finds the optimal trade-off between review frequency and retention.
+**Key Insight**: Stability increases _faster_ when you review at lower retrievability (harder retrieval → stronger memory consolidation). FSRS automatically finds the optimal trade-off between review frequency and retention.
 
 ### Difficulty Update Mechanism
 
-Difficulty adjusts based on *how easily* stability increases:
+Difficulty adjusts based on _how easily_ stability increases:
 
 - Card that reaches S=30 days after 3 reviews → Low difficulty
 - Card that reaches S=30 days after 10 reviews → High difficulty
@@ -208,7 +215,7 @@ def fsrs_update_difficulty(D: float, grade: int):
     D: Current difficulty
     grade: Review outcome (1-4)
     """
-    
+
     # Failed/hard reviews increase difficulty
     if grade <= 2:
         D_new = D + 0.5
@@ -218,7 +225,7 @@ def fsrs_update_difficulty(D: float, grade: int):
     # Good reviews: minimal change
     else:
         D_new = D + 0.1
-    
+
     # Clamp to valid range
     return max(0, min(10, D_new))
 ```
@@ -233,13 +240,13 @@ def fsrs_optimal_interval(S: float, desired_retention: float = 0.9):
     S: Current stability (days)
     desired_retention: Target retention rate (0.9 = 90%)
     """
-    
+
     # Solve for t in: desired_retention = 0.9^(t/S)
     # t = S * log(desired_retention) / log(0.9)
-    
+
     import math
     interval = S * math.log(desired_retention) / math.log(0.9)
-    
+
     return max(1, round(interval))  # Minimum 1 day
 ```
 
@@ -282,18 +289,18 @@ FSRS_PARAMS = {
 
 ## SM-2 vs FSRS Comparison Table
 
-| Feature | SM-2 | FSRS |
-|---|---|---|
-| **Year Introduced** | 1987 | 2023 |
-| **Core Parameters** | Interval, Ease Factor, Repetitions | Difficulty, Stability, Retrievability |
-| **User Input** | Subjective confidence (0-5) | Objective outcome (correct/incorrect) |
-| **Personalization** | None (same formula for all users) | ML-optimized (21 params per user) |
-| **Lapse Handling** | Reset to day 1 | Gradual stability decay (preserves some memory) |
-| **Efficiency** | Baseline | 20-30% fewer reviews for same retention |
-| **Computational Cost** | O(1) per card | O(1) per card + one-time O(n) optimization |
-| **Cold Start** | Works immediately | Uses default params until 100+ reviews |
-| **Ease Hell Risk** | High (EF floor at 1.3) | None (difficulty can decrease over time) |
-| **Algorithm Complexity** | Low (10 lines of code) | Medium (200 lines + ML optimizer) |
+| Feature                  | SM-2                               | FSRS                                            |
+| ------------------------ | ---------------------------------- | ----------------------------------------------- |
+| **Year Introduced**      | 1987                               | 2023                                            |
+| **Core Parameters**      | Interval, Ease Factor, Repetitions | Difficulty, Stability, Retrievability           |
+| **User Input**           | Subjective confidence (0-5)        | Objective outcome (correct/incorrect)           |
+| **Personalization**      | None (same formula for all users)  | ML-optimized (21 params per user)               |
+| **Lapse Handling**       | Reset to day 1                     | Gradual stability decay (preserves some memory) |
+| **Efficiency**           | Baseline                           | 20-30% fewer reviews for same retention         |
+| **Computational Cost**   | O(1) per card                      | O(1) per card + one-time O(n) optimization      |
+| **Cold Start**           | Works immediately                  | Uses default params until 100+ reviews          |
+| **Ease Hell Risk**       | High (EF floor at 1.3)             | None (difficulty can decrease over time)        |
+| **Algorithm Complexity** | Low (10 lines of code)             | Medium (200 lines + ML optimizer)               |
 
 ---
 
@@ -324,7 +331,7 @@ FSRS_PARAMS = {
 ```python
 def choose_algorithm(user):
     review_count = count_user_reviews(user.id)
-    
+
     if review_count < 100:
         return SM2Scheduler()
     else:
@@ -343,7 +350,7 @@ def unified_formula(previous_delay: float, correct: bool, consecutive_correct: i
     """
     Simple spaced repetition: newDelay = previousDelay * performanceMultiplier
     """
-    
+
     if correct:
         if consecutive_correct >= 3:
             multiplier = 2.5  # High confidence
@@ -356,10 +363,10 @@ def unified_formula(previous_delay: float, correct: bool, consecutive_correct: i
             multiplier = 0.25  # Complete failure (reset)
         else:
             multiplier = 0.5  # Lapse (relearn)
-    
+
     new_delay = previous_delay * multiplier
     new_delay = max(1, min(365, new_delay))  # Clamp to [1, 365] days
-    
+
     return new_delay
 ```
 
@@ -384,10 +391,10 @@ def unified_formula(previous_delay: float, correct: bool, consecutive_correct: i
 
 Study of 10,000 Anki users over 6 months:
 
-| Algorithm | Avg Daily Reviews (90% retention) | Time Investment |
-|---|---|---|
-| SM-2 (default) | 127 cards/day | 38 min/day |
-| FSRS (optimized) | 95 cards/day (-25%) | 29 min/day (-24%) |
+| Algorithm        | Avg Daily Reviews (90% retention) | Time Investment   |
+| ---------------- | --------------------------------- | ----------------- |
+| SM-2 (default)   | 127 cards/day                     | 38 min/day        |
+| FSRS (optimized) | 95 cards/day (-25%)               | 29 min/day (-24%) |
 
 **Conclusion**: FSRS reduces review burden by ~25% while maintaining same retention.
 
@@ -395,11 +402,11 @@ Study of 10,000 Anki users over 6 months:
 
 100 med students learning anatomy (3,000 cards each):
 
-| Algorithm | Cards Matured (>30d interval) After 90 days | Exam Score (%) |
-|---|---|---|
-| No SRS (cramming) | 0 | 68% |
-| SM-2 | 850 cards (28%) | 82% |
-| FSRS | 1,100 cards (37%) | 84% |
+| Algorithm         | Cards Matured (>30d interval) After 90 days | Exam Score (%) |
+| ----------------- | ------------------------------------------- | -------------- |
+| No SRS (cramming) | 0                                           | 68%            |
+| SM-2              | 850 cards (28%)                             | 82%            |
+| FSRS              | 1,100 cards (37%)                           | 84%            |
 
 **Conclusion**: FSRS graduates cards to long intervals 30% faster than SM-2, with slightly higher exam performance.
 
@@ -450,7 +457,3 @@ Study of 10,000 Anki users over 6 months:
 
 - [Cognitive Science of Active Recall](./cognitive-science-active-recall.md) - Why spaced repetition works
 - [Vocabulary Retention Research](./vocabulary-retention-research.md) - Full research synthesis
-
----
-
-**Last Updated**: January 20, 2025

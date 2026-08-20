@@ -1,3 +1,10 @@
+---
+purpose: Gamification psychology in learning applications
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # Gamification Psychology in Learning Applications
 
 **Last Updated:** June 2, 2026
@@ -55,14 +62,14 @@ Over-reliance on loss aversion can trigger:
 
 ### Fixed vs Variable Rewards
 
-| Reward Type | Predictability | Dopamine Response | Habituation Speed |
-|---|---|---|---|
-| **Fixed** (10 XP per quiz) | Completely predictable | Low (diminishes over time) | Fast (boring after 20 reps) |
-| **Variable** (5-50 XP random) | Unpredictable | High (sustained excitement) | Slow (doesn't get boring) |
+| Reward Type                   | Predictability         | Dopamine Response           | Habituation Speed           |
+| ----------------------------- | ---------------------- | --------------------------- | --------------------------- |
+| **Fixed** (10 XP per quiz)    | Completely predictable | Low (diminishes over time)  | Fast (boring after 20 reps) |
+| **Variable** (5-50 XP random) | Unpredictable          | High (sustained excitement) | Slow (doesn't get boring)   |
 
-**Psychological Mechanism**: Dopamine (neurotransmitter associated with motivation/pleasure) spikes **highest during uncertainty**. The *anticipation* of a reward (not knowing if it will be small/large) creates stronger engagement than guaranteed fixed rewards.
+**Psychological Mechanism**: Dopamine (neurotransmitter associated with motivation/pleasure) spikes **highest during uncertainty**. The _anticipation_ of a reward (not knowing if it will be small/large) creates stronger engagement than guaranteed fixed rewards.
 
-**Classic Example**: Slot machines use variable rewards (sometimes you win big, sometimes nothing) to create addictive behavior. Educational apps can borrow this mechanism *ethically* by rewarding curiosity rather than exploitation.
+**Classic Example**: Slot machines use variable rewards (sometimes you win big, sometimes nothing) to create addictive behavior. Educational apps can borrow this mechanism _ethically_ by rewarding curiosity rather than exploitation.
 
 ### Octalysis Framework: Six Types of Rewards
 
@@ -166,7 +173,7 @@ Yu-kai Chou's Octalysis framework categorizes rewards into six contextual types:
 
 **Result**: After payment stopped, Group A **stopped drawing** (lost intrinsic interest). Group B continued drawing at same rate.
 
-**Lesson**: If users study *only* for points/streaks, they'll quit when rewards removed. Goal is to amplify innate curiosity, not replace it.
+**Lesson**: If users study _only_ for points/streaks, they'll quit when rewards removed. Goal is to amplify innate curiosity, not replace it.
 
 ### Self-Determination Theory (SDT)
 
@@ -178,11 +185,11 @@ Yu-kai Chou's Octalysis framework categorizes rewards into six contextual types:
 
 **Gamification Alignment**:
 
-| SDT Need | Gamification Mechanic | Implementation |
-|---|---|---|
-| **Autonomy** | User choice | "Choose your study path: HSK 1 food vocab OR family vocab" |
-| **Competence** | Mastery visualization | Heat maps showing progress (green = strong areas, red = weak) |
-| **Relatedness** | Social features | Friend leaderboards, shared goals, collaborative challenges |
+| SDT Need        | Gamification Mechanic | Implementation                                                |
+| --------------- | --------------------- | ------------------------------------------------------------- |
+| **Autonomy**    | User choice           | "Choose your study path: HSK 1 food vocab OR family vocab"    |
+| **Competence**  | Mastery visualization | Heat maps showing progress (green = strong areas, red = weak) |
+| **Relatedness** | Social features       | Friend leaderboards, shared goals, collaborative challenges   |
 
 **Example: Duolingo's Approach**:
 
@@ -212,7 +219,7 @@ Yu-kai Chou's Octalysis framework categorizes rewards into six contextual types:
 
 **Ethical Balance**: Use ~70% White Hat (sustainable motivation) + ~30% Black Hat (short-term boosts).
 
-**Red Flag**: If users say "I *have to* study" instead of "I *want to* study" → Too much Black Hat (recalibrate toward mastery and autonomy features).
+**Red Flag**: If users say "I _have to_ study" instead of "I _want to_ study" → Too much Black Hat (recalibrate toward mastery and autonomy features).
 
 ### Netflix Manipulation vs Duolingo Empowerment
 
@@ -246,7 +253,7 @@ Yu-kai Chou's Octalysis framework categorizes rewards into six contextual types:
 
 ❌ **DON'T**:
 
-- Make streaks the *only* measure of progress (demotivates perfectionists)
+- Make streaks the _only_ measure of progress (demotivates perfectionists)
 - Charge money for streak freezes (exploits loss aversion)
 - Show global "Top Streak" leaderboard (demotivates 99.9% of users)
 
@@ -431,7 +438,3 @@ Diamond League (Elite: 600+ XP/week)
 
 - [Cognitive Science of Active Recall](./cognitive-science-active-recall.md) - Learning mechanisms gamification amplifies
 - [Vocabulary Retention Research](./vocabulary-retention-research.md) - Full gamification integration in Mandarin learning
-
----
-
-**Last Updated**: January 20, 2025

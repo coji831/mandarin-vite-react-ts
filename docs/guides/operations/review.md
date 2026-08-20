@@ -1,3 +1,10 @@
+---
+purpose: "Code review criteria, pre-commit checks, and PR review standards"
+status: active
+last-verified: 2026-06-08
+type: guide
+---
+
 # Review Checklist
 
 **Last Updated:** June 8, 2026

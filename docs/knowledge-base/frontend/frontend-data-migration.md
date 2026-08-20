@@ -1,3 +1,10 @@
+---
+purpose: Data migration & versioning on the frontend
+status: active
+last-verified: 2025-12-09
+type: guide
+---
+
 # Data Migration & Versioning
 
 **Category:** Frontend Development  

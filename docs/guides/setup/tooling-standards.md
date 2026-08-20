@@ -1,3 +1,10 @@
+---
+purpose: "Monorepo-wide ESLint, Prettier, TypeScript, and Vitest configuration standards"
+status: active
+last-verified: 2026-06-08
+type: guide
+---
+
 # Tooling Standards
 
 **Last Updated:** June 8, 2026

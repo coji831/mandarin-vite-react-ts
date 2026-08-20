@@ -1,3 +1,10 @@
+---
+purpose: ES modules + testing patterns (Jest/Vitest)
+status: active
+last-verified: 2026-02-02
+type: guide
+---
+
 # ES Modules + Testing Patterns (Jest/Vitest)
 
 **Category:** Testing  

@@ -1,3 +1,10 @@
+---
+purpose: "Common development, deployment, and integration issues and how to resolve them"
+status: active
+last-verified: 2026-07-04
+type: guide
+---
+
 # Troubleshooting Guide
 
 **Audience:** Developers debugging common development, deployment, and integration issues  

@@ -1,3 +1,10 @@
+---
+purpose: Advanced React patterns
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Advanced React Patterns
 
 **Category:** Frontend Development  

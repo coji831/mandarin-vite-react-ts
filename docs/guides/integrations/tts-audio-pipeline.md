@@ -1,3 +1,10 @@
+---
+purpose: How spoken audio is delivered to the browser — the unified audio capability and per-sentence resolution
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # TTS Audio Pipeline Guide
 
 **Last Updated:** 2026-08-03

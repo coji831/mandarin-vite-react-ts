@@ -1,3 +1,10 @@
+---
+purpose: Backend architecture patterns
+status: active
+last-verified: 2026-07-03
+type: guide
+---
+
 # Backend Architecture Patterns
 
 **Category:** Backend Development  

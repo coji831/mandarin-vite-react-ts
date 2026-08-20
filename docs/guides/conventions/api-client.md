@@ -1,3 +1,11 @@
+---
+purpose: "API client conventions, error handling, and service layer patterns for frontend-backend communication"
+status: active
+last-verified: 2026-08-07
+type: convention
+audience: frontend
+---
+
 # API Client & Integration Patterns
 
 **Last Updated:** August 7, 2026

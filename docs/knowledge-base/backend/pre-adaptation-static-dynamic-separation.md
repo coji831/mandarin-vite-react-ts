@@ -1,3 +1,10 @@
+---
+purpose: Pre-adaptation rules for static/dynamic data separation
+status: active
+last-verified: 2026-06-26
+type: guide
+---
+
 # Pre-Adaptation Rules for Static/Dynamic Data Separation
 
 **Category:** Backend Development  

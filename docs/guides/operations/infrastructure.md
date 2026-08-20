@@ -1,3 +1,11 @@
+---
+purpose: "How the system's infrastructure services work together — dependencies, data flow, and ops tasks"
+status: active
+last-verified: 2026-06-12
+type: guide
+audience: devops
+---
+
 # Infrastructure Overview
 
 **Last Updated:** June 12, 2026

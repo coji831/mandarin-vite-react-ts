@@ -1,16 +1,23 @@
+---
+purpose: "Area index for deep-dive concepts, patterns, and reference materials"
+status: active
+last-verified: 2026-08-17
+type: area-index
+---
+
 # Knowledge Base
 
-**Last Updated:** August 6, 2026
+**Last Updated:** August 17, 2026
 
 Central repository for deep-dive concepts, patterns, and reference materials.
 
 ## Agent Operations (Agentics)
 
-| Article                                                                | Description                                        | Source Material                                                                          |
-| ---------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [Agent Development Pipeline](./agentics/agent-development-pipeline.md) | Full 9-step dev lifecycle for AI coding agents     | `copilot-instructions.md`, `docs/guides/operations/workflow.md`                          |
-| [Agent Visual Understanding](./agentics/agent-visual-understanding.md) | Storybook-first, token integrity, MCP toolchain    | `docs/guides/design/visual-design-workflow.md`, `docs/guides/design/design-reasoning.md` |
-| [Structured AI Prompts](./agentics/structured-prompts.md)              | `[TASK][CONTEXT][PARAMETERS][OUTPUT][CONSTRAINTS]` | `docs/automation/structured-ai-prompts.md`                                               |
+| Article                                                                | Description                                        | Source Material                                                 |
+| ---------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| [Agent Development Pipeline](./agentics/agent-development-pipeline.md) | Full 9-step dev lifecycle for AI coding agents     | `copilot-instructions.md`, `docs/guides/operations/workflow.md` |
+| [Agent Visual Understanding](./agentics/agent-visual-understanding.md) | Storybook-first, token integrity, MCP toolchain    | `docs/guides/design/design-reasoning.md`                        |
+| [Structured AI Prompts](./agentics/structured-prompts.md)              | `[TASK][CONTEXT][PARAMETERS][OUTPUT][CONSTRAINTS]` | `docs/automation/structured-ai-prompts.md`                      |
 
 ## Frontend
 
@@ -85,7 +92,7 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 | [Documentation Patterns](./practices/documentation-patterns.md)             | Concise visual docs                                                                                                           |
 | [Git Workflow](./practices/git-workflow.md)                                 | Branching, commit conventions                                                                                                 |
 | [Planning & Estimation](./practices/planning-estimation-strategies.md)      | Story estimation techniques                                                                                                   |
-| [.NET Patterns](./practices/dotnet-patterns.md)                             | .NET migration reference                                                                                                      |
+| [.NET Patterns](./practices/dotnet-patterns.md)                             | ⚠️ RETIRED — .NET migration reference (retired with the epic-24 re-scope to NestJS shell, 2026-08-17)                         |
 | [Integration Gap Diagnosis](./practices/integration-gap-diagnosis.md)       | 3-gap checklist for frontend-backend integration                                                                              |
 | [Async Progressive Enrichment](./practices/async-progressive-enrichment.md) | Lazy per-item enrichment so base data never blocks render                                                                     |
 | [Agent Browser Verification](./practices/agent-browser-verification.md)     | Playwright/Storybook verification: small surgical runs, trust-disk-over-return, UTF-8-safe PowerShell I/O, MSW/axios pitfalls |

@@ -1,3 +1,10 @@
+---
+purpose: "Step-by-step guide for integrating the Google Gemini API for natural language generation, text analysis, and AI-powered features"
+status: active
+last-verified: 2026-06-03
+type: guide
+---
+
 # Google Gemini API Integration Guide
 
 **Last Updated:** June 3, 2026
@@ -431,7 +438,7 @@ Cost = 4,500 × $0.00002 = $0.09/month (Gemini Flash tier)
 - [ ] Explanation quality tested for tone errors (mā vs mǎ)
 - [ ] Cost estimation validated with production traffic logs
 
-- [Story 15.4 BR](../../business-requirements/epic-15-learning-retention/story-15-4-ai-feedback-backend.md) - AI Feedback Backend requirements
+- [Story 15.4 BR](../../business-requirements/archive/epic-15-learning-retention/story-15-4-ai-feedback-backend.md) - AI Feedback Backend requirements
 - [Redis Caching Guide](../setup/redis.md) - General Redis best practices
 - [Gamification Psychology](../../knowledge-base/learning-theory/gamification-psychology-learning.md) - Why feedback matters for retention
 - [Backend API Spec](../../../apps/backend/docs/api-spec.md) - Full API documentation

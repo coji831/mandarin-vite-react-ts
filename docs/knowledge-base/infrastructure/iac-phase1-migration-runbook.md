@@ -1,3 +1,10 @@
+---
+purpose: IaC migration — Phase 1 deployment runbook
+status: active
+last-verified: 2026-07-04
+type: guide
+---
+
 # IaC Migration — Phase 1 Deployment Runbook
 
 **Date:** 2026-07-04 | **Repo:** coji831/mandarin-vite-react-ts  

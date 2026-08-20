@@ -1,3 +1,10 @@
+---
+purpose: Frontend modular monolith vs micro frontend
+status: active
+last-verified: 2026-06-13
+type: guide
+---
+
 # Frontend Modular Monolith vs Micro Frontend
 
 **KB Category:** Architecture Patterns

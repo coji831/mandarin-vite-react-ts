@@ -1,3 +1,10 @@
+---
+purpose: Cognitive science of active recall
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # Cognitive Science of Active Recall
 
 **Last Updated:** June 2, 2026
@@ -301,7 +308,3 @@ Active recall principles apply to:
 
 - [Spaced Repetition Algorithms](./spaced-repetition-algorithms.md) - Mathematical implementations of spacing principles
 - [Gamification Psychology in Learning](./gamification-psychology-learning.md) - Motivational strategies to sustain active recall practice
-
----
-
-**Last Updated**: January 20, 2025

@@ -1,3 +1,10 @@
+---
+purpose: Adult Mandarin learning roadmap — 4-phase progression framework
+status: active
+last-verified: 2026-06-16
+type: guide
+---
+
 # Adult Mandarin Learning Roadmap
 
 **Last Updated:** June 16, 2026

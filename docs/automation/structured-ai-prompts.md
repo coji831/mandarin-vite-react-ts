@@ -1,3 +1,10 @@
+---
+purpose: Systematic approach to creating effective structured AI prompts for the project
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # Structured AI Prompts Guide
 
 **Last Updated:** June 2, 2026

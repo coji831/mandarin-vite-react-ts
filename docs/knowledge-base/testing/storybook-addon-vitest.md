@@ -1,3 +1,10 @@
+---
+purpose: Storybook story tests via @storybook/addon-vitest
+status: active
+last-verified: 2026-08-01
+type: guide
+---
+
 # Storybook Story Tests via `@storybook/addon-vitest`
 
 **Category:** Testing / Storybook

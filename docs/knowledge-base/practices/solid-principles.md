@@ -1,3 +1,10 @@
+---
+purpose: SOLID principles for React and TypeScript
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # SOLID Principles for React and TypeScript
 
 **Last Updated:** June 2, 2026
@@ -728,5 +735,5 @@ function App() {
 
 ## Further Reading
 
-- [Epic 3: State Management Refactor](../business-requirements/epic-3-state-management-refactor-template/README.md)
-- [Epic 4: Routing Improvements](../business-requirements/epic-4-routing-improvements-template/README.md)
+- [Epic 3: State Management Refactor](../../business-requirements/archive/epic-3-state-management-refactor/README.md)
+- [Epic 4: Routing Improvements](../../business-requirements/archive/epic-4-routing-improvements/README.md)

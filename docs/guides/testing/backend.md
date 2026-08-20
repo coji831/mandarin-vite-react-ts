@@ -1,3 +1,11 @@
+---
+purpose: "Patterns, examples, and configuration for testing backend services (apps/backend)"
+status: active
+last-verified: 2026-08-02
+type: guide
+audience: backend
+---
+
 # Backend Testing Guide
 
 **Last Updated:** August 2, 2026  

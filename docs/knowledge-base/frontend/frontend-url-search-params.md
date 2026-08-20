@@ -1,3 +1,10 @@
+---
+purpose: URL search-param persistence rule
+status: active
+last-verified: 2026-08-06
+type: guide
+---
+
 # URL Search-Param Persistence Rule
 
 **Category:** Frontend Development  

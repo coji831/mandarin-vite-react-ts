@@ -1,3 +1,11 @@
+---
+purpose: "Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma"
+status: active
+last-verified: 2026-07-24
+type: convention
+audience: backend
+---
+
 # Data Import Scripts for Prisma
 
 **Last Updated:** July 24, 2026

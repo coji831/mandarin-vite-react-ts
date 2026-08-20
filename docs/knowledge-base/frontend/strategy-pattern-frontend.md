@@ -1,3 +1,10 @@
+---
+purpose: Strategy pattern on the frontend
+status: active
+last-verified: 2026-06-30
+type: guide
+---
+
 # Strategy Pattern on the Frontend
 
 **Last Updated:** June 30, 2026

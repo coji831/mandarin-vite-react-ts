@@ -1,3 +1,10 @@
+---
+purpose: "Maintained, versioned list of KNOWN pre-existing failures so agents don't re-triage the same known-broken items"
+status: active
+last-verified: 2026-08-05
+type: guide
+---
+
 # Known Failures Registry
 
 **Last Updated:** August 5, 2026

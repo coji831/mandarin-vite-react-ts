@@ -1,3 +1,10 @@
+---
+purpose: UI & component patterns
+status: active
+last-verified: 2025-12-09
+type: guide
+---
+
 # UI & Component Patterns
 
 **Category:** Frontend Development  

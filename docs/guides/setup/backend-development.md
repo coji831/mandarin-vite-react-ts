@@ -1,4 +1,12 @@
-﻿# Backend Development Guide
+﻿---
+purpose: "Complete guide for running the Express backend locally, understanding architecture, and following development best practices"
+status: active
+last-verified: 2026-07-03
+type: guide
+audience: backend
+---
+
+# Backend Development Guide
 
 **Last Updated:** July 3, 2026  
 **Purpose:** Complete guide for running the Express backend locally, understanding architecture, and following development best practices  

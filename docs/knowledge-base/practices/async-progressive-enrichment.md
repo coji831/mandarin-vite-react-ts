@@ -1,3 +1,10 @@
+---
+purpose: Async progressive enrichment pattern
+status: active
+last-verified: 2026-08-01
+type: guide
+---
+
 # Async Progressive Enrichment
 
 **Category:** Frontend / React

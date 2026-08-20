@@ -1,3 +1,10 @@
+---
+purpose: "Deep-dive into how agents handle visual design — Storybook-first, token integrity, MCP toolchain, verification"
+status: active
+last-verified: 2026-07-20
+type: guide
+---
+
 # Agent Visual Understanding
 
 **Last Updated:** 2026-07-20

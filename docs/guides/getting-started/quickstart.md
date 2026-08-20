@@ -1,3 +1,11 @@
+---
+purpose: Get the frontend running in 5 minutes
+status: active
+last-verified: 2026-06-03
+type: guide
+audience: new-dev
+---
+
 # Quick Start Guide
 
 **Last Updated:** June 3, 2026  

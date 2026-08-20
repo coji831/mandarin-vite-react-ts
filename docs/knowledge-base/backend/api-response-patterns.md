@@ -1,3 +1,10 @@
+---
+purpose: API response patterns — wrapper vs direct
+status: active
+last-verified: 2026-07-03
+type: guide
+---
+
 # API Response Patterns: Wrapper vs. Direct
 
 **Last Updated:** July 3, 2026  

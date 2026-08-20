@@ -1,3 +1,10 @@
+---
+purpose: Shared / kernel layer in a modular monolith
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # Shared / Kernel Layer in a Modular Monolith
 
 **KB Category:** Architecture Patterns

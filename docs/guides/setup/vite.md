@@ -1,3 +1,10 @@
+---
+purpose: "Configure Vite for React frontend development, including dev server, proxy setup, and build optimization"
+status: active
+last-verified: 2026-06-03
+type: guide
+---
+
 # Vite Setup Guide
 
 **Last Updated:** June 3, 2026

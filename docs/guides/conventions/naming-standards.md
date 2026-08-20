@@ -1,3 +1,11 @@
+---
+purpose: "File, folder, and naming conventions for both frontend and backend code across the monorepo"
+status: active
+last-verified: 2026-06-08
+type: convention
+audience: all
+---
+
 # Naming Standards
 
 **Last Updated:** June 8, 2026

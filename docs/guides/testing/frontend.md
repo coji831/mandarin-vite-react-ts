@@ -1,3 +1,11 @@
+---
+purpose: "Patterns, examples, and configuration for testing frontend code"
+status: active
+last-verified: 2026-08-02
+type: guide
+audience: frontend
+---
+
 # Frontend Testing Guide
 
 **Last Updated:** August 2, 2026  

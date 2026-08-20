@@ -1,3 +1,10 @@
+---
+purpose: "Application-specific Redis caching patterns, key strategies, monitoring, and performance tuning"
+status: active
+last-verified: 2026-06-03
+type: guide
+---
+
 # Caching Patterns & Strategies
 
 **Last Updated:** June 3, 2026

@@ -1,3 +1,10 @@
+---
+purpose: Single source of truth for all environment variables used by the system
+status: active
+last-verified: 2026-06-12
+type: guide
+---
+
 # Environment Setup Guide
 
 **Last Updated:** June 12, 2026  
@@ -281,7 +288,7 @@ GOOGLE_API_KEY=your-google-api-key-here
 
 ## Reference
 
-- [JWT Authentication](../../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
+- [JWT Authentication](../../business-requirements/archive/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 **Learn more:**
 

@@ -1,3 +1,10 @@
+---
+purpose: Prompt templates for HSK-graded reading passage generation via Gemini (Story 21.3)
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # Prompt Templates for AI Passage Generation
 
 > **Epic 21 — Graded Readers** | Story 21.3: Passage Generation Backend

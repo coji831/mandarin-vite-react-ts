@@ -1,3 +1,10 @@
+---
+purpose: Agent browser verification practices
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Agent Browser Verification
 
 **Category:** Practices / Agent Operations
@@ -64,7 +71,7 @@ in-page. What the user sees is what matters.
 ### 5. Mandatory concise report
 
 Every browser-verification pass ends with a short report (what was verified, screenshots,
-discrepancies vs spec) written to `verification-artifacts/` — not just an in-chat "done".
+discrepancies vs spec) written to `verification-artifacts/` (gitignored — evidence is not a committed source) — not just an in-chat "done".
 
 ### 6. UTF-8-safe PowerShell file I/O
 

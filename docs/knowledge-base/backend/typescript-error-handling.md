@@ -1,3 +1,10 @@
+---
+purpose: TypeScript error handling best practices
+status: active
+last-verified: 2026-02-07
+type: guide
+---
+
 # TypeScript Error Handling Best Practices
 
 **Last Updated:** February 7, 2026  

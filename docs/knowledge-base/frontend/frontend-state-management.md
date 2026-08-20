@@ -1,3 +1,10 @@
+---
+purpose: State management patterns
+status: active
+last-verified: 2025-12-09
+type: guide
+---
+
 # State Management
 
 **Category:** Frontend Development  

@@ -1,3 +1,10 @@
+---
+purpose: Narrative companion to the storybook-production-alignment instruction — why the rules keep stories and pages in sync
+status: active
+last-verified: 2026-08-01
+type: guide
+---
+
 # Storybook–Production Alignment Guide
 
 **Last Updated:** August 1, 2026

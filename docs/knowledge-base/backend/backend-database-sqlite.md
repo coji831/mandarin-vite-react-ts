@@ -1,3 +1,10 @@
+---
+purpose: SQLite for local development
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # SQLite for Local Development
 
 **Last Updated:** June 2, 2026

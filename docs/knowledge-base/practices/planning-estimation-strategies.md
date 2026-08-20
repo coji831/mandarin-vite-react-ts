@@ -1,3 +1,10 @@
+---
+purpose: Planning & estimation strategies
+status: active
+last-verified: 2026-01-09
+type: guide
+---
+
 # Planning & Estimation Guide
 
 This guide provides estimation frameworks, complexity multipliers, and lessons learned from real implementations to improve project planning accuracy.
@@ -386,7 +393,7 @@ For each story, ensure these tasks are explicitly estimated:
 
 ## Reference
 
-- **Source Story**: [Story 13.3: JWT Authentication System](../../business-requirements/epic-13-production-backend-architecture/story-13-3-authentication.md)
+- **Source Story**: [Story 13.3: JWT Authentication System](../../business-requirements/archive/epic-13-production-backend-architecture/story-13-3-authentication.md)
 - **Postmortem Analysis**: Story 13.3 revealed 2-3x multiplier for infrastructure work
 - [Agile Estimation Techniques](https://www.atlassian.com/agile/project-management/estimation)
 

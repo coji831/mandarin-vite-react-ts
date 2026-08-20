@@ -1,3 +1,10 @@
+---
+purpose: "Deep-dive into structured prompting patterns for consistent, predictable agent behavior"
+status: active
+last-verified: 2026-07-20
+type: guide
+---
+
 # Structured AI Prompts
 
 **Last Updated:** 2026-07-20

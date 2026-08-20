@@ -1,3 +1,10 @@
+---
+purpose: "High-level overview of the monorepo structure, tech stack, and development workflow"
+status: active
+last-verified: 2026-08-07
+type: guide
+---
+
 # Project Overview
 
 **Last Updated:** August 7, 2026

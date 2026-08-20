@@ -1,4 +1,12 @@
-﻿# Branch Strategy and Git Workflow
+﻿---
+purpose: "Branch management strategy, commit conventions (Conventional Commits), and PR workflow"
+status: active
+last-verified: 2026-08-02
+type: convention
+audience: all
+---
+
+# Branch Strategy and Git Workflow
 
 **Last Updated:** 2026-08-02  
 **Purpose:** Branch management strategy, commit conventions (Conventional Commits), and PR workflow  

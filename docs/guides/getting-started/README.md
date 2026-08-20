@@ -1,3 +1,10 @@
+---
+purpose: Comprehensive setup and workflow documentation for the PinyinPal project
+status: active
+last-verified: 2026-07-04
+type: area-index
+---
+
 # PinyinPal Development Guides
 
 **Last Updated:** July 4, 2026  

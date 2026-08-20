@@ -1,8 +1,15 @@
+---
+purpose: Caching strategies (third-party integrations)
+status: active
+last-verified: 2026-01-23
+type: guide
+---
+
 # Caching Strategies
 
 **Category:** Third-Party Integrations  
 **Last Updated:** January 23, 2026  
-**Epic 13 Reference:** [Story 13.5 Redis Caching](../issue-implementation/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
+**Epic 13 Reference:** [Story 13.5 Redis Caching](../../issue-implementation/archive/epic-13-production-backend-architecture/story-13-5-redis-caching.md)
 
 ## TL;DR Quick Reference
 

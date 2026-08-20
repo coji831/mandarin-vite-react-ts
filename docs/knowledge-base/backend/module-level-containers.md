@@ -1,3 +1,10 @@
+---
+purpose: Module-level container pattern
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # Module-Level Container Pattern
 
 **Category:** Backend Development

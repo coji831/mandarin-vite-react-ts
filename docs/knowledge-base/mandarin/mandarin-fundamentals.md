@@ -1,3 +1,10 @@
+---
+purpose: Central reference for Mandarin language structure
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Mandarin Chinese Fundamentals
 
 **Purpose:** Central reference for Mandarin language structure to inform app design and architecture decisions.

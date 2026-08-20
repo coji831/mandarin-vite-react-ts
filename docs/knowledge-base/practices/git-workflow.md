@@ -1,3 +1,10 @@
+---
+purpose: Git workflow & conventions
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Git Workflow & Conventions
 
 **Category:** Getting Started  
@@ -243,8 +250,8 @@ git commit -m "feat(component): add VocabularyCard component"
 ```bash
 # Update both code and docs
 git add src/features/mandarin/services/audioService.ts
-git add docs/business-requirements/epic-11-service-layer-overhaul/story-11-2-audio-service.md
-git add docs/issue-implementation/epic-11-service-layer-overhaul/story-11-2-audio-service.md
+git add docs/business-requirements/archive/epic-11-service-layer-overhaul/story-11-2-audio-service.md
+git add docs/issue-implementation/archive/epic-11-service-layer-overhaul/story-11-2-audio-service.md
 
 git commit -m "feat(story-11-2): implement AudioService with fallback
 
@@ -323,8 +330,8 @@ Implements Story 11.2: AudioService with API + local fallback.
 
 ## Stories / Issues
 
-- Story BR: `docs/business-requirements/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
-- Story impl: `docs/issue-implementation/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
+- Story BR: `docs/business-requirements/archive/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
+- Story impl: `docs/issue-implementation/archive/epic-11-service-layer-overhaul/story-11-2-audio-service.md`
 - Closes #XX
 
 ## Key Changes

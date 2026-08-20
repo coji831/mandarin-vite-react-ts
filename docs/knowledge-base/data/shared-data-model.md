@@ -1,12 +1,20 @@
+---
+purpose: Shared data model across packages
+status: active
+last-verified: 2026-08-16
+type: guide
+---
+
 # Shared Data Model
 
 **Category:** Data Architecture
-**Last Updated:** August 7, 2026
+**Last Updated:** August 16, 2026
 **Difficulty:** Intermediate
 
-> **Source material:** `verification-artifacts/shared-data-model-v3.md` (gitignored) and the
-> all-in-DB architecture described in `docs/architecture.md`. This article promotes the shared
-> data model into the committed knowledge base so doc links have a stable target.
+> **History:** This article was originally developed as a gitignored working spec that is NOT
+> official documentation and may be deleted; do not treat it as authoritative. It is now the
+> committed source of record for the shared data model, alongside the all-in-DB architecture
+> described in `docs/architecture.md`.
 
 ---
 
@@ -62,7 +70,7 @@ Relations are stored as DB junction tables, not embedded JSON:
 
 Content entities carry stable, pre-adapted fields (content ID, version, metadata) so seed
 re-runs are idempotent and references never break — see
-[Pre-Adaptation Rules](./backend/pre-adaptation-static-dynamic-separation.md).
+[Pre-Adaptation Rules](../backend/pre-adaptation-static-dynamic-separation.md).
 
 ## Impact
 
@@ -79,7 +87,7 @@ re-runs are idempotent and references never break — see
 
 ## See Also
 
-- [Character-Level SRS with Reading Context](./backend/character-level-srs-reading-context.md)
-- [Pre-Adaptation Rules](./backend/pre-adaptation-static-dynamic-separation.md)
-- [Adult Mandarin Learning Roadmap](./learning-theory/adult-mandarin-learning-roadmap.md)
+- [Character-Level SRS with Reading Context](../backend/character-level-srs-reading-context.md)
+- [Pre-Adaptation Rules](../backend/pre-adaptation-static-dynamic-separation.md)
+- [Adult Mandarin Learning Roadmap](../learning-theory/adult-mandarin-learning-roadmap.md)
 - `docs/architecture.md` (Content Data Flow) · `apps/backend/prisma/schema.prisma`

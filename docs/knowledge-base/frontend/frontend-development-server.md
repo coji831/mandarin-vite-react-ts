@@ -1,3 +1,10 @@
+---
+purpose: Frontend development server concepts
+status: active
+last-verified: 2026-01-09
+type: guide
+---
+
 # Frontend Development Server Concepts
 
 **Category:** Frontend Development  

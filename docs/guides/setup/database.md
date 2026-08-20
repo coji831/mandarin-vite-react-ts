@@ -1,3 +1,11 @@
+---
+purpose: Comprehensive PostgreSQL and Prisma setup for local development and production
+status: active
+last-verified: 2026-06-03
+type: guide
+audience: backend
+---
+
 # Database Setup Guide
 
 **Last Updated:** June 3, 2026  

@@ -1,3 +1,10 @@
+---
+purpose: Full-stack Epic 18 audit report — findings and resolutions
+status: active
+last-verified: 2026-06-25
+type: guide
+---
+
 # Epic 18 — Foundations, Review & Quiz: Full Audit Report
 
 **Date:** 2026-06-25 | **Auditor:** GitHub Copilot (Solution Architect mode) | **Scope:** Full-stack Epic 18

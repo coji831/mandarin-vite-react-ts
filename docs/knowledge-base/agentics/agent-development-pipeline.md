@@ -1,3 +1,10 @@
+---
+purpose: "Conceptual deep-dive into the full development lifecycle — requirements to commit, and the why behind each phase"
+status: active
+last-verified: 2026-07-20
+type: guide
+---
+
 # Agent Development Pipeline
 
 **Last Updated:** 2026-07-20
@@ -50,8 +57,8 @@ Before writing code, the agent must gather context across four dimensions:
 
 ### 1.4 Design Context
 
-- Read `docs/guides/design/design-reasoning.md` for design philosophy
-- Read `docs/guides/design/visual-design-workflow.md` for Storybook-first patterns
+- Read `docs/guides/design/design-reasoning.md` for design philosophy (incl. token-change procedure)
+- Follow `.github/instructions/storybook-production-alignment.instructions.md` for Storybook-first patterns
 - If a Figma URL is available, fetch structured design data
 
 **Anti-pattern:** Jumping straight to implementation without reading shared components or design tokens → results in reimplementation and style drift.
@@ -124,7 +131,7 @@ For UI changes:
 1. Open the page in browser (via `npm run dev`)
 2. Use Playwright/Chrome DevTools MCP to take screenshots
 3. Compare against Storybook stories or wireframes
-4. Document discrepancies in `verification-artifacts/`
+4. Document discrepancies in `verification-artifacts/` (gitignored — evidence is not a committed source)
 
 For backend changes:
 

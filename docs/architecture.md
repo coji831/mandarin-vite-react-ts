@@ -1,3 +1,10 @@
+---
+purpose: "High-level system design decisions, architectural patterns, and technology choices"
+status: active
+last-verified: 2026-08-15
+type: architecture
+---
+
 # System Architecture
 
 > **Purpose:** High-level system design decisions, architectural patterns, and technology choices.  
@@ -462,9 +469,10 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 - **Business Requirements**: [docs/business-requirements/](./business-requirements/)
 - **Development Guides**: [docs/guides/](./guides/)
 - **Knowledge Base**: [docs/knowledge-base/](./knowledge-base/)
+- **Business Model**: [docs/business/business-model.md](./business/business-model.md) · [Business Index](./business/README.md)
 
 - **Code Conventions**: [Backend Conventions](./guides/conventions/backend.md)
 
 ---
 
-**Last Updated:** August 8, 2026
+**Last Updated:** August 15, 2026

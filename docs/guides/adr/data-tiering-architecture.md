@@ -1,3 +1,11 @@
+---
+purpose: "4 data tiers — storage, cache, and module dependency rules for content vs user data"
+status: proposed
+last-verified: 2026-07-23
+type: decision
+audience: all
+---
+
 # ADR-006: Data Tiering Architecture
 
 **Status:** Proposed

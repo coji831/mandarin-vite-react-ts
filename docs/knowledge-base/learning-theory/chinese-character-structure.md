@@ -1,3 +1,10 @@
+---
+purpose: Chinese character structure and radical systems
+status: active
+last-verified: 2026-06-02
+type: guide
+---
+
 # Chinese Character Structure and Radical Systems
 
 **Last Updated:** June 2, 2026
@@ -28,14 +35,14 @@ Chinese characters (汉字, hànzì) are not random pictographs—they are highl
 
 ### Examples of Common Radicals
 
-| Radical | Pinyin | Meaning Category | Example Characters |
-|---|---|---|---|
-| 氵 (water) | shuǐ | Water, liquids | 海 (sea), 河 (river), 湖 (lake), 汤 (soup) |
-| 讠 (speech) | yán | Speaking, language | 说 (speak), 话 (words), 语 (language), 诗 (poetry) |
-| 忄 (heart) | xīn | Emotions, feelings | 怕 (fear), 快 (happy), 情 (emotion), 恨 (hate) |
-| 艹 (grass) | cǎo | Plants, vegetation | 花 (flower), 草 (grass), 药 (medicine), 茶 (tea) |
-| 亻 (person) | rén | People, human actions | 他 (he), 们 (plural), 你 (you), 做 (do) |
-| 扌 (hand) | shǒu | Hand actions | 打 (hit), 拉 (pull), 推 (push), 抱 (hug) |
+| Radical     | Pinyin | Meaning Category      | Example Characters                                 |
+| ----------- | ------ | --------------------- | -------------------------------------------------- |
+| 氵 (water)  | shuǐ   | Water, liquids        | 海 (sea), 河 (river), 湖 (lake), 汤 (soup)         |
+| 讠 (speech) | yán    | Speaking, language    | 说 (speak), 话 (words), 语 (language), 诗 (poetry) |
+| 忄 (heart)  | xīn    | Emotions, feelings    | 怕 (fear), 快 (happy), 情 (emotion), 恨 (hate)     |
+| 艹 (grass)  | cǎo    | Plants, vegetation    | 花 (flower), 草 (grass), 药 (medicine), 茶 (tea)   |
+| 亻 (person) | rén    | People, human actions | 他 (he), 们 (plural), 你 (you), 做 (do)            |
+| 扌 (hand)   | shǒu   | Hand actions          | 打 (hit), 拉 (pull), 推 (push), 抱 (hug)           |
 
 **Pattern Recognition**:
 
@@ -47,13 +54,13 @@ Chinese characters (汉字, hànzì) are not random pictographs—they are highl
 
 Radicals appear in different positions within characters:
 
-| Position | Name | Example | Full Character |
-|---|---|---|---|
-| Left | 左偏旁 | 氵 | 河 (river) |
-| Right | 右偏旁 | 阝(city) | 都 (capital) |
-| Top | 字头 | 艹 | 花 (flower) |
-| Bottom | 字底 | 心 | 想 (think) |
-| Enclosure | 字框 | 门 | 问 (ask) |
+| Position  | Name   | Example  | Full Character |
+| --------- | ------ | -------- | -------------- |
+| Left      | 左偏旁 | 氵       | 河 (river)     |
+| Right     | 右偏旁 | 阝(city) | 都 (capital)   |
+| Top       | 字头   | 艹       | 花 (flower)    |
+| Bottom    | 字底   | 心       | 想 (think)     |
+| Enclosure | 字框   | 门       | 问 (ask)       |
 
 **Implication**: Same radical can look slightly different depending on position (e.g., 心 as bottom component vs 忄 as side component—both represent "heart").
 
@@ -81,28 +88,28 @@ While there are 214 Kangxi radicals, linguistic research shows ~50 radicals acco
 
 ### Top 20 Radicals by Frequency
 
-| Rank | Radical | Meaning | Character Count (HSK 1-6) | Examples |
-|---|---|---|---|---|
-| 1 | 氵 | Water | 180+ | 河, 海, 洗, 法 |
-| 2 | 亻 | Person | 150+ | 你, 他, 们, 住 |
-| 3 | 讠 | Speech | 140+ | 说, 话, 语, 认 |
-| 4 | 扌 | Hand | 130+ | 打, 拉, 把, 找 |
-| 5 | 艹 | Grass | 110+ | 花, 草, 茶, 药 |
-| 6 | 口 | Mouth | 100+ | 吃, 喝, 叫, 吗 |
-| 7 | 忄 | Heart | 95+ | 快, 怕, 情, 懂 |
-| 8 | 木 | Tree/Wood | 90+ | 树, 林, 桌, 椅 |
-| 9 | 女 | Female | 85+ | 她, 好, 姐, 妈 |
-| 10 | 日 | Sun/Day | 80+ | 明, 时, 晴, 早 |
-| 11 | 阝(left) | Hill/mound | 75+ | 陈, 阳, 队 |
-| 12 | 阝(right) | City | 75+ | 那, 都, 部 |
-| 13 | 宀 | Roof | 70+ | 家, 宝, 宇, 室 |
-| 14 | 纟 | Silk/thread | 68+ | 红, 经, 给, 结 |
-| 15 | 土 | Earth/soil | 65+ | 地, 场, 城, 在 |
-| 16 | 米 | Rice | 60+ | 米, 粉, 糖, 粗 |
-| 17 | 辶 | Walk/movement | 58+ | 这, 过, 道, 还 |
-| 18 | 月 | Moon/meat | 55+ | 月, 朋, 期, 肚 |
-| 19 | 钅 | Metal | 52+ | 钱, 铁, 银, 铜 |
-| 20 | 目 | Eye | 50+ | 看, 眼, 睛, 相 |
+| Rank | Radical   | Meaning       | Character Count (HSK 1-6) | Examples       |
+| ---- | --------- | ------------- | ------------------------- | -------------- |
+| 1    | 氵        | Water         | 180+                      | 河, 海, 洗, 法 |
+| 2    | 亻        | Person        | 150+                      | 你, 他, 们, 住 |
+| 3    | 讠        | Speech        | 140+                      | 说, 话, 语, 认 |
+| 4    | 扌        | Hand          | 130+                      | 打, 拉, 把, 找 |
+| 5    | 艹        | Grass         | 110+                      | 花, 草, 茶, 药 |
+| 6    | 口        | Mouth         | 100+                      | 吃, 喝, 叫, 吗 |
+| 7    | 忄        | Heart         | 95+                       | 快, 怕, 情, 懂 |
+| 8    | 木        | Tree/Wood     | 90+                       | 树, 林, 桌, 椅 |
+| 9    | 女        | Female        | 85+                       | 她, 好, 姐, 妈 |
+| 10   | 日        | Sun/Day       | 80+                       | 明, 时, 晴, 早 |
+| 11   | 阝(left)  | Hill/mound    | 75+                       | 陈, 阳, 队     |
+| 12   | 阝(right) | City          | 75+                       | 那, 都, 部     |
+| 13   | 宀        | Roof          | 70+                       | 家, 宝, 宇, 室 |
+| 14   | 纟        | Silk/thread   | 68+                       | 红, 经, 给, 结 |
+| 15   | 土        | Earth/soil    | 65+                       | 地, 场, 城, 在 |
+| 16   | 米        | Rice          | 60+                       | 米, 粉, 糖, 粗 |
+| 17   | 辶        | Walk/movement | 58+                       | 这, 过, 道, 还 |
+| 18   | 月        | Moon/meat     | 55+                       | 月, 朋, 期, 肚 |
+| 19   | 钅        | Metal         | 52+                       | 钱, 铁, 银, 铜 |
+| 20   | 目        | Eye           | 50+                       | 看, 眼, 睛, 相 |
 
 **Pedagogical Strategy**: Teach these 20 radicals explicitly in early lessons. Once learned, students can infer meaning for 60-70% of new characters.
 
@@ -118,13 +125,13 @@ While radicals often hint at meaning, **phonetic components (声旁, shēng pán
 
 **Example Family** (包 bāo phonetic):
 
-| Character | Radical | Phonetic | Reading | Meaning |
-|---|---|---|---|---|
-| 包 | — | — | bāo | Wrap, package |
-| 抱 | 扌(hand) | 包 | bào | Hug (hand + bao sound) |
-| 泡 | 氵(water) | 包 | pào | Bubble (water + bao sound) |
-| 炮 | 火 (fire) | 包 | pào | Cannon (fire + bao sound) |
-| 饱 | 饣(food) | 包 | bǎo | Full/satiated (food + bao sound) |
+| Character | Radical   | Phonetic | Reading | Meaning                          |
+| --------- | --------- | -------- | ------- | -------------------------------- |
+| 包        | —         | —        | bāo     | Wrap, package                    |
+| 抱        | 扌(hand)  | 包       | bào     | Hug (hand + bao sound)           |
+| 泡        | 氵(water) | 包       | pào     | Bubble (water + bao sound)       |
+| 炮        | 火 (fire) | 包       | pào     | Cannon (fire + bao sound)        |
+| 饱        | 饣(food)  | 包       | bǎo     | Full/satiated (food + bao sound) |
 
 **Pattern Recognition**: If you know 包 (bāo), you can guess the pronunciation of 抱, 泡, 炮, 饱 (all have "ao" sound with various tones).
 
@@ -132,14 +139,14 @@ While radicals often hint at meaning, **phonetic components (声旁, shēng pán
 
 ### Example: 青 (qīng) Phonetic Family
 
-| Character | Radical | Reading | Meaning |
-|---|---|---|---|
-| 青 | — | qīng | Green/blue |
-| 清 | 氵(water) | qīng | Clear (as water) |
-| 晴 | 日 (sun) | qíng | Sunny |
-| 情 | 忄(heart) | qíng | Emotion |
-| 请 | 讠(speech) | qǐng | Please/invite |
-| 睛 | 目 (eye) | jīng | Eyeball |
+| Character | Radical    | Reading | Meaning          |
+| --------- | ---------- | ------- | ---------------- |
+| 青        | —          | qīng    | Green/blue       |
+| 清        | 氵(water)  | qīng    | Clear (as water) |
+| 晴        | 日 (sun)   | qíng    | Sunny            |
+| 情        | 忄(heart)  | qíng    | Emotion          |
+| 请        | 讠(speech) | qǐng    | Please/invite    |
+| 睛        | 目 (eye)   | jīng    | Eyeball          |
 
 **Lesson**: Once you learn 青, six+ other characters become easier to remember (both pronunciation and meaning via radical).
 
@@ -408,7 +415,7 @@ Requirements:
 **Example**:
 
 > Characters: 河, 明, 海, 晴, 江, 时
-> 
+>
 > Group 1 (氵water):
 > Group 2 (日sun):
 
@@ -473,7 +480,3 @@ Requirements:
 
 - [Cognitive Science of Active Recall](./cognitive-science-active-recall.md) - Why decomposition + mnemonics work
 - [Vocabulary Retention Research](./vocabulary-retention-research.md) - Full character learning strategies
-
----
-
-**Last Updated**: January 20, 2025

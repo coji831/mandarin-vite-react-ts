@@ -1,3 +1,10 @@
+---
+purpose: Character-level SRS with reading context
+status: active
+last-verified: 2026-06-26
+type: guide
+---
+
 # Character-Level SRS with Reading Context
 
 **Category:** Backend Development  

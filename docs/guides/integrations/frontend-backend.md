@@ -1,4 +1,11 @@
-﻿# Frontend-Backend Integration Guide
+﻿---
+purpose: "Unified guide for cookie-based authentication, CORS setup, API communication, and frontend-backend sync"
+status: active
+last-verified: 2026-07-03
+type: guide
+---
+
+# Frontend-Backend Integration Guide
 
 **Last Updated:** July 3, 2026  
 **Purpose:** Unified guide for cookie-based authentication, CORS setup, API communication, and frontend-backend sync  

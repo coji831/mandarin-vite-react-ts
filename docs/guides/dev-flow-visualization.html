@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PinyinPal — Development Workflow Visualization</title>
+    <!-- last-verified: 2026-08-18 -->
     <style>
       /* ===== Reset & Base ===== */
       *,
@@ -686,8 +687,8 @@
           <span class="step-label" style="color: #93c5fd">🔍 Gather Context</span>
           <span class="step-desc"
             ><strong>Business need</strong> → <strong>User need</strong> →
-            <strong>Research</strong>. Read design docs, <code>docs/design.md</code>, component
-            registry, proposals in <code>verification-artifacts/</code>.</span
+            <strong>Research</strong>. Read design docs, <code>docs/design.md</code>, and the
+            component registry.</span
           >
         </div>
         <span class="pipeline-arrow">→</span>
@@ -811,10 +812,10 @@
           <div class="card-title">� Context Gathering</div>
           <div class="card-desc">
             Start with business need + user need, not code. Read existing design docs and domain
-            research. Check <code>verification-artifacts/</code> for proposals. Map user flow: what
-            they see → think → want to do next. Establish preview/reward boundary.
+            research. Map user flow: what they see → think → want to do next. Establish
+            preview/reward boundary.
           </div>
-          <span class="card-code">docs/design.md → verification-artifacts/</span>
+          <span class="card-code">docs/design.md → committed docs</span>
         </div>
         <div class="detail-card fe">
           <div class="card-title">✏️ Wireframe-First Design</div>
@@ -822,7 +823,7 @@
             Sketch or wireframe before writing components. Visual understanding must precede
             implementation. Align with <code>DESIGN.md</code> tokens and
             <code>ui-composition.instructions.md</code>. Check
-            <code>preview-detail-separation</code>.
+            <code>ui-composition §7 (preview vs detail)</code>.
           </div>
           <span class="card-code">sketch → DESIGN.md → tokens</span>
         </div>
@@ -1284,8 +1285,8 @@
             <div class="step-title">👁️ Visual Verification</div>
             <div class="step-detail">
               Start Storybook + dev server. Wait for full load. Screenshot side-by-side. Compare
-              layout, spacing, colors, structure. Fix mismatches. Log findings in
-              <code>verification-artifacts/</code>. Run
+              layout, spacing, colors, structure. Fix mismatches. Log findings as verification
+              artifacts (gitignored — evidence is not committed). Run
               <code>npm run test-storybook --workspace=@mandarin/frontend</code>.
             </div>
           </div>

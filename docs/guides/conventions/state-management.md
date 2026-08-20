@@ -1,3 +1,11 @@
+---
+purpose: "Reducer, action, selector, and React Context state management patterns"
+status: active
+last-verified: 2026-06-03
+type: convention
+audience: frontend
+---
+
 # State Management Patterns (Quick Reference)
 
 **Last Updated:** June 3, 2026

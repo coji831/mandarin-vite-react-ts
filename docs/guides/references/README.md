@@ -1,3 +1,10 @@
+---
+purpose: Redirect index for the old flat docs/guides/ structure
+status: active
+last-verified: 2026-08-02
+type: area-index
+---
+
 # References & Redirects
 
 > The `docs/guides/` directory has been restructured into a hierarchical layout.

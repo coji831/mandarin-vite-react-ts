@@ -1,3 +1,10 @@
+---
+purpose: Modeling Chinese as a knowledge graph
+status: active
+last-verified: 2026-06-26
+type: guide
+---
+
 # Modeling Chinese as a Knowledge Graph
 
 **Category:** Learning Theory  

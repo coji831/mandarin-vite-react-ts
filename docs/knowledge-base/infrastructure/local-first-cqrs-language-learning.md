@@ -1,3 +1,10 @@
+---
+purpose: Local-first CQRS for language learning
+status: active
+last-verified: 2026-06-26
+type: guide
+---
+
 # Local-First CQRS for Language Learning
 
 **Category:** Infrastructure  

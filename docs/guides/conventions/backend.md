@@ -1,4 +1,12 @@
-﻿# Backend Conventions & Architecture (Quick Reference)
+﻿---
+purpose: Standard for creating and maintaining backend modules in the modular monolith
+status: active
+last-verified: 2026-07-22
+type: convention
+audience: backend
+---
+
+# Backend Conventions & Architecture (Quick Reference)
 
 **Last Updated:** July 22, 2026
 

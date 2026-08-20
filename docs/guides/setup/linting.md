@@ -1,3 +1,10 @@
+---
+purpose: "Configure ESLint, Prettier, and TypeScript checking in the project"
+status: active
+last-verified: 2026-06-03
+type: guide
+---
+
 # Linting Setup Guide
 
 **Last Updated:** June 3, 2026

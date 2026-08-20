@@ -1,3 +1,10 @@
+---
+purpose: Infrastructure configuration management
+status: active
+last-verified: 2026-01-09
+type: guide
+---
+
 # Infrastructure Configuration Management
 
 **Category:** Infrastructure & DevOps  

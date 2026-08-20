@@ -1,3 +1,10 @@
+---
+purpose: React patterns
+status: active
+last-verified: 2025-12-09
+type: guide
+---
+
 # React Patterns
 
 **Category:** Frontend Development  

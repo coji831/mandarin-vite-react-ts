@@ -1,3 +1,10 @@
+---
+purpose: Canonical reference for the 32-step hash-gated delta seed pipeline (all-in-DB content)
+status: active
+last-verified: 2026-08-08
+type: data-doc
+---
+
 # Seed Pipeline (All-in-DB)
 
 **Category:** Data & Content  

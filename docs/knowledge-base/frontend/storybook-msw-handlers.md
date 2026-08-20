@@ -1,3 +1,10 @@
+---
+purpose: Storybook MSW handler factories
+status: active
+last-verified: 2026-08-01
+type: guide
+---
+
 # Storybook MSW Handler Factories
 
 **Category:** Frontend / Storybook

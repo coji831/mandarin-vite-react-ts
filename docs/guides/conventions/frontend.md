@@ -1,6 +1,14 @@
+---
+purpose: "Frontend coding standards, conventions, and patterns"
+status: active
+last-verified: 2026-08-18
+type: convention
+audience: frontend
+---
+
 # Frontend Conventions
 
-**Last Updated:** August 7, 2026  
+**Last Updated:** August 18, 2026  
 **Purpose:** Frontend coding standards, conventions, and patterns  
 **Audience:** Frontend developers
 
@@ -11,6 +19,16 @@
 > **Authoritative source:** `.github/component-registry.json` — the machine-checked catalog of all shared components, verified via `npm run check:registry-stories` (gate 7 in `.github/instructions/project-workflow.instructions.md`).
 >
 > All shared components live in `apps/frontend/src/shared/components/` and are re-exported through the `shared/components` barrel. This document does NOT maintain a parallel component list — consult the registry for the current catalog.
+
+## Page Layer & Design Quality
+
+> **Page contract:** `.github/page-inventory.json` — the machine-checked page ledger (route, component, archetype, story, states, status), verified via `npm run check:page-inventory` (gate 7).
+>
+> **Page skeleton:** `docs/guides/design/page-archetypes.md` — the Focus-First page library (archetypes + mode/page table); every page is a parameterization of one archetype.
+>
+> **What "good" means:** `docs/guides/design/design-quality-rubric.md` — scored criteria × measure × threshold; the human-pass companion to the machine gates.
+>
+> **Per-epic spec:** `docs/guides/design/per-epic-design-spec.md` — the design-spec template naming `archetype:` + `provenance:`.
 
 ## Code Style & Patterns
 
@@ -26,6 +44,15 @@
 - Put route constants in `apps/frontend/src/shared/constants/paths.ts`
 - Use React Router for navigation and routing
 - Consume vocabulary through the backend words API via the service layer (`apiClient`) — all vocabulary lives in the database; local CSV files are not read at runtime
+
+## Component Architecture
+
+> **Ruleset:** `.github/instructions/frontend-component-architecture.instructions.md` — the always-on convention (auto-attaches to TSX edits); this is the prose canon. **Store/reducer deep dive:** [State Management Patterns](./state-management.md).
+
+- **3-layer hierarchy:** thin page container (`src/pages/`) → feature components (`src/features/<name>/components/`) → shared primitives (`src/shared/components/`). Pages stay thin (≤ ~100 JSX lines); one concern per layer.
+- **State-aware:** colocate state with usage; lift only when ≥2 siblings share; compute derivable values instead of storing them; URL-as-state via `useSearchParamState`; global stores (`useUserStore`, `useUiStore`) only for cross-cutting state — per-screen state stays feature-scoped (`useQuizSessionStore`, `useReadingStore`).
+- **Logic-aware:** JSX is a pure projection — no fetch/mutation in render; side effects in event handlers; reusable stateful behavior → custom hooks (`usePhaseGate`, `useAudioManager`); stateless domain/API → services (`passageService`, `wordService`); cross-subtree shared state → stores.
+- **Hierarchy-aware:** named `XxxProps` for components with >2 props; data down / `onXxx` up; extract subcomponents at ~50–80 JSX lines or when props change together; a new shared primitive requires a `component-registry.json` entry + story + test.
 
 ## API Client & Integration Patterns
 

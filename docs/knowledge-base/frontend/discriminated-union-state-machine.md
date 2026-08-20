@@ -1,3 +1,10 @@
+---
+purpose: Discriminated union state machines with useReducer
+status: active
+last-verified: 2026-07-21
+type: guide
+---
+
 # Discriminated Union State Machines with useReducer
 
 **Category:** Frontend Development

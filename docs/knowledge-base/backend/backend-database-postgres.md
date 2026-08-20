@@ -1,3 +1,10 @@
+---
+purpose: PostgreSQL setup & migrations
+status: active
+last-verified: 2026-07-03
+type: guide
+---
+
 # PostgreSQL Setup & Migrations
 
 **Last Updated:** July 3, 2026

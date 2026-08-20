@@ -1,3 +1,10 @@
+---
+purpose: Step-by-step guide to deploy or add a new deployment environment
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # Deployment Guide
 
 **Last Updated:** August 3, 2026

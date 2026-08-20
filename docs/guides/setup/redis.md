@@ -1,3 +1,10 @@
+---
+purpose: "Configure Redis for caching, session management, and rate limiting"
+status: active
+last-verified: 2026-06-03
+type: guide
+---
+
 # Redis Setup Guide
 
 **Last Updated:** June 3, 2026

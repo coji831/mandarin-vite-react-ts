@@ -1,14 +1,19 @@
+---
+purpose: "Which document holds which information — business vs technical, and how to cross-reference"
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 <!-- Renamed from documentation-relationship-guide.md -->
 
 Purpose: Which document holds which information (business vs technical) and how to cross-reference them.
 
-If you only read one: For diagram and formatting examples (Mermaid, collapsible sections), see `doc-authoring-patterns.md`.
+If you only read one: this guide covers which document holds which information (business vs technical) and how to cross-reference them.
 
 # Documentation Relationship Guide (architecture)
 
 This guide explains how different documentation formats in this project work together to provide complete coverage of both business and technical aspects.
-
-> **Note**: For guidelines on creating concise, visual documentation, refer to the [Documentation Patterns guide](./documentation-patterns.md).
 
 ## Document Relationship Map
 
@@ -119,7 +124,7 @@ When referencing between documents:
 
 - **From Business Requirements to Technical Implementation**:
 
-  For technical details, see [Technical Implementation](../../issue-implementation/epic-13-production-backend-architecture/README.md)
+  For technical details, see [Technical Implementation](../../issue-implementation/archive/epic-13-production-backend-architecture/README.md)
 
   ```
 
@@ -127,7 +132,7 @@ When referencing between documents:
 
 - **From Technical Implementation to Business Requirements**:
 
-  For business context and user stories, see [Business Requirements](../../business-requirements/epic-13-production-backend-architecture/README.md)
+  For business context and user stories, see [Business Requirements](../../business-requirements/archive/epic-13-production-backend-architecture/README.md)
 
   ```
 

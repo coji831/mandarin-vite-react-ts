@@ -1,3 +1,10 @@
+---
+purpose: Cloud database providers
+status: active
+last-verified: 2026-01-09
+type: guide
+---
+
 # Cloud Database Providers
 
 **Category:** Backend Infrastructure  

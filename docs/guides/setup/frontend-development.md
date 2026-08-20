@@ -1,4 +1,12 @@
-﻿# Frontend Development Guide
+﻿---
+purpose: "Comprehensive guide for frontend development with React, TypeScript, and Vite"
+status: active
+last-verified: 2026-08-02
+type: guide
+audience: frontend
+---
+
+# Frontend Development Guide
 
 **Last Updated:** 2026-08-02  
 **Purpose:** Comprehensive guide for frontend development with React, TypeScript, and Vite  

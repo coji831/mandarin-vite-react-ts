@@ -1,3 +1,10 @@
+---
+purpose: "Area index for agent-operations articles — development pipeline, design workflows, tooling, prompting"
+status: active
+last-verified: 2026-07-20
+type: area-index
+---
+
 # AI Agent Operations Guide
 
 **Last Updated:** 2026-07-20
@@ -10,27 +17,26 @@ This section consolidates agent-operation knowledge that was previously scattere
 
 ## Articles
 
-| Article                                                       | Description                                                                  | Source Material                                                                          |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [Agent Development Pipeline](./agent-development-pipeline.md) | Full lifecycle: Context → Review → Plan → Implement → Verify → Test → Gates  | `copilot-instructions.md`, `docs/guides/operations/workflow.md`                          |
-| [Agent Visual Understanding](./agent-visual-understanding.md) | How agents handle visual design: Storybook-first, token integrity, MCP tools | `docs/guides/design/visual-design-workflow.md`, `docs/guides/design/design-reasoning.md` |
-| [Structured AI Prompts](./structured-prompts.md)              | `[TASK][CONTEXT][PARAMETERS][OUTPUT][CONSTRAINTS]` template and examples     | `docs/automation/structured-ai-prompts.md`                                               |
+| Article                                                       | Description                                                                  | Source Material                                                 |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| [Agent Development Pipeline](./agent-development-pipeline.md) | Full lifecycle: Context → Review → Plan → Implement → Verify → Test → Gates  | `copilot-instructions.md`, `docs/guides/operations/workflow.md` |
+| [Agent Visual Understanding](./agent-visual-understanding.md) | How agents handle visual design: Storybook-first, token integrity, MCP tools | `docs/guides/design/design-reasoning.md`                        |
+| [Structured AI Prompts](./structured-prompts.md)              | `[TASK][CONTEXT][PARAMETERS][OUTPUT][CONSTRAINTS]` template and examples     | `docs/automation/structured-ai-prompts.md`                      |
 
 ## Related Resources
 
 These existing guides are **actionable references** (not deep-dives) that agents should read during implementation:
 
-| Resource                                                               | Type         | Purpose                                        |
-| ---------------------------------------------------------------------- | ------------ | ---------------------------------------------- |
-| `docs/guides/design/visual-design-workflow.md`                         | Action guide | Step-by-step Storybook-first design workflow   |
-| `docs/guides/design/design-reasoning.md`                               | Action guide | Design philosophy ("Warm Minimalism")          |
-| `docs/guides/operations/workflow.md`                                   | Action guide | Human-friendly epic/story workflow checklist   |
-| `docs/guides/operations/review.md`                                     | Action guide | Code review checklist                          |
-| `docs/guides/references/review-checklist.md`                           | Action guide | Review checklist                               |
-| `.github/copilot-instructions.md`                                      | Instructions | Agent operational playbook (TL;DR, rules, etc) |
-| `.github/instructions/project-workflow.instructions.md`                | Instructions | Story-level development workflow               |
-| `.github/instructions/frontend-visual-design-protocol.instructions.md` | Instructions | Visual design protocol                         |
-| `.github/instructions/frontend-pre-delivery-checklist.instructions.md` | Instructions | Pre-delivery UI checklist                      |
+| Resource                                                               | Type         | Purpose                                                         |
+| ---------------------------------------------------------------------- | ------------ | --------------------------------------------------------------- |
+| `docs/guides/design/design-reasoning.md`                               | Action guide | Design philosophy + token change procedure                      |
+| `docs/guides/operations/workflow.md`                                   | Action guide | Human-friendly epic/story workflow checklist                    |
+| `docs/guides/operations/review.md`                                     | Action guide | Code review checklist                                           |
+| `docs/guides/references/review-checklist.md`                           | Action guide | Review checklist                                                |
+| `.github/copilot-instructions.md`                                      | Instructions | Agent operational playbook (TL;DR, rules, etc)                  |
+| `.github/instructions/project-workflow.instructions.md`                | Instructions | Story-level development workflow                                |
+| `.github/instructions/uiux-design-protocol.instructions.md`            | Instructions | UIUX design protocol (Storybook-first + fundamentals + AI-slop) |
+| `.github/instructions/frontend-pre-delivery-checklist.instructions.md` | Instructions | Pre-delivery UI checklist                                       |
 
 ## Tooling Reference
 

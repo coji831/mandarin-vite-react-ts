@@ -48,6 +48,14 @@ const ALLOWED_STATES = [
   "empty",
   "disabled",
   "edge",
+  "with-description",
+  "with-cta",
+  "with-eyebrow",
+  // Tier-0 vibrancy (Wave 3): Icon + EmptyState state catalog (ADR-010/Q8)
+  "decorative",
+  "with-title",
+  "with-icon",
+  "with-action",
 ];
 
 // ─── Main ────────────────────────────────────────────────────────────────────
