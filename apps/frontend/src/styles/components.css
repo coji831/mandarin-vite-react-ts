@@ -23,7 +23,7 @@
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: var(--fw-500);
   font-family: inherit;
   background-color: var(--surface-dark-alt);
   cursor: pointer;
@@ -48,7 +48,7 @@
   font-size: var(--font-xl);
   cursor: pointer;
   transition: all var(--transition-fast);
-  line-height: 1;
+  line-height: var(--lh-1);
 }
 .btn-close:hover {
   background: var(--surface-light-10);
@@ -170,7 +170,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal);
 }
 
 /* ═══════════════════════════════════════════════
@@ -183,7 +183,7 @@
 .progress-text {
   color: var(--text-primary);
   font-size: var(--font-sm);
-  font-weight: 500;
+  font-weight: var(--fw-500);
 }
 .progress-bar {
   height: 10px;
@@ -194,7 +194,7 @@
 .progress-fill {
   height: 100%;
   background-color: var(--color-success);
-  transition: width 0.3s ease-in-out;
+  transition: width var(--transition-normal);
   border-radius: 6px;
 }
 /* Celebration state for 100% completion */
@@ -228,9 +228,10 @@
    ═══════════════════════════════════════════════ */
 .card-raised {
   background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--surface-border-subtle);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
+  box-shadow: var(--shadow-elevated-2);
 }
 
 /* ═══════════════════════════════════════════════

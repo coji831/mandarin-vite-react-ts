@@ -15,6 +15,17 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
     backgrounds: { default: "dark" },
+    // Token-reference page: renders EVERY color token — including deliberately
+    // low-contrast tiers (e.g. --text-subtle at 0.2 white) — as swatches + text
+    // samples, so color-contrast can NEVER pass by construction. Disable ONLY
+    // color-contrast for this reference story (NOT a blanket todo): every other
+    // axe wcag22a/aa rule still runs hard. Documented in the a11y sweep report.
+    a11y: {
+      test: "error",
+      config: {
+        rules: [{ id: "color-contrast", enabled: false }],
+      },
+    },
   },
 };
 

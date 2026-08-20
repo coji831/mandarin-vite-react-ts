@@ -41,6 +41,7 @@ tokens:
     surface:
       dark: ["#262321", "#1C1917", "#2D2A27"]
       border: "#3D3935"
+      border-subtle: "rgba(255,255,255,0.08)" # hairline for elevated surfaces (cards, modal, popovers); --surface-border stays for structural dividers
       light:
         [
           "rgba(255,255,255,0.03)",
@@ -52,11 +53,15 @@ tokens:
       overlay: "rgba(38,35,33,0.3)"
       hover: "rgba(61,57,53,0.5)"
     text:
+      # Text role tiers (Q4 ADR): [primary, secondary, tertiary, muted, subtle, ghost]
+      #   primary/secondary = body text (≥4.5:1) · muted = information-bearing meta (≥4.5:1)
+      #   subtle/ghost = decorative-only + large (never placeholder text — SC 1.4.3 requires ≥4.5:1)
+      #   muted = 0.6 white on --surface-dark (#262321) ≈ 6.5:1 — meets ≥4.5:1
       [
         "rgba(255,255,255,0.95)",
         "rgba(255,255,255,0.85)",
         "rgba(255,255,255,0.7)",
-        "rgba(255,255,255,0.5)",
+        "rgba(255,255,255,0.6)",
         "rgba(255,255,255,0.2)",
         "rgba(255,255,255,0.05)",
       ]
@@ -113,11 +118,42 @@ tokens:
     md: "0 4px 12px rgba(245,158,11,0.2)"
     lg: "0 6px 20px rgba(245,158,11,0.25)"
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
+    elevated-1: "0 1px 2px rgba(0,0,0,0.3)" # neutral — resting Browse cards (crisp 1px edge)
+    elevated-2: "0 4px 12px rgba(0,0,0,0.35)" # neutral — popovers / dropdowns / box-elevated / card-raised
+    elevated-3: "0 12px 32px rgba(0,0,0,0.45)" # neutral — modal surface / future toasts
   transitions:
     fast: "0.2s ease"
     normal: "0.3s ease"
+    slow: "0.4s ease" # toggle-switch knob slide — deliberately slower, visible flip affordance
+  z-index: # --z-* ladder — stacking order (ascending): content < chrome < popover < modal < toast
+    content: 1 # base content layer
+    chrome: 10 # app chrome (top bar / side nav)
+    popover: 100 # popovers / dropdowns / menus
+    modal: 200 # modal overlays
+    toast: 300 # toasts (highest)
   typography:
     sizes: ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "40px", "48px"]
+    display-tiers-fluid: # --font-3xl..6xl → Utopia-style clamp() (Q5 ADR) — names stable, values fluid
+      font-3xl: "clamp(1.75rem, 1.25rem + 1vw, 2rem)" # 28px → 32px
+      font-4xl: "clamp(2rem, 1.5rem + 1.25vw, 2.5rem)" # 32px → 40px
+      font-5xl: "clamp(2.5rem, 1.75rem + 1.75vw, 3rem)" # 40px → 48px
+      font-6xl: "clamp(3rem, 2.25rem + 2vw, 3.75rem)" # 48px → 60px
+    line-heights: # --lh-* ladder (Q5) — wired into .lh-* utilities
+      lh-1: "1" # legacy leading-none tier
+      lh-tight: "1.15"
+      lh-normal: "1.5" # body default
+      lh-relaxed: "1.6" # long-form prose
+      lh-display: "1.08" # display headings
+      line-height-display: "var(--lh-display)" # alias
+      lh-1-3: "1.3" # legacy tier (HubIdentityCard meaning)
+      lh-1-4: "1.4" # legacy tier (ReviewCard full answer)
+    font-weights: # --fw-* ladder (Wave-2) — wired into .fw-* utilities
+      fw-400: "400" # body / default
+      fw-500: "500" # medium emphasis
+      fw-600: "600" # semibold — buttons, badges, labels
+      fw-700: "700" # bold — display emphasis
+      fw-800: "800" # extrabold — hero display
+    tracking-tight: "-0.02em" # display headings (Latin only — never on hanzi glyphs)
   gradients:
     primary: "linear-gradient(135deg, #B45309 0%, #92400E 100%)"
     success: "linear-gradient(90deg, #34D399 0%, #059669 100%)"
@@ -196,6 +232,9 @@ components:
   - name: "AppTopBar"
     file: "apps/frontend/src/shared/components/AppTopBar/AppTopBar.tsx"
     description: "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu), no feature import."
+  - name: "PageHeader"
+    file: "apps/frontend/src/shared/components/PageHeader/PageHeader.tsx"
+    description: "Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background."
   - name: "TopNav"
     file: "apps/frontend/src/shared/components/TopNav/TopNav.tsx"
     description: "Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned since Story 22.4 — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)"
@@ -246,9 +285,15 @@ components:
     description: "Character chips for a word's constituent characters (glyph + pinyin + meaning) — delegates to the shared Chip component (interactive, surface variant) and opens the Character Detail Hub via openHub."
 ---
 
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-20
 
 ## Changelog
+
+- **2026-08-20** — Audit-rule promotion: `z-index-raw` + `elevation-no-hairline` moved from advisory to **machine-enforced errors** in `tools/design-audit.mjs`; noted in § Z-Index Ladder and § Elevation Usage Ladder & Amber Restriction.
+
+- **2026-08-18** — Wave-3 (Icon FE + dashboard demo reconciliation): § Icon System status → **implemented** (shared `Icon` component + `lucide-react ^1.32.0` in `apps/frontend/package.json`); Typography Role Map `h1`/`h2` rows aligned to shipped usage (`h1 = font-2xl/3xl`, `4xl/5xl` reserved hero; `h2 = font-lg/xl`); Global Motion Rule now lists both documented exceptions (Radical/Phonetic Trees + Dashboard quick-tile hover-lift) and adds `--transition-slow` (0.4s — ToggleSwitch) to the motion-resources list.
+
+- **2026-08-18** — Wave 1b-1 (design-system docs layer; owner-voted 2026-08-18): added § Color Roles (semantic role model + text-role tiers + ≤1-saturated-fill budget), § Typography Role Map (display→micro, ADR-009), § Z-Index Ladder, § Icon System (ADR-010 contract), § Spacing & Nesting; documented the new `.lh-*` / `.fw-*` / `.font-3xl..6xl` utilities; formalized the elevation-no-hairline rule; ratified ADR-007–010 (see `docs/guides/design/design-reasoning.md` + `.github/decision-log.json`).
 
 - **2026-08-05** — Story 22.4 review fixes (N1/N4): `UserMenu`/`AppTopBar` are now auth-free (auth threaded via props from `AppLayout`); removed dead `SideNav` `onNavigate`/`mobile` props and `AppTopBar` `leading` slot; popover is a disclosure-style `role="list"` (N6).
 - **2026-08-05** — Story 22.4: added `UserMenu` + `AppTopBar` to the `components:` list (single account control + slim top bar); updated `SideNav` (nav-only, phase-gated Learn group + collapsed rail) and flagged `TopNav` as orphaned (Learn tabs moved to the sidebar Learn group).
@@ -259,15 +304,155 @@ components:
 
 ---
 
+## Color Roles
+
+PinyinPal uses a **semantic role model** (Carbon-inspired): a color is assigned a _role_ before it is assigned a value, and every role declares which surfaces it may pair with. The role taxonomy:
+
+| Role               | Tokens                                                                     | Allowed on                                           |
+| ------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Surface**        | `--surface-dark`, `--surface-light-*`, `--surface-hover`, `--overlay-dark` | background layers                                    |
+| **Border**         | `--surface-border` (structural), `--surface-border-subtle` (hairline)      | dividers / elevated-surface edges                    |
+| **Text**           | `--text-primary/secondary/muted/subtle/ghost` (role tiers below)           | text on sanctioned surfaces                          |
+| **Brand-Accent**   | `--color-primary-*`, `--gradient-primary` (amber)                          | CTAs, active states, emphasis — sparingly            |
+| **Status**         | `--success`/`--error`/`--warning`/`--info`/`--neutral` (+ `--tone-1..5`)   | status indicators only — never decoration            |
+| **XP-Celebration** | `--xp-*` + `--shadow-xp-glow`                                              | completion/celebration only (see Global Motion Rule) |
+
+### Text-role tiers (ADR-008 / Q4)
+
+Contrast is a **token-pair** property: each text role declares a minimum contrast against `--surface-dark` (#262321), not a bare opacity.
+
+| Tier        | Token              | Value                    | Contrast role                                                      |
+| ----------- | ------------------ | ------------------------ | ------------------------------------------------------------------ |
+| `primary`   | `--text-primary`   | `rgba(255,255,255,0.95)` | body text — **≥4.5:1**                                             |
+| `secondary` | `--text-secondary` | `rgba(255,255,255,0.85)` | body text — **≥4.5:1**                                             |
+| `muted`     | `--text-muted`     | `rgba(255,255,255,0.6)`  | information-bearing meta — **≥4.5:1** (≈6.5:1 on `--surface-dark`) |
+| `subtle`    | `--text-subtle`    | `rgba(255,255,255,0.2)`  | **decorative-only + large** — never placeholder text               |
+| `ghost`     | `--text-ghost`     | `rgba(255,255,255,0.05)` | **decorative-only + large** — never placeholder text               |
+
+Rules:
+
+- **`primary`/`secondary`/`muted` are the only tiers for information-bearing text** (WCAG 2.2 SC 1.4.3 — small text ≥4.5:1).
+- **`subtle`/`ghost` are decorative-only** and exempt _by role_ — they must never carry meaning. **Placeholder text must use `muted` (≥4.5:1)** — SC 1.4.3 explicitly covers placeholders.
+- **Allowed-pair discipline:** text roles pair only with sanctioned surfaces; status colors signal status, never decoration; a token's role determines its usage, not its hue.
+
+### Saturation budget — ≤1 filled saturated element per viewport (ADR-007/010 / Q10)
+
+The amber budget (Elevation section, A.3) extends to **all saturated fills** (amber, blue, green, purple, status fills): **at most one filled, saturated element per viewport**. Advisory + rubric criterion today (hardens later). Saturated _borders_ and _text accents_ are exempt; emphasis comes from the neutral elevation ladder + a single concentrated accent, never from stacking saturated fills.
+
+## Typography Role Map
+
+One shared role map (consolidating the per-feature type tables in `radicals`/`review`/`quiz` `docs/design.md` — ADR-009). Every type role maps to a `--font-*` size + a `--lh-*` line-height + a `--fw-*` weight; **no raw `font-size`/`line-height`/`font-weight` literals** in component CSS.
+
+| Role      | Size                           | Line-height    | Weight         | Notes                                                                                                                                                                            |
+| --------- | ------------------------------ | -------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| display   | `--font-6xl` (fluid `clamp()`) | `--lh-display` | `--fw-800`     | hero — `--tracking-tight` on Latin only                                                                                                                                          |
+| h1        | `--font-2xl/3xl`               | `--lh-display` | `--fw-600/700` | page title (shipped: `font-3xl fw-700` PageHeader; `font-2xl fw-600` PhoneticClusters/Profile/Settings) — `--tracking-tight` on Latin only; `4xl/5xl` reserved for hero surfaces |
+| h2        | `--font-lg` / `--font-xl`      | `--lh-tight`   | `--fw-600/700` | section heading (e.g. Dashboard sections `font-lg fw-600`)                                                                                                                       |
+| h3        | `--font-2xl`                   | `--lh-tight`   | `--fw-600`     | group heading                                                                                                                                                                    |
+| body      | `--font-md`                    | `--lh-normal`  | `--fw-400`     | default (matches `:root`)                                                                                                                                                        |
+| meta      | `--font-sm` / `--font-xs`      | `--lh-normal`  | `--fw-400/500` | information-bearing — `--text-muted`                                                                                                                                             |
+| micro     | `--font-xs`                    | `--lh-normal`  | `--fw-400`     | caption — `--text-subtle` (decorative-only)                                                                                                                                      |
+| long-form | `--font-md`                    | `--lh-relaxed` | `--fw-400`     | prose passages                                                                                                                                                                   |
+
+Notes:
+
+- **Fluid display tiers** (`--font-3xl..6xl`, `clamp()`) — names are stable, values scale with the viewport (Utopia-style). `h1` uses `--font-2xl/3xl`; `4xl/5xl` are reserved for hero surfaces; body/meta/micro use the fixed `--font-xs..2xl` steps.
+- **`--lh-display` / `--line-height-display`** (1.08) are the display-heading line-height (alias). Legacy tiers `--lh-1` (1) / `--lh-1-3` (1.3) / `--lh-1-4` (1.4) are retained for existing surfaces only — not for new work.
+- **`--fw-*` semantics (ADR-009):** `fw-800` = hero display · `fw-700` = display emphasis · `fw-600` = semibold (buttons, badges, labels) · `fw-500` = medium · `fw-400` = body/default.
+- **`--tracking-tight`** (−0.02em) applies to Latin display headings only — never on hanzi glyphs.
+
+## Z-Index Ladder
+
+Stacking order is a **named ladder**, never raw values:
+
+| Layer   | Token         | Value | Used for                        |
+| ------- | ------------- | ----- | ------------------------------- |
+| content | `--z-content` | 1     | base content layer              |
+| chrome  | `--z-chrome`  | 10    | app chrome (top bar / side nav) |
+| popover | `--z-popover` | 100   | popovers / dropdowns / menus    |
+| modal   | `--z-modal`   | 200   | modal overlays                  |
+| toast   | `--z-toast`   | 300   | toasts (highest)                |
+
+**Rule:** raw `z-index` is **forbidden** in component CSS — use the `--z-*` ladder only. Pair the ladder with stacking-context discipline (`min-width: 0` on flex/grid children, explicit `isolation` where layers meet).
+
+> **Machine-enforced (error):** `z-index-raw` in `tools/design-audit.mjs` reports any raw `z-index` literal as an **error** — the ladder is enforced by the audit, not just convention.
+
+## Icon System
+
+**Status:** Implemented (2026-08-18, Wave-3) — the shared `Icon` component and its `lucide-react` dependency (`^1.32.0` in `apps/frontend/package.json`) are in the repo; emoji remains the interim icon set only on surfaces not yet covered by `Icon`.
+
+The icon system is a **Lucide-wrapped `Icon` shared component** (`apps/frontend/src/shared/components/Icon/`). Contract:
+
+| Property   | Contract                                                                        |
+| ---------- | ------------------------------------------------------------------------------- |
+| Source     | Lucide (ISC license, tree-shakable); record the icon source in DESIGN.md/README |
+| Rendering  | `currentColor` — inherits surrounding text color, never a hardcoded fill        |
+| Stroke     | 1.5px stroke (Lucide default)                                                   |
+| Size       | 16–24px                                                                         |
+| Decorative | `aria-hidden="true"` — purely visual, no meaning                                |
+| Meaningful | `role="img"` + accessible `title` — carries meaning (WCAG 2.2)                  |
+
+**Emoji rule (ADR-010 / Q8):** emoji is **forbidden** as an icon once a surface is covered by the `Icon` component (nav, recurring actions). Migrate surface-by-surface; a surface is covered → its emoji usage must be replaced in the same change.
+
+## Spacing & Nesting
+
+Spacing runs on the 8px grid (`--space-xs` 8 · `--space-sm` 12 · `--space-md` 16 · `--space-lg` 24 · `--space-xl` 32 · `--space-2xl` 40). **Proximity = hierarchy:** spacing tightens as you nest deeper — the outer shell is the roomiest, the innermost chip the tightest.
+
+| Level         | Padding       | Example                        |
+| ------------- | ------------- | ------------------------------ |
+| Outer shell   | `p-xl` (32px) | page/section container         |
+| Inner section | `p-lg` (24px) | grouped block within the shell |
+| Card          | `p-md` (16px) | `Card` / `Box` surfaces        |
+| Chip          | `p-xs` (8px)  | `Chip`, `Badge`, inline tokens |
+
+Rules:
+
+- **Nesting tightens:** a child's padding/gap must be ≤ its parent's — a child may never be roomier than its parent.
+- **Child gap must not exceed parent gap** (nesting-inversion advisory).
+- **12px half-step (`--space-sm`) is sanctioned for dense controls only** (compact rows, filter bars, inline clusters) — not a general spacing step.
+- Prefer `.gap-*` / `.p-*` / `.px-*` / `.py-*` utilities over inline `gap:`/`padding:` (design-audit enforces token usage).
+
+---
+
+## Elevation Usage Ladder & Amber Restriction
+
+**Policy (A.2/A.3 — precision-minimal refinement):** the amber `--shadow-md/lg` + `--shadow-xp-glow` are used **only** for (a) hover-lift feedback and (b) XP-completion celebration. All **resting** elevation uses the new neutral family:
+
+| Surface                                                                                  | Elevation                                    | Hairline?                    |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------- |
+| Browse cards (Box `dark`/`card`, quick-access tiles, focal cards)                        | `--shadow-elevated-1`                        | ✅ `--surface-border-subtle` |
+| UserMenu popover, Dropdown menu, WordPopover, `box-elevated`, `card-raised`              | `--shadow-elevated-2`                        | ✅                           |
+| Modal surface, future toasts                                                             | `--shadow-elevated-3`                        | ✅                           |
+| Focus-task surfaces (Review/Quiz task cards)                                             | **none** (flat — ADR-004)                    | ✅ `--surface-border-subtle` |
+| Hover-lift (Card/`content-card`/quick tiles/rating/audio/`.hover-lift`/`.hover-lift-md`) | amber `--shadow-md/lg`                       | —                            |
+| XP completion (`.progress-fill[100%]`, `ExampleCharCell`)                                | amber `--shadow-md` / `--shadow-xp-glow`     | —                            |
+| `--shadow-sm`                                                                            | neutral (retained — compat; `hover-lift-sm`) | —                            |
+
+**Amber-restriction rule (machine-enforced):** every **resting** amber-shadow usage is forbidden; only hover/XP states may carry the amber family. The complete redefinition list (Phase A) is recorded in `docs/guides/design/design-reasoning.md` ADR-007.
+
+> **Machine-enforced (error):** `resting-amber-shadow` in `tools/design-audit.mjs` reports the amber `--shadow-md/lg`/`--shadow-xp-glow` family in any rule that isn't a `:hover` / `.hover-lift*` / XP-completion class as an **error** — the Amber Restriction is enforced by the audit, not just policy.
+
+**Elevation-no-hairline rule (ADR-007):** every elevated surface in the rows above (Browse cards, popovers/dropdowns, modal/toasts) **must carry `--surface-border-subtle`** — an elevation token without its hairline border is a violation. Focus-task flat surfaces (ADR-004) also carry the hairline to separate the task card from the canvas.
+
+> **Machine-enforced (error):** `elevation-no-hairline` in `tools/design-audit.mjs` reports an elevated surface without `--surface-border-subtle` in the same rule as an **error** — the hairline rule is enforced by the audit, not just convention.
+
 ## Utility Classes Added
 
-| Class        | Purpose                          |
-| ------------ | -------------------------------- |
-| `.mt-xs`     | `margin-top: var(--space-xs)`    |
-| `.mt-md`     | `margin-top: var(--space-md)`    |
-| `.mb-xl`     | `margin-bottom: var(--space-xl)` |
-| `.max-w-320` | `max-width: 320px`               |
-| `.max-w-450` | `max-width: 450px`               |
+| Class                                                                                        | Purpose                                                                                                     |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `.mt-xs`                                                                                     | `margin-top: var(--space-xs)`                                                                               |
+| `.mt-md`                                                                                     | `margin-top: var(--space-md)`                                                                               |
+| `.mb-xl`                                                                                     | `margin-bottom: var(--space-xl)`                                                                            |
+| `.max-w-320`                                                                                 | `max-width: 320px`                                                                                          |
+| `.max-w-450`                                                                                 | `max-width: 450px`                                                                                          |
+| `.shadow-elevated-1`                                                                         | `box-shadow: var(--shadow-elevated-1)`                                                                      |
+| `.shadow-elevated-2`                                                                         | `box-shadow: var(--shadow-elevated-2)`                                                                      |
+| `.shadow-elevated-3`                                                                         | `box-shadow: var(--shadow-elevated-3)`                                                                      |
+| `.border-surface-subtle`                                                                     | `border-color: var(--surface-border-subtle)`                                                                |
+| `.tracking-tight`                                                                            | `letter-spacing: var(--tracking-tight)`                                                                     |
+| `.lh-1` / `.lh-tight` / `.lh-normal` / `.lh-1-3` / `.lh-1-4` / `.lh-relaxed` / `.lh-display` | `line-height: var(--lh-*)` ladder (ADR-009)                                                                 |
+| `.fw-400` … `.fw-800`                                                                        | `font-weight: var(--fw-*)` ladder — 400 body / 500 medium / 600 semibold / 700 display / 800 hero (ADR-009) |
+| `.font-3xl` … `.font-6xl`                                                                    | `font-size: var(--font-*)` fluid display tiers (`clamp()`) — ADR-009                                        |
 
 ---
 
@@ -276,9 +461,9 @@ components:
 **No animation, transition, transform, or pseudo-element motion in feature/component CSS** unless it is one of:
 
 1. A **shared component variant** — interaction styles owned by shared components (`Button`, `Chip`, etc.) and their CSS.
-2. The **single documented exception** — the Radical / Phonetic Trees expand/collapse animation (next section).
+2. The **two documented exceptions** — (a) the Radical / Phonetic Trees expand/collapse animation (next section) and (b) the Dashboard quick-tile hover-lift (`.dashboard-quick-btn.btn-tag:hover` — `translateY(-2px)` + amber `--shadow-md`, spec D.6; being migrated to the shared `.hover-lift` utility).
 
-Concretely: never add `transition:`, `animation:`, `@keyframes`, `transform:`, or `::before`/`::after` motion to feature-local CSS. The only motion resources available are `--transition-fast` (0.2s ease) and `--transition-normal` (0.3s ease) plus the `transition-transform` / `transition-width` utilities in `animations.css` — reserved for shared variants and the tree exception.
+Concretely: never add `transition:`, `animation:`, `@keyframes`, `transform:`, or `::before`/`::after` motion to feature-local CSS. The only motion resources available are `--transition-fast` (0.2s ease), `--transition-normal` (0.3s ease), and `--transition-slow` (0.4s ease — ToggleSwitch knob slide) plus the `transition-transform` / `transition-width` utilities in `animations.css` — reserved for shared variants and the two documented exceptions below.
 
 ---
 
@@ -297,10 +482,11 @@ feature-local tree components:
 ### Why this is an EXCEPTION to the no-animation rule
 
 Tree expand/collapse and hover affordances **require CSS transitions** to read as
-tree structure. These are the single documented exception to the global
-no-animation rule, scoped to the `.tree-root-node__*` and
-`.phonetic-family-node__*` classes only. Everything else (tokens, spacing,
-typography) still uses global utilities and DESIGN.md tokens.
+tree structure. These are one of the two documented exceptions to the global
+no-animation rule (the other is the Dashboard quick-tile hover-lift above),
+scoped to the `.tree-root-node__*` and `.phonetic-family-node__*` classes only.
+Everything else (tokens, spacing, typography) still uses global utilities and
+DESIGN.md tokens.
 
 ### Special styling (component-local, token-based)
 
