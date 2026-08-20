@@ -1,0 +1,52 @@
+# Chromatic Visual Regression (Wave 4 — Q1/Q7 wiring)
+# Every story is snapshotted against the accepted "last known good" baseline on
+# each push; the per-diff accept/deny decision IS the human manual-test gate
+# (see docs/guides/testing/visual-qa.md). The Visual Tests addon
+# (@chromatic-com/storybook, already registered in .storybook/main.ts) powers
+# local accept/deny once the project is linked.
+#
+# NOTE — `on: push` (NOT `pull_request`): TurboSnap (`onlyChanged`) is
+# incompatible with the `pull_request` trigger, and it unlocks only after 10
+# successful builds — see the `onlyChanged: false` comment below. The repo's
+# existing `storybook-checks.yml` keeps its `pull_request` trigger untouched.
+#
+# OWNER ACTIVATION (blocking — this workflow is inert until done):
+#   1. Create the project at https://www.chromatic.com (free tier: 5,000 billed
+#      snapshots/mo; a11y scans included in Free).
+#   2. Add the project token as a GitHub Actions secret named
+#      `CHROMATIC_PROJECT_TOKEN` (repo Settings → Secrets and variables →
+#      Actions). Do not commit the token anywhere.
+#   3. Push once → the first build becomes the baseline. Accept/deny each diff
+#      from the build UI (or locally via the Visual Tests addon once linked).
+
+name: Chromatic
+
+on:
+  push:
+    branches:
+      - main
+      - "epic-*"
+      - "feature/**"
+      - "fix/**"
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - name: Build Storybook
+        run: npm run build-storybook --workspace=@mandarin/frontend
+      - name: Chromatic (visual regression)
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          workingDir: apps/frontend
+          buildScriptName: build-storybook
+          exitZeroOnChanges: true
+          # TurboSnap — flip to true after 10 green builds (needs `on: push`).
+          onlyChanged: false

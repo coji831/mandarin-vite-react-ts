@@ -27,7 +27,11 @@
     "design-audit": "node tools/design-audit.mjs",
     "design-audit:feature": "node tools/design-audit.mjs",
     "check:registry-stories": "node scripts/check-registry-stories.mjs",
+    "check:page-inventory": "node scripts/check-page-inventory.mjs",
     "check:module-boundaries": "node scripts/check-module-boundaries.mjs",
+    "generate:system-map": "node scripts/generate-system-map.mjs --emit",
+    "check:system-map": "node scripts/generate-system-map.mjs --check",
+    "check:doc-links": "node scripts/check-doc-links.mjs",
     "logs:capture": "node scripts/capture-log.mjs",
     "logs:prune": "node scripts/capture-log.mjs --prune"
   },
@@ -46,6 +50,7 @@
     "@google/design.md": "^0.3.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "chromatic": "^16.10.1",
     "jsdom": "^24.0.0",
     "prettier": "^3.9.4",
     "typescript": "^5.9.3"

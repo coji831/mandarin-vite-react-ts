@@ -82,6 +82,14 @@ const preview: Preview = {
   ],
   loaders: [mswLoader],
   parameters: {
+    // Chromatic visual regression (Wave 4 — Q1/Q7): pixel-diff sensitivity,
+    // 0 = most accurate, 1 = least. ~0.1 keeps the hairline
+    // `--surface-border-subtle` (0.08 white) from generating noise. Tune only
+    // if real drift produces false positives. Per-story override is available
+    // via `parameters.chromatic.diffThreshold` in any story.
+    chromatic: {
+      diffThreshold: 0.1,
+    },
     // Default phase-gate handler: AppLayout now consumes `usePhaseGate()` to
     // lock the sidebar Learn group, so every layout story resolves the phase
     // gate as "all unlocked" (phase 4) unless a story overrides it.
@@ -119,7 +127,17 @@ const preview: Preview = {
       },
     },
     a11y: {
+      // A11y gate (Wave-2, Q3 decision): the vitest `storybook` project fails on
+      // WCAG 2.2 A/AA violations. The gate is now fully hard — no story uses
+      // `parameters.a11y.test: "todo"` (all previously-marked violations were
+      // fixed in the 2026-08-20 a11y sweep). The Colors token-reference story
+      // disables ONLY color-contrast via a targeted per-story config (all other
+      // wcag22a/aa rules still run).
+      test: "error",
       config: {
+        // axe runOnly — WCAG 2.2 A + AA rule tags (color-contrast is a wcag22aa
+        // rule; kept explicitly enabled below).
+        runOnly: { type: "tag", values: ["wcag22a", "wcag22aa"] },
         rules: [{ id: "color-contrast", enabled: true }],
       },
     },

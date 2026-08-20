@@ -17,6 +17,7 @@
     "test:ui": "vitest --ui",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --exit-on-upload-errors --exit-zero-on-changes",
     "test-storybook": "vitest run --project storybook"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "@mandarin/shared-utils": "*",
     "axios": "^1.18.0",
     "hanzi-writer": "^3.7.3",
+    "lucide-react": "^1.32.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.8.2",
@@ -35,7 +37,7 @@
     "@eslint/js": "^9.25.1",
     "@storybook/addon-a11y": "^10.4.6",
     "@storybook/addon-docs": "^10.4.6",
-    "@storybook/addon-mcp": "^0.6.0",
+    "@storybook/addon-mcp": "^0.7.0",
     "@storybook/addon-vitest": "^10.4.6",
     "@storybook/react-vite": "^10.4.6",
     "@testing-library/jest-dom": "^6.9.1",

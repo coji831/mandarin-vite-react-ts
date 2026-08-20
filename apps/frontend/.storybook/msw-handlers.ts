@@ -444,6 +444,10 @@ export const mswHandlers = {
         const key = `phase${phase}` as keyof typeof PHASE_GATE_BODIES;
         return HttpResponse.json(PHASE_GATE_BODIES[key], { status: 200 });
       }),
+    phaseGateError: () =>
+      http.get(`${API_BASE}/progression/phase-gate`, () =>
+        HttpResponse.json({ error: "Failed to load phase gate" }, { status: 500 }),
+      ),
     radicalProgress: {
       default: () =>
         http.get(`${API_BASE}/progression/radical-progress`, () =>

@@ -1,0 +1,956 @@
+{
+  "auth-form-error": [
+    "apps/frontend/src/features/auth/components/LoginForm.tsx",
+    "apps/frontend/src/features/auth/components/RegisterForm.tsx"
+  ],
+  "transition-normal": [
+    "apps/frontend/src/features/auth/components/LoginForm.tsx",
+    "apps/frontend/src/features/auth/components/RegisterForm.tsx"
+  ],
+  "hub-cardinal__center": [
+    "apps/frontend/src/features/character-hub/components/CharacterHub/CharacterHub.tsx"
+  ],
+  "hub-center": [
+    "apps/frontend/src/features/character-hub/components/HubCharacterCard/HubCharacterCard.tsx"
+  ],
+  "hub-identity__header": [
+    "apps/frontend/src/features/character-hub/components/HubIdentityCard/HubIdentityCard.tsx"
+  ],
+  "hub-identity__glyph": [
+    "apps/frontend/src/features/character-hub/components/HubIdentityCard/HubIdentityCard.tsx"
+  ],
+  "hub-identity__badges": [
+    "apps/frontend/src/features/character-hub/components/HubIdentityCard/HubIdentityCard.tsx"
+  ],
+  "hub-identity__etymology": [
+    "apps/frontend/src/features/character-hub/components/HubIdentityCard/HubIdentityCard.tsx"
+  ],
+  "hub-radical-section": [
+    "apps/frontend/src/features/character-hub/components/HubRadicalSection/HubRadicalSection.tsx"
+  ],
+  "hub-radical-section__list": [
+    "apps/frontend/src/features/character-hub/components/HubRadicalSection/HubRadicalSection.tsx"
+  ],
+  "hub-radical-section__glyph": [
+    "apps/frontend/src/features/character-hub/components/HubRadicalSection/HubRadicalSection.tsx"
+  ],
+  "hub-radical-section__meaning": [
+    "apps/frontend/src/features/character-hub/components/HubRadicalSection/HubRadicalSection.tsx"
+  ],
+  "hub-readings": [
+    "apps/frontend/src/features/character-hub/components/HubReadings/HubReadings.tsx"
+  ],
+  "hub-reading-left": [
+    "apps/frontend/src/features/character-hub/components/HubReadings/HubReadings.tsx"
+  ],
+  "items-start": [
+    "apps/frontend/src/features/character-hub/components/HubReadings/HubReadings.tsx",
+    "apps/frontend/src/shared/components/PageHeader/PageHeader.tsx"
+  ],
+  "chengyu-card__meta": [
+    "apps/frontend/src/features/chengyu/components/ChengyuCard.tsx"
+  ],
+  "chengyu-hub__example": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__example-pinyin": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__example-english": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__header": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__badges": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__section": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__section-title": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-hub__related": [
+    "apps/frontend/src/features/chengyu/components/ChengyuHub.tsx"
+  ],
+  "chengyu-list__empty": [
+    "apps/frontend/src/features/chengyu/components/ChengyuList.tsx"
+  ],
+  "chengyu-pagination__controls": [
+    "apps/frontend/src/features/chengyu/components/ChengyuPagination.tsx"
+  ],
+  "dashboard-empty-state": [
+    "apps/frontend/src/features/dashboard/components/DashboardWelcome.tsx"
+  ],
+  "anim-speed-label": [
+    "apps/frontend/src/features/foundations/components/animations/AnimationControls.tsx"
+  ],
+  "stroke-anim-card": [
+    "apps/frontend/src/features/foundations/components/animations/AnimationPanel.tsx"
+  ],
+  "stroke-anim-suggested": [
+    "apps/frontend/src/features/foundations/components/animations/SuggestionPanel.tsx"
+  ],
+  "stroke-anim-suggested-label": [
+    "apps/frontend/src/features/foundations/components/animations/SuggestionPanel.tsx"
+  ],
+  "pictograph-gallery__detail": [
+    "apps/frontend/src/features/foundations/components/PictographGallery.tsx"
+  ],
+  "pinyin-combination-empty": [
+    "apps/frontend/src/features/foundations/components/pinyin/CombinationDisplay.tsx"
+  ],
+  "pinyin-combination-display": [
+    "apps/frontend/src/features/foundations/components/pinyin/CombinationDisplay.tsx"
+  ],
+  "pinyin-combination-heading": [
+    "apps/frontend/src/features/foundations/components/pinyin/CombinationDisplay.tsx"
+  ],
+  "pinyin-combination-row": [
+    "apps/frontend/src/features/foundations/components/pinyin/CombinationDisplay.tsx"
+  ],
+  "pinyin-detail-header": [
+    "apps/frontend/src/features/foundations/components/pinyin/DetailPanel.tsx"
+  ],
+  "pinyin-detail-main": [
+    "apps/frontend/src/features/foundations/components/pinyin/DetailPanel.tsx"
+  ],
+  "pinyin-detail-char-link": [
+    "apps/frontend/src/features/foundations/components/pinyin/DetailPanel.tsx"
+  ],
+  "gap-4px": [
+    "apps/frontend/src/features/foundations/components/pinyin/DetailPanel.tsx",
+    "apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx",
+    "apps/frontend/src/pages/learn/foundations/PinyinTab.tsx",
+    "apps/frontend/src/pages/learn/foundations/TonesTab.tsx",
+    "apps/frontend/src/shared/components/Card/Card.tsx"
+  ],
+  "pinyin-detail-actions": [
+    "apps/frontend/src/features/foundations/components/pinyin/DetailPanel.tsx"
+  ],
+  "pinyin-finals-group": [
+    "apps/frontend/src/features/foundations/components/pinyin/FinalsGrid.tsx"
+  ],
+  "pinyin-finals-group-label": [
+    "apps/frontend/src/features/foundations/components/pinyin/FinalsGrid.tsx"
+  ],
+  "pinyin-cell-pinyin": [
+    "apps/frontend/src/features/foundations/components/pinyin/PinyinCell.tsx"
+  ],
+  "pinyin-cell-ipa": [
+    "apps/frontend/src/features/foundations/components/pinyin/PinyinCell.tsx"
+  ],
+  "pinyin-tone-vowel": [
+    "apps/frontend/src/features/foundations/components/pinyin/ToneCell.tsx"
+  ],
+  "foundations-progress-loading": [
+    "apps/frontend/src/features/foundations/components/shared/FoundationsProgressBar.tsx"
+  ],
+  "foundations-progress-bar": [
+    "apps/frontend/src/features/foundations/components/shared/FoundationsProgressBar.tsx"
+  ],
+  "foundations-progress-text": [
+    "apps/frontend/src/features/foundations/components/shared/FoundationsProgressBar.tsx"
+  ],
+  "stroke-grid": [
+    "apps/frontend/src/features/foundations/components/strokes/BasicStrokesGrid.tsx",
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-pinyin": [
+    "apps/frontend/src/features/foundations/components/strokes/BasicStrokesGrid.tsx",
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-meaning": [
+    "apps/frontend/src/features/foundations/components/strokes/BasicStrokesGrid.tsx",
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-anim-breakdown": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeBreakdown.tsx"
+  ],
+  "stroke-anim-breakdown-label": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeBreakdown.tsx"
+  ],
+  "stroke-ref-heading": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-ref-subtitle": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-ref-header": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-ref-suggested": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-ref-suggested-char": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-ref-tip": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeReferenceContent.tsx"
+  ],
+  "stroke-anim-rules": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesDisplay.tsx"
+  ],
+  "stroke-anim-rules-label": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesDisplay.tsx"
+  ],
+  "stroke-anim-rules-value": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesDisplay.tsx"
+  ],
+  "stroke-rules-container": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "stroke-rule-card": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "stroke-rule-number": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "stroke-rule-name": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "stroke-rule-example": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "stroke-rule-desc": [
+    "apps/frontend/src/features/foundations/components/strokes/StrokeRulesList.tsx"
+  ],
+  "mt-sm": [
+    "apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx",
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "mt-4px": [
+    "apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx"
+  ],
+  "mb-xs": [
+    "apps/frontend/src/features/foundations/components/tones/SandhiDrill.tsx"
+  ],
+  "tone-rules-empty": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rules": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-icon": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-character": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-pinyin-inline": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-title": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-arrow": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-rule-description": [
+    "apps/frontend/src/features/foundations/components/tones/ToneChangeRules.tsx"
+  ],
+  "tone-contour-mark": [
+    "apps/frontend/src/features/foundations/components/tones/ToneContourCard.tsx"
+  ],
+  "tone-contour-symbol": [
+    "apps/frontend/src/features/foundations/components/tones/ToneContourCard.tsx"
+  ],
+  "tone-contour-description": [
+    "apps/frontend/src/features/foundations/components/tones/ToneContourCard.tsx"
+  ],
+  "tone-contour-chinese": [
+    "apps/frontend/src/features/foundations/components/tones/ToneContourCard.tsx"
+  ],
+  "tone-pair-drills-empty": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drills": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-rule": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-chinese": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-comparison": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-dict": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-arrow": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "tone-pair-drill-spoken-compact": [
+    "apps/frontend/src/features/foundations/components/tones/TonePairDrills.tsx"
+  ],
+  "grammar-card__meta": [
+    "apps/frontend/src/features/grammar/components/GrammarCard.tsx"
+  ],
+  "grammar-hub__example": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__example-pinyin": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__example-english": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__header": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__badges": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__section": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__section-title": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "grammar-hub__related": [
+    "apps/frontend/src/features/grammar/components/GrammarHub.tsx"
+  ],
+  "lexical-hub__back-bar": [
+    "apps/frontend/src/features/lexical-hub/components/LexicalHubRouter.tsx"
+  ],
+  "pb-none": [
+    "apps/frontend/src/features/lexical-hub/components/LexicalHubRouter.tsx"
+  ],
+  "cluster-card__pinyin": [
+    "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
+  ],
+  "cluster-card__description": [
+    "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
+  ],
+  "cluster-card__pronunciation-note": [
+    "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
+  ],
+  "cluster-card__meta": [
+    "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
+  ],
+  "cluster-card__members": [
+    "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
+  ],
+  "phonetic-clusters-content__filters": [
+    "apps/frontend/src/features/phonetic-clusters/components/PhoneticClustersContent.tsx"
+  ],
+  "skeleton-loading__chips-row": [
+    "apps/frontend/src/features/phonetic-clusters/components/PhoneticClustersContent.tsx"
+  ],
+  "quiz-question__answer": [
+    "apps/frontend/src/features/quiz/components/AnswerInput.tsx"
+  ],
+  "quiz-feedback__card": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "ime-quiz-feedback__char": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "ime-quiz-feedback__detail": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "ime-quiz-feedback__hint": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "quiz-feedback__comparison": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "quiz-feedback__divider": [
+    "apps/frontend/src/features/quiz/components/FeedbackView.tsx"
+  ],
+  "ime-quiz-question__clue": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__clue-label": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__input-area": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "focus-ring": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx",
+    "apps/frontend/src/shared/components/ContentBrowser/SearchBar.tsx",
+    "apps/frontend/src/shared/components/Dropdown/Dropdown.tsx"
+  ],
+  "ime-quiz-question__steps": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__candidates": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__candidates-status": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__submit": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__phonetic-hint": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__hint-toggle": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__radical-hint-btn": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "ime-quiz-question__radical-hint": [
+    "apps/frontend/src/features/quiz/components/ime-input/IMEQuestionView.tsx"
+  ],
+  "pinyin-tone-input__label": [
+    "apps/frontend/src/features/quiz/components/inputs/PinyinToneInput.tsx"
+  ],
+  "pinyin-tone-input__btn-mark": [
+    "apps/frontend/src/features/quiz/components/inputs/PinyinToneInput.tsx"
+  ],
+  "pinyin-tone-input__btn-example": [
+    "apps/frontend/src/features/quiz/components/inputs/PinyinToneInput.tsx"
+  ],
+  "quiz-question-empty": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx",
+    "apps/frontend/src/features/quiz/components/QuestionView.tsx"
+  ],
+  "quiz-question__character-display": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx",
+    "apps/frontend/src/features/quiz/components/QuestionView.tsx"
+  ],
+  "quiz-question__character": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx",
+    "apps/frontend/src/features/quiz/components/QuestionView.tsx"
+  ],
+  "quiz-question__meaning": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx",
+    "apps/frontend/src/features/quiz/components/QuestionView.tsx"
+  ],
+  "quiz-question__pinyin": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx"
+  ],
+  "quiz-mc-options": [
+    "apps/frontend/src/features/quiz/components/MultipleChoiceView.tsx"
+  ],
+  "phase-timeline": [
+    "apps/frontend/src/features/quiz/components/QuizCard.tsx"
+  ],
+  "quiz-progress__stats": [
+    "apps/frontend/src/features/quiz/components/QuizProgressBar.tsx"
+  ],
+  "quiz-breakdown__track": [
+    "apps/frontend/src/features/quiz/components/results/CategoryBreakdown.tsx"
+  ],
+  "quiz-breakdown__heading": [
+    "apps/frontend/src/features/quiz/components/results/CategoryBreakdown.tsx"
+  ],
+  "quiz-results__heading": [
+    "apps/frontend/src/features/quiz/components/results/QuizResults.tsx",
+    "apps/frontend/src/pages/practices/QuizSessionPage.tsx"
+  ],
+  "quiz-results__score": [
+    "apps/frontend/src/features/quiz/components/results/QuizResults.tsx"
+  ],
+  "quiz-results__bar-wrapper": [
+    "apps/frontend/src/features/quiz/components/results/QuizResults.tsx"
+  ],
+  "quiz-results__score-by-type-heading": [
+    "apps/frontend/src/features/quiz/components/results/QuizResults.tsx"
+  ],
+  "branch-node__main": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx"
+  ],
+  "branch-node__pinyin": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx"
+  ],
+  "branch-node__meaning": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx"
+  ],
+  "branch-node__audio-btn": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx"
+  ],
+  "transition-fast": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx",
+    "apps/frontend/src/features/radicals/components/PhoneticFamilyNode.tsx"
+  ],
+  "branch-node__hub-btn": [
+    "apps/frontend/src/features/radicals/components/BranchNode.tsx"
+  ],
+  "character-list-node": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "character-list-node__header": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "character-list-node__radical-glyph": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "character-list-node__radical-info": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "character-list-node__count": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "character-list-node__grid": [
+    "apps/frontend/src/features/radicals/components/CharacterListNode.tsx"
+  ],
+  "example-char-row__actions": [
+    "apps/frontend/src/features/radicals/components/ExampleCharCell.tsx"
+  ],
+  "example-char-section": [
+    "apps/frontend/src/features/radicals/components/ExampleCharGrid.tsx"
+  ],
+  "example-char-section__header": [
+    "apps/frontend/src/features/radicals/components/ExampleCharGrid.tsx"
+  ],
+  "example-char-section__more": [
+    "apps/frontend/src/features/radicals/components/ExampleCharGrid.tsx"
+  ],
+  "radicals-filter-bar": [
+    "apps/frontend/src/features/radicals/components/FilterBar.tsx"
+  ],
+  "flex-row": [
+    "apps/frontend/src/features/radicals/components/FilterBar.tsx",
+    "apps/frontend/src/features/readers/components/PassageCard.tsx",
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx",
+    "apps/frontend/src/features/readers/components/ReadingView.tsx",
+    "apps/frontend/src/features/word-hub/components/ConstituentCharacterChips.tsx",
+    "apps/frontend/src/features/word-hub/components/MeasureWordSection.tsx",
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "radicals-page__legend": [
+    "apps/frontend/src/features/radicals/components/FilterBar.tsx"
+  ],
+  "flex-end": [
+    "apps/frontend/src/features/radicals/components/Phase3TreeView.tsx"
+  ],
+  "phase3-tree-view__selected-indicator": [
+    "apps/frontend/src/features/radicals/components/Phase3TreeView.tsx"
+  ],
+  "phase3-tree-view__tagline": [
+    "apps/frontend/src/features/radicals/components/Phase3TreeView.tsx"
+  ],
+  "truncate": [
+    "apps/frontend/src/features/radicals/components/PhoneticFamilyNode.tsx"
+  ],
+  "pt-md": [
+    "apps/frontend/src/features/radicals/components/PhoneticFamilyNode.tsx"
+  ],
+  "phonetic-tree-view": [
+    "apps/frontend/src/features/radicals/components/PhoneticTreeView.tsx"
+  ],
+  "phonetic-tree-view__families": [
+    "apps/frontend/src/features/radicals/components/PhoneticTreeView.tsx"
+  ],
+  "radical-card__glyph": [
+    "apps/frontend/src/features/radicals/components/RadicalCard.tsx"
+  ],
+  "radical-card__pinyin": [
+    "apps/frontend/src/features/radicals/components/RadicalCard.tsx"
+  ],
+  "radical-card__meaning": [
+    "apps/frontend/src/features/radicals/components/RadicalCard.tsx"
+  ],
+  "radical-card__strokes": [
+    "apps/frontend/src/features/radicals/components/RadicalCard.tsx"
+  ],
+  "radical-chip-picker": [
+    "apps/frontend/src/features/radicals/components/RadicalChipPicker.tsx"
+  ],
+  "radical-chip-picker__chip": [
+    "apps/frontend/src/features/radicals/components/RadicalChipPicker.tsx"
+  ],
+  "radical-detail-card": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__hero": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__info": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__pinyin": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__meaning": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__badges": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__meta": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__meta-sep": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__etymology": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__variants": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "rdc__variants-list": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "text-danger": [
+    "apps/frontend/src/features/radicals/components/RadicalDetailContent.tsx"
+  ],
+  "error-screen__icon": [
+    "apps/frontend/src/features/radicals/components/RadicalGrid.tsx",
+    "apps/frontend/src/shared/components/ErrorScreen/ErrorScreen.tsx"
+  ],
+  "radical-hub": [
+    "apps/frontend/src/features/radicals/components/RadicalHub.tsx"
+  ],
+  "tree-root-node": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "tree-root-node__header": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "tree-root-node__radical": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "tree-root-node__branches-inner": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "tree-root-node__character-column": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "tree-root-node__footer": [
+    "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
+  ],
+  "passage-card": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "passage-card__indicators": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "passage-card__completed": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "passage-card__bookmark": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "passage-card__bookmark-off": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "op-50": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "hover-op-100": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "passage-card__title": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx"
+  ],
+  "text-ellipsis": [
+    "apps/frontend/src/features/readers/components/PassageCard.tsx",
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "reader-library__generate-error": [
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx"
+  ],
+  "reader-library__filters": [
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx"
+  ],
+  "reader-library__bookmark-filter": [
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx"
+  ],
+  "reader-library": [
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx"
+  ],
+  "reader-library__empty-filter": [
+    "apps/frontend/src/features/readers/components/ReaderLibrary.tsx"
+  ],
+  "reading-view": [
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "reading-view__header": [
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "reading-view__back-btn": [
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "reading-view__title": [
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "reading-view__completion": [
+    "apps/frontend/src/features/readers/components/ReadingView.tsx"
+  ],
+  "sentence-word--known": [
+    "apps/frontend/src/features/readers/components/SentenceDisplay.tsx"
+  ],
+  "sentence-word--punct": [
+    "apps/frontend/src/features/readers/components/SentenceDisplay.tsx"
+  ],
+  "sentence-display__pinyin": [
+    "apps/frontend/src/features/readers/components/SentenceDisplay.tsx"
+  ],
+  "word-popover__close": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__hero": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__glyph": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__info": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__pinyin": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__meaning": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "word-popover__cta": [
+    "apps/frontend/src/features/readers/components/WordPopover.tsx"
+  ],
+  "review-card__side": [
+    "apps/frontend/src/features/review/components/ReviewCardOptionSelect.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardPinyinInput.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardResult.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardToneSelect.tsx"
+  ],
+  "review-card__character": [
+    "apps/frontend/src/features/review/components/ReviewCardOptionSelect.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardPinyinInput.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardResult.tsx",
+    "apps/frontend/src/features/review/components/ReviewCardToneSelect.tsx"
+  ],
+  "review-card__feedback": [
+    "apps/frontend/src/features/review/components/ReviewCardResult.tsx"
+  ],
+  "review-card__ratings": [
+    "apps/frontend/src/features/review/components/ReviewCardResult.tsx"
+  ],
+  "review-complete__emoji": [
+    "apps/frontend/src/features/review/components/ReviewComplete.tsx"
+  ],
+  "review-complete__title": [
+    "apps/frontend/src/features/review/components/ReviewComplete.tsx"
+  ],
+  "review-complete__subtitle": [
+    "apps/frontend/src/features/review/components/ReviewComplete.tsx"
+  ],
+  "review-complete__divider": [
+    "apps/frontend/src/features/review/components/ReviewComplete.tsx"
+  ],
+  "review-picker__title": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__description": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__step-label": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__card-icon": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__card-label": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__card-desc": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "review-picker__card-count": [
+    "apps/frontend/src/features/review/components/ReviewPicker.tsx"
+  ],
+  "word-hub": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "word-hub__hero-row": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "word-hub__hero": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "word-hub__glyph": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "word-hub__pinyin": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "word-hub__definitions": [
+    "apps/frontend/src/features/word-hub/components/WordHub.tsx"
+  ],
+  "chengyu-page__header": [
+    "apps/frontend/src/pages/learn/chengyu/ChengyuPage.tsx"
+  ],
+  "tab-placeholder": [
+    "apps/frontend/src/pages/learn/ContentPlaceholderPage.tsx"
+  ],
+  "foundations-page": [
+    "apps/frontend/src/pages/learn/foundations/FoundationsPage.tsx"
+  ],
+  "pinyin-tab-tip": [
+    "apps/frontend/src/pages/learn/foundations/PinyinTab.tsx"
+  ],
+  "stroke-anim-header": [
+    "apps/frontend/src/pages/learn/foundations/StrokeAnimationTab.tsx"
+  ],
+  "tones-section-heading": [
+    "apps/frontend/src/pages/learn/foundations/TonesTab.tsx"
+  ],
+  "tones-section-subtitle": [
+    "apps/frontend/src/pages/learn/foundations/TonesTab.tsx"
+  ],
+  "tones-contour-grid": [
+    "apps/frontend/src/pages/learn/foundations/TonesTab.tsx"
+  ],
+  "tones-tab-tip": [
+    "apps/frontend/src/pages/learn/foundations/TonesTab.tsx"
+  ],
+  "grammar-page__header": [
+    "apps/frontend/src/pages/learn/grammar/GrammarPage.tsx"
+  ],
+  "radicals-page__header": [
+    "apps/frontend/src/pages/learn/radicals/RadicalsPage.tsx"
+  ],
+  "radicals-page__view-toggle": [
+    "apps/frontend/src/pages/learn/radicals/RadicalsPage.tsx"
+  ],
+  "readers-page": [
+    "apps/frontend/src/pages/learn/readers/ReadersPage.tsx"
+  ],
+  "progress-page__card-text": [
+    "apps/frontend/src/pages/ProgressPage.tsx"
+  ],
+  "app-top-bar__spacer": [
+    "apps/frontend/src/shared/components/AppTopBar/AppTopBar.tsx"
+  ],
+  "btn-content-loading": [
+    "apps/frontend/src/shared/components/Button/Button.tsx"
+  ],
+  "card__icon": [
+    "apps/frontend/src/shared/components/Card/Card.tsx"
+  ],
+  "stroke-anim-canvas-overlay": [
+    "apps/frontend/src/shared/components/CharacterStroke/AnimationCanvas.tsx"
+  ],
+  "content-browser__error": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentBrowser.tsx"
+  ],
+  "content-browser__toolbar-group": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentBrowser.tsx"
+  ],
+  "content-card__body": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__title-row": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__type-badge": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__title": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__subtitle-row": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__separator": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__meta-row": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-card__hsk": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentCard.tsx"
+  ],
+  "content-grid__empty-content": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__category-suggestions": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__results-info": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__page-info": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__page-size": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__page-size-label": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "content-grid__page-size-select": [
+    "apps/frontend/src/shared/components/ContentBrowser/ContentGrid.tsx"
+  ],
+  "search-bar__row": [
+    "apps/frontend/src/shared/components/ContentBrowser/SearchBar.tsx"
+  ],
+  "search-bar__icon": [
+    "apps/frontend/src/shared/components/ContentBrowser/SearchBar.tsx"
+  ],
+  "search-bar__clear": [
+    "apps/frontend/src/shared/components/ContentBrowser/SearchBar.tsx"
+  ],
+  "grid__loading": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "grid__empty": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "grid__results-info": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "grid__pagination": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "grid__page-info": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "grid__page-size-label": [
+    "apps/frontend/src/shared/components/Grid/Grid.tsx"
+  ],
+  "modal__header": [
+    "apps/frontend/src/shared/components/Modal/Modal.tsx"
+  ],
+  "modal__title": [
+    "apps/frontend/src/shared/components/Modal/Modal.tsx"
+  ],
+  "radio-group__label": [
+    "apps/frontend/src/shared/components/RadioGroup/RadioGroup.tsx"
+  ],
+  "radio-group__option-label": [
+    "apps/frontend/src/shared/components/RadioGroup/RadioGroup.tsx"
+  ],
+  "side-nav__logo": [
+    "apps/frontend/src/shared/components/SideNav/SideNav.tsx"
+  ],
+  "side-nav__group": [
+    "apps/frontend/src/shared/components/SideNav/SideNav.tsx"
+  ],
+  "tabs__tab-icon": [
+    "apps/frontend/src/shared/components/Tabs/Tabs.tsx"
+  ],
+  "tabs__tab-label": [
+    "apps/frontend/src/shared/components/Tabs/Tabs.tsx"
+  ],
+  "toggle-switch": [
+    "apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.tsx"
+  ],
+  "label-text": [
+    "apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.tsx"
+  ],
+  "label": [
+    "apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.tsx"
+  ],
+  "top-nav": [
+    "apps/frontend/src/shared/components/TopNav/TopNav.tsx"
+  ],
+  "user-menu--guest": [
+    "apps/frontend/src/shared/components/UserMenu/UserMenu.tsx"
+  ],
+  "justify-start": [
+    "apps/frontend/src/shared/components/UserMenu/UserMenu.tsx"
+  ]
+}
