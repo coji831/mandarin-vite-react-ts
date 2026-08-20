@@ -1,3 +1,10 @@
+---
+purpose: Authentication endpoints — register/login at /api/v1/auth
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # Authentication Endpoints
 
 All authentication endpoints are at `/api/v1/auth`.

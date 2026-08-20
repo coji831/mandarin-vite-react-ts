@@ -93,6 +93,8 @@ Persistent collapsible `SideNav` (phase-gated "Learn" group with locked children
 | `npm run build-storybook` | Build the Storybook static site        |
 | `npm run test-storybook`  | Run Storybook story tests              |
 
+> **Visual QA:** `npm run chromatic --workspace=@mandarin/frontend` (needs `CHROMATIC_PROJECT_TOKEN`); see `docs/guides/testing/visual-qa.md`.
+
 ## Environment
 
 ```env

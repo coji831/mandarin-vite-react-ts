@@ -1,3 +1,10 @@
+---
+purpose: Legacy monolithic API spec — superseded by the per-domain api/ files
+status: superseded
+last-verified: 2026-08-08
+type: guide
+---
+
 # Backend API Specification
 
 > **This monolithic file has been split into domain-specific files.**  

@@ -1,3 +1,10 @@
+---
+purpose: TTS endpoints — POST /v1/tts
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # TTS Endpoints
 
 **Last Updated:** August 3, 2026

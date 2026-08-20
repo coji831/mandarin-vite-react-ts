@@ -1,3 +1,10 @@
+---
+purpose: Error response format — the unified error structure
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # Error Response Format
 
 All errors follow this structure:

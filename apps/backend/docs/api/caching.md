@@ -1,3 +1,10 @@
+---
+purpose: Redis-based caching strategy — reduce external API calls and improve response times
+status: active
+last-verified: 2026-08-03
+type: guide
+---
+
 # Caching Strategy
 
 **Last Updated:** August 3, 2026

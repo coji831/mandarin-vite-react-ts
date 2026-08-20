@@ -1,3 +1,11 @@
+---
+purpose: "Backend modulith architecture — modules, shared infrastructure, layer responsibilities"
+status: active
+last-verified: 2026-08-02
+covers: auth, characters, foundations, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, audio, words
+type: architecture
+---
+
 # Backend Design
 
 **Last Updated:** August 2, 2026

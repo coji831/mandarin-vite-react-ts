@@ -1,3 +1,10 @@
+---
+purpose: AI feedback endpoints — Gemini-based error explanations with Redis caching
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # AI Feedback Endpoints
 
 AI-powered error explanations using Gemini API with Redis caching for cost optimization.

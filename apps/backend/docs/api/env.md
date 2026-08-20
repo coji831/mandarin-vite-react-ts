@@ -1,3 +1,10 @@
+---
+purpose: Environment variables — required (real mode) and local
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # Environment Variables
 
 ## Required (Real Mode)

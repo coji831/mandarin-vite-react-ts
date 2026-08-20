@@ -1,3 +1,10 @@
+---
+purpose: Feature docs index — per-feature design docs (8 of 13 features documented)
+status: active
+last-verified: 2026-08-18
+type: area-index
+---
+
 # Features
 
 This directory contains the main features of the application, organized following a feature-based architecture. Each feature is contained in its own directory with its own components, state management, and documentation.

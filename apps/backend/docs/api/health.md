@@ -1,3 +1,10 @@
+---
+purpose: Health check endpoint — /api/health with Redis status and metrics
+status: active
+last-verified: 2026-08-18
+type: guide
+---
+
 # Health Check
 
 ## GET /api/health

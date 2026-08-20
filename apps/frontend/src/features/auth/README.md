@@ -1,3 +1,10 @@
+---
+purpose: Authentication feature — JWT-based login/register UI
+status: active
+last-verified: 2026-08-18
+type: readme
+---
+
 # Authentication Feature
 
 JWT-based authentication with login/register forms.

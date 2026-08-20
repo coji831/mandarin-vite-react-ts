@@ -1,3 +1,10 @@
+---
+purpose: "Backend API reference — 7 domains (auth, health, caching, TTS, AI feedback, errors, env)"
+status: active
+last-verified: 2026-08-02
+type: guide
+---
+
 # Backend API Specification
 
 **Last Updated:** August 2, 2026
