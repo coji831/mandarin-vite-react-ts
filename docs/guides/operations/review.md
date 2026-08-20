@@ -29,7 +29,7 @@ Run through these checks before committing your own changes:
 
 - [ ] 🔴 **No debug artifacts:** Remove `console.log`, `debugger`, `TODO`, `FIXME` (unless tracked in issue tracker)
 - [ ] 🔴 **No dead code:** Remove commented-out blocks, unused imports, unused variables
-- [ ] 🔴 **TypeScript compiles:** `tsc --noEmit` passes with no errors
+- [ ] 🔴 **TypeScript compiles:** frontend `npm run build` (or `npx tsc -b --noEmit`); backend `npm run typecheck --workspace=@mandarin/backend` — never a bare `npx tsc --noEmit` in `apps/frontend` (solution tsconfig = no-op false-green)
 - [ ] 🔴 **Lint passes:** `npm run lint` exits with code 0
 - [ ] 🟡 **No `any` types:** Use strict types; avoid type escapes
 - [ ] 🟡 **Error handling:** All promise rejections handled; try/catch for fallible operations

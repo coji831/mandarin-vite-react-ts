@@ -17,7 +17,7 @@ import { Outlet, useLocation } from "react-router-dom";
 
 import { auth_page, practices_page, progress_page } from "../constants/paths";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "../constants/learnNav";
-import { AppTopBar, SideNav, Modal } from "shared/components";
+import { AppTopBar, SideNav, Modal, type NavItem } from "shared/components";
 // NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
 // features/lexical-hub to orchestrate the app-wide HubModal and phase gating —
 // these overlays/gates must be mounted at the app root so they work everywhere.
@@ -84,7 +84,7 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   // (previously only login was hidden, so Register showed the nav when authed).
   const isAuthPage = location.pathname.startsWith(auth_page);
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
     {
       path: "/learn",

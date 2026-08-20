@@ -13,12 +13,12 @@
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
-import type { SideNavProps } from "./SideNav";
+import type { NavItem, SideNavProps } from "./SideNav";
 import { SideNav } from "./SideNav";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
 import { withRouter } from "../../../../.storybook/decorators";
 
-const navItems = [
+const navItems: NavItem[] = [
   { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
   { path: "/learn", label: "Learn", icon: "learn", exact: false, children: LEARN_NAV_ITEMS },
   { path: "/practices", label: "Practices", icon: "practice", exact: false },

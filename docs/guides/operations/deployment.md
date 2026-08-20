@@ -175,7 +175,7 @@ npm run db:migrate:deploy --workspace=@mandarin/backend
 ### Code Quality
 
 - [ ] All tests passing locally: `npm test`
-- [ ] Type checking clean: `npx tsc --noEmit` (frontend and backend)
+- [ ] Type checking clean: frontend `npm run build` (`tsc -b`); backend `npm run typecheck --workspace=@mandarin/backend`
 - [ ] Linting clean: `npm run lint` (frontend)
 - [ ] No console errors in local dev environment
 - [ ] No critical security vulnerabilities: `npm audit`

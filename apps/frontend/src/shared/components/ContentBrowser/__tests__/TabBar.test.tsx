@@ -7,7 +7,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import { TabBar } from "../TabBar";
-import { CONTENT_TABS } from "../types";
+import { CONTENT_TABS, type TabDefinition } from "../types";
 
 describe("TabBar", () => {
   it("renders all tabs", () => {
@@ -46,7 +46,7 @@ describe("TabBar", () => {
   });
 
   it("renders custom tabs when provided", () => {
-    const customTabs = [
+    const customTabs: TabDefinition[] = [
       { id: "all" as const, label: "Everything", icon: "book" },
       { id: "foundations" as const, label: "Foundations", icon: "letters" },
     ];
