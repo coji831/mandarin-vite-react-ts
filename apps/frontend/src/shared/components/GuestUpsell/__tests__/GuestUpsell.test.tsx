@@ -30,8 +30,11 @@ describe("GuestUpsell", () => {
   });
 
   it("renders icon prefix when provided", () => {
-    render(<GuestUpsell title="Mnemonic stories" description="Desc" icon="🔒" />);
-    expect(screen.getByText("🔒 Mnemonic stories")).toBeInTheDocument();
+    const { container } = render(
+      <GuestUpsell title="Mnemonic stories" description="Desc" icon="lock" />,
+    );
+    expect(screen.getByText("Mnemonic stories")).toBeInTheDocument();
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   it("default CTA navigates to the register page", () => {

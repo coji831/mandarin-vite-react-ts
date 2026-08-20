@@ -4,7 +4,7 @@
  * A controlled text input with search icon styling.
  * No business domain dependencies.
  */
-import { Box } from "shared/components";
+import { Box, Icon } from "shared/components";
 import "./SearchInput.css";
 
 export type SearchInputProps = {
@@ -20,8 +20,8 @@ export function SearchInput({ value, onChange, placeholder = "Search..." }: Sear
       padding="xs"
       className="search-input transition-border-color flex-center gap-xs bg-transparent focus-within:border-primary"
     >
-      <span className="font-sm shrink-0" aria-hidden="true">
-        🔍
+      <span className="shrink-0" aria-hidden="true">
+        <Icon name="search" size={16} />
       </span>
       <input
         className="search-input__field text-secondary font-sm w-full border-none bg-transparent outline-none"

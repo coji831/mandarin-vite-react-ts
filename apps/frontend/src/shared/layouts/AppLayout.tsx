@@ -15,7 +15,7 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-import { auth_page, practices_page } from "../constants/paths";
+import { auth_page, practices_page, progress_page } from "../constants/paths";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "../constants/learnNav";
 import { AppTopBar, SideNav, Modal } from "shared/components";
 // NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
@@ -85,17 +85,17 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   const isAuthPage = location.pathname.startsWith(auth_page);
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: "🏠", exact: true },
+    { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
     {
       path: "/learn",
       label: "Learn",
-      icon: "📚",
+      icon: "learn",
       exact: false,
       children: LEARN_NAV_ITEMS,
     },
-    { path: practices_page, label: "Practices", icon: "🎯", exact: false },
-    { path: "/library", label: "Library", icon: "📖", exact: false },
-    { path: "/progress", label: "Progress", icon: "📊", exact: false },
+    { path: practices_page, label: "Practices", icon: "practice", exact: false },
+    { path: "/library", label: "Library", icon: "book", exact: false },
+    { path: progress_page, label: "Progress", icon: "progress", exact: false },
   ];
 
   return (

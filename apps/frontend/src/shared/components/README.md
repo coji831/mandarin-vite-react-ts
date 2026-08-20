@@ -1,3 +1,10 @@
+---
+purpose: Shared presentational component catalog — reusable UI primitives and conventions
+status: active
+last-verified: 2026-08-18
+type: readme
+---
+
 # Components
 
 This directory contains reusable UI components for the application.

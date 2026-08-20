@@ -8,7 +8,7 @@
  * Shows ClassificationBadge in card header and regeneration guidance below.
  */
 
-import { Button, Skeleton, ClassificationBadge } from "shared/components";
+import { Button, Icon, Skeleton, ClassificationBadge } from "shared/components";
 import { PictographLayout } from "./PictographLayout";
 import { PhonoSemanticLayout } from "./PhonoSemanticLayout";
 import { CompoundIdeographLayout } from "./CompoundIdeographLayout";
@@ -146,7 +146,7 @@ export function MnemonicCard({
         <div className="mnemonic-card__header-actions">
           {onEdit && (
             <Button variant="icon" size="sm" onClick={onEdit} aria-label="Edit mnemonic story">
-              ✏️
+              <Icon name="edit" size={16} aria-hidden />
             </Button>
           )}
           {onRegenerate && (
@@ -156,7 +156,7 @@ export function MnemonicCard({
               onClick={onRegenerate}
               aria-label="Regenerate mnemonic story"
             >
-              🔄
+              <Icon name="refresh" size={16} aria-hidden />
             </Button>
           )}
         </div>

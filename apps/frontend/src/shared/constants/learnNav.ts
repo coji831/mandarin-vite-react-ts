@@ -22,11 +22,13 @@ import {
   learn_chengyu,
 } from "./paths";
 import type { SearchParamInput } from "./searchParams";
+import type { IconName } from "shared/components";
 
 export type LearnNavItem = {
   id: string;
   label: string;
-  icon: string;
+  /** Sanctioned icon name (ADR-010 / Q8) — rendered via the shared Icon component. */
+  icon: IconName;
   path: string;
   requiredPhase: number;
   /**
@@ -45,21 +47,21 @@ export const LEARN_NAV_ITEMS: LearnNavItem[] = [
   {
     id: "foundations",
     label: "Foundations",
-    icon: "🔤",
+    icon: "letters",
     path: learn_foundations,
     requiredPhase: 1,
   },
-  { id: "radicals", label: "Radicals", icon: "📘", path: learn_radicals, requiredPhase: 2 },
-  { id: "grammar", label: "Grammar", icon: "📕", path: learn_grammar, requiredPhase: 2 },
+  { id: "radicals", label: "Radicals", icon: "radicals", path: learn_radicals, requiredPhase: 2 },
+  { id: "grammar", label: "Grammar", icon: "grammar", path: learn_grammar, requiredPhase: 2 },
   {
     id: "phonetic",
     label: "Phonetic",
-    icon: "🔊",
+    icon: "audio",
     path: learn_phonetic_clusters,
     requiredPhase: 3,
   },
-  { id: "readers", label: "Readers", icon: "📖", path: learn_readers, requiredPhase: 3 },
-  { id: "chengyu", label: "Chengyu", icon: "🏮", path: learn_chengyu, requiredPhase: 4 },
+  { id: "readers", label: "Readers", icon: "book", path: learn_readers, requiredPhase: 3 },
+  { id: "chengyu", label: "Chengyu", icon: "chengyu", path: learn_chengyu, requiredPhase: 4 },
 ];
 
 /**

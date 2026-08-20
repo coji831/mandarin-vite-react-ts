@@ -47,8 +47,8 @@ describe("TabBar", () => {
 
   it("renders custom tabs when provided", () => {
     const customTabs = [
-      { id: "all" as const, label: "Everything", icon: "📋" },
-      { id: "foundations" as const, label: "Foundations", icon: "🔤" },
+      { id: "all" as const, label: "Everything", icon: "book" },
+      { id: "foundations" as const, label: "Foundations", icon: "letters" },
     ];
 
     render(

@@ -7,6 +7,8 @@
  * Maps each classification type to an emoji + label + color.
  */
 
+import { Icon } from "./Icon/Icon";
+import type { IconName } from "./Icon/Icon";
 import "./ClassificationBadge.css";
 
 export type ClassificationType =
@@ -19,11 +21,11 @@ export interface ClassificationBadgeProps {
   size?: "sm" | "md" | "lg";
 }
 
-const CLASSIFICATION_MAP: Record<ClassificationType, { emoji: string; label: string }> = {
-  pictograph: { emoji: "🖼️", label: "Pictograph" },
-  phono_semantic: { emoji: "🔤", label: "Phono-semantic" },
-  compound_ideograph: { emoji: "🧩", label: "Compound ideograph" },
-  ideograph: { emoji: "⚡", label: "Simple ideograph" },
+const CLASSIFICATION_MAP: Record<ClassificationType, { icon: IconName; label: string }> = {
+  pictograph: { icon: "image", label: "Pictograph" },
+  phono_semantic: { icon: "letters", label: "Phono-semantic" },
+  compound_ideograph: { icon: "puzzle", label: "Compound ideograph" },
+  ideograph: { icon: "zap", label: "Simple ideograph" },
 };
 
 export function ClassificationBadge({
@@ -58,7 +60,9 @@ export function ClassificationBadge({
       aria-label={`Classification: ${info.label}`}
       title={titleText}
     >
-      <span aria-hidden="true">{info.emoji}</span>
+      <span aria-hidden="true">
+        <Icon name={info.icon} size={16} />
+      </span>
       {showLabel && <span>{info.label}</span>}
     </span>
   );

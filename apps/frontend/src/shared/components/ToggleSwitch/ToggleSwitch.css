@@ -21,8 +21,8 @@
   right: 0;
   bottom: 0;
   /* background-color migrated to bg-primary-bg utility in ToggleSwitch.tsx */
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  -webkit-transition: var(--transition-slow);
+  transition: var(--transition-slow);
 }
 
 /* .slider border-color hover/checked migrated to hover:border-primary / border-primary in ToggleSwitch.tsx */
@@ -36,8 +36,8 @@
   left: 2px;
   bottom: 2px;
   background-color: var(--text-primary);
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  -webkit-transition: var(--transition-slow);
+  transition: var(--transition-slow);
 }
 
 input:focus + .slider {

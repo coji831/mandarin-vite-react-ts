@@ -12,6 +12,8 @@
  * - CONTENT_TABS: Default tab configurations
  */
 
+import type { IconName } from "shared/components";
+
 export type ContentType = "foundations" | "radical" | "phonetic" | "reader" | "grammar" | "chengyu";
 
 export interface ContentItem {
@@ -40,16 +42,17 @@ export interface ContentSource {
 export type TabDefinition = {
   id: ContentType | "all";
   label: string;
-  icon: string;
+  /** Sanctioned icon name (ADR-010 / Q8) — rendered via the shared Icon component. */
+  icon: IconName;
   isLocked?: boolean;
 };
 
 export const CONTENT_TABS: TabDefinition[] = [
-  { id: "all", label: "All", icon: "📋" },
-  { id: "foundations", label: "Foundations", icon: "🔤" },
-  { id: "radical", label: "Radicals", icon: "📘" },
-  { id: "phonetic", label: "Phonetic", icon: "🔊" },
-  { id: "reader", label: "Readers", icon: "📖" },
-  { id: "grammar", label: "Grammar", icon: "📕" },
-  { id: "chengyu", label: "Chengyu", icon: "🏮" },
+  { id: "all", label: "All", icon: "book" },
+  { id: "foundations", label: "Foundations", icon: "letters" },
+  { id: "radical", label: "Radicals", icon: "radicals" },
+  { id: "phonetic", label: "Phonetic", icon: "audio" },
+  { id: "reader", label: "Readers", icon: "book" },
+  { id: "grammar", label: "Grammar", icon: "grammar" },
+  { id: "chengyu", label: "Chengyu", icon: "chengyu" },
 ];

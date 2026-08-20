@@ -18,7 +18,7 @@
  */
 
 import { useSearchParams } from "react-router-dom";
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import { CONTENT_TABS } from "./types";
 import type { TabDefinition } from "./types";
 
@@ -79,13 +79,9 @@ function TabBar({
             title={lockPhase ? `Complete Phase ${lockPhase} to unlock` : undefined}
             className={`tab-bar__tab ${tab.isLocked ? "op-40" : ""}`}
           >
-            <span aria-hidden="true">{tab.icon}</span>
+            <Icon name={tab.icon} size={16} aria-hidden />
             <span>{tab.label}</span>
-            {tab.isLocked && (
-              <span className="font-xs" aria-label="locked">
-                🔒
-              </span>
-            )}
+            {tab.isLocked && <Icon name="lock" size={16} label="locked" />}
           </Button>
         );
       })}

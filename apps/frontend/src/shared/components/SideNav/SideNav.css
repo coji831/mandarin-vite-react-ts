@@ -2,8 +2,14 @@
 
 .side-nav {
   width: 220px;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto; /* rail clips/scrolls internally instead of spilling the page */
+  overscroll-behavior-y: contain; /* no wheel chaining from the rail */
   transition: width var(--transition-normal);
+  /* Precision-minimal rail (Phase A B.2): muted surface + hairline divider vs
+     the --surface-dark-alt content area. */
+  background: var(--surface-dark);
+  border-right: 1px solid var(--surface-border-subtle);
   /* Component-scoped token for the icon column (24px) — shared by the
      brand/row icons and the child indent math so the 24px is not duplicated. */
   --side-nav-icon-w: 24px;
@@ -95,8 +101,8 @@
 .side-nav .side-nav__child[aria-current="page"]:not(.side-nav__child--locked) {
   background: var(--color-primary-bg);
   border-color: var(--color-primary-border);
-  color: var(--color-primary-light);
-  font-weight: 600;
+  color: var(--color-primary-lighter);
+  font-weight: var(--fw-600);
 }
 
 /* Learn group header — row container (parent: font-sm fw-600 text-secondary

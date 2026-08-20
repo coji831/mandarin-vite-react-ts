@@ -20,6 +20,7 @@ export {
   practices_page,
   practices_review,
   practices_quiz,
+  progress_page,
   learn_basic,
   auth_page,
   login_page,

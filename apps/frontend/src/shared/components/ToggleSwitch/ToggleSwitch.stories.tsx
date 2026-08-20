@@ -40,6 +40,7 @@ export const On: Story = {
 export const WithoutLabel: Story = {
   args: {
     checked: false,
+    "aria-label": "Unlabeled toggle",
   },
 };
 

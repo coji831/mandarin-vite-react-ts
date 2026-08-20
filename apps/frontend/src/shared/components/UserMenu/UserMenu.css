@@ -38,10 +38,11 @@
   top: calc(100% + var(--space-xs));
   right: 0;
   min-width: 220px;
-  z-index: 100;
-  border: 1px solid var(--surface-border);
+  z-index: var(--z-popover);
+  border: 1px solid var(--surface-border-subtle);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
+  box-shadow: var(--shadow-elevated-2);
   padding: var(--space-xs);
   margin: 0;
   list-style: none;

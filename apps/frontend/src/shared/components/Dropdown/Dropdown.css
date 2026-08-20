@@ -36,7 +36,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: var(--z-popover);
   max-height: 300px;
   overflow-y: auto;
   list-style: none;

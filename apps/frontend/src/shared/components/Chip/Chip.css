@@ -21,8 +21,8 @@
   background: var(--surface-light-5);
   color: var(--text-primary);
   font-family: inherit;
-  font-weight: 500;
-  line-height: 1.2;
+  font-weight: var(--fw-500);
+  line-height: var(--lh-tight);
   white-space: nowrap;
   padding: 0 var(--space-sm);
 }
@@ -130,7 +130,7 @@
 
 .chip__glyph {
   font-size: var(--font-xl);
-  line-height: 1;
+  line-height: var(--lh-1);
 }
 
 .chip--sm .chip__glyph {
@@ -149,18 +149,18 @@
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.1;
+  line-height: var(--lh-tight); /* 1.1 → nearest sanctioned tier */
 }
 
 .chip__label {
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .chip__pinyin {
   font-size: var(--font-xs);
   font-style: italic;
   color: var(--text-muted);
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .chip__count {
@@ -169,5 +169,5 @@
   padding: 0 var(--space-xs);
   font-size: var(--font-xs);
   color: var(--text-tertiary);
-  line-height: 1.4;
+  line-height: var(--lh-1-4);
 }

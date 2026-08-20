@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  font-weight: 600;
+  font-weight: var(--fw-600);
   cursor: pointer;
 }
 
@@ -204,6 +204,7 @@
   border-radius: var(--radius-pill);
   font-size: var(--font-sm);
   padding: var(--space-xs);
+  color: var(--text-secondary);
 }
 
 .btn-tag:hover:not(:disabled) {
@@ -217,7 +218,7 @@
   border-radius: var(--radius-pill);
   font-size: var(--font-sm);
   padding: var(--space-xs);
-  color: var(--color-primary-light);
+  color: var(--color-primary-lighter);
 }
 
 /* Primary active - Toggle/active state */
@@ -225,7 +226,7 @@
   background: var(--color-primary-bg);
   border: 1px solid var(--color-primary-border);
   border-radius: var(--radius-md);
-  color: var(--color-primary-light);
+  color: var(--color-primary-lighter);
   padding: var(--space-sm);
 }
 
@@ -240,6 +241,7 @@
   border-radius: var(--radius-md);
   padding: var(--space-xs);
   font-size: var(--font-sm);
+  color: var(--text-muted);
 }
 
 .btn-tab:hover:not(:disabled) {
@@ -254,7 +256,7 @@
   border-radius: var(--radius-md);
   padding: var(--space-xs);
   font-size: var(--font-sm);
-  color: var(--color-primary);
+  color: var(--color-primary-lighter);
 }
 
 .btn-tab-active:hover:not(:disabled) {
@@ -352,9 +354,9 @@
 }
 
 .btn-inline-text:hover {
-  color: var(--color-primary-light);
+  color: var(--color-primary-lighter);
   text-decoration-style: solid;
-  text-decoration-color: var(--color-primary-light);
+  text-decoration-color: var(--color-primary-lighter);
 }
 
 .btn-inline-text:focus-visible {

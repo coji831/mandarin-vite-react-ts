@@ -9,25 +9,25 @@
 
 .badge {
   display: inline-block;
-  line-height: 1;
+  line-height: var(--lh-1);
   border-radius: var(--radius-pill);
   padding: var(--space-xs);
   font-size: var(--font-xs);
-  font-weight: 600;
+  font-weight: var(--fw-600);
   white-space: nowrap;
 }
 
 .badge--primary {
   background: var(--color-primary-bg);
-  color: var(--color-primary);
+  color: var(--color-primary-lighter);
 }
 
 .badge--surface {
   background: var(--surface-hover);
-  color: var(--color-primary);
+  color: var(--color-primary-lighter);
 }
 
 .badge--accent {
   background: var(--color-primary-bg-medium);
-  color: var(--color-primary-light);
+  color: var(--color-primary-lighter);
 }

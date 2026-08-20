@@ -141,7 +141,8 @@ export function Button({
         ...style,
       }}
     >
-      {loading ? <span className="btn-content-loading op-80"></span> : children}
+      {loading && <span className="btn-content-loading op-80" aria-hidden="true" />}
+      {loading ? <span className="sr-only">{children}</span> : children}
     </button>
   );
 }

@@ -140,7 +140,7 @@ export function Dropdown<TValue = string | number | null>({
       {isOpen && (
         <ul
           id={listboxId}
-          className="dropdown__menu m-0 border-1 border-surface radius-md bg-surface-dark-alt shadow-md p-xs absolute"
+          className="dropdown__menu m-0 border-1 border-surface radius-md bg-surface-dark-alt shadow-elevated-2 p-xs absolute"
           role="listbox"
           aria-label={label || ariaLabel}
         >

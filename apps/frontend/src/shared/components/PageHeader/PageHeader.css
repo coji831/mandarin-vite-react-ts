@@ -1,0 +1,11 @@
+/**
+ * PageHeader.css — precision-minimal page header (hub-launcher)
+ *
+ * By design: no border, no background — all surface treatment lives on the
+ * elevated surfaces below. Layout is composed entirely from global utilities
+ * (flex-between, items-start, gap-lg, flex-col, gap-xs, shrink-0). Only the
+ * structural overflow-safety rule lives here.
+ */
+.page-header {
+  min-width: 0; /* flex ancestor — allows the CTA slot to shrink on narrow content */
+}

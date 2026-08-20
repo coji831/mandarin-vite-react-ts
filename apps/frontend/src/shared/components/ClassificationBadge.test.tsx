@@ -9,28 +9,28 @@ import { describe, it, expect } from "vitest";
 import { ClassificationBadge } from "./ClassificationBadge";
 
 describe("ClassificationBadge", () => {
-  describe("renders each classification type with correct emoji + label", () => {
+  describe("renders each classification type with correct icon + label", () => {
     it("renders pictograph badge", () => {
-      render(<ClassificationBadge classification="pictograph" />);
-      expect(screen.getByText("🖼️")).toBeInTheDocument();
+      const { container } = render(<ClassificationBadge classification="pictograph" />);
+      expect(container.querySelector("svg")).toBeInTheDocument();
       expect(screen.getByText("Pictograph")).toBeInTheDocument();
     });
 
     it("renders phono_semantic badge", () => {
-      render(<ClassificationBadge classification="phono_semantic" />);
-      expect(screen.getByText("🔤")).toBeInTheDocument();
+      const { container } = render(<ClassificationBadge classification="phono_semantic" />);
+      expect(container.querySelector("svg")).toBeInTheDocument();
       expect(screen.getByText("Phono-semantic")).toBeInTheDocument();
     });
 
     it("renders compound_ideograph badge", () => {
-      render(<ClassificationBadge classification="compound_ideograph" />);
-      expect(screen.getByText("🧩")).toBeInTheDocument();
+      const { container } = render(<ClassificationBadge classification="compound_ideograph" />);
+      expect(container.querySelector("svg")).toBeInTheDocument();
       expect(screen.getByText("Compound ideograph")).toBeInTheDocument();
     });
 
     it("renders ideograph badge", () => {
-      render(<ClassificationBadge classification="ideograph" />);
-      expect(screen.getByText("⚡")).toBeInTheDocument();
+      const { container } = render(<ClassificationBadge classification="ideograph" />);
+      expect(container.querySelector("svg")).toBeInTheDocument();
       expect(screen.getByText("Simple ideograph")).toBeInTheDocument();
     });
   });
@@ -101,8 +101,10 @@ describe("ClassificationBadge", () => {
   });
 
   it("hides label when showLabel is false", () => {
-    render(<ClassificationBadge classification="pictograph" showLabel={false} />);
-    expect(screen.getByText("🖼️")).toBeInTheDocument();
+    const { container } = render(
+      <ClassificationBadge classification="pictograph" showLabel={false} />,
+    );
+    expect(container.querySelector("svg")).toBeInTheDocument();
     expect(screen.queryByText("Pictograph")).not.toBeInTheDocument();
   });
 });

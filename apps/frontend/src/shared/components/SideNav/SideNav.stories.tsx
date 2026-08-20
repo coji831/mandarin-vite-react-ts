@@ -19,11 +19,11 @@ import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
 import { withRouter } from "../../../../.storybook/decorators";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: "🏠", exact: true },
-  { path: "/learn", label: "Learn", icon: "📚", exact: false, children: LEARN_NAV_ITEMS },
-  { path: "/practices", label: "Practices", icon: "🎯", exact: false },
-  { path: "/library", label: "Library", icon: "📖", exact: false },
-  { path: "/progress", label: "Progress", icon: "📊", exact: false },
+  { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
+  { path: "/learn", label: "Learn", icon: "learn", exact: false, children: LEARN_NAV_ITEMS },
+  { path: "/practices", label: "Practices", icon: "practice", exact: false },
+  { path: "/library", label: "Library", icon: "book", exact: false },
+  { path: "/progress", label: "Progress", icon: "progress", exact: false },
 ];
 
 const defaultArgs: SideNavProps = {

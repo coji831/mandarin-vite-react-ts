@@ -7,7 +7,6 @@
 }
 
 .learn-content {
-  overflow-x: hidden;
-  overflow-y: auto; /* scroll zone — learn content area (scroll chain rule) */
-  min-height: 0; /* flex child — required for internal overflow to work (scroll chain rule) */
+  overflow: visible; /* NOT a second scroller — .app-content is the one scroll container */
+  min-height: 0; /* flex child — lets content grow; .app-content scrolls to reveal it */
 }

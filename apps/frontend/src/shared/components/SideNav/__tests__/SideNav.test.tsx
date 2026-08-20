@@ -11,9 +11,9 @@ import { SideNav } from "../SideNav";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
 
 const navItems: SideNavProps["navItems"] = [
-  { path: "/", label: "Dashboard", icon: "🏠", exact: true },
-  { path: "/learn", label: "Learn", icon: "📚", exact: false, children: LEARN_NAV_ITEMS },
-  { path: "/practices", label: "Practices", icon: "🎯", exact: false },
+  { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
+  { path: "/learn", label: "Learn", icon: "learn", exact: false, children: LEARN_NAV_ITEMS },
+  { path: "/practices", label: "Practices", icon: "practice", exact: false },
 ];
 
 function renderSideNav(props: Partial<SideNavProps> = {}, entries?: string[]) {
@@ -74,7 +74,7 @@ describe("SideNav", () => {
       expect(grammar).toHaveAttribute("aria-disabled", "true");
       expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
       expect(grammar).toHaveAttribute("tabindex", "-1");
-      expect(within(grammar).getByLabelText("locked")).toBeInTheDocument();
+      expect(within(grammar).getByRole("img", { name: "locked" })).toBeInTheDocument();
     });
 
     it("keeps locked children non-navigable (click does not navigate)", () => {
@@ -136,14 +136,14 @@ describe("SideNav", () => {
       const toggle = screen.getByRole("button", { name: "Collapse sidebar" });
       expect(toggle).toHaveAttribute("aria-expanded", "true");
       expect(within(toggle).getByText("Collapse")).toBeInTheDocument();
-      expect(within(toggle).getByText("◂")).toBeInTheDocument();
+      expect(toggle.querySelector("svg.lucide-chevron-left")).toBeInTheDocument();
     });
 
     it("shows an icon-only toggle (no label) when collapsed", () => {
       renderSideNav({ collapsed: true });
       const toggle = screen.getByRole("button", { name: "Expand sidebar" });
       expect(toggle).toHaveAttribute("aria-expanded", "false");
-      expect(within(toggle).getByText("▸")).toBeInTheDocument();
+      expect(toggle.querySelector("svg.lucide-chevron-right")).toBeInTheDocument();
       expect(within(toggle).queryByText("Collapse")).not.toBeInTheDocument();
     });
   });

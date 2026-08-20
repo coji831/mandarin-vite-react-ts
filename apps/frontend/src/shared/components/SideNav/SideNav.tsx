@@ -32,6 +32,8 @@ import {
   LEARN_NAV_ITEMS,
   withSearchParams,
 } from "shared/constants";
+import { Icon } from "../Icon/Icon";
+import type { IconName } from "../Icon/Icon";
 import "./SideNav.css";
 
 export { SideNav };
@@ -40,7 +42,8 @@ export type { NavItem, SideNavProps };
 type NavItem = {
   path: string;
   label: string;
-  icon: string;
+  /** Sanctioned icon name (ADR-010 / Q8) — rendered via the shared Icon component. */
+  icon: IconName;
   exact?: boolean;
   /** Nested phase-gated group (the Learn section). When present, renders as an expandable group. */
   children?: LearnNavItem[];
@@ -169,7 +172,7 @@ function SideNav({
                   }
                 >
                   <span className="side-nav__icon font-md text-center shrink-0" aria-hidden="true">
-                    {item.icon}
+                    <Icon name={item.icon} size={16} />
                   </span>
                   <span className="side-nav__label whitespace-nowrap overflow-hidden">
                     {item.label}
@@ -197,7 +200,7 @@ function SideNav({
                       className="side-nav__icon font-md text-center shrink-0"
                       aria-hidden="true"
                     >
-                      {item.icon}
+                      <Icon name={item.icon} size={16} />
                     </span>
                     <span className="side-nav__label whitespace-nowrap overflow-hidden">
                       {item.label}
@@ -214,12 +217,12 @@ function SideNav({
                     }
                   >
                     <span
-                      className={`side-nav__group-chevron font-xs text-muted lh-1 ${
+                      className={`side-nav__group-chevron text-muted lh-1 ${
                         learnOpen ? "side-nav__group-chevron--open" : ""
                       }`}
                       aria-hidden="true"
                     >
-                      ▾
+                      <Icon name="chevron-down" size={16} />
                     </span>
                   </button>
                 </div>
@@ -241,6 +244,7 @@ function SideNav({
                       <NavLink
                         key={child.id}
                         to={childTo}
+                        aria-label={child.label}
                         onClick={(e) => {
                           if (isLocked) {
                             e.preventDefault();
@@ -263,16 +267,12 @@ function SideNav({
                           className="side-nav__child-icon font-md text-center shrink-0"
                           aria-hidden="true"
                         >
-                          {child.icon}
+                          <Icon name={child.icon} size={16} />
                         </span>
                         <span className="side-nav__label whitespace-nowrap overflow-hidden">
                           {child.label}
                         </span>
-                        {isLocked && (
-                          <span className="font-xs" aria-label="locked">
-                            🔒
-                          </span>
-                        )}
+                        {isLocked && <Icon name="lock" size={16} label="locked" />}
                       </NavLink>
                     );
                   })}
@@ -284,6 +284,7 @@ function SideNav({
               key={item.path}
               to={item.path}
               end={item.exact}
+              aria-label={item.label}
               className={({ isActive }) =>
                 `side-nav__link gap-sm radius-sm text-tertiary font-sm p-sm transition-all border-1 border-transparent ${
                   isActive ? ACTIVE_LINK_CLASS : ""
@@ -291,7 +292,7 @@ function SideNav({
               }
             >
               <span className="side-nav__icon font-md text-center shrink-0" aria-hidden="true">
-                {item.icon}
+                <Icon name={item.icon} size={16} />
               </span>
               <span className="side-nav__label whitespace-nowrap overflow-hidden">
                 {item.label}
@@ -314,7 +315,9 @@ function SideNav({
             aria-expanded={!collapsed}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <span aria-hidden="true">{collapsed ? "▸" : "◂"}</span>
+            <span aria-hidden="true">
+              <Icon name={collapsed ? "chevron-right" : "chevron-left"} size={16} />
+            </span>
             <span className="side-nav__footer-label font-xs text-muted">
               {collapsed ? "" : "Collapse"}
             </span>

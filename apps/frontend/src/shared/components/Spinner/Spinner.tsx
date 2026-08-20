@@ -41,6 +41,7 @@ export function Spinner({
   return (
     <span
       className={`spinner radius-full ${sizeClass} ${colorClass}${className ? ` ${className}` : ""}`}
+      role={hidden ? undefined : "status"}
       aria-label={hidden ? undefined : "Loading"}
       aria-hidden={hidden || undefined}
     />

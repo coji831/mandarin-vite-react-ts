@@ -18,7 +18,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Spinner } from "shared/components";
+import { Icon, Spinner } from "shared/components";
 
 export { SearchBar };
 
@@ -74,8 +74,8 @@ function SearchBar({
 
   return (
     <div className="search-bar__row">
-      <span className="search-bar__icon font-md op-60" aria-hidden="true">
-        🔍
+      <span className="search-bar__icon op-60" aria-hidden="true">
+        <Icon name="search" size={16} />
       </span>
       <input
         type="search"
@@ -92,7 +92,7 @@ function SearchBar({
           aria-label="Clear search"
           type="button"
         >
-          ✕
+          <Icon name="cross" size={16} aria-hidden />
         </button>
       )}
       {isDebouncing && <Spinner size="xs" />}

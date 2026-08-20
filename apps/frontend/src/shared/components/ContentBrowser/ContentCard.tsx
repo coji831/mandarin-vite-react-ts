@@ -17,18 +17,19 @@
  * ```
  */
 
-import { Button } from "shared/components";
-import type { ContentItem } from "./types";
+import { Button, Icon } from "shared/components";
+import type { IconName } from "shared/components";
+import type { ContentItem, ContentType } from "./types";
 
 export { ContentCard };
 
-const TYPE_ICONS: Record<string, string> = {
-  foundations: "🔤",
-  radical: "📘",
-  phonetic: "🔊",
-  reader: "📖",
-  grammar: "📕",
-  chengyu: "🏮",
+const TYPE_ICONS: Record<ContentType, IconName> = {
+  foundations: "letters",
+  radical: "radicals",
+  phonetic: "audio",
+  reader: "book",
+  grammar: "grammar",
+  chengyu: "chengyu",
 };
 
 function ContentCard({
@@ -39,7 +40,7 @@ function ContentCard({
   onClick?: (item: ContentItem) => void;
 }) {
   const { contentType, title, subtitle, translation, hskLevel, isLocked } = item;
-  const typeIcon = TYPE_ICONS[contentType] ?? "📋";
+  const typeIcon = TYPE_ICONS[contentType];
   const handleClick = () => {
     if (!isLocked && onClick) {
       onClick(item);
@@ -71,19 +72,16 @@ function ContentCard({
     >
       {/* Lock badge */}
       {isLocked && (
-        <span
-          className="content-card__lock-badge absolute font-lg lh-1"
-          aria-label="Locked content"
-        >
-          🔒
+        <span className="content-card__lock-badge absolute flex-center">
+          <Icon name="lock" size={16} label="Locked content" />
         </span>
       )}
 
       {/* Card body */}
       <div className="content-card__body flex-col gap-xs">
         <div className="content-card__title-row flex-center gap-xs">
-          <span className="content-card__type-badge font-lg lh-1" aria-hidden="true">
-            {typeIcon}
+          <span className="content-card__type-badge lh-1" aria-hidden="true">
+            <Icon name={typeIcon} size={16} />
           </span>
           <span className="content-card__title font-lg">{title}</span>
         </div>

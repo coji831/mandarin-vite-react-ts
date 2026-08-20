@@ -42,9 +42,10 @@
 
 .box-elevated {
   background: var(--surface-dark-alt-2);
-  border: 2px solid var(--surface-border);
+  border: 1px solid var(--surface-border-subtle);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
+  box-shadow: var(--shadow-elevated-2);
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }

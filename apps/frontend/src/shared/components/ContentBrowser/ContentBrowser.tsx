@@ -21,7 +21,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Box, Button, Chip, Dropdown } from "shared/components";
+import { Box, Button, Chip, Dropdown, Icon } from "shared/components";
 import { CONTENT_TABS } from "./types";
 import type { ContentItem, ContentSource, ContentType } from "./types";
 import { TabBar } from "./TabBar";
@@ -295,7 +295,8 @@ function ContentBrowser({
             {activeFilterCount > 0 && (
               <Chip interactive={false} variant="primary" size="sm" count={activeFilterCount} />
             )}
-            ✕ Clear all
+            <Icon name="cross" size={16} aria-hidden />
+            Clear all
           </Button>
         </div>
       </Box>

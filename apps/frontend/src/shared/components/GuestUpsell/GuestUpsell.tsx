@@ -11,14 +11,16 @@
 import { useNavigate } from "react-router-dom";
 import { Box, Button } from "shared/components";
 import { register_page } from "shared/constants";
+import { Icon } from "../Icon/Icon";
+import type { IconName } from "../Icon/Icon";
 
 export type GuestUpsellProps = {
   /** Card heading (e.g. "Mnemonic stories"). */
   title: string;
   /** Supporting copy explaining the registered-user benefit. */
   description: string;
-  /** Leading emoji/icon glyph shown before the title (e.g. "🔒"). */
-  icon?: string;
+  /** Leading icon from the sanctioned Icon set (e.g. "lock"). */
+  icon?: IconName;
   /** CTA label. Defaults to "Create an account to unlock ▸". */
   ctaLabel?: string;
   /** Route to navigate to on CTA click. Defaults to the register page. */
@@ -36,7 +38,10 @@ export function GuestUpsell({
 
   return (
     <Box variant="dark" padding="lg" className="flex-col gap-md">
-      <h2 className="font-2xl fw-700 text-primary m-0">{icon ? `${icon} ${title}` : title}</h2>
+      <h2 className="font-2xl fw-700 text-primary m-0 flex-center gap-xs">
+        {icon && <Icon name={icon} size={20} aria-hidden />}
+        <span>{title}</span>
+      </h2>
       <p className="font-sm text-secondary m-0 lh-normal">{description}</p>
 
       <Button variant="primary" onClick={() => navigate(to)}>

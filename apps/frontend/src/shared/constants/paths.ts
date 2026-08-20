@@ -35,6 +35,9 @@ const practices_page = "/practices";
 const practices_review = "/practices/review";
 const practices_quiz = "/practices/quiz";
 
+// Progress page (quick-tile + nav target)
+const progress_page = "/progress";
+
 export {
   root,
   profile_page,
@@ -51,6 +54,7 @@ export {
   practices_page,
   practices_review,
   practices_quiz,
+  progress_page,
   learn_basic,
   auth_page,
   login_page,

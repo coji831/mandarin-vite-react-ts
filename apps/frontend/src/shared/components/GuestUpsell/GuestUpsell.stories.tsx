@@ -18,7 +18,7 @@ const meta: Meta<typeof GuestUpsell> = {
   argTypes: {
     title: { control: "text" },
     description: { control: "text" },
-    icon: { control: "text" },
+    icon: { control: "select" },
     ctaLabel: { control: "text" },
     to: { control: "text" },
   },
@@ -29,7 +29,7 @@ type Story = StoryObj<typeof GuestUpsell>;
 
 export const Default: Story = {
   args: {
-    icon: "🔒",
+    icon: "lock",
     title: "Mnemonic stories",
     description: "Register to generate and save your own mnemonic stories for characters.",
   },
@@ -44,7 +44,7 @@ export const NoIcon: Story = {
 
 export const CustomCta: Story = {
   args: {
-    icon: "🔒",
+    icon: "lock",
     title: "Your session expired",
     description: "Your session expired — sign in again to continue reviewing.",
     ctaLabel: "Sign in again ▸",

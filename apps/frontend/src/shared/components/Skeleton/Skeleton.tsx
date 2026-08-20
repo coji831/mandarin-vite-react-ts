@@ -28,6 +28,16 @@ export function Skeleton({
     custom: "",
   };
 
+  // Default dimensions per variant live in co-located Skeleton.css
+  // (skeleton--line/card/circle). The inline style carries only explicit
+  // width/height overrides (dynamic identifiers — allowed).
+  const variantSizeClass: Record<string, string> = {
+    line: "skeleton--line",
+    card: "skeleton--card",
+    circle: "skeleton--circle",
+    custom: "",
+  };
+
   const items = Array.from({ length: count }, (_, i) => i);
 
   if (variant === "custom") {
@@ -39,10 +49,10 @@ export function Skeleton({
       {items.map((i) => (
         <div
           key={i}
-          className={`skeleton ${variantRadius[variant] ?? "radius-md"}`}
+          className={`skeleton ${variantSizeClass[variant] ?? ""} ${variantRadius[variant] ?? "radius-md"}`}
           style={{
-            width: width ?? (variant === "circle" ? "40px" : "100%"),
-            height: height ?? (variant === "line" ? "16px" : variant === "card" ? "120px" : "40px"),
+            ...(width != null ? { width } : {}),
+            ...(height != null ? { height } : {}),
           }}
           aria-hidden="true"
         />

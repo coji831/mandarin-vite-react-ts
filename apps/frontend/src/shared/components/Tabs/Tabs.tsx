@@ -6,7 +6,8 @@
  * Supports locked (disabled) tabs with phase-gate tooltip info.
  * No business domain dependencies.
  */
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
+import { isIconName } from "shared/components";
 import "./Tabs.css";
 
 export type TabConfig = {
@@ -73,23 +74,19 @@ export function Tabs({
               role="tab"
               id={`tab-${tab.id}`}
               aria-selected={isActive}
-              aria-controls={`panel-${tab.id}`}
+              aria-controls={children ? `panel-${tab.id}` : undefined}
               disabled={isLocked}
               onClick={() => !isLocked && onTabChange(tab.id)}
               className={`tabs__tab ${isLocked ? "op-40" : ""}`}
               title={lockPhase ? `Complete Phase ${lockPhase} to unlock` : undefined}
             >
               {tab.icon && (
-                <span className="tabs__tab-icon font-sm" aria-hidden="true">
-                  {tab.icon}
+                <span className="tabs__tab-icon" aria-hidden="true">
+                  {isIconName(tab.icon) ? <Icon name={tab.icon} size={16} /> : tab.icon}
                 </span>
               )}
               <span className="tabs__tab-label">{tab.label}</span>
-              {isLocked && (
-                <span className="font-xs" aria-label="locked">
-                  🔒
-                </span>
-              )}
+              {isLocked && <Icon name="lock" size={16} label="locked" />}
             </Button>
           );
         })}
@@ -100,6 +97,9 @@ export function Tabs({
           role="tabpanel"
           id={`panel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
+          // Scrollable region (overflow-y:auto) must be keyboard-focusable (axe
+          // scrollable-region-focusable). Tab panels are scroll containers.
+          tabIndex={0}
         >
           {children}
         </div>

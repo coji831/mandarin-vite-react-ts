@@ -17,8 +17,8 @@
   color: var(--text-primary);
   font-family: inherit;
   font-size: var(--font-sm);
-  font-weight: 500;
-  line-height: 1.2;
+  font-weight: var(--fw-500);
+  line-height: var(--lh-tight);
   padding: var(--space-xs) var(--space-sm);
   cursor: pointer;
   transition:
@@ -40,5 +40,5 @@
 .filter-chip--selected {
   background: var(--color-primary-bg);
   border-color: var(--color-primary-border);
-  color: var(--color-primary-light);
+  color: var(--color-primary-lighter);
 }

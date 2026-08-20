@@ -1,0 +1,10 @@
+/* .icon — layout/display helper for the Lucide-wrapped shared Icon (ADR-010).
+   Color/stroke are controlled by props (currentColor, strokeWidth); this file
+   only normalizes inline SVG display so it aligns with adjacent text. */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}

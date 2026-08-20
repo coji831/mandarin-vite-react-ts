@@ -34,6 +34,7 @@ export const Default: Story = {
 export const WithValue: Story = {
   args: {
     value: "Hello World",
+    "aria-label": "Sample input with value",
   },
 };
 
@@ -41,6 +42,7 @@ export const Disabled: Story = {
   args: {
     value: "Disabled input",
     disabled: true,
+    "aria-label": "Disabled input",
   },
 };
 

@@ -8,4 +8,5 @@
   /* Used with border-primary / border-transparent color utilities */
   border-bottom-width: 2px;
   border-bottom-style: solid;
+  text-decoration: none;
 }

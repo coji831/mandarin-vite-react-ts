@@ -62,7 +62,7 @@ export function TopNav({
             to={effectivePath}
             className={({ isActive }) =>
               [
-                "flex-center font-sm whitespace-nowrap p-xs transition-all top-nav__link",
+                "flex-center gap-sm font-sm whitespace-nowrap p-xs transition-all top-nav__link",
                 isActive && !isLocked
                   ? "text-primary border-primary"
                   : "text-muted border-transparent",
@@ -78,12 +78,6 @@ export function TopNav({
             }}
             aria-disabled={isLocked || undefined}
             title={isLocked ? `Complete Phase ${required} to unlock` : item.label}
-            style={{
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-            }}
           >
             {item.icon && <span aria-hidden="true">{item.icon}</span>}
             <span>{item.label}</span>

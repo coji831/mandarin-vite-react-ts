@@ -28,20 +28,21 @@
  */
 
 import { ContentCard } from "./ContentCard";
-import { Box, Button, LoadingScreen } from "shared/components";
+import { Box, Button, EmptyState, Icon, LoadingScreen } from "shared/components";
+import type { IconName } from "shared/components";
 import type { ContentItem, ContentType } from "./types";
 import { CONTENT_TABS } from "./types";
 import "./ContentBrowser.css";
 
 export { ContentGrid };
 
-const CATEGORY_SUGGESTIONS: { id: ContentType; label: string }[] = [
-  { id: "foundations", label: "🔤 Foundations" },
-  { id: "radical", label: "📘 Radicals" },
-  { id: "phonetic", label: "🔊 Phonetic" },
-  { id: "reader", label: "📖 Readers" },
-  { id: "grammar", label: "📕 Grammar" },
-  { id: "chengyu", label: "🏮 Chengyu" },
+const CATEGORY_SUGGESTIONS: { id: ContentType; label: string; icon: IconName }[] = [
+  { id: "foundations", label: "Foundations", icon: "letters" },
+  { id: "radical", label: "Radicals", icon: "radicals" },
+  { id: "phonetic", label: "Phonetic", icon: "audio" },
+  { id: "reader", label: "Readers", icon: "book" },
+  { id: "grammar", label: "Grammar", icon: "grammar" },
+  { id: "chengyu", label: "Chengyu", icon: "chengyu" },
 ];
 
 function ContentGrid({
@@ -76,40 +77,40 @@ function ContentGrid({
   if (items.length === 0) {
     return (
       <Box variant="dashed" padding="2xl" className="content-grid__empty" role="status">
-        <div className="content-grid__empty-content flex-col-center gap-md">
-          <span className="font-3xl" aria-hidden="true">
-            📭
-          </span>
-          <p className="font-lg text-secondary fw-600">No content found</p>
-          <p className="font-sm text-muted">
-            Try adjusting your search or filters to discover more content.
-          </p>
+        <EmptyState
+          icon="search-x"
+          title="No content found"
+          description="Try adjusting your search or filters to discover more content."
+          action={
+            <div className="flex-col-center gap-md">
+              {onClearFilters && (
+                <Button variant="secondary" size="sm" onClick={onClearFilters}>
+                  Clear all filters
+                </Button>
+              )}
 
-          {onClearFilters && (
-            <Button variant="secondary" size="sm" onClick={onClearFilters}>
-              Clear all filters
-            </Button>
-          )}
-
-          {onTabSuggestion && (
-            <div className="content-grid__category-suggestions flex-center flex-wrap gap-sm">
-              {CATEGORY_SUGGESTIONS.map((cat) => {
-                const tabDef = CONTENT_TABS.find((t) => t.id === cat.id);
-                return (
-                  <Button
-                    key={cat.id}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onTabSuggestion(cat.id)}
-                    title={`Browse ${tabDef?.label ?? cat.label}`}
-                  >
-                    {cat.label}
-                  </Button>
-                );
-              })}
+              {onTabSuggestion && (
+                <div className="content-grid__category-suggestions flex-center flex-wrap gap-sm">
+                  {CATEGORY_SUGGESTIONS.map((cat) => {
+                    const tabDef = CONTENT_TABS.find((t) => t.id === cat.id);
+                    return (
+                      <Button
+                        key={cat.id}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onTabSuggestion(cat.id)}
+                        title={`Browse ${tabDef?.label ?? cat.label}`}
+                      >
+                        <Icon name={cat.icon} size={16} aria-hidden />
+                        {cat.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          }
+        />
       </Box>
     );
   }

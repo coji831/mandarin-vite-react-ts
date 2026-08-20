@@ -106,7 +106,7 @@ function TopNavPreview({
                 textDecoration: "none",
                 fontSize: "var(--font-sm)",
                 whiteSpace: "nowrap",
-                color: isActive && !isLocked ? "var(--color-primary)" : "var(--text-muted)",
+                color: isActive && !isLocked ? "var(--color-primary-lighter)" : "var(--text-muted)",
                 borderBottom:
                   isActive && !isLocked
                     ? "2px solid var(--color-primary)"

@@ -12,7 +12,7 @@
  * Extracted from features/foundations to shared/components/CharacterStroke.
  */
 
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 import { useAudioItemPlayback } from "shared/hooks";
 import { openHub } from "shared/store";
 import { AnimationCanvas } from "./AnimationCanvas";
@@ -151,7 +151,7 @@ export function CharacterStrokePlayer({
           title={`Play ${character}`}
           aria-label={`Play pronunciation for ${character}`}
         >
-          🔊
+          <Icon name="audio" size={16} aria-hidden />
         </Button>
 
         <span className="font-xs font-italic text-muted">

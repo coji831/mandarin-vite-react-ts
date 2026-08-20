@@ -31,7 +31,7 @@ describe("ContentCard", () => {
   it("shows lock badge when locked", () => {
     render(<ContentCard item={{ ...baseItem, isLocked: true }} />);
 
-    expect(screen.getByLabelText("Locked content")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Locked content" })).toBeInTheDocument();
   });
 
   it("shows HSK level badge", () => {

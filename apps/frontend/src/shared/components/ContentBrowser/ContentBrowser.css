@@ -43,8 +43,10 @@
   outline: none;
 }
 
+/* Placeholder text must stay ≥4.5:1 — SC 1.4.3 covers placeholder. Role tiers:
+   primary/secondary/muted = ≥4.5:1 (body/meta/placeholder); subtle/ghost = decorative-only + large. */
 .search-bar__input::placeholder {
-  color: var(--text-subtle);
+  color: var(--text-muted);
 }
 
 /* ─── Content Grid ─── */

@@ -1,0 +1,13 @@
+/* .empty-state — iconographic empty state (Tier-0 vibrancy, 2B.1 d).
+   Precision-minimal: muted icon, fw-600 title, muted description, action slot.
+   Layout/typography come from globals.css utility classes; this file only
+   normalizes the icon color/size on the muted ramp. */
+.empty-state__icon {
+  display: inline-flex;
+  color: var(--text-muted);
+  line-height: var(--lh-1);
+}
+
+.empty-state__action {
+  margin-top: var(--space-xs);
+}
