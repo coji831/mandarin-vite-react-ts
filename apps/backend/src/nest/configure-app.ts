@@ -29,7 +29,7 @@ import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
 import { config } from "../shared/config/index.js";
 import { requestIdMiddleware } from "./request-id.middleware.js";
-import { rateLimitAuth, rateLimitWordsByAuth } from "./rate-limit.config.js";
+import { rateLimitAuth, rateLimitMnemonics, rateLimitWordsByAuth } from "./rate-limit.config.js";
 
 /** CORS — same explicit origin allowlist as app/index.ts. */
 const allowedOrigins: string[] = [
@@ -106,14 +106,17 @@ export function configureNestShellApp(app: INestApplication): void {
   app.use(requestIdMiddleware);
 
   // Rate-limit parity — `words` is mounted path-scoped (WordsRoutes.ts: 60/min
-  // user, 20/min guest) and `auth` mounts the shared brute-force limiter on
-  // `/register` + `/login` (authRoutes.ts: 5/min per IP) — the only ported
-  // routes with per-route limiters in Express today. Each honors the same
-  // per-route config + real-IP via trust proxy. Readers' 5/day generation
-  // limit is DB-backed (24-12) and declared as infra in rate-limit.config.ts.
+  // user, 20/min guest), `auth` mounts the shared brute-force limiter on
+  // `/register` + `/login` (authRoutes.ts: 5/min per IP), and `mnemonics`
+  // mounts the per-method limiters (mnemonicsRoutes.ts: GET 60, POST 10, PUT 30,
+  // DELETE 30 /min per user) — the only ported routes with per-route limiters
+  // in Express today. Each honors the same per-route config + real-IP via trust
+  // proxy. Readers' 5/day generation limit is DB-backed (24-12) and declared as
+  // infra in rate-limit.config.ts.
   expressApp.use("/api/v1/words", rateLimitWordsByAuth);
   expressApp.use("/api/v1/auth/register", rateLimitAuth);
   expressApp.use("/api/v1/auth/login", rateLimitAuth);
+  expressApp.use("/api/v1/mnemonics", rateLimitMnemonics);
 
   // Graceful shutdown (Redis quit wiring lands in a later story).
   app.enableShutdownHooks();

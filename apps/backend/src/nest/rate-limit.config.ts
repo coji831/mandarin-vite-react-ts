@@ -25,7 +25,7 @@
  *     route.
  */
 
-import { rateLimit, type Options } from "express-rate-limit";
+import { rateLimit, ipKeyGenerator, type Options } from "express-rate-limit";
 import type { NextFunction, Request, Response } from "express";
 
 /** Configs are passed to `rateLimit()` which accepts `Partial<Options>`. */
@@ -99,6 +99,98 @@ const authLimiter = rateLimit(AUTH_LIMITER_CONFIG);
 /** Route-level middleware: auth brute-force limiter (login/register). */
 export function rateLimitAuth(req: Request, res: Response, next: NextFunction): void {
   authLimiter(req, res, next);
+}
+
+// ── mnemonics — [APPLIED] (mnemonicsRoutes.ts, applied in 24-8) ───────────
+
+/**
+ * Per-method mnemonics limiters — 1:1 with `mnemonicsRoutes.ts`
+ * (get 60/min, generate 10/min, update 30/min, delete 30/min), including the
+ * same `req.userId || ipKeyGenerator(req.ip || "unknown")` key (the helper
+ * avoids express-rate-limit's ERR_ERL_KEY_GEN_IPV6 warning). NOTE: the shell
+ * mounts this dispatcher as path-scoped middleware in `configure-app.ts`, which
+ * runs BEFORE the Nest guards, so `req.userId` is not yet attached for
+ * authenticated requests and the limiter keys by IP for everyone. This is a
+ * rate-limit KEY difference only (max-per-bucket is the same); the 24-8
+ * mnemonics parity harness uses unique `X-Forwarded-For` IPs per request so it
+ * never trips any limiter. The 429 body (default express-rate-limit handler
+ * sending the `message` object directly) is byte-identical to Express — no
+ * envelope, like the auth 429.
+ */
+export const MNEMONICS_GET_LIMITER_CONFIG: LimiterConfig = {
+  windowMs: 60 * 1000, // 1 minute
+  max: 60,
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
+  message: {
+    error: "Too many requests. Please wait a moment before fetching more mnemonics.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+};
+
+/** Mnemonics POST (generate) limiter — 10 req/min per user. */
+export const MNEMONICS_GENERATE_LIMITER_CONFIG: LimiterConfig = {
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
+  message: {
+    error: "Too many generation requests. Please wait a moment before generating more mnemonics.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+};
+
+/** Mnemonics PUT (update) limiter — 30 req/min per user. */
+export const MNEMONICS_UPDATE_LIMITER_CONFIG: LimiterConfig = {
+  windowMs: 60 * 1000, // 1 minute
+  max: 30,
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
+  message: {
+    error: "Too many update requests. Please wait a moment before updating more mnemonics.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+};
+
+/** Mnemonics DELETE (reset) limiter — 30 req/min per user. */
+export const MNEMONICS_DELETE_LIMITER_CONFIG: LimiterConfig = {
+  windowMs: 60 * 1000, // 1 minute
+  max: 30,
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
+  message: {
+    error: "Too many reset requests. Please wait a moment before resetting more mnemonics.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+};
+
+const mnemonicsGetLimiter = rateLimit(MNEMONICS_GET_LIMITER_CONFIG);
+const mnemonicsGenerateLimiter = rateLimit(MNEMONICS_GENERATE_LIMITER_CONFIG);
+const mnemonicsUpdateLimiter = rateLimit(MNEMONICS_UPDATE_LIMITER_CONFIG);
+const mnemonicsDeleteLimiter = rateLimit(MNEMONICS_DELETE_LIMITER_CONFIG);
+
+/** Route-level middleware: per-method mnemonics limiter — mirrors mnemonicsRoutes.ts. */
+export function rateLimitMnemonics(req: Request, res: Response, next: NextFunction): void {
+  switch (req.method) {
+    case "GET":
+      mnemonicsGetLimiter(req, res, next);
+      break;
+    case "POST":
+      mnemonicsGenerateLimiter(req, res, next);
+      break;
+    case "PUT":
+      mnemonicsUpdateLimiter(req, res, next);
+      break;
+    case "DELETE":
+      mnemonicsDeleteLimiter(req, res, next);
+      break;
+    default:
+      next();
+  }
 }
 
 // ── readers — [INFRA] (readersRoutes.ts, applied in 24-12) ────────────────

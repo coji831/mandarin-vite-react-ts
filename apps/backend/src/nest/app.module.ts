@@ -19,6 +19,11 @@
  * providers and available to later module ports (24-6 auth, 24-8 mnemonics,
  * 24-10 audio, 24-11 review, 24-12 readers, 24-13 quiz/progression). They are
  * NOT applied globally — later modules apply them per-route via `@UseGuards`.
+ *
+ * Story 24-8 — wires `CharactersModule` (two-controller module: deep-param
+ * routing + /search; public static data) and `MnemonicsModule` (the first
+ * consumer of `SharedModule` cache/gemini + the calibrated `OptionalAuthGuard`
+ * on a read route and `RequireAuthGuard` on the write routes).
  */
 
 import { Module } from "@nestjs/common";
@@ -28,6 +33,8 @@ import { PhoneticClustersModule } from "../modules/phonetic-clusters/nest/phonet
 import { GrammarModule } from "../modules/grammar/nest/grammar.module.js";
 import { ChengyuModule } from "../modules/chengyu/nest/chengyu.module.js";
 import { AuthModule } from "../modules/auth/nest/auth.module.js";
+import { CharactersModule } from "../modules/characters/nest/characters.module.js";
+import { MnemonicsModule } from "../modules/mnemonics/nest/mnemonics.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -39,6 +46,8 @@ import { AppExceptionFilter } from "./exception.filter.js";
     GrammarModule,
     ChengyuModule,
     AuthModule,
+    CharactersModule,
+    MnemonicsModule,
     SharedModule,
     GuardsModule,
   ],
