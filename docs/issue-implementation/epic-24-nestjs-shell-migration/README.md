@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-7, 24-5/24-6/24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-5/24-7, 24-6/24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 21, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1/24-2/24-3/24-4/24-7 are fully authored; 24-5/24-6/24-8…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1/24-2/24-3/24-4/24-5/24-7 are fully authored; 24-6/24-8…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -71,13 +71,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-5 — Auth-Surface Guards (Calibrated)
 
-**_(STUB — absorbs epic-25 F6 unification)_**
+**_(completed — absorbs epic-25 F6 unification)_**
 
 **Goal:** Port `authenticateToken`/`optionalAuth`/`requireAuth` to Nest guards targeting the **calibrated** unified guest semantics (F6: guest → session-local/empty, never all-unlocked) — the calibration spec is the source of truth, not current code.
 
 **ACs:** Three guard types exist and reproduce the calibrated semantics (401 messages, guest handling, `req.userId`); parity harness proves 401/403 + guest-vs-user responses identical to Express on a test-protected route (with the calibrated guest shape per the calibration spec, F6); guard unit tests cover success/failure/guest/expired-token paths; no "port pre-25 then rework" — the calibrated shape is the port target (ADR-24-B).
 
-**Gate:** 24-4 (shared substrate) + the calibration spec (`wip/guest-access-calibration.md`) — **no code dependency on 24-7** (the guards read the spec, never `createGuestPhaseGate`). **Docs:** stub — full BR/IMP authored when 24-5 runs.
+**Status:** ✅ completed — `AuthGuard`/`OptionalAuthGuard`/`RequireAuthGuard` shipped under `src/nest/guards/` with the shared helpers (`resolveAccessToken` header→cookie fallback, `attachAuthUser` → `req.user`/`req.userId`, `AUTH_GUARD_ERRORS` matching `authMiddleware.ts` byte-for-byte, `ACCESS_TOKEN_COOKIE`), wired into `app.module.ts` via the `GuardsModule` providers module (not global — public routes unaffected); hermetic parity harness (`tests/integration/nest/auth-guards-parity.test.ts`) proves 401/403 + guest-vs-user identical to the real Express middleware; guard unit tests cover success/failure/guest/expired-token paths; additive `JwtService.verifyAccessToken` (+ tests); no code dependency on 24-7; no `packages/shared-constants` / 25–28 zone file touched. **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-4 (shared substrate) + the calibration spec (`wip/guest-access-calibration.md`) — **no code dependency on 24-7** (the guards read the spec, never `createGuestPhaseGate`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-5-auth-guards-calibrated.md) · [IMP](story-24-5-auth-guards-calibrated.md) (full).
 
 ### 24-6 — Auth Module Port
 
