@@ -55,6 +55,8 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** 4xx/5xx deep-equal to Express for status + `{code, message, requestId}` shape; `X-Request-Id` set + echoed into envelope; rate-limit honors same per-route configs + real-IP via `trust proxy` (429 status parity; auth limits applied later in 24-6/24-12); **error-visibility parity — filter logs every 4xx/5xx with requestId/code/message identically to `errorHandler.ts`**; **body-parser parity — json + urlencoded limits reproduced**; harness extended + green, no 25–28 zone file touched; `@nestjs/throttler` decision recorded (recommend reject — retain `express-rate-limit`).
 
+**Status:** ✅ completed — HTTP-layer parity shipped on the Nest shell: global `AppExceptionFilter` (`{code, message, requestId}` envelope via pure `resolveHttpError()`/`logError()`) + `mountExpressErrorBridge()` (mounted last — Nest filters can't see pre-router `app.use` errors, enabling body-parser 413 parity); `request-id.middleware.ts` re-exports the shared `requestIdMiddleware` (zero drift); `express-rate-limit` retained — `@nestjs/throttler` rejected (decision recorded), `words` applied path-scoped, auth/readers declared as infra; body-parser via `bodyParser: false` + explicit `express.json()`/`urlencoded({ extended: true })`; route-parity harness extended 23→30 (413 envelope deep-equal, `X-Request-Id`, seeded 429 + 500, log-parity). **Commit hash:** _(to be filled at epic close)_.
+
 **Gate:** none (sits on 24-2). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-3-http-layer-parity.md) · [IMP](story-24-3-http-layer-parity.md) (full).
 
 ### 24-4 — SharedModule/DatabaseModule + Async Providers

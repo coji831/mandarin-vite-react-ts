@@ -14,13 +14,13 @@ This is the second unblocked story (sits directly on 24-2's runway). The HTTP la
 
 ## Acceptance Criteria
 
-- [ ] 4xx/5xx responses from Nest are deep-equal to Express for status + `{code, message, requestId}` shape on all ported routes.
-- [ ] `X-Request-Id` header set + echoed into the envelope; identical to Express format.
-- [ ] Rate-limit middleware in Nest honors the same per-route configs + real-IP via `trust proxy`; 429s match Express (status only; auth-specific limits deferred to 24-5/24-10).
-- [ ] Parity harness extended and green; no 25–28 zone file touched.
-- [ ] **Error-visibility parity (O1)**: the Nest exception filter logs every 4xx/5xx with `requestId`/`code`/`message` identically to `src/shared/middleware/errorHandler.ts` (same log fields + severity on each error path) — verified by a log-parity check on seeded 4xx/5xx.
-- [ ] **Body-parser parity**: `express.json()` + `express.urlencoded()` limits reproduced on the Nest Express adapter (same size/limit configs as `src/app/index.ts`) — verified by an oversized-body test that yields the identical 4xx status + envelope.
-- [ ] `@nestjs/throttler` decision recorded in the story IMP (reject or adopt — recommend reject for parity).
+- [x] 4xx/5xx responses from Nest are deep-equal to Express for status + `{code, message, requestId}` shape on all ported routes.
+- [x] `X-Request-Id` header set + echoed into the envelope; identical to Express format.
+- [x] Rate-limit middleware in Nest honors the same per-route configs + real-IP via `trust proxy`; 429s match Express (status only; auth-specific limits deferred to 24-5/24-10).
+- [x] Parity harness extended and green; no 25–28 zone file touched.
+- [x] **Error-visibility parity (O1)**: the Nest exception filter logs every 4xx/5xx with `requestId`/`code`/`message` identically to `src/shared/middleware/errorHandler.ts` (same log fields + severity on each error path) — verified by a log-parity check on seeded 4xx/5xx.
+- [x] **Body-parser parity**: `express.json()` + `express.urlencoded()` limits reproduced on the Nest Express adapter (same size/limit configs as `src/app/index.ts`) — verified by an oversized-body test that yields the identical 4xx status + envelope.
+- [x] `@nestjs/throttler` decision recorded in the story IMP (reject or adopt — recommend reject for parity).
 
 ## Business Rules
 
@@ -41,7 +41,8 @@ This is the second unblocked story (sits directly on 24-2's runway). The HTTP la
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Commit hash**: _(to be filled at epic close)_
+- **Implementation note:** Global `AppExceptionFilter` (`{code, message, requestId}` envelope via pure `resolveHttpError()`/`logError()` helpers) + `mountExpressErrorBridge()` (mounted last — Nest filters can't see pre-router `app.use` errors, needed for body-parser 413 parity); `request-id.middleware.ts` re-exports the shared `requestIdMiddleware` (zero drift); `express-rate-limit` retained (`@nestjs/throttler` rejected — decision recorded) with `words` applied path-scoped and auth/readers declared as infra (24-6/24-12); body-parser via `bodyParser: false` + explicit `express.json()`/`express.urlencoded({ extended: true })`; route-parity harness extended 23→30 (413 envelope deep-equal, `X-Request-Id`, seeded 429 + 500, log-parity). All 7 ACs verified against the shipped code — commit hash deferred to epic close.

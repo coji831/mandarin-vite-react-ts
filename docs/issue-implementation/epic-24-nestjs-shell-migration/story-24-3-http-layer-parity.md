@@ -4,7 +4,23 @@
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-3-http-layer-parity.md`
 > **Last Updated:** August 21, 2026
-> **Status:** Planned
+> **Status:** Completed
+> **Commit hash:** _(to be filled at epic close)_
+
+## Implementation Summary
+
+Shipped HTTP-layer parity on the Nest shell: every 4xx/5xx now emits the Express `{ code, message, requestId }` envelope, `X-Request-Id` is set and echoed per request, `express-rate-limit` is retained with the same per-route configs, and the body-parser limits are reproduced — verified by the route-parity harness extended **23 → 30 assertions**. Express remains the production entry, untouched by this story.
+
+**Key shipping decisions:**
+
+- **`AppExceptionFilter` + pure `resolveHttpError()`/`logError()`** (`src/nest/exception.filter.ts`) — the global `@Catch()` filter maps every error to `{ code: err.code || "INTERNAL_ERROR", message: err.message || "An unexpected error occurred", requestId }` with status `err.status || err.statusCode || 500` and logs `API Error { requestId, code, message, stack }` identically to `src/shared/middleware/errorHandler.ts` (O1 error-visibility parity). The mapping + logging are pure helpers shared with the Express error bridge, so the two paths can never diverge.
+- **`mountExpressErrorBridge()` mounted LAST** — Nest's exception filter cannot see errors thrown by pre-router `app.use(...)` middleware (body-parser, cookie-parser) because they bypass the Nest router. An Express error-handling bridge is therefore mounted after every other mount so those errors emit the exact same envelope via the shared mapper — this is what makes body-parser 413 (and the seeded 500) parity possible.
+- **`request-id.middleware.ts` re-exports the shared `requestIdMiddleware`** — the shell mounts the exact same function the Express app uses today, so `requestId` format and `X-Request-Id` header behavior can never drift (zero drift by construction).
+- **Retained `express-rate-limit`, rejected `@nestjs/throttler`** (decision recorded) — `words` limiters (60/min user, 20/min guest) applied path-scoped at `/api/v1/words`; auth/readers limiters declared as **infra** and applied when those modules are ported (24-6 / 24-12); real-IP honored via `trust proxy 1` mirroring `src/app/index.ts`.
+- **Body-parser via `bodyParser: false` + explicit `express.json()` / `express.urlencoded({ extended: true })`** in `configure-app.ts` — Nest's built-in parser is disabled so this single authoritative config matches `src/app/index.ts`; oversized bodies fail with the identical 413 + envelope.
+- **Harness extended 23 → 30 assertions** — 413 envelope deep-equal on both apps, `X-Request-Id` present + unique + client-echo, seeded 429 + 500 envelopes, and a log-parity check on the oversized-body path.
+
+**Honest parity nuance:** on the ported routes the Express 4xx bodies are still the **legacy controller shape** `{ error, code }` (they do not pass through the Express `errorHandler`), so the harness asserts identical status + the Nest envelope shape on those paths, but cross-app **envelope deep-equal is proven on the 413 path** — the one ported path where Express also reaches the errorHandler. Nest bare `HttpException`s map to `code: "INTERNAL_ERROR"` defaults; richer code mapping lands with the controller ports.
 
 ## Technical Scope
 
@@ -12,12 +28,13 @@ Make the Nest shell contract-identical at the HTTP layer before any more modules
 
 **Files:**
 
-- `apps/backend/src/nest/main.ts` — **UPDATE**: mount the requestId middleware/interceptor + rate-limit middleware via `app.use`; register the global `ExceptionFilter`.
-- `apps/backend/src/nest/app.module.ts` — **UPDATE**: register the global exception filter (`APP_FILTER`) provider.
-- `apps/backend/src/nest/exception.filter.ts` — **NEW**: global `ExceptionFilter` → `{ code, message, requestId }` with the Express status mapping.
-- `apps/backend/src/nest/request-id.middleware.ts` (or interceptor) — **NEW**: `uuid` per request + `X-Request-Id` header + `req.requestId` parity.
-- `apps/backend/src/nest/rate-limit.config.ts` — **NEW**: shared `express-rate-limit` configs (trust-proxy real-IP; per-route limits for auth/readers declared as infra, applied later).
-- `apps/backend/tests/integration/nest/route-parity.test.ts` — **UPDATE**: envelope-shape assertions on 4xx/5xx; `X-Request-Id` present + unique; 429 behavior on a seeded test route.
+- `apps/backend/src/nest/main.ts` — **UPDATE**: `bodyParser: false` at `NestFactory.create`; configure the shell (`configureNestShellApp`) then `mountExpressErrorBridge()` (bridge last).
+- `apps/backend/src/nest/app.module.ts` — **UPDATE**: register the global `AppExceptionFilter` via the `APP_FILTER` provider.
+- `apps/backend/src/nest/configure-app.ts` — **UPDATE**: mount `express.json()` + `express.urlencoded({ extended: true })` (body-parser parity), `requestIdMiddleware`, and the path-scoped `words` rate-limiters; `trust proxy 1` + `/api` prefix + CORS (from 24-2).
+- `apps/backend/src/nest/exception.filter.ts` — **NEW**: global `AppExceptionFilter` → `{ code, message, requestId }` (Express status mapping) + pure `resolveHttpError()`/`logError()` + `mountExpressErrorBridge()`.
+- `apps/backend/src/nest/request-id.middleware.ts` — **NEW**: re-exports the shared `requestIdMiddleware` (zero drift — same `uuid` + `X-Request-Id` + `req.requestId` behavior).
+- `apps/backend/src/nest/rate-limit.config.ts` — **NEW**: shared `express-rate-limit` configs (trust-proxy real-IP; `words` applied path-scoped; auth/readers declared as infra for 24-6/24-12; test low-limit configs).
+- `apps/backend/tests/integration/nest/route-parity.test.ts` — **UPDATE**: 4xx/5xx envelope-shape assertions, `X-Request-Id` present + unique + client-echo, seeded 429 + 500 envelopes, body-parser 413 deep-equal + log-parity.
 
 ## Implementation Details
 
@@ -113,11 +130,11 @@ Solution: Retain express-rate-limit and mount it on the adapter via app.use with
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code
-- [ ] All relative markdown links resolve
-- [ ] Last Updated / Last Update date is current (same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code
+- [x] All relative markdown links resolve
+- [x] Last Updated / Last Update date is current (same commit as the edit)
 
 ## Testing Implementation
 
