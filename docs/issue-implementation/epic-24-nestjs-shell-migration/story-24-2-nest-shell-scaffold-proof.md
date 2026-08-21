@@ -4,7 +4,24 @@
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-2-nest-shell-scaffold-proof.md`
 > **Last Updated:** August 21, 2026
-> **Status:** Planned
+> **Status:** Completed
+> **Commit hash:** _(to be filled at epic close)_
+
+## Implementation Summary
+
+Shipped the NestJS 11 dev-only shell (Express platform adapter) and ported the four zero-dependency reference modules (`words`, `phonetic-clusters`, `grammar`, `chengyu`) as Nest modules under `modules/<name>/nest/`, reusing the existing services/repositories unchanged — verified by a 23-assertion route-response parity harness (`tests/integration/nest/route-parity.test.ts`) that boots **both** apps in-process via supertest and asserts identical 2xx status+body (deep-equal) and identical 4xx status across all 8 ported routes. Express remains the production entry (`node dist/app/index.js` via `railway.toml`/`Procfile`/`start`), untouched by this story.
+
+**Key shipping decisions:**
+
+- **`configure-app.ts` extraction** — `src/nest/configure-app.ts` exports `configureNestShellApp(app)` (the shared boot shape: `trust proxy 1`, `/api` global prefix, cookie parsing, the identical CORS allowlist, `enableShutdownHooks`). Both the dev entry (`main.ts`) and the parity harness configure through this **same code path**, so the harness verifies the exact production shell boot shape and the two can never drift.
+- **Explicit `useFactory` + `@Inject()` providers** (not auto constructor-param injection) because `tsx` (esbuild) emits no decorator metadata in the dev loop; the compiled `tsc` build still gets metadata via the tsconfig flags. Nest controllers bypass `req.xController` and call the same services.
+- **Parity harness** — 23 assertions across 4 modules (words 6, phonetic-clusters 6, grammar 6, chengyu 5); fixtures resolved from the seeded DB at runtime (glyph / word id / grammar `content_id` / chengyu `content_id`); `describe.skipIf(!db.available)` skip-with-message guard when `DATABASE_URL` is absent; runs under `vitest.integration.config.ts` (`fileParallelism: false`, 30s timeout) and is excluded from Tier-1 via the base config's `!tests/integration/**` pattern.
+- **Lockfile correction** — the lockfile changed is the **repo-root `package-lock.json`**, not `apps/backend/package-lock.json` (the backend workspace resolves from the root lockfile; deps merged via `npm install` at the root).
+- **Express 5 ↔ Nest 11 adapter confirmed compatible** — `npm ls express` shows a single `express@5.2.1` (deduped under `@nestjs/platform-express@11.2.1`, `express-rate-limit`, and `swagger-ui-express`); no Express 4 peer was forced. The parity harness acts as the compat smoke test.
+
+**Verification results (story gates):** typecheck ✅ · `npm run build` ✅ (both `dist/app/index.js` + `dist/nest/main.js` emitted) · `test:integration` ✅ 15 files / 105 tests (82 baseline + 23 parity) · `test:full` ✅ 56 files / 605 tests (no regression) · `lint` ✅ 0 errors · `check:module-boundaries` ✅ green (no new `shared/`→`modules/` edge) · `dev:nest` smoke ✅ all 8 routes return the exact success JSON.
+
+**Pre-existing flags (not this story's scope, noted for awareness):** (1) `ERR_ERL_KEY_GEN_IPV6` log from the `WordsRoutes.ts` `keyGenerator` (`req.userId || req.ip || "unknown"`) — harmless, unrelated to the Nest shell; (2) pre-existing `tsconfig.test.json` type errors in unrelated integration files (`chengyu-delta.test.ts`, `chengyu-seed.test.ts`).
 
 ## Technical Scope
 
@@ -14,18 +31,18 @@ Scaffold the NestJS 11 shell (Express platform adapter) as a parallel, dev-only 
 
 - `verification-artifacts/` — **NEW**: baseline record (full + integration pass/fail captured + **triaged before any work starts** — the epic-level T1 hard precondition).
 - `apps/backend/package.json` — **UPDATE**: add deps `@nestjs/common`/`@nestjs/core`/`@nestjs/platform-express` `^11` + `reflect-metadata` `^0.2`; dev dep `@nestjs/testing` `^11`; `engines` → `>=22`; add scripts `dev:nest` (`tsx watch src/nest/main.ts`) + `start:nest` (`node dist/nest/main.js`). `predev`/`prebuild`/`start`/`build` untouched.
-- `apps/backend/package-lock.json` — **UPDATE**: lock the new deps (single-version guard `npm ls express`; merge via `npm install`).
+- `package-lock.json` (repo **root**, not `apps/backend/`) — **UPDATE**: lock the new deps (single-version guard `npm ls express`; merged via `npm install` at the repo root — the backend workspace resolves from the root lockfile).
 - `apps/backend/tsconfig.json` — **UPDATE**: add `experimentalDecorators` + `emitDecoratorMetadata` (inherited by all configs); `isolatedModules` stays.
 - `apps/backend/.node-version` — **UPDATE**: 20 → 24.
 - `apps/backend/.nvmrc` — **UPDATE**: 20.19.0 → 24.x.
 - `apps/backend/src/nest/main.ts` — **NEW**: `NestFactory.create(AppModule)` boot shape (CORS allowlist, `trust proxy 1`, cookie-parser, `/api` prefix, `enableShutdownHooks`, `listen(config.port)`).
 - `apps/backend/src/nest/app.module.ts` — **NEW**: `@Module({ imports: [WordsModule, PhoneticClustersModule, GrammarModule, ChengyuModule] })`.
+- `apps/backend/src/nest/configure-app.ts` — **NEW**: extracted `configureNestShellApp(app)` — the shared boot shape (`trust proxy 1`, `/api` prefix, cookie-parser, CORS allowlist, `enableShutdownHooks`) so `main.ts` and the route-parity harness configure through the **same code path** (no drift).
 - `apps/backend/src/modules/words/nest/words.module.ts` + `words-nest.controller.ts` — **NEW**: `@Module` + Nest controller (reuses `WordsService`/`MeasureWordService`/`WordsRepository`/`MeasureWordRepository` unchanged).
 - `apps/backend/src/modules/phonetic-clusters/nest/*.ts` — **NEW**: module + controller (2 routes).
 - `apps/backend/src/modules/grammar/nest/*.ts` — **NEW**: module + controller (2 routes).
 - `apps/backend/src/modules/chengyu/nest/*.ts` — **NEW**: module + controller (2 routes).
 - `apps/backend/tests/integration/nest/route-parity.test.ts` — **NEW**: parity harness booting both apps in-process via supertest.
-- `verification-artifacts/` — **NEW**: baseline record (full + integration pass/fail captured before work).
 
 ## Implementation Details
 
@@ -224,11 +241,11 @@ Solution: Verify at scaffold via `npm ls express` (single 5.x version) and treat
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code
-- [ ] All relative markdown links resolve
-- [ ] Last Updated / Last Update date is current (same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code
+- [x] All relative markdown links resolve
+- [x] Last Updated / Last Update date is current (same commit as the edit)
 
 ## Testing Implementation
 

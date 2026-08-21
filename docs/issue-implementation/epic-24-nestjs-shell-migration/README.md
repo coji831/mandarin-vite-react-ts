@@ -45,6 +45,8 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** Nest 11 deps + decorator flags + `src/nest/main.ts`/`app.module.ts` boot with identical CORS/`trust proxy 1`/cookie/`/api` prefix; Express prod path + `railway.toml`/`Procfile`/`start` untouched; 4 modules ported under `modules/<name>/nest/` (exact success JSON + status, 4xx status; envelope deferred to 24-3); **test baseline = epic-level hard precondition (record + triage before starting)**; parity harness covers **`WordsRoutes.ts` (uppercase)** + the other 3 route files under `vitest.integration.config.ts` with skip-guard on missing `DATABASE_URL`; Node reconciled to 24 LTS + single `npm ls express` + `check:module-boundaries` green; no `SharedModule`, no 25–28 zone touched; all gates green.
 
+**Status:** ✅ completed — Nest 11 dev-only shell scaffolded (Express adapter) with the shared `configure-app.ts` boot shape; `words`/`phonetic-clusters`/`grammar`/`chengyu` ported under `modules/<name>/nest/` reusing services/repos (useFactory + `@Inject`); 23-assertion route-parity harness green (`tests/integration/nest/route-parity.test.ts`, skip-guard on missing `DATABASE_URL`); Express prod path untouched (`dist/app/index.js` still emitted). **Commit hash:** _(to be filled at epic close)_.
+
 **Gate:** none — sits on 24-1. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-2-nest-shell-scaffold-proof.md) · [IMP](story-24-2-nest-shell-scaffold-proof.md) (full).
 
 ### 24-3 — HTTP-Layer Parity: `{code,message,requestId}` Envelope + RequestId + Rate-Limit

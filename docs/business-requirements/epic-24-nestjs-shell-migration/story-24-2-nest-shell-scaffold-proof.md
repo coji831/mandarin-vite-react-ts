@@ -14,14 +14,14 @@ This is the executable first story of Epic 24 (D7 shell-swap). It de-risks the e
 
 ## Acceptance Criteria
 
-- [ ] Nest 11 deps added (`@nestjs/common`/`@nestjs/core`/`@nestjs/platform-express` `^11` + `reflect-metadata`; dev `@nestjs/testing` `^11`) + `experimentalDecorators`/`emitDecoratorMetadata` in `apps/backend/tsconfig.json` (inherited by all configs); `src/nest/main.ts` + `src/nest/app.module.ts` boot on the Express adapter with the identical CORS allowlist, `trust proxy 1`, cookie parsing, and `/api` global prefix; `dev:nest`/`start:nest` scripts run it. Deliberately absent: `@nestjs/config`, `@nestjs/throttler`, `@nestjs/swagger`, `nest-cli.json`.
-- [ ] Express production path unchanged: `npm run build` still emits `dist/app/index.js`; `railway.toml`/`Procfile`/`start` untouched and the Express entry still boots.
-- [ ] `words`, `phonetic-clusters`, `grammar`, `chengyu` ported as Nest modules under `modules/<name>/nest/` reusing the existing services/repos unchanged; Nest controllers return the exact success JSON + status of their Express counterparts for all their `ROUTE_PATTERNS` paths; 4xx status matches (body-envelope parity deferred to 24-3).
-- [ ] Parity harness `tests/integration/nest/route-parity.test.ts` passes under `vitest.integration.config.ts` (identical 2xx body + status, identical 4xx status across all ported routes); excluded from Tier-1 changed-scope; skip-with-message guard when `DATABASE_URL` is absent. The covered set includes `WordsRoutes.ts` (uppercase filename — the Express words route file is `apps/backend/src/modules/words/api/WordsRoutes.ts`).
-- [ ] **Test baseline is an epic-level hard precondition (T1)**: `npm run test:full` + `npm run test:integration` are run and the real pass/fail is **recorded and triaged in a verification artifact before any 24-2 work starts** — the prior "green" claim is unverified; failures are triaged (fix or documented) before scaffolding begins.
-- [ ] Node engine reconciled to 24 LTS (`engines`, `.node-version`, `.nvmrc`); `npm ls express` shows a single 5.x version; `npm run check:module-boundaries` green (no new `shared/`→`modules/` edge).
-- [ ] No `SharedModule` introduced; no changes to auth/guards, the `{code, message, requestId}` envelope, requestId, rate-limit config, `progression↔quiz` DI, or any 25–28 collision zone (review/quiz/audio/progression/radicals/foundations/`authMiddleware`/`shared-constants`/Prisma schema); baseline tests stay green.
-- [ ] Gates green: `npm run build`, `npm run lint` (0 errors), `npm run typecheck --workspace=@mandarin/backend`, `npm test`, `npm run test:full`, `npm run test:integration`.
+- [x] Nest 11 deps added (`@nestjs/common`/`@nestjs/core`/`@nestjs/platform-express` `^11` + `reflect-metadata`; dev `@nestjs/testing` `^11`) + `experimentalDecorators`/`emitDecoratorMetadata` in `apps/backend/tsconfig.json` (inherited by all configs); `src/nest/main.ts` + `src/nest/app.module.ts` boot on the Express adapter with the identical CORS allowlist, `trust proxy 1`, cookie parsing, and `/api` global prefix; `dev:nest`/`start:nest` scripts run it. Deliberately absent: `@nestjs/config`, `@nestjs/throttler`, `@nestjs/swagger`, `nest-cli.json`.
+- [x] Express production path unchanged: `npm run build` still emits `dist/app/index.js`; `railway.toml`/`Procfile`/`start` untouched and the Express entry still boots.
+- [x] `words`, `phonetic-clusters`, `grammar`, `chengyu` ported as Nest modules under `modules/<name>/nest/` reusing the existing services/repos unchanged; Nest controllers return the exact success JSON + status of their Express counterparts for all their `ROUTE_PATTERNS` paths; 4xx status matches (body-envelope parity deferred to 24-3).
+- [x] Parity harness `tests/integration/nest/route-parity.test.ts` passes under `vitest.integration.config.ts` (identical 2xx body + status, identical 4xx status across all ported routes); excluded from Tier-1 changed-scope; skip-with-message guard when `DATABASE_URL` is absent. The covered set includes `WordsRoutes.ts` (uppercase filename — the Express words route file is `apps/backend/src/modules/words/api/WordsRoutes.ts`).
+- [x] **Test baseline is an epic-level hard precondition (T1)**: `npm run test:full` + `npm run test:integration` are run and the real pass/fail is **recorded and triaged in a verification artifact before any 24-2 work starts** — the prior "green" claim is unverified; failures are triaged (fix or documented) before scaffolding begins.
+- [x] Node engine reconciled to 24 LTS (`engines`, `.node-version`, `.nvmrc`); `npm ls express` shows a single 5.x version; `npm run check:module-boundaries` green (no new `shared/`→`modules/` edge).
+- [x] No `SharedModule` introduced; no changes to auth/guards, the `{code, message, requestId}` envelope, requestId, rate-limit config, `progression↔quiz` DI, or any 25–28 collision zone (review/quiz/audio/progression/radicals/foundations/`authMiddleware`/`shared-constants`/Prisma schema); baseline tests stay green.
+- [x] Gates green: `npm run build`, `npm run lint` (0 errors), `npm run typecheck --workspace=@mandarin/backend`, `npm test`, `npm run test:full`, `npm run test:integration`.
 
 ## Business Rules
 
@@ -42,7 +42,8 @@ This is the executable first story of Epic 24 (D7 shell-swap). It de-risks the e
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Commit hash**: _(to be filled at epic close)_
+- **Implementation note:** NestJS 11 dev-only shell booted on the Express adapter via `src/nest/main.ts` + `src/nest/app.module.ts` + the shared `configure-app.ts` boot shape; four reference modules (`words`, `phonetic-clusters`, `grammar`, `chengyu`) ported under `modules/<name>/nest/` with `useFactory` + `@Inject` reusing the existing services/repos unchanged; 23-assertion route-parity harness green under `vitest.integration.config.ts`; Express production path untouched (`dist/app/index.js` still emitted). All 8 ACs verified against the shipped code — commit hash deferred to epic close.
