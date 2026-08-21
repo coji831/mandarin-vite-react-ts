@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-12, 24-13…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-13, 24-14…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 22, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-12 are fully authored; 24-13…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-13 are fully authored; 24-14…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -163,13 +163,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-13 — Quiz + Progression Port
 
-**_(STUB — absorbs epic-26 M1 backend shape + epic-25 F6 progression; FE quiz fixes C)_**
+**_(completed — resolves the `progression ↔ quiz` circular-DI; absorbs epic-26 M1 backend shape + epic-25 F6 progression; FE quiz fixes C)_**
 
 **Goal:** Resolve the `progression ↔ quiz` cycle (primary `forwardRef(() => QuizModule)`/`@Inject(forwardRef(() => QuizService))`; fallback = preserve re-injection via `setQuizService` provider factory) and port both modules together — the backend engine ported **correctly** (no backend bug canonized).
 
 **ACs:** Circular-DI resolved with a recorded ADR (no mutable setter in Nest land unless documented fallback); all 15 quiz+progression routes ported (`quiz`: 7 + `POST /v1/quiz/feedback` + 5 strategies + SandhiDrill; `progression`: 7 routes incl. foundation-progress/phase-gate/gates/radical-progress); parity green (status + body + envelope); quiz strategies registry + SandhiDrill ported with the **correct** backend shape; progression guest branch unified to the calibrated gate (24-7); calibrated `optionalAuth` on guest quiz submit; **FE quiz-engine fixes explicitly NOT absorbed (C-declared, tracked in 26)**.
 
-**Gate:** 24-5 + 24-7 + 24-12 (serial order). **Docs:** stub — full BR/IMP authored when 24-13 runs.
+**Status:** ✅ completed — the `progression ↔ quiz` circular-DI resolved with a recorded ADR (`forwardRef`-direct PRIMARY failed the parity harness — `resolveParamToken` returned `undefined` for the un-instantiated forwardRef wrapper → `DEPENDENCY_MISSING`; as-built FALLBACK = construction-order break + the `ProgressionQuizBridge.onModuleInit` one-shot re-injection via `ModuleRef.get(QuizService)` + `setQuizService()`, invoked exactly once at composition); `QuizModule` (**8 routes** — 7 verbatim + feedback + sandhi — with the 5-strategy registry + `SandhiDrillService` 5–25 clamp) + `ProgressionModule` (**7 routes** verbatim) registered in `app.module.ts`; calibrated `OptionalAuthGuard` on the guest quiz submit surface (session-local mock shapes, no persistence) + `RequireAuthGuard` on attempts-GET/feedback (guest 401); **`/gates` guest branch CALIBRATED to Phase-1-only** (the 24-7 deferred item; Express untouched, unified at 24-15); backend engine ported **correctly** (no backend bug canonized; FE quiz fixes C-declared, stay in 26); quiz AI-feedback limiter (10/min/IP) applied in `rate-limit.config.ts`/`configure-app.ts` (1:1 with `aiFeedbackRoutes`); parity harness `quiz-progression-parity.test.ts` (**28 tests**) green — quiz 2xx deep-equal with `id`/`category` shuffle-position normalization (sentinels `QID`/`CAT`), 4xx envelope, guest vs registered, authed shared-attempt parity, calibrated `/gates` guest shape (documented Express deviation); gates green (typecheck · build both dist · test:full **744** (+40 unit) · integration **259** (+28 parity) · lint 0 · boundaries · dev:nest smoke — no circular-DI runtime errors, `/gates` guest = calibrated Phase-1, `/quiz/attempts` guest 401). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-5 + 24-7 + 24-12 (serial order). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-13-quiz-progression-circular-di.md) · [IMP](story-24-13-quiz-progression-circular-di.md) (full).
 
 ### 24-14 — Release-Safety Cutover Gate
 
