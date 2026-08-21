@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-5/24-6/24-7, 24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-8, 24-9…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 21, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1/24-2/24-3/24-4/24-5/24-6/24-7 are fully authored; 24-8…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-8 are fully authored; 24-9…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -103,13 +103,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-8 — Characters + Mnemonics Port
 
-**_(STUB — absorbs epic-25 F6 for mnemonics)_**
+**_(completed — absorbs epic-25 F6 for mnemonics)_**
 
 **Goal:** Port `characters` (2 controllers — `CharactersController` + `PinyinController`; 7 routes: `:glyph`, `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search`, `/frequency` + `GET /v1/pinyin/search`) and `mnemonics` (4 routes: GET/POST/PUT/DELETE on `/v1/mnemonics/:character`, cache+gemini, `optionalAuth`).
 
 **ACs:** All 7 characters + 4 mnemonics routes ported; parity harness green (2xx body+status, 4xx envelope); mnemonics uses `SharedModule` cache+gemini + the **calibrated** `OptionalAuthGuard` (guest → empty, per F6); mnemonics POST/PUT/DELETE success + validation 4xx match Express; no other zone touched.
 
-**Gate:** 24-3 + 24-4 + 24-5 (calibrated `OptionalAuthGuard`). **Docs:** stub — full BR/IMP authored when 24-8 runs.
+**Status:** ✅ completed — `CharactersModule` = **two controllers** (`CharactersNestController` + `PinyinNestController`) + 4 `useFactory` providers (2 repos + 2 services): 6 characters routes (`:glyph`, `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search`, `/frequency`) with CJK-regex validation + a route-shadowing parity note (`:glyph` first shadows `/search`/`/frequency` — pre-existing latent, reproduced byte-for-byte) + `GET /v1/pinyin/search` (not shadowed); `MnemonicsModule` = **first `SharedModule` consumer** (repo + gemini + cache via `useFactory`) + `GuardsModule`; `OptionalAuthGuard` on GET (guest → `req.userId` undefined → empty, never 401, never all-unlocked — F6), `RequireAuthGuard` on POST/PUT/DELETE (401 `AUTH_REQUIRED`); validation + HTML-sanitization parity; per-method limiters (GET 60 / POST 10 / PUT 30 / DELETE 30) mounted path-scoped in `configure-app.ts`/`rate-limit.config.ts` (1:1 with `mnemonicsRoutes.ts`); dedicated parity harness (`characters-mnemonics-parity.test.ts`, 24 tests — pictograph fixtures short-circuit Gemini, unique `X-Forwarded-For`); gates green (typecheck · build both dist · test:full 59/649 · integration 18/166 · lint 0 · boundaries · dev:nest smoke). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-3 + 24-4 + 24-5 (calibrated `OptionalAuthGuard`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-8-characters-mnemonics-port.md) · [IMP](story-24-8-characters-mnemonics-port.md) (full).
 
 ### 24-9 — Radicals + Foundations Port
 
