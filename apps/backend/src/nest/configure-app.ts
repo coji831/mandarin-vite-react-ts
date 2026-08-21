@@ -29,7 +29,7 @@ import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
 import { config } from "../shared/config/index.js";
 import { requestIdMiddleware } from "./request-id.middleware.js";
-import { rateLimitWordsByAuth } from "./rate-limit.config.js";
+import { rateLimitAuth, rateLimitWordsByAuth } from "./rate-limit.config.js";
 
 /** CORS — same explicit origin allowlist as app/index.ts. */
 const allowedOrigins: string[] = [
@@ -105,12 +105,15 @@ export function configureNestShellApp(app: INestApplication): void {
   // (parity with requestIdMiddleware in shared/middleware/errorHandler.ts).
   app.use(requestIdMiddleware);
 
-  // Rate-limit parity — `words` is the only ported route with a per-route
-  // limiter in Express today (WordsRoutes.ts: 60/min user, 20/min guest);
-  // mount it path-scoped so it honors the same per-route config + real-IP via
-  // trust proxy. Auth/readers limiters are declared in rate-limit.config.ts
-  // as infra and applied when those modules are ported (24-6/24-12).
+  // Rate-limit parity — `words` is mounted path-scoped (WordsRoutes.ts: 60/min
+  // user, 20/min guest) and `auth` mounts the shared brute-force limiter on
+  // `/register` + `/login` (authRoutes.ts: 5/min per IP) — the only ported
+  // routes with per-route limiters in Express today. Each honors the same
+  // per-route config + real-IP via trust proxy. Readers' 5/day generation
+  // limit is DB-backed (24-12) and declared as infra in rate-limit.config.ts.
   expressApp.use("/api/v1/words", rateLimitWordsByAuth);
+  expressApp.use("/api/v1/auth/register", rateLimitAuth);
+  expressApp.use("/api/v1/auth/login", rateLimitAuth);
 
   // Graceful shutdown (Redis quit wiring lands in a later story).
   app.enableShutdownHooks();

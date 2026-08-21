@@ -27,6 +27,7 @@ import { WordsModule } from "../modules/words/nest/words.module.js";
 import { PhoneticClustersModule } from "../modules/phonetic-clusters/nest/phonetic-clusters.module.js";
 import { GrammarModule } from "../modules/grammar/nest/grammar.module.js";
 import { ChengyuModule } from "../modules/chengyu/nest/chengyu.module.js";
+import { AuthModule } from "../modules/auth/nest/auth.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -37,6 +38,7 @@ import { AppExceptionFilter } from "./exception.filter.js";
     PhoneticClustersModule,
     GrammarModule,
     ChengyuModule,
+    AuthModule,
     SharedModule,
     GuardsModule,
   ],

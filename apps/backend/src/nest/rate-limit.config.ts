@@ -86,6 +86,21 @@ export const AUTH_LIMITER_CONFIG: LimiterConfig = {
   legacyHeaders: false,
 };
 
+/**
+ * Auth brute-force limiter INSTANCE — a single shared instance mounted on
+ * BOTH `/register` and `/login` (mirrors `authRoutes.ts`, where one `authLimiter`
+ * guards both routes → one shared per-IP counter). The default express-rate-limit
+ * handler sends the `message` object directly as the 429 body, so the Nest 429
+ * response is byte-identical to Express (`{ error, code, message }`, no envelope)
+ * — proven by the 24-6 auth-parity harness. Applied in Story 24-6.
+ */
+const authLimiter = rateLimit(AUTH_LIMITER_CONFIG);
+
+/** Route-level middleware: auth brute-force limiter (login/register). */
+export function rateLimitAuth(req: Request, res: Response, next: NextFunction): void {
+  authLimiter(req, res, next);
+}
+
 // ── readers — [INFRA] (readersRoutes.ts, applied in 24-12) ────────────────
 
 /** Readers GET limiter — 60 req/min per user. */
