@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-5/24-7, 24-6/24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-5/24-6/24-7, 24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 21, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1/24-2/24-3/24-4/24-5/24-7 are fully authored; 24-6/24-8…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1/24-2/24-3/24-4/24-5/24-6/24-7 are fully authored; 24-8…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -83,13 +83,13 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-6 — Auth Module Port
 
-**_(STUB)_**
-
 **Goal:** Port the `auth` module (register/login/refresh/logout/me — 5 endpoints) to Nest, wired with the 24-5 guards and brute-force rate-limit parity.
 
-**ACs:** All 5 auth endpoints ported; parity harness green (status + body, incl. error envelope on 401/409); brute-force rate-limit 429 + envelope matches Express; refresh-token rotation + httpOnly cookie semantics preserved (integration test); guards applied to the right routes (me = required, register/login = public); `/me` returns the calibrated guest identity.
+**ACs:** All 5 auth endpoints ported (register/login/refresh/logout public; `me` → `AuthGuard`); parity harness green (`tests/integration/nest/auth-parity.test.ts` — status + body, error envelope on 401/409, 429 brute-force); refresh-token rotation + httpOnly cookie semantics preserved (integration test); brute-force rate-limit matches Express (429 + `{error, code, message}` shape).
 
-**Gate:** 24-4 + 24-5. **Docs:** stub — full BR/IMP authored when 24-6 runs.
+**Status:** ✅ completed — `AuthModule` = 1:1 of `createAuthModule(deps)` (useFactory providers injecting `AuthRepository`+`JwtService`+`PasswordService`; imports `SharedModule`+`GuardsModule`; exports `AuthService`); `AuthNestController` mirrors `AuthController.ts` 1:1 reusing `AuthService` unchanged, routes verbatim; `/me` → `@UseGuards(AuthGuard)`, register/login/refresh/logout public; one shared `authLimiter` (5/min/IP) on register+login mirroring `authRoutes.ts` (429 body deep-equal — no envelope); cookie parity (`setRefreshTokenCookie`/`clearRefreshTokenCookie` byte-for-byte, `@Res({passthrough:true})`); rotation proven in harness (reuse R1 → 401 `INVALID_TOKEN`); DB-gated parity harness boots real Express + Nest (+17 integration tests, 17/142; test:full 58/631). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-4 + 24-5. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-6-auth-module-port.md) · [IMP](story-24-6-auth-module-port.md) (full).
 
 ### 24-7 — Guest Identity Calibration **_(NEW — absorbs epic-25 F1 + identity lockstep (FE-minimal))_**
 
