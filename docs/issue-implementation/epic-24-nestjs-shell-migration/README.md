@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-11, 24-12…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-12, 24-13…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 22, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-11 are fully authored; 24-12…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-12 are fully authored; 24-13…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -151,13 +151,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-12 — Readers Port
 
-**_(STUB — absorbs epic-25 F5 passage-audio)_**
+**_(completed — absorbs epic-25 F5 passage-audio)_**
 
 **Goal:** Port `readers` — the largest module (11 routes; `SegmenterService`/`PassageGenerationService`/`ReadersAudioService` + DB-backed 5/day rate-limit).
 
 **ACs:** All 11 readers routes ported (incl. `:id`-nested passages/sessions/bookmarks; `createReadersRoutes(controller)` factory → standard Nest controllers); parity green; `ReadersAudioService` uses Nest-injected audio (no direct cross-module import); passage-audio uses the **calibrated** `optionalAuth` (cache-first-free for guests, F5); 5/day generation rate-limit 429 + envelope matches Express incl. real-IP; required auth guards on user-scoped routes.
 
-**Gate:** 24-10 (audio) + 24-3 + 24-4 + 24-5. **Docs:** stub — full BR/IMP authored when 24-12 runs.
+**Status:** ✅ completed — `ReadersModule` = all **5 services as `useFactory` providers** (imports `SharedModule` + `GuardsModule` + `AudioModule`; exports `ReadersService`); `ReadersNestController` = **11 routes verbatim** (`GET passages`, `GET passages/:id`, `POST passages/:id/audio` → calibrated `OptionalAuthGuard` F5 @200; `POST generate` @201, `GET/PUT sessions/:passageId`, `POST …/complete` @200, `GET/POST bookmarks`, `DELETE/GET bookmarks/by-passage/:passageId` → `RequireAuthGuard`), incl. `formatPassageResponse` date serialization + every `{error, code}` branch → `HttpException` → 24-3 envelope; **service-ownership move** — `SegmenterService`/`PassageGenerationService`/`ReadersAudioService` moved from `app/container.ts` root-instantiation into module providers (Express keeps the same classes via a container wiring change — dual-mode); **`ReadersAudioService` → Nest audio DI** — direct `passageHashFor`/`passagePath` value import removed; ctor takes `PassagePathHelpers`; Nest injects `AudioService` + the additive `AUDIO_PASSAGE_PATHS` provider from the ported `AudioModule` (no direct `modules/audio` import in Nest land; type-only `AudioServiceLike` import erased); **DB-backed 5/day generation rate-limit** — unchanged `checkRateLimits` → `countUserGeneratedToday` (UTC-midnight reset) + 5-passage storage cap, `READERS_DAILY_GENERATION_LIMIT = 5`, `RateLimitExceededError` → 429 `RATE_LIMIT` envelope (the story's "shared WordRepository" mention does not apply — counts live on `ReadersRepository`, consistent with Express); `express-rate-limit` GET limiters (60/min user, 20/min guest) on the two passage GET routes only; **`ReadersAudioController.test.ts` kept untouched + passing** (uniquely covers live Express `getPassageAudio` until 24-15); dedicated parity harness (`readers-parity.test.ts`, **28 tests** — 2xx deep-equal with non-deterministic normalization, 4xx envelope, guest 401s, 5/day 429 with no Gemini call, sessions/bookmarks upserts, mocked-GCS audio cache-hit/miss) + 38 unit tests; gates green (typecheck · build both dist · test:full 62→**704** (was 666) · integration 21→**231** (was 203) · lint 0 · boundaries · dev:nest smoke — audio POST 200 with real GCS signed URLs proving AudioModule DI end-to-end; guest generate 401). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-10 (audio) + 24-3 + 24-4 + 24-5. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-12-readers-port.md) · [IMP](story-24-12-readers-port.md) (full).
 
 ### 24-13 — Quiz + Progression Port
 
