@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "type": "module",
   "prisma": {
@@ -11,10 +11,10 @@
   },
   "scripts": {
     "predev": "npm run build --workspace=@mandarin/shared-utils",
-    "dev": "tsx watch src/app/index.ts",
+    "dev": "tsx watch src/nest/main.ts",
     "dev:nest": "tsx watch src/nest/main.ts",
     "prebuild": "npm run build --workspace=@mandarin/shared-utils",
-    "start": "node dist/app/index.js",
+    "start": "node dist/nest/main.js",
     "start:nest": "node dist/nest/main.js",
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/shared/docs/openapi.yaml', 'dist/shared/docs/openapi.yaml')\"",
     "typecheck": "tsc --noEmit",

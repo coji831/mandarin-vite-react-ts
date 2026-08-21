@@ -1,46 +1,45 @@
 /**
  * @file apps/backend/tests/integration/nest/audio-health-parity.test.ts
- * @description Audio (TTS) + Health ↔ Express parity harness (Story 24-10 —
- * Audio + Health Port).
+ * @description Audio (TTS) + Health regression harness (Story 24-10 — Audio +
+ * Health Port; Story 24-15 — converted to Nest-only at the cutover).
  *
- * Boots BOTH apps in-process via supertest:
- *   - the production Express app (`src/app/index.ts` default export — mounts
- *     the real audio + health route files), and
- *   - the NestJS 11 shell (`NestFactory.create(AppModule)` + the real
- *     `configureNestShellApp` + `mountExpressErrorBridge` boot shape).
+ * Pre-cutover this booted BOTH apps (production Express + Nest shell) and
+ * deep-equal'd every response; that parity was verified through 24-14. At
+ * 24-15 the Express surface was deleted, so this harness now boots ONLY the
+ * NestJS 11 shell (`NestFactory.create(AppModule)` + the real
+ * `configureNestShellApp` + `mountExpressErrorBridge` boot shape) and asserts
+ * the audio + health contract directly as regression guards.
  *
  * ## NO REAL GOOGLE TTS / GCS / GEMINI IS HIT — every external client is
- * module-mocked (`GCSClient`, `GoogleTTSClient`, `GeminiService`) so the
- * Express `app/container.ts` and the Nest `SharedModule` both construct
- * deterministic fakes. The raw Redis ping used by the health endpoint is
- * spied to resolve "PONG" (deterministic + no real network). This keeps the
- * suite hermetic and byte-deterministic.
+ * module-mocked (`GCSClient`, `GoogleTTSClient`, `GeminiService`) so the Nest
+ * `SharedModule` constructs deterministic fakes. The raw Redis ping used by
+ * the health endpoint is spied to resolve "PONG" (deterministic + no real
+ * network). This keeps the suite hermetic and byte-deterministic.
  *
  * ## audio (POST /v1/tts — calibrated optionalAuth, F5 TTS surface)
- * The ported `AudioNestController` mirrors `api/AudioController.ts` VERBATIM
- * (same body read, same `AudioService` facade reuse, same `{ audioUrl,
- * cached }` 2xx) with the calibrated `OptionalAuthGuard` (24-5):
+ * The ported `AudioNestController` mirrors the (now deleted) `AudioController`
+ * VERBATIM (same body read, same `AudioService` facade reuse, same
+ * `{ audioUrl, cached }` 2xx) with the calibrated `OptionalAuthGuard` (24-5):
  *   - Guest (no token) cache HIT → 200 `{ audioUrl, cached: true }` and the
  *     mocked TTS `synthesizeSpeech` is NOT called — the F5 "cache-first free-
- *     for-guests" contract verified in-port (no billable generation).
+ *     for-guests" contract (no billable generation).
  *   - Guest cache MISS → 200 `{ cached: false }` (generation allowed for a
  *     guest today; the generated-audio path is counter-gated, mechanics
  *     deferred to epic-29 — no counter ships here).
  *   - Registered user (valid token) → 200, same shape (authenticated).
  *   - Invalid/garbage token → STILL 200 as a guest (optionalAuth never 401s —
  *     calibrated F6: a bad token is treated as guest, never rejected).
- *   - 4xx/5xx: status + full `{ code, message, requestId }` body deep-equal
- *     (both apps echo the sent `X-Request-Id`): empty text / pinyin / too-many
- *     words → 400 `VALIDATION_ERROR`; upstream TTS failure → 500 `TTS_ERROR`.
+ *   - 4xx/5xx: status + the `{ code, message, requestId }` envelope (the
+ *     requestId echoes the sent `X-Request-Id`): empty text / pinyin /
+ *     too-many words → 400 `VALIDATION_ERROR`; upstream TTS failure → 500
+ *     `TTS_ERROR`.
  *
  * ## health (GET /v1/health)
- * `HealthNestController` mirrors `api/HealthController.ts` byte-for-byte and
- * resolves the DIRECT cross-module import via Nest DI (HealthModule imports
- * AudioModule; no `modules/audio/index.js` import in Nest land). Both apps
- * return the same 200 shape `{ status, timestamp, uptime, services: { gemini,
- * tts }, cache: { redis: { connected } } }` — asserted with `timestamp` /
- * `uptime` normalized (they differ between the two requests) and the
- * deterministic fields (`status`, `services`, `cache`) deep-equal.
+ * `HealthNestController` mirrors the (now deleted) `HealthController`
+ * byte-for-byte and resolves the cross-module audio dependency via Nest DI
+ * (HealthModule imports AudioModule). Returns the 200 shape `{ status,
+ * timestamp, uptime, services: { gemini, tts }, cache: { redis: { connected } } }`
+ * — asserted directly (deterministic fields deep-equal).
  *
  * DB-backed (real Prisma against the test database — used only to register a
  * real user for the authed-TTS surface; TTS/health themselves write no DB
@@ -57,8 +56,8 @@ import request from "supertest";
 import type { INestApplication } from "@nestjs/common";
 
 // ── External-client mocks (hoisted — MUST be in place before ANY module under
-// ── test is evaluated; the Express container and Nest SharedModule both
-// ── construct these classes at import/init time) ───────────────────────────
+// ── test is evaluated; the Nest SharedModule constructs these classes at
+// ── init time) ─────────────────────────────────────────────────────────────
 
 const { mockGcs, mockTts, mockGemini, MockGCSClient, MockGoogleTTSClient, MockGeminiService } =
   vi.hoisted(() => {
@@ -113,13 +112,12 @@ vi.mock("../../../src/shared/infrastructure/external/GeminiService.js", () => ({
 }));
 
 // ── Hermetic env — MUST run before any module under test is evaluated ──────
-// `src/app/index.ts` calls `app.listen(config.port)` at import time — pin PORT
-// to an ephemeral port first (dotenv does not override already-set vars).
+// Pin PORT to an ephemeral port before importing anything that transitively
+// boots a listener (dotenv does not override already-set vars).
 process.env.PORT = "0";
 
 // Dynamic imports AFTER the env stub + mocks (ESM evaluates static imports
 // first; the module mocks are hoisted above so they apply here).
-const { default: expressApp } = await import("../../../src/app/index.js");
 const { NestFactory } = await import("@nestjs/core");
 const { AppModule } = await import("../../../src/nest/app.module.js");
 const { configureNestShellApp } = await import("../../../src/nest/configure-app.js");
@@ -152,7 +150,7 @@ function nextIp(): string {
 
 // ── Parity suite ───────────────────────────────────────────────────────────
 
-describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integration, DB)", () => {
+describe.skipIf(!db.available)("Nest audio + health regression (integration, DB)", () => {
   let nestApp: INestApplication | undefined;
   let nestServer: Server;
   /** Registered user for the authed-TTS surface. */
@@ -172,11 +170,10 @@ describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integrat
     await nestApp.init();
     nestServer = nestApp.getHttpServer() as Server;
 
-    // Register a real user (via the Express app; both apps share the DB + JWT
-    // secret, so the token authenticates on both) for the authed-TTS surface.
+    // Register a real user (via the Nest app) for the authed-TTS surface.
     const runId = crypto.randomBytes(4).toString("hex");
     const email = `audio-parity-${runId}@example.com`;
-    const register = await request(expressApp)
+    const register = await request(nestServer)
       .post("/api/v1/auth/register")
       .set("X-Forwarded-For", nextIp())
       .send({ email, password: "ValidPass123", displayName: "Audio Health Parity" });
@@ -214,51 +211,46 @@ describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integrat
     mockGemini.healthCheck.mockReset().mockResolvedValue(true);
   });
 
-  /** Fire the same POST on both apps and return both responses. */
+  /** Fire the same POST at the Nest app and return `{ nestRes }`. */
   function postBoth(
     path: string,
     body: Record<string, unknown>,
     headers: Record<string, string> = {},
   ) {
-    const send = (app: Parameters<typeof request>[0]) => {
-      let req = request(app).post(path).set("X-Forwarded-For", nextIp());
-      for (const [k, v] of Object.entries(headers)) req = req.set(k, v);
-      return req.send(body);
-    };
-    return Promise.all([send(expressApp), send(nestServer)]).then(([expressRes, nestRes]) => ({
-      expressRes,
-      nestRes,
-    }));
+    let req = request(nestServer).post(path).set("X-Forwarded-For", nextIp());
+    for (const [k, v] of Object.entries(headers)) req = req.set(k, v);
+    return req.send(body).then((nestRes) => ({ nestRes }));
   }
 
-  /** Fire the same GET on both apps and return both responses. */
+  /** Fire the same GET at the Nest app and return `{ nestRes }`. */
   function getBoth(path: string) {
-    return Promise.all([request(expressApp).get(path), request(nestServer).get(path)]).then(
-      ([expressRes, nestRes]) => ({ expressRes, nestRes }),
-    );
+    return request(nestServer)
+      .get(path)
+      .then((nestRes) => ({ nestRes }));
   }
 
-  /** 2xx: identical status AND identical body (deep-equal). */
-  function expectParity2xx(res: { expressRes: request.Response; nestRes: request.Response }) {
-    expect(res.expressRes.status).toBeGreaterThanOrEqual(200);
-    expect(res.expressRes.status).toBeLessThan(300);
-    expect(res.nestRes.status).toBe(res.expressRes.status);
-    expect(res.nestRes.body).toEqual(res.expressRes.body);
+  /** 2xx regression guard: the route responds 2xx with a body. */
+  function expectParity2xx(res: { nestRes: request.Response }) {
+    expect(res.nestRes.status).toBeGreaterThanOrEqual(200);
+    expect(res.nestRes.status).toBeLessThan(300);
+    expect(res.nestRes.body).toBeDefined();
   }
 
-  /** 4xx/5xx: identical status AND identical `{ code, message, requestId }` body. */
-  function expectErrorParity(res: { expressRes: request.Response; nestRes: request.Response }) {
-    expect(res.nestRes.status).toBe(res.expressRes.status);
-    // Both apps echo the sent X-Request-Id into the envelope → full deep-equal.
-    expect(res.nestRes.body).toEqual(res.expressRes.body);
+  /**
+   * 4xx/5xx regression guard: the route responds with the exact status AND the
+   * Nest `{ code, message, requestId }` envelope (24-3 HTTP-layer contract).
+   */
+  function expectErrorParity(res: { nestRes: request.Response }, expectedStatus: number) {
+    expect(res.nestRes.status).toBe(expectedStatus);
     expect(res.nestRes.body).toEqual({
       code: expect.any(String),
       message: expect.any(String),
       requestId: expect.any(String),
     });
+    expect(res.nestRes.body.requestId).toBe(res.nestRes.headers["x-request-id"]);
   }
 
-  // ── audio (Express route file: api/audioRoutes.ts) ───────────────────────
+  // ── audio (POST /v1/tts) ─────────────────────────────────────────────────
 
   describe("audio — POST /v1/tts (calibrated optionalAuth, F5)", () => {
     it("guest cache HIT — 200 { audioUrl, cached:true }, NO billable generation (F5 cache-first free-for-guests)", async () => {
@@ -276,9 +268,9 @@ describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integrat
       const res = await postBoth("/api/v1/tts", { text: "你好" });
       expectParity2xx(res);
       expect(res.nestRes.body).toEqual({ audioUrl: expect.any(String), cached: false });
-      // Both apps synthesized exactly once each (single-flight per app).
-      expect(mockTts.synthesizeSpeech).toHaveBeenCalledTimes(2);
-      expect(mockGcs.uploadFile).toHaveBeenCalledTimes(2);
+      // Single-flight generation for the one (Nest) app.
+      expect(mockTts.synthesizeSpeech).toHaveBeenCalledTimes(1);
+      expect(mockGcs.uploadFile).toHaveBeenCalledTimes(1);
     });
 
     it("registered user cache HIT — 200, same shape (authenticated via calibrated OptionalAuthGuard)", async () => {
@@ -302,68 +294,57 @@ describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integrat
       expect(res.nestRes.body).toEqual({ audioUrl: expect.any(String), cached: true });
     });
 
-    it("empty text — 400 VALIDATION_ERROR envelope parity", async () => {
+    it("empty text — 400 VALIDATION_ERROR envelope", async () => {
       const res = await postBoth("/api/v1/tts", { text: "" }, { "X-Request-Id": "tts-empty-1" });
-      expect(res.expressRes.status).toBe(400);
-      expectErrorParity(res);
+      expectErrorParity(res, 400);
       expect(res.nestRes.body.code).toBe("VALIDATION_ERROR");
       expect(res.nestRes.body.message).toBe("Text is required.");
     });
 
-    it("pinyin text ('bā') — 400 VALIDATION_ERROR envelope parity (Hanzi guard)", async () => {
+    it("pinyin text ('bā') — 400 VALIDATION_ERROR envelope (Hanzi guard)", async () => {
       const res = await postBoth("/api/v1/tts", { text: "bā" }, { "X-Request-Id": "tts-pinyin-1" });
-      expect(res.expressRes.status).toBe(400);
-      expectErrorParity(res);
+      expectErrorParity(res, 400);
       expect(res.nestRes.body.code).toBe("VALIDATION_ERROR");
       expect(res.nestRes.body.message).toBe(
         "Failed to generate TTS audio — text must contain Chinese characters (Hanzi)",
       );
     });
 
-    it("too many words — 400 VALIDATION_ERROR envelope parity", async () => {
+    it("too many words — 400 VALIDATION_ERROR envelope", async () => {
       const longText = Array.from({ length: 16 }, () => "word").join(" ");
       const res = await postBoth(
         "/api/v1/tts",
         { text: longText },
         { "X-Request-Id": "tts-long-1" },
       );
-      expect(res.expressRes.status).toBe(400);
-      expectErrorParity(res);
+      expectErrorParity(res, 400);
       expect(res.nestRes.body.code).toBe("VALIDATION_ERROR");
       expect(res.nestRes.body.message).toBe("Please enter between 1 and 15 words.");
     });
 
-    it("upstream TTS failure — 500 TTS_ERROR envelope parity (mocked client rejects)", async () => {
+    it("upstream TTS failure — 500 TTS_ERROR envelope (mocked client rejects)", async () => {
       mockGcs.fileExists.mockResolvedValue(false);
       mockTts.synthesizeSpeech.mockRejectedValue(new Error("TTS API down"));
       const res = await postBoth("/api/v1/tts", { text: "你好" }, { "X-Request-Id": "tts-500-1" });
-      expect(res.expressRes.status).toBe(500);
-      expectErrorParity(res);
+      expectErrorParity(res, 500);
       expect(res.nestRes.body.code).toBe("TTS_ERROR");
       expect(res.nestRes.body.message).toBe("TTS API down");
     });
 
-    it("GCS signing failure on a cache hit — 500 TTS_ERROR envelope parity", async () => {
+    it("GCS signing failure on a cache hit — 500 TTS_ERROR envelope", async () => {
       mockGcs.getSignedUrl.mockRejectedValue(new Error("signing failed"));
       const res = await postBoth("/api/v1/tts", { text: "你好" }, { "X-Request-Id": "tts-sign-1" });
-      expect(res.expressRes.status).toBe(500);
-      expectErrorParity(res);
+      expectErrorParity(res, 500);
       expect(res.nestRes.body.code).toBe("TTS_ERROR");
     });
   });
 
-  // ── health (Express route file: api/healthRoutes.ts) ─────────────────────
+  // ── health (GET /v1/health) ──────────────────────────────────────────────
 
   describe("health — GET /v1/health", () => {
     it("200 — same shape as Express (timestamp/uptime normalized, services+cache deep-equal)", async () => {
       const res = await getBoth("/api/v1/health");
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
-
-      // timestamp + uptime differ between the two requests — normalize them,
-      // then the REST must deep-equal.
-      const normalize = (b: Record<string, unknown>) => ({ ...b, timestamp: "T", uptime: 0 });
-      expect(normalize(res.nestRes.body)).toEqual(normalize(res.expressRes.body));
 
       // Deterministic expected shape (mocked gemini/tts healthy + Redis "PONG").
       expect(res.nestRes.body).toEqual({
@@ -375,11 +356,9 @@ describe.skipIf(!db.available)("Nest audio + health ↔ Express parity (integrat
       });
     });
 
-    it("200 — exact key set matches Express (no extra/missing keys)", async () => {
+    it("200 — exact key set (no extra/missing keys)", async () => {
       const res = await getBoth("/api/v1/health");
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
-      expect(Object.keys(res.nestRes.body).sort()).toEqual(Object.keys(res.expressRes.body).sort());
       expect(Object.keys(res.nestRes.body).sort()).toEqual([
         "cache",
         "services",

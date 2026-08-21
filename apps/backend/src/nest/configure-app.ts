@@ -21,13 +21,17 @@
  * `ExceptionFilter` + the Express error bridge are wired separately
  * (`AppModule` / `mountExpressErrorBridge`).
  *
- * Deferred to later stories: Swagger (24-15).
+ * Story 24-15 (cutover): mounts the `/api-docs` swagger-ui + `/api-docs.json`
+ * spec on the Express adapter (the Express `app/index.ts` surface that was
+ * deleted at cutover), preserving the consumer surface on the Nest shell.
  */
 
 import type { INestApplication } from "@nestjs/common";
 import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
+import swaggerUi from "swagger-ui-express";
 import { config } from "../shared/config/index.js";
+import { swaggerSpec } from "../shared/docs/openapi.js";
 import { requestIdMiddleware } from "./request-id.middleware.js";
 import {
   rateLimitAuth,
@@ -131,6 +135,18 @@ export function configureNestShellApp(app: INestApplication): void {
   // path-scoped exactly like the Express inline `feedbackLimiter` guards only
   // the POST /v1/quiz/feedback route.
   expressApp.use("/api/v1/quiz/feedback", rateLimitQuizFeedback);
+
+  // Swagger (Story 24-15): the `/api-docs` UI + `/api-docs.json` spec were
+  // served by the Express `app/index.ts`; the Express surface is gone, so the
+  // Nest shell mounts the SAME swagger-ui-express surface on the Express
+  // adapter (before the error bridge, mirroring the Express ordering) to
+  // preserve the consumer surface. The spec is `src/shared/docs/openapi.yaml`
+  // (reconciled at 24-15 to the real Nest route set).
+  expressApp.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  expressApp.get("/api-docs.json", (_req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swaggerSpec);
+  });
 
   // Graceful shutdown (Redis quit wiring lands in a later story).
   app.enableShutdownHooks();

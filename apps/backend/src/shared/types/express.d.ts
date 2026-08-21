@@ -1,82 +1,26 @@
 /**
  * @file apps/backend/src/shared/types/express.d.ts
- * @description Express type augmentation for controller injection via middleware.
+ * @description Express type augmentation for request-scoped auth/tracing fields.
  *
- * Controllers are injected into `req` by middleware in routes.ts so that
- * route handlers don't need to import controllers directly.
- * This augments Express.Request to provide type-safe access.
- *
- * Phase 5 P0 of backend TS migration — replaces `(req as any).xxx` casts.
+ * Story 24-15 (cutover): the `req.xController` / `req.geminiService`
+ * augmentations (injected by the deleted Express `app/routes.ts` middleware)
+ * are removed — the Express surface is gone and the Nest shell injects
+ * controllers via Nest DI. The `userId` / `user` / `requestId` fields are
+ * KEPT: the Nest guards (`src/nest/guards/*`) attach them and the Nest
+ * controllers + rate-limit config read them on the Express adapter.
  */
-
-import type { AuthController } from "../../modules/auth/api/AuthController.js";
-import type { QuizController } from "../../modules/quiz/api/QuizController.js";
-import type { ReviewController } from "../../modules/review/api/ReviewController.js";
-import type { ProgressionController } from "../../modules/progression/api/ProgressionController.js";
-import type { FoundationsController } from "../../modules/foundations/api/FoundationsController.js";
-import type { RadicalsController } from "../../modules/radicals/api/RadicalsController.js";
-import type { MnemonicsController } from "../../modules/mnemonics/api/MnemonicsController.js";
-import type { WordsController } from "../../modules/words/api/WordsController.js";
-import type { PhoneticClustersController } from "../../modules/phonetic-clusters/api/PhoneticClustersController.js";
-import type { CharactersController } from "../../modules/characters/api/CharactersController.js";
-import type { PinyinController } from "../../modules/characters/api/PinyinController.js";
-import type { GrammarController } from "../../modules/grammar/api/GrammarController.js";
-import type { ChengyuController } from "../../modules/chengyu/api/ChengyuController.js";
-import type { GeminiService } from "../infrastructure/external/GeminiService.js";
 
 declare global {
   namespace Express {
     interface Request {
-      /** User ID set by authMiddleware after JWT verification */
+      /** User ID set by auth middleware / Nest auth guards after JWT verification */
       userId?: string;
 
-      /** Decoded JWT payload set by authMiddleware */
+      /** Decoded JWT payload set by auth middleware / Nest auth guards */
       user?: { userId: string; email?: string } & Record<string, unknown>;
 
       /** Request ID for tracing, set by requestIdMiddleware */
       requestId?: string;
-
-      /** Injected by routes.ts middleware */
-      authController?: AuthController;
-
-      /** Injected by routes.ts middleware */
-      quizController?: QuizController;
-
-      /** Injected by routes.ts middleware */
-      reviewController?: ReviewController;
-
-      /** Injected by routes.ts middleware */
-      progressionController?: ProgressionController;
-
-      /** Injected by routes.ts middleware */
-      foundationsController?: FoundationsController;
-
-      /** Injected by routes.ts middleware */
-      radicalsController?: RadicalsController;
-
-      /** Injected by routes.ts middleware */
-      mnemonicsController?: MnemonicsController;
-
-      /** Injected by routes.ts middleware */
-      wordsController?: WordsController;
-
-      /** Injected by routes.ts middleware */
-      phoneticClustersController?: PhoneticClustersController;
-
-      /** Injected by routes.ts middleware */
-      charactersController?: CharactersController;
-
-      /** Injected by routes.ts middleware */
-      pinyinController?: PinyinController;
-
-      /** Injected by routes.ts middleware */
-      grammarController?: GrammarController;
-
-      /** Injected by routes.ts middleware */
-      chengyuController?: ChengyuController;
-
-      /** Injected by routes.ts middleware */
-      geminiService?: GeminiService;
     }
   }
 }

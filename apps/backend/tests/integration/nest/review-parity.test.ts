@@ -1,44 +1,34 @@
 /**
  * @file apps/backend/tests/integration/nest/review-parity.test.ts
- * @description Review ↔ Express parity harness (Story 24-11 — Review Port +
- * SRS Schema).
+ * @description Review regression harness (Story 24-11 — Review Port + SRS
+ * Schema; Story 24-15 — converted to Nest-only at the cutover).
  *
- * Boots BOTH apps in-process via supertest:
- *   - the production Express app (`src/app/index.ts` default export — mounts
- *     the real `reviewRoutes.ts`), and
- *   - the NestJS 11 shell (`NestFactory.create(AppModule)` + the real
- *     `configureNestShellApp` + `mountExpressErrorBridge` boot shape).
+ * Pre-cutover this booted BOTH apps (production Express + Nest shell) and
+ * deep-equal'd every response; that parity was verified through 24-14. At
+ * 24-15 the Express surface was deleted, so this harness now boots ONLY the
+ * NestJS 11 shell (`NestFactory.create(AppModule)` + the real
+ * `configureNestShellApp` + `mountExpressErrorBridge` boot shape) and asserts
+ * the review contract directly as regression guards.
  *
  * ## review (3 routes — `GET /v1/review/items`, `GET /v1/review/due-count`,
  * `POST /v1/review/result`)
- * All three routes mount the calibrated guest-rejecting guard on both apps
- * (Express `requireAuth` ↔ Nest `RequireAuthGuard`, 24-5). Both apps share the
- * SAME framework-agnostic `ReviewService`/`ReviewRepository` (re-pointed to
- * the absorbed additive `SrsCardState` table, 24-11) and the same DB — so a
- * registered user's responses are identical modulo the two inherently non-
- * deterministic fields:
- *   - `nextReview` — a per-request `now` for items with no SRS state (and the
- *     `now + interval` in the rating result). Normalized to a sentinel before
- *     deep-equal (same normalization precedent as the 24-10 health `timestamp`).
- *   - item ORDER — `ReviewService` shuffles items (`Math.random`). Both arrays
- *     are sorted by `itemType:itemId` before deep-equal, so the item SET + all
- *     deterministic fields are byte-compared.
+ * All three routes mount the calibrated guest-rejecting `RequireAuthGuard`
+ * (24-5) over the SAME framework-agnostic `ReviewService`/`ReviewRepository`
+ * (re-pointed to the absorbed additive `SrsCardState` table, 24-11).
  *
- * The content parity case uses `type=tone` (5 seeded tone rows, deterministic
+ * The content case uses `type=tone` (5 seeded tone rows, deterministic
  * content, NO random `options` array — radical items carry shuffle-derived
- * distractors so they are intentionally not byte-compared here; the raw
- * radical data routes are covered by `radicals-foundations-parity.test.ts`).
+ * distractors so they are intentionally not asserted here; the raw radical
+ * data routes are covered by `radicals-foundations-parity.test.ts`).
  *
  * ## guest → 401 (requireAuth)
- * No token → both apps 401 with the same `code`/`message`
- * (`AUTH_REQUIRED` / "Please sign in to access this feature"); the Nest side
- * wraps it in the 24-3 `{ code, message, requestId }` envelope (Express emits
- * the legacy `{ error, code, message }` requireAuth body).
+ * No token → 401 with `code` `AUTH_REQUIRED` / message "Please sign in to
+ * access this feature" wrapped in the 24-3 `{ code, message, requestId }`
+ * envelope.
  *
  * ## 4xx (400 validation)
  * `POST /v1/review/result` with a missing field / invalid rating → 400
- * `MISSING_FIELDS` on both apps (Nest envelope `code`/`message` equal to the
- * Express `{ error, code }` body).
+ * `MISSING_FIELDS`.
  *
  * ## P0-1 no-leak (a user only sees their own rows)
  * User A rates a tone item; User B (fresh) reads the same route — B's item for
@@ -61,12 +51,11 @@ import request from "supertest";
 import type { INestApplication } from "@nestjs/common";
 
 // ── Hermetic env — MUST run before any module under test is evaluated ──────
-// `src/app/index.ts` calls `app.listen(config.port)` at import time — pin PORT
-// to an ephemeral port first (dotenv does not override already-set vars).
+// Pin PORT to an ephemeral port before importing anything that transitively
+// boots a listener (dotenv does not override already-set vars).
 process.env.PORT = "0";
 
 // Dynamic imports AFTER the env stub (ESM evaluates static imports first).
-const { default: expressApp } = await import("../../../src/app/index.js");
 const { NestFactory } = await import("@nestjs/core");
 const { AppModule } = await import("../../../src/nest/app.module.js");
 const { configureNestShellApp } = await import("../../../src/nest/configure-app.js");
@@ -87,7 +76,7 @@ function nextIp(): string {
 
 // ── Parity suite ───────────────────────────────────────────────────────────
 
-describe.skipIf(!db.available)("Nest review ↔ Express parity (integration, DB)", () => {
+describe.skipIf(!db.available)("Nest review regression (integration, DB)", () => {
   let nestApp: INestApplication | undefined;
   let nestServer: Server;
   /** Registered user A — rates a tone item (has SRS state). */
@@ -110,19 +99,18 @@ describe.skipIf(!db.available)("Nest review ↔ Express parity (integration, DB)
     await nestApp.init();
     nestServer = nestApp.getHttpServer() as Server;
 
-    // Register two real users (via the Express app; both apps share the DB +
-    // JWT secret, so the tokens authenticate on both).
+    // Register two real users (via the Nest app).
     const runId = crypto.randomBytes(4).toString("hex");
     const emailA = `review-a-${runId}@example.com`;
     const emailB = `review-b-${runId}@example.com`;
-    const regA = await request(expressApp)
+    const regA = await request(nestServer)
       .post("/api/v1/auth/register")
       .set("X-Forwarded-For", nextIp())
       .send({ email: emailA, password: "ValidPass123", displayName: "Review Parity A" });
     expect(regA.status).toBe(201);
     userIdA = regA.body.data.user.id as string;
     tokenA = regA.body.data.accessToken as string;
-    const regB = await request(expressApp)
+    const regB = await request(nestServer)
       .post("/api/v1/auth/register")
       .set("X-Forwarded-For", nextIp())
       .send({ email: emailB, password: "ValidPass123", displayName: "Review Parity B" });
@@ -148,47 +136,34 @@ describe.skipIf(!db.available)("Nest review ↔ Express parity (integration, DB)
     await disconnectDatabase();
   });
 
-  /** Fire the same GET (with optional auth header) on both apps. */
+  /** Fire the same GET (with optional auth header) at the Nest app. */
   function getBoth(path: string, authHeader?: string) {
-    const send = (app: Parameters<typeof request>[0]) => {
-      let req = request(app).get(path).set("X-Forwarded-For", nextIp());
-      if (authHeader) req = req.set("Authorization", authHeader);
-      return req;
-    };
-    return Promise.all([send(expressApp), send(nestServer)]).then(([expressRes, nestRes]) => ({
-      expressRes,
-      nestRes,
-    }));
+    let req = request(nestServer).get(path).set("X-Forwarded-For", nextIp());
+    if (authHeader) req = req.set("Authorization", authHeader);
+    return req.then((nestRes) => ({ nestRes }));
   }
 
-  /** Fire the same POST (with optional auth header) on both apps. */
+  /** Fire the same POST (with optional auth header) at the Nest app. */
   function postBoth(path: string, body: Record<string, unknown>, authHeader?: string) {
-    const send = (app: Parameters<typeof request>[0]) => {
-      let req = request(app).post(path).set("X-Forwarded-For", nextIp());
-      if (authHeader) req = req.set("Authorization", authHeader);
-      return req.send(body);
-    };
-    return Promise.all([send(expressApp), send(nestServer)]).then(([expressRes, nestRes]) => ({
-      expressRes,
-      nestRes,
-    }));
+    let req = request(nestServer).post(path).set("X-Forwarded-For", nextIp());
+    if (authHeader) req = req.set("Authorization", authHeader);
+    return req.send(body).then((nestRes) => ({ nestRes }));
   }
 
   /**
-   * 4xx: identical status; the Nest 24-3 envelope `{ code, message, requestId }`
-   * with `code`/`message` byte-for-byte equal to the Express legacy
-   * `{ error, code[, message] }` body (`message` wins over `error` when both
-   * are present, as in the `requireAuth` 401 shape).
+   * 4xx regression guard: exact status + the Nest 24-3 envelope
+   * `{ code, message, requestId }` with the calibrated `code`/`message`.
    */
   function expectParity4xx(
-    res: { expressRes: request.Response; nestRes: request.Response },
+    res: { nestRes: request.Response },
     expectedStatus: number,
+    expectedCode: string,
+    expectedMessage: string,
   ) {
-    expect(res.expressRes.status).toBe(expectedStatus);
     expect(res.nestRes.status).toBe(expectedStatus);
     expect(res.nestRes.body).toEqual({
-      code: res.expressRes.body.code,
-      message: res.expressRes.body.message ?? res.expressRes.body.error,
+      code: expectedCode,
+      message: expectedMessage,
       requestId: expect.any(String),
     });
     expect(res.nestRes.body.requestId).toBe(res.nestRes.headers["x-request-id"]);
@@ -208,78 +183,75 @@ describe.skipIf(!db.available)("Nest review ↔ Express parity (integration, DB)
       .sort((a, b) => `${a.itemType}:${a.itemId}`.localeCompare(`${b.itemType}:${b.itemId}`));
   }
 
-  /** 2xx items: identical status + normalized items deep-equal. */
-  function expectParityItems(res: { expressRes: request.Response; nestRes: request.Response }) {
-    expect(res.expressRes.status).toBe(200);
+  /** 2xx items: 200 + a normalized item array (sorted, nextReview sentinel). */
+  function expectParityItems(res: { nestRes: request.Response }) {
     expect(res.nestRes.status).toBe(200);
-    expect(normalizeItems(res.nestRes.body)).toEqual(normalizeItems(res.expressRes.body));
+    expect(Array.isArray(res.nestRes.body)).toBe(true);
+    expect(normalizeItems(res.nestRes.body)).toEqual(
+      normalizeItems(res.nestRes.body)
+        .slice()
+        .sort((a: { itemType: string; itemId: string }, b: { itemType: string; itemId: string }) =>
+          `${a.itemType}:${a.itemId}`.localeCompare(`${b.itemType}:${b.itemId}`),
+        ),
+    );
   }
 
-  // ── review (Express route file: api/reviewRoutes.ts) ────────────────────
+  // ── review (3 routes) ────────────────────────────────────────────────────
 
   describe("review — guest rejected 401 (calibrated requireAuth)", () => {
-    it("GET /api/v1/review/items — guest → 401 AUTH_REQUIRED parity", async () => {
+    it("GET /api/v1/review/items — guest → 401 AUTH_REQUIRED", async () => {
       const res = await getBoth("/api/v1/review/items?source=due&type=radical&limit=5");
-      expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("AUTH_REQUIRED");
-      expect(res.expressRes.body.message).toBe("Please sign in to access this feature");
+      expectParity4xx(res, 401, "AUTH_REQUIRED", "Please sign in to access this feature");
     });
 
-    it("GET /api/v1/review/due-count — guest → 401 AUTH_REQUIRED parity", async () => {
+    it("GET /api/v1/review/due-count — guest → 401 AUTH_REQUIRED", async () => {
       const res = await getBoth("/api/v1/review/due-count?type=radical");
-      expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("AUTH_REQUIRED");
+      expectParity4xx(res, 401, "AUTH_REQUIRED", "Please sign in to access this feature");
     });
 
-    it("POST /api/v1/review/result — guest → 401 AUTH_REQUIRED parity (no SRS row written)", async () => {
+    it("POST /api/v1/review/result — guest → 401 AUTH_REQUIRED (no SRS row written)", async () => {
       const res = await postBoth(
         "/api/v1/review/result",
         { itemType: "tone-syllable", itemId: "1", rating: "good" },
         undefined,
       );
-      expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("AUTH_REQUIRED");
+      expectParity4xx(res, 401, "AUTH_REQUIRED", "Please sign in to access this feature");
     });
   });
 
-  describe("review — authed 2xx parity (deterministic)", () => {
-    it("GET items source=recent — 200 [] deep-equal (fresh user has no recent SRS state)", async () => {
+  describe("review — authed 2xx (deterministic)", () => {
+    it("GET items source=recent — 200 [] (fresh user has no recent SRS state)", async () => {
       const res = await getBoth(
         "/api/v1/review/items?source=recent&type=radical&limit=10",
         `Bearer ${tokenA}`,
       );
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
       expect(res.nestRes.body).toEqual([]);
-      expect(res.nestRes.body).toEqual(res.expressRes.body);
     });
 
-    it("GET items source=all&type=tone — 200 normalized deep-equal (5 tone items, no options)", async () => {
+    it("GET items source=all&type=tone — 200 (5 tone items, no options)", async () => {
       const res = await getBoth(
         "/api/v1/review/items?source=all&type=tone&limit=50",
         `Bearer ${tokenA}`,
       );
       expectParityItems(res);
-      expect(res.expressRes.body).toHaveLength(5);
+      expect(res.nestRes.body).toHaveLength(5);
     });
 
-    it("GET due-count — 200 { count: 0 } deep-equal (fresh user, no due rows)", async () => {
+    it("GET due-count — 200 { count: 0 } (fresh user, no due rows)", async () => {
       const res = await getBoth("/api/v1/review/due-count?type=tone", `Bearer ${tokenA}`);
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
       expect(res.nestRes.body).toEqual({ count: 0 });
-      expect(res.nestRes.body).toEqual(res.expressRes.body);
     });
   });
 
   describe("review — POST result (recordRating, interval-doubling preserved)", () => {
-    it("rating 'good' — 200 { intervalDays: 2, studyCount: 1 } normalized deep-equal (1×2 doubling)", async () => {
+    it("rating 'good' — 200 { intervalDays: 2, studyCount: 1 } (1×2 doubling)", async () => {
       const res = await postBoth(
         "/api/v1/review/result",
         { itemType: "tone-syllable", itemId: "1", rating: "good" },
         `Bearer ${tokenA}`,
       );
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
       // Normalize the `now + interval` timestamp; intervalDays/studyCount are
       // the deterministic interval-doubling assertions.
@@ -288,57 +260,42 @@ describe.skipIf(!db.available)("Nest review ↔ Express parity (integration, DB)
         intervalDays: 2,
         studyCount: 1,
       });
-      expect({ ...res.nestRes.body, nextReview: "NEXT" }).toEqual({
-        ...res.expressRes.body,
-        nextReview: "NEXT",
-      });
     });
 
-    it("due-count after the rating — 200 { count: 0 } deep-equal (next review is in the future)", async () => {
+    it("due-count after the rating — 200 { count: 0 } (next review is in the future)", async () => {
       const res = await getBoth("/api/v1/review/due-count?type=tone", `Bearer ${tokenA}`);
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
       expect(res.nestRes.body).toEqual({ count: 0 });
-      expect(res.nestRes.body).toEqual(res.expressRes.body);
     });
 
-    it("rating 'again' — 200 { intervalDays: 1, studyCount: 2 } normalized deep-equal (reset to 1d)", async () => {
+    it("rating 'again' — 200 { intervalDays: 1, studyCount: 2 } (reset to 1d)", async () => {
       const res = await postBoth(
         "/api/v1/review/result",
         { itemType: "tone-syllable", itemId: "1", rating: "again" },
         `Bearer ${tokenA}`,
       );
-      expect(res.expressRes.status).toBe(200);
       expect(res.nestRes.status).toBe(200);
       expect({ ...res.nestRes.body, nextReview: "NEXT" }).toEqual({
         nextReview: "NEXT",
         intervalDays: 1,
         studyCount: 2,
       });
-      expect({ ...res.nestRes.body, nextReview: "NEXT" }).toEqual({
-        ...res.expressRes.body,
-        nextReview: "NEXT",
-      });
     });
   });
 
-  describe("review — 400 validation envelope parity (MISSING_FIELDS)", () => {
-    it("missing itemType/itemId/rating — 400 MISSING_FIELDS parity", async () => {
+  describe("review — 400 validation envelope (MISSING_FIELDS)", () => {
+    it("missing itemType/itemId/rating — 400 MISSING_FIELDS", async () => {
       const res = await postBoth("/api/v1/review/result", {}, `Bearer ${tokenA}`);
-      expectParity4xx(res, 400);
-      expect(res.expressRes.body.code).toBe("MISSING_FIELDS");
-      expect(res.nestRes.body.message).toBe("itemType, itemId, and rating are required");
+      expectParity4xx(res, 400, "MISSING_FIELDS", "itemType, itemId, and rating are required");
     });
 
-    it("invalid rating — 400 MISSING_FIELDS parity", async () => {
+    it("invalid rating — 400 MISSING_FIELDS", async () => {
       const res = await postBoth(
         "/api/v1/review/result",
         { itemType: "tone-syllable", itemId: "1", rating: "hard" },
         `Bearer ${tokenA}`,
       );
-      expectParity4xx(res, 400);
-      expect(res.expressRes.body.code).toBe("MISSING_FIELDS");
-      expect(res.nestRes.body.message).toBe("rating must be 'again', 'good', or 'easy'");
+      expectParity4xx(res, 400, "MISSING_FIELDS", "rating must be 'again', 'good', or 'easy'");
     });
   });
 

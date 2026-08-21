@@ -1,14 +1,23 @@
 ---
 purpose: Module-level container pattern
-status: active
-last-verified: 2026-08-03
+status: retired
+last-verified: 2026-08-22
 type: guide
 ---
 
 # Module-Level Container Pattern
 
 **Category:** Backend Development
-**Last Updated:** August 3, 2026
+**Last Updated:** August 22, 2026
+
+> **⛔ RETIRED at the 24-15 cutover (Epic 24).** The Express module-level
+> container factories (`modules/*/container.ts`) and the root composition root
+> (`src/app/container.ts`) were **deleted** when NestJS became the production
+> entry (`node dist/nest/main.js`). The live wiring is now the NestJS 11 shell:
+> per-module `modules/<name>/nest/*.module.ts` (providers + `useFactory`)
+> composed in `src/nest/app.module.ts`, with shared infrastructure exposed via
+> `SharedModule`/`DatabaseModule`. The "NestJS Migration Path" section below is
+> now the actual (live) shape. This doc is preserved for traceability.
 
 ---
 

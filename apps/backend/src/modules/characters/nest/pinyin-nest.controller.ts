@@ -72,7 +72,12 @@ export class PinyinNestController {
     }
 
     try {
-      return await this.service.search({ q: qValue, tone: toneValue, page: pageValue, pageSize: pageSizeValue });
+      return await this.service.search({
+        q: qValue,
+        tone: toneValue,
+        page: pageValue,
+        pageSize: pageSizeValue,
+      });
     } catch (err) {
       if (err instanceof PinyinValidationError) {
         throw new BadRequestException({ code: "VALIDATION_ERROR", message: err.message });

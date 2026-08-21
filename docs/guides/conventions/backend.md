@@ -224,6 +224,14 @@ word (zero external deps)         auth (zero external deps)         mnemonics (z
 
 ### 4. Module-Level Container Pattern
 
+> **⛔ RETIRED at the 24-15 cutover (Epic 24).** The Express `container.ts`
+> factories and the root `app/container.ts` were **deleted** when NestJS became
+> the production entry. The live wiring is now the NestJS 11 shell: per-module
+> `modules/<name>/nest/*.module.ts` (providers + `useFactory`) composed in
+> `src/nest/app.module.ts`, with shared infra in `SharedModule`/`DatabaseModule`.
+> This section is preserved for historical traceability; the Nest module shape
+> is the convention going forward.
+
 Each module exports a **typed factory function** from its own `container.ts`:
 
 ```typescript

@@ -29,7 +29,7 @@ type: architecture
 PinyinPal is a **full-stack Mandarin learning platform** built with:
 
 - **Frontend**: React 19.1.0 + TypeScript + Vite (deployed to Vercel)
-- **Backend**: Node.js + Express (deployed to Railway)
+- **Backend**: Node.js + NestJS 11 (Express adapter) (deployed to Railway)
 - **Database**: PostgreSQL with Prisma ORM (hosted on Neon)
 - **Cache**: Redis (Upstash) for API response caching
 - **External APIs**: Google Cloud TTS, Google Cloud Storage, Gemini AI
@@ -42,7 +42,7 @@ PinyinPal is a **full-stack Mandarin learning platform** built with:
 mandarin-vite-react-ts/
 ├── apps/
 │   ├── frontend/          # React application (Vite + TypeScript)
-│   └── backend/           # Express API (Node.js + Prisma)
+│   └── backend/           # NestJS API (Node.js + Prisma)
 ├── packages/
 │   ├── shared-types/      # Shared TypeScript interfaces
 │   ├── shared-constants/  # API routes, HSK levels, regex patterns
@@ -69,19 +69,19 @@ mandarin-vite-react-ts/
 
 **Layer Separation (Modular Monolith):**
 
-- **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
-- **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
+- **App Layer** (`src/nest/`): NestJS 11 shell — entry (`main.ts`), composition root (`app.module.ts`), shared app config (`configure-app.ts`), HTTP-layer parity (exception filter, requestId middleware, rate-limit). The pre-cutover Express `src/app/` (index/routes/container) was deleted at the 24-15 cutover.
+- **Module Layer** (`src/modules/*/`): Per-domain modules containing `nest/` (Nest controllers/modules), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
   - Current modules (15): `audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
-  - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/api/` and mounts the public `POST /v1/tts` wire path.
+  - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/nest/` and mounts the public `POST /v1/tts` wire path.
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`. **Never contains capability logic**: `shared/infrastructure/external/` holds Tier-0 raw clients (`GCSClient`, `GoogleTTSClient`, `GeminiClient`) and the Tier-1 resilient `GeminiService` (relocated from `shared/services/`). `shared/services/` and `shared/tts/` are retired.
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
 
 **Key Design Decisions:**
 
-1. **Single Express App** (dev + prod): Unified behavior, no dual-backend maintenance
+1. **NestJS 11 production entry** (`node dist/nest/main.js`): the Express surface was removed at the 24-15 cutover; the shell runs on the Express adapter with identical CORS / `trust proxy 1` / body-parser / rate-limit semantics
 2. **ESM Modules**: TypeScript source uses `.ts` files; the `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports)
-3. **Dependency Injection**: Constructor injection with direct instantiation at composition root
+3. **Dependency Injection**: Nest DI (providers + `useFactory`) over the modulith modules and the shared providers (`SharedModule`/`DatabaseModule`); services never touch Prisma directly
 4. **Fail-Open Caching**: Redis failures never block requests (degrades to API calls)
 5. **Repository Pattern**: All database access through repositories (abstracts Prisma)
 6. **Types Directory**: Each module has `types/` with barrel re-exports; no `Record<string, unknown>` casts, no `as unknown as` double casts
@@ -399,17 +399,17 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 **Production Environment:**
 
-| Component | Platform | Trigger          | Runtime                     |
-| --------- | -------- | ---------------- | --------------------------- |
-| Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build)     |
-| Backend   | Railway  | Push to `main`   | Node.js 20 (Express server) |
-| Database  | Neon     | Manual migration | PostgreSQL 17               |
-| Cache     | Upstash  | Always-on        | Redis 7                     |
+| Component | Platform | Trigger          | Runtime                 |
+| --------- | -------- | ---------------- | ----------------------- |
+| Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build) |
+| Backend   | Railway  | Push to `main`   | Node.js 24 (NestJS 11)  |
+| Database  | Neon     | Manual migration | PostgreSQL 17           |
+| Cache     | Upstash  | Always-on        | Redis 7                 |
 
 **Development Environment:**
 
 - **Frontend**: Vite dev server (port 5173) with HMR
-- **Backend**: Express with `tsx watch` (port 3001) hot reload
+- **Backend**: NestJS with `tsx watch` (port 3001) hot reload
 - **Proxy**: Vite proxies `/api/*` to localhost:3001 for seamless development
 
 **CI/CD:**

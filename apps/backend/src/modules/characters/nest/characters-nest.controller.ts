@@ -73,7 +73,10 @@ export class CharactersNestController {
     const glyphValue = String(glyph);
 
     if (!glyphValue || !CHINESE_CHAR_REGEX.test(glyphValue)) {
-      throw new BadRequestException({ code: "VALIDATION_ERROR", message: "Invalid character glyph" });
+      throw new BadRequestException({
+        code: "VALIDATION_ERROR",
+        message: "Invalid character glyph",
+      });
     }
 
     try {
@@ -100,7 +103,10 @@ export class CharactersNestController {
     const glyphValue = String(glyph);
 
     if (!glyphValue || !CHINESE_CHAR_REGEX.test(glyphValue)) {
-      throw new BadRequestException({ code: "VALIDATION_ERROR", message: "Invalid character glyph" });
+      throw new BadRequestException({
+        code: "VALIDATION_ERROR",
+        message: "Invalid character glyph",
+      });
     }
 
     try {
@@ -137,7 +143,10 @@ export class CharactersNestController {
     const glyphValue = String(glyph);
 
     if (!glyphValue || !CHINESE_CHAR_REGEX.test(glyphValue)) {
-      throw new BadRequestException({ code: "VALIDATION_ERROR", message: "Invalid character glyph" });
+      throw new BadRequestException({
+        code: "VALIDATION_ERROR",
+        message: "Invalid character glyph",
+      });
     }
 
     try {
@@ -165,7 +174,10 @@ export class CharactersNestController {
     const glyphValue = String(glyph);
 
     if (!glyphValue || !CHINESE_CHAR_REGEX.test(glyphValue)) {
-      throw new BadRequestException({ code: "VALIDATION_ERROR", message: "Invalid character glyph" });
+      throw new BadRequestException({
+        code: "VALIDATION_ERROR",
+        message: "Invalid character glyph",
+      });
     }
 
     try {

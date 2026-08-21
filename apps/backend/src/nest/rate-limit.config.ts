@@ -37,7 +37,12 @@ type LimiterConfig = Partial<Options>;
 export const WORDS_GET_LIMITER_CONFIG: LimiterConfig = {
   windowMs: 60 * 1000, // 1 minute
   max: 60,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  // `req.userId || ipKeyGenerator(req.ip || "unknown")` — the helper avoids
+  // express-rate-limit's ERR_ERL_KEY_GEN_IPV6 validation (same as the
+  // mnemonics/readers configs). Story 24-15: the bare `req.ip` form in a
+  // custom keyGenerator is rejected by the library (IPv6-bypass guard), which
+  // would crash the production boot.
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment.",
     code: "RATE_LIMIT",
@@ -50,7 +55,7 @@ export const WORDS_GET_LIMITER_CONFIG: LimiterConfig = {
 export const WORDS_GUEST_GET_LIMITER_CONFIG: LimiterConfig = {
   windowMs: 60 * 1000, // 1 minute
   max: 20,
-  keyGenerator: (req: Request) => req.ip || "unknown",
+  keyGenerator: (req: Request) => ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment.",
     code: "RATE_LIMIT",

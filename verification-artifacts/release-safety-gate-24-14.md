@@ -4,7 +4,7 @@
 **Branch:** `epic-24-nestjs-shell-migration`
 **Story:** 24-14 (stub in [epic README](../../docs/issue-implementation/epic-24-nestjs-shell-migration/README.md))
 **Source of truth:** Architect's release-safety scope report §1 (DoD gates) + §4 (release checklist).
-*Note: the Architect report used the pre-serial-renumber numbering (gate=24-13, cutover=24-12); under the serial renumber these are **24-14 = gate** and **24-15 = cutover**. All gate semantics below are the report's, mapped to the current numbers.*
+_Note: the Architect report used the pre-serial-renumber numbering (gate=24-13, cutover=24-12); under the serial renumber these are **24-14 = gate** and **24-15 = cutover**. All gate semantics below are the report's, mapped to the current numbers._
 **Verified by:** Backend Engineer (Story 24-14) — every line below was run/read, not assumed.
 
 ---
@@ -32,25 +32,25 @@ The fully-migrated NestJS shell is **release-safe per the §1 Definition of Done
 
 ### S1 Security — P0-1 closed structurally ✅ PASS
 
-| Check | Evidence |
-|---|---|
-| `ReviewRepository.findByUserAndTypes` rejects `undefined` userId before Prisma | `src/modules/review/repositories/ReviewRepository.ts:86-88` — `if (userId === undefined) return []` **before** any `prisma` call (no ignore-`undefined` path) |
-| `ReviewRepository.countDue` rejects `undefined` before Prisma | `ReviewRepository.ts:166-168` — `if (userId === undefined) return 0` before `prisma.srsCardState.count` |
-| No `req.userId!` non-null assertion in Nest controllers | Code-scan across `src/modules/*/nest/*.ts` — **zero** `req.userId!`/`req.user!`; the only hit is a *comment* (`progression-nest.controller.ts:209`). Ported controllers use `req.userId as string` (typed) + a defensive `if (!userId) 401` mirroring Express |
-| P0-1 regression tests green | `review-nest.controller.test.ts` (7 tests: each route "throws 401 and never calls the service when req.userId is missing") + `ReviewRepository.test.ts` (`undefined → []`/`0`, **no Prisma call** asserted) — included in `test:full` 744 ✅ |
-| Guest ⇒ 401/empty, never another user's rows | `review-parity.test.ts` — "P0-1 no-leak (user B never sees user A's rows)" + guest-401 A/B parity ✅ (in integration 262) |
+| Check                                                                          | Evidence                                                                                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ReviewRepository.findByUserAndTypes` rejects `undefined` userId before Prisma | `src/modules/review/repositories/ReviewRepository.ts:86-88` — `if (userId === undefined) return []` **before** any `prisma` call (no ignore-`undefined` path)                                                                                                 |
+| `ReviewRepository.countDue` rejects `undefined` before Prisma                  | `ReviewRepository.ts:166-168` — `if (userId === undefined) return 0` before `prisma.srsCardState.count`                                                                                                                                                       |
+| No `req.userId!` non-null assertion in Nest controllers                        | Code-scan across `src/modules/*/nest/*.ts` — **zero** `req.userId!`/`req.user!`; the only hit is a _comment_ (`progression-nest.controller.ts:209`). Ported controllers use `req.userId as string` (typed) + a defensive `if (!userId) 401` mirroring Express |
+| P0-1 regression tests green                                                    | `review-nest.controller.test.ts` (7 tests: each route "throws 401 and never calls the service when req.userId is missing") + `ReviewRepository.test.ts` (`undefined → []`/`0`, **no Prisma call** asserted) — included in `test:full` 744 ✅                  |
+| Guest ⇒ 401/empty, never another user's rows                                   | `review-parity.test.ts` — "P0-1 no-leak (user B never sees user A's rows)" + guest-401 A/B parity ✅ (in integration 262)                                                                                                                                     |
 
 **Owner:** absorbed in-epic (24-1 stopgap + 24-11 structural). **Status:** closed on both the Express and Nest paths.
 
 ### S2 Security — guest-auth == calibrated shape ✅ PASS
 
-| Check | Evidence |
-|---|---|
-| `createGuestPhaseGate → {currentPhase:1, isGuest:true}` | `packages/shared-constants/src/index.js:98-117` — returns `{ id:"guest-unlocked", currentPhase:1, phase4Unlocked:false, isGuest:true, ... }` (never all-unlocked) |
-| `OptionalAuthGuard` guest → undefined/empty (never all-unlocked) | `src/nest/guards/optional-auth.guard.ts` — no token → `return true` with `req.userId` undefined; invalid/expired token → caught, guest continues (never 401/403, never a fabricated user) |
-| `/gates` guest branch calibrated | `src/modules/progression/nest/progression-nest.controller.ts` `getGates` — guest → `{ phase2Gate:{passed:false,reason:"GUEST"}, characterCountGate:{passed:false,...}, phase3To4Gate:{passed:false,...} }` (Phase-1-only, NOT the all-passed GUEST shape Express still returns — Express unified at 24-15) |
-| `getPhaseGate` guest → calibrated gate | `progression-nest.controller.ts` — guest → `createGuestPhaseGate()` |
-| Guest-behavior tests / parity green | `auth-guards-parity.test.ts` (hermetic: required/require 401, optional guest passes with null user) + `quiz-progression-parity.test.ts` (calibrated `/gates` guest, guest progression `[]`) + `audio-health-parity.test.ts` (guest TTS never 401, F5) — all in the green suites below |
+| Check                                                            | Evidence                                                                                                                                                                                                                                                                                                   |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createGuestPhaseGate → {currentPhase:1, isGuest:true}`          | `packages/shared-constants/src/index.js:98-117` — returns `{ id:"guest-unlocked", currentPhase:1, phase4Unlocked:false, isGuest:true, ... }` (never all-unlocked)                                                                                                                                          |
+| `OptionalAuthGuard` guest → undefined/empty (never all-unlocked) | `src/nest/guards/optional-auth.guard.ts` — no token → `return true` with `req.userId` undefined; invalid/expired token → caught, guest continues (never 401/403, never a fabricated user)                                                                                                                  |
+| `/gates` guest branch calibrated                                 | `src/modules/progression/nest/progression-nest.controller.ts` `getGates` — guest → `{ phase2Gate:{passed:false,reason:"GUEST"}, characterCountGate:{passed:false,...}, phase3To4Gate:{passed:false,...} }` (Phase-1-only, NOT the all-passed GUEST shape Express still returns — Express unified at 24-15) |
+| `getPhaseGate` guest → calibrated gate                           | `progression-nest.controller.ts` — guest → `createGuestPhaseGate()`                                                                                                                                                                                                                                        |
+| Guest-behavior tests / parity green                              | `auth-guards-parity.test.ts` (hermetic: required/require 401, optional guest passes with null user) + `quiz-progression-parity.test.ts` (calibrated `/gates` guest, guest progression `[]`) + `audio-health-parity.test.ts` (guest TTS never 401, F5) — all in the green suites below                      |
 
 **Owner:** absorbed in-epic (24-5 guards, 24-7 identity calibration, 24-8/24-10/24-13 consumers). **Status:** calibrated shape reproduced on the Nest surface.
 
@@ -70,9 +70,9 @@ The fully-migrated NestJS shell is **release-safe per the §1 Definition of Done
 
 ### T1 Tests ✅ PASS
 
-| Suite | Result (exact) |
-|---|---|
-| `npm run test:full` (`vitest run`) | ✅ **66 files / 744 tests passed** (exit 0) |
+| Suite                                                                       | Result (exact)                              |
+| --------------------------------------------------------------------------- | ------------------------------------------- |
+| `npm run test:full` (`vitest run`)                                          | ✅ **66 files / 744 tests passed** (exit 0) |
 | `npm run test:integration` (`vitest --config vitest.integration.config.ts`) | ✅ **23 files / 262 tests passed** (exit 0) |
 
 - **Stale artifact note:** `modules/readers/api/__tests__/ReadersAudioController.test.ts` **still present and passing** — it uniquely covers the live Express `ReadersController.getPassageAudio` until Express is deleted. **Retires at 24-15** (per 24-11/24-12 investigation; removal now would drop live coverage).
@@ -104,14 +104,14 @@ The fully-migrated NestJS shell is **release-safe per the §1 Definition of Done
 
 ### R1 Runtime — Node 24 + ESM prod build + config fail-fast ✅ PASS (one caveat)
 
-| Check | Evidence |
-|---|---|
-| Node 24 declared | `apps/backend/.node-version` = **24**, `apps/backend/.nvmrc` = **24.x** ✅ |
-| ESM prod build emits Nest entry | `npm run build` → `dist/nest/main.js` (2286 bytes) + `dist/app/index.js` (5137 bytes) emitted; backend `"type":"module"` ✅ |
-| Prod build boots | `node dist/nest/main.js` booted → health 200 (Redis connected, DB reachable) ✅ |
+| Check                                     | Evidence                                                                                                                                                         |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node 24 declared                          | `apps/backend/.node-version` = **24**, `apps/backend/.nvmrc` = **24.x** ✅                                                                                       |
+| ESM prod build emits Nest entry           | `npm run build` → `dist/nest/main.js` (2286 bytes) + `dist/app/index.js` (5137 bytes) emitted; backend `"type":"module"` ✅                                      |
+| Prod build boots                          | `node dist/nest/main.js` booted → health 200 (Redis connected, DB reachable) ✅                                                                                  |
 | `validateConfig()` fail-fast on Nest boot | `src/nest/main.ts` calls `validateConfig()` **before** `NestFactory.create`; `src/shared/config/index.ts:150` throws `[Config] <key> is required but not set` ✅ |
-| CORS / `trust proxy 1` / cookie parity | `src/nest/configure-app.ts` — identical origin allowlist, `set("trust proxy", 1)`, `cookieParser()`, `express.json()`/`urlencoded` with same limits ✅ |
-| Prisma 7 CJS pattern in prod | `DatabaseModule` — CJS default-import + `PrismaPg` connection-string adapter; boot smoke passed ✅ |
+| CORS / `trust proxy 1` / cookie parity    | `src/nest/configure-app.ts` — identical origin allowlist, `set("trust proxy", 1)`, `cookieParser()`, `express.json()`/`urlencoded` with same limits ✅           |
+| Prisma 7 CJS pattern in prod              | `DatabaseModule` — CJS default-import + `PrismaPg` connection-string adapter; boot smoke passed ✅                                                               |
 
 **Caveat (hardening note, NOT a blocker):** the `engines` fields are **lower bounds**, not pins — backend `"node": ">=22"`, root `"node": ">=20.0.0"` — satisfied by Node 24 but not pinning it. The toolchain files (`.node-version: 24`, `.nvmrc: 24.x`) declare 24, and the local dev shell is on Node v20.19.4. **24-15 must validate the prod boot under Node 24 on Railway** (RAILPACK respects `.nvmrc`/`.node-version`) and may tighten `engines` to `>=24`.
 
@@ -125,6 +125,7 @@ The fully-migrated NestJS shell is **release-safe per the §1 Definition of Done
 ### DOC — input state flagged ✅ (refresh is 24-15)
 
 Per the story scope, DOC is NOT closed here — it is **flagged as 24-15's work**:
+
 - `apps/backend/src/shared/docs/openapi.yaml` — **stale** (dead `/v1/vocabulary/*` + `/v1/progress*` docs, §P2); regenerate + reconcile at 24-15.
 - `docs/architecture.md`, `module-level-containers.md`, backend conventions — not yet updated for the Nest surface; 24-15 truth-check.
 - `/api-docs` consumer decision — 24-15.
@@ -132,15 +133,15 @@ Per the story scope, DOC is NOT closed here — it is **flagged as 24-15's work*
 
 ### G Quality — canonical gates ✅ PASS
 
-| Gate | Result |
-|---|---|
-| `npx tsc --noEmit` (apps/backend) | ✅ exit 0 |
-| `npm run build --workspace=@mandarin/backend` | ✅ exit 0 (both dist entries emit) |
-| `npm run lint` (eslint .) | ✅ exit 0 (0 errors) |
-| `npm test` (changed scope) | covered by test:full below (no changed test files in this story) |
-| `npm run test:full` | ✅ 66 files / 744 tests |
-| `npm run test:integration` | ✅ 23 files / 262 tests |
-| `npm run check:module-boundaries` | ✅ exit 0 ("All shared imports respect the direction rule; naming guard clean") |
+| Gate                                          | Result                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------- |
+| `npx tsc --noEmit` (apps/backend)             | ✅ exit 0                                                                       |
+| `npm run build --workspace=@mandarin/backend` | ✅ exit 0 (both dist entries emit)                                              |
+| `npm run lint` (eslint .)                     | ✅ exit 0 (0 errors)                                                            |
+| `npm test` (changed scope)                    | covered by test:full below (no changed test files in this story)                |
+| `npm run test:full`                           | ✅ 66 files / 744 tests                                                         |
+| `npm run test:integration`                    | ✅ 23 files / 262 tests                                                         |
+| `npm run check:module-boundaries`             | ✅ exit 0 ("All shared imports respect the direction rule; naming guard clean") |
 
 ---
 
@@ -148,27 +149,27 @@ Per the story scope, DOC is NOT closed here — it is **flagged as 24-15's work*
 
 Enumerated from the 17 route files (`router.<method>(` registrations = 63) vs the parity harness (`tests/integration/nest/*.test.ts`). **No uncovered routes.**
 
-| Module (routes) | Routes | Covered by harness |
-|---|---|---|
-| words (2) | `GET /v1/words/:glyph`, `GET /v1/words/:glyph/measure-words` | `route-parity.test.ts` |
-| phonetic-clusters (2) | `GET /v1/phonetic-clusters`, `GET /v1/phonetic-clusters/:id` | `route-parity.test.ts` |
-| grammar (2) | `GET /v1/grammar/patterns`, `GET /v1/grammar/patterns/:id` | `route-parity.test.ts` |
-| chengyu (2) | `GET /v1/chengyu/idioms`, `GET /v1/chengyu/idioms/:id` | `route-parity.test.ts` |
-| audio (1) | `POST /v1/tts` | `audio-health-parity.test.ts` |
-| health (1) | `GET /v1/health` | `audio-health-parity.test.ts` |
-| auth (5) | register / login / refresh / logout / `GET me` | `auth-parity.test.ts` |
-| characters (6) | `:glyph` (foundations shadow), `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search` (404 shadow), `/frequency` (404 shadow) | `characters-mnemonics-parity.test.ts` + `radicals-foundations-parity.test.ts` (shadow block) |
-| pinyin (1) | `GET /v1/pinyin/search` | `characters-mnemonics-parity.test.ts` |
-| mnemonics (4) | GET / POST / PUT / DELETE `/v1/mnemonics/:glyph` | `characters-mnemonics-parity.test.ts` |
-| radicals (4) | `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters` | `radicals-foundations-parity.test.ts` |
-| foundations (4) | `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph` (shadow wins) | `radicals-foundations-parity.test.ts` |
-| review (3) | `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result` | `review-parity.test.ts` |
-| readers (11) | passages list/get, `passages/:id/audio`, generate, sessions get/put/complete, bookmarks get/post, bookmarks by-passage get/delete | `readers-parity.test.ts` |
-| quiz (8) | config, questions, attempts GET, attempts POST, attempts/:id/answers, attempts/:id/complete, feedback, sandhi-drill/questions | `quiz-progression-parity.test.ts` |
-| progression (7) | foundation-progress GET/PUT, phase-gate GET/PUT, gates, radical-progress GET/PUT | `quiz-progression-parity.test.ts` |
-| **TOTAL** | **63** | **63 (100%)** |
+| Module (routes)       | Routes                                                                                                                                           | Covered by harness                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| words (2)             | `GET /v1/words/:glyph`, `GET /v1/words/:glyph/measure-words`                                                                                     | `route-parity.test.ts`                                                                       |
+| phonetic-clusters (2) | `GET /v1/phonetic-clusters`, `GET /v1/phonetic-clusters/:id`                                                                                     | `route-parity.test.ts`                                                                       |
+| grammar (2)           | `GET /v1/grammar/patterns`, `GET /v1/grammar/patterns/:id`                                                                                       | `route-parity.test.ts`                                                                       |
+| chengyu (2)           | `GET /v1/chengyu/idioms`, `GET /v1/chengyu/idioms/:id`                                                                                           | `route-parity.test.ts`                                                                       |
+| audio (1)             | `POST /v1/tts`                                                                                                                                   | `audio-health-parity.test.ts`                                                                |
+| health (1)            | `GET /v1/health`                                                                                                                                 | `audio-health-parity.test.ts`                                                                |
+| auth (5)              | register / login / refresh / logout / `GET me`                                                                                                   | `auth-parity.test.ts`                                                                        |
+| characters (6)        | `:glyph` (foundations shadow), `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search` (404 shadow), `/frequency` (404 shadow) | `characters-mnemonics-parity.test.ts` + `radicals-foundations-parity.test.ts` (shadow block) |
+| pinyin (1)            | `GET /v1/pinyin/search`                                                                                                                          | `characters-mnemonics-parity.test.ts`                                                        |
+| mnemonics (4)         | GET / POST / PUT / DELETE `/v1/mnemonics/:glyph`                                                                                                 | `characters-mnemonics-parity.test.ts`                                                        |
+| radicals (4)          | `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters`                                                                                      | `radicals-foundations-parity.test.ts`                                                        |
+| foundations (4)       | `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph` (shadow wins)                                              | `radicals-foundations-parity.test.ts`                                                        |
+| review (3)            | `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result`                                                                     | `review-parity.test.ts`                                                                      |
+| readers (11)          | passages list/get, `passages/:id/audio`, generate, sessions get/put/complete, bookmarks get/post, bookmarks by-passage get/delete                | `readers-parity.test.ts`                                                                     |
+| quiz (8)              | config, questions, attempts GET, attempts POST, attempts/:id/answers, attempts/:id/complete, feedback, sandhi-drill/questions                    | `quiz-progression-parity.test.ts`                                                            |
+| progression (7)       | foundation-progress GET/PUT, phase-gate GET/PUT, gates, radical-progress GET/PUT                                                                 | `quiz-progression-parity.test.ts`                                                            |
+| **TOTAL**             | **63**                                                                                                                                           | **63 (100%)**                                                                                |
 
-*Note: `GET /v1/characters/:glyph` is counted once and exercised through the foundations shadow (foundations mounted first on both apps — identical behavior, verified in the shadow-parity blocks).*
+_Note: `GET /v1/characters/:glyph` is counted once and exercised through the foundations shadow (foundations mounted first on both apps — identical behavior, verified in the shadow-parity blocks)._
 
 ---
 
@@ -176,28 +177,28 @@ Enumerated from the 17 route files (`router.<method>(` registrations = 63) vs th
 
 Per Architect scope report §2 (verdict keys A = absorb into Epic 24, B = hard prereq, C = post-release-safe). Under the serial plan, Epic 24 ran first-to-completion and absorbed the release-safety scope, so the original B enforcement became in-epic work. **All absorbed items landed; C items declared.**
 
-| Item | Verdict | Status in Epic 24 |
-|---|---|---|
-| 2.1 P0-1 leak (`findByUserAndTypes`/`countDue` undefined; `req.userId!`) | B→absorbed | ✅ **Landed** — 24-1 stopgap (Express) + 24-11 structural (Nest repo guard + typed controller) + regression tests (§S1) |
-| 2.2 Guest identity / auth semantics (F1–F6, `createGuestPhaseGate`) | B→absorbed | ✅ **Landed** — 24-5 guards (calibrated), 24-7 identity calibration, 24-8/24-10/24-13 consumers (§S2) |
-| 2.3 Quiz-engine known bugs (`PHASE_CONFIGS[3]`, aggregation, key-4 dup) | B→**C-declared** | 🟡 **C-declared → epic-26** — the FE quiz fixes (`useQuizCard`, `QuizCard`, strategy registry) stay in epic-26; the **backend engine was ported correctly** (no backend bug canonized, 24-13). Not a migration regression; does not block the Nest cutover |
-| 2.4 Gate/phase data + HSK rebase | C | 🟡 **C-declared → epic-27** (status-quo data is what's live; not release-blocking) |
-| 2.5 Review/SRS schema (`SrsCardState`, reserved vector) | B→absorbed | ✅ **Landed additive-only** — 24-11 schema + migration (§D1) |
-| 2.6 openapi.yaml refresh | A | 🟡 In progress — refresh + reconciliation is **24-15** (§P2/DOC) |
-| 2.7 Full ~63-route parity harness | A | ✅ **Landed** — 63/63 (§P1) |
-| 2.8 Test baseline + integration coverage | A | ✅ **Landed** — baseline recorded in `test-report-24-1.md`; suites green (§T1) |
-| 2.9 Observability minimum (error visibility + healthcheck) | A | ✅ **Landed** — 24-3 filter (§O1) + health (§O2) |
-| 2.10 Full observability spine | C | 🟡 **C-declared → epic-39** (parity = no regression; not release-blocking) |
-| 2.11 Rate limiting | A | ✅ **Landed** — 24-2/24-3 infra, 24-6 auth brute-force, 24-12 readers 5/day, 24-13 quiz feedback |
-| 2.12 Error envelope + requestId + body-parser | A | ✅ **Landed** — 24-3 (§O1) |
-| 2.13 Deployment safety (rollback/smoke/watch) | A | ✅ **Landed (documented here)** — §4 |
-| 2.14 Config/secrets/runtime (Node 24, CORS/trust-proxy, Prisma CJS) | A | ✅ **Landed** — §R1 |
-| 2.15 Graceful shutdown | A | ✅ **Landed** — 24-3/24-4 (§R2) |
-| 2.16 Prisma migration safety at cutover | A (+B schema) | ✅ **Landed** — §D1 |
-| 2.17 Swagger/SDK consumer surface | A | 🟡 In progress — **24-15** (serve from Nest or document removal) |
-| 2.18 Dead/misrouted endpoints | A | 🟡 In progress — diff documented (§P2); openapi cleanup is **24-15** |
-| 2.19 Stale `ReadersAudioController.test.ts`; `WordsRoutes.ts` uppercase; config homes; `GcsFileStore` DI | A | ✅ **Landed** — WordsRoutes covered in harness (24-2); config homes → Nest providers (24-4); `GcsFileStore` lazy-singleton DI (24-4); stale test **kept + deferred to 24-15** (uniquely covers live Express method) |
-| 2.20 Cosmetic housekeeping | C | 🟡 **C-declared** (non-blocking) |
+| Item                                                                                                     | Verdict          | Status in Epic 24                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1 P0-1 leak (`findByUserAndTypes`/`countDue` undefined; `req.userId!`)                                 | B→absorbed       | ✅ **Landed** — 24-1 stopgap (Express) + 24-11 structural (Nest repo guard + typed controller) + regression tests (§S1)                                                                                                                                    |
+| 2.2 Guest identity / auth semantics (F1–F6, `createGuestPhaseGate`)                                      | B→absorbed       | ✅ **Landed** — 24-5 guards (calibrated), 24-7 identity calibration, 24-8/24-10/24-13 consumers (§S2)                                                                                                                                                      |
+| 2.3 Quiz-engine known bugs (`PHASE_CONFIGS[3]`, aggregation, key-4 dup)                                  | B→**C-declared** | 🟡 **C-declared → epic-26** — the FE quiz fixes (`useQuizCard`, `QuizCard`, strategy registry) stay in epic-26; the **backend engine was ported correctly** (no backend bug canonized, 24-13). Not a migration regression; does not block the Nest cutover |
+| 2.4 Gate/phase data + HSK rebase                                                                         | C                | 🟡 **C-declared → epic-27** (status-quo data is what's live; not release-blocking)                                                                                                                                                                         |
+| 2.5 Review/SRS schema (`SrsCardState`, reserved vector)                                                  | B→absorbed       | ✅ **Landed additive-only** — 24-11 schema + migration (§D1)                                                                                                                                                                                               |
+| 2.6 openapi.yaml refresh                                                                                 | A                | 🟡 In progress — refresh + reconciliation is **24-15** (§P2/DOC)                                                                                                                                                                                           |
+| 2.7 Full ~63-route parity harness                                                                        | A                | ✅ **Landed** — 63/63 (§P1)                                                                                                                                                                                                                                |
+| 2.8 Test baseline + integration coverage                                                                 | A                | ✅ **Landed** — baseline recorded in `test-report-24-1.md`; suites green (§T1)                                                                                                                                                                             |
+| 2.9 Observability minimum (error visibility + healthcheck)                                               | A                | ✅ **Landed** — 24-3 filter (§O1) + health (§O2)                                                                                                                                                                                                           |
+| 2.10 Full observability spine                                                                            | C                | 🟡 **C-declared → epic-39** (parity = no regression; not release-blocking)                                                                                                                                                                                 |
+| 2.11 Rate limiting                                                                                       | A                | ✅ **Landed** — 24-2/24-3 infra, 24-6 auth brute-force, 24-12 readers 5/day, 24-13 quiz feedback                                                                                                                                                           |
+| 2.12 Error envelope + requestId + body-parser                                                            | A                | ✅ **Landed** — 24-3 (§O1)                                                                                                                                                                                                                                 |
+| 2.13 Deployment safety (rollback/smoke/watch)                                                            | A                | ✅ **Landed (documented here)** — §4                                                                                                                                                                                                                       |
+| 2.14 Config/secrets/runtime (Node 24, CORS/trust-proxy, Prisma CJS)                                      | A                | ✅ **Landed** — §R1                                                                                                                                                                                                                                        |
+| 2.15 Graceful shutdown                                                                                   | A                | ✅ **Landed** — 24-3/24-4 (§R2)                                                                                                                                                                                                                            |
+| 2.16 Prisma migration safety at cutover                                                                  | A (+B schema)    | ✅ **Landed** — §D1                                                                                                                                                                                                                                        |
+| 2.17 Swagger/SDK consumer surface                                                                        | A                | 🟡 In progress — **24-15** (serve from Nest or document removal)                                                                                                                                                                                           |
+| 2.18 Dead/misrouted endpoints                                                                            | A                | 🟡 In progress — diff documented (§P2); openapi cleanup is **24-15**                                                                                                                                                                                       |
+| 2.19 Stale `ReadersAudioController.test.ts`; `WordsRoutes.ts` uppercase; config homes; `GcsFileStore` DI | A                | ✅ **Landed** — WordsRoutes covered in harness (24-2); config homes → Nest providers (24-4); `GcsFileStore` lazy-singleton DI (24-4); stale test **kept + deferred to 24-15** (uniquely covers live Express method)                                        |
+| 2.20 Cosmetic housekeeping                                                                               | C                | 🟡 **C-declared** (non-blocking)                                                                                                                                                                                                                           |
 
 **Sign-off:** the A/B/C ownership map above reflects the state at 24-14. The only items still open are the **24-15-scoped** A-items (openapi/docs/`/api-docs` — all recorded as 24-15 inputs) and the **C-declared** items (epic-26 quiz-FE fixes, epic-27 data, epic-39 observability spine, cosmetic).
 
@@ -208,6 +209,7 @@ Per Architect scope report §2 (verdict keys A = absorb into Epic 24, B = hard p
 ### 4.1 Rollback runbook (verified)
 
 **Primary — `start:express` escape hatch (keep for one release):**
+
 - The Express production entry `node dist/app/index.js` **still builds and serves** (verified: `npm run build` emits it; it is today's `start` command in `railway.toml`).
 - **After the 24-15 flip** (Nest becomes `start`): to roll back, either (a) revert `railway.toml` `startCommand` to run the Express entry (`node dist/app/index.js`), or (b) re-point the start script. The Express entry remains compilable until it is explicitly deleted (24-15's retirement ACs).
 - Because Nest and Express share the same Prisma client + schema, **no migration rollback is needed** — the release's migration set is additive-only (§D1), so a running Express build is compatible with the post-deploy schema.
@@ -251,13 +253,78 @@ No gate failed; no blocker exists at 24-14. Remaining open items are **24-15's d
 
 ## 6. Gate Run Details (exact numbers, run 2026-08-22)
 
-| Gate | Command | Exact result |
-|---|---|---|
-| Typecheck | `npx tsc --noEmit` (apps/backend) | exit 0 |
-| Build | `npm run build --workspace=@mandarin/backend` | exit 0; `dist/app/index.js` 5137 B + `dist/nest/main.js` 2286 B emitted |
-| Full unit | `npm run test:full` | **66 files / 744 tests passed** (5.90s) |
-| Integration | `npm run test:integration` | **23 files / 262 tests passed** (82.61s) |
-| Lint | `npm run lint` (eslint .) | exit 0 |
-| Boundaries | `npm run check:module-boundaries` | exit 0 |
-| Migration | `npx prisma migrate status` | 30 migrations, "Database schema is up to date!" |
-| Nest prod boot | `node dist/nest/main.js` (PORT=3999) | booted; `GET /api/v1/health` → 200 |
+| Gate           | Command                                       | Exact result                                                            |
+| -------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| Typecheck      | `npx tsc --noEmit` (apps/backend)             | exit 0                                                                  |
+| Build          | `npm run build --workspace=@mandarin/backend` | exit 0; `dist/app/index.js` 5137 B + `dist/nest/main.js` 2286 B emitted |
+| Full unit      | `npm run test:full`                           | **66 files / 744 tests passed** (5.90s)                                 |
+| Integration    | `npm run test:integration`                    | **23 files / 262 tests passed** (82.61s)                                |
+| Lint           | `npm run lint` (eslint .)                     | exit 0                                                                  |
+| Boundaries     | `npm run check:module-boundaries`             | exit 0                                                                  |
+| Migration      | `npx prisma migrate status`                   | 30 migrations, "Database schema is up to date!"                         |
+| Nest prod boot | `node dist/nest/main.js` (PORT=3999)          | booted; `GET /api/v1/health` → 200                                      |
+
+---
+
+# Story 24-15 — Deployment Cutover: Post-Flip Verification Record
+
+**Date:** August 22, 2026
+**Branch:** `epic-24-nestjs-shell-migration`
+**Story:** 24-15 `deployment-cutover` (FINAL story of Epic 24)
+**Verified by:** Backend Engineer (Story 24-15) — every gate below was run/read, not assumed.
+**Verdict:** ✅ CUTOVER COMPLETE — NestJS is the production entry; the Express surface is deleted; openapi + docs refreshed; all gates green. **Epic 24 closed.**
+
+---
+
+## 1. Gate Results (exact numbers, run 2026-08-22 from `apps/backend`)
+
+| Gate                     | Command                                          | Exact result                                                                                                                       |
+| ------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Build                    | `npm run build`                                  | ✅ exit 0 — `dist/nest/main.js` (2305 B) emitted; `dist/app/index.js` **no longer emitted** (src/app deleted); openapi copy step passed (`dist/shared/docs/openapi.yaml` present) |
+| Full unit suite          | `npm run test:full` (`vitest run`)               | ✅ **52 files / 609 tests passed** (4.61s) — down from 24-14's 66/744: the Express controller/route tests were retired at cutover (§4) |
+| Integration suite        | `npm run test:integration`                       | ✅ **23 files / 262 tests passed** (73.37s) — same count as 24-14; the 9 parity harnesses were refactored from dual-app (Express+Nest) boot to **Nest-only regression guards** |
+| Lint (changed files)     | `npx eslint <34 changed backend TS files>`       | ✅ **0 errors** (9 warnings = `tests/integration/nest/*` files the backend ESLint config intentionally ignores — pre-existing behavior) |
+| Module boundaries        | `npm run check:module-boundaries`                | ✅ exit 0 — "All shared imports respect the direction rule (shared never imports features/modules); naming guard clean"            |
+| Typecheck                | `npx tsc --noEmit` (via build)                   | ✅ exit 0 (part of `npm run build`)                                                                                                 |
+
+## 2. Smoke — production build `node dist/nest/main.js` (PORT=3999)
+
+Booted the production entry with `.env.local` (dev mode) — config validated, Redis connected, all 17 modules initialized, `Nest production server running on port 3999`.
+
+| Request                                       | Result                                                                                                                        |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/health`                          | ✅ **200** `{"status":"ok", ..., "services":{"gemini":true,"tts":true}, "cache":{"redis":{"connected":true}}}`                |
+| `GET /api/v1/words/好` (guest route)          | ✅ **200** word payload (`w_00138` 好 hao3)                                                                                    |
+| `GET /api/v1/pinyin/search?q=hao` (guest)     | ✅ **200** `{query, totalResults:35, page, pageSize, results[]}`                                                               |
+| `GET /api-docs` (swagger-ui)                  | ✅ **200** HTML (`swagger-ui` present)                                                                                        |
+| `GET /api-docs.json` (spec)                   | ✅ **200** OpenAPI 3.1.0 spec                                                                                                 |
+| `GET /api/v1/nonexistent-route`               | ✅ **404** `{"code":"INTERNAL_ERROR","message":"Cannot GET ...","requestId":"..."}` — error envelope intact                    |
+| `GET /api/v1/review/due-count` (no token)     | ✅ **401** `{"code":"AUTH_REQUIRED","message":"Please sign in to access this feature","requestId":"..."}`                      |
+
+## 3. Deploy Config As-Committed (Nest entry)
+
+| File              | As-committed                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `package.json`    | `"start": "node dist/nest/main.js"` (Nest prod entry); `"dev": "tsx watch src/nest/main.ts"`; `engines.node` **tightened to `>=24`**; `start:nest`/`dev:nest` aliases kept |
+| `railway.toml`    | `startCommand = "npm run start --workspace=@mandarin/backend"` (→ Nest); `healthcheckPath = "/api/v1/health"`; `preDeployCommand = npm run db:migrate:deploy`; `NODE_ENV=production` |
+| `Procfile`        | `web: npm run start` (→ Nest)                                                                                                                                |
+
+## 4. Rollback Statement
+
+- **Primary:** redeploy the **previous Railway release** (Railway keeps prior releases; one-click). No code change needed.
+- **No schema rollback** — the epic's migration set is **additive-only** (single 24-11 `SrsCardState` migration; `prisma migrate status` = 30 migrations, up to date). A redeployed previous backend build is compatible with the post-deploy schema.
+- The Express production entry (`dist/app/index.js`) was **deleted** at cutover — the 24-14 §4.1 "start:express escape hatch" no longer exists by design; rollback = previous release redeploy only.
+
+## 5. `/api-docs` + openapi + docs/architecture Status
+
+- **`/api-docs` decision: SERVE FROM NEST.** swagger-ui-express + `/api-docs.json` mounted in `configure-app.ts` on the Express adapter (before the error bridge), preserving the consumer surface. Both verified 200 in the smoke above.
+- **openapi.yaml refreshed:** 9 dead routes (`/v1/vocabulary/lists`, `/v1/vocabulary/lists/{listId}`, `/v1/vocabulary/lists/{listId}/progress`, `/v1/vocabulary/lists/{listId}/words`, `/v1/vocabulary/search`, `/v1/progress`, `/v1/progress/{wordId}`, `/v1/progress/batch`, `/v1/progress/stats` — none exist in ROUTE_PATTERNS) + 4 dead schemas (`VocabularyList`, `VocabularyWord`, `Progress`, `ListProgress`) + 2 dead tags (`Vocabulary`, `Progress`) **removed** (375 lines deleted, 0 added). The spec now documents the live System/Auth/TTS surface (7 paths: health, auth register/login/refresh/logout/me, tts). The build's openapi copy step to `dist/` verified. Note: the spec was never a full 63-route spec — expanding it to document all ~54 real routes is a follow-up, not part of this commit.
+- **docs truth-checked to shipped code:** `docs/architecture.md`, `docs/knowledge-base/backend/module-level-containers.md`, `docs/guides/conventions/backend.md` §4 updated for the Nest production surface (Express deleted, `/api-docs` served from Nest). No removed/renamed endpoints remain documented.
+
+## 6. Commit
+
+- Message: `feat(epic-24): cutover to NestJS production entry, delete Express surface, refresh openapi + docs (story 24-15)`
+- Staged explicitly (no `git add -A`): deploy flip, Express deletions, `src/nest/*` edits, module barrel edits, test changes (integration refactor + retired Express tests), `openapi.yaml`, docs (architecture + conventions + module-level-containers), this artifact. Earlier-story formatting-only leftovers (story docs 24-5…24-13, frontend test, test-report) intentionally NOT staged.
+- **NO push.**
+
+**Signed:** Backend Engineer (Story 24-15) — Epic 24 complete ✅

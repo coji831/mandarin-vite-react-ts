@@ -1,50 +1,37 @@
-// apps/backend/tests/unit/errorHandler.test.js
-// Test for errorHandler and requestIdMiddleware
+// apps/backend/src/shared/middleware/__tests__/errorHandler.test.ts
+// Test for requestIdMiddleware (the Express errorHandler was removed at the
+// 24-15 cutover — its envelope is reproduced by the Nest AppExceptionFilter,
+// covered by the integration parity harness).
 
 import { describe, test, expect, beforeEach } from "vitest";
 import express from "express";
 import request from "supertest";
-import { requestIdMiddleware, errorHandler } from "../errorHandler.js";
+import { requestIdMiddleware } from "../errorHandler.js";
 
-describe("errorHandler middleware", () => {
+describe("requestIdMiddleware", () => {
   let app: express.Application;
   beforeEach(() => {
     app = express();
     app.use(requestIdMiddleware);
-    app.get("/fail", (req, res, next) => {
-      const err: any = new Error("Test error");
-      err.status = 418;
-      err.code = "TEAPOT";
-      next(err);
+    app.get("/ok", (_req, res) => {
+      res.status(200).json({ ok: true });
     });
-    app.get("/fail-statuscode", (req, res, next) => {
-      const err: any = new Error("Validation failed");
-      err.statusCode = 400;
-      err.code = "VALIDATION_ERROR";
-      next(err);
-    });
-    app.use(errorHandler);
   });
 
-  test("should return structured error with requestId", async () => {
-    const res = await request(app).get("/fail");
-    expect(res.status).toBe(418);
-    expect(res.body).toHaveProperty("code", "TEAPOT");
-    expect(res.body).toHaveProperty("message", "Test error");
-    expect(res.body).toHaveProperty("requestId");
+  test("sets X-Request-Id on the response", async () => {
+    const res = await request(app).get("/ok");
+    expect(res.status).toBe(200);
     expect(res.headers).toHaveProperty("x-request-id");
-    expect(res.body.requestId).toBe(res.headers["x-request-id"]);
   });
 
-  test("should generate requestId if not provided", async () => {
-    const res = await request(app).get("/fail");
-    expect(res.body.requestId).toBeDefined();
+  test("generates a requestId when the client does not supply one", async () => {
+    const res = await request(app).get("/ok");
+    expect(res.body.requestId).toBeUndefined(); // requestId lives on req, not body
+    expect(typeof res.headers["x-request-id"]).toBe("string");
   });
 
-  test("should honor statusCode when status is not set (ApiError from errorFactory)", async () => {
-    const res = await request(app).get("/fail-statuscode");
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("code", "VALIDATION_ERROR");
-    expect(res.body).toHaveProperty("message", "Validation failed");
+  test("echoes a client-supplied X-Request-Id", async () => {
+    const res = await request(app).get("/ok").set("X-Request-Id", "client-rid-1");
+    expect(res.headers["x-request-id"]).toBe("client-rid-1");
   });
 });

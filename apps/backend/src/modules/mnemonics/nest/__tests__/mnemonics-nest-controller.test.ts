@@ -126,26 +126,26 @@ describe("MnemonicsNestController", () => {
     });
 
     it("throws 400 VALIDATION_ERROR for an invalid character parameter", async () => {
-      await expect(controller.generateMnemonic("ab", { userId: "u" } as any)).rejects.toBeInstanceOf(
-        BadRequestException,
-      );
+      await expect(
+        controller.generateMnemonic("ab", { userId: "u" } as any),
+      ).rejects.toBeInstanceOf(BadRequestException);
       expect(mockService.generateMnemonic).not.toHaveBeenCalled();
     });
 
     it("throws 503 SERVICE_UNAVAILABLE for AI-generation errors", async () => {
       mockService.generateMnemonic.mockRejectedValue(new Error("Gemini API timeout"));
 
-      await expect(controller.generateMnemonic("好", { userId: "u" } as any)).rejects.toBeInstanceOf(
-        ServiceUnavailableException,
-      );
+      await expect(
+        controller.generateMnemonic("好", { userId: "u" } as any),
+      ).rejects.toBeInstanceOf(ServiceUnavailableException);
     });
 
     it("throws 500 INTERNAL_ERROR for unexpected errors", async () => {
       mockService.generateMnemonic.mockRejectedValue(new Error("boom"));
 
-      await expect(controller.generateMnemonic("好", { userId: "u" } as any)).rejects.toBeInstanceOf(
-        InternalServerErrorException,
-      );
+      await expect(
+        controller.generateMnemonic("好", { userId: "u" } as any),
+      ).rejects.toBeInstanceOf(InternalServerErrorException);
     });
   });
 
@@ -189,7 +189,10 @@ describe("MnemonicsNestController", () => {
         // validation-under-test path (real HTTP bodies are untyped at runtime).
         controller.updateMnemonic(
           "好",
-          { story: "ok", radicalIds: [1, 2] } as unknown as { story?: string; radicalIds?: string[] },
+          { story: "ok", radicalIds: [1, 2] } as unknown as {
+            story?: string;
+            radicalIds?: string[];
+          },
           { userId: "u" } as any,
         ),
       ).rejects.toBeInstanceOf(BadRequestException);
@@ -208,7 +211,9 @@ describe("MnemonicsNestController", () => {
     it("resolves undefined (204) for an authed user", async () => {
       mockService.resetMnemonic.mockResolvedValue(undefined);
 
-      await expect(controller.resetMnemonic("好", { userId: "user-1" } as any)).resolves.toBeUndefined();
+      await expect(
+        controller.resetMnemonic("好", { userId: "user-1" } as any),
+      ).resolves.toBeUndefined();
       expect(mockService.resetMnemonic).toHaveBeenCalledWith("好", "user-1");
     });
 

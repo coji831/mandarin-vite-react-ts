@@ -75,7 +75,10 @@ import { CacheService } from "../../../shared/infrastructure/cache/CacheService.
       provide: ReadersAudioService,
       useFactory: (
         audioService: AudioService,
-        passagePathHelpers: { passageHashFor(texts: string[]): string; passagePath(hash: string, index: number): string },
+        passagePathHelpers: {
+          passageHashFor(texts: string[]): string;
+          passagePath(hash: string, index: number): string;
+        },
       ) => new ReadersAudioService(audioService, passagePathHelpers),
       inject: [AudioService, AUDIO_PASSAGE_PATHS],
     },

@@ -80,10 +80,7 @@ export class MnemonicsNestController {
    */
   @Get(":character")
   @UseGuards(OptionalAuthGuard)
-  async getMnemonic(
-    @Param("character") character: string,
-    @Req() req: Request,
-  ): Promise<unknown> {
+  async getMnemonic(@Param("character") character: string, @Req() req: Request): Promise<unknown> {
     const characterValue = String(character);
     const userId = req.userId as string | undefined;
 
@@ -253,10 +250,7 @@ export class MnemonicsNestController {
   @Delete(":character")
   @HttpCode(204)
   @UseGuards(RequireAuthGuard)
-  async resetMnemonic(
-    @Param("character") character: string,
-    @Req() req: Request,
-  ): Promise<void> {
+  async resetMnemonic(@Param("character") character: string, @Req() req: Request): Promise<void> {
     const characterValue = String(character);
     const userId = req.userId as string | undefined;
 

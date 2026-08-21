@@ -153,9 +153,7 @@ export class ReadersNestController {
    */
   @Get("passages/:id")
   @UseGuards(OptionalAuthGuard)
-  async getPassage(
-    @Req() req: Request,
-  ): Promise<{ data: PassageResponseData }> {
+  async getPassage(@Req() req: Request): Promise<{ data: PassageResponseData }> {
     const id = String(req.params.id);
     const userId = req.userId;
 
@@ -268,10 +266,7 @@ export class ReadersNestController {
       // `ReadersService.checkRateLimits` throws RateLimitExceededError, mapped
       // by the Express controller to 429 RATE_LIMIT (verbatim here).
       if (err instanceof RateLimitExceededError) {
-        throw new HttpException(
-          { code: "RATE_LIMIT", message: "Failed to generate passage" },
-          429,
-        );
+        throw new HttpException({ code: "RATE_LIMIT", message: "Failed to generate passage" }, 429);
       }
       // 502 — Gemini generation/parsing failure.
       if (err instanceof PassageGenerationError) {
@@ -519,9 +514,7 @@ export class ReadersNestController {
    */
   @Get("bookmarks/by-passage/:passageId")
   @UseGuards(RequireAuthGuard)
-  async checkBookmarkByPassage(
-    @Req() req: Request,
-  ): Promise<{ data: { isBookmarked: boolean } }> {
+  async checkBookmarkByPassage(@Req() req: Request): Promise<{ data: { isBookmarked: boolean } }> {
     const userId = req.userId as string;
     if (!userId) {
       throw new UnauthorizedException({

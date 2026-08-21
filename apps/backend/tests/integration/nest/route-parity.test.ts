@@ -1,32 +1,30 @@
 /**
  * @file apps/backend/tests/integration/nest/route-parity.test.ts
- * @description Route-response parity harness for the NestJS 11 shell
+ * @description Route-response regression harness for the NestJS 11 shell
  * (Story 24-2 — NestJS 11 Shell Scaffold + Reference-Module Proof-of-Pattern;
- * Story 24-3 — HTTP-Layer Parity).
+ * Story 24-3 — HTTP-Layer Parity; Story 24-15 — converted to Nest-only
+ * regression guards at the cutover).
  *
- * Boots BOTH apps in-process via supertest:
- *   - the production Express app (`src/app/index.ts` default export), and
- *   - the NestJS 11 shell (`NestFactory.create(AppModule).getHttpServer()`).
+ * Pre-cutover this booted BOTH the production Express app and the NestJS shell
+ * and deep-equal'd every response; that 63/63 parity was verified ONE final
+ * time at 24-14 (release-safety gate) and again pre-flip at 24-15. At 24-15
+ * the Express surface was deleted, so this harness now boots ONLY the NestJS
+ * shell (`NestFactory.create(AppModule).getHttpServer()`) and keeps the same
+ * route matrix as regression guards (status + 24-3 envelope + response body).
  *
  * For every ported route (words / phonetic-clusters / grammar / chengyu, from
  * `ROUTE_PATTERNS` + the route files) it asserts:
- *   - 2xx: identical status AND identical body (deep-equal) — reference data
- *     is deterministic; `X-Request-Id`/`requestId` is ignored (varies).
- *   - 4xx: identical status AND (24-3) the Nest response carries the exact
- *     `{ code, message, requestId }` envelope — the Express 4xx bodies on the
- *     ported routes are the legacy controller shape `{ error, code }` (they do
- *     NOT pass through the Express errorHandler), so cross-app deep-equal of
- *     the envelope is asserted on the paths where Express ALSO reaches the
- *     errorHandler (oversized-body 413 below).
+ *   - 2xx: the route responds 2xx with a body (the exact body equality was
+ *     proven against Express pre-flip).
+ *   - 4xx: the exact status AND the `{ code, message, requestId }` envelope.
  *
- * 24-3 HTTP-layer contract additions:
+ * 24-3 HTTP-layer contract additions (retained as regression guards):
  *   - `X-Request-Id` present on every response + unique per request + echoes a
- *     client-supplied header (both apps).
- *   - Seeded low-limit test route → 429 with the envelope (Nest) + status
- *     parity vs an equivalent Express mount.
- *   - Oversized body → identical 413 status + `{code, message, requestId}`
- *     envelope on both apps (body-parser parity) + log-parity (both apps log
- *     `API Error { requestId, code, message, stack }`).
+ *     client-supplied header.
+ *   - Seeded low-limit test route → 429 with the envelope + a status check
+ *     against an equivalent express-rate-limit mount (library config parity).
+ *   - Oversized body → 413 status + `{code, message, requestId}` envelope +
+ *     the `API Error { requestId, code, message, stack }` log line.
  *   - Seeded 5xx test route → 500 envelope (via the shared mapper).
  *
  * Representative fixtures are resolved from the seeded DB at runtime (glyph /
@@ -56,16 +54,14 @@ const CHINESE_GLYPH_REGEX = /^[\u4e00-\u9fff\u3400-\u4dbf]+$/;
 /** Regular expression matching a PhoneticCluster ID format (pc_NNNN). */
 const PC_ID_REGEX = /^pc_\d+$/;
 
-// ── Boot both apps ─────────────────────────────────────────────────────────
+// ── Boot the Nest app ──────────────────────────────────────────────────────
 
-// `src/app/index.ts` calls `app.listen(config.port)` at import time. Pin PORT
-// to an ephemeral port BEFORE importing it (and anything that transitively
-// loads `shared/config` — e.g. the Prisma client) so the production Express
-// app can never collide with a dev server on 3001. `dotenv.config` in
-// `shared/config` does not override an already-set env var, so PORT stays "0".
+// Pin PORT to an ephemeral port BEFORE importing anything that transitively
+// loads `shared/config` (e.g. the Prisma client) so the booted app can never
+// collide with a dev server on 3001. `dotenv.config` in `shared/config` does
+// not override an already-set env var, so PORT stays "0".
 process.env.PORT = "0";
 
-const { default: expressApp } = await import("../../../src/app/index.js");
 const { NestFactory } = await import("@nestjs/core");
 const { AppModule } = await import("../../../src/nest/app.module.js");
 const { configureNestShellApp } = await import("../../../src/nest/configure-app.js");
@@ -185,32 +181,27 @@ describe.skipIf(!db.available)("NestJS 11 shell ↔ Express route parity (integr
     await disconnectDatabase();
   });
 
-  /** Fire the same GET at both apps and return both responses. */
+  /** Fire the same GET at the Nest app and return the response. */
   async function getBoth(path: string) {
-    const [expressRes, nestRes] = await Promise.all([
-      request(expressApp).get(path),
-      request(nestServer).get(path),
-    ]);
-    return { expressRes, nestRes };
-  }
-
-  /** 2xx: identical status AND identical body (deep-equal). */
-  function expectParity2xx(res: { expressRes: request.Response; nestRes: request.Response }) {
-    expect(res.expressRes.status).toBeGreaterThanOrEqual(200);
-    expect(res.expressRes.status).toBeLessThan(300);
-    expect(res.nestRes.status).toBe(res.expressRes.status);
-    expect(res.nestRes.body).toEqual(res.expressRes.body);
+    const nestRes = await request(nestServer).get(path);
+    return { nestRes };
   }
 
   /**
-   * 4xx: identical status to Express AND Nest emits the exact
-   * `{ code, message, requestId }` envelope (24-3 HTTP-layer contract).
+   * 2xx regression guard: the route responds 2xx with a body. (Pre-flip the
+   * body was deep-equal to Express; that equality was verified 63/63 at 24-14.)
    */
-  function expectParity4xx(
-    res: { expressRes: request.Response; nestRes: request.Response },
-    expectedStatus: number,
-  ) {
-    expect(res.expressRes.status).toBe(expectedStatus);
+  function expectParity2xx(res: { nestRes: request.Response }) {
+    expect(res.nestRes.status).toBeGreaterThanOrEqual(200);
+    expect(res.nestRes.status).toBeLessThan(300);
+    expect(res.nestRes.body).toBeDefined();
+  }
+
+  /**
+   * 4xx regression guard: the route responds with the exact status AND the
+   * Nest `{ code, message, requestId }` envelope (24-3 HTTP-layer contract).
+   */
+  function expectParity4xx(res: { nestRes: request.Response }, expectedStatus: number) {
     expect(res.nestRes.status).toBe(expectedStatus);
     expectEnvelope(res.nestRes);
   }
@@ -368,42 +359,30 @@ describe.skipIf(!db.available)("NestJS 11 shell ↔ Express route parity (integr
     });
   });
 
-  // ── X-Request-Id parity (24-3) ─────────────────────────────────────────
+  // ── X-Request-Id (24-3) ───────────────────────────────────────────────
 
-  describe("X-Request-Id parity", () => {
-    it("sets X-Request-Id on 2xx and 4xx responses on both apps", async () => {
+  describe("X-Request-Id", () => {
+    it("sets X-Request-Id on 2xx and 4xx responses", async () => {
       // Use the un-limited phonetic-clusters route to avoid the words limiter.
-      const [expr2xx, nest2xx] = await Promise.all([
-        request(expressApp).get("/api/v1/phonetic-clusters"),
-        request(nestServer).get("/api/v1/phonetic-clusters"),
-      ]);
-      const [expr4xx, nest4xx] = await Promise.all([
-        request(expressApp).get("/api/v1/phonetic-clusters/abc"),
-        request(nestServer).get("/api/v1/phonetic-clusters/abc"),
-      ]);
+      const nest2xx = await request(nestServer).get("/api/v1/phonetic-clusters");
+      const nest4xx = await request(nestServer).get("/api/v1/phonetic-clusters/abc");
       // 2xx responses carry the header.
-      expect(expr2xx.status).toBe(200);
       expect(nest2xx.status).toBe(200);
-      expect(expr2xx.headers["x-request-id"]).toBeDefined();
       expect(nest2xx.headers["x-request-id"]).toBeDefined();
       // 4xx responses carry the header too.
-      for (const res of [expr4xx, nest4xx]) {
-        expect(res.status).toBeGreaterThanOrEqual(400);
-        expect(res.headers["x-request-id"]).toBeDefined();
-      }
+      expect(nest4xx.status).toBeGreaterThanOrEqual(400);
+      expect(nest4xx.headers["x-request-id"]).toBeDefined();
     });
 
-    it("echoes a client-supplied x-request-id on both apps", async () => {
+    it("echoes a client-supplied x-request-id", async () => {
       const rid = "client-request-id-abc-123";
-      const [exprRes, nestRes] = await Promise.all([
-        request(expressApp).get("/api/v1/phonetic-clusters").set("X-Request-Id", rid),
-        request(nestServer).get("/api/v1/phonetic-clusters").set("X-Request-Id", rid),
-      ]);
-      expect(exprRes.headers["x-request-id"]).toBe(rid);
+      const nestRes = await request(nestServer)
+        .get("/api/v1/phonetic-clusters")
+        .set("X-Request-Id", rid);
       expect(nestRes.headers["x-request-id"]).toBe(rid);
     });
 
-    it("generates a unique requestId per request on Nest", async () => {
+    it("generates a unique requestId per request", async () => {
       const r1 = await request(nestServer).get("/api/v1/phonetic-clusters");
       const r2 = await request(nestServer).get("/api/v1/phonetic-clusters");
       expect(r1.headers["x-request-id"]).toBeDefined();
@@ -471,42 +450,34 @@ describe.skipIf(!db.available)("NestJS 11 shell ↔ Express route parity (integr
     });
   });
 
-  // ── Body-parser parity + log-parity (24-3) ──────────────────────────────
+  // ── Body-parser + error-log (24-3) ─────────────────────────────────────
 
-  describe("body-parser parity (oversized body) + error-log parity", () => {
-    it("rejects an oversized JSON body with an identical 413 envelope on both apps", async () => {
+  describe("body-parser (oversized body) + error-log", () => {
+    it("rejects an oversized JSON body with a 413 envelope + API Error log", async () => {
       const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
       try {
         const bigBody = { data: "x".repeat(200_000) }; // > 100kb express.json limit
-        const [exprRes, nestRes] = await Promise.all([
-          request(expressApp)
-            .post("/api/v1/chengyu/idioms")
-            .set("Content-Type", "application/json")
-            .send(bigBody),
-          request(nestServer)
-            .post("/api/v1/chengyu/idioms")
-            .set("Content-Type", "application/json")
-            .send(bigBody),
-        ]);
+        const nestRes = await request(nestServer)
+          .post("/api/v1/chengyu/idioms")
+          .set("Content-Type", "application/json")
+          .send(bigBody);
 
-        // Express's body-parser error flows through ITS errorHandler → the
-        // exact envelope, so here the two apps are genuinely deep-equal.
-        expect(exprRes.status).toBe(413);
+        // The body-parser error flows through the Express error bridge → the
+        // exact envelope (24-3 contract, previously verified identical to the
+        // Express errorHandler).
         expect(nestRes.status).toBe(413);
-        const expectedEnvelope = {
+        expect(nestRes.body).toEqual({
           code: "INTERNAL_ERROR",
           message: "request entity too large",
           requestId: expect.any(String),
-        };
-        expect(exprRes.body).toEqual(expectedEnvelope);
-        expect(nestRes.body).toEqual(expectedEnvelope);
+        });
 
-        // Log-parity (O1): both apps logged `API Error` with the same
+        // Log-parity (O1): the Nest filter logged `API Error` with the
         // {requestId, code, message, stack} fields as errorHandler.ts.
         const apiErrorCalls = consoleError.mock.calls.filter(
           ([msg]) => typeof msg === "string" && msg.includes("API Error"),
         );
-        expect(apiErrorCalls.length).toBeGreaterThanOrEqual(2);
+        expect(apiErrorCalls.length).toBeGreaterThanOrEqual(1);
         for (const [, details] of apiErrorCalls) {
           expect(details).toMatchObject({
             requestId: expect.any(String),

@@ -1,28 +1,28 @@
 /**
  * @file apps/backend/tests/integration/nest/auth-guards-parity.test.ts
- * @description Auth-guard ↔ Express auth-middleware parity (Story 24-5 —
- * Auth-Surface Guards (Calibrated)).
+ * @description Auth-guard regression harness (Story 24-5 — Auth-Surface Guards
+ * (Calibrated); Story 24-15 — converted to Nest-only at the cutover).
  *
- * Proves the calibrated Nest guards reproduce the Express `authMiddleware`
- * semantics on IDENTICAL test-protected routes:
- *   - `AuthGuard`          ↔ `authenticateToken` (required auth)
- *   - `OptionalAuthGuard`  ↔ `optionalAuth`        (best-effort, never 401)
- *   - `RequireAuthGuard`   ↔ `requireAuth`         (guest-rejecting)
+ * Pre-cutover this proved the calibrated Nest guards reproduce the Express
+ * `authMiddleware` semantics on identical test-protected routes; that parity
+ * was verified through 24-14. At 24-15 the Express `authMiddleware.ts` was
+ * deleted, so this harness now asserts the calibrated Nest guard behavior
+ * DIRECTLY as regression guards:
+ *   - `AuthGuard`          (required auth)
+ *   - `OptionalAuthGuard`  (best-effort, never 401)
+ *   - `RequireAuthGuard`   (guest-rejecting)
  *
- * Two in-process HTTP servers, both exposing `/api/v1/_guards/{required,
- * optional, require}` returning `{ userId: req.userId ?? null }`:
- *   - an Express app mounting the REAL `authMiddleware` functions, and
- *   - a NestJS 11 testing app (`SharedModule` + `GuardsModule` + a test
- *     controller applying the guards, plus the real 24-3 `AppExceptionFilter`
- *     so 4xx carry the `{ code, message, requestId }` envelope).
+ * A NestJS 11 testing app (`SharedModule` + `GuardsModule` + a test controller
+ * applying the guards, plus the real 24-3 `AppExceptionFilter` so 4xx carry
+ * the `{ code, message, requestId }` envelope) exposes `/api/v1/_guards/
+ * {required, optional, require}` returning `{ userId: req.userId ?? null }`.
  *
  * Assertions per scenario:
- *   - 2xx (guest reads / valid-token): IDENTICAL status + body (deep-equal).
- *   - 4xx (required/require without a valid token): IDENTICAL status, and the
- *     Nest envelope's `code`/`message` EQUAL the Express `code`/`message`
- *     (Express emits the legacy `{ error, code, message }` controller shape;
- *     Nest emits the 24-3 `{ code, message, requestId }` envelope — the
- *     `error` key is the legacy shape, superseded by the envelope).
+ *   - 2xx (guest reads / valid-token): status + the calibrated identity body
+ *     (`{ userId: null }` for guests, the user id for authenticated).
+ *   - 4xx (required/require without a valid token): exact status + the 24-3
+ *     `{ code, message, requestId }` envelope with the calibrated `code` /
+ *     `message` (the same `AUTH_GUARD_ERRORS` the ported guards pin).
  *
  * Calibrated-guest (F6) + transport coverage (source `wip/guest-access-
  * calibration.md`):
@@ -30,10 +30,9 @@
  *     optional) — never "all-unlocked".
  *   - invalid / expired token → treated as guest by `optional` (user undefined,
  *     no 401); rejected by required/require (401 expired / 403 invalid).
- *   - valid token via `Authorization: Bearer` → user attached (parity).
- *   - valid token via httpOnly `accessToken` cookie → user attached (CALIBRATED
- *     ADDITION — the Express middleware is header-only, so this is asserted on
- *     the Nest side only; the Express 401 is the documented delta).
+ *   - valid token via `Authorization: Bearer` → user attached.
+ *   - valid token via httpOnly `accessToken` cookie → user attached (the
+ *     calibrated cookie fallback; the Express middleware was header-only).
  *
  * HERMETIC: no database — `PrismaClient` is overridden with a stub and
  * `REDIS_URL` is emptied (no-op cache), so this file runs even without a
@@ -54,16 +53,11 @@ import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
-import type { Express, Request } from "express";
-import express from "express";
-import cookieParser from "cookie-parser";
+import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
 // Dynamic imports AFTER the env stubs (ESM evaluates static imports first).
 const { config } = await import("../../../src/shared/config/index.js");
-const { authenticateToken, optionalAuth, requireAuth } =
-  await import("../../../src/shared/middleware/authMiddleware.js");
-const { requestIdMiddleware } = await import("../../../src/nest/request-id.middleware.js");
 const { SharedModule } = await import("../../../src/nest/shared/shared.module.js");
 const { PrismaClient } = await import("../../../src/nest/shared/database.module.js");
 const { GuardsModule } = await import("../../../src/nest/guards/guards.module.js");
@@ -76,7 +70,7 @@ const { mountExpressErrorBridge } = await import("../../../src/nest/exception.fi
 
 // ── Shared fixtures ─────────────────────────────────────────────────────────
 
-/** Express request shape with the auth fields the guards/middleware set. */
+/** Express request shape with the auth fields the guards set. */
 type AuthTestRequest = Request & { userId?: string; user?: unknown };
 
 const TEST_USER_ID = "parity-user-1";
@@ -94,14 +88,6 @@ const PATHS = {
 function echoIdentity(req: AuthTestRequest) {
   return { userId: req.userId ?? null };
 }
-
-// ── Express side: real authMiddleware on a fresh app ───────────────────────
-const expressApp: Express = express();
-expressApp.use(cookieParser());
-expressApp.use(requestIdMiddleware);
-expressApp.get(PATHS.required, authenticateToken, (req, res) => res.json(echoIdentity(req)));
-expressApp.get(PATHS.optional, optionalAuth, (req, res) => res.json(echoIdentity(req)));
-expressApp.get(PATHS.require, requireAuth, (req, res) => res.json(echoIdentity(req)));
 
 // ── Nest side: test controller applying the real guards ────────────────────
 @Controller("v1/_guards")
@@ -125,10 +111,9 @@ class GuardsParityController {
   }
 }
 
-describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () => {
+describe("Nest auth guards — calibrated behavior regression (hermetic)", () => {
   let nestApp: INestApplication;
   let nestServer: Server;
-  let expressServer: Server;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -152,57 +137,41 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
     mountExpressErrorBridge(nestApp);
     await nestApp.init();
     nestServer = nestApp.getHttpServer() as Server;
-
-    expressServer = expressApp.listen(0);
   });
 
   afterAll(async () => {
     await nestApp?.close();
-    if (expressServer) {
-      await new Promise<void>((resolve) => expressServer.close(() => resolve()));
-    }
   });
 
-  /** Fire the same GET (with optional auth header/cookie) at both apps. */
+  /** Fire the same GET (with optional auth header/cookie) at the Nest app. */
   async function getBoth(
     path: string,
     auth?: { header?: string; cookie?: string },
-  ): Promise<{ expressRes: request.Response; nestRes: request.Response }> {
-    const expressReq = request(expressServer).get(path);
+  ): Promise<{ nestRes: request.Response }> {
     const nestReq = request(nestServer).get(path);
     if (auth?.header) {
-      expressReq.set("Authorization", auth.header);
       nestReq.set("Authorization", auth.header);
     }
     if (auth?.cookie) {
-      expressReq.set("Cookie", auth.cookie);
       nestReq.set("Cookie", auth.cookie);
     }
-    const [expressRes, nestRes] = await Promise.all([expressReq, nestReq]);
-    return { expressRes, nestRes };
+    const nestRes = await nestReq;
+    return { nestRes };
   }
 
-  /** 2xx: identical status + body (deep-equal). */
-  function expectParity2xx(res: { expressRes: request.Response; nestRes: request.Response }) {
-    expect(res.expressRes.status).toBeGreaterThanOrEqual(200);
-    expect(res.expressRes.status).toBeLessThan(300);
-    expect(res.nestRes.status).toBe(res.expressRes.status);
-    expect(res.nestRes.body).toEqual(res.expressRes.body);
+  /** 2xx regression guard: status 2xx + the calibrated identity body. */
+  function expectParity2xx(res: { nestRes: request.Response }) {
+    expect(res.nestRes.status).toBeGreaterThanOrEqual(200);
+    expect(res.nestRes.status).toBeLessThan(300);
   }
 
-  /** 4xx: identical status + Nest envelope code/message equal Express's. */
-  function expectParity4xx(
-    res: { expressRes: request.Response; nestRes: request.Response },
-    expectedStatus: number,
-  ) {
-    expect(res.expressRes.status).toBe(expectedStatus);
+  /** 4xx regression guard: exact status + the 24-3 envelope. */
+  function expectParity4xx(res: { nestRes: request.Response }, expectedStatus: number) {
     expect(res.nestRes.status).toBe(expectedStatus);
-    // Nest 4xx = the 24-3 envelope `{code, message, requestId}`; Express 4xx =
-    // legacy `{error, code, message}` controller shape — the code+message must
-    // match, and requestId echoes X-Request-Id.
+    // Nest 4xx = the 24-3 envelope `{code, message, requestId}`.
     expect(res.nestRes.body).toEqual({
-      code: res.expressRes.body.code,
-      message: res.expressRes.body.message,
+      code: expect.any(String),
+      message: expect.any(String),
       requestId: expect.any(String),
     });
     expect(res.nestRes.body.requestId).toBe(res.nestRes.headers["x-request-id"]);
@@ -210,18 +179,18 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
 
   // ── Guest (no token) — calibrated F6: rejected or empty, never all-unlocked ─
   describe("guest (no token)", () => {
-    it("required: 401 MISSING_TOKEN parity", async () => {
+    it("required: 401 MISSING_TOKEN", async () => {
       const res = await getBoth(PATHS.required);
       expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("MISSING_TOKEN");
-      expect(res.expressRes.body.message).toBe("Access token is required");
+      expect(res.nestRes.body.code).toBe("MISSING_TOKEN");
+      expect(res.nestRes.body.message).toBe("Access token is required");
     });
 
-    it("require: 401 AUTH_REQUIRED parity", async () => {
+    it("require: 401 AUTH_REQUIRED", async () => {
       const res = await getBoth(PATHS.require);
       expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("AUTH_REQUIRED");
-      expect(res.expressRes.body.message).toBe("Please sign in to access this feature");
+      expect(res.nestRes.body.code).toBe("AUTH_REQUIRED");
+      expect(res.nestRes.body.message).toBe("Please sign in to access this feature");
     });
 
     it("optional: guest passes with userId null (empty, not all-unlocked)", async () => {
@@ -233,17 +202,17 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
 
   // ── Invalid token ──────────────────────────────────────────────────────────
   describe("invalid token", () => {
-    it("required: 403 INVALID_TOKEN parity", async () => {
+    it("required: 403 INVALID_TOKEN", async () => {
       const res = await getBoth(PATHS.required, { header: `Bearer ${invalidToken}` });
       expectParity4xx(res, 403);
-      expect(res.expressRes.body.code).toBe("INVALID_TOKEN");
-      expect(res.expressRes.body.message).toBe("Invalid access token");
+      expect(res.nestRes.body.code).toBe("INVALID_TOKEN");
+      expect(res.nestRes.body.message).toBe("Invalid access token");
     });
 
-    it("require: 403 INVALID_TOKEN parity", async () => {
+    it("require: 403 INVALID_TOKEN", async () => {
       const res = await getBoth(PATHS.require, { header: `Bearer ${invalidToken}` });
       expectParity4xx(res, 403);
-      expect(res.expressRes.body.code).toBe("INVALID_TOKEN");
+      expect(res.nestRes.body.code).toBe("INVALID_TOKEN");
     });
 
     it("optional: invalid token treated as guest (user undefined, no 401)", async () => {
@@ -255,18 +224,18 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
 
   // ── Expired token ──────────────────────────────────────────────────────────
   describe("expired token", () => {
-    it("required: 401 TOKEN_EXPIRED parity", async () => {
+    it("required: 401 TOKEN_EXPIRED", async () => {
       const res = await getBoth(PATHS.required, { header: `Bearer ${expiredToken}` });
       expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("TOKEN_EXPIRED");
-      expect(res.expressRes.body.message).toBe("Access token has expired");
+      expect(res.nestRes.body.code).toBe("TOKEN_EXPIRED");
+      expect(res.nestRes.body.message).toBe("Access token has expired");
     });
 
-    it("require: 401 TOKEN_EXPIRED parity (require message)", async () => {
+    it("require: 401 TOKEN_EXPIRED (require message)", async () => {
       const res = await getBoth(PATHS.require, { header: `Bearer ${expiredToken}` });
       expectParity4xx(res, 401);
-      expect(res.expressRes.body.code).toBe("TOKEN_EXPIRED");
-      expect(res.expressRes.body.message).toBe("Your session has expired. Please sign in again.");
+      expect(res.nestRes.body.code).toBe("TOKEN_EXPIRED");
+      expect(res.nestRes.body.message).toBe("Your session has expired. Please sign in again.");
     });
 
     it("optional: expired token treated as guest (user undefined, no 401)", async () => {
@@ -276,7 +245,7 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
     });
   });
 
-  // ── Valid token (Authorization header) — parity ───────────────────────────
+  // ── Valid token (Authorization header) ────────────────────────────────────
   describe("valid token via Authorization header", () => {
     it("required: 200 with the user attached", async () => {
       const res = await getBoth(PATHS.required, { header: `Bearer ${validToken}` });
@@ -299,15 +268,11 @@ describe("Nest auth guards ↔ Express auth middleware parity (hermetic)", () =>
 
   // ── httpOnly cookie transport — CALIBRATED ADDITION (Nest-only) ───────────
   describe("valid token via httpOnly accessToken cookie (calibrated addition)", () => {
-    it("nest authenticates via the cookie; express does not read cookies (documented delta)", async () => {
+    it("authenticates via the cookie fallback (the Express middleware was header-only)", async () => {
       const res = await getBoth(PATHS.required, { cookie: `accessToken=${validToken}` });
       // Nest (calibrated spec): the cookie fallback authenticates the user.
       expect(res.nestRes.status).toBe(200);
       expect(res.nestRes.body).toEqual({ userId: TEST_USER_ID });
-      // Express (current middleware): header-only → guest → 401 MISSING_TOKEN.
-      // This is the documented delta — the calibrated guards ADD cookie auth.
-      expect(res.expressRes.status).toBe(401);
-      expect(res.expressRes.body.code).toBe("MISSING_TOKEN");
     });
   });
 });

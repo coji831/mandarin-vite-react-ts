@@ -72,7 +72,12 @@ describe("ReadersNestController", () => {
     segments: [{ text: "你好", wordId: "w1", start: 0, end: 2 }],
     hskProfile: { distribution: { 2: 1 }, unknownRatio: 0, knownWordRatio: 1, totalWords: 1 },
     enrichedSentences: [
-      { index: 0, text: "你好。", pinyin: "nǐ hǎo", words: [{ glyph: "你好", wordId: "w1", hskLevel: 2, pinyin: "nǐhǎo", isKnown: false }] },
+      {
+        index: 0,
+        text: "你好。",
+        pinyin: "nǐ hǎo",
+        words: [{ glyph: "你好", wordId: "w1", hskLevel: 2, pinyin: "nǐhǎo", isKnown: false }],
+      },
     ],
   };
 
@@ -142,7 +147,10 @@ describe("ReadersNestController", () => {
     it("returns the formatted passage (dates serialized, content stripped)", async () => {
       mockService.getPassage.mockResolvedValue(mockPassageResult);
 
-      const result = await controller.getPassage({ params: { id: "passage-1" }, userId: undefined } as any);
+      const result = await controller.getPassage({
+        params: { id: "passage-1" },
+        userId: undefined,
+      } as any);
 
       expect(mockService.getPassage).toHaveBeenCalledWith("passage-1", undefined);
       expect(result.data.id).toBe("passage-1");
@@ -167,9 +175,9 @@ describe("ReadersNestController", () => {
     it("throws 404 NOT_FOUND for a missing passage", async () => {
       mockService.getPassage.mockRejectedValue(new PassageNotFoundError("nope"));
 
-      await expect(
-        controller.getPassage({ params: { id: "nope" } } as any),
-      ).rejects.toBeInstanceOf(NotFoundException);
+      await expect(controller.getPassage({ params: { id: "nope" } } as any)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
 
     it("throws 500 INTERNAL_ERROR on unexpected service errors", async () => {
@@ -224,10 +232,9 @@ describe("ReadersNestController", () => {
     it("returns the formatted generated passage (201 shape)", async () => {
       mockService.generatePassage.mockResolvedValue(mockPassageResult);
 
-      const result = await controller.generatePassage(
-        { topic: "  我的爱好  " },
-        { userId: "user-1" } as any,
-      );
+      const result = await controller.generatePassage({ topic: "  我的爱好  " }, {
+        userId: "user-1",
+      } as any);
 
       // topic is trimmed before delegation
       expect(mockService.generatePassage).toHaveBeenCalledWith("我的爱好", "user-1");
@@ -338,10 +345,10 @@ describe("ReadersNestController", () => {
     it("returns { data: result } for a valid currentSentence", async () => {
       mockService.updatePosition.mockResolvedValue({ currentSentence: 2, isCompleted: false });
 
-      const result = await controller.updateSession(
-        { currentSentence: 2 },
-        { params: { passageId: "passage-1" }, userId: "user-1" } as any,
-      );
+      const result = await controller.updateSession({ currentSentence: 2 }, {
+        params: { passageId: "passage-1" },
+        userId: "user-1",
+      } as any);
 
       expect(result).toEqual({ data: { currentSentence: 2, isCompleted: false } });
       expect(mockService.updatePosition).toHaveBeenCalledWith("user-1", "passage-1", 2);
@@ -349,28 +356,28 @@ describe("ReadersNestController", () => {
 
     it("throws 400 VALIDATION_ERROR for a negative currentSentence", async () => {
       await expect(
-        controller.updateSession(
-          { currentSentence: -1 },
-          { params: { passageId: "passage-1" }, userId: "user-1" } as any,
-        ),
+        controller.updateSession({ currentSentence: -1 }, {
+          params: { passageId: "passage-1" },
+          userId: "user-1",
+        } as any),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("throws 400 VALIDATION_ERROR for a non-integer currentSentence", async () => {
       await expect(
-        controller.updateSession(
-          { currentSentence: 1.5 },
-          { params: { passageId: "passage-1" }, userId: "user-1" } as any,
-        ),
+        controller.updateSession({ currentSentence: 1.5 }, {
+          params: { passageId: "passage-1" },
+          userId: "user-1",
+        } as any),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("throws 400 VALIDATION_ERROR for a non-number currentSentence", async () => {
       await expect(
-        controller.updateSession(
-          { currentSentence: "2" },
-          { params: { passageId: "passage-1" }, userId: "user-1" } as any,
-        ),
+        controller.updateSession({ currentSentence: "2" }, {
+          params: { passageId: "passage-1" },
+          userId: "user-1",
+        } as any),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
   });
@@ -422,19 +429,18 @@ describe("ReadersNestController", () => {
     it("returns { data: { passageId } } for a valid passageId (201 shape)", async () => {
       mockService.addBookmark.mockResolvedValue({ passageId: "passage-1" });
 
-      const result = await controller.addBookmark(
-        { passageId: "passage-1" },
-        { userId: "user-1" } as any,
-      );
+      const result = await controller.addBookmark({ passageId: "passage-1" }, {
+        userId: "user-1",
+      } as any);
 
       expect(result).toEqual({ data: { passageId: "passage-1" } });
       expect(mockService.addBookmark).toHaveBeenCalledWith("user-1", "passage-1");
     });
 
     it("throws 400 VALIDATION_ERROR for a missing passageId", async () => {
-      await expect(
-        controller.addBookmark({}, { userId: "user-1" } as any),
-      ).rejects.toBeInstanceOf(BadRequestException);
+      await expect(controller.addBookmark({}, { userId: "user-1" } as any)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
     });
 
     it("throws 400 VALIDATION_ERROR for a non-string passageId", async () => {
