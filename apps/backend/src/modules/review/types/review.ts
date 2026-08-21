@@ -3,7 +3,7 @@
  * @description Type definitions for the Review module
  */
 
-import type { ReviewItem } from "@prisma/client";
+import type { SrsCardState } from "@prisma/client";
 import type { ContentFile } from "../../../shared/utils/contentUtils.js";
 
 /** A review item as returned by the service (after merging content + SRS state). */
@@ -50,7 +50,7 @@ export interface IReviewRepository {
       intervalDays: number;
       source: string;
     },
-  ): Promise<ReviewItem>;
+  ): Promise<SrsCardState>;
   countDue(userId: string | undefined, type: string): Promise<number>;
 }
 

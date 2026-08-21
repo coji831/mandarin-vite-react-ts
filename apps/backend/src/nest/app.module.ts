@@ -56,6 +56,7 @@ import { CharactersModule } from "../modules/characters/nest/characters.module.j
 import { MnemonicsModule } from "../modules/mnemonics/nest/mnemonics.module.js";
 import { AudioModule } from "../modules/audio/nest/audio.module.js";
 import { HealthModule } from "../modules/health/nest/health.module.js";
+import { ReviewModule } from "../modules/review/nest/review.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -79,6 +80,11 @@ import { AppExceptionFilter } from "./exception.filter.js";
     // at the top of the Express routes.ts — no prefix overlap with the above.
     AudioModule,
     HealthModule,
+    // Review (GET /v1/review/items + /due-count, POST /v1/review/result) with
+    // the calibrated RequireAuthGuard (24-11) — user-scoped SRS state; the
+    // repository reads/writes the absorbed additive SrsCardState table. Route
+    // path /v1/review/* shares no prefix with any other module.
+    ReviewModule,
     SharedModule,
     GuardsModule,
   ],
