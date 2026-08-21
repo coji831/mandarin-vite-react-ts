@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-8, 24-9…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-9, 24-10…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 21, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-8 are fully authored; 24-9…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-9 are fully authored; 24-10…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -115,13 +115,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-9 — Radicals + Foundations Port
 
-**_(STUB — current content; 27 stays C)_**
+**_(completed — current content; 27 stays C)_**
 
 **Goal:** Port `radicals` (4 routes: `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters`) and `foundations` (4 routes: `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph`) — both zero-dep reference modules, the cheapest ports.
 
 **ACs:** All radicals + foundations routes ported on the **current** content; parity green; no wait for epic-27 (27 re-touches data on Nest later); no other zone touched.
 
-**Gate:** 24-8 (serial order); **not** gated on epic-27 M1. **Docs:** stub — full BR/IMP authored when 24-9 runs.
+**Status:** ✅ completed — `RadicalsModule` = 1:1 of `createRadicalsModule()` (3 `useFactory` providers; repos self-import Prisma, no `SharedModule`), 4 routes verbatim incl. a full-`@Res()` `res.json()` mirror preserving the **`200 null`** unknown-ID body; `FoundationsModule` = 1:1 of `createFoundationsModule()` on a single `@Controller("v1")` (pinyin-tones, pinyin-character-map, strokes + the cross-module shadow `GET /v1/characters/:glyph`); **route-shadowing resolved (deferred from 24-8)** — `FoundationsModule` imported BEFORE `CharactersModule` (reproduces `app/routes.ts` L60/L126 mount order; first-match-wins), so `/characters/好` → foundations shape and `/search`/`/frequency`/`abc` → 404 on both apps; truth-check correction — `FoundationsService` is **all-in-DB** (Prisma since epic-21), not contentUtils (reused unchanged, no `CONTENT_UTILS` injected); dedicated parity harness (`radicals-foundations-parity.test.ts`, 14 tests — radicals 7 incl. 200-null, foundations data 3, shadow 4) + the 24-8 harness shadow-block edit (full-parity + 3 prettier reformat hunks, transparency note); gates green (typecheck · build both dist · test:full 59/649 · integration 19/180 · lint 0 · boundaries · dev:nest smoke). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-8 (serial order); **not** gated on epic-27 M1. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-9-radicals-foundations-port.md) · [IMP](story-24-9-radicals-foundations-port.md) (full).
 
 ### 24-10 — Audio + Health Port
 
