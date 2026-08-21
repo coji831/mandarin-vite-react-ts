@@ -58,6 +58,8 @@ import { AudioModule } from "../modules/audio/nest/audio.module.js";
 import { HealthModule } from "../modules/health/nest/health.module.js";
 import { ReviewModule } from "../modules/review/nest/review.module.js";
 import { ReadersModule } from "../modules/readers/nest/readers.module.js";
+import { QuizModule } from "../modules/quiz/nest/quiz.module.js";
+import { ProgressionModule } from "../modules/progression/nest/progression.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -93,6 +95,21 @@ import { AppExceptionFilter } from "./exception.filter.js";
     // the AudioService + AUDIO_PASSAGE_PATHS DI (no direct modules/audio import
     // in Nest land). Path /v1/readers/* shares no prefix with any other module.
     ReadersModule,
+    // Quiz (8 routes, 24-13): config/questions/attempts(×4)/feedback + the
+    // sandhi-drill route (sandhi-drill lives on its own controller). The guest
+    // quiz SUBMIT surface gets the calibrated OptionalAuthGuard (session-local
+    // mock shapes, no persistence); attempts GET + feedback → RequireAuthGuard.
+    // Imports ProgressionModule via forwardRef (circular-DI ADR). Path
+    // /v1/quiz/* shares no prefix with any other module.
+    QuizModule,
+    // Progression (7 routes, 24-13): foundation-progress/phase-gate/gates/
+    // radical-progress. Read routes → calibrated OptionalAuthGuard (guest →
+    // session-local/empty; the `/gates` guest branch is CALIBRATED to
+    // Phase-1-only — not the all-passed GUEST shape Express still returns);
+    // write routes → RequireAuthGuard. Imports QuizModule via forwardRef
+    // (circular-DI ADR). Path /v1/progression/* shares no prefix with any other
+    // module.
+    ProgressionModule,
     SharedModule,
     GuardsModule,
   ],

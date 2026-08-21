@@ -32,6 +32,7 @@ import { requestIdMiddleware } from "./request-id.middleware.js";
 import {
   rateLimitAuth,
   rateLimitMnemonics,
+  rateLimitQuizFeedback,
   rateLimitReadersByAuth,
   rateLimitWordsByAuth,
 } from "./rate-limit.config.js";
@@ -126,6 +127,10 @@ export function configureNestShellApp(app: INestApplication): void {
   expressApp.use("/api/v1/auth/login", rateLimitAuth);
   expressApp.use("/api/v1/mnemonics", rateLimitMnemonics);
   expressApp.use("/api/v1/readers/passages", rateLimitReadersByAuth);
+  // Quiz AI-feedback limiter (aiFeedbackRoutes.ts: 10/min per IP) — mounted
+  // path-scoped exactly like the Express inline `feedbackLimiter` guards only
+  // the POST /v1/quiz/feedback route.
+  expressApp.use("/api/v1/quiz/feedback", rateLimitQuizFeedback);
 
   // Graceful shutdown (Redis quit wiring lands in a later story).
   app.enableShutdownHooks();

@@ -266,6 +266,33 @@ export function rateLimitReadersByAuth(req: Request, res: Response, next: NextFu
  */
 export const READERS_DAILY_GENERATION_LIMIT = 5;
 
+// ── quiz feedback — [APPLIED] (aiFeedbackRoutes.ts, applied in 24-13) ──────
+
+/**
+ * AI-feedback limiter — 10 req/min per IP (1:1 with the inline `feedbackLimiter`
+ * in `api/aiFeedbackRoutes.ts`, including the default IP key + `message` body
+ * `{ error, code }`). Mounted path-scoped on `/api/v1/quiz/feedback` in
+ * `configure-app.ts`. The 429 body (default express-rate-limit handler sending
+ * the `message` object directly) is byte-identical to Express — no envelope.
+ */
+export const QUIZ_FEEDBACK_LIMITER_CONFIG: LimiterConfig = {
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  message: {
+    error: "Too many feedback requests.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+};
+
+const quizFeedbackLimiter = rateLimit(QUIZ_FEEDBACK_LIMITER_CONFIG);
+
+/** Route-level middleware: quiz AI-feedback limiter (10/min per IP). */
+export function rateLimitQuizFeedback(req: Request, res: Response, next: NextFunction): void {
+  quizFeedbackLimiter(req, res, next);
+}
+
 // ── test — [TEST] (parity harness seeded 429 route) ───────────────────────
 
 /**
