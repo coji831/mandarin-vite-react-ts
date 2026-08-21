@@ -1,6 +1,6 @@
 ﻿---
 purpose: "Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS"
-status: planned
+status: in-progress
 last-verified: 2026-08-21
 type: epic
 ---
@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** Planned — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration` created (no commits yet); full story docs authored for 24-1/24-2/24-3/24-4/24-7, 24-5/24-6/24-8…24-15 stubbed below — status stays `planned` until 24-1 ships
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1/24-2/24-3/24-4/24-7, 24-5/24-6/24-8…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 21, 2026
 
@@ -34,6 +34,8 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 **Goal:** Close the live cross-tenant SRS leak on Express now — `findByUserAndTypes`/`countDue` reject `undefined` userId structurally (no Prisma ignore-`undefined` path), `ReviewController` drops `req.userId!` (explicit 401), P0-1 regression test, T1 baseline recorded + triaged. Ships independently; does not wait for the Nest shell.
 
 **ACs:** Repo rejects `userId === undefined` before Prisma on `findByUserAndTypes`/`countDue`; `ReviewController` returns explicit 401 (no `req.userId!`); P0-1 regression test green (guest ⇒ 401/empty, never another user's rows); T1 baseline (full + integration) recorded + triaged in a verification artifact before work; no other review/schema/FE changes; all gates green.
+
+**Status:** ✅ completed — shipped independently on Express (leak closed, 10 P0-1 regression tests, T1 baseline + post-change verification in `../../../verification-artifacts/test-report-24-1.md`). **Commit hash:** _(to be filled at epic close)_.
 
 **Gate:** none — **first story, ships independently**. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md) · [IMP](story-24-1-p0-1-security-stopgap.md) (full).
 

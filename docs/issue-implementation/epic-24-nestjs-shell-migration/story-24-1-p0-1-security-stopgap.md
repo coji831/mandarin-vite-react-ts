@@ -4,7 +4,14 @@
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md`
 > **Last Updated:** August 21, 2026
-> **Status:** Planned
+> **Status:** Completed
+> **Commit hash:** _(to be filled at epic close)_
+
+## Implementation Summary
+
+Shipped on live Express, independent of the Nest shell. `ReviewRepository.findByUserAndTypes`/`countDue` structurally reject `userId === undefined` **before** any Prisma call (return-empty: `[]`/`0`), so a guest / missing-auth caller can never read or count another user's SRS rows through a Prisma ignore-`undefined` where-key. `ReviewController` drops `req.userId!` on all three handlers (`getReviewItems`/`recordRating`/`getDueCount`) and returns an explicit `401` `{ error: "Authentication required", code: "AUTH_ERROR" }` when no authenticated user is present. `types/review.ts` widens the `IReviewRepository` signatures to `userId: string | undefined` and documents the undefined-rejection contract.
+
+**Tests & verification:** 10 new P0-1 regression tests (4 repository + 6 controller); review module now 3 files / 22 tests. Per `../../../verification-artifacts/test-report-24-1.md`: T1 pre-change baseline green (full unit 54 files / 595 tests; integration 14 files / 82 tests), post-change full unit 56 files / 605 tests, integration 14 files / 82 tests, scoped review-module lint clean — no new failures.
 
 ## Technical Scope
 
@@ -12,11 +19,12 @@ Close the confirmed P0-1 cross-tenant SRS leak on the **live Express backend** b
 
 **Files:**
 
-- `apps/backend/src/modules/review/repositories/ReviewRepository.ts` — **UPDATE**: `findByUserAndTypes` (and `countDue`) throw or return empty when `userId === undefined` **before** calling `prisma.reviewItem.*`, so there is no Prisma ignore-`undefined` path.
-- `apps/backend/src/modules/review/api/ReviewController.ts` — **UPDATE**: remove `req.userId!` on `getReviewItems`/`recordRating`/`getDueCount`; return an explicit 401 when no authenticated user is present.
-- `apps/backend/src/modules/review/repositories/__tests__/ReviewRepository.test.ts` (or existing repo test file) — **UPDATE/NEW**: P0-1 regression test — `userId === undefined` → no rows / thrown; a real userId → only that user's rows.
-- `apps/backend/src/modules/review/api/__tests__/ReviewController.test.ts` (or existing controller test file) — **UPDATE/NEW**: missing-user → 401, never a full-row read.
-- `verification-artifacts/` — **NEW**: baseline record (full + integration pass/fail + triage) — the T1 hard precondition.
+- `apps/backend/src/modules/review/repositories/ReviewRepository.ts` — **UPDATE**: `findByUserAndTypes`/`countDue` return empty (`[]`/`0`) when `userId === undefined` **before** calling `prisma.reviewItem.*` — no Prisma ignore-`undefined` path.
+- `apps/backend/src/modules/review/api/ReviewController.ts` — **UPDATE**: remove `req.userId!` on `getReviewItems`/`recordRating`/`getDueCount`; return an explicit `401` `AUTH_ERROR` when no authenticated user is present.
+- `apps/backend/src/modules/review/types/review.ts` — **UPDATE**: `IReviewRepository.findByUserAndTypes`/`countDue` signatures widened to `userId: string | undefined` + documented undefined-rejection contract.
+- `apps/backend/src/modules/review/repositories/__tests__/ReviewRepository.test.ts` — **NEW**: P0-1 regression tests — `userId === undefined` → `[]`/`0` and no Prisma call; a real userId → only that user's rows.
+- `apps/backend/src/modules/review/api/__tests__/ReviewController.test.ts` — **NEW**: missing-user → 401 `AUTH_ERROR` on all three routes (service never called); present userId → normal delegation (no `req.userId!`).
+- `verification-artifacts/test-report-24-1.md` — **NEW** (at repo root): T1 baseline record (full + integration pass/fail + triage) + post-change verification — the T1 hard precondition.
 
 ## Implementation Details
 
@@ -109,11 +117,11 @@ Solution: Land the stopgap as 24-1 on live Express, shipped independently. 24-11
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code
-- [ ] All relative markdown links resolve
-- [ ] Last Updated / Last Update date is current (same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` — no new endpoints; the three touched handlers map to existing `reviewItems`/`reviewResult`/`reviewDueCount` (`/v1/review/items`, `/v1/review/result`, `/v1/review/due-count`)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` — `review` module confirmed
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — SRS rows via `prisma.reviewItem`
+- [x] All relative markdown links resolve (story-24-2, epic README, IMP twin, test report)
+- [x] Last Updated / Last Update date is current (August 21, 2026 — same commit as the edit)
 
 ## Testing Implementation
 

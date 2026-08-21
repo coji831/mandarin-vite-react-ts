@@ -14,12 +14,12 @@ This is the **first story of the serial Epic 24** and the owner's P0-1-as-gate-1
 
 ## Acceptance Criteria
 
-- [ ] `ReviewRepository.findByUserAndTypes` and `ReviewRepository.countDue` structurally reject `userId === undefined` **before hitting Prisma** (throw a typed error or return an empty result), so there is no Prisma ignore-`undefined` path on any `optionalAuth` SRS read.
-- [ ] `ReviewController` drops `req.userId!` on all three handlers (`getReviewItems`, `recordRating`, `getDueCount`) and returns an **explicit 401** (with the `{code, message, requestId}` envelope where the error handler applies) when no authenticated user is present.
-- [ ] A **P0-1 regression test** is committed that proves a guest / missing-auth call returns 401 (or empty) and never another user's rows.
-- [ ] **Test baseline recorded (T1 hard precondition):** `npm run test:full` + `npm run test:integration` run first; real pass/fail recorded and failures triaged in a verification artifact before this story's changes land.
-- [ ] No other review surface changes (no port, no schema change, no quiz/progression/audio edits); the Nest shell is **not** required for this story to ship.
-- [ ] Gates green: `npm run build`, `npm run lint` (0 errors), `npm run typecheck --workspace=@mandarin/backend`, `npm test`, `npm run test:full`, `npm run test:integration`.
+- [x] `ReviewRepository.findByUserAndTypes` and `ReviewRepository.countDue` structurally reject `userId === undefined` **before hitting Prisma** (throw a typed error or return an empty result), so there is no Prisma ignore-`undefined` path on any `optionalAuth` SRS read.
+- [x] `ReviewController` drops `req.userId!` on all three handlers (`getReviewItems`, `recordRating`, `getDueCount`) and returns an **explicit 401** (with the `{code, message, requestId}` envelope where the error handler applies) when no authenticated user is present.
+- [x] A **P0-1 regression test** is committed that proves a guest / missing-auth call returns 401 (or empty) and never another user's rows.
+- [x] **Test baseline recorded (T1 hard precondition):** `npm run test:full` + `npm run test:integration` run first; real pass/fail recorded and failures triaged in a verification artifact before this story's changes land.
+- [x] No other review surface changes (no port, no schema change, no quiz/progression/audio edits); the Nest shell is **not** required for this story to ship.
+- [x] Gates green: `npm run build`, `npm run lint` (0 errors), `npm run typecheck --workspace=@mandarin/backend`, `npm test`, `npm run test:full`, `npm run test:integration`.
 
 ## Business Rules
 
@@ -38,7 +38,8 @@ This is the **first story of the serial Epic 24** and the owner's P0-1-as-gate-1
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Commit hash**: _(to be filled at epic close)_
+- **Implementation note:** Stopgap shipped on live Express — return-empty (`[]`/`0`) repository guards on `findByUserAndTypes`/`countDue` + explicit 401 (`AUTH_ERROR`) in `ReviewController`; T1 baseline + 10 P0-1 regression tests recorded in `../../../verification-artifacts/test-report-24-1.md` (mechanism = return-empty + 401 `AUTH_ERROR`).
