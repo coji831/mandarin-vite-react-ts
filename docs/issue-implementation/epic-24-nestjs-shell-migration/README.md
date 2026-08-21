@@ -1,7 +1,7 @@
 ﻿---
 purpose: "Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS"
 status: in-progress
-last-verified: 2026-08-21
+last-verified: 2026-08-22
 type: epic
 ---
 
@@ -9,9 +9,9 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-9, 24-10…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-10, 24-11…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
-**Last Update:** August 21, 2026
+**Last Update:** August 22, 2026
 
 ---
 
@@ -127,13 +127,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-10 — Audio + Health Port
 
-**_(STUB — absorbs epic-25 F5 TTS surface)_**
+**_(completed — absorbs epic-25 F5 TTS surface)_**
 
 **Goal:** Port `audio` (`POST /v1/tts`; `AudioService` facade over `AudioSynthesizer`/`AudioPathCache`/`AudioUrlSigner`) and `health` (consumes `AudioServiceLike` via Nest DI — replaces the direct `modules/audio/index.js` import).
 
 **ACs:** TTS route ported with the **calibrated** `optionalAuth` semantics; parity harness green; health uses Nest-provided `AudioServiceLike` (no direct cross-module import in Nest land); audio URL-signing/path-cache identical (mocked-GCS integration test); **cache-first free-for-guests (F5) verified in-port**; guest-visible generation stays counter-gated (mechanics in 29).
 
-**Gate:** 24-4 + 24-5 (calibrated `optionalAuth`). **Docs:** stub — full BR/IMP authored when 24-10 runs.
+**Status:** ✅ completed — `AudioNestController` mirrors `AudioController.ts` verbatim (`{ text, voice = voiceDefault }` → `AudioService.getTtsUrl` → `{ audioUrl, cached }`) with `@HttpCode(200)` (fixed the Nest default 201) + the calibrated `OptionalAuthGuard`; `AudioModule` imports `SharedModule` + `GuardsModule`, `AudioService` via `useFactory(CacheService, GCSClient, GoogleTTSClient)`, **exports AudioService** for Health DI; `HealthNestController` = full `@Res()` mirror (same 200 shape + same `{ error, code, message }` 500 branch), injects `GeminiService` (SharedModule) + `AudioService` (AudioModule DI) + `RedisClient` (local provider); **cross-module-import fix** — `HealthModule` imports `AudioModule` (no `modules/audio/index.js` import in Nest land; ctor param typed structurally `{ healthCheck(): Promise<boolean> }`); calibrated TTS F5 verified in-port (guest no/bad token → never 401; GCS cache HIT → `{ cached: true }`, `synthesizeSpeech` not called); generation counter-gating deferred to epic-29 (no counter ships); dedicated mocked-GCS parity harness (`audio-health-parity.test.ts`, 11 tests — TTS 9 + health 2) + unit tests (audio 5 + health 5); gates green (typecheck · build both dist · test:full 61/659 (+10 unit) · integration 20/191 (+11 parity) · lint 0 · boundaries · dev:nest smoke). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-4 + 24-5 (calibrated `optionalAuth`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-10-audio-health-port.md) · [IMP](story-24-10-audio-health-port.md) (full).
 
 ### 24-11 — Review Port + SRS Schema
 
