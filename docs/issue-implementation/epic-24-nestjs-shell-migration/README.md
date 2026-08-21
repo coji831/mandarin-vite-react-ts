@@ -65,6 +65,8 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** `SharedModule`/`DatabaseModule` compile + boot; `CacheService` resolves via async provider before first request; no new `shared/`→`modules/` edge (`check:module-boundaries` green) + Express `app/container.ts` untouched; providers unit-tested (Prisma singleton, cache async resolution, lazy external clients); **graceful shutdown — `onApplicationShutdown` (`PrismaClient.$disconnect()`, `redisClient.quit()`, cache teardown) + shutdown unit test**; **`GcsFileStore`/external clients as lazy-singleton providers (no top-level `new GCSClient()` in Nest land)**; no 25–28 collision-zone file touched.
 
+**Status:** ✅ completed — `SharedModule`/`DatabaseModule` expose the shared infra as Nest providers: `CacheService` async `useFactory` (resolves the Express top-level await before first request), `PrismaClient` via the Prisma 7 CJS + `PrismaPg` connection-string factory, the three config homes (`CONFIG`/`GATE_THRESHOLDS`/`AUDIO_CONFIG`) + `CONTENT_UTILS` + `WordRepository`/`JwtService`/`PasswordService` + external clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`/`GcsFileStore`) as lazy singletons; graceful shutdown (`$disconnect()`/`redisClient.quit()`); `GcsFileStore` DI fix (constructor-injected GCS client, lazy fallback); provider + shutdown unit tests; boundaries green. **Commit hash:** _(to be filled at epic close)_.
+
 **Gate:** none (sits on 24-3). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-4-shared-module-async-providers.md) · [IMP](story-24-4-shared-module-async-providers.md) (full).
 
 ### 24-5 — Auth-Surface Guards (Calibrated)

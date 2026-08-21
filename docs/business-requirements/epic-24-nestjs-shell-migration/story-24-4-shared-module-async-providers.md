@@ -14,12 +14,12 @@ This is the third unblocked story (sits on 24-3). It is the DI substrate of the 
 
 ## Acceptance Criteria
 
-- [ ] `SharedModule`/`DatabaseModule` compile + boot inside the Nest shell; `CacheService` resolves via async provider before the first request.
-- [ ] **Graceful shutdown (R2)**: `SharedModule`/`DatabaseModule` implement `onApplicationShutdown` — `PrismaClient.$disconnect()`, `redisClient.quit()`, and cache teardown on SIGTERM — with a shutdown unit test (SIGTERM → clean exit, no dropped connections).
-- [ ] **`GcsFileStore`/external clients as lazy-singleton providers** — no top-level `new GCSClient()` in Nest land (`GcsFileStore.ts` today instantiates `new GCSClient()` at module scope); `GcsFileStore` + `GCSClient` are exposed as lazy-singleton `useFactory` providers (constructor-take-nothing, read `config` at call time).
-- [ ] No new `shared/`→`modules/` edge (`check:module-boundaries` green); Express `app/container.ts` untouched.
-- [ ] Providers unit-tested (Prisma client singleton, cache async resolution, lazy external clients, shutdown hooks).
-- [ ] No 25–28 collision-zone file touched.
+- [x] `SharedModule`/`DatabaseModule` compile + boot inside the Nest shell; `CacheService` resolves via async provider before the first request.
+- [x] **Graceful shutdown (R2)**: `SharedModule`/`DatabaseModule` implement `onApplicationShutdown` — `PrismaClient.$disconnect()`, `redisClient.quit()`, and cache teardown on SIGTERM — with a shutdown unit test (SIGTERM → clean exit, no dropped connections).
+- [x] **`GcsFileStore`/external clients as lazy-singleton providers** — no top-level `new GCSClient()` in Nest land (`GcsFileStore.ts` today instantiates `new GCSClient()` at module scope); `GcsFileStore` + `GCSClient` are exposed as lazy-singleton `useFactory` providers (constructor-take-nothing, read `config` at call time).
+- [x] No new `shared/`→`modules/` edge (`check:module-boundaries` green); Express `app/container.ts` untouched.
+- [x] Providers unit-tested (Prisma client singleton, cache async resolution, lazy external clients, shutdown hooks).
+- [x] No 25–28 collision-zone file touched.
 
 ## Business Rules
 
@@ -41,7 +41,8 @@ This is the third unblocked story (sits on 24-3). It is the DI substrate of the 
 
 ## Implementation Status
 
-- **Status**: Planned
+- **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Commit hash**: _(to be filled at epic close)_
+- **Implementation note:** `SharedModule`/`DatabaseModule` expose the shared infrastructure as Nest providers — `CacheService` via async `useFactory` (resolves the Express top-level await before the first request), `PrismaClient` via the Prisma 7 CJS-only + `PrismaPg` connection-string factory, the three config homes (`config`/`GATE_THRESHOLDS`/`audioConfig`), `contentUtils` (`CONTENT_UTILS`), shared `WordRepository`, `JwtService`/`PasswordService`, and external clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`/`GcsFileStore`) as lazy singletons; graceful shutdown (`DatabaseModule` → `$disconnect()`, `SharedModule` → `redisClient.quit()`); `GcsFileStore` DI fix (constructor-injected GCS client with lazy fallback). All 6 ACs verified against the shipped code — commit hash deferred to epic close.

@@ -4,7 +4,27 @@
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-4-shared-module-async-providers.md`
 > **Last Updated:** August 21, 2026
-> **Status:** Planned
+> **Status:** Completed
+> **Commit hash:** _(to be filled at epic close)_
+
+## Implementation Summary
+
+Shipped the DI substrate of the Nest shell: `SharedModule`/`DatabaseModule` (in `apps/backend/src/nest/shared/`) expose the shared infrastructure as Nest providers, wired into `AppModule` (story 24-4). `CacheService` is resolved via an async `useFactory` (`await CacheFactory.create("default")`) — converting the Express container's top-level await into a provider that resolves before bootstrap completes and before the first request. `PrismaClient` is a singleton `useFactory` provider replicating the Prisma 7 CJS-only default-import + `PrismaPg` connection-string pattern from `src/shared/infrastructure/database/client.ts`. External clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`) and `GcsFileStore` are lazy-singleton providers — no top-level `new GCSClient()` in Nest land. Both modules implement graceful shutdown. The Express `app/container.ts` is untouched; Nest has its own provider path.
+
+**Three documented deviations from the IMP pseudocode:**
+
+1. **String-const `InjectionToken`s, not inline string literals** — the pseudocode used `{ provide: "CONFIG", … }` literals; shipped `shared.module.ts` exports typed string-const tokens (`CONFIG`, `GATE_THRESHOLDS_TOKEN`, `AUDIO_CONFIG_TOKEN`, `CONTENT_UTILS`) so consumers import the token rather than duplicating the literal.
+2. **`PrismaClient` re-exported transitively via `DatabaseModule`, not directly from `SharedModule`** — `SharedModule` imports + re-exports `DatabaseModule` (which provides/exports `PrismaClient`); consumers importing `SharedModule` can `@Inject(PrismaClient)` without re-importing the CJS package directly.
+3. **`contentUtils` exposed via the `CONTENT_UTILS` token** — `contentUtils` is a module namespace (`import * as contentUtils`), not a `ContentUtils` class, so it is provided as `useValue: contentUtils` under the token rather than `useFactory: () => new ContentUtils()`.
+
+**Other key shipping decisions:**
+
+- **Graceful shutdown:** `DatabaseModule.onApplicationShutdown` → `await this.prisma.$disconnect()`; `SharedModule.onApplicationShutdown` → `await redisClient.quit()` — the shared Redis client is the connection owner behind `CacheService`, which exposes no teardown of its own (verified: no `quit`/`disconnect`/teardown surface in `CacheService.ts`).
+- **Three config homes as providers:** `CONFIG` (readonly `config` from `src/shared/config`), `GATE_THRESHOLDS_TOKEN` (`src/config/gate-thresholds.ts`), `AUDIO_CONFIG_TOKEN` (`src/modules/audio/config.ts`).
+- **`GcsFileStore` DI fix:** `GcsFileStore.ts` constructor now accepts `{ bucket?, gcsClient? }` with a lazy fallback (`gcsClient ?? new GCSClient()`) — backward-compatible with existing `new GcsFileStore({ bucket })` call sites while letting Nest inject the shared `GCSClient` provider; the module-scope client construction is gone. (`GcsFileStore.ts` is a `shared/infrastructure` file, which is allowed to be edited — `shared/` is not a 25–28 zone.)
+- **`vitest.config.ts`:** `src/nest/**/__tests__/**/*.test.ts` added to the test include patterns so the provider tests run in the default suite.
+
+**Verification (against the shipped commit — hash deferred to epic close):** typecheck + `build` green (both dist entries emitted incl. `dist/nest/shared`); `lint` 0 errors; `test:full` 57/611; `test:integration` 15/112; `check:module-boundaries` green (no new `shared/`→`modules/` edge); `dev:nest` boots and the async `CacheService` resolves before routes are served.
 
 ## Technical Scope
 
@@ -12,10 +32,12 @@ Expose the shared infrastructure as Nest providers so cache/gemini/jwt-dependent
 
 **Files:**
 
-- `apps/backend/src/nest/shared/database.module.ts` — **NEW**: `DatabaseModule` exposing the `PrismaClient` provider (Prisma 7 CJS pattern + `PrismaPg`).
-- `apps/backend/src/nest/shared/shared.module.ts` — **NEW**: `SharedModule` exposing `config`, `CacheService` (async `useFactory`), `contentUtils`, `WordRepository`, `JwtService`, `PasswordService`, external clients.
-- `apps/backend/src/nest/app.module.ts` — **UPDATE**: import `SharedModule`/`DatabaseModule` (global or per-module as decided) so later module ports consume them.
-- `apps/backend/src/nest/**/__tests__/*.test.ts` — **NEW**: unit tests for the async provider (CacheService resolves before bootstrap; PrismaClient constructed once; lazy external clients).
+- `apps/backend/src/nest/shared/database.module.ts` — **NEW**: `DatabaseModule` exposing the `PrismaClient` provider (Prisma 7 CJS-only default-import + `PrismaPg` connection-string adapter) + `OnApplicationShutdown` → `prisma.$disconnect()`.
+- `apps/backend/src/nest/shared/shared.module.ts` — **NEW**: `SharedModule` exposing the three config homes (`CONFIG`/`GATE_THRESHOLDS_TOKEN`/`AUDIO_CONFIG_TOKEN`), `CacheService` (async `useFactory`), `CONTENT_UTILS`, shared `WordRepository`, `JwtService`, `PasswordService`, and external clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`/`GcsFileStore`) as lazy-singleton providers + `OnApplicationShutdown` → `redisClient.quit()`.
+- `apps/backend/src/nest/shared/__tests__/shared-module.providers.test.ts` — **NEW**: unit tests — `CacheService` async resolution before bootstrap; `PrismaClient` singleton; the three config homes + `CONTENT_UTILS` exposed; external clients lazy + `GcsFileStore` delegates to the injected `GCSClient`; graceful-shutdown hooks (`$disconnect()` / `redisClient.quit()`).
+- `apps/backend/src/nest/app.module.ts` — **UPDATE**: wire `SharedModule` (which imports `DatabaseModule`) so the shared substrate is available to later module ports.
+- `apps/backend/src/shared/infrastructure/storage/GcsFileStore.ts` — **UPDATE**: DI fix — constructor accepts an injected `GCSClient` (`{ bucket?, gcsClient? }`) with lazy fallback (`gcsClient ?? new GCSClient()`); removes module-scope client construction; backward-compatible (`shared/` is not a 25–28 zone).
+- `apps/backend/vitest.config.ts` — **UPDATE**: add `src/nest/**/__tests__/**/*.test.ts` to the test include patterns.
 
 ## Implementation Details
 
@@ -143,16 +165,16 @@ Solution: Async useFactory provider (`useFactory: async () => await CacheFactory
 
 ### Doc Truth-Check
 
-- [ ] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
-- [ ] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
-- [ ] Data source (static JSON vs Postgres/API) matches the backing service/repository code
-- [ ] All relative markdown links resolve
-- [ ] Last Updated / Last Update date is current (same commit as the edit)
+- [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim)
+- [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/`
+- [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code
+- [x] All relative markdown links resolve
+- [x] Last Updated / Last Update date is current (same commit as the edit)
 
 ## Testing Implementation
 
-- **Provider unit tests:** `CacheService` resolves via the async provider before bootstrap/first request; `PrismaClient` constructed exactly once (singleton); external clients lazy-initialize (no construction until first use); **`GcsFileStore`/`GCSClient` resolve as lazy-singleton providers** (no top-level `new GCSClient()` in Nest land).
-- **Graceful-shutdown test (R2):** SIGTERM → `PrismaClient.$disconnect()` + `redisClient.quit()` + cache teardown called; clean exit.
-- **Boundary check:** `npm run check:module-boundaries` green — no new `shared/`→`modules/` edge introduced by the Nest provider path.
+- **Provider unit tests** (`src/nest/shared/__tests__/shared-module.providers.test.ts`): `CacheService` resolves via the async `useFactory` before bootstrap completes (`Test.compile()` awaits async providers — a rejected factory fails compilation); the three config homes + `CONTENT_UTILS` are exposed as providers; `PrismaClient` is constructed exactly once (singleton); external clients resolve as lazy singletons — `GcsFileStore` delegates to the INJECTED `GCSClient` (no top-level `new GCSClient()` in Nest land). Hermetic env stubs (`REDIS_URL=""` no-op cache, `DATABASE_URL`/JWT fallbacks) with dynamic imports so module singletons evaluate against the stubbed env.
+- **Graceful-shutdown tests (R2):** `DatabaseModule.onApplicationShutdown` → `PrismaClient.$disconnect()` called once; `SharedModule.onApplicationShutdown` → `redisClient.quit()` called once (CacheService exposes no teardown — the Redis client is the connection owner).
+- **Boundary check:** `check:module-boundaries` green — no new `shared/`→`modules/` edge introduced by the Nest provider path (`src/nest/` files import `shared/` + `modules/audio/config.js`, but the direction rule scans only `apps/backend/src/shared/`, which still imports zero from `modules/`).
 - **Existing suites:** unchanged and green; Express `app/container.ts` untouched.
-- **Gates:** Tier 1 `build`/`lint` (0 errors)/`test`; Tier 2 `test:full`/`typecheck`/`check:module-boundaries`/`test:integration`.
+- **Gates:** typecheck + `build` green (both dist entries emitted incl. `dist/nest/shared`); `lint` 0 errors; `test:full` 57/611; `test:integration` 15/112; `check:module-boundaries` green; `dev:nest` boots and the async `CacheService` resolves before routes are served.
