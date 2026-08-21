@@ -6,7 +6,7 @@
 
 **As a** product owner,
 **I want to** change the guest identity shape from the over-generous `{currentPhase: 4, phase4Unlocked: true}` to the calibrated **`{currentPhase: 1, isGuest: true}`** in the shared gate (`createGuestPhaseGate`), with types/tests and the **minimal frontend lockstep** (AppLayout guest override removal + `getGates` guest-branch unification) plus a guest end-to-end check,
-**So that** guests unlock exactly Phase 1 (the Blueprint) — not all content — and the backend and shell agree on the same guest shape before the auth-guard/port stories and the cutover.
+**So that** guests unlock exactly Phase 1 (the Blueprint) — not all content — and the backend and shell agree on the same guest shape before the identity-reading port story (24-13) and the cutover.
 
 ## Business Value
 
@@ -33,8 +33,8 @@ This is the serial re-ratification's second **new** story (`24-7`, inserted betw
 ## Related Issues
 
 - Epic 24: NestJS Shell Migration — [BR](README.md) (epic parent)
-- **Story 24.5: Auth-Surface Guards (Calibrated)** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-5--auth-surface-guards-calibrated)) (consumer — guards target the calibrated guest semantics from this story)
-- **Story 24.6: Auth Module Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-6--auth-module-port)) (consumer — `/me` returns the calibrated guest identity)
+- **Story 24.5: Auth-Surface Guards (Calibrated)** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-5--auth-surface-guards-calibrated)) (related — guards target the calibrated semantics per the calibration spec; no code dependency on this story)
+- **Story 24.6: Auth Module Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-6--auth-module-port)) (related — `/me` requires auth; guest handling comes from the 24-5 guards)
 - **Story 24.13: Quiz + Progression Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-13--quiz--progression-port)) (consumer — progression guest branch unified to the calibrated gate)
 - **Implementation (IMP twin):** `story-24-7-guest-identity-calibration.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-7-guest-identity-calibration.md`
 

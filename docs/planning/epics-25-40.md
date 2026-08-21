@@ -7,19 +7,19 @@ type: planning
 
 # Epic Plan 25–40 — Re-Sliced (Calibration + AI Roadmap)
 
-**Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D9)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
+**Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
 **Last Updated:** 2026-08-21
 
-**Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D9**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
+**Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D10**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
 
-> ⚠️ **Re-ratification (2026-08-21, D9):** the earlier **"D7 shell-swap parallel with 25–28; P0-1 first gate"** constraints are deliberately **reversed** — **full-scoped serial Epic 24 runs FIRST to completion (15 stories, including the P0-1 security stopgap as 24-1); epics 25–28 START AFTER, all on NestJS.** Every former B-gate becomes A (absorb) or C (declare). This is an owner decision (owner re-ratification), not an editorial change.
+> ⚠️ **Re-ratification (2026-08-21, D10):** the earlier **"D7 shell-swap parallel with 25–28; P0-1 first gate"** constraints are deliberately **reversed** — **full-scoped serial Epic 24 runs FIRST to completion (15 stories, including the P0-1 security stopgap as 24-1); epics 25–28 START AFTER, all on NestJS.** Every former B-gate becomes A (absorb) or C (declare). This is an owner decision (owner re-ratification), not an editorial change.
 
 ---
 
 ## Context Summary
 
-Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appendix B) plus the calibrated guest-access, tech-mapping, and production-readiness working specs. Locked constraints honored unchanged: D1=NestJS 11, **D7=full-scoped serial Epic 24 first; 25–28 after, on NestJS** (29/30/31 land on NestJS) — ⚠️ deliberate owner re-ratification 2026-08-21 (D9) **reversing** the earlier "D7=shell-swap parallel with 25–28" + "P0-1 first gate" framing; **P0-1 absorbed into Epic 24 (24-1 stopgap)** instead of being epic-25's gate 1; P0-2 re-based as data prerequisite, 4 satellite carve-outs, business-deferred items kept out of scope.
+Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appendix B) plus the calibrated guest-access, tech-mapping, and production-readiness working specs. Locked constraints honored unchanged: D1=NestJS 11, **D7=full-scoped serial Epic 24 first; 25–28 after, on NestJS** (29/30/31 land on NestJS) — ⚠️ deliberate owner re-ratification 2026-08-21 (D10) **reversing** the earlier "D7=shell-swap parallel with 25–28" + "P0-1 first gate" framing; **P0-1 absorbed into Epic 24 (24-1 stopgap)** instead of being epic-25's gate 1; P0-2 re-based as data prerequisite, 4 satellite carve-outs, business-deferred items kept out of scope.
 
 ## Re-Slicing Principles
 
@@ -462,7 +462,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 | **40**                                                      | —                          | 28, 38, 27, 32 (34 for FSRS-weighted) | L3/L4 learning road                                                                                                                                          |
 | **D7 shell-swap** _(re-scoped epic-24, full-scoped serial)_ | — (serial-first)           | —                                     | **Runs to completion before 25**; 25–28 land on NestJS after; 29/30/31 land on NestJS                                                                        |
 
-> **Serial note (2026-08-21, D9):** epics 25–28 no longer run parallel to D7 — they queue **behind full-scoped Epic 24**. Once started, 26/27/28 may still run parallel to each other (and to 38/39) per their dependency rows.
+> **Serial note (2026-08-21, D10):** epics 25–28 no longer run parallel to D7 — they queue **behind full-scoped Epic 24**. Once started, 26/27/28 may still run parallel to each other (and to 38/39) per their dependency rows.
 
 ```mermaid
 graph LR
@@ -526,7 +526,7 @@ graph LR
 - **Status:** `RESOLVED — EXECUTED (docs reorg Pass 1 + renumber epic-24→41, 2026-08-17)`
 - **Where it lands:** epic-plan renumber table + `tech-mapping.md` §6 (D7 row) + a retirement note on the old dotnet impl folder.
 - **Residual risk:** Renaming the two committed `epic-24-traditional-characters` folders is a docs-churn item; must land in one commit with the renumber table to avoid broken links.
-- **Re-ratified 2026-08-21 (serial; D9):** the OI-1 execution framing — "run **parallel to epics 25–28, complete before epic-29**" — is **superseded** by the owner's serial decision: **full-scoped Epic 24 runs FIRST to completion (15 stories, fully self-contained), then epics 25–28 land on NestJS**. The D7 home + `epic-24` name-collision resolution stands unchanged; only the execution timing changed. See the new decision-log entry **D9** (`.github/decision-log.json`).
+- **Re-ratified 2026-08-21 (serial; D10):** the OI-1 execution framing — "run **parallel to epics 25–28, complete before epic-29**" — is **superseded** by the owner's serial decision: **full-scoped Epic 24 runs FIRST to completion (15 stories, fully self-contained), then epics 25–28 land on NestJS**. The D7 home + `epic-24` name-collision resolution stands unchanged; only the execution timing changed. See the new decision-log entry **D10** (`.github/decision-log.json`).
 
 ### OI-2 — Quota-number final sign-off
 

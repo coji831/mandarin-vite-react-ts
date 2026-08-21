@@ -81,10 +81,10 @@ Assert with the calibrated gate: a guest renders the Phase-1 shape end-to-end; g
 ├── apps/frontend/src/shared/layouts/AppLayout.tsx — unauthenticated :4 override removed (isGuest)
 ├── apps/frontend gate consumers — getGates/getPhaseGate guest branch unified (single source, one cache key)
 └── guest e2e — Phase-1 shape asserted
-      ↓ consumed by 24-5 (auth guards target calibrated semantics), 24-6 (/me), 24-13 (progression guest branch)
+      ↓ consumed by 24-13 (progression `getPhaseGate` — the only backend `createGuestPhaseGate` caller) + the FE shell (settled in-story). The auth guards (24-5) consume the calibration spec (F6), not this shape.
 ```
 
-Dependencies: **24-4** (shared substrate) + the calibrated shape being the single source of truth; sits between 24-6 and 24-8 in the serial order. Parallel-safety: touches `shared-constants` + FE gate consumers — the highest collision zone (`authMiddleware`/`shared-constants`) is handled here deliberately so the port stories (24-5/24-6/24-13) copy the settled calibrated shape (single touch, no port-then-rework).
+Dependencies: **24-4** (shared substrate) + the calibrated shape being the single source of truth; sits between 24-6 and 24-8 in the serial order. Parallel-safety: touches `shared-constants` + FE gate consumers — the highest collision zone (`authMiddleware`/`shared-constants`) is handled here deliberately so the identity-reading port story (24-13) + the FE shell copy the settled shape; the guards (24-5) port the spec's calibrated semantics (single touch, no port-then-rework).
 
 ## Technical Challenges & Solutions
 
@@ -95,7 +95,7 @@ Problem: getPhaseGate and getGates disagree for guests; the FE shell keys off th
         over-generous currentPhase:4 while the calibrated backend would ship currentPhase:1.
 Solution: Land the calibrated createGuestPhaseGate shape + the minimal FE lockstep
         (AppLayout :4 → isGuest, getGates guest-branch unification) together in this story,
-        so backend and shell agree before any auth-guard/port story copies the shape.
+        so backend and shell agree before the identity-reading port story (24-13) copies the shape.
         One cache key, cleared on auth change.
 ```
 

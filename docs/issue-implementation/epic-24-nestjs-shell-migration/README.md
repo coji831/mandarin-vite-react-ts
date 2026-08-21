@@ -17,10 +17,10 @@ type: epic
 
 ## Scope (D7 shell-swap)
 
-_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record + D9 serial re-ratification) and tech-mapping D1/D7._
+_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record + D10 serial re-ratification) and tech-mapping D1/D7._
 
 - Migrate the backend onto a NestJS 11 shell (mechanical shell-swap) — **D1 = NestJS 11, owner-approved 2026-08-17**
-- **Full-scoped serial: Epic 24 runs first to completion (15 stories); epics 25–28 land on NestJS after — owner re-ratification 2026-08-21 (D9)**
+- **Full-scoped serial: Epic 24 runs first to completion (15 stories); epics 25–28 land on NestJS after — owner re-ratification 2026-08-21 (D10)**
 - Absorb the cross-cutting release-safety items within the epic: P0-1 stopgap (24-1) + structural fix (24-11), calibrated guest identity + minimal FE lockstep (24-7), additive `SrsCardState` schema/vector (24-11); quiz-FE fixes C-declared (26)
 - Build the calibrated substrate (E.0–E.2 AI gateway, retrieval seam, tracking) as epics land on the shell
 - Keep the existing content/features/tests; retrofit the substrate — not a greenfield rebuild
@@ -67,9 +67,9 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **Goal:** Port `authenticateToken`/`optionalAuth`/`requireAuth` to Nest guards targeting the **calibrated** unified guest semantics (F6: guest → session-local/empty, never all-unlocked) — the calibration spec is the source of truth, not current code.
 
-**ACs:** Three guard types exist and reproduce the calibrated semantics (401 messages, guest handling, `req.userId`); parity harness proves 401/403 + guest-vs-user responses identical to Express on a test-protected route (with the calibrated guest shape from 24-7); guard unit tests cover success/failure/guest/expired-token paths; no "port pre-25 then rework" — the calibrated shape is the port target (ADR-24-B).
+**ACs:** Three guard types exist and reproduce the calibrated semantics (401 messages, guest handling, `req.userId`); parity harness proves 401/403 + guest-vs-user responses identical to Express on a test-protected route (with the calibrated guest shape per the calibration spec, F6); guard unit tests cover success/failure/guest/expired-token paths; no "port pre-25 then rework" — the calibrated shape is the port target (ADR-24-B).
 
-**Gate:** 24-4 + 24-7 (calibrated identity shape lands first). **Docs:** stub — full BR/IMP authored when 24-5 runs.
+**Gate:** 24-4 (shared substrate) + the calibration spec (`wip/guest-access-calibration.md`) — **no code dependency on 24-7** (the guards read the spec, never `createGuestPhaseGate`). **Docs:** stub — full BR/IMP authored when 24-5 runs.
 
 ### 24-6 — Auth Module Port
 
@@ -87,7 +87,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** `createGuestPhaseGate` returns `{currentPhase: 1, isGuest: true}` (no all-unlock); `.d.ts` matches; `shared-constants` tests updated; `AppLayout` removes the unauthenticated `: 4` override; `getGates`/`getPhaseGate` guest branch unified (single source, one cache key, cleared on auth change); guest e2e asserts the Phase-1 shape + guest flows still function; no full FE guest-shell UI (badge/banner, route-gate fallback, design spec — stays in 25).
 
-**Gate:** 24-6 → 24-7 → 24-8 (serial); sets the calibrated shape for 24-5/24-8/24-10/24-13. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-7-guest-identity-calibration.md) · [IMP](story-24-7-guest-identity-calibration.md) (full).
+**Gate:** 24-6 → 24-7 → 24-8 (serial); sets the calibrated identity shape for **24-13 (progression)** + the FE shell (the auth guards in 24-5 consume the calibration spec, not this shape). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-7-guest-identity-calibration.md) · [IMP](story-24-7-guest-identity-calibration.md) (full).
 
 ### 24-8 — Characters + Mnemonics Port
 
@@ -97,7 +97,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** All 7 characters + 4 mnemonics routes ported; parity harness green (2xx body+status, 4xx envelope); mnemonics uses `SharedModule` cache+gemini + the **calibrated** `OptionalAuthGuard` (guest → empty, per F6); mnemonics POST/PUT/DELETE success + validation 4xx match Express; no other zone touched.
 
-**Gate:** 24-3 + 24-4 + 24-7. **Docs:** stub — full BR/IMP authored when 24-8 runs.
+**Gate:** 24-3 + 24-4 + 24-5 (calibrated `OptionalAuthGuard`). **Docs:** stub — full BR/IMP authored when 24-8 runs.
 
 ### 24-9 — Radicals + Foundations Port
 
@@ -117,7 +117,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** TTS route ported with the **calibrated** `optionalAuth` semantics; parity harness green; health uses Nest-provided `AudioServiceLike` (no direct cross-module import in Nest land); audio URL-signing/path-cache identical (mocked-GCS integration test); **cache-first free-for-guests (F5) verified in-port**; guest-visible generation stays counter-gated (mechanics in 29).
 
-**Gate:** 24-4 + 24-5 + 24-7. **Docs:** stub — full BR/IMP authored when 24-10 runs.
+**Gate:** 24-4 + 24-5 (calibrated `optionalAuth`). **Docs:** stub — full BR/IMP authored when 24-10 runs.
 
 ### 24-11 — Review Port + SRS Schema
 
@@ -127,7 +127,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** 3 review routes ported; parity green; `findByUserAndTypes`/`countDue` structurally reject `undefined` userId (regression test re-authored in Nest land); additive `SrsCardState` migration (new table/enum/vector, backfill, re-point; `ReviewItem` columns kept until 34/28 cleanup) satisfies the D1 additive-only gate; interval-doubling preserved (no FSRS semantics — that's 34); calibrated `requireAuth` applied; stale `ReadersAudioController.test.ts` rewritten/removed here or flagged for 24-12.
 
-**Gate:** 24-5 (calibrated guards) + 24-7 (identity). **Docs:** stub — full BR/IMP authored when 24-11 runs.
+**Gate:** 24-5 (calibrated guards). **Docs:** stub — full BR/IMP authored when 24-11 runs.
 
 ### 24-12 — Readers Port
 
@@ -176,7 +176,7 @@ Serial order (single engineer): **24-1 → 24-2 → 24-3 → 24-4 → 24-5 → 2
 1. **24-1**: P0-1 stopgap (leak closed on Express, T1 baseline recorded + triaged) — FIRST, ships independently.
 2. **24-2 → 24-3 → 24-4**: unblocked runway (shell → HTTP parity → shared substrate).
 3. **24-5 → 24-6**: auth guards (calibrated, F6) + auth module port.
-4. **24-7**: guest identity calibration + minimal FE lockstep (sets the calibrated shape for 24-5/24-8/24-10/24-13).
+4. **24-7**: guest identity calibration + minimal FE lockstep (sets the calibrated identity shape for 24-13 + the FE shell; the 24-5 guards target the spec).
 5. **24-8 → 24-9 → 24-10**: characters+mnemonics → radicals+foundations (current content) → audio+health.
 6. **24-11 → 24-12 → 24-13**: collision-core — review + `SrsCardState` additive schema → readers → quiz+progression (heaviest batch).
 7. **24-14**: release-safety gate (pre-flight before 24-15's flip).

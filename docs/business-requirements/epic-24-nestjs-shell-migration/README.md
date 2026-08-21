@@ -9,12 +9,12 @@ type: epic
 
 ## Epic Summary
 
-**Goal:** Migrate the backend to a NestJS 11 shell via the **D7 shell-swap** — a **full-scoped serial** Epic 24 that runs **FIRST, to completion** (15 stories, fully self-contained), absorbing the P0-1 security stopgap, calibrated guest identity, and the additive `SrsCardState` schema; epics 25–28 then land **on NestJS after**. **D1 = NestJS 11**, owner-approved **2026-08-17**; serial sequencing re-ratified **2026-08-21** (D9).
+**Goal:** Migrate the backend to a NestJS 11 shell via the **D7 shell-swap** — a **full-scoped serial** Epic 24 that runs **FIRST, to completion** (15 stories, fully self-contained), absorbing the P0-1 security stopgap, calibrated guest identity, and the additive `SrsCardState` schema; epics 25–28 then land **on NestJS after**. **D1 = NestJS 11**, owner-approved **2026-08-17**; serial sequencing re-ratified **2026-08-21** (D10).
 
 **Key Points:**
 
 - D7 = shell-swap to NestJS 11 early — **not** a greenfield rebuild, **not** a full migrate
-- Runs **FIRST to completion** (serial, 15 stories); then epics 25–28 land on NestJS — **supersedes the "parallel with 25–28" clause (owner re-ratification 2026-08-21, D9)**
+- Runs **FIRST to completion** (serial, 15 stories); then epics 25–28 land on NestJS — **supersedes the "parallel with 25–28" clause (owner re-ratification 2026-08-21, D10)**
 - Absorbs release-safety items within the epic: P0-1 stopgap (24-1) + structural fix (24-11), calibrated guest identity + minimal FE lockstep (24-7), additive `SrsCardState` schema/vector (24-11); quiz-FE fixes are C-declared (tracked in 26)
 - Builds the calibrated substrate (AI gateway E.0–E.2, retrieval seam, tracking) as epics land on the shell
 - Modulith + SSE/gateway/quota/DI all land on NestJS
@@ -29,9 +29,9 @@ type: epic
 
 ## Scope (D7 shell-swap)
 
-_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record + D9 serial re-ratification) and tech-mapping D1/D7._
+_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record + D10 serial re-ratification) and tech-mapping D1/D7._
 
-- Migrate the backend onto a NestJS 11 shell (mechanical shell-swap) — **full-scoped serial: Epic 24 runs first to completion; epics 25–28 land on NestJS after (owner re-ratification 2026-08-21, D9)**
+- Migrate the backend onto a NestJS 11 shell (mechanical shell-swap) — **full-scoped serial: Epic 24 runs first to completion; epics 25–28 land on NestJS after (owner re-ratification 2026-08-21, D10)**
 - Absorb the cross-cutting release-safety items within the epic: P0-1 stopgap (24-1) + structural fix (24-11), calibrated guest identity + minimal FE lockstep (24-7), additive `SrsCardState` schema/vector (24-11); quiz-FE fixes C-declared (26)
 - Complete before epic-29; epics 29/30/31 land on NestJS
 - Build the calibrated substrate (E.0–E.2 AI gateway, retrieval seam, tracking) as epics land
@@ -88,7 +88,7 @@ This epic consists of the following user stories (full 15-story serial breakdown
 
 ## Acceptance Criteria
 
-- [ ] Runs **first, to completion** (serial, 15 stories); absorbed release-safety items ship **within** the epic (P0-1 stopgap 24-1, guest identity 24-7, `SrsCardState` additive schema 24-11, release-safety gate 24-14); epics 25–28 land **on NestJS after** — owner re-ratification 2026-08-21 (D9).
+- [ ] Runs **first, to completion** (serial, 15 stories); absorbed release-safety items ship **within** the epic (P0-1 stopgap 24-1, guest identity 24-7, `SrsCardState` additive schema 24-11, release-safety gate 24-14); epics 25–28 land **on NestJS after** — owner re-ratification 2026-08-21 (D10).
 - [ ] All **15 existing modules** under `apps/backend/src/modules/` are ported as Nest modules, each appearing exactly once across the port stories (24-2…24-13) — re-verify by listing the module directory when the epic closes.
 - [ ] API contract preserved: the parity harness proves identical status **and body** on 2xx and identical status on 4xx/5xx for all ~63 routes across all 17 route files, versus the Express app.
 - [ ] 4xx/5xx error envelope `{code, message, requestId}` + `X-Request-Id` header + rate-limit behavior + error-visibility (every 4xx/5xx logged with requestId/code/message) are contract-identical on the Nest shell (24-3).
@@ -104,9 +104,9 @@ This epic consists of the following user stories (full 15-story serial breakdown
   - Alternatives considered: ASP.NET Core 8 (retired), remaining on Express (no substrate for epics 29+).
   - Implications: all modulith + SSE/gateway/quota/DI concerns land on NestJS; the shell must be proven before epics 29/30/31.
 
-- Decision: **D7 — shell-swap (not greenfield, not full migrate), re-ratified serial 2026-08-21 (D9)** (ratified)
+- Decision: **D7 — shell-swap (not greenfield, not full migrate), re-ratified serial 2026-08-21 (D10)** (ratified)
   - Rationale: mechanical shell migration; under the owner's serial re-ratification Epic 24 runs **first to completion** (15 stories), then epics 25–28 land on NestJS — the "parallel with 25–28" clause is superseded. Keep the existing content/features/tests; retrofit the calibrated substrate rather than rebuild.
-  - Alternatives considered: big-bang rewrite (rejected — collision + risk), deferring until after 29 (rejected — 29/30/31 need the shell), parallel-with-25–28 (superseded — no parallel capacity, owner 2026-08-21, D9).
+  - Alternatives considered: big-bang rewrite (rejected — collision + risk), deferring until after 29 (rejected — 29/30/31 need the shell), parallel-with-25–28 (superseded — no parallel capacity, owner 2026-08-21, D10).
   - Implications: 15-story breakdown; serial order 24-1→24-15; absorbed release-safety scope (P0-1, guest identity, SrsCardState additive) rides the port stories.
 
 - Decision: **Dev-only dual-mode until cutover**
@@ -142,7 +142,7 @@ This epic consists of the following user stories (full 15-story serial breakdown
 - Decision: **Calibrated auth semantics as the port target (not current code)** — ADR-24-B
   - Rationale: 24-5 ports the three auth guards to the **calibrated** unified guest semantics (F6: guest → session-local/empty, never all-unlocked), using the calibration spec as the source of truth rather than the current inconsistent `optionalAuth` shape — the single-touch win of the absorption (no "port pre-25 then rework").
   - Alternatives considered: porting the current pre-calibration shape then reworking on Nest (rejected — double touch).
-  - Implications: 24-5/24-6/24-8/24-10/24-13 copy the settled calibrated shape; 24-7 lands the identity lockstep first.
+  - Implications: 24-5 ports the guards to the spec's calibrated semantics (no code wait on 24-7); 24-6/24-8/24-10/24-13 apply those guards; 24-7 lands the identity shape consumed by 24-13 + the FE shell.
 
 - Decision: **`SrsCardState` additive schema absorption into the review port (24-11)** — ADR-24-C
   - Rationale: Epic 24 is the migration epic and owns `db:migrate:deploy`; running the **additive-only** `ReviewItem → SrsCardState` 4-state schema + enum + reserved pgvector here ships the final SRS data shape with the migration (no post-release schema migration on the P0-1-anchor repo). Interval-doubling semantics preserved (no FSRS change — that's 34); destructive cleanup + CharacterMastery/LearnerState stay in 28.
@@ -154,7 +154,7 @@ This epic consists of the following user stories (full 15-story serial breakdown
   - Alternatives considered: absorbing the FE quiz fixes (rejected — FE feature story, not migration scope).
   - Implications: 24-13 ports the **correct** backend engine shape (no backend bug canonized); 24-14 release checklist explicitly declares the quiz-FE bugs as C (tracked in 26).
 
-- Decision: **Serial re-ratification (D9)** — Epic 24 runs first to completion; 25–28 after, on NestJS (ratified 2026-08-21, decision-log D9)
+- Decision: **Serial re-ratification (D10)** — Epic 24 runs first to completion; 25–28 after, on NestJS (ratified 2026-08-21, decision-log D10)
   - Rationale: no capacity for parallel tracks; full-scoped Epic 24 is self-contained and fronts the roadmap; every former B-gate (P0-1, guest-auth, quiz-FE, SRS schema) becomes A (absorb) or C (declare) — no prerequisite epic running beside 24.
   - Alternatives considered: parallel-with-25–28 (superseded — owner 2026-08-21), hybrid front-load (rejected under serial).
   - Implications: roadmap stall risk (R1) + single-point-of-failure (R2) accepted; timeline ≈5 weeks (4–7); epics 25–40 queue behind the migration.
