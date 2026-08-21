@@ -11,19 +11,18 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "../AppLayout";
 
+const { mockUseAuth, mockUsePhaseGate } = vi.hoisted(() => ({
+  mockUseAuth: vi.fn(),
+  mockUsePhaseGate: vi.fn(),
+}));
+
 vi.mock("features/auth", () => ({
-  useAuth: () => ({
-    user: { displayName: "Alex", email: "alex@example.com" },
-    isAuthenticated: true,
-    logout: vi.fn(),
-  }),
+  useAuth: mockUseAuth,
 }));
 
 vi.mock("features/lexical-hub/components", () => ({
   LexicalHubRouter: () => null,
 }));
-
-const { mockUsePhaseGate } = vi.hoisted(() => ({ mockUsePhaseGate: vi.fn() }));
 
 vi.mock("shared/hooks", () => ({
   usePhaseGate: mockUsePhaseGate,
@@ -53,6 +52,11 @@ const mainNav = () => screen.queryByRole("navigation", { name: "Main navigation"
 const userMenu = () => screen.queryByLabelText(/Account menu for/);
 
 beforeEach(() => {
+  mockUseAuth.mockReturnValue({
+    user: { displayName: "Alex", email: "alex@example.com" },
+    isAuthenticated: true,
+    logout: vi.fn(),
+  });
   mockUsePhaseGate.mockReturnValue({ phaseGate: { currentPhase: 4 }, isLoading: false });
 });
 
@@ -99,5 +103,27 @@ describe("AppLayout composition (Story 22.4)", () => {
     renderAppLayout("/");
     const grammar = screen.getByRole("link", { name: /Grammar/ });
     expect(grammar).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("renders the calibrated Phase-1 identity for a guest — Phase-2+ Learn items locked (Story 24-7)", () => {
+    // Guest: no auth + the calibrated guest gate ({currentPhase: 1, isGuest: true}).
+    // The shell must NOT fall back to the old all-unlocked `: 4` override.
+    mockUseAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      logout: vi.fn(),
+    });
+    mockUsePhaseGate.mockReturnValue({
+      phaseGate: { currentPhase: 1, isGuest: true },
+      isLoading: false,
+    });
+    renderAppLayout("/learn/grammar");
+
+    // Phase-1 (Foundations) stays unlocked for the guest…
+    expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute("aria-disabled");
+    // …but Phase-2+ items (Radicals/Grammar/…) render locked, not all-unlocked.
+    const grammar = screen.getByRole("link", { name: /Grammar/ });
+    expect(grammar).toHaveAttribute("aria-disabled");
+    expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
   });
 });

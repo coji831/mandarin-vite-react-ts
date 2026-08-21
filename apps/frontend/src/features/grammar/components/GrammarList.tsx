@@ -15,7 +15,7 @@ export interface GrammarListProps {
   patterns: GrammarPatternData[];
   isLoading: boolean;
   error: string | null;
-  /** Learner's current phase from `usePhaseGate()` (guests = 4). */
+  /** Learner's current phase from `usePhaseGate()` (guests = 1 — calibrated). */
   currentPhase: number;
   onRetry: () => void;
   onPatternClick: (pattern: GrammarPatternData) => void;

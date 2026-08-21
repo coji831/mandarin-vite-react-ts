@@ -75,10 +75,15 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
     });
   };
 
-  // Phase gate for the sidebar Learn group (moved from LearnLayout — guests see all unlocked).
-  // Review N7: while the gate fetch is in-flight or failed (`phaseGate` is null), default authed
-  // users to "all unlocked" (Infinity) instead of a misleading phase-1 lock app-wide.
-  const effectivePhase = isAuthenticated ? (phaseGate?.currentPhase ?? Infinity) : 4;
+  // Phase gate for the sidebar Learn group (moved from LearnLayout). Calibrated
+  // guest identity (Story 24-7): guests unlock exactly Phase 1 — the backend
+  // returns `createGuestPhaseGate()` → `{currentPhase: 1, isGuest: true}`, so
+  // the shell consumes that single source instead of a hardcoded `: 4`
+  // all-unlock. Review N7: while the gate fetch is in-flight or failed
+  // (`phaseGate` is null), default authed users to "all unlocked" (Infinity)
+  // instead of a misleading phase-1 lock app-wide — but guests stay Phase 1,
+  // never all-unlocked.
+  const effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? Infinity : 1);
 
   // Don't show sidebar on auth pages — both login and register render standalone
   // (previously only login was hidden, so Register showed the nav when authed).
