@@ -13,6 +13,12 @@
  * shared infrastructure (config homes, CacheService async provider, Prisma
  * client, JwtService/PasswordService, external clients) is available to later
  * module ports as Nest providers, with graceful shutdown hooks.
+ *
+ * Story 24-5 — wires `GuardsModule` so the calibrated auth guards
+ * (`AuthGuard`/`OptionalAuthGuard`/`RequireAuthGuard`) are registered as
+ * providers and available to later module ports (24-6 auth, 24-8 mnemonics,
+ * 24-10 audio, 24-11 review, 24-12 readers, 24-13 quiz/progression). They are
+ * NOT applied globally — later modules apply them per-route via `@UseGuards`.
  */
 
 import { Module } from "@nestjs/common";
@@ -22,10 +28,18 @@ import { PhoneticClustersModule } from "../modules/phonetic-clusters/nest/phonet
 import { GrammarModule } from "../modules/grammar/nest/grammar.module.js";
 import { ChengyuModule } from "../modules/chengyu/nest/chengyu.module.js";
 import { SharedModule } from "./shared/shared.module.js";
+import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
 
 @Module({
-  imports: [WordsModule, PhoneticClustersModule, GrammarModule, ChengyuModule, SharedModule],
+  imports: [
+    WordsModule,
+    PhoneticClustersModule,
+    GrammarModule,
+    ChengyuModule,
+    SharedModule,
+    GuardsModule,
+  ],
   providers: [{ provide: APP_FILTER, useClass: AppExceptionFilter }],
 })
 export class AppModule {}

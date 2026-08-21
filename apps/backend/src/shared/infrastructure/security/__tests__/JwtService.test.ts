@@ -129,6 +129,39 @@ describe("JwtService", () => {
     });
   });
 
+  describe("verifyAccessToken", () => {
+    it("should verify and decode a valid access token", () => {
+      const token = jwtService.generateAccessToken(testUserId);
+      const decoded = jwtService.verifyAccessToken(token);
+
+      expect(decoded.userId).toBe(testUserId);
+    });
+
+    it("should throw TokenExpiredError for an expired access token", () => {
+      const expiredToken = jwt.sign({ userId: testUserId }, jwtService.JWT_SECRET, {
+        expiresIn: "-1s",
+      });
+
+      expect(() => jwtService.verifyAccessToken(expiredToken)).toThrowError("jwt expired");
+    });
+
+    it("should throw for an invalid token", () => {
+      expect(() => jwtService.verifyAccessToken("invalid.token.here")).toThrow();
+    });
+
+    it("should throw for a token signed with the wrong secret", () => {
+      const wrongToken = jwt.sign({ userId: testUserId }, "wrong-secret", { expiresIn: "15m" });
+
+      expect(() => jwtService.verifyAccessToken(wrongToken)).toThrow();
+    });
+
+    it("should throw for a refresh token (different secret)", () => {
+      const refreshToken = jwtService.generateRefreshToken(testUserId);
+
+      expect(() => jwtService.verifyAccessToken(refreshToken)).toThrow();
+    });
+  });
+
   describe("getRefreshTokenExpiration", () => {
     it("should return a date 7 days in the future", () => {
       const expirationDate = jwtService.getRefreshTokenExpiration();
