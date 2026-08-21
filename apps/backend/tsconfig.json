@@ -11,6 +11,8 @@
     "allowJs": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib": ["ES2022"],
     "sourceMap": true,
     "declaration": true,

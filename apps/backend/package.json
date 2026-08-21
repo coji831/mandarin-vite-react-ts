@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22"
   },
   "type": "module",
   "prisma": {
@@ -12,8 +12,10 @@
   "scripts": {
     "predev": "npm run build --workspace=@mandarin/shared-utils",
     "dev": "tsx watch src/app/index.ts",
+    "dev:nest": "tsx watch src/nest/main.ts",
     "prebuild": "npm run build --workspace=@mandarin/shared-utils",
     "start": "node dist/app/index.js",
+    "start:nest": "node dist/nest/main.js",
     "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/shared/docs/openapi.yaml', 'dist/shared/docs/openapi.yaml')\"",
     "typecheck": "tsc --noEmit",
     "typecheck:scripts": "tsc --noEmit --project tsconfig.scripts.json",
@@ -77,6 +79,9 @@
     "@mandarin/shared-constants": "*",
     "@mandarin/shared-types": "*",
     "@mandarin/shared-utils": "*",
+    "@nestjs/common": "^11",
+    "@nestjs/core": "^11",
+    "@nestjs/platform-express": "^11",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
@@ -93,10 +98,12 @@
     "node-fetch": "^3.3.2",
     "pg": "^8.22.0",
     "prisma": "^7.8.0",
+    "reflect-metadata": "^0.2",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.0.0"
   },
   "devDependencies": {
+    "@nestjs/testing": "^11",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
