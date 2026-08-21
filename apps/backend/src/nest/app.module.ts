@@ -33,6 +33,14 @@
  * foundations' `GET /v1/characters/:glyph` captures every single-segment
  * `/v1/characters/<x>` and shadows the characters module's `:glyph` (plus its
  * `/search` / `/frequency`) — matching the live Express behavior byte-for-byte.
+ *
+ * Story 24-10 — wires `AudioModule` (`POST /v1/tts` with the calibrated
+ * `OptionalAuthGuard`, F5 TTS surface) and `HealthModule` (`GET /v1/health`).
+ * `HealthModule` imports `AudioModule` (module-to-module Nest DI) — resolving
+ * the Express health wiring's direct `modules/audio/index.js` import with NO
+ * direct cross-module barrel import in Nest land. Both route files mount at
+ * the top of `app/routes.ts` (health L49, audio L64); import order here is
+ * immaterial to those paths (no overlapping prefixes).
  */
 
 import { Module } from "@nestjs/common";
@@ -46,6 +54,8 @@ import { FoundationsModule } from "../modules/foundations/nest/foundations.modul
 import { RadicalsModule } from "../modules/radicals/nest/radicals.module.js";
 import { CharactersModule } from "../modules/characters/nest/characters.module.js";
 import { MnemonicsModule } from "../modules/mnemonics/nest/mnemonics.module.js";
+import { AudioModule } from "../modules/audio/nest/audio.module.js";
+import { HealthModule } from "../modules/health/nest/health.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -64,6 +74,11 @@ import { AppExceptionFilter } from "./exception.filter.js";
     RadicalsModule,
     CharactersModule,
     MnemonicsModule,
+    // Audio (POST /v1/tts, calibrated OptionalAuthGuard) + Health (GET
+    // /v1/health; imports AudioModule for the AudioService DI). Both mounted
+    // at the top of the Express routes.ts — no prefix overlap with the above.
+    AudioModule,
+    HealthModule,
     SharedModule,
     GuardsModule,
   ],
