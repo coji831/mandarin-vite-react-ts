@@ -37,12 +37,12 @@ This is the second unblocked story (sits directly on 24-2's runway). The HTTP la
 - Epic 24: NestJS Shell Migration — [BR](README.md) (epic parent)
 - **Story 24.2: NestJS 11 Shell Scaffold + Reference-Module Proof-of-Pattern** ([BR](story-24-2-nest-shell-scaffold-proof.md)) (dependency — the shell + parity harness)
 - **Story 24.4: SharedModule/DatabaseModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (successor — DI substrate on the parity shell)
-- **Implementation (IMP twin):** `story-24-3-http-layer-parity.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-3-http-layer-parity.md`
+- **Implementation (IMP twin):** `story-24-3-http-layer-parity.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-3-http-layer-parity.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `1f1f4df7`
 - **Implementation note:** Global `AppExceptionFilter` (`{code, message, requestId}` envelope via pure `resolveHttpError()`/`logError()` helpers) + `mountExpressErrorBridge()` (mounted last — Nest filters can't see pre-router `app.use` errors, needed for body-parser 413 parity); `request-id.middleware.ts` re-exports the shared `requestIdMiddleware` (zero drift); `express-rate-limit` retained (`@nestjs/throttler` rejected — decision recorded) with `words` applied path-scoped and auth/readers declared as infra (24-6/24-12); body-parser via `bodyParser: false` + explicit `express.json()`/`express.urlencoded({ extended: true })`; route-parity harness extended 23→30 (413 envelope deep-equal, `X-Request-Id`, seeded 429 + 500, log-parity). All 7 ACs verified against the shipped code — commit hash deferred to epic close.

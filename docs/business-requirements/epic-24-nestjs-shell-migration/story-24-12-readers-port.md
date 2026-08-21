@@ -41,12 +41,12 @@ The story also lands the **calibrated epic-25 F5 passage-audio surface**: the au
 - **Story 24.4: SharedModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (dependency — `CacheService`/`GeminiService` the readers services are constructed with)
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — the `{ code, message, requestId }` envelope the readers 4xx/5xx paths inherit)
 - **Story 24.11: Review Port + SRS Schema** ([BR](story-24-11-review-port-srs-schema.md)) (predecessor — flagged the stale `ReadersAudioController.test.ts` for this story's disposition)
-- **Implementation (IMP twin):** `story-24-12-readers-port.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-12-readers-port.md`
+- **Implementation (IMP twin):** `story-24-12-readers-port.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-12-readers-port.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `20a3c36c`
 - **Implementation note:** `readers.module.ts` provides all five services via `useFactory` (imports `SharedModule` + `GuardsModule` + `AudioModule`); `readers-nest.controller.ts` = 11 routes 1:1 (incl. `formatPassageResponse` date serialization + every `{error, code}` branch → `HttpException` → 24-3 envelope); `ReadersAudioService` now constructor-injects `AudioService` + `AUDIO_PASSAGE_PATHS` from the ported `AudioModule` (no direct `modules/audio` function import in Nest land; type-only `AudioServiceLike` import erased); the DB-backed 5/day generation limit is unchanged (`checkRateLimits` → `countUserGeneratedToday`, UTC-midnight reset + 5-passage storage cap, `READERS_DAILY_GENERATION_LIMIT = 5`); calibrated `OptionalAuthGuard` on passages/audio reads (guest never 401; audio cache-first-free F5) + `RequireAuthGuard` on generate/sessions/bookmarks (guest 401 `AUTH_REQUIRED`); parity harness `readers-parity.test.ts` (28 tests) green; `ReadersAudioController.test.ts` kept untouched + passing (uniquely covers live Express `getPassageAudio` until 24-15). All 6 ACs verified against the shipped code (commit `20a3c36c`) — commit hash deferred to epic close.

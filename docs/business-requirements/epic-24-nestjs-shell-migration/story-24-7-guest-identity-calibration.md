@@ -45,5 +45,5 @@ This is the serial re-ratification's second **new** story (`24-7`, inserted betw
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `09c59df8`
 - **Implementation note:** `createGuestPhaseGate` calibrated to `{currentPhase: 1, isGuest: true}` (sentinels `id: "guest-unlocked"` + `phase4Unlocked: false` preserved so `isGuestPhaseGate`/`isPhaseGate` keep working); `PhaseGate.isGuest?: boolean` added (additive); minimal FE lockstep — AppLayout single-source `effectivePhase`, `usePhaseGate` re-fetch on auth change, `phaseGateService` auth-keyed cache key; new shared-constants Vitest suite (5/5) + `AppLayout.guest.integration.test.tsx` (MSW serves the actual `createGuestPhaseGate`); 5 comment-hygiene files updated. All 7 ACs verified against the shipped code (commit `09c59df8`) — commit hash deferred to epic close.

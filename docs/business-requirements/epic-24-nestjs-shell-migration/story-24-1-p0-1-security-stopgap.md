@@ -34,12 +34,12 @@ This is the **first story of the serial Epic 24** and the owner's P0-1-as-gate-1
 - Epic 24: NestJS Shell Migration — [BR](README.md) (epic parent)
 - **Story 24.2: NestJS 11 Shell Scaffold + Reference-Module Proof-of-Pattern** ([BR](story-24-2-nest-shell-scaffold-proof.md)) (successor — begins the shell after the leak is closed)
 - **Story 24.11: Review Port + SRS Schema** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-11--review-port--srs-schema)) (structural re-fix + absorbed `SrsCardState` additive schema)
-- **Implementation (IMP twin):** `story-24-1-p0-1-security-stopgap.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md`
+- **Implementation (IMP twin):** `story-24-1-p0-1-security-stopgap.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `27d35573`
 - **Implementation note:** Stopgap shipped on live Express — return-empty (`[]`/`0`) repository guards on `findByUserAndTypes`/`countDue` + explicit 401 (`AUTH_ERROR`) in `ReviewController`; T1 baseline + 10 P0-1 regression tests recorded in `../../../verification-artifacts/test-report-24-1.md` (mechanism = return-empty + 401 `AUTH_ERROR`).

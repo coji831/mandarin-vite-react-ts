@@ -37,12 +37,12 @@ This is the third unblocked story (sits on 24-3). It is the DI substrate of the 
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — parity shell)
 - **Story 24.5: Auth-Surface Guards (Calibrated)** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-5--auth-surface-guards-calibrated)) (consumer — `JwtService`/`PasswordService` from `SharedModule`)
 - **Story 24.8: Characters + Mnemonics Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-8--characters--mnemonics-port)) (consumer — cache + gemini providers)
-- **Implementation (IMP twin):** `story-24-4-shared-module-async-providers.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-4-shared-module-async-providers.md`
+- **Implementation (IMP twin):** `story-24-4-shared-module-async-providers.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-4-shared-module-async-providers.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `99620056`
 - **Implementation note:** `SharedModule`/`DatabaseModule` expose the shared infrastructure as Nest providers — `CacheService` via async `useFactory` (resolves the Express top-level await before the first request), `PrismaClient` via the Prisma 7 CJS-only + `PrismaPg` connection-string factory, the three config homes (`config`/`GATE_THRESHOLDS`/`audioConfig`), `contentUtils` (`CONTENT_UTILS`), shared `WordRepository`, `JwtService`/`PasswordService`, and external clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`/`GcsFileStore`) as lazy singletons; graceful shutdown (`DatabaseModule` → `$disconnect()`, `SharedModule` → `redisClient.quit()`); `GcsFileStore` DI fix (constructor-injected GCS client with lazy fallback). All 6 ACs verified against the shipped code — commit hash deferred to epic close.

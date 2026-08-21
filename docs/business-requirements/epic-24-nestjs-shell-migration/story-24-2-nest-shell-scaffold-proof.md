@@ -38,12 +38,12 @@ This is the executable first story of Epic 24 (D7 shell-swap). It de-risks the e
 - Epic 24: NestJS Shell Migration — [BR](README.md) (epic parent)
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (successor — inherits the parity harness, adds envelope/requestId/rate-limit)
 - **Story 24.4: SharedModule/DatabaseModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (successor — builds the DI substrate on the shell)
-- **Implementation (IMP twin):** `story-24-2-nest-shell-scaffold-proof.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-2-nest-shell-scaffold-proof.md`
+- **Implementation (IMP twin):** `story-24-2-nest-shell-scaffold-proof.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-2-nest-shell-scaffold-proof.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `2dd55c0e`
 - **Implementation note:** NestJS 11 dev-only shell booted on the Express adapter via `src/nest/main.ts` + `src/nest/app.module.ts` + the shared `configure-app.ts` boot shape; four reference modules (`words`, `phonetic-clusters`, `grammar`, `chengyu`) ported under `modules/<name>/nest/` with `useFactory` + `@Inject` reusing the existing services/repos unchanged; 23-assertion route-parity harness green under `vitest.integration.config.ts`; Express production path untouched (`dist/app/index.js` still emitted). All 8 ACs verified against the shipped code — commit hash deferred to epic close.

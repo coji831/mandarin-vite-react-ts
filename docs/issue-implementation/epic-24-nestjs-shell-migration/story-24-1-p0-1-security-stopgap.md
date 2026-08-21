@@ -5,7 +5,7 @@
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md`
 > **Last Updated:** August 21, 2026
 > **Status:** Completed
-> **Commit hash:** _(to be filled at epic close)_
+> **Commit hash:** `27d35573`
 
 ## Implementation Summary
 

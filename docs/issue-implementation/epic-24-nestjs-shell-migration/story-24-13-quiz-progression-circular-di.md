@@ -5,7 +5,7 @@
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-13-quiz-progression-circular-di.md`
 > **Last Updated:** August 21, 2026
 > **Status:** Completed
-> **Commit hash:** _(to be filled at epic close)_
+> **Commit hash:** `e68e668a`
 
 ## Implementation Summary
 

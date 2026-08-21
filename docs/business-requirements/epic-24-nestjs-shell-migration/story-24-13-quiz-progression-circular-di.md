@@ -48,12 +48,12 @@ Finally, the story makes the **C-declaration of the quiz-FE fixes explicit and s
 - **Story 24.4: SharedModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (dependency — `SharedModule`'s `GeminiService` (AI-feedback) + `GATE_THRESHOLDS` infra providers)
 - **Epic 26 (quiz-engine fixes, C-declared)** — the FE fixes (`PHASE_CONFIGS[3]`, key-4 dup, `useQuizCard`, `QuizCard`) stay in epic-26; the backend quiz module is ported here (24-13), so 26's backend work is minimal
 - **Story 24.14: Release-Safety Cutover Gate** (stub — the release checklist declares the pre-26 quiz-FE bugs known-post-release, C-tracked in 26)
-- **Implementation (IMP twin):** `story-24-13-quiz-progression-circular-di.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-13-quiz-progression-circular-di.md`
+- **Implementation (IMP twin):** `story-24-13-quiz-progression-circular-di.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-13-quiz-progression-circular-di.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `e68e668a`
 - **Implementation note:** `QuizModule` imports `SharedModule` + `GuardsModule` + `forwardRef(() => ProgressionModule)` (controllers `QuizNestController` + `SandhiDrillNestController`; `QuizRepository`/`QuizService`/`SandhiDrillService` providers; `QuizService` built WITH `forwardRef(() => ProgressionService)`); `ProgressionModule` imports `SharedModule` + `GuardsModule` + `ReviewModule` + `ReadersModule` + `forwardRef(() => QuizModule)` (`ProgressionService` built WITHOUT `quizService`; `ProgressionQuizBridge` re-injects it once in `onModuleInit`); the circular-DI ADR (`forwardRef`-direct failed → re-injection bridge) is recorded in `progression-quiz-bridge.ts` + both module docstrings; quiz = 7 routes verbatim + feedback + sandhi (8 total), progression = 7 routes verbatim; the `/gates` guest branch is CALIBRATED to Phase-1-only (not the Express all-passed `GUEST`); calibrated `OptionalAuthGuard` on the guest quiz submit surface + `RequireAuthGuard` on `attempts` GET/`feedback`; the quiz AI-feedback limiter (10/min/IP) applied in `rate-limit.config.ts`/`configure-app.ts`; parity harness `quiz-progression-parity.test.ts` (28 tests) green (the quiz `id`/`category` shuffle-position normalization sentineled `QID`/`CAT`); gates green (typecheck · build both dist · test:full 744 · integration 259 · lint 0 · boundaries · dev:nest smoke). All 7 ACs verified against the shipped code (commit `e68e668a`) — commit hash deferred to epic close.

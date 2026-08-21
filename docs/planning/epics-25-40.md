@@ -460,7 +460,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 | **38**                                                      | 26/27 (rides 28 migration) | 25; coord. 28                         | Substrate; unblocks 29/31/34/35                                                                                                                              |
 | **39**                                                      | 25–29 (parallel)           | —                                     | Observability; **P1/P2 must precede 29's close**                                                                                                             |
 | **40**                                                      | —                          | 28, 38, 27, 32 (34 for FSRS-weighted) | L3/L4 learning road                                                                                                                                          |
-| **D7 shell-swap** _(re-scoped epic-24, full-scoped serial)_ | — (serial-first)           | —                                     | **Runs to completion before 25**; 25–28 land on NestJS after; 29/30/31 land on NestJS                                                                        |
+| **D7 shell-swap** _(re-scoped epic-24, full-scoped serial)_ | — (serial-first)           | —                                     | **✅ COMPLETED 2026-08-22 (epic-24 close)** — ran to completion before 25; 25–28 land on NestJS after; 29/30/31 land on NestJS                               |
 
 > **Serial note (2026-08-21, D10):** epics 25–28 no longer run parallel to D7 — they queue **behind full-scoped Epic 24**. Once started, 26/27/28 may still run parallel to each other (and to 38/39) per their dependency rows.
 

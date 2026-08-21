@@ -36,12 +36,12 @@ The characters + mnemonics port is the mid-migration batch's first **dependency-
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — the `{code, message, requestId}` envelope + rate-limit infra the port inherits)
 - **Story 24.4: SharedModule/DatabaseModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (dependency — `SharedModule` provides `CacheService` + `GeminiService` consumed by `MnemonicsModule`)
 - **Story 24.5: Auth-Surface Guards (Calibrated)** ([BR](story-24-5-auth-guards-calibrated.md)) (dependency — calibrated `OptionalAuthGuard`/`RequireAuthGuard` applied to the mnemonics routes)
-- **Implementation (IMP twin):** `story-24-8-characters-mnemonics-port.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-8-characters-mnemonics-port.md`
+- **Implementation (IMP twin):** `story-24-8-characters-mnemonics-port.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-8-characters-mnemonics-port.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `0c076cb0`
 - **Implementation note:** `characters.module.ts` is a TWO-controller module (`CharactersNestController` + `PinyinNestController`) with 4 `useFactory` providers (2 repos + 2 services) — 6 characters routes (`:glyph`, `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search`, `/frequency`) with CJK-regex validation + a route-shadowing parity note (`:glyph` first shadows `/search`/`/frequency`, pre-existing latent, reproduced for byte-for-byte parity) and `pinyin-nest.controller.ts` (`GET /v1/pinyin/search`, not shadowed). `mnemonics.module.ts` is the first `SharedModule` consumer (repo + gemini + cache via `useFactory`) + `GuardsModule`; `OptionalAuthGuard` on GET (guest → `req.userId` undefined → empty, never 401, never all-unlocked — F6), `RequireAuthGuard` on POST/PUT/DELETE (401 `AUTH_REQUIRED`); validation + HTML-sanitization parity; per-method limiters (GET 60 / POST 10 / PUT 30 / DELETE 30) mounted path-scoped. Dedicated parity harness (`characters-mnemonics-parity.test.ts`, 24 tests — pictograph fixtures short-circuit Gemini, unique `X-Forwarded-For`). All 5 ACs verified against the shipped code (commit `0c076cb0`) — commit hash deferred to epic close.

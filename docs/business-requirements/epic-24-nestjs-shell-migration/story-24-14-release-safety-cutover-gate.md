@@ -40,12 +40,12 @@ This story is the **hard pre-flight gate for the 24-15 cutover**: 24-15 cannot f
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (O1 — the `{code, message, requestId}` envelope + `API Error` log parity the watch window observes)
 - **Story 24.10: Audio + Health Port** ([BR](story-24-10-audio-health-port.md)) (O2 — the healthcheck parity verified from the Nest prod build)
 - **Epic 26** (quiz-FE fixes, C-declared) · **Epic 27** (gate/phase data + HSK, C) · **Epic 39** (full observability spine, C) — the C-declared items in the A/B/C map
-- **Implementation (IMP twin):** `story-24-14-release-safety-cutover-gate.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-14-release-safety-cutover-gate.md`
+- **Implementation (IMP twin):** `story-24-14-release-safety-cutover-gate.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-14-release-safety-cutover-gate.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `0b3fe00c`
 - **Implementation note:** the gate shipped as a committed verification artifact (`verification-artifacts/release-safety-gate-24-14.md` — the story's only deliverable; force-added because `verification-artifacts/` is gitignored). All twelve DoD gates verified **PASS** from the shipped code: S1 (P0-1 closed structurally — `ReviewRepository` rejects `undefined` before Prisma, zero `req.userId!` in Nest controllers, regression green), S2 (calibrated guest-auth — `createGuestPhaseGate → {currentPhase:1, isGuest:true}`, `OptionalAuthGuard` guest → empty, `/gates` guest = Phase-1-only), P1 (**63/63 routes, 100%** across 9 parity harnesses), P2 (openapi documents 9 dead routes — `/v1/vocabulary/*` ×5 + `/v1/progress*` ×4 — recorded as a 24-15 input), T1 (`test:full` 66/744 + `test:integration` 23/262), O1 (`AppExceptionFilter.logError` byte-for-byte identical to `errorHandler.ts`), O2 (health 200 from `dist/nest/main.js`), D1 (only additive `SrsCardState` migration; `migrate status` 30 up-to-date), D2 (rollback runbook verified — Express entry still builds/serves + redeploy-previous; watch window ≥24–48h), R1 (Node 24 declared; `engines` lower-bounds caveat → 24-15 validates prod boot on Railway), R2 (graceful shutdown unit-tested), G (all canonical gates green). **Pre-flight sign-off (S1 + S2 + P1 100% + T1) PASS → 24-15 UNBLOCKED.** ACs verified against the shipped artifact (commit `0b3fe00c`) — commit hash deferred to epic close.

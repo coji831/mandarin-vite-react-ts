@@ -5,7 +5,7 @@
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-10-audio-health-port.md`
 > **Last Updated:** August 21, 2026
 > **Status:** Completed
-> **Commit hash:** _(to be filled at epic close)_
+> **Commit hash:** `60f87f30`
 
 ## Implementation Summary
 

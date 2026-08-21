@@ -5,7 +5,7 @@
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-6-auth-module-port.md`
 > **Last Updated:** August 21, 2026
 > **Status:** Completed
-> **Commit hash:** _(to be filled at epic close)_
+> **Commit hash:** `19cf58b2`
 
 ## Implementation Summary
 

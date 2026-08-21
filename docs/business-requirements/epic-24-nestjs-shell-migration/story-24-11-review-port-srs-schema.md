@@ -47,5 +47,5 @@ Porting review on the calibrated `RequireAuthGuard` also de-risks the **user-sco
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `94374fa8`
 - **Implementation note:** Review ported to the Nest shell (`review.module.ts` = 1:1 of `createReviewModule(deps)`, imports `GuardsModule`, exports `ReviewService`; `review-nest.controller.ts` = 3 routes verbatim, all `@UseGuards(RequireAuthGuard)`, `@HttpCode(200)` on result, structural P0-1 `req.userId as string` + defensive 401); additive `SrsCardState` schema/enum + reserved pgvector column landed (migration `20260821175536_add_srs_card_state`, additive-only, no BOM, `prisma migrate status` = 30 up-to-date); repository/types re-pointed `reviewItem → srsCardState` with interval-doubling preserved (no FSRS); P0-1 regression re-authored in Nest land (controller 7 tests + repo tests); parity harness `review-parity.test.ts` (12 tests) green. All 6 ACs verified against the shipped code (commit `94374fa8`) — commit hash deferred to epic close.

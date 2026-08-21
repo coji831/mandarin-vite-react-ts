@@ -38,12 +38,12 @@ The auth module is the security-critical surface every other protected route dep
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — the `{code, message, requestId}` envelope + rate-limit infra the auth port inherits)
 - **Story 24.4: SharedModule/DatabaseModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (dependency — `AuthRepository` via `useFactory`, `JwtService`/`PasswordService` from `SharedModule`)
 - **Story 24.5: Auth-Surface Guards (Calibrated)** ([BR](story-24-5-auth-guards-calibrated.md)) (dependency — `AuthGuard` applied to `/me`; first live consumer)
-- **Implementation (IMP twin):** `story-24-6-auth-module-port.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-6-auth-module-port.md`
+- **Implementation (IMP twin):** `story-24-6-auth-module-port.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-6-auth-module-port.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `19cf58b2`
 - **Implementation note:** `AuthModule` is a 1:1 translation of `createAuthModule(deps)` (`AuthRepository` useFactory + `AuthService` useFactory injecting `AuthRepository` + `JwtService` + `PasswordService`; imports `SharedModule` + `GuardsModule`; exports `AuthService`); `AuthNestController` mirrors `AuthController.ts` 1:1 (routes verbatim, `@Res({passthrough:true})` cookie parity, `@HttpCode(200)` on login/refresh/logout); one shared `authLimiter` (5/min/IP) mounted on `/register` + `/login` in `configure-app.ts`; DB-gated parity harness (`auth-parity.test.ts`, +17 integration tests) proves status + body (deep-equal where deterministic, normalized contract for token-bearing 2xx, status/envelope for 4xx), refresh-token rotation (reuse R1 → 401 `INVALID_TOKEN`), and the 429 brute-force deep-equal. All 7 ACs verified against the shipped code — commit hash deferred to epic close.

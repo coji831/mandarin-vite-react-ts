@@ -39,12 +39,12 @@ The story also lands the **calibrated epic-25 F5 TTS surface**: guests get **cac
 - **Story 24.4: SharedModule + Async Providers** ([BR](story-24-4-shared-module-async-providers.md)) (dependency — `CacheService`/`GCSClient`/`GoogleTTSClient` + the `AUDIO_CONFIG_TOKEN` the TTS controller reads for the voice default, all from `SharedModule`)
 - **Story 24.5: Auth-Surface Guards (Calibrated)** ([BR](story-24-5-auth-guards-calibrated.md)) (dependency — the calibrated `OptionalAuthGuard` applied to the TTS route)
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — the `{ code, message, requestId }` envelope the TTS 4xx/5xx paths inherit)
-- **Implementation (IMP twin):** `story-24-10-audio-health-port.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-10-audio-health-port.md`
+- **Implementation (IMP twin):** `story-24-10-audio-health-port.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-10-audio-health-port.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `60f87f30`
 - **Implementation note:** `audio.module.ts` imports `SharedModule` + `GuardsModule` and provides `AudioService` via `useFactory(CacheService, GCSClient, GoogleTTSClient)`; **exports `AudioService`** for Health DI. `AudioNestController` = `POST /v1/tts` verbatim mirror with `@HttpCode(200)` + the calibrated `OptionalAuthGuard`, `audioConfig` injected via `AUDIO_CONFIG_TOKEN`. `health.module.ts` imports `SharedModule` + `AudioModule` (module-to-module DI replacing the Express `health/container.ts`'s direct `modules/audio/index.js` import) and provides `RedisClient` locally via `useFactory`; `HealthNestController` = full `@Res()` mirror of `HealthController.ts` (same 200 shape + same `{ error, code: "HEALTH_CHECK_FAILED", message }` 500 branch), injecting `GeminiService` (SharedModule), `AudioService` (AudioModule DI, typed structurally `{ healthCheck(): Promise<boolean> }`), and `RedisClient` (local provider). Calibrated TTS F5 verified in-port: guest (no/bad token) → never 401, cache-first free reads (GCS cache HIT → `{ cached: true }`, `synthesizeSpeech` not called); registered → authed 2xx; guest cache-MISS keeps verbatim behavior with generation counter-gating deferred to epic-29. Dedicated mocked-GCS parity harness (`audio-health-parity.test.ts`, 11 tests) + unit tests (audio 5 + health 5). All 5 ACs verified against the shipped code (commit `60f87f30`) — commit hash deferred to epic close.

@@ -41,12 +41,12 @@ It also ships the **calibrated guest contract** as the port target: a guest is a
 - **Story 24.6: Auth Module Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-6--auth-module-port)) (consumer — applies `AuthGuard` to `/auth/me`)
 - **Story 24.8: Characters + Mnemonics Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-8--characters--mnemonics-port)) (consumer — calibrated `OptionalAuthGuard`)
 - **Story 24.13: Quiz + Progression Port** ([IMP stub](../../issue-implementation/epic-24-nestjs-shell-migration/README.md#24-13--quiz--progression-port)) (consumer — F6-inconsistent controllers re-pointed to the calibrated guest shape)
-- **Implementation (IMP twin):** `story-24-5-auth-guards-calibrated.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-5-auth-guards-calibrated.md`
+- **Implementation (IMP twin):** `story-24-5-auth-guards-calibrated.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-5-auth-guards-calibrated.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `9c97ba95`
 - **Implementation note:** `AuthGuard`/`OptionalAuthGuard`/`RequireAuthGuard` shipped under `apps/backend/src/nest/guards/` with shared helpers (`resolveAccessToken` header→cookie, `attachAuthUser` → `req.user`/`req.userId`, `AUTH_GUARD_ERRORS` 401/403 bodies matching `authMiddleware.ts` byte-for-byte, `ACCESS_TOKEN_COOKIE` const), wired into `app.module.ts` via the `GuardsModule` providers module (not global — public routes unaffected); hermetic parity harness (`tests/integration/nest/auth-guards-parity.test.ts`) proves 401/403 + guest-vs-user identical to the real Express middleware; guard unit tests cover success/failure/guest/expired-token paths; additive `JwtService.verifyAccessToken` (+ tests); no code dependency on 24-7; no `packages/shared-constants` and no 25–28 zone file touched. All 7 ACs verified against the shipped code — commit hash deferred to epic close.

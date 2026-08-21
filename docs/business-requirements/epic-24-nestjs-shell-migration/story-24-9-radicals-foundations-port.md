@@ -35,12 +35,12 @@ The radicals + foundations port is the mid-migration batch's **zero-dependency p
 - Epic 24: NestJS Shell Migration — [BR](README.md) (epic parent)
 - **Story 24.3: HTTP-Layer Parity** ([BR](story-24-3-http-layer-parity.md)) (dependency — the `{code, message, requestId}` envelope the ports inherit)
 - **Story 24.8: Characters + Mnemonics Port** ([BR](story-24-8-characters-mnemonics-port.md)) (predecessor + dependency — the cross-module `/:glyph` shadow (foundations vs characters) was deferred from 24-8 to 24-9, and the 24-8 parity harness's characters single-segment smokes are updated in this commit)
-- **Implementation (IMP twin):** `story-24-9-radicals-foundations-port.md` → `../../../issue-implementation/epic-24-nestjs-shell-migration/story-24-9-radicals-foundations-port.md`
+- **Implementation (IMP twin):** `story-24-9-radicals-foundations-port.md` → `../../issue-implementation/epic-24-nestjs-shell-migration/story-24-9-radicals-foundations-port.md`
 
 ## Implementation Status
 
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: _(to be filled at epic close)_
+- **Commit hash**: `edc1ec49`
 - **Implementation note:** `radicals.module.ts` is a 1:1 of `createRadicalsModule()` — 3 `useFactory` providers (`RadicalsRepository`, `RadicalsService` injecting `RadicalsRepository`, `RadicalCharacterService`), repos self-import Prisma (no `SharedModule`), 4 routes verbatim (`/`, `/:radicalId` with a **full-`@Res()` `res.json()` mirror** preserving the `200 null` unknown-ID body, `/character/:glyph`, `/:radicalId/characters`). `foundations.module.ts` is a 1:1 of `createFoundationsModule()` (`FoundationsService` via `useFactory`, self-imports Prisma); `foundations-nest.controller.ts` is a **single `@Controller("v1")`** serving all 4 routes incl. the cross-module shadow `GET /v1/characters/:glyph`; **truth-check correction**: the story brief said foundations reads "via shared utils (contentUtils) — no DB", but the on-disk `FoundationsService` is **all-in-DB** (Prisma since epic-21) — reused unchanged, no `CONTENT_UTILS` injected (the binding "reuse unchanged" wins over the stale premise). Route-shadowing resolved via module-import order (`FoundationsModule` before `CharactersModule`). Dedicated parity harness (`radicals-foundations-parity.test.ts`, 14 tests) + the 24-8 harness shadow-block edit (Nest-only smokes → full-parity foundations-shadow assertions). All 5 ACs verified against the shipped code (commit `edc1ec49`) — commit hash deferred to epic close.
