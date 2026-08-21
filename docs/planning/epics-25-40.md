@@ -1,23 +1,25 @@
 ---
 purpose: Ratified re-sliced epic plan 25–40 (calibration + AI roadmap) + OI-1…OI-10 decision record
 status: ratified
-last-verified: 2026-08-17
+last-verified: 2026-08-21
 type: planning
 ---
 
 # Epic Plan 25–40 — Re-Sliced (Calibration + AI Roadmap)
 
-**Status:** ✅ RATIFIED — owner-approved 2026-08-17
+**Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D9)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
-**Last Updated:** 2026-08-17
+**Last Updated:** 2026-08-21
 
-**Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan.
+**Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D9**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
+
+> ⚠️ **Re-ratification (2026-08-21, D9):** the earlier **"D7 shell-swap parallel with 25–28; P0-1 first gate"** constraints are deliberately **reversed** — **full-scoped serial Epic 24 runs FIRST to completion (15 stories, including the P0-1 security stopgap as 24-1); epics 25–28 START AFTER, all on NestJS.** Every former B-gate becomes A (absorb) or C (declare). This is an owner decision (owner re-ratification), not an editorial change.
 
 ---
 
 ## Context Summary
 
-Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appendix B) plus the calibrated guest-access, tech-mapping, and production-readiness working specs. Locked constraints honored unchanged: D1=NestJS 11, D7=shell-swap parallel with 25–28 (29/30/31 land on NestJS), P0-1 first gate, P0-2 re-based as data prerequisite, 4 satellite carve-outs, business-deferred items kept out of scope.
+Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appendix B) plus the calibrated guest-access, tech-mapping, and production-readiness working specs. Locked constraints honored unchanged: D1=NestJS 11, **D7=full-scoped serial Epic 24 first; 25–28 after, on NestJS** (29/30/31 land on NestJS) — ⚠️ deliberate owner re-ratification 2026-08-21 (D9) **reversing** the earlier "D7=shell-swap parallel with 25–28" + "P0-1 first gate" framing; **P0-1 absorbed into Epic 24 (24-1 stopgap)** instead of being epic-25's gate 1; P0-2 re-based as data prerequisite, 4 satellite carve-outs, business-deferred items kept out of scope.
 
 ## Re-Slicing Principles
 
@@ -53,7 +55,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 
 **UI scope:** `UI: guest-mode shell (isGuest badge/banner in AppLayout) + route-gate fallback screen (locked-surface placeholder) — design spec TBD`. _(CTA/copy deliberately not here — see 26.)_
 
-**Dependencies:** none (first epic). Runs parallel to the D7 NestJS shell-swap track; 25 may land on Express and migrate.
+**Dependencies:** none (first post-24 epic). **Lands on NestJS after Epic 24 completes (serial)**; P0-1 + guest-auth semantics are absorbed into Epic 24 (24-1 stopgap + 24-7 identity + 24-11 structural), so epic-25's residual = FE route gating + guest-shell UI + TTS-surface verification on Nest.
 
 **Close criteria:** story BRs + impls (25-1 P0-1 guard, 25-2 guest-gate lockstep, 25-3 route gates + TTS verification) with Status/Last-Update + all ACs boxed; verification artifact `verification-artifacts/epic-25-*`; Tier 1 + Tier 2 gates (backend type-check, full suite, backend-audit skill).
 
@@ -81,7 +83,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 
 **UI scope:** `UI: guest practice lane + post-quiz value-moment CTA + 4 new quiz-format surfaces (Q6 cloze, Q7 sentence-building, Q9 listening-dictation, Q10 tone-judgment) — design spec TBD`.
 
-**Dependencies:** needs 25 (P0-1). Parallel: 27, 38, 39, D7 track.
+**Dependencies:** needs 25. **Lands after Epic 24 (serial)** — 24-13 ports the correct backend quiz engine shape (M1 backend); the FE quiz-engine fixes stay in this epic (C-declared by 24-13). Parallel: 27, 38, 39.
 
 **Close criteria:** story docs + impls; Storybook-first UI design per protocol (stories for each new format); Tier 1 + Tier 2 (story tests, design audit, frontend-audit); verification artifact. **Recommended split:** promote M2 (formats) to its own epic if it grows — it is self-contained (strategies + curated banks + stories).
 
@@ -109,7 +111,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 
 **UI scope:** `UI: none` (data/substrate). _(Gate-threshold/readiness display lands with epic-40's soft-readiness UI.)_
 
-**Dependencies:** needs 25. Parallel: 26, 38, 39, D7. **M2 is the only dependency of 37; M1 feeds 28 (P3→4) and 40 (readiness data).**
+**Dependencies:** needs 25. **Lands after Epic 24 (serial)** — 24-9 ports radicals/foundations on **current** content (27 re-touches data on Nest later). Parallel: 26, 38, 39. **M2 is the only dependency of 37; M1 feeds 28 (P3→4) and 40 (readiness data).**
 
 **Close criteria:** data-focused BR/impl + content seed verification; Tier 1 + Tier 2 (full suite, backend type-check, backend-audit); verification artifact recording the 3,088 settlement + rebase reconciliation. **Recommended split:** promote M2 (HSK rebase) to its own epic if it grows — it is the largest single data program in the plan.
 
@@ -138,7 +140,7 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 
 **UI scope:** `UI: Q8 comprehension surface + P3→4 gate-reachability UI + interleaved review-session UI + guest review lane (session-local) — design spec TBD`.
 
-**Dependencies:** needs 26 (M1 quiz engine + quiz-failure source), 27 (M1 phase/gate data; M2 for P3→4), P0-2. Coordinates with 38 (event taxonomy rides the migration). Parallel: 39, D7.
+**Dependencies:** needs 26 (M1 quiz engine + quiz-failure source), 27 (M1 phase/gate data; M2 for P3→4), P0-2. **Lands after Epic 24 (serial)** — the `SrsCardState` additive schema/enum + reserved pgvector is **absorbed into Epic 24** (24-11, additive-only), so 28's residual = review-behavior calibration + data-integrity net-new + comprehension (destructive `ReviewItem` cleanup post-34). Coordinates with 38 (event taxonomy rides the migration). Parallel: 39.
 
 **Close criteria:** backend-heavy epic with one UI slice; story docs + impls; Tier 1 + Tier 2 (full suite, backend type-check, story tests, design audit); verification artifact incl. the migration truth-check + P0-2 closure record.
 
@@ -440,25 +442,27 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 
 ## Sequencing Summary
 
-| Epic                                    | Parallel with              | Needs first                           | Blocking gate / unblocks                                                                 |
-| --------------------------------------- | -------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **25**                                  | D7 track, 39               | —                                     | Closes **P0-1** (gate 1); unblocks all `optionalAuth` SRS reads                          |
-| **26**                                  | 27, 38, 39, D7             | 25                                    | Phase B pre-AI; unblocks 28 (quiz-failure source), 32 (signals)                          |
-| **27**                                  | 26, 38, 39, D7             | 25                                    | Stable content/phase metadata (C) + **HSK rebase**; unblocks 28-M2, **37 (M2)**, 40 (M1) |
-| **28**                                  | 38 (coordinated), 39       | 26, 27, P0-2                          | Closes **A–D data-integrity (P0-2)**; unblocks 29 (SRS-touching AI), 33/40, 34           |
-| **29**                                  | 26/27/38 (overlaps)        | 25, 28, 39 (P1/P2/P7)                 | Closes **S11 / P11-AMEND cost-governance gate**; unblocks 30/31/32/33/36                 |
-| **30**                                  | 31 (after)                 | 29, 26, 27, 28                        | E.1 + retrieval seam (**C14**); unblocks 31 (Retriever reuse)                            |
-| **31**                                  | —                          | 30, 29, 38                            | E.2 + **RAG-1/FV14 decision point** (must record before close)                           |
-| **32**                                  | 30/31                      | 26, 28, 29                            | E.3 (FSRS-free); unblocks 33-M1, 40 (infra reuse)                                        |
-| **33**                                  | —                          | 28, 29, 30, 32                        | E.4/E.5 — **END of Tier-1 critical path**                                                |
-| **34**                                  | 35 (after)                 | 28, 38                                | **T2.1 FSRS before FSRS-weighted AI**; unblocks FSRS-weighted sequencing in 40           |
-| **35**                                  | —                          | 29/30–33, 38                          | T2.5/T2.6 (satellite `evals-pinyinpal`)                                                  |
-| **36**                                  | Q11 pass (parallel)        | 29, Q11, 39 (soft)                    | **N1 product-gate (Q11)** — Q11 run de-gates                                             |
-| **37**                                  | —                          | 27-M2 only                            | N3 (HSK levels, by-exam-part)                                                            |
-| **38**                                  | 26/27 (rides 28 migration) | 25; coord. 28                         | Substrate; unblocks 29/31/34/35                                                          |
-| **39**                                  | 25–29 (parallel)           | —                                     | Observability; **P1/P2 must precede 29's close**                                         |
-| **40**                                  | —                          | 28, 38, 27, 32 (34 for FSRS-weighted) | L3/L4 learning road                                                                      |
-| **D7 shell-swap** _(re-scoped epic-24)_ | 25–28                      | —                                     | **Must complete before 29** (29/30/31 land on NestJS)                                    |
+| Epic                                                        | Parallel with              | Needs first                           | Blocking gate / unblocks                                                                                                                                     |
+| ----------------------------------------------------------- | -------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **25**                                                      | —                          | —                                     | P0-1 + guest-auth absorbed into Epic 24 (24-1/24-7/24-11); residual = FE route gating + guest-shell UI                                                       |
+| **26**                                                      | —                          | 25                                    | FE quiz-engine fixes stay here (C-declared by 24-13); unblocks 28 (quiz-failure source), 32 (signals)                                                        |
+| **27**                                                      | —                          | 25                                    | Stable content/phase metadata (C) + **HSK rebase**; radicals/foundations port already landed on current content (24-9); unblocks 28-M2, **37 (M2)**, 40 (M1) |
+| **28**                                                      | —                          | 26, 27, P0-2                          | Closes **A–D data-integrity (P0-2)**; `SrsCardState` additive schema/vector absorbed into 24-11; unblocks 29 (SRS-touching AI), 33/40, 34                    |
+| **29**                                                      | 26/27/38 (overlaps)        | 25, 28, 39 (P1/P2/P7)                 | Closes **S11 / P11-AMEND cost-governance gate**; unblocks 30/31/32/33/36                                                                                     |
+| **30**                                                      | 31 (after)                 | 29, 26, 27, 28                        | E.1 + retrieval seam (**C14**); unblocks 31 (Retriever reuse)                                                                                                |
+| **31**                                                      | —                          | 30, 29, 38                            | E.2 + **RAG-1/FV14 decision point** (must record before close)                                                                                               |
+| **32**                                                      | 30/31                      | 26, 28, 29                            | E.3 (FSRS-free); unblocks 33-M1, 40 (infra reuse)                                                                                                            |
+| **33**                                                      | —                          | 28, 29, 30, 32                        | E.4/E.5 — **END of Tier-1 critical path**                                                                                                                    |
+| **34**                                                      | 35 (after)                 | 28, 38                                | **T2.1 FSRS before FSRS-weighted AI**; unblocks FSRS-weighted sequencing in 40                                                                               |
+| **35**                                                      | —                          | 29/30–33, 38                          | T2.5/T2.6 (satellite `evals-pinyinpal`)                                                                                                                      |
+| **36**                                                      | Q11 pass (parallel)        | 29, Q11, 39 (soft)                    | **N1 product-gate (Q11)** — Q11 run de-gates                                                                                                                 |
+| **37**                                                      | —                          | 27-M2 only                            | N3 (HSK levels, by-exam-part)                                                                                                                                |
+| **38**                                                      | 26/27 (rides 28 migration) | 25; coord. 28                         | Substrate; unblocks 29/31/34/35                                                                                                                              |
+| **39**                                                      | 25–29 (parallel)           | —                                     | Observability; **P1/P2 must precede 29's close**                                                                                                             |
+| **40**                                                      | —                          | 28, 38, 27, 32 (34 for FSRS-weighted) | L3/L4 learning road                                                                                                                                          |
+| **D7 shell-swap** _(re-scoped epic-24, full-scoped serial)_ | — (serial-first)           | —                                     | **Runs to completion before 25**; 25–28 land on NestJS after; 29/30/31 land on NestJS                                                                        |
+
+> **Serial note (2026-08-21, D9):** epics 25–28 no longer run parallel to D7 — they queue **behind full-scoped Epic 24**. Once started, 26/27/28 may still run parallel to each other (and to 38/39) per their dependency rows.
 
 ```mermaid
 graph LR
@@ -477,14 +481,14 @@ graph LR
     M -.-> H
     N[38 ActivityEvent] -.rides.-> D
     N -.capture.-> G
-    O[39 observability] -.parallel 25-29.-> E
-    P[D7 NestJS shell-swap] -.parallel 25-28, done before 29.-> E
+    O[39 observability] -.-> E
+    P[D7 Epic 24 shell-swap - serial, full-scoped] --> A
     C -.rebase.-> Q[37 HSK exam-prep]
     R[Q11 ASR run] -.parallel, de-gates.-> S[36 ASR N1]
     S -.quota.-> E
 ```
 
-**Critical path (AI Tier-1):** 25 → (26 ∥ 27) → 28 → 29 → 30 → 31 → 33, with **38 riding 28**, **39 parallel (P1/P2 before 29)** and **D7 done before 29**. **SRS deep path:** 25 → 26 → 28 → 34 → 35. Product lanes 36/37 and the learning road 40 attach at their single dependency (29+Q11 / 27-M2 / 28+38+32).
+**Critical path (AI Tier-1):** **Epic 24 (D7, serial) first** → 25 → (26 ∥ 27) → 28 → 29 → 30 → 31 → 33, with **38 riding 28**, **39 parallel (P1/P2 before 29)** and **25–28 queued behind Epic 24**. **SRS deep path:** 25 → 26 → 28 → 34 → 35. Product lanes 36/37 and the learning road 40 attach at their single dependency (29+Q11 / 27-M2 / 28+38+32).
 
 ---
 
@@ -522,6 +526,7 @@ graph LR
 - **Status:** `RESOLVED — EXECUTED (docs reorg Pass 1 + renumber epic-24→41, 2026-08-17)`
 - **Where it lands:** epic-plan renumber table + `tech-mapping.md` §6 (D7 row) + a retirement note on the old dotnet impl folder.
 - **Residual risk:** Renaming the two committed `epic-24-traditional-characters` folders is a docs-churn item; must land in one commit with the renumber table to avoid broken links.
+- **Re-ratified 2026-08-21 (serial; D9):** the OI-1 execution framing — "run **parallel to epics 25–28, complete before epic-29**" — is **superseded** by the owner's serial decision: **full-scoped Epic 24 runs FIRST to completion (15 stories, fully self-contained), then epics 25–28 land on NestJS**. The D7 home + `epic-24` name-collision resolution stands unchanged; only the execution timing changed. See the new decision-log entry **D9** (`.github/decision-log.json`).
 
 ### OI-2 — Quota-number final sign-off
 

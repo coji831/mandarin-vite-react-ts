@@ -1,6 +1,6 @@
 {
   "description": "PinyinPal decision log — the machine catalog of every tracked decision across the repo (ADR records, tech-mapping D-tracker, planning OI record, business BM register). One record per decision: { id, title, status, file, date }. Sibling of component-registry.json and page-inventory.json. Validated by check:system-map; the human ADR/decision index is generated from this JSON (never a second hand-maintained list). Status vocab: proposed | ratified | superseded.",
-  "scope": "Decisions that are anchored in a committed doc (status: ratified) or tracked as pending (status: proposed). D-items whose committed home is the ratified epic plan (docs/planning/epics-25-40.md); OI items are the plan's decision record; ADR records live in design-reasoning.md / guides/adr; BM-1 is the ratified business model. D1-D8 decision records are anchored in the committed epic plan (docs/planning/epics-25-40.md) and this log.",
+  "scope": "Decisions that are anchored in a committed doc (status: ratified) or tracked as pending (status: proposed). D-items whose committed home is the ratified epic plan (docs/planning/epics-25-40.md); OI items are the plan's decision record; ADR records live in design-reasoning.md / guides/adr; BM-1 is the ratified business model. D1-D9 decision records are anchored in the committed epic plan (docs/planning/epics-25-40.md) and this log.",
   "version": "1.0",
   "decisions": [
     {
@@ -100,6 +100,13 @@
       "status": "proposed",
       "file": "docs/planning/epics-25-40.md",
       "date": "2026-08-17"
+    },
+    {
+      "id": "D9",
+      "title": "Serial sequencing re-ratification — full-scoped Epic 24 runs first to completion; epics 25–28 start after on NestJS (owner 2026-08-21); supersedes D7's 'parallel with 25–28' clause",
+      "status": "ratified",
+      "file": "docs/planning/epics-25-40.md",
+      "date": "2026-08-21"
     },
     {
       "id": "OI-1",
