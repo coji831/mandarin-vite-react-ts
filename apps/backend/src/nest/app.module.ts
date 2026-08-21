@@ -24,6 +24,15 @@
  * routing + /search; public static data) and `MnemonicsModule` (the first
  * consumer of `SharedModule` cache/gemini + the calibrated `OptionalAuthGuard`
  * on a read route and `RequireAuthGuard` on the write routes).
+ *
+ * Story 24-9 — wires `FoundationsModule` + `RadicalsModule` (both zero-dep
+ * public reference-data modules; services self-import Prisma like characters).
+ * `FoundationsModule` is imported BEFORE `CharactersModule` to reproduce the
+ * Express `src/app/routes.ts` mount order (foundations L60, characters L126):
+ * Nest registers routes in module-import order onto the same Express router, so
+ * foundations' `GET /v1/characters/:glyph` captures every single-segment
+ * `/v1/characters/<x>` and shadows the characters module's `:glyph` (plus its
+ * `/search` / `/frequency`) — matching the live Express behavior byte-for-byte.
  */
 
 import { Module } from "@nestjs/common";
@@ -33,6 +42,8 @@ import { PhoneticClustersModule } from "../modules/phonetic-clusters/nest/phonet
 import { GrammarModule } from "../modules/grammar/nest/grammar.module.js";
 import { ChengyuModule } from "../modules/chengyu/nest/chengyu.module.js";
 import { AuthModule } from "../modules/auth/nest/auth.module.js";
+import { FoundationsModule } from "../modules/foundations/nest/foundations.module.js";
+import { RadicalsModule } from "../modules/radicals/nest/radicals.module.js";
 import { CharactersModule } from "../modules/characters/nest/characters.module.js";
 import { MnemonicsModule } from "../modules/mnemonics/nest/mnemonics.module.js";
 import { SharedModule } from "./shared/shared.module.js";
@@ -46,6 +57,11 @@ import { AppExceptionFilter } from "./exception.filter.js";
     GrammarModule,
     ChengyuModule,
     AuthModule,
+    // Foundations BEFORE Characters — reproduces the Express shadow where
+    // foundations' `GET /v1/characters/:glyph` captures the single-segment
+    // character path (see the class docstring on FoundationsNestController).
+    FoundationsModule,
+    RadicalsModule,
     CharactersModule,
     MnemonicsModule,
     SharedModule,

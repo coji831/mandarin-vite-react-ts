@@ -128,8 +128,7 @@ async function resolveFixtures(): Promise<Fixtures> {
     orderBy: { id: "asc" },
     take: 500,
   });
-  const noPhonetic =
-    noPhoneticCandidates.find((c) => CHINESE_CHAR_REGEX.test(c.glyph)) ?? null;
+  const noPhonetic = noPhoneticCandidates.find((c) => CHINESE_CHAR_REGEX.test(c.glyph)) ?? null;
   // A pinyin shared by >=2 readings ⇒ the owning glyph has a homophone.
   // (pinyin is a required String — no null filter needed in groupBy.)
   const homophoneGroup = await prisma.characterReading.groupBy({
@@ -266,10 +265,9 @@ describe.skipIf(!db.available)(
 
     /** Fire the same request on both apps and return both responses. */
     function getBoth(path: string) {
-      return Promise.all([
-        request(expressApp).get(path),
-        request(nestServer).get(path),
-      ]).then(([expressRes, nestRes]) => ({ expressRes, nestRes }));
+      return Promise.all([request(expressApp).get(path), request(nestServer).get(path)]).then(
+        ([expressRes, nestRes]) => ({ expressRes, nestRes }),
+      );
     }
 
     /** 2xx: identical status AND identical body (deep-equal). */
@@ -340,9 +338,10 @@ describe.skipIf(!db.available)(
     }
 
     /** 2xx mnemonic parity: status equal + stable fields deep-equal + ISO timestamps on both. */
-    function expectMnemonicParity(
-      res: { expressRes: request.Response; nestRes: request.Response },
-    ) {
+    function expectMnemonicParity(res: {
+      expressRes: request.Response;
+      nestRes: request.Response;
+    }) {
       expect(res.expressRes.status).toBeGreaterThanOrEqual(200);
       expect(res.expressRes.status).toBeLessThan(300);
       expect(res.nestRes.status).toBe(res.expressRes.status);
@@ -429,38 +428,45 @@ describe.skipIf(!db.available)(
       );
     });
 
-    // ── characters single-segment :glyph — Nest-only (foundations collision) ──
+    // ── characters single-segment :glyph — foundations shadow (restored in 24-9) ──
 
-    describe("characters :glyph single-segment (Nest-only — foundations collision, 24-9)", () => {
+    describe("characters :glyph single-segment (foundations shadow — restored by 24-9)", () => {
       // The live Express app serves `GET /v1/characters/:glyph` (single segment)
-      // from the FOUNDATIONS module (`getCharacterByGlyph`, file-backed), which
-      // shadows the characters module's `:glyph` + `/search` + `/frequency`
-      // (mounted earlier in app/routes.ts). Until 24-9 ports foundations to
-      // Nest (restoring the shadow), these Nest-only assertions document the
-      // CURRENT shell state — the ported characters handlers are wired and work.
-      it("GET /api/v1/characters/:glyph — 200 characters shape on Nest", async () => {
-        const glyph = fixtures!.plainGlyph!; // a real single CJK char that passes the regex
-        const res = await request(nestServer).get(`/api/v1/characters/${glyph}`);
-        expect(res.status).toBe(200);
-        // Characters CharacterDetailResponse shape (NOT the foundations shape).
-        expect(res.body.glyph).toBe(glyph);
-        expect(Array.isArray(res.body.pinyin)).toBe(true);
-        expect(Array.isArray(res.body.hskLevels)).toBe(true);
+      // from the FOUNDATIONS module (`getCharacterByGlyph`), which shadows the
+      // characters module's `:glyph` + `/search` + `/frequency` (foundations is
+      // mounted before characters in app/routes.ts). 24-9 ports foundations to
+      // Nest (imported before CharactersModule in AppModule), restoring the
+      // shadow — so these are now FULL parity assertions (both apps serve the
+      // foundations handler), not Nest-only smokes. The dedicated 24-9 harness
+      // (`radicals-foundations-parity.test.ts`) covers the same shadow deeper.
+      it("GET /api/v1/characters/:glyph — 200 foundations shape, full parity", async () => {
+        const glyph = fixtures!.plainGlyph!; // a real seeded glyph (foundations has no regex gate)
+        const res = await getBoth(`/api/v1/characters/${glyph}`);
+        expectParity2xx(res);
+        // Both apps serve the FOUNDATIONS CharacterDetailResponse shape (NOT the
+        // characters module shape) — foundations shadows characters' :glyph.
+        expect(res.expressRes.body.glyph).toBe(glyph);
+        expect(Array.isArray(res.expressRes.body.readings)).toBe(true);
       });
 
-      it("GET /api/v1/characters/abc — 400 (characters validation) on Nest", async () => {
-        const res = await request(nestServer).get("/api/v1/characters/abc");
-        expect(res.status).toBe(400);
-        expectEnvelope(res);
-        expect(res.body.code).toBe("VALIDATION_ERROR");
+      it("GET /api/v1/characters/abc — 404 (foundations, not found) full parity", async () => {
+        const res = await getBoth("/api/v1/characters/abc");
+        expect(res.expressRes.status).toBe(404);
+        expect(res.nestRes.status).toBe(404);
+        expectEnvelope(res.nestRes);
+        // foundations has NO CJK validation and no `code` in its Express body —
+        // the envelope message reproduces the Express `error` text.
+        expect(res.nestRes.body.message).toBe(res.expressRes.body.error);
+        expect(res.nestRes.body.message).toBe('Character "abc" not found');
       });
 
-      it("GET /api/v1/characters/search + /frequency — 400 (characters :glyph shadow) on Nest", async () => {
+      it("GET /api/v1/characters/search + /frequency — 404 (foundations shadow) full parity", async () => {
         for (const p of ["/api/v1/characters/search?q=好", "/api/v1/characters/frequency"]) {
-          const res = await request(nestServer).get(p);
-          expect(res.status).toBe(400);
-          expectEnvelope(res);
-          expect(res.body.code).toBe("VALIDATION_ERROR");
+          const res = await getBoth(p);
+          expect(res.expressRes.status).toBe(404);
+          expect(res.nestRes.status).toBe(404);
+          expectEnvelope(res.nestRes);
+          expect(res.nestRes.body.message).toBe(res.expressRes.body.error);
         }
       });
     });
