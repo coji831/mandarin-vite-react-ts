@@ -52,8 +52,20 @@ export class ReviewRepository {
 
   /**
    * Find review items by user and a list of item types.
+   *
+   * P0-1 stopgap (Story 24-1): structurally reject `undefined` userId BEFORE
+   * any Prisma call. Prisma silently drops `undefined` where-keys, so
+   * `where: { userId: undefined }` would return EVERY user's rows. Returning
+   * an empty array here guarantees no ignore-`undefined` path survives on any
+   * optionalAuth SRS read — a guest never sees another user's rows.
    */
-  async findByUserAndTypes(userId: string, itemTypes: string[]): Promise<ReviewItem[]> {
+  async findByUserAndTypes(
+    userId: string | undefined,
+    itemTypes: string[],
+  ): Promise<ReviewItem[]> {
+    if (userId === undefined) {
+      return [];
+    }
     return prisma.reviewItem.findMany({
       where: {
         userId,
@@ -123,7 +135,17 @@ export class ReviewRepository {
     });
   }
 
-  async countDue(userId: string, itemTypePrefix: string): Promise<number> {
+  /**
+   * Count review items due for a user.
+   *
+   * P0-1 stopgap (Story 24-1): same structural `undefined`-userId rejection as
+   * findByUserAndTypes — `prisma.reviewItem.count({ where: { userId: undefined } })`
+   * would count EVERY user's due rows. Return 0 instead.
+   */
+  async countDue(userId: string | undefined, itemTypePrefix: string): Promise<number> {
+    if (userId === undefined) {
+      return 0;
+    }
     return prisma.reviewItem.count({
       where: {
         userId,

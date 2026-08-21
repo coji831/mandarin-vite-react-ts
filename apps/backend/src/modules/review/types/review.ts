@@ -27,9 +27,16 @@ export interface ReviewItemOutput {
   radicalGlyph?: string;
 }
 
-/** Repository interface consumed by ReviewService. */
+/**
+ * Repository interface consumed by ReviewService.
+ *
+ * P0-1 stopgap (Story 24-1): `findByUserAndTypes`/`countDue` accept
+ * `userId: string | undefined` and MUST reject `undefined` before any Prisma
+ * call (Prisma drops `undefined` where-keys, which would leak every user's
+ * rows). The implementation returns empty / 0 for `undefined`.
+ */
 export interface IReviewRepository {
-  findByUserAndTypes(userId: string, types: string[]): Promise<SrsRecord[]>;
+  findByUserAndTypes(userId: string | undefined, types: string[]): Promise<SrsRecord[]>;
   findByUserAndItem(userId: string, itemType: string, itemId: string): Promise<SrsRecord | null>;
   upsert(
     userId: string,
@@ -44,7 +51,7 @@ export interface IReviewRepository {
       source: string;
     },
   ): Promise<ReviewItem>;
-  countDue(userId: string, type: string): Promise<number>;
+  countDue(userId: string | undefined, type: string): Promise<number>;
 }
 
 /** SRS record shape from the ReviewItem table. */
