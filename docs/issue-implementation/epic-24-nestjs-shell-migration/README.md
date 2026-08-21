@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-10, 24-11…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
+**Status:** In progress — full-scoped serial Epic 24 (15 stories, first-to-completion; absorbed release-safety scope); branch `epic-24-nestjs-shell-migration`; **24-1 shipped** (P0-1 stopgap — live Express leak closed, T1 baseline recorded); full story docs authored for 24-1…24-11, 24-12…24-15 stubbed below — status stays `in-progress` until all 15 stories ship
 
 **Last Update:** August 22, 2026
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-9 are fully authored; 24-10…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. 24-1…24-11 are fully authored; 24-12…24-15 are stubs (title + goal + ACs) authored as full BR/IMP docs at the point each runs.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -139,13 +139,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-11 — Review Port + SRS Schema
 
-**_(STUB — absorbs epic-25 P0-1 structural + epic-28 SrsCardState additive)_**
+**_(completed — absorbs epic-25 P0-1 structural + epic-28 SrsCardState additive)_**
 
 **Goal:** Port `review` (3 routes: `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result`) with the **structural P0-1 fix** (Nest repo rejects `undefined` userId at type/guard level) + the **absorbed additive `SrsCardState` schema/enum + reserved pgvector**; review re-points with interval-doubling preserved; calibrated `requireAuth`.
 
 **ACs:** 3 review routes ported; parity green; `findByUserAndTypes`/`countDue` structurally reject `undefined` userId (regression test re-authored in Nest land); additive `SrsCardState` migration (new table/enum/vector, backfill, re-point; `ReviewItem` columns kept until 34/28 cleanup) satisfies the D1 additive-only gate; interval-doubling preserved (no FSRS semantics — that's 34); calibrated `requireAuth` applied; stale `ReadersAudioController.test.ts` rewritten/removed here or flagged for 24-12.
 
-**Gate:** 24-5 (calibrated guards). **Docs:** stub — full BR/IMP authored when 24-11 runs.
+**Status:** ✅ completed — `review.module.ts` = 1:1 of `createReviewModule(deps)` (imports `GuardsModule`, NOT `SharedModule`; `ReviewRepository` + `ReviewService` via `useFactory`; exports `ReviewService`); `review-nest.controller.ts` = 3 routes verbatim (`GET /v1/review/items`, `POST /v1/review/result` with `@HttpCode(200)`, `GET /v1/review/due-count`), all `@UseGuards(RequireAuthGuard)` (calibrated 24-5: guest → 401 `AUTH_REQUIRED`), structural P0-1 `req.userId as string` + defensive 401 `AUTH_ERROR`; **additive `SrsCardState` schema/enum + reserved `Unsupported("vector")` column (FV14 hedge, empty until RAG-1)** — migration `20260821175536_add_srs_card_state` = `CREATE EXTENSION IF NOT EXISTS vector` + enum/table/3 indexes/1 unique, **zero `ReviewItem` drops/renames/alters**, no BOM, `prisma migrate status` = 30 up-to-date (already applied), `prisma generate` regenerated the root-hoisted client; repository/types re-pointed `reviewItem → srsCardState` with **interval-doubling preserved (no FSRS — that's 34)**; P0-1 regression re-authored in Nest land (controller 7 tests: 401 + no service call; repo tests: `undefined` → `[]`/`0`, no Prisma call); parity harness `review-parity.test.ts` (12 tests: 2xx deep-equal with `nextReview`/shuffle normalization, 4xx envelope, guest 401, **P0-1 no-leak A-vs-B**); **`ReadersAudioController.test.ts` investigated — NOT dead (uniquely covers the live `ReadersController.getPassageAudio` Express method), left in place and deferred to 24-12** (removal would drop live coverage); gates green (typecheck · build both dist · test:full 62/666 (+7) · integration 21/203 (+12) · lint 0 · boundaries · dev:nest smoke — review routes guest → 401 `AUTH_REQUIRED`). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-5 (calibrated guards). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-11-review-port-srs-schema.md) · [IMP](story-24-11-review-port-srs-schema.md) (full).
 
 ### 24-12 — Readers Port
 
