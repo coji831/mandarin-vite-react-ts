@@ -1,23 +1,35 @@
 /**
  * @file apps/backend/src/nest/configure-app.ts
- * @description Shared NestJS shell app configuration (Story 24-2).
+ * @description Shared NestJS shell app configuration (Story 24-2 + 24-3).
  *
  * Maps the Express `src/app/index.ts` middleware 1:1 onto a NestJS 11 app on
  * the Express platform adapter: `trust proxy 1`, the `/api` global prefix,
- * cookie parsing, the identical CORS allowlist, and graceful shutdown hooks.
+ * the identical CORS allowlist, body parsers, cookie parsing, the requestId
+ * middleware, per-route rate limiting, and graceful shutdown hooks.
  *
  * Extracted so the dev entry (`main.ts`) and the route-parity harness
  * (`tests/integration/nest/route-parity.test.ts`) configure the app through
  * the SAME code path — the harness therefore verifies the exact production
  * shell boot shape and the two can never drift.
  *
- * Deferred to later stories: requestId interceptor (24-3), error filter (24-3),
- * Swagger (24-15).
+ * Story 24-3 (HTTP-Layer Parity): mounts `express.json()` +
+ * `express.urlencoded({ extended: true })` with the SAME options/limits as
+ * `app/index.ts` (Nest's built-in parser is disabled via `bodyParser: false`
+ * at `NestFactory.create` so ours is authoritative), the requestId middleware
+ * (`X-Request-Id` header + `req.requestId`), and the `words` per-route rate
+ * limiters (the only ported routes with a limiter today). The global
+ * `ExceptionFilter` + the Express error bridge are wired separately
+ * (`AppModule` / `mountExpressErrorBridge`).
+ *
+ * Deferred to later stories: Swagger (24-15).
  */
 
 import type { INestApplication } from "@nestjs/common";
 import cookieParser from "cookie-parser";
+import express, { type Express } from "express";
 import { config } from "../shared/config/index.js";
+import { requestIdMiddleware } from "./request-id.middleware.js";
+import { rateLimitWordsByAuth } from "./rate-limit.config.js";
 
 /** CORS — same explicit origin allowlist as app/index.ts. */
 const allowedOrigins: string[] = [
@@ -39,11 +51,10 @@ export function configureNestShellApp(app: INestApplication): void {
   // Express mounts routes under /api — mirror with the global prefix.
   app.setGlobalPrefix("api");
 
-  // Cookie parser for httpOnly cookie-based auth (parity now, harmless).
-  app.use(cookieParser());
-
   // CORS — same explicit origin allowlist as app/index.ts (frontendUrl +
-  // localhost:5173/5174/3000 + *.vercel.app + *.up.railway.app).
+  // localhost:5173/5174/3000 + *.vercel.app + *.up.railway.app). CORS is
+  // mounted before the body parsers so error responses also carry CORS headers
+  // (parity with app/index.ts ordering).
   app.enableCors({
     origin: (
       origin: string | undefined,
@@ -76,6 +87,30 @@ export function configureNestShellApp(app: INestApplication): void {
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   });
+
+  // Body parsers after CORS so error responses always include CORS headers —
+  // identical options/limits to app/index.ts (express.json() +
+  // express.urlencoded({ extended: true })). Nest's built-in parser is
+  // disabled (`bodyParser: false` at NestFactory.create) so this is the single
+  // authoritative body-parser config; oversized bodies fail with the identical
+  // 413 + envelope (see route-parity harness).
+  const expressApp = app.getHttpAdapter().getInstance() as Express;
+  expressApp.use(express.json());
+  expressApp.use(express.urlencoded({ extended: true }));
+
+  // Cookie parser for httpOnly cookie-based auth (parity now, harmless).
+  app.use(cookieParser());
+
+  // Request ID middleware — req.requestId + X-Request-Id response header
+  // (parity with requestIdMiddleware in shared/middleware/errorHandler.ts).
+  app.use(requestIdMiddleware);
+
+  // Rate-limit parity — `words` is the only ported route with a per-route
+  // limiter in Express today (WordsRoutes.ts: 60/min user, 20/min guest);
+  // mount it path-scoped so it honors the same per-route config + real-IP via
+  // trust proxy. Auth/readers limiters are declared in rate-limit.config.ts
+  // as infra and applied when those modules are ported (24-6/24-12).
+  expressApp.use("/api/v1/words", rateLimitWordsByAuth);
 
   // Graceful shutdown (Redis quit wiring lands in a later story).
   app.enableShutdownHooks();
