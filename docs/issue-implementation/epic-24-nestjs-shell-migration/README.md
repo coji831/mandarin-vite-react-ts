@@ -175,13 +175,15 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ### 24-14 — Release-Safety Cutover Gate
 
-**_(STUB — absorbs A-items P1/P2/T1/O1/O2/D1/D2/R1/DOC)_**
+**_(completed — owns the §1 DoD verification + release checklist + pre-flight sign-off + rollback/watch-window)_**
 
 **Goal:** Own the Definition of Done + release checklist as the hard pre-flight gate that 24-15 cannot flip without, plus post-flip smoke + rollback + watch-window verification. Serial-flipped: S1 (P0-1) = absorbed (24-1 + 24-11); S2 (guest-auth) = absorbed (24-5/24-7/24-8/24-10/24-13); quiz-FE bugs = C-declared (tracked in 26); schema = absorbed-additive (24-11).
 
 **ACs:** Release checklist artifact committed (every §1 line S1–S2/P1–P2/T1/O1–O2/D1–D2/R1–R2/DOC/G with status/evidence pointer); A/C ownership map recorded + signed off; pre-flight sign-off (S1, S2, P1 parity 100%, T1 full+integration green) → only then may 24-15 flip; post-flip smoke (`/api/v1/health` + register/login + one data route) green; watch-window procedure documented + executed (via 24-3 requestId logs) before Express deletion; rollback runbook verified (`start:express` for one release or redeploy-previous).
 
-**Gate:** 24-13 (all modules ported) — immediately before 24-15. **Docs:** stub — full BR/IMP authored when 24-14 runs.
+**Status:** ✅ completed — the §1 Definition of Done verified against the shipped code: **all twelve gates PASS** (S1 P0-1 closed structurally — repo rejects `undefined` before Prisma, zero `req.userId!` in Nest controllers, regression green · S2 guest-auth calibrated — `createGuestPhaseGate → {currentPhase:1, isGuest:true}`, `OptionalAuthGuard` guest → empty, `/gates` guest = Phase-1-only · P1 parity **63/63 (100%)** across 9 harnesses · P2 openapi 9 dead routes (`/v1/vocabulary/*` ×5 + `/v1/progress*` ×4) recorded as a 24-15 input · T1 `test:full` **66/744** + `test:integration` **23/262** · O1 `AppExceptionFilter.logError` identical · O2 health 200 from `dist/nest/main.js` · D1 only additive `SrsCardState` migration (30 up-to-date) · D2 rollback verified + watch window ≥24–48h · R1 Node 24 declared (`engines` lower-bounds caveat → 24-15 validates prod boot on Railway) · R2 graceful shutdown unit-tested · G all canonical gates green); A/B/C ownership map recorded + signed off; **pre-flight sign-off (S1 + S2 + P1 100% + T1) PASS → 24-15 UNBLOCKED**; post-flip smoke + watch-window procedure documented; rollback runbook verified. Full record in `../../../verification-artifacts/release-safety-gate-24-14.md` (the story's only deliverable — force-added; `verification-artifacts/` is gitignored). **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** 24-13 (all modules ported) — immediately before 24-15. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-14-release-safety-cutover-gate.md) · [IMP](story-24-14-release-safety-cutover-gate.md) (full).
 
 ### 24-15 — Deployment Cutover + Retire Dual-Mode + Docs Refresh
 
