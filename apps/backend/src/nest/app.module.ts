@@ -4,12 +4,15 @@
  *
  * Story 24-2 — deliberately imports ONLY the four ported reference modules
  * (words, phonetic-clusters, grammar, chengyu). No shared infra module and no
- * health module yet — the shell is a pure proof-of-pattern. SharedModule /
- * DatabaseModule land in 24-4 when cache/gemini/jwt-dependent modules are
- * ported.
+ * health module yet — the shell is a pure proof-of-pattern.
  *
  * Story 24-3 — registers the global `AppExceptionFilter` (APP_FILTER) so every
  * 4xx/5xx on the shell emits the Express `{code, message, requestId}` envelope.
+ *
+ * Story 24-4 — wires `SharedModule` (which imports `DatabaseModule`) so the
+ * shared infrastructure (config homes, CacheService async provider, Prisma
+ * client, JwtService/PasswordService, external clients) is available to later
+ * module ports as Nest providers, with graceful shutdown hooks.
  */
 
 import { Module } from "@nestjs/common";
@@ -18,10 +21,11 @@ import { WordsModule } from "../modules/words/nest/words.module.js";
 import { PhoneticClustersModule } from "../modules/phonetic-clusters/nest/phonetic-clusters.module.js";
 import { GrammarModule } from "../modules/grammar/nest/grammar.module.js";
 import { ChengyuModule } from "../modules/chengyu/nest/chengyu.module.js";
+import { SharedModule } from "./shared/shared.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
 
 @Module({
-  imports: [WordsModule, PhoneticClustersModule, GrammarModule, ChengyuModule],
+  imports: [WordsModule, PhoneticClustersModule, GrammarModule, ChengyuModule, SharedModule],
   providers: [{ provide: APP_FILTER, useClass: AppExceptionFilter }],
 })
 export class AppModule {}
