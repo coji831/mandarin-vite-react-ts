@@ -57,6 +57,7 @@ import { MnemonicsModule } from "../modules/mnemonics/nest/mnemonics.module.js";
 import { AudioModule } from "../modules/audio/nest/audio.module.js";
 import { HealthModule } from "../modules/health/nest/health.module.js";
 import { ReviewModule } from "../modules/review/nest/review.module.js";
+import { ReadersModule } from "../modules/readers/nest/readers.module.js";
 import { SharedModule } from "./shared/shared.module.js";
 import { GuardsModule } from "./guards/guards.module.js";
 import { AppExceptionFilter } from "./exception.filter.js";
@@ -85,6 +86,13 @@ import { AppExceptionFilter } from "./exception.filter.js";
     // repository reads/writes the absorbed additive SrsCardState table. Route
     // path /v1/review/* shares no prefix with any other module.
     ReviewModule,
+    // Readers (11 routes — the largest port, 24-12): passages list/get + the
+    // passage-audio POST (calibrated OptionalAuthGuard, F5 cache-first-free for
+    // guests), generate (RequireAuthGuard + the DB-backed 5/day generation
+    // limit) + sessions/bookmarks (RequireAuthGuard). Imports AudioModule for
+    // the AudioService + AUDIO_PASSAGE_PATHS DI (no direct modules/audio import
+    // in Nest land). Path /v1/readers/* shares no prefix with any other module.
+    ReadersModule,
     SharedModule,
     GuardsModule,
   ],

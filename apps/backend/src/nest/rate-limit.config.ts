@@ -193,13 +193,17 @@ export function rateLimitMnemonics(req: Request, res: Response, next: NextFuncti
   }
 }
 
-// ── readers — [INFRA] (readersRoutes.ts, applied in 24-12) ────────────────
+// ── readers — [APPLIED] (readersRoutes.ts, applied in 24-12) ───────────────
 
 /** Readers GET limiter — 60 req/min per user. */
 export const READERS_GET_LIMITER_CONFIG: LimiterConfig = {
   windowMs: 60 * 1000, // 1 minute
   max: 60,
-  keyGenerator: (req: Request) => req.userId || req.ip || "unknown",
+  // `req.userId || ipKeyGenerator(req.ip || "unknown")` — the helper avoids
+  // express-rate-limit's ERR_ERL_KEY_GEN_IPV6 warning (same as the mnemonics
+  // configs; the Express readersRoutes.ts uses the bare `req.ip` form, which
+  // the library rejects for IPv6 — behavior is identical for the parity gate).
+  keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment.",
     code: "RATE_LIMIT",
@@ -212,7 +216,7 @@ export const READERS_GET_LIMITER_CONFIG: LimiterConfig = {
 export const READERS_GUEST_GET_LIMITER_CONFIG: LimiterConfig = {
   windowMs: 60 * 1000, // 1 minute
   max: 20,
-  keyGenerator: (req: Request) => req.ip || "unknown",
+  keyGenerator: (req: Request) => ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment.",
     code: "RATE_LIMIT",
@@ -221,10 +225,44 @@ export const READERS_GUEST_GET_LIMITER_CONFIG: LimiterConfig = {
   legacyHeaders: false,
 };
 
+const readersGetLimiter = rateLimit(READERS_GET_LIMITER_CONFIG);
+const readersGuestGetLimiter = rateLimit(READERS_GUEST_GET_LIMITER_CONFIG);
+
+/**
+ * Route-level middleware: applies the readers GET limiters ONLY to the two
+ * passage GET routes (`GET /v1/readers/passages` + `GET /v1/readers/passages/:id`)
+ * — mirroring `readersRoutes.ts`, where `rateLimitByAuth` guards exactly those
+ * two routes (the audio POST / generate / sessions / bookmarks routes carry NO
+ * express-rate-limit in Express). Mounted path-scoped on `/api/v1/readers/
+ * passages` in `configure-app.ts`; the GET-only method check keeps the audio
+ * POST (`/passages/:id/audio`) un-limited, exactly like Express.
+ *
+ * NOTE (same as the mnemonics dispatch): the shell mounts this before the Nest
+ * guards run, so `req.userId` is not yet attached for authenticated requests
+ * and the limiter keys by IP for everyone. This is a rate-limit KEY difference
+ * only (max-per-bucket is the same); the 24-12 readers parity harness uses
+ * unique `X-Forwarded-For` IPs per request so it never trips any limiter. The
+ * 429 body (default express-rate-limit handler sending the `message` object
+ * directly) is byte-identical to Express — no envelope.
+ */
+export function rateLimitReadersByAuth(req: Request, res: Response, next: NextFunction): void {
+  if (req.method !== "GET") {
+    next();
+    return;
+  }
+  if (req.userId) {
+    readersGetLimiter(req, res, next);
+  } else {
+    readersGuestGetLimiter(req, res, next);
+  }
+}
+
 /**
  * Readers POST generate daily limit — 5/day per user, DB-backed (UTC midnight
- * reset), enforced in `ReadersService.checkRateLimits` — NOT express-rate-limit.
- * Declared as infra; applied when readers is ported (24-12).
+ * reset), enforced in `ReadersService.checkRateLimits` (via
+ * `ReadersRepository.countUserGeneratedToday`) — NOT express-rate-limit. Applied
+ * when readers is ported (24-12); the 429 envelope parity is proven by the
+ * 24-12 readers parity harness.
  */
 export const READERS_DAILY_GENERATION_LIMIT = 5;
 

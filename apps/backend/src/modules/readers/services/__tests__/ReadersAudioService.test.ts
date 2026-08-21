@@ -28,6 +28,9 @@ vi.mock("../../../../shared/utils/hashUtils", () => ({
 }));
 
 import { ReadersAudioService } from "../ReadersAudioService.js";
+// The real passage path helpers — `passageHashFor` calls the mocked
+// `hashUtils.computeHash` above, so the hashes stay deterministic here.
+import { passageHashFor, passagePath } from "../../../../modules/audio/index.js";
 import type { PassageRecord } from "../../types/readers.js";
 
 describe("ReadersAudioService", () => {
@@ -59,7 +62,7 @@ describe("ReadersAudioService", () => {
       healthCheck: vi.fn(),
     };
 
-    service = new ReadersAudioService(mockAudioService as any);
+    service = new ReadersAudioService(mockAudioService as any, { passageHashFor, passagePath });
   });
 
   describe("getPassageAudio", () => {

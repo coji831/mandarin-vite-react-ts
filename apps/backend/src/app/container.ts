@@ -19,7 +19,7 @@ import { GeminiClient } from "../shared/infrastructure/external/GeminiClient.js"
 import { GCSClient } from "../shared/infrastructure/external/GCSClient.js";
 import { GoogleTTSClient } from "../shared/infrastructure/external/GoogleTTSClient.js";
 import { redisClient } from "../shared/infrastructure/redis/RedisClient.js";
-import { AudioService } from "../modules/audio/index.js";
+import { AudioService, passageHashFor, passagePath } from "../modules/audio/index.js";
 import { GeminiService } from "../shared/infrastructure/external/GeminiService.js";
 
 // Repositories
@@ -76,7 +76,14 @@ const authModule = createAuthModule({ authRepository, jwtService, passwordServic
 // Readers module — uses SegmenterService, PassageGenerationService, and ReadersAudioService singletons
 export const segmenterService = new SegmenterService(cacheService);
 export const passageGenerationService = new PassageGenerationService(geminiService);
-export const readersAudioService = new ReadersAudioService(audioService);
+// The passage path helpers are injected (DI) so ReadersAudioService carries NO
+// direct `modules/audio` import — the Nest shell gets the same helpers from the
+// ported AudioModule (Story 24-12). Express keeps the same framework-agnostic
+// class; only the wiring differs.
+export const readersAudioService = new ReadersAudioService(audioService, {
+  passageHashFor,
+  passagePath,
+});
 
 const readersModule = createReadersModule({
   passageGenerationService,

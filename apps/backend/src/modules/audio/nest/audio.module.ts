@@ -37,11 +37,21 @@
 import { Module } from "@nestjs/common";
 import { AudioNestController } from "./audio-nest.controller.js";
 import { AudioService } from "../services/AudioService.js";
+import { passageHashFor, passagePath } from "../services/paths.js";
 import { SharedModule } from "../../../nest/shared/shared.module.js";
 import { GuardsModule } from "../../../nest/guards/guards.module.js";
 import { CacheService } from "../../../shared/infrastructure/cache/CacheService.js";
 import { GCSClient } from "../../../shared/infrastructure/external/GCSClient.js";
 import { GoogleTTSClient } from "../../../shared/infrastructure/external/GoogleTTSClient.js";
+
+/**
+ * Injection token for the passage-audio path helpers (`passageHashFor` /
+ * `passagePath`). Provided + exported by `AudioModule` so the Readers module
+ * (24-12) resolves the passage hash/path primitives via module-to-module Nest
+ * DI instead of importing them directly from the `modules/audio` barrel — no
+ * direct cross-module function import in Nest land.
+ */
+export const AUDIO_PASSAGE_PATHS = "AUDIO_PASSAGE_PATHS" as const;
 
 @Module({
   imports: [SharedModule, GuardsModule],
@@ -53,7 +63,12 @@ import { GoogleTTSClient } from "../../../shared/infrastructure/external/GoogleT
         new AudioService(cacheService, gcsClient, ttsClient),
       inject: [CacheService, GCSClient, GoogleTTSClient],
     },
+    // Passage audio path helpers — the same `modules/audio` primitives the
+    // Express readers wiring imports directly, exposed here as a DI provider
+    // (Story 24-12: ReadersAudioService consumes them via `@Inject`, no barrel
+    // import in the readers Nest land).
+    { provide: AUDIO_PASSAGE_PATHS, useValue: { passageHashFor, passagePath } },
   ],
-  exports: [AudioService],
+  exports: [AudioService, AUDIO_PASSAGE_PATHS],
 })
 export class AudioModule {}
