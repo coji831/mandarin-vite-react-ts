@@ -78,6 +78,7 @@ prohibitions:
   - "NEVER store state in components/ — use stores/ directories"
   - "NEVER call apiClient directly from hooks or components — use service layer"
   - "NEVER bypass CSS import restrictions with eslint-disable"
+  - "NEVER stage, commit, or push without an explicit \"commit allowed\" from the user — default is review-before-commit (ambiguous words like \"proceed\" are NOT approval)"
 ---
 
 ## UI Codegen Protocol

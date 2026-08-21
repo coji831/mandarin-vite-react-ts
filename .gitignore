@@ -58,8 +58,6 @@ storybook-static
 # Build output
 apps/frontend/build-output.txt
 
-# MSW service worker
-apps/frontend/public/mockServiceWorker.js
 keys/
 # Terraform state
 *.tfstate

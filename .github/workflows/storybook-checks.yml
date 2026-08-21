@@ -15,4 +15,7 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build-storybook --workspace=@mandarin/frontend
+      - name: Install Playwright browser (storybook tests)
+        run: npx playwright install --with-deps chromium
+      - run: npm run test-storybook --workspace=@mandarin/frontend
       - run: npm run lint:css --workspace=@mandarin/frontend

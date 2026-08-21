@@ -98,6 +98,7 @@ This runs Chromatic/vitest-integration tests on all stories. Fix any failures be
    - **Never hand-edit `package-lock.json`.** If `npm install` reports "up to date" after a dependency change, delete the stale nested `node_modules/<pkg>` and re-install instead.
 
 9. **Commit** — Use Conventional Commit format: `<type>(story-<epic>-<story>): <summary>`. Include scope referencing story. Ensure BR + implementation doc updates are in the same commit for traceability.
+   > 🚦 **Commit gate (binding):** only commit after the user explicitly says **"commit allowed"**. Default is review-before-commit — present the staged diff (`git diff --cached --stat`) and wait for approval. "Proceed"/"go ahead" is NOT approval.
 
 ## Pre-Implementation Investigation Checklist
 

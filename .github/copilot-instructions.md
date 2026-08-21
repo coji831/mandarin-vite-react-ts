@@ -1,8 +1,18 @@
 ﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** August 17, 2026
+**Last Updated:** August 21, 2026
 
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
+
+## 🚦 COMMIT GATE (binding — read first)
+
+**Never `git commit` or `git push` unless the user explicitly says the phrase
+"commit allowed"** (or an unambiguous equivalent like "yes, commit"). The
+default state of this repo is **review-before-commit**: after making changes,
+present the diff/plan and wait for explicit approval. Ambiguous words
+("proceed", "go ahead", "fix it", "ok") do NOT grant commit permission. When
+in doubt, do not commit — ask. The only exception is a change the user has
+already explicitly approved for commit earlier in the same session.
 
 ## ⚡ TL;DR Quick Start
 

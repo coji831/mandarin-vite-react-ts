@@ -16,6 +16,17 @@ type: guide
 > (auto-attached when editing `*.stories.tsx` and `pages/**/*.tsx`). When the two disagree, the
 > instruction file wins.
 
+## Roles (2026 two-step flow)
+
+The story shell is built by the **UIUX Designer** (Step 1) and converted to code
+by the **Frontend Engineer** (Step 2) — see
+[`.github/instructions/uiux-design-protocol.instructions.md`](../../../.github/instructions/uiux-design-protocol.instructions.md)
+and [`.github/agents/uiux-designer.agent.md`](../../../.github/agents/uiux-designer.agent.md).
+Stories must satisfy the **12 UIUX fundamentals + AI-slop checklist**
+([`docs/guides/design/uiux-fundamentals.md`](../../design/uiux-fundamentals.md))
+at the Step 1 self-check, before the User Preview Gate. The container-delegation
+and state-parity rules below are unchanged by the role split.
+
 ---
 
 ## Overview

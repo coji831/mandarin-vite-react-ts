@@ -48,53 +48,53 @@ All defined in `.storybook/decorators/`:
 4. Verify all visual states render correctly (default, loading, error, empty)
 5. For page stories, verify the full layout chain is applied via decorators
 
-## CDD Process Flow (Component-Driven Development)
+## Two-Step Flow (2026) — UIUX Designer (Step 1) → Frontend Engineer (Step 2)
 
-This instruction enforces the **Component-Driven Development (CDD)** workflow — an industry-standard methodology used by Airbnb, BBC, Shopify, Microsoft, and others (see [componentdriven.org](https://componentdriven.org/)).
+This instruction enforces the repo's **Storybook-first two-step flow** (see
+`uiux-design-protocol.instructions.md`): when UI is involved, the **UIUX
+Designer** agent owns **Step 1** — the approved **Storybook shell (no logic)** —
+and the **Frontend Engineer** owns **Step 2** — converting that shell to code.
+Stories are authored in Step 1 against the **12 UIUX fundamentals + AI-slop
+checklist** (`docs/guides/design/uiux-fundamentals.md`; `frontend-audit` skill
+Part 1).
 
-Follow these phases **in order**:
+### Step 1 — UIUX Design (UIUX Designer): Storybook shell, no logic
 
-### Phase A: Design
+1. **Design spec** — consume/create the per-epic design spec (archetype from
+   `docs/guides/design/page-archetypes.md`, tokens, states) per
+   `uiux-design-protocol.instructions.md` Step 1.1–1.3.
+2. **Build the Storybook shell** on the host container (`*Page.tsx` is the story
+   target — no `*PageContent.tsx` split) covering ALL visual states:
+   - Default (happy path — API returns data)
+   - Loading
+   - Error (with retry)
+   - Empty / No Data
+   - Edge cases (long text, boundary values)
+   - Guest (where applicable)
+3. **Use MSW (Mock Service Worker)** to simulate each state's API response
+   (`mswHandlers.*` factories) and **decorators** (`withAppLayout`,
+   `withLearnLayout`, `withGuestAuth`) for layout/auth context.
+4. **No business logic in stories** — no hooks, no API calls, no router.
+5. **AI-slop + fundamentals self-check** — run `frontend-audit` **Part 1** (12
+   fundamentals + AI-slop checklist) + `design-audit` (0 errors) on the shell.
+6. **User Preview Gate** — present the shell in the browser; the owner approves
+   layout/spacing/colors/states. **Do NOT proceed to Step 2 until approved.**
+7. **Handoff** — approved stories + design spec + screenshots → Frontend
+   Engineer (Step 2).
 
-Consume or create the design spec. Define layout, states, tokens.  
-**Output:** Design reference (Figma, sketch, or `docs/design.md`)
+### Step 2 — Code Conversion (Frontend Engineer): convert the approved shell
 
-### Phase B: UI Build
-
-Build the page as a **container component** (`*Page.tsx`) that:
-
-- Defines the layout, state handling, and data requirements
-- Delegates rendering to **feature-level components** (`features/*/components/`)
-- Feature components receive data via props only — no hooks, no API calls
-- Business logic hooks are imported directly into the container
-  **Output:** `*Page.tsx` + any new feature components
-
-### Phase C: Storybook
-
-Create stories targeting the container `*Page.tsx` covering ALL visual states:
-
-- Default (happy path — API returns data)
-- Loading
-- Error (with retry)
-- Empty / No Data
-- Edge cases (long text, boundary values)
-
-**Use MSW (Mock Service Worker) to simulate API responses for each state.**
-**Use decorators (`withAppLayout`, `withLearnLayout`) to provide layout context.**
-
-❌ No business logic in stories (no hooks, no API calls, no router)
-❌ No `*PageContent.tsx` split needed — the container itself IS the story target
-
-**Gate:** Stories are reviewed against the design. Each page story must include the full layout chain via decorators (e.g., `withAppLayout`) and use `parameters: { layout: "fullscreen" }`. Only once confirmed, proceed to Phase D.
-
-### Phase D: Logic Injection
-
-Add business logic hooks directly into the container (`*Page.tsx`):
-
-- Import and call hooks (`usePhaseGate`, `useRadicals`, etc.)
-- Compute derived data from hook results and pass as props to feature components
-- Handle ALL the same states that the stories cover (state parity)
-  **Stories remain untouched** — MSW handlers simulate the same API responses that hooks will return at runtime.
+1. Add business logic hooks directly into the container (`*Page.tsx`):
+   - Import and call hooks (`usePhaseGate`, `useRadicals`, etc.)
+   - Compute derived data and pass as props to feature components
+   - Keep the approved visual shell EXACT (no silent redesign)
+2. **State parity** — handle ALL the same states the stories cover (§3).
+   **Stories remain untouched** — MSW handlers simulate the same API responses
+   the hooks return at runtime.
+3. **Tests + gates** — `test-storybook` + `design-audit` + unit tests +
+   `frontend-pre-delivery-checklist.instructions.md`.
+4. If production must differ from an approved story, raise it at the gate — do
+   not silently diverge.
 
 ## 1. Container Delegates to Feature Components
 
