@@ -1,19 +1,19 @@
 ﻿---
-purpose: "Complete guide for running the Express backend locally, understanding architecture, and following development best practices"
+purpose: "Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices"
 status: active
-last-verified: 2026-07-03
+last-verified: 2026-08-22
 type: guide
 audience: backend
 ---
 
 # Backend Development Guide
 
-**Last Updated:** July 3, 2026  
-**Purpose:** Complete guide for running the Express backend locally, understanding architecture, and following development best practices  
-**Audience:** Developers setting up and working with the Express backend  
+**Last Updated:** August 22, 2026  
+**Purpose:** Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices  
+**Audience:** Developers setting up and working with the NestJS backend  
 **Time to Complete:** 15-20 minutes initial setup
 
-> **Purpose:** Complete guide for running the Express backend locally, understanding architecture, and following development best practices.
+> **Purpose:** Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices.
 
 ---
 
@@ -21,7 +21,7 @@ audience: backend
 
 1. [Quick Start (10 Minutes)](#quick-start-10-minutes)
 2. [Architecture Overview](#architecture-overview)
-3. [Express Server Setup](#express-server-setup)
+3. [NestJS Server Setup](#nestjs-server-setup)
 4. [CORS & Authentication](#cors--authentication) → cross-ref
 5. [Security Standards](#security-standards) → cross-ref
 6. [Database Setup](#database-setup) → cross-ref
@@ -36,7 +36,7 @@ audience: backend
 
 ### Prerequisites
 
-- **Completed:** [Frontend Quick Start](quickstart.md) (Node.js, npm, git, project cloned)
+- **Completed:** [Frontend Quick Start](../getting-started/quickstart.md) (Node.js, npm, git, project cloned)
 - **Google Cloud:** Dev-tier service account with TTS + Gemini + GCS access
 - **Optional:** Redis instance (caching falls back gracefully if unavailable)
 
@@ -49,9 +49,9 @@ Create `.env.local` at **project root** (if you haven't already):
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with required variables. See **[Environment Setup Guide](../getting-started/environment-setup.md)** for complete documentation.
+Edit `.env.local` with required variables. See **[Environment Setup Guide](../getting-started/environment-setup.md)** for the full catalog.
 
-**Minimum Required Variables (all mandatory — `validateConfig()` will crash at startup if missing):**
+**Required at startup — the 7 fail-fast criticals (`validateConfig()` in `apps/backend/src/shared/config/index.ts` throws if any are missing):** `DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `GCS_BUCKET_NAME`, `GCS_CREDENTIALS_RAW`, `GOOGLE_TTS_CREDENTIALS_RAW`, `GEMINI_API_CREDENTIALS_RAW`.
 
 ```env
 # Database (Neon)
@@ -65,6 +65,7 @@ JWT_REFRESH_SECRET="your-other-32-char-secret-here"
 # Google Cloud (dev-tier service account)
 GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
 GEMINI_API_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
+GCS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
 GCS_BUCKET_NAME="your-dev-bucket-name"
 
 # Server
@@ -85,46 +86,9 @@ VITE_API_URL=http://localhost:3001
 npx prisma migrate dev
 ```
 
-This creates:
+**Verify:** Check your database — tables should exist now. See [Database Setup Guide](../setup/database.md) for the full model list and reset/seed commands.
 
-- **Auth**: `User`, `Session` (JWT refresh tokens)
-- **Progress**: `Progress` (vocabulary progress tracking), `FoundationProgress`, `RadicalProgress`
-- **Content**: `VocabularyWord`, `Category`, `VocabularyList`, `ContentItem`, `CharacterRadical`, `PinyinCombination` with junction tables `WordCategory`, `WordList`
-- **Quiz/Review**: `QuizAttempt`, `QuizAttemptAnswer`, `ReviewItem`
-- **Gating**: `PhaseGate`, `StudyStreak`
-
-**Verify:** Check your database — tables should exist now.
-
-### Step 3: Load Vocabulary Data (Optional)
-
-The backend includes migration scripts to populate vocabulary from CSV files:
-
-```bash
-# Navigate to backend directory
-cd apps/backend
-
-# Clean existing vocabulary data (if any)
-npm run migrate:clean
-
-# Load 500 HSK 3.0 Band 1 words
-npm run migrate:vocab
-
-# Load thematic categories (daily-communication, food-dining, etc.)
-npm run migrate:categories
-
-# Check migration status
-node scripts/check-migration-progress.js
-```
-
-**Expected Result:**
-
-- 500 vocabulary words (IDs 1-500)
-- 7 thematic categories
-- 624 word-category links
-
-**Note:** This step is optional for backend development. The API works with or without vocabulary data, but quiz features require it.
-
-### Step 3.5: Create Test Users
+### Step 3: Create Test Users
 
 ```bash
 # From apps/backend
@@ -144,7 +108,7 @@ cd apps/backend
 npm run dev
 ```
 
-**Γ£à Backend is running at:** `http://localhost:3001`
+**✅ Backend is running at:** `http://localhost:3001`
 
 ### Step 5: Verify Backend Health
 
@@ -181,100 +145,64 @@ You should see (or HTTP 200):
 
 ## Architecture Overview
 
-### Modular Monolith Folder Structure
+### NestJS Modulith (Epic 24)
+
+Since **Epic 24 (completed 2026-08-22)** the backend is a **NestJS 11 modulith** on the Express platform adapter — the Express surface (`src/app/` + `modules/*/api/`) is deleted and Nest is the only production entry.
 
 All source files are TypeScript (`.ts`). The `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports).
 
 ```
 apps/backend/
 ├── src/
-│   ├── app/                       # Express App Bootstrap
-│   │   ├── index.ts               # Express app entry point
-│   │   ├── container.ts           # DI composition root
-│   │   └── routes.ts              # Route routers under /v1/
-│   ├── modules/                   # Business Modules
-│   │   ├── auth/                  # Simple CRUD
-│   │   │   ├── api/               #   controllers + routes
-│   │   │   ├── services/
-│   │   │   ├── repositories/
-│   │   │   ├── types/             #   typed interfaces (barrel)
-│   │   │   └── __tests__/
-│   │   ├── quiz/                  # Clean Architecture (use-cases/)
-│   │   ├── review/                # Clean Architecture (SRS review)
-│   │   ├── foundations/           # Simple CRUD
-│   │   ├── radicals/              # Simple CRUD
-│   │   ├── progression/           # Clean Architecture
-│   │   ├── examples/              # Feature Slices
-│   │   ├── tts/                   # Simple
-│   │   └── health/                # Simple
-│   └── shared/                    # Cross-cutting Concerns
-│       ├── config/index.ts        # Env config validation
-│       ├── infrastructure/        # External clients, cache, DB, security
-│       │   ├── cache/
-│       │   ├── database/
-│       │   ├── external/          # GCS, Gemini, GoogleTTS
-│       │   ├── redis/
-│       │   ├── security/          # JwtService, PasswordService, HmacManager
-│       │   └── storage/
-│       ├── middleware/            # asyncHandler, auth, cache, errorHandler
-│       └── utils/                 # logger, errorFactory, hashUtils, dateUtils
+│   ├── nest/                    # NestJS shell (production entry)
+│   │   ├── main.ts              # Bootstrap — validateConfig() → NestFactory.create()
+│   │   ├── app.module.ts        # Root module — registers all feature modules
+│   │   ├── configure-app.ts     # CORS, cookie parsing, /api prefix, /api-docs, error bridge
+│   │   ├── exception.filter.ts  # Global {code, message, requestId} error envelope
+│   │   ├── guards/              # AuthGuard / OptionalAuthGuard / RequireAuthGuard
+│   │   ├── rate-limit.config.ts # express-rate-limit configs (per-route)
+│   │   └── request-id.middleware.ts
+│   ├── modules/                 # Business modules (15) — each with:
+│   │   ├── <name>/nest/         #   <name>.module.ts (@Module) + <name>-nest.controller.ts
+│   │   ├── <name>/services/     #   business logic
+│   │   ├── <name>/repositories/ #   Prisma access
+│   │   ├── <name>/types/        #   typed interfaces (barrel)
+│   │   └── <name>/__tests__/
+│   └── shared/                  # Cross-cutting concerns
+│       ├── config/index.ts      # Env config validation (fail-fast)
+│       ├── infrastructure/      # External clients, cache, DB, security
+│       └── utils/               # logger, errorFactory, dateUtils
 ├── prisma/
 │   └── schema.prisma
 └── tests/
-    ├── integration/
+    ├── integration/nest/        # Nest-only regression guards (ex-parity harnesses)
     └── unit/
 ```
 
-### Architectural Layers
+### Key Concepts
 
-1. **App Layer** (`src/app/`): Entry point, DI container registration, route mounting
-2. **Module Layer** (`src/modules/<name>/api/`): HTTP request handling, validation, response formatting (controllers/routes per module)
-3. **Service/Use-Case Layer** (`src/modules/<name>/services/` or `use-cases/`): Business logic, orchestration, domain rules
-4. **Repository Layer** (`src/modules/<name>/repositories/`): Database access, query construction, data mapping
-5. **Shared Infrastructure** (`src/shared/infrastructure/`): External service clients, cache, Redis, security
+1. **Shell** (`src/nest/`): `main.ts` validates config and boots `AppModule`; `configure-app.ts` reproduces the former Express middleware order (CORS once, cookie parsing, `/api` prefix, body-parser limits, error bridge last).
+2. **Modules** (`src/modules/<name>/nest/`): each module declares its Nest `@Module` with controllers + `useFactory` providers, registered in `src/nest/app.module.ts`. Services/repositories are reused unchanged from the modulith.
+3. **DI**: NestJS `@Module`/constructor injection replaces the deleted Express `container.ts` composition root. Shared infra is exposed via `SharedModule`/`DatabaseModule`.
+4. **HTTP layer**: errors flow through the global `AppExceptionFilter` → `{code, message, requestId}` envelope; guards implement auth.
 
-**Deep Dive:** See [Backend Architecture Patterns](../../knowledge-base/backend/backend-architecture.md) for layered architecture, dependency injection, and design patterns.
+**Deep Dive:** See [Backend Architecture Patterns](../../knowledge-base/backend/backend-architecture.md) for layered architecture, dependency injection, and design patterns. **Authoritative reference:** [`apps/backend/README.md`](../../../apps/backend/README.md).
 
 ---
 
-## Express Server Setup
+## NestJS Server Setup
 
-**Key Configuration Points** ([apps/backend/src/app/index.ts](../../apps/backend/src/app/index.ts)):
+**Key Configuration Points** ([apps/backend/src/nest/main.ts](../../../apps/backend/src/nest/main.ts) + [`app.module.ts`](../../../apps/backend/src/nest/app.module.ts)):
 
-```typescript
-const app = express();
-
-// Middleware order is critical:
-app.use(express.json()); // Parse JSON bodies
-app.use(cookieParser()); // Parse cookies (required for JWT refresh tokens)
-app.use(corsMiddleware); // CORS configuration (apply once only)
-
-// API Routes
-app.use("/api/v1/auth", authRoutes);
-// ... more routes ...
-
-// Error handling (must be last middleware)
-app.use(errorHandler);
-```
+- `validateConfig()` runs **before** `NestFactory.create` — a missing critical env var crashes at boot (fail-fast preserved).
+- The Express adapter (`NestFactory.create<NestExpressApplication>`) reproduces the former middleware order: CORS applied once, cookie-parser, `/api` prefix, body-parser limits, then the `AppExceptionFilter` error bridge mounted last.
+- `/api-docs` (swagger-ui) + `/api-docs.json` are served from Nest (`configure-app.ts`).
 
 **Critical Notes:**
 
-- Middleware order matters: CORS ΓåÆ Routes ΓåÆ Error Handler
-- Apply CORS **once only** at app level (duplicate CORS breaks authentication)
-- Error handler must be last middleware registered
-
-### Error Handling
-
-**Centralized Error Middleware** ([apps/backend/src/middleware/errorHandler.ts](../../apps/backend/src/middleware/errorHandler.ts)):
-
-- Catches all unhandled errors from routes/middleware
-- Handles Prisma-specific errors (duplicate keys, not found)
-- Must be registered **after all routes**
-
-**Common Prisma Error Codes:**
-
-- `P2002`: Unique constraint violation (409 Conflict)
-- `P2025`: Record not found (404 Not Found)
+- The global error filter emits the `{code, message, requestId}` envelope for every 4xx/5xx and logs each error with its requestId (parity with the retired Express `errorHandler.ts`).
+- Prisma error codes are translated in the shared error-resolution helpers: `P2002` (unique violation → 409 Conflict), `P2025` (not found → 404 Not Found).
+- Apply CORS **once only** at app level (duplicate CORS breaks authentication).
 
 ---
 
@@ -321,42 +249,37 @@ app.use(errorHandler);
 ## Common Commands
 
 ```bash
-# Development
-npm run dev:backend         # Start backend server (from project root)
+# Development (apps/backend unless noted)
+npm run dev:backend         # Start backend server (from project root → tsx watch src/nest/main.ts)
 npm run dev                 # Start backend server (from apps/backend)
+npm run build               # Compile (tsc -p tsconfig.build.json) + copy openapi.yaml
+npm run start               # Run the production build (node dist/nest/main.js)
 
 # Database
-npm run db:migrate         # Run migrations
+npm run db:migrate         # Run migrations (prisma migrate dev)
 npm run db:generate        # Generate Prisma client
 npm run db:seed            # Create test users (test@example.com / Test1234!)
 npm run db:studio          # Open Prisma Studio (GUI)
 npm run db:reset           # Reset database (WARNING: deletes data)
 
-# Vocabulary Data Migration (apps/backend)
-npm run migrate:clean      # Delete all vocabulary data
-npm run migrate:vocab      # Load 500 words from CSV files
-npm run migrate:categories # Load thematic categories
+# Quality
+npm run typecheck          # tsc --noEmit
+npm run lint               # eslint
 
 # Testing
-npm run test:backend       # Run backend tests (from project root)
-npm run test              # Run backend tests (from apps/backend)
-npm run test:watch        # Watch mode
-npm run test:coverage     # Coverage report
+npm run test               # Changed-scope tests (vitest run --changed)
+npm run test:full          # Full unit suite (vitest run)
+npm run test:integration   # Integration suite (vitest --config vitest.integration.config.ts)
+npm run test:coverage      # Coverage report
 ```
+
+> **Full script reference:** [`apps/backend/package.json`](../../../apps/backend/package.json) — the authoritative list (~50 scripts).
 
 ---
 
 ## Troubleshooting
 
-> **Troubleshooting Guide:** See [Troubleshooting Guide](./troubleshooting.md) for comprehensive debugging help.
->
-> Common issues covered:
->
-> - [CORS Errors](./troubleshooting.md#-cors-errors-persist)
-> - [Authentication Issues](./troubleshooting.md#-authentication-middleware-not-working)
-> - [Redis Connection Issues](./troubleshooting.md#-redis-connection-issues)
-> - [Database Connection Errors](./troubleshooting.md#-database-connection-errors)
-> - [Bcrypt/Native Modules](./troubleshooting.md#-bcryptnative-module-issues)
+> **Troubleshooting Guide:** See [Troubleshooting Guide](../operations/troubleshooting.md) for comprehensive debugging help (CORS, authentication, Redis, database, and native-module issues).
 
 ---
 
@@ -364,24 +287,24 @@ npm run test:coverage     # Coverage report
 
 ### Official Documentation
 
-- [Express.js Best Practices](https://expressjs.com/en/advanced/best-practice-security.html)
+- [NestJS Documentation](https://docs.nestjs.com)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [JWT.io](https://jwt.io/introduction) - JWT introduction
 
 ### Project Documentation
 
-- [Backend README](../../apps/backend/README.md) - Backend overview and deployment
-- [API Specification](../../apps/backend/docs/api-spec.md) - Endpoint reference
+- [Backend README](../../../apps/backend/README.md) - Backend overview, deployment, and API endpoints (authoritative)
+- [API Specification](../../../apps/backend/docs/api-spec.md) - Endpoint reference
 - [Environment Setup Guide](../getting-started/environment-setup.md) — All environment variables
 - [Redis Setup Guide](../setup/redis.md) — Redis caching and integration
 
 ### Knowledge Base
 
-- [Backend Architecture Patterns](../knowledge-base/backend/backend-architecture.md) - Layered architecture, CORS, middleware
-- [Authentication Concepts](../knowledge-base/backend/backend-authentication.md) - OAuth, SSO, session strategies
-- [PostgreSQL Setup & Migrations](../knowledge-base/backend/backend-database-postgres.md) - Connection pooling, migrations
-- [Caching Strategies](../knowledge-base/infrastructure/integration-caching.md) - Redis patterns, cache-aside
+- [Backend Architecture Patterns](../../knowledge-base/backend/backend-architecture.md) - Layered architecture, DI, error handling
+- [Authentication Concepts](../../knowledge-base/backend/backend-authentication.md) - OAuth, SSO, session strategies
+- [PostgreSQL Setup & Migrations](../../knowledge-base/backend/backend-database-postgres.md) - Connection pooling, migrations
+- [Caching Strategies](../../knowledge-base/infrastructure/integration-caching.md) - Redis patterns, cache-aside
 
 ---
 
-**Last Updated:** July 3, 2026
+**Last Updated:** August 22, 2026

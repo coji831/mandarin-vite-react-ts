@@ -3,25 +3,12 @@
  * @description NestJS `@Module` for the Review module (Story 24-11 — Review
  * Port + SRS Schema).
  *
- * 1:1 translation of `createReviewModule(deps)` in `modules/review/container.ts`,
- * wiring the same framework-agnostic service through Nest providers:
- *
- *   - `ReviewRepository` — self-imports the shared Prisma singleton (same as
- *     the Express path); provided via `useFactory`. Reads/writes the absorbed
- *     additive `SrsCardState` table (24-11 re-point; `ReviewItem` untouched).
- *   - `ReviewService` — constructor-injected with `ReviewRepository` (the same
- *     dep the container factory takes). Interval-doubling semantics preserved
- *     (FSRS scheduling is epic-34).
- *
- * `GuardsModule` is imported so the calibrated `RequireAuthGuard` (24-5) and
- * its `JwtService` dependency resolve in this module's context for the
- * controller's `@UseGuards(...)` decorators. `SharedModule` is NOT imported —
- * `ReviewService`/`ReviewRepository` self-import the shared Prisma singleton
- * like the characters/radicals ports (no external/cache/gemini deps).
- *
- * The Express wiring (`container.ts`, `api/ReviewController.ts`,
- * `api/reviewRoutes.ts`) is UNTOUCHED — this module coexists as the Nest shell
- * surface (dual-mode) and is deleted at the module's cutover (24-15).
+ * Wires `ReviewService` (constructor-injected with `ReviewRepository`, which
+ * reads/writes the absorbed additive `SrsCardState` table) via a `useFactory`
+ * provider and exports it. `GuardsModule` is imported so the calibrated
+ * `RequireAuthGuard` and its `JwtService` dependency resolve in this module's
+ * context. `SharedModule` is NOT imported — the service/repository self-import
+ * the shared Prisma singleton (no external/cache/gemini deps).
  */
 
 import { Module } from "@nestjs/common";

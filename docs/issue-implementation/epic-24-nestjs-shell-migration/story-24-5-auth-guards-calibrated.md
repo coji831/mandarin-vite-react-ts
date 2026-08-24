@@ -51,15 +51,15 @@ Port the three Express auth-middleware semantics to Nest guards targeting the **
 
 ```typescript
 // AuthGuard (authenticateToken semantics) — excerpts
-if (!token) throw new UnauthorizedException(AUTH_GUARD_ERRORS.missing);   // 401 MISSING_TOKEN
+if (!token) throw new UnauthorizedException(AUTH_GUARD_ERRORS.missing); // 401 MISSING_TOKEN
 try {
   decoded = this.jwtService.verifyAccessToken(token);
 } catch (error) {
   if (error instanceof Error && error.name === "TokenExpiredError")
-    throw new UnauthorizedException(AUTH_GUARD_ERRORS.expired);           // 401 TOKEN_EXPIRED
-  throw new ForbiddenException(AUTH_GUARD_ERRORS.invalid);                // 403 INVALID_TOKEN
+    throw new UnauthorizedException(AUTH_GUARD_ERRORS.expired); // 401 TOKEN_EXPIRED
+  throw new ForbiddenException(AUTH_GUARD_ERRORS.invalid); // 403 INVALID_TOKEN
 }
-attachAuthUser(req, decoded);                                             // req.user + req.userId
+attachAuthUser(req, decoded); // req.user + req.userId
 return true;
 ```
 
@@ -68,23 +68,26 @@ return true;
 ### Shared helpers — one home for the calibrated contract
 
 ```typescript
-export const ACCESS_TOKEN_COOKIE = "accessToken";   // httpOnly cookie fallback (inert today)
+export const ACCESS_TOKEN_COOKIE = "accessToken"; // httpOnly cookie fallback (inert today)
 
 export const AUTH_GUARD_ERRORS = {
-  missing:         { code: "MISSING_TOKEN", message: "Access token is required" },
-  expired:         { code: "TOKEN_EXPIRED", message: "Access token has expired" },
-  invalid:         { code: "INVALID_TOKEN", message: "Invalid access token" },
-  requireMissing:  { code: "AUTH_REQUIRED", message: "Please sign in to access this feature" },
-  requireExpired:  { code: "TOKEN_EXPIRED", message: "Your session has expired. Please sign in again." },
-} as const;   // code + message match authMiddleware.ts byte-for-byte
+  missing: { code: "MISSING_TOKEN", message: "Access token is required" },
+  expired: { code: "TOKEN_EXPIRED", message: "Access token has expired" },
+  invalid: { code: "INVALID_TOKEN", message: "Invalid access token" },
+  requireMissing: { code: "AUTH_REQUIRED", message: "Please sign in to access this feature" },
+  requireExpired: {
+    code: "TOKEN_EXPIRED",
+    message: "Your session has expired. Please sign in again.",
+  },
+} as const; // code + message match authMiddleware.ts byte-for-byte
 
 export function resolveAccessToken(req: Request): string | undefined {
   const authHeader = req.headers["authorization"];
   if (authHeader) {
-    const token = authHeader.split(" ")[1];          // Bearer TOKEN — same split as authMiddleware
+    const token = authHeader.split(" ")[1]; // Bearer TOKEN — same split as authMiddleware
     if (token) return token;
   }
-  return req.cookies?.[ACCESS_TOKEN_COOKIE] || undefined;   // calibrated cookie fallback
+  return req.cookies?.[ACCESS_TOKEN_COOKIE] || undefined; // calibrated cookie fallback
 }
 
 export function attachAuthUser(req: Request, decoded: TokenPayload): void {
@@ -99,9 +102,9 @@ The guards read the calibration spec's F6 contract through `OptionalAuthGuard` (
 
 ```typescript
 @Module({
-  imports: [SharedModule],                       // JwtService comes from SharedModule (24-4)
+  imports: [SharedModule], // JwtService comes from SharedModule (24-4)
   providers: [AuthGuard, OptionalAuthGuard, RequireAuthGuard],
-  exports: [SharedModule, AuthGuard, OptionalAuthGuard, RequireAuthGuard],  // re-export is load-bearing
+  exports: [SharedModule, AuthGuard, OptionalAuthGuard, RequireAuthGuard], // re-export is load-bearing
 })
 export class GuardsModule {}
 ```

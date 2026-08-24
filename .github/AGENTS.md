@@ -4,7 +4,7 @@ description: "Full-stack AI agent for the PinyinPal Mandarin learning platform"
 roles:
   - "Frontend-focused developer (React, hooks, stores, UI)"
   - "UIUX designer (Storybook-first Step 1 design — wireframe → approved shell, AI-slop prevention)"
-  - "Backend-focused developer (NestJS/Express migration, Prisma, API, DB)"
+  - "Backend-focused developer (NestJS migration, Prisma, API, DB)"
   - "Code reviewer (cross-cutting conventions)"
   - "Documentation writer (Docs Writer agent — BR/impl docs, KB, guides, verification artifacts, truth-check)"
 instructions:
@@ -71,26 +71,16 @@ agents:
   - ".github/agents/investigator.agent.md"
   - ".github/agents/orchestrator.agent.md"
   - ".github/agents/uiux-designer.agent.md"
-last-verified: 2026-08-20
+last-verified: 2026-08-24
 prohibitions:
   - "NEVER hardcode color, spacing, or typography values — use CSS variables or DESIGN.md tokens"
   - "NEVER create a new Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser — import from src/shared/components/"
   - "NEVER store state in components/ — use stores/ directories"
   - "NEVER call apiClient directly from hooks or components — use service layer"
   - "NEVER bypass CSS import restrictions with eslint-disable"
-  - "NEVER stage, commit, or push without an explicit \"commit allowed\" from the user — default is review-before-commit (ambiguous words like \"proceed\" are NOT approval)"
+  - 'NEVER stage, commit, or push without an explicit "commit allowed" from the user — default is review-before-commit (ambiguous words like "proceed" are NOT approval)'
 ---
 
 ## UI Codegen Protocol
 
-Before writing any UI, load the design-system context pack and treat the Storybook MCP as the component source of truth:
-
-1. **Load the context pack**: `DESIGN.md` (tokens) + `apps/frontend/src/styles/globals.css` (1:1 CSS vars + utilities) + `.github/component-registry.json` (allowed components) + `.github/page-inventory.json` (page contract) + `.github/instructions/ui-composition.instructions.md` (layout rules) + one archetype exemplar story from `docs/guides/design/page-archetypes.md`.
-2. **Query the Storybook MCP first — never invent a component.** Compose from `shared/components` (barrel re-exports) only. If the registry already covers a need, reuse it with props.
-3. **Strict prompt, real names:**
-   - ❌ **Bad:** "Make a modern settings page with a form and a toggle."
-   - ✅ **Good:** "Build the epic-26 guest-lane page. Use ONLY tokens from `DESIGN.md`/`globals.css` (`--surface-dark`, `--color-primary`, `--space-md/lg`, `--radius-sm/md`, `--font-*`). Compose ONLY from `component-registry.json` — `Box variant='dark'` for sections, `Card` for items, `Button variant='primary'` for the single CTA, `FilterChip` for filters, `GuestUpsell` for the guest gate. No raw `<button>`, no hex, no arbitrary spacing, no `.module.css` unless justified. Query the Storybook MCP for the real prop APIs first. Match the structure of the ReviewView exemplar story."
-4. **Golden Template**: match the archetype's exemplar story — the default `focus-task` exemplar is `ReviewView` (`apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx`). Never build from blank.
-5. **Gate rule**: Step 1 Storybook story (no logic) → user preview gate → Step 2. Structural work is AI-safe; token/component/forbidden-decoration decisions are human-gated.
-
-The page archetype + composition map are the strict constraints — see `docs/guides/design/page-archetypes.md`.
+**UI Codegen Protocol:** see `.github/instructions/uiux-design-protocol.instructions.md` §Storybook MCP + Context Pack — Storybook MCP is the component source of truth; never invent a component.

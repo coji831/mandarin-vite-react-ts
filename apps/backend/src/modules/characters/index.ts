@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/characters/index.ts
  * @description Characters module barrel exports (framework-agnostic surface
- * only — the Express HTTP layer was removed at the 24-15 cutover).
+ * only).
  */
 export { CharactersService } from "./services/CharactersService.js";
 export { CharactersRepository } from "./repositories/CharactersRepository.js";

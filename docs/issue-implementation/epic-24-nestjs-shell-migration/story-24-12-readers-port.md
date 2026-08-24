@@ -76,9 +76,27 @@ Port the `readers` module (11 routes) to the NestJS 11 shell with contract-ident
     },
     {
       provide: ReadersService,
-      useFactory: (repository, passageGenService, segmenterService, cacheService, readersAudioService) =>
-        new ReadersService(repository, passageGenService, segmenterService, cacheService, readersAudioService),
-      inject: [ReadersRepository, PassageGenerationService, SegmenterService, CacheService, ReadersAudioService],
+      useFactory: (
+        repository,
+        passageGenService,
+        segmenterService,
+        cacheService,
+        readersAudioService,
+      ) =>
+        new ReadersService(
+          repository,
+          passageGenService,
+          segmenterService,
+          cacheService,
+          readersAudioService,
+        ),
+      inject: [
+        ReadersRepository,
+        PassageGenerationService,
+        SegmenterService,
+        CacheService,
+        ReadersAudioService,
+      ],
     },
   ],
   exports: [ReadersService],

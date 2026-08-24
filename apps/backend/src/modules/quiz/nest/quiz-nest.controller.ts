@@ -1,17 +1,14 @@
 /**
  * @file apps/backend/src/modules/quiz/nest/quiz-nest.controller.ts
  * @description NestJS controller for the quiz module (Story 24-13 — Quiz +
- * Progression Port). Mirrors `api/QuizController.ts` (Express) 1:1 plus the
- * AI-feedback handler from `api/aiFeedbackRoutes.ts` — same query/body/path
- * parsing + string coercion, same service delegation, same 2xx JSON (incl. the
- * guest mock attempt/answer/completion shapes), same 4xx/5xx `code`/`message`
- * (the global 24-3 `AppExceptionFilter` serializes thrown `HttpException`s
- * into the `{ code, message, requestId }` envelope; `code`/`message` are
- * byte-for-byte equal to the Express controller's legacy `{ error, code }`
- * body).
+ * + Progression Port). Same query/body/path parsing + string coercion, same
+ * service delegation, same 2xx JSON (incl. the guest mock attempt/answer/
+ * completion shapes), same 4xx/5xx `code`/`message` (the global 24-3
+ * `AppExceptionFilter` serializes thrown `HttpException`s into the
+ * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
+ * equal to the previous surface's legacy `{ error, code }` body).
  *
- * Routes (verbatim from `api/quizRoutes.ts` + `api/aiFeedbackRoutes.ts` —
- * ROUTE_PATTERNS):
+ * Routes (ROUTE_PATTERNS):
  *   - `GET  /v1/quiz/config`        → `@Get("config")`            → optionalAuth
  *   - `GET  /v1/quiz/questions`     → `@Get("questions")`         → optionalAuth
  *   - `POST /v1/quiz/attempts`      → `@Post("attempts")`         → optionalAuth
@@ -23,7 +20,7 @@
  * (The sandhi-drill route lives on `SandhiDrillNestController` — 1:1 with the
  * Express `SandhiDrillController`.)
  *
- * Guard mapping (verbatim from `api/quizRoutes.ts` + `api/aiFeedbackRoutes.ts`):
+ * Guard mapping:
  * the guest quiz SUBMIT surface (`config`, `questions`, `attempts` POST,
  * `attempts/:id/answers`, `attempts/:id/complete`) → the CALIBRATED
  * `OptionalAuthGuard` (24-5) — a guest proceeds with `req.userId` UNDEFINED
@@ -66,8 +63,8 @@ import { RequireAuthGuard } from "../../../nest/guards/require-auth.guard.js";
 const logger = createLogger("QuizNestController");
 
 /**
- * Build the AI-feedback prompt — byte-for-byte `buildFeedbackPrompt` from
- * `api/aiFeedbackRoutes.ts`.
+ * Build the AI-feedback prompt — `buildFeedbackPrompt`, byte-for-byte with the
+ * previous Express feedback surface.
  */
 function buildFeedbackPrompt(params: {
   wordId: string;
@@ -293,11 +290,11 @@ export class QuizNestController {
 
   /**
    * POST /v1/quiz/feedback
-   * Generate an AI-powered explanation for an incorrect quiz answer (1:1 with
-   * `api/aiFeedbackRoutes.ts` — GeminiService directly, no intermediate
-   * service). requireAuth — AI/vendor-cost generation is registered-only
-   * (S11/P11: guests never incur generation cost). @HttpCode(200) mirrors the
-   * Express `res.json(...)`.
+   * Generate an AI-powered explanation for an incorrect quiz answer
+   * (GeminiService directly, no intermediate service). requireAuth —
+   * AI/vendor-cost generation is registered-only (S11/P11: guests never incur
+   * generation cost). @HttpCode(200) mirrors the previous surface's
+   * `res.json(...)`.
    */
   @Post("feedback")
   @HttpCode(200)

@@ -2,17 +2,12 @@
  * @file apps/backend/src/modules/words/nest/words.module.ts
  * @description NestJS `@Module` for the Words module (Story 24-2 shell).
  *
- * 1:1 translation of `createWordsModule()` in `modules/words/container.ts`
- * (see docs/knowledge-base/backend/module-level-containers.md). Repositories
- * self-import the Prisma singleton — no shared infra module needed yet.
- *
- * Uses explicit `useFactory` providers + `@Inject()` decorators (NOT auto
- * constructor-param injection) because `tsx` (esbuild) does not emit decorator
+ * Wires `WordsService` + `MeasureWordService` (each constructor-injected with
+ * its repository) via explicit `useFactory` providers, and exports both
+ * services for module-to-module Nest DI. Repositories self-import the Prisma
+ * singleton, so no `SharedModule` is needed. `useFactory` + `@Inject()` (not
+ * auto constructor-param injection) because tsx/esbuild emits no decorator
  * metadata in the dev loop; the compiled tsc build gets metadata for free.
- *
- * The Express wiring (`container.ts`, `api/WordsController.ts`,
- * `api/WordsRoutes.ts`) is UNTOUCHED — this module coexists as the Nest shell
- * surface and is deleted at the module's cutover (24-15).
  */
 
 import { Module } from "@nestjs/common";

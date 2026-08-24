@@ -1,7 +1,7 @@
 ---
 purpose: IaC migration — Phase 1 deployment runbook
 status: active
-last-verified: 2026-07-04
+last-verified: 2026-08-23
 type: guide
 ---
 
@@ -191,10 +191,12 @@ Items that CANNOT be automated via Terraform.
 | ------------------- | ---------------------------------------- | --------------------------- |
 | Service Source      | GitHub: `coji831/mandarin-vite-react-ts` | Service → Settings → Source |
 | Branch              | `main`                                   | Service → Settings → Source |
-| Root Directory      | `apps/backend`                           | Service → Settings          |
+| Root Directory      | _leave unset (repository root)_          | Service → Settings          |
 | Region              | `asia-southeast1-eqsg3a` (Singapore)     | Service → Settings → Region |
 | Healthcheck Path    | `/api/v1/health`                         | Service → Settings          |
 | Healthcheck Timeout | `300`                                    | Service → Settings          |
+
+> **Corrected 2026-08-23:** the **Root Directory must be left unset** (Railway builds with cwd = the repository root), NOT `apps/backend`. The `railway.toml` build command is repo-root-relative — `npx prisma generate --schema=apps/backend/prisma/schema.prisma` + `npm run build --workspace=@mandarin/shared-utils` / `--workspace=@mandarin/backend` — so a `Root Directory` of `apps/backend` would resolve `--schema=apps/backend/...` to `apps/backend/apps/backend/...` (nonexistent) and fail the root `--workspace` flags (see `docs/guides/operations/deployment.md` § Backend (Railway), which matches the committed `apps/backend/railway.toml`). This row was wrong from when it was written (2026-07-04); it is corrected here.
 
 #### Environment Variables (14 vars)
 

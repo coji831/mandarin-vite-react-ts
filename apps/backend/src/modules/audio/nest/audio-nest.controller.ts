@@ -3,15 +3,13 @@
  * @description NestJS controller for the TTS route (Story 24-10 — Audio +
  * Health Port).
  *
- * Mirrors `api/AudioController.ts` (Express) 1:1 — `POST /v1/tts` verbatim:
- * the same `{ text, voice = voiceDefault }` body read, the same delegation to
- * the `AudioService` facade (reused unchanged — GCS exists-check → sign or
+ * `POST /v1/tts` verbatim: the same `{ text, voice = voiceDefault }` body read,
+ * the same delegation to the `AudioService` facade (GCS exists-check → sign or
  * synthesize+upload+sign, `{ audioUrl, cached }`), and the same 2xx JSON
  * `{ audioUrl, cached }`. Validation / upstream failures are thrown by the
  * service and serialized by the global 24-3 `AppExceptionFilter` into the
- * `{ code, message, requestId }` envelope — identical status + body to the
- * Express `errorHandler.ts` (`validationError` → 400 `VALIDATION_ERROR`;
- * `classifyTtsError` → 500 `TTS_ERROR`).
+ * `{ code, message, requestId }` envelope — `validationError` → 400
+ * `VALIDATION_ERROR`, `classifyTtsError` → 500 `TTS_ERROR`.
  *
  * ## Calibrated `optionalAuth` (F5 — the post-epic-25-calibrated TTS surface)
  * `@UseGuards(OptionalAuthGuard)` mirrors the Express `optionalAuth` mount:

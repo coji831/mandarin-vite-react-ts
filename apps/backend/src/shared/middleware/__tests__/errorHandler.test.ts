@@ -1,7 +1,7 @@
 // apps/backend/src/shared/middleware/__tests__/errorHandler.test.ts
-// Test for requestIdMiddleware (the Express errorHandler was removed at the
-// 24-15 cutover — its envelope is reproduced by the Nest AppExceptionFilter,
-// covered by the integration parity harness).
+// Test for requestIdMiddleware (the Express errorHandler's envelope is
+// reproduced by the Nest AppExceptionFilter, covered by the integration
+// parity harness).
 
 import { describe, test, expect, beforeEach } from "vitest";
 import express from "express";

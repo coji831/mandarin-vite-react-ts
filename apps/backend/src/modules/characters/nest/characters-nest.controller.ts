@@ -3,32 +3,28 @@
  * @description NestJS controller for character data endpoints (Story 24-8 —
  * Characters + Mnemonics Port).
  *
- * Mirrors `api/CharactersController.ts` (Express) 1:1 — same validation regex,
- * same service delegation, same 2xx JSON, same 4xx `code`/`message` (the
- * global 24-3 `AppExceptionFilter` serializes thrown `HttpException`s into the
- * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
- * equal to the Express controller's `{ error, code }` legacy body — `error`
- * is the legacy key superseded by the envelope, per the established 24-5
- * parity contract).
+ * Same validation regex, same service delegation, same 2xx JSON, same 4xx
+ * `code`/`message` (the global 24-3 `AppExceptionFilter` serializes thrown
+ * `HttpException`s into the `{ code, message, requestId }` envelope; `code`/
+ * `message` are byte-for-byte equal to the previous surface's `{ error, code }`
+ * legacy body — `error` is the legacy key superseded by the envelope, per the
+ * established 24-5 parity contract).
  *
- * ROUTE ORDER NOTE (parity-critical): `:glyph` is declared FIRST, exactly as
- * in `api/charactersRoutes.ts`. In Express (and Nest — both use path-to-regexp
- * matching in registration order), `GET /v1/characters/search` and
- * `GET /v1/characters/frequency` are matched by the `:glyph` route BEFORE the
- * literal `/search` / `/frequency` routes, so they return 400 "Invalid
- * character glyph" (glyph = "search"/"frequency" fails the CJK regex). This is
- * a PRE-EXISTING latent behavior on the live Express app (no frontend consumer
- * calls those two paths today) and is reproduced here byte-for-byte so the
- * Nest↔Express parity harness stays green. The `search`/`frequency` handlers
- * are still ported (declared after `:glyph`, so they shadow identically); the
- * underlying 2xx search/frequency logic is covered by the CharactersService
- * unit tests. If a future story reorders `charactersRoutes.ts`, the same
- * reorder here activates the full routes.
+ * ROUTE ORDER NOTE (parity-critical): `:glyph` is declared FIRST — both
+ * surfaces match in registration order (path-to-regexp, first-match-wins), so
+ * `GET /v1/characters/search` and `/frequency` are matched by the `:glyph`
+ * route BEFORE the literal `/search` / `/frequency` routes and return 400
+ * "Invalid character glyph" (glyph = "search"/"frequency" fails the CJK
+ * regex). This is a PRE-EXISTING latent behavior (no frontend consumer calls
+ * those two paths today), reproduced byte-for-byte so the Nest↔Express parity
+ * harness stays green. The `search`/`frequency` handlers are still ported
+ * (declared after `:glyph`, so they shadow identically); their 2xx logic is
+ * covered by the CharactersService unit tests. If a future story reorders the
+ * route declarations, the same reorder here activates the full routes.
  *
- * Route patterns are copied verbatim from `api/charactersRoutes.ts`
- * (`ROUTE_PATTERNS.charactersByGlyph` / `charactersPhonetic` /
+ * Routes: `ROUTE_PATTERNS.charactersByGlyph` / `charactersPhonetic` /
  * `charactersHomophones` / `charactersDecomposition` / `charactersSearch` /
- * `charactersFrequency`).
+ * `charactersFrequency`.
  */
 
 import {

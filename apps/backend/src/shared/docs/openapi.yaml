@@ -3,9 +3,24 @@ info:
   title: Mandarin Learning Platform API
   version: 1.0.0
   description: |
-    Production backend API for Mandarin vocabulary learning and AI-powered conversation generation. 
-    All endpoints are versioned under /api/v1. 
-    Authentication required for AI services (TTS) to control API costs.
+    Production backend API for Mandarin vocabulary learning and AI-powered
+    conversation generation. All endpoints are versioned under /api/v1.
+
+    This reference documents the full NestJS 11 route surface: 54 route paths
+    across the 15 backend modules (audio, auth, characters, chengyu,
+    foundations, grammar, health, mnemonics, phonetic-clusters, progression,
+    quiz, radicals, readers, review, words — pinyin lives under foundations).
+
+    Authentication model (per route):
+      - Public — no auth required (static reference data, health, auth
+        register/login/refresh/logout).
+      - Required auth — `Authorization: Bearer <access_token>`; user-scoped
+        state or AI/vendor-cost generation (`RequireAuthGuard`).
+      - Optional auth — bearer token is best-effort (`OptionalAuthGuard`): an
+        absent or invalid token proceeds as a guest (`req.userId` undefined),
+        never 401. Guest responses are session-local/empty shapes.
+
+    All 4xx/5xx errors use the `{ code, message, requestId }` envelope.
   contact:
     name: API Support
 
@@ -21,7 +36,33 @@ tags:
   - name: Authentication
     description: User authentication and session management
   - name: TTS
-    description: Text-to-speech synthesis
+    description: Text-to-speech synthesis (audio module)
+  - name: Progression
+    description: Phase gates, foundation and radical progress tracking
+  - name: Quiz
+    description: Quiz config, questions, attempts, and AI feedback
+  - name: Review
+    description: Spaced-repetition review items and ratings
+  - name: Radicals
+    description: Radical reference data
+  - name: Foundations
+    description: Pinyin, tones, and strokes reference data
+  - name: Characters
+    description: Character detail, decomposition, phonetic, and homophone data
+  - name: Words
+    description: Word detail and measure words
+  - name: Mnemonics
+    description: AI-generated and user-edited mnemonic stories
+  - name: Phonetic Clusters
+    description: Phonetic cluster reference data
+  - name: Pinyin
+    description: Pinyin search
+  - name: Grammar
+    description: Grammar pattern reference data
+  - name: Chengyu
+    description: Chengyu (four-character idiom) reference data
+  - name: Readers
+    description: Reading passages, sessions, and bookmarks
 
 components:
   securitySchemes:
@@ -37,73 +78,135 @@ components:
       description: HTTP-only refresh token cookie
 
   schemas:
-    Error:
+    ErrorEnvelope:
       type: object
+      description: |
+        Standard error envelope — the global 24-3 `AppExceptionFilter`
+        serializes every thrown `HttpException` into this shape.
       properties:
-        error:
-          type: string
-          description: Error message
         code:
           type: string
-          description: Error code
-        details:
-          type: object
-          description: Additional error details
+          description: Machine-readable error code
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: Human-readable error message
+        requestId:
+          type: string
+          description: Request ID (echoes the `X-Request-Id` response header)
       required:
-        - error
+        - code
+        - message
+        - requestId
+
+    SuccessEnvelope:
+      type: object
+      description: Standard success wrapper used by the auth endpoints
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          nullable: true
+        message:
+          type: string
+          nullable: true
+      required:
+        - success
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          description: Process uptime in seconds
+        services:
+          type: object
+          properties:
+            gemini:
+              type: boolean
+              description: Gemini API reachable
+            tts:
+              type: boolean
+              description: TTS service healthy
+        cache:
+          type: object
+          properties:
+            redis:
+              type: object
+              properties:
+                connected:
+                  type: boolean
+      required:
+        - status
+        - timestamp
+        - uptime
+        - services
+        - cache
 
 paths:
+  # ══════════════════════════════════════════════════════════════════
+  # System — health
+  # ══════════════════════════════════════════════════════════════════
   /v1/health:
     get:
       summary: Health check endpoint
       tags:
         - System
-      description: Returns operational status of backend services and external dependencies
+      description: |
+        Returns operational status of backend services and external
+        dependencies (Gemini, TTS, Redis). Public — no authentication.
       responses:
         "200":
           description: System is operational
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-                  mode:
-                    type: string
-                    example: real
-                  timestamp:
-                    type: string
-                    format: date-time
-                  services:
-                    type: object
-                    properties:
-                      gemini:
-                        type: boolean
-                      tts:
-                        type: boolean
-                  cache:
-                    type: object
-                    properties:
-                      redis:
-                        type: object
-                        properties:
-                          connected:
-                            type: boolean
+                $ref: "#/components/schemas/HealthResponse"
         "500":
           description: Health check failed
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorEnvelope"
 
+  # ══════════════════════════════════════════════════════════════════
+  # Authentication — auth
+  # ══════════════════════════════════════════════════════════════════
   /v1/auth/register:
     post:
       summary: Register a new user
       tags:
         - Authentication
-      description: Creates a new user account with email and password
+      description: |
+        Creates a new user account with email and password. Public. Sets the
+        httpOnly `refreshToken` cookie (7-day, Secure in production).
+        Rate-limited by the brute-force limiter.
       requestBody:
         required: true
         content:
@@ -120,6 +223,9 @@ paths:
                 password:
                   type: string
                   minLength: 8
+                  description: At least 8 chars with upper/lowercase and a number
+                displayName:
+                  type: string
       responses:
         "201":
           description: User registered successfully
@@ -128,27 +234,43 @@ paths:
               schema:
                 type: object
                 properties:
-                  user:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
                     type: object
-                  accessToken:
-                    type: string
+                    properties:
+                      user:
+                        $ref: "#/components/schemas/User"
+                      accessToken:
+                        type: string
         "400":
-          description: Validation error or weak password
+          description: Missing fields (MISSING_FIELDS) or weak password (INVALID_PASSWORD)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorEnvelope"
         "409":
-          description: User already exists
+          description: User already exists (USER_EXISTS)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
         "429":
           description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 
   /v1/auth/login:
     post:
       summary: Login user
       tags:
         - Authentication
-      description: Authenticates user and returns JWT tokens
+      description: |
+        Authenticates a user and returns JWT tokens. Public. Sets the httpOnly
+        `refreshToken` cookie. Rate-limited (5 attempts/minute/IP).
       requestBody:
         required: true
         content:
@@ -172,21 +294,45 @@ paths:
               schema:
                 type: object
                 properties:
-                  user:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
                     type: object
-                  accessToken:
-                    type: string
+                    properties:
+                      user:
+                        $ref: "#/components/schemas/User"
+                      accessToken:
+                        type: string
+        "400":
+          description: Missing fields (MISSING_FIELDS)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
         "401":
-          description: Invalid credentials
+          description: Invalid credentials (INVALID_CREDENTIALS)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
         "429":
           description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 
   /v1/auth/refresh:
     post:
       summary: Refresh access token
       tags:
         - Authentication
-      description: Rotates refresh token and provides new access token
+      security:
+        - cookieAuth: []
+      description: |
+        Rotates the refresh token (read from the httpOnly `refreshToken`
+        cookie) and issues a new access token. Public — matches Express.
       responses:
         "200":
           description: Token refreshed
@@ -195,20 +341,57 @@ paths:
               schema:
                 type: object
                 properties:
-                  accessToken:
-                    type: string
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+        "400":
+          description: Refresh token missing (MISSING_TOKEN)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
         "401":
-          description: Invalid refresh token
+          description: Invalid or expired refresh token (INVALID_TOKEN)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 
   /v1/auth/logout:
     post:
       summary: Logout user
       tags:
         - Authentication
-      description: Invalidates refresh token
+      security:
+        - cookieAuth: []
+      description: |
+        Invalidates the refresh token and clears the httpOnly `refreshToken`
+        cookie. Public — matches Express.
       responses:
         "200":
           description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged out successfully
+        "400":
+          description: Refresh token missing (MISSING_REFRESH_TOKEN; cookie still cleared)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 
   /v1/auth/me:
     get:
@@ -217,7 +400,7 @@ paths:
         - Authentication
       security:
         - bearerAuth: []
-      description: Returns authenticated user's profile
+      description: Returns the authenticated user's profile (required auth).
       responses:
         "200":
           description: User profile
@@ -226,23 +409,41 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  email:
-                    type: string
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: "#/components/schemas/User"
         "401":
-          description: Unauthorized
+          description: Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: User not found (USER_NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 
+  # ══════════════════════════════════════════════════════════════════
+  # TTS — audio
+  # ══════════════════════════════════════════════════════════════════
   /v1/tts:
     post:
       summary: Generate text-to-speech audio
       tags:
         - TTS
-      security:
-        - bearerAuth: []
       description: |
-        Synthesizes Chinese text to speech using Google Cloud TTS. 
-        Results are cached for 24 hours to reduce API costs.
+        Resolves a browser-playable TTS audio URL for the given Hanzi text.
+        Optional auth: guests get cache-first free reads (a GCS cache hit
+        re-signs a fresh 1-hour URL with `cached: true` and no billable
+        generation); a valid token attaches the user. Results are cached for
+        24 hours.
       requestBody:
         required: true
         content:
@@ -254,35 +455,2380 @@ paths:
               properties:
                 text:
                   type: string
-                  description: Chinese text to synthesize (1-15 words)
+                  description: Chinese text to synthesize
                   example: 你好
                 voice:
                   type: string
-                  description: Voice identifier
+                  description: TTS voice identifier (defaults to config voiceDefault)
                   default: cmn-CN-Wavenet-B
                   example: cmn-CN-Wavenet-B
       responses:
         "200":
-          description: Audio URL generated successfully
+          description: Audio URL resolved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - audioUrl
+                  - cached
+                properties:
+                  audioUrl:
+                    type: string
+                    description: Short-lived (1h) signed GCS URL to the MP3 audio file
+                    example: https://storage.googleapis.com/bucket/tts/abc123.mp3
+                  cached:
+                    type: boolean
+                    description: true = MP3 already existed in GCS; false = freshly synthesized
+        "400":
+          description: Validation error — text is required (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: TTS generation or GCS upload failed (TTS_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Progression
+  # ══════════════════════════════════════════════════════════════════
+  /v1/progression/foundation-progress:
+    get:
+      summary: Get foundation section progress
+      tags:
+        - Progression
+      description: |
+        Fetches the user's foundation section progress (auto-initializes four
+        records when none exist). Optional auth — a guest receives `[]`.
+      responses:
+        "200":
+          description: Foundation progress records (empty array for guests)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Failed to fetch foundation progress (LOAD_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/progression/foundation-progress/{sectionId}:
+    put:
+      summary: Mark a foundation section completed
+      tags:
+        - Progression
+      security:
+        - bearerAuth: []
+      description: Marks a foundation section as completed (required auth).
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Foundation section identifier
+      responses:
+        "200":
+          description: Updated progress record
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid sectionId (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to mark section completed (UPDATE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/progression/phase-gate:
+    get:
+      summary: Get phase gate status
+      tags:
+        - Progression
+      description: |
+        Fetches the user's phase gate status (auto-creates with defaults when
+        none exists). Optional auth — a guest receives the calibrated guest
+        gate (`currentPhase: 1, isGuest: true`).
+      responses:
+        "200":
+          description: Phase gate object
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to fetch phase gate (LOAD_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    put:
+      summary: Update phase gate progression
+      tags:
+        - Progression
+      security:
+        - bearerAuth: []
+      description: Updates phase gate progression after a quiz attempt (required auth).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phase:
+                  type: number
+                passed:
+                  type: boolean
+                gateCriteria:
+                  type: string
+      responses:
+        "200":
+          description: Updated phase gate object
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to update phase gate (UPDATE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/progression/gates:
+    get:
+      summary: Get computed gate statuses
+      tags:
+        - Progression
+      description: |
+        Fetches COMPUTED gate statuses (Phase 2 IME, character count >= 500,
+        Phase 3→4 comprehension). Optional auth — a CALIBRATED guest is
+        Phase-1-only, so the Phase 2+ gates are not passed.
+      responses:
+        "200":
+          description: Computed gate statuses
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  audioUrl:
-                    type: string
-                    description: Public URL to MP3 audio file
-                    example: https://storage.googleapis.com/bucket/tts/abc123.mp3
-                  cached:
-                    type: boolean
-                    description: Whether result was served from cache
-        "400":
-          description: Validation error (empty text, too many words)
+                  phase2Gate:
+                    type: object
+                  characterCountGate:
+                    type: object
+                  phase3To4Gate:
+                    type: object
+        "500":
+          description: Failed to load gate status (LOAD_FAILED)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Unauthorized (missing or invalid JWT)
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/progression/radical-progress:
+    get:
+      summary: Get radical progress
+      tags:
+        - Progression
+      description: |
+        Fetches the user's radical progress records. Optional auth — a guest
+        receives `[]`.
+      responses:
+        "200":
+          description: Radical progress records (empty array for guests)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
         "500":
-          description: TTS generation failed
+          description: Failed to load radical progress (LOAD_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/progression/radical-progress/{radicalId}:
+    put:
+      summary: Create or update radical progress
+      tags:
+        - Progression
+      security:
+        - bearerAuth: []
+      description: |
+        Creates or updates radical progress. When `memorized: true`, a
+        ReviewItem side-effect is fired (required auth).
+      parameters:
+        - name: radicalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Radical business key (e.g. rad_XXXX)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                memorized:
+                  type: boolean
+                recognitionLevel:
+                  type: number
+      responses:
+        "200":
+          description: Updated progress record
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid radicalId (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to update radical progress (UPDATE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Quiz
+  # ══════════════════════════════════════════════════════════════════
+  /v1/quiz/config:
+    get:
+      summary: Get quiz config
+      tags:
+        - Quiz
+      description: |
+        Fetches config for one quiz type, or all registered strategies when no
+        type is given. Optional auth — public strategy metadata.
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Quiz strategy type
+      responses:
+        "200":
+          description: Quiz config object(s)
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to get quiz config (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/questions:
+    get:
+      summary: Generate quiz questions
+      tags:
+        - Quiz
+      description: |
+        Generates questions for a quiz type by delegating to the registered
+        strategy. Optional auth — the strategy pool is shared/public content.
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Quiz strategy type (default audio-to-pinyin-tone)
+        - name: count
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of questions (default 20)
+      responses:
+        "200":
+          description: Generated questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Failed to generate questions (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/attempts:
+    get:
+      summary: Get user's quiz attempts
+      tags:
+        - Quiz
+      security:
+        - bearerAuth: []
+      description: Fetches a user's quiz attempts (required auth — a guest is rejected 401).
+      responses:
+        "200":
+          description: Quiz attempts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to fetch quiz attempts (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Create a quiz attempt
+      tags:
+        - Quiz
+      description: |
+        Creates a quiz attempt. Optional auth — a guest receives a
+        session-local mock attempt (201, no persistence).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quizType:
+                  type: string
+                phase:
+                  type: number
+                metadata:
+                  type: object
+                passageId:
+                  type: string
+      responses:
+        "201":
+          description: Quiz attempt created (guest mock or persisted attempt)
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to create quiz attempt (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/attempts/{id}/answers:
+    post:
+      summary: Submit an answer to a quiz attempt
+      tags:
+        - Quiz
+      description: |
+        Submits an answer to a quiz attempt. Optional auth — a guest receives a
+        session-local mock answer (correctness computed locally, no
+        persistence).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quiz attempt ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionIndex:
+                  type: integer
+                pinyinInput:
+                  type: string
+                selectedTone:
+                  type: integer
+                correctPinyin:
+                  type: string
+                correctTone:
+                  type: integer
+                category:
+                  type: string
+      responses:
+        "200":
+          description: Answer result (guest mock or persisted answer)
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to submit answer (VALIDATION_ERROR / INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/attempts/{id}/complete:
+    put:
+      summary: Complete a quiz attempt
+      tags:
+        - Quiz
+      description: |
+        Completes a quiz attempt and evaluates it against the strategy's pass
+        threshold. Optional auth — a guest receives a session-local mock
+        completion (no pass signal, no persistence).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quiz attempt ID
+      responses:
+        "200":
+          description: Completion result (guest mock or persisted evaluation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalScore:
+                    type: integer
+                  maxScore:
+                    type: integer
+                  passed:
+                    type: boolean
+                  accuracy:
+                    type: number
+        "500":
+          description: Failed to complete quiz attempt (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/feedback:
+    post:
+      summary: Generate AI feedback for an incorrect answer
+      tags:
+        - Quiz
+      security:
+        - bearerAuth: []
+      description: |
+        Generates an AI-powered explanation for an incorrect quiz answer via
+        Gemini (required auth — AI/vendor-cost generation is registered-only).
+        Rate-limited (10/min per user).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wordId
+                - userAnswer
+                - correctAnswer
+                - questionType
+              properties:
+                wordId:
+                  type: string
+                userAnswer:
+                  type: string
+                correctAnswer:
+                  type: string
+                questionType:
+                  type: string
+                  example: tone_audio
+      responses:
+        "200":
+          description: AI-generated explanation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  explanation:
+                    type: string
+                  errorType:
+                    type: string
+                    example: ai_feedback
+        "400":
+          description: Missing required fields (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/quiz/sandhi-drill/questions:
+    get:
+      summary: Get sandhi drill questions
+      tags:
+        - Quiz
+      description: |
+        Returns an array of sandhi drill `DrillQuestion` objects. Optional auth
+        — the strategy pool is shared/public content.
+      parameters:
+        - name: count
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of questions (default 10)
+      responses:
+        "200":
+          description: Sandhi drill questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Invalid count (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load sandhi drill questions (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Review
+  # ══════════════════════════════════════════════════════════════════
+  /v1/review/items:
+    get:
+      summary: Get review items
+      tags:
+        - Review
+      security:
+        - bearerAuth: []
+      description: |
+        Fetches the authenticated user's review items. Required auth —
+        user-scoped SRS reads.
+      parameters:
+        - name: source
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Source filter — due | recent | all (default due)
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional item-type prefix filter
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Result limit (default 20)
+      responses:
+        "200":
+          description: Review items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to fetch review items (LOAD_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/review/result:
+    post:
+      summary: Record a review rating
+      tags:
+        - Review
+      security:
+        - bearerAuth: []
+      description: |
+        Records a rating (again/good/easy) for a review item and computes the
+        next review date. Required auth — writes user-scoped SRS state.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - itemType
+                - itemId
+                - rating
+              properties:
+                itemType:
+                  type: string
+                  description: e.g. radical, character, word
+                itemId:
+                  type: string
+                rating:
+                  type: string
+                  enum:
+                    - again
+                    - good
+                    - easy
+      responses:
+        "200":
+          description: Next review date / updated item result
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid itemType or rating (MISSING_FIELDS)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to record rating (UPDATE_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/review/due-count:
+    get:
+      summary: Get due review count
+      tags:
+        - Review
+      security:
+        - bearerAuth: []
+      description: Counts the authenticated user's due SRS rows. Required auth.
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional item-type prefix filter
+      responses:
+        "200":
+          description: Due count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to fetch due count (LOAD_FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Radicals
+  # ══════════════════════════════════════════════════════════════════
+  /v1/radicals:
+    get:
+      summary: List all radicals
+      tags:
+        - Radicals
+      description: Returns all radicals from the Radical reference table. Public.
+      responses:
+        "200":
+          description: All radicals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Failed to load radicals (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/radicals/{radicalId}:
+    get:
+      summary: Get a radical by ID
+      tags:
+        - Radicals
+      description: |
+        Returns a single radical by business-key ID (e.g. rad_0001). Unknown
+        IDs return `200 null` — a byte-for-byte mirror of the Express
+        `res.json(null)`. Public.
+      parameters:
+        - name: radicalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Radical business key (e.g. rad_0001)
+      responses:
+        "200":
+          description: Radical object, or literal null for an unknown ID
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        "404":
+          description: Load failure (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/radicals/character/{glyph}:
+    get:
+      summary: Get radicals composing a character
+      tags:
+        - Radicals
+      description: Returns radicals that compose the given character glyph. Public.
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Chinese character glyph
+      responses:
+        "200":
+          description: Radicals composing the character
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Failed to load radicals for character (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/radicals/{radicalId}/characters:
+    get:
+      summary: Get characters associated with a radical
+      tags:
+        - Radicals
+      description: Returns characters associated with the given radical. Public.
+      parameters:
+        - name: radicalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Radical business key (e.g. rad_0001)
+      responses:
+        "200":
+          description: Characters for the radical
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "404":
+          description: Radical not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load radical characters (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Foundations
+  # ══════════════════════════════════════════════════════════════════
+  /v1/foundations/data/pinyin-tones:
+    get:
+      summary: Get pinyin + tones reference pool
+      tags:
+        - Foundations
+      description: Returns the full pinyin + tones reference data pool. Public.
+      responses:
+        "200":
+          description: Pinyin-tones reference pool
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to load pinyin-tones pool (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/foundations/data/pinyin-character-map:
+    get:
+      summary: Get pinyin → character map
+      tags:
+        - Foundations
+      description: Returns a pinyin syllable → Chinese character mapping for TTS audio. Public.
+      responses:
+        "200":
+          description: Pinyin-character map
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to load pinyin character map (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/foundations/data/strokes:
+    get:
+      summary: Get strokes reference
+      tags:
+        - Foundations
+      description: |
+        Returns the strokes reference data (basic strokes, stroke order rules,
+        suggested characters). Public.
+      responses:
+        "200":
+          description: Strokes reference
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Failed to load strokes reference (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Characters
+  # ══════════════════════════════════════════════════════════════════
+  /v1/characters/{glyph}:
+    get:
+      summary: Get character by glyph
+      tags:
+        - Characters
+      description: |
+        Returns full character detail (pinyin, meanings, stroke count, radical,
+        etc.). Public — no authentication.
+
+        **Shadow note:** this path is served by the FOUNDATIONS module — the
+        foundations router is mounted before the characters router, so its
+        `characters/:glyph` handler captures every single-segment
+        `GET /v1/characters/<x>` on the live route tree (shadowing the
+        characters module's own `:glyph`, `/search`, and `/frequency`
+        handlers). Unknown glyphs return 404 `Character "<glyph>" not found`.
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Chinese character glyph
+      responses:
+        "200":
+          description: Character detail
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Missing glyph (VALIDATION_ERROR — HTTP-unreachable for single-segment paths)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Character not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get character data (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/characters/{glyph}/phonetic:
+    get:
+      summary: Get phonetic component
+      tags:
+        - Characters
+      description: |
+        Returns phonetic component info (glyph, pinyin, meaning). Public.
+        Served by the characters module (not shadowed — multi-segment path).
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Chinese character glyph
+      responses:
+        "200":
+          description: Phonetic component info
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid character glyph (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Character or phonetic component not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get phonetic component (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/characters/{glyph}/homophones:
+    get:
+      summary: Get homophones
+      tags:
+        - Characters
+      description: |
+        Returns all characters sharing the same pronunciation, grouped by
+        reading. Public.
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Chinese character glyph
+        - name: exactTone
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filter to exact tone match
+      responses:
+        "200":
+          description: Homophones grouped by reading
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid character glyph (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Character not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get homophones (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/characters/{glyph}/decomposition:
+    get:
+      summary: Get character decomposition
+      tags:
+        - Characters
+      description: |
+        Returns the decomposition tree — constituent components with types.
+        Public.
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Chinese character glyph
+      responses:
+        "200":
+          description: Decomposition tree
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid character glyph (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Character not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get decomposition (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/characters/search:
+    get:
+      summary: Search characters (SHADOWED — returns 404 in practice)
+      tags:
+        - Characters
+      description: |
+        Searches characters by pinyin, tone filter, or HSK level. Declared on
+        the characters controller AFTER `:glyph`.
+
+        **Shadow note:** on the live route tree the foundations `:glyph` shadow
+        matches `search` first, so this path returns 404
+        `Character "search" not found`. The underlying 2xx search logic is
+        covered by service unit tests; the full route activates only if the
+        route order is reordered.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Pinyin search query
+        - name: tone
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Tone filter
+        - name: hskLevel
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: HSK level filter
+      responses:
+        "200":
+          description: Search results (only when the shadow is lifted)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "404":
+          description: Shadowed by the foundations :glyph route (practical behavior)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "400":
+          description: Validation error (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to search characters (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/characters/frequency:
+    get:
+      summary: Get characters by frequency (SHADOWED — returns 404 in practice)
+      tags:
+        - Characters
+      description: |
+        Returns characters ordered by frequency rank, optionally filtered by
+        HSK tier. Declared on the characters controller AFTER `:glyph`.
+
+        **Shadow note:** on the live route tree the foundations `:glyph` shadow
+        matches `frequency` first, so this path returns 404
+        `Character "frequency" not found`. The underlying 2xx frequency logic
+        is covered by service unit tests.
+      parameters:
+        - name: tier
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: HSK tier filter (1-6)
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number (default 1)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page size (default 50)
+      responses:
+        "200":
+          description: Frequency list (only when the shadow is lifted)
+          content:
+            application/json:
+              schema:
+                type: array
+        "404":
+          description: Shadowed by the foundations :glyph route (practical behavior)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "400":
+          description: Invalid tier parameter (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get frequency list (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Words
+  # ══════════════════════════════════════════════════════════════════
+  /v1/words/{glyph}:
+    get:
+      summary: Get word detail
+      tags:
+        - Words
+      description: |
+        Fetches full word detail including pinyin, definitions, HSK level, and
+        constituent characters. Public.
+      parameters:
+        - name: glyph
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Chinese glyph (one or more CJK Unified Ideographs)
+      responses:
+        "200":
+          description: Word detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "400":
+          description: Invalid glyph (non-CJK characters)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Word not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load word detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/words/{wordId}/measure-words:
+    get:
+      summary: Get measure words for a word
+      tags:
+        - Words
+      description: Fetches measure words (量词) associated with a given word ID. Public.
+      parameters:
+        - name: wordId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Word business key (w_XXXX)
+      responses:
+        "200":
+          description: Measure words
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid word ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Word not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load measure words
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Mnemonics
+  # ══════════════════════════════════════════════════════════════════
+  /v1/mnemonics/{character}:
+    get:
+      summary: Get a mnemonic story
+      tags:
+        - Mnemonics
+      description: |
+        Fetches a mnemonic story for a character via the 4-step lookup chain
+        (user-edited → cache → DB(AI) → generate). Optional auth — a guest
+        reads shared/cached stories (`req.userId` undefined, never 401; a guest
+        never sees another user's edited story). "No mnemonic yet" returns
+        `{ "mnemonic": null }`.
+      parameters:
+        - name: character
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Han character
+      responses:
+        "200":
+          description: Mnemonic story (or null when none exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mnemonic:
+                    type: object
+                    nullable: true
+        "400":
+          description: Invalid character (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to fetch mnemonic story (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Generate a mnemonic story via AI
+      tags:
+        - Mnemonics
+      security:
+        - bearerAuth: []
+      description: |
+        Generates a new mnemonic story for a character via AI (required auth —
+        guests never trigger vendor-cost AI generation).
+      parameters:
+        - name: character
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Han character
+      responses:
+        "201":
+          description: Generated mnemonic story
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid character (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: AI generation service unavailable (SERVICE_UNAVAILABLE)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to generate mnemonic story (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    put:
+      summary: Update (edit) a mnemonic story
+      tags:
+        - Mnemonics
+      security:
+        - bearerAuth: []
+      description: |
+        Updates a user's mnemonic story (user-edited persistence is
+        user-scoped; required auth). HTML tags are stripped from the story.
+      parameters:
+        - name: character
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Han character
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - story
+              properties:
+                story:
+                  type: string
+                  maxLength: 1000
+                  description: Mnemonic story text (non-empty, HTML stripped)
+                radicalIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Updated mnemonic story
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid character or story (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to update mnemonic story (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    delete:
+      summary: Reset a mnemonic story
+      tags:
+        - Mnemonics
+      security:
+        - bearerAuth: []
+      description: |
+        Resets a user's mnemonic story (deletes the user-edited version;
+        required auth).
+      parameters:
+        - name: character
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Single Han character
+      responses:
+        "204":
+          description: Reset successful — no content
+        "400":
+          description: Invalid character (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to reset mnemonic story (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Phonetic Clusters
+  # ══════════════════════════════════════════════════════════════════
+  /v1/phonetic-clusters:
+    get:
+      summary: List phonetic clusters
+      tags:
+        - Phonetic Clusters
+      description: Lists all phonetic clusters, optionally filtered by HSK level. Public.
+      parameters:
+        - name: hskLevel
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: HSK level filter (1-6)
+      responses:
+        "200":
+          description: Phonetic clusters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "400":
+          description: Invalid hskLevel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to list clusters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/phonetic-clusters/{id}:
+    get:
+      summary: Get a phonetic cluster by ID
+      tags:
+        - Phonetic Clusters
+      description: Gets a single phonetic cluster by business key. Public.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Phonetic cluster business key (pc_XXXX)
+      responses:
+        "200":
+          description: Phonetic cluster
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "400":
+          description: Invalid cluster ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Cluster not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load cluster
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Pinyin
+  # ══════════════════════════════════════════════════════════════════
+  /v1/pinyin/search:
+    get:
+      summary: Search characters by pinyin
+      tags:
+        - Pinyin
+      description: |
+        Searches characters by pinyin query. Public. Unlike the characters
+        search, this route is NOT shadowed (the pinyin router registered only
+        `/search`), so it returns a real 2xx.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Pinyin search query (required)
+        - name: tone
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Tone filter (1-5)
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number (default 1)
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page size (default 50)
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Missing q or invalid tone (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to search pinyin (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Grammar
+  # ══════════════════════════════════════════════════════════════════
+  /v1/grammar/patterns:
+    get:
+      summary: List grammar patterns
+      tags:
+        - Grammar
+      description: |
+        Lists patterns with optional `search` / `hskLevel` / `phase` filters
+        and `page` / `pageSize` pagination. Public.
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: hskLevel
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: phase
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Grammar patterns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load grammar patterns
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/grammar/patterns/{id}:
+    get:
+      summary: Get a grammar pattern by ID
+      tags:
+        - Grammar
+      description: Gets a single pattern by its content_id business key (gr_XXXX). Public.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Grammar pattern business key (gr_XXXX)
+      responses:
+        "200":
+          description: Grammar pattern
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid pattern ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Pattern not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load grammar pattern
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Chengyu
+  # ══════════════════════════════════════════════════════════════════
+  /v1/chengyu/idioms:
+    get:
+      summary: List chengyu idioms
+      tags:
+        - Chengyu
+      description: |
+        Lists idioms with optional `search` / `theme` / `era` filters and
+        `page` / `pageSize` pagination. Public.
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: theme
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: era
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Chengyu idioms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load chengyu idioms
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/chengyu/idioms/{id}:
+    get:
+      summary: Get a chengyu idiom by ID
+      tags:
+        - Chengyu
+      description: Gets a single idiom by its content_id business key (cy_XXXX). Public.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Chengyu business key (cy_XXXX)
+      responses:
+        "200":
+          description: Chengyu idiom
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid idiom ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Idiom not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to load chengyu idiom
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  # ══════════════════════════════════════════════════════════════════
+  # Readers
+  # ══════════════════════════════════════════════════════════════════
+  /v1/readers/passages:
+    get:
+      summary: List reading passages
+      tags:
+        - Readers
+      description: |
+        Lists passages, optionally filtered by `?hskLevel=N`. Optional auth — a
+        guest lists shared passages; an authenticated user's own generated
+        passages are excluded by the service.
+      parameters:
+        - name: hskLevel
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: HSK level filter (1-6)
+      responses:
+        "200":
+          description: Passage list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Invalid hskLevel (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to list passages (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/passages/{id}:
+    get:
+      summary: Get a reading passage
+      tags:
+        - Readers
+      description: |
+        Gets a single passage with segmented result and HSK profile. Optional
+        auth — a guest reads without a userId (no per-word known status).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "200":
+          description: Passage with segments and HSK profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      sentences:
+                        type: array
+                      segments:
+                        type: array
+                      hskProfile:
+                        type: object
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Passage not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get passage (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/passages/{id}/audio:
+    post:
+      summary: Get passage audio URLs
+      tags:
+        - Readers
+      description: |
+        Gets audio URLs for all sentences in a passage via a two-tier fallback
+        (GCS → on-demand TTS). Optional auth (calibrated F5): user and guest
+        share identical audio access — a guest never 401s and gets cache-first
+        free reads. Returns per-sentence source status — never 5xx for audio
+        infra failures.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "200":
+          description: Per-sentence audio sources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Passage not found (NOT_FOUND)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get passage audio (LOAD_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/generate:
+    post:
+      summary: Generate a reading passage
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: |
+        Generates a new passage on a given topic (required auth). Rate limited
+        to 5/day per user (DB-backed UTC midnight reset).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - topic
+              properties:
+                topic:
+                  type: string
+                  maxLength: 100
+                  description: Passage topic (non-empty, <= 100 chars)
+      responses:
+        "201":
+          description: Generated passage
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "400":
+          description: Invalid topic (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          description: Daily generation limit exceeded (RATE_LIMIT)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "502":
+          description: Gemini generation/parsing failure (GENERATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to generate passage (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/sessions/{passageId}:
+    get:
+      summary: Get or create a reading session
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: |
+        Gets or creates a reading session. Returns
+        `{ currentSentence, isCompleted }`. Required auth — user-scoped reading
+        progress.
+      parameters:
+        - name: passageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "200":
+          description: Reading session state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      currentSentence:
+                        type: integer
+                      isCompleted:
+                        type: boolean
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to get session (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    put:
+      summary: Update reading position
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: |
+        Updates the reading position. Required auth — user-scoped reading
+        progress.
+      parameters:
+        - name: passageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentSentence
+              properties:
+                currentSentence:
+                  type: integer
+                  minimum: 0
+      responses:
+        "200":
+          description: Updated session state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      currentSentence:
+                        type: integer
+                      isCompleted:
+                        type: boolean
+        "400":
+          description: Invalid body or missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to update session (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/sessions/{passageId}/complete:
+    post:
+      summary: Complete a passage
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: |
+        Marks a passage as completed (idempotent). Returns `{ passageId }`.
+        Required auth.
+      parameters:
+        - name: passageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "200":
+          description: Completion acknowledged
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      passageId:
+                        type: string
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to complete passage (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/bookmarks:
+    get:
+      summary: List bookmarked passages
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: |
+        Lists bookmarked passage IDs. Returns `{ bookmarks: string[] }`.
+        Required auth.
+      responses:
+        "200":
+          description: Bookmarked passage IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      bookmarks:
+                        type: array
+                        items:
+                          type: string
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to list bookmarks (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Add a bookmark
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: Adds a bookmark for a passage. Required auth.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - passageId
+              properties:
+                passageId:
+                  type: string
+      responses:
+        "201":
+          description: Bookmark added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      passageId:
+                        type: string
+        "400":
+          description: Invalid body (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to add bookmark (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /v1/readers/bookmarks/by-passage/{passageId}:
+    get:
+      summary: Check if a passage is bookmarked
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: Checks if a single passage is bookmarked. Required auth.
+      parameters:
+        - name: passageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "200":
+          description: Bookmark status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isBookmarked:
+                        type: boolean
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to check bookmark (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    delete:
+      summary: Remove a bookmark by passage
+      tags:
+        - Readers
+      security:
+        - bearerAuth: []
+      description: Removes a bookmark by passage ID (idempotent). Required auth.
+      parameters:
+        - name: passageId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Passage ID
+      responses:
+        "204":
+          description: Bookmark removed — no content
+        "400":
+          description: Missing passage ID (VALIDATION_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Missing or invalid JWT (AUTH_REQUIRED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to remove bookmark (INTERNAL_ERROR)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"

@@ -5,27 +5,13 @@
  * (deep-param routing: `/:glyph/decomposition`, `/:glyph/homophones`, etc.) +
  * `PinyinNestController` (`/v1/pinyin/search`).
  *
- * 1:1 translation of `createCharactersModule()` + `createPinyinModule()` in
- * `modules/characters/container.ts`, wiring the same framework-agnostic
- * services through Nest providers:
- *
- *   - `CharactersRepository` / `PinyinSearchRepository` — self-import the shared
- *     Prisma singleton (same as the Express path); provided via `useFactory`.
- *   - `CharactersService`     — constructor-injected with `CharactersRepository`.
- *   - `PinyinSearchService`   — constructor-injected with `PinyinSearchRepository`.
- *
+ * Wires `CharactersService` + `PinyinSearchService` (each constructor-injected
+ * with its repository) via `useFactory` providers and exports them.
  * Characters are PUBLIC static reference data — no auth, no cache, no external
- * clients — so no `SharedModule` is needed (repos self-import Prisma, matching
- * the `words` port in 24-2).
- *
- * Explicit `useFactory` providers + `@Inject()` decorators (NOT auto
- * constructor-param injection) because `tsx` (esbuild) does not emit decorator
- * metadata in the dev loop; the compiled tsc build gets metadata for free.
- *
- * The Express wiring (`container.ts`, `api/CharactersController.ts`,
- * `api/PinyinController.ts`, `api/charactersRoutes.ts`, `api/pinyinRoutes.ts`)
- * is UNTOUCHED — this module coexists as the Nest shell surface and is deleted
- * at the module's cutover (24-15).
+ * clients — so no `SharedModule` is needed (repos self-import Prisma).
+ * `useFactory` + `@Inject()` (not auto constructor-param injection) because
+ * tsx/esbuild emits no decorator metadata in the dev loop; the compiled tsc
+ * build gets metadata for free.
  */
 
 import { Module } from "@nestjs/common";

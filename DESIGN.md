@@ -147,7 +147,7 @@ tokens:
       line-height-display: "var(--lh-display)" # alias
       lh-1-3: "1.3" # legacy tier (HubIdentityCard meaning)
       lh-1-4: "1.4" # legacy tier (ReviewCard full answer)
-    font-weights: # --fw-* ladder (Wave-2) — wired into .fw-* utilities
+    font-weights: # --fw-* ladder — wired into .fw-* utilities
       fw-400: "400" # body / default
       fw-500: "500" # medium emphasis
       fw-600: "600" # semibold — buttons, badges, labels
@@ -225,7 +225,7 @@ components:
     description: "Search input with search icon and clear button."
   - name: "SideNav"
     file: "apps/frontend/src/shared/components/SideNav/SideNav.tsx"
-    description: "Side navigation panel. Nav-only since Story 22.4 (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail (icons only, no auth chrome)."
+    description: "Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail (icons only, no auth chrome)."
   - name: "UserMenu"
     file: "apps/frontend/src/shared/components/UserMenu/UserMenu.tsx"
     description: "Single account control (login/user-info/logout) — avatar trigger + popover (account header, Profile, Settings, Logout); guest state = Login/Register CTAs. Hosted in the AppTopBar so it is reachable at every breakpoint."
@@ -237,7 +237,7 @@ components:
     description: "Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background."
   - name: "TopNav"
     file: "apps/frontend/src/shared/components/TopNav/TopNav.tsx"
-    description: "Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned since Story 22.4 — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)"
+    description: "Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)"
   - name: "FilterControls"
     file: "apps/frontend/src/shared/components/FilterControls/FilterControls.tsx"
     description: "Filter bar with multiple FilterChips, search, and reset."
@@ -285,7 +285,7 @@ components:
     description: "Character chips for a word's constituent characters (glyph + pinyin + meaning) — delegates to the shared Chip component (interactive, surface variant) and opens the Character Detail Hub via openHub."
 ---
 
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-24
 
 ## Changelog
 
@@ -381,7 +381,7 @@ Stacking order is a **named ladder**, never raw values:
 
 ## Icon System
 
-**Status:** Implemented (2026-08-18, Wave-3) — the shared `Icon` component and its `lucide-react` dependency (`^1.32.0` in `apps/frontend/package.json`) are in the repo; emoji remains the interim icon set only on surfaces not yet covered by `Icon`.
+**Status:** Implemented — the shared `Icon` component and its `lucide-react` dependency (`^1.32.0` in `apps/frontend/package.json`) are in the repo; emoji remains the interim icon set only on surfaces not yet covered by `Icon`.
 
 The icon system is a **Lucide-wrapped `Icon` shared component** (`apps/frontend/src/shared/components/Icon/`). Contract:
 

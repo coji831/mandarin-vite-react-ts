@@ -13,7 +13,7 @@ type: guide
 
 Generate or retrieve cached TTS audio for given text. **Auth:** `optionalAuth` (guests and users both POST).
 
-Implemented by the HTTP-free `modules/audio` capability (`modules/audio/api/` is the thin HTTP layer): `AudioController` → `AudioService.getTtsUrl` → `AudioSynthesizer.synthesizeToPath(text, tts/{hash}.mp3)` (exists-or-synthesize primitive wrapped in `AudioPathCache` single-flight) → `AudioUrlSigner`.
+Implemented on the NestJS shell by `AudioNestController` (`src/modules/audio/nest/audio-nest.controller.ts`) → `AudioService.getTtsUrl` → `AudioSynthesizer.synthesizeToPath(text, tts/{hash}.mp3)` (exists-or-synthesize primitive wrapped in `AudioPathCache` single-flight) → `AudioUrlSigner`.
 
 **Request Body:**
 

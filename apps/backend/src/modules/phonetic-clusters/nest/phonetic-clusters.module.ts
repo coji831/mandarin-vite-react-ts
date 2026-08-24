@@ -2,12 +2,12 @@
  * @file apps/backend/src/modules/phonetic-clusters/nest/phonetic-clusters.module.ts
  * @description NestJS `@Module` for the Phonetic Clusters module (Story 24-2 shell).
  *
- * 1:1 translation of `createPhoneticClustersModule()` in
- * `modules/phonetic-clusters/container.ts`. Explicit `useFactory` providers +
- * `@Inject()` decorators (tsx/esbuild emits no decorator metadata in dev).
- *
- * The Express wiring is UNTOUCHED — this module coexists as the Nest shell
- * surface and is deleted at the module's cutover (24-15).
+ * Wires `PhoneticClustersService` (constructor-injected with
+ * `PhoneticClustersRepository`) via a `useFactory` provider and exports it.
+ * The repository self-imports the Prisma singleton, so no `SharedModule` is
+ * needed. `useFactory` + `@Inject()` (not auto constructor-param injection)
+ * because tsx/esbuild emits no decorator metadata in the dev loop; the
+ * compiled tsc build gets metadata for free.
  */
 
 import { Module } from "@nestjs/common";

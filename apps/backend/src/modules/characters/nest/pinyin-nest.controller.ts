@@ -3,17 +3,15 @@
  * @description NestJS controller for pinyin search endpoints (Story 24-8 —
  * Characters + Mnemonics Port).
  *
- * Mirrors `api/PinyinController.ts` (Express) 1:1 — same query validation
- * (`q` required, `tone` 1–5), same service delegation, same 2xx JSON, same
- * 4xx `code`/`message` (the global 24-3 `AppExceptionFilter` serializes thrown
- * `HttpException`s into the `{ code, message, requestId }` envelope; `code`/
- * `message` are byte-for-byte equal to the Express controller's legacy
- * `{ error, code }` body).
+ * Same query validation (`q` required, `tone` 1–5), same service delegation,
+ * same 2xx JSON, same 4xx `code`/`message` (the global 24-3
+ * `AppExceptionFilter` serializes thrown `HttpException`s into the
+ * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
+ * equal to the previous surface's legacy `{ error, code }` body).
  *
- * Route pattern is copied verbatim from `api/pinyinRoutes.ts`
- * (`ROUTE_PATTERNS.pinyinSearch` — `GET /v1/pinyin/search`). Unlike the
- * characters router, `pinyinRoutes.ts` registers ONLY `/search` (no `:glyph`
- * sibling), so this route is NOT shadowed and returns a real 2xx.
+ * Route: `ROUTE_PATTERNS.pinyinSearch` (`GET /v1/pinyin/search`) — the only
+ * pinyin route (no `:glyph` sibling), so it is NOT shadowed and returns a real
+ * 2xx.
  */
 
 import {

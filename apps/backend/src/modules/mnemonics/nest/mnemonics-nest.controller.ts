@@ -4,15 +4,14 @@
  * 24-8 — Characters + Mnemonics Port). The first consumer of the calibrated
  * `OptionalAuthGuard` (24-5) + the shared cache/gemini infra on the Nest shell.
  *
- * Mirrors `api/MnemonicsController.ts` (Express) 1:1 — same character/story
- * validation, same service delegation, same 2xx JSON (GET → `{ mnemonic }`,
- * POST → 201 MnemonicStoryResponse, PUT → 200 MnemonicStoryResponse, DELETE →
- * 204), same 4xx `code`/`message` (the global 24-3 `AppExceptionFilter`
- * serializes thrown `HttpException`s into the `{ code, message, requestId }`
- * envelope; `code`/`message` are byte-for-byte equal to the Express
- * controller's legacy `{ error, code, message }` body).
+ * Same character/story validation, same service delegation, same 2xx JSON
+ * (GET → `{ mnemonic }`, POST → 201 MnemonicStoryResponse, PUT → 200
+ * MnemonicStoryResponse, DELETE → 204), same 4xx `code`/`message` (the global
+ * 24-3 `AppExceptionFilter` serializes thrown `HttpException`s into the
+ * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
+ * equal to the previous surface's legacy `{ error, code, message }` body).
  *
- * Guard mapping (verbatim from `api/mnemonicsRoutes.ts`):
+ * Guard mapping:
  *   - `GET    /v1/mnemonics/:character` → `@UseGuards(OptionalAuthGuard)` —
  *     calibrated best-effort auth: a guest proceeds with `req.userId`
  *     UNDEFINED (never 401) and the 4-step lookup chain skips the user-edited
@@ -25,8 +24,8 @@
  *     the Express controller structure).
  *
  * Read/write surface parity: POST/PUT exercise body-parsing (the shell mounts
- * the same `express.json()` limits as `app/index.ts` via 24-3), PUT sanitizes
- * HTML tags from user-submitted stories exactly as Express does.
+ * the same `express.json()` limits as the shared app config — configure-app.ts,
+ * 24-3), and PUT sanitizes HTML tags from user-submitted stories.
  */
 
 import {

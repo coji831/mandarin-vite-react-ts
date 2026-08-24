@@ -54,7 +54,9 @@ describe("AppLayout — calibrated guest identity (Story 24-7)", () => {
 
     // Phase-1 Learn item (Foundations) stays unlocked for the guest…
     await waitFor(() =>
-      expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute("aria-disabled"),
+      expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute(
+        "aria-disabled",
+      ),
     );
     // …and Phase-2+ items render locked — the guest is NOT all-unlocked.
     const grammar = screen.getByRole("link", { name: /Grammar/ });

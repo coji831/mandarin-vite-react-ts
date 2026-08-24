@@ -20,7 +20,7 @@
  * factory step:
  *   1. `ProgressionService` is constructed WITHOUT `quizService` (the ctor
  *      param is optional and `setQuizService` is the documented re-injection
- *      seam the Express `app/container.ts` already uses).
+ *      seam).
  *   2. `QuizService` is constructed WITH `ProgressionService` — which is
  *      ALWAYS available first (it needs no `QuizService`), so the `forwardRef`
  *      resolves to a real instance.
@@ -31,9 +31,9 @@
  *      here is guaranteed resolved — no ordering race.
  *
  * The mutable `setQuizService` setter is invoked EXACTLY ONCE at composition
- * time (boot), mirroring the Express container — never as a per-request escape
- * hatch. This is the documented fallback per the 24-13 AC ("no mutable setter
- * in Nest land UNLESS documented fallback").
+ * time (boot) — never as a per-request escape hatch. This is the documented
+ * fallback per the 24-13 AC ("no mutable setter in Nest land UNLESS documented
+ * fallback").
  */
 
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";

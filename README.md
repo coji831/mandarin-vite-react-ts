@@ -25,15 +25,15 @@ PinyinPal is an interactive web application designed to help new learners master
 
 ## 🛠️ Tech Stack
 
-| Layer          | Technology                            |
-| -------------- | ------------------------------------- |
-| **Frontend**   | React + TypeScript (Vite)             |
-| **Backend**    | Node.js + Express                     |
-| **Database**   | PostgreSQL (Neon) + Prisma            |
-| **Cache**      | Redis (Upstash)                       |
-| **Auth**       | JWT with httpOnly cookies             |
-| **APIs**       | Google Cloud TTS, Gemini AI           |
-| **Deployment** | Vercel (frontend) + Railway (backend) |
+| Layer          | Technology                                  |
+| -------------- | ------------------------------------------- |
+| **Frontend**   | React + TypeScript (Vite)                   |
+| **Backend**    | Node.js + NestJS (Express platform adapter) |
+| **Database**   | PostgreSQL (Neon) + Prisma                  |
+| **Cache**      | Redis (Upstash)                             |
+| **Auth**       | JWT with httpOnly cookies                   |
+| **APIs**       | Google Cloud TTS, Gemini AI                 |
+| **Deployment** | Vercel (frontend) + Railway (backend)       |
 
 > **Detailed breakdown:** See [Project Overview](docs/guides/getting-started/project-overview.md#tech-stack)
 

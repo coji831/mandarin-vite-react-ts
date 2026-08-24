@@ -72,13 +72,12 @@ export class JwtService {
    * @param token - Access token
    * @returns Decoded payload
    * @throws `TokenExpiredError` if the token is expired, `JsonWebTokenError`
-   * if it is invalid (mismatched signature / malformed) — the same error
-   * contract `authMiddleware.ts` relies on.
+   * if it is invalid (mismatched signature / malformed).
    *
    * Story 24-5: lets the Nest auth guards consume `JwtService` (via the
    * `SharedModule` provider) instead of importing `jsonwebtoken` directly,
-   * centralizing access-token verification. Additive — the Express path
-   * (`authMiddleware.ts`) still calls `jwt.verify` directly and is untouched.
+   * centralizing access-token verification. Additive — preserves the previous
+   * access-token verification behavior.
    */
   verifyAccessToken(token: string): TokenPayload {
     return jwt.verify(token, this.JWT_SECRET) as TokenPayload;

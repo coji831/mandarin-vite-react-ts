@@ -1,13 +1,13 @@
 ---
 purpose: Area index for technical implementation docs (epics and stories)
 status: active
-last-verified: 2026-08-18
+last-verified: 2026-08-22
 type: area-index
 ---
 
 # Issue Implementation
 
-**Last Updated:** August 18, 2026
+**Last Updated:** August 22, 2026
 
 This folder contains technical implementation documents for epics and stories.
 
@@ -30,10 +30,10 @@ Controlled vocabulary for epic status in implementation docs:
 
 ## Active Epics
 
-| Epic                                                                                | Status                  |
-| ----------------------------------------------------------------------------------- | ----------------------- |
-| [Epic 24: NestJS Shell Migration](./epic-24-nestjs-shell-migration/README.md)       | Planned (D7 shell-swap) |
-| [Epic 41: Traditional Character Toggle](./epic-41-traditional-characters/README.md) | Deferred (Phase-4)      |
+| Epic                                                                                | Status             |
+| ----------------------------------------------------------------------------------- | ------------------ |
+| [Epic 24: NestJS Shell Migration](./epic-24-nestjs-shell-migration/README.md)       | Completed          |
+| [Epic 41: Traditional Character Toggle](./epic-41-traditional-characters/README.md) | Deferred (Phase-4) |
 
 ## Archived Epics
 

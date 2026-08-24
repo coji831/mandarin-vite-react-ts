@@ -3,34 +3,28 @@
  * @description NestJS controller for the health check (Story 24-10 — Audio +
  * Health Port).
  *
- * Mirrors `api/HealthController.ts` (Express) 1:1 — `GET /v1/health` returns
- * the SAME 200 shape: `{ status, timestamp, uptime, services: { gemini, tts },
- * cache: { redis: { connected } } }`, and the same 500 shape
- * `{ error, code, message }` (`HEALTH_CHECK_FAILED`) if the response assembly
- * itself throws.
+ * `GET /v1/health` returns the SAME 200 shape: `{ status, timestamp, uptime,
+ * services: { gemini, tts }, cache: { redis: { connected } } }`, and the same
+ * 500 shape `{ error, code, message }` (`HEALTH_CHECK_FAILED`) if the response
+ * assembly itself throws.
  *
  * Full `@Res()` mirror (like the radicals `200 null` port): the success body
  * is written with `res.status(200).json(...)` and the catch branch writes the
- * Express `{ error, code, message }` shape directly — Nest's exception filter
- * would otherwise re-wrap it into the `{ code, message, requestId }` envelope,
- * which is NOT what the Express health endpoint emits.
+ * `{ error, code, message }` shape directly — Nest's exception filter would
+ * otherwise re-wrap it into the `{ code, message, requestId }` envelope, which
+ * is NOT what the health endpoint emits.
  *
  * ## The `AudioServiceLike` cross-module import (resolved via Nest DI)
- * The Express health wiring (`modules/health/container.ts`) imports
- * `AudioServiceLike` from `../../modules/audio/index.js` — a DIRECT cross-
- * module barrel import. On the Nest shell that is replaced by module-to-module
- * injection: `HealthModule` imports `AudioModule` and the controller injects
- * the exported `AudioService` (which implements `AudioServiceLike`) via
- * `@Inject(AudioService)`. The constructor param is typed structurally
- * (`{ healthCheck(): Promise<boolean> }`, exactly like the Express
- * `HealthController` constructor) so no `modules/audio` barrel is ever
+ * `HealthModule` imports `AudioModule` and the controller injects the exported
+ * `AudioService` (which implements `AudioServiceLike`) via `@Inject(AudioService)`
+ * — module-to-module Nest DI. The constructor param is typed structurally
+ * (`{ healthCheck(): Promise<boolean> }`) so no `modules/audio` barrel is ever
  * imported from health Nest land.
  *
- * Redis health mirrors the Express `container.ts` `redisPing` wiring: the raw
- * ioredis client is read via `redisClient.getClient()` (fallback ping
- * resolving "NO_REDIS" when no client is configured), and `connected: true`
- * iff `ping(5000)` resolves without throwing — byte-for-byte the Express
- * `HealthController.checkHealth` logic.
+ * Redis health: the raw ioredis client is read via `redisClient.getClient()`
+ * (fallback ping resolving "NO_REDIS" when no client is configured), and
+ * `connected: true` iff `ping(5000)` resolves without throwing — byte-for-byte
+ * the health check logic.
  */
 
 import { Controller, Get, Inject, Res } from "@nestjs/common";

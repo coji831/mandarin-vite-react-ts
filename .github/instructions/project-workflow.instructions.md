@@ -26,15 +26,15 @@ Follow this sequence when implementing or updating a story:
 
 3. **Backend Implementation (if applicable)** — For backend changes (API, database, external services), follow the modulith creation pipeline from `docs/guides/dev-flow-visualization.html`:
 
-   1. **Module scaffold** — Create `modules/<name>/` with `api/`, `services/`, `repositories/`, `types/`, `container.ts`. Choose CRUD, Feature Slices, or Clean Architecture template based on complexity. See `docs/guides/conventions/backend.md`.
+   1. **Module scaffold** — Create `modules/<name>/` with `services/`, `repositories/`, `types/`, and `nest/` (`<name>.module.ts` + `<name>-nest.controller.ts`). Choose CRUD, Feature Slices, or Clean Architecture template based on complexity. See `docs/guides/conventions/backend.md`.
    2. **Database** — Edit `prisma/schema.prisma` → `npx prisma migrate dev` → `npx prisma generate`. Never `push` to production. See `prisma-schema-changes.instructions.md`.
-   3. **Container DI** — Create `createXModule(deps)` factory. Register in root `src/app/container.ts`. Constructor injection at composition root.
-   4. **Routes** — Define endpoints with rate limiting. Register in `src/app/routes.ts`. Use route constants from `packages/shared-constants`.
+   3. **Module DI** — Define the Nest `@Module` (controllers + `useFactory` providers) in `modules/<name>/nest/<name>.module.ts`; register it in `src/nest/app.module.ts` (NestJS DI at composition root). Import `SharedModule`/`GuardsModule` as needed.
+   4. **Routes** — Declare controllers with `@Controller("v1/...")` + route decorators; apply rate limiting via the shared limiters in `src/nest/rate-limit.config.ts`. Use route constants from `packages/shared-constants`.
    5. **Validation** — Input validation at controller layer. Error responses in `{ error, code }` format per `backend-error-messages.instructions.md`.
    6. **External services** — Class pattern with constructor injection (GeminiService, CacheService, GCSClient). Fail-open: degraded service, never crash.
    7. **Tests** — Unit: service + repository. Integration: full request→response cycle. Mock external deps. `vitest run src/modules/<module>/`.
 
-   > **Backend framework state** — The Express modulith pipeline above (`container.ts` / `src/app/routes.ts` manual DI) is the current state and stays until the D7 shell-swap. After the NestJS 11 swap (D1, parallel with epics 25–28), replace container DI with NestJS `@Module`/DI. `docs/planning/epics-25-40.md` is the single source for which epics land on Express vs NestJS (epic 25 may land on Express and migrate; 29+ land on NestJS).
+   > **Backend framework state** — NestJS 11 (Express platform adapter) is the current production backend; the Express surface (`src/app/` + `modules/*/api/`) is retired. The pipeline above is the NestJS modulith: `@Module` DI in `src/modules/*/nest/` + `src/nest/app.module.ts`, with guards/pipes/filters for cross-cutting concerns. Future epics land on NestJS. `docs/planning/epics-25-40.md` is the single source.
 
 4. **UIUX Design (Step 1 — UIUX Designer)** — **owned by the UIUX Designer agent** (input = the Architect's per-epic design spec). When UI is involved, design always comes first. BEFORE any code, build the complete visual UI in Storybook (no logic). Follow Step 1 of `uiux-design-protocol.instructions.md`:
 
@@ -81,7 +81,7 @@ This runs Chromatic/vitest-integration tests on all stories. Fix any failures be
 
    **Per-story struggle extraction** — When a struggle resolves (>1h debug, schema/API misalignment, pattern clarified, perf issue), record it in the story impl "Technical Challenges & Solutions" **same-day** — do not defer to epic close. Reusable patterns (>3h) extract to `docs/knowledge-base/` or `docs/guides/` immediately and cross-link.
 
-8. **Pre-Commit Gate** — Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm run test:full` → must pass (full suite; `npm test` runs changed-scope only). Run `npm run test-storybook --workspace=@mandarin/frontend` → must pass if stories were modified. Run `npm run lint` → must have **0 errors** (warnings are acceptable during incremental migration). Fix any NEW errors you introduced. Do not add new `any` annotations — use proper types. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
+8. **Pre-Commit Gate** — **Run `npx prettier --write <every touched file>` before staging — never stage unformatted edits** (verify with `npm run format:check`). Run `npm run format` → auto-formats code with Prettier. Run `npm run build` → must pass (runs `tsc -b` type-check across all workspaces + Vite bundle). Run `npm run test:full` → must pass (full suite; `npm test` runs changed-scope only). Run `npm run test-storybook --workspace=@mandarin/frontend` → must pass if stories were modified. Run `npm run lint` → must have **0 errors** (warnings are acceptable during incremental migration). Fix any NEW errors you introduced. Do not add new `any` annotations — use proper types. Verify Quality Gates & Cross-Doc Alignment checklists. Documentation changes must be validated by a reviewer for template compliance, cross-linking, AC clarity, technical accuracy, and status consistency.
 
    **Git State Pre-Flight (before `git add`)**
    - Verify branch/HEAD/divergence with REAL commands — never reconstruct state from `.git/` file inspection:
@@ -181,13 +181,13 @@ A gate may appear in **exactly one place** in the canonical table below. Any oth
 
 ### Tier 1 — Per-Change / Pre-Commit (fast, run on every code commit)
 
-| #   | Gate                        | Exact command                                     | Scope            |
-| --- | --------------------------- | ------------------------------------------------- | ---------------- |
-| 1   | Format (soft, non-blocking) | `npm run format`                                  | both             |
-| 2   | Lint                        | `npm run lint` (0 errors)                         | both             |
-| 3   | CSS lint                    | `npm run lint:css --workspace=@mandarin/frontend` | frontend changes |
-| 4   | Type-check + build          | `npm run build`                                   | both             |
-| 5   | Tests (changed scope)       | `npm test`                                        | both             |
+| #   | Gate                  | Exact command                                     | Scope            |
+| --- | --------------------- | ------------------------------------------------- | ---------------- |
+| 1   | Format (blocking)     | `npm run format` / `npm run format:check`         | both             |
+| 2   | Lint                  | `npm run lint` (0 errors)                         | both             |
+| 3   | CSS lint              | `npm run lint:css --workspace=@mandarin/frontend` | frontend changes |
+| 4   | Type-check + build    | `npm run build`                                   | both             |
+| 5   | Tests (changed scope) | `npm test`                                        | both             |
 
 ### Tier 2 — Pre-Merge / Story-Complete / Epic-Close (Tier 1 plus)
 
@@ -211,7 +211,7 @@ A gate may appear in **exactly one place** in the canonical table below. Any oth
 - **Design gates are TWO complementary tools**: `@google/design.md lint` validates the DESIGN.md token **SPEC**; `npm run design-audit` (`tools/design-audit.mjs`) scans SOURCE CODE for token compliance. Both are gates; neither replaces the other.
 - **Gate #9 includes the slop-scan** — `npm run design-audit` also enforces the forbidden-decoration set (gradients outside shared `Button`/`ProgressBar`, `backdrop-filter`, `blur(`, emoji codepoints in JSX, untokened `box-shadow`) as errors, plus advisory spacing/typography-role heuristics as warnings. Command unchanged; no new gate number.
 - **Gate #7 includes the page layer** — `npm run check:page-inventory` (`.github/page-inventory.json`) fails on missing page entries, unregistered archetypes, non-registry composition-map components, missing `<Page>Full` stories, or illegal/empty states.
-- **`format` is soft** (no `format:check` script exists; prettier drift breaks nothing). Coverage is NOT a gate (Testing-Trophy minimums in `testing-standards.instructions.md` are the enforcement).
+- **`format` is blocking** — `npm run format:check` (prettier `--check`) is the verification for the Tier-1 Format gate; run `npx prettier --write <touched files>` before staging — never stage unformatted edits. Coverage is NOT a gate (Testing-Trophy minimums in `testing-standards.instructions.md` are the enforcement).
 - **Storybook tests** run via the `@storybook/addon-vitest` project; frontend `test:full` is scoped `--project='!storybook'` so the browser storybook project only runs via `test-storybook`.
 - **Known-failures triage** — At every `test:full`/type-check failure, match against `docs/guides/testing/known-failures.md` FIRST; re-triaging a known failure from scratch is prohibited — update its last-verified date + one-line confirm instead. New failures open a new entry; do not auto-fix unrelated failures inside a story.
 

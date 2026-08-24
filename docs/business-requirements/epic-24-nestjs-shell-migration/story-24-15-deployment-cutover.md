@@ -1,4 +1,4 @@
-**Last Updated:** August 21, 2026
+**Last Updated:** August 22, 2026
 
 # Story 24.15: Deployment Cutover + Retire Dual-Mode + Docs Refresh
 
@@ -45,5 +45,5 @@ This story is the **cutover** that completes the shell migration: it makes the N
 - **Status**: Completed
 - **PR**: TBD
 - **Merge Date**: TBD
-- **Commit hash**: `011a6c6d` (the cutover impl commit; the docs-close hash is filled on the epic-close commit)
+- **Commit hash**: `011a6c6d` (cutover impl) · docs-close `5834a51e` (epic-close commit)
 - **Implementation note:** the cutover shipped in commit `011a6c6d` — production entry flipped to Nest (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`, healthcheck `/api/v1/health`), the Express surface deleted (`src/app/` + all `modules/*/api/` + the `req.xController`/`req.geminiService` `express.d.ts` augmentation + `authMiddleware`/`cacheMiddleware`/`asyncHandler`), `openapi.yaml` reconciled (9 dead routes + 4 dead schemas + 2 dead tags removed; documents the 7-path System/Auth/TTS surface — expansion to all ~54 real routes is a flagged follow-up), `/api-docs` + `/api-docs.json` served from Nest (verified 200), `engines` tightened to `>=24`, `ReadersAudioController.test.ts` + the Express controller/route suites retired with coverage preserved (test:full 52/609; the 9 parity harnesses refactored to Nest-only regression guards, test:integration 23/262), `docs/architecture.md` + backend conventions + `module-level-containers.md` updated + truth-checked, and the post-flip verification recorded in `verification-artifacts/release-safety-gate-24-14.md`. All ACs verified against the shipped commit.

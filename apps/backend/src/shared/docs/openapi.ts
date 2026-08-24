@@ -1,7 +1,7 @@
 /**
- * @file apps/backend/src/api/docs/openapi.js
- * @description OpenAPI 3.1 specification loader - reads from YAML file instead of JSDoc annotations
- * @architecture Clean separation: API specs in YAML, route logic in JS files
+ * @file apps/backend/src/shared/docs/openapi.ts
+ * @description OpenAPI 3.1 specification loader — reads the spec from the
+ * YAML file instead of JSDoc annotations (specs in YAML, route logic in TS).
  */
 
 import { fileURLToPath } from "url";

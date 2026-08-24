@@ -1,13 +1,9 @@
 /**
  * @file apps/backend/src/shared/types/express.d.ts
- * @description Express type augmentation for request-scoped auth/tracing fields.
- *
- * Story 24-15 (cutover): the `req.xController` / `req.geminiService`
- * augmentations (injected by the deleted Express `app/routes.ts` middleware)
- * are removed — the Express surface is gone and the Nest shell injects
- * controllers via Nest DI. The `userId` / `user` / `requestId` fields are
- * KEPT: the Nest guards (`src/nest/guards/*`) attach them and the Nest
- * controllers + rate-limit config read them on the Express adapter.
+ * @description Express type augmentation for request-scoped auth/tracing
+ * fields. `userId` / `user` / `requestId` are attached by the Nest guards
+ * (`src/nest/guards/*`) and read by the Nest controllers + rate-limit config
+ * on the Express adapter.
  */
 
 declare global {

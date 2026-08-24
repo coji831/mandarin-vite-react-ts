@@ -57,7 +57,8 @@
 
 ### Tier 1 — per-change / pre-commit
 
-- [ ] `npm run format` (soft, non-blocking)
+- [ ] `npx prettier --write <touched files>` before staging — never stage unformatted edits
+- [ ] `npm run format` / `npm run format:check` (blocking)
 - [ ] `npm run lint` (0 errors)
 - [ ] `npm run lint:css --workspace=@mandarin/frontend` (frontend changes)
 - [ ] `npm run build` (type-check + bundle)

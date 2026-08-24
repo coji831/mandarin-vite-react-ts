@@ -553,7 +553,7 @@
       }
     },
     "SideNav": {
-      "description": "Side navigation panel. Nav-only since Story 22.4 (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail.",
+      "description": "Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail.",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/SideNav/SideNav.stories.tsx",

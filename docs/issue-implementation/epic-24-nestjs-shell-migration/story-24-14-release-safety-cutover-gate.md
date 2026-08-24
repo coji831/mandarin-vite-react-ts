@@ -104,27 +104,27 @@ The gate's evidence is structural, not a checklist of intentions. Key verificati
 
 Enumerated from the **17 route files** (`router.<method>(` registrations = 63) vs the parity harness (`tests/integration/nest/*.test.ts`, **9 harnesses**). **No uncovered routes.**
 
-| Module (routes) | Routes | Covered by harness |
-|---|---|---|
-| words (2) | `GET /v1/words/:glyph`, `GET /v1/words/:glyph/measure-words` | `route-parity.test.ts` |
-| phonetic-clusters (2) | `GET /v1/phonetic-clusters`, `GET /v1/phonetic-clusters/:id` | `route-parity.test.ts` |
-| grammar (2) | `GET /v1/grammar/patterns`, `GET /v1/grammar/patterns/:id` | `route-parity.test.ts` |
-| chengyu (2) | `GET /v1/chengyu/idioms`, `GET /v1/chengyu/idioms/:id` | `route-parity.test.ts` |
-| audio (1) | `POST /v1/tts` | `audio-health-parity.test.ts` |
-| health (1) | `GET /v1/health` | `audio-health-parity.test.ts` |
-| auth (5) | register / login / refresh / logout / `GET me` | `auth-parity.test.ts` |
-| characters (6) | `:glyph` (foundations shadow), `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search` (404 shadow), `/frequency` (404 shadow) | `characters-mnemonics-parity.test.ts` + `radicals-foundations-parity.test.ts` (shadow block) |
-| pinyin (1) | `GET /v1/pinyin/search` | `characters-mnemonics-parity.test.ts` |
-| mnemonics (4) | GET / POST / PUT / DELETE `/v1/mnemonics/:glyph` | `characters-mnemonics-parity.test.ts` |
-| radicals (4) | `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters` | `radicals-foundations-parity.test.ts` |
-| foundations (4) | `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph` (shadow wins) | `radicals-foundations-parity.test.ts` |
-| review (3) | `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result` | `review-parity.test.ts` |
-| readers (11) | passages list/get, `passages/:id/audio`, generate, sessions get/put/complete, bookmarks get/post, bookmarks by-passage get/delete | `readers-parity.test.ts` |
-| quiz (8) | config, questions, attempts GET, attempts POST, attempts/:id/answers, attempts/:id/complete, feedback, sandhi-drill/questions | `quiz-progression-parity.test.ts` |
-| progression (7) | foundation-progress GET/PUT, phase-gate GET/PUT, gates, radical-progress GET/PUT | `quiz-progression-parity.test.ts` |
-| **TOTAL** | **63** | **63 (100%)** |
+| Module (routes)       | Routes                                                                                                                                           | Covered by harness                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| words (2)             | `GET /v1/words/:glyph`, `GET /v1/words/:glyph/measure-words`                                                                                     | `route-parity.test.ts`                                                                       |
+| phonetic-clusters (2) | `GET /v1/phonetic-clusters`, `GET /v1/phonetic-clusters/:id`                                                                                     | `route-parity.test.ts`                                                                       |
+| grammar (2)           | `GET /v1/grammar/patterns`, `GET /v1/grammar/patterns/:id`                                                                                       | `route-parity.test.ts`                                                                       |
+| chengyu (2)           | `GET /v1/chengyu/idioms`, `GET /v1/chengyu/idioms/:id`                                                                                           | `route-parity.test.ts`                                                                       |
+| audio (1)             | `POST /v1/tts`                                                                                                                                   | `audio-health-parity.test.ts`                                                                |
+| health (1)            | `GET /v1/health`                                                                                                                                 | `audio-health-parity.test.ts`                                                                |
+| auth (5)              | register / login / refresh / logout / `GET me`                                                                                                   | `auth-parity.test.ts`                                                                        |
+| characters (6)        | `:glyph` (foundations shadow), `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search` (404 shadow), `/frequency` (404 shadow) | `characters-mnemonics-parity.test.ts` + `radicals-foundations-parity.test.ts` (shadow block) |
+| pinyin (1)            | `GET /v1/pinyin/search`                                                                                                                          | `characters-mnemonics-parity.test.ts`                                                        |
+| mnemonics (4)         | GET / POST / PUT / DELETE `/v1/mnemonics/:glyph`                                                                                                 | `characters-mnemonics-parity.test.ts`                                                        |
+| radicals (4)          | `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters`                                                                                      | `radicals-foundations-parity.test.ts`                                                        |
+| foundations (4)       | `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph` (shadow wins)                                              | `radicals-foundations-parity.test.ts`                                                        |
+| review (3)            | `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result`                                                                     | `review-parity.test.ts`                                                                      |
+| readers (11)          | passages list/get, `passages/:id/audio`, generate, sessions get/put/complete, bookmarks get/post, bookmarks by-passage get/delete                | `readers-parity.test.ts`                                                                     |
+| quiz (8)              | config, questions, attempts GET, attempts POST, attempts/:id/answers, attempts/:id/complete, feedback, sandhi-drill/questions                    | `quiz-progression-parity.test.ts`                                                            |
+| progression (7)       | foundation-progress GET/PUT, phase-gate GET/PUT, gates, radical-progress GET/PUT                                                                 | `quiz-progression-parity.test.ts`                                                            |
+| **TOTAL**             | **63**                                                                                                                                           | **63 (100%)**                                                                                |
 
-*Note: `GET /v1/characters/:glyph` is counted once and exercised through the foundations shadow (foundations mounted first on both apps — identical behavior, verified in the shadow-parity blocks).*
+_Note: `GET /v1/characters/:glyph` is counted once and exercised through the foundations shadow (foundations mounted first on both apps — identical behavior, verified in the shadow-parity blocks)._
 
 ### The pre-flight sign-off + rollback/watch-window (the gate's operative output)
 
@@ -239,15 +239,15 @@ Impact: D2 is verified + executable — rollback requires no schema revert (addi
 
 This is a **docs/verification story — no production code or test code is written**. The "testing" is the gate's own verification burden: every DoD gate is either a CI run or a committed artifact, and the exact results are recorded in the artifact §6:
 
-| Gate | Command | Exact result (run 2026-08-22) |
-|---|---|---|
-| Typecheck | `npx tsc --noEmit` (apps/backend) | exit 0 |
-| Build | `npm run build --workspace=@mandarin/backend` | exit 0; `dist/app/index.js` 5137 B + `dist/nest/main.js` 2286 B emitted |
-| Full unit | `npm run test:full` | **66 files / 744 tests passed** (5.90s) |
-| Integration | `npm run test:integration` | **23 files / 262 tests passed** (82.61s) |
-| Lint | `npm run lint` (eslint .) | exit 0 |
-| Boundaries | `npm run check:module-boundaries` | exit 0 |
-| Migration | `npx prisma migrate status` | 30 migrations, "Database schema is up to date!" |
-| Nest prod boot | `node dist/nest/main.js` (PORT=3999) | booted; `GET /api/v1/health` → 200 |
+| Gate           | Command                                       | Exact result (run 2026-08-22)                                           |
+| -------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| Typecheck      | `npx tsc --noEmit` (apps/backend)             | exit 0                                                                  |
+| Build          | `npm run build --workspace=@mandarin/backend` | exit 0; `dist/app/index.js` 5137 B + `dist/nest/main.js` 2286 B emitted |
+| Full unit      | `npm run test:full`                           | **66 files / 744 tests passed** (5.90s)                                 |
+| Integration    | `npm run test:integration`                    | **23 files / 262 tests passed** (82.61s)                                |
+| Lint           | `npm run lint` (eslint .)                     | exit 0                                                                  |
+| Boundaries     | `npm run check:module-boundaries`             | exit 0                                                                  |
+| Migration      | `npx prisma migrate status`                   | 30 migrations, "Database schema is up to date!"                         |
+| Nest prod boot | `node dist/nest/main.js` (PORT=3999)          | booted; `GET /api/v1/health` → 200                                      |
 
 Evidence is structural (file:line for the P0-1 guards, the calibrated guest shape, the error-filter parity, the additive migration SQL, the Node-24 toolchain files) plus the parity-suite + unit-suite results that back P1/T1/O1/R2. The **pre-flight sign-off** (S1 + S2 + P1 100% + T1) is the story's acceptance verdict — all PASS → **24-15 UNBLOCKED**, with the 24-15 input list as the explicit hand-off.

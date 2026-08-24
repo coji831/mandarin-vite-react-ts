@@ -11,9 +11,8 @@
  * express-rate-limit gives exact parity with zero rewrite. The parity
  * harness (429 status + envelope) is the regression gate.
  *
- * The Express `src/app/index.ts` sets `trust proxy 1` so the rate limiter
- * reads the real client IP from `X-Forwarded-For` — the Nest shell mirrors
- * this in `configure-app.ts`.
+ * `trust proxy 1` is enabled (configure-app.ts) so the limiter reads the real
+ * client IP from `X-Forwarded-For` behind Railway's edge proxy.
  *
  * Config markers:
  *   - **[APPLIED]** — mounted on the shell now (the only ported route with a
@@ -31,7 +30,7 @@ import type { NextFunction, Request, Response } from "express";
 /** Configs are passed to `rateLimit()` which accepts `Partial<Options>`. */
 type LimiterConfig = Partial<Options>;
 
-// ── words — [APPLIED] (WordsRoutes.ts, byte-for-byte) ─────────────────────
+// ── words — [APPLIED] ──────────────────────────────────────────────────────
 
 /** Words GET limiter — 60 req/min per user. */
 export const WORDS_GET_LIMITER_CONFIG: LimiterConfig = {
@@ -67,7 +66,7 @@ export const WORDS_GUEST_GET_LIMITER_CONFIG: LimiterConfig = {
 const wordsGetLimiter = rateLimit(WORDS_GET_LIMITER_CONFIG);
 const wordsGuestGetLimiter = rateLimit(WORDS_GUEST_GET_LIMITER_CONFIG);
 
-/** Route-level middleware: stricter limit for guests — mirrors WordsRoutes.ts. */
+/** Route-level middleware: stricter limit for guests. */
 export function rateLimitWordsByAuth(req: Request, res: Response, next: NextFunction): void {
   if (req.userId) {
     wordsGetLimiter(req, res, next);
@@ -76,7 +75,7 @@ export function rateLimitWordsByAuth(req: Request, res: Response, next: NextFunc
   }
 }
 
-// ── auth — [INFRA] (authRoutes.ts, applied in 24-6) ───────────────────────
+// ── auth — [INFRA] (applied in 24-6) ──────────────────────────────────────
 
 /** Auth brute-force limiter — 5 req/min per IP (login/register). */
 export const AUTH_LIMITER_CONFIG: LimiterConfig = {
@@ -93,11 +92,11 @@ export const AUTH_LIMITER_CONFIG: LimiterConfig = {
 
 /**
  * Auth brute-force limiter INSTANCE — a single shared instance mounted on
- * BOTH `/register` and `/login` (mirrors `authRoutes.ts`, where one `authLimiter`
- * guards both routes → one shared per-IP counter). The default express-rate-limit
- * handler sends the `message` object directly as the 429 body, so the Nest 429
- * response is byte-identical to Express (`{ error, code, message }`, no envelope)
- * — proven by the 24-6 auth-parity harness. Applied in Story 24-6.
+ * BOTH `/register` and `/login` (one `authLimiter` guards both routes → one
+ * shared per-IP counter). The default express-rate-limit handler sends the
+ * `message` object directly as the 429 body, so the Nest 429 response is
+ * byte-identical to the previous surface (`{ error, code, message }`, no
+ * envelope) — proven by the 24-6 auth-parity harness. Applied in Story 24-6.
  */
 const authLimiter = rateLimit(AUTH_LIMITER_CONFIG);
 
@@ -106,10 +105,10 @@ export function rateLimitAuth(req: Request, res: Response, next: NextFunction): 
   authLimiter(req, res, next);
 }
 
-// ── mnemonics — [APPLIED] (mnemonicsRoutes.ts, applied in 24-8) ───────────
+// ── mnemonics — [APPLIED] (applied in 24-8) ───────────────────────────────
 
 /**
- * Per-method mnemonics limiters — 1:1 with `mnemonicsRoutes.ts`
+ * Per-method mnemonics limiters
  * (get 60/min, generate 10/min, update 30/min, delete 30/min), including the
  * same `req.userId || ipKeyGenerator(req.ip || "unknown")` key (the helper
  * avoids express-rate-limit's ERR_ERL_KEY_GEN_IPV6 warning). NOTE: the shell
@@ -178,7 +177,7 @@ const mnemonicsGenerateLimiter = rateLimit(MNEMONICS_GENERATE_LIMITER_CONFIG);
 const mnemonicsUpdateLimiter = rateLimit(MNEMONICS_UPDATE_LIMITER_CONFIG);
 const mnemonicsDeleteLimiter = rateLimit(MNEMONICS_DELETE_LIMITER_CONFIG);
 
-/** Route-level middleware: per-method mnemonics limiter — mirrors mnemonicsRoutes.ts. */
+/** Route-level middleware: per-method mnemonics limiter. */
 export function rateLimitMnemonics(req: Request, res: Response, next: NextFunction): void {
   switch (req.method) {
     case "GET":
@@ -198,7 +197,7 @@ export function rateLimitMnemonics(req: Request, res: Response, next: NextFuncti
   }
 }
 
-// ── readers — [APPLIED] (readersRoutes.ts, applied in 24-12) ───────────────
+// ── readers — [APPLIED] (applied in 24-12) ────────────────────────────────
 
 /** Readers GET limiter — 60 req/min per user. */
 export const READERS_GET_LIMITER_CONFIG: LimiterConfig = {
@@ -206,8 +205,8 @@ export const READERS_GET_LIMITER_CONFIG: LimiterConfig = {
   max: 60,
   // `req.userId || ipKeyGenerator(req.ip || "unknown")` — the helper avoids
   // express-rate-limit's ERR_ERL_KEY_GEN_IPV6 warning (same as the mnemonics
-  // configs; the Express readersRoutes.ts uses the bare `req.ip` form, which
-  // the library rejects for IPv6 — behavior is identical for the parity gate).
+  // configs; the bare `req.ip` form is rejected by the library for IPv6 —
+  // behavior is identical for the parity gate).
   keyGenerator: (req: Request) => req.userId || ipKeyGenerator(req.ip || "unknown"),
   message: {
     error: "Too many requests. Please wait a moment.",
@@ -236,11 +235,10 @@ const readersGuestGetLimiter = rateLimit(READERS_GUEST_GET_LIMITER_CONFIG);
 /**
  * Route-level middleware: applies the readers GET limiters ONLY to the two
  * passage GET routes (`GET /v1/readers/passages` + `GET /v1/readers/passages/:id`)
- * — mirroring `readersRoutes.ts`, where `rateLimitByAuth` guards exactly those
- * two routes (the audio POST / generate / sessions / bookmarks routes carry NO
- * express-rate-limit in Express). Mounted path-scoped on `/api/v1/readers/
- * passages` in `configure-app.ts`; the GET-only method check keeps the audio
- * POST (`/passages/:id/audio`) un-limited, exactly like Express.
+ * — the audio POST / generate / sessions / bookmarks routes carry NO
+ * express-rate-limit. Mounted path-scoped on `/api/v1/readers/passages` in
+ * `configure-app.ts`; the GET-only method check keeps the audio POST
+ * (`/passages/:id/audio`) un-limited, exactly like the previous surface.
  *
  * NOTE (same as the mnemonics dispatch): the shell mounts this before the Nest
  * guards run, so `req.userId` is not yet attached for authenticated requests
@@ -271,13 +269,13 @@ export function rateLimitReadersByAuth(req: Request, res: Response, next: NextFu
  */
 export const READERS_DAILY_GENERATION_LIMIT = 5;
 
-// ── quiz feedback — [APPLIED] (aiFeedbackRoutes.ts, applied in 24-13) ──────
+// ── quiz feedback — [APPLIED] (applied in 24-13) ──────────────────────────
 
 /**
- * AI-feedback limiter — 10 req/min per IP (1:1 with the inline `feedbackLimiter`
- * in `api/aiFeedbackRoutes.ts`, including the default IP key + `message` body
- * `{ error, code }`). Mounted path-scoped on `/api/v1/quiz/feedback` in
- * `configure-app.ts`. The 429 body (default express-rate-limit handler sending
+ * AI-feedback limiter — 10 req/min per IP (the inline `feedbackLimiter`,
+ * including the default IP key + `message` body `{ error, code }`). Mounted
+ * path-scoped on `/api/v1/quiz/feedback` in `configure-app.ts`. The 429 body
+ * (default express-rate-limit handler sending
  * the `message` object directly) is byte-identical to Express — no envelope.
  */
 export const QUIZ_FEEDBACK_LIMITER_CONFIG: LimiterConfig = {

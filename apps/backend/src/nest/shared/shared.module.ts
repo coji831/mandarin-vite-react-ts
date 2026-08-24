@@ -2,14 +2,13 @@
  * @file apps/backend/src/nest/shared/shared.module.ts
  * @description NestJS `SharedModule` — exposes the shared infrastructure as
  * Nest providers so cache/gemini/jwt-dependent modules (mnemonics, auth,
- * audio, readers, quiz, progression) can be ported without reaching back into
- * the Express `app/container.ts` (Story 24-4).
+ * audio, readers, quiz, progression) resolve them through Nest DI (Story 24-4).
  *
  * Providers:
  *   - `CONFIG` (readonly `config` from `src/shared/config`) — the primary
  *     config home, plus `GATE_THRESHOLDS` (`src/config/gate-thresholds.ts`)
  *     and `audioConfig` (`src/modules/audio/config.ts`) — the three config
- *     homes rationalized into Nest providers (the Express path is untouched).
+ *     homes rationalized into Nest providers.
  *   - `CacheService` via async `useFactory` (`await CacheFactory.create("default")`)
  *     — resolves the Express container's top-level await before first request.
  *   - `CONTENT_UTILS` (the `contentUtils` module namespace), the shared
@@ -28,9 +27,6 @@
  * client — `redisClient` is the connection owner behind `CacheService` (which
  * exposes no teardown of its own) — so the shell drains cleanly on SIGTERM.
  * Prisma teardown lives on `DatabaseModule`.
- *
- * Express `app/container.ts` is UNTOUCHED — the Nest shell gets its own
- * provider path (the `CacheFactory` singleton registry is shared where safe).
  */
 
 import { Module, OnApplicationShutdown } from "@nestjs/common";
@@ -72,7 +68,7 @@ export const CONTENT_UTILS = "CONTENT_UTILS" as const;
     { provide: AUDIO_CONFIG_TOKEN, useValue: audioConfig },
 
     // ── Shared services ────────────────────────────────────────────────
-    // Async provider: resolves the Express container's top-level await
+    // Async provider: resolves the top-level await
     // (`await CacheFactory.create("default")`) before bootstrap completes.
     {
       provide: CacheService,

@@ -1,15 +1,14 @@
 /**
  * @file apps/backend/src/modules/readers/nest/readers-nest.controller.ts
  * @description NestJS controller for the readers module (Story 24-12 — Readers
- * Port). Mirrors `api/ReadersController.ts` (Express) 1:1 — all 11 routes
- * verbatim: same query/body/path parsing + string coercion, same service
- * delegation, same 2xx JSON (incl. `formatPassageResponse` date serialization),
- * same 4xx/5xx `code`/`message` (the global 24-3 `AppExceptionFilter`
- * serializes thrown `HttpException`s into the `{ code, message, requestId }`
- * envelope; `code`/`message` are byte-for-byte equal to the Express
- * controller's legacy `{ error, code }` body).
+ * Port). All 11 routes verbatim: same query/body/path parsing + string
+ * coercion, same service delegation, same 2xx JSON (incl.
+ * `formatPassageResponse` date serialization), same 4xx/5xx `code`/`message`
+ * (the global 24-3 `AppExceptionFilter` serializes thrown `HttpException`s
+ * into the `{ code, message, requestId }` envelope; `code`/`message` are
+ * byte-for-byte equal to the previous surface's legacy `{ error, code }` body).
  *
- * Routes (verbatim from `api/readersRoutes.ts` — ROUTE_PATTERNS):
+ * Routes (ROUTE_PATTERNS):
  *   - `GET    /v1/readers/passages`                    → optionalAuth (F5)
  *   - `GET    /v1/readers/passages/:id`                → optionalAuth (F5)
  *   - `POST   /v1/readers/passages/:id/audio`          → optionalAuth (calibrated F5: cache-first free for guests)
@@ -22,7 +21,8 @@
  *   - `DELETE /v1/readers/bookmarks/by-passage/:passageId` → requireAuth
  *   - `GET    /v1/readers/bookmarks/by-passage/:passageId` → requireAuth
  *
- * Guard mapping (verbatim from `api/readersRoutes.ts`): the three public-ish
+ * Guard mapping:
+ * the three public-ish
  * reads (`passages`, `passages/:id`, `passages/:id/audio`) → the CALIBRATED
  * `OptionalAuthGuard` (24-5) — a guest (no/bad token) proceeds with
  * `req.userId` UNDEFINED, never 401 (F5 cache-first free-for-guests on the
@@ -31,11 +31,11 @@
  * `AUTH_REQUIRED` before the controller, matching Express `requireAuth`).
  *
  * The `if (!userId)` 401 `AUTH_ERROR` checks on the user-scoped routes are
- * defense-in-depth mirroring the Express controller structure (unreachable
- * under `RequireAuthGuard`). Status-code parity: `@HttpCode(200)` on the POST
- * audio/complete routes (Nest's POST default 201), `@HttpCode(201)` on
- * generate/addBookmark (Express `res.status(201)`), `@HttpCode(204)` on the
- * bookmark DELETE (Express `res.status(204).send()`).
+ * defense-in-depth (unreachable under `RequireAuthGuard`). Status-code parity:
+ * `@HttpCode(200)` on the POST audio/complete routes (Nest's POST default
+ * 201), `@HttpCode(201)` on generate/addBookmark (the previous surface used
+ * `res.status(201)`), `@HttpCode(204)` on the bookmark DELETE (the previous
+ * surface used `res.status(204).send()`).
  */
 
 import {

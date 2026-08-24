@@ -2,13 +2,12 @@
  * @file apps/backend/src/modules/grammar/nest/grammar-nest.controller.ts
  * @description NestJS controller for the Grammar module (Story 24-2 shell).
  *
- * Mirrors `api/GrammarController.ts` (Express) 1:1 — same query coercion, same
- * service delegation, same 2xx JSON. Bypasses the `req.grammarController`
- * pattern; throws `BadRequestException` / `NotFoundException` on 4xx (envelope
- * parity deferred to 24-3).
+ * Same query coercion, same service delegation, same 2xx JSON. The Nest
+ * controller calls the framework-agnostic services directly (no controller-on-
+ * request pattern); throws `BadRequestException` / `NotFoundException` on 4xx
+ * (envelope parity deferred to 24-3).
  *
- * Route patterns copied verbatim from `api/grammarRoutes.ts`
- * (`ROUTE_PATTERNS.grammarPatterns` + `grammarPatternById(":id")`).
+ * Routes: `ROUTE_PATTERNS.grammarPatterns` + `ROUTE_PATTERNS.grammarPatternById(":id")`.
  */
 
 import {

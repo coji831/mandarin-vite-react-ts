@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/progression/index.ts
  * @description Progression module barrel exports (framework-agnostic surface
- * only — the Express HTTP layer was removed at the 24-15 cutover).
+ * only).
  *
  * Exports:
  * - ProgressionService: Progression business logic

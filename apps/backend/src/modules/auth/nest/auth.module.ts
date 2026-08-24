@@ -3,26 +3,13 @@
  * @description NestJS `@Module` for the Auth module (Story 24-6 — Auth
  * Module Port).
  *
- * 1:1 translation of `createAuthModule(deps)` in `modules/auth/container.ts`,
- * wiring the same framework-agnostic services through Nest providers:
- *
- *   - `AuthRepository`  — self-imports the shared Prisma singleton (same as
- *     the Express path); provided via `useFactory`.
- *   - `AuthService`     — constructor-injected with `AuthRepository` +
- *     `JwtService` + `PasswordService` (the same three deps the factory takes,
- *     the latter two resolved from `SharedModule`, 24-4).
- *
- * Explicit `useFactory` providers + `@Inject()` decorators (NOT auto
- * constructor-param injection) because `tsx` (esbuild) does not emit decorator
- * metadata in the dev loop; the compiled tsc build gets metadata for free.
- *
- * The controller applies `AuthGuard` (24-5) to `GET /me`; `GuardsModule` is
- * imported so the guard + its `JwtService` dependency resolve in this module's
- * context. `SharedModule` is imported directly for `JwtService`/`PasswordService`.
- *
- * The Express wiring (`container.ts`, `api/AuthController.ts`,
- * `api/authRoutes.ts`) is UNTOUCHED — this module coexists as the Nest shell
- * surface and is deleted at the module's cutover (24-15).
+ * Wires `AuthService` (constructor-injected with `AuthRepository` +
+ * `JwtService` + `PasswordService`) and exports it. `SharedModule` is imported
+ * for `JwtService`/`PasswordService`; `GuardsModule` so the `AuthGuard` applied
+ * to `GET /me` and its `JwtService` dependency resolve in this module's
+ * context. `useFactory` + `@Inject()` (not auto constructor-param injection)
+ * because tsx/esbuild emits no decorator metadata in the dev loop; the
+ * compiled tsc build gets metadata for free.
  */
 
 import { Module } from "@nestjs/common";

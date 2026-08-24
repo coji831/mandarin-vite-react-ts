@@ -101,11 +101,13 @@ export class FoundationsModule {}
 ```typescript
 @Controller("v1")
 export class FoundationsNestController {
-  @Get("foundations/data/pinyin-tones")         // GET /v1/foundations/data/pinyin-tones
+  @Get("foundations/data/pinyin-tones") // GET /v1/foundations/data/pinyin-tones
   @Get("foundations/data/pinyin-character-map") // GET /v1/foundations/data/pinyin-character-map
-  @Get("foundations/data/strokes")              // GET /v1/foundations/data/strokes
-  @Get("characters/:glyph")                     // GET /v1/characters/:glyph — the cross-module SHADOW route
-  async getCharacterByGlyph(@Param("glyph") glyphParam: string) { /* … */ }
+  @Get("foundations/data/strokes") // GET /v1/foundations/data/strokes
+  @Get("characters/:glyph") // GET /v1/characters/:glyph — the cross-module SHADOW route
+  async getCharacterByGlyph(@Param("glyph") glyphParam: string) {
+    /* … */
+  }
 }
 ```
 

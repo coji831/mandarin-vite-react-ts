@@ -1,7 +1,7 @@
 ---
 purpose: "High-level system design decisions, architectural patterns, and technology choices"
 status: active
-last-verified: 2026-08-15
+last-verified: 2026-08-24
 type: architecture
 ---
 
@@ -69,7 +69,7 @@ mandarin-vite-react-ts/
 
 **Layer Separation (Modular Monolith):**
 
-- **App Layer** (`src/nest/`): NestJS 11 shell — entry (`main.ts`), composition root (`app.module.ts`), shared app config (`configure-app.ts`), HTTP-layer parity (exception filter, requestId middleware, rate-limit). The pre-cutover Express `src/app/` (index/routes/container) was deleted at the 24-15 cutover.
+- **App Layer** (`src/nest/`): NestJS 11 shell — entry (`main.ts`), composition root (`app.module.ts`), shared app config (`configure-app.ts`), HTTP-layer parity (exception filter, requestId middleware, rate-limit). The Express `src/app/` (index/routes/container) is retired.
 - **Module Layer** (`src/modules/*/`): Per-domain modules containing `nest/` (Nest controllers/modules), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
   - Current modules (15): `audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
   - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/nest/` and mounts the public `POST /v1/tts` wire path.
@@ -79,7 +79,7 @@ mandarin-vite-react-ts/
 
 **Key Design Decisions:**
 
-1. **NestJS 11 production entry** (`node dist/nest/main.js`): the Express surface was removed at the 24-15 cutover; the shell runs on the Express adapter with identical CORS / `trust proxy 1` / body-parser / rate-limit semantics
+1. **NestJS 11 production entry** (`node dist/nest/main.js`): the Express surface is retired; the shell runs on the Express adapter with identical CORS / `trust proxy 1` / body-parser / rate-limit semantics
 2. **ESM Modules**: TypeScript source uses `.ts` files; the `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports)
 3. **Dependency Injection**: Nest DI (providers + `useFactory`) over the modulith modules and the shared providers (`SharedModule`/`DatabaseModule`); services never touch Prisma directly
 4. **Fail-Open Caching**: Redis failures never block requests (degrades to API calls)
@@ -125,7 +125,7 @@ mandarin-vite-react-ts/
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
   - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useAudioManager / useAudioItemPlayback for audio playback)
-  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group — Story 22.4)
+  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group)
 
 ### Component Hierarchy
 
@@ -262,7 +262,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 
 #### Seed Pipeline (all-in-DB)
 
-`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **32-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). Since the hash-gate (Story 22.1) the pipeline no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (24 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe); **Chengyu (steps 30–32)** — `syncChengyu` syncs `Chengyu` → `ChengyuExample` → `ChengyuRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
+`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **32-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). The hash-gated delta sync no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (24 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe); **Chengyu (steps 30–32)** — `syncChengyu` syncs `Chengyu` → `ChengyuExample` → `ChengyuRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
 
 See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.md) (32-step order + FK table, regeneration flow, runbook, verification, idempotency rules).
 
@@ -343,7 +343,7 @@ Computed per-user gate status is served by `GET /api/v1/progression/gates` (`ROU
 
 The route uses `optionalAuth` — **guest users receive an all-passed response**; authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
 
-> **Known gap (Epic 21):** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
+> **Known gap:** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
 
 ### Leech Detection
 

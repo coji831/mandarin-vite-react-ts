@@ -135,7 +135,7 @@ This project has a machine-readable design token file at the project root: `DESI
   - min-heights for fixed-state shells (e.g. `.radical-trees-tab__loading { min-height: 200px; }`)
   - hairline borders / small deltas (e.g. `2px` border-left on `.phonetic-family-node__members`)
   - fixed widths/paddings that are pure layout math, not a spacing-scale value (e.g. `40px`, `200px`)
-- The epic-21 tree components (`RadicalTreesTab.css`, `PhoneticFamilyNode.css`) are the sanctioned example of the boundary.
+- The existing tree components (`RadicalTreesTab.css`, `PhoneticFamilyNode.css`) are the sanctioned example of the boundary.
 - ❌ Do not invent new tokens for every px — that bloats the token surface and creates token drift.
 
 ## ✅ Utility Classes (in `globals.css` — Single-Property)

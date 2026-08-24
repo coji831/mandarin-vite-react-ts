@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/grammar/index.ts
- * @description Grammar module barrel exports (framework-agnostic surface only
- * — the Express HTTP layer was removed at the 24-15 cutover).
+ * @description Grammar module barrel exports (framework-agnostic surface
+ * only).
  */
 export { GrammarService } from "./services/GrammarService.js";
 export { GrammarRepository } from "./repositories/GrammarRepository.js";

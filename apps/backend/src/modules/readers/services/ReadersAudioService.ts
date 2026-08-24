@@ -30,8 +30,7 @@ const logger = createLogger("ReadersAudioService");
  * (`passageHashFor` / `passagePath` from `modules/audio/services/paths.ts`).
  * Constructor-injected (DI) instead of imported directly from `modules/audio`
  * so the Nest shell consumes them from the ported `AudioModule` (Story 24-12 —
- * no direct `modules/audio` function import in Nest land); the Express
- * composition root (`app/container.ts`) passes the same helpers.
+ * no direct `modules/audio` function import in Nest land).
  */
 export interface PassagePathHelpers {
   /** Passage-level hash: SHA256 of the concatenated sentence texts. */

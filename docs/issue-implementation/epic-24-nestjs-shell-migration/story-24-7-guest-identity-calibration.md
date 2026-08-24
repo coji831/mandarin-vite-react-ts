@@ -133,10 +133,18 @@ useEffect(() => {
   let isMounted = true; // Prevent state updates after unmount (React Strict Mode)
   setIsLoading(true);
   fetchPhaseGate()
-    .then((gate) => { if (isMounted) setPhaseGate(gate); })
-    .catch(() => { if (isMounted) setPhaseGate(null); })
-    .finally(() => { if (isMounted) setIsLoading(false); });
-  return () => { isMounted = false; };
+    .then((gate) => {
+      if (isMounted) setPhaseGate(gate);
+    })
+    .catch(() => {
+      if (isMounted) setPhaseGate(null);
+    })
+    .finally(() => {
+      if (isMounted) setIsLoading(false);
+    });
+  return () => {
+    isMounted = false;
+  };
 }, [accessToken]);
 ```
 

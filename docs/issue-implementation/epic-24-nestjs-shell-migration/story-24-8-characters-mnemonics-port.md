@@ -17,12 +17,12 @@ Ported the `characters` module (two controllers, 7 routes) and the `mnemonics` m
 
 **Mnemonics — first SharedModule consumer + calibrated optional-auth (`mnemonics.module.ts` + `mnemonics-nest.controller.ts`).** `MnemonicsModule` imports `SharedModule` (24-4) for `GeminiService` + `CacheService` and `GuardsModule` (24-5) so the calibrated `OptionalAuthGuard`/`RequireAuthGuard` (and their `JwtService` dependency) resolve in the controller's `@UseGuards(...)` context. Providers: `MnemonicsRepository` via `useFactory`, and `MnemonicsService` via `useFactory` injecting the SAME three deps the Express `createMnemonicsModule(deps)` container factory takes — `MnemonicsRepository` + `GeminiService` + `CacheService`. The controller mirrors `MnemonicsController.ts` 1:1:
 
-| Route (with `/api` prefix)        | Verb   | Guard                                             | Status                   |
-| --------------------------------- | ------ | ------------------------------------------------- | ------------------------ |
-| `/v1/mnemonics/:character`        | GET    | `@UseGuards(OptionalAuthGuard)` (24-5 calibrated)  | 200 `{ mnemonic }` / `{ mnemonic: null }` |
-| `/v1/mnemonics/:character`        | POST   | `@UseGuards(RequireAuthGuard)`                     | 201 (`@HttpCode`)        |
-| `/v1/mnemonics/:character`        | PUT    | `@UseGuards(RequireAuthGuard)`                     | 200                      |
-| `/v1/mnemonics/:character`        | DELETE | `@UseGuards(RequireAuthGuard)`                     | 204 (`@HttpCode`)        |
+| Route (with `/api` prefix) | Verb   | Guard                                             | Status                                    |
+| -------------------------- | ------ | ------------------------------------------------- | ----------------------------------------- |
+| `/v1/mnemonics/:character` | GET    | `@UseGuards(OptionalAuthGuard)` (24-5 calibrated) | 200 `{ mnemonic }` / `{ mnemonic: null }` |
+| `/v1/mnemonics/:character` | POST   | `@UseGuards(RequireAuthGuard)`                    | 201 (`@HttpCode`)                         |
+| `/v1/mnemonics/:character` | PUT    | `@UseGuards(RequireAuthGuard)`                    | 200                                       |
+| `/v1/mnemonics/:character` | DELETE | `@UseGuards(RequireAuthGuard)`                    | 204 (`@HttpCode`)                         |
 
 **Calibrated guest behavior (verified):** on GET, `OptionalAuthGuard` leaves `req.userId` **undefined** for a guest (never 401). `getMnemonic(character, userId?)` passes that through to the service's 4-step lookup chain (user-edited → cache(AI) → DB(AI) → generate): `if (userId) { … user-edited branch … }` — so a guest skips step 1 entirely and returns only shared/cached/static data. The harness proves a guest GET on a glyph that HAS a user-edited story still returns `{ mnemonic: null }` — never another user's rows, never all-unlocked (F6 calibrated semantics). The controller's own `!userId → 401 AUTH_ERROR` defense-in-depth branches on the write routes (mirroring the Express controller, which double-checks `req.userId` after `requireAuth`) are unreachable under `RequireAuthGuard` but kept structurally. Validation parity: `HAN_CHAR_REGEX = /^[\u4e00-\u9fff]$/`, `MAX_STORY_LENGTH = 1000`, `radicalIds` array-of-strings check, and PUT HTML sanitization (`story.replace(/<[^>]*>/g, "")`) — all byte-for-byte with the Express controller.
 
@@ -87,13 +87,19 @@ Explicit `useFactory` + `@Inject()` (NOT auto constructor-param injection) becau
 @Controller("v1/characters")
 export class CharactersNestController {
   @Get(":glyph") // declared FIRST — shadows /search + /frequency, exactly as charactersRoutes.ts
-  async getCharacter(@Param("glyph") glyph: string): Promise<unknown> { /* … */ }
+  async getCharacter(@Param("glyph") glyph: string): Promise<unknown> {
+    /* … */
+  }
 
   @Get("search") // declared AFTER :glyph — matched by :glyph first on BOTH apps (400)
-  async search(@Query("q") q?, @Query("tone") tone?, @Query("hskLevel") hskLevel?) { /* … */ }
+  async search(@Query("q") q?, @Query("tone") tone?, @Query("hskLevel") hskLevel?) {
+    /* … */
+  }
 
   @Get("frequency") // declared AFTER :glyph — shadowed identically (400)
-  async getFrequency(@Query("tier") tier?, @Query("page") page?, @Query("pageSize") pageSize?) { /* … */ }
+  async getFrequency(@Query("tier") tier?, @Query("page") page?, @Query("pageSize") pageSize?) {
+    /* … */
+  }
 }
 ```
 
@@ -141,20 +147,36 @@ The service's 4-step lookup chain (`MnemonicsService.getMnemonic(characterGlyph,
 ```typescript
 // apps/backend/src/nest/rate-limit.config.ts
 export const MNEMONICS_GET_LIMITER_CONFIG: LimiterConfig = {
-  windowMs: 60 * 1000, max: 60,
+  windowMs: 60 * 1000,
+  max: 60,
   keyGenerator: (req) => req.userId || ipKeyGenerator(req.ip || "unknown"), // ipKeyGenerator avoids ERR_ERL_KEY_GEN_IPV6
-  message: { error: "Too many requests. Please wait a moment before fetching more mnemonics.", code: "RATE_LIMIT" },
-  standardHeaders: true, legacyHeaders: false,
+  message: {
+    error: "Too many requests. Please wait a moment before fetching more mnemonics.",
+    code: "RATE_LIMIT",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
 };
 // … GENERATE 10 / UPDATE 30 / DELETE 30 …
 
 export function rateLimitMnemonics(req, res, next) {
-  switch (req.method) { // per-method dispatcher — mirrors mnemonicsRoutes.ts
-    case "GET": mnemonicsGetLimiter(req, res, next); break;
-    case "POST": mnemonicsGenerateLimiter(req, res, next); break;
-    case "PUT": mnemonicsUpdateLimiter(req, res, next); break;
-    case "DELETE": mnemonicsDeleteLimiter(req, res, next); break;
-    default: next();
+  switch (
+    req.method // per-method dispatcher — mirrors mnemonicsRoutes.ts
+  ) {
+    case "GET":
+      mnemonicsGetLimiter(req, res, next);
+      break;
+    case "POST":
+      mnemonicsGenerateLimiter(req, res, next);
+      break;
+    case "PUT":
+      mnemonicsUpdateLimiter(req, res, next);
+      break;
+    case "DELETE":
+      mnemonicsDeleteLimiter(req, res, next);
+      break;
+    default:
+      next();
   }
 }
 

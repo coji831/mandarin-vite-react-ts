@@ -37,7 +37,7 @@ section only describes what the tier covers.
 | Design lint            | `npx @google/design.md lint DESIGN.md`                                               | 0 drift     |
 | Pre-delivery checklist | `.github/instructions/frontend-pre-delivery-checklist.instructions.md`               | all items   |
 
-> ⚠️ Use `npm run build` for the type-check gate (frontend `tsc -b` + Vite bundle) — **not** a bare `npx tsc --noEmit` in `apps/frontend`: its `tsconfig.json` is solution-style (`"files": []` + references only), so a plain `npx tsc --noEmit` compiles **zero files** and exits 0 even with type errors in `src/`. This false-green shipped a broken build in 2026-08-21 (AppLayout / SideNav / TabBar `icon` widening to `string` vs `IconName`). Frontend gate: `npm run build` or `npx tsc -b --noEmit`. Backend gate: `npm run typecheck --workspace=@mandarin/backend` (its `tsconfig.json` is a real project, so `tsc --noEmit` is valid there).
+> ⚠️ Use `npm run build` for the type-check gate (frontend `tsc -b` + Vite bundle) — **not** a bare `npx tsc --noEmit` in `apps/frontend`: its `tsconfig.json` is solution-style (`"files": []` + references only), so a plain `npx tsc --noEmit` compiles **zero files** and exits 0 even with type errors in `src/`. A prior regression shipped a broken build because this false-green passed. Frontend gate: `npm run build` or `npx tsc -b --noEmit`. Backend gate: `npm run typecheck --workspace=@mandarin/backend` (its `tsconfig.json` is a real project, so `tsc --noEmit` is valid there).
 
 Static analysis catches the cheapest class of bugs — wrong types, unused code,
 design-token drift, missed states — before a single test runs. **If static

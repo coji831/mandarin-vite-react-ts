@@ -3,7 +3,7 @@
  * @description NestJS `DatabaseModule` — exposes the shared `PrismaClient` as a
  * singleton provider using the Prisma 7 CJS-only pattern (Story 24-4).
  *
- * Replicates `src/shared/infrastructure/database/client.ts` inside a Nest
+ * Replicates `src/shared/infrastructure/database/client.ts` as a Nest
  * `useFactory` provider: Prisma 7 ships a CJS-only `@prisma/client`, so we
  * default-import the package and destructure `PrismaClient`, and pass the
  * `PrismaPg` adapter a *connection string* (not a `pg.Pool`) so Prisma manages
@@ -12,9 +12,6 @@
  * Graceful shutdown (R2 AC): implements `OnApplicationShutdown` so the shared
  * `PrismaClient` is disconnected on SIGTERM (Railway restart/rollback). Hooks
  * are enabled via `app.enableShutdownHooks()` in `configure-app.ts`.
- *
- * The Express `app/container.ts` is UNTOUCHED — the Nest shell gets its own
- * provider path.
  */
 
 import { Inject, Module, OnApplicationShutdown } from "@nestjs/common";

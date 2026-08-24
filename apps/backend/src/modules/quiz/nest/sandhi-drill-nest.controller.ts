@@ -1,15 +1,14 @@
 /**
  * @file apps/backend/src/modules/quiz/nest/sandhi-drill-nest.controller.ts
  * @description NestJS controller for the sandhi drill quiz surface (Story
- * 24-13 — Quiz + Progression Port). 1:1 mirror of `api/SandhiDrillController.ts`
- * (Express) — same `?count` parsing + validation, same service delegation,
- * same 2xx JSON (array of `DrillQuestion` objects), same 4xx/5xx
- * `code`/`message` (the global 24-3 `AppExceptionFilter` serializes thrown
- * `HttpException`s into the `{ code, message, requestId }` envelope; `code`/
- * `message` are byte-for-byte equal to the Express controller's legacy
+ * 24-13 — Quiz + Progression Port). Same `?count` parsing + validation, same
+ * service delegation, same 2xx JSON (array of `DrillQuestion` objects), same
+ * 4xx/5xx `code`/`message` (the global 24-3 `AppExceptionFilter` serializes
+ * thrown `HttpException`s into the `{ code, message, requestId }` envelope;
+ * `code`/`message` are byte-for-byte equal to the previous surface's legacy
  * `{ error, code }` body).
  *
- * Route (verbatim from `api/quizRoutes.ts` — ROUTE_PATTERNS.quizSandhiDrill):
+ * Route (ROUTE_PATTERNS.quizSandhiDrill):
  *   - `GET /v1/quiz/sandhi-drill/questions` → `@Get("sandhi-drill/questions")`
  *     → optionalAuth (the strategy pool is shared/public content).
  *

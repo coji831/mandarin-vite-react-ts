@@ -1,25 +1,14 @@
 # Verification Artifacts
 
-This directory stores structured outputs produced by agents during verification, review, and audit stages of the SOLAR-Ralph pipeline.
+Structured outputs produced by agents during verification, review, and audit stages. This directory is **gitignored** — it is the local on-disk evidence record, not part of the committed tree on `main`.
 
 ## Purpose
 
-Verification artifacts provide auditable evidence that a work package was completed correctly. They allow:
+Verification artifacts provide auditable evidence that a work package was completed correctly:
 
 - Human review of agent decisions without re-running the full pipeline
-- Restart-safe proof of completed verification gates
-- Pattern analysis across stories to improve agent quality over time
-
-## Artifact Types
-
-| Artifact                       | Produced By                      | Format                                          | Retention                    |
-| ------------------------------ | -------------------------------- | ----------------------------------------------- | ---------------------------- |
-| `test-report-<story>.txt`      | Frontend/Backend Test Specialist | Plain text (Jest/Vitest output)                 | Until story closed + 30 days |
-| `review-findings-<story>.md`   | Frontend/Backend Review Auditor  | Markdown (severity-ordered findings)            | Until story closed + 30 days |
-| `security-findings-<story>.md` | Security Auditor                 | Markdown (findings + residual risk)             | Until story closed + 90 days |
-| `repro-script-<story>.sh`      | Bug Investigation Specialist     | Shell/curl or Vitest integration test           | Until bug fix verified       |
-| `repro-log-<story>.txt`        | Bug Investigation Specialist     | Terminal output confirming repro                | Until bug fix verified       |
-| `design-plan-<story>.md`       | Design Planning Architect        | Markdown (work packages + verification targets) | Until story closed           |
+- Restart-safe proof of completed verification gates (test baselines, release-safety gates)
+- Records of code-review audits, UIUX audits, and browser-captured screenshots
 
 ## Naming Convention
 
@@ -29,19 +18,27 @@ Verification artifacts provide auditable evidence that a work package was comple
 
 Examples:
 
-- `test-report-15-3.txt`
-- `review-findings-15-3.md`
-- `security-findings-15-3.md`
-- `repro-script-15-3.sh`
+- `test-report-24-1.md`
+- `release-safety-gate-24-14.md`
+
+## Current Artifacts
+
+| Artifact                                | Type        | What it records                                                                                                                      |
+| --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `test-report-24-1.md`                   | Test report | Epic 24 T1 pre-migration baseline (test:full / test:integration counts) + P0-1 stopgap post-change verification                      |
+| `release-safety-gate-24-14.md`          | Gate result | Story 24-14 DoD verification (all 12 gates) + pre-flight sign-off + post-flip prod-boot smoke (24-15) + rollback/watch-window record |
+| `epic-25-integration-review.md`         | Review      | Code Reviewer integration-readiness audit of the calibrated guest-access state against the current code (Epic 25 scope)              |
+| `northstar-canonization-review.md`      | Review      | Working record for the north-star page canonization review (8-gate protocol)                                                         |
+| `uiux-audit-practices-full-userflow.md` | Audit       | UIUX audit of the PracticesPage full userflow (machine layers L1–L3 + Storybook walk + screenshots)                                  |
+| `dashboard-demo-*.png`                  | Screenshots | Browser-captured screenshots supporting earlier audits/reviews                                                                       |
 
 ## Behavior Rules
 
-- **Agents write artifacts here** when producing structured output during pipeline stages.
-- **The governor references artifacts** when verifying stage exit criteria before advancing the pipeline.
-- **Log-Backpressure Gate**: Pipeline 3 (Bug Fix) may not mark `WORK_PACKAGE_COMPLETE` until a `repro-log-*.txt` artifact confirms the reproduction script no longer produces the original error.
-- **Directory is the evidence record**: `verification-artifacts/` is gitignored — verification evidence lives here and per-epic results are recorded in this directory, which serves as the on-disk record of verification output.
-- **Retention**: Artifacts older than 30 days for standard stories (90 days for security) may be deleted. The `.gitkeep` placeholder remains as an anchor within the gitignored directory — it does not affect git tracking.
+- **Agents write artifacts here** when producing structured output during verification/review/audit stages.
+- **Committed docs may backtick-reference these files** (e.g. `release-safety-gate-24-14.md`, `test-report-24-1.md` from the epic-24 docs) for traceability — but because this directory is gitignored, those references do not resolve on `main`. The essential content should be extracted into tracked docs (see the 24-16 release-prep proposal) so the committed record stands on its own.
+- **Directory is the local evidence record** — not tracked, not deployed.
+- **Retention**: local-only. The `.gitkeep` placeholder anchors the directory.
 
-## Integration with .github/AGENTS.md
+## Integration with committed docs
 
-The **Verification Contract** in `.github/AGENTS.md` requires all verification evidence to be present before a `WORK_PACKAGE_COMPLETE` promise is written. Recording the artifact path with the per-epic results in `verification-artifacts/` satisfies this requirement.
+Epic/story docs (e.g. `docs/issue-implementation/epic-24-*/**`) cite these artifacts for gate and test evidence. The owner's extraction decision determines whether that evidence is condensed into tracked docs (`docs/audits/` or the epic implementation READMEs) or left as local-only records.

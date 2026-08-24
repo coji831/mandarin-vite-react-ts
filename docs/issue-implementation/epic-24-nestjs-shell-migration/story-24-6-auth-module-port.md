@@ -33,13 +33,13 @@ export class AuthModule {}
 
 **Controller wiring (`auth-nest.controller.ts`)** — route + guard mapping verbatim from `authRoutes.ts`:
 
-| Route (with `/api` prefix) | Verb | Guard | Status |
-| --- | --- | --- | --- |
-| `/v1/auth/register` | POST | public (brute-force limiter in `configure-app.ts`) | 201 |
-| `/v1/auth/login` | POST | public (brute-force limiter) | 200 (`@HttpCode`) |
-| `/v1/auth/refresh` | POST | public (matches Express — no guard) | 200 (`@HttpCode`) |
-| `/v1/auth/logout` | POST | public (matches Express — no guard) | 200 (`@HttpCode`) |
-| `/v1/auth/me` | GET | `@UseGuards(AuthGuard)` (24-5 required auth) | 200 |
+| Route (with `/api` prefix) | Verb | Guard                                              | Status            |
+| -------------------------- | ---- | -------------------------------------------------- | ----------------- |
+| `/v1/auth/register`        | POST | public (brute-force limiter in `configure-app.ts`) | 201               |
+| `/v1/auth/login`           | POST | public (brute-force limiter)                       | 200 (`@HttpCode`) |
+| `/v1/auth/refresh`         | POST | public (matches Express — no guard)                | 200 (`@HttpCode`) |
+| `/v1/auth/logout`          | POST | public (matches Express — no guard)                | 200 (`@HttpCode`) |
+| `/v1/auth/me`              | GET  | `@UseGuards(AuthGuard)` (24-5 required auth)       | 200               |
 
 **Cookie parity** — `setRefreshTokenCookie`/`clearRefreshTokenCookie` are byte-for-byte copies of the Express `AuthController` helpers (httpOnly `refreshToken`, 7-day maxAge, `secure` in production, `sameSite: none`/`lax`, `path: /`), and every cookie-writing handler uses `@Res({ passthrough: true })` so `res.cookie()`/`res.clearCookie()` set the same httpOnly cookie while Nest still serializes the returned body.
 

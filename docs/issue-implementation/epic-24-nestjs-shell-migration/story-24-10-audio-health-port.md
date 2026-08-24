@@ -93,9 +93,7 @@ The controller mirrors `AudioController.ts` 1:1 — same body read, same `getTts
 @Module({
   imports: [SharedModule, AudioModule], // ← AudioModule — NOT modules/audio/index.js
   controllers: [HealthNestController],
-  providers: [
-    { provide: RedisClient, useFactory: () => redisClient },
-  ],
+  providers: [{ provide: RedisClient, useFactory: () => redisClient }],
 })
 export class HealthModule {}
 ```

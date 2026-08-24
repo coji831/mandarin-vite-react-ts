@@ -1,7 +1,7 @@
 /**
  * @file apps/backend/src/modules/chengyu/index.ts
- * @description Chengyu module barrel exports (framework-agnostic surface only
- * — the Express HTTP layer was removed at the 24-15 cutover).
+ * @description Chengyu module barrel exports (framework-agnostic surface
+ * only).
  */
 export { ChengyuService } from "./services/ChengyuService.js";
 export { ChengyuRepository } from "./repositories/ChengyuRepository.js";

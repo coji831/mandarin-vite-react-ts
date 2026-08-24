@@ -1,19 +1,19 @@
 /**
  * @file apps/backend/src/modules/review/nest/review-nest.controller.ts
  * @description NestJS controller for the review module (Story 24-11 — Review
- * Port + SRS Schema). Mirrors `api/ReviewController.ts` (Express) 1:1 — same
- * query/body parsing + string coercion, same service delegation, same 2xx JSON,
- * same 4xx `code`/`message` (the global 24-3 `AppExceptionFilter` serializes
- * thrown `HttpException`s into the `{ code, message, requestId }` envelope;
- * `code`/`message` are byte-for-byte equal to the Express controller's legacy
- * `{ error, code }` body).
+ * Port + SRS Schema). Same query/body parsing + string coercion, same service
+ * delegation, same 2xx JSON, same 4xx `code`/`message` (the global 24-3
+ * `AppExceptionFilter` serializes thrown `HttpException`s into the
+ * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
+ * equal to the previous surface's legacy `{ error, code }` body).
  *
- * Routes (verbatim from `api/reviewRoutes.ts` — ROUTE_PATTERNS):
+ * Routes (ROUTE_PATTERNS):
  *   - `GET  /v1/review/items`     → `@Get("items")`
  *   - `GET  /v1/review/due-count` → `@Get("due-count")`
  *   - `POST /v1/review/result`    → `@Post("result")`
  *
- * Guard mapping (verbatim from `api/reviewRoutes.ts`): all three routes →
+ * Guard mapping:
+ * all three routes →
  * `@UseGuards(RequireAuthGuard)` — the calibrated guest-rejecting guard (24-5).
  * Review is user-scoped SRS state + a write surface (S11/P11: guests never
  * reach endpoints that persist their state), so a guest is rejected 401
@@ -24,9 +24,9 @@
  * the controller runs, so it is TYPED `string` here (the guard is the
  * type/guard-level rejection of `undefined` — `undefined` cannot reach the
  * repository through a Nest route). The `if (!userId)` 401 check is kept as
- * defense-in-depth to mirror the Express controller structure (unreachable
- * under the guard). The repository ALSO structurally rejects `undefined`
- * userId (shared 24-1 check) — the Nest path never leaks.
+ * defense-in-depth (unreachable under the guard). The repository ALSO
+ * structurally rejects `undefined` userId (shared 24-1 check) — the Nest path
+ * never leaks.
  */
 
 import {

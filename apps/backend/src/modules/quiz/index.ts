@@ -1,7 +1,6 @@
 /**
  * @file apps/backend/src/modules/quiz/index.ts
- * @description Quiz module barrel exports (framework-agnostic surface only —
- * the Express HTTP layer was removed at the 24-15 cutover).
+ * @description Quiz module barrel exports (framework-agnostic surface only).
  *
  * Exports:
  * - QuizService: Generic quiz service with strategy delegation

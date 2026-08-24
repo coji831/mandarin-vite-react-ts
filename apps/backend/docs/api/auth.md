@@ -1,7 +1,7 @@
 ---
 purpose: Authentication endpoints — register/login at /api/v1/auth
 status: active
-last-verified: 2026-08-18
+last-verified: 2026-08-24
 type: guide
 ---
 
@@ -34,24 +34,28 @@ Create a new user account.
 
 ```json
 {
-  "user": {
-    "id": "uuid-123",
-    "email": "user@example.com",
-    "displayName": "John Doe",
-    "createdAt": "2026-01-14T10:00:00.000Z"
-  },
-  "accessToken": "eyJhbGc...xyz",
-  "expiresIn": 900
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid-123",
+      "email": "user@example.com",
+      "displayName": "John Doe",
+      "createdAt": "2026-01-14T10:00:00.000Z"
+    },
+    "accessToken": "eyJhbGc...xyz"
+  }
 }
 ```
 
 **Set-Cookie Header:**
 
 ```
-refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/
+refreshToken=<token>; HttpOnly; Secure; SameSite=None; Max-Age=604800; Path=/
 ```
 
-**Errors:** `400 INVALID_EMAIL`, `400 WEAK_PASSWORD`, `409 EMAIL_EXISTS`, `500 REGISTRATION_ERROR`
+> Cookie attributes are environment-dependent: `Secure` is set **only in production** (HTTPS); `SameSite` is `none` in production and `lax` in development.
+
+**Errors:** `400 MISSING_FIELDS` (missing email/password), `409 USER_EXISTS`, `400 INVALID_PASSWORD` (weak password), `429` (rate limit), `500 REGISTRATION_FAILED`
 
 ---
 
@@ -72,17 +76,21 @@ Authenticate existing user and issue tokens.
 
 ```json
 {
-  "user": { "id": "uuid-123", "email": "user@example.com", "displayName": "John Doe" },
-  "accessToken": "eyJhbGc...xyz",
-  "expiresIn": 900
+  "success": true,
+  "data": {
+    "user": { "id": "uuid-123", "email": "user@example.com", "displayName": "John Doe" },
+    "accessToken": "eyJhbGc...xyz"
+  }
 }
 ```
 
-**Set-Cookie Header:** `refreshToken=<token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/`
+**Set-Cookie Header:** `refreshToken=<token>; HttpOnly; Secure; SameSite=None; Max-Age=604800; Path=/`
 
-**Errors:** `400 MISSING_CREDENTIALS`, `401 INVALID_CREDENTIALS`, `429 TOO_MANY_REQUESTS`, `500 LOGIN_ERROR`
+> Cookie attributes are environment-dependent: `Secure` is set **only in production** (HTTPS); `SameSite` is `none` in production and `lax` in development.
 
-**Rate Limiting:** Maximum 5 login attempts per minute per IP address.
+**Errors:** `400 MISSING_FIELDS` (missing email/password), `401 INVALID_CREDENTIALS`, `429` (rate limit), `500 LOGIN_FAILED`
+
+**Rate Limiting:** Maximum 5 login attempts per minute per IP address (brute-force limiter mounted on `/api/v1/auth/login` + `/api/v1/auth/register`).
 
 ---
 
@@ -94,26 +102,37 @@ Exchange refresh token for new access token. Refresh token is read from httpOnly
 
 ```json
 {
-  "accessToken": "eyJhbGc...xyz",
-  "expiresIn": 900
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGc...xyz"
+  }
 }
 ```
 
-**Set-Cookie Header:** `refreshToken=<new_token>; HttpOnly; Secure; SameSite=Strict; Max-Age=604800; Path=/`
+**Set-Cookie Header:** `refreshToken=<new_token>; HttpOnly; Secure; SameSite=None; Max-Age=604800; Path=/`
 
-> Note: Refresh token rotation is implemented. Old refresh token is invalidated and new one is issued.
+> Note: Refresh token rotation is implemented. Old refresh token is invalidated and a new one is issued.
 
-**Errors:** `401 MISSING_REFRESH_TOKEN`, `401 INVALID_REFRESH_TOKEN`, `500 REFRESH_ERROR`
+**Errors:** `400 MISSING_TOKEN` (no refresh-token cookie), `401 INVALID_TOKEN` (invalid/expired refresh token), `500 REFRESH_FAILED`
 
 ---
 
 ## POST /api/v1/auth/logout
 
-Invalidate refresh token and clear session. Reads refresh token from httpOnly cookie.
+Invalidate refresh token and clear the session. Reads the refresh token from the httpOnly cookie. Returns **200 OK** (not 204) with a `{ success, message }` body.
 
-**Response (204 No Content).** `Set-Cookie` header clears the refresh token.
+**Response (200 OK):**
 
-**Errors:** `401 UNAUTHORIZED`, `500 LOGOUT_ERROR`
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+The `Set-Cookie` header clears the refresh token cookie.
+
+**Errors:** `400 MISSING_REFRESH_TOKEN` (no refresh-token cookie — the cookie is still cleared), `500 LOGOUT_FAILED` (cookie is still cleared)
 
 ---
 
@@ -129,14 +148,19 @@ Get currently authenticated user's profile.
 
 ```json
 {
-  "id": "uuid-123",
-  "email": "user@example.com",
-  "displayName": "John Doe",
-  "createdAt": "2026-01-10T08:00:00.000Z"
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid-123",
+      "email": "user@example.com",
+      "displayName": "John Doe",
+      "createdAt": "2026-01-10T08:00:00.000Z"
+    }
+  }
 }
 ```
 
-**Errors:** `401 UNAUTHORIZED`, `404 USER_NOT_FOUND`
+**Errors:** `401` (missing/invalid JWT), `404 USER_NOT_FOUND`, `500 PROFILE_LOAD_FAILED`
 
 ---
 
@@ -161,5 +185,5 @@ Get currently authenticated user's profile.
 - bcrypt password hashing (cost factor: 10)
 - Refresh token rotation prevents replay attacks
 - HttpOnly cookies prevent XSS attacks
-- Secure flag enforced in production (HTTPS only)
+- `Secure` cookie flag set **only in production** (HTTPS); `SameSite=none` in production, `lax` in development
 - Rate limiting on login (5 attempts/minute/IP)

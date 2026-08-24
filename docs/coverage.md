@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-08-21 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-08-25 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 
@@ -14,7 +14,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A1 Frontend Features | 6 | 2 | 5 | 13 | 13 |
 | A2 Frontend Pages | 13 | 3 | 0 | 16 | 18 |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | 11 |
-| A4 Backend Modules | 3 | 10 | 2 | 15 | 15 |
+| A4 Backend Modules | 3 | 12 | 0 | 15 | 15 |
 | A5 Backend Shared / Infra | 8 | 0 | 0 | 8 | 8 |
 | A6 Packages | 0 | 0 | 3 | 3 | 3 |
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
@@ -88,16 +88,16 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a4"></a>
 
-## A4 — Backend Modules (15)  ·  score 3/15 documented · 10 partial · 2 undocumented
+## A4 — Backend Modules (15)  ·  score 3/15 documented · 12 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
 | audio | ✅ | apps/backend/docs/api/tts.md | documented | — | module-boundaries |
 | auth | ✅ | apps/backend/docs/api/auth.md | documented | — | module-boundaries |
 | characters | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
-| chengyu | ✅ | — | **undocumented** | **write design.md row + api spec for chengyu** | module-boundaries |
+| chengyu | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | foundations | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
-| grammar | ✅ | — | **undocumented** | **write design.md row + api spec for grammar** | module-boundaries |
+| grammar | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | health | ✅ | apps/backend/docs/api/health.md | documented | — | module-boundaries |
 | mnemonics | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | phonetic-clusters | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
@@ -175,7 +175,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 14 + agents 8 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-08-20` | — | check:system-map |
+| **Agentic layer (instructions 14 + agents 8 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-08-24` | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
 | instructions/frontend-api-client | ✅ | .github/instructions/frontend-api-client.instructions.md | documented | — | check:system-map |
@@ -237,20 +237,20 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 13 | services | A3 | — | **write doc for services** | — |
 | 14 | store | A3 | — | **write doc for store** | — |
 | 15 | types | A3 | — | **write doc for types** | — |
-| 16 | chengyu | A4 | — | **write design.md row + api spec for chengyu** | — |
-| 17 | grammar | A4 | — | **write design.md row + api spec for grammar** | — |
-| 18 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
-| 19 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
-| 20 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
-| 21 | terraform/ | A8 | — | **write terraform/README.md** | — |
-| 22 | quiz | A1 | apps/frontend/src/features/quiz/docs/design.md | — | — |
-| 23 | radicals | A1 | apps/frontend/src/features/radicals/docs/design.md | — | — |
-| 24 | /learn/readers | A2 | apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx | — | — |
-| 25 | /auth/login | A2 | apps/frontend/src/pages/LoginPageFull.stories.tsx | — | — |
-| 26 | /auth/register | A2 | apps/frontend/src/pages/RegisterPageFull.stories.tsx | — | — |
-| 27 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
-| 28 | characters | A4 | apps/backend/docs/design.md | — | — |
-| 29 | foundations | A4 | apps/backend/docs/design.md | — | — |
+| 16 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
+| 17 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
+| 18 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
+| 19 | terraform/ | A8 | — | **write terraform/README.md** | — |
+| 20 | quiz | A1 | apps/frontend/src/features/quiz/docs/design.md | — | — |
+| 21 | radicals | A1 | apps/frontend/src/features/radicals/docs/design.md | — | — |
+| 22 | /learn/readers | A2 | apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx | — | — |
+| 23 | /auth/login | A2 | apps/frontend/src/pages/LoginPageFull.stories.tsx | — | — |
+| 24 | /auth/register | A2 | apps/frontend/src/pages/RegisterPageFull.stories.tsx | — | — |
+| 25 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
+| 26 | characters | A4 | apps/backend/docs/design.md | — | — |
+| 27 | chengyu | A4 | apps/backend/docs/design.md | — | — |
+| 28 | foundations | A4 | apps/backend/docs/design.md | — | — |
+| 29 | grammar | A4 | apps/backend/docs/design.md | — | — |
 | 30 | mnemonics | A4 | apps/backend/docs/design.md | — | — |
 | 31 | phonetic-clusters | A4 | apps/backend/docs/design.md | — | — |
 | 32 | progression | A4 | apps/backend/docs/design.md | — | — |
@@ -279,8 +279,6 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 
 ## Flags
 
-- ⚠️ backend/docs/design.md count-truth: declares 13/15 modules (missing: chengyu, grammar)
-- ⚠️ apps/backend/docs/api/README.md self-declares "13 modules"; actual is 15 — APIs for the remainder not captured here (partial)
 - ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
 - ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)

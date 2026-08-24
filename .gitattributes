@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+# Relax git's trailing-whitespace check for .md only — prettier trailing-comma/wrap rules
+# conflict with `git diff --check` on markdown. See Docs Writer Round B report (2026-08-24).
+*.md whitespace=-trailing-space

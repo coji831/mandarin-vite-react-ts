@@ -5,7 +5,7 @@
 #
 # ── Architecture (Option B: Best-of-Breed) ───────────────────────────────────
 #   Frontend:  Vercel (SPA, CDN)       ← terraform/vercel.tf
-#   Backend:   Railway (Express API)   ← NOT in Terraform (no provider exists)
+#   Backend:   Railway (NestJS API)    ← NOT in Terraform (no provider exists)
 #   Database:  Neon (serverless PG)    ← terraform/neon.tf
 #   Cache:     Upstash (Redis)         ← terraform/upstash.tf
 #   Storage:   GCP (GCS bucket)        ← terraform/main.tf

@@ -3,13 +3,12 @@
  * @description NestJS controller for the Auth module (Story 24-6 — Auth
  * Module Port).
  *
- * Mirrors `api/AuthController.ts` (Express) 1:1 — same body validation, same
- * service delegation, same 2xx JSON, same refresh-token httpOnly cookie
- * semantics (set on register/login/refresh, cleared on logout), and the same
- * refresh-token rotation (the service already rotates; the controller sets the
- * NEW cookie exactly as Express does).
+ * Same body validation, same service delegation, same 2xx JSON, same
+ * refresh-token httpOnly cookie semantics (set on register/login/refresh,
+ * cleared on logout), and the same refresh-token rotation (the service already
+ * rotates; the controller sets the NEW cookie).
  *
- * Route + guard mapping (verbatim from `api/authRoutes.ts`):
+ * Route + guard mapping:
  *   - `POST /v1/auth/register` → public (brute-force limiter mounted in
  *     `configure-app.ts`)
  *   - `POST /v1/auth/login`    → public (brute-force limiter mounted in
@@ -20,17 +19,16 @@
  *     matches Express `authenticateToken`)
  *
  * 4xx/5xx are thrown as `HttpException`s carrying the SAME `code` + `message`
- * as the Express controller's `{ error, code, message }` bodies; the global
+ * as the previous surface's `{ error, code, message }` bodies; the global
  * 24-3 `AppExceptionFilter` serializes them into the `{ code, message,
  * requestId }` envelope (the legacy `error` key is superseded by the envelope
  * — the established 24-5 parity contract). `code`/`message` are byte-for-byte
- * equal to Express on every mapped status.
+ * equal on every mapped status.
  *
- * Cookie access: the shell mounts `cookie-parser` (configure-app.ts), so
- * `req.cookies.refreshToken` is read identically to Express; `@Res({ passthrough:
- * true })` hands the Express response through so `res.cookie()`/`res.clearCookie()`
- * set the same httpOnly `refreshToken` cookie while Nest still serializes the
- * returned body.
+ * Cookie access: `cookie-parser` (configure-app.ts) populates
+ * `req.cookies.refreshToken`; `@Res({ passthrough: true })` hands the Express
+ * response through so `res.cookie()`/`res.clearCookie()` set the same httpOnly
+ * `refreshToken` cookie while Nest still serializes the returned body.
  */
 
 import {

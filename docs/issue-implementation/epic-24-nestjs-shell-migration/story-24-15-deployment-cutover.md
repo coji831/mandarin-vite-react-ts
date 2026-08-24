@@ -1,11 +1,11 @@
-**Last Updated:** August 21, 2026
+**Last Updated:** August 22, 2026
 
 # Implementation 24-15: Deployment Cutover + Retire Dual-Mode + Docs Refresh
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-15-deployment-cutover.md`
-> **Last Updated:** August 21, 2026
+> **Last Updated:** August 22, 2026
 > **Status:** Completed
-> **Commit hash:** `011a6c6d` (the cutover impl commit; the docs-close hash is filled on the epic-close commit)
+> **Commit hash:** `011a6c6d` (cutover impl) · docs-close `5834a51e` (epic-close commit)
 
 ## Implementation Summary
 

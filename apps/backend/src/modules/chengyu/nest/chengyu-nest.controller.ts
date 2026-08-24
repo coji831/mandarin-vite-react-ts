@@ -2,13 +2,12 @@
  * @file apps/backend/src/modules/chengyu/nest/chengyu-nest.controller.ts
  * @description NestJS controller for the Chengyu module (Story 24-2 shell).
  *
- * Mirrors `api/ChengyuController.ts` (Express) 1:1 — same query coercion, same
- * service delegation, same 2xx JSON. Bypasses the `req.chengyuController`
- * pattern; throws `BadRequestException` / `NotFoundException` on 4xx (envelope
- * parity deferred to 24-3).
+ * Same query coercion, same service delegation, same 2xx JSON. The Nest
+ * controller calls the framework-agnostic services directly (no controller-on-
+ * request pattern); throws `BadRequestException` / `NotFoundException` on 4xx
+ * (envelope parity deferred to 24-3).
  *
- * Route patterns copied verbatim from `api/chengyuRoutes.ts`
- * (`ROUTE_PATTERNS.chengyuIdioms` + `chengyuIdiomById(":id")`).
+ * Routes: `ROUTE_PATTERNS.chengyuIdioms` + `ROUTE_PATTERNS.chengyuIdiomById(":id")`.
  */
 
 import {

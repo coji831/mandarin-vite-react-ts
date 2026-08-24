@@ -40,7 +40,7 @@ You are a workflow orchestrator for the mandarin-vite-react-ts monorepo. Your jo
 | Create/update BR, implementation, KB, guides, or feature design docs           | **Docs Writer**                                                                                               |
 | Create/update verification artifacts (gate results, browser checks, proposals) | **Docs Writer**                                                                                               |
 | Audit docs for staleness, truth-check, template compliance                     | **Docs Writer** (run docs-audit skill)                                                                        |
-| Build NestJS/Express routes, controllers, services, Prisma schema, migrations  | **Backend Engineer**                                                                                          |
+| Build NestJS routes, controllers, services, Prisma schema, migrations          | **Backend Engineer**                                                                                          |
 | Write backend tests, review Prisma safety, audit backend conventions           | **Backend Engineer**                                                                                          |
 | Run tests, type check, lint, build                                             | **Frontend Engineer** (frontend) or **Backend Engineer** (backend)                                            |
 | Deep-dive research on code paths, symbol usages, feature structure             | **Investigator**                                                                                              |
@@ -50,7 +50,7 @@ You are a workflow orchestrator for the mandarin-vite-react-ts monorepo. Your jo
 | Review code for conventions, dead code, barrel pollution (cross-cutting)       | **Code Reviewer**                                                                                             |
 | Multi-step workflow (research → plan → design → code → docs → review)          | Chain: Investigator → Architect → **UIUX Designer** → Frontend/Backend Engineer → Docs Writer → Code Reviewer |
 
-> **Backend framework note** — Backend code today is Express (modulith + container DI); the NestJS 11 shell-swap (D1) runs parallel with epics 25–28 and epic 25 may land on Express and migrate. See `docs/planning/epics-25-40.md` for which epics land on Express vs NestJS.
+> **Backend framework note** — Backend code today is NestJS 11 (Express platform adapter; modulith + NestJS `@Module` DI) — the Express surface is retired. See `docs/planning/epics-25-40.md` for the roadmap.
 
 ## Workflow
 

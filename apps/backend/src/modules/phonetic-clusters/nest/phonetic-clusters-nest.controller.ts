@@ -2,13 +2,12 @@
  * @file apps/backend/src/modules/phonetic-clusters/nest/phonetic-clusters-nest.controller.ts
  * @description NestJS controller for the Phonetic Clusters module (Story 24-2 shell).
  *
- * Mirrors `api/PhoneticClustersController.ts` (Express) 1:1 — same validation
- * regexes, same service delegation, same 2xx JSON. Bypasses the
- * `req.phoneticClustersController` pattern; throws `BadRequestException` /
- * `NotFoundException` on 4xx (envelope parity deferred to 24-3).
+ * Same validation regexes, same service delegation, same 2xx JSON. The Nest
+ * controller calls the framework-agnostic services directly (no controller-on-
+ * request pattern); throws `BadRequestException` / `NotFoundException` on 4xx
+ * (envelope parity deferred to 24-3).
  *
- * Route patterns copied verbatim from `api/phoneticClustersRoutes.ts`
- * (`ROUTE_PATTERNS.phoneticClusters` + `phoneticClustersById(":id")`).
+ * Routes: `ROUTE_PATTERNS.phoneticClusters` + `ROUTE_PATTERNS.phoneticClustersById(":id")`.
  */
 
 import {

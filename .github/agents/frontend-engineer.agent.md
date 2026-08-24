@@ -68,3 +68,4 @@ For rapid wireframe-to-UI without Storybook gate (deprecated; prefer Storybook-f
 
 Before routing to Code Reviewer, run the **[frontend-audit skill](../skills/frontend-audit/SKILL.md)** to self-review your own code — Part 1 (12 UIUX fundamentals + AI-slop) plus Parts 2–4 (architecture, verification, integration).
 Verify any feature `docs/design.md` you touched matches the shipped component structure (renamed components reflected, no stale sections).
+Run `npx prettier --write <touched files>` before finishing — never stage unformatted edits.

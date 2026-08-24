@@ -3,29 +3,28 @@
  * @description NestJS controller for radicals data endpoints (Story 24-9 —
  * Radicals + Foundations Port).
  *
- * Mirrors `api/RadicalsController.ts` (Express) 1:1 — same service delegation,
- * same 2xx JSON, same 4xx `code`/`message` (the global 24-3 `AppExceptionFilter`
- * serializes thrown `HttpException`s into the `{ code, message, requestId }`
- * envelope; `code`/`message` are byte-for-byte equal to the Express controller's
- * `{ error, code }` legacy body — `error` is the legacy key superseded by the
- * envelope, per the established 24-5 parity contract).
+ * Same service delegation, same 2xx JSON, same 4xx `code`/`message` (the
+ * global 24-3 `AppExceptionFilter` serializes thrown `HttpException`s into the
+ * `{ code, message, requestId }` envelope; `code`/`message` are byte-for-byte
+ * equal to the previous surface's `{ error, code }` legacy body — `error` is
+ * the legacy key superseded by the envelope, per the established 24-5 parity
+ * contract).
  *
  * ROUTE ORDER parity: the four handlers are declared in the same order as the
- * four registrations in `api/radicalsRoutes.ts` (`/`, `/:radicalId`,
- * `/character/:glyph`, `/:radicalId/characters`) so the shell's Express router
- * registration order matches Express exactly (both use path-to-regexp
+ * four route registrations (`/`, `/:radicalId`, `/character/:glyph`,
+ * `/:radicalId/characters`) so the shell's Express router registration order
+ * matches the previous surface exactly (both use path-to-regexp
  * first-match-wins; e.g. `GET /v1/radicals/character` is captured by
  * `/:radicalId` → 404 on both apps — a pre-existing latent, reproduced).
  *
- * `GET /:radicalId` NOT-FOUND PARITY NOTE: the Express handler calls
- * `res.json(radical)` where the service returns `null` for an unknown ID — a
- * 200 with a literal `null` JSON body. Nest's default reply path strips
- * `null`/`undefined` (`ExpressAdapter.reply`: `isNil(body)` → `response.send()`,
- * empty body), so this handler takes full `@Res()` control and calls
- * `res.json()` directly — a byte-for-byte mirror of the Express controller
- * that preserves the `200 null` wire body on BOTH apps. The thrown 404 still
- * flows through the global `AppExceptionFilter` (it writes via
- * `ctx.getResponse()`, independent of `@Res`).
+ * `GET /:radicalId` NOT-FOUND PARITY NOTE: the handler calls `res.json(radical)`
+ * where the service returns `null` for an unknown ID — a 200 with a literal
+ * `null` JSON body. Nest's default reply path strips `null`/`undefined`
+ * (`ExpressAdapter.reply`: `isNil(body)` → `response.send()`, empty body), so
+ * this handler takes full `@Res()` control and calls `res.json()` directly —
+ * a byte-for-byte mirror that preserves the `200 null` wire body on BOTH apps.
+ * The thrown 404 still flows through the global `AppExceptionFilter` (it
+ * writes via `ctx.getResponse()`, independent of `@Res`).
  */
 
 import {

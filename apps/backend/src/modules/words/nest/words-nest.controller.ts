@@ -2,14 +2,12 @@
  * @file apps/backend/src/modules/words/nest/words-nest.controller.ts
  * @description NestJS controller for the Words module (Story 24-2 shell).
  *
- * Mirrors `api/WordsController.ts` (Express) 1:1 — same validation regexes,
- * same service delegation, same 2xx JSON. The Nest controller bypasses the
- * `req.wordsController` pattern entirely: it calls the same framework-agnostic
- * services directly and throws `BadRequestException` / `NotFoundException` on
+ * Same validation regexes, same service delegation, same 2xx JSON. The Nest
+ * controller calls the framework-agnostic services directly (no controller-on-
+ * request pattern) and throws `BadRequestException` / `NotFoundException` on
  * 4xx (body-envelope parity `{ error, code }` is deferred to 24-3).
  *
- * Route patterns are copied verbatim from `api/WordsRoutes.ts`
- * (`ROUTE_PATTERNS.wordsByGlyph(":glyph")` + `wordsMeasureWords(":id")`).
+ * Routes: `ROUTE_PATTERNS.wordsByGlyph(":glyph")` + `ROUTE_PATTERNS.wordsMeasureWords(":id")`.
  */
 
 import {

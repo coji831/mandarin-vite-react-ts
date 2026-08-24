@@ -1,7 +1,7 @@
 ﻿---
 purpose: "Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS"
 status: completed
-last-verified: 2026-08-22
+last-verified: 2026-08-24
 type: epic
 ---
 
@@ -9,9 +9,9 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** ✅ Completed — full-scoped serial Epic 24 shipped all **15 stories** to completion (24-1 P0-1 stopgap → 24-15 deployment cutover); branch `epic-24-nestjs-shell-migration`; **NestJS 11 is the production entry** (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`), the Express surface is deleted (no dual-mode), `openapi.yaml` reconciled (7-path System/Auth/TTS surface), `/api-docs` + `/api-docs.json` served from Nest, and the **post-flip verification is recorded** in `verification-artifacts/release-safety-gate-24-14.md`; all 15 story docs fully authored + closed, impl commit hashes filled at epic close — epics 25–28 land on NestJS after (serial plan, D10)
+**Status:** ✅ Completed — full-scoped serial Epic 24 shipped all **15 stories** to completion (24-1 P0-1 stopgap → 24-15 deployment cutover); branch `epic-24-nestjs-shell-migration`; **NestJS 11 is the production entry** (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`), the Express surface is deleted (no dual-mode), `openapi.yaml` reconciled (7-path System/Auth/TTS surface), `/api-docs` + `/api-docs.json` served from Nest, and the **post-flip verification is recorded** in `verification-artifacts/release-safety-gate-24-14.md`; all 15 story docs fully authored + closed, impl commit hashes filled at epic close — epics 25–28 land on NestJS after (serial plan, D10); **follow-on stories (post-close, re-sliced 2026-08-23):** **24-16 (Docs-Truth Close + API Docs Expansion — BLOCKING pre-merge FIRST, docs-only**, BR/IMP authored 2026-08-23, status **in-progress**; the docs side of the merge-PR release prep) · **24-17 (Deployment Setup — PR Env Scope — pre-merge SECOND, deployment setup — PR env scope**, BR/IMP authored 2026-08-23, re-scoped 2026-08-24, status **in-progress**; executes the production release; post-merge bugs → hotfix on main)
 
-**Last Update:** August 22, 2026
+**Last Update:** August 24, 2026
 
 ---
 
@@ -27,7 +27,7 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 ## User Stories
 
-15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. **All 15 stories are fully authored + completed** — each BR/IMP was authored/closed at the point it ran, and every impl commit hash is filled at epic close (below).
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. **All 15 stories are fully authored + completed** — each BR/IMP was authored/closed at the point it ran, and every impl commit hash is filled at epic close (below). **Follow-on stories (outside the 15-story serial scope, re-sliced 2026-08-23):** **24-16 (Docs-Truth Close + API Docs Expansion)** — **BLOCKING pre-merge FIRST**, docs-only, BR/IMP authored 2026-08-23, status **in-progress** (see its section below); **24-17 (Deployment Setup — PR Env Scope)** — **pre-merge SECOND**, deployment setup — PR env scope, BR/IMP authored 2026-08-23, re-scoped 2026-08-24, status **in-progress** (see its section below). Both land before the single merge.
 
 ### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
 
@@ -193,9 +193,29 @@ _See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 de
 
 **ACs:** Production boots from the Nest entry on Railway; `healthcheckPath` green; frontend regression-free (parity harness 100% green across all ~63 routes pre-flip, gated by 24-14); Express controllers/routes/`req.xController`/`express.d.ts` augmentation deleted; **migration-safety pre-flight — pending Prisma migrations reviewed, release deploy additive-only, `db:migrate:deploy` clean**; **openapi ↔ `ROUTE_PATTERNS` ↔ Nest registry reconciliation (no dead/misrouted endpoints)**; **`/api-docs` + `/api-docs.json` served from Nest**; **`validateConfig()` fail-fast preserved on Nest boot**; **rollback runbook + post-flip smoke + watch window (per 24-14)**; `docs/architecture.md` + conventions/KB docs updated + truth-checked; retired/stale test artifacts removed; key controller tests converted to Nest e2e.
 
-**Status:** ✅ completed — the cutover shipped in commit `011a6c6d`: production entry flipped to Nest (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`, healthcheck `/api/v1/health`), `engines` tightened to `>=24`; the **Express surface deleted** (`src/app/` + all `modules/*/api/` + the `req.xController`/`req.geminiService` `express.d.ts` augmentation + `authMiddleware`/`cacheMiddleware`/`asyncHandler` — `dist/app/index.js` no longer emitted); `openapi.yaml` reconciled (**9 dead routes + 4 dead schemas + 2 dead tags removed**; documents the **7-path System/Auth/TTS surface** — expansion to all ~54 real routes is a flagged follow-up); `/api-docs` + `/api-docs.json` served **from Nest** (swagger-ui-express in `configure-app.ts`, verified 200); Express-only tests retired (`ReadersAudioController.test.ts` included) with coverage preserved — `test:full` 66/744 → **52/609**, the 9 parity harnesses refactored to **Nest-only regression guards** (`test:integration` 23/262 preserved); `docs/architecture.md` + backend conventions §4 + `module-level-containers.md` updated + truth-checked; **post-flip verification recorded** in `verification-artifacts/release-safety-gate-24-14.md` (prod-boot smoke green — health 200, words/pinyin guest 200, `/api-docs` + `/api-docs.json` 200, 404 `{code,message,requestId}` envelope, guest 401 `AUTH_REQUIRED`). **Commit hash:** `011a6c6d` (docs-close hash filled on the epic-close commit).
+**Status:** ✅ completed — the cutover shipped in commit `011a6c6d`: production entry flipped to Nest (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`, healthcheck `/api/v1/health`), `engines` tightened to `>=24`; the **Express surface deleted** (`src/app/` + all `modules/*/api/` + the `req.xController`/`req.geminiService` `express.d.ts` augmentation + `authMiddleware`/`cacheMiddleware`/`asyncHandler` — `dist/app/index.js` no longer emitted); `openapi.yaml` reconciled (**9 dead routes + 4 dead schemas + 2 dead tags removed**; documents the **7-path System/Auth/TTS surface** — expansion to all ~54 real routes is a flagged follow-up); `/api-docs` + `/api-docs.json` served **from Nest** (swagger-ui-express in `configure-app.ts`, verified 200); Express-only tests retired (`ReadersAudioController.test.ts` included) with coverage preserved — `test:full` 66/744 → **52/609**, the 9 parity harnesses refactored to **Nest-only regression guards** (`test:integration` 23/262 preserved); `docs/architecture.md` + backend conventions §4 + `module-level-containers.md` updated + truth-checked; **post-flip verification recorded** in `verification-artifacts/release-safety-gate-24-14.md` (prod-boot smoke green — health 200, words/pinyin guest 200, `/api-docs` + `/api-docs.json` 200, 404 `{code,message,requestId}` envelope, guest 401 `AUTH_REQUIRED`). **Commit hash:** `011a6c6d` (cutover impl) · docs-close `5834a51e` (epic-close commit 2026-08-22).
 
 **Gate:** 24-14 (release-safety gate passes). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-15-deployment-cutover.md) · [IMP](story-24-15-deployment-cutover.md) (full).
+
+### 24-16 — Docs-Truth Close + API Docs Expansion **_(BLOCKING pre-merge FIRST — all docs scope; the docs side of the merge-PR release prep)_**
+
+**Goal:** Close the docs-truth (system-map regen + coverage, index READMEs → Completed, Nest-rewritten workflow/backend-dev instructions, `validateConfig`-aligned env docs, 24-15 hash `5834a51e` filled, epic READMEs registered 16/17, `apps/backend/docs/design.md` modernized to 15 modules) and expand the **openapi** to the full live surface: `openapi.yaml` from the 7-path System/Auth/TTS surface to the full **~54-route surface** (63 registered incl. shadowed), reconciled against `ROUTE_PATTERNS` + the parity harness, with the `apps/backend/docs/api/*` per-domain specs reconciled/completed. The infra release-safety artifacts (rollback runbook, smoke script, rehearsal record, `preview.yml`, engines, terraform/eslint comments) are **out of scope here** — they land in **24-17** and are referenced as forward-pointers.
+
+**ACs:** docs-truth close (committed + `check:system-map` green — already done in the working tree, not redone); openapi ~54-route expansion (primary remaining work item); quality gates (`check:system-map` green · `check:doc-links` on edited files · docs-audit truth-check).
+
+**Status:** 🔄 **in-progress** — docs-truth (AC 1) complete in the working tree (committed in this story); the **openapi ~54-route expansion (AC 2) is the primary remaining work item**; quality gates (AC 3) run at close. **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** the merge PR (docs side — runs FIRST, before 24-17). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-16-release-prep.md) · [IMP](story-24-16-release-prep.md) (full).
+
+### 24-17 — Deployment Setup (PR Env Scope) **_(pre-merge SECOND — executes the Epic 24 production release; post-merge bugs handled as hotfixes on main)_**
+
+**Goal:** Execute the Epic 24 production release — merge the PR (with the `preview.yml` smoke green + the Layer-1 rollback rehearsal record `verification-artifacts/rollback-rehearsal-24-17.md` attached as the merge gate) → **Railway prod deploy** → **post-flip prod smoke + T+0→24h watch window** → **rollback execution if triggered** (per the runbook's auto-trip trigger table). Post-merge bugs are handled as **hotfixes on main** (separate concern, not in 24-17). The deployment is underpinned by deployment enablers built in the working tree (deployment prep): the **verified two-layer rollback** (pinned tag `rollback/express-24-14` @ `011a6c6d^` + in-repo runbook `docs/runbooks/backend-rollback.md` + auto-trip trigger table + T+0..24h cadence, owner = release captain; Layer-1 rehearsal on the merge-PR env, record = merge gate), the **PR-env smoke step in `preview.yml`** (health + service booleans, auth register/login/refresh/me, guest phase-gate shape, 4xx envelope — via the in-repo script `apps/backend/scripts/pr-smoke.mjs`), and the config normalizations (root `engines` `>=24`, `terraform/main.tf` + `eslint.config.js` comments).
+
+**ACs:** deployment executed (merge PR smoke-green + rehearsal record → Railway prod deploy → post-flip smoke + T+0→24h watch → rollback if triggered); deployment enablers (rollback model + PR-env smoke + config normalizations, built in the working tree); post-merge bugs → hotfix on main (out of scope, separate concern); owner external validations (open AC gates); quality gates (typecheck 0 · build · test:full · test:integration · lint 0 · check:module-boundaries · check:system-map · check:doc-links on edited files).
+
+**Status:** 🔄 **in-progress** — the deployment enablers (rollback model, smoke step, config normalizations) are complete in the working tree (committed in this story as deployment prep); the **deployment execution** (merge → prod deploy → post-flip smoke + watch → rollback if triggered) and the **owner external validations** (pending owner) are the remaining work. **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** the merge PR (green incl. smoke + rehearsal record) → Railway prod deploy → post-flip smoke + watch. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-17-deployment-setup-pr-env.md) · [IMP](story-24-17-deployment-setup-pr-env.md) (full).
 
 ## Implementation Plan
 
@@ -209,8 +229,10 @@ Serial order (single engineer): **24-1 → 24-2 → 24-3 → 24-4 → 24-5 → 2
 6. **24-11 → 24-12 → 24-13**: collision-core — review + `SrsCardState` additive schema → readers → quiz+progression (heaviest batch).
 7. **24-14**: release-safety gate (pre-flight before 24-15's flip).
 8. **24-15**: cutover — Nest production entry, Express deleted, docs refreshed.
+9. **24-16** (follow-on, **BLOCKING pre-merge FIRST**): Docs-Truth Close + API Docs Expansion — close the docs-truth (system map + coverage + index READMEs + Nest-rewritten instructions + `validateConfig`-aligned env docs + hash fills + design.md 15 modules) + expand openapi to the full ~54-route surface (63 registered incl. shadowed) + reconcile `apps/backend/docs/api/*`.
+10. **24-17** (follow-on, **pre-merge SECOND**): Deployment Setup (PR Env Scope) — execute the production release (merge PR smoke-green + Layer-1 rehearsal record → Railway prod deploy → post-flip prod smoke + T+0→24h watch → rollback if triggered) using the deployment enablers built in the working tree (two-layer rollback tag `rollback/express-24-14` @ `011a6c6d^` + runbook + PR-env Layer-1 rehearsal, record = merge gate; `preview.yml` smoke step; root `engines` `>=24` + `terraform/main.tf`/`eslint.config.js` comments); post-merge bugs → hotfix on main (separate concern, not in 24-17); owner external validations are open AC gates.
 
-Serial-gating summary: **no external epic gates** — absorbed-scope stories (24-1/24-5/24-7/24-8/24-10/24-11/24-13) carry their former epic's work **inside** the epic. Timeline ≈5 weeks (4–7). 24-14 is the hard pre-flight immediately before 24-15.
+Serial-gating summary: **no external epic gates** — absorbed-scope stories (24-1/24-5/24-7/24-8/24-10/24-11/24-13) carry their former epic's work **inside** the epic. Timeline ≈5 weeks (4–7). 24-14 is the hard pre-flight immediately before 24-15; **24-16 (docs) is the FIRST pre-merge commit group and 24-17 (deployment setup — PR env scope) the second, both before the single merge** — the merge PR is the epic's release gate.
 
 ## Risks & Mitigations
 
