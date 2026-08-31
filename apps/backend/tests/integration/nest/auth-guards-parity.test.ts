@@ -74,8 +74,16 @@ const { mountExpressErrorBridge } = await import("../../../src/nest/exception.fi
 type AuthTestRequest = Request & { userId?: string; user?: unknown };
 
 const TEST_USER_ID = "parity-user-1";
-const validToken = jwt.sign({ userId: TEST_USER_ID }, config.jwtSecret!, { expiresIn: "15m" });
-const expiredToken = jwt.sign({ userId: TEST_USER_ID }, config.jwtSecret!, { expiresIn: "-1s" });
+// Story 24-17 env-isolation hardening: JwtService now binds every token to the
+// deployment env (`APP_ENV ?? "production"`) and rejects tokens with a missing
+// or wrong `env` claim — so directly-signed fixtures must carry it too.
+const TOKEN_ENV = process.env.APP_ENV ?? "production";
+const validToken = jwt.sign({ userId: TEST_USER_ID, env: TOKEN_ENV }, config.jwtSecret!, {
+  expiresIn: "15m",
+});
+const expiredToken = jwt.sign({ userId: TEST_USER_ID, env: TOKEN_ENV }, config.jwtSecret!, {
+  expiresIn: "-1s",
+});
 const invalidToken = "not.a.jwt";
 
 const PATHS = {

@@ -315,9 +315,13 @@ describe.skipIf(!db.available)("Nest auth module (integration, DB)", () => {
     });
 
     it("404 USER_NOT_FOUND (valid token, unknown user)", async () => {
-      const ghostToken = jwt.sign({ userId: "auth-parity-ghost-user" }, config.jwtSecret!, {
-        expiresIn: "15m",
-      });
+      // Story 24-17 env-claim hardening: JwtService rejects tokens without a
+      // matching `env` claim, so directly-signed fixtures must carry it.
+      const ghostToken = jwt.sign(
+        { userId: "auth-parity-ghost-user", env: process.env.APP_ENV ?? "production" },
+        config.jwtSecret!,
+        { expiresIn: "15m" },
+      );
       const res = await request(nestServer)
         .get("/api/v1/auth/me")
         .set("Authorization", `Bearer ${ghostToken}`);

@@ -90,8 +90,16 @@ export class GeminiService {
 
   /**
    * Health check — calls Gemini API with a simple prompt.
+   *
+   * Story 24-17 probe gate: when `HEALTH_PROBE_EXTERNAL=false` (PR/preview
+   * environments), short-circuits to `false` without making a paid Gemini API
+   * call or needing SA credentials. The `/health` envelope stays 200 — it just
+   * reports `services.gemini: false`.
    */
   async healthCheck(): Promise<boolean> {
+    if (process.env.HEALTH_PROBE_EXTERNAL === "false") {
+      return false;
+    }
     try {
       const result = await Promise.race([this.client.healthCheck(), timeoutPromise(5_000)]);
       return result;

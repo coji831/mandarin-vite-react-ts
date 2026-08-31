@@ -162,6 +162,72 @@ describe("JwtService", () => {
     });
   });
 
+  describe("env claim (Story 24-17 env-isolation hardening)", () => {
+    const defaultEnv = process.env.APP_ENV ?? "production";
+    // A token env guaranteed to differ from the current APP_ENV.
+    const wrongEnv = defaultEnv === "pr-123" ? "pr-999" : "pr-123";
+
+    it("access token round-trips the env claim", () => {
+      const token = jwtService.generateAccessToken(testUserId);
+      const decoded = jwtService.verifyAccessToken(token);
+      expect(decoded.env).toBe(defaultEnv);
+    });
+
+    it("refresh token round-trips the env claim", () => {
+      const token = jwtService.generateRefreshToken(testUserId);
+      const decoded = jwtService.verifyRefreshToken(token);
+      expect(decoded.env).toBe(defaultEnv);
+    });
+
+    it("rejects an access token with a wrong env claim", () => {
+      const wrongEnvToken = jwt.sign({ userId: testUserId, env: wrongEnv }, jwtService.JWT_SECRET, {
+        expiresIn: "15m",
+      });
+      expect(() => jwtService.verifyAccessToken(wrongEnvToken)).toThrowError("env claim");
+    });
+
+    it("rejects a refresh token with a wrong env claim", () => {
+      const wrongEnvToken = jwt.sign(
+        { userId: testUserId, env: wrongEnv, timestamp: Date.now(), random: Math.random() },
+        jwtService.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" },
+      );
+      expect(() => jwtService.verifyRefreshToken(wrongEnvToken)).toThrowError("env claim");
+    });
+
+    it("rejects an access token with a missing env claim", () => {
+      const noEnvToken = jwt.sign({ userId: testUserId }, jwtService.JWT_SECRET, {
+        expiresIn: "15m",
+      });
+      expect(() => jwtService.verifyAccessToken(noEnvToken)).toThrowError("env claim");
+    });
+
+    it("rejects a refresh token with a missing env claim", () => {
+      const noEnvToken = jwt.sign(
+        { userId: testUserId, timestamp: Date.now(), random: Math.random() },
+        jwtService.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" },
+      );
+      expect(() => jwtService.verifyRefreshToken(noEnvToken)).toThrowError("env claim");
+    });
+
+    it("rejects a token minted under a different APP_ENV at verify time", () => {
+      const prev = process.env.APP_ENV;
+      try {
+        process.env.APP_ENV = "pr-777";
+        const token = jwtService.generateAccessToken(testUserId);
+        process.env.APP_ENV = "pr-888";
+        expect(() => jwtService.verifyAccessToken(token)).toThrowError("env claim");
+      } finally {
+        if (prev === undefined) {
+          delete process.env.APP_ENV;
+        } else {
+          process.env.APP_ENV = prev;
+        }
+      }
+    });
+  });
+
   describe("getRefreshTokenExpiration", () => {
     it("should return a date 7 days in the future", () => {
       const expirationDate = jwtService.getRefreshTokenExpiration();

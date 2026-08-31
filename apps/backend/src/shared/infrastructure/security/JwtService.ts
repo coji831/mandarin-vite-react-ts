@@ -4,12 +4,14 @@
  * Handles token generation and verification
  */
 
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { config } from "../../config/index.js";
 
 /** Payload shape with userId guaranteed by our token generation. */
 export interface TokenPayload {
   userId: string;
+  /** Deployment env the token is bound to (Story 24-17 env isolation). */
+  env?: string;
   timestamp?: number;
   random?: number;
   iat?: number;
@@ -34,12 +36,37 @@ export class JwtService {
   }
 
   /**
+   * Deployment environment a token is bound to. PR-preview environments set
+   * `APP_ENV=pr-<n>`; production leaves it unset (default "production"). Read
+   * at call-time (not import-time) so tests can vary it per-case.
+   */
+  private expectedEnv(): string {
+    return process.env.APP_ENV ?? "production";
+  }
+
+  /**
+   * Reject a token minted for a different — or missing — deployment env
+   * (Story 24-17 env-isolation hardening). PR-preview tokens (`env: "pr-<n>"`)
+   * must never be accepted by production or another PR env, even when the
+   * signing secret matches (secrets are per-env via CI; the env claim is
+   * defense-in-depth). Throws the same `JsonWebTokenError`-shaped error the
+   * guards already classify, so guard/parity behavior is unchanged.
+   */
+  private assertEnvClaim(payload: TokenPayload): void {
+    if (payload.env !== this.expectedEnv()) {
+      throw new JsonWebTokenError(
+        `Token env claim does not match APP_ENV (got ${String(payload.env)}, expected ${this.expectedEnv()})`,
+      );
+    }
+  }
+
+  /**
    * Generate JWT access token
    * @param userId - User ID
    * @returns Access token
    */
   generateAccessToken(userId: string): string {
-    return jwt.sign({ userId }, this.JWT_SECRET, {
+    return jwt.sign({ userId, env: this.expectedEnv() }, this.JWT_SECRET, {
       expiresIn: this.ACCESS_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
     });
   }
@@ -51,7 +78,7 @@ export class JwtService {
    */
   generateRefreshToken(userId: string): string {
     return jwt.sign(
-      { userId, timestamp: Date.now(), random: Math.random() },
+      { userId, env: this.expectedEnv(), timestamp: Date.now(), random: Math.random() },
       this.JWT_REFRESH_SECRET,
       { expiresIn: this.REFRESH_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"] },
     );
@@ -61,10 +88,12 @@ export class JwtService {
    * Verify and decode refresh token
    * @param token - Refresh token
    * @returns Decoded payload
-   * @throws If token is invalid or expired
+   * @throws If token is invalid, expired, or minted for a different env
    */
   verifyRefreshToken(token: string): TokenPayload {
-    return jwt.verify(token, this.JWT_REFRESH_SECRET) as TokenPayload;
+    const payload = jwt.verify(token, this.JWT_REFRESH_SECRET) as TokenPayload;
+    this.assertEnvClaim(payload);
+    return payload;
   }
 
   /**
@@ -76,11 +105,13 @@ export class JwtService {
    *
    * Story 24-5: lets the Nest auth guards consume `JwtService` (via the
    * `SharedModule` provider) instead of importing `jsonwebtoken` directly,
-   * centralizing access-token verification. Additive — preserves the previous
-   * access-token verification behavior.
+   * centralizing access-token verification. Story 24-17: adds the env-claim
+   * check (rejects tokens minted for a different/missing deployment env).
    */
   verifyAccessToken(token: string): TokenPayload {
-    return jwt.verify(token, this.JWT_SECRET) as TokenPayload;
+    const payload = jwt.verify(token, this.JWT_SECRET) as TokenPayload;
+    this.assertEnvClaim(payload);
+    return payload;
   }
 
   /**
