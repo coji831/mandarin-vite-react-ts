@@ -20,6 +20,8 @@ jobs:
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: preview/${{ github.head_ref }}
+          # R3 — clone the demo base so preview branches inherit its schema/data.
+          parent_branch: demo
           api_key: ${{ secrets.NEON_API_KEY }}
 
       - name: Wait for Railway PR Environment
@@ -30,7 +32,9 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
               --data '{"query":"{environments(projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\"){edges{node{id name}}}}"}' \
               https://backboard.railway.com/graphql/v2 | \
-              jq -r '.data.environments.edges[].node | select(.name | startswith("pr-")) | .id' | head -1)
+              jq -r --arg pr "pr-${{ github.event.pull_request.number }}" '
+                .data.environments.edges[].node | select(.name == $pr) | .id
+              ' | head -1)
             if [ -n "$ENV_ID" ]; then
               echo "ENV_ID=$ENV_ID" >> $GITHUB_OUTPUT
               break
@@ -38,24 +42,141 @@ jobs:
             sleep 10
           done
 
-      - name: Override DATABASE_URL on Railway PR Environment
+      - name: Upsert PR environment variables on Railway
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_BACKEND_SERVICE_ID: ${{ vars.RAILWAY_BACKEND_SERVICE_ID }}
+          ENVIRONMENT_ID: ${{ steps.wait-railway.outputs.ENV_ID }}
+          NEON_DB_URL: ${{ steps.neon.outputs.db_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GCP_PREVIEW_SA_KEY: ${{ secrets.GCP_PREVIEW_SA_KEY }}
+          # Sandbox bucket for the preview SA — GH variable, defaulting to the
+          # IaC-created `pinyin-pal-preview-data` bucket (non-secret).
+          GCP_PREVIEW_BUCKET_NAME: ${{ vars.GCP_PREVIEW_BUCKET_NAME }}
         run: |
-          curl -s \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{
-              "query": "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }",
-              "variables": {
-                "input": {
-                  "projectId": "${{ vars.RAILWAY_PROJECT_ID }}",
-                  "environmentId": "${{ steps.wait-railway.outputs.ENV_ID }}",
-                  "serviceId": "${{ vars.RAILWAY_BACKEND_SERVICE_ID }}",
-                  "name": "DATABASE_URL",
-                  "value": "${{ steps.neon.outputs.db_url }}"
-                }
-              }
-            }' \
-            https://backboard.railway.com/graphql/v2
+          set -euo pipefail
+
+          # Per-PR secrets — generated in-workflow, never committed.
+          JWT_SECRET="$(openssl rand -hex 48)"
+          JWT_REFRESH_SECRET="$(openssl rand -hex 48)"
+
+          # Sandbox bucket (non-secret) — defaults to the IaC-created bucket.
+          GCS_BUCKET="${GCP_PREVIEW_BUCKET_NAME:-pinyin-pal-preview-data}"
+
+          # Clean loop over the variableUpsert mutation, scoped to the PR env.
+          upsert() {
+            local name="$1"
+            local value="$2"
+            local payload
+            payload="$(jq -n \
+              --arg projectId "$RAILWAY_PROJECT_ID" \
+              --arg environmentId "$ENVIRONMENT_ID" \
+              --arg serviceId "$RAILWAY_BACKEND_SERVICE_ID" \
+              --arg name "$name" \
+              --arg value "$value" \
+              '{query: "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }",
+                variables: {input: {projectId: $projectId, environmentId: $environmentId, serviceId: $serviceId, name: $name, value: $value}}}')"
+            curl -s \
+              -H "Authorization: Bearer $RAILWAY_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$payload" \
+              https://backboard.railway.com/graphql/v2
+          }
+
+          # Neon preview DB + per-PR secrets + env isolation + probe gate.
+          upsert "DATABASE_URL" "$NEON_DB_URL"
+          upsert "JWT_SECRET" "$JWT_SECRET"
+          upsert "JWT_REFRESH_SECRET" "$JWT_REFRESH_SECRET"
+          upsert "APP_ENV" "pr-$PR_NUMBER"
+          upsert "HEALTH_PROBE_EXTERNAL" "false"
+          # Preview SA credentials (single GH secret) + the sandbox bucket.
+          upsert "GEMINI_API_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GOOGLE_TTS_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GCS_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GCS_BUCKET_NAME" "$GCS_BUCKET"
+
+  # ── PR smoke (merge gate) ──────────────────────────────────────────────
+  # Runs the dependency-free smoke script (apps/backend/scripts/pr-smoke.mjs)
+  # against the Railway pr-* preview URL so the merge PR must be green incl
+  # smoke. continue-on-error is false (default) on purpose — this is the merge
+  # gate. Skips on close so the teardown path (cleanup job) is unaffected.
+  # Runs even when `provision` fails — the first step exits 1 unless
+  # needs.provision.result == success, so a failed provision reports FAILED
+  # (not Success-as-skipped) for the required merge check.
+  smoke:
+    if: ${{ !cancelled() && github.event.action != 'closed' }}
+    needs: provision
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - name: Fail if provision failed
+        run: |
+          if [ "${{ needs.provision.result }}" != "success" ]; then
+            echo "::error::provision result is '${{ needs.provision.result }}' (expected success) — smoke cannot proceed"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Wait for Railway PR Environment
+        id: wait-railway
+        run: |
+          for i in $(seq 1 30); do
+            ENV_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              --data '{"query":"{environments(projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\"){edges{node{id name}}}}"}' \
+              https://backboard.railway.com/graphql/v2 | \
+              jq -r --arg pr "pr-${{ github.event.pull_request.number }}" '
+                .data.environments.edges[].node | select(.name == $pr) | .id
+              ' | head -1)
+            if [ -n "$ENV_ID" ]; then
+              echo "ENV_ID=$ENV_ID" >> $GITHUB_OUTPUT
+              break
+            fi
+            sleep 10
+          done
+          # Exact-only: fail rather than falling back to another PR's env.
+          if [ -z "${ENV_ID:-}" ]; then
+            echo "::error::exact Railway environment pr-${{ github.event.pull_request.number }} not found (exact-only — no fallback to another PR's env)"
+            exit 1
+          fi
+
+      - name: Resolve PR app URL
+        id: url
+        run: |
+          for i in $(seq 1 30); do
+            SI_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              --data '{"query":"{serviceInstances(environmentId:\"${{ steps.wait-railway.outputs.ENV_ID }}\", serviceId:\"${{ vars.RAILWAY_BACKEND_SERVICE_ID }}\"){edges{node{id}}}}"}' \
+              https://backboard.railway.com/graphql/v2 | \
+              jq -r '.data.serviceInstances.edges[0].node.id' 2>/dev/null)
+            if [ -n "$SI_ID" ] && [ "$SI_ID" != "null" ]; then
+              DOMAIN=$(curl -s \
+                -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+                --data "{\"query\":\"{domains(serviceInstanceId:\\\"$SI_ID\\\"){edges{node{domain}}}}\"}" \
+                https://backboard.railway.com/graphql/v2 | \
+                jq -r '.data.domains.edges[0].node.domain' 2>/dev/null)
+              if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "null" ]; then
+                echo "PR_URL=https://$DOMAIN" >> $GITHUB_OUTPUT
+                break
+              fi
+            fi
+            sleep 10
+          done
+          if [ -z "$PR_URL" ]; then
+            echo "::error::could not resolve Railway PR app URL from the pr-* environment"
+            exit 1
+          fi
+
+      - name: Run PR smoke
+        run: node apps/backend/scripts/pr-smoke.mjs "${{ steps.url.outputs.PR_URL }}"
 
   # ── Cleanup on PR close ────────────────────────────────────────────────
   cleanup:

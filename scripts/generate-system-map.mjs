@@ -697,15 +697,18 @@ function collectContent() {
 
 function collectInfra() {
   const infraDoc = "docs/guides/operations/infrastructure.md";
+  const terraformDoc = "terraform/README.md";
   const dbRedirectTarget = "docs/guides/setup/database.md";
   return [
     {
       unit: "terraform/",
       code: true,
-      docPath: null,
-      docDisplay: null,
-      meta: null,
-      klass: { cat: CAT.UNDOCUMENTED, label: CAT.UNDOCUMENTED },
+      docPath: exists(terraformDoc) ? terraformDoc : null,
+      docDisplay: exists(terraformDoc) ? terraformDoc : null,
+      meta: exists(terraformDoc) ? readLeafMeta(terraformDoc) : null,
+      // klass deliberately unset — buildAreas() classifies from docPath/meta, so
+      // terraform/ becomes `documented` once terraform/README.md exists (with its
+      // front-matter freshness marker) instead of being hardcoded undocumented.
       gate: "terraform plan workflows",
       area: "A8",
     },

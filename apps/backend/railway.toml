@@ -5,8 +5,6 @@ buildCommand = "npm install --include=dev && npx prisma generate --schema=apps/b
 [deploy]
 preDeployCommand = ["npm run db:migrate:deploy --workspace=@mandarin/backend"]
 # NestJS production entry (Story 24-15 cutover) — `start` = `node dist/nest/main.js`.
-# The Express entry (`dist/app/index.js`) was deleted; rollback = redeploy the
-# previous Railway release (see verification-artifacts/release-safety-gate-24-14.md).
 startCommand = "npm run start --workspace=@mandarin/backend"
 healthcheckPath = "/api/v1/health"
 restartPolicyType = "ON_FAILURE"
