@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-08-25 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-08-31 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -178,16 +178,11 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Application-specific Redis caching patterns, key strategies, monitoring, and performance tuning | **review** | [docs/guides/operations/caching-patterns.md](guides/operations/caching-patterns.md) |
 | Step-by-step guide to deploy or add a new deployment environment | active | [docs/guides/operations/deployment.md](guides/operations/deployment.md) |
+| Env-isolation verification — separated-vs-shared matrix, R1–R6 risks, and the 7 owner verification items for the Epic 24 release | active | [docs/guides/operations/env-isolation.md](guides/operations/env-isolation.md) |
 | How the system's infrastructure services work together — dependencies, data flow, and ops tasks | **review** | [docs/guides/operations/infrastructure.md](guides/operations/infrastructure.md) |
 | Code review criteria, pre-commit checks, and PR review standards | **review** | [docs/guides/operations/review.md](guides/operations/review.md) |
 | Common development, deployment, and integration issues and how to resolve them | **review** | [docs/guides/operations/troubleshooting.md](guides/operations/troubleshooting.md) |
 | Step-by-step development workflow — design, plan, implement, test, review | active | [docs/guides/operations/workflow.md](guides/operations/workflow.md) |
-
-#### Runbooks
-
-| Purpose | Status | Link |
-| --- | --- | --- |
-| Operational runbook for rolling back the Epic 24 NestJS production entry to the pinned Express state | active | [docs/runbooks/backend-rollback.md](runbooks/backend-rollback.md) |
 
 #### Testing
 
@@ -442,7 +437,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A5 Backend Shared / Infra | 8 | 0 | 0 | 8 | [coverage.md](coverage.md#a5) |
 | A6 Packages | 0 | 0 | 3 | 3 | [coverage.md](coverage.md#a6) |
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
-| A8 Infra | 1 | 1 | 1 | 3 | [coverage.md](coverage.md#a8) |
+| A8 Infra | 2 | 1 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
 | A10 Agentic / Dev-Flow | 36 | 3 | 0 | 39 | [coverage.md](coverage.md#a10) |
 

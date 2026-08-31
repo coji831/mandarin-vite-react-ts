@@ -1,13 +1,13 @@
 ---
 purpose: Step-by-step guide to deploy or add a new deployment environment
 status: active
-last-verified: 2026-08-03
+last-verified: 2026-08-25
 type: guide
 ---
 
 # Deployment Guide
 
-**Last Updated:** August 3, 2026
+**Last Updated:** August 25, 2026
 **Purpose:** Step-by-step guide to deploy or add a new deployment environment
 **Audience:** DevOps engineers and developers managing deployments
 
@@ -26,7 +26,7 @@ type: guide
 4. [Preview (Staging) Deployment](#preview-staging-deployment)
 5. [Production Deployment](#production-deployment)
 6. [Post-Deployment Verification](#post-deployment-verification)
-7. [Rollback Procedures](#rollback-procedures)
+7. [Rollback](#rollback)
 8. [Troubleshooting](#troubleshooting)
 
 ---
@@ -36,7 +36,7 @@ type: guide
 ### Architecture (Current)
 
 - **Frontend**: Vite React application → Vercel
-- **Backend**: Express API server → Railway
+- **Backend**: NestJS 11 API server (`node dist/nest/main.js`) → Railway
 - **Database**: PostgreSQL → Neon PostgreSQL
 - **Cache**: Redis → Upstash Redis
 - **Storage**: Google Cloud Storage (TTS audio, examples)
@@ -93,7 +93,7 @@ For the full list of frontend env vars, see [Environment Setup](../getting-start
 
 **Build Configuration:**
 
-See the actual config in [`apps/backend/railway.toml`](../../apps/backend/railway.toml) and [`apps/backend/Procfile`](../../apps/backend/Procfile):
+See the actual config in [`apps/backend/railway.toml`](../../../apps/backend/railway.toml) and [`apps/backend/Procfile`](../../../apps/backend/Procfile):
 
 ```toml
 # railway.toml (current)
@@ -146,7 +146,7 @@ The deployment is not locked to Railway. To deploy to a different platform:
 | ----------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `railway.toml` build          | Install deps + build shared-utils + generate Prisma | Translate to platform's build config (e.g. `Dockerfile`, `app.yaml`)                          |
 | `preDeployCommand`            | Pre-deploy migration step                           | Run `npm run db:migrate:deploy --workspace=@mandarin/backend` before starting the web process |
-| `Procfile` web / startCommand | Start the server                                    | Run `node dist/app/index.js` from `apps/backend/`                                             |
+| `Procfile` web / startCommand | Start the server                                    | Run `node dist/nest/main.js` from `apps/backend/` (NestJS 11 production entry)                |
 | PostgreSQL plugin             | `DATABASE_URL` injection                            | Set `DATABASE_URL` env var to your managed PostgreSQL                                         |
 | Redis plugin                  | `REDIS_URL` injection                               | Set `REDIS_URL` env var to your managed Redis                                                 |
 | Auto-injected `PORT`          | Runtime port assignment                             | Most platforms inject `PORT` — the server reads it from config                                |
@@ -154,11 +154,11 @@ The deployment is not locked to Railway. To deploy to a different platform:
 ### Example: Docker-based deployment
 
 ```dockerfile
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
 COPY . .
 RUN npm install && npx prisma generate --schema=apps/backend/prisma/schema.prisma
-CMD ["node", "apps/backend/src/app/index.js"]
+CMD ["node", "apps/backend/dist/nest/main.js"]
 ```
 
 With a separate migration step:
@@ -304,6 +304,16 @@ railway run npm run db:migrate:deploy --workspace=@mandarin/backend
 4. Run migration during low-traffic period
 5. Monitor for errors
 
+### Backup Gate (before data-sensitive migrations)
+
+The **backup gate** applies before any **data-sensitive migration** (a migration that moves, transforms, or drops data — **not** the additive-only pattern the NestJS release uses):
+
+1. Take a **Neon backup** — console-side, manual (Neon → Branches/Backups), **documented, not automated**.
+2. Verify the backup succeeded before running the migration.
+3. Record it as a manual release check.
+
+> Documented in [env-isolation](./env-isolation.md) (R6) — doc-only. The Epic 24 migration set (`20260821175536_add_srs_card_state`) is additive-only and does not trigger the backup gate, but the gate still applies to any future data-sensitive migration.
+
 ### Step 4: Verify Deployment
 
 See [Post-Deployment Verification](#post-deployment-verification) section below.
@@ -311,6 +321,8 @@ See [Post-Deployment Verification](#post-deployment-verification) section below.
 ---
 
 ## Post-Deployment Verification
+
+**Automated post-deploy smoke:** the PR-env smoke script `apps/backend/scripts/pr-smoke.mjs` (invoked by `.github/workflows/preview.yml` on the PR URL) is also the post-rollback/post-deploy verification command against prod — `node apps/backend/scripts/pr-smoke.mjs <BASE_URL>` (see [Backend Rollback (Railway)](#backend-rollback-railway)). It asserts health + service booleans, auth register/login/refresh/me, the guest phase-gate shape, and a 4xx envelope.
 
 ### Health Checks
 
@@ -382,7 +394,7 @@ Expected response:
 
 ---
 
-## Rollback Procedures
+## Rollback
 
 ### Frontend Rollback (Vercel)
 
@@ -403,22 +415,32 @@ git push origin main
 
 ### Backend Rollback (Railway)
 
-**Option 1: Redeploy Previous Version**
+Backend rollback is a **single-page note** (the former two-layer pinned-tag model + `docs/runbooks/backend-rollback.md` were **retired in 24-17**). Two options, no pinned tag, no rehearsal, no trigger table.
 
-1. Go to Railway Dashboard → Deployments
-2. Find last working deployment
-3. Click "Redeploy"
-4. Wait for deployment to complete
+**Option 1 — Redeploy the previous Railway release (primary):**
 
-**Option 2: Git Revert**
+1. Go to the **Railway dashboard → Deployments** for the backend service
+2. Find the last known-good release (the one before the bad deploy)
+3. Click **Redeploy** that release and confirm
+
+**Option 2 — Git revert (fallback, if the previous release is unavailable or a code fix is preferable):**
 
 ```bash
-git revert <commit-hash>
+git revert <bad-commit>      # add -m 1 if reverting a merge commit
 git push origin main
-# Railway automatically deploys reverted code
+# Railway automatically redeploys the reverted tree
 ```
 
+**Retained invariants (always):**
+
+- **Never roll back the migration set** — the Epic 24 migration (`20260821175536_add_srs_card_state`) is **additive-only**; no DDL is ever rolled back, and the schema always moves forward.
+- **Verify with the post-rollback smoke against prod** after any rollback: `node apps/backend/scripts/pr-smoke.mjs <BASE_URL>` (see [Post-Deployment Verification](#post-deployment-verification)).
+
+**Triage:** a **red prod smoke** is triaged as **env-diff** (config/secret drift — fix the config + redeploy, **no rollback**) vs **code-regression** (a bad deploy — **revert**), diffing against the green PR smoke from `preview.yml`.
+
 ### Database Migration Rollback
+
+> **Note:** the Epic 24 migration set (`20260821175536_add_srs_card_state`) is additive-only and is **never** rolled back (see [Backend Rollback (Railway)](#backend-rollback-railway)); the generic guidance below applies only to a future data-sensitive migration, and is gated by the [backup gate](#backup-gate-before-data-sensitive-migrations).
 
 **WARNING:** Database rollbacks are risky. Always backup first.
 
@@ -469,6 +491,9 @@ REDIS_URL=redis://default:password@provider:6379
 # PORT — do NOT set; Railway injects 8080 automatically
 # PORT=3001
 NODE_ENV=production
+# APP_ENV — do NOT set on prod (or set exactly `production`). The JwtService env
+# claim defaults to `production`; any other value would break all prod token
+# verification (issued tokens carry `env: APP_ENV`).
 FRONTEND_URL=https://mandarin-vite-react-ts.vercel.app
 
 # Google Cloud (mandatory for TTS/AI/GCS features)
@@ -489,6 +514,7 @@ GCS_BUCKET_NAME=pinyin-pal-data
 DATABASE_URL=<preview-database-url>
 FRONTEND_URL=https://mandarin-vite-react-ts-<hash>.vercel.app
 NODE_ENV=preview
+# APP_ENV=pr-<n> — set per-PR by preview.yml (the JwtService env claim)
 ```
 
 ### Security Best Practices
@@ -618,4 +644,4 @@ The Example Caching feature (Story 16.3) requires additional deployment steps:
 
 ---
 
-**Last Updated:** August 3, 2026
+**Last Updated:** August 25, 2026

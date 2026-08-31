@@ -1,9 +1,9 @@
-**Last Updated:** August 24, 2026
+**Last Updated:** August 25, 2026
 
 # Implementation 24-16: Docs-Truth Close + API Docs Expansion
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-16-release-prep.md`
-> **Last Updated:** August 24, 2026
+> **Last Updated:** August 25, 2026
 > **Status:** In Progress
 > **Commit hash:** _(to be filled at epic close)_
 
@@ -14,7 +14,7 @@ Story 24-16 is the **BLOCKING pre-merge FIRST** story of the Epic 24 follow-on r
 1. **Docs-truth close (Docs Writer — complete in the working tree, committed in this story):** system map + coverage regenerated (`check:system-map` green), both index READMEs → `Completed`, `project-workflow.instructions.md` + `backend-development.md` Nest-rewritten, `copilot-instructions.md` / `.github/agents/*` / READMEs / env docs aligned to `validateConfig` (7 criticals incl. `GCS_CREDENTIALS_RAW`), the 24-15 docs-close hash `5834a51e` filled, the epic READMEs registered for the 16/17 stories, `apps/backend/docs/design.md` modernized (15 modules), and the Root-Directory contradiction reconciled (see Technical Challenges).
 2. **openapi ~54-route expansion (Docs Writer + Backend Engineer — REMAINING WORK, the primary remaining work item):** `apps/backend/src/shared/docs/openapi.yaml` from the 7-path System/Auth/TTS surface to the full ~54-route surface (63 registered incl. shadowed), reconciled against `ROUTE_PATTERNS` + the parity harness; `apps/backend/docs/api/*` per-domain specs reconciled/completed.
 
-DoD: openapi full surface + docs-truth committed; `check:system-map` + `check:doc-links` green. **Sequencing:** 24-16 (docs) is the **FIRST commit group(s)** and 24-17 (infra) the **second**, both before the single merge. 24-16's cross-references to the infra artifacts that land in 24-17 (rollback runbook, smoke script, rehearsal record, `preview.yml`, root `engines`, `terraform/main.tf`, `eslint.config.js`) are **forward-pointers** ("delivered in 24-17") — those artifacts are **not** authored in this story. **No `git add -f`** is used (owner rule — `verification-artifacts/` stays gitignored; referenced by path only).
+DoD: openapi full surface + docs-truth committed; `check:system-map` + `check:doc-links` green. **Sequencing:** 24-16 (docs) is the **FIRST commit group(s)** and 24-17 (infra) the **second**, both before the single merge. 24-16's cross-references to the infra artifacts that land in 24-17 (the PR-env smoke — `apps/backend/scripts/pr-smoke.mjs` + `preview.yml` — root `engines`, `terraform/main.tf`, `eslint.config.js`) are **forward-pointers** ("delivered in 24-17") — those artifacts are **not** authored in this story. **No `git add -f`** is used (owner rule — `verification-artifacts/` stays gitignored; referenced by path only).
 
 ## Technical Scope
 
@@ -38,10 +38,9 @@ Close the docs-truth and expand the API docs to the full live surface — the do
 
 **Files (forward-pointers — delivered in 24-17, NOT authored here):**
 
-- `docs/runbooks/backend-rollback.md` — two-layer rollback runbook (delivered in 24-17)
 - `apps/backend/scripts/pr-smoke.mjs` + `.github/workflows/preview.yml` — PR-env smoke (delivered in 24-17)
-- `verification-artifacts/rollback-rehearsal-24-17.md` — Layer-1 rehearsal record (delivered in 24-17; gitignored — referenced by path only)
-- `apps/backend/railway.toml` rollback pointer · root `package.json` `engines` `>=24` · `terraform/main.tf` + `apps/backend/eslint.config.js` comments (delivered in 24-17)
+- `docs/guides/operations/deployment.md` §Rollback — single-page rollback note (redeploy-previous + `git revert`; the former `docs/runbooks/backend-rollback.md` runbook is retired — delivered in 24-17)
+- `apps/backend/railway.toml` · root `package.json` `engines` `>=24` · `terraform/main.tf` + `apps/backend/eslint.config.js` comments (delivered in 24-17)
 
 ## Implementation Details
 
@@ -67,7 +66,7 @@ The spec (reconciled at 24-15 to the 7-path System/Auth/TTS surface) is **not** 
 
 ### Forward-pointers to 24-17 (delivered in 24-17)
 
-The infra artifacts this story's release gate depends on land in **24-17 (Deployment Setup — PR Env Scope)**, the second pre-merge commit group: the two-layer rollback runbook `docs/runbooks/backend-rollback.md`, the PR-env smoke (`apps/backend/scripts/pr-smoke.mjs` + `preview.yml` job), the Layer-1 rehearsal record `verification-artifacts/rollback-rehearsal-24-17.md`, the `railway.toml` rollback pointer, root `engines` `>=24`, and the `terraform/main.tf` + `eslint.config.js` comments. They are referenced here as forward-pointers only.
+The infra artifacts this story's release gate depends on land in **24-17 (Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC)**, the second pre-merge commit group: the PR-env smoke (`apps/backend/scripts/pr-smoke.mjs` + `preview.yml` job), the single-page rollback note in `docs/guides/operations/deployment.md` §Rollback, the `railway.toml` pipeline, root `engines` `>=24`, and the `terraform/main.tf` + `eslint.config.js` comments. They are referenced here as forward-pointers only.
 
 ## Architecture Integration
 
@@ -85,9 +84,9 @@ The infra artifacts this story's release gate depends on land in **24-17 (Deploy
 │     · reconciled vs ROUTE_PATTERNS + parity harness · apps/backend/docs/api/*
 │     per-domain specs reconciled/completed
 ├── Forward-pointers to 24-17 (deployment, delivered there):
-│     runbook docs/runbooks/backend-rollback.md · pr-smoke.mjs + preview.yml ·
-│     rehearsal record rollback-rehearsal-24-17.md (gitignored) · railway.toml
-│     pointer · root engines >=24 · terraform/main.tf + eslint.config.js comments
+│     pr-smoke.mjs + preview.yml · deployment.md §Rollback (single-page
+│     rollback note) · railway.toml pipeline · root engines >=24 ·
+│     terraform/main.tf + eslint.config.js comments
 └── Enables: the Epic 24 merge PR to ship with truthful docs + a full API reference;
     epics 25–28 land on NestJS after
 ```
@@ -109,9 +108,9 @@ Solution: Owner re-sliced into two pre-merge stories — NEW 24-16 = Docs-Truth
   2026-08-24 to deployment setup — PR env scope only). The old combined 24-16 docs are
   rewritten (docs-only) and a new 24-17 BR/IMP authored. Sequencing: 24-16 is
   the FIRST commit group(s), 24-17 the second, both before the single merge.
-  The rehearsal record moves from `rollback-rehearsal-24-16.md` →
-  `rollback-rehearsal-24-17.md` (the record now belongs to story 17 — verified
-  not present in the tree; referenced as a forward-pointer).
+  The former rehearsal record (a Layer-1 rollback drill on the merge-PR env) was
+  dropped in the 2026-08-25 rollback-model removal — no rehearsal record exists
+  anywhere; it is referenced nowhere as a forward-pointer.
 ```
 
 ### Root Directory contradiction — `apps/backend` vs repository root
@@ -148,7 +147,7 @@ Solution: FLAGGED here, not fixed — this is part of the openapi ~54-route
 - [x] Endpoints match `ROUTE_PATTERNS` in `packages/shared-constants/src/index.js` (path + verb copied verbatim) — the openapi target is the **~54 `ROUTE_PATTERNS` entries** (verified by reading `packages/shared-constants/src/index.js`: 54 unique patterns across all 15 modules + `pinyin/search`); the "63 registered incl. shadowed" figure is the Nest-registry count (parity-harness surface, incl. the duplicated `radicalsCharacters` + cross-module `/characters/:glyph` shadow) — reconciled at expansion time
 - [x] Feature/module/component names verified against `apps/backend/src/modules/` and `apps/frontend/src/features/` — **15 modules** listed verbatim (`audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`); no new module names invented
 - [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — the per-domain spec claims (auth/health/caching/TTS/AI-feedback/errors/env) are re-verified against the backing modules at expansion time
-- [x] All relative markdown links resolve — the epic READMEs + the story-BR/IMP twins + `story-24-14`/`story-24-15` resolve; `docs/runbooks/backend-rollback.md` + `apps/backend/scripts/pr-smoke.mjs` + `apps/backend/docs/api/*` resolve in the working tree; `verification-artifacts/rollback-rehearsal-24-17.md` is referenced by backtick path only (gitignored — no force-add; forward-pointer to 24-17)
+- [x] All relative markdown links resolve — the epic READMEs + the story-BR/IMP twins + `story-24-14`/`story-24-15` resolve; `apps/backend/scripts/pr-smoke.mjs` + `apps/backend/docs/api/*` resolve in the working tree (the retired `docs/runbooks/backend-rollback.md` + `rollback-rehearsal-24-17.md` are referenced nowhere — removed)
 - [x] Last Updated / Last Update date is current (same commit as the edit) — bumped to 2026-08-23 on every leaf touched
 - [x] **Truth-check corrections:** (1) the Root Directory contradiction resolved in favour of repository-root cwd (the runbook was the wrong doc); (2) the api/README "13 modules" scope note is stale vs 15 — flagged for the openapi work item; (3) no tool/framework named that isn't in `package.json` (Vitest-only; `swagger-ui-express`/NestJS verified).
 
@@ -163,4 +162,4 @@ This is a **docs + verification story** — its "tests" are the quality gates (r
 | Docs audit        | `.github/skills/docs-audit/SKILL.md`                  | template compliance + doc↔code truth-check on the edited leaves              |
 | openapi reconcile | openapi.yaml ↔ `ROUTE_PATTERNS` ↔ parity-harness diff | full ~54-route surface, no dead/misrouted routes documented                  |
 
-**Behavioral verification (24-17's scope, referenced as forward-pointers):** the PR-env smoke (`preview.yml` job via `apps/backend/scripts/pr-smoke.mjs`) and the Layer-1 rollback rehearsal (record in `verification-artifacts/rollback-rehearsal-24-17.md`) land in **24-17** and gate the merge PR there.
+**Behavioral verification (24-17's scope, referenced as forward-pointers):** the PR-env smoke (`preview.yml` job via `apps/backend/scripts/pr-smoke.mjs`) and the post-flip prod smoke + T+0→24h watch (the T+0 rollback-decision point per `deployment.md` §Rollback) land in **24-17** and gate the merge PR there.

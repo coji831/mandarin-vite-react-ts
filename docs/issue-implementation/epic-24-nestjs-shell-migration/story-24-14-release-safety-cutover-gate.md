@@ -1,9 +1,9 @@
-**Last Updated:** August 21, 2026
+**Last Updated:** August 25, 2026
 
 # Implementation 24-14: Release-Safety Cutover Gate
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-14-release-safety-cutover-gate.md`
-> **Last Updated:** August 21, 2026
+> **Last Updated:** August 25, 2026
 > **Status:** Completed
 > **Commit hash:** `0b3fe00c`
 
@@ -32,6 +32,8 @@ Authored the release-safety gate as a committed verification artifact — `verif
 **S1** (P0-1 closed structurally + regression green) ✅ PASS · **S2** (guest-auth == calibrated shape) ✅ PASS · **P1** (parity harness 100% route coverage — **63/63**) ✅ PASS · **T1** (`test:full` 744 + `test:integration` 262 green) ✅ PASS → **The 24-15 cutover is UNBLOCKED.** No gate failed; no 24-15 blocker surfaced by this gate. (The R1 `engines` lower-bounds caveat is recorded as a hardening note, not a blocker.)
 
 ### Rollback + watch-window procedure (D2, as documented)
+
+> **Historical note (2026-08-25):** the rollback strategy recorded here (Express-entry escape hatch / redeploy-previous) was **retired in 24-17** — rollback is now the single-page note in `docs/guides/operations/deployment.md` §Rollback (redeploy the previous Railway release + `git revert`; no pinned tag, no rehearsal).
 
 - **Rollback runbook (verified):** Primary — the **`start:express` escape hatch**: the Express production entry `node dist/app/index.js` still builds + serves; after the 24-15 flip, revert `railway.toml` `startCommand` to run the Express entry (or re-point the start script) for one release. Secondary — **redeploy-previous Railway release** (one click). **No migration rollback needed** — additive-only set (§D1). Both options restore service without a schema rollback.
 - **Post-flip smoke (on Railway, immediately after 24-15 flips):** 1) `GET /api/v1/health` → 200; 2) `POST /api/v1/auth/register` → 201 + httpOnly refresh `set-cookie`; 3) `POST /api/v1/auth/login` → 200 + access token; 4) one **authenticated** data route → 200 (e.g. `GET /api/v1/review/due-count` or `GET /api/v1/readers/passages` with the Bearer token) + one **guest** route → calibrated guest shape (e.g. `GET /api/v1/progression/phase-gate` → `currentPhase:1, isGuest:true`); 5) confirm a 4xx produces the `{code, message, requestId}` envelope and appears in logs.

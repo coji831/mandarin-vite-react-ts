@@ -1,7 +1,7 @@
 ---
 purpose: IaC migration — Phase 1 deployment runbook
 status: active
-last-verified: 2026-08-23
+last-verified: 2026-08-25
 type: guide
 ---
 
@@ -9,7 +9,8 @@ type: guide
 
 **Date:** 2026-07-04 | **Repo:** coji831/mandarin-vite-react-ts  
 **Author:** AI Agent (Copilot DeepSeek Flash)  
-**Status:** Phase 1 complete — all core infrastructure provisioned and verified
+**Status:** Phase 1 complete — all core infrastructure provisioned and verified  
+**Current state (2026-08-25):** the backend now runs the **NestJS 11 production entry** (`node dist/nest/main.js`, post-24-15 cutover) — the Express surface (`src/app/`, `modules/*/api/`) is retired. See §2 (Railway) for the updated entry, the rollback pointer, and the per-env isolation pointer.
 
 ---
 
@@ -44,7 +45,7 @@ type: guide
                     ┌──────────────────────────┐
                     │      Railway             │
                     │  mandarin-vite-react-ts   │
-                    │  Express 5 backend        │
+                    │  NestJS 11 backend        │
                     │  Click-ops + railway.toml │
                     │  NO Terraform provider!  │
                     └──────────┬───────────────┘
@@ -61,14 +62,14 @@ type: guide
 
 ### Key Design Decisions
 
-| Decision                                            | Rationale                                                                                                                              |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Railway NOT in Terraform                            | Railway has no Terraform provider (native IaC is experimental v0, June 2026)                                                           |
-| `VITE_API_URL` NOT in Terraform                     | Railway→Vercel integration auto-syncs it; avoids ENV_CONFLICT                                                                          |
-| `VITE_API_URL = https://${{RAILWAY_PUBLIC_DOMAIN}}` | Railway reference variable — automatically resolves to correct domain for each environment (prod/preview)                              |
-| GCS CORS: `origin: ["*"]`                           | GCS doesn't support `*.vercel.app` wildcard patterns                                                                                   |
-| All resources in Singapore                          | Matches user's geographic proximity: Neon (ap-southeast-1), GCS (ASIA-SOUTHEAST1), Railway (asia-southeast1), Upstash (ap-southeast-1) |
-| Shared DB across environments                       | Acceptable for single-user app; Neon branching planned for Phase 2                                                                     |
+| Decision                                            | Rationale                                                                                                                                                        |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Railway NOT in Terraform                            | Railway has no Terraform provider (native IaC is experimental v0, June 2026)                                                                                     |
+| `VITE_API_URL` NOT in Terraform                     | Railway→Vercel integration auto-syncs it; avoids ENV_CONFLICT                                                                                                    |
+| `VITE_API_URL = https://${{RAILWAY_PUBLIC_DOMAIN}}` | Railway reference variable — automatically resolves to correct domain for each environment (prod/preview)                                                        |
+| GCS CORS: `origin: ["*"]`                           | GCS doesn't support `*.vercel.app` wildcard patterns                                                                                                             |
+| All resources in Singapore                          | Matches user's geographic proximity: Neon (ap-southeast-1), GCS (ASIA-SOUTHEAST1), Railway (asia-southeast1), Upstash (ap-southeast-1)                           |
+| Shared DB across environments                       | Per-env isolation since 24-17: Neon preview branching per PR via `.github/workflows/preview.yml` — see [env-isolation](../../guides/operations/env-isolation.md) |
 
 ---
 
@@ -123,6 +124,8 @@ type: guide
 | ---------- | ---------------------------------------------------------- |
 | Production | `https://mandarin-vite-react-ts-production.up.railway.app` |
 | Preview    | `https://mandarin-vite-react-ts-preview.up.railway.app`    |
+
+**NestJS production entry (post-24-15):** the backend runs `node dist/nest/main.js` via the `apps/backend/railway.toml` pipeline (build → `db:migrate:deploy` → start → healthcheck `/api/v1/health` ON_FAILURE ×10). **Rollback** of the NestJS entry is the single-page note in [deployment.md §Rollback](../../guides/operations/deployment.md#rollback) — redeploy the previous Railway release (primary) or `git revert` (fallback); the additive-only migration set is never rolled back, and `pr-smoke.mjs` is run against prod after any rollback. **Per-env isolation** (Neon preview branches + per-PR JWT/GCP/health-probe hardening) is handled by `.github/workflows/preview.yml` — see [env-isolation](../../guides/operations/env-isolation.md).
 
 ---
 
@@ -619,23 +622,23 @@ node scripts/upload-content-to-gcs.js
 
 ## Appendix B: Key Files & Locations
 
-| File                                                      | Purpose                                          |
-| --------------------------------------------------------- | ------------------------------------------------ |
-| `apps/backend/railway.toml`                               | Railway build/deploy/healthcheck config          |
-| `apps/backend/prisma/seed.js`                             | Database seed (single entry point)               |
-| `apps/backend/prisma.config.ts`                           | Prisma v7 config (seed command, datasource)      |
-| `apps/backend/src/shared/config/index.ts`                 | Backend env var mapping + validation             |
-| `apps/backend/src/app/index.ts`                           | Express setup: CORS, trust proxy, crash handlers |
-| `apps/backend/src/app/container.ts`                       | DI composition root                              |
-| `apps/backend/src/modules/health/api/HealthController.ts` | Health check (reports GCS, TTS, Gemini, Redis)   |
-| `scripts/upload-content-to-gcs.js`                        | GCS content uploader                             |
-| `terraform/main.tf`                                       | GCS bucket + IAM + CORS                          |
-| `terraform/variables.tf`                                  | Variable definitions                             |
-| `terraform/apis.tf`                                       | GCP API enablements                              |
-| `terraform/iam.tf`                                        | IAM role bindings                                |
-| `terraform/service-accounts.tf`                           | Service account definitions                      |
-| `terraform/neon.tf`                                       | Neon project                                     |
-| `terraform/upstash.tf`                                    | Upstash Redis                                    |
-| `terraform/vercel.tf`                                     | Vercel project                                   |
-| `keys/*.json`                                             | GCP SA keys (gitignored)                         |
-| `.env.local`                                              | Local dev env vars (gitignored)                  |
+| File                                                             | Purpose                                                                    |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `apps/backend/railway.toml`                                      | Railway build/deploy/healthcheck config                                    |
+| `apps/backend/prisma/seed.js`                                    | Database seed (single entry point)                                         |
+| `apps/backend/prisma.config.ts`                                  | Prisma v7 config (seed command, datasource)                                |
+| `apps/backend/src/shared/config/index.ts`                        | Backend env var mapping + validation                                       |
+| `apps/backend/src/nest/main.ts`                                  | NestJS 11 production entry (CORS, trust proxy, body parsers, error bridge) |
+| `apps/backend/src/nest/app.module.ts`                            | Nest DI composition root                                                   |
+| `apps/backend/src/modules/health/nest/health-nest.controller.ts` | Health check (reports GCS, TTS, Gemini, Redis)                             |
+| `scripts/upload-content-to-gcs.js`                               | GCS content uploader                                                       |
+| `terraform/main.tf`                                              | GCS bucket + IAM + CORS                                                    |
+| `terraform/variables.tf`                                         | Variable definitions                                                       |
+| `terraform/apis.tf`                                              | GCP API enablements                                                        |
+| `terraform/iam.tf`                                               | IAM role bindings                                                          |
+| `terraform/service-accounts.tf`                                  | Service account definitions                                                |
+| `terraform/neon.tf`                                              | Neon project                                                               |
+| `terraform/upstash.tf`                                           | Upstash Redis                                                              |
+| `terraform/vercel.tf`                                            | Vercel project                                                             |
+| `keys/*.json`                                                    | GCP SA keys (gitignored)                                                   |
+| `.env.local`                                                     | Local dev env vars (gitignored)                                            |

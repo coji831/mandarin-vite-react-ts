@@ -1,4 +1,4 @@
-**Last Updated:** August 21, 2026
+**Last Updated:** August 25, 2026
 
 # Story 24.14: Release-Safety Cutover Gate
 
@@ -27,6 +27,9 @@ This story is the **hard pre-flight gate for the 24-15 cutover**: 24-15 cannot f
 2. **The pre-flight sign-off is the hard gate** — 24-15 may not flip Railway unless S1 + S2 + P1 (100%) + T1 (full + integration) all pass; any failed gate blocks the flip (none failed here).
 3. **A/B/C ownership map** — A = absorbed into Epic 24 (landed in-story); B = hard prerequisite (under the serial plan, absorbed and landed in-epic); C = post-release-safe (declared + tracked in the target epic — quiz-FE fixes → epic-26, gate/phase data + HSK → epic-27, full observability spine → epic-39, cosmetic → non-blocking).
 4. **Rollback is real, not hypothetical** — keep the Express entry (`node dist/app/index.js`) building/serving for one release after the flip OR redeploy-previous Railway release; the additive-only migration set (single 24-11 `SrsCardState` migration) means **no schema rollback is ever needed**.
+
+> **Historical note (2026-08-25):** the rollback strategy recorded here was **retired in 24-17** — rollback is now the single-page note in `docs/guides/operations/deployment.md` §Rollback (redeploy the previous Railway release + `git revert`; no pinned tag, no rehearsal).
+
 5. **Watch window before Express deletion** — run ≥24–48h after the flip observing the 24-3 requestId logs; escalate on any error missing `requestId` or any 500 on a previously-green route; only after the window closes with no P1/P0 AND the P1 parity harness re-runs green may Express be deleted.
 
 ## Related Issues
