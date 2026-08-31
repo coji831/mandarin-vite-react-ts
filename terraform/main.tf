@@ -5,7 +5,7 @@
 #
 # ── Architecture (Option B: Best-of-Breed) ───────────────────────────────────
 #   Frontend:  Vercel (SPA, CDN)       ← terraform/vercel.tf
-#   Backend:   Railway (NestJS API)    ← NOT in Terraform (no provider exists)
+#   Backend:   Railway (NestJS API)    ← NOT in Terraform (no official/production-grade provider; community wrapper exists, not adopted)
 #   Database:  Neon (serverless PG)    ← terraform/neon.tf
 #   Cache:     Upstash (Redis)         ← terraform/upstash.tf
 #   Storage:   GCP (GCS bucket)        ← terraform/main.tf
@@ -13,7 +13,9 @@
 #   AI:        Google TTS + Gemini     ← terraform/service-accounts.tf + iam.tf
 #
 # ── Exit Strategy (Railway → Render) ─────────────────────────────────────────
-# Railway has no Terraform provider and has experienced reliability issues.
+# Railway has no official/production-grade Terraform provider (a community
+# wrapper, terraform-community-providers/railway, exists but is not adopted) and
+# has experienced reliability issues.
 # If migrating to Render, the following changes are needed:
 #   1. Add render_web_service + render_static_site resources
 #   2. Use render-oss/render provider (Terraform-native, stable)
@@ -27,7 +29,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.0, < 7.0"
+      version = ">= 6.0, < 8.0"
     }
     neon = {
       source  = "kislerdm/neon"
@@ -96,6 +98,47 @@ resource "google_storage_bucket" "app_data" {
 
 resource "google_storage_bucket_iam_member" "public_read" {
   bucket = google_storage_bucket.app_data.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
+# ── Preview Sandbox Bucket (Story 24-17 env isolation) ─────────────────────
+# Sandbox bucket for PR-preview environments (TTS audio written by preview
+# builds via the single preview SA). Additive-only — production resources are
+# untouched.
+#
+# ACCESS CHOICE: mirrors the app_data bucket (uniform access + public-read
+# allUsers objectViewer) for consistency, so preview behaves byte-for-byte like
+# production. The app actually serves audio via short-lived SIGNED URLs (see
+# AudioService.getSignedUrl), so this bucket COULD be private — but public-read
+# parity keeps the preview/prod browser path identical, and preview audio is
+# non-sensitive generated content. Flagged: a private + signed-URL-only variant
+# is a possible hardening follow-up but would diverge preview from prod behavior.
+
+resource "google_storage_bucket" "preview_data" {
+  name          = var.preview_bucket_name
+  location      = var.region
+  storage_class = "STANDARD"
+
+  # No auto-delete — preview audio cache; cleaned up with the environment.
+  versioning {
+    enabled = false
+  }
+
+  uniform_bucket_level_access = true
+  public_access_prevention    = "inherited"
+
+  # CORS — allow browser to fetch TTS audio from any origin (same as app_data).
+  cors {
+    origin          = ["*"]
+    method          = ["GET", "HEAD"]
+    response_header = ["Content-Type", "Content-Disposition", "Content-Length", "Content-Range"]
+    max_age_seconds = 3600
+  }
+}
+
+resource "google_storage_bucket_iam_member" "preview_public_read" {
+  bucket = google_storage_bucket.preview_data.name
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
