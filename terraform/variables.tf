@@ -2,6 +2,11 @@
 # Minimal configuration: only project_id and region are needed.
 # Service accounts and Redis are managed outside terraform (env vars / Railway).
 
+# project_id is REQUIRED (no default) and is NOT set in any tfvars file.
+# CI (terraform-apply.yml / terraform-plan.yml) supplies it via the
+# TF_VAR_project_id env var and runs with `-input=false` — otherwise terraform
+# blocks on the interactive stdin prompt forever (runner stdin never EOFs) and
+# the job hangs instead of failing fast.
 variable "project_id" {
   description = "GCP project ID"
   type        = string
