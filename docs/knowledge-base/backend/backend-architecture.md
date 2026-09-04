@@ -1,14 +1,14 @@
 ---
 purpose: Backend architecture patterns
 status: active
-last-verified: 2026-07-03
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Backend Architecture Patterns
 
 **Category:** Backend Development  
-**Last Updated:** July 3, 2026
+**Last Updated:** September 3, 2026
 
 ---
 
@@ -270,7 +270,7 @@ try {
 
 ### Real-World Impact
 
-In Story 13.6, the `deleteProgress` endpoint was returning 404 errors even after successful deletions. The issue was traced to:
+The `deleteProgress` endpoint once returned 404 errors even after successful deletions. The issue was traced to:
 
 1. Repository silently ignored P2025 (record not found) and returned `void`
 2. Service didn't return anything either

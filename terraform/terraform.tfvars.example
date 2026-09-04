@@ -4,7 +4,7 @@
 # (e.g., TF_VAR_project_id=pinyin-pal-831).
 #
 # Provider credentials can also be passed directly as environment variables:
-#   GOOGLE_CREDENTIALS, NEON_API_KEY, UPSTASH_API_KEY, UPSTASH_EMAIL, VERCEL_API_TOKEN
+#   GOOGLE_CREDENTIALS, NEON_API_KEY, UPSTASH_API_KEY, VERCEL_API_TOKEN
 #
 # See docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md
 # for detailed setup instructions.
@@ -24,6 +24,5 @@
 #
 #   Neon:       NEON_API_KEY          — from Neon Dashboard → Account → API Keys
 #   Upstash:    UPSTASH_API_KEY       — from Upstash Dashboard → API Keys
-#   Upstash:    UPSTASH_EMAIL         — Upstash login email address
 #   Vercel:     VERCEL_API_TOKEN      — from vercel.com/account/tokens
-#   GCP:        GOOGLE_CREDENTIALS    — GCP SA key JSON (one-line), passed as GCP_SA_KEY in CI
+#   GCP:        GOOGLE_CREDENTIALS    — GCP SA key JSON (one-line), passed as GCP_TF_SA_KEY in CI

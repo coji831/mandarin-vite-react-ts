@@ -19,12 +19,25 @@
 # If migrating to Render, the following changes are needed:
 #   1. Add render_web_service + render_static_site resources
 #   2. Use render-oss/render provider (Terraform-native, stable)
-#   3. Replace Railway-Vercel integration with direct VITE_API_URL in vercel.tf
+#   3. Point VITE_API_URL at the new backend URL in terraform/vercel.tf — it is
+#      ALREADY Terraform-managed there (Production scope; the "Railway → Vercel
+#      integration" is NOT documented/verified by either vendor as of 2026-09),
+#      so this is now just a value update, not wiring up a new mechanism
 #   4. Optionally keep Neon for DB branching, or use Render Postgres
 #   5. Replace Upstash with Render Key Value, or keep Upstash
 
 terraform {
   required_version = ">= 1.5"
+
+  # ── Remote State + Locking (adopted 2026-09-03) ───────────────────────────
+  # State now lives in GCS (versioned) at gs://pinyin-pal-tfstate under
+  # terraform/state/, with native state locking via the GCS backend. The old
+  # local terraform/terraform.tfstate was migrated here (kept as a local safety
+  # copy). CI plan/apply auto-reads this backend config via `terraform init`.
+  backend "gcs" {
+    bucket = "pinyin-pal-tfstate"
+    prefix = "terraform/state"
+  }
 
   required_providers {
     google = {
@@ -74,12 +87,11 @@ resource "google_storage_bucket" "app_data" {
   storage_class = "STANDARD"
 
   # No auto-delete — contains vocabulary data (source of truth) + cached assets
-  versioning {
-    enabled = false
-  }
-
-  # Security best practices
-  uniform_bucket_level_access = true
+  # versioning is intentionally NOT declared — provider default (disabled) matches live bucket.
+  # Security best practices — NOTE: uniform_bucket_level_access=false matches LIVE reality
+  # (bucket is non-uniform / has per-object ACLs from legacy writes). Do not flip to true
+  # without a migration plan, or prod audio access breaks.
+  uniform_bucket_level_access = false
   public_access_prevention    = "inherited"
 
   # CORS — allow browser to fetch TTS audio from any origin (public bucket).
@@ -107,9 +119,12 @@ resource "google_storage_bucket_iam_member" "public_read" {
 # builds via the single preview SA). Additive-only — production resources are
 # untouched.
 #
-# ACCESS CHOICE: mirrors the app_data bucket (uniform access + public-read
-# allUsers objectViewer) for consistency, so preview behaves byte-for-byte like
-# production. The app actually serves audio via short-lived SIGNED URLs (see
+# ACCESS CHOICE: mirrors the app_data bucket's public-read model (allUsers
+# objectViewer) for consistency, so preview behaves like production. NOTE:
+# app_data is NON-uniform (uniform_bucket_level_access = false — per-object ACLs
+# from legacy writes), while this preview bucket keeps uniform access ON — so
+# this mirrors app_data's public-read browser path, not its access-setting
+# uniformity. The app serves audio via short-lived SIGNED URLs (see
 # AudioService.getSignedUrl), so this bucket COULD be private — but public-read
 # parity keeps the preview/prod browser path identical, and preview audio is
 # non-sensitive generated content. Flagged: a private + signed-URL-only variant

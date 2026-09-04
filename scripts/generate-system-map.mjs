@@ -196,7 +196,7 @@ const LAYER_ROOTS = {
       { path: "docs/audits", branch: "Audits", include: /\.md$/ },
       { path: "docs/automation", branch: "Automation", include: /\.md$/ },
       { path: "docs/visualizations", branch: "Visualizations", include: /\.html$/ },
-      { path: "docs/guides/infrastructure-visualization.html", branch: "Visualizations" },
+      { path: "docs/guides/iac-onboarding.html", branch: "Visualizations" },
       { path: "docs/guides/prompt-templates.md", branch: "Templates" },
       { path: "apps/backend/docs", branch: "Backend docs", single: true, include: /\.md$/ },
       {

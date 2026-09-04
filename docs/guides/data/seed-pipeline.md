@@ -1,14 +1,14 @@
 ---
 purpose: Canonical reference for the 32-step hash-gated delta seed pipeline (all-in-DB content)
 status: active
-last-verified: 2026-08-08
+last-verified: 2026-09-03
 type: data-doc
 ---
 
 # Seed Pipeline (All-in-DB)
 
 **Category:** Data & Content  
-**Last Updated:** August 8, 2026
+**Last Updated:** September 3, 2026
 
 > Canonical reference for how static learning content gets into PostgreSQL and
 > how it is regenerated. Applies to the **all-in-DB** architecture: production
@@ -90,7 +90,7 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 > - `Tone` → `ReviewService` (tone items), `FoundationsService.getPinyinTonesPool`.
 > - `PinyinPhoneme` (+ `TonePair`, `ToneRule`) → `FoundationsService.getPinyinTonesPool`.
 
-> **Grammar steps (27–29, Story 22.1):** `grammar-patterns.json` is a single
+> **Grammar sync steps (27–29, added August 2026):** `grammar-patterns.json` is a single
 > object `{ patterns, relations }` whose patterns **nest their own examples**.
 > `syncGrammar` flattens it and syncs Patterns → Examples → Relations inside
 > ONE interactive transaction (all-or-nothing, FK-safe). Real edits propagate
@@ -98,7 +98,7 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 > asserts `patterns ≥ 21`, `examples ≥ 63`, `relations ≥ 0` and **0 FK-orphan
 > examples**.
 
-> **Chengyu steps (30–32, Story 23.1):** `chengyu.json` is a single object
+> **Chengyu sync steps (30–32, added August 2026):** `chengyu.json` is a single object
 > `{ idioms, relations }` whose idioms **nest their own examples**.
 > `syncChengyu` flattens it and syncs Idioms → Examples → Relations inside
 > ONE interactive transaction (all-or-nothing, FK-safe), mirroring
@@ -107,7 +107,7 @@ The legacy runtime readers (`readContentDir`, `readContentFile`,
 > `relations ≥ 0` and **0 FK-orphan examples**. Current authored counts:
 > **55 / 55 / 18**.
 
-> **Hash-gate (Story 22.1):** since this change the whole pipeline is a
+> **Hash-gate (added August 2026):** since this change the whole pipeline is a
 > deterministic content diff — see §3. Steady-state re-runs make **0 writes**
 > to every content table (~8s total).
 
@@ -320,12 +320,12 @@ npx tsx scripts/verify/health-check.ts         # env, migrations, schema, counts
 | `CharacterComponent`     | 15,742  |
 | `User`                   | 2       |
 
-**Grammar (Story 22.1):** the post-seed verification in `seed.ts` asserts
+**Grammar (added August 2026):** the post-seed verification in `seed.ts` asserts
 `GrammarPattern ≥ 21`, `GrammarExample ≥ 63`, `GrammarPatternRelation ≥ 0`, and
 **0 FK-orphan examples** (an example whose `patternContentId` has no matching
 `GrammarPattern`). Current authored counts: **21 / 63 / 12**.
 
-**Chengyu (Story 23.1):** the post-seed verification in `seed.ts` asserts
+**Chengyu (added August 2026):** the post-seed verification in `seed.ts` asserts
 `Chengyu ≥ 50`, `ChengyuExample ≥ 50`, `ChengyuRelation ≥ 0`, and **0
 FK-orphan examples** (an example whose `chengyuContentId` has no matching
 `Chengyu`). Current authored counts: **55 / 55 / 18**.

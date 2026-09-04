@@ -24,16 +24,18 @@ jobs:
         run: terraform init
         working-directory: terraform/
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
-          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform/
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
-          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}

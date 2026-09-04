@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-08-31 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-09-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -65,7 +65,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 4 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 125 leaves](#layer-5)
+- [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
 - [Layer 6 · Agentic System — active · 31 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
@@ -122,7 +122,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Index of Architecture Decision Records (ADRs) — ADR-001…005 in design-reasoning.md, ADR-006 here, plus the machine decision-log catalog | active | [docs/guides/adr/README.md](guides/adr/README.md) |
 | Machine catalog of ADR/D/OI/BM decisions | planned | [.github/decision-log.json](../.github/decision-log.json) |
 | High-level system design decisions, architectural patterns, and technology choices | active | [docs/architecture.md](architecture.md) |
-| 4 data tiers — storage, cache, and module dependency rules for content vs user data | proposed | [docs/guides/adr/data-tiering-architecture.md](guides/adr/data-tiering-architecture.md) |
+| 4 data tiers — storage, cache, and module dependency rules for content vs user data | **review** | [docs/guides/adr/data-tiering-architecture.md](guides/adr/data-tiering-architecture.md) |
 
 </details>
 
@@ -149,7 +149,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 125 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 128 leaves</summary>
 
 #### Getting started
 
@@ -181,7 +181,10 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Env-isolation verification — separated-vs-shared matrix, R1–R6 risks, and the 7 owner verification items for the Epic 24 release | active | [docs/guides/operations/env-isolation.md](guides/operations/env-isolation.md) |
 | How the system's infrastructure services work together — dependencies, data flow, and ops tasks | **review** | [docs/guides/operations/infrastructure.md](guides/operations/infrastructure.md) |
 | Code review criteria, pre-commit checks, and PR review standards | **review** | [docs/guides/operations/review.md](guides/operations/review.md) |
-| Common development, deployment, and integration issues and how to resolve them | **review** | [docs/guides/operations/troubleshooting.md](guides/operations/troubleshooting.md) |
+| Canonical secrets/resources ledger — one logical credential traced across GitHub, Railway, Vercel, GCP, Neon, Upstash, and local surfaces (store map, master registry, fixed identifiers, aliases/fan-out, dead names, refresh cadence) | active | [docs/guides/operations/secret-inventory.md](guides/operations/secret-inventory.md) |
+| Production + preview secrets/keys rotation — GitHub secrets/vars master table, T+0 rotation decisions, fixed identifiers, and rotation ordering | active | [docs/guides/operations/secret-rotation.md](guides/operations/secret-rotation.md) |
+| Runbook for Terraform state-loss recovery now that state is remote (GCS gs://pinyin-pal-tfstate, versioned) — restore state from the bucket (Path A) or reconstruct by import (Path B), with the plan guard and post-apply GCP_PREVIEW_SA_KEY steps | active | [docs/guides/operations/terraform-state-recovery.md](guides/operations/terraform-state-recovery.md) |
+| Common development, deployment, and integration issues and how to resolve them | active | [docs/guides/operations/troubleshooting.md](guides/operations/troubleshooting.md) |
 | Step-by-step development workflow — design, plan, implement, test, review | active | [docs/guides/operations/workflow.md](guides/operations/workflow.md) |
 
 #### Testing
@@ -232,13 +235,13 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Area index for deep-dive concepts, patterns, and reference materials | active | [docs/knowledge-base/README.md](knowledge-base/README.md) |
-| Area index for agent-operations articles — development pipeline, design workflows, tooling, prompting | active | [docs/knowledge-base/agentics/README.md](knowledge-base/agentics/README.md) |
-| Conceptual deep-dive into the full development lifecycle — requirements to commit, and the why behind each phase | active | [docs/knowledge-base/agentics/agent-development-pipeline.md](knowledge-base/agentics/agent-development-pipeline.md) |
-| Deep-dive into how agents handle visual design — Storybook-first, token integrity, MCP toolchain, verification | active | [docs/knowledge-base/agentics/agent-visual-understanding.md](knowledge-base/agentics/agent-visual-understanding.md) |
-| Deep-dive into structured prompting patterns for consistent, predictable agent behavior | active | [docs/knowledge-base/agentics/structured-prompts.md](knowledge-base/agentics/structured-prompts.md) |
+| Area index for agent-operations articles — development pipeline, design workflows, tooling, prompting | **review** | [docs/knowledge-base/agentics/README.md](knowledge-base/agentics/README.md) |
+| Conceptual deep-dive into the full development lifecycle — requirements to commit, and the why behind each phase | **review** | [docs/knowledge-base/agentics/agent-development-pipeline.md](knowledge-base/agentics/agent-development-pipeline.md) |
+| Deep-dive into how agents handle visual design — Storybook-first, token integrity, MCP toolchain, verification | **review** | [docs/knowledge-base/agentics/agent-visual-understanding.md](knowledge-base/agentics/agent-visual-understanding.md) |
+| Deep-dive into structured prompting patterns for consistent, predictable agent behavior | **review** | [docs/knowledge-base/agentics/structured-prompts.md](knowledge-base/agentics/structured-prompts.md) |
 | API response patterns — wrapper vs direct | **review** | [docs/knowledge-base/backend/api-response-patterns.md](knowledge-base/backend/api-response-patterns.md) |
 | Advanced backend patterns | **review** | [docs/knowledge-base/backend/backend-advanced-patterns.md](knowledge-base/backend/backend-advanced-patterns.md) |
-| Backend architecture patterns | **review** | [docs/knowledge-base/backend/backend-architecture.md](knowledge-base/backend/backend-architecture.md) |
+| Backend architecture patterns | active | [docs/knowledge-base/backend/backend-architecture.md](knowledge-base/backend/backend-architecture.md) |
 | Authentication & security — auth patterns in the backend | active | [docs/knowledge-base/backend/backend-authentication.md](knowledge-base/backend/backend-authentication.md) |
 | Cloud database providers | **review** | [docs/knowledge-base/backend/backend-database-cloud.md](knowledge-base/backend/backend-database-cloud.md) |
 | PostgreSQL setup & migrations | **review** | [docs/knowledge-base/backend/backend-database-postgres.md](knowledge-base/backend/backend-database-postgres.md) |
@@ -249,7 +252,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Pre-adaptation rules for static/dynamic data separation | **review** | [docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md](knowledge-base/backend/pre-adaptation-static-dynamic-separation.md) |
 | TypeScript error handling best practices | **review** | [docs/knowledge-base/backend/typescript-error-handling.md](knowledge-base/backend/typescript-error-handling.md) |
 | Shared data model across packages | active | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
-| Discriminated union state machines with useReducer | active | [docs/knowledge-base/frontend/discriminated-union-state-machine.md](knowledge-base/frontend/discriminated-union-state-machine.md) |
+| Discriminated union state machines with useReducer | **review** | [docs/knowledge-base/frontend/discriminated-union-state-machine.md](knowledge-base/frontend/discriminated-union-state-machine.md) |
 | Advanced React patterns | active | [docs/knowledge-base/frontend/frontend-advanced-patterns.md](knowledge-base/frontend/frontend-advanced-patterns.md) |
 | Data migration & versioning on the frontend | **review** | [docs/knowledge-base/frontend/frontend-data-migration.md](knowledge-base/frontend/frontend-data-migration.md) |
 | Frontend development server concepts | **review** | [docs/knowledge-base/frontend/frontend-development-server.md](knowledge-base/frontend/frontend-development-server.md) |
@@ -292,7 +295,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Central index of all documentation templates and format files | active | [docs/templates/README.md](templates/README.md) |
-| Prompt templates for HSK-graded reading passage generation via Gemini (Story 21.3) | active | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
+| Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature) | active | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
 | Conventional Commits message format reference — type(scope): description | **review** | [docs/templates/commit-message-template.md](templates/commit-message-template.md) |
 | Copyable epic business-requirements template | active | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
 | Copyable epic implementation template | **review** | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
@@ -317,7 +320,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| infrastructure visualization | active | [docs/guides/infrastructure-visualization.html](guides/infrastructure-visualization.html) |
+| iac onboarding | active | [docs/guides/iac-onboarding.html](guides/iac-onboarding.html) |
 | epic21 data architecture | active | [docs/visualizations/epic21-data-architecture.html](visualizations/epic21-data-architecture.html) |
 
 #### Backend docs
@@ -341,14 +344,14 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Feature docs index — per-feature design docs (8 of 13 features documented) | active | [apps/frontend/src/features/README.md](../apps/frontend/src/features/README.md) |
 | Authentication feature — JWT-based login/register UI | active | [apps/frontend/src/features/auth/README.md](../apps/frontend/src/features/auth/README.md) |
-| Design spec for login/register pages and JWT token-based authentication UI | active | [apps/frontend/src/features/auth/docs/design.md](../apps/frontend/src/features/auth/docs/design.md) |
-| Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words) | active | [apps/frontend/src/features/character-hub/docs/design.md](../apps/frontend/src/features/character-hub/docs/design.md) |
+| Design spec for login/register pages and JWT token-based authentication UI | **review** | [apps/frontend/src/features/auth/docs/design.md](../apps/frontend/src/features/auth/docs/design.md) |
+| Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words) | **review** | [apps/frontend/src/features/character-hub/docs/design.md](../apps/frontend/src/features/character-hub/docs/design.md) |
 | Design spec for the Dashboard demo (hub-launcher) — guest + authenticated landing | active | [apps/frontend/src/features/dashboard/docs/design.md](../apps/frontend/src/features/dashboard/docs/design.md) |
-| Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs | active | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
+| Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs | **review** | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
 | Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes | **review** | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
 | Design spec for the radicals browser, trees, and detail views (phase 2/3) | **review** | [apps/frontend/src/features/radicals/docs/design.md](../apps/frontend/src/features/radicals/docs/design.md) |
 | Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave | active | [apps/frontend/src/features/readers/docs/design.md](../apps/frontend/src/features/readers/docs/design.md) |
-| Design spec for strategy-pattern SRS review sessions — flip-card practice across content types | active | [apps/frontend/src/features/review/docs/design.md](../apps/frontend/src/features/review/docs/design.md) |
+| Design spec for strategy-pattern SRS review sessions — flip-card practice across content types | **review** | [apps/frontend/src/features/review/docs/design.md](../apps/frontend/src/features/review/docs/design.md) |
 
 #### Shared docs
 
@@ -430,7 +433,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 
 | Area | Documented | Partial | Undocumented | Active | Deep-link |
 | --- | --- | --- | --- | --- | --- |
-| A1 Frontend Features | 6 | 2 | 5 | 13 | [coverage.md](coverage.md#a1) |
+| A1 Frontend Features | 2 | 6 | 5 | 13 | [coverage.md](coverage.md#a1) |
 | A2 Frontend Pages | 13 | 3 | 0 | 16 | [coverage.md](coverage.md#a2) |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | [coverage.md](coverage.md#a3) |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | [coverage.md](coverage.md#a4) |
@@ -444,8 +447,12 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 ## Flags
 
 - ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
+- ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
+- ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
+- ⚠️ A1 foundations: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
+- ⚠️ A1 review: review (2026-07-20 > 6 weeks)
 - ⚠️ A8 .github/workflows/: review (2026-06-12 > 6 weeks)
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)

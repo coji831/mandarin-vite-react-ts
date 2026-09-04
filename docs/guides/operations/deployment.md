@@ -1,13 +1,13 @@
 ---
 purpose: Step-by-step guide to deploy or add a new deployment environment
 status: active
-last-verified: 2026-08-25
+last-verified: 2026-09-04
 type: guide
 ---
 
 # Deployment Guide
 
-**Last Updated:** August 25, 2026
+**Last Updated:** September 4, 2026
 **Purpose:** Step-by-step guide to deploy or add a new deployment environment
 **Audience:** DevOps engineers and developers managing deployments
 
@@ -46,11 +46,11 @@ type: guide
 
 ### Deployment Environments
 
-| Environment    | Frontend URL                        | Backend URL                                        | Purpose                        |
-| -------------- | ----------------------------------- | -------------------------------------------------- | ------------------------------ |
-| **Local Dev**  | `http://localhost:5173`             | `http://localhost:3001`                            | Development                    |
-| **Preview**    | `*.vercel.app` (auto-generated)     | `*.up.railway.app` (preview branches)              | Testing, QA, stakeholder demos |
-| **Production** | `mandarin-vite-react-ts.vercel.app` | `mandarin-vite-react-ts-production.up.railway.app` | Live user traffic              |
+| Environment    | Frontend URL                           | Backend URL                                                                                                                                                           | Purpose                        |
+| -------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| **Local Dev**  | `http://localhost:5173`                | `http://localhost:3001`                                                                                                                                               | Development                    |
+| **Preview**    | `*.vercel.app` (per-PR branch preview) | Railway `pr-<n>` env — confirmed pattern `mandarin-vite-react-ts-mandarin-vite-react-ts-pr-<n>.up.railway.app` (project name doubled; verified 2026-09-04 for PR #54) | Testing, QA, stakeholder demos |
+| **Production** | `mandarin-vite-react-ts.vercel.app`    | `mandarin-vite-react-ts-production.up.railway.app`                                                                                                                    | Live user traffic              |
 
 ---
 
@@ -76,8 +76,12 @@ npm install
 **Environment Variables (Vercel Dashboard):**
 
 ```env
-VITE_API_URL=https://mandarin-vite-react-ts-production.up.railway.app  # Production
-VITE_API_URL=https://your-backend-preview.up.railway.app  # Preview
+# VITE_API_URL — Vercel (2026-09-04): the ONLY Terraform-managed VITE_API_URL is
+#   the Production-scope var (= prod Railway URL, terraform/vercel.tf). Preview-scope
+#   VITE_API_URL is NOT Terraform-managed — previews are Vercel-native auto-builds;
+#   the owner sets the preview var manually (Vercel dashboard) when testing the FE
+#   preview against a manually-deployed Railway pr-<n> backend.
+VITE_API_URL=https://mandarin-vite-react-ts-production.up.railway.app  # Production (TF-managed)
 ```
 
 For the full list of frontend env vars, see [Environment Setup](../getting-started/environment-setup.md).
@@ -85,7 +89,11 @@ For the full list of frontend env vars, see [Environment Setup](../getting-start
 **Automatic Deployments:**
 
 - **Production:** Deploys on merge to `main` branch
-- **Preview:** Deploys on pull request creation/update
+- **Preview:** Deploys on pull request creation/update — Vercel-native (auto-built per branch;
+  `ignore_command` is not set). No per-PR `VITE_API_URL` automation — when testing the FE preview
+  against a manually-deployed Railway `pr-<n>` backend, the owner points the preview-scope
+  `VITE_API_URL` manually in the Vercel dashboard (the old `preview.yml` `vercel-preview` job was
+  removed 2026-09-04)
 
 ### Backend (Railway)
 
@@ -220,21 +228,34 @@ Preview deployments allow testing changes in a production-like environment befor
 **Frontend (Vercel):**
 
 1. Create pull request on GitHub
-2. Vercel automatically builds and deploys preview
-3. Preview URL appears in PR comments: `https://mandarin-vite-react-ts-<hash>.vercel.app`
+2. Vercel auto-builds the branch preview (previews are **Vercel-native** — auto-built per branch;
+   `ignore_command` is not set in `terraform/vercel.tf`)
+3. When testing the FE preview against a manually-deployed Railway `pr-<n>` backend, the **owner
+   points the preview-scope `VITE_API_URL` manually** (Vercel dashboard → Project → Settings →
+   Environment Variables → Preview) and re-deploys the branch preview. There is **no per-PR Vercel
+   var automation** (the `preview.yml` `vercel-preview` job was removed 2026-09-04). The deployment
+   URL is on the Vercel dashboard / GitHub PR
 
 **Backend (Railway):**
 
 1. Enable PR deployments in Railway dashboard
-2. Railway creates preview service for PR branch
-3. Preview URL: `https://<project>-pr-<number>.up.railway.app` (see Railway dashboard)
+2. Railway creates a `pr-<n>` environment for the PR branch; `preview.yml` upserts its env vars
+3. Preview URL: resolved per-PR by `preview.yml` via Railway GraphQL (`domains` query). Confirmed
+   shape (verified 2026-09-04 for PR #54):
+   `https://mandarin-vite-react-ts-mandarin-vite-react-ts-pr-<n>.up.railway.app` — the project name
+   is doubled (Railway env name `mandarin-vite-react-ts-pr-<n>`). Still resolve per-PR rather than
+   hardcoding the number; read it from the Railway dashboard / PR deployment if unsure
 
 ### Update Preview Environment Variables
 
 **Frontend (Vercel):**
 
-- Navigate to Vercel Dashboard → Project → Settings → Environment Variables
-- Set preview-specific variables (e.g., `VITE_API_URL` pointing to preview backend)
+- **Production `VITE_API_URL`** is Terraform-managed (`terraform/vercel.tf`,
+  `vercel_project_environment_variable.frontend_api_url` — the single TF-managed VITE_API_URL);
+  change via `terraform apply`, never the Vercel dashboard
+- **Preview-scope `VITE_API_URL` is NOT Terraform-managed.** To point a preview at a Railway
+  `pr-<n>` backend, the **owner edits the Preview var manually** in the Vercel dashboard (no per-PR
+  automation — `preview.yml` no longer touches Vercel)
 
 **Backend (Railway):**
 
@@ -252,8 +273,11 @@ Preview deployments allow testing changes in a production-like environment befor
 
 ### Preview Cleanup
 
-- Vercel automatically deletes preview deployments after PR merge/close (configurable)
-- Railway preview deployments remain until manually deleted (optional cleanup)
+- Vercel auto-removes branch preview **deployments** on PR merge/close; Vercel-native previews need
+  no additional var cleanup (no per-PR `VITE_API_URL` automation exists to prune — removed
+  2026-09-04)
+- Railway `pr-<n>` environments are deprovisioned on PR close, and the Neon `preview/<head>`
+  branch is deleted by `preview.yml` `cleanup` (Neon-only)
 
 ---
 
@@ -312,7 +336,7 @@ The **backup gate** applies before any **data-sensitive migration** (a migration
 2. Verify the backup succeeded before running the migration.
 3. Record it as a manual release check.
 
-> Documented in [env-isolation](./env-isolation.md) (R6) — doc-only. The Epic 24 migration set (`20260821175536_add_srs_card_state`) is additive-only and does not trigger the backup gate, but the gate still applies to any future data-sensitive migration.
+> Documented in [env-isolation](./env-isolation.md) (R6) — doc-only. The migration set shipped with the NestJS cutover (`20260821175536_add_srs_card_state`, 2026-08) is additive-only and does not trigger the backup gate, but the gate still applies to any future data-sensitive migration.
 
 ### Step 4: Verify Deployment
 
@@ -415,7 +439,7 @@ git push origin main
 
 ### Backend Rollback (Railway)
 
-Backend rollback is a **single-page note** (the former two-layer pinned-tag model + `docs/runbooks/backend-rollback.md` were **retired in 24-17**). Two options, no pinned tag, no rehearsal, no trigger table.
+Backend rollback is a **single-page note** (the former two-layer pinned-tag model + `docs/runbooks/backend-rollback.md` were **retired when the single-page rollback model landed, 2026-08-25**). Two options, no pinned tag, no rehearsal, no trigger table.
 
 **Option 1 — Redeploy the previous Railway release (primary):**
 
@@ -433,14 +457,14 @@ git push origin main
 
 **Retained invariants (always):**
 
-- **Never roll back the migration set** — the Epic 24 migration (`20260821175536_add_srs_card_state`) is **additive-only**; no DDL is ever rolled back, and the schema always moves forward.
+- **Never roll back the migration set** — the additive-only migration set shipped with the NestJS cutover (`20260821175536_add_srs_card_state`, 2026-08) is **never rolled back**; no DDL is ever rolled back, and the schema always moves forward.
 - **Verify with the post-rollback smoke against prod** after any rollback: `node apps/backend/scripts/pr-smoke.mjs <BASE_URL>` (see [Post-Deployment Verification](#post-deployment-verification)).
 
 **Triage:** a **red prod smoke** is triaged as **env-diff** (config/secret drift — fix the config + redeploy, **no rollback**) vs **code-regression** (a bad deploy — **revert**), diffing against the green PR smoke from `preview.yml`.
 
 ### Database Migration Rollback
 
-> **Note:** the Epic 24 migration set (`20260821175536_add_srs_card_state`) is additive-only and is **never** rolled back (see [Backend Rollback (Railway)](#backend-rollback-railway)); the generic guidance below applies only to a future data-sensitive migration, and is gated by the [backup gate](#backup-gate-before-data-sensitive-migrations).
+> **Note:** the additive-only migration set shipped with the NestJS cutover (`20260821175536_add_srs_card_state`, 2026-08) is **never** rolled back (see [Backend Rollback (Railway)](#backend-rollback-railway)); the generic guidance below applies only to a future data-sensitive migration, and is gated by the [backup gate](#backup-gate-before-data-sensitive-migrations).
 
 **WARNING:** Database rollbacks are risky. Always backup first.
 
@@ -607,11 +631,11 @@ NODE_ENV=preview
 
 ---
 
-## Appendix: Story 16.3 Example Caching Deployment
+## Appendix: Example Caching Deployment (legacy, retired feature)
 
 ### Feature-Specific Requirements
 
-The Example Caching feature (Story 16.3) requires additional deployment steps:
+The Example Caching feature (a legacy, retired feature) required additional deployment steps:
 
 #### 1. GCS Service Account & Bucket
 

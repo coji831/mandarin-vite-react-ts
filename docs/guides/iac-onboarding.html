@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- last-verified: 2026-09-04 -->
+    <title>PinyinPal — IaC Onboarding</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --muted: #64748b;
+        --tf: #0369a1;
+        --tf-bg: #e0f2fe;
+        --manual: #b45309;
+        --manual-bg: #fef3c7;
+        --gh: #6d28d9;
+        --gh-bg: #ede9fe;
+        --red: #b91c1c;
+        --red-bg: #fee2e2;
+        --ok: #166534;
+        --ok-bg: #dcfce7;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-size: 15px;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        padding: 2rem 1.25rem 4rem;
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .subtitle a {
+        color: var(--tf);
+        text-decoration: none;
+      }
+      .subtitle a:hover {
+        text-decoration: underline;
+      }
+      h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 2.5rem 0 0.75rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 2px solid var(--border);
+      }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 1.4rem 0 0.5rem;
+      }
+      p {
+        margin: 0.4rem 0;
+        color: #1e293b;
+      }
+      code {
+        font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+        font-size: 0.85em;
+        background: #f1f5f9;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0.05em 0.35em;
+      }
+      .note {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--tf);
+        border-radius: 6px;
+        padding: 0.6rem 0.9rem;
+        margin: 0.75rem 0;
+        font-size: 0.92rem;
+      }
+      .note.red {
+        border-left-color: var(--red);
+        background: var(--red-bg);
+      }
+      .note.warn {
+        border-left-color: var(--manual);
+        background: var(--manual-bg);
+      }
+
+      /* ── Tags / legend ─────────────────────────────── */
+      .tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.12rem 0.45rem;
+        border-radius: 999px;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+      }
+      .tag-tf {
+        color: var(--tf);
+        background: var(--tf-bg);
+      }
+      .tag-manual {
+        color: var(--manual);
+        background: var(--manual-bg);
+      }
+      .tag-gh {
+        color: var(--gh);
+        background: var(--gh-bg);
+      }
+      .tag-ok {
+        color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .tag-red {
+        color: var(--red);
+        background: var(--red-bg);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        margin: 0.5rem 0 1rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      /* ── Topology cards ────────────────────────────── */
+      .topo {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0;
+      }
+      .service {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.8rem 0.9rem;
+        transition:
+          box-shadow 0.15s ease,
+          transform 0.15s ease;
+      }
+      .service:hover {
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        transform: translateY(-1px);
+      }
+      .service .name {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.15rem;
+      }
+      .service .role {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+      }
+      .service ul {
+        list-style: none;
+        font-size: 0.85rem;
+        color: #334155;
+      }
+      .service li {
+        padding: 0.1rem 0;
+      }
+      .service li::before {
+        content: "•";
+        color: #94a3b8;
+        margin-right: 0.35rem;
+      }
+
+      /* ── Flow blocks ───────────────────────────────── */
+      .flow {
+        margin: 1rem 0;
+      }
+      .flow-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 0.4rem;
+      }
+      .step {
+        flex: 1 1 200px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.7rem 0.8rem;
+        font-size: 0.85rem;
+        transition:
+          box-shadow 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .step:hover {
+        border-color: var(--tf);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+      }
+      .step b {
+        display: block;
+        margin-bottom: 0.15rem;
+        font-size: 0.88rem;
+      }
+      .step code {
+        font-size: 0.8em;
+      }
+      .arrow {
+        align-self: center;
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 700;
+        padding: 0 0.15rem;
+      }
+
+      /* ── Tables ────────────────────────────────────── */
+      .table-wrap {
+        overflow-x: auto;
+        margin: 0.75rem 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: #f1f5f9;
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #334155;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      td code {
+        white-space: nowrap;
+      }
+
+      .env-list {
+        margin: 0.5rem 0 0.75rem;
+        padding-left: 1.25rem;
+        font-size: 0.9rem;
+        color: #1e293b;
+      }
+      .env-list li {
+        margin: 0.15rem 0;
+      }
+      .foot {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 2px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .foot a {
+        color: var(--tf);
+        text-decoration: none;
+      }
+      .foot a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PinyinPal — Infrastructure-as-Code: mental map</h1>
+    <p class="subtitle">
+      A one-glance map of the platform, what is manual vs. automated, and what happens on every
+      deploy. For the full low-level wiring see the
+      <a href="operations/deployment.md">Deployment Guide</a> ·
+      <a href="operations/env-isolation.md">Env-Isolation</a> ·
+      <a href="../../terraform/README.md">Terraform README</a>.
+    </p>
+
+    <!-- ============ 1. TOPOLOGY ============ -->
+    <h2 id="topology">1 · Topology — who owns what</h2>
+
+    <div class="legend">
+      <span
+        ><span class="tag tag-tf">Terraform-managed</span> infra declared in
+        <code>terraform/</code></span
+      >
+      <span
+        ><span class="tag tag-manual">Manual / Railway.toml</span> configured by hand (no TF
+        provider / click-ops)</span
+      >
+      <span
+        ><span class="tag tag-gh">GitHub workflow</span> automated by
+        <code>.github/workflows/</code></span
+      >
+    </div>
+
+    <div class="topo">
+      <div class="service">
+        <div class="name">GitHub <span class="tag tag-gh">GitHub workflow</span></div>
+        <div class="role">Control plane — triggers every deploy</div>
+        <ul>
+          <li>
+            <code>ci.yml</code> — quality gate (<code>quality</code> check): lint → typecheck →
+            build → <code>test:full</code>, on PRs to <code>main</code> + <code>main</code> pushes
+          </li>
+          <li><code>preview.yml</code> — PR env provision / smoke / teardown</li>
+          <li>
+            <code>terraform-plan.yml</code> — <code>terraform plan</code>, <b>manual-only</b>
+            (<code>workflow_dispatch</code>; no PR/push trigger — the owner runs
+            <code>terraform plan</code> locally before the release apply, 2026-09-04)
+          </li>
+          <li>
+            <code>terraform-apply.yml</code> — <code>apply</code> on push to <code>main</code>
+          </li>
+          <li><code>chromatic.yml</code> · <code>storybook-checks.yml</code></li>
+          <li>Holds the GH secrets/vars the workflows read</li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">Vercel <span class="tag tag-tf">Terraform-managed</span></div>
+        <div class="role">Frontend — React + Vite SPA (<code>apps/frontend/dist</code>)</div>
+        <ul>
+          <li>
+            Auto-deploy on push to <code>main</code> (prod) + PR branches (previews). Previews are
+            <b>Vercel-native</b> — auto-built per branch (<code>ignore_command</code> is not set);
+            no per-PR Vercel var automation (the <code>preview.yml</code>
+            <code>vercel-preview</code>
+            job was removed 2026-09-04)
+          </li>
+          <li>Managed by <code>terraform/vercel.tf</code> (import existing project)</li>
+          <li>
+            <code>VITE_API_URL</code>: the single TF-managed <b>Production</b> var in
+            <code>vercel.tf</code>; preview-scope <code>VITE_API_URL</code> is owner-set manually
+            (Vercel dashboard) when testing the FE preview against a Railway
+            <code>pr-&lt;n&gt;</code>
+            backend
+          </li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">Railway <span class="tag tag-manual">Manual / Railway.toml</span></div>
+        <div class="role">Backend — NestJS 11 (<code>node dist/nest/main.js</code>)</div>
+        <ul>
+          <li>NOT in Terraform — no official provider (community wrapper unadopted)</li>
+          <li>Deploy via <code>apps/backend/railway.toml</code> + <code>Procfile</code></li>
+          <li>Prod env + per-PR <code>pr-&lt;n&gt;</code> envs (PR deployments enabled by hand)</li>
+          <li>Healthcheck <code>/api/v1/health</code> (ON_FAILURE ×10)</li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">Neon <span class="tag tag-tf">Terraform-managed</span></div>
+        <div class="role">PostgreSQL — serverless</div>
+        <ul>
+          <li>Managed by <code>terraform/neon.tf</code></li>
+          <li>
+            Prod DB + <code>demo</code> branch (manual) + per-PR
+            <code>preview/&lt;head&gt;</code> branches (workflow)
+          </li>
+          <li><code>DATABASE_URL</code> injected into Railway</li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">Upstash <span class="tag tag-tf">Terraform-managed</span></div>
+        <div class="role">Redis — cache / TTS path index</div>
+        <ul>
+          <li>Managed by <code>terraform/upstash.tf</code></li>
+          <li><code>REDIS_URL</code> set in Railway Dashboard (env, not committed)</li>
+          <li>Keyspace <code>mandarin:</code> — shared across envs (deferred R5)</li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">GCP <span class="tag tag-tf">Terraform-managed</span></div>
+        <div class="role">Gemini AI · Google TTS · GCS buckets</div>
+        <ul>
+          <li>
+            <code>main.tf</code> buckets · <code>service-accounts.tf</code> SAs ·
+            <code>iam.tf</code> · <code>apis.tf</code>
+          </li>
+          <li>
+            Buckets: <code>pinyin-pal-data</code> (prod) +
+            <code>pinyin-pal-preview-data</code> (sandbox)
+          </li>
+          <li>
+            SAs: <code>tts-service</code> · <code>gemini-service</code> ·
+            <code>gcs-storage-service</code> · <code>preview-service</code>
+          </li>
+          <li>SA <b>keys</b> are NOT in Terraform — created via <code>gcloud</code></li>
+        </ul>
+      </div>
+
+      <div class="service">
+        <div class="name">
+          Terraform <span class="tag tag-ok">remote state: GCS (2026-09-03)</span>
+        </div>
+        <div class="role">Declares GCP / Neon / Upstash / Vercel</div>
+        <ul>
+          <li>
+            Plan is manual (<code>terraform-plan.yml</code> — <code>workflow_dispatch</code>) ·
+            apply on <code>main</code> + locally (owner)
+          </li>
+          <li>Railway is out of scope (no provider)</li>
+          <li>
+            State + locking in <code>gs://pinyin-pal-tfstate</code> (versioned) — backend
+            <code>gcs</code>, prefix <code>terraform/state</code>; CI reads it via
+            <code>terraform init</code>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-row">
+        <div class="step">
+          <b>GitHub workflows</b>on <code>pull_request</code> / push to <code>main</code>
+        </div>
+        <span class="arrow">→</span>
+        <div class="step"><b>Vercel</b>frontend SPA + previews</div>
+        <span class="arrow">→</span>
+        <div class="step"><b>Railway</b>NestJS backend</div>
+        <span class="arrow">→</span>
+        <div class="step"><b>Neon · Upstash · GCP</b>data, cache, AI/storage</div>
+      </div>
+      <p style="margin-top: 0.4rem">
+        Terraform (locally, owner-run) manages GCP / Neon / Upstash / Vercel. Railway is connected
+        to Neon / Upstash / GCP via env vars set in the Railway Dashboard.
+      </p>
+    </div>
+
+    <!-- ============ 2. ENVIRONMENTS ============ -->
+    <h2 id="environments">2 · Three environments — and why there is no “Develop”</h2>
+
+    <div class="flow">
+      <div class="flow-row">
+        <div class="step">
+          <b>Production <span class="tag tag-tf">auto</span></b>
+          <code>main</code> merge → Vercel prod + Railway prod + <code>terraform-apply.yml</code>.
+          Owner post-flip smoke + T+0→24h watch + prod JWT rotation at T+0.
+        </div>
+        <span class="arrow">vs</span>
+        <div class="step">
+          <b>Preview <span class="tag tag-gh">auto provision + smoke + teardown</span></b>
+          per-PR: Neon branch + Railway <code>pr-&lt;n&gt;</code> env + per-env secrets, gated by
+          <code>preview.yml</code> smoke. Torn down on PR close.
+        </div>
+        <span class="arrow">vs</span>
+        <div class="step">
+          <b>Develop <span class="tag tag-red">skipped</span></b>
+          no persistent staging surface. If ever needed, open a long-lived PR and reuse its preview
+          env.
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Why no Develop:</b> the per-PR preview environment <i>is</i> the smoke/staging surface.
+      Merging to <code>main</code> is a two-fold gate — machine (required status checks
+      <code>quality</code> · <code>smoke</code> · <code>storybook</code> all green) <b>and</b>
+      human (per-env R1/R2 upserts verified). A third environment would duplicate that surface for
+      no benefit.
+    </div>
+
+    <!-- ============ 3. DEPLOY FLOWS ============ -->
+    <h2 id="deploys">3 · What happens during each deploy</h2>
+
+    <h3 id="flow-pr">3.1 PR open / sync → <code>preview.yml</code></h3>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="step">
+          <b>1 · Neon clone</b>
+          <code>demo</code> branch → <code>preview/&lt;head&gt;</code> branch (<code
+            >parent_branch: demo</code
+          >). Verify <code>_prisma_migrations</code> is populated (schema copy from prod/demo).
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>2 · Railway <code>pr-&lt;n&gt;</code> env</b>
+          waits for the PR environment, then upserts per-PR vars: <code>DATABASE_URL</code> (Neon
+          preview) · <code>JWT_SECRET</code>/<code>JWT_REFRESH_SECRET</code> (<code
+            >openssl rand -hex 48</code
+          >) · <code>APP_ENV=pr-&lt;n&gt;</code> · <code>HEALTH_PROBE_EXTERNAL=false</code>.
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>3 · GCP → preview SA</b>
+          all three <code>*_CREDENTIALS_RAW</code> ← <code>GCP_PREVIEW_SA_KEY</code>, and
+          <code>GCS_BUCKET_NAME</code> → sandbox <code>pinyin-pal-preview-data</code> (or the
+          <code>GCS_PREVIEW_BUCKET_NAME</code> var — optional, same default).
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>4 · <code>smoke</code> job (merge gate)</b>
+          resolves the exact <code>pr-&lt;n&gt;</code> URL and runs
+          <code>apps/backend/scripts/pr-smoke.mjs</code>. Fails closed — required status check.
+        </div>
+      </div>
+      <div class="flow-row" style="margin-top: 0.4rem">
+        <div class="step">
+          <b>PR close → cleanup</b>
+          <code>cleanup</code> job (Neon-only) deletes the Neon
+          <code>preview/&lt;head&gt;</code> branch, and the Railway <code>pr-&lt;n&gt;</code> env is
+          deprovisioned. Vercel auto-removes the branch preview <em>deployments</em> on merge/close
+          (Vercel-native; no env-var row to prune — the per-PR Vercel automation was removed
+          2026-09-04).
+        </div>
+      </div>
+    </div>
+
+    <h3 id="flow-merge">3.2 Merge to <code>main</code> → production</h3>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="step">
+          <b>1 · Vercel prod deploy</b>
+          git integration auto-deploys the SPA on push to <code>main</code>.
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>2 · Railway prod deploy</b>
+          <code>railway.toml</code>: build → <code>db:migrate:deploy</code> (preDeploy) → start
+          (<code>node dist/nest/main.js</code>) → healthcheck. A failed migration blocks deploy.
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>3 · <code>terraform-apply.yml</code></b>
+          only when <code>terraform/**</code> changed. State is remote in
+          <code>gs://pinyin-pal-tfstate</code> (2026-09-03) — CI <code>terraform init</code> reads
+          the shared GCS backend; the CI SA needs bucket access (owner grant, see
+          <code>terraform/README.md</code>).
+        </div>
+        <span class="arrow">→</span>
+        <div class="step">
+          <b>4 · Owner verification</b>
+          post-flip prod smoke — <code>apps/backend/scripts/pr-smoke.mjs</code> against the Railway
+          prod URL — then T+0→24h watch. Prod JWT rotation at T+0 (<code>openssl rand -hex 48</code
+          >).
+        </div>
+      </div>
+    </div>
+
+    <h3 id="flow-manual">3.3 Manual one-time items — setup ledger (as of 2026-09-04)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Status (2026-09-04)</th>
+            <th>Where</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Neon <code>demo</code> parent branch (preview clone parent — R3,
+              <code>parent_branch: demo</code> in <code>preview.yml</code>)
+            </td>
+            <td>
+              ✅ Migration-consistent (2026-09-04) — schema reset +
+              <code>prisma migrate deploy</code> → 30/30, data-free. Was schema-only with an empty
+              <code>_prisma_migrations</code> → preview branches cloned from it failed
+              <code>prisma migrate deploy</code> (P3009) until repaired 2026-09-04
+            </td>
+            <td>
+              Neon console — data-free (0 rows); created 2026-08-31 (init parent-schema), never
+              seeded — not a prod copy
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>terraform apply</code> on the branch (additive <code>preview-service</code> SA +
+              sandbox bucket)
+            </td>
+            <td>✅ In place — applied locally (owner-run)</td>
+            <td>Local <code>terraform/</code> — owner-run; never from a PR</td>
+          </tr>
+          <tr>
+            <td>
+              <code>GCP_PREVIEW_SA_KEY</code> GitHub secret (from <code>preview-service</code> SA
+              key)
+            </td>
+            <td>✅ In place — fans out to the 3 preview <code>*_CREDENTIALS_RAW</code></td>
+            <td>GitHub → Settings → Secrets and variables</td>
+          </tr>
+          <tr>
+            <td>
+              <code>GCS_PREVIEW_BUCKET_NAME</code> GitHub variable (was
+              <code>GCP_PREVIEW_BUCKET_NAME</code>)
+            </td>
+            <td>🔄 Pending — add the new name before the push (see §3.4)</td>
+            <td>
+              GitHub → Settings → Variables — optional; unset defaults to
+              <code>pinyin-pal-preview-data</code>
+            </td>
+          </tr>
+          <tr>
+            <td>Railway PR environments enabled</td>
+            <td>✅ In place</td>
+            <td>Railway dashboard → project settings</td>
+          </tr>
+          <tr>
+            <td>
+              Required status checks — <code>quality</code> · <code>smoke</code> ·
+              <code>storybook</code> (was: <code>smoke</code> only)
+            </td>
+            <td>🔄 Pending — owner sets on branch protection (see §3.4)</td>
+            <td>GitHub → branch protection — merge PR gates on these</td>
+          </tr>
+          <tr>
+            <td>The 7 fail-fast criticals on Railway prod (<code>APP_ENV</code> unset)</td>
+            <td>✅ In place — prod runtime (see §4.1)</td>
+            <td>Railway prod → Variables (see §4.1)</td>
+          </tr>
+          <tr>
+            <td>GCS remote-state + locking</td>
+            <td>✅ Adopted (2026-09-03)</td>
+            <td>
+              <code>terraform/main.tf</code> → <code>gs://pinyin-pal-tfstate</code> (versioned,
+              prefix <code>terraform/state</code>)
+            </td>
+          </tr>
+          <tr>
+            <td>Workload Identity Federation (WIF)</td>
+            <td>⏭ Deferred — unchanged</td>
+            <td>GCP IAM — replaces SA key auth for CI</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="owner-current">3.4 · Manual owner actions — current (as of 2026-09-04)</h3>
+    <div class="note warn">
+      <b
+        >Git state (2026-09-04): pushed — branch tip of
+        <code>origin/epic-24-nestjs-shell-migration</code> (PR #54).</b
+      >
+      The preview-CI fixes, the <code>ci.yml</code> quality gate, GCS remote state, and the
+      GitHub-secret renames (GitHub names now align with the actual GH-secret set —
+      <code>VERCEL_TOKEN</code> → <code>VERCEL_API_TOKEN</code>, <code>GCP_SA_KEY</code> →
+      <code>GCP_SA_KEY_TF</code> → <code>GCP_TF_SA_KEY</code>, <code>NEON_API_KEY</code> →
+      <code>NEON_API_TOKEN</code>, <code>GCP_PREVIEW_BUCKET_NAME</code> →
+      <code>GCS_PREVIEW_BUCKET_NAME</code>) are committed.
+      <b>Vercel simplified (2026-09-04):</b> the per-PR Vercel targeting was removed —
+      <code>preview.yml</code> no longer has a <code>vercel-preview</code> job or a Vercel cleanup
+      step, and the Preview-scope fallback var was removed from <code>terraform/vercel.tf</code>.
+      Vercel = a single TF-managed Production <code>VITE_API_URL</code>; previews are
+      <b>Vercel-native</b> auto-builds (<code>ignore_command</code> stays removed); preview-scope
+      <code>VITE_API_URL</code> is owner-set manually (Vercel dashboard) when testing the FE preview
+      against a manually-deployed Railway <code>pr-&lt;n&gt;</code> backend. The GitHub var
+      <code>VERCEL_PROJECT_ID</code> is orphaned (no consumer).
+      <b>Terraform plan is manual (2026-09-04):</b> <code>terraform-plan.yml</code> no longer runs
+      on PRs (<code>workflow_dispatch</code> only); the owner runs
+      <code>terraform plan</code> locally before the release apply — <code>terraform-plan</code> is
+      not a required status check. For the full secret map see the
+      <a href="operations/secret-inventory.md">secret inventory</a>.
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Owner action</th>
+            <th>Status (2026-09-04)</th>
+            <th>Where (exact UI)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              Add GitHub secret <code>VERCEL_API_TOKEN</code> = the value currently in
+              <code>VERCEL_TOKEN</code> (Vercel access token)
+            </td>
+            <td>🔄 pending — before push</td>
+            <td>
+              GitHub → repo → Settings → Secrets and variables → Actions → New repository secret
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              Add GitHub secret <code>GCP_TF_SA_KEY</code> = the value currently in
+              <code>GCP_SA_KEY_TF</code> (the <code>terraform-ci</code> SA key)
+            </td>
+            <td>🔄 pending — before push</td>
+            <td>Same as #1</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>
+              Add GitHub variable <code>GCS_PREVIEW_BUCKET_NAME</code> (optional) = the value
+              currently in <code>GCP_PREVIEW_BUCKET_NAME</code>, or leave unset (workflow defaults
+              to <code>pinyin-pal-preview-data</code>)
+            </td>
+            <td>🔄 pending — before push</td>
+            <td>GitHub → repo → Settings → Secrets and variables → Variables</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>
+              Set required status checks to <code>quality</code> (<code>ci.yml</code>) ·
+              <code>smoke</code> (<code>preview.yml</code>) ·
+              <code>storybook</code> (<code>storybook-checks.yml</code>). Do <b>not</b> require
+              <code>terraform-plan</code>.
+            </td>
+            <td>🔄 pending — owner</td>
+            <td>
+              GitHub → repo → Settings → Branches → branch protection rule for <code>main</code> →
+              Require status checks
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>
+              Confirm the <code>terraform-ci</code> SA (the one backing <code>GCP_TF_SA_KEY</code>:
+              <code>terraform-ci@pinyin-pal-831.iam.gserviceaccount.com</code>) holds
+              <code>roles/storage.objectAdmin</code> on <code>gs://pinyin-pal-tfstate</code> —
+              covers CI <code>terraform init</code> state read + lock, and plan/apply object access
+            </td>
+            <td>🔄 pending — owner</td>
+            <td>
+              GCP Console → IAM &amp; Admin → bucket <code>pinyin-pal-tfstate</code> → Permissions
+              (or <code>gcloud</code>/<code>gsutil iam</code>)
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>
+              After a green CI run on the pushed branch, delete the old GitHub names:
+              <code>VERCEL_TOKEN</code> · <code>GCP_SA_KEY</code> · <code>GCP_SA_KEY_TF</code> ·
+              <code>NEON_API_KEY</code> (secrets), <code>GCP_PREVIEW_BUCKET_NAME</code> (variable),
+              plus the dead <code>RAILWAY_PROJECT_TOKEN</code> (secret) and the orphaned
+              <code>VERCEL_PROJECT_ID</code> (variable — the per-PR Vercel automation that read it
+              was removed 2026-09-04; no workflow consumes it). <code>UPSTASH_EMAIL</code> is
+              <b>required</b> (Upstash provider email) — do <b>not</b> delete it; the Upstash
+              provider reads <code>UPSTASH_EMAIL</code> + <code>UPSTASH_API_KEY</code> from env in
+              <code>terraform-plan.yml</code>/<code>terraform-apply.yml</code>.
+            </td>
+            <td>🔄 pending — after green CI</td>
+            <td>GitHub → repo → Settings → Secrets and variables → Actions (delete each name)</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>
+              Post-merge prod smoke: run
+              <code>node apps/backend/scripts/pr-smoke.mjs</code> against the Railway prod URL
+            </td>
+            <td>🔄 pending — post-merge</td>
+            <td>
+              Local terminal (prod URL
+              <code>https://mandarin-vite-react-ts-production.up.railway.app</code>)
+            </td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>
+              Post-merge T+0 rotation: rotate prod JWT (<code>JWT_SECRET</code> /
+              <code>JWT_REFRESH_SECRET</code>) and the three prod GCP SA keys
+              (<code>*_CREDENTIALS_RAW</code>), per
+              <a href="operations/secret-rotation.md">secret-rotation.md</a>
+            </td>
+            <td>🔄 pending — post-merge (T+0)</td>
+            <td>Railway prod → Variables · GCP IAM (matrix in §4.2)</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>
+              Vercel simplification (2026-09-04): drop per-PR Vercel targeting — remove the
+              <code>preview.yml</code> <code>vercel-preview</code> job + Vercel cleanup step, and
+              delete the Preview-scope fallback var from <code>terraform/vercel.tf</code> (keep the
+              single TF Production <code>VITE_API_URL</code>; previews stay Vercel-native).
+            </td>
+            <td>
+              🔄 committed 2026-09-04 — config done (<code>preview.yml</code> lean = provision →
+              smoke → cleanup(Neon); <code>vercel.tf</code> = Production var only); owner runs
+              <code>terraform apply</code> to destroy the live fallback var (state → 19 resources)
+            </td>
+            <td>
+              <code>.github/workflows/preview.yml</code> (vercel-preview job + Vercel cleanup step
+              removed) · <code>terraform/vercel.tf</code> (Preview-scope fallback var deleted)
+            </td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>
+              Dev DB isolation — Neon dev branch for a persistent non-prod DB surface (parent
+              <code>main</code>)
+            </td>
+            <td>✅ done (2026-09-04)</td>
+            <td>
+              Neon console → Branches → <code>dev</code> · pooled URL → <code>.env.local</code>
+              <code>DATABASE_URL</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ 4. SECRET ROTATION ============ -->
+    <h2 id="secret-rotation">4 · 🔑 Key / secret rotation</h2>
+
+    <p>
+      The cardinal rule of rotation:
+      <b>create → update the target → redeploy + verify → delete the old value</b>. GCP allows max
+      <b>10 keys per service account</b>, so retire old keys promptly. Rotate the prod secrets at
+      <b>T+0</b> after any cutover that introduces per-env isolation (see
+      <a href="operations/secret-rotation.md">secret-rotation.md</a>).
+    </p>
+
+    <h3 id="secrets-4-1">4.1 The 7 fail-fast criticals (Railway prod)</h3>
+    <p>
+      <code>validateConfig()</code> in <code>apps/backend/src/shared/config/index.ts</code> throws
+      at boot if any of these is missing — the app will not start. All live in
+      <b>Railway prod → Variables</b>:
+    </p>
+    <ul class="env-list">
+      <li><code>DATABASE_URL</code> (Neon prod)</li>
+      <li><code>JWT_SECRET</code> · <code>JWT_REFRESH_SECRET</code></li>
+      <li>
+        <code>GCS_BUCKET_NAME</code> · <code>GCS_CREDENTIALS_RAW</code> (SA:
+        <code>gcs-storage-service</code>)
+      </li>
+      <li>
+        <code>GOOGLE_TTS_CREDENTIALS_RAW</code> (SA: <code>tts-service</code>) ·
+        <code>GEMINI_API_CREDENTIALS_RAW</code> (SA: <code>gemini-service</code>)
+      </li>
+    </ul>
+    <div class="note">
+      <b><code>APP_ENV</code> must stay unset (or exactly <code>production</code>) on prod.</b> The
+      <code>JwtService</code> env claim defaults to <code>production</code> when unset; any other
+      value would break all prod token verification.
+    </div>
+
+    <h3 id="secrets-4-2">4.2 Rotation matrix</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Secret / key</th>
+            <th>Lives in</th>
+            <th>Rotate where</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>JWT_SECRET</code> / <code>JWT_REFRESH_SECRET</code></td>
+            <td>
+              Railway prod → Variables (per-PR values are generated by <code>preview.yml</code>)
+            </td>
+            <td>Railway prod backend service → Variables; <code>openssl rand -hex 48</code></td>
+            <td>T+0; keep <code>APP_ENV</code> unset/<code>production</code></td>
+          </tr>
+          <tr>
+            <td>
+              <code>GEMINI_API_CREDENTIALS_RAW</code> / <code>GOOGLE_TTS_CREDENTIALS_RAW</code> /
+              <code>GCS_CREDENTIALS_RAW</code>
+            </td>
+            <td>Railway prod Variables + GCP IAM service-account keys</td>
+            <td>
+              GCP IAM → create key → update the Railway var → redeploy + verify → delete old key
+              (10-key limit)
+            </td>
+            <td>T+0</td>
+          </tr>
+          <tr>
+            <td><code>GCP_PREVIEW_SA_KEY</code></td>
+            <td>GitHub Actions secret (from <code>preview-service</code> SA key)</td>
+            <td>GCP IAM → <code>preview-service</code> → new key → GitHub secret</td>
+            <td>On rotation / SA key expiry</td>
+          </tr>
+          <tr>
+            <td>
+              <code>GCP_TF_SA_KEY</code> (was <code>GCP_SA_KEY_TF</code>, formerly
+              <code>GCP_SA_KEY</code>)
+            </td>
+            <td>GitHub Actions secret (Terraform CI SA <code>terraform-ci</code>)</td>
+            <td>GCP IAM → Terraform CI SA → new key → GitHub secret</td>
+            <td>On rotation / SA key expiry</td>
+          </tr>
+          <tr>
+            <td>
+              <code>NEON_API_TOKEN</code> (was <code>NEON_API_KEY</code> — the provider env var
+              stays <code>NEON_API_KEY</code>) · <code>RAILWAY_API_TOKEN</code> ·
+              <code>VERCEL_API_TOKEN</code> (was <code>VERCEL_TOKEN</code>, renamed 2026-09-03) ·
+              <code>UPSTASH_API_KEY</code>
+            </td>
+            <td>GitHub Actions secrets</td>
+            <td>Provider console (Neon / Railway / Vercel / Upstash) → GitHub secrets</td>
+            <td>On rotation / leak</td>
+          </tr>
+          <tr>
+            <td>
+              <code>NEON_PROJECT_ID</code> · <code>RAILWAY_PROJECT_ID</code> ·
+              <code>RAILWAY_BACKEND_SERVICE_ID</code> · <code>GCS_PREVIEW_BUCKET_NAME</code>
+            </td>
+            <td>GitHub Actions <b>variables</b> (non-secret)</td>
+            <td>GitHub → Settings → Variables</td>
+            <td>On project/service changes</td>
+          </tr>
+          <tr>
+            <td><code>DATABASE_URL</code> (prod)</td>
+            <td>Railway prod → Variables</td>
+            <td>Neon → <code>main</code> branch → connection string → Railway var</td>
+            <td>On credential rotation / migration</td>
+          </tr>
+          <tr>
+            <td><code>VITE_API_URL</code></td>
+            <td>Vercel project env (Production scope — TF-managed)</td>
+            <td>
+              Terraform <code>vercel.tf</code> (single Production var) for prod; preview-scope is
+              owner-set manually in the Vercel dashboard (no workflow automation — per-PR Vercel
+              wiring removed 2026-09-04)
+            </td>
+            <td>On backend URL change</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn">
+      <b>VITE_API_URL is a single TF-managed Production var (2026-09-04).</b> The Railway→Vercel
+      integration is real and connected (config <code>icfg_e97MW1YjJIhYvIDnMb6y4RkW</code>,
+      2026-07-04) and syncs <b>18 backend env rows</b> (duplicated preview + production) that the
+      app does <b>not</b> read (the backend reads Railway) —
+      <b>PENDING OWNER CLEANUP:</b> disconnect the integration + delete those rows (they are not
+      Terraform-managed). <code>VITE_API_URL</code> is separate: the
+      <b>single Terraform-managed Production var</b> (prod Railway URL) lives in
+      <code>terraform/vercel.tf</code>; preview-scope <code>VITE_API_URL</code> is owner-set
+      manually (Vercel dashboard) when testing the FE preview against a Railway
+      <code>pr-&lt;n&gt;</code>
+      backend — no per-PR automation (removed 2026-09-04). Change the Production value via
+      <code>vercel.tf</code> + <code>terraform apply</code>; never the Vercel dashboard.
+    </div>
+
+    <!-- ============ 5. FOOTER / LEGEND ============ -->
+    <h2 id="expected-red">5 · Footer — the “expected red” notes</h2>
+    <div class="note">
+      <b>CI <code>terraform apply</code> reads the shared GCS backend (2026-09-03).</b> With remote
+      state adopted (<code>gs://pinyin-pal-tfstate</code>, backend <code>gcs</code> in
+      <code>main.tf</code>), <code>terraform init</code> in CI no longer starts from empty local
+      state — the former “runs against empty local state” red note is <b>resolved</b>. The CI SA
+      (backing <code>GCP_TF_SA_KEY</code>) must hold <code>roles/storage.objectAdmin</code> on the
+      bucket — covers state read + lock + plan/apply (owner grant to confirm, see §3.4).
+    </div>
+    <div class="note red">
+      <b>IAM propagation 403s.</b> After creating a new service-account key or role binding, expect
+      transient <code>403</code>s for a short window until GCP IAM propagates. Retry, don’t re-key.
+    </div>
+    <div class="note red">
+      <b>Vercel previews: Vercel-native, owner-managed preview URL (2026-09-04 — see §3.4).</b>
+      <code>ignore_command</code> is not set, so Vercel auto-builds branch previews. There is no
+      per-PR Vercel var automation (the <code>preview.yml</code> <code>vercel-preview</code> job +
+      Vercel cleanup step were removed 2026-09-04) and no Preview-scope fallback var in
+      <code>terraform/vercel.tf</code>. When testing the FE preview against a Railway
+      <code>pr-&lt;n&gt;</code> backend, the owner points the preview-scope
+      <code>VITE_API_URL</code> manually (Vercel dashboard). Railway PR envs + Neon preview branches
+      are provisioned/torn down per-PR by <code>preview.yml</code> today.
+    </div>
+
+    <div class="foot">
+      <b>Legend:</b>
+      <span class="tag tag-tf">Terraform-managed</span>
+      <span class="tag tag-manual">Manual / Railway.toml</span>
+      <span class="tag tag-gh">GitHub workflow</span>
+      <span class="tag tag-red">skipped / expected-red</span> · Last verified 2026-09-04. Sources:
+      <a href="operations/deployment.md">deployment.md</a> ·
+      <a href="operations/env-isolation.md">env-isolation.md</a> ·
+      <a href="operations/secret-inventory.md">secret-inventory.md</a> ·
+      <a href="../../terraform/README.md">terraform/README.md</a> ·
+      <a href="../../.github/workflows/ci.yml">ci.yml</a> ·
+      <a href="../../.github/workflows/preview.yml">preview.yml</a> ·
+      <a href="../../apps/backend/railway.toml">railway.toml</a>.
+    </div>
+  </body>
+</html>

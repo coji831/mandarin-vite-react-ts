@@ -1,14 +1,14 @@
 ---
 purpose: Async progressive enrichment pattern
 status: active
-last-verified: 2026-08-01
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Async Progressive Enrichment
 
 **Category:** Frontend / React
-**Last Updated:** August 1, 2026
+**Last Updated:** September 3, 2026
 **Difficulty:** Intermediate
 
 > **Scope:** The lazy-enrichment pattern used in
@@ -27,11 +27,10 @@ arrives would show empty shells.
 
 ## Root Cause
 
-- The Phonetic Clusters API (`GET /v1/phonetic-clusters`, Story 21.6) returns families whose
-  members have `classification: null`.
-- Classification is populated by the Characters Module API (`GET /v1/characters/:glyph`,
-  Story 21.10) — a per-glyph request that is only worth making when the user actually expands
-  a family.
+- The Phonetic Clusters API (`GET /v1/phonetic-clusters`) returns families whose members have
+  `classification: null`.
+- Classification is populated by the Characters Module API (`GET /v1/characters/:glyph`) — a
+  per-glyph request that is only worth making when the user actually expands a family.
 
 ## Solution
 

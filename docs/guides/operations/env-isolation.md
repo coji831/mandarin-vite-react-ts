@@ -1,7 +1,7 @@
 ---
 purpose: Env-isolation verification — separated-vs-shared matrix, R1–R6 risks, and the 7 owner verification items for the Epic 24 release
 status: active
-last-verified: 2026-08-25
+last-verified: 2026-09-04
 type: guide
 audience: backend
 tags: epic-24, env-isolation, deployment, hardening, release
@@ -9,7 +9,7 @@ tags: epic-24, env-isolation, deployment, hardening, release
 
 # Environment Isolation — Epic 24 Release Verification
 
-**Last Updated:** August 25, 2026
+**Last Updated:** September 4, 2026
 **Purpose:** Committed artifact of the env-isolation verification for the Epic 24 NestJS production release (story 24-17, Workstreams C–E) — the **"Phase-2-delivered" evidence** of what was hardened in 24-17 vs. what is deferred or accepted.
 
 ---
@@ -65,7 +65,7 @@ The owner (release captain) verifies the following before/around the merge. Item
 
 > **Two-fold merge gate:** the merge PR gates on `preview.yml` smoke green (machine) + the **R1/R2 upserts verified** (human) — the former Layer-1 rollback rehearsal leg was dropped (the rollback model was retired in 24-17). The post-flip prod smoke + T+0→24h watch remains the **T+0 rollback-decision point**: owner judgment → redeploy the previous Railway release or `git revert`, per `deployment.md` §Rollback.
 
-1. **Railway/Neon secrets/vars present** — `RAILWAY_API_TOKEN`, `NEON_API_KEY`, `RAILWAY_PROJECT_ID`, `RAILWAY_BACKEND_SERVICE_ID`, `NEON_PROJECT_ID`.
+1. **Railway/Neon secrets/vars present** — `RAILWAY_API_TOKEN`, `NEON_API_TOKEN`, `RAILWAY_PROJECT_ID`, `RAILWAY_BACKEND_SERVICE_ID`, `NEON_PROJECT_ID`.
 2. **PR deployments + overrides** — Railway PR deployments enabled; no conflicting Preview environment overrides; Vercel preview `VITE_API_URL` resolves.
 3. **Neon preview branch parent = prod** — the preview branch migrates a prod-schema copy, not a stale branch.
 4. **Branch protection** — `smoke` added as a **required status check**.

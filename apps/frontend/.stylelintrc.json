@@ -45,6 +45,6 @@
     ],
     "selector-pseudo-element-colon-notation": null,
     "value-keyword-case": null,
-    "unit-allowed-list": ["px", "%", "em", "rem", "vw", "vh", "s", "ms", "deg", "fr"]
+    "unit-allowed-list": ["px", "%", "em", "rem", "vw", "vh", "dvh", "s", "ms", "deg", "fr"]
   }
 }

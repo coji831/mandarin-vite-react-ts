@@ -1,14 +1,14 @@
 ---
 purpose: "Common development, deployment, and integration issues and how to resolve them"
 status: active
-last-verified: 2026-07-04
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Troubleshooting Guide
 
 **Audience:** Developers debugging common development, deployment, and integration issues  
-**Last Updated:** July 4, 2026  
+**Last Updated:** September 3, 2026  
 **Scope:** Consolidates troubleshooting from backend, frontend, database, infrastructure, and testing guides
 
 > **=��� Tip:** Use `Ctrl+F` to search for your specific error message or keyword.
@@ -826,7 +826,16 @@ taskkill /PID <PID> /F
 
 **Root Cause:** Railway's Vercel integration only syncs **custom user-defined variables**, not Railway system-provided variables like `RAILWAY_PUBLIC_DOMAIN`.
 
-**Fix:** Create a custom reference variable: `VITE_API_URL = https://${{RAILWAY_PUBLIC_DOMAIN}}`. This is a custom variable that users defined, so it gets synced. The `${{}}` syntax resolves to the Railway-provided domain at runtime.
+**Fix (historical):** Create a custom reference variable: `VITE_API_URL = https://${{RAILWAY_PUBLIC_DOMAIN}}`. This is a custom variable that users defined, so it gets synced. The `${{}}` syntax resolves to the Railway-provided domain at runtime.
+
+> **Superseded (2026-09-03):** this Railway→Vercel variable-sync fix is **no
+> longer the live mechanism** and should NOT be re-applied. `VITE_API_URL` is
+> now **Terraform-managed** in `terraform/vercel.tf` (Production scope only —
+> value `https://mandarin-vite-react-ts-production.up.railway.app`). Vercel
+> **preview deployments are disabled** (`ignore_command` in `vercel.tf` — only
+> `main` builds), and the Railway→Vercel integration is **not
+> verified/superseded** by either vendor. See `terraform/README.md` +
+> `terraform/vercel.tf` for the current source of truth.
 
 ### 🔴 GCS CORS — ERR_BLOCKED_BY_ORB on TTS Audio
 
@@ -893,7 +902,7 @@ gcloud services enable texttospeech.googleapis.com
 
 ### Project Documentation Links
 
-- [Backend Development Guide](./backend-development-guide.md) - Express setup, authentication, database
+- [Backend Development Guide](../setup/backend-development.md) - Express setup, authentication, database
 - [Frontend Development Guide](./frontend-development-guide.md) - React, Vite, routing (coming soon)
 - [Backend Testing Guide](./backend-testing-guide.md) - Service/repository testing
 - [Frontend Testing Guide](./frontend-testing-guide.md) - Component/hook testing

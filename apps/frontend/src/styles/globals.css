@@ -155,6 +155,7 @@
     255,
     0.6
   ); /* 0.6 white on --surface-dark (#262321) ≈ 6.5:1 — meets ≥4.5:1 */
+
   --text-subtle: rgba(255, 255, 255, 0.2);
   --text-ghost: rgba(255, 255, 255, 0.05);
 

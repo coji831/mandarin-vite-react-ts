@@ -1,18 +1,18 @@
 ---
 purpose: Agent browser verification practices
 status: active
-last-verified: 2026-08-02
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Agent Browser Verification
 
 **Category:** Practices / Agent Operations
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-09-03
 **Difficulty:** Advanced
 
 > **Scope:** Running Playwright / Storybook browser verification as an AI agent — the
-> operational lessons from epic-21 (subagents dying on long runs, trust-the-disk-over-
+> operational lessons from the 2026 browser-verification work (subagents dying on long runs, trust-the-disk-over-
 > tool-return, UTF-8-safe PowerShell I/O, and the MSW/axios interactions that make
 > Storybook mocks silently misbehave).
 

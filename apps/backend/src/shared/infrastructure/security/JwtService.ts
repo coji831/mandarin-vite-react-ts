@@ -4,8 +4,15 @@
  * Handles token generation and verification
  */
 
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { config } from "../../config/index.js";
+
+// jsonwebtoken@9 is CommonJS; under real Node ESM a named import of
+// `JsonWebTokenError` throws at module load ("does not provide an export named
+// 'JsonWebTokenError'"), crashing the Nest shell at boot. Destructure from the
+// default (CJS `module.exports`) instead — behavior is identical (guards
+// classify errors by `.name`).
+const { JsonWebTokenError } = jwt;
 
 /** Payload shape with userId guaranteed by our token generation. */
 export interface TokenPayload {

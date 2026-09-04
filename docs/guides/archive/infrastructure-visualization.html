@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- last-verified: 2026-08-18 -->
+    <!-- last-verified: 2026-09-03 -->
     <title>PinyinPal — Infrastructure Visualization</title>
     <style>
       *,
@@ -271,6 +271,14 @@
   </head>
   <body>
     <h1>🛠 PinyinPal — Infrastructure Visualization</h1>
+    <div class="err">
+      <strong>SUPERSEDED 2026-09-03.</strong> Retired in favor of
+      <a href="../iac-onboarding.html">iac-onboarding.html</a> (IaC/ops mental map) and
+      <a href="../../architecture.md">docs/architecture.md</a> (app architecture). Kept for
+      traceability of the 2026-07-22 migration/data-flow verification. Content is stale
+      (Express-5 framing, 3 SAs, live Vercel previews, legacy GCS upload) — do not cite as
+      current.
+    </div>
     <p class="subtitle">
       End-to-end mapping of services, variables, secrets, connections, environments, deployment, and
       development flow
@@ -504,19 +512,23 @@
       <tbody>
         <tr>
           <td><span class="code">VITE_API_URL</span></td>
-          <td><span class="tag tag-dep">Railway→Vercel</span></td>
+          <td><span class="tag tag-dep">Terraform (vercel.tf)</span></td>
           <td class="sensitive">✅ Required</td>
           <td>
-            Backend URL. In production: auto-synced via Railway→Vercel integration. Local:
+            Backend URL. In production: Terraform-managed (Production scope) in
+            <span class="code">vercel.tf</span>, pinned to the Railway prod URL. Local:
             <span class="code">http://localhost:3001</span>
           </td>
         </tr>
       </tbody>
     </table>
     <div class="warn">
-      <strong>⚠ Note:</strong> <span class="code">VITE_API_URL</span> is <em>not</em> managed by
-      Terraform. Railway pushes its public domain to Vercel via integration after each deploy. This
-      avoids hardcoded Railway URLs and <span class="code">ENV_CONFLICT</span> errors.
+      <strong>⚠ Note (2026-09-03):</strong> <span class="code">VITE_API_URL</span> <em>is</em>
+      managed by Terraform (<span class="code">terraform/vercel.tf</span>,
+      <span class="code">vercel_project_environment_variable.frontend_api_url</span>, Production
+      scope, pinned to the Railway prod URL). The earlier Railway→Vercel auto-sync premise is
+      superseded, and Vercel previews are disabled (<span class="code">ignore_command</span>, only
+      <span class="code">main</span> builds).
     </div>
 
     <!-- ===== 4. SECRETS & CREDENTIALS MAP ===== -->
@@ -679,7 +691,7 @@
                                                                 │
   Vercel (via Terraform) ───────────────────────────────────┘
   └── Frontend SPA, auto-deploy from GitHub main branch
-      VITE_API_URL synced via Railway→Vercel integration
+      VITE_API_URL Terraform-managed (vercel.tf) — main-only builds
 </pre>
     </div>
 
@@ -709,8 +721,9 @@
       <strong>Note:</strong> Railway deploy uses <span class="code">Procfile</span> with
       <span class="code">release</span> phase:
       <span class="code">npx prisma migrate deploy && npx prisma db seed</span> runs before the
-      <span class="code">web</span> process starts. The Railway→Vercel integration then auto-syncs
-      the new backend URL to Vercel's <span class="code">VITE_API_URL</span>.
+      <span class="code">web</span> process starts. <span class="code">VITE_API_URL</span> is
+      Terraform-managed (<span class="code">vercel.tf</span>, Production scope) — the Railway→Vercel
+      auto-sync premise is superseded.
     </div>
 
     <h3>Preview Environment (PR Workflow)</h3>
@@ -728,9 +741,9 @@
       │      └── Overrides DATABASE_URL on Railway PR env
       │          Points to the new Neon preview branch
       │
-      ├── 2. Vercel auto-creates preview deployment
-      │      URL: https://mandarin-vite-react-ts-git-*.coji831.vercel.app
-      │      VITE_API_URL points to Railway PR env (via integration)
+      ├── 2. Vercel previews are DISABLED (only main builds)
+      │      — the per-PR preview surface is the Railway pr-<n> env
+      │      + Neon branch provisioned by preview.yml above
       │
       └── 3. Terraform Plan (if terraform/ files changed)
              Shows expected infra changes before merge
@@ -1553,7 +1566,6 @@
   ⚠ Not managed by Terraform:
     • Railway (no Terraform provider — click-ops)
     • GitHub Actions workflows (YAML in repo)
-    • Vercel VITE_API_URL (Railway→Vercel integration)
 
   🔴 Known risks:
     • No remote state backend — state stored locally (terraform.tfstate)
@@ -1650,9 +1662,11 @@
     </div>
 
     <div class="warn">
-      <strong>🟡 MEDIUM — Vercel URL Sync:</strong> <span class="code">VITE_API_URL</span> on Vercel
-      depends on Railway→Vercel integration auto-sync. If the integration breaks, the frontend will
-      point to a stale backend URL. No fallback or monitoring for this.
+      <strong>� RESOLVED (2026-09-03) — Vercel URL Sync:</strong> <span class="code">VITE_API_URL</span>
+      is Terraform-managed (<span class="code">vercel.tf</span>, Production scope) — no Railway→Vercel
+      integration dependency remains. It only changes when the pinned value in
+      <span class="code">vercel.tf</span> is edited and <span class="code">terraform apply</span> is
+      run.
     </div>
 
     <div class="warn">
@@ -2012,7 +2026,7 @@
     <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08)" />
 
     <p style="text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem">
-      Generated from codebase analysis — July 2026 · Last verified: 2026-07-22<br />
+      Generated from codebase analysis — July 2026 · Last verified: 2026-09-03<br />
       Repository: <span class="code">coji831/mandarin-vite-react-ts</span> · Branch:
       <span class="code">epic-20-mnemonic-stories</span>
     </p>

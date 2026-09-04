@@ -1,14 +1,14 @@
 ﻿---
 purpose: "Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices"
 status: active
-last-verified: 2026-08-22
+last-verified: 2026-09-03
 type: guide
 audience: backend
 ---
 
 # Backend Development Guide
 
-**Last Updated:** August 22, 2026  
+**Last Updated:** September 3, 2026  
 **Purpose:** Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices  
 **Audience:** Developers setting up and working with the NestJS backend  
 **Time to Complete:** 15-20 minutes initial setup
@@ -145,9 +145,9 @@ You should see (or HTTP 200):
 
 ## Architecture Overview
 
-### NestJS Modulith (Epic 24)
+### NestJS Modulith
 
-Since **Epic 24 (completed 2026-08-22)** the backend is a **NestJS 11 modulith** on the Express platform adapter — the Express surface (`src/app/` + `modules/*/api/`) is deleted and Nest is the only production entry.
+The backend is a **NestJS 11 modulith** on the Express platform adapter — the Express surface (`src/app/`, `modules/*/api/`) was deleted when Nest became the sole production entry (2026-08-22).
 
 All source files are TypeScript (`.ts`). The `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports).
 

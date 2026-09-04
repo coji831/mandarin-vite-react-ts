@@ -1,14 +1,14 @@
 ---
 purpose: Shared data model across packages
 status: active
-last-verified: 2026-08-16
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Shared Data Model
 
 **Category:** Data Architecture
-**Last Updated:** August 16, 2026
+**Last Updated:** September 3, 2026
 **Difficulty:** Intermediate
 
 > **History:** This article was originally developed as a gitignored working spec that is NOT
@@ -44,9 +44,9 @@ architecture. Feature teams would interpret the same concept (e.g., "a radical")
 | `CharacterComponent` | Character ↔ Component decomposition junction (position, function)                        | e.g., 河 → 氵 (left) + 可 (right, phonetic) |
 | `PinyinSyllable`     | Syllable reference data                                                                  | 2,045 seeded                                |
 | `MeasureWord`        | Measure word entity (量词) with permanent `mw_XXXXX` ids                                 | ≥50 seeded                                  |
-| `Passage`            | Graded reader passage (plain text + cached segmentation)                                 | Story 21.3                                  |
+| `Passage`            | Graded reader passage (plain text + cached segmentation)                                 | added July 2026 (graded readers)            |
 | `GrammarPattern`     | Grammar pattern with structure, usage rules, and curated examples                        | `gr_XXXX` ids; 21 KB-sourced patterns       |
-| `Chengyu`            | 4-character idiom with narrative origin story, theme/era tags, and modern-usage examples | `cy_XXXX` ids; 50+ idioms (Epic 23)         |
+| `Chengyu`            | 4-character idiom with narrative origin story, theme/era tags, and modern-usage examples | `cy_XXXX` ids; 50+ idioms (added August 2026) |
 
 ### Junction tables
 

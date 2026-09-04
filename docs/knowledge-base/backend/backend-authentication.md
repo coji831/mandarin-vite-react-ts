@@ -1,14 +1,14 @@
 ---
 purpose: Authentication & security — auth patterns in the backend
 status: active
-last-verified: 2026-08-02
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Authentication & Security
 
 **Category:** Backend Development  
-**Last Updated:** 2026-08-02  
+**Last Updated:** 2026-09-03  
 **Epic 13 Reference:** [Story 13.3 Authentication](../../issue-implementation/archive/epic-13-production-backend-architecture/story-13-3-authentication.md)
 
 ## TL;DR Quick Reference
@@ -363,7 +363,7 @@ Because each use **deletes** the old `Session` row, two concurrent `POST /auth/r
 
 ### The fix is client-side single-flight
 
-The backend must keep rotating (single-use) tokens. The **frontend** is responsible for coalescing every refresh path into one in-flight request — see [Single-Flight Across ALL Refresh Paths](../frontend/frontend-advanced-patterns.md#single-flight-across-all-refresh-paths-epic-21--f4) in the frontend patterns KB.
+The backend must keep rotating (single-use) tokens. The **frontend** is responsible for coalescing every refresh path into one in-flight request — see [Single-Flight Across ALL Refresh Paths](../frontend/frontend-advanced-patterns.md#single-flight-across-all-refresh-paths) in the frontend patterns KB.
 
 ### Key Lessons
 

@@ -1,11 +1,17 @@
-**Last Updated:** August 25, 2026
+**Last Updated:** September 4, 2026
 
 # Implementation 24-17: Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC
 
 > **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/story-24-17-deployment-setup-pr-env.md`
-> **Last Updated:** August 25, 2026
+> **Last Updated:** September 4, 2026
 > **Status:** In Progress
 > **Commit hash:** _(to be filled at epic close)_
+> **2026-09-04:** Vercel **simplified** (owner + Architect approved): per-PR Vercel targeting
+> removed — `preview.yml` has no `vercel-preview` job or Vercel cleanup step, and
+> `terraform/vercel.tf` keeps only the single Production `VITE_API_URL` (Preview-scope fallback var
+> deleted). Previews are Vercel-native auto-builds; preview-scope `VITE_API_URL` is owner-set
+> manually when testing (Neon `demo` parent repaired 2026-09-04 → 30/30 migrations, data-free;
+> poisoned preview branch deleted).
 
 ## Implementation Summary
 
@@ -125,7 +131,7 @@ Dedicated preview GCP project (same-project quota — R4) and dedicated preview 
 
 ### Owner external validations (Workstream E)
 
-The 7 verification items (also in `env-isolation.md` §5): (1) Railway/Neon secrets/vars present; (2) PR deployments enabled + no conflicting overrides + Vercel preview `VITE_API_URL` resolution; (3) Neon preview branch parent = prod; (4) `smoke` required status check; (5) manual `terraform apply` on branch + `GCP_PREVIEW_SA_KEY` GitHub secret; (6) per-env upserts verified live; (7) Neon `demo` parent branch (`parent_branch: demo`) created/seeded.
+The 7 verification items (also in `env-isolation.md` §5): (1) Railway/Neon secrets/vars present; (2) PR deployments enabled + no conflicting overrides + Vercel preview `VITE_API_URL` resolution — **Vercel simplified 2026-09-04** (single TF Production `VITE_API_URL`; previews Vercel-native auto-builds; the per-PR `vercel-preview` job + Vercel cleanup step + the Preview-scope fallback var were **removed** — preview-scope `VITE_API_URL` is owner-set manually when testing the FE preview against a Railway `pr-<n>` backend); (3) Neon preview branch parent = prod; (4) `smoke` required status check; (5) manual `terraform apply` on branch + `GCP_PREVIEW_SA_KEY` GitHub secret; (6) per-env upserts verified live; (7) Neon `demo` parent branch (`parent_branch: demo`) created/seeded.
 
 ## Architecture Integration
 

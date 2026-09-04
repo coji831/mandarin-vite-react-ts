@@ -1,13 +1,25 @@
-# Terraform Plan
-# Runs on PRs that touch terraform/ files.
-# Shows expected infra changes before merge.
+# Terraform Plan — MANUAL ONLY
+# Runs only via manual dispatch (Actions tab -> "Terraform Plan (manual)" -> Run workflow).
+#
+# Plan review for the release apply is OWNER-LOCAL (`terraform plan` before the
+# release `terraform apply`). The automated plan gate is OFF pull requests:
+#   - PR gate removed: `terraform plan` on PRs was unreliable (stale GCS state
+#     lock, then a ~23min provider-refresh hang) and added noise without blocking
+#     value — the release apply is owner-driven and already preceded by an
+#     owner-local plan.
+#   - NOT on push-to-main: `terraform-apply.yml` triggers on the same
+#     `push -> main` with the same `terraform/**` path, so a plan-on-main would
+#     run CONCURRENTLY with the apply and race for the shared GCS state lock.
+#     Plan (fast) starts before/during the apply, not after it, so it would show
+#     pre-apply drift or fail red on lock contention — and could delay/fail the
+#     release apply if it won the lock first.
+# Trigger it manually whenever an on-CI plan is wanted (e.g. a post-release
+# drift check). The job below keeps the same secrets/env wiring as the apply.
 
-name: Terraform Plan
+name: Terraform Plan (manual)
 
 on:
-  pull_request:
-    paths:
-      - "terraform/**"
+  workflow_dispatch:
 
 jobs:
   plan:
@@ -24,16 +36,18 @@ jobs:
         run: terraform init
         working-directory: terraform/
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
-          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
 
       - name: Terraform Plan
         run: terraform plan -no-color
         working-directory: terraform/
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
+          NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
-          VERCEL_API_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
