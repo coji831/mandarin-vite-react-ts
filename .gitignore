@@ -66,3 +66,8 @@ keys/
 # External data (downloaded from Make Me a Hanzi) — root only
 # Anchored (/data/) so docs/guides/data/ (seed-pipeline.md) is not shadowed.
 /data/
+# SOLAR-Ralph v5 governor runtime (solar-governor) — machine-local install artifacts.
+# registry.json is the shared repo wiring and IS committed; config/state/ledger are per-machine.
+.solar/config.json
+.solar/state/
+.solar/ledger.md
