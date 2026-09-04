@@ -4,7 +4,9 @@
 # Plan review for the release apply is OWNER-LOCAL (`terraform plan` before the
 # release `terraform apply`). The automated plan gate is OFF pull requests:
 #   - PR gate removed: `terraform plan` on PRs was unreliable (stale GCS state
-#     lock, then a ~23min provider-refresh hang) and added noise without blocking
+#     lock, then a hang caused by the required input var `project_id` never being
+#     set in CI with no `-input=false` — Terraform blocked on the interactive
+#     stdin prompt, runner stdin never EOFs) and added noise without blocking
 #     value — the release apply is owner-driven and already preceded by an
 #     owner-local plan.
 #   - NOT on push-to-main: `terraform-apply.yml` triggers on the same
@@ -43,11 +45,17 @@ jobs:
           VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        # `project_id` is a required input var; it is NOT set in CI and without
+        # `-input=false` Terraform blocks on the interactive stdin prompt forever
+        # (runner stdin never EOFs) -> hangs the job. Set the var via TF_VAR_ and
+        # fail fast with -input=false. -lock-timeout=5m avoids blocking forever on
+        # a stale state lock.
+        run: terraform plan -no-color -input=false -lock-timeout=5m
         working-directory: terraform/
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
           NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
+          TF_VAR_project_id: pinyin-pal-831
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
           UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
           VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}

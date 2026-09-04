@@ -31,11 +31,17 @@ jobs:
           VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        # `project_id` is a required input var; it is NOT set in CI and without
+        # `-input=false` Terraform blocks on the interactive stdin prompt forever
+        # (runner stdin never EOFs) -> hangs the job. Set the var via TF_VAR_ and
+        # fail fast with -input=false. -lock-timeout=5m avoids blocking forever on
+        # a stale state lock.
+        run: terraform apply -auto-approve -input=false -lock-timeout=5m
         working-directory: terraform/
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_TF_SA_KEY }}
           NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
+          TF_VAR_project_id: pinyin-pal-831
           UPSTASH_API_KEY: ${{ secrets.UPSTASH_API_KEY }}
           UPSTASH_EMAIL: ${{ secrets.UPSTASH_EMAIL }}
           VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
