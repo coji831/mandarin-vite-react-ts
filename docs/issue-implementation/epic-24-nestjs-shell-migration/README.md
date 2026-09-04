@@ -1,7 +1,7 @@
 ﻿---
-purpose: "Epic 24 implementation — NestJS 11 shell-swap (D7), Express until epic-29"
-status: planned
-last-verified: 2026-08-17
+purpose: "Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS"
+status: completed
+last-verified: 2026-08-25
 type: epic
 ---
 
@@ -9,20 +9,234 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-24-nestjs-shell-migration/README.md`
 
-**Status:** Planned — D7 shell-swap track (parallel with epics 25–28, complete before epic-29)
+**Status:** ✅ Completed — full-scoped serial Epic 24 shipped all **15 stories** to completion (24-1 P0-1 stopgap → 24-15 deployment cutover); branch `epic-24-nestjs-shell-migration`; **NestJS 11 is the production entry** (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`), the Express surface is deleted (no dual-mode), `openapi.yaml` reconciled (7-path System/Auth/TTS surface), `/api-docs` + `/api-docs.json` served from Nest, and the **post-flip verification is recorded** in `verification-artifacts/release-safety-gate-24-14.md`; all 15 story docs fully authored + closed, impl commit hashes filled at epic close — epics 25–28 land on NestJS after (serial plan, D10); **follow-on stories (post-close, re-sliced 2026-08-23):** **24-16 (Docs-Truth Close + API Docs Expansion — BLOCKING pre-merge FIRST, docs-only**, BR/IMP authored 2026-08-23, status **in-progress**; the docs side of the merge-PR release prep) · **24-17 (Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC — pre-merge SECOND** — deploy execution Workstreams A–E: enablers + R1/R2/R3/R6 hardening + IaC + owner validations**, BR/IMP authored 2026-08-23, re-scoped 2026-08-24, superseded 2026-08-25 by the approved final plan, status **in-progress**; executes the production release; post-merge bugs → hotfix on main)
 
-**Last Update:** August 17, 2026
+**Last Update:** August 25, 2026
 
 ---
 
 ## Scope (D7 shell-swap)
 
-_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record) and tech-mapping D1/D7._
+_See the ratified epic plan (`docs/planning/epics-25-40.md` — D7 row + OI-1 decision record + D10 serial re-ratification) and tech-mapping D1/D7._
 
-- Migrate the backend onto a NestJS 11 shell early (mechanical shell-swap) — **D1 = NestJS 11, owner-approved 2026-08-17**
-- Run **parallel to epics 25–28 and complete before epic-29** (epics 29/30/31 land on NestJS)
+- Migrate the backend onto a NestJS 11 shell (mechanical shell-swap) — **D1 = NestJS 11, owner-approved 2026-08-17**
+- **Full-scoped serial: Epic 24 runs first to completion (15 stories); epics 25–28 land on NestJS after — owner re-ratification 2026-08-21 (D10)**
+- Absorb the cross-cutting release-safety items within the epic: P0-1 stopgap (24-1) + structural fix (24-11), calibrated guest identity + minimal FE lockstep (24-7), additive `SrsCardState` schema/vector (24-11); quiz-FE fixes C-declared (26)
 - Build the calibrated substrate (E.0–E.2 AI gateway, retrieval seam, tracking) as epics land on the shell
 - Keep the existing content/features/tests; retrofit the substrate — not a greenfield rebuild
+
+## User Stories
+
+15 stories covering all **15 existing modules** + the HTTP/DI/deploy substrate + the absorbed release-safety scope (P0-1 stopgap, calibrated guest identity, `SrsCardState` additive schema). Every module is accounted for exactly once in a port story. **All 15 stories are fully authored + completed** — each BR/IMP was authored/closed at the point it ran, and every impl commit hash is filled at epic close (below). **Follow-on stories (outside the 15-story serial scope, re-sliced 2026-08-23):** **24-16 (Docs-Truth Close + API Docs Expansion)** — **BLOCKING pre-merge FIRST**, docs-only, BR/IMP authored 2026-08-23, status **in-progress** (see its section below); **24-17 (Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC)** — **pre-merge SECOND** — deploy execution Workstreams A–E (enablers + R1/R2/R3/R6 hardening + IaC + owner validations), BR/IMP authored 2026-08-23, re-scoped 2026-08-24, superseded 2026-08-25 by the approved final plan, status **in-progress** (see its section below). Both land before the single merge.
+
+### 24-1 — P0-1 Security Stopgap **_(NEW — absorbs epic-25 P0-1 stopgap half)_**
+
+**Goal:** Close the live cross-tenant SRS leak on Express now — `findByUserAndTypes`/`countDue` reject `undefined` userId structurally (no Prisma ignore-`undefined` path), `ReviewController` drops `req.userId!` (explicit 401), P0-1 regression test, T1 baseline recorded + triaged. Ships independently; does not wait for the Nest shell.
+
+**ACs:** Repo rejects `userId === undefined` before Prisma on `findByUserAndTypes`/`countDue`; `ReviewController` returns explicit 401 (no `req.userId!`); P0-1 regression test green (guest ⇒ 401/empty, never another user's rows); T1 baseline (full + integration) recorded + triaged in a verification artifact before work; no other review/schema/FE changes; all gates green.
+
+**Status:** ✅ completed — shipped independently on Express (leak closed, 10 P0-1 regression tests, T1 baseline + post-change verification in `../../../verification-artifacts/test-report-24-1.md`). **Commit hash:** `27d35573`.
+
+**Gate:** none — **first story, ships independently**. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-1-p0-1-security-stopgap.md) · [IMP](story-24-1-p0-1-security-stopgap.md) (full).
+
+### 24-2 — NestJS 11 Shell Scaffold + Reference-Module Proof-of-Pattern
+
+**Goal:** Bootstrap a dev-only Nest 11 shell (Express adapter) and port `words`/`phonetic-clusters`/`grammar`/`chengyu` with a route-parity harness — proving the swap pattern risk-free.
+
+**ACs:** Nest 11 deps + decorator flags + `src/nest/main.ts`/`app.module.ts` boot with identical CORS/`trust proxy 1`/cookie/`/api` prefix; Express prod path + `railway.toml`/`Procfile`/`start` untouched; 4 modules ported under `modules/<name>/nest/` (exact success JSON + status, 4xx status; envelope deferred to 24-3); **test baseline = epic-level hard precondition (record + triage before starting)**; parity harness covers **`WordsRoutes.ts` (uppercase)** + the other 3 route files under `vitest.integration.config.ts` with skip-guard on missing `DATABASE_URL`; Node reconciled to 24 LTS + single `npm ls express` + `check:module-boundaries` green; no `SharedModule`, no 25–28 zone touched; all gates green.
+
+**Status:** ✅ completed — Nest 11 dev-only shell scaffolded (Express adapter) with the shared `configure-app.ts` boot shape; `words`/`phonetic-clusters`/`grammar`/`chengyu` ported under `modules/<name>/nest/` reusing services/repos (useFactory + `@Inject`); 23-assertion route-parity harness green (`tests/integration/nest/route-parity.test.ts`, skip-guard on missing `DATABASE_URL`); Express prod path untouched (`dist/app/index.js` still emitted). **Commit hash:** `2dd55c0e`.
+
+**Gate:** none — sits on 24-1. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-2-nest-shell-scaffold-proof.md) · [IMP](story-24-2-nest-shell-scaffold-proof.md) (full).
+
+### 24-3 — HTTP-Layer Parity: `{code,message,requestId}` Envelope + RequestId + Rate-Limit
+
+**Goal:** Make the Nest shell contract-identical at the HTTP layer (error filter, requestId interceptor, rate-limit middleware) + error-visibility + body-parser parity so every later port inherits correct semantics.
+
+**ACs:** 4xx/5xx deep-equal to Express for status + `{code, message, requestId}` shape; `X-Request-Id` set + echoed into envelope; rate-limit honors same per-route configs + real-IP via `trust proxy` (429 status parity; auth limits applied later in 24-6/24-12); **error-visibility parity — filter logs every 4xx/5xx with requestId/code/message identically to `errorHandler.ts`**; **body-parser parity — json + urlencoded limits reproduced**; harness extended + green, no 25–28 zone file touched; `@nestjs/throttler` decision recorded (recommend reject — retain `express-rate-limit`).
+
+**Status:** ✅ completed — HTTP-layer parity shipped on the Nest shell: global `AppExceptionFilter` (`{code, message, requestId}` envelope via pure `resolveHttpError()`/`logError()`) + `mountExpressErrorBridge()` (mounted last — Nest filters can't see pre-router `app.use` errors, enabling body-parser 413 parity); `request-id.middleware.ts` re-exports the shared `requestIdMiddleware` (zero drift); `express-rate-limit` retained — `@nestjs/throttler` rejected (decision recorded), `words` applied path-scoped, auth/readers declared as infra; body-parser via `bodyParser: false` + explicit `express.json()`/`urlencoded({ extended: true })`; route-parity harness extended 23→30 (413 envelope deep-equal, `X-Request-Id`, seeded 429 + 500, log-parity). **Commit hash:** `1f1f4df7`.
+
+**Gate:** none (sits on 24-2). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-3-http-layer-parity.md) · [IMP](story-24-3-http-layer-parity.md) (full).
+
+### 24-4 — SharedModule/DatabaseModule + Async Providers
+
+**Goal:** Expose `config`/`PrismaClient`/`CacheService` (async, top-level-await) + shared clients/services as Nest providers — the DI substrate for cache/gemini/jwt modules.
+
+**ACs:** `SharedModule`/`DatabaseModule` compile + boot; `CacheService` resolves via async provider before first request; no new `shared/`→`modules/` edge (`check:module-boundaries` green) + Express `app/container.ts` untouched; providers unit-tested (Prisma singleton, cache async resolution, lazy external clients); **graceful shutdown — `onApplicationShutdown` (`PrismaClient.$disconnect()`, `redisClient.quit()`, cache teardown) + shutdown unit test**; **`GcsFileStore`/external clients as lazy-singleton providers (no top-level `new GCSClient()` in Nest land)**; no 25–28 collision-zone file touched.
+
+**Status:** ✅ completed — `SharedModule`/`DatabaseModule` expose the shared infra as Nest providers: `CacheService` async `useFactory` (resolves the Express top-level await before first request), `PrismaClient` via the Prisma 7 CJS + `PrismaPg` connection-string factory, the three config homes (`CONFIG`/`GATE_THRESHOLDS`/`AUDIO_CONFIG`) + `CONTENT_UTILS` + `WordRepository`/`JwtService`/`PasswordService` + external clients (`GeminiClient`/`GCSClient`/`GoogleTTSClient`/`GeminiService`/`GcsFileStore`) as lazy singletons; graceful shutdown (`$disconnect()`/`redisClient.quit()`); `GcsFileStore` DI fix (constructor-injected GCS client, lazy fallback); provider + shutdown unit tests; boundaries green. **Commit hash:** `99620056`.
+
+**Gate:** none (sits on 24-3). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-4-shared-module-async-providers.md) · [IMP](story-24-4-shared-module-async-providers.md) (full).
+
+### 24-5 — Auth-Surface Guards (Calibrated)
+
+**_(completed — absorbs epic-25 F6 unification)_**
+
+**Goal:** Port `authenticateToken`/`optionalAuth`/`requireAuth` to Nest guards targeting the **calibrated** unified guest semantics (F6: guest → session-local/empty, never all-unlocked) — the calibration spec is the source of truth, not current code.
+
+**ACs:** Three guard types exist and reproduce the calibrated semantics (401 messages, guest handling, `req.userId`); parity harness proves 401/403 + guest-vs-user responses identical to Express on a test-protected route (with the calibrated guest shape per the calibration spec, F6); guard unit tests cover success/failure/guest/expired-token paths; no "port pre-25 then rework" — the calibrated shape is the port target (ADR-24-B).
+
+**Status:** ✅ completed — `AuthGuard`/`OptionalAuthGuard`/`RequireAuthGuard` shipped under `src/nest/guards/` with the shared helpers (`resolveAccessToken` header→cookie fallback, `attachAuthUser` → `req.user`/`req.userId`, `AUTH_GUARD_ERRORS` matching `authMiddleware.ts` byte-for-byte, `ACCESS_TOKEN_COOKIE`), wired into `app.module.ts` via the `GuardsModule` providers module (not global — public routes unaffected); hermetic parity harness (`tests/integration/nest/auth-guards-parity.test.ts`) proves 401/403 + guest-vs-user identical to the real Express middleware; guard unit tests cover success/failure/guest/expired-token paths; additive `JwtService.verifyAccessToken` (+ tests); no code dependency on 24-7; no `packages/shared-constants` / 25–28 zone file touched. **Commit hash:** `9c97ba95`.
+
+**Gate:** 24-4 (shared substrate) + the calibration spec (`wip/guest-access-calibration.md`) — **no code dependency on 24-7** (the guards read the spec, never `createGuestPhaseGate`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-5-auth-guards-calibrated.md) · [IMP](story-24-5-auth-guards-calibrated.md) (full).
+
+### 24-6 — Auth Module Port
+
+**Goal:** Port the `auth` module (register/login/refresh/logout/me — 5 endpoints) to Nest, wired with the 24-5 guards and brute-force rate-limit parity.
+
+**ACs:** All 5 auth endpoints ported (register/login/refresh/logout public; `me` → `AuthGuard`); parity harness green (`tests/integration/nest/auth-parity.test.ts` — status + body, error envelope on 401/409, 429 brute-force); refresh-token rotation + httpOnly cookie semantics preserved (integration test); brute-force rate-limit matches Express (429 + `{error, code, message}` shape).
+
+**Status:** ✅ completed — `AuthModule` = 1:1 of `createAuthModule(deps)` (useFactory providers injecting `AuthRepository`+`JwtService`+`PasswordService`; imports `SharedModule`+`GuardsModule`; exports `AuthService`); `AuthNestController` mirrors `AuthController.ts` 1:1 reusing `AuthService` unchanged, routes verbatim; `/me` → `@UseGuards(AuthGuard)`, register/login/refresh/logout public; one shared `authLimiter` (5/min/IP) on register+login mirroring `authRoutes.ts` (429 body deep-equal — no envelope); cookie parity (`setRefreshTokenCookie`/`clearRefreshTokenCookie` byte-for-byte, `@Res({passthrough:true})`); rotation proven in harness (reuse R1 → 401 `INVALID_TOKEN`); DB-gated parity harness boots real Express + Nest (+17 integration tests, 17/142; test:full 58/631). **Commit hash:** `19cf58b2`.
+
+**Gate:** 24-4 + 24-5. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-6-auth-module-port.md) · [IMP](story-24-6-auth-module-port.md) (full).
+
+### 24-7 — Guest Identity Calibration **_(NEW — absorbs epic-25 F1 + identity lockstep (FE-minimal))_**
+
+**Goal:** Change `createGuestPhaseGate → {currentPhase:1, isGuest:true}` in `packages/shared-constants/src/index.js` (+ `.d.ts` + tests) with the minimal FE lockstep (AppLayout `:4 → isGuest` removal, `getGates` guest-branch unification) + guest e2e.
+
+**ACs:** `createGuestPhaseGate` returns `{currentPhase: 1, isGuest: true}` (no all-unlock; `id: "guest-unlocked"` + `phase4Unlocked: false` kept); `.d.ts` matches; new `shared-constants` test suite (5); `PhaseGate.isGuest?` additive; `AppLayout` removes the unauthenticated `: 4` override (single-source `effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? Infinity : 1)`); `usePhaseGate` re-fetches on auth change + `phaseGateService` auth-keyed cache key — the FE consumes `fetchPhaseGate` (no FE `getGates` consumer), and the backend `/gates` GUEST branch is left for 24-13; guest e2e asserts the Phase-1 shape end-to-end; no full FE guest-shell UI (badge/banner, route-gate fallback, design spec — stays in 25).
+
+**Status:** ✅ completed — `createGuestPhaseGate` calibrated to `{currentPhase:1, isGuest:true}` (sentinels kept; `PhaseGate.isGuest?` additive); minimal FE lockstep (AppLayout `:4` removed → single-source `effectivePhase`, `usePhaseGate` re-fetch on auth change, `phaseGateService` auth-keyed cache key); new shared-constants Vitest suite (5/5) + `AppLayout.guest.integration.test.tsx` (MSW serves the real `createGuestPhaseGate`); 5 comment-hygiene files; the FE consumes `fetchPhaseGate` (no FE `getGates` consumer) and the backend `/gates` GUEST branch is left for 24-13. **Commit hash:** `09c59df8`.
+
+**Gate:** 24-6 → 24-7 → 24-8 (serial); sets the calibrated identity shape for **24-13 (progression)** + the FE shell (the auth guards in 24-5 consume the calibration spec, not this shape). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-7-guest-identity-calibration.md) · [IMP](story-24-7-guest-identity-calibration.md) (full).
+
+### 24-8 — Characters + Mnemonics Port
+
+**_(completed — absorbs epic-25 F6 for mnemonics)_**
+
+**Goal:** Port `characters` (2 controllers — `CharactersController` + `PinyinController`; 7 routes: `:glyph`, `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search`, `/frequency` + `GET /v1/pinyin/search`) and `mnemonics` (4 routes: GET/POST/PUT/DELETE on `/v1/mnemonics/:character`, cache+gemini, `optionalAuth`).
+
+**ACs:** All 7 characters + 4 mnemonics routes ported; parity harness green (2xx body+status, 4xx envelope); mnemonics uses `SharedModule` cache+gemini + the **calibrated** `OptionalAuthGuard` (guest → empty, per F6); mnemonics POST/PUT/DELETE success + validation 4xx match Express; no other zone touched.
+
+**Status:** ✅ completed — `CharactersModule` = **two controllers** (`CharactersNestController` + `PinyinNestController`) + 4 `useFactory` providers (2 repos + 2 services): 6 characters routes (`:glyph`, `:glyph/phonetic`, `:glyph/homophones`, `:glyph/decomposition`, `/search`, `/frequency`) with CJK-regex validation + a route-shadowing parity note (`:glyph` first shadows `/search`/`/frequency` — pre-existing latent, reproduced byte-for-byte) + `GET /v1/pinyin/search` (not shadowed); `MnemonicsModule` = **first `SharedModule` consumer** (repo + gemini + cache via `useFactory`) + `GuardsModule`; `OptionalAuthGuard` on GET (guest → `req.userId` undefined → empty, never 401, never all-unlocked — F6), `RequireAuthGuard` on POST/PUT/DELETE (401 `AUTH_REQUIRED`); validation + HTML-sanitization parity; per-method limiters (GET 60 / POST 10 / PUT 30 / DELETE 30) mounted path-scoped in `configure-app.ts`/`rate-limit.config.ts` (1:1 with `mnemonicsRoutes.ts`); dedicated parity harness (`characters-mnemonics-parity.test.ts`, 24 tests — pictograph fixtures short-circuit Gemini, unique `X-Forwarded-For`); gates green (typecheck · build both dist · test:full 59/649 · integration 18/166 · lint 0 · boundaries · dev:nest smoke). **Commit hash:** `0c076cb0`.
+
+**Gate:** 24-3 + 24-4 + 24-5 (calibrated `OptionalAuthGuard`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-8-characters-mnemonics-port.md) · [IMP](story-24-8-characters-mnemonics-port.md) (full).
+
+### 24-9 — Radicals + Foundations Port
+
+**_(completed — current content; 27 stays C)_**
+
+**Goal:** Port `radicals` (4 routes: `/radicals`, `/:id`, `/character/:glyph`, `/:id/characters`) and `foundations` (4 routes: `data/pinyin-tones`, `data/pinyin-character-map`, `data/strokes`, `characters/:glyph`) — both zero-dep reference modules, the cheapest ports.
+
+**ACs:** All radicals + foundations routes ported on the **current** content; parity green; no wait for epic-27 (27 re-touches data on Nest later); no other zone touched.
+
+**Status:** ✅ completed — `RadicalsModule` = 1:1 of `createRadicalsModule()` (3 `useFactory` providers; repos self-import Prisma, no `SharedModule`), 4 routes verbatim incl. a full-`@Res()` `res.json()` mirror preserving the **`200 null`** unknown-ID body; `FoundationsModule` = 1:1 of `createFoundationsModule()` on a single `@Controller("v1")` (pinyin-tones, pinyin-character-map, strokes + the cross-module shadow `GET /v1/characters/:glyph`); **route-shadowing resolved (deferred from 24-8)** — `FoundationsModule` imported BEFORE `CharactersModule` (reproduces `app/routes.ts` L60/L126 mount order; first-match-wins), so `/characters/好` → foundations shape and `/search`/`/frequency`/`abc` → 404 on both apps; truth-check correction — `FoundationsService` is **all-in-DB** (Prisma since epic-21), not contentUtils (reused unchanged, no `CONTENT_UTILS` injected); dedicated parity harness (`radicals-foundations-parity.test.ts`, 14 tests — radicals 7 incl. 200-null, foundations data 3, shadow 4) + the 24-8 harness shadow-block edit (full-parity + 3 prettier reformat hunks, transparency note); gates green (typecheck · build both dist · test:full 59/649 · integration 19/180 · lint 0 · boundaries · dev:nest smoke). **Commit hash:** `edc1ec49`.
+
+**Gate:** 24-8 (serial order); **not** gated on epic-27 M1. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-9-radicals-foundations-port.md) · [IMP](story-24-9-radicals-foundations-port.md) (full).
+
+### 24-10 — Audio + Health Port
+
+**_(completed — absorbs epic-25 F5 TTS surface)_**
+
+**Goal:** Port `audio` (`POST /v1/tts`; `AudioService` facade over `AudioSynthesizer`/`AudioPathCache`/`AudioUrlSigner`) and `health` (consumes `AudioServiceLike` via Nest DI — replaces the direct `modules/audio/index.js` import).
+
+**ACs:** TTS route ported with the **calibrated** `optionalAuth` semantics; parity harness green; health uses Nest-provided `AudioServiceLike` (no direct cross-module import in Nest land); audio URL-signing/path-cache identical (mocked-GCS integration test); **cache-first free-for-guests (F5) verified in-port**; guest-visible generation stays counter-gated (mechanics in 29).
+
+**Status:** ✅ completed — `AudioNestController` mirrors `AudioController.ts` verbatim (`{ text, voice = voiceDefault }` → `AudioService.getTtsUrl` → `{ audioUrl, cached }`) with `@HttpCode(200)` (fixed the Nest default 201) + the calibrated `OptionalAuthGuard`; `AudioModule` imports `SharedModule` + `GuardsModule`, `AudioService` via `useFactory(CacheService, GCSClient, GoogleTTSClient)`, **exports AudioService** for Health DI; `HealthNestController` = full `@Res()` mirror (same 200 shape + same `{ error, code, message }` 500 branch), injects `GeminiService` (SharedModule) + `AudioService` (AudioModule DI) + `RedisClient` (local provider); **cross-module-import fix** — `HealthModule` imports `AudioModule` (no `modules/audio/index.js` import in Nest land; ctor param typed structurally `{ healthCheck(): Promise<boolean> }`); calibrated TTS F5 verified in-port (guest no/bad token → never 401; GCS cache HIT → `{ cached: true }`, `synthesizeSpeech` not called); generation counter-gating deferred to epic-29 (no counter ships); dedicated mocked-GCS parity harness (`audio-health-parity.test.ts`, 11 tests — TTS 9 + health 2) + unit tests (audio 5 + health 5); gates green (typecheck · build both dist · test:full 61/659 (+10 unit) · integration 20/191 (+11 parity) · lint 0 · boundaries · dev:nest smoke). **Commit hash:** `60f87f30`.
+
+**Gate:** 24-4 + 24-5 (calibrated `optionalAuth`). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-10-audio-health-port.md) · [IMP](story-24-10-audio-health-port.md) (full).
+
+### 24-11 — Review Port + SRS Schema
+
+**_(completed — absorbs epic-25 P0-1 structural + epic-28 SrsCardState additive)_**
+
+**Goal:** Port `review` (3 routes: `GET /v1/review/items`, `GET /v1/review/due-count`, `POST /v1/review/result`) with the **structural P0-1 fix** (Nest repo rejects `undefined` userId at type/guard level) + the **absorbed additive `SrsCardState` schema/enum + reserved pgvector**; review re-points with interval-doubling preserved; calibrated `requireAuth`.
+
+**ACs:** 3 review routes ported; parity green; `findByUserAndTypes`/`countDue` structurally reject `undefined` userId (regression test re-authored in Nest land); additive `SrsCardState` migration (new table/enum/vector, backfill, re-point; `ReviewItem` columns kept until 34/28 cleanup) satisfies the D1 additive-only gate; interval-doubling preserved (no FSRS semantics — that's 34); calibrated `requireAuth` applied; stale `ReadersAudioController.test.ts` rewritten/removed here or flagged for 24-12.
+
+**Status:** ✅ completed — `review.module.ts` = 1:1 of `createReviewModule(deps)` (imports `GuardsModule`, NOT `SharedModule`; `ReviewRepository` + `ReviewService` via `useFactory`; exports `ReviewService`); `review-nest.controller.ts` = 3 routes verbatim (`GET /v1/review/items`, `POST /v1/review/result` with `@HttpCode(200)`, `GET /v1/review/due-count`), all `@UseGuards(RequireAuthGuard)` (calibrated 24-5: guest → 401 `AUTH_REQUIRED`), structural P0-1 `req.userId as string` + defensive 401 `AUTH_ERROR`; **additive `SrsCardState` schema/enum + reserved `Unsupported("vector")` column (FV14 hedge, empty until RAG-1)** — migration `20260821175536_add_srs_card_state` = `CREATE EXTENSION IF NOT EXISTS vector` + enum/table/3 indexes/1 unique, **zero `ReviewItem` drops/renames/alters**, no BOM, `prisma migrate status` = 30 up-to-date (already applied), `prisma generate` regenerated the root-hoisted client; repository/types re-pointed `reviewItem → srsCardState` with **interval-doubling preserved (no FSRS — that's 34)**; P0-1 regression re-authored in Nest land (controller 7 tests: 401 + no service call; repo tests: `undefined` → `[]`/`0`, no Prisma call); parity harness `review-parity.test.ts` (12 tests: 2xx deep-equal with `nextReview`/shuffle normalization, 4xx envelope, guest 401, **P0-1 no-leak A-vs-B**); **`ReadersAudioController.test.ts` investigated — NOT dead (uniquely covers the live `ReadersController.getPassageAudio` Express method), left in place and deferred to 24-12** (removal would drop live coverage); gates green (typecheck · build both dist · test:full 62/666 (+7) · integration 21/203 (+12) · lint 0 · boundaries · dev:nest smoke — review routes guest → 401 `AUTH_REQUIRED`). **Commit hash:** `94374fa8`.
+
+**Gate:** 24-5 (calibrated guards). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-11-review-port-srs-schema.md) · [IMP](story-24-11-review-port-srs-schema.md) (full).
+
+### 24-12 — Readers Port
+
+**_(completed — absorbs epic-25 F5 passage-audio)_**
+
+**Goal:** Port `readers` — the largest module (11 routes; `SegmenterService`/`PassageGenerationService`/`ReadersAudioService` + DB-backed 5/day rate-limit).
+
+**ACs:** All 11 readers routes ported (incl. `:id`-nested passages/sessions/bookmarks; `createReadersRoutes(controller)` factory → standard Nest controllers); parity green; `ReadersAudioService` uses Nest-injected audio (no direct cross-module import); passage-audio uses the **calibrated** `optionalAuth` (cache-first-free for guests, F5); 5/day generation rate-limit 429 + envelope matches Express incl. real-IP; required auth guards on user-scoped routes.
+
+**Status:** ✅ completed — `ReadersModule` = all **5 services as `useFactory` providers** (imports `SharedModule` + `GuardsModule` + `AudioModule`; exports `ReadersService`); `ReadersNestController` = **11 routes verbatim** (`GET passages`, `GET passages/:id`, `POST passages/:id/audio` → calibrated `OptionalAuthGuard` F5 @200; `POST generate` @201, `GET/PUT sessions/:passageId`, `POST …/complete` @200, `GET/POST bookmarks`, `DELETE/GET bookmarks/by-passage/:passageId` → `RequireAuthGuard`), incl. `formatPassageResponse` date serialization + every `{error, code}` branch → `HttpException` → 24-3 envelope; **service-ownership move** — `SegmenterService`/`PassageGenerationService`/`ReadersAudioService` moved from `app/container.ts` root-instantiation into module providers (Express keeps the same classes via a container wiring change — dual-mode); **`ReadersAudioService` → Nest audio DI** — direct `passageHashFor`/`passagePath` value import removed; ctor takes `PassagePathHelpers`; Nest injects `AudioService` + the additive `AUDIO_PASSAGE_PATHS` provider from the ported `AudioModule` (no direct `modules/audio` import in Nest land; type-only `AudioServiceLike` import erased); **DB-backed 5/day generation rate-limit** — unchanged `checkRateLimits` → `countUserGeneratedToday` (UTC-midnight reset) + 5-passage storage cap, `READERS_DAILY_GENERATION_LIMIT = 5`, `RateLimitExceededError` → 429 `RATE_LIMIT` envelope (the story's "shared WordRepository" mention does not apply — counts live on `ReadersRepository`, consistent with Express); `express-rate-limit` GET limiters (60/min user, 20/min guest) on the two passage GET routes only; **`ReadersAudioController.test.ts` kept untouched + passing** (uniquely covers live Express `getPassageAudio` until 24-15); dedicated parity harness (`readers-parity.test.ts`, **28 tests** — 2xx deep-equal with non-deterministic normalization, 4xx envelope, guest 401s, 5/day 429 with no Gemini call, sessions/bookmarks upserts, mocked-GCS audio cache-hit/miss) + 38 unit tests; gates green (typecheck · build both dist · test:full 62→**704** (was 666) · integration 21→**231** (was 203) · lint 0 · boundaries · dev:nest smoke — audio POST 200 with real GCS signed URLs proving AudioModule DI end-to-end; guest generate 401). **Commit hash:** `20a3c36c`.
+
+**Gate:** 24-10 (audio) + 24-3 + 24-4 + 24-5. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-12-readers-port.md) · [IMP](story-24-12-readers-port.md) (full).
+
+### 24-13 — Quiz + Progression Port
+
+**_(completed — resolves the `progression ↔ quiz` circular-DI; absorbs epic-26 M1 backend shape + epic-25 F6 progression; FE quiz fixes C)_**
+
+**Goal:** Resolve the `progression ↔ quiz` cycle (primary `forwardRef(() => QuizModule)`/`@Inject(forwardRef(() => QuizService))`; fallback = preserve re-injection via `setQuizService` provider factory) and port both modules together — the backend engine ported **correctly** (no backend bug canonized).
+
+**ACs:** Circular-DI resolved with a recorded ADR (no mutable setter in Nest land unless documented fallback); all 15 quiz+progression routes ported (`quiz`: 7 + `POST /v1/quiz/feedback` + 5 strategies + SandhiDrill; `progression`: 7 routes incl. foundation-progress/phase-gate/gates/radical-progress); parity green (status + body + envelope); quiz strategies registry + SandhiDrill ported with the **correct** backend shape; progression guest branch unified to the calibrated gate (24-7); calibrated `optionalAuth` on guest quiz submit; **FE quiz-engine fixes explicitly NOT absorbed (C-declared, tracked in 26)**.
+
+**Status:** ✅ completed — the `progression ↔ quiz` circular-DI resolved with a recorded ADR (`forwardRef`-direct PRIMARY failed the parity harness — `resolveParamToken` returned `undefined` for the un-instantiated forwardRef wrapper → `DEPENDENCY_MISSING`; as-built FALLBACK = construction-order break + the `ProgressionQuizBridge.onModuleInit` one-shot re-injection via `ModuleRef.get(QuizService)` + `setQuizService()`, invoked exactly once at composition); `QuizModule` (**8 routes** — 7 verbatim + feedback + sandhi — with the 5-strategy registry + `SandhiDrillService` 5–25 clamp) + `ProgressionModule` (**7 routes** verbatim) registered in `app.module.ts`; calibrated `OptionalAuthGuard` on the guest quiz submit surface (session-local mock shapes, no persistence) + `RequireAuthGuard` on attempts-GET/feedback (guest 401); **`/gates` guest branch CALIBRATED to Phase-1-only** (the 24-7 deferred item; Express untouched, unified at 24-15); backend engine ported **correctly** (no backend bug canonized; FE quiz fixes C-declared, stay in 26); quiz AI-feedback limiter (10/min/IP) applied in `rate-limit.config.ts`/`configure-app.ts` (1:1 with `aiFeedbackRoutes`); parity harness `quiz-progression-parity.test.ts` (**28 tests**) green — quiz 2xx deep-equal with `id`/`category` shuffle-position normalization (sentinels `QID`/`CAT`), 4xx envelope, guest vs registered, authed shared-attempt parity, calibrated `/gates` guest shape (documented Express deviation); gates green (typecheck · build both dist · test:full **744** (+40 unit) · integration **259** (+28 parity) · lint 0 · boundaries · dev:nest smoke — no circular-DI runtime errors, `/gates` guest = calibrated Phase-1, `/quiz/attempts` guest 401). **Commit hash:** `e68e668a`.
+
+**Gate:** 24-5 + 24-7 + 24-12 (serial order). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-13-quiz-progression-circular-di.md) · [IMP](story-24-13-quiz-progression-circular-di.md) (full).
+
+### 24-14 — Release-Safety Cutover Gate
+
+**_(completed — owns the §1 DoD verification + release checklist + pre-flight sign-off + rollback/watch-window)_**
+
+**Goal:** Own the Definition of Done + release checklist as the hard pre-flight gate that 24-15 cannot flip without, plus post-flip smoke + rollback + watch-window verification. Serial-flipped: S1 (P0-1) = absorbed (24-1 + 24-11); S2 (guest-auth) = absorbed (24-5/24-7/24-8/24-10/24-13); quiz-FE bugs = C-declared (tracked in 26); schema = absorbed-additive (24-11).
+
+**ACs:** Release checklist artifact committed (every §1 line S1–S2/P1–P2/T1/O1–O2/D1–D2/R1–R2/DOC/G with status/evidence pointer); A/C ownership map recorded + signed off; pre-flight sign-off (S1, S2, P1 parity 100%, T1 full+integration green) → only then may 24-15 flip; post-flip smoke (`/api/v1/health` + register/login + one data route) green; watch-window procedure documented + executed (via 24-3 requestId logs) before Express deletion; rollback runbook verified (`start:express` for one release or redeploy-previous).
+
+**Status:** ✅ completed — the §1 Definition of Done verified against the shipped code: **all twelve gates PASS** (S1 P0-1 closed structurally — repo rejects `undefined` before Prisma, zero `req.userId!` in Nest controllers, regression green · S2 guest-auth calibrated — `createGuestPhaseGate → {currentPhase:1, isGuest:true}`, `OptionalAuthGuard` guest → empty, `/gates` guest = Phase-1-only · P1 parity **63/63 (100%)** across 9 harnesses · P2 openapi 9 dead routes (`/v1/vocabulary/*` ×5 + `/v1/progress*` ×4) recorded as a 24-15 input · T1 `test:full` **66/744** + `test:integration` **23/262** · O1 `AppExceptionFilter.logError` identical · O2 health 200 from `dist/nest/main.js` · D1 only additive `SrsCardState` migration (30 up-to-date) · D2 rollback verified + watch window ≥24–48h · R1 Node 24 declared (`engines` lower-bounds caveat → 24-15 validates prod boot on Railway) · R2 graceful shutdown unit-tested · G all canonical gates green); A/B/C ownership map recorded + signed off; **pre-flight sign-off (S1 + S2 + P1 100% + T1) PASS → 24-15 UNBLOCKED**; post-flip smoke + watch-window procedure documented; rollback runbook verified. Full record in `../../../verification-artifacts/release-safety-gate-24-14.md` (the story's only deliverable — force-added; `verification-artifacts/` is gitignored). **Commit hash:** `0b3fe00c`.
+
+**Gate:** 24-13 (all modules ported) — immediately before 24-15. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-14-release-safety-cutover-gate.md) · [IMP](story-24-14-release-safety-cutover-gate.md) (full).
+
+### 24-15 — Deployment Cutover + Retire Dual-Mode + Docs Refresh
+
+**_(completed — absorbs A-items 2.6/2.7/2.13/2.16/2.17/2.18; the FINAL story — Nest is the production entry, Express is deleted)_**
+
+**Goal:** Make Nest the production entry, delete the Express surface, and refresh the API/docs contract — so epics 25–28 land on NestJS.
+
+**ACs:** Production boots from the Nest entry on Railway; `healthcheckPath` green; frontend regression-free (parity harness 100% green across all ~63 routes pre-flip, gated by 24-14); Express controllers/routes/`req.xController`/`express.d.ts` augmentation deleted; **migration-safety pre-flight — pending Prisma migrations reviewed, release deploy additive-only, `db:migrate:deploy` clean**; **openapi ↔ `ROUTE_PATTERNS` ↔ Nest registry reconciliation (no dead/misrouted endpoints)**; **`/api-docs` + `/api-docs.json` served from Nest**; **`validateConfig()` fail-fast preserved on Nest boot**; **rollback runbook + post-flip smoke + watch window (per 24-14)**; `docs/architecture.md` + conventions/KB docs updated + truth-checked; retired/stale test artifacts removed; key controller tests converted to Nest e2e.
+
+**Status:** ✅ completed — the cutover shipped in commit `011a6c6d`: production entry flipped to Nest (`start`/`railway.toml`/`Procfile` → `node dist/nest/main.js`, healthcheck `/api/v1/health`), `engines` tightened to `>=24`; the **Express surface deleted** (`src/app/` + all `modules/*/api/` + the `req.xController`/`req.geminiService` `express.d.ts` augmentation + `authMiddleware`/`cacheMiddleware`/`asyncHandler` — `dist/app/index.js` no longer emitted); `openapi.yaml` reconciled (**9 dead routes + 4 dead schemas + 2 dead tags removed**; documents the **7-path System/Auth/TTS surface** — expansion to all ~54 real routes is a flagged follow-up); `/api-docs` + `/api-docs.json` served **from Nest** (swagger-ui-express in `configure-app.ts`, verified 200); Express-only tests retired (`ReadersAudioController.test.ts` included) with coverage preserved — `test:full` 66/744 → **52/609**, the 9 parity harnesses refactored to **Nest-only regression guards** (`test:integration` 23/262 preserved); `docs/architecture.md` + backend conventions §4 + `module-level-containers.md` updated + truth-checked; **post-flip verification recorded** in `verification-artifacts/release-safety-gate-24-14.md` (prod-boot smoke green — health 200, words/pinyin guest 200, `/api-docs` + `/api-docs.json` 200, 404 `{code,message,requestId}` envelope, guest 401 `AUTH_REQUIRED`). **Commit hash:** `011a6c6d` (cutover impl) · docs-close `5834a51e` (epic-close commit 2026-08-22).
+
+**Gate:** 24-14 (release-safety gate passes). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-15-deployment-cutover.md) · [IMP](story-24-15-deployment-cutover.md) (full).
+
+### 24-16 — Docs-Truth Close + API Docs Expansion **_(BLOCKING pre-merge FIRST — all docs scope; the docs side of the merge-PR release prep)_**
+
+**Goal:** Close the docs-truth (system-map regen + coverage, index READMEs → Completed, Nest-rewritten workflow/backend-dev instructions, `validateConfig`-aligned env docs, 24-15 hash `5834a51e` filled, epic READMEs registered 16/17, `apps/backend/docs/design.md` modernized to 15 modules) and expand the **openapi** to the full live surface: `openapi.yaml` from the 7-path System/Auth/TTS surface to the full **~54-route surface** (63 registered incl. shadowed), reconciled against `ROUTE_PATTERNS` + the parity harness, with the `apps/backend/docs/api/*` per-domain specs reconciled/completed. The infra release-safety artifacts (the PR-env smoke — `apps/backend/scripts/pr-smoke.mjs` + `preview.yml` — engines, terraform/eslint comments) are **out of scope here** — they land in **24-17** and are referenced as forward-pointers.
+
+**ACs:** docs-truth close (committed + `check:system-map` green — already done in the working tree, not redone); openapi ~54-route expansion (primary remaining work item); quality gates (`check:system-map` green · `check:doc-links` on edited files · docs-audit truth-check).
+
+**Status:** 🔄 **in-progress** — docs-truth (AC 1) complete in the working tree (committed in this story); the **openapi ~54-route expansion (AC 2) is the primary remaining work item**; quality gates (AC 3) run at close. **Commit hash:** `8c027e94` (docs-truth close + openapi ~54-route expansion + format enforcement + backend comment hygiene).
+
+**Gate:** the merge PR (docs side — runs FIRST, before 24-17). **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-16-release-prep.md) · [IMP](story-24-16-release-prep.md) (full).
+
+### 24-17 — Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC **_(pre-merge SECOND — the approved final plan (Architect, owner-approved 2026-08-25): five workstreams A–E; post-merge bugs handled as hotfixes on main)_**
+
+**Goal:** Execute the Epic 24 production release across five workstreams (the approved final plan, superseding the earlier "Deployment Setup (PR Env Scope) only" and "Release Infra Setup" re-scopes; the rollback model was retired on 2026-08-25 → two-fold merge gate): **A deploy execution** — merge the PR (with the **two-fold merge gate**: the `preview.yml` smoke green + the **R1/R2 upserts verified**) → **Railway prod deploy** → **post-flip prod smoke + T+0→24h watch window** → the **T+0 rollback-decision point** (owner judgment → redeploy-previous or `git revert`, per `deployment.md` §Rollback); **B deployment enablers** built in the working tree (deployment prep): the **single-page rollback note** in `deployment.md` §Rollback (redeploy the previous Railway release primary + `git revert` fallback; the former two-layer pinned-tag model + runbook + Layer-1 rehearsal are retired), the **PR-env smoke step in `preview.yml`** (health + service booleans, auth register/login/refresh/me, guest phase-gate shape, 4xx envelope — via the in-repo script `apps/backend/scripts/pr-smoke.mjs`), and the config normalizations (root `engines` `>=24`, `terraform/main.tf` + `eslint.config.js` comments); **C env-isolation hardening** — R1 per-env `JWT_SECRET`/`JWT_REFRESH_SECRET`/`APP_ENV` upsert + `JwtService` env claim + prod rotation T+0, R2 `HEALTH_PROBE_EXTERNAL=false` probe gate + per-env GCP → preview SA `preview-service` + sandbox bucket `pinyin-pal-preview-data`, R3 Neon `parent_branch: demo` (non-blocking), R6 backup gate (doc-only), R4/R5 deferred Phase-2; **D IaC** — `terraform/README.md` + additive preview SA + sandbox bucket + the committed `env-isolation.md` extraction + the NestJS refresh of the IaC runbook + deployment guide; **E owner external validations** (incl. the new upsert/secret/demo checks). Post-merge bugs are handled as **hotfixes on main** (separate concern, not in 24-17).
+
+**ACs:** deployment executed (Workstream A: merge PR with the two-fold merge gate — smoke green + R1/R2 upserts verified → Railway prod deploy → post-flip smoke + T+0→24h watch → the T+0 rollback-decision point per `deployment.md` §Rollback); deployment enablers (Workstream B: the single-page rollback note §Rollback + PR-env smoke + config normalizations, built in the working tree); env-isolation hardening (Workstream C: R1/R2 shipped, R3 non-blocking, R6 doc-only, R4/R5 deferred); IaC (Workstream D: terraform README + additive preview SA/sandbox + `env-isolation.md` + runbook/deployment refresh); post-merge bugs → hotfix on main (out of scope, separate concern); owner external validations (Workstream E, open AC gates); quality gates (typecheck 0 · build · test:full · test:integration · lint 0 · check:module-boundaries · check:system-map · check:doc-links on edited files).
+
+**Status:** 🔄 **in-progress** — the deployment enablers (Workstream B) and the env-isolation code/CI/IaC deltas (Workstreams C–D: `JwtService` env claim + probe gate + per-env upserts + preview SA/sandbox bucket + terraform README) are complete in the working tree; the **deployment execution** (Workstream A: merge → prod deploy → post-flip smoke + watch → the T+0 rollback-decision point) and the **owner external validations** (Workstream E, pending owner) are the remaining work. **Commit hash:** _(to be filled at epic close)_.
+
+**Gate:** the merge PR (**two-fold**: smoke green + R1/R2 upserts verified) → Railway prod deploy → post-flip smoke + watch. **Docs:** [BR](../../business-requirements/epic-24-nestjs-shell-migration/story-24-17-deployment-setup-pr-env.md) · [IMP](story-24-17-deployment-setup-pr-env.md) (full).
+
+## Implementation Plan
+
+Serial order (single engineer): **24-1 → 24-2 → 24-3 → 24-4 → 24-5 → 24-6 → 24-7 → 24-8 → 24-9 → 24-10 → 24-11 → 24-12 → 24-13 → 24-14 → 24-15**.
+
+1. **24-1**: P0-1 stopgap (leak closed on Express, T1 baseline recorded + triaged) — FIRST, ships independently.
+2. **24-2 → 24-3 → 24-4**: unblocked runway (shell → HTTP parity → shared substrate).
+3. **24-5 → 24-6**: auth guards (calibrated, F6) + auth module port.
+4. **24-7**: guest identity calibration + minimal FE lockstep (sets the calibrated identity shape for 24-13 + the FE shell; the 24-5 guards target the spec).
+5. **24-8 → 24-9 → 24-10**: characters+mnemonics → radicals+foundations (current content) → audio+health.
+6. **24-11 → 24-12 → 24-13**: collision-core — review + `SrsCardState` additive schema → readers → quiz+progression (heaviest batch).
+7. **24-14**: release-safety gate (pre-flight before 24-15's flip).
+8. **24-15**: cutover — Nest production entry, Express deleted, docs refreshed.
+9. **24-16** (follow-on, **BLOCKING pre-merge FIRST**): Docs-Truth Close + API Docs Expansion — close the docs-truth (system map + coverage + index READMEs + Nest-rewritten instructions + `validateConfig`-aligned env docs + hash fills + design.md 15 modules) + expand openapi to the full ~54-route surface (63 registered incl. shadowed) + reconcile `apps/backend/docs/api/*`.
+10. **24-17** (follow-on, **pre-merge SECOND**): Deployment Setup (PR Env Scope) + Env-Isolation Hardening + IaC — the approved final plan (Architect, owner-approved 2026-08-25; rollback model retired → two-fold merge gate): **A** execute the production release (merge PR with the **two-fold merge gate** — smoke green + R1/R2 upserts verified → Railway prod deploy → post-flip prod smoke + T+0→24h watch → the T+0 rollback-decision point per `deployment.md` §Rollback), **B** keep the deployment enablers built in the working tree (the single-page rollback note in `deployment.md` §Rollback — redeploy-previous + `git revert`; `preview.yml` smoke step; root `engines` `>=24` + `terraform/main.tf`/`eslint.config.js` comments), **C** harden env isolation (R1 per-env JWT + `JwtService` env claim + prod rotation T+0; R2 probe gate + per-env GCP → preview SA `preview-service` + sandbox bucket `pinyin-pal-preview-data`; R3 Neon `parent_branch: demo` non-blocking; R6 backup gate doc-only; R4/R5 deferred Phase-2), **D** land the IaC (`terraform/README.md` + additive preview SA + sandbox bucket + `env-isolation.md` + runbook/deployment NestJS refresh), **E** owner external validations (open AC gates incl. the new upsert/secret/demo checks); post-merge bugs → hotfix on main (separate concern, not in 24-17).
+
+Serial-gating summary: **no external epic gates** — absorbed-scope stories (24-1/24-5/24-7/24-8/24-10/24-11/24-13) carry their former epic's work **inside** the epic. Timeline ≈5 weeks (4–7). 24-14 is the hard pre-flight immediately before 24-15; **24-16 (docs) is the FIRST pre-merge commit group and 24-17 (deployment setup + env-isolation hardening + IaC) the second, both before the single merge** — the merge PR is the epic's release gate (**two-fold**: smoke green + R1/R2 upserts verified).
+
+## Risks & Mitigations
+
+See the epic [BR README](../../business-requirements/epic-24-nestjs-shell-migration/README.md#risks--mitigations) for the full risk register (severity + mitigation + rollback) — now **18 items** = the 12 migration risks (renumbered to the serial story numbers) + the 6 serial risks **R1–R6**. Highlights: (1) dev-only dual-mode confirmation — High; (2) Node 24 reconciliation in 24-2 — Low; (3) unverified test baseline — Medium (24-1, epic-level hard precondition); (4) radicals/foundations on current content — Low (24-9); (5) retain `express-rate-limit` vs `@nestjs/throttler` — Medium (record in 24-3); (6) `forwardRef` vs re-injection for `progression↔quiz` — High (record in 24-13); (7) prod entry path + `nest build` at cutover — Medium (24-15); (8) stale `openapi.yaml` reconciliation — Medium (24-15); (9) Express retirement shape — Medium (24-15); (10) absorbed 25–28 surfaces ported against the calibrated shape — Medium (ADR-24-B); (11) shared-track single-PR discipline — High; (12) absorbed `SrsCardState` schema migration on the review table — Med-High (additive-only); **R1 roadmap stall — High; R2 single-point-of-failure — High; R3 parity canonizing pre-26 quiz-FE bugs — Low-Med (C-declared, tracked in 26); R4 schema migration risk (additive) — Med-High; R5 FE lockstep coupling — Med; R6 auth-surface double-touch — Med.**
 
 ## ⚠️ RETIRED — ASP.NET Core 8 migration material (historical, preserved for traceability)
 

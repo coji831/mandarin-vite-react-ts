@@ -353,6 +353,48 @@ model ReviewItem {
   @@index([userId, source])
 }
 
+// ── SrsState + SrsCardState: 4-state SRS scheduling state (Epic 24-11, ADDITIVE) ──
+// Absorbed from epic-28 as an ADDITIVE-only migration (D1 gate): new enum +
+// new table + reserved pgvector column. `ReviewItem` stays FULLY live (legacy
+// SRS + display columns kept) until the epic-28/34 destructive cleanup — no
+// ReviewItem column is dropped, renamed, or re-typed here.
+//
+// The 4-state vocabulary (T14, ts-fsrs/Anki-compatible) is the FSRS-ready
+// per-item scheduling state (`ReviewItem → SrsCardState`, inventory D5). The
+// review service/repository RE-POINTS reads/writes here with interval-doubling
+// semantics PRESERVED (simple SRS: again=1d, good=double, easy=triple, capped
+// at 60d) — FSRS scheduling replaces doubling in epic-34, NOT here.
+enum SrsState {
+  New
+  Learning
+  Review
+  Relearning
+}
+
+model SrsCardState {
+  id           String    @id @default(uuid())
+  userId       String
+  itemType     String // same business-key vocabulary as ReviewItem ("pinyin-syllable" | "tone-syllable" | "radical" | "character-radical" | ...)
+  itemId       String // identifier within the type (e.g., "b-a", "mā", "rad_0001", a glyph)
+  state        SrsState  @default(New)
+  studyCount   Int       @default(0)
+  correctCount Int       @default(0)
+  lapses       Int       @default(0) // ts-fsrs Card.lapses — pinned by inventory D5/T19 (lands with the migration; no lapse derivation before ActivityEvent/SrsCardState per gap G1)
+  lastReviewed DateTime?
+  nextReview   DateTime  @default(now())
+  intervalDays Int       @default(1)
+  phaseId      Int       @default(1)
+  source       String    @default("viewed")
+  vector       Unsupported("vector")? // reserved pgvector column (FV14 hedge) — EMPTY until RAG-1 (epic-21 provisioned pgvector on Neon; extension enabled in the migration)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, itemType, itemId])
+  @@index([userId, nextReview])
+  @@index([userId, phaseId])
+  @@index([userId, source])
+}
+
 model MnemonicStory {
   id             String   @id @default(uuid())
   characterGlyph String

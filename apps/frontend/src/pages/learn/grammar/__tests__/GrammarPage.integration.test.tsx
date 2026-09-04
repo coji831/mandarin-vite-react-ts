@@ -22,7 +22,7 @@ const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
 
 const SEARCH_LABEL = "Search grammar by keyword or pattern name...";
 
-/** Phase-gate body — guests see currentPhase 4, but tests pin a specific phase. */
+/** Phase-gate body — guests are Phase 1 (calibrated, Story 24-7); tests pin a specific phase. */
 function phaseGateBody(currentPhase: number) {
   return {
     id: `pg-${currentPhase}`,

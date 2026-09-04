@@ -1,7 +1,7 @@
 ---
 purpose: "High-level system design decisions, architectural patterns, and technology choices"
 status: active
-last-verified: 2026-08-15
+last-verified: 2026-08-24
 type: architecture
 ---
 
@@ -29,7 +29,7 @@ type: architecture
 PinyinPal is a **full-stack Mandarin learning platform** built with:
 
 - **Frontend**: React 19.1.0 + TypeScript + Vite (deployed to Vercel)
-- **Backend**: Node.js + Express (deployed to Railway)
+- **Backend**: Node.js + NestJS 11 (Express adapter) (deployed to Railway)
 - **Database**: PostgreSQL with Prisma ORM (hosted on Neon)
 - **Cache**: Redis (Upstash) for API response caching
 - **External APIs**: Google Cloud TTS, Google Cloud Storage, Gemini AI
@@ -42,7 +42,7 @@ PinyinPal is a **full-stack Mandarin learning platform** built with:
 mandarin-vite-react-ts/
 ├── apps/
 │   ├── frontend/          # React application (Vite + TypeScript)
-│   └── backend/           # Express API (Node.js + Prisma)
+│   └── backend/           # NestJS API (Node.js + Prisma)
 ├── packages/
 │   ├── shared-types/      # Shared TypeScript interfaces
 │   ├── shared-constants/  # API routes, HSK levels, regex patterns
@@ -69,19 +69,19 @@ mandarin-vite-react-ts/
 
 **Layer Separation (Modular Monolith):**
 
-- **App Layer** (`src/app/`): Entry point, DI composition root (`container.ts`), route registration (`routes.ts`)
-- **Module Layer** (`src/modules/*/`): Per-domain modules containing `api/` (controllers/routes), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
+- **App Layer** (`src/nest/`): NestJS 11 shell — entry (`main.ts`), composition root (`app.module.ts`), shared app config (`configure-app.ts`), HTTP-layer parity (exception filter, requestId middleware, rate-limit). The Express `src/app/` (index/routes/container) is retired.
+- **Module Layer** (`src/modules/*/`): Per-domain modules containing `nest/` (Nest controllers/modules), `services/` or `use-cases/` (business logic), `repositories/` (data access), `types/` (typed interfaces)
   - Current modules (15): `audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`
-  - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/api/` and mounts the public `POST /v1/tts` wire path.
+  - **`modules/audio/`** — the audio capability (renamed from the scaffolded `modules/tts` — capability modules are named after the capability, never the provider): HTTP-free `AudioService` facade → `AudioSynthesizer.synthesizeToPath` (path-parameterized exists-or-synthesize primitive) → `AudioPathCache` (Redis path cache + per-key single-flight) → `AudioUrlSigner` (signed URLs). HTTP mapping lives in `modules/audio/nest/` and mounts the public `POST /v1/tts` wire path.
 - **Shared Layer** (`src/shared/`): Cross-cutting — `infrastructure/` (external clients, cache, database, security), `middleware/`, `utils/`, `config/`. **Never contains capability logic**: `shared/infrastructure/external/` holds Tier-0 raw clients (`GCSClient`, `GoogleTTSClient`, `GeminiClient`) and the Tier-1 resilient `GeminiService` (relocated from `shared/services/`). `shared/services/` and `shared/tts/` are retired.
 
 **Dependency Rule:** API → Services/Use-Cases → Repositories → Infrastructure, never reverse
 
 **Key Design Decisions:**
 
-1. **Single Express App** (dev + prod): Unified behavior, no dual-backend maintenance
+1. **NestJS 11 production entry** (`node dist/nest/main.js`): the Express surface is retired; the shell runs on the Express adapter with identical CORS / `trust proxy 1` / body-parser / rate-limit semantics
 2. **ESM Modules**: TypeScript source uses `.ts` files; the `.js` extension in import paths refers to compiled output (Node.js ESM requires file extensions in imports)
-3. **Dependency Injection**: Constructor injection with direct instantiation at composition root
+3. **Dependency Injection**: Nest DI (providers + `useFactory`) over the modulith modules and the shared providers (`SharedModule`/`DatabaseModule`); services never touch Prisma directly
 4. **Fail-Open Caching**: Redis failures never block requests (degrades to API calls)
 5. **Repository Pattern**: All database access through repositories (abstracts Prisma)
 6. **Types Directory**: Each module has `types/` with barrel re-exports; no `Record<string, unknown>` casts, no `as unknown as` double casts
@@ -125,7 +125,7 @@ mandarin-vite-react-ts/
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
   - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useAudioManager / useAudioItemPlayback for audio playback)
-  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group — Story 22.4)
+  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group)
 
 ### Component Hierarchy
 
@@ -262,7 +262,7 @@ Static content (characters, words, radicals, etc.) follows a separate path from 
 
 #### Seed Pipeline (all-in-DB)
 
-`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **32-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). Since the hash-gate (Story 22.1) the pipeline no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (24 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe); **Chengyu (steps 30–32)** — `syncChengyu` syncs `Chengyu` → `ChengyuExample` → `ChengyuRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
+`apps/backend/prisma/seed.ts` reads the per-table aggregate JSON files from `content/seed/phase2/` and runs a **32-step hash-gated delta sync** into Prisma tables (run via `npx prisma db seed` from `apps/backend`; idempotent — safe to re-run). The hash-gated delta sync no longer blind-inserts with `createMany({ skipDuplicates: true })`: every run computes a per-row SHA-256 `content_hash CHAR(64)` over the DB-bound payload and writes only the delta — **unchanged rows → 0 writes**, edited rows propagate **and bump `content_version`**, NULL-hash rows (post-migration first run) reconcile without a version bump, and removed rows are pruned (log-only by default). Tables fall into three sync buckets: **Bucket A** — hash-gated diff via `syncTable` (24 tables; `Character`/`Word` use a chunked raw `INSERT … ON CONFLICT … DO UPDATE` bulk path); **Bucket B** — `SeedCheckpoint`-gated rebuild via `syncDerived` (derived projection tables: `CharacterReading`, `WordCharacter`, … deleted + rebuilt on change, checkpoint updated only after success); **Grammar (steps 27–29)** — `syncGrammar` syncs `GrammarPattern` → `GrammarExample` → `GrammarPatternRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe); **Chengyu (steps 30–32)** — `syncChengyu` syncs `Chengyu` → `ChengyuExample` → `ChengyuRelation` inside ONE 120s interactive transaction (all-or-nothing, FK-safe). The reference tables added in migration `20260731045648_add_reference_tables` seed first (**Radical** 20, **Tone** 5, **PinyinPhoneme** 50, **TonePair** 6, **ToneRule** 3 — steps 2–6), then Characters → Readings/Radicals → WordCharacters → MeasureWordWord, etc. Production reads content through Prisma repositories only — `content/` is authoring source, never a runtime read. GCS serves binary assets only.
 
 See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.md) (32-step order + FK table, regeneration flow, runbook, verification, idempotency rules).
 
@@ -343,7 +343,7 @@ Computed per-user gate status is served by `GET /api/v1/progression/gates` (`ROU
 
 The route uses `optionalAuth` — **guest users receive an all-passed response**; authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
 
-> **Known gap (Epic 21):** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
+> **Known gap:** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
 
 ### Leech Detection
 
@@ -399,17 +399,17 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 **Production Environment:**
 
-| Component | Platform | Trigger          | Runtime                     |
-| --------- | -------- | ---------------- | --------------------------- |
-| Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build)     |
-| Backend   | Railway  | Push to `main`   | Node.js 20 (Express server) |
-| Database  | Neon     | Manual migration | PostgreSQL 17               |
-| Cache     | Upstash  | Always-on        | Redis 7                     |
+| Component | Platform | Trigger          | Runtime                 |
+| --------- | -------- | ---------------- | ----------------------- |
+| Frontend  | Vercel   | Push to `main`   | Node.js 20 (Vite build) |
+| Backend   | Railway  | Push to `main`   | Node.js 24 (NestJS 11)  |
+| Database  | Neon     | Manual migration | PostgreSQL 17           |
+| Cache     | Upstash  | Always-on        | Redis 7                 |
 
 **Development Environment:**
 
 - **Frontend**: Vite dev server (port 5173) with HMR
-- **Backend**: Express with `tsx watch` (port 3001) hot reload
+- **Backend**: NestJS with `tsx watch` (port 3001) hot reload
 - **Proxy**: Vite proxies `/api/*` to localhost:3001 for seamless development
 
 **CI/CD:**

@@ -1,18 +1,18 @@
 ---
 purpose: "Backend modulith architecture — modules, shared infrastructure, layer responsibilities"
 status: active
-last-verified: 2026-08-02
-covers: auth, characters, foundations, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, audio, words
+last-verified: 2026-08-23
+covers: auth, characters, chengyu, foundations, grammar, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, audio, words
 type: architecture
 ---
 
 # Backend Design
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 23, 2026
 
 ## Purpose
 
-Provides an Express server for development and production, supporting:
+Provides a NestJS 11 (Express platform adapter) server for development and production, supporting:
 
 - Text-to-Speech (TTS) generation via Google Cloud TTS
 - Quiz sessions and spaced repetition
@@ -28,14 +28,16 @@ All source files are TypeScript (`.ts`). The `.js` extension in import paths ref
 
 ```
 src/
-├── app/                          ← Express app bootstrap, DI container, routes
-│   ├── index.ts                  ← Express app entry point
-│   ├── container.ts              ← DI composition root
-│   └── routes.ts                 ← Route routers registered under /v1/
-├── modules/                      ← Business modules
+├── nest/                         ← NestJS 11 shell (Express platform adapter)
+│   ├── main.ts                   ← NestJS production entry point (node dist/nest/main.js)
+│   ├── app.module.ts             ← Root module — wires feature modules + shared infra
+│   └── configure-app.ts          ← Express-adapter config: /api prefix, CORS, body parsers, swagger, error bridge
+├── modules/                      ← Business modules (Nest controller + module under each <name>/nest/)
 │   ├── auth/                     ← Simple CRUD (login, register, refresh)
 │   ├── characters/               ← Read-only character detail, phonetic, homophones, search, frequency APIs
+│   ├── chengyu/                  ← Read-only idiom reference: search + detail (Prisma)
 │   ├── foundations/              ← Simple CRUD (pinyin, tones, strokes)
+│   ├── grammar/                  ← Read-only grammar pattern reference: search + detail (Prisma)
 │   ├── health/                   ← Simple (health check)
 │   ├── mnemonics/                ← AI mnemonic generation (Gemini)
 │   ├── phonetic-clusters/        ← DB-driven phonetic cluster browser
@@ -63,7 +65,7 @@ src/
 
 | Layer                  | Responsibility                        | Location                                    |
 | ---------------------- | ------------------------------------- | ------------------------------------------- |
-| **API (Controller)**   | Parse request, call service, respond  | `modules/<name>/api/`                       |
+| **API (Controller)**   | Parse request, call service, respond  | `modules/<name>/nest/`                      |
 | **Service / Use-Case** | Business logic, orchestration         | `modules/<name>/services/` or `strategies/` |
 | **Repository**         | Data access (via Prisma)              | `modules/<name>/repositories/`              |
 | **Infrastructure**     | External APIs, cache, database client | `shared/infrastructure/`                    |
@@ -72,7 +74,7 @@ src/
 
 **Modules** (`modules/`):
 
-- Each module self-contains its own `api/` (controllers + routes), `services/` (business logic), `repositories/` (data access), and `__tests__/`
+- Each module self-contains its own `nest/` (Nest controllers + module), `services/` (business logic), `repositories/` (data access), and `__tests__/`
 - Modules expose public API via `index.ts` — only services, never internal files
 - Quiz module is the largest, with dedicated `strategies/` directory for Clean Architecture
 
@@ -103,8 +105,8 @@ src/
 
 ### Key Features
 
-- **Modular Monolith**: 13 self-contained modules, each owning its domain
-- **Dependency Injection**: Constructor injection with direct instantiation in `container.ts` — services receive dependencies via constructor
+- **Modular Monolith**: 15 self-contained modules, each owning its domain
+- **Dependency Injection**: NestJS `@Module` DI — feature modules declare their controllers/providers and import shared infrastructure via `SharedModule`/`DatabaseModule`; services receive dependencies via constructor injection
 - **Fail-Open Caching**: Redis failures degrade gracefully to live API calls
 - **Repository Pattern**: All database access through repositories (abstracts Prisma)
 - **Error Tracing**: Request IDs propagated through all layers
@@ -179,16 +181,26 @@ Key differences from the legacy session-based system:
 
 ### Service Initialization
 
-All services are initialized via the DI composition root in `src/app/container.ts`:
+Services are bootstrapped by the NestJS 11 shell in `src/nest/` — there is no
+hand-rolled `container.ts` composition root:
 
-```js
-// container.ts — composition root
-import { CacheFactory } from "../shared/infrastructure/cache/CacheFactory.js";
-import { config } from "../shared/config/index.js";
+- `src/nest/main.ts` — production entry (`node dist/nest/main.js`): runs
+  `validateConfig()`, then `NestFactory.create(AppModule, { bodyParser: false })`
+- `src/nest/app.module.ts` — root module: wires the 15 feature modules plus
+  `SharedModule` (which imports `DatabaseModule`) and `GuardsModule` (auth
+  guards); registers the global `AppExceptionFilter` via `APP_FILTER`
+- `src/nest/configure-app.ts` — Express-adapter config: `/api` prefix, CORS
+  allowlist, body parsers, requestId middleware, per-route rate limiters,
+  swagger (`/api-docs`)
+- `src/nest/exception.filter.ts` — `mountExpressErrorBridge` installs the
+  `{ code, message, requestId }` error envelope last
 
-export const cacheService = await CacheFactory.create("default");
-// ... exported instances: repositories, services, infrastructure clients
-const exists = await gcsService.fileExists(path); // Auto-initializes
+```ts
+// src/nest/main.ts — NestJS composition
+const app = await NestFactory.create(AppModule, { bodyParser: false });
+configureNestShellApp(app); // /api prefix, CORS, body parsers, requestId, rate limits, swagger
+mountExpressErrorBridge(app); // Express error bridge → {code, message, requestId} envelope
+await app.listen(config.port, "0.0.0.0");
 ```
 
 ### Cache Paths
@@ -197,39 +209,41 @@ Defined in `shared/config/index.ts`. Cache layer with Redis for general caching 
 
 ## Usage Examples
 
+In the Nest shell there is no manual composition root (`container.ts`) —
+services are providers declared by their module and injected via constructor DI.
+
 ### Generate TTS Audio
 
-The `AudioService` facade lives in `modules/audio` (constructed at the
-composition root with the shared infra clients via constructor DI):
+`AudioModule` (`modules/audio/nest/audio.module.ts`) provides `AudioService`
+(constructor-injected with `CacheService` + `GCSClient` + `GoogleTTSClient`)
+and exports it for cross-module DI (e.g. `HealthModule`):
 
 ```typescript
-import { AudioService } from "./modules/audio/index.js";
-import { CacheFactory } from "./shared/infrastructure/cache/CacheFactory.js";
-import { GCSClient } from "./shared/infrastructure/external/GCSClient.js";
-import { GoogleTTSClient } from "./shared/infrastructure/external/GoogleTTSClient.js";
-
-const cacheService = await CacheFactory.create("default");
-const audioService = new AudioService(cacheService, new GCSClient(), new GoogleTTSClient());
-const { audioUrl, cached } = await audioService.getTtsUrl("你好世界", "cmn-CN-Wavenet-B");
+// AudioNestController — POST /v1/tts (@UseGuards(OptionalAuthGuard), @HttpCode(200))
+const { text, voice } = body ?? {}; // voice defaults via audioConfig.voiceDefault
+return this.audioService.getTtsUrl(text, voice); // { audioUrl, cached }
 ```
 
 ### Submit Quiz Attempt
 
+`QuizModule` provides `QuizService` (constructor-injected with `QuizRepository`
+
+- `ProgressionService` via `forwardRef`), consumed by `QuizNestController`:
+
 ```typescript
-import { quizAttemptService } from "./app/container.js";
-const result = await quizAttemptService.submitAttempt({
-  userId: "user-123",
-  wordId: "hsk1_001",
-  mode: "multiple_choice",
-  answer: "nǐ hǎo",
-});
-// Returns: { correct, feedback?, xpEarned, nextReview? }
+// QuizNestController — POST /v1/quiz/attempts/:id/answers
+const answer = await this.quizService.submitAnswer(id, body);
+// Registered user → persisted; guest → session-local mock answer
 ```
 
 ### Get AI Feedback
 
+The AI-feedback handler (formerly Express `api/aiFeedbackRoutes.ts`) now lives
+on `QuizNestController` (`POST /v1/quiz/feedback`, `@UseGuards(RequireAuthGuard)`),
+which injects `GeminiService` (provided by `SharedModule`):
+
 ```typescript
-import { aiFeedbackService } from "./app/container.js";
-const feedback = await aiFeedbackService.getFeedback("user-123", "ma1", "ma3");
-// Returns: { explanation, errorType, suggestion }
+const prompt = buildFeedbackPrompt({ wordId, userAnswer, correctAnswer, questionType });
+const explanation = await this.geminiService.generateText(prompt, { timeout: 5000 });
+// Returns: { explanation, errorType: "ai_feedback" }
 ```

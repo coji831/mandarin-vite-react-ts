@@ -16,7 +16,6 @@
 
 import { createLogger } from "../../../shared/utils/logger.js";
 import type { PassageRecord, PassageContent } from "../types/readers.js";
-import { passageHashFor, passagePath } from "../../../modules/audio/index.js";
 import type { AudioServiceLike } from "../../../modules/audio/index.js";
 import type {
   PassageAudioResponse,
@@ -27,12 +26,29 @@ import type {
 const logger = createLogger("ReadersAudioService");
 
 /**
+ * Passage audio path helpers — the audio-domain hashing/path primitives
+ * (`passageHashFor` / `passagePath` from `modules/audio/services/paths.ts`).
+ * Constructor-injected (DI) instead of imported directly from `modules/audio`
+ * so the Nest shell consumes them from the ported `AudioModule` (Story 24-12 —
+ * no direct `modules/audio` function import in Nest land).
+ */
+export interface PassagePathHelpers {
+  /** Passage-level hash: SHA256 of the concatenated sentence texts. */
+  passageHashFor(sentenceTexts: string[]): string;
+  /** Passage sentence path: `tts/{passageHash}/{index}.mp3` (D4). */
+  passagePath(passageHash: string, index: number): string;
+}
+
+/**
  * ReadersAudioService — resolves audio URLs for all sentences in a passage.
  * Delegates to the audio service (synthesizeToPath) which owns synthesis,
  * GCS upload, and signing — no hand-rolled GCS fast-path here.
  */
 export class ReadersAudioService {
-  constructor(private readonly audioService: AudioServiceLike) {
+  constructor(
+    private readonly audioService: AudioServiceLike,
+    private readonly passagePathHelpers: PassagePathHelpers,
+  ) {
     logger.info("Initialized ReadersAudioService");
   }
 
@@ -54,7 +70,7 @@ export class ReadersAudioService {
     }
 
     // Passage-level hash from concatenated sentence texts
-    const passageHash = passageHashFor(sentences.map((s) => s.text));
+    const passageHash = this.passagePathHelpers.passageHashFor(sentences.map((s) => s.text));
 
     logger.info(
       `Resolving audio for passage ${passage.id} (hash: ${passageHash}, ${sentences.length} sentences)`,
@@ -92,7 +108,7 @@ export class ReadersAudioService {
     try {
       const result = await this.audioService.synthesizeToPath(
         text,
-        passagePath(passageHash, index),
+        this.passagePathHelpers.passagePath(passageHash, index),
       );
       return {
         url: result.audioUrl,

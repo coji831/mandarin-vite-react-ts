@@ -19,6 +19,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
+    "format:all": "prettier --write \"docs/**\" \"apps/**\" \"packages/**\" \"scripts/**\" \"tools/**\" \".github/**\" \"*.md\" \"*.json\"",
+    "format:check": "prettier --check \"docs/**\" \"apps/**\" \"packages/**\" \"scripts/**\" \".github/**\" \"*.md\" \"*.json\"",
     "cleanup:radical-content": "npx tsx scripts/cleanup-radical-content.ts",
     "validate:radical-content": "npx tsx scripts/validate-radical-content.ts",
     "validate:grammar-content": "npx tsx scripts/validate-grammar-content.ts",
@@ -41,7 +43,7 @@
     "msw-storybook-addon": "^2.0.7"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=24"
   },
   "overrides": {
     "uuid": "^11.0.0"

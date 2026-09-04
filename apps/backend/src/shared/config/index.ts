@@ -129,7 +129,9 @@ export const redisConfig = {
 
   connectTimeout: 10_000,
   keepAlive: 30_000,
-  keyPrefix: "mandarin:",
+  // Local dev can isolate its Redis keyspace via REDIS_KEY_PREFIX
+  // (e.g. "mandarin:dev:"); prod leaves it unset → "mandarin:" (unchanged).
+  keyPrefix: process.env.REDIS_KEY_PREFIX || "mandarin:",
 };
 
 export const cacheConfig = {

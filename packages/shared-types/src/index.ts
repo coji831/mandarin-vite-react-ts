@@ -17,6 +17,13 @@ export interface PhaseGate {
   phase2Passed: boolean;
   phase3Passed: boolean;
   phase4Unlocked: boolean;
+  /**
+   * Calibrated guest identity (Story 24-7): present only on the session-local
+   * guest gate (`createGuestPhaseGate` → `{currentPhase: 1, isGuest: true}`).
+   * Additive/optional so `isPhaseGate` and `isGuestPhaseGate` keep working for
+   * persisted user gates.
+   */
+  isGuest?: boolean;
   qualificationScore: number | null;
   placedPhase: number | null;
   phase1Retention: number | null;
@@ -29,7 +36,9 @@ export interface PhaseGate {
 
 /**
  * Checks if a response is a guest-unlocked phase gate (vs a real persisted one).
- * Guest phase gates have id === "guest-unlocked" and all phases accessible.
+ * Guest phase gates have `id === "guest-unlocked"` — the calibrated guest
+ * identity (Story 24-7) unlocks exactly Phase 1 (`{currentPhase: 1,
+ * isGuest: true}`), never all content.
  */
 export function isGuestPhaseGate(
   gate: PhaseGate | { id: string },

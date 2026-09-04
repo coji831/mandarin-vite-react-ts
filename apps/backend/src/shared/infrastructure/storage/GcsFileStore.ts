@@ -1,20 +1,22 @@
 import { createLogger } from "../../utils/logger.js";
 import { GCSClient } from "../external/GCSClient.js";
 
-const gcsClient = new GCSClient();
-
 const logger = createLogger("GcsFileStore");
 
 export class GcsFileStore {
+  private gcsClient: GCSClient;
   private bucket: string | undefined;
 
-  constructor({ bucket }: { bucket?: string } = {}) {
+  constructor({ bucket, gcsClient }: { bucket?: string; gcsClient?: GCSClient } = {}) {
+    // Lazy by default — constructors take nothing; a client is created on
+    // demand unless a shared GCSClient is injected (Nest DI, story 24-4).
+    this.gcsClient = gcsClient ?? new GCSClient();
     this.bucket = bucket;
   }
 
   async exists(objectPath: string): Promise<boolean> {
     try {
-      return await gcsClient.fileExists(objectPath, this.bucket);
+      return await this.gcsClient.fileExists(objectPath, this.bucket);
     } catch (err) {
       logger.error("GCS exists failed", err);
       return false;
@@ -23,13 +25,13 @@ export class GcsFileStore {
 
   async get(objectPath: string): Promise<object | null> {
     try {
-      const exists = await gcsClient.fileExists(objectPath, this.bucket);
+      const exists = await this.gcsClient.fileExists(objectPath, this.bucket);
       if (!exists) {
         logger.cacheMiss(objectPath);
         return null;
       }
 
-      const buf = (await gcsClient.downloadFile(objectPath, this.bucket)) as Buffer;
+      const buf = (await this.gcsClient.downloadFile(objectPath, this.bucket)) as Buffer;
       const str = buf.toString("utf-8");
       logger.cacheHit(objectPath);
       try {
@@ -55,10 +57,10 @@ export class GcsFileStore {
     try {
       // If caller provided a Buffer and a non-JSON content type, write raw bytes
       if (contentType !== "application/json" && Buffer.isBuffer(obj)) {
-        await gcsClient.uploadFile(objectPath, obj, contentType, this.bucket);
+        await this.gcsClient.uploadFile(objectPath, obj, contentType, this.bucket);
       } else {
         const buf = Buffer.from(JSON.stringify(obj));
-        await gcsClient.uploadFile(objectPath, buf, contentType, this.bucket);
+        await this.gcsClient.uploadFile(objectPath, buf, contentType, this.bucket);
       }
       logger.info(`Wrote cache: ${objectPath}`);
     } catch (err) {
@@ -69,7 +71,7 @@ export class GcsFileStore {
 
   async getSignedUrl(objectPath: string, expirySeconds: number = 3600): Promise<string | null> {
     try {
-      const file = gcsClient.getGCSFile(objectPath, this.bucket);
+      const file = this.gcsClient.getGCSFile(objectPath, this.bucket);
       const expiryMillis = Date.now() + expirySeconds * 1000;
       const [url] = await file.getSignedUrl({ action: "read" as const, expires: expiryMillis });
       return url;

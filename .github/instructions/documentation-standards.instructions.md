@@ -1,6 +1,6 @@
 ---
 description: "Use when writing or updating business requirements, implementation docs, or knowledge base articles. Covers template compliance, high-level guidelines, technical challenges documentation, and KB extraction."
-applyTo: "docs/**/*.md, apps/frontend/src/features/**/docs/**/*.md, apps/backend/src/modules/**/docs/**/*.md, apps/backend/docs/**/*.md"
+applyTo: "docs/**/*.md, docs/**/*.html, apps/frontend/src/features/**/docs/**/*.md, apps/backend/src/modules/**/docs/**/*.md, apps/backend/docs/**/*.md"
 ---
 
 # Documentation Standards
@@ -35,7 +35,40 @@ applyTo: "docs/**/*.md, apps/frontend/src/features/**/docs/**/*.md, apps/backend
 1. Open the template at `docs/templates/` to cross-check current structure
 2. Update content — do NOT add sections not in the template
 3. Bump `last-verified` (frontmatter) and the body `**Last Updated:**` footer — both in the same commit (see the Freshness rule below)
-4. For high-level docs (`docs/architecture.md`, `README.md`): use descriptive feature names, never story/epic numbers
+4. Release-scoped references: durable/evergreen/high-level docs describe the system by feature name + date, never by story/epic/PR number — see **Release-scoped references (epic/story/PR numbers)** below for the full scope, exceptions, and pre-commit grep
+
+### Release-scoped references (epic/story/PR numbers) — where they may NOT appear
+
+Durable, evergreen, and high-level docs describe the system by FEATURE NAME, never by release number. Story/epic ids and `PR #N` are scoped to the epic's own files; once a change ships, its docs must stand on their own.
+
+**Scope (this rule applies to):** `docs/architecture.md`, root + package READMEs (any `README.md` outside the epic folders), `terraform/README.md`, durable guides under `docs/guides/**` (getting-started, setup, operations, data, conventions, integrations — NOT epic folders under `docs/business-requirements` / `docs/issue-implementation`), evergreen KB articles, and `.html` onboarding under `docs/guides/` (e.g. `iac-onboarding.html`). It also applies to leaf `purpose:` frontmatter, because that string feeds the generated `docs/README.md` map row.
+
+**Exceptions — release-scoped references ARE allowed when:**
+
+1. The doc is itself the epic/story's file (BR/IMP READMEs + story files), an epic index, a decision/planning record, or an archive/retired leaf preserved for traceability.
+2. The doc's own frontmatter declares it release-scoped (`tags:` contains the epic id or `release`) AND its `purpose:` is that release (e.g. an env-isolation verification artifact for a named release).
+3. The reference is a SCOPED CROSS-LINK to a story/epic BR/IMP doc (a link, not a claim), or a KB "When Adopted" / "Related" provenance field.
+4. It is a clearly-marked historical note pinned to a DATE ("as of 2026-08-22", "retired 2026-08-25", "added August 2026") — the date is mandatory; a bare "since story 24-17" is never enough.
+
+✅ DO name the durable system property and pin history to a date:
+
+- "The backend is a NestJS 11 modulith" (not "since Epic 24 the backend is…")
+- "The additive-only migration set (`20260821175536_add_srs_card_state`, 2026-08) is never rolled back" (not "the Epic 24 migration")
+- "Per-PR preview isolation: per-env JWT + `JwtService` env claim + sandbox SA" (not "NEW (Epic 24)" / "hardened in story 24-17")
+- "…were retired when the single-page rollback note landed (2026-08-25)" (not "retired in 24-17")
+- "See [story BR](../business-requirements/…/story-24-17-….md)" — scoped cross-links OK.
+
+❌ DON'T write behavior as if the release id were a durable system property:
+
+- "Since Epic 24 / after epic 24 / pre-24-17, the backend…"
+- "The Epic 24 migration is additive-only"
+- "**NEW (Epic 24).**"
+- "Why no Develop (the 24-17 rule)"
+- "(Story 22.1)" as the label for a current pipeline step, with no date
+
+**Truth-check before commit:** run
+`grep -rniE "epic-[0-9]+|epic [0-9]+|story-[0-9]+-[0-9]+|story [0-9]+\.[0-9]+|PR #[0-9]+"`
+over every file in the Scope list above; every hit must satisfy an Exception above, or be rewritten to a descriptive feature name + date. `purpose:` edits feed the generated `docs/README.md` map — regenerate it with `npm run generate:system-map` and gate it with `npm run check:system-map` (the map and its leaves must not disagree). Bump `last-verified` and `Last Updated` in the same commit.
 
 ### Extracting Knowledge Base Articles
 

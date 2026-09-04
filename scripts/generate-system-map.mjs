@@ -196,7 +196,7 @@ const LAYER_ROOTS = {
       { path: "docs/audits", branch: "Audits", include: /\.md$/ },
       { path: "docs/automation", branch: "Automation", include: /\.md$/ },
       { path: "docs/visualizations", branch: "Visualizations", include: /\.html$/ },
-      { path: "docs/guides/infrastructure-visualization.html", branch: "Visualizations" },
+      { path: "docs/guides/iac-onboarding.html", branch: "Visualizations" },
       { path: "docs/guides/prompt-templates.md", branch: "Templates" },
       { path: "apps/backend/docs", branch: "Backend docs", single: true, include: /\.md$/ },
       {
@@ -697,15 +697,18 @@ function collectContent() {
 
 function collectInfra() {
   const infraDoc = "docs/guides/operations/infrastructure.md";
+  const terraformDoc = "terraform/README.md";
   const dbRedirectTarget = "docs/guides/setup/database.md";
   return [
     {
       unit: "terraform/",
       code: true,
-      docPath: null,
-      docDisplay: null,
-      meta: null,
-      klass: { cat: CAT.UNDOCUMENTED, label: CAT.UNDOCUMENTED },
+      docPath: exists(terraformDoc) ? terraformDoc : null,
+      docDisplay: exists(terraformDoc) ? terraformDoc : null,
+      meta: exists(terraformDoc) ? readLeafMeta(terraformDoc) : null,
+      // klass deliberately unset — buildAreas() classifies from docPath/meta, so
+      // terraform/ becomes `documented` once terraform/README.md exists (with its
+      // front-matter freshness marker) instead of being hardcoded undocumented.
       gate: "terraform plan workflows",
       area: "A8",
     },

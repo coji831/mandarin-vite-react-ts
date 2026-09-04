@@ -1,6 +1,6 @@
 ﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** August 21, 2026
+**Last Updated:** August 24, 2026
 
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
@@ -59,10 +59,11 @@ See `.github/instructions/uiux-design-protocol.instructions.md` for the full pro
 
 **Frontend**: React + TypeScript via Vite; feature folders in `apps/frontend/src/features/`.
 **State**: Context + reducers + shared Zustand stores: `userStore` (userId/preferences), `uiStore` (loading/error/selectedList), `hubStore` (LexicalHub overlay); plus feature-scoped stores (mnemonicStore, quizSessionStore, readingStore, audioStore). Device identity read from localStorage (deviceUserId); stores are not persisted.
-**Backend**: Express + Prisma in `apps/backend/` (NestJS 11 shell-swap in progress per D1, parallel with epics 25–28; 29+ land on NestJS); deployed to Railway in production, runs locally on port 3001 for development.
-**Routing**: React Router; constants in `apps/frontend/src/shared/constants/paths.ts`.
-**Business & planning**: Epic work follows the RATIFIED business model (`docs/business/business-model.md`, BM-1) and the approved epic plan (`docs/planning/epics-25-40.md`).
-**Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
+
+- **Backend**: NestJS 11 (Express platform adapter) + Prisma in `apps/backend/` (production backend); deployed to Railway in production, runs locally on port 3001 for development.
+  **Routing**: React Router; constants in `apps/frontend/src/shared/constants/paths.ts`.
+  **Business & planning**: Epic work follows the RATIFIED business model (`docs/business/business-model.md`, BM-1) and the approved epic plan (`docs/planning/epics-25-40.md`).
+  **Authentication**: JWT with httpOnly cookies, bcrypt password hashing, refresh token rotation.
 
 ## 🧩 Component Reuse
 

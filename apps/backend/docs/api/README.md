@@ -1,17 +1,17 @@
 ---
 purpose: "Backend API reference — 7 domains (auth, health, caching, TTS, AI feedback, errors, env)"
 status: active
-last-verified: 2026-08-02
+last-verified: 2026-08-22
 type: guide
 ---
 
 # Backend API Specification
 
-**Last Updated:** August 2, 2026
+**Last Updated:** August 22, 2026
 
-API reference for the Express backend server, covering the following domains. Each domain has its own specification file.
+API reference for the NestJS backend server, covering the following domains. Each domain has its own specification file.
 
-> ⚠️ **Scope note:** This reference is **not** a complete API reference for the whole backend. It covers the 7 domains listed below (auth, health, caching, TTS, AI feedback, error format, environment). The modulith has 13 modules; APIs for the **quiz** (incl. strategies + sandhi drill), **readers** (passages/sessions/bookmarks/audio), **characters**, **radicals**, **phonetic-clusters**, **words** (incl. measure words), **mnemonics**, **progression**, **review**, and **foundations** modules are documented in their respective epic/feature docs and are not yet captured here.
+> ⚠️ **Scope note:** This reference covers the 7 operational domains listed below (auth, health, caching, TTS, AI feedback, error format, environment). The modulith has **15 modules** (audio, auth, characters, chengyu, foundations, grammar, health, mnemonics, phonetic-clusters, progression, quiz, radicals, readers, review, words — pinyin lives under foundations). The **complete** machine-readable API surface — all 54 route paths across every module — is captured in the OpenAPI spec at [`src/shared/docs/openapi.yaml`](../../src/shared/docs/openapi.yaml). Module-specific endpoint details live there (plus the per-module epic/feature docs); the domain files here document the cross-cutting operational concerns.
 
 ## Domain Index
 
@@ -27,8 +27,8 @@ API reference for the Express backend server, covering the following domains. Ea
 
 ## Common Patterns
 
-- **Base URL**: All endpoints are relative to `http://localhost:3001` (dev) or production URL
-- **Auth**: Protected endpoints require `Authorization: Bearer <access_token>` header
-- **Rate Limiting**: Login: 5/min per IP; Quiz: 100/hour per user; AI Feedback: 10/min per user
-- **Error Format**: All errors follow `{ code, message, requestId, metadata? }` structure
+- **Base URL**: All endpoints are relative to `http://localhost:3001/api` (dev) or `https://mandarin-vite-react-ts-production.up.railway.app/api` (production)
+- **Auth**: Protected endpoints require `Authorization: Bearer <access_token>` header (optional-auth endpoints proceed as guests without one)
+- **Rate Limiting**: Login: 5/min per IP; Quiz: 100/hour per user; AI Feedback: 10/min per user; Passage generation: 5/day per user
+- **Error Format**: All errors follow the `{ code, message, requestId }` envelope
 - **Caching**: TTS (24h TTL), AI Feedback (24h TTL)

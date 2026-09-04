@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-08-21 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-09-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 
@@ -11,36 +11,36 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Area | Documented | Partial | Undocumented | Active | Total |
 | --- | --- | --- | --- | --- | --- |
-| A1 Frontend Features | 6 | 2 | 5 | 13 | 13 |
+| A1 Frontend Features | 2 | 6 | 5 | 13 | 13 |
 | A2 Frontend Pages | 13 | 3 | 0 | 16 | 18 |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | 11 |
-| A4 Backend Modules | 3 | 10 | 2 | 15 | 15 |
+| A4 Backend Modules | 3 | 12 | 0 | 15 | 15 |
 | A5 Backend Shared / Infra | 8 | 0 | 0 | 8 | 8 |
 | A6 Packages | 0 | 0 | 3 | 3 | 3 |
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
-| A8 Infra | 1 | 1 | 1 | 3 | 4 |
+| A8 Infra | 2 | 1 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
 | A10 Agentic / Dev-Flow | 36 | 3 | 0 | 39 | 39 |
 
 
 <a id="a1"></a>
 
-## A1 — Frontend Features (13)  ·  score 6/13 documented · 2 partial · 5 undocumented
+## A1 — Frontend Features (13)  ·  score 2/13 documented · 6 partial · 5 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| auth | ✅ | apps/frontend/src/features/auth/docs/design.md | documented | — | module-boundaries |
-| character-hub | ✅ | apps/frontend/src/features/character-hub/docs/design.md | documented | — | module-boundaries |
+| auth | ✅ | apps/frontend/src/features/auth/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-20 > 6 weeks) | — | module-boundaries |
+| character-hub | ✅ | apps/frontend/src/features/character-hub/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-22 > 6 weeks) | — | module-boundaries |
 | chengyu | ✅ | — | **undocumented** | **write features/chengyu/docs/design.md** | module-boundaries |
 | dashboard | ✅ | apps/frontend/src/features/dashboard/docs/design.md | documented | — | module-boundaries |
-| foundations | ✅ | apps/frontend/src/features/foundations/docs/design.md | documented | — | module-boundaries |
+| foundations | ✅ | apps/frontend/src/features/foundations/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-20 > 6 weeks) | — | module-boundaries |
 | grammar | ✅ | — | **undocumented** | **write features/grammar/docs/design.md** | module-boundaries |
 | lexical-hub | ✅ | — | **undocumented** | **write features/lexical-hub/docs/design.md** | module-boundaries |
 | phonetic-clusters | ✅ | — | **undocumented** | **write features/phonetic-clusters/docs/design.md** | module-boundaries |
 | quiz | ✅ | apps/frontend/src/features/quiz/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-01 > 6 weeks) | — | module-boundaries |
 | radicals | ✅ | apps/frontend/src/features/radicals/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-08 > 6 weeks) | — | module-boundaries |
 | readers | ✅ | apps/frontend/src/features/readers/docs/design.md | documented | — | module-boundaries |
-| review | ✅ | apps/frontend/src/features/review/docs/design.md | documented | — | module-boundaries |
+| review | ✅ | apps/frontend/src/features/review/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-20 > 6 weeks) | — | module-boundaries |
 | word-hub | ✅ | — | **undocumented** | **write features/word-hub/docs/design.md** | module-boundaries |
 
 <a id="a2"></a>
@@ -88,16 +88,16 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a4"></a>
 
-## A4 — Backend Modules (15)  ·  score 3/15 documented · 10 partial · 2 undocumented
+## A4 — Backend Modules (15)  ·  score 3/15 documented · 12 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
 | audio | ✅ | apps/backend/docs/api/tts.md | documented | — | module-boundaries |
 | auth | ✅ | apps/backend/docs/api/auth.md | documented | — | module-boundaries |
 | characters | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
-| chengyu | ✅ | — | **undocumented** | **write design.md row + api spec for chengyu** | module-boundaries |
+| chengyu | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | foundations | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
-| grammar | ✅ | — | **undocumented** | **write design.md row + api spec for grammar** | module-boundaries |
+| grammar | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | health | ✅ | apps/backend/docs/api/health.md | documented | — | module-boundaries |
 | mnemonics | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
 | phonetic-clusters | ✅ | apps/backend/docs/design.md | **partial** ⚠️ design.md line + epic docs; no API spec (api/README.md self-declares this) | — | module-boundaries |
@@ -151,11 +151,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a8"></a>
 
-## A8 — Infra (4)  ·  score 1/3 documented · 1 partial · 1 undocumented
+## A8 — Infra (4)  ·  score 2/3 documented · 1 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| terraform/ | ✅ | — | **undocumented** | **write terraform/README.md** | terraform plan workflows |
+| terraform/ | ✅ | terraform/README.md | documented | — | terraform plan workflows |
 | .github/workflows/ | ✅ | docs/guides/operations/infrastructure.md | **partial** ⚠️ review (last-verified 2026-06-12 > 6 weeks) | — | terraform plan workflows |
 | vercel.json | ✅ | — | n/a (config — self-evident) | — | — |
 | backend/DATABASE.md (redirect) | — | docs/guides/setup/database.md | documented (redirect → guides/setup/database.md) | — | — |
@@ -175,7 +175,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 14 + agents 8 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-08-20` | — | check:system-map |
+| **Agentic layer (instructions 14 + agents 8 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-08-24` | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
 | instructions/frontend-api-client | ✅ | .github/instructions/frontend-api-client.instructions.md | documented | — | check:system-map |
@@ -237,53 +237,58 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 13 | services | A3 | — | **write doc for services** | — |
 | 14 | store | A3 | — | **write doc for store** | — |
 | 15 | types | A3 | — | **write doc for types** | — |
-| 16 | chengyu | A4 | — | **write design.md row + api spec for chengyu** | — |
-| 17 | grammar | A4 | — | **write design.md row + api spec for grammar** | — |
-| 18 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
-| 19 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
-| 20 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
-| 21 | terraform/ | A8 | — | **write terraform/README.md** | — |
+| 16 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
+| 17 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
+| 18 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
+| 19 | auth | A1 | apps/frontend/src/features/auth/docs/design.md | — | — |
+| 20 | character-hub | A1 | apps/frontend/src/features/character-hub/docs/design.md | — | — |
+| 21 | foundations | A1 | apps/frontend/src/features/foundations/docs/design.md | — | — |
 | 22 | quiz | A1 | apps/frontend/src/features/quiz/docs/design.md | — | — |
 | 23 | radicals | A1 | apps/frontend/src/features/radicals/docs/design.md | — | — |
-| 24 | /learn/readers | A2 | apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx | — | — |
-| 25 | /auth/login | A2 | apps/frontend/src/pages/LoginPageFull.stories.tsx | — | — |
-| 26 | /auth/register | A2 | apps/frontend/src/pages/RegisterPageFull.stories.tsx | — | — |
-| 27 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
-| 28 | characters | A4 | apps/backend/docs/design.md | — | — |
-| 29 | foundations | A4 | apps/backend/docs/design.md | — | — |
-| 30 | mnemonics | A4 | apps/backend/docs/design.md | — | — |
-| 31 | phonetic-clusters | A4 | apps/backend/docs/design.md | — | — |
-| 32 | progression | A4 | apps/backend/docs/design.md | — | — |
-| 33 | quiz | A4 | apps/backend/docs/design.md | — | — |
-| 34 | radicals | A4 | apps/backend/docs/design.md | — | — |
-| 35 | readers | A4 | apps/backend/docs/design.md | — | — |
-| 36 | review | A4 | apps/backend/docs/design.md | — | — |
-| 37 | words | A4 | apps/backend/docs/design.md | — | — |
-| 38 | characters | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 39 | pinyin | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 40 | radicals | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 41 | references | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 42 | seed | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 43 | strokes | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 44 | tones | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 45 | words | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 46 | manifest.json | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 47 | .github/workflows/ | A8 | docs/guides/operations/infrastructure.md | — | — |
-| 48 | scripts/ | A9 | project-workflow gate table | — | — |
-| 49 | tools/ | A9 | — | — | — |
-| 50 | conventions/naming-standards | A10 | docs/guides/conventions/naming-standards.md | — | — |
-| 51 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
-| 52 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
-| 53 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
-| 54 | /learn/basic | A2 | — | — | — |
+| 24 | review | A1 | apps/frontend/src/features/review/docs/design.md | — | — |
+| 25 | /learn/readers | A2 | apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx | — | — |
+| 26 | /auth/login | A2 | apps/frontend/src/pages/LoginPageFull.stories.tsx | — | — |
+| 27 | /auth/register | A2 | apps/frontend/src/pages/RegisterPageFull.stories.tsx | — | — |
+| 28 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
+| 29 | characters | A4 | apps/backend/docs/design.md | — | — |
+| 30 | chengyu | A4 | apps/backend/docs/design.md | — | — |
+| 31 | foundations | A4 | apps/backend/docs/design.md | — | — |
+| 32 | grammar | A4 | apps/backend/docs/design.md | — | — |
+| 33 | mnemonics | A4 | apps/backend/docs/design.md | — | — |
+| 34 | phonetic-clusters | A4 | apps/backend/docs/design.md | — | — |
+| 35 | progression | A4 | apps/backend/docs/design.md | — | — |
+| 36 | quiz | A4 | apps/backend/docs/design.md | — | — |
+| 37 | radicals | A4 | apps/backend/docs/design.md | — | — |
+| 38 | readers | A4 | apps/backend/docs/design.md | — | — |
+| 39 | review | A4 | apps/backend/docs/design.md | — | — |
+| 40 | words | A4 | apps/backend/docs/design.md | — | — |
+| 41 | characters | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 42 | pinyin | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 43 | radicals | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 44 | references | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 45 | seed | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 46 | strokes | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 47 | tones | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 48 | words | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 49 | manifest.json | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 50 | .github/workflows/ | A8 | docs/guides/operations/infrastructure.md | — | — |
+| 51 | scripts/ | A9 | project-workflow gate table | — | — |
+| 52 | tools/ | A9 | — | — | — |
+| 53 | conventions/naming-standards | A10 | docs/guides/conventions/naming-standards.md | — | — |
+| 54 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
+| 55 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
+| 56 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
+| 57 | /learn/basic | A2 | — | — | — |
 
 ## Flags
 
-- ⚠️ backend/docs/design.md count-truth: declares 13/15 modules (missing: chengyu, grammar)
-- ⚠️ apps/backend/docs/api/README.md self-declares "13 modules"; actual is 15 — APIs for the remainder not captured here (partial)
 - ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
+- ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
+- ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
+- ⚠️ A1 foundations: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
+- ⚠️ A1 review: review (2026-07-20 > 6 weeks)
 - ⚠️ A8 .github/workflows/: review (2026-06-12 > 6 weeks)
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)

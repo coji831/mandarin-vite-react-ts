@@ -11,9 +11,9 @@
  * ONE dialog at a time (no local modal).
  *
  * Locked-card state derives from `usePhaseGate()`'s numeric currentPhase
- * (guests = 4) — never from `userStore`. If the phase-gate fetch fails
- * (null gate), defaults to Phase 2 in prod and Phase 4 in dev so locked
- * preview cards never hide content.
+ * (guests = 1 — calibrated guest identity, Story 24-7) — never from
+ * `userStore`. If the phase-gate fetch fails (null gate), defaults to Phase 2
+ * in prod and Phase 4 in dev so locked preview cards never hide content.
  */
 import { usePhaseGate } from "shared/hooks";
 import { Box } from "shared/components";

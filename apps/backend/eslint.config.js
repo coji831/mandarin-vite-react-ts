@@ -3,7 +3,7 @@
  * ESLint flat config for backend TypeScript source
  *
  * Uses typescript-eslint with Node.js globals.
- * Rules are tuned for a Node.js Express backend — no browser/React rules.
+ * Rules are tuned for a Node.js NestJS (Express platform adapter) backend — no browser/React rules.
  */
 
 import js from "@eslint/js";

@@ -1,14 +1,14 @@
 ---
 purpose: Hub entity-ID contract
 status: active
-last-verified: 2026-08-06
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Hub Entity-ID Contract
 
 **Category:** Frontend Development
-**Last Updated:** August 6, 2026
+**Last Updated:** September 3, 2026
 
 ---
 
@@ -72,7 +72,7 @@ export function segmentToEntityRef(segment: GrammarSegment): EntityRef | null {
 
 ## Fix Context (2026-08-06)
 
-Story 22.3's reviewer round (commits after `5cd43667`) surfaced this contract
+A reviewer round (commits after `5cd43667`) surfaced this contract
 mismatch: grammar→hub cross-linking initially passed the seed `content_id`
 (`ch_20070`) to the glyph-keyed character hub, producing dead/blank hubs for
 linked tokens. The fix added the glyph translation in `segmentToEntityRef`

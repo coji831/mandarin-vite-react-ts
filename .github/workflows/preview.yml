@@ -20,7 +20,9 @@ jobs:
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: preview/${{ github.head_ref }}
-          api_key: ${{ secrets.NEON_API_KEY }}
+          # R3 — clone the demo base so preview branches inherit its schema/data.
+          parent_branch: demo
+          api_key: ${{ secrets.NEON_API_TOKEN }}
 
       - name: Wait for Railway PR Environment
         id: wait-railway
@@ -28,43 +30,239 @@ jobs:
           for i in $(seq 1 30); do
             ENV_ID=$(curl -s \
               -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
               --data '{"query":"{environments(projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\"){edges{node{id name}}}}"}' \
               https://backboard.railway.com/graphql/v2 | \
-              jq -r '.data.environments.edges[].node | select(.name | startswith("pr-")) | .id' | head -1)
+              jq -r --arg pr "pr-${{ github.event.pull_request.number }}" '
+                .data.environments.edges[].node | select(.name == $pr or (.name | endswith("-" + $pr))) | .id
+              ' | head -1)
             if [ -n "$ENV_ID" ]; then
               echo "ENV_ID=$ENV_ID" >> $GITHUB_OUTPUT
               break
             fi
             sleep 10
           done
+          # Exact-only: fail rather than false-greening when the Railway env is
+          # missing or the API call is rejected (auth) — no fallback to another
+          # PR's env.
+          if [ -z "${ENV_ID:-}" ]; then
+            echo "::error::exact Railway environment pr-${{ github.event.pull_request.number }} not found or API auth rejected"
+            exit 1
+          fi
 
-      - name: Override DATABASE_URL on Railway PR Environment
+      - name: Upsert PR environment variables on Railway
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_BACKEND_SERVICE_ID: ${{ vars.RAILWAY_BACKEND_SERVICE_ID }}
+          ENVIRONMENT_ID: ${{ steps.wait-railway.outputs.ENV_ID }}
+          NEON_DB_URL: ${{ steps.neon.outputs.db_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GCP_PREVIEW_SA_KEY: ${{ secrets.GCP_PREVIEW_SA_KEY }}
+          # Sandbox bucket for the preview SA — GH variable, defaulting to the
+          # IaC-created `pinyin-pal-preview-data` bucket (non-secret).
+          GCS_PREVIEW_BUCKET_NAME: ${{ vars.GCS_PREVIEW_BUCKET_NAME }}
         run: |
-          curl -s \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{
-              "query": "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }",
-              "variables": {
-                "input": {
-                  "projectId": "${{ vars.RAILWAY_PROJECT_ID }}",
-                  "environmentId": "${{ steps.wait-railway.outputs.ENV_ID }}",
-                  "serviceId": "${{ vars.RAILWAY_BACKEND_SERVICE_ID }}",
-                  "name": "DATABASE_URL",
-                  "value": "${{ steps.neon.outputs.db_url }}"
-                }
-              }
-            }' \
-            https://backboard.railway.com/graphql/v2
+          set -euo pipefail
+
+          # Per-PR secrets — generated in-workflow, never committed.
+          JWT_SECRET="$(openssl rand -hex 48)"
+          JWT_REFRESH_SECRET="$(openssl rand -hex 48)"
+
+          # Sandbox bucket (non-secret) — defaults to the IaC-created bucket.
+          GCS_BUCKET="${GCS_PREVIEW_BUCKET_NAME:-pinyin-pal-preview-data}"
+
+          # Clean loop over the variableUpsert mutation, scoped to the PR env.
+          upsert() {
+            local name="$1"
+            local value="$2"
+            local payload
+            payload="$(jq -n \
+              --arg projectId "$RAILWAY_PROJECT_ID" \
+              --arg environmentId "$ENVIRONMENT_ID" \
+              --arg serviceId "$RAILWAY_BACKEND_SERVICE_ID" \
+              --arg name "$name" \
+              --arg value "$value" \
+              '{query: "mutation($input: VariableUpsertInput!) { variableUpsert(input: $input) }",
+                variables: {input: {projectId: $projectId, environmentId: $environmentId, serviceId: $serviceId, name: $name, value: $value}}}')"
+            local response
+            response="$(curl -s \
+              -H "Authorization: Bearer $RAILWAY_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$payload" \
+              https://backboard.railway.com/graphql/v2)"
+            # Fail fast: Railway returns {"errors":[...]} with "data":null on
+            # auth rejection / API errors — never false-green an upsert.
+            if printf '%s' "$response" | jq -e '.data == null or (.errors | length > 0)' >/dev/null 2>&1; then
+              local err
+              err="$(printf '%s' "$response" | jq -r '.errors[0].message // "unknown Railway API error"' 2>/dev/null)"
+              echo "::error::Railway variableUpsert failed for '$name': $err"
+              exit 1
+            fi
+          }
+
+          # Neon preview DB + per-PR secrets + env isolation + probe gate.
+          upsert "DATABASE_URL" "$NEON_DB_URL"
+          upsert "JWT_SECRET" "$JWT_SECRET"
+          upsert "JWT_REFRESH_SECRET" "$JWT_REFRESH_SECRET"
+          upsert "APP_ENV" "pr-$PR_NUMBER"
+          upsert "HEALTH_PROBE_EXTERNAL" "false"
+          # Preview SA credentials (single GH secret) + the sandbox bucket.
+          upsert "GEMINI_API_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GOOGLE_TTS_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GCS_CREDENTIALS_RAW" "$GCP_PREVIEW_SA_KEY"
+          upsert "GCS_BUCKET_NAME" "$GCS_BUCKET"
+
+  # ── PR smoke (merge gate) ──────────────────────────────────────────────
+  # Runs the dependency-free smoke script (apps/backend/scripts/pr-smoke.mjs)
+  # against the Railway pr-* preview URL so the merge PR must be green incl
+  # smoke. continue-on-error is false (default) on purpose — this is the merge
+  # gate. Skips on close so the teardown path (cleanup job) is unaffected.
+  # Runs even when `provision` fails — the first step exits 1 unless
+  # needs.provision.result == success, so a failed provision reports FAILED
+  # (not Success-as-skipped) for the required merge check.
+  smoke:
+    if: ${{ !cancelled() && github.event.action != 'closed' }}
+    needs: provision
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - name: Fail if provision failed
+        run: |
+          if [ "${{ needs.provision.result }}" != "success" ]; then
+            echo "::error::provision result is '${{ needs.provision.result }}' (expected success) — smoke cannot proceed"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Wait for Railway PR Environment
+        id: wait-railway
+        run: |
+          for i in $(seq 1 30); do
+            ENV_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"query":"{environments(projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\"){edges{node{id name}}}}"}' \
+              https://backboard.railway.com/graphql/v2 | \
+              jq -r --arg pr "pr-${{ github.event.pull_request.number }}" '
+                .data.environments.edges[].node | select(.name == $pr or (.name | endswith("-" + $pr))) | .id
+              ' | head -1)
+            if [ -n "$ENV_ID" ]; then
+              echo "ENV_ID=$ENV_ID" >> $GITHUB_OUTPUT
+              break
+            fi
+            sleep 10
+          done
+          # Exact-only: fail rather than falling back to another PR's env.
+          if [ -z "${ENV_ID:-}" ]; then
+            echo "::error::exact Railway environment pr-${{ github.event.pull_request.number }} not found (exact-only — no fallback to another PR's env)"
+            exit 1
+          fi
+
+      - name: Resolve PR app URL
+        id: url
+        run: |
+          for i in $(seq 1 30); do
+            SI_ID=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"query":"{serviceInstance(environmentId:\"${{ steps.wait-railway.outputs.ENV_ID }}\", serviceId:\"${{ vars.RAILWAY_BACKEND_SERVICE_ID }}\"){id}}"}' \
+              https://backboard.railway.com/graphql/v2 | \
+              jq -r '.data.serviceInstance.id' 2>/dev/null)
+            if [ -n "$SI_ID" ] && [ "$SI_ID" != "null" ]; then
+              DOMAIN=$(curl -s \
+                -H "Authorization: Bearer ${{ secrets.RAILWAY_API_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                --data '{"query":"{domains(environmentId:\"${{ steps.wait-railway.outputs.ENV_ID }}\", projectId:\"${{ vars.RAILWAY_PROJECT_ID }}\", serviceId:\"${{ vars.RAILWAY_BACKEND_SERVICE_ID }}\"){serviceDomains{domain}}}"}' \
+                https://backboard.railway.com/graphql/v2 | \
+                jq -r '.data.domains.serviceDomains[0].domain' 2>/dev/null)
+              if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "null" ]; then
+                PR_URL="https://$DOMAIN"
+                echo "PR_URL=$PR_URL" >> $GITHUB_OUTPUT
+                break
+              fi
+            fi
+            sleep 10
+          done
+          if [ -z "$PR_URL" ]; then
+            echo "::error::could not resolve Railway PR app URL from the pr-* environment"
+            exit 1
+          fi
+
+      - name: Run PR smoke
+        run: node apps/backend/scripts/pr-smoke.mjs "${{ steps.url.outputs.PR_URL }}"
 
   # ── Cleanup on PR close ────────────────────────────────────────────────
+  # ROOT-CAUSE FIX (2026-09): neondatabase/delete-branch-action@v3 does NOT
+  # declare a `branch_name` input — its real input is `branch` (or the
+  # deprecated `branch_id`). The old step passed `branch_name`, which the
+  # action silently dropped, so it always ran `neonctl branches delete` with NO
+  # branch → "Not enough non-option arguments" → the job failed and every
+  # `preview/<head_ref>` leaked. Replaced with an inline step that mirrors the
+  # action's own setup (pinned neonctl, no scripts) and deletes idempotently
+  # ("already gone / not found" = SUCCESS). The `provision` create step is
+  # untouched (`branch_name` IS correct for create-branch-action@v6).
   cleanup:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete Neon Preview Branch
-        uses: neondatabase/delete-branch-action@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
-          branch_name: preview/${{ github.head_ref }}
-          api_key: ${{ secrets.NEON_API_KEY }}
+          node-version: 24
+
+      - name: Delete Neon Preview Branch
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_TOKEN }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          # github.head_ref can be EMPTY on `closed` when the head branch was
+          # deleted on merge → guard so we never compute a bare `preview/`
+          # (which is what made the old action error out).
+          if [ -z "${HEAD_REF:-}" ] || [ "${HEAD_REF}" = "null" ]; then
+            echo "::warning::github.head_ref is empty ('${HEAD_REF}') on this 'closed' event (head branch likely deleted on merge) — skipping Neon preview branch cleanup"
+            exit 0
+          fi
+
+          NEON_BRANCH="preview/${HEAD_REF}"
+          echo "Deleting Neon preview branch '${NEON_BRANCH}' (project ${NEON_PROJECT_ID})..."
+
+          # Mirror the replaced action's own setup — pinned neonctl, no scripts —
+          # for reproducible CI behavior.
+          npm i -g --ignore-scripts neonctl@2.22.0
+
+          # Idempotent delete: neonctl exits non-zero and prints
+          # "Branch ... not found" when the branch is already gone; treat that
+          # as SUCCESS (exit 0).
+          #
+          # Capture the real exit code in the `else`: an `if` with no `else`
+          # returns 0 when the condition is false, so a `DELETE_EXIT=$?` placed
+          # after the `fi` would always read 0 and real failures (bad API key /
+          # wrong project / network) would go GREEN and leak silently. The
+          # `if output="$(...)"` guard correctly masks the failure from `set -e`
+          # while still binding ${output} for the "not found" probe below.
+          if output="$(neonctl branches delete "${NEON_BRANCH}" --project-id "${NEON_PROJECT_ID}" 2>&1)"; then
+            echo "::notice::Deleted Neon preview branch '${NEON_BRANCH}'"
+            exit 0
+          else
+            DELETE_EXIT=$?
+          fi
+
+          if printf '%s' "${output}" | grep -qi "not found"; then
+            echo "::notice::Neon preview branch '${NEON_BRANCH}' not found (already gone) — treating as success"
+            exit 0
+          fi
+
+          echo "::error::Failed to delete Neon preview branch '${NEON_BRANCH}' (neonctl exit ${DELETE_EXIT})"
+          printf '%s\n' "${output}"
+          exit "${DELETE_EXIT}"

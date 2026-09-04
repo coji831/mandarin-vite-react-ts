@@ -1,5 +1,5 @@
 {
-  "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot (M0 seed). One entry per page container, seeded from the 12 <Page>Full.stories.tsx files + router/paths.ts. A page is 'conforms' when it has a Full story, declared states, and a registry-clean composition map matching its archetype. 'diverges' surfaces the gap (missing Full story, unassigned archetype, or anatomy not yet audited against the archetype library). Enforced by scripts/check-page-inventory.mjs.",
+  "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot. One entry per page container, sourced from the <Page>Full.stories.tsx files + router/paths.ts. A page is 'conforms' when it has a Full story, declared states, and a registry-clean composition map matching its archetype. 'diverges' surfaces the gap (missing Full story, unassigned archetype, or anatomy not yet audited against the archetype library). Enforced by scripts/check-page-inventory.mjs.",
   "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component; composition maps may only name component-registry.json components. Archetype ids come from page-archetypes.md (hub-launcher, browse-index, focus-task, focus-chat, focus-timed, focus-media, utility, auth).",
   "version": "1.0",
   "archetypes": [
@@ -36,7 +36,7 @@
       "story": null,
       "states": [],
       "status": "diverges",
-      "note": "Learn home — redirects to /learn/foundations (no page container). BLOCKED on epic-26 hub-launcher page before this can conform."
+      "note": "Learn home — redirects to /learn/foundations (no page container). BLOCKED: needs a dedicated hub-launcher page before it can conform."
     },
     {
       "route": "/practices",
@@ -169,7 +169,7 @@
       "story": "apps/frontend/src/pages/LoginPageFull.stories.tsx",
       "states": ["default", "edge"],
       "status": "diverges",
-      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending shell family (epic 25/39)."
+      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending a dedicated shell family."
     },
     {
       "route": "/auth/register",
@@ -178,7 +178,7 @@
       "story": "apps/frontend/src/pages/RegisterPageFull.stories.tsx",
       "states": ["default", "edge"],
       "status": "diverges",
-      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending shell family (epic 25/39)."
+      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending a dedicated shell family."
     },
     {
       "route": "/settings",
@@ -190,7 +190,7 @@
       "composition": {
         "section": "Box"
       },
-      "note": "Thin utility placeholder (Box card section); full settings shell is epic 25/39."
+      "note": "Thin utility placeholder (Box card section); full settings shell is not yet built."
     },
     {
       "route": "/profile",
@@ -202,7 +202,7 @@
       "composition": {
         "section": "Box"
       },
-      "note": "Thin utility placeholder (Box card section); full profile shell is epic 25/39."
+      "note": "Thin utility placeholder (Box card section); full profile shell is not yet built."
     },
     {
       "route": "/learn/foundations",
@@ -243,7 +243,7 @@
       "story": null,
       "states": [],
       "status": "diverges",
-      "note": "Legacy redirect → /learn/foundations (no page container). BLOCKED: no page container to conform until epic-26 removes/rebuilds it."
+      "note": "Legacy redirect → /learn/foundations (no page container). BLOCKED: no page container to conform until the legacy redirect is retired/rebuilt."
     }
   ]
 }

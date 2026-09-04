@@ -1,13 +1,13 @@
 ---
 purpose: Single source of truth for all environment variables used by the system
 status: active
-last-verified: 2026-06-12
+last-verified: 2026-08-22
 type: guide
 ---
 
 # Environment Setup Guide
 
-**Last Updated:** June 12, 2026  
+**Last Updated:** August 22, 2026  
 **Purpose:** Single source of truth for all environment variables used by the system  
 **Audience:** Developers setting up local development or configuring a new deployment
 
@@ -30,21 +30,20 @@ mandarin-vite-react-ts/
 
 ## Environment Variable Catalog
 
-| Variable                     | Required                                  | Source (file)                 | Validated at startup? | Since      |
-| ---------------------------- | ----------------------------------------- | ----------------------------- | --------------------- | ---------- |
-| `DATABASE_URL`               | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13    |
-| `JWT_SECRET`                 | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13    |
-| `JWT_REFRESH_SECRET`         | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13    |
-| `GCS_BUCKET_NAME`            | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13    |
-| `GOOGLE_TTS_CREDENTIALS_RAW` | ✅ **Mandatory**                          | `external/GoogleTTSClient.js` | ✅ `validateConfig()` | Epic 13    |
-| `GEMINI_API_CREDENTIALS_RAW` | ✅ **Mandatory**                          | `external/GeminiClient.js`    | ✅ `validateConfig()` | Epic 13    |
-| `REDIS_URL`                  | 🟡 Optional (cache auto-enabled when set) | `shared/config/index.js`      | ❌                    | Epic 13    |
-| `FRONTEND_URL`               | 🟡 Optional (default: `localhost:5173`)   | `shared/config/index.js`      | ❌                    | Epic 13    |
-| `EXAMPLES_CACHE_HMAC_KEY`    | 🟡 Optional                               | `shared/config/index.js`      | ❌                    | Story 16.3 |
-| `PORT`                       | 🟡 Optional (default: `3001`)             | `shared/config/index.js`      | ❌                    | —          |
-| `NODE_ENV`                   | 🟡 Optional (default: `development`)      | `shared/config/index.js`      | ❌                    | —          |
-| `VITE_API_URL`               | ✅ **Mandatory (frontend)**               | Frontend services             | ❌                    | —          |
-| `ENABLE_DETAILED_LOGS`       | 🟡 Optional                               | `shared/config/index.js`      | ❌                    | —          |
+| Variable                     | Required                                  | Source (file)                 | Validated at startup? | Since   |
+| ---------------------------- | ----------------------------------------- | ----------------------------- | --------------------- | ------- |
+| `DATABASE_URL`               | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13 |
+| `JWT_SECRET`                 | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13 |
+| `JWT_REFRESH_SECRET`         | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13 |
+| `GCS_BUCKET_NAME`            | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13 |
+| `GOOGLE_TTS_CREDENTIALS_RAW` | ✅ **Mandatory**                          | `external/GoogleTTSClient.js` | ✅ `validateConfig()` | Epic 13 |
+| `GEMINI_API_CREDENTIALS_RAW` | ✅ **Mandatory**                          | `external/GeminiClient.js`    | ✅ `validateConfig()` | Epic 13 |
+| `GCS_CREDENTIALS_RAW`        | ✅ **Mandatory**                          | `shared/config/index.js`      | ✅ `validateConfig()` | Epic 13 |
+| `REDIS_URL`                  | 🟡 Optional (cache auto-enabled when set) | `shared/config/index.js`      | ❌                    | Epic 13 |
+| `FRONTEND_URL`               | 🟡 Optional (default: `localhost:5173`)   | `shared/config/index.js`      | ❌                    | Epic 13 |
+| `PORT`                       | 🟡 Optional (default: `3001`)             | `shared/config/index.js`      | ❌                    | —       |
+| `NODE_ENV`                   | 🟡 Optional (default: `development`)      | `shared/config/index.js`      | ❌                    | —       |
+| `VITE_API_URL`               | ✅ **Mandatory (frontend)**               | Frontend services             | ❌                    | —       |
 
 > `CACHE_ENABLED` has been **deprecated** — cache is now enabled automatically when `REDIS_URL` is present. Remove it from your env config.
 
@@ -83,6 +82,7 @@ JWT_REFRESH_SECRET=your-jwt-refresh-secret-different-from-access-secret
 # Service account JSON must be a single-line escaped string
 GOOGLE_TTS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
 GEMINI_API_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
+GCS_CREDENTIALS_RAW='{"type":"service_account","project_id":"..."}'
 GCS_BUCKET_NAME=your-bucket-name
 
 # === SERVER ===
@@ -95,9 +95,6 @@ VITE_API_URL=http://localhost:3001
 
 # === REDIS (Optional — cache degrades gracefully if absent) ===
 REDIS_URL=redis://default:password@localhost:6379
-
-# === EXAMPLE CACHING (Optional) ===
-EXAMPLES_CACHE_HMAC_KEY=your-hmac-key-at-least-32-chars
 ```
 
 > **Note:** Google Cloud credentials use a **dev-tier service account** with limited quotas. Production uses a separate account with full resources. All GCS/TTS/Gemini clients are lazy-loaded — validated at startup but fail only on use if misconfigured.
@@ -113,27 +110,26 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ### Mandatory — validated by `validateConfig()` at startup
 
-| Variable                     | Where it's read                           | Local Dev                                | Cloud Deployment                                 | Notes                                                           |
-| ---------------------------- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------- |
-| `DATABASE_URL`               | `shared/config/index.js` → Prisma         | Neon connection string in `.env.local`   | Neon connection string in platform Dashboard     | No local PostgreSQL needed                                      |
-| `JWT_SECRET`                 | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Access tokens (15min).                            |
-| `JWT_REFRESH_SECRET`         | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Refresh tokens (7d). Different from `JWT_SECRET`. |
-| `GCS_BUCKET_NAME`            | `shared/config/index.js`                  | Same bucket name in `.env.local`         | Same bucket name in platform Dashboard           | Dev uses a dev-tier bucket                                      |
-| `GOOGLE_TTS_CREDENTIALS_RAW` | `external/GoogleTTSClient.js`             | Dev service account JSON in `.env.local` | Production service account in platform Dashboard | Dev account has lower TTS quotas                                |
-| `GEMINI_API_CREDENTIALS_RAW` | `external/GeminiClient.js`                | Dev service account JSON in `.env.local` | Production service account in platform Dashboard | Used for Gemini AI + GCS auth fallback                          |
-| `VITE_API_URL`               | Frontend services                         | `http://localhost:3001` in `.env.local`  | Production backend URL in Vercel Dashboard       | Mandatory for frontend (not validated by backend)               |
+| Variable                     | Where it's read                           | Local Dev                                | Cloud Deployment                                 | Notes                                                                  |
+| ---------------------------- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------- |
+| `DATABASE_URL`               | `shared/config/index.js` → Prisma         | Neon connection string in `.env.local`   | Neon connection string in platform Dashboard     | No local PostgreSQL needed                                             |
+| `JWT_SECRET`                 | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Access tokens (15min).                                   |
+| `JWT_REFRESH_SECRET`         | `shared/config/index.js` → JWT middleware | Same value in `.env.local`               | Same value in platform Dashboard                 | Min 32 chars. Refresh tokens (7d). Different from `JWT_SECRET`.        |
+| `GCS_BUCKET_NAME`            | `shared/config/index.js`                  | Same bucket name in `.env.local`         | Same bucket name in platform Dashboard           | Dev uses a dev-tier bucket                                             |
+| `GOOGLE_TTS_CREDENTIALS_RAW` | `external/GoogleTTSClient.js`             | Dev service account JSON in `.env.local` | Production service account in platform Dashboard | Dev account has lower TTS quotas                                       |
+| `GEMINI_API_CREDENTIALS_RAW` | `external/GeminiClient.js`                | Dev service account JSON in `.env.local` | Production service account in platform Dashboard | Used for Gemini AI + GCS auth fallback                                 |
+| `GCS_CREDENTIALS_RAW`        | `shared/config/index.js`                  | Dev service account JSON in `.env.local` | Production service account in platform Dashboard | Dedicated GCS SA (gcs-storage-service). Used for content/audio storage |
+| `VITE_API_URL`               | Frontend services                         | `http://localhost:3001` in `.env.local`  | Production backend URL in Vercel Dashboard       | Mandatory for frontend (not validated by backend)                      |
 
 ### Optional (safe defaults)
 
-| Variable                  | Default                 | Local Dev                                   | Cloud Deployment                            | Notes                                                                                        |
-| ------------------------- | ----------------------- | ------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `REDIS_URL`               | _disabled_              | Local Redis or skip (cache = no-op)         | Platform auto-injects or set manually       | Cache enabled automatically when `REDIS_URL` is set. No separate `CACHE_ENABLED` var needed. |
-| `FRONTEND_URL`            | `http://localhost:5173` | Not needed (default matches Vite)           | Set to production frontend URL              | CORS allowed origin.                                                                         |
-| `PORT`                    | `3001`                  | Fixed locally                               | Platform usually overrides                  |                                                                                              |
-| `NODE_ENV`                | `development`           | `development`                               | `production`                                |                                                                                              |
-| `CACHE_ENABLED`           | — (deprecated)          | Not needed — cache auto-detects `REDIS_URL` | Not needed — cache auto-detects `REDIS_URL` | **Deprecated.** Cache is enabled automatically when `REDIS_URL` is present. Remove this var. |
-| `ENABLE_DETAILED_LOGS`    | `false`                 | Set `true` for debugging                    | Usually `false`                             |                                                                                              |
-| `EXAMPLES_CACHE_HMAC_KEY` | _none_                  | Not needed for dev                          | Set in platform Dashboard                   | HMAC key for examples GCS cache naming.                                                      |
+| Variable        | Default                 | Local Dev                                   | Cloud Deployment                            | Notes                                                                                        |
+| --------------- | ----------------------- | ------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `REDIS_URL`     | _disabled_              | Local Redis or skip (cache = no-op)         | Platform auto-injects or set manually       | Cache enabled automatically when `REDIS_URL` is set. No separate `CACHE_ENABLED` var needed. |
+| `FRONTEND_URL`  | `http://localhost:5173` | Not needed (default matches Vite)           | Set to production frontend URL              | CORS allowed origin.                                                                         |
+| `PORT`          | `3001`                  | Fixed locally                               | Platform usually overrides                  |                                                                                              |
+| `NODE_ENV`      | `development`           | `development`                               | `production`                                |                                                                                              |
+| `CACHE_ENABLED` | — (deprecated)          | Not needed — cache auto-detects `REDIS_URL` | Not needed — cache auto-detects `REDIS_URL` | **Deprecated.** Cache is enabled automatically when `REDIS_URL` is present. Remove this var. |
 
 ---
 

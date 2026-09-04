@@ -1,14 +1,14 @@
 ﻿---
 purpose: Standard for creating and maintaining backend modules in the modular monolith
 status: active
-last-verified: 2026-07-22
+last-verified: 2026-09-03
 type: convention
 audience: backend
 ---
 
 # Backend Conventions & Architecture (Quick Reference)
 
-**Last Updated:** July 22, 2026
+**Last Updated:** September 3, 2026
 
 > **Deep Dive:** For architecture patterns and design principles, see [backend-architecture.md](../knowledge-base/backend/backend-architecture.md)
 
@@ -35,7 +35,7 @@ audience: backend
 
 ## Module Architecture Guide
 
-**Last Updated:** July 22, 2026
+**Last Updated:** September 3, 2026
 **Purpose:** Standard for creating and maintaining backend modules in the modular monolith
 **Audience:** Backend developers
 
@@ -223,6 +223,14 @@ word (zero external deps)         auth (zero external deps)         mnemonics (z
 ---
 
 ### 4. Module-Level Container Pattern
+
+> **⛔ RETIRED 2026-08-22** — the Express `container.ts` factories and the root
+> `app/container.ts` were **deleted** when NestJS 11 became the production
+> entry. The live wiring is now the NestJS 11 shell: per-module
+> `modules/<name>/nest/*.module.ts` (providers + `useFactory`) composed in
+> `src/nest/app.module.ts`, with shared infra in `SharedModule`/`DatabaseModule`.
+> This section is preserved for historical traceability; the Nest module shape
+> is the convention going forward.
 
 Each module exports a **typed factory function** from its own `container.ts`:
 

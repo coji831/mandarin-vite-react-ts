@@ -90,17 +90,21 @@ export const TTS_VOICES = {
 
 /**
  * Creates a guest phase gate response — returned when no user is authenticated.
- * All phases unlocked (currentPhase: 4) so guests can browse all content.
+ * Calibrated guest identity (Story 24-7): guests unlock exactly Phase 1 (the
+ * Blueprint) — never all content. `isGuest` marks the session-local guest
+ * identity; `id: "guest-unlocked"` keeps the `isGuestPhaseGate` sentinel
+ * working (`packages/shared-types`).
  */
 export function createGuestPhaseGate() {
   const now = new Date().toISOString();
   return {
     id: "guest-unlocked",
-    currentPhase: 4,
+    currentPhase: 1,
     phase1Passed: false,
     phase2Passed: false,
     phase3Passed: false,
-    phase4Unlocked: true,
+    phase4Unlocked: false,
+    isGuest: true,
     qualificationScore: null,
     placedPhase: null,
     phase1Retention: null,

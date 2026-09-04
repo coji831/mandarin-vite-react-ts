@@ -1,13 +1,13 @@
 ---
 purpose: Comprehensive setup and workflow documentation for the PinyinPal project
 status: active
-last-verified: 2026-07-04
+last-verified: 2026-08-22
 type: area-index
 ---
 
 # PinyinPal Development Guides
 
-**Last Updated:** July 4, 2026  
+**Last Updated:** August 22, 2026  
 **Purpose:** Comprehensive setup and workflow documentation for the PinyinPal project
 
 > **For New Developers:** Start with [Quickstart](quickstart.md) → [Project Overview](project-overview.md) → [Environment Setup](environment-setup.md)
@@ -36,7 +36,7 @@ New to the project? Start here:
 Then proceed to:
 
 4. **[Frontend Development](../setup/frontend-development.md)** - React/TypeScript setup, component patterns, state management
-5. **[Backend Development](../setup/backend-development.md)** - Express server, middleware, authentication setup
+5. **[Backend Development](../setup/backend-development.md)** - NestJS server, modules, authentication setup
 6. **[Database Setup](../setup/database.md)** - PostgreSQL/Prisma setup (local, Neon, Railway)
 
 ---

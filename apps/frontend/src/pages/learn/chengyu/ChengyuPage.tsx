@@ -19,8 +19,8 @@
  * Access is gated at the route level (`LearnRoutes` PhaseGate requiredPhase={4}),
  * and idiom cards carry no phase/lock state — so the page itself does not need
  * to re-derive the phase gate (mirrors `ReadersPage`, which is also route-gated
- * and lock-free). Phase source remains `usePhaseGate()` (numeric; guests = 4) —
- * never `userStore`.
+ * and lock-free). Phase source remains `usePhaseGate()` (numeric; guests = 1 —
+ * calibrated guest identity, Story 24-7) — never `userStore`.
  */
 import { Box } from "shared/components";
 import { openHub } from "shared/hub-entry";

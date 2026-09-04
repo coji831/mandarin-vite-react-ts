@@ -82,8 +82,17 @@ export class AudioService implements AudioServiceLike {
     return this.urlSigner.getSignedUrl(path, expirySeconds);
   }
 
-  /** Health check — delegates to the underlying TTS client. */
+  /**
+   * Health check — delegates to the underlying TTS client.
+   *
+   * Story 24-17 probe gate: when `HEALTH_PROBE_EXTERNAL=false` (PR/preview
+   * environments), short-circuits to `false` without calling the external TTS
+   * API. The `/health` envelope stays 200 — it just reports `services.tts: false`.
+   */
   async healthCheck(): Promise<boolean> {
+    if (process.env.HEALTH_PROBE_EXTERNAL === "false") {
+      return false;
+    }
     try {
       return await this.ttsClient.healthCheck();
     } catch {

@@ -1,0 +1,33 @@
+node_modules
+dist
+storybook-static
+coverage
+package-lock.json
+content/
+data/
+logs/
+wip/
+verification-artifacts/
+.codegraph/
+.terraform/
+*.tsbuildinfo
+.playwright-mcp/
+storybook-static/
+apps/backend/storybook-static/
+apps/frontend/storybook-static/
+
+# ——— Docs Writer Round B 2026-08-24 — format:check hardening ———
+# Unparseable formats (no prettier parser)
+*.toml
+*.prisma
+*.sql
+Procfile
+*.svg
+**/.gitignore
+**/.node-version
+**/.nvmrc
+apps/frontend/public/
+# Vite HTML entry + system-map generated leaves (regen by scripts/generate-system-map.mjs)
+apps/frontend/index.html
+docs/README.md
+docs/coverage.md

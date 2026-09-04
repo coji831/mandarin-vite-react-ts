@@ -1,6 +1,6 @@
 # Backend Server
 
-Express server for PinyinPal, providing TTS, content data (characters/words/radicals/grammar/chengyu), progression, quiz, review, mnemonics, and graded readers.
+NestJS 11 backend server for PinyinPal, providing TTS, content data (characters/words/radicals/grammar/chengyu), progression, quiz, review, mnemonics, and graded readers.
 
 > **For detailed setup, architecture, environment variables, and troubleshooting:** See [Backend Development Guide](../../docs/guides/setup/backend-development.md).
 

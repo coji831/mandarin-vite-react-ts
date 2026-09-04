@@ -31,7 +31,8 @@ export function mapGrammarApiToData(item: GrammarPatternSummary): GrammarPattern
 /**
  * Derive whether a pattern is locked for the current learner phase.
  *
- * Phase source: `usePhaseGate()` → currentPhase (numeric 2|3|4; guests = 4).
+ * Phase source: `usePhaseGate()` → currentPhase (numeric 2|3|4; guests = 1 —
+ * calibrated guest identity, Story 24-7).
  * NEVER sourced from userStore. A pattern is locked when its own phase is
  * HIGHER than the learner's current phase (Phase 3/4 patterns → locked/preview
  * cards for Phase-2 users — the platform's "discovery, not gate" stance).

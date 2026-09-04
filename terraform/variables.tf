@@ -18,3 +18,9 @@ variable "bucket_name" {
   type        = string
   default     = "pinyin-pal-data"
 }
+
+variable "preview_bucket_name" {
+  description = "GCS bucket name for PR-preview environments (sandbox TTS audio)"
+  type        = string
+  default     = "pinyin-pal-preview-data"
+}

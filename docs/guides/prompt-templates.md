@@ -1,13 +1,14 @@
 ---
-purpose: Prompt templates for HSK-graded reading passage generation via Gemini (Story 21.3)
+purpose: Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature)
 status: active
-last-verified: 2026-08-18
+last-verified: 2026-09-03
 type: guide
 ---
 
 # Prompt Templates for AI Passage Generation
 
-> **Epic 21 — Graded Readers** | Story 21.3: Passage Generation Backend
+> **Graded Readers — passage generation feature.** The templates below are the
+> live prompt set used by the HSK-graded passage-generation backend via Gemini.
 
 This document defines the prompt templates used for generating HSK-graded reading passages via Gemini. Each template instructs Gemini to return a structured JSON response with a sentences array.
 

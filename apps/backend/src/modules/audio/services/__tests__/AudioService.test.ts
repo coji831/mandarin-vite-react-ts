@@ -237,5 +237,21 @@ describe("AudioService", () => {
       mockTtsClient.healthCheck.mockResolvedValue(false);
       await expect(service.healthCheck()).resolves.toBe(false);
     });
+
+    it("probe gate — returns false without calling the TTS client when HEALTH_PROBE_EXTERNAL=false", async () => {
+      const prev = process.env.HEALTH_PROBE_EXTERNAL;
+      try {
+        process.env.HEALTH_PROBE_EXTERNAL = "false";
+        mockTtsClient.healthCheck.mockResolvedValue(true);
+        await expect(service.healthCheck()).resolves.toBe(false);
+        expect(mockTtsClient.healthCheck).not.toHaveBeenCalled();
+      } finally {
+        if (prev === undefined) {
+          delete process.env.HEALTH_PROBE_EXTERNAL;
+        } else {
+          process.env.HEALTH_PROBE_EXTERNAL = prev;
+        }
+      }
+    });
   });
 });
