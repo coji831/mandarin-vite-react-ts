@@ -72,3 +72,4 @@ keys/
 .solar/state/
 .solar/ledger.md
 .solar/runs/
+.solar/handoffs/
