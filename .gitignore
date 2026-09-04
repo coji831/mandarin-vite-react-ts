@@ -71,3 +71,4 @@ keys/
 .solar/config.json
 .solar/state/
 .solar/ledger.md
+.solar/runs/
