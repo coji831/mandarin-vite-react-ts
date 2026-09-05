@@ -7,14 +7,14 @@ node is the source of truth — no need to paste chat output).
 
 ## Ladder
 
-| # | Prompt (@Governor v5) | Proves | Status | Evidence |
-|---|---|---|---|---|
-| T1 | Audit the shared `Button` component for DESIGN.md token violations | Hermes decode → `review`/`code-reviewer`; single dispatch; read-only | ✅ PASS | `runs/btn-token-audit.json` — role code-reviewer, APPROVED, 10 findings w/ token fixes, git clean |
-| T2 | Trace how `optionalAuth` is resolved on the TTS endpoints and report findings | `research` → `investigator`; gather-only | ✅ PASS | `runs/tts-optionalauth-trace.json` — role investigator, APPROVED, deep trace + 6 flags, git clean |
-| T3 | Add a small frontend util + test under `src/shared/` | **Stack resolution** (`frontend-engineer`); first write-capable agent | ⏳ next | — |
-| T4 | Write the implementation note for the T2 findings, then have it reviewed | **Nested delegation** (docs-writer → code-reviewer) + bubble-up | ⬜ | — |
-| T5 | (vague/ambiguous ask, e.g. "it's still broken") | Hermes low/medium → **clearance bounce** (asks, doesn't guess) | ⬜ | — |
-| T6 | epic 25 scoped run | Full self-chain (composition) | ⬜ | only if T1–T5 green |
+| #   | Prompt (@Governor v5)                                                         | Proves                                                                | Status  | Evidence                                                                                          |
+| --- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| T1  | Audit the shared `Button` component for DESIGN.md token violations            | Hermes decode → `review`/`code-reviewer`; single dispatch; read-only  | ✅ PASS | `runs/btn-token-audit.json` — role code-reviewer, APPROVED, 10 findings w/ token fixes, git clean |
+| T2  | Trace how `optionalAuth` is resolved on the TTS endpoints and report findings | `research` → `investigator`; gather-only                              | ✅ PASS | `runs/tts-optionalauth-trace.json` — role investigator, APPROVED, deep trace + 6 flags, git clean |
+| T3  | Add a small frontend util + test under `src/shared/`                          | **Stack resolution** (`frontend-engineer`); first write-capable agent | ✅ PASS | `runs/shared-utils-cn.json` — role frontend-engineer, 3 files (`cn.ts`+test+barrel), vitest 5/5 **independently verified**, lint/tsc green |
+| T4  | Write the implementation note for the T2 findings, then have it reviewed      | **Nested delegation** (docs-writer → code-reviewer) + bubble-up       | ⬜      | —                                                                                                 |
+| T5  | (vague/ambiguous ask, e.g. "it's still broken")                               | Hermes low/medium → **clearance bounce** (asks, doesn't guess)        | ⬜      | —                                                                                                 |
+| T6  | epic 25 scoped run                                                            | Full self-chain (composition)                                         | ⬜      | only if T1–T5 green                                                                               |
 
 ## Gate notes
 
@@ -32,6 +32,10 @@ node is the source of truth — no need to paste chat output).
    profile). Real code will also auto-approve unless we enable approvals.
 3. T1/T2 both read-only (reviewer/investigator) — the real write + nesting risk
    starts at T3/T4.
+4. **T3 nuance:** the stored objective was role-prefixed (`frontend-engineer: …`)
+   + fully specified, so the run proved write-capability + scope discipline but
+   did NOT exercise Hermes stack-resolution from a *vague* ask. Re-check that
+   later with an unprefixed "add a small frontend util" if needed.
 
 ## Open risks to watch
 
