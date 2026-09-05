@@ -2,29 +2,23 @@
  * @file router/__tests__/LearnRoutes.grammar.test.tsx
  * @description Integration test (Testing Trophy, INTEGRATION tier) —
  * `LearnRoutes` Phase-2 gate for `/learn/grammar`.
- * Story 22.3: Grammar UI
+ * Story 22.3: Grammar UI · Epic 25 Phase A: data-driven gate on all 6 routes.
  *
- * - currentPhase 1 → PhaseGate redirects to `/learn/foundations` (GrammarPage NOT rendered)
- * - currentPhase 2 → GrammarPage renders (grammar unlocked)
+ * - currentPhase 1 → the shared LockedSurface gate screen renders ("Grammar
+ *   unlocks in Phase 2") — replaces the old silent redirect-to-foundations
+ *   (GrammarPage NOT rendered).
+ * - currentPhase 2 → GrammarPage renders (grammar unlocked).
  *
  * The phase gate is fetched through the real `usePhaseGate` + `apiClient`,
- * intercepted by the MSW node server. `FoundationsPage` is stubbed so the
- * redirect target (which fetches pinyin data on mount) doesn't pull in
- * unrelated network calls.
+ * intercepted by the MSW node server.
  */
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router-dom";
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { server, grammarHandlers } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { LearnRoutes } from "../LearnRoutes";
-
-// FoundationsPage fetches pinyin data on mount — stub it so the redirect
-// assertion targets navigation, not Foundations internals.
-vi.mock("../../pages/learn/foundations/FoundationsPage", () => ({
-  FoundationsPage: () => <div>FoundationsPage stub</div>,
-}));
 
 const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
 // The intro paragraph is longer than the leading sentence — match a substring.
@@ -69,13 +63,15 @@ describe("LearnRoutes — /learn/grammar phase gate", () => {
     );
   }
 
-  it("redirects to /learn/foundations when the learner is below Phase 2", async () => {
+  it("renders the LockedSurface gate screen when the learner is below Phase 2", async () => {
     usePhaseGate(1);
 
     renderAtGrammarRoute();
 
-    // Phase gate resolves → Navigate to /learn/foundations (stubbed page renders)
-    await waitFor(() => expect(screen.getByText("FoundationsPage stub")).toBeInTheDocument());
+    // Phase gate resolves → the shared locked-surface screen (not a redirect)
+    await waitFor(() => expect(screen.getByTestId("locked-surface")).toBeInTheDocument());
+    expect(screen.getByText("Grammar")).toBeInTheDocument();
+    expect(screen.getByText("Unlocks in Phase 2.")).toBeInTheDocument();
     // GrammarPage is never mounted
     expect(screen.queryByText(GRAMMAR_PAGE_INTRO)).not.toBeInTheDocument();
   });

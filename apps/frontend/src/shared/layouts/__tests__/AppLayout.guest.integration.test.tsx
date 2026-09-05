@@ -52,6 +52,10 @@ describe("AppLayout — calibrated guest identity (Story 24-7)", () => {
 
     renderGuestShell();
 
+    // Epic 25 S1: the passive Guest identity badge shows in the AppTopBar.
+    await waitFor(() => expect(screen.getByTestId("guest-identity-badge")).toBeInTheDocument());
+    expect(screen.getByTestId("guest-identity-badge")).toHaveTextContent("Guest");
+
     // Phase-1 Learn item (Foundations) stays unlocked for the guest…
     await waitFor(() =>
       expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute(
@@ -66,12 +70,14 @@ describe("AppLayout — calibrated guest identity (Story 24-7)", () => {
 
   it("keeps a guest Phase-1 (not all-unlocked) when the phase-gate fetch fails", async () => {
     // Backend unavailable → `usePhaseGate` falls back to phase-1 for a guest
-    // (never the old all-unlocked `: 4` override).
+    // (never the old all-unlocked `: 4` override). The Guest badge still shows
+    // because the identity is driven by `!isAuthenticated`.
     server.use(http.get(PHASE_GATE_URL, () => HttpResponse.error()));
 
     renderGuestShell();
 
     await waitFor(() => expect(screen.getByText("page content")).toBeInTheDocument());
+    expect(screen.getByTestId("guest-identity-badge")).toBeInTheDocument();
     const grammar = screen.getByRole("link", { name: /Grammar/ });
     expect(grammar).toHaveAttribute("aria-disabled");
   });

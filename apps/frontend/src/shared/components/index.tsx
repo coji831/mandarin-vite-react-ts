@@ -16,6 +16,8 @@ export { Dropdown } from "./Dropdown";
 export { ErrorScreen } from "./ErrorScreen/ErrorScreen";
 export { EmptyState } from "./EmptyState/EmptyState";
 export type { EmptyStateProps } from "./EmptyState/EmptyState";
+export { LockedSurface } from "./LockedSurface/LockedSurface";
+export type { LockedSurfaceProps } from "./LockedSurface/LockedSurface";
 export { FilterChip } from "./FilterChip/FilterChip";
 export { FilterControls } from "./FilterControls";
 export { Grid } from "./Grid";

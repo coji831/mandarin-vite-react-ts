@@ -544,6 +544,27 @@
         }
       }
     },
+    "LockedSurface": {
+      "description": "Shared locked-surface gate fallback (Epic 25 S2) — neutral, CTA-free screen shown on below-phase direct Learn-route nav (guest or authed). Replaces the silent redirect-to-foundations. Data-driven via label/requiredPhase; composes EmptyState (lock icon) mirroring the SideNav locked-item treatment. CTA/value-moment stays out (epic-26 GuestUpsell).",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/LockedSurface/LockedSurface.stories.tsx",
+        "states": ["default", "edge"]
+      },
+      "props": {
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Content label of the locked surface (e.g. \"Grammar\")"
+        },
+        "requiredPhase": {
+          "type": "number",
+          "required": true,
+          "description": "Phase required to unlock the surface (from LEARN_REQUIRED_PHASE)"
+        },
+        "className": { "type": "string" }
+      }
+    },
     "FilterControls": {
       "description": "Filter bar with multiple FilterChips.",
       "importPath": "shared/components",
@@ -581,15 +602,20 @@
       "props": {}
     },
     "AppTopBar": {
-      "description": "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu).",
+      "description": "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu). When isGuest, renders a compact passive Guest badge next to the account controls (Epic 25 S1 — no CTA; upsell is epic-26).",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/AppTopBar/AppTopBar.stories.tsx",
-        "states": ["default"]
+        "states": ["default", "edge"]
       },
       "props": {
         "user": { "type": "UserMenuUser | null", "required": true },
         "isAuthenticated": { "type": "boolean", "required": true },
+        "isGuest": {
+          "type": "boolean",
+          "required": true,
+          "description": "Renders the passive Guest identity badge when true (driven by AppLayout from useAuth/usePhaseGate)"
+        },
         "logout": { "type": "function", "required": true },
         "className": { "type": "string" }
       }

@@ -288,7 +288,7 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 
 ## Flags
 
-- ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
+- ⚠️ shared/components/README.md lists 7 of 36 shared components — stale
 - ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
 - ⚠️ A1 foundations: review (2026-07-20 > 6 weeks)

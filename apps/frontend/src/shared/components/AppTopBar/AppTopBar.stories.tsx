@@ -5,7 +5,10 @@
  * Auth is threaded in via props (AppLayout → AppTopBar → UserMenu);
  * `withRouter` provides the navigation context.
  *
- * States: authed (UserMenu) · guest (Login/Register).
+ * Epic 25 S1: the guest state also renders the compact passive "Guest"
+ * identity badge (no CTA — upsell is epic-26).
+ *
+ * States: authed (UserMenu) · guest (Guest badge + Login/Register).
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AppTopBar } from "./AppTopBar";
@@ -19,7 +22,8 @@ const meta: Meta<typeof AppTopBar> = {
     layout: "fullscreen",
     docs: {
       description: {
-        component: "Slim global top bar (56px) hosting the account UserMenu on the right.",
+        component:
+          "Slim global top bar (56px) hosting the account UserMenu on the right; passive Guest identity badge when isGuest.",
       },
     },
   },
@@ -32,6 +36,7 @@ type Story = StoryObj<typeof AppTopBar>;
 const authedArgs = {
   user: { id: "storybook-user", email: "user@example.com", displayName: "Storybook User" },
   isAuthenticated: true,
+  isGuest: false,
   logout: async () => {},
 };
 
@@ -41,6 +46,11 @@ export const Authed: Story = {
 };
 
 export const Guest: Story = {
-  name: "Guest — Login / Register",
-  args: { user: null, isAuthenticated: false, logout: async () => {} },
+  name: "Guest — badge + Login / Register",
+  args: {
+    user: null,
+    isAuthenticated: false,
+    isGuest: true,
+    logout: async () => {},
+  },
 };

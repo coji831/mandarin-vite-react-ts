@@ -1,13 +1,13 @@
 ---
 purpose: "Area index for business requirements, epics, user stories, and planning docs"
 status: active
-last-verified: 2026-08-22
+last-verified: 2026-09-05
 type: area-index
 ---
 
 # Business Requirements
 
-**Last Updated:** August 22, 2026
+**Last Updated:** September 5, 2026
 
 This folder contains business requirements, epics, user stories, and project planning documents for the project.
 
@@ -30,10 +30,11 @@ Controlled vocabulary for epic status in BR docs:
 
 ## Active Epics
 
-| Epic                                                                                | Status             |
-| ----------------------------------------------------------------------------------- | ------------------ |
-| [Epic 24: NestJS Shell Migration](./epic-24-nestjs-shell-migration/README.md)       | Completed          |
-| [Epic 41: Traditional Character Toggle](./epic-41-traditional-characters/README.md) | Deferred (Phase-4) |
+| Epic                                                                                                        | Status             |
+| ----------------------------------------------------------------------------------------------------------- | ------------------ |
+| [Epic 24: NestJS Shell Migration](./epic-24-nestjs-shell-migration/README.md)                               | Completed          |
+| [Epic 25: Secure Guest Identity & Route Gating](./epic-25-secure-guest-identity-and-route-gating/README.md) | Completed          |
+| [Epic 41: Traditional Character Toggle](./epic-41-traditional-characters/README.md)                         | Deferred (Phase-4) |
 
 ## Archived Epics
 

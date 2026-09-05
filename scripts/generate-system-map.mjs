@@ -140,16 +140,16 @@ const LAYER_ROOTS = {
       {
         path: "docs/business-requirements",
         branch: "Business requirements",
-        single: true, // active READMEs (index + epic-24/41) collapse into ONE branch
+        single: true, // active READMEs (index + epic-24/25/41) collapse into ONE branch
         exclude: ["archive"],
-        include: /^(README\.md|epic-(24|41)[^/]*\/README\.md)$/,
+        include: /^(README\.md|epic-(24|25|41)[^/]*\/README\.md)$/,
       },
       {
         path: "docs/issue-implementation",
         branch: "Issue implementation",
-        single: true, // active READMEs (index + epic-24/41) collapse into ONE branch
+        single: true, // active READMEs (index + epic-24/25/41) collapse into ONE branch
         exclude: ["archive"],
-        include: /^(README\.md|epic-(24|41)[^/]*\/README\.md)$/,
+        include: /^(README\.md|epic-(24|25|41)[^/]*\/README\.md)$/,
       },
     ],
   },

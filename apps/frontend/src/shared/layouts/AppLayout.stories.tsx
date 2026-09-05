@@ -119,11 +119,29 @@ export const PhaseLocked: Story = {
 /**
  * LoggedOut — guest user: the sidebar renders no auth chrome; the AppTopBar
  * UserMenu shows Login/Register CTAs. withGuestAuth overrides the global
- * authenticated MockAuthProvider.
+ * authenticated MockAuthProvider. Phase 1 (not the default phase 4) so the
+ * guest shell stays truthful: the calibrated guest unlocks exactly Phase 1.
  */
 export const LoggedOut: Story = {
   decorators: [withGuestAuth, withAppLayoutPath("/")],
   render: () => <PageContent />,
+  parameters: {
+    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
+  },
+};
+
+/**
+ * GuestShell — Epic 25 S1/guest state parity: the passive Guest identity badge
+ * shows in the AppTopBar (near the Login/Register CTAs) and the sidebar Learn
+ * group renders the Phase-1 shape (Foundations unlocked, Radicals/Grammar/
+ * Phonetic/Readers/Chengyu locked). No CTA/upsell (epic-26).
+ */
+export const GuestShell: Story = {
+  decorators: [withGuestAuth, withAppLayoutPath("/learn/foundations")],
+  render: () => <PageContent />,
+  parameters: {
+    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
+  },
 };
 
 export const Mobile: Story = {

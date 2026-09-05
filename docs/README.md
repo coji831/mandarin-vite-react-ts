@@ -62,7 +62,7 @@ The per-class status vocabulary lives in
 Generated full tree — every tracked leaf (purpose · status · link), nested layer → small branch. `review` = stale > 6 weeks (machine override); scanned .md leaves must carry YAML front-matter (purpose/status/last-verified) — absence is a hard `check:system-map` failure; HTML leaves use a `<!-- last-verified: -->` marker.
 
 - [Layer 1 · Product / Business — active · 5 leaves](#layer-1)
-- [Layer 2 · Planning — planned · 8 leaves](#layer-2)
+- [Layer 2 · Planning — planned · 10 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 4 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
@@ -88,7 +88,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-2"><summary>Layer 2 · Planning — planned · 8 leaves</summary>
+<details id="layer-2"><summary>Layer 2 · Planning — planned · 10 leaves</summary>
 
 #### Planning
 
@@ -103,6 +103,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Area index for business requirements, epics, user stories, and planning docs | active | [docs/business-requirements/README.md](business-requirements/README.md) |
 | NestJS 11 shell-swap — full-scoped serial Epic 24 runs FIRST to completion (15 stories), then epics 25–28 land on NestJS; 24-16 BLOCKING pre-merge release gate | completed | [docs/business-requirements/epic-24-nestjs-shell-migration/README.md](business-requirements/epic-24-nestjs-shell-migration/README.md) |
+| Epic 25 Secure Guest Identity & Route Gating — data-driven Learn route gating (all 6 routes) + guest-shell UI + TTS guest-cost verification (residual after epic-24 absorption) | completed | [docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/README.md](business-requirements/epic-25-secure-guest-identity-and-route-gating/README.md) |
 | Global Simplified↔Traditional character toggle for Phase 4 learners | deferred | [docs/business-requirements/epic-41-traditional-characters/README.md](business-requirements/epic-41-traditional-characters/README.md) |
 
 #### Issue implementation
@@ -111,6 +112,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Area index for technical implementation docs (epics and stories) | active | [docs/issue-implementation/README.md](issue-implementation/README.md) |
 | Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS | completed | [docs/issue-implementation/epic-24-nestjs-shell-migration/README.md](issue-implementation/epic-24-nestjs-shell-migration/README.md) |
+| Epic 25 implementation — data-driven Learn route gating (all 6 routes) + guest-shell UI + TTS guest-cost verification (residual after epic-24 absorption) | completed | [docs/issue-implementation/epic-25-secure-guest-identity-and-route-gating/README.md](issue-implementation/epic-25-secure-guest-identity-and-route-gating/README.md) |
 | Epic 41 implementation — 简体/繁體 global toggle (Phase 4, deferred) | deferred | [docs/issue-implementation/epic-41-traditional-characters/README.md](issue-implementation/epic-41-traditional-characters/README.md) |
 
 </details>
@@ -450,7 +452,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 
 ## Flags
 
-- ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
+- ⚠️ shared/components/README.md lists 7 of 36 shared components — stale
 - ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
 - ⚠️ A1 foundations: review (2026-07-20 > 6 weeks)

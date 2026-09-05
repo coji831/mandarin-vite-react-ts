@@ -85,6 +85,12 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   // never all-unlocked.
   const effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? Infinity : 1);
 
+  // Epic 25 S1: the shell's guest identity — true for the calibrated guest
+  // gate (`phaseGate.isGuest` → `createGuestPhaseGate()`) OR any
+  // unauthenticated session (auth fetch fallback). Drives the passive Guest
+  // badge in the AppTopBar (no CTA/upsell — that's epic-26).
+  const isGuest = !isAuthenticated || !!phaseGate?.isGuest;
+
   // Don't show sidebar on auth pages — both login and register render standalone
   // (previously only login was hidden, so Register showed the nav when authed).
   const isAuthPage = location.pathname.startsWith(auth_page);
@@ -121,7 +127,12 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
       )}
 
       <div className="app-main flex flex-col flex-1">
-        <AppTopBar user={user} isAuthenticated={isAuthenticated} logout={logout} />
+        <AppTopBar
+          user={user}
+          isAuthenticated={isAuthenticated}
+          isGuest={isGuest}
+          logout={logout}
+        />
         <main className="app-content flex flex-col flex-1">
           <Outlet />
         </main>
