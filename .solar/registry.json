@@ -73,7 +73,8 @@
       "docs-writer",
       "code-reviewer"
     ],
-    "docs-review": ["docs-writer", "code-reviewer"]
+    "docs-review": ["docs-writer", "code-reviewer"],
+    "verify": ["investigator", "code-reviewer"]
   },
   "playbooks": {
     "research": {
