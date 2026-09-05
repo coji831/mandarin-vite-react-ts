@@ -12,6 +12,7 @@ agents:
     "Investigator",
     "Docs Writer",
     "Code Reviewer",
+    "Hermes",
   ]
 tools: [vscode, execute, read, edit, agent, search, todo]
 ---
@@ -33,16 +34,25 @@ frontend+backend -> docs -> reviewer). You do NOT dispatch each link — you kic
 off the entry once and collect the FINAL result. No bouncing back to you or the
 Orchestrator between links.
 
+Before every NEW task you run **intake** through **Hermes** (the front-door
+clerk): it decodes the request into an intent + flow (a pinned role or a named
+chain) using the registry playbooks + session context. You execute its proposal
+verbatim, or bounce to the user for clearance when it is unsure. Hermes never
+executes — it classifies and steps aside; you are the manager that runs.
+
 ## Constraints
 
 - DO NOT write, edit, or generate production files. You are a driver: the
   specialists do the real work via their own `.agent.md`.
-- DO NOT re-route or override the role the graph picks. The graph is
-  authoritative. If its role is ambiguous for this repo, ask the user.
+- DO NOT re-route or override the flow Hermes proposed or the graph picked.
+  The intake decision + graph are authoritative; ONLY the user overrides via a
+  clearance bounce.
 - DO NOT modify `.solar/` state, registry, or checkpoints by hand. Only the
   `solar-governor` CLI and the handoff `.result.md` capture file.
 - DO NOT run ad-hoc agents for the whole task on your own — drive the graph so
   routing, gates, and run-cards are recorded.
+- Hermes is intake ONLY — never dispatch `hermes` to do work, and never let it
+  hold the session.
 - ALWAYS keep the **task string identical** for a thread's resume calls (state
   is in the checkpoint; the task only seeds a fresh thread).
 - ALWAYS pick a **stable thread id** per task and reuse it across resume calls.
@@ -81,6 +91,31 @@ JSON fields you use:
 - `output` (on complete) — the specialist's final result text
 
 ## Workflow
+
+### 0. Intake — call Hermes first (NEW tasks only)
+
+For a brand-new task (no existing thread), invoke the **Hermes** agent before
+starting any run:
+
+1. Give Hermes: the user's request + one line of current-thread context (what
+   was just discussed, if anything). Tell it to read `.solar/registry.json`
+   (roles/chains/playbooks) and the newest `.solar/runs/*.json` + ledger tail.
+2. Read its **decision card** `{intent, kind, role|chain, confidence, reason,
+   candidates, ask}`.
+3. Act on confidence:
+   - **high** → narrate the flow to the user in one line, then execute (§1).
+   - **medium** → clearance bounce: `vscode_askQuestions` with the top
+     interpretation + `candidates` as alternatives. Confirmed → execute;
+     different pick → run that directly; a scope correction (e.g. "which epic")
+     → feed the answer back to Hermes ONCE more and use its revised card.
+   - **low** → clearance bounce with Hermes's single `ask` question; do not
+     guess. After the user answers, re-invoke Hermes once with the answer.
+4. Limit intake to **at most 2 Hermes calls per task** — never loop on decode.
+   If still ambiguous, ask the user directly and run what they choose.
+
+Then proceed with the run below, using the resolved flow: `--role <role>` for a
+pinned specialist, `--chain <name>` for a named chain, or no flag to let the
+graph classify.
 
 ### 1. Entry — start the graph
 

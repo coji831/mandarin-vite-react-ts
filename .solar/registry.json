@@ -52,7 +52,15 @@
     "role": "Orchestrator",
     "system": "Workflow orchestrator: classify requests, route to the right specialist, coordinate multi-step chains. In v5 the orchestrator IS the graph (deterministic dispatch); this registry entry preserves the delegation map for the coexisting write-side harness. Never writes production files or runs shell.",
     "tools": ["workspace"],
-    "next_edges": ["investigator", "architect", "uiux-designer", "frontend-engineer", "backend-engineer", "docs-writer", "code-reviewer"],
+    "next_edges": [
+      "investigator",
+      "architect",
+      "uiux-designer",
+      "frontend-engineer",
+      "backend-engineer",
+      "docs-writer",
+      "code-reviewer"
+    ],
     "model": "deepseek"
   },
   "default_chain": "epic",
@@ -65,5 +73,25 @@
       "docs-writer",
       "code-reviewer"
     ]
+  },
+  "playbooks": {
+    "research": {
+      "kind": "role",
+      "role": "investigator",
+      "note": "codebase / root-cause research"
+    },
+    "fix-bug": {
+      "kind": "role",
+      "role": "frontend-engineer|backend-engineer",
+      "note": "stack-resolved; prepend investigator when root cause unknown"
+    },
+    "implement-epic": { "kind": "chain", "name": "epic", "note": "investigate-first full epic" },
+    "implement-story": {
+      "kind": "role",
+      "role": "frontend-engineer|backend-engineer",
+      "note": "small feature; prepend uiux-designer when UI is involved"
+    },
+    "docs": { "kind": "role", "role": "docs-writer", "note": "docs + doc<->code truth-check" },
+    "review": { "kind": "role", "role": "code-reviewer", "note": "audit / cross-cutting review" }
   }
 }
