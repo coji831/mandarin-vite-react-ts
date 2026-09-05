@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-09-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-09-05 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -65,8 +65,8 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 4 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — active · 31 leaves](#layer-6)
+- [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
+- [Layer 6 · Agentic System — active · 34 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — active · 5 leaves</summary>
@@ -149,7 +149,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 128 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 129 leaves</summary>
 
 #### Getting started
 
@@ -217,7 +217,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | API client conventions, error handling, and service layer patterns for frontend-backend communication | active | [docs/guides/conventions/api-client.md](guides/conventions/api-client.md) |
 | Standard for creating and maintaining backend modules in the modular monolith | active | [docs/guides/conventions/backend.md](guides/conventions/backend.md) |
-| Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma | active | [docs/guides/conventions/data-import-scripts.md](guides/conventions/data-import-scripts.md) |
+| Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma | **review** | [docs/guides/conventions/data-import-scripts.md](guides/conventions/data-import-scripts.md) |
 | Frontend coding standards, conventions, and patterns | active | [docs/guides/conventions/frontend.md](guides/conventions/frontend.md) |
 | Branch management strategy, commit conventions (Conventional Commits), and PR workflow | active | [docs/guides/conventions/git.md](guides/conventions/git.md) |
 | File, folder, and naming conventions for both frontend and backend code across the monorepo | **review** | [docs/guides/conventions/naming-standards.md](guides/conventions/naming-standards.md) |
@@ -249,6 +249,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Shared / kernel layer in a modular monolith | active | [docs/knowledge-base/backend/backend-shared-kernel-layer.md](knowledge-base/backend/backend-shared-kernel-layer.md) |
 | Character-level SRS with reading context | **review** | [docs/knowledge-base/backend/character-level-srs-reading-context.md](knowledge-base/backend/character-level-srs-reading-context.md) |
 | Module-level container pattern | retired | [docs/knowledge-base/backend/module-level-containers.md](knowledge-base/backend/module-level-containers.md) |
+| How optionalAuth resolves on the TTS & passage-audio surface — guard mechanism, DI, and the findings log | active | [docs/knowledge-base/backend/optional-auth-resolution.md](knowledge-base/backend/optional-auth-resolution.md) |
 | Pre-adaptation rules for static/dynamic data separation | **review** | [docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md](knowledge-base/backend/pre-adaptation-static-dynamic-separation.md) |
 | TypeScript error handling best practices | **review** | [docs/knowledge-base/backend/typescript-error-handling.md](knowledge-base/backend/typescript-error-handling.md) |
 | Shared data model across packages | active | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
@@ -361,7 +362,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — active · 31 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — active · 34 leaves</summary>
 
 #### Instructions
 
@@ -377,12 +378,13 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Database schema change safety checks and migration commands | active | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
 | Quiz strategy pattern, routing, component reuse | active | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
 | Hanzi-writer, D3, canvas library integration with React | active | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
+| SOLAR v5 self-chain contract — when a handoff says CHAIN MODE, run your step then delegate to the next specialist yourself (no return to Governor between links); last link returns the final result | active | [.github/instructions/solar-agent-chain.instructions.md](../.github/instructions/solar-agent-chain.instructions.md) |
 | Page-container delegation, MSW mocking, state parity, drift prevention | active | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
 | Testing requirements for frontend and backend | active | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
 | Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law | active | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
 | UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification | active | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_14 instruction leaves · 15 on disk — project-workflow is the control-plane gate table._
+_15 instruction leaves · 16 on disk — project-workflow is the control-plane gate table._
 
 #### Agents
 
@@ -393,6 +395,8 @@ _14 instruction leaves · 15 on disk — project-workflow is the control-plane g
 | Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | active | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
 | Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | active | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
 | Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | active | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
+| Use when: running a task through the SOLAR v5 governor graph — ONE entry point that deterministically routes to a specialist (or runs an epic as a self-chaining agent chain), gates the result, and completes with a run-card (v5 pilot, e.g. epic 25). Also use when the user asks for 'governor', 'v5 run', 'graph-governed', 'run the chain', or wants the same orchestrator UX but with durable checkpoints + run-cards. For ad-hoc single-agent requests with no governor need, delegate straight to the matching specialist instead. | active | [.github/agents/governor-v5.agent.md](../.github/agents/governor-v5.agent.md) |
+| Use when: decoding the user's request into an intent + flow before a SOLAR run (intake only). Governor v5 calls Hermes as the FIRST step of every new task. Also answers 'what would you route this as?'. Do NOT use for executing, coding, or designing — Hermes only classifies. | active | [.github/agents/hermes.agent.md](../.github/agents/hermes.agent.md) |
 | Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | active | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
 | Use when: starting a new task, coordinating multi-step workflows, routing work to specialist agents, managing execution flow, or determining which agent to use for a request. | active | [.github/agents/orchestrator.agent.md](../.github/agents/orchestrator.agent.md) |
 | Use when: designing UI — wireframes, Storybook Step 1 (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | active | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
@@ -435,14 +439,14 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | --- | --- | --- | --- | --- | --- |
 | A1 Frontend Features | 2 | 6 | 5 | 13 | [coverage.md](coverage.md#a1) |
 | A2 Frontend Pages | 13 | 3 | 0 | 16 | [coverage.md](coverage.md#a2) |
-| A3 Frontend Shared | 0 | 1 | 10 | 11 | [coverage.md](coverage.md#a3) |
+| A3 Frontend Shared | 0 | 1 | 11 | 12 | [coverage.md](coverage.md#a3) |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | [coverage.md](coverage.md#a4) |
 | A5 Backend Shared / Infra | 8 | 0 | 0 | 8 | [coverage.md](coverage.md#a5) |
 | A6 Packages | 0 | 0 | 3 | 3 | [coverage.md](coverage.md#a6) |
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 2 | 1 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 36 | 3 | 0 | 39 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 38 | 4 | 0 | 42 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
@@ -454,6 +458,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
 - ⚠️ A1 review: review (2026-07-20 > 6 weeks)
 - ⚠️ A8 .github/workflows/: review (2026-06-12 > 6 weeks)
+- ⚠️ A10 conventions/data-import-scripts: review (2026-07-24 > 6 weeks)
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
