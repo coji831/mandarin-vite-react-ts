@@ -80,6 +80,29 @@ platform does not grant nested agents the agent tool). Design updated to match
 reality. Uncommitted real work on the branch (route gating + epic-25 docs) is
 ready for the operator to review/commit.
 
+## Epic-25 close-out — Code Reviewer verdict (2026-09-05)
+
+Driver-orchestrated `verify` chain (`investigator → code-reviewer`) re-run
+headless over `http` / `deepseek-chat` with an efficient objective (thread
+`e25verify-close`):
+
+- **Code Reviewer verdict: APPROVED** — C1–C7 graded HIGH, C8 MEDIUM, each with
+  `file:line` evidence; closes the epic-25 pending Code-Reviewer gate. Artifact:
+  `.solar/chains/e25verify-close.md` (+ `.json`; run-cards
+  `runs/e25verify-close-{0,1}.json`). `.solar/` artifacts are gitignored — this
+  scorecard is the committed record.
+- **Investigator link: REJECTED (max_rounds)** — the gather link exhausted its
+  12-round cap (34 tool calls, 263.5k in, ~90 s) before a final answer; the
+  error → REJECTED fix held (no false auto-approve). The reviewer link then
+  completed (31 tools, 197.3k in, ~105 s). Net ≈ 461k in / 11.6k out / 65 tools
+  / ~3.3 min; est ≈ $0.14 worst-case (no-cache), a fraction of that with cache.
+- **Performance datapoint:** read-heavy GATHER roles (investigator) are the
+  runaway risk — even at rounds 12 + truncation 8000 + an efficient objective, a
+  thorough verify exceeds the cap; the cap never binds on the role that renders
+  the verdict. Next lever: constrain the gather objective ("collect only what
+  the reviewer needs; cite paths, don't page whole big files") rather than
+  raising rounds.
+
 ## Open risks to watch
 
 - ~~Autonomous agent-spawns-agent nesting~~ **FALSIFIED (Caveat 9)** — nested
