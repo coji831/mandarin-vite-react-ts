@@ -38,6 +38,8 @@ instructions:
     description: "Quiz strategy pattern, routing, component reuse"
   - file: ".github/instructions/storybook-production-alignment.instructions.md"
     description: "Page-container delegation, MSW mocking, state parity, drift prevention"
+  - file: ".github/instructions/solar-agent-chain.instructions.md"
+    description: "SOLAR v5 driver-orchestrated chain contract — the coordinator (Governor v5 / --auto) runs each link in order; you are ONE link. Never spawn or compose downstream links yourself (nested agents lack the spawn tool)."
   - file: ".github/instructions/ui-composition.instructions.md"
     description: "Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law"
   - file: "DESIGN.md"
@@ -68,10 +70,11 @@ agents:
   - ".github/agents/code-reviewer.agent.md"
   - ".github/agents/docs-writer.agent.md"
   - ".github/agents/frontend-engineer.agent.md"
+  - ".github/agents/governor-v5.agent.md"
+  - ".github/agents/hermes.agent.md"
   - ".github/agents/investigator.agent.md"
-  - ".github/agents/orchestrator.agent.md"
   - ".github/agents/uiux-designer.agent.md"
-last-verified: 2026-08-24
+last-verified: 2026-09-06
 prohibitions:
   - "NEVER hardcode color, spacing, or typography values — use CSS variables or DESIGN.md tokens"
   - "NEVER create a new Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser — import from src/shared/components/"
