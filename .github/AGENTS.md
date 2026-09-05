@@ -68,6 +68,7 @@ agents:
   - ".github/agents/code-reviewer.agent.md"
   - ".github/agents/docs-writer.agent.md"
   - ".github/agents/frontend-engineer.agent.md"
+  - ".github/agents/governor-v5.agent.md"
   - ".github/agents/investigator.agent.md"
   - ".github/agents/orchestrator.agent.md"
   - ".github/agents/uiux-designer.agent.md"
