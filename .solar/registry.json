@@ -72,7 +72,8 @@
       ["frontend-engineer", "backend-engineer"],
       "docs-writer",
       "code-reviewer"
-    ]
+    ],
+    "docs-review": ["docs-writer", "code-reviewer"]
   },
   "playbooks": {
     "research": {

@@ -207,6 +207,13 @@ via direct agent-to-agent delegation (`solar-agent-chain.instructions.md`) and
 returns the FINAL result. You: kick off the entry once, save its final result,
 resume, and report the ONE run-card (role = entry, chain recorded).
 
+**Named chains available** (read `.solar/registry.json` → `chains`): `epic`
+(full investigate-first) and `docs-review` (`docs-writer → code-reviewer`). Use
+`--chain docs-review` when a request is "write X, then have it reviewed" — the
+docs-writer is the chain ENTRY and must delegate the review itself (this is
+what makes nesting real). Do not fall back to two separate dispatches unless
+the user has already run the write leg.
+
 **Human-owned gates still pause the chain** — the UIUX link stops at its User
 Preview Gate (2026 norm; never auto-merge design). If the returned result says
 the chain is waiting on design approval, show the user what UIUX produced, get
