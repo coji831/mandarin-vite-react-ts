@@ -38,6 +38,8 @@ instructions:
     description: "Quiz strategy pattern, routing, component reuse"
   - file: ".github/instructions/storybook-production-alignment.instructions.md"
     description: "Page-container delegation, MSW mocking, state parity, drift prevention"
+  - file: ".github/instructions/solar-agent-chain.instructions.md"
+    description: "SOLAR v5 self-chain contract — when a handoff says CHAIN MODE, run your step then delegate to the next specialist yourself (no return to Governor between links); last link returns the final result"
   - file: ".github/instructions/ui-composition.instructions.md"
     description: "Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law"
   - file: "DESIGN.md"

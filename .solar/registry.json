@@ -54,5 +54,16 @@
     "tools": ["workspace"],
     "next_edges": ["investigator", "architect", "uiux-designer", "frontend-engineer", "backend-engineer", "docs-writer", "code-reviewer"],
     "model": "deepseek"
+  },
+  "default_chain": "epic",
+  "chains": {
+    "epic": [
+      "investigator",
+      "architect",
+      "uiux-designer",
+      ["frontend-engineer", "backend-engineer"],
+      "docs-writer",
+      "code-reviewer"
+    ]
   }
 }
