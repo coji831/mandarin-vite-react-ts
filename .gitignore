@@ -66,3 +66,11 @@ keys/
 # External data (downloaded from Make Me a Hanzi) — root only
 # Anchored (/data/) so docs/guides/data/ (seed-pipeline.md) is not shadowed.
 /data/
+
+# SOLAR v5 runtime state (registry.json + PILOT.md stay tracked)
+.solar/config.json
+.solar/state/
+.solar/ledger.md
+.solar/runs/
+.solar/handoffs/
+.solar/chains/
