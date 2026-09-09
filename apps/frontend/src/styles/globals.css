@@ -186,7 +186,7 @@
   --card-gutter-sm: 16px; /* PageGrid gutter, dense */
   --card-gutter: 20px; /* PageGrid gutter, default */
   --card-gutter-lg: 24px; /* PageGrid gutter, spacious */
-  --measure-prose: 65ch; /* long-form reading measure (reader paragraphs) */
+  --measure-prose: 720px; /* long-form reading measure (reader paragraphs) — ≈65ch at 16px; px per unit-allowed-list */
 
   /* ===== Size Scale ===== */
 

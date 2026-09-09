@@ -47,6 +47,12 @@
  *   - display-tracking (advisory)              — display font class without tracking-tight
  *   - nesting-inversion (advisory)             — child gap token ≥ parent gap token
  *   - transition-token-only (advisory)         — raw transition duration literal
+ *
+ * Page-Anatomy rules (S0a-3, ratified rollout 2026-09-09) — page-container CSS
+ * only (`pages/**` + `*Page.css`); these findings ARE the deviation list S2 owns:
+ *   - missing-layout-token (error)       — hardcoded max-width: <px> page measure
+ *   - page-scoped-layout-css (error)     — page-wrapper margin: … auto centering
+ *   - page-scoped-grid (error)           — page-defined grid-template-columns
  * Rule-level/file-level checks return finding ARRAYS (the per-line loop spreads
  * them); per-line checks return a single finding or null.
  *
@@ -556,7 +562,77 @@ const CHECKS = {
       return null;
     },
   },
+
+  // ─── Page-Anatomy law (S0a-3, ratified rollout 2026-09-09) ──────────────
+  // Page containers must compose from PageShell/PageStack/PageGrid — no
+  // page-scoped layout CSS, ever. Errors intentionally surface PRE-EXISTING
+  // drift on the 10 page-scoped-CSS pages (S2 owns the sweep — these findings
+  // ARE the machine-readable deviation list); S1's Dashboard retrofit clears
+  // the first findings. Scoped to page-container CSS only (`pages/**` +
+  // `*Page.css`) — feature/shared component measures are NOT page layout.
+  missingLayoutToken: {
+    name: "missing-layout-token",
+    severity: "error",
+    description:
+      "Hardcoded page measure (max-width: <px>) in a page container CSS — consume --page-measure-<archetype> via PageShell (page-anatomy law); never hardcode a page max-width",
+    test: (line, file) => {
+      if (!isPageContainerCss(file)) return null;
+      const trimmed = line.trim();
+      if (isCommentOrMedia(trimmed)) return null; // @media (max-width:…) is a breakpoint, not a measure
+      const match = line.match(/max-width\s*:\s*\d+(?:\.\d+)?px/);
+      if (match && !line.includes("var(--page-measure")) {
+        return { line: line, match: match[0] };
+      }
+      return null;
+    },
+  },
+  pageScopedLayoutCss: {
+    name: "page-scoped-layout-css",
+    severity: "error",
+    description:
+      "Page-wrapper auto-centering (margin: … auto / margin-inline: auto) in a page container CSS — PageShell owns page centering + measure; use PageShell, not a hand-rolled page wrapper (page-anatomy law)",
+    test: (line, file) => {
+      if (!isPageContainerCss(file)) return null;
+      const trimmed = line.trim();
+      if (isCommentOrMedia(trimmed)) return null;
+      const match = line.match(/margin(?:-inline|-block)?\s*:\s*[^;]*auto/);
+      if (match) return { line: line, match: match[0] };
+      return null;
+    },
+  },
+  pageScopedGrid: {
+    name: "page-scoped-grid",
+    severity: "error",
+    description:
+      "Page-defined grid (grid-template-columns) in a page container CSS — use the PageGrid primitive (page-anatomy law); the card grid is PageGrid's job",
+    test: (line, file) => {
+      if (!isPageContainerCss(file)) return null;
+      const trimmed = line.trim();
+      if (isCommentOrMedia(trimmed)) return null;
+      const match = line.match(/grid-template-columns\s*:/);
+      if (match) return { line: line, match: match[0] };
+      return null;
+    },
+  },
 };
+
+/** True for page-container CSS: a `*Page.css` under apps/frontend/src/pages/. */
+function isPageContainerCss(file) {
+  if (!file.endsWith(".css")) return false;
+  const norm = file.replace(/\\/g, "/");
+  if (!norm.includes("/pages/")) return false;
+  return /Page\.css$/.test(path.basename(file));
+}
+
+/** True for comment-only lines and @media breakpoint condition lines. */
+function isCommentOrMedia(trimmed) {
+  return (
+    trimmed.startsWith("/*") ||
+    trimmed.startsWith("*") ||
+    trimmed.startsWith("//") ||
+    trimmed.startsWith("@media")
+  );
+}
 
 // ─── Advisory Heuristic Helpers (file-level) ─────────────────────────────────
 // These run once per file (via the uniformGap/sizeJump caches) and return a
