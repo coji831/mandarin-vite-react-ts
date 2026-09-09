@@ -19,6 +19,10 @@ audience: agents
 ## How to use
 
 1. **Pick the archetype** from the mode/page table in `docs/guides/design/page-archetypes.md` (§0). Name it on the required `archetype:` line.
+   1.5 **Declare anatomy (page-anatomy law)** - the page's content region is PageShell (per-archetype
+   `--page-measure-*`) -> PageStack -> PageGrid; NO page-scoped layout CSS, ever. Confirm the page's
+   anatomy in `.github/page-inventory.json` (shell/measure/gutter/header) matches the archetype
+   before speccing new UI - a page must conform before an epic builds on it (D5).
 2. **Reference the archetype, list deltas** — section 4 (Component reuse map) becomes "reference archetype X; list deltas", not a re-derivation of the skeleton.
 3. **Record any external borrow** on the required `provenance:` line (per the External Borrowing Protocol in `design-reasoning.md`).
 4. **Score the outcome** against `docs/guides/design/design-quality-rubric.md` at epic close.
@@ -33,6 +37,7 @@ audience: agents
 Source: BM-1 (§<tier table rows>) + epic-<N> ACs
 archetype: <id from docs/guides/design/page-archetypes.md> # REQUIRED
 provenance: <external borrow origin, if any> # REQUIRED — e.g. "source: <pattern> — why: <principle>"; "none" if no borrow
+anatomy: shell: PageShell | measure: <archetype> | gutter: sm|default|lg | header: PageHeader|Box|null # page-anatomy law - see .github/page-inventory.json; no page-scoped layout CSS
 
 1. **User flow** — entry → action → outcome → next (what the user sees/thinks/wants next).
 2. **Preview/reward split** — what lives on the card/preview vs the detail surface (ui-composition §7 master-detail law). Detail content must NOT appear on the preview surface.

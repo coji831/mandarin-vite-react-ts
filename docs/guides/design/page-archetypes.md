@@ -30,13 +30,19 @@ Two structural modes:
 
 Every route declares its mode as part of its page archetype — never ad hoc.
 
-### The 5 non-negotiables
+### The 6 non-negotiables (5 + page-anatomy law)
 
 1. **Dual-mode chrome law** — Browse = rail expanded + standard top bar; Focus = rail collapsed + recessed top bar. Enforced via the page's declared mode (archetype), not per-page taste.
 2. **One primary action per view, position-locked** — Focus: the task-completion CTA at the natural completion point (e.g. the Review session's `rating-again/good/easy` cluster). Browse: one top entry CTA. All secondary actions are `ghost`/`icon` (`Button` variants). This upgrades ui-composition's "one CTA" from a _count_ to a _position contract_.
 3. **Preview-detail separation as the master-detail law** — lists/launchers show previews only; detail/task is a Focus surface; never inline full detail into a list; never stack dense grids in a Focus surface. See `ui-composition.instructions.md` §7.
 4. **Fixed-height data-resilient shell in every Focus surface** (ADR-002) — stable frame, inner scroll, skeleton dims = final dims. Chrome never scrolls; content does.
 5. **Density + spacing contract** — Focus surfaces stay consumer-comfortable (`gap-lg/md/sm/xs` hierarchy per `design-reasoning.md` §5.3; never the same gap at different levels); density rises only in Browse indexes and the HSK exam scan surface.
+6. **No page-scoped layout CSS, ever (page-anatomy law)** - every page composes PageShell
+   (per-archetype `--page-measure-*`) -> PageStack (section rhythm) -> PageGrid (card home). No
+   page max-width / `margin:...auto` wrapper / `grid-template-columns` in `*Page.css`
+   (`design-audit`: `missing-layout-token` / `page-scoped-layout-css` / `page-scoped-grid`). The
+   anatomy ledger (`.github/page-inventory.json` shell/measure/gutter/header) is the machine
+   contract; drift leaders converge in the S2 wave order (D5).
 
 ### Mode / page mapping (epics 25–40)
 
@@ -57,6 +63,13 @@ Every route declares its mode as part of its page archetype — never ad hoc.
 ## The 8 Archetypes
 
 Each archetype is a YAML block. **Composition maps may only name `component-registry.json` components** — `check:page-inventory` fails on any non-registry name. Token references are names only (`--space-*`, `--font-*`, `--color-*`, `--surface-*`); new tokens still flow through the `DESIGN.md` + `globals.css` + `design-audit` parity path.
+
+**Page anatomy & measure (the shell law):** every archetype's content measure is the
+`--page-measure-<archetype>` token (`hub-launcher` 960 / `browse-index` 1200 / `focus-*` 620 /
+`utility` 1000 / `auth` 420 px - DESIGN.md `tokens.layout` <-> globals.css `:root`, parity-gated
+#14). Pages compose `PageShell(measure) -> PageStack(rhythm) -> PageGrid(gutter)`; the per-page
+anatomy (shell/measure/gutter/header) is declared in `.github/page-inventory.json` (verified by
+`check:page-inventory`) - this doc defines the archetypes; the ledger is authoritative per page.
 
 ### 1. `hub-launcher`
 

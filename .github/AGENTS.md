@@ -77,6 +77,7 @@ agents:
 last-verified: 2026-09-06
 prohibitions:
   - "NEVER hardcode color, spacing, or typography values — use CSS variables or DESIGN.md tokens"
+  - "NEVER write page-scoped layout CSS - a page content region composes PageShell (per-archetype --page-measure-*) -> PageStack (section rhythm) -> PageGrid (card home); no page max-width, margin:...auto wrapper, or grid-template-columns in *Page.css (page-anatomy law; design-audit errors: missing-layout-token / page-scoped-layout-css / page-scoped-grid)"
   - "NEVER create a new Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser — import from src/shared/components/"
   - "NEVER store state in components/ — use stores/ directories"
   - "NEVER call apiClient directly from hooks or components — use service layer"
@@ -85,5 +86,21 @@ prohibitions:
 ---
 
 ## UI Codegen Protocol
+
+## Page-Anatomy Law (read before building ANY page)
+
+Every routed page composes as: **AppLayout/LearnLayout chrome -> PageShell (per-archetype
+measure) -> PageHeader -> PageStack (section rhythm) -> PageGrid (cards)** - see
+`docs/guides/design/page-archetypes.md` + `.github/page-inventory.json` (the anatomy ledger:
+shell/measure/gutter/header, verified by `check:page-inventory`).
+
+- **No page-scoped layout CSS, ever.** Never set a page max-width, a `margin: ... auto` centering
+  wrapper, or `grid-template-columns` in `*Page.css` - PageShell/PageStack/PageGrid own measure,
+  rhythm, and the card grid. `design-audit` errors: `missing-layout-token`,
+  `page-scoped-layout-css`, `page-scoped-grid` (S0a-3). Retrofit drift leaders in the S2 wave
+  order - never add new UI on an un-converged shell (D5).
+- Consume layout tokens (`--page-measure-<archetype>`, `--page-pad`, `--section-rhythm-*`,
+  `--chrome-h`, `--card-gutter-*`) - never hardcoded px for page structure. DESIGN.md <->
+  globals.css parity is enforced (`check:design-parity`, gate #14).
 
 **UI Codegen Protocol:** see `.github/instructions/uiux-design-protocol.instructions.md` §Storybook MCP + Context Pack — Storybook MCP is the component source of truth; never invent a component.

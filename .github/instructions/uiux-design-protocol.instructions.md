@@ -64,6 +64,11 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 1. Build the UI structure (JSX skeleton) directly on the host component's `.stories.tsx`
 2. **Cover ALL visual states**: default, loading, empty, error, edge cases — use MSW mocks
 3. **No API calls, no hook logic, no state management** — pure visual shell with mock data only
+4. **Compose the page content region from PageShell/PageStack/PageGrid** (per-archetype
+   `--page-measure-*` measure, section rhythm, card gutter) - NO page-scoped layout CSS (no page
+   max-width / margin:auto wrapper / grid-template-columns in `*Page.css`; `design-audit` errors:
+   `missing-layout-token` / `page-scoped-layout-css` / `page-scoped-grid`). Confirm the page's
+   anatomy (shell/measure/gutter/header) in `.github/page-inventory.json` before building.
 
 #### 1.5 — Polish Styling
 
