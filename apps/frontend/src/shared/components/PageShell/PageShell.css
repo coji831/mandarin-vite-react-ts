@@ -1,0 +1,38 @@
+/**
+ * PageShell.css — page-anatomy content region (A2)
+ *
+ * Layout-only: measure (per-archetype token) + horizontal page gutters.
+ * Vertical rhythm between sections is PageStack's job; surface treatment
+ * lives on child cards/chrome (never here). No page-scoped overrides.
+ */
+.page-shell {
+  width: 100%;
+  margin-inline: auto; /* centers within the scroll region */
+  padding-inline: var(--page-pad);
+  padding-block: var(--space-xl) var(--space-2xl);
+  min-width: 0; /* flex child — prevents blow-out inside .app-content */
+}
+
+/* Per-archetype measure — single source of page width (never hardcode) */
+.page-shell--hub-launcher {
+  max-width: var(--page-measure-hub-launcher);
+}
+.page-shell--browse-index {
+  max-width: var(--page-measure-browse-index);
+}
+.page-shell--focus-task {
+  max-width: var(--page-measure-focus-task);
+}
+.page-shell--utility {
+  max-width: var(--page-measure-utility);
+}
+.page-shell--auth {
+  max-width: var(--page-measure-auth);
+}
+
+@media (max-width: 480px) {
+  .page-shell {
+    padding-inline: var(--space-md); /* tighten gutters on small screens */
+    padding-block: var(--space-lg) var(--space-xl);
+  }
+}

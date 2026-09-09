@@ -1,0 +1,38 @@
+/**
+ * PageGrid.css — card home grid (A2)
+ *
+ * The ONLY card-grid primitive. Canonical columns + card-gutter tokens.
+ * Responsive collapse via repeat(auto-fit, minmax(...)) so breakpoints live
+ * in one place. Child cards must not set their own grid placement.
+ */
+.page-grid {
+  display: grid;
+  grid-auto-flow: row;
+  min-width: 0;
+}
+
+/* Gutters */
+.page-grid--gutter-sm {
+  gap: var(--card-gutter-sm);
+}
+.page-grid--gutter-default {
+  gap: var(--card-gutter);
+}
+.page-grid--gutter-lg {
+  gap: var(--card-gutter-lg);
+}
+
+/* Column counts — auto-fit minmax keeps cards equal width and collapses
+   responsively without per-breakpoint column overrides. */
+.page-grid--cols-4 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+.page-grid--cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.page-grid--cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.page-grid--cols-1 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 100%), 1fr));
+}

@@ -130,7 +130,7 @@ tokens:
       sm: "16px" # space-md
       md: "20px"
       lg: "24px" # space-lg
-    measure-prose: "65ch" # --measure-prose: long-form reading measure (reader paragraphs)
+    measure-prose: "720px" # --measure-prose: long-form reading measure (≈65ch at 16px; px per unit-allowed-list)
   size:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
   radii: ["4px", "8px", "12px", "20px"]

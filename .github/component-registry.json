@@ -608,6 +608,65 @@
         "children": { "type": "reactNode" }
       }
     },
+    "PageShell": {
+      "description": "Content region primitive (page-anatomy law, A2). The ONLY measure+pad surface: centers content at the archetype's --page-measure-<archetype> token with --page-pad gutters. Pages compose as chrome -> PageShell -> (PageHeader) -> PageStack -> (PageGrid). Never hardcode a page max-width.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/PageShell/PageShell.stories.tsx",
+        "states": ["default", "variant-catalog"]
+      },
+      "props": {
+        "archetype": {
+          "type": "enum",
+          "values": ["hub-launcher", "browse-index", "focus-task", "utility", "auth"],
+          "default": "hub-launcher"
+        },
+        "as": { "type": "elementType", "default": "main" },
+        "children": { "type": "reactNode" },
+        "className": { "type": "string" }
+      }
+    },
+    "PageStack": {
+      "description": "Vertical section-rhythm primitive (page-anatomy law, A2). The ONLY page-level vertical rhythm: sections are children, gap = --section-rhythm-* (outer > item gap). Never hand-set margins between page sections.",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/PageStack/PageStack.stories.tsx",
+        "states": ["default", "variant-catalog"]
+      },
+      "props": {
+        "size": {
+          "type": "enum",
+          "values": ["sm", "default", "lg"],
+          "default": "default"
+        },
+        "as": { "type": "elementType", "default": "div" },
+        "children": { "type": "reactNode" },
+        "className": { "type": "string" }
+      }
+    },
+    "PageGrid": {
+      "description": "Card-home grid primitive (page-anatomy law, A2). The ONLY card grid: canonical columns + --card-gutter-* gutter, auto-fit responsive collapse. NOT a paginated list (that is Grid). Use for card families (quick-access tiles, browse cards).",
+      "importPath": "shared/components",
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/PageGrid/PageGrid.stories.tsx",
+        "states": ["default", "variant-catalog"]
+      },
+      "props": {
+        "columns": {
+          "type": "enum",
+          "values": ["1", "2", "3", "4"],
+          "default": "3",
+          "description": "Column count at desktop: tiles=4, cards=3, wide=2"
+        },
+        "gutter": {
+          "type": "enum",
+          "values": ["sm", "default", "lg"],
+          "default": "default"
+        },
+        "children": { "type": "reactNode" },
+        "className": { "type": "string" }
+      }
+    },
     "CharacterStrokePlayer": {
       "description": "Stroke animation player for Chinese characters. Mini mode for embedding (hub), full mode for dedicated stroke practice.",
       "importPath": "shared/components",

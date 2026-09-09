@@ -1,0 +1,20 @@
+/**
+ * PageStack.css — vertical section rhythm (A2)
+ *
+ * The ONLY page-level vertical rhythm primitive. Gap = section rhythm token;
+ * sections are direct children. Never hand-set margins between page sections.
+ */
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.page-stack--default {
+  gap: var(--section-rhythm);
+}
+.page-stack--sm {
+  gap: var(--section-rhythm-sm);
+}
+.page-stack--lg {
+  gap: var(--section-rhythm-lg);
+}
