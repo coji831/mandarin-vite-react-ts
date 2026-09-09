@@ -110,6 +110,27 @@ tokens:
       box-variant: "box-tone-5"
       button-variant: "btn-tone-5"
   spacing: ["8px", "12px", "16px", "24px", "32px", "40px"]
+  layout: # Page-anatomy layout tokens (blueprint A2 — the page-anatomy law, ratified rollout S0)
+    # Per-archetype content measure. Values grounded in current shipped pages / canonized exemplars;
+    # drift leaders migrate to these in the S1/S2 rollout waves. NEVER hardcode a page max-width —
+    # consume --page-measure-<archetype> via the PageShell primitive instead.
+    page-measure: # --page-measure-<archetype>: content max-width per archetype
+      hub-launcher: "960px" # DashboardPage (canonized hub-launcher exemplar)
+      browse-index: "1200px" # ContentBrowser / PhoneticClustersPage (dense browse)
+      focus-task: "620px" # ReviewView (golden focus-task template); Quiz flow ~620-700
+      utility: "1000px" # ProgressPage (real content shell)
+      auth: "420px" # AuthForm centered single-column
+    page-pad: "24px" # --page-pad: responsive horizontal page gutter (= space-lg)
+    section-rhythm: # --section-rhythm-*: vertical rhythm BETWEEN page sections (outer > item gap)
+      sm: "24px" # space-lg
+      md: "32px" # space-xl
+      lg: "40px" # space-2xl
+    chrome-h: "56px" # --chrome-h: AppTopBar height (shared chrome height — single source)
+    card-gutter: # --card-gutter-*: PageGrid gutter per density tier
+      sm: "16px" # space-md
+      md: "20px"
+      lg: "24px" # space-lg
+    measure-prose: "65ch" # --measure-prose: long-form reading measure (reader paragraphs)
   size:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
   radii: ["4px", "8px", "12px", "20px"]

@@ -169,6 +169,25 @@
   --space-xl: 32px; /* 32px */
   --space-2xl: 40px; /* 40px */
 
+  /* ===== Page-Anatomy Layout tokens (blueprint A2 — the page-anatomy law) =====
+     Per-archetype content measure + page rhythm. 1:1 with DESIGN.md tokens.layout.
+     Consume via PageShell/PageStack/PageGrid primitives — NEVER hardcode a page
+     max-width/max-height/margin in page CSS (design-audit rule page-scoped-layout-css). */
+  --page-measure-hub-launcher: 960px; /* hub-launcher (DashboardPage exemplar) */
+  --page-measure-browse-index: 1200px; /* browse-index (ContentBrowser / PhoneticClusters) */
+  --page-measure-focus-task: 620px; /* focus-task (ReviewView golden template) */
+  --page-measure-utility: 1000px; /* utility (ProgressPage real content shell) */
+  --page-measure-auth: 420px; /* auth (AuthForm centered single-column) */
+  --page-pad: 24px; /* responsive horizontal page gutter (= space-lg) */
+  --section-rhythm-sm: 24px; /* space-lg — compact section stack */
+  --section-rhythm: 32px; /* space-xl — default BETWEEN-section rhythm (outer > item gap) */
+  --section-rhythm-lg: 40px; /* space-2xl — generous section stack */
+  --chrome-h: 56px; /* AppTopBar height — single source of chrome height */
+  --card-gutter-sm: 16px; /* PageGrid gutter, dense */
+  --card-gutter: 20px; /* PageGrid gutter, default */
+  --card-gutter-lg: 24px; /* PageGrid gutter, spacious */
+  --measure-prose: 65ch; /* long-form reading measure (reader paragraphs) */
+
   /* ===== Size Scale ===== */
 
   /* px-based size tokens (fixed dimensions, touch targets) */
