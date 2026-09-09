@@ -76,11 +76,22 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 
 #### 1.6 — User Preview & Approval (Gate)
 
-1. Open Storybook in the browser and present to the user
-2. Walk through each visual state (loading, empty, error, display, edge cases)
-3. User approves layout, spacing, colors, and state coverage
+Present the Storybook shell to the user. This is a **structured gate — a scored checklist, not a
+"looks good?" check** (2026 research: structured scorecard beats freeform; judge side-by-side when
+unsure):
 
-> ⚠️ **Gate rule**: Do NOT proceed to Step 2 (Code Conversion) until the user has previewed and approved the UI design in Storybook. Logic implementation on unapproved layouts wastes effort.
+1. **Walk through each visual state** (loading, empty, error, display, edge cases).
+2. **Run the fillable scorecard** (`design-quality-rubric.md` § Fillable Scorecard): rate 1–5 on
+   Job clarity · Alignment · Spacing/rhythm · Hierarchy · Proportion · Typography · States/
+   resilience · Language · A11y · Business fit · Distinctiveness.
+3. **Ask the uniqueness question**: "Does this read as the generic default you'd produce for any
+   similar page type?" If yes, name what you'd change + why.
+4. **Business check** (goal → signal → lever, §14.5): does the hierarchy serve the screen's ONE job?
+5. **Record a one-line verdict**: `PASS` / `REVISE` / `BLOCK` + what-to-change AND why it fails the
+   check — never "make it prettier".
+
+> ⚠️ **Gate rule**: Do NOT proceed to Step 2 (Code Conversion) until the user has previewed AND the
+> gate verdict is `PASS`. Logic implementation on unapproved layouts wastes effort.
 
 ### Step 2 — Code Conversion (Frontend Engineer): convert the approved design to code
 
