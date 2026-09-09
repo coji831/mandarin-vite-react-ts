@@ -178,137 +178,13 @@ tokens:
   gradients:
     primary: "linear-gradient(135deg, #B45309 0%, #92400E 100%)"
     success: "linear-gradient(90deg, #34D399 0%, #059669 100%)"
-# Scope: catalogs shared presentational components AND registered feature/domain
-# components (e.g. CharacterHub, HubMnemonicSection, tree nodes, ClusterCard,
-# ConstituentCharacterChips). All listed components are registered in
-# .github/component-registry.json and documented in their feature docs/design.md.
-# Feature containers not registered here live in feature folders only. (Decision D1)
-components:
-  - name: "Button"
-    file: "apps/frontend/src/shared/components/Button/Button.tsx"
-    description: "Primary gradient button with hover lift + focus-visible ring. Supports keyboard (onKeyDown/onKeyUp) and aria-expanded for accessible toggles."
-  - name: "Chip"
-    file: "apps/frontend/src/shared/components/Chip/Chip.tsx"
-    description: "Shared chip with interactive (<button>, aria-pressed on active, hover/focus-visible) and non-interactive (<span>, no toggle semantics) modes. Composes glyph/pinyin/label/icon/count slots. No-motion rule: hover/focus-visible styling only when interactive; transitions limited to colors (transition-colors) — no transform/animation."
-  - name: "Input"
-    file: "apps/frontend/src/shared/components/Input/Input.tsx"
-    description: "Styled input with dark theme, focus ring, and error state"
-  - name: "LoadingScreen"
-    file: "apps/frontend/src/shared/components/LoadingScreen/LoadingScreen.tsx"
-    description: "Full-page loading spinner with optional message"
-  - name: "ErrorScreen"
-    file: "apps/frontend/src/shared/components/ErrorScreen/ErrorScreen.tsx"
-    description: "Full-page error display with retry action"
-  - name: "GuestUpsell"
-    file: "apps/frontend/src/shared/components/GuestUpsell/GuestUpsell.tsx"
-    description: "Presentational sign-in upsell card for guest-gated features. Callers gate on useAuth().isAuthenticated; the card has no auth logic and its CTA navigates to the register page by default (override via `to`). Reused by ReviewPromptCard, HubMnemonicSection, and ReviewView."
-  - name: "ProgressBar"
-    file: "apps/frontend/src/shared/components/ProgressBar/ProgressBar.tsx"
-    description: "Progress bar with completion celebration animation"
-  - name: "FilterChip"
-    file: "apps/frontend/src/shared/components/FilterChip/FilterChip.tsx"
-    description: "Toggleable filter chip for content filtering; selected state shows a primary tint (bg + border + text) + aria-pressed."
-  - name: "ToggleSwitch"
-    file: "apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.tsx"
-    description: "Toggle switch for binary settings"
-  - name: "ContentBrowser"
-    file: "apps/frontend/src/shared/components/ContentBrowser/ContentBrowser.tsx"
-    description: "Content browser for navigating learning materials. The active-filter count badge delegates to the shared Chip component (non-interactive, count slot)."
-  - name: "Box"
-    file: "apps/frontend/src/shared/components/Box/Box.tsx"
-    description: "Generic layout container. Preferred over raw <div>. 20 variants, 7 padding sizes."
-  - name: "Modal"
-    file: "apps/frontend/src/shared/components/Modal/Modal.tsx"
-    description: "Controlled overlay dialog with backdrop, close on Escape, size variants (sm/md/lg)."
-  - name: "Card"
-    file: "apps/frontend/src/shared/components/Card/Card.tsx"
-    description: "Content card with title, subtitle, optional icon/badge/locked state. The optional badge delegates to the shared Badge component (variant primary)."
-  - name: "Tabs"
-    file: "apps/frontend/src/shared/components/Tabs/Tabs.tsx"
-    description: "Tab navigation bar with panel content slot and optional lock states. Supports default and underline variants."
-  - name: "Textarea"
-    file: "apps/frontend/src/shared/components/Textarea/Textarea.tsx"
-    description: "Controlled multiline text input with dark theme, focus ring, and character limit."
-  - name: "Spinner"
-    file: "apps/frontend/src/shared/components/Spinner/Spinner.tsx"
-    description: "Loading spinner indicator. Sizes: sm/md/lg, customizable color."
-  - name: "Skeleton"
-    file: "apps/frontend/src/shared/components/Skeleton/Skeleton.tsx"
-    description: "Content placeholder shimmer for loading states."
-  - name: "Dropdown"
-    file: "apps/frontend/src/shared/components/Dropdown/Dropdown.tsx"
-    description: "Dropdown select menu with controlled value."
-  - name: "Grid"
-    file: "apps/frontend/src/shared/components/Grid/Grid.tsx"
-    description: "CSS Grid layout container with auto-fill support."
-  - name: "SearchInput"
-    file: "apps/frontend/src/shared/components/SearchInput/SearchInput.tsx"
-    description: "Search input with search icon and clear button."
-  - name: "SideNav"
-    file: "apps/frontend/src/shared/components/SideNav/SideNav.tsx"
-    description: "Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail (icons only, no auth chrome)."
-  - name: "UserMenu"
-    file: "apps/frontend/src/shared/components/UserMenu/UserMenu.tsx"
-    description: "Single account control (login/user-info/logout) — avatar trigger + popover (account header, Profile, Settings, Logout); guest state = Login/Register CTAs. Hosted in the AppTopBar so it is reachable at every breakpoint."
-  - name: "AppTopBar"
-    file: "apps/frontend/src/shared/components/AppTopBar/AppTopBar.tsx"
-    description: "Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu), no feature import."
-  - name: "PageHeader"
-    file: "apps/frontend/src/shared/components/PageHeader/PageHeader.tsx"
-    description: "Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background."
-  - name: "TopNav"
-    file: "apps/frontend/src/shared/components/TopNav/TopNav.tsx"
-    description: "Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)"
-  - name: "FilterControls"
-    file: "apps/frontend/src/shared/components/FilterControls/FilterControls.tsx"
-    description: "Filter bar with multiple FilterChips, search, and reset."
-  - name: "RadioGroup"
-    file: "apps/frontend/src/shared/components/RadioGroup/RadioGroup.tsx"
-    description: "Radio button group for single-selection from options."
-  - name: "TextLink"
-    file: "apps/frontend/src/shared/components/TextLink/TextLink.tsx"
-    description: "Inline button styled as a link. For form-switch actions where Router links won't work."
-  - name: "CharacterStrokePlayer"
-    file: "apps/frontend/src/shared/components/CharacterStroke/CharacterStrokePlayer.tsx"
-    description: "Stroke animation player. Full mode for practice, mini mode for embedding."
-  - name: "CharacterHub"
-    file: "apps/frontend/src/features/character-hub/components/CharacterHub/CharacterHub.tsx"
-    description: "Character Detail Hub overlay — modal with character info, stroke animation, audio, radicals, and actions. Feature container (calls hooks/services) — see features/character-hub/docs/design.md."
-  - name: "HubMnemonicSection"
-    file: "apps/frontend/src/features/character-hub/components/HubMnemonicSection/HubMnemonicSection.tsx"
-    description: "Feature component — Phase-gated mnemonic story section for CharacterHub. Displays, generates, and edits AI-powered mnemonic stories. Feature container — see features/character-hub/docs/design.md."
-  - name: "AnimationCanvas"
-    file: "apps/frontend/src/shared/components/CharacterStroke/AnimationCanvas.tsx"
-    description: "Canvas-based stroke order animation container."
-  - name: "ClassificationBadge"
-    file: "apps/frontend/src/shared/components/ClassificationBadge.tsx"
-    description: "Pill badge for character classification types (pictograph, phono_semantic, etc.) with color-coded variants."
-  - name: "MnemonicCard"
-    file: "apps/frontend/src/shared/components/MnemonicCard/MnemonicCard.tsx"
-    description: "Classification-aware mnemonic story card. Selects among 4 sub-layouts — PictographLayout (etymology + visualize), PhonoSemanticLayout (meaning/sound clue grid), CompoundIdeographLayout (component breakdown), SimpleIdeographLayout (concise + story) — based on character classification. Header shows ClassificationBadge; footer shows regeneration guidance. Loading/generating skeleton states included."
-  - name: "Badge"
-    file: "apps/frontend/src/shared/components/Badge/Badge.tsx"
-    description: "Shared token pill for inline metadata labels (HSK level, tags, counts). Variants: primary (bg-primary-bg / text-primary), surface (bg-surface-hover / text-primary), accent (bg-primary-bg-medium / text-primary-light). Migrated from 3 feature-inlined HSK badge styles (readers, word-hub, phonetic-clusters)."
-  - name: "TreeRootNode"
-    file: "apps/frontend/src/features/radicals/components/TreeRootNode.tsx"
-    description: "Radical tree root node — a mastered radical with expandable character branches. Tree EXCEPTION: chevron rotate(90deg) + grid-template-rows expand/collapse animation (see Radical/Phonetic Trees section). The character-count pill delegates to the shared Chip component (non-interactive, count slot)."
-  - name: "BranchNode"
-    file: "apps/frontend/src/features/radicals/components/BranchNode.tsx"
-    description: "Character branch node — horizontal row with glyph, pinyin, meaning, audio button, and Hub link. Tree EXCEPTION: ::before vertical rail + corner connector tree lines (see Radical/Phonetic Trees section)."
-  - name: "PhoneticFamilyNode"
-    file: "apps/frontend/src/features/radicals/components/PhoneticFamilyNode.tsx"
-    description: "Expandable phonetic family node — phonetic glyph, pinyin, meaning, character count, and expandable member list with ClassificationBadge. Tree EXCEPTION: arrow rotate(90deg) + border-left member rail (see Radical/Phonetic Trees section)."
-  - name: "ClusterCard"
-    file: "apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx"
-    description: "Phonetic cluster card — large pattern glyph, pinyin/description, pronunciation note, HSK badges (shared Badge accent variant), a member character grid using the shared Chip component (interactive, opens hub), and a member-count chip using the shared Chip component (non-interactive, count slot)."
-  - name: "ConstituentCharacterChips"
-    file: "apps/frontend/src/features/word-hub/components/ConstituentCharacterChips.tsx"
-    description: "Character chips for a word's constituent characters (glyph + pinyin + meaning) — delegates to the shared Chip component (interactive, surface variant) and opens the Character Detail Hub via openHub."
 ---
 
-**Last Updated:** 2026-08-24
+**Last Updated:** 2026-09-10
 
 ## Changelog
+
+- **2026-09-10** — S0b-1 restructure: moved the 40-entry `components:` catalog OUT of the YAML frontmatter into the `## Component Catalog` body section (markdown table). The frontmatter is now `name` / `description` / `tokens` only. Rationale: `@google/design.md` treats `components:` as a design-TOKEN group, not a registry catalog — the old shape produced 120 lint warnings and blocked a strict spec gate. The machine source of truth is unchanged: `.github/component-registry.json`. Gate #8 (`npm run design:lint`, `tools/design-lint.mjs`) is now STRICT (0 findings) and wired into CI via `.github/workflows/design-lint.yml`.
 
 - **2026-08-21** — Audit-rule promotion: `utility-duplicate` moved from advisory to **machine-enforced error** in `tools/design-audit.mjs` — local/feature CSS may NOT repeat a global utility class (use `className` instead); shared-component CSS is exempt, and a preceding comment documents an intentional custom override. 252 existing findings queued for later epics (see note under § Utility Classes Added).
 
@@ -553,3 +429,54 @@ not the library completion indicator — not reused.
 If a second feature ever needs a bookmark-star or completion-check indicator,
 promote it to a shared `Badge`/icon variant at that time (update registry +
 this file in the same commit).
+
+## Component Catalog
+
+Human catalog of registered shared + feature components. **The machine source of
+truth is `.github/component-registry.json`** (registry + storybook contract enforced
+by `check-registry-stories`). Components live under `shared/components/` or their
+feature folder; feature containers not registered here live in feature folders
+only (Decision D1).
+
+| Component                 | File                                                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Button                    | `apps/frontend/src/shared/components/Button/Button.tsx`                                         | Primary gradient button with hover lift + focus-visible ring. Supports keyboard (onKeyDown/onKeyUp) and aria-expanded for accessible toggles.                                                                                                                                                                                                                                                                   |
+| Chip                      | `apps/frontend/src/shared/components/Chip/Chip.tsx`                                             | Shared chip with interactive (<button>, aria-pressed on active, hover/focus-visible) and non-interactive (<span>, no toggle semantics) modes. Composes glyph/pinyin/label/icon/count slots. No-motion rule: hover/focus-visible styling only when interactive; transitions limited to colors (transition-colors) — no transform/animation.                                                                      |
+| Input                     | `apps/frontend/src/shared/components/Input/Input.tsx`                                           | Styled input with dark theme, focus ring, and error state                                                                                                                                                                                                                                                                                                                                                       |
+| LoadingScreen             | `apps/frontend/src/shared/components/LoadingScreen/LoadingScreen.tsx`                           | Full-page loading spinner with optional message                                                                                                                                                                                                                                                                                                                                                                 |
+| ErrorScreen               | `apps/frontend/src/shared/components/ErrorScreen/ErrorScreen.tsx`                               | Full-page error display with retry action                                                                                                                                                                                                                                                                                                                                                                       |
+| GuestUpsell               | `apps/frontend/src/shared/components/GuestUpsell/GuestUpsell.tsx`                               | Presentational sign-in upsell card for guest-gated features. Callers gate on useAuth().isAuthenticated; the card has no auth logic and its CTA navigates to the register page by default (override via `to`). Reused by ReviewPromptCard, HubMnemonicSection, and ReviewView.                                                                                                                                   |
+| ProgressBar               | `apps/frontend/src/shared/components/ProgressBar/ProgressBar.tsx`                               | Progress bar with completion celebration animation                                                                                                                                                                                                                                                                                                                                                              |
+| FilterChip                | `apps/frontend/src/shared/components/FilterChip/FilterChip.tsx`                                 | Toggleable filter chip for content filtering; selected state shows a primary tint (bg + border + text) + aria-pressed.                                                                                                                                                                                                                                                                                          |
+| ToggleSwitch              | `apps/frontend/src/shared/components/ToggleSwitch/ToggleSwitch.tsx`                             | Toggle switch for binary settings                                                                                                                                                                                                                                                                                                                                                                               |
+| ContentBrowser            | `apps/frontend/src/shared/components/ContentBrowser/ContentBrowser.tsx`                         | Content browser for navigating learning materials. The active-filter count badge delegates to the shared Chip component (non-interactive, count slot).                                                                                                                                                                                                                                                          |
+| Box                       | `apps/frontend/src/shared/components/Box/Box.tsx`                                               | Generic layout container. Preferred over raw <div>. 20 variants, 7 padding sizes.                                                                                                                                                                                                                                                                                                                               |
+| Modal                     | `apps/frontend/src/shared/components/Modal/Modal.tsx`                                           | Controlled overlay dialog with backdrop, close on Escape, size variants (sm/md/lg).                                                                                                                                                                                                                                                                                                                             |
+| Card                      | `apps/frontend/src/shared/components/Card/Card.tsx`                                             | Content card with title, subtitle, optional icon/badge/locked state. The optional badge delegates to the shared Badge component (variant primary).                                                                                                                                                                                                                                                              |
+| Tabs                      | `apps/frontend/src/shared/components/Tabs/Tabs.tsx`                                             | Tab navigation bar with panel content slot and optional lock states. Supports default and underline variants.                                                                                                                                                                                                                                                                                                   |
+| Textarea                  | `apps/frontend/src/shared/components/Textarea/Textarea.tsx`                                     | Controlled multiline text input with dark theme, focus ring, and character limit.                                                                                                                                                                                                                                                                                                                               |
+| Spinner                   | `apps/frontend/src/shared/components/Spinner/Spinner.tsx`                                       | Loading spinner indicator. Sizes: sm/md/lg, customizable color.                                                                                                                                                                                                                                                                                                                                                 |
+| Skeleton                  | `apps/frontend/src/shared/components/Skeleton/Skeleton.tsx`                                     | Content placeholder shimmer for loading states.                                                                                                                                                                                                                                                                                                                                                                 |
+| Dropdown                  | `apps/frontend/src/shared/components/Dropdown/Dropdown.tsx`                                     | Dropdown select menu with controlled value.                                                                                                                                                                                                                                                                                                                                                                     |
+| Grid                      | `apps/frontend/src/shared/components/Grid/Grid.tsx`                                             | CSS Grid layout container with auto-fill support.                                                                                                                                                                                                                                                                                                                                                               |
+| SearchInput               | `apps/frontend/src/shared/components/SearchInput/SearchInput.tsx`                               | Search input with search icon and clear button.                                                                                                                                                                                                                                                                                                                                                                 |
+| SideNav                   | `apps/frontend/src/shared/components/SideNav/SideNav.tsx`                                       | Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail (icons only, no auth chrome).                                                                                                                                                                                                                                                          |
+| UserMenu                  | `apps/frontend/src/shared/components/UserMenu/UserMenu.tsx`                                     | Single account control (login/user-info/logout) — avatar trigger + popover (account header, Profile, Settings, Logout); guest state = Login/Register CTAs. Hosted in the AppTopBar so it is reachable at every breakpoint.                                                                                                                                                                                      |
+| AppTopBar                 | `apps/frontend/src/shared/components/AppTopBar/AppTopBar.tsx`                                   | Slim global top bar hosting the UserMenu on the right; auth threaded in via props (AppLayout → AppTopBar → UserMenu), no feature import.                                                                                                                                                                                                                                                                        |
+| PageHeader                | `apps/frontend/src/shared/components/PageHeader/PageHeader.tsx`                                 | Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background.                                                                                                                                                                                                                        |
+| TopNav                    | `apps/frontend/src/shared/components/TopNav/TopNav.tsx`                                         | Top navigation bar with route-based NavLinks. Phase-gated lock support. (Orphaned — Learn tabs moved to the sidebar Learn group; kept pending cleanup follow-up.)                                                                                                                                                                                                                                               |
+| FilterControls            | `apps/frontend/src/shared/components/FilterControls/FilterControls.tsx`                         | Filter bar with multiple FilterChips, search, and reset.                                                                                                                                                                                                                                                                                                                                                        |
+| RadioGroup                | `apps/frontend/src/shared/components/RadioGroup/RadioGroup.tsx`                                 | Radio button group for single-selection from options.                                                                                                                                                                                                                                                                                                                                                           |
+| TextLink                  | `apps/frontend/src/shared/components/TextLink/TextLink.tsx`                                     | Inline button styled as a link. For form-switch actions where Router links won't work.                                                                                                                                                                                                                                                                                                                          |
+| CharacterStrokePlayer     | `apps/frontend/src/shared/components/CharacterStroke/CharacterStrokePlayer.tsx`                 | Stroke animation player. Full mode for practice, mini mode for embedding.                                                                                                                                                                                                                                                                                                                                       |
+| CharacterHub              | `apps/frontend/src/features/character-hub/components/CharacterHub/CharacterHub.tsx`             | Character Detail Hub overlay — modal with character info, stroke animation, audio, radicals, and actions. Feature container (calls hooks/services) — see features/character-hub/docs/design.md.                                                                                                                                                                                                                 |
+| HubMnemonicSection        | `apps/frontend/src/features/character-hub/components/HubMnemonicSection/HubMnemonicSection.tsx` | Feature component — Phase-gated mnemonic story section for CharacterHub. Displays, generates, and edits AI-powered mnemonic stories. Feature container — see features/character-hub/docs/design.md.                                                                                                                                                                                                             |
+| AnimationCanvas           | `apps/frontend/src/shared/components/CharacterStroke/AnimationCanvas.tsx`                       | Canvas-based stroke order animation container.                                                                                                                                                                                                                                                                                                                                                                  |
+| ClassificationBadge       | `apps/frontend/src/shared/components/ClassificationBadge.tsx`                                   | Pill badge for character classification types (pictograph, phono_semantic, etc.) with color-coded variants.                                                                                                                                                                                                                                                                                                     |
+| MnemonicCard              | `apps/frontend/src/shared/components/MnemonicCard/MnemonicCard.tsx`                             | Classification-aware mnemonic story card. Selects among 4 sub-layouts — PictographLayout (etymology + visualize), PhonoSemanticLayout (meaning/sound clue grid), CompoundIdeographLayout (component breakdown), SimpleIdeographLayout (concise + story) — based on character classification. Header shows ClassificationBadge; footer shows regeneration guidance. Loading/generating skeleton states included. |
+| Badge                     | `apps/frontend/src/shared/components/Badge/Badge.tsx`                                           | Shared token pill for inline metadata labels (HSK level, tags, counts). Variants: primary (bg-primary-bg / text-primary), surface (bg-surface-hover / text-primary), accent (bg-primary-bg-medium / text-primary-light). Migrated from 3 feature-inlined HSK badge styles (readers, word-hub, phonetic-clusters).                                                                                               |
+| TreeRootNode              | `apps/frontend/src/features/radicals/components/TreeRootNode.tsx`                               | Radical tree root node — a mastered radical with expandable character branches. Tree EXCEPTION: chevron rotate(90deg) + grid-template-rows expand/collapse animation (see Radical/Phonetic Trees section). The character-count pill delegates to the shared Chip component (non-interactive, count slot).                                                                                                       |
+| BranchNode                | `apps/frontend/src/features/radicals/components/BranchNode.tsx`                                 | Character branch node — horizontal row with glyph, pinyin, meaning, audio button, and Hub link. Tree EXCEPTION: ::before vertical rail + corner connector tree lines (see Radical/Phonetic Trees section).                                                                                                                                                                                                      |
+| PhoneticFamilyNode        | `apps/frontend/src/features/radicals/components/PhoneticFamilyNode.tsx`                         | Expandable phonetic family node — phonetic glyph, pinyin, meaning, character count, and expandable member list with ClassificationBadge. Tree EXCEPTION: arrow rotate(90deg) + border-left member rail (see Radical/Phonetic Trees section).                                                                                                                                                                    |
+| ClusterCard               | `apps/frontend/src/features/phonetic-clusters/components/ClusterCard.tsx`                       | Phonetic cluster card — large pattern glyph, pinyin/description, pronunciation note, HSK badges (shared Badge accent variant), a member character grid using the shared Chip component (interactive, opens hub), and a member-count chip using the shared Chip component (non-interactive, count slot).                                                                                                         |
+| ConstituentCharacterChips | `apps/frontend/src/features/word-hub/components/ConstituentCharacterChips.tsx`                  | Character chips for a word's constituent characters (glyph + pinyin + meaning) — delegates to the shared Chip component (interactive, surface variant) and opens the Character Detail Hub via openHub.                                                                                                                                                                                                          |

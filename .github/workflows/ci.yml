@@ -19,7 +19,11 @@
 #     tree vs local git base → 0 tests on a clean CI checkout, always green.
 #     test:full is the reliable CI gate.
 #   • Story tests + CSS lint (gates #3/#7) — already in storybook-checks.yml.
-#   • Design audit (#9) / design lint (#8) — Tier-2, known pre-existing backlog.
+#   • Design audit (#9) — Tier-2, known pre-existing backlog (the intentional 15
+#     page-anatomy deviations ARE the S2 wave list); stays documented-only until
+#     the debt clears.
+#   • Design lint (#8) — now wired as its own DESIGN.md-only spec gate
+#     (design-lint.yml); not here because it needs no frontend build.
 #   • Chromatic visual regression / preview smoke — separate workflows.
 
 name: CI Quality Gates
