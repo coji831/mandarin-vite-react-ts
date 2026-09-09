@@ -31,6 +31,7 @@
     "design:lint": "node tools/design-lint.mjs",
     "check:registry-stories": "node scripts/check-registry-stories.mjs",
     "check:page-inventory": "node scripts/check-page-inventory.mjs",
+    "check:design-parity": "node scripts/check-design-parity.mjs",
     "check:module-boundaries": "node scripts/check-module-boundaries.mjs",
     "generate:system-map": "node scripts/generate-system-map.mjs --emit",
     "check:system-map": "node scripts/generate-system-map.mjs --check",

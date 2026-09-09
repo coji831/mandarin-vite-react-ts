@@ -23,7 +23,7 @@
 #     page-anatomy deviations ARE the S2 wave list); stays documented-only until
 #     the debt clears.
 #   • Design lint (#8) — now wired as its own DESIGN.md-only spec gate
-#     (design-lint.yml); not here because it needs no frontend build.
+#     (design-gates.yml); not here because it needs no frontend build.
 #   • Chromatic visual regression / preview smoke — separate workflows.
 
 name: CI Quality Gates

@@ -18,7 +18,7 @@
  *     and lint yields 0 findings. This strict wrapper keeps it that way: any
  *     regression — an unknown top-level key, a re-added `components:` catalog,
  *     a YAML break, an invalid top-level token value — fails CI.
- *   - Real token-VALUE protection of the `tokens:` subtree (the DESIGN.md <-> 
+ *   - Real token-VALUE protection of the `tokens:` subtree (the DESIGN.md <->
  *     globals.css 1:1 parity contract) is a separate gate; this file validates
  *     frontmatter STRUCTURE only.
  *

@@ -1,0 +1,67 @@
+# Design Gates — DESIGN.md spec + DESIGN.md<->globals.css parity (gates #8 + #14).
+#
+# Canonical commands (single source: .github/instructions/project-workflow.
+# instructions.md quality-gate table, rows #8 and #14):
+#   #8   npm run design:lint           (tools/design-lint.mjs)
+#   #14  npm run check:design-parity   (scripts/check-design-parity.mjs)
+#
+# Wired 2026-09-10 (S0b, branch ui/page-anatomy-convergence). DESIGN.md is the
+# frozen agent-read design truth (4-layer enforcement model, layer 1); globals.css
+# is its `:root` mirror. This workflow guards both directions of that truth on
+# exactly the files that define it: DESIGN.md and
+# apps/frontend/src/styles/globals.css.
+#
+# Gate #8 (strict spec validity): tools/design-lint.mjs wraps `@google/design.md
+# lint DESIGN.md` and fails on ANY finding, because the upstream CLI exits 0 on
+# warnings. After the S0b-1 restructure the frontmatter is name/description/
+# tokens only (component catalog -> body `## Component Catalog`); lint is 0/0/0.
+#
+# Gate #14 (token parity): scripts/check-design-parity.mjs asserts the S0a-1
+# DESIGN.md tokens <-> globals.css :root 1:1 contract for the mechanical
+# families (layout page-measure/rhythm/gutters/scalars, spacing, radii, size,
+# shadows, transitions, z-index): 40 pairs, bidirectional, whitespace-normalized
+# value equality. colors/typography/gradients are NOT covered (hex<->rgba +
+# variant-array mapping needs a semantic comparator — tracked separately).
+#
+# Deliberately NOT here: gate #9 (design-audit) stays Tier-2 backlog (267
+# pre-existing errors incl. the intentional 15 page-anatomy deviations that ARE
+# the S2 wave list).
+
+name: Design Gates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "DESIGN.md"
+      - "apps/frontend/src/styles/globals.css"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/design-gates.yml"
+  push:
+    branches: [main]
+    paths:
+      - "DESIGN.md"
+      - "apps/frontend/src/styles/globals.css"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/design-gates.yml"
+
+jobs:
+  design-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Design lint (gate #8 — spec validity, strict)
+        run: npm run design:lint
+      - name: Design parity (gate #14 — DESIGN.md <-> globals.css)
+        run: npm run check:design-parity
