@@ -27,6 +27,12 @@
         "progress": "ProgressBar",
         "loading": "Skeleton"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "hub-launcher",
+        "gutter": "default",
+        "header": "PageHeader"
+      },
       "note": "Precision-minimal hub-launcher exemplar."
     },
     {
@@ -51,6 +57,12 @@
         "quick-access": "Button",
         "guest-gate": "GuestUpsell"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "hub-launcher",
+        "gutter": "default",
+        "header": "PageHeader"
+      },
       "note": "Hub-launcher: Review + Quiz launch cards; guest variant (edge) renders ReviewPromptCard."
     },
     {
@@ -64,6 +76,12 @@
         "content": "ContentBrowser",
         "search": "SearchInput",
         "filters": "FilterControls"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": null
       },
       "note": "Dry-run adoption candidate for the browse-index archetype (registry-clean composition)."
     },
@@ -91,6 +109,12 @@
         "view-toggle": "Button",
         "loading": "Skeleton"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": "Box"
+      },
       "note": "Browse-index with radical/phonetic tree views (edge); empty = no mastered radicals."
     },
     {
@@ -106,6 +130,12 @@
         "list": "Box",
         "items": "Card",
         "loading": "Skeleton"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": "Box"
       },
       "note": "Browse-index pattern library; card click opens the shared LexicalHub."
     },
@@ -124,6 +154,12 @@
         "pager": "Button",
         "loading": "Skeleton"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": "Box"
+      },
       "note": "Browse-index idiom library; edge = paginated list (3 pages)."
     },
     {
@@ -139,6 +175,12 @@
         "card": "Card",
         "shell": "Box"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "focus-task",
+        "gutter": "default",
+        "header": null
+      },
       "note": "Golden Template candidate (focus-task). ReviewView hosts the canonical review session."
     },
     {
@@ -148,6 +190,12 @@
       "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "focus-task",
+        "gutter": "default",
+        "header": null
+      },
       "note": "Session UI (QuizSessionPage) shares the focus-task skeleton with Review."
     },
     {
@@ -159,6 +207,12 @@
       "status": "conforms",
       "composition": {
         "section": "Box"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "utility",
+        "gutter": "default",
+        "header": null
       },
       "note": "Static utility shell composed of Box sections."
     },
@@ -190,6 +244,12 @@
       "composition": {
         "section": "Box"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "utility",
+        "gutter": "default",
+        "header": null
+      },
       "note": "Thin utility placeholder (Box card section); full settings shell is not yet built."
     },
     {
@@ -201,6 +261,12 @@
       "status": "conforms",
       "composition": {
         "section": "Box"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "utility",
+        "gutter": "default",
+        "header": null
       },
       "note": "Thin utility placeholder (Box card section); full profile shell is not yet built."
     },
@@ -219,6 +285,12 @@
         "items": "Card",
         "loading": "Skeleton"
       },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "hub-launcher",
+        "gutter": "default",
+        "header": null
+      },
       "note": "De-facto Learn home; hub-launcher with tabbed focal point + progress. Edge = tones deep-link."
     },
     {
@@ -233,6 +305,12 @@
         "list": "Box",
         "items": "Card",
         "loading": "Skeleton"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": "Box"
       },
       "note": "Browse-index over phonetic cluster families (HSK filter)."
     },

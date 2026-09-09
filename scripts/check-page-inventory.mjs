@@ -19,8 +19,23 @@
  *     "states": ["default"],                     // subset of ALLOWED_STATES
  *     "status": "conforms" | "diverges",         // M0 snapshot semantics (see below)
  *     "composition": { "region": "RegistryComponent" },  // optional; registry names ONLY
+ *     "anatomy": {                               // OPTIONAL declared target (page-anatomy law, S0a-4)
+ *       "shell": "PageShell",                    //   the page-content layout primitive (law target)
+ *       "measure": "hub-launcher",               //   archetype whose --page-measure-* governs the width;
+ *                                                //   MUST equal the entry's `archetype`
+ *       "gutter": "default",                     //   PageGrid gutter tier: sm | default | lg
+ *       "header": "PageHeader" | null            //   header primitive (registry component) or null
+ *     },
  *     "note": "optional human context"
  *   }
+ *
+ * Anatomy semantics (S0a-4, ratified rollout — "declared target" model):
+ *   `anatomy` declares the page's TARGET under the page-anatomy law — the ledger
+ *   is the forward contract. Whether the real code already meets it is tracked
+ *   SEPARATELY by design-audit's page-anatomy rules (missing-layout-token /
+ *   page-scoped-layout-css / page-scoped-grid). So `conforms` = "declared
+ *   correctly per archetype" (not "code already migrated"). A `conforms` entry
+ *   MUST declare a valid `anatomy`; S2 migrations close the audit findings.
  *
  * Status semantics (M0 divergence report):
  *   - `conforms`  — the page claims it matches its archetype contract, so it
@@ -95,6 +110,24 @@ const ALLOWED_STATES = [
   "with-cta",
   "with-eyebrow",
 ];
+
+// Page-anatomy contract (S0a-4, ratified rollout). The `measure` archetype is
+// the one whose --page-measure-<archetype> token governs the page content width
+// (PageShell). Under the law it MUST equal the entry's `archetype`.
+const ANATOMY_MEASURE_ARCHETYPES = [
+  "hub-launcher",
+  "browse-index",
+  "focus-task",
+  "focus-chat",
+  "focus-timed",
+  "focus-media",
+  "utility",
+  "auth",
+];
+const ANATOMY_GUTTERS = ["sm", "default", "lg"];
+// The page-content layout primitive every route targets (chrome lives in
+// AppLayout/LearnLayout, not page anatomy).
+const ANATOMY_SHELL = "PageShell";
 
 // *Page.tsx files that are internal/non-routed page helpers, not page containers.
 const EXEMPT_PAGE_COMPONENTS = new Set(["ContentPlaceholderPage", "QuizSessionPage"]);
@@ -254,13 +287,56 @@ function main() {
       }
     }
 
-    // conforms → must declare archetype + component + story + >=1 state
+    // anatomy map (declared target — page-anatomy law, S0a-4)
+    if (page.anatomy != null) {
+      if (typeof page.anatomy !== "object" || Array.isArray(page.anatomy)) {
+        problems.push("`anatomy` must be an object { shell, measure, gutter, header }");
+      } else {
+        // shell: must equal the law's page-content primitive
+        if (page.anatomy.shell !== ANATOMY_SHELL) {
+          problems.push(
+            `anatomy.shell must be "${ANATOMY_SHELL}" (page-anatomy law) — got ${JSON.stringify(page.anatomy.shell)}`,
+          );
+        }
+        // measure: must be a registered archetype and equal the entry's archetype
+        if (!ANATOMY_MEASURE_ARCHETYPES.includes(page.anatomy.measure)) {
+          problems.push(
+            `anatomy.measure "${page.anatomy.measure}" is not a valid measure archetype (allowed: ${ANATOMY_MEASURE_ARCHETYPES.join(", ")})`,
+          );
+        } else if (page.archetype != null && page.anatomy.measure !== page.archetype) {
+          problems.push(
+            `anatomy.measure "${page.anatomy.measure}" must equal archetype "${page.archetype}" (measure follows archetype under the page-anatomy law)`,
+          );
+        }
+        // gutter: sm | default | lg
+        if (!ANATOMY_GUTTERS.includes(page.anatomy.gutter)) {
+          problems.push(
+            `anatomy.gutter "${page.anatomy.gutter}" invalid (allowed: ${ANATOMY_GUTTERS.join(", ")})`,
+          );
+        }
+        // header: null or a registry component name
+        if (page.anatomy.header != null) {
+          if (typeof page.anatomy.header !== "string" || !registryNames.has(page.anatomy.header)) {
+            problems.push(
+              `anatomy.header ${JSON.stringify(page.anatomy.header)} must be null or a registry component (not in component-registry.json)`,
+            );
+          }
+        }
+      }
+    }
+
+    // conforms → must declare archetype + component + story + >=1 state + anatomy
     if (page.status === "conforms") {
       if (page.archetype == null) problems.push("conforms page missing `archetype`");
       if (page.component == null) problems.push("conforms page missing `component`");
       if (page.story == null) problems.push("conforms page missing its `Full` story");
       if (!Array.isArray(page.states) || page.states.length === 0) {
         problems.push("conforms page missing declared states (expected >=1)");
+      }
+      if (page.anatomy == null) {
+        problems.push(
+          "conforms page missing `anatomy` (declared target required — { shell: PageShell, measure: <archetype>, gutter, header })",
+        );
       }
     }
 
