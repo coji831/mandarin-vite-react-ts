@@ -177,31 +177,9 @@
    Component: Progress Bar
    Progress bar structure with fill state.
    ═══════════════════════════════════════════════ */
-.progress-container {
-  gap: var(--space-xs);
-}
-.progress-text {
-  color: var(--text-primary);
-  font-size: var(--font-sm);
-  font-weight: var(--fw-500);
-}
-.progress-bar {
-  height: 10px;
-  background-color: var(--surface-light-10);
-  border-radius: 5px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background-color: var(--color-success);
-  transition: width var(--transition-normal);
-  border-radius: 6px;
-}
-/* Celebration state for 100% completion */
-.progress-fill[style*="100%"] {
-  background: var(--gradient-success);
-  box-shadow: var(--shadow-md);
-}
+/* Legacy progress-bar block removed 2026-09-10: `.progress-container`,
+   `.progress-text`, `.progress-bar`, `.progress-fill` had zero consumers — every
+   progress surface renders the shared ProgressBar primitive. */
 
 /* ═══════════════════════════════════════════════
    Component: Card Interactive
