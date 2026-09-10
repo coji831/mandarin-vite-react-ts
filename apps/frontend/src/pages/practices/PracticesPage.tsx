@@ -11,7 +11,7 @@
 import { ReviewLaunchCard, ReviewPromptCard } from "features/review";
 import { QuizCard, useQuizCard } from "features/quiz";
 import { useAuth } from "features/auth";
-import "./PracticesPage.css";
+import { PageGrid, PageHeader, PageShell, PageStack } from "shared/components";
 
 export default function PracticesPage() {
   const { isAuthenticated } = useAuth();
@@ -19,22 +19,26 @@ export default function PracticesPage() {
   const { currentPhase, label, quizzes, takeQuiz, timeline } = useQuizCard();
 
   return (
-    <div className="flex-col gap-lg mx-auto max-w-700">
-      <div className="text-center flex-col gap-xs">
-        <h1 className="font-4xl fw-800 text-primary m-0">🎯 Practices</h1>
-        <p className="font-md text-muted m-0">Review and Quiz</p>
-      </div>
-      <div className="cardGrid grid-2-col gap-lg w-full">
-        {isAuthenticated ? <ReviewLaunchCard /> : <ReviewPromptCard />}
-        <QuizCard
-          isGuest={isGuest}
-          currentPhase={currentPhase}
-          label={label}
-          quizzes={quizzes}
-          takeQuiz={takeQuiz}
-          timeline={timeline}
-        />
-      </div>
-    </div>
+    <PageShell archetype="hub-launcher">
+      <PageStack size="default">
+        <PageHeader title="Practices" description="Review and Quiz" />
+
+        <PageGrid columns={2} aria-label="Practice modes">
+          <div role="listitem" className="grid min-w-0">
+            {isAuthenticated ? <ReviewLaunchCard /> : <ReviewPromptCard />}
+          </div>
+          <div role="listitem" className="grid min-w-0">
+            <QuizCard
+              isGuest={isGuest}
+              currentPhase={currentPhase}
+              label={label}
+              quizzes={quizzes}
+              takeQuiz={takeQuiz}
+              timeline={timeline}
+            />
+          </div>
+        </PageGrid>
+      </PageStack>
+    </PageShell>
   );
 }

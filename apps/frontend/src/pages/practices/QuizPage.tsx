@@ -15,13 +15,12 @@
  * the strategy registry (invalid → no session), via useSearchParamState.
  */
 
-import "./QuizPage.css";
 import type { StrategyType } from "features/quiz";
 import { getStrategy } from "features/quiz";
 import { SEARCH_PARAMS, practices_page } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
 import { QuizSessionPage } from "./QuizSessionPage";
-import { Button } from "shared/components";
+import { Button, PageHeader, PageShell, PageStack } from "shared/components";
 
 export function QuizPage() {
   // Validate ?type= against the strategy registry — invalid/absent → null.
@@ -37,14 +36,14 @@ export function QuizPage() {
 
   // Fallback — no matching strategy selected
   return (
-    <div className="flex-col-center p-2xl gap-lg">
-      <h2 className="font-xl text-primary m-0">📝 Quiz</h2>
-      <p className="text-secondary text-center quiz-page__fallback-text">
-        Select a quiz type from the practices page to begin.
-      </p>
-      <Button variant="primary" onClick={() => (window.location.href = practices_page)}>
-        Back to Practices
-      </Button>
-    </div>
+    <PageShell archetype="focus-task">
+      <PageStack size="default">
+        <PageHeader title="Quiz" description="Select a quiz type from the practices page to begin.">
+          <Button variant="primary" onClick={() => (window.location.href = practices_page)}>
+            Back to Practices
+          </Button>
+        </PageHeader>
+      </PageStack>
+    </PageShell>
   );
 }

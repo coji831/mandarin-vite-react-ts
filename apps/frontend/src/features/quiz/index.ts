@@ -6,6 +6,9 @@
  * External consumers import from this barrel.
  */
 
+// Shared quiz styles (legacy monolithic sheet; pending per-component split)
+import "./components/Quiz.css";
+
 // Engine
 export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
 export { getPhaseQuizzes } from "./engine/PhaseStrategyRegistry";

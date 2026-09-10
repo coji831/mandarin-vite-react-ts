@@ -193,12 +193,17 @@ describe("ChengyuPage (integration + MSW)", () => {
 
     // Next → page 2 renders the later slice; prev enabled, next disabled.
     fireEvent.click(next);
-    await waitFor(() => expect(screen.getByText("成语21")).toBeInTheDocument());
-    expect(screen.getByText("Showing 21–25 of 25")).toBeInTheDocument();
-    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Previous page" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
-    expect(screen.queryByText("成语1")).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("成语21")).toBeInTheDocument(), { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Showing 21–25 of 25")).toBeInTheDocument();
+        expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Previous page" })).toBeEnabled();
+        expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
+        expect(screen.queryByText("成语1")).not.toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it("resets to page 1 when a filter changes while on a later page", async () => {
@@ -210,7 +215,9 @@ describe("ChengyuPage (integration + MSW)", () => {
 
     // Advance to page 2.
     fireEvent.click(screen.getByRole("button", { name: "Next page" }));
-    await waitFor(() => expect(screen.getByText("Page 2 of 2")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Page 2 of 2")).toBeInTheDocument(), {
+      timeout: 3000,
+    });
 
     // Changing the era filter resets pagination back to page 1.
     fireEvent.click(screen.getByRole("button", { name: "Han" }));

@@ -190,13 +190,16 @@
       "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
+      "composition": {
+        "header": "PageHeader"
+      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "focus-task",
         "gutter": "default",
-        "header": null
+        "header": "PageHeader"
       },
-      "note": "Session UI (QuizSessionPage) shares the focus-task skeleton with Review."
+      "note": "Focus-task: PageHeader (title + timer), then QuizRouter + progress. Without ?type= the same skeleton renders a Back to Practices CTA."
     },
     {
       "route": "/progress",
