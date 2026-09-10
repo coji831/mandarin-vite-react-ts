@@ -28,7 +28,7 @@
  * handles transitions (library ↔ reading). The prop is kept for SSR/mount parity.
  */
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import { Box } from "shared/components";
+import { Box, PageHeader, PageShell, PageStack } from "shared/components";
 import { useAudioManager } from "shared/hooks";
 import type { AudioBehavior, PlayableItem } from "shared/audio";
 import {
@@ -280,62 +280,66 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   );
 
   return (
-    <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
-      {/* Page title */}
-      <h2 className="font-2xl fw-700 text-primary m-0">Graded Readers</h2>
-
-      {mode === "library" && (
-        <ReaderLibrary
-          passages={passagesWithProgress}
-          selectedLevel={selectedLevel}
-          onLevelChange={handleLevelChange}
-          onSelectPassage={handleSelectPassage}
-          isLoading={libLoading}
-          isEmpty={libEmpty}
-          hasError={libError}
-          onRetry={libRetry}
-          onGeneratePassage={handleGeneratePassage}
-          isGenerating={isGenerating}
-          generateError={generateError}
-          onRetryGenerate={handleGeneratePassage}
-          bookmarkFilter={bookmarkFilter}
-          onBookmarkFilterChange={setBookmarkFilter}
-          onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
-          isGuest={!isAuthenticated}
+    <PageShell archetype="browse-index">
+      <PageStack size="default">
+        <PageHeader
+          title="Graded Readers"
+          description="Read graded passages with sentence audio, word popovers, and saved progress."
         />
-      )}
 
-      {mode === "reading" && passage && (
-        <ReadingView
-          passage={passage}
-          onBack={handleBack}
-          isLoading={readLoading}
-          hasError={readError}
-          onRetry={readRetry}
-          onTogglePlay={handleTogglePlay}
-          onStop={stop}
-          onSpeedChange={handleSpeedChange}
-          onComplete={handleComplete}
-        >
-          {passage.sentences.flatMap((sentence) => {
-            const items: React.ReactNode[] = [
-              <SentenceDisplay
-                key={sentence.index}
-                sentence={sentence}
-                onPopoverOpen={handlePopoverOpen}
-                onPlay={handleSentencePlay}
-              />,
-            ];
-            if (sentence.index < passage.sentences.length - 1) {
-              items.push(<Box key={`divider-${sentence.index}`} variant="divider" />);
-            }
-            return items;
-          })}
-        </ReadingView>
-      )}
+        {mode === "library" && (
+          <ReaderLibrary
+            passages={passagesWithProgress}
+            selectedLevel={selectedLevel}
+            onLevelChange={handleLevelChange}
+            onSelectPassage={handleSelectPassage}
+            isLoading={libLoading}
+            isEmpty={libEmpty}
+            hasError={libError}
+            onRetry={libRetry}
+            onGeneratePassage={handleGeneratePassage}
+            isGenerating={isGenerating}
+            generateError={generateError}
+            onRetryGenerate={handleGeneratePassage}
+            bookmarkFilter={bookmarkFilter}
+            onBookmarkFilterChange={setBookmarkFilter}
+            onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
+            isGuest={!isAuthenticated}
+          />
+        )}
 
-      {/* WordPopover — reads glyph and position from readingStore */}
-      {popover.glyph && <WordPopover />}
-    </Box>
+        {mode === "reading" && passage && (
+          <ReadingView
+            passage={passage}
+            onBack={handleBack}
+            isLoading={readLoading}
+            hasError={readError}
+            onRetry={readRetry}
+            onTogglePlay={handleTogglePlay}
+            onStop={stop}
+            onSpeedChange={handleSpeedChange}
+            onComplete={handleComplete}
+          >
+            {passage.sentences.flatMap((sentence) => {
+              const items: React.ReactNode[] = [
+                <SentenceDisplay
+                  key={sentence.index}
+                  sentence={sentence}
+                  onPopoverOpen={handlePopoverOpen}
+                  onPlay={handleSentencePlay}
+                />,
+              ];
+              if (sentence.index < passage.sentences.length - 1) {
+                items.push(<Box key={`divider-${sentence.index}`} variant="divider" />);
+              }
+              return items;
+            })}
+          </ReadingView>
+        )}
+
+        {/* WordPopover — reads glyph and position from readingStore */}
+        {popover.glyph && <WordPopover />}
+      </PageStack>
+    </PageShell>
   );
 }

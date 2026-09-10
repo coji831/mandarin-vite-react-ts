@@ -42,7 +42,7 @@
       "story": null,
       "states": [],
       "status": "diverges",
-      "note": "Learn home — redirects to /learn/foundations (no page container). BLOCKED: needs a dedicated hub-launcher page before it can conform."
+      "note": "Redirect by design: the LearnRoutes index → /learn/foundations (the de-facto learn home). There is no page container to conform. A real Learn hub is new UI and belongs with the learn-surface epics (28/32/33), not the anatomy rollout."
     },
     {
       "route": "/practices",
@@ -91,8 +91,17 @@
       "archetype": "browse-index",
       "story": "apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
-      "status": "diverges",
-      "note": "Dual-mode (library/reading) page straddles browse-index and focus-media; archetype split pending — do not force a split decision."
+      "status": "conforms",
+      "composition": {
+        "header": "PageHeader"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "browse-index",
+        "gutter": "default",
+        "header": "PageHeader"
+      },
+      "note": "Dual-mode kept (library/reading) under the browse-index measure; the page-level surface wrapper is gone (PageShell + PageStack + PageHeader). Splitting reading into a focus-media archetype remains a product decision, not a layout gap."
     },
     {
       "route": "/learn/radicals",
@@ -227,8 +236,17 @@
       "archetype": "auth",
       "story": "apps/frontend/src/pages/LoginPageFull.stories.tsx",
       "states": ["default", "edge"],
-      "status": "diverges",
-      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending a dedicated shell family."
+      "status": "conforms",
+      "composition": {
+        "focal-card": "Box"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "auth",
+        "gutter": "default",
+        "header": null
+      },
+      "note": "PageShell(auth) is the 420px centered single column; the auth card owns the page h1 (LoginForm renders it), so there is no PageHeader. Shell-less presentation (auth outside AppLayout) is still an open product decision."
     },
     {
       "route": "/auth/register",
@@ -236,8 +254,17 @@
       "archetype": "auth",
       "story": "apps/frontend/src/pages/RegisterPageFull.stories.tsx",
       "states": ["default", "edge"],
-      "status": "diverges",
-      "note": "Full story exists but rendered inside AppLayout; auth archetype requires the shell-less centered single-column — pending a dedicated shell family."
+      "status": "conforms",
+      "composition": {
+        "focal-card": "Box"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "auth",
+        "gutter": "default",
+        "header": null
+      },
+      "note": "PageShell(auth) is the 420px centered single column; the auth card owns the page h1 (RegisterForm renders it), so there is no PageHeader. Shell-less presentation (auth outside AppLayout) is still an open product decision."
     },
     {
       "route": "/settings",
@@ -326,7 +353,7 @@
       "story": null,
       "states": [],
       "status": "diverges",
-      "note": "Legacy redirect → /learn/foundations (no page container). BLOCKED: no page container to conform until the legacy redirect is retired/rebuilt."
+      "note": "Legacy redirect → /learn/foundations (no page container). Retire the alias when nothing references it; there is nothing to conform."
     }
   ]
 }

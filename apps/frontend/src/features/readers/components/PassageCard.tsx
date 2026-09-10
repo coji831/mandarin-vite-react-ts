@@ -112,9 +112,9 @@ export const PassageCard = memo(function PassageCard({
           (isBookmarked ? ", bookmarked" : "")
         }
       >
-        <h3 className="passage-card__title overflow-hidden whitespace-nowrap text-ellipsis font-md fw-600 text-secondary m-0 lh-1-3">
+        <h2 className="passage-card__title overflow-hidden whitespace-nowrap text-ellipsis font-md fw-600 text-secondary m-0 lh-1-3">
           {title}
-        </h3>
+        </h2>
 
         {/* Known-word ratio */}
         <div className="passage-card__ratio flex-col gap-xs">

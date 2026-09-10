@@ -152,9 +152,9 @@ export function ReadingView({
         >
           ← Back
         </Button>
-        <h3 className="reading-view__title overflow-hidden whitespace-nowrap text-ellipsis font-xl fw-600 text-primary m-0 flex-1">
+        <h2 className="reading-view__title overflow-hidden whitespace-nowrap text-ellipsis font-xl fw-600 text-primary m-0 flex-1">
           {passage.title}
-        </h3>
+        </h2>
         <Badge variant="surface" className="shrink-0">
           HSK {passage.hskLevel}
         </Badge>

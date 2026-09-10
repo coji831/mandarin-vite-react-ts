@@ -20,6 +20,7 @@ import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LoginForm, useAuth } from "../features/auth";
 import { auth_page, dashboard_page, register_page } from "shared/constants";
+import { PageShell, PageStack } from "shared/components";
 
 /**
  * Sanitize `location.state.from` to a same-origin relative path.
@@ -60,8 +61,10 @@ export function LoginPage() {
   const handleSwitchToRegister = () => navigate(register_page, { state: location.state });
 
   return (
-    <div className="flex-center p-xl flex-1">
-      <LoginForm onSwitchToRegister={handleSwitchToRegister} />
-    </div>
+    <PageShell archetype="auth">
+      <PageStack size="default">
+        <LoginForm onSwitchToRegister={handleSwitchToRegister} />
+      </PageStack>
+    </PageShell>
   );
 }
