@@ -9,29 +9,29 @@
 
 import { PhoneticClustersContent, usePhoneticClusters } from "features/phonetic-clusters";
 import { usePageTitle } from "shared/hooks";
-import "./PhoneticClustersPage.css";
+import { PageHeader, PageShell, PageStack } from "shared/components";
 
 export function PhoneticClustersPage() {
   usePageTitle("Phonetic Clusters");
   const { clusters, isLoading, error, hskFilter, setHskFilter, retry } = usePhoneticClusters();
 
   return (
-    <div className="phonetic-clusters-page">
-      <div className="phonetic-clusters-page__header mb-md">
-        <h1 className="font-2xl text-primary fw-600 m-0">Phonetic Clusters</h1>
-        <p className="font-sm text-tertiary m-0 mt-xs">
-          Characters grouped by shared phonetic elements
-        </p>
-      </div>
+    <PageShell archetype="browse-index">
+      <PageStack size="default">
+        <PageHeader
+          title="Phonetic Clusters"
+          description="Characters grouped by shared phonetic elements"
+        />
 
-      <PhoneticClustersContent
-        clusters={clusters}
-        isLoading={isLoading}
-        error={error}
-        hskFilter={hskFilter}
-        onHskFilterChange={setHskFilter}
-        onRetry={retry}
-      />
-    </div>
+        <PhoneticClustersContent
+          clusters={clusters}
+          isLoading={isLoading}
+          error={error}
+          hskFilter={hskFilter}
+          onHskFilterChange={setHskFilter}
+          onRetry={retry}
+        />
+      </PageStack>
+    </PageShell>
   );
 }

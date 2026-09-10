@@ -22,7 +22,7 @@
  * and lock-free). Phase source remains `usePhaseGate()` (numeric; guests = 1 —
  * calibrated guest identity, Story 24-7) — never `userStore`.
  */
-import { Box } from "shared/components";
+import { PageHeader, PageShell, PageStack } from "shared/components";
 import { openHub } from "shared/hub-entry";
 import {
   ChengyuFilterBar,
@@ -31,7 +31,6 @@ import {
   useChengyu,
   type ChengyuData,
 } from "features/chengyu";
-import "./ChengyuPage.css";
 
 export function ChengyuPage() {
   const {
@@ -58,40 +57,33 @@ export function ChengyuPage() {
   };
 
   return (
-    <div className="chengyu-page flex flex-col flex-1 gap-xs p-md">
-      <Box variant="dark" padding="md" className="chengyu-page__header flex-col gap-xs">
-        <h1 className="font-xl fw-700 text-secondary m-0">Chengyu</h1>
-        <p className="font-sm text-muted m-0">
-          Browse Mandarin idioms by theme and era. Click a card to read its origin story, play
-          audio, and follow related idioms and characters.
-        </p>
-      </Box>
+    <PageShell archetype="browse-index">
+      <PageStack size="default">
+        <PageHeader
+          title="Chengyu"
+          description="Browse Mandarin idioms by theme and era. Click a card to read its origin story, play audio, and follow related idioms and characters."
+        />
 
-      <ChengyuFilterBar
-        search={filter.search}
-        onSearchChange={(search) => setFilter({ search })}
-        theme={filter.theme}
-        onThemeChange={(theme) => setFilter({ theme })}
-        era={filter.era}
-        onEraChange={(era) => setFilter({ era })}
-      />
+        <ChengyuFilterBar
+          search={filter.search}
+          onSearchChange={(search) => setFilter({ search })}
+          theme={filter.theme}
+          onThemeChange={(theme) => setFilter({ theme })}
+          era={filter.era}
+          onEraChange={(era) => setFilter({ era })}
+        />
 
-      <Box variant="dark" padding="md" className="chengyu-page__content flex-1 flex-col">
-        <div className="chengyu-page__list-wrapper">
-          <ChengyuList
-            idioms={idioms}
-            isLoading={isLoading}
-            error={error}
-            onRetry={refetch}
-            onIdiomClick={handleIdiomClick}
-            onResetFilters={resetFilter}
-          />
-        </div>
+        <ChengyuList
+          idioms={idioms}
+          isLoading={isLoading}
+          error={error}
+          onRetry={refetch}
+          onIdiomClick={handleIdiomClick}
+          onResetFilters={resetFilter}
+        />
 
-        {/* Pagination footer — flex sibling of the scrolling list wrapper, so
-            the results summary + pager stay visible while cards scroll. Only
-            rendered in the populated state (hidden during loading/empty/error
-            to avoid an empty bar / layout jump). */}
+        {/* Pagination footer — only in the populated state (hidden during
+            loading/empty/error to avoid an empty bar / layout jump). */}
         {!isLoading && !error && idioms.length > 0 && (
           <ChengyuPagination
             page={page}
@@ -101,7 +93,7 @@ export function ChengyuPage() {
             onPageChange={setPage}
           />
         )}
-      </Box>
-    </div>
+      </PageStack>
+    </PageShell>
   );
 }

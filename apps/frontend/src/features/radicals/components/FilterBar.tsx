@@ -6,6 +6,7 @@
 
 import { Box, Button, Dropdown, Icon, Input, ToggleSwitch } from "shared/components";
 import type { RadicalFilter } from "../types";
+import "./FilterBar.css";
 
 interface FilterBarProps {
   filter: RadicalFilter;

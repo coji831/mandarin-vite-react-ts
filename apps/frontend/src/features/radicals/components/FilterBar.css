@@ -1,0 +1,11 @@
+/**
+ * FilterBar.css — co-located styles for FilterBar.tsx
+ * (frontend-css-styling.instructions.md: one CSS file per component).
+ *
+ * Moved out of pages/learn/radicals/RadicalsPage.css (a page file must not hold
+ * a feature component's styles).
+ */
+
+.radicals-filter-bar__search {
+  width: 100%; /* search input fill — BEM component style, w-full utility doesn't pair with BEM naming */
+}

@@ -123,21 +123,21 @@ describe("RadicalsPage", () => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
 
-      const browseBtn = screen.getAllByText("📋 Browse")[0].closest("button")!;
-      const treesBtn = screen.getAllByText("🌳 Trees")[0].closest("button")!;
+      const browseBtn = screen.getAllByText("Browse")[0].closest("button")!;
+      const treesBtn = screen.getAllByText("Trees")[0].closest("button")!;
 
       // Browse is active by default (shared Button primary-active variant), Trees is not
       expect(browseBtn.className).toContain("btn-primary-active");
       expect(treesBtn.className).not.toContain("btn-primary-active");
     });
 
-    it('clicking "🌳 Trees" switches heading to "Radical Trees"', async () => {
+    it('clicking "Trees" switches heading to "Radical Trees"', async () => {
       renderWithRouter(<RadicalsPage />);
       await waitFor(() => {
         expect(screen.queryByText(/loading radicals/i)).not.toBeInTheDocument();
       });
 
-      const treesBtn = screen.getByText("🌳 Trees").closest("button")!;
+      const treesBtn = screen.getByText("Trees").closest("button")!;
       fireEvent.click(treesBtn);
 
       expect(screen.getByText("Radical Trees")).toBeInTheDocument();
@@ -154,7 +154,7 @@ describe("RadicalsPage", () => {
       expect(screen.getByPlaceholderText(/search by pinyin/i)).toBeInTheDocument();
 
       // Switch to Trees mode
-      const treesBtn = screen.getByText("🌳 Trees").closest("button")!;
+      const treesBtn = screen.getByText("Trees").closest("button")!;
       fireEvent.click(treesBtn);
 
       // FilterBar should be hidden
@@ -168,7 +168,7 @@ describe("RadicalsPage", () => {
       });
 
       // Switch to Trees mode
-      const treesBtn = screen.getByText("🌳 Trees").closest("button")!;
+      const treesBtn = screen.getByText("Trees").closest("button")!;
       fireEvent.click(treesBtn);
 
       // RadicalTreesTab renders
@@ -228,7 +228,7 @@ describe("RadicalsPage", () => {
       );
 
       // Trigger a re-render (view toggle) — the ref guard must NOT re-open the hub.
-      const treesBtn = screen.getByText("🌳 Trees").closest("button")!;
+      const treesBtn = screen.getByText("Trees").closest("button")!;
       fireEvent.click(treesBtn);
       expect(openSpy).toHaveBeenCalledTimes(1);
     });

@@ -17,7 +17,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePhaseGate, useSearchParamState } from "shared/hooks";
 import { SEARCH_PARAMS } from "shared/constants";
-import { Box, Button } from "shared/components";
+import { Box, Button, PageHeader, PageShell, PageStack } from "shared/components";
 import { openHub } from "shared/store";
 import {
   useRadicals,
@@ -26,7 +26,6 @@ import {
   RadicalTreesTab,
   type RadicalData,
 } from "features/radicals";
-import "./RadicalsPage.css";
 
 const VIEWS = ["browse", "trees"] as const;
 type RadicalsView = (typeof VIEWS)[number];
@@ -104,78 +103,79 @@ export function RadicalsPage() {
   };
 
   return (
-    <div className="radicals-page flex flex-col flex-1 gap-xs p-md">
-      <Box variant="dark" padding="md" className="radicals-page__header flex-col gap-xs">
-        <h1 className="font-xl fw-700 text-secondary m-0 flex gap-xs">
-          {showTrees && treeMode === "phonetic"
-            ? "Phonetic Trees"
-            : showTreesHeading
-              ? "Radical Trees"
-              : "Radicals"}
-        </h1>
-        <p className="font-sm text-muted m-0">
-          {showTrees && treeMode === "phonetic"
-            ? "Explore characters grouped by shared phonetic components."
-            : showTreesHeading
-              ? "Explore mastered radicals as expandable tree views."
-              : "Browse the building blocks of Chinese characters. Click a card to see its characters and story."}
-        </p>
-      </Box>
+    <PageShell archetype="browse-index">
+      <PageStack size="default">
+        <PageHeader
+          title={
+            showTrees && treeMode === "phonetic"
+              ? "Phonetic Trees"
+              : showTreesHeading
+                ? "Radical Trees"
+                : "Radicals"
+          }
+          description={
+            showTrees && treeMode === "phonetic"
+              ? "Explore characters grouped by shared phonetic components."
+              : showTreesHeading
+                ? "Explore mastered radicals as expandable tree views."
+                : "Browse the building blocks of Chinese characters. Click a card to see its characters and story."
+          }
+        />
 
-      {!showTrees && <FilterBar filter={filter} onFilterChange={setFilter} onReset={resetFilter} />}
+        {!showTrees && (
+          <FilterBar filter={filter} onFilterChange={setFilter} onReset={resetFilter} />
+        )}
 
-      <Box variant="dark" padding="md" className="radicals-page__content flex-1 flex-col">
         {showTrees ? (
           <RadicalTreesTab radicals={filteredRadicals} isLoading={isLoading} treeMode={treeMode} />
         ) : (
-          <div className="radicals-page__grid-wrapper">
-            <RadicalGrid
-              radicals={filteredRadicals}
-              isLoading={isLoading}
-              error={error}
-              onRadicalClick={handleRadicalClick}
-              onRetry={refetch}
-            />
-          </div>
+          <RadicalGrid
+            radicals={filteredRadicals}
+            isLoading={isLoading}
+            error={error}
+            onRadicalClick={handleRadicalClick}
+            onRetry={refetch}
+          />
         )}
-      </Box>
 
-      {/* View toggle footer */}
-      <Box variant="dark" padding="md" className="radicals-page__view-toggle flex-center gap-sm">
-        <Button
-          variant={!showTrees ? "primary-active" : "ghost"}
-          onClick={showTrees ? toggleView : undefined}
-        >
-          📋 Browse
-        </Button>
-        <Button
-          variant={showTrees ? "primary-active" : "ghost"}
-          onClick={!showTrees ? toggleView : undefined}
-        >
-          🌳 Trees
-        </Button>
-        {showTrees && (
-          <>
-            <span className="text-muted font-xs" aria-hidden="true">
-              |
-            </span>
-            <Button
-              variant={treeMode === "radical" ? "primary-active" : "ghost"}
-              onClick={() => handleTreeModeChange("radical")}
-              size="sm"
-            >
-              🔤 Radical
-            </Button>
-            <Button
-              variant={treeMode === "phonetic" ? "primary-active" : "ghost"}
-              onClick={() => handleTreeModeChange("phonetic")}
-              size="sm"
-            >
-              🔈 Phonetic
-            </Button>
-          </>
-        )}
-      </Box>
-    </div>
+        {/* View toggle — page-level state (RadicalTreesTab has no toggle of
+            its own, by design). */}
+        <Box variant="card-elevated" className="flex-center gap-sm">
+          <Button
+            variant={!showTrees ? "primary-active" : "ghost"}
+            onClick={showTrees ? toggleView : undefined}
+          >
+            Browse
+          </Button>
+          <Button
+            variant={showTrees ? "primary-active" : "ghost"}
+            onClick={!showTrees ? toggleView : undefined}
+          >
+            Trees
+          </Button>
+          {showTrees && (
+            <>
+              <span className="text-muted font-xs" aria-hidden="true">
+                |
+              </span>
+              <Button
+                variant={treeMode === "radical" ? "primary-active" : "ghost"}
+                onClick={() => handleTreeModeChange("radical")}
+                size="sm"
+              >
+                Radical
+              </Button>
+              <Button
+                variant={treeMode === "phonetic" ? "primary-active" : "ghost"}
+                onClick={() => handleTreeModeChange("phonetic")}
+                size="sm"
+              >
+                Phonetic
+              </Button>
+            </>
+          )}
+        </Box>
+      </PageStack>
+    </PageShell>
   );
 }

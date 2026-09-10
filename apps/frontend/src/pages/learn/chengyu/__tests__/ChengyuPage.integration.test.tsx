@@ -182,14 +182,14 @@ describe("ChengyuPage (integration + MSW)", () => {
     expect(prev).toBeDisabled();
     expect(next).toBeEnabled();
 
-    // The pagination footer is OUTSIDE the scrolling list region — a flex
-    // sibling of the scroll wrapper, never rendered inside it (so it stays
-    // visible while the idiom cards scroll).
+    // The pagination footer is a PageStack sibling of the list — never inside
+    // it (so it stays visible while the idiom cards scroll).
     const pagination = screen.getByRole("region", { name: "Chengyu list pagination" });
-    const listWrapper = document.querySelector(".chengyu-page__list-wrapper");
-    expect(listWrapper).not.toBeNull();
-    expect(listWrapper!.contains(pagination)).toBe(false);
-    expect(pagination.parentElement).toBe(listWrapper!.parentElement);
+    const stack = document.querySelector(".page-stack");
+    expect(stack).not.toBeNull();
+    expect(stack!.contains(pagination)).toBe(true);
+    expect(pagination.parentElement).toBe(stack);
+    expect(pagination.closest("ul")).toBeNull();
 
     // Next → page 2 renders the later slice; prev enabled, next disabled.
     fireEvent.click(next);
