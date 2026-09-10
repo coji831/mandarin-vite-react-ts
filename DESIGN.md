@@ -175,6 +175,9 @@ tokens:
       fw-700: "700" # bold — display emphasis
       fw-800: "800" # extrabold — hero display
     tracking-tight: "-0.02em" # display headings (Latin only — never on hanzi glyphs)
+    font-families: # CJK-first identity (A3) — Latin face + hanzi face
+      font-latin: "Manrope, ui-sans-serif, system-ui, sans-serif" # replaces Inter (AI-default tell)
+      font-hanzi: "Noto Sans SC, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif"
   gradients:
     primary: "linear-gradient(135deg, #B45309 0%, #92400E 100%)"
     success: "linear-gradient(90deg, #34D399 0%, #059669 100%)"
@@ -183,6 +186,8 @@ tokens:
 **Last Updated:** 2026-09-10
 
 ## Changelog
+
+- **2026-09-10** — CJK-first identity (S1′a-1, blueprint P0-1): added `tokens.typography.font-families` (`--font-latin` = Manrope, `--font-hanzi` = Noto Sans SC stack) to DESIGN.md + globals.css; base `font-family` switched from `Inter` → `var(--font-latin)` — kills the "Inter = AI default" tell. Hanzi never gets letter-spacing (`--tracking-tight` stays Latin-only).
 
 - **2026-09-10** — S0b-1b: added gate #14 `npm run check:design-parity` (`scripts/check-design-parity.mjs`) — asserts the DESIGN.md `tokens.*` ↔ globals.css `:root` 1:1 contract for the mechanical families (layout page-measure/rhythm/gutters/scalars, spacing, radii, size, shadows, transitions, z-index): 40 pairs, bidirectional, whitespace-normalized value equality. Colors/typography/gradients are out of scope (hex↔rgba + variant-array mapping needs a semantic comparator — tracked separately). Wired into CI (`.github/workflows/design-gates.yml`) alongside strict gate #8.
 

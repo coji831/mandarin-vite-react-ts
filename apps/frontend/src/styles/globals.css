@@ -15,6 +15,7 @@
  */
 
 /* Import reusable component patterns */
+@import "./fonts.css";
 @import "./components.css";
 @import "./animations.css";
 
@@ -235,6 +236,12 @@
 
   /* ===== Typography ===== */
 
+  /* Font families — CJK-first identity (A3): Latin face + hanzi face.
+     --font-latin replaces Inter (the "AI default" tell). Hanzi never gets
+     letter-spacing (see --tracking-tight). */
+  --font-latin: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-hanzi: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
   /* Font sizes */
   --font-xs: 12px; /* 12px */
   --font-sm: 14px; /* 14px */
@@ -281,7 +288,7 @@
   --tone-5: rgba(158, 158, 158, 1);
 
   /* ===== Base Typography & Color (from index.css :root) ===== */
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-latin);
   line-height: var(--lh-normal);
   font-weight: 400;
 

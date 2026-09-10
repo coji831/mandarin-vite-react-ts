@@ -428,6 +428,7 @@ const CHECKS = {
     test: (line, file, context) => {
       if (!file.endsWith(".css") && !file.endsWith(".tsx")) return null;
       if (file.endsWith(".css")) {
+        if (path.basename(file) === "fonts.css") return null; // @font-face descriptors — infrastructure, not component styling
         const trimmed = line.trim();
         if (trimmed.startsWith("/*") || trimmed.startsWith("*") || trimmed.startsWith("//"))
           return null; // comment-only line
