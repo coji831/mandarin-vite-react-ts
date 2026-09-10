@@ -59,7 +59,7 @@ describe("Dashboard Page", () => {
 
     // Loading branch renders the data-resilient Skeleton shell (D.8), not the
     // old LoadingScreen. Assert the shell (aria-busy) + status skeletons exist.
-    expect(container.querySelector(".dashboard[aria-busy='true']")).not.toBeNull();
+    expect(container.querySelector(".page-shell[aria-busy='true']")).not.toBeNull();
     expect(screen.getAllByRole("status", { name: "Loading" }).length).toBeGreaterThan(0);
 
     // A11y (axe page-has-heading-one): the loading branch keeps exactly one

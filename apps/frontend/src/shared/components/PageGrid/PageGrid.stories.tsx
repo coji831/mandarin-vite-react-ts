@@ -41,7 +41,9 @@ const Tile = ({ label }: { label: string }) => (
 const Tiles = ({ n }: { n: number }) => (
   <>
     {Array.from({ length: n }, (_, i) => (
-      <Tile key={i} label={`card ${i + 1}`} />
+      <div key={i} role="listitem">
+        <Tile label={`card ${i + 1}`} />
+      </div>
     ))}
   </>
 );

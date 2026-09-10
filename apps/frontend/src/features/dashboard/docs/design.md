@@ -38,30 +38,36 @@ Cards show previews only (phase name, %, next step, tile label). Detail/task liv
 
 Reference archetype `hub-launcher` (page-archetypes §1); **none invented beyond `PageHeader`** (registry-disciplined):
 
-| Region             | Component                                                               |
-| ------------------ | ----------------------------------------------------------------------- |
-| Header             | `PageHeader` (title/eyebrow/description + ≤1 primary Button top-right)  |
-| Focal card         | `Box` variant `dark` (hairline + `--shadow-elevated-1` + `--radius-lg`) |
-| Empty-state focal  | `Box` variant `dashed`                                                  |
-| Quick-access tiles | `Button` variant `tag` (`flex-col` + hover-lift)                        |
-| Progress           | `ProgressBar`                                                           |
-| Loading            | `Skeleton` (dims = final dims)                                          |
-| Activity           | `Box` variant `dark`                                                    |
+| Region             | Component                                                                   |
+| ------------------ | --------------------------------------------------------------------------- |
+| Page shell         | `PageShell` archetype `hub-launcher`, `as="div"` (AppLayout owns `<main>`)  |
+| Section rhythm     | `PageStack` (size `default`)                                                |
+| Card home          | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)              |
+| Section head       | plain `section[aria-labelledby]` + `.dashboard-section-head` (feature CSS)  |
+| Header             | `PageHeader` (title/eyebrow/description + ≤1 primary Button top-right)      |
+| Focal card         | `Box` variant `card` + `.dashboard-card` (hairline + `--shadow-elevated-1`) |
+| Empty-state focal  | `Box` variant `dashed` + `.dashboard-empty-card`                            |
+| Quick-access tiles | `Button` variant `tag` + `.dashboard-tile` (icon well, title, sub-label)    |
+| Progress           | `ProgressBar`                                                               |
+| Loading            | `Skeleton` (dims = final dims)                                              |
+| Activity           | `Box` variant `card` (rows) / variant `dashed` (empty)                      |
 
 ## 5. Token map
 
-| Element         | Tokens                                                                                              |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| Header title    | `font-3xl fw-700 tracking-tight text-primary`                                                       |
-| Eyebrow         | `font-xs fw-500 text-muted tracking-wide`                                                           |
-| Header CTA      | `--gradient-primary` bg, `--radius-md`, hover-lift `--shadow-md` (amber)                            |
-| Focal card      | `--surface-dark` + `--surface-border-subtle` hairline + `--shadow-elevated-1` + `--radius-lg`       |
-| Quick tile      | `--surface-dark` + hairline + `--shadow-elevated-1`; hover `translateY(-2px)` + amber `--shadow-md` |
-| Section h2      | `font-lg fw-600 text-primary`                                                                       |
-| Progress meta   | `font-sm text-muted`; bar = `ProgressBar` (success gradient at 100% — untouched)                    |
-| Activity rows   | `font-sm text-secondary`; empty = `font-sm text-muted`                                              |
-| Guest hero card | `--surface-dark` + hairline + `--radius-lg` + `--shadow-elevated-1`                                 |
-| Skeleton        | `Skeleton` — dims equal final card/header dims                                                      |
+| Element         | Tokens                                                                                                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Header title    | `font-3xl fw-700 tracking-tight text-primary` (PageHeader)                                                                                                                       |
+| Eyebrow         | `font-xs fw-500 text-muted tracking-wide` (PageHeader)                                                                                                                           |
+| Header CTA      | `--gradient-primary` bg, `--radius-md`, hover-lift `--shadow-md` (amber)                                                                                                         |
+| Card family     | `Box card` = `--surface-dark-alt` + `--radius-lg`; `.dashboard-card` narrows to `--surface-border-subtle` hairline + `--shadow-elevated-1`                                       |
+| Quick tile      | `Button tag` + `.dashboard-tile` (same surface family); icon well = `--space-2xl` box, `--color-primary-bg`, `--color-primary-lighter`; hover = amber border + shared hover-lift |
+| Section head    | `h2 font-lg fw-600 text-primary` + meta `font-sm text-muted`, baseline row (`margin-bottom: --space-sm`)                                                                         |
+| Section rhythm  | `PageStack default` = `--section-rhythm` (32px)                                                                                                                                  |
+| Card grid       | `PageGrid` = `--card-gutter` (20px), auto-fit collapse                                                                                                                           |
+| Progress meta   | `font-sm text-muted`; bar = `ProgressBar` (untouched — success gradient is system doctrine)                                                                                      |
+| Activity rows   | `font-sm text-secondary`; empty = dashed card + `EmptyState`                                                                                                                     |
+| Guest hero card | `Box card` + `.dashboard-card`                                                                                                                                                   |
+| Skeleton        | `Skeleton` — dims equal final card/header dims                                                                                                                                   |
 
 New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1/2/3`, `--tracking-tight` (+ utilities). Amber `--shadow-md/lg` are now hover/XP-only (see DESIGN.md Elevation Usage Ladder & Amber Restriction).
 
@@ -75,11 +81,24 @@ New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1
 - Focus order = visual order (header CTA → focal → sections).
 - **320px reflow EXCLUDED** — mobile out of scope (Phase A decision 4).
 
-## 7. Data-resilient shell
+## 7. Page anatomy & data-resilient shell
 
-- `.dashboard`: `max-width: 960px`, `margin: 0 auto`, `padding: var(--space-xl) var(--space-lg)`, `min-height: 0` (no viewport floor — content grows inside `.app-content`), `overflow-x: clip`; scroll lives in `.app-content` (existing).
-- Skeleton dims = final dims (header bar height, focal-card height, 4-tile grid cells, activity rows) — no CLS.
-- Recent Activity renders its **existing empty branch** (the page hardcodes `activities=[]`; real data wiring is Phase B).
+Anatomy (page-anatomy law — there is no page-scoped layout CSS any more):
+
+| Layer     | Where                                                           | Owns                                                         |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| Shell     | `PageShell archetype="hub-launcher" as="div"` (`DashboardPage`) | hub measure (960px), page gutters, region + `aria-busy`      |
+| Rhythm    | `PageStack size="default"` (each variant)                       | 32px between-section rhythm                                  |
+| Card home | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)  | card columns + gutter; children wrapped in `role="listitem"` |
+| Sections  | `section[aria-labelledby]` + `.dashboard-section-head`          | h2 + optional meta on a baseline row                         |
+
+- `features/dashboard/dashboard.css` holds feature surfaces only (card family,
+  tile, icon well, skeleton dims). The former `pages/dashboard/DashboardPage.css`
+  is deleted — it was the page-anatomy deviation list's first entry.
+- Scroll + gutters live in `.app-content` / `PageShell`.
+- Skeleton dims = final dims (header bar, focal card, 4 tiles at 150px, activity
+  card) — no CLS; the loading shell is `PageShell[aria-busy="true"]` with
+  `role="region"`.
 
 ## 8. AI-codegen inputs
 
@@ -97,14 +116,15 @@ New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1
 ## Component Tree
 
 ```
-DashboardPage            — Route container (`pages/dashboard/DashboardPage.tsx`) — phase gate + guest/auth split
-  ├── DashboardGuest     — Guest landing (sign-up CTA)
-  │     └── DashboardWelcome  — Personalized welcome message (phase-1 CTA)
-  └── DashboardSections  — Authed (phase 2+) dashboard
-        ├── PageHeader   — eyebrow (phase name), title ("Welcome back"), streak, CTA
-        ├── Current Phase    — h2 + Box `dark` focal card (ProgressBar)
-        ├── Quick Access     — h2 + 4 Button `tag` tiles (Icon + label)
-        └── Recent Activity  — h2 + Box `dark` (list rows or EmptyState)
+DashboardPage            — Route container (`pages/dashboard/DashboardPage.tsx`)
+  │                        PageShell(hub-launcher) + phase gate + guest/auth split
+  ├── DashboardGuest     — Guest landing (sign-up CTA, hero card, phase previews)
+  ├── DashboardWelcome   — Phase 1 welcome (dashed empty-state focal card)
+  └── DashboardSections  — Authed (phase 2+)
+        ├── PageHeader   — eyebrow (phase), title ("Welcome back"), streak, CTA
+        ├── Current Phase    — section head (+% meta) + Box `card` focal card (ProgressBar)
+        ├── Quick Access     — section head + PageGrid of 4 Button `tag` tiles
+        └── Recent Activity  — section head + Box `card` rows / dashed EmptyState
 ```
 
 ## State & Data Flow
@@ -118,18 +138,21 @@ No polling or real-time subscriptions.
 
 ## Responsive scope
 
-Desktop-only (Phase A decision 4 — 320px reflow excluded). The legacy mobile `@media`
-blocks in `DashboardPage.css` remain untouched (Phase A out-of-scope).
+Desktop-first. The legacy mobile `@media` blocks are gone with
+`DashboardPage.css`: the tile grid now collapses via `PageGrid`'s canonical
+auto-fit columns (4 → 2 → 1) and `PageShell` tightens its gutters under 480px.
+Sub-320px reflow is still out of scope.
 
 ## File Structure
 
 ```
 features/dashboard/
-├── index.ts                     — Barrel exports
+├── dashboard.css                — feature surfaces (card family, tile, skeleton)
+├── index.ts                     — barrel + stylesheet entry
 ├── components/
-│   ├── DashboardWelcome.tsx     — Welcome message + greeting
-│   ├── DashboardGuest.tsx       — Guest landing with sign-up CTA
-│   ├── DashboardSections.tsx    — Main authenticated dashboard
+│   ├── DashboardWelcome.tsx     — Phase 1 welcome (PageStack + dashed focal card)
+│   ├── DashboardGuest.tsx       — Guest landing (hero card + PageGrid previews)
+│   ├── DashboardSections.tsx    — Phase 2+ (focal card, tiles, activity)
 │   └── __tests__/               — Component tests
 └── docs/
     └── design.md                — This document

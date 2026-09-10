@@ -2,23 +2,23 @@
  * DashboardPage
  *
  * Main landing page for authenticated users (Wireframe Sections 8.3/8.5).
- * Thin container: fetches phase gate state and delegates rendering to
- * feature components.
+ * Thin container: fetches phase gate state, owns the page anatomy (PageShell
+ * hub-launcher measure), and delegates rendering to feature components that
+ * own their own PageStack rhythm and PageGrid card homes.
  *
  * Phase variants:
  * - Phase 1: DashboardWelcome
- * - Phase 2+: DashboardSections (PhaseProgress + QuickAccess + RecentActivity)
+ * - Phase 2+: DashboardSections (CurrentPhase + QuickAccess + RecentActivity)
  */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { Skeleton } from "shared/components";
+import { PageGrid, PageShell, PageStack, Skeleton } from "shared/components";
 import type { IconName } from "shared/components";
 import { learn_page } from "shared/constants";
 import { DashboardWelcome, DashboardSections } from "features/dashboard";
 import { DashboardGuest } from "features/dashboard";
 import { useAuth } from "features/auth";
-import "./DashboardPage.css";
 
 export { DashboardPage };
 
@@ -27,11 +27,12 @@ type ActivityItem = {
   text: string;
 };
 
-const PHASE_NAMES: Record<number, string> = {
-  1: "Phase 1: The Blueprint",
-  2: "Phase 2: The Core 300",
-  3: "Phase 3: The Network",
-  4: "Phase 4: Advanced Fluidity",
+/** Phase titles, keyed by the 1-based phase number the API returns. */
+const PHASE_TITLES: Record<number, string> = {
+  1: "The Blueprint",
+  2: "The Core 300",
+  3: "The Network",
+  4: "Advanced Fluidity",
 };
 
 const PHASE_PCT: Record<number, number> = {
@@ -43,10 +44,13 @@ const PHASE_PCT: Record<number, number> = {
 
 const PHASE_NEXT: Record<number, string> = {
   1: "Master Pinyin, tones, and basic strokes",
-  2: "Learn radicals (★ 氵, 亻, 口 recommended)",
+  2: "Learn radicals: 氵, 亻, 口 recommended",
   3: "Explore phonetic clusters and graded readers",
   4: "All content available — explore freely!",
 };
+
+/** Fallback title for a phase number outside the 4-phase course. */
+const PHASE_FALLBACK_TITLE = "Self-Directed Study";
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -56,10 +60,10 @@ function DashboardPage() {
   const [activities] = useState<ActivityItem[]>([]);
 
   const currentPhase = phaseGate?.currentPhase ?? 1;
-  const phaseName = PHASE_NAMES[currentPhase] ?? "Self-Directed Study";
+  const phaseTitle = PHASE_TITLES[currentPhase] ?? PHASE_FALLBACK_TITLE;
   const phasePct = currentPhase < 4 ? (PHASE_PCT[currentPhase] ?? 0) : 100;
   const nextStep =
-    currentPhase < 4 ? (PHASE_NEXT[currentPhase] ?? "") : "You've completed all phases! 🎉";
+    currentPhase < 4 ? (PHASE_NEXT[currentPhase] ?? "") : "You've completed all phases!";
 
   if (phaseLoading || authLoading) {
     // Loading skeleton — dims equal final content (D.8: no CLS).
@@ -68,50 +72,53 @@ function DashboardPage() {
     // aria-busy with a descriptive label (Skeletons below stay aria-hidden
     // placeholders / role=status live regions).
     return (
-      <div
-        className="dashboard flex-col gap-lg"
+      <PageShell
+        archetype="hub-launcher"
+        as="div"
         role="region"
         aria-busy="true"
         aria-label="Loading dashboard"
       >
-        <h1 className="sr-only">Dashboard</h1>
-        <Skeleton variant="custom" className="skeleton-dashboard-header" />
-        <Skeleton variant="card" height="180px" />
-        <div className="flex-col gap-sm">
-          <Skeleton variant="line" width="160px" height="20px" />
-          <div className="dashboard-quick-grid grid gap-md">
-            {Array.from({ length: 4 }, (_, i) => (
-              <Skeleton key={i} variant="card" height="96px" />
-            ))}
-          </div>
-        </div>
-        <div className="flex-col gap-sm">
-          <Skeleton variant="line" width="160px" height="20px" />
-          <Skeleton variant="card" height="72px" />
-        </div>
-      </div>
+        <PageStack size="default">
+          <h1 className="sr-only">Dashboard</h1>
+          <Skeleton variant="custom" className="dashboard-skeleton-header" />
+          <Skeleton variant="card" height="180px" />
+          <section className="flex-col gap-sm">
+            <Skeleton variant="line" width="160px" height="20px" />
+            <PageGrid columns={4}>
+              {Array.from({ length: 4 }, (_, i) => (
+                <div key={i} role="listitem" className="flex min-w-0">
+                  <Skeleton variant="card" height="150px" className="flex-1" />
+                </div>
+              ))}
+            </PageGrid>
+          </section>
+          <section className="flex-col gap-sm">
+            <Skeleton variant="line" width="160px" height="20px" />
+            <Skeleton variant="card" height="72px" />
+          </section>
+        </PageStack>
+      </PageShell>
     );
   }
 
-  if (!isAuthenticated) {
-    return <DashboardGuest />;
-  }
-
-  if (currentPhase === 1) {
-    return (
-      <DashboardWelcome streakDays={streakDays} onStartLearning={() => navigate(learn_page)} />
-    );
-  }
-
-  // Phase 2+
   return (
-    <DashboardSections
-      phaseName={phaseName}
-      phasePct={phasePct}
-      nextStep={nextStep}
-      streakDays={streakDays}
-      activities={activities}
-      onContinueLearning={() => navigate(learn_page)}
-    />
+    <PageShell archetype="hub-launcher" as="div">
+      {!isAuthenticated ? (
+        <DashboardGuest />
+      ) : currentPhase === 1 ? (
+        <DashboardWelcome streakDays={streakDays} onStartLearning={() => navigate(learn_page)} />
+      ) : (
+        <DashboardSections
+          phaseNumber={currentPhase}
+          phaseTitle={phaseTitle}
+          phasePct={phasePct}
+          nextStep={nextStep}
+          streakDays={streakDays}
+          activities={activities}
+          onContinueLearning={() => navigate(learn_page)}
+        />
+      )}
+    </PageShell>
   );
 }

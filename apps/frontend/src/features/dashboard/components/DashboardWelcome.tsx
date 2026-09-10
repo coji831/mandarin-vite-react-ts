@@ -1,11 +1,12 @@
 /**
  * DashboardWelcome
  *
- * Phase 1 (empty) welcome state for the dashboard.
+ * Phase 1 (empty) welcome state for the dashboard. Owns the page's section
+ * rhythm via PageStack (the page container owns the PageShell measure).
  * PageHeader hosts the single primary CTA (amber budget ≤1/viewport); the
  * dashed empty-state focal card carries the message only (D.3).
  */
-import { Box, Button, EmptyState, Icon, PageHeader } from "shared/components";
+import { Box, Button, EmptyState, Icon, PageHeader, PageStack } from "shared/components";
 
 export interface DashboardWelcomeProps {
   streakDays?: number;
@@ -14,7 +15,7 @@ export interface DashboardWelcomeProps {
 
 export function DashboardWelcome({ streakDays = 0, onStartLearning }: DashboardWelcomeProps) {
   return (
-    <div className="dashboard flex-col gap-lg">
+    <PageStack size="default">
       <PageHeader
         title="Welcome to PinyinPal!"
         description={
@@ -33,7 +34,7 @@ export function DashboardWelcome({ streakDays = 0, onStartLearning }: DashboardW
       <Box
         variant="dashed"
         padding="2xl"
-        className="dashboard-empty-state flex-col-center gap-lg text-center"
+        className="dashboard-empty-card flex-col-center gap-lg text-center"
       >
         <EmptyState
           icon="sparkles"
@@ -41,6 +42,6 @@ export function DashboardWelcome({ streakDays = 0, onStartLearning }: DashboardW
           description="Begin with the foundations: master Pinyin, tones, and basic strokes. No characters needed yet."
         />
       </Box>
-    </div>
+    </PageStack>
   );
 }

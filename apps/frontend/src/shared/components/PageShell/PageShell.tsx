@@ -19,17 +19,26 @@ export type PageArchetype = "hub-launcher" | "browse-index" | "focus-task" | "ut
 export type PageShellProps = {
   /** Archetype selects the measure token --page-measure-<archetype>. */
   archetype?: PageArchetype;
-  /** HTML element to render as (main/div/section). Default: main. */
+  /**
+   * HTML element to render as. Default: div — the app shell (AppLayout) already
+   * owns the <main class="app-content"> landmark, so a page shell must not nest
+   * a second main (axe landmark-unique). Pass "section" when the region is
+   * named, or "main" only when rendering outside the app shell.
+   */
   as?: ElementType;
   children?: ReactNode;
   className?: string;
   id?: string;
+  /** Region semantics — PageShell is the page's content region. */
+  role?: string;
   "aria-label"?: string;
+  /** True while the page's data is in flight (pages render their skeleton here). */
+  "aria-busy"?: boolean | "true" | "false";
 };
 
 export function PageShell({
   archetype = "hub-launcher",
-  as: Tag = "main",
+  as: Tag = "div",
   children,
   className,
   ...rest

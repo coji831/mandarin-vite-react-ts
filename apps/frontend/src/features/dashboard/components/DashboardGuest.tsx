@@ -1,7 +1,10 @@
 /**
  * DashboardGuest
  *
- * Guest-facing dashboard component for unauthenticated users.
+ * Guest-facing dashboard component for unauthenticated users. Owns the page's
+ * section rhythm via PageStack + PageGrid (the page container owns the
+ * PageShell measure).
+ *
  * PageHeader carries the single primary "Sign Up Free ▸" CTA (amber budget
  * ≤1/viewport — D.3); the hero focal card offers a secondary "Start with
  * Pinyin Basics ▸"; all-phase preview cards follow.
@@ -9,7 +12,7 @@
  * No SRS/progress/gamification sections — those are registered-only.
  */
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Icon, PageHeader } from "shared/components";
+import { Box, Button, Icon, PageGrid, PageHeader, PageStack } from "shared/components";
 import type { IconName } from "shared/components";
 import { learn_foundations, register_page } from "shared/constants";
 
@@ -44,7 +47,7 @@ export function DashboardGuest() {
   const navigate = useNavigate();
 
   return (
-    <div className="dashboard flex-col gap-lg">
+    <PageStack size="default">
       {/* Header — value pitch + the single primary CTA (registration merged here, D.3) */}
       <PageHeader
         title="Welcome to PinyinPal!"
@@ -56,33 +59,26 @@ export function DashboardGuest() {
       </PageHeader>
 
       {/* Hero focal card — start now via the secondary action (D.3/D.6) */}
-      <Box
-        variant="dark"
-        padding="lg"
-        className="dashboard-card flex-col-center gap-md text-center"
-      >
+      <Box variant="card" className="dashboard-card flex-col-center gap-md text-center">
         <Button variant="secondary" size="lg" onClick={() => navigate(learn_foundations)}>
           Start with Pinyin Basics ▸
         </Button>
       </Box>
 
       {/* All-phase preview cards (previews only — D.2) */}
-      <div className="grid-2-col gap-md w-full">
+      <PageGrid columns={2} aria-label="Course phases">
         {PHASE_PREVIEWS.map((phase) => (
-          <Box
-            key={phase.phase}
-            variant="dark"
-            padding="lg"
-            className="dashboard-card flex-col gap-sm"
-          >
-            <Icon name={phase.icon} size={24} aria-hidden />
-            <h2 className="font-lg fw-600 text-primary m-0">
-              Phase {phase.phase}: {phase.title}
-            </h2>
-            <p className="font-sm text-secondary m-0">{phase.description}</p>
-          </Box>
+          <div key={phase.phase} role="listitem" className="flex min-w-0">
+            <Box variant="card" className="dashboard-card flex-col gap-sm flex-1">
+              <Icon name={phase.icon} size={24} aria-hidden />
+              <h2 className="font-lg fw-600 text-primary m-0">
+                Phase {phase.phase}: {phase.title}
+              </h2>
+              <p className="font-sm text-secondary m-0">{phase.description}</p>
+            </Box>
+          </div>
         ))}
-      </div>
-    </div>
+      </PageGrid>
+    </PageStack>
   );
 }

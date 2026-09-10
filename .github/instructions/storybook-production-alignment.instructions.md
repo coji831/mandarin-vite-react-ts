@@ -19,6 +19,8 @@ Use these commands when working with Storybook:
 
 **cwd note:** `storybook` / `test-storybook` / `build-storybook` live in the `@mandarin/frontend` workspace only. The table shows the canonical repo-root command forms with `--workspace=@mandarin/frontend` (as `storybook-checks.yml` does). Running bare `npm run storybook` at the root fails.
 
+**Do not start Storybook with `npm --prefix apps/frontend run storybook`.** `--prefix` resolves the package but leaves the shell's working directory in place, and `@storybook/builder-vite` generates the iframe import map with `path.relative(process.cwd(), importPath)` — so the map keys come out absolute and **every** story dies with `TypeError: importers[path] is not a function`, even though the build "succeeds". `.storybook/main.ts` now fails fast with an actionable message when `process.cwd()` is not the workspace root (Vitest story runs are exempt — `@storybook/addon-vitest` uses its own resolution). Use `--workspace=@mandarin/frontend`, or run `npm run storybook` from `apps/frontend`.
+
 ### How to View Stories in the Browser
 
 After running `npm run storybook --workspace=@mandarin/frontend`, Storybook opens at `http://localhost:6006`. Use the `open_browser_page` tool to open this URL, then navigate to the story via the sidebar.

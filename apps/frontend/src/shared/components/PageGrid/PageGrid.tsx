@@ -8,6 +8,11 @@
  * Columns default per intent: tiles=4, cards=3, wide=2. Responsive collapse:
  * 4 -> 2 -> 1, 3 -> 2 -> 1, 2 -> 1 (utility classes in CSS). No page-scoped
  * grid overrides (design-audit rule page-scoped-grid).
+ *
+ * A11y contract: the grid renders `role="list"` so it can carry an
+ * accessible name (aria-label). Every direct child must therefore be a
+ * `role="listitem"` element (axe aria-required-children) — wrap each card in
+ * a cell div, e.g. `<div role="listitem" className="flex min-w-0">`.
  */
 import type { ReactNode } from "react";
 import "./PageGrid.css";
@@ -22,6 +27,7 @@ export type PageGridProps = {
   gutter?: PageGridGutter;
   children?: ReactNode;
   className?: string;
+  /** Accessible name for the grid (legal because the grid is role="list"). */
   "aria-label"?: string;
 };
 
