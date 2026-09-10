@@ -127,12 +127,18 @@ function SideNav({
         collapsed ? "side-nav--collapsed" : ""
       }`}
     >
-      {/* Brand row — logo + title only (collapse toggle lives in the footer) */}
-      <div className="side-nav__brand gap-xs font-lg fw-700 p-xs">
-        <span className="side-nav__logo font-2xl" aria-hidden="true">
-          🏮
+      {/* Brand row — CJK-first identity (A3, S1′a-2): hanzi mark + name + 拼音.
+          Collapse toggle lives in the footer. */}
+      <div className="side-nav__brand gap-sm p-xs">
+        <span className="side-nav__mark" lang="zh-Hans" aria-hidden="true">
+          拼
         </span>
-        <span className="side-nav__title text-accent flex-1">Mandarin</span>
+        <span className="side-nav__title flex-1">
+          PinyinPal
+          <span className="side-nav__title-zh" lang="zh-Hans">
+            拼音
+          </span>
+        </span>
       </div>
 
       {/* Navigation links — always visible */}
