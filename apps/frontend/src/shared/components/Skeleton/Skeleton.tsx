@@ -41,7 +41,18 @@ export function Skeleton({
   const items = Array.from({ length: count }, (_, i) => i);
 
   if (variant === "custom") {
-    return <div className={`skeleton ${className}`} aria-hidden="true" />;
+    // width/height are honored here too (they used to be dropped for `custom`,
+    // which forced callers to add a local CSS class for a single dimension).
+    return (
+      <div
+        className={`skeleton ${className}`}
+        style={{
+          ...(width != null ? { width } : {}),
+          ...(height != null ? { height } : {}),
+        }}
+        aria-hidden="true"
+      />
+    );
   }
 
   return (

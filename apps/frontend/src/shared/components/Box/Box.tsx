@@ -22,6 +22,7 @@ export type BoxVariant =
   | "elevated"
   | "error"
   | "card"
+  | "card-elevated"
   | "divider"
   | "header"
   | "dashed"
@@ -37,6 +38,15 @@ export type BoxVariant =
 
 export type BoxPadding = "none" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
+/** Radius override — declared in Box.css so it wins over the variant radius. */
+export type BoxRadius = "sm" | "md" | "lg";
+
+const RADIUS_CLASSES: Record<BoxRadius, string> = {
+  sm: "box-radius-sm",
+  md: "box-radius-md",
+  lg: "box-radius-lg",
+};
+
 const VARIANT_CLASSES: Record<BoxVariant, string> = {
   dark: "box-dark",
   "dark-alt": "box-dark-alt",
@@ -46,6 +56,7 @@ const VARIANT_CLASSES: Record<BoxVariant, string> = {
   elevated: "box-elevated",
   error: "box-error",
   card: "box-card",
+  "card-elevated": "box-card-elevated",
   divider: "box-divider",
   header: "box-header",
   dashed: "box-dashed",
@@ -73,19 +84,30 @@ const PADDING_CLASSES: Record<BoxPadding, string> = {
 export type BoxProps = {
   variant?: BoxVariant;
   padding?: BoxPadding;
+  /** Radius override (e.g. a dashed card at --radius-lg). */
+  radius?: BoxRadius;
   as?: React.ElementType;
   className?: string;
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLElement>;
 
 export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
-  { variant = "dark-alt", padding = "none", as: Element = "div", className, children, ...rest },
+  {
+    variant = "dark-alt",
+    padding = "none",
+    radius,
+    as: Element = "div",
+    className,
+    children,
+    ...rest
+  },
   ref,
 ) {
   const variantClass = VARIANT_CLASSES[variant];
   const paddingClass = PADDING_CLASSES[padding];
+  const radiusClass = radius ? RADIUS_CLASSES[radius] : "";
   const mergedClassName =
-    `${variantClass} ${paddingClass}${className ? ` ${className}` : ""}`.trim();
+    `${variantClass} ${paddingClass} ${radiusClass}${className ? ` ${className}` : ""}`.trim();
 
   return (
     <Element ref={ref as React.Ref<HTMLDivElement>} className={mergedClassName} {...rest}>

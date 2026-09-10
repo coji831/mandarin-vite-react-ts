@@ -15,6 +15,13 @@ import "./EmptyState.css";
 export type EmptyStateProps = {
   /** Decorative leading icon from the sanctioned Icon set (optional). */
   icon?: IconName;
+  /**
+   * Icon treatment. `muted` (default) = the bare muted glyph; `accent` = the
+   * amber well (translucent --color-primary-bg + circular radius) used by the
+   * blueprint's empty-state cards. Opt-in so a page can match the blueprint
+   * without the other EmptyState owners changing.
+   */
+  iconTone?: "muted" | "accent";
   /** Short empty-state heading. */
   title: string;
   /** Supporting copy explaining the next step (optional). */
@@ -24,7 +31,14 @@ export type EmptyStateProps = {
   className?: string;
 };
 
-export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  iconTone = "muted",
+  title,
+  description,
+  action,
+  className,
+}: EmptyStateProps) {
   return (
     <div
       className={["empty-state flex-col-center gap-md text-center", className]
@@ -32,7 +46,12 @@ export function EmptyState({ icon, title, description, action, className }: Empt
         .join(" ")}
     >
       {icon && (
-        <span className="empty-state__icon" aria-hidden="true">
+        <span
+          className={["empty-state__icon", iconTone === "accent" ? "empty-state__icon--accent" : ""]
+            .filter(Boolean)
+            .join(" ")}
+          aria-hidden="true"
+        >
           <Icon name={icon} size={24} />
         </span>
       )}

@@ -59,7 +59,7 @@ export function DashboardGuest() {
       </PageHeader>
 
       {/* Hero focal card — start now via the secondary action (D.3/D.6) */}
-      <Box variant="card" className="dashboard-card flex-col-center gap-md text-center">
+      <Box variant="card-elevated" className="flex-col-center gap-md text-center">
         <Button variant="secondary" size="lg" onClick={() => navigate(learn_foundations)}>
           Start with Pinyin Basics ▸
         </Button>
@@ -69,7 +69,7 @@ export function DashboardGuest() {
       <PageGrid columns={2} aria-label="Course phases">
         {PHASE_PREVIEWS.map((phase) => (
           <div key={phase.phase} role="listitem" className="flex min-w-0">
-            <Box variant="card" className="dashboard-card flex-col gap-sm flex-1">
+            <Box variant="card-elevated" className="flex-col gap-sm flex-1">
               <Icon name={phase.icon} size={24} aria-hidden />
               <h2 className="font-lg fw-600 text-primary m-0">
                 Phase {phase.phase}: {phase.title}

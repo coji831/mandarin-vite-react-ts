@@ -1,7 +1,7 @@
 /**
  * Box Component — Storybook stories
  *
- * Covers all 20 variants, padding examples, `as` prop polymorphism,
+ * Covers all 21 variants, padding examples, `as` prop polymorphism,
  * and `className` merge behavior.
  *
  * Tone variants (tone-1..5) are static legend chips — use Button tone
@@ -90,6 +90,18 @@ export const Card: Story = {
     variant: "card",
     padding: "lg",
     children: <p style={{ margin: 0 }}>card variant — larger radius-lg for card containers</p>,
+  },
+};
+
+export const CardElevated: Story = {
+  args: {
+    variant: "card-elevated",
+    children: (
+      <p style={{ margin: 0 }}>
+        card-elevated variant — the Elevation Usage Ladder card surface (surface-dark-alt +
+        surface-border-subtle hairline + shadow-elevated-1 + radius-lg)
+      </p>
+    ),
   },
 };
 
@@ -221,6 +233,9 @@ export const AllVariants: Story = {
       </Box>
       <Box variant="card" padding="lg">
         <p style={{ margin: 0 }}>card</p>
+      </Box>
+      <Box variant="card-elevated">
+        <p style={{ margin: 0 }}>card-elevated</p>
       </Box>
       <Box variant="divider">
         <p style={{ margin: 0 }}>divider</p>

@@ -38,36 +38,37 @@ Cards show previews only (phase name, %, next step, tile label). Detail/task liv
 
 Reference archetype `hub-launcher` (page-archetypes §1); **none invented beyond `PageHeader`** (registry-disciplined):
 
-| Region             | Component                                                                   |
-| ------------------ | --------------------------------------------------------------------------- |
-| Page shell         | `PageShell` archetype `hub-launcher`, `as="div"` (AppLayout owns `<main>`)  |
-| Section rhythm     | `PageStack` (size `default`)                                                |
-| Card home          | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)              |
-| Section head       | plain `section[aria-labelledby]` + `.dashboard-section-head` (feature CSS)  |
-| Header             | `PageHeader` (title/eyebrow/description + ≤1 primary Button top-right)      |
-| Focal card         | `Box` variant `card` + `.dashboard-card` (hairline + `--shadow-elevated-1`) |
-| Empty-state focal  | `Box` variant `dashed` + `.dashboard-empty-card`                            |
-| Quick-access tiles | `Button` variant `tag` + `.dashboard-tile` (icon well, title, sub-label)    |
-| Progress           | `ProgressBar`                                                               |
-| Loading            | `Skeleton` (dims = final dims)                                              |
-| Activity           | `Box` variant `card` (rows) / variant `dashed` (empty)                      |
+| Region             | Component                                                                    |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Page shell         | `PageShell` archetype `hub-launcher`, `as="div"` (AppLayout owns `<main>`)   |
+| Section rhythm     | `PageStack` (size `default`)                                                 |
+| Card home          | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)               |
+| Section head       | plain `section[aria-labelledby]` + `.dashboard-section-head` (component CSS) |
+| Header             | `PageHeader` (title/eyebrow/description + ≤1 primary Button top-right)       |
+| Focal card         | `Box` variant `card` + `.dashboard-card` (hairline + `--shadow-elevated-1`)  |
+| Empty-state focal  | `Box` variant `dashed` + `.dashboard-empty-card`                             |
+| Quick-access tiles | `Button` variant `tag` + `.dashboard-tile` (icon well, title, sub-label)     |
+| Progress           | `ProgressBar`                                                                |
+| Loading            | `Skeleton` (dims = final dims)                                               |
+| Activity           | `Box` variant `card` (rows) / variant `dashed` (empty)                       |
 
 ## 5. Token map
 
-| Element         | Tokens                                                                                                                                                                           |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Header title    | `font-3xl fw-700 tracking-tight text-primary` (PageHeader)                                                                                                                       |
-| Eyebrow         | `font-xs fw-500 text-muted tracking-wide` (PageHeader)                                                                                                                           |
-| Header CTA      | `--gradient-primary` bg, `--radius-md`, hover-lift `--shadow-md` (amber)                                                                                                         |
-| Card family     | `Box card` = `--surface-dark-alt` + `--radius-lg`; `.dashboard-card` narrows to `--surface-border-subtle` hairline + `--shadow-elevated-1`                                       |
-| Quick tile      | `Button tag` + `.dashboard-tile` (same surface family); icon well = `--space-2xl` box, `--color-primary-bg`, `--color-primary-lighter`; hover = amber border + shared hover-lift |
-| Section head    | `h2 font-lg fw-600 text-primary` + meta `font-sm text-muted`, baseline row (`margin-bottom: --space-sm`)                                                                         |
-| Section rhythm  | `PageStack default` = `--section-rhythm` (32px)                                                                                                                                  |
-| Card grid       | `PageGrid` = `--card-gutter` (20px), auto-fit collapse                                                                                                                           |
-| Progress meta   | `font-sm text-muted`; bar = `ProgressBar` (untouched — success gradient is system doctrine)                                                                                      |
-| Activity rows   | `font-sm text-secondary`; empty = dashed card + `EmptyState`                                                                                                                     |
-| Guest hero card | `Box card` + `.dashboard-card`                                                                                                                                                   |
-| Skeleton        | `Skeleton` — dims equal final card/header dims                                                                                                                                   |
+| Element         | Tokens                                                                                                                                                                                                                              |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Header title    | `font-3xl fw-700 tracking-tight text-primary` (PageHeader)                                                                                                                                                                          |
+| Eyebrow         | `font-xs fw-500 text-muted tracking-wide` (PageHeader)                                                                                                                                                                              |
+| Header CTA      | `--gradient-primary` bg, `--radius-md`, hover-lift `--shadow-md` (amber)                                                                                                                                                            |
+| Card family     | `Box variant="card-elevated"` — the shared Elevation-Ladder card surface (`--surface-dark-alt` + `--surface-border-subtle` hairline + `--shadow-elevated-1` + `--radius-lg`)                                                        |
+| Quick tile      | `Button tag` + `.dashboard-tile` (same surface family); icon well = `--space-2xl` box, `--color-primary-bg`, `--color-primary-lighter`; hover = amber border + shared hover-lift                                                    |
+| Section head    | `h2 font-lg fw-600 text-primary` + meta `font-sm text-muted`, baseline row; the section owns the 12px gap via `flex flex-col gap-sm` utilities (no raw margin in CSS)                                                               |
+| Section rhythm  | `PageStack default` = `--section-rhythm` (32px)                                                                                                                                                                                     |
+| Card grid       | `PageGrid` = `--card-gutter` (20px), auto-fit collapse                                                                                                                                                                              |
+| Progress meta   | `font-sm text-muted`; bar = `ProgressBar` narrowed to the blueprint geometry (8px, `--radius-pill`, `--surface-border` track, clipped fill) — fill keeps `--gradient-success` (green = completion; amber is hover/XP-only, ADR-007) |
+| Activity rows   | `font-sm text-secondary`; empty = `Box variant="dashed" radius="lg"` + `EmptyState iconTone="accent"`                                                                                                                               |
+| Empty icon well | `EmptyState iconTone="accent"` → `.empty-state__icon--accent`: `--space-xs` padding around the 24px glyph = a 40px amber circle (`--color-primary-bg` / `--color-primary-lighter`), same motif as the tile wells                    |
+| Guest hero card | `Box variant="card-elevated"`                                                                                                                                                                                                       |
+| Skeleton        | `Skeleton` — dims equal final card/header dims                                                                                                                                                                                      |
 
 New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1/2/3`, `--tracking-tight` (+ utilities). Amber `--shadow-md/lg` are now hover/XP-only (see DESIGN.md Elevation Usage Ladder & Amber Restriction).
 
@@ -92,9 +93,18 @@ Anatomy (page-anatomy law — there is no page-scoped layout CSS any more):
 | Card home | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)  | card columns + gutter; children wrapped in `role="listitem"` |
 | Sections  | `section[aria-labelledby]` + `.dashboard-section-head`          | h2 + optional meta on a baseline row                         |
 
-- `features/dashboard/dashboard.css` holds feature surfaces only (card family,
-  tile, icon well, skeleton dims). The former `pages/dashboard/DashboardPage.css`
-  is deleted — it was the page-anatomy deviation list's first entry.
+- The page has **no page-level stylesheet**: surfaces come from the shared
+  `Box variant="card-elevated"` / `dashed` + `radius="lg"`, the `EmptyState`
+  `iconTone="accent"` well and `Skeleton` width/height. The only local CSS is
+  `DashboardSections.css`, co-located with its component
+  (`frontend-css-styling.instructions.md`: one CSS file per component,
+  utility-first — everything a utility can express is a className).
+- **Prototype-parity narrowing (deliberate, page-scoped):** the focal
+  `ProgressBar` geometry (8px pill, `--surface-border` track, clipped fill).
+  System-wide adoption would re-render 6 `ProgressBar` owners (ProgressPage,
+  ReviewView, quiz, …) — the rollout plan reserves that for its own guarded,
+  baseline-diffed shared-layer pass. The fill stays `--gradient-success`
+  (green = completion; amber is hover/XP-only, ADR-007).
 - Scroll + gutters live in `.app-content` / `PageShell`.
 - Skeleton dims = final dims (header bar, focal card, 4 tiles at 150px, activity
   card) — no CLS; the loading shell is `PageShell[aria-busy="true"]` with
@@ -122,9 +132,9 @@ DashboardPage            — Route container (`pages/dashboard/DashboardPage.tsx
   ├── DashboardWelcome   — Phase 1 welcome (dashed empty-state focal card)
   └── DashboardSections  — Authed (phase 2+)
         ├── PageHeader   — eyebrow (phase), title ("Welcome back"), streak, CTA
-        ├── Current Phase    — section head (+% meta) + Box `card` focal card (ProgressBar)
+        ├── Current Phase    — section head (+% meta) + Box `card-elevated` focal card (ProgressBar)
         ├── Quick Access     — section head + PageGrid of 4 Button `tag` tiles
-        └── Recent Activity  — section head + Box `card` rows / dashed EmptyState
+        └── Recent Activity  — section head + Box `card-elevated` rows / dashed `EmptyState` (accent well)
 ```
 
 ## State & Data Flow
@@ -147,12 +157,13 @@ Sub-320px reflow is still out of scope.
 
 ```
 features/dashboard/
-├── dashboard.css                — feature surfaces (card family, tile, skeleton)
-├── index.ts                     — barrel + stylesheet entry
+├── index.ts                     — barrel
 ├── components/
-│   ├── DashboardWelcome.tsx     — Phase 1 welcome (PageStack + dashed focal card)
+│   ├── DashboardWelcome.tsx     — Phase 1 welcome (dashed focal card)
 │   ├── DashboardGuest.tsx       — Guest landing (hero card + PageGrid previews)
 │   ├── DashboardSections.tsx    — Phase 2+ (focal card, tiles, activity)
+│   ├── DashboardSections.css    — the page's only local CSS (tile, section head,
+│   │                              focal ProgressBar narrowing)
 │   └── __tests__/               — Component tests
 └── docs/
     └── design.md                — This document

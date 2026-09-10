@@ -81,7 +81,7 @@ function DashboardPage() {
       >
         <PageStack size="default">
           <h1 className="sr-only">Dashboard</h1>
-          <Skeleton variant="custom" className="dashboard-skeleton-header" />
+          <Skeleton variant="custom" width="100%" height="88px" />
           <Skeleton variant="card" height="180px" />
           <section className="flex-col gap-sm">
             <Skeleton variant="line" width="160px" height="20px" />

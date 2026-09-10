@@ -27,6 +27,7 @@ import {
   progress_page,
   withSearchParams,
 } from "shared/constants";
+import "./DashboardSections.css";
 
 export type ActivityItem = {
   icon: IconName;
@@ -124,13 +125,13 @@ export function DashboardSections({
       </PageHeader>
 
       {/* Current Phase — preview only; the % is section meta, not card chrome */}
-      <section aria-labelledby="dashboard-phase-title">
+      <section aria-labelledby="dashboard-phase-title" className="flex flex-col gap-sm">
         <SectionHead
           id="dashboard-phase-title"
           title="Current Phase"
           meta={`${phasePct}% complete`}
         />
-        <Box variant="card" className="dashboard-card flex-col gap-md">
+        <Box variant="card-elevated" className="dashboard-card flex-col gap-md">
           <div className="flex-between items-center gap-sm">
             <span className="font-sm text-muted">
               Phase {phaseNumber} of {PHASE_COUNT}
@@ -143,7 +144,7 @@ export function DashboardSections({
       </section>
 
       {/* Quick Access — PageGrid is the only card home (page-anatomy law) */}
-      <section aria-labelledby="dashboard-quick-title">
+      <section aria-labelledby="dashboard-quick-title" className="flex flex-col gap-sm">
         <SectionHead id="dashboard-quick-title" title="Quick Access" />
         <PageGrid columns={4} aria-label="Quick access">
           {quickTiles.map((tile) => (
@@ -168,10 +169,10 @@ export function DashboardSections({
       </section>
 
       {/* Recent Activity — empty branch (D.8: real data wiring is a later epic) */}
-      <section aria-labelledby="dashboard-activity-title">
+      <section aria-labelledby="dashboard-activity-title" className="flex flex-col gap-sm">
         <SectionHead id="dashboard-activity-title" title="Recent Activity" />
         {activities.length > 0 ? (
-          <Box variant="card" className="dashboard-card flex-col gap-sm">
+          <Box variant="card-elevated" className="flex-col gap-sm">
             {activities.map((item, i) => (
               <div key={i} className="flex-center gap-sm font-sm text-secondary">
                 <span aria-hidden="true">
@@ -182,9 +183,10 @@ export function DashboardSections({
             ))}
           </Box>
         ) : (
-          <Box variant="dashed" padding="2xl" className="dashboard-empty-card">
+          <Box variant="dashed" radius="lg" padding="2xl">
             <EmptyState
               icon="activity"
+              iconTone="accent"
               title="No recent activity yet"
               description="Start learning to see your progress here!"
             />

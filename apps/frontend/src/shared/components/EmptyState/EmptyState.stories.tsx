@@ -65,3 +65,14 @@ export const WithAction: Story = {
     </EmptyState>
   ),
 };
+
+/** The blueprint's amber icon well (opt-in). */
+export const AccentIcon: Story = {
+  name: "Accent icon well",
+  args: {
+    icon: "sparkles",
+    iconTone: "accent",
+    title: "Let's start learning!",
+    description: "Begin with the foundations: master pinyin, tones, and basic strokes.",
+  },
+};

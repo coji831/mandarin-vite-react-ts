@@ -40,6 +40,15 @@
   transition: all var(--transition-fast);
 }
 
+.box-card-elevated {
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated-1);
+  padding: var(--space-lg);
+  transition: all var(--transition-fast);
+}
+
 .box-elevated {
   background: var(--surface-dark-alt-2);
   border: 1px solid var(--surface-border-subtle);
@@ -157,6 +166,21 @@
   color: var(--tone-4);
   padding: var(--space-xs);
   transition: all var(--transition-fast);
+}
+
+/* Radius overrides — declared after the variants so they win at equal
+   specificity inside this stylesheet (Box.css loads after globals.css, so the
+   `radius-*` utilities would lose to the variant rules). */
+.box-radius-sm {
+  border-radius: var(--radius-sm);
+}
+
+.box-radius-md {
+  border-radius: var(--radius-md);
+}
+
+.box-radius-lg {
+  border-radius: var(--radius-lg);
 }
 
 .box-tone-5 {

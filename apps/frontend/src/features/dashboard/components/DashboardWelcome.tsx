@@ -33,11 +33,13 @@ export function DashboardWelcome({ streakDays = 0, onStartLearning }: DashboardW
       {/* Dashed empty-state focal card (D.3) — the CTA lives in the header */}
       <Box
         variant="dashed"
+        radius="lg"
         padding="2xl"
-        className="dashboard-empty-card flex-col-center gap-lg text-center"
+        className="flex-col-center gap-lg text-center"
       >
         <EmptyState
           icon="sparkles"
+          iconTone="accent"
           title="Let's start learning!"
           description="Begin with the foundations: master Pinyin, tones, and basic strokes. No characters needed yet."
         />

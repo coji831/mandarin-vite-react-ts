@@ -1,0 +1,63 @@
+/**
+ * DashboardSections.css — co-located styles for DashboardSections.tsx
+ * (frontend-css-styling.instructions.md: one CSS file per component).
+ *
+ * Utility-first: everything a global utility can express is a className in the
+ * markup. The rules below are only the declarations a utility cannot carry —
+ * either no utility exists, or the declaration must beat a shared component
+ * class (the audit's `utility-duplicate` exempts those via the comment above
+ * each line).
+ */
+
+/* Section head — baseline row. The section above supplies the gap via
+   `flex flex-col gap-sm` utilities; only the baseline alignment has no utility
+   (`items-baseline` / `items-start` do not exist in globals.css). */
+.dashboard-section-head {
+  align-items: baseline;
+}
+
+/* Quick-access tile — Button `tag` restyled as a precision-minimal card
+   (blueprint .tile). flex-col / gap-sm / text-left / flex-1 are utilities. */
+.dashboard-tile.btn-tag {
+  /* .btn ships align-items:center; the tile stacks left-aligned */
+  align-items: flex-start;
+  /* .btn-tag is transparent — the tile is a recessed card surface */
+  background: var(--surface-dark-alt);
+  border: 1px solid var(--surface-border-subtle);
+  /* .btn-tag is a pill — the tile is a card */
+  border-radius: var(--radius-lg);
+  /* card padding beats the .btn-md tag padding */
+  padding: var(--space-lg);
+  /* elevated-1 paired with the hairline above (Elevation Usage Ladder) */
+  box-shadow: var(--shadow-elevated-1);
+}
+
+/* Hover = border emphasis + the shared .hover-lift -2px lift (components.css
+   owns transform per the Global Motion Rule). */
+.dashboard-tile.btn-tag:hover:not(:disabled) {
+  /* the tile keeps its surface — the shared .btn:hover would wash it out */
+  background: var(--surface-dark-alt);
+  /* amber border is the sanctioned hover affordance */
+  border-color: var(--color-primary-border);
+}
+
+/* Amber icon well — flex-center / radius-md / bg-primary-bg / text-primary-light
+   come from utilities; no box-size utility exists for 40px. */
+.dashboard-tile__icon {
+  width: var(--space-2xl);
+  height: var(--space-2xl);
+}
+
+/* Focal card — narrows the shared ProgressBar to the blueprint's geometry for
+   this page only. System-wide adoption is a recorded shared-layer pass (6 owner
+   surfaces); the fill keeps --gradient-success (green = completion, ADR-007). */
+.dashboard-card .progress-bar__track {
+  /* the primitive ships 12px; the blueprint's bar is a slim 8px pill */
+  height: 8px;
+  /* pill track (blueprint .progress-track) */
+  border-radius: var(--radius-pill);
+  /* hairline track (blueprint .progress-track) */
+  background: var(--surface-border);
+  /* clips the fill to the pill radius (the shared track is overflow:visible) */
+  overflow: hidden;
+}

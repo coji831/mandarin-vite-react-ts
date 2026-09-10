@@ -8,6 +8,16 @@
   line-height: var(--lh-1);
 }
 
+/* Opt-in accent well (iconTone="accent") — the blueprint's circular icon well.
+   p-xs around the 24px glyph yields a 40px well without a fixed box, and the
+   pill radius keeps it round. */
+.empty-state__icon--accent {
+  padding: var(--space-xs);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-lighter);
+}
+
 .empty-state__action {
   margin-top: var(--space-xs);
 }
