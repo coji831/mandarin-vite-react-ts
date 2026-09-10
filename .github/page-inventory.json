@@ -206,15 +206,17 @@
       "states": ["default"],
       "status": "conforms",
       "composition": {
-        "section": "Box"
+        "header": "PageHeader",
+        "section": "Box",
+        "grid": "PageGrid"
       },
       "anatomy": {
         "shell": "PageShell",
         "measure": "utility",
         "gutter": "default",
-        "header": null
+        "header": "PageHeader"
       },
-      "note": "Static utility shell composed of Box sections."
+      "note": "Utility shell: PageShell + PageStack + PageHeader + PageGrid card home."
     },
     {
       "route": "/auth/login",
