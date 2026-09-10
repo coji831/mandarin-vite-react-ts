@@ -24,7 +24,7 @@ export type PageHeaderProps = {
 
 export function PageHeader({ title, eyebrow, description, children }: PageHeaderProps) {
   return (
-    <header className="page-header flex-between items-start gap-lg">
+    <header className="page-header flex-between gap-lg">
       <div className="flex-col gap-xs">
         {eyebrow && <span className="font-xs fw-500 text-muted tracking-wide">{eyebrow}</span>}
         <h1 className="font-3xl fw-700 tracking-tight text-primary m-0">{title}</h1>
