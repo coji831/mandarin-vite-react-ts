@@ -1,25 +1,34 @@
 /**
  * ProgressBar Component Styles
  * Uses CSS variables for colors, inline styles for dynamic width.
+ *
+ * Geometry (shared-layer pass 2026-09-10): the blueprint's slim pill — 8px track,
+ * --surface-border hairline, radius-pill, fill clipped to the radius. Every owner
+ * (dashboard, foundations, sandhi drill, pictograph game, quiz, readers, review)
+ * renders this one geometry; pages must NOT override it locally.
  */
 
 .progress-bar__track {
   position: relative;
-  height: 12px;
-  overflow: visible;
+  height: var(--space-xs);
+  background: var(--surface-border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
 }
 
 .progress-bar__fill {
   height: 100%;
-  background: var(--gradient-success);
-  transition: width var(--transition-normal);
   min-width: 4px;
+  background: var(--gradient-success);
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-normal);
 }
 
+/* Pass marker — sits inside the track (the pill clips overflow) */
 .progress-bar__threshold {
   position: absolute;
-  top: -4px;
-  width: 3px;
-  height: 20px;
+  top: 0;
+  width: 2px;
+  height: 100%;
   background: var(--color-warning);
 }

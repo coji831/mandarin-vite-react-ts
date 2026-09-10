@@ -47,17 +47,3 @@
   width: var(--space-2xl);
   height: var(--space-2xl);
 }
-
-/* Focal card — narrows the shared ProgressBar to the blueprint's geometry for
-   this page only. System-wide adoption is a recorded shared-layer pass (6 owner
-   surfaces); the fill keeps --gradient-success (green = completion, ADR-007). */
-.dashboard-card .progress-bar__track {
-  /* the primitive ships 12px; the blueprint's bar is a slim 8px pill */
-  height: 8px;
-  /* pill track (blueprint .progress-track) */
-  border-radius: var(--radius-pill);
-  /* hairline track (blueprint .progress-track) */
-  background: var(--surface-border);
-  /* clips the fill to the pill radius (the shared track is overflow:visible) */
-  overflow: hidden;
-}

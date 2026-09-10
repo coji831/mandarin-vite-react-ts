@@ -1,5 +1,6 @@
 /**
- * Tokens used: --gradient-success, --color-warning, --radius-sm
+ * Tokens used: --gradient-success, --color-warning, --radius-pill,
+ * --surface-border, --space-xs
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -48,5 +49,13 @@ export const Complete: Story = {
 export const Empty: Story = {
   args: {
     value: 0,
+  },
+};
+
+/** Pass marker — used by the sandhi drill (threshold sits inside the pill track) */
+export const WithThreshold: Story = {
+  args: {
+    value: 62,
+    threshold: 80,
   },
 };
