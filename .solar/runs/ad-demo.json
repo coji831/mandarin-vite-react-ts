@@ -1,0 +1,22 @@
+{
+  "run_id": "ad-demo-20260905T024354-fa2e91",
+  "date": "2026-09-05 02:43:54",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "ad-demo",
+  "objective": "add a frontend test for the login feature",
+  "role": "tester",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:tester",
+  "error": "",
+  "duration_ms": 55
+}

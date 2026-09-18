@@ -1,0 +1,11 @@
+{
+  "profile": "light",
+  "state_dir": ".solar/state",
+  "ledger": ".solar/ledger.md",
+  "uplink": "none",
+  "model": "deepseek-flash",
+  "model_tier": "",
+  "human_approval": false,
+  "reasoning_effort": "",
+  "runner": "agent-dispatch"
+}

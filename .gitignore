@@ -67,10 +67,37 @@ keys/
 # Anchored (/data/) so docs/guides/data/ (seed-pipeline.md) is not shadowed.
 /data/
 
-# SOLAR v5 runtime state (registry.json + PILOT.md stay tracked)
-.solar/config.json
+# SOLAR v5 runtime state now lives in the GENERATED BLOCK at the bottom of this file,
+# written by `solar-governor init` and rewritten in place there.
+#
+# The hand-written rules that used to sit here — .solar/config.json, .solar/ledger.md,
+# .solar/runs/ — CONFLICTED with that block: they kept out of review precisely the files
+# the block tracks, and config.json is the file where a non-existent model id
+# (`deepseek-v4-flash`) sat unnoticed. Removed 2026-09-19 as part of the solar-governor
+# v5.6.0 install-alignment; `registry.json` and `PILOT.md` were always tracked and still are.
+
+# >>> solar-governor — generated block; rewritten by `solar-governor init` >>>
+# Rewritten by `solar-governor init`. Edit OUTSIDE these markers if you must; anything
+# added inside is lost on the next init.
+#
+# IGNORED — churn, not history:
+#   .solar/state/       SQLite checkpoints, rewritten every graph step
+#   .solar/handoffs/    one file per agent-dispatch link, superseded on resume
+#   .solar/chains/      per-link chain scratch
+#   .solar/objectives/  the text of what one link was asked to do
+#   .solar/approvals/   pending and decided approval requests for one command
+#
+# TRACKED ON PURPOSE — this is the record:
+#   .solar/ledger.md      the human-view run record
+#   .solar/runs/          one run-card per dispatch: the only per-run history
+#   .solar/config.json    portable since v5.6.0 (no absolute paths), so it is
+#                         reviewable - a stale model pin has to show up in a diff
+#   .solar/registry.json  roles, grants and prompts
+#   .solar/commands.json  the vetted command vocabulary
+#   .solar/VERSION        which runtime version this repo was installed against
 .solar/state/
-.solar/ledger.md
-.solar/runs/
 .solar/handoffs/
 .solar/chains/
+.solar/objectives/
+.solar/approvals/
+# <<< solar-governor <<<

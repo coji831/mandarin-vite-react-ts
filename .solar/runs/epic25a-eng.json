@@ -1,0 +1,23 @@
+{
+  "run_id": "epic25a-eng-20260905T173904-a07b4d",
+  "date": "2026-09-05 17:39:04",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "epic25a-eng",
+  "objective": "Epic 25 Phase A \u2014 engineering continuation (DESIGN APPROVED by human at the User Preview Gate). Frontend Engineer: implement the approved guest-shell + route-gating scope on branch solar-v5-wire, slug epic-25-secure-guest-identity-and-route-gating. (1) Data-driven route gating: replace the hardcoded redirect-only PhaseGate in apps/frontend/src/router/LearnRoutes.tsx with ONE data-driven gate wrapper deriving requiredPhase from LEARN_REQUIRED_PHASE (apps/frontend/src/shared/constants/learnNav.ts) applied to ALL 6 Learn routes (foundations/radicals/grammar/phonetic-clusters/readers/chengyu), closing the OPEN radicals + phonetic-clusters URL bypass. Approved behavior: below-phase direct nav (guest or authed) renders a LOCKED-SURFACE GATE SCREEN (replaces the silent redirect-to-foundations) with neutral non-CTA copy ('X unlocks in Phase N'). (2) S1 guest identity: compact passive isGuest badge in AppTopBar (near auth controls), driven by usePhaseGate().phaseGate.isGuest / !isAuthenticated, NO CTA/upsell (GuestUpsell = epic-26, out). (3) S2 shared locked-surface route-gate fallback component (shared/components, registry-check before registering), mirroring SideNav lock treatment. Stories MSW-mocked with state parity (guest P1 shell + authed below-phase + unlocked absent); update LearnRoutes.grammar/chengyu tests (redirect -> gate screen), add radicals/phonetic route-gate tests + guest integration/e2e asserting Phase-1 shell + gate screen on direct higher-phase nav; FE regression on guest flows (browse/quiz/review). Token/registry/design compliance (DESIGN.md + globals.css only), responsive 320/768/1024, frontend-audit Parts 1-4 + design-audit 0 errors. NON-GOALS: no guest CTA/copy/value-moment (epic-26), no demo-quota counters (epic-29).",
+  "role": "frontend-engineer",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:frontend-engineer",
+  "error": "",
+  "duration_ms": 46
+}

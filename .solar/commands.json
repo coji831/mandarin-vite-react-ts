@@ -1,0 +1,123 @@
+{
+  "typecheck": {
+    "argv": ["npm", "--silent", "run", "typecheck"],
+    "kind": "check",
+    "timeout": 300,
+    "describe": "tsc across all workspaces. The first thing to run after touching types."
+  },
+  "lint": {
+    "argv": ["npm", "--silent", "run", "lint"],
+    "kind": "check",
+    "timeout": 240,
+    "describe": "ESLint across all workspaces."
+  },
+  "test": {
+    "argv": ["npm", "--silent", "run", "test"],
+    "kind": "check",
+    "timeout": 600,
+    "describe": "The workspace unit suites (Vitest under --if-present)."
+  },
+  "test_full": {
+    "argv": ["npm", "--silent", "run", "test:full"],
+    "kind": "check",
+    "timeout": 900,
+    "describe": "The full workspace suites, including the slower tiers the default `test` skips."
+  },
+  "format_check": {
+    "argv": ["npm", "--silent", "run", "format:check"],
+    "kind": "check",
+    "timeout": 180,
+    "describe": "prettier --check. It prints one line per unformatted file, so only the final count is kept - and CRLF noise is not a defect.",
+    "shape": { "summary_only": true }
+  },
+  "design_lint": {
+    "argv": ["npm", "--silent", "run", "design:lint"],
+    "kind": "check",
+    "timeout": 180,
+    "describe": "tools/design-lint.mjs - token and style-rule violations."
+  },
+  "design_audit": {
+    "argv": ["npm", "--silent", "run", "design-audit"],
+    "kind": "check",
+    "timeout": 240,
+    "describe": "tools/design-audit.mjs - the design-system compliance audit."
+  },
+  "check_registry_stories": {
+    "argv": ["npm", "--silent", "run", "check:registry-stories"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Every registry entry has a matching Storybook story."
+  },
+  "check_page_inventory": {
+    "argv": ["npm", "--silent", "run", "check:page-inventory"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "The page inventory matches the routes that exist."
+  },
+  "check_design_parity": {
+    "argv": ["npm", "--silent", "run", "check:design-parity"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Design parity across the surfaces that must agree."
+  },
+  "check_module_boundaries": {
+    "argv": ["npm", "--silent", "run", "check:module-boundaries"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Module-boundary violations (the architectural rule that is cheapest to check and most expensive to fix later)."
+  },
+  "check_system_map": {
+    "argv": ["npm", "--silent", "run", "check:system-map"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "system-map.html is in sync with the repo (--check, so it reports and does not write)."
+  },
+  "check_doc_links": {
+    "argv": ["npm", "--silent", "run", "check:doc-links"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "No broken links in the docs tree."
+  },
+  "validate_radical_content": {
+    "argv": ["npm", "--silent", "run", "validate:radical-content"],
+    "kind": "check",
+    "timeout": 300,
+    "describe": "Radical content data validates against its schema and invariants."
+  },
+  "validate_grammar_content": {
+    "argv": ["npm", "--silent", "run", "validate:grammar-content"],
+    "kind": "check",
+    "timeout": 300,
+    "describe": "Grammar content data validates against its schema and invariants."
+  },
+  "validate_chengyu_content": {
+    "argv": ["npm", "--silent", "run", "validate:chengyu-content"],
+    "kind": "check",
+    "timeout": 300,
+    "describe": "Chengyu content data validates against its schema and invariants."
+  },
+  "git_head": {
+    "argv": ["git", "rev-parse", "--short", "HEAD"],
+    "kind": "read",
+    "timeout": 30,
+    "describe": "Current HEAD commit - cite this when reporting what you read."
+  },
+  "git_status": {
+    "argv": ["git", "status", "--short"],
+    "kind": "read",
+    "timeout": 30,
+    "describe": "Working-tree changes, so a report can separate your edits from what was already there."
+  },
+  "git_diff": {
+    "argv": ["git", "diff", "--stat"],
+    "kind": "read",
+    "timeout": 30,
+    "describe": "A stat summary of uncommitted changes."
+  },
+  "git_log": {
+    "argv": ["git", "log", "--oneline", "-10"],
+    "kind": "read",
+    "timeout": 30,
+    "describe": "The last 10 commits."
+  }
+}

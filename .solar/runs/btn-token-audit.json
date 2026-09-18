@@ -1,0 +1,23 @@
+{
+  "run_id": "btn-token-audit-20260905T150157-4766e0",
+  "date": "2026-09-05 15:01:57",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "btn-token-audit",
+  "objective": "Audit the shared Button component for DESIGN.md token violations.",
+  "role": "code-reviewer",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:code-reviewer",
+  "error": "",
+  "duration_ms": 52
+}

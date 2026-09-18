@@ -1,0 +1,23 @@
+{
+  "run_id": "epic25-phasea-20260905T171658-dcd3a8",
+  "date": "2026-09-05 17:16:58",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "epic25-phasea",
+  "objective": "Epic 25 Phase A (chain entry): Run the full Epic 25 Phase A residual scope on Nest. Goal: secure guest identity + route gating. Residual scope to execute (Epic 24 already absorbed the guest identity shape {currentPhase:1, isGuest:true} + FE lockstep via story 24-7): (1) data-driven LEARN_REQUIRED_PHASE route gating for all 6 Learn routes, closing the radicals/phonetic-clusters URL bypass; (2) guest-shell UI \u2014 isGuest badge/banner in AppLayout + route-gate fallback/locked-surface screen (design spec produced by the UIUX link, human preview gate); (3) TTS guest-cost verification on Nest \u2014 the two optionalAuth surfaces (POST /v1/tts, passage-audio) verified cache-first-free-for-guests, generated-audio quota mechanics documented as epic-29's. Rough ACs: BE contract consistency; FE e2e guest = Phase-1 shell + higher-phase Learn route shows gate screen; FE regression on existing guest flows (browse/quiz/review); release gates green. NON-GOALS: guest CTA/copy + value-moment prompts (epic-26), demo-quota counters + circuit breaker (epic-29), practice-lane calibration (26/28).",
+  "role": "investigator",
+  "chain": "epic",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:investigator",
+  "error": "",
+  "duration_ms": 46
+}

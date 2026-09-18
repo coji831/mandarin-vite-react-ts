@@ -1,0 +1,23 @@
+{
+  "run_id": "shared-utils-cn-20260905T152829-0a6aab",
+  "date": "2026-09-05 15:28:29",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "shared-utils-cn",
+  "objective": "frontend-engineer: Add a small frontend util + test under src/shared/. Create apps/frontend/src/shared/utils/ containing a single pure helper cn (class-name joiner accepting strings, arrays, and falsy values; filters falsy entries, joins truthy with a single space), colocated Vitest test cn.test.ts, and index.ts barrel re-exporting it. No external deps, no DOM access. Header comment: frontend shared utils home (mirror of apps/backend/src/shared/utils/) for generic framework-free helpers; keep domain pinyin/normalization in packages/shared-utils. Tests cover falsy filtering (undefined, null, false, 0, ''), string + conditional joining, array inputs, single-space invariant. Confirm test + lint + type-check pass before closing.",
+  "role": "frontend-engineer",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:frontend-engineer",
+  "error": "",
+  "duration_ms": 42
+}

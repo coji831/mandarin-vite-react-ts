@@ -1,0 +1,22 @@
+{
+  "run_id": "exec-smoke1-20260905T020719-b1212f",
+  "date": "2026-09-05 02:07:19",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "exec-smoke1",
+  "objective": "add a frontend test for the login feature",
+  "role": "tester",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "stub",
+  "error": "",
+  "duration_ms": 38
+}

@@ -1,0 +1,23 @@
+{
+  "run_id": "epic25a-docs-20260905T175452-c907c7",
+  "date": "2026-09-05 17:54:52",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "epic25a-docs",
+  "objective": "Epic 25 Phase A \u2014 docs + review (chain docs-review, entry docs-writer). Docs Writer: author the Epic 25 docs + verification artifact for the EXECUTED residual scope on branch solar-v5-wire (slug epic-25-secure-guest-identity-and-route-gating; FE code + tests already landed in the working tree). What was actually executed (derive every claim from code \u2014 no invented endpoints/names): (1) data-driven LEARN_REQUIRED_PHASE route gating on ALL 6 Learn routes via apps/frontend/src/router/LearnRoutes.tsx (LearnRouteGate + LEARN_ROUTE_CONFIG) with the new shared LockedSurface gate screen (apps/frontend/src/shared/components/LockedSurface/) REPLACING the silent redirect-to-foundations \u2014 closes the radicals + phonetic-clusters URL bypass; (2) guest-shell UI = compact passive Guest badge in AppTopBar (S1, no CTA/upsell) + LockedSurface (S2); (3) TTS guest-cost verification on Nest \u2014 both optionalAuth surfaces (POST /v1/tts via apps/backend/src/modules/audio/nest/audio-nest.controller.ts, passage-audio via readers-nest.controller.ts) verified cache-first-free-for-guests with NO backend code change needed; generated-audio quota mechanics recorded as epic-29's. Important framing: the guest identity shape {currentPhase:1, isGuest:true} was ALREADY absorbed by epic-24 story 24-7 (shared-constants + FE lockstep) \u2014 epic-25 does NOT re-implement it; docs must say so. Deliverables: story BR + implementation docs under docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/ + docs/issue-implementation/epic-25-secure-guest-identity-and-route-gating/ (follow templates + documentation-standards.instructions.md; Status + Last Update; AC boxes reflecting what shipped); a verification artifact verification-artifacts/epic-25-* consolidating the FE verdict (tsc 0 errors, affected tests 20 pass, registry-stories 36/36, no NEW design-audit errors) + the TTS guest-cost verification + epic-29 deferral record; run the doc<->code truth-check (docs-audit) before handoff. NON-GOALS: no guest CTA/copy/value-moment (epic-26), no demo-quota counters (epic-29), no backend code changes. Then delegate to Code Reviewer; its verdict is the FINAL result to bubble up.",
+  "role": "docs-writer",
+  "chain": "docs-review",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:docs-writer",
+  "error": "",
+  "duration_ms": 50
+}

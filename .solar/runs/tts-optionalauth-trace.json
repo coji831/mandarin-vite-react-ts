@@ -1,0 +1,23 @@
+{
+  "run_id": "tts-optionalauth-trace-20260905T151341-d62857",
+  "date": "2026-09-05 15:13:41",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "tts-optionalauth-trace",
+  "objective": "Trace how optionalAuth is resolved on the TTS endpoints and report findings.",
+  "role": "investigator",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 0,
+    "out": 0
+  },
+  "tool_calls": 0,
+  "model": "agent-dispatch:investigator",
+  "error": "",
+  "duration_ms": 37
+}

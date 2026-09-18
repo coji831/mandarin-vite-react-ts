@@ -1,0 +1,23 @@
+{
+  "run_id": "e25verify-final-0-20260905T184547-f8a0a5",
+  "date": "2026-09-05 18:45:47",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "e25verify-final-0",
+  "objective": "Adversarially verify the committed Epic 25 (Secure Guest Identity & Route Gating) implementation against its BR acceptance criteria. Read docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/README.md (status: completed, commit 7682ff48). Verify each [x] AC against live code: LearnRoutes.tsx LearnRouteGate LEARN_ROUTE_CONFIG derive phases from LEARN_NAV_ITEMS (no hardcoded per-route phases); radicals/phonetic direct nav renders LockedSurface (no content, no redirect); LockedSurface registered + barrel-exported + in component-registry.json; AppTopBar isGuest prop renders passive Guest badge; AppLayout wires isGuest; TTS guest-cost verification recorded (no backend change). Read-only. Batch your reads, verify each AC, then give ONE final verdict APPROVED or REJECTED with per-AC HIGH/MEDIUM/LOW findings + file:line. Stop once verified.",
+  "role": "investigator",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 309714,
+    "out": 3667
+  },
+  "tool_calls": 37,
+  "model": "deepseek-chat",
+  "error": "max_rounds",
+  "duration_ms": 164637
+}

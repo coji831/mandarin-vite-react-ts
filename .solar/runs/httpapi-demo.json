@@ -1,0 +1,23 @@
+{
+  "run_id": "httpapi-demo-20260905T182619-4ff866",
+  "date": "2026-09-05 18:26:19",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "httpapi-demo",
+  "objective": "List apps/frontend/src/shared top-level entries via your tools and report them in one short line.",
+  "role": "investigator",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 1449,
+    "out": 115
+  },
+  "tool_calls": 1,
+  "model": "deepseek-chat",
+  "error": "",
+  "duration_ms": 4048
+}
