@@ -1,0 +1,33 @@
+{
+  "run_id": "bench-1789761567-1-20260919T025956-25b315",
+  "date": "2026-09-19 02:59:56",
+  "repo": "mandarin-vite-react-ts",
+  "harness": "v5-light",
+  "profile": "light",
+  "thread": "bench-1789761567-1",
+  "objective": "Use your read tools to list the top-level entries under apps/frontend/src/shared and reply with the directory names only.",
+  "role": "investigator",
+  "chain": "",
+  "outcome": "complete",
+  "verdict": "APPROVED",
+  "attempts": 1,
+  "steps": 4,
+  "tokens": {
+    "in": 1538,
+    "out": 426,
+    "reported": true
+  },
+  "tool_calls": 1,
+  "model": "solar-local:latest",
+  "provider": "localhost:11434",
+  "error": "",
+  "forced_final": false,
+  "output": "api\naudio\ncomponents\nconfig\nconstants\nhooks\nhub-entry\nlayouts\nservices\nstore\ntypes",
+  "decisions": [
+    "material_gate -> READY",
+    "dispatch -> investigator",
+    "specialist attempt 1",
+    "TASK_COMPLETE"
+  ],
+  "duration_ms": 8302
+}
