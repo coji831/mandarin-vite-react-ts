@@ -88,8 +88,9 @@ keys/
 #   .solar/approvals/   pending and decided approval requests for one command
 #
 # TRACKED ON PURPOSE — this is the record:
-#   .solar/ledger.md      the human-view run record
-#   .solar/runs/          one run-card per dispatch: the only per-run history
+#   .solar/ledger.md      the running record: one section per run, appended to and never
+#                         rewritten, so hand-written content in this file is safe
+#   .solar/runs/          one run-card per dispatch: the structured record, with decisions
 #   .solar/config.json    portable since v5.6.0 (no absolute paths), so it is
 #                         reviewable - a stale model pin has to show up in a diff
 #   .solar/registry.json  roles, grants and prompts
