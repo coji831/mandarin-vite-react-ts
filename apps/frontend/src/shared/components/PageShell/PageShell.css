@@ -13,18 +13,21 @@
   min-width: 0; /* flex child — prevents blow-out inside .app-content */
 }
 
-/* Per-archetype measure — single source of page width (never hardcode) */
+/* Per-archetype measure — single source of page width (never hardcode).
+   The right-hand side is spine's generic measure (its registry's page-measure
+   family); the left-hand side is the PinyinPal page vocabulary. This file is the
+   ONLY place the two meet — pages never re-map it. */
 .page-shell--hub-launcher {
-  max-width: var(--page-measure-hub-launcher);
+  max-width: var(--page-measure-overview);
 }
 .page-shell--browse-index {
-  max-width: var(--page-measure-browse-index);
+  max-width: var(--page-measure-list);
 }
 .page-shell--focus-task {
-  max-width: var(--page-measure-focus-task);
+  max-width: var(--page-measure-detail);
 }
 .page-shell--utility {
-  max-width: var(--page-measure-utility);
+  max-width: var(--page-measure-settings);
 }
 .page-shell--auth {
   max-width: var(--page-measure-auth);

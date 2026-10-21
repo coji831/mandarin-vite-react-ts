@@ -114,12 +114,14 @@ tokens:
     # Per-archetype content measure. Values grounded in current shipped pages / canonized exemplars;
     # drift leaders migrate to these in the S1/S2 rollout waves. NEVER hardcode a page max-width —
     # consume --page-measure-<archetype> via the PageShell primitive instead.
-    page-measure: # --page-measure-<archetype>: content max-width per archetype
-      hub-launcher: "960px" # DashboardPage (canonized hub-launcher exemplar)
-      browse-index: "1200px" # ContentBrowser / PhoneticClustersPage (dense browse)
-      focus-task: "620px" # ReviewView (golden focus-task template); Quiz flow ~620-700
-      utility: "1000px" # ProgressPage (real content shell)
-      auth: "420px" # AuthForm centered single-column
+    page-measure: # --page-measure-<archetype>: content max-width per archetype (spine's generic
+      # archetype vocabulary; PageShell.css maps PinyinPal's page archetypes onto these names —
+      # hub-launcher -> overview, browse-index -> list, focus-task -> detail, utility -> settings)
+      overview: "960px" # hub-launcher (DashboardPage canonized exemplar)
+      list: "1200px" # browse-index (ContentBrowser / PhoneticClustersPage, dense browse)
+      detail: "620px" # focus-task (ReviewView golden template); Quiz flow ~620-700
+      settings: "1000px" # utility (ProgressPage real content shell)
+      auth: "420px" # auth (AuthForm centered single-column)
     page-pad: "24px" # --page-pad: responsive horizontal page gutter (= space-lg)
     section-rhythm: # --section-rhythm-*: vertical rhythm BETWEEN page sections (outer > item gap)
       sm: "24px" # space-lg

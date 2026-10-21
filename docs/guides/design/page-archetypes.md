@@ -64,12 +64,15 @@ Every route declares its mode as part of its page archetype — never ad hoc.
 
 Each archetype is a YAML block. **Composition maps may only name `component-registry.json` components** — `check:page-inventory` fails on any non-registry name. Token references are names only (`--space-*`, `--font-*`, `--color-*`, `--surface-*`); new tokens still flow through the `DESIGN.md` + `globals.css` + `design-audit` parity path.
 
-**Page anatomy & measure (the shell law):** every archetype's content measure is the
-`--page-measure-<archetype>` token (`hub-launcher` 960 / `browse-index` 1200 / `focus-*` 620 /
-`utility` 1000 / `auth` 420 px - DESIGN.md `tokens.layout` <-> globals.css `:root`, parity-gated
-#14). Pages compose `PageShell(measure) -> PageStack(rhythm) -> PageGrid(gutter)`; the per-page
-anatomy (shell/measure/gutter/header) is declared in `.github/page-inventory.json` (verified by
-`check:page-inventory`) - this doc defines the archetypes; the ledger is authoritative per page.
+**Page anatomy & measure (the shell law):** every archetype's content measure is a generic
+`--page-measure-<archetype>` token from spine's token architecture (`overview` 960 / `list` 1200 /
+`detail` 620 / `settings` 1000 / `auth` 420 px - DESIGN.md `tokens.layout` <-> globals.css `:root`,
+parity-gated #14). PinyinPal's page archetypes map onto those names in `PageShell.css` only:
+`hub-launcher -> overview`, `browse-index -> list`, `focus-task -> detail`, `utility -> settings`,
+`auth -> auth`. Pages compose `PageShell(measure) -> PageStack(rhythm) -> PageGrid(gutter)`; the
+per-page anatomy (shell/measure/gutter/header) is declared in `.github/page-inventory.json`
+(verified by `check:page-inventory`) - this doc defines the archetypes; the ledger is authoritative
+per page. Never add a `--page-measure-*` name spine's registry lacks.
 
 ### 1. `hub-launcher`
 

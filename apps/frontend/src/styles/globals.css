@@ -174,10 +174,17 @@
      Per-archetype content measure + page rhythm. 1:1 with DESIGN.md tokens.layout.
      Consume via PageShell/PageStack/PageGrid primitives — NEVER hardcode a page
      max-width/max-height/margin in page CSS (design-audit rule page-scoped-layout-css). */
-  --page-measure-hub-launcher: 960px; /* hub-launcher (DashboardPage exemplar) */
-  --page-measure-browse-index: 1200px; /* browse-index (ContentBrowser / PhoneticClusters) */
-  --page-measure-focus-task: 620px; /* focus-task (ReviewView golden template) */
-  --page-measure-utility: 1000px; /* utility (ProgressPage real content shell) */
+  /* Generic archetype measures — spine's vocabulary (spine registry/tokens.json
+     page-measure). PinyinPal's page archetypes map onto them in ONE place, the
+     PageShell primitive:
+       hub-launcher -> overview · browse-index -> list · focus-task -> detail
+       utility -> settings · auth -> auth
+     The values here are the theme overlay PinyinPal applies, not a second measure
+     family: never invent a --page-measure-* name that spine's registry lacks. */
+  --page-measure-overview: 960px; /* hub-launcher (DashboardPage exemplar) */
+  --page-measure-list: 1200px; /* browse-index (ContentBrowser / PhoneticClusters) */
+  --page-measure-detail: 620px; /* focus-task (ReviewView golden template) */
+  --page-measure-settings: 1000px; /* utility (ProgressPage real content shell) */
   --page-measure-auth: 420px; /* auth (AuthForm centered single-column) */
   --page-pad: 24px; /* responsive horizontal page gutter (= space-lg) */
   --section-rhythm-sm: 24px; /* space-lg — compact section stack */

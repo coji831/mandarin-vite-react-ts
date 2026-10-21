@@ -8,7 +8,7 @@
 }
 
 .auth-form {
-  max-width: 420px;
+  max-width: var(--page-measure-auth);
 }
 
 .auth-form-label {

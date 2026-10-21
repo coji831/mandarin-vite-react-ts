@@ -83,6 +83,7 @@ prohibitions:
   - "NEVER call apiClient directly from hooks or components — use service layer"
   - "NEVER bypass CSS import restrictions with eslint-disable"
   - 'NEVER stage, commit, or push without an explicit "commit allowed" from the user — default is review-before-commit (ambiguous words like "proceed" are NOT approval)'
+  - "NEVER invent a generic design token, generic component, or page-archetype measure - spine (`C:\\CodeProjects\\Personal\\spine`, reachable through the spine MCP) is the source of truth for the generic layer; PinyinPal owns only its theme overlay + `domain.pinyinpal` support tokens"
 ---
 
 ## UI Codegen Protocol
@@ -99,6 +100,29 @@ shell/measure/gutter/header, verified by `check:page-inventory`).
   rhythm, and the card grid. `design-audit` errors: `missing-layout-token`,
   `page-scoped-layout-css`, `page-scoped-grid` (S0a-3). Retrofit drift leaders in the S2 wave
   order - never add new UI on an un-converged shell (D5).
+- **Foundation gate:** `npm run design-audit:foundation` runs *spine's* design-audit and fails on
+  those three rules only (`.github/workflows/spine-foundation.yml`; `SPINE_ROOT`, default
+  `C:\CodeProjects\Personal\spine`).
+
+## Design-system source of truth (spine)
+
+The generic design system is the **spine** repo (`C:\CodeProjects\Personal\spine`), not this one,
+and the spine MCP (`.vscode/mcp.json` -> `spine`, stdio) serves it: `spine://tokens`,
+`spine://components/{name}`, `spine://rules`, plus `search_kb` / `suggest_token` /
+`suggest_component` / `audit_design` / `lint_spec`.
+
+- **Generic layer = spine.** Generic tokens, generic components, page-anatomy measures and the
+  page archetype vocabulary are spine's. Read `spine://components/{name}` for a component's
+  contract instead of trusting a local copy.
+- **This repo owns two layers only.** (1) the **theme overlay** PinyinPal applies over spine's
+  semantic names (its locked palette, radii, elevation policy - DESIGN.md + `globals.css` `:root`);
+  (2) the **`domain.pinyinpal`** support tokens (tone hues, stroke-demo, tone-contour, hanzi font).
+  A theme is a delta over the same semantic names: renaming a spine token locally is a fork.
+- **Never add a generic token or a new page-archetype measure locally** - if spine lacks it, that is
+  a spine change (or an escalation), not a PinyinPal `:root` addition.
+- `PageShell.css` is the one place PinyinPal's page archetypes map onto spine's generic measures
+  (`hub-launcher -> overview`, `browse-index -> list`, `focus-task -> detail`, `utility -> settings`,
+  `auth -> auth`). Pages never re-map it.
 - Consume layout tokens (`--page-measure-<archetype>`, `--page-pad`, `--section-rhythm-*`,
   `--chrome-h`, `--card-gutter-*`) - never hardcoded px for page structure. DESIGN.md <->
   globals.css parity is enforced (`check:design-parity`, gate #14).

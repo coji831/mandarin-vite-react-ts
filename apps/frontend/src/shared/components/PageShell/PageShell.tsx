@@ -2,7 +2,11 @@
  * PageShell Component — content region for a page (page-anatomy law, A2)
  *
  * The ONLY content measure+pad+surface primitive. Centers content at the
- * archetype's --page-measure-<archetype> token with --page-pad gutters.
+ * archetype's measure token with --page-pad gutters. The archetype prop speaks
+ * PinyinPal's page vocabulary; the measure it selects is spine's generic one
+ * (hub-launcher -> --page-measure-overview, browse-index -> --page-measure-list,
+ * focus-task -> --page-measure-detail, utility -> --page-measure-settings,
+ * auth -> --page-measure-auth). That mapping lives in PageShell.css only.
  * Pages must compose as: AppShell/SideNav chrome -> PageShell -> (PageHeader)
  * -> PageStack -> (PageGrid). NO page-scoped layout CSS / hardcoded max-width.
  *

@@ -29,6 +29,7 @@ Run format: `npm run format`
 Run lint: `npm run lint` (0 errors required)
 Run design lint: `npx @google/design.md lint DESIGN.md`
 Run design audit (code compliance): `npm run design-audit`
+Run foundation audit (spine's page-anatomy rules only): `npm run design-audit:foundation`
 Run registry-stories check: `npm run check:registry-stories`
 Run backend type-check (full): `npm run typecheck --workspace=@mandarin/backend`
 Quality gates (canonical two-tier): see `project-workflow.instructions.md` — the single source of truth for all gates
@@ -52,6 +53,8 @@ Doc Truth-Check: before closing, verify docs match the shipped code (endpoints/n
 See `.github/instructions/uiux-design-protocol.instructions.md` for the full protocol covering: Storybook-first mandate, component reuse, token integrity, Storybook mandate, verification requirements, responsive/accessibility checks, data-resilient UI principle, UI composition guide, and the UIUX fundamentals + AI-slop checklist.
 
 **Key references:** `ui-composition.instructions.md` (layout rules), `component-registry.json` (allowed components), `page-archetypes.md` (page library), `design-reasoning.md` (design philosophy), `DESIGN.md` (design tokens).
+
+**Design-system source of truth = spine** (`C:\CodeProjects\Personal\spine`, served by the `spine` MCP in `.vscode/mcp.json`). The generic layer — generic tokens, generic components, page-anatomy measures, the archetype vocabulary — lives there. This repo owns only the theme overlay (`DESIGN.md` + `globals.css` `:root`) and the `domain.pinyinpal` support tokens; never add a generic token or a new measure locally. See `AGENTS.md` § "Design-system source of truth (spine)".
 
 ---
 

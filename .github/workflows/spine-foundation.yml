@@ -1,0 +1,60 @@
+# Spine Foundation — the page-anatomy law, enforced by spine's own design-audit.
+#
+# Why this gate exists (spine arc step 6): spine is the source of truth for the design
+# system, including the page-anatomy law's rules. PinyinPal runs *spine's* gate rather
+# than a local copy, scoped to the foundation rules only:
+#   missing-layout-token · page-scoped-layout-css · page-scoped-grid
+# Everything else spine's audit reports (tone, elevation, inline styles, dead CSS) stays
+# out: those are feature-level sweeps and would fail every PR on pre-existing debt.
+#
+# spine is a local checkout, not a published package, so a hosted runner cannot reach it.
+# The gate runs where a spine checkout exists (SPINE_ROOT, default the owner's path) and
+# emits a warning annotation where it does not — it never silently passes.
+#
+# Deliberate non-goals (step 6 scope): per-page restyling, component-by-component
+# migration, new feature UI. Those land per feature, against this foundation.
+
+name: Spine Foundation
+
+on:
+  pull_request:
+    paths:
+      - "apps/frontend/src/**"
+      - "DESIGN.md"
+      - "tools/design-audit-foundation.mjs"
+      - "package.json"
+      - ".github/workflows/spine-foundation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/frontend/src/**"
+      - "DESIGN.md"
+      - "tools/design-audit-foundation.mjs"
+      - "package.json"
+      - ".github/workflows/spine-foundation.yml"
+
+jobs:
+  page-anatomy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      SPINE_ROOT: C:/CodeProjects/Personal/spine
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Locate the spine checkout
+        id: spine
+        run: |
+          if [ -f "${SPINE_ROOT}/packages/gates/design-audit.mjs" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=spine gate skipped::spine is a local checkout; run 'npm run design-audit:foundation' on a machine that has it (SPINE_ROOT)."
+          fi
+      - name: Page-anatomy law (spine design-audit, foundation rules)
+        if: steps.spine.outputs.present == 'true'
+        run: npm run design-audit:foundation
