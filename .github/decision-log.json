@@ -304,6 +304,13 @@
       "status": "ratified",
       "file": "docs/guides/design/design-reasoning.md",
       "date": "2026-08-18"
+    },
+    {
+      "id": "ADR-011",
+      "title": "North Star Visual Direction — Night Bench (dark instrument register + a light paper surface for long-form reading only); Option A Reading Room not adopted, retained for a future light mode",
+      "status": "ratified",
+      "file": "docs/guides/adr/design-direction-night-bench.md",
+      "date": "2026-09-12"
     }
   ]
 }

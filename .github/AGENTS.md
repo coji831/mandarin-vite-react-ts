@@ -101,12 +101,12 @@ shell/measure/gutter/header, verified by `check:page-inventory`).
   `page-scoped-layout-css`, `page-scoped-grid` (S0a-3). Retrofit drift leaders in the S2 wave
   order - never add new UI on an un-converged shell (D5).
 - **Foundation gate:** `npm run design-audit:foundation` runs *spine's* design-audit and fails on
-  those three rules only (`.github/workflows/spine-foundation.yml`; `SPINE_ROOT`, default
-  `C:\CodeProjects\Personal\spine`).
+  those three rules only (`.github/workflows/spine-foundation.yml`; `SPINE_ROOT`, default = the
+  local spine checkout).
 
 ## Design-system source of truth (spine)
 
-The generic design system is the **spine** repo (`C:\CodeProjects\Personal\spine`), not this one,
+The generic design system is the **spine** repo, not this one,
 and the spine MCP (`.vscode/mcp.json` -> `spine`, stdio) serves it: `spine://tokens`,
 `spine://components/{name}`, `spine://rules`, plus `search_kb` / `suggest_token` /
 `suggest_component` / `audit_design` / `lint_spec`.

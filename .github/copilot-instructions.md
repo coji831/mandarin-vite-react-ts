@@ -54,7 +54,7 @@ See `.github/instructions/uiux-design-protocol.instructions.md` for the full pro
 
 **Key references:** `ui-composition.instructions.md` (layout rules), `component-registry.json` (allowed components), `page-archetypes.md` (page library), `design-reasoning.md` (design philosophy), `DESIGN.md` (design tokens).
 
-**Design-system source of truth = spine** (`C:\CodeProjects\Personal\spine`, served by the `spine` MCP in `.vscode/mcp.json`). The generic layer — generic tokens, generic components, page-anatomy measures, the archetype vocabulary — lives there. This repo owns only the theme overlay (`DESIGN.md` + `globals.css` `:root`) and the `domain.pinyinpal` support tokens; never add a generic token or a new measure locally. See `AGENTS.md` § "Design-system source of truth (spine)".
+**Design-system source of truth = spine** (served by the `spine` MCP in `.vscode/mcp.json`). The generic layer — generic tokens, generic components, page-anatomy measures, the archetype vocabulary — lives there. This repo owns only the theme overlay (`DESIGN.md` + `globals.css` `:root`) and the `domain.pinyinpal` support tokens; never add a generic token or a new measure locally. See `AGENTS.md` § "Design-system source of truth (spine)".
 
 ---
 
