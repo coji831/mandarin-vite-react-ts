@@ -7,15 +7,15 @@ applyTo: "apps/frontend/src/**/*.tsx"
 
 The always-on umbrella for **how UI is designed and built** in this repo. Read this (with `docs/guides/design/uiux-fundamentals.md`) BEFORE writing any UI code. See `docs/guides/dev-flow-visualization.html#frontend` for the full flow diagram.
 
-## Storybook MCP + Context Pack (UI Codegen Protocol)
+## Spine MCP + Context Pack (UI Codegen Protocol)
 
-Before writing any UI, load the design-system context pack and treat the Storybook MCP as the component source of truth:
+Before writing any UI, load the design-system context pack and treat the **spine MCP** as the component source of truth — Storybook is the preview/render surface, not the catalog:
 
-1. **Load the context pack**: `DESIGN.md` (tokens) + `apps/frontend/src/styles/globals.css` (1:1 CSS vars + utilities) + `.github/component-registry.json` (allowed components) + `.github/page-inventory.json` (page contract) + `.github/instructions/ui-composition.instructions.md` (layout rules) + one archetype exemplar story from `docs/guides/design/page-archetypes.md`.
-2. **Query the Storybook MCP first — never invent a component.** Compose from `shared/components` (barrel re-exports) only. If the registry already covers a need, reuse it with props.
+1. **Load the context pack**: the **spine MCP** (`spine://tokens`, `spine://components/{name}`, `spine://rules`) + `DESIGN.md` (theme overlay) + `apps/frontend/src/styles/globals.css` (1:1 CSS vars + utilities) + `.github/component-registry.json` (allowed local components) + `.github/page-inventory.json` (page contract) + `.github/instructions/ui-composition.instructions.md` (layout rules) + one archetype exemplar story from `docs/guides/design/page-archetypes.md`.
+2. **Query the spine MCP first — never invent a component.** Use `suggest_component` / `search_kb` to resolve a need to a spine registry component; render the result as a Storybook story. Compose from `shared/components` (barrel re-exports) only; if the spine registry or the local registry already covers a need, reuse it with props.
 3. **Strict prompt, real names:**
    - ❌ **Bad:** "Make a modern settings page with a form and a toggle."
-   - ✅ **Good:** "Build the guest-shell page. Use ONLY tokens from `DESIGN.md`/`globals.css` (`--surface-dark`, `--color-primary`, `--space-md/lg`, `--radius-sm/md`, `--font-*`). Compose ONLY from `component-registry.json` — `Box variant='dark'` for sections, `Card` for items, `Button variant='primary'` for the single CTA, `FilterChip` for filters, `GuestUpsell` for the guest gate. No raw `<button>`, no hex, no arbitrary spacing, no `.module.css` unless justified. Query the Storybook MCP for the real prop APIs first. Match the structure of the ReviewView exemplar story."
+   - ✅ **Good:** "Build the guest-shell page. Use ONLY tokens from `DESIGN.md`/`globals.css` (`--surface-dark`, `--color-primary`, `--space-md/lg`, `--radius-sm/md`, `--font-*`). Compose ONLY from `component-registry.json` — `Box variant='dark'` for sections, `Card` for items, `Button variant='primary'` for the single CTA, `FilterChip` for filters, `GuestUpsell` for the guest gate. No raw `<button>`, no hex, no arbitrary spacing, no `.module.css` unless justified. Query the spine MCP (`suggest_component` / `search_kb`) for the real prop APIs first. Match the structure of the ReviewView exemplar story."
 4. **Golden Template**: match the archetype's exemplar story — the default `focus-task` exemplar is `ReviewView` (`apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx`). Never build from blank.
 5. **Gate rule**: Step 1 Storybook story (no logic) → user preview gate → Step 2. Structural work is AI-safe; token/component/forbidden-decoration decisions are human-gated.
 
