@@ -134,11 +134,38 @@ const preview: Preview = {
       // disables ONLY color-contrast via a targeted per-story config (all other
       // wcag22a/aa rules still run).
       test: "error",
+      // `config` → `axe.configure()` (rule definitions, enable flags).
+      // `options` → `axe.run(context, options)` (runOnly, per-run overrides).
       config: {
-        // axe runOnly — WCAG 2.2 A + AA rule tags (color-contrast is a wcag22aa
-        // rule; kept explicitly enabled below).
-        runOnly: { type: "tag", values: ["wcag22a", "wcag22aa"] },
         rules: [{ id: "color-contrast", enabled: true }],
+      },
+      options: {
+        // CORRECTION 2026-10-25 (S11a — `design-lead-s8-ruling.md` § N5). This
+        // block replaces the two claims that stood here, both kept on the record
+        // in the git history rather than deleted:
+        //
+        //   1. "color-contrast is a wcag22aa rule" — false. It is tagged
+        //      `wcag2aa` (SC 1.4.3 is a WCAG 2.0 criterion), and
+        //      `aria-prohibited-attr` is tagged `wcag2a` (SC 4.1.2). Measured
+        //      against axe-core 4.12.1, `wcag22aa` selects exactly one rule
+        //      (`target-size`) and `wcag22a` selects none.
+        //   2. The `runOnly` filter used to sit in `config`, i.e. inside
+        //      `axe.configure()`. `axe.run()` reads `runOnly` from its own
+        //      options argument, so the filter never applied: the gate ran axe's
+        //      full DEFAULT rule set while its comment described two tags. That
+        //      is why the gate and the receipts disagreed about nothing at all —
+        //      they were already running each other's rules, and the gate had
+        //      been red on this tree (82 colour stories) the whole time.
+        //
+        // The six tags below are the set spine's `a11y.md` opens with and the
+        // set the S8 receipt's standalone axe run used, so the repo gate and the
+        // receipts can no longer disagree about which rules exist. Do not narrow
+        // it again: a tag set that cannot express the rule class its own merge
+        // condition is stated in is a gate that narrates a false state (F8).
+        runOnly: {
+          type: "tag",
+          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa"],
+        },
       },
     },
     backgrounds: {
