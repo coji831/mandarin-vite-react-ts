@@ -54,6 +54,8 @@ Sections
 
 ## Backlog
 
+- [ ] **F3 (owed 2026-10-24, never written): Han leading ≥ 1.7 vs `a11y.md` 1.5** — see `design-lead-sevenchecks-ruling.md` § F3; measured in the S8 browser pass (2026-10-25): tree max **1.6** (readers running text), Han body 1.5–1.6, radical glyph cards 1.15 by design (`lh-tight` display tier — not a violation of the body rule). Owner: **spine first, then PinyinPal** (the `lh` scale is spine's). Trigger: **T1** spine declares an `lh` tier ≥ 1.7, **or** **T2** the first epic touching Han body type (Epic 28). What breaks if wrong: Han body type keeps shipping below the floor this repo's own a11y doc states, silently and indefinitely.
+
 - [ ] Standardize API response structure - Error format is already standardized (`errorFactory`/`errorHandler`/`requestIdMiddleware` in `apps/backend/src/shared/`, `backend-error-messages.instructions.md`, KB `api-response-patterns.md`). Remaining: success-envelope consistency — some endpoints wrap `{ data }`, others return data directly.
 
 - [ ] Refactor services to direct export pattern - Direct-export object pattern is now the convention (`readingProgressService`); remaining class-wrapped services to convert, e.g. `features/review/services/reviewService.ts` (Epic 14 follow-up)

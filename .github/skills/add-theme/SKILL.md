@@ -62,12 +62,18 @@ enforce; until that gate exists, the receipt is the evidence.
 | 2 | Name discipline | the overlay introduces no new semantic or component names and removes none (`npm run check:spine-parity` → `0 generic, 0 deprecated`) |
 | 3 | Contrast | over the merged set: text 4.5:1, large text 3:1, UI and focus 3:1, focus ring at least 2px; APCA reported as advisory, not binding |
 | 4 | Ramp monotonicity | lightness is monotonic across each ramp; hue and chroma deltas are bounded, with no muddy cross-hue grey unless the theme declares it |
-| 5 | Reflow | no horizontal scroll at 200% zoom and at 320px; CJK line-height at or above 1.7 with no hyphenation |
-| 6 | Motion and forced colors | `prefers-reduced-motion` collapses animation; `forced-colors: active` loses no information |
+| 5 | Reflow | no horizontal scroll at 200% zoom and at 320px; CJK line-height at or above 1.7 with no hyphenation || 6 | Motion and forced colors | `prefers-reduced-motion` collapses animation; `forced-colors: active` loses no information |
 | 7 | Receipts | renders produced by the same instruments as the base, so theme-vs-base diffs visually and numerically |
 
 Check 3 and check 5 are run per theme, not extrapolated from the base: a theme that fails contrast
 fails the accessibility floor the base paid for.
+
+> **AMENDED 2026-10-25 (S11e, `design-lead-s8-ruling.md` § N1a).** Check 5's reflow half now has an
+> instrument, because prose is not a gate: `npm run check:reflow` (`scripts/check-reflow.mjs`) measures
+> `.app-content` at a 320px viewport and at a 640px layout viewport (= 200% zoom), prints every failing
+> route, and exits 1 while any stands. Asserting `document.scrollingElement.scrollWidth <= clientWidth`
+> instead is **not** a reflow check in this tree: `html, body` are locked to `100dvh; overflow: hidden`, so
+> the root cannot overflow and the assertion prints 16/16 while content is clipped.
 
 ## 4 · Apply and prove
 

@@ -36,6 +36,7 @@
     "check:spine-parity": "node scripts/check-spine-parity.mjs",
     "check:token-values": "node scripts/check-token-values.mjs",
     "check:closure": "node scripts/check-custom-property-closure.mjs",
+    "check:reflow": "node scripts/check-reflow.mjs",
     "check:module-boundaries": "node scripts/check-module-boundaries.mjs",
     "generate:system-map": "node scripts/generate-system-map.mjs --emit",
     "check:system-map": "node scripts/generate-system-map.mjs --check",
