@@ -10,7 +10,7 @@
   display: inline-block;
   border-style: solid;
   border-color: var(--surface-light-8);
-  animation: spinner-rotate 0.8s linear infinite;
+  animation: spinner-rotate var(--duration-spin) linear infinite;
   box-sizing: border-box;
 }
 
@@ -19,7 +19,7 @@
   width: 8px;
   height: 8px;
   border-width: 1.5px;
-  animation-duration: 0.6s;
+  animation-duration: var(--duration-spin-xs);
 }
 
 .spinner--sm {
@@ -56,5 +56,24 @@
 @keyframes spinner-rotate {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Declared per-element, never tree-wide: a blanket `forced-color-adjust: none` would
+   re-impose the Night Bench palette in high contrast. */
+@media (forced-colors: active) {
+  /* Forced colors flatten the track and the accent into one ink, leaving a uniform ring
+     whose rotation cannot be read. The system palette keeps the two roles apart. */
+  .spinner {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    border-top-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The arc is drawn without rotation; the host still announces loading (role="status"). */
+  .spinner {
+    animation: none;
   }
 }

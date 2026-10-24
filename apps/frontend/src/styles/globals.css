@@ -260,6 +260,14 @@
   --transition-normal: 240ms ease-out;
   --transition-slow: 360ms ease-out; /* toggle-switch knob slide — deliberately slower, visible flip affordance */
 
+  /* Duration-only twin of the transition group: the number without the easing, for an
+     `animation` where the timing function is written separately (spine: duration is the
+     number, transition is the number plus the easing). Added 2026-10-24, S4b. */
+  --duration-normal: 240ms;
+  --duration-shimmer: 1080ms;
+  --duration-spin: 800ms;
+  --duration-spin-xs: 600ms;
+
   /* ===== Typography ===== */
 
   /* Font families — CJK-first identity (A3): Latin face + hanzi face.

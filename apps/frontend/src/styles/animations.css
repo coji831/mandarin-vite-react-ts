@@ -53,7 +53,7 @@
    Animation Utility Classes
    ═══════════════════════════════════════════════ */
 .animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: fade-in var(--duration-normal) ease-out;
 }
 
 .skeleton-loading {
@@ -64,7 +64,34 @@
     var(--surface-light-5) 100%
   );
   background-size: 200% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
+  animation: skeleton-loading var(--duration-shimmer) linear infinite;
+}
+
+/* The legacy .skeleton shimmer override lives in shared/components/Skeleton/Skeleton.css:
+   animations.css is imported at the top of globals.css, so it cannot win the cascade for a
+   class another sheet defines. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* An entrance fade is decoration; the content is at its end state without it. */
+  .animate-fade-in {
+    animation: none;
+  }
+
+  /* Shimmer replaced by the skeleton's own base wash, not by an empty box. */
+  .skeleton-loading {
+    animation: none;
+    background: var(--surface-light-5);
+  }
+}
+
+@media (forced-colors: active) {
+  /* Forced colors erase the gradient; the plate keeps a drawn boundary instead. */
+  .skeleton-loading {
+    forced-color-adjust: none;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-sizing: border-box;
+  }
 }
 
 /* ═══════════════════════════════════════════════
