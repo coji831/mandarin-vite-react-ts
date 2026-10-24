@@ -1,15 +1,15 @@
 ---
 purpose: Area index for ratified planning docs — epics 25–40 + the D7 backend shell-swap track
 status: active
-last-verified: 2026-08-17
+last-verified: 2026-10-24
 type: area-index
 ---
 
 # Planning
 
-**Last Updated:** August 17, 2026
+**Last Updated:** October 24, 2026
 
-Ratified planning documents for the 25+ epic arc (calibration + AI roadmap). These are the committed source of record for epics 25–40 and the D7 backend shell-swap track.
+Ratified planning documents for the 25+ epic arc (calibration + AI roadmap). These are the committed source of record for epics 25–40 and the D7 backend shell-swap track. As of 2026-10-24 the epic plan also carries a "Design-System (Spine) Adoption Track" section, which governs how the remaining spine adoption attaches to the UI-carrying epics.
 
 ## Contents
 
