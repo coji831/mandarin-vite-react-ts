@@ -84,7 +84,7 @@ const preview: Preview = {
   parameters: {
     // Chromatic visual regression (Wave 4 — Q1/Q7): pixel-diff sensitivity,
     // 0 = most accurate, 1 = least. ~0.1 keeps the hairline
-    // `--surface-border-subtle` (0.08 white) from generating noise. Tune only
+    // `--surface-border-subtle` from generating noise. Tune only
     // if real drift produces false positives. Per-story override is available
     // via `parameters.chromatic.diffThreshold` in any story.
     chromatic: {

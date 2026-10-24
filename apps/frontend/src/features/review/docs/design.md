@@ -90,15 +90,15 @@ ReviewCard
 
 ### Colors
 
-| Token   | CSS Variable       | Usage                      |
-| ------- | ------------------ | -------------------------- |
-| Success | `--color-success`  | Correct answer ✅          |
-| Error   | `--color-error`    | Wrong answer ❌            |
-| Primary | `--color-primary`  | Interactive elements       |
-| —       | `--text-primary`   | Character glyph, headings  |
-| —       | `--text-secondary` | Instructions, meaning text |
-| —       | `--text-muted`     | Hint text                  |
-| —       | `--surface-dark`   | Card background            |
+| Token   | CSS Variable      | Usage                      |
+| ------- | ----------------- | -------------------------- |
+| Success | `--color-success` | Correct answer ✅          |
+| Error   | `--color-error`   | Wrong answer ❌            |
+| Primary | `--accent-fill`   | Interactive elements       |
+| —       | `--ink-1`         | Character glyph, headings  |
+| —       | `--ink-2`         | Instructions, meaning text |
+| —       | `--ink-quiet`     | Hint text                  |
+| —       | `--card`          | Card background            |
 
 ### Typography
 

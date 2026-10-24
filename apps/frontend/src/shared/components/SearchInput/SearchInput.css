@@ -5,5 +5,5 @@
 /* Placeholder text must stay ≥4.5:1 — SC 1.4.3 covers placeholder. Role tiers:
    primary/secondary/muted = ≥4.5:1 (body/meta/placeholder); subtle/ghost = decorative-only + large. */
 .search-input__field::placeholder {
-  color: var(--text-muted);
+  color: var(--ink-quiet);
 }

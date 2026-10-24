@@ -16,8 +16,8 @@
  * unit/shadow/dimension values only, so notation is identical):
  *   layout.page-measure.<archetype>   -> --page-measure-<archetype>
  *   layout.page-pad / chrome-h / measure-prose
- *   layout.section-rhythm.{sm,md,lg}  -> --section-rhythm[-sm|-lg]  (md = no suffix)
- *   layout.card-gutter.{sm,md,lg}     -> --card-gutter[-sm|-lg]     (md = no suffix)
+ *   layout.section-rhythm.{sm,md,lg}  -> --section-rhythm-{sm,md,lg}
+ *   layout.card-gutter.{sm,md,lg}     -> --card-gutter-{sm,md,lg}
  *   spacing[]                         -> --space-{xs,sm,md,lg,xl,2xl}  (index map)
  *   radii[]                           -> --radius-{sm,md,lg,pill}      (index map)
  *   size.touch                        -> --size-touch
@@ -74,7 +74,7 @@ function readDesignTokens() {
 // Each family: { name, prefixes: string[], collect(tokens) -> [{ cssVar, mdPath, value }] }
 const SPACE_LEVELS = ["xs", "sm", "md", "lg", "xl", "2xl"];
 const RADIUS_LEVELS = ["sm", "md", "lg", "pill"];
-const TIER_SUFFIX = { sm: "-sm", md: "", lg: "-lg" }; // section-rhythm / card-gutter (md = default, no suffix)
+const TIER_SUFFIX = { sm: "-sm", md: "-md", lg: "-lg" }; // section-rhythm / card-gutter (md carries its own suffix)
 
 function mapObj(obj, fn) {
   return Object.entries(obj ?? {}).map(([k, v]) => fn(k, v));

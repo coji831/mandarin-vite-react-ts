@@ -8,7 +8,7 @@
  * via the `transition-colors` utility — no transform, no looping animation, no @keyframes.
  * `active` on a non-interactive chip is purely visual — no hover/press affordance.
  *
- * Tokens: --surface-*, --surface-border, --color-primary-*, --tone-1..5,
+ * Tokens: --surface-*, --hairline, --color-primary-*, --tone-1..5,
  * --radius-pill, --space-*, --font-*, --text-*  (see DESIGN.md / globals.css)
  */
 
@@ -16,10 +16,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
   background: var(--surface-light-5);
-  color: var(--text-primary);
+  color: var(--ink-1);
   font-family: inherit;
   font-weight: var(--fw-500);
   line-height: var(--lh-tight);
@@ -48,25 +48,25 @@
 /* Variants */
 .chip--outline {
   background: transparent;
-  border-color: var(--surface-border);
-  color: var(--text-primary);
+  border-color: var(--hairline);
+  color: var(--ink-1);
 }
 
 .chip--surface {
   background: var(--surface-light-10);
-  border-color: var(--surface-border);
-  color: var(--text-primary);
+  border-color: var(--hairline);
+  color: var(--ink-1);
 }
 
 .chip--solid {
   background: var(--surface-light-20);
   border-color: transparent;
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .chip--primary {
-  background: var(--color-primary-bg);
-  border-color: var(--color-primary-border);
+  background: var(--accent-tint);
+  border-color: var(--edge-control);
   color: var(--color-primary-light);
 }
 
@@ -117,7 +117,7 @@
 }
 
 .chip--interactive:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-fill);
   outline-offset: 2px;
 }
 
@@ -159,7 +159,7 @@
 .chip__pinyin {
   font-size: var(--font-xs);
   font-style: italic;
-  color: var(--text-muted);
+  color: var(--ink-quiet);
   line-height: var(--lh-tight);
 }
 
@@ -168,6 +168,6 @@
   border-radius: var(--radius-pill);
   padding: 0 var(--space-xs);
   font-size: var(--font-xs);
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   line-height: var(--lh-1-4);
 }

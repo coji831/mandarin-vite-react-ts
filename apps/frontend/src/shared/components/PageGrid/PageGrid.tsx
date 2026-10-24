@@ -23,7 +23,7 @@ export type PageGridGutter = "sm" | "default" | "lg";
 export type PageGridProps = {
   /** Column count at desktop: tiles=4, cards=3, wide=2. */
   columns?: PageGridColumns;
-  /** Gutter: sm=--card-gutter-sm, default=--card-gutter, lg=--card-gutter-lg */
+  /** Gutter: sm=--card-gutter-sm, default=--card-gutter-md, lg=--card-gutter-lg */
   gutter?: PageGridGutter;
   children?: ReactNode;
   className?: string;

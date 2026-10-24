@@ -1,0 +1,82 @@
+{
+	"mcpServers": {
+		"Chrome DevTools MCP": {
+			"type": "local",
+			"command": "npx",
+			"args": [
+				"-y",
+				"chrome-devtools-mcp"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"codegraph": {
+			"type": "local",
+			"command": "codegraph",
+			"args": [
+				"serve",
+				"--mcp"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"fetch": {
+			"type": "local",
+			"command": "npx",
+			"args": [
+				"-y",
+				"mcp-fetch-server"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"github": {
+			"type": "local",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-github"
+			],
+			"tools": [
+				"*"
+			],
+			"env": {
+				"GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+			}
+		},
+		"playwright": {
+			"type": "local",
+			"command": "npx",
+			"args": [
+				"@playwright/mcp@latest"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"puppeteer": {
+			"type": "local",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-puppeteer"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"spine": {
+			"type": "local",
+			"command": "C:\\Users\\Hiep\\AppData\\Local\\nodejs-24.22.0\\node-v24.22.0-win-x64\\node.exe",
+			"args": [
+				"C:\\CodeProjects\\Personal\\spine\\packages\\mcp\\dist\\cli.js"
+			],
+			"tools": [
+				"*"
+			]
+		}
+	}
+}

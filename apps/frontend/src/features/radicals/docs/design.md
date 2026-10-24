@@ -56,19 +56,19 @@ The radicals feature has three phases/views accessible via tabs:
 
 ### Colors
 
-| Token         | CSS Variable            | Usage                                   |
-| ------------- | ----------------------- | --------------------------------------- |
-| Primary       | `--color-primary`       | Accent highlights, interactive elements |
-| Primary Dark  | `--color-primary-dark`  | Hover states                            |
-| Primary Light | `--color-primary-light` | Background tints                        |
-| Error         | `--color-error`         | Error messages, alert backgrounds       |
-| Success       | `--color-success`       | Mastery indicators (★)                  |
-| Warning       | `--color-warning`       | Recommended badges                      |
-| —             | `--surface-dark`        | Card backgrounds                        |
-| —             | `bg-surface-dark`       | Search bar background (utility class)   |
-| —             | `--text-primary`        | Primary text                            |
-| —             | `--text-secondary`      | Secondary text                          |
-| —             | `--text-muted`          | Muted/hint text                         |
+| Token        | CSS Variable           | Usage                                   |
+| ------------ | ---------------------- | --------------------------------------- |
+| Primary      | `--accent-fill`        | Accent highlights, interactive elements |
+| Primary Dark | `--color-primary-dark` | Hover states (retires at step 1b)       |
+| Accent text  | `--accent-ink`         | Accent text — never fills               |
+| Error        | `--color-error`        | Error messages, alert backgrounds       |
+| Success      | `--color-success`      | Mastery indicators (★)                  |
+| Warning      | `--color-warn`         | Recommended badges                      |
+| —            | `--card`               | Card backgrounds                        |
+| —            | `bg-surface-dark`      | Search bar background (utility class)   |
+| —            | `--ink-1`              | Primary text                            |
+| —            | `--ink-2`              | Secondary text                          |
+| —            | `--ink-quiet`          | Muted/hint text                         |
 
 ### Spacing
 

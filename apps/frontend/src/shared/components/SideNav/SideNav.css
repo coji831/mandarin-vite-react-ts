@@ -7,8 +7,8 @@
   overscroll-behavior-y: contain; /* no wheel chaining from the rail */
   transition: width var(--transition-normal);
   /* Precision-minimal rail (Phase A B.2): muted surface + hairline divider vs
-     the --surface-dark-alt content area. */
-  background: var(--surface-dark);
+     the --canvas content area. */
+  background: var(--card);
   border-right: 1px solid var(--surface-border-subtle);
   /* Component-scoped token for the icon column (24px) — shared by the
      brand/row icons and the child indent math so the 24px is not duplicated. */
@@ -32,9 +32,9 @@
   height: var(--size-touch);
   flex: 0 0 auto;
   border-radius: var(--radius-md);
-  background: var(--color-primary-bg);
-  border: 1px solid var(--color-primary-border);
-  color: var(--color-primary-lighter);
+  background: var(--accent-tint);
+  border: 1px solid var(--edge-control);
+  color: var(--accent-ink);
   font-family: var(--font-hanzi);
   font-size: var(--font-md);
   font-weight: var(--fw-700);
@@ -46,14 +46,14 @@
 .side-nav__title {
   font-size: var(--font-md);
   font-weight: var(--fw-700);
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .side-nav__title-zh {
   margin-left: var(--space-xs);
   font-family: var(--font-hanzi);
   font-weight: var(--fw-700);
-  color: var(--color-primary-lighter);
+  color: var(--accent-ink);
 }
 
 /* ===========================
@@ -74,15 +74,15 @@
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-sm);
   cursor: pointer;
-  border: 1px solid var(--surface-border);
-  color: var(--text-tertiary);
+  border: 1px solid var(--hairline);
+  color: var(--ink-3);
   font-size: var(--font-sm);
   transition: all var(--transition-fast);
 }
 
 .side-nav__collapse-toggle:hover {
   background: var(--surface-light-10);
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .side-nav--collapsed .side-nav__footer {
@@ -118,7 +118,7 @@
 .side-nav__group-header:hover,
 .side-nav__child:hover {
   background: var(--surface-light-8);
-  color: var(--text-secondary);
+  color: var(--ink-2);
 }
 
 /* Active state — single deterministic source for the pill. Driven by
@@ -132,9 +132,9 @@
 .side-nav .side-nav__link[aria-current="page"],
 .side-nav .side-nav__group-header[aria-current="page"],
 .side-nav .side-nav__child[aria-current="page"]:not(.side-nav__child--locked) {
-  background: var(--color-primary-bg);
-  border-color: var(--color-primary-border);
-  color: var(--color-primary-lighter);
+  background: var(--accent-tint);
+  border-color: var(--edge-control);
+  color: var(--accent-ink);
   font-weight: var(--fw-600);
 }
 
@@ -170,7 +170,7 @@
   margin-left: auto;
   padding: var(--space-xs);
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--ink-quiet);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -178,7 +178,7 @@
 }
 
 .side-nav__group-chevron-btn:hover {
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .side-nav__group-chevron-btn .side-nav__group-chevron {
@@ -217,7 +217,7 @@
 
 /* Locked children — dimmed, non-interactive affordance (parity with TabBar op-40) */
 .side-nav__child--locked {
-  color: var(--text-muted);
+  color: var(--ink-quiet);
   cursor: not-allowed;
   opacity: 0.6;
 }

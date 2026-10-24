@@ -17,7 +17,7 @@ export type EmptyStateProps = {
   icon?: IconName;
   /**
    * Icon treatment. `muted` (default) = the bare muted glyph; `accent` = the
-   * amber well (translucent --color-primary-bg + circular radius) used by the
+   * amber well (translucent --accent-tint + circular radius) used by the
    * blueprint's empty-state cards. Opt-in so a page can match the blueprint
    * without the other EmptyState owners changing.
    */

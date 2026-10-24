@@ -35,13 +35,13 @@
   width: 36px;
   left: 2px;
   bottom: 2px;
-  background-color: var(--text-primary);
+  background-color: var(--ink-1);
   -webkit-transition: var(--transition-slow);
   transition: var(--transition-slow);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px var(--color-primary);
+  box-shadow: 0 0 1px var(--accent-fill);
 }
 
 input:checked + .slider:before {

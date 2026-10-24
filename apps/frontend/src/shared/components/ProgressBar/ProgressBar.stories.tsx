@@ -1,6 +1,6 @@
 /**
- * Tokens used: --gradient-success, --color-warning, --radius-pill,
- * --surface-border, --space-xs
+ * Tokens used: --gradient-success, --color-warn, --radius-pill,
+ * --hairline, --space-xs
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

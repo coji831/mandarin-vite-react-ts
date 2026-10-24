@@ -4,7 +4,7 @@
    normalizes the icon color/size on the muted ramp. */
 .empty-state__icon {
   display: inline-flex;
-  color: var(--text-muted);
+  color: var(--ink-quiet);
   line-height: var(--lh-1);
 }
 
@@ -14,8 +14,8 @@
 .empty-state__icon--accent {
   padding: var(--space-xs);
   border-radius: var(--radius-pill);
-  background: var(--color-primary-bg);
-  color: var(--color-primary-lighter);
+  background: var(--accent-tint);
+  color: var(--accent-ink);
 }
 
 .empty-state__action {

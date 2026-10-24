@@ -3,7 +3,7 @@
  * Uses CSS variables for colors, inline styles for dynamic width.
  *
  * Geometry (shared-layer pass 2026-09-10): the blueprint's slim pill — 8px track,
- * --surface-border hairline, radius-pill, fill clipped to the radius. Every owner
+ * --hairline hairline, radius-pill, fill clipped to the radius. Every owner
  * (dashboard, foundations, sandhi drill, pictograph game, quiz, readers, review)
  * renders this one geometry; pages must NOT override it locally.
  */
@@ -11,7 +11,7 @@
 .progress-bar__track {
   position: relative;
   height: var(--space-xs);
-  background: var(--surface-border);
+  background: var(--hairline);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -30,5 +30,5 @@
   top: 0;
   width: 2px;
   height: 100%;
-  background: var(--color-warning);
+  background: var(--color-warn);
 }

@@ -1,5 +1,5 @@
 /**
- * Tokens used: --color-primary, --gradient-primary, --shadow-sm, --transition-fast
+ * Tokens used: --accent-fill, --gradient-primary, --shadow-sm, --transition-fast
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

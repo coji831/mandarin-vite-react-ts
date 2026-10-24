@@ -1,6 +1,6 @@
 .modal-backdrop {
   inset: 0;
-  background: var(--overlay-dark);
+  background: var(--scrim);
   z-index: var(--z-modal);
 }
 
@@ -35,6 +35,6 @@
   width: 100%;
   height: 0;
   border: none;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
   margin: 0;
 }

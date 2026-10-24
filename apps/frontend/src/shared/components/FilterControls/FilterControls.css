@@ -12,7 +12,7 @@
 /* outline: none — the select element already inherits outline-none via utility */
 
 .filter-controls__select option {
-  background: var(--surface-dark-alt);
-  color: var(--text-secondary);
+  background: var(--canvas);
+  color: var(--ink-2);
   /* NOTE: <option> elements don't support className well; select already uses bg-surface-dark-alt utility */
 }

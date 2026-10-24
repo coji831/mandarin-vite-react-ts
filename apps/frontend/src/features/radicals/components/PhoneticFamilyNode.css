@@ -39,7 +39,7 @@
 /* ─── Member list ────────────────────────────────────────────────── */
 
 .phonetic-family-node__members {
-  border-left: 2px solid var(--surface-border);
+  border-left: 2px solid var(--hairline);
   margin-left: calc(var(--space-sm) + 2px);
 }
 

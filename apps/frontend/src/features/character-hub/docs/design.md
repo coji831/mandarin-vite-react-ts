@@ -29,11 +29,11 @@ SOUTH: Tabs (📖 Common Words | 📝 Mnemonic Story) → HubActions (bottom, al
 
 ## Design Tokens Used
 
-- Surface: `--surface-dark`, `--surface-dark-alt`
-- Text: `--text-primary`, `--text-secondary`, `--text-tertiary`
+- Surface: `--card`, `--canvas`
+- Text: `--ink-1`, `--ink-2`, `--ink-3`
 - Spacing: `--space-sm` (component gaps), `--space-md` (card padding), `--space-lg` (section gaps)
-- Border: `--surface-border`
-- Primary: `--color-primary`, `--color-primary-bg`, `--color-primary-light`
+- Border: `--hairline`
+- Primary: `--accent-fill`, `--accent-tint`, `--accent-ink`
 
 ## Components
 

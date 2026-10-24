@@ -68,7 +68,7 @@ function TopNavPreview({
         display: "flex",
         flexDirection: "column",
         flex: 1,
-        background: "var(--surface-dark)",
+        background: "var(--card)",
         minHeight: "200px",
       }}
     >
@@ -106,11 +106,9 @@ function TopNavPreview({
                 textDecoration: "none",
                 fontSize: "var(--font-sm)",
                 whiteSpace: "nowrap",
-                color: isActive && !isLocked ? "var(--color-primary-lighter)" : "var(--text-muted)",
+                color: isActive && !isLocked ? "var(--accent-ink)" : "var(--ink-quiet)",
                 borderBottom:
-                  isActive && !isLocked
-                    ? "2px solid var(--color-primary)"
-                    : "2px solid transparent",
+                  isActive && !isLocked ? "2px solid var(--accent-fill)" : "2px solid transparent",
                 cursor: isLocked ? "not-allowed" : "pointer",
                 opacity: isLocked ? 0.4 : 1,
                 transition: "all 0.15s ease",

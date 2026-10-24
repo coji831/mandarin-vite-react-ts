@@ -67,13 +67,13 @@
 .sandhi-drill-option-btn--correct {
   background-color: var(--color-success) !important;
   border-color: var(--color-success) !important;
-  color: var(--text-primary) !important;
+  color: var(--ink-1) !important;
 }
 
 .sandhi-drill-option-btn--wrong {
   background-color: var(--color-error) !important;
   border-color: var(--color-error) !important;
-  color: var(--text-primary) !important;
+  color: var(--ink-1) !important;
 }
 
 .sandhi-drill-option-btn--dimmed {
@@ -116,12 +116,20 @@
 }
 
 .sandhi-drill-results-badge--pass {
-  background-color: var(--color-success-bg);
+  background-color: color-mix(
+    in srgb,
+    var(--color-success) calc(var(--status-tint) * 100%),
+    transparent
+  );
   color: var(--color-success);
 }
 
 .sandhi-drill-results-badge--fail {
-  background-color: var(--color-error-bg);
+  background-color: color-mix(
+    in srgb,
+    var(--color-error) calc(var(--status-tint) * 100%),
+    transparent
+  );
   color: var(--color-error);
 }
 
@@ -141,11 +149,11 @@
 
 .sandhi-drill-results-table th {
   font-weight: var(--fw-600);
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .sandhi-drill-results-table td {
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .sandhi-drill-results-actions {

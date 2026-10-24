@@ -45,5 +45,5 @@
   width: 8px;
   height: 8px;
   /* border-radius migrated to — pseudo-element, can't use utility class */
-  background: var(--color-primary);
+  background: var(--accent-fill);
 }

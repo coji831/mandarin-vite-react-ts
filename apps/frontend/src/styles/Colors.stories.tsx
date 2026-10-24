@@ -4,7 +4,8 @@
  * A comprehensive visual catalog of every color token in the Amber Stone
  * design system. This is a documentation page — not a component story.
  *
- * Tokens referenced: all --color-*, --surface-*, --text-*, --tone-*, --gradient-*, --overlay-*
+ * Tokens referenced: the canonical (accent / card / canvas / ink / hairline),
+ * domain (pinyinpal) and gradient families defined in globals.css.
  * See: DESIGN.md, globals.css
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -16,7 +17,7 @@ const meta: Meta = {
     layout: "fullscreen",
     backgrounds: { default: "dark" },
     // Token-reference page: renders EVERY color token — including deliberately
-    // low-contrast tiers (e.g. --text-subtle at 0.2 white) — as swatches + text
+    // low-contrast tiers (e.g. --ink-wash-subtle at 0.2 white) — as swatches + text
     // samples, so color-contrast can NEVER pass by construction. Disable ONLY
     // color-contrast for this reference story (NOT a blanket todo): every other
     // axe wcag22a/aa rule still runs hard. Documented in the a11y sweep report.
@@ -57,13 +58,13 @@ function ColorCard({
     variable.includes("border") ||
     variable.includes("ghost") ||
     variable.includes("subtle") ||
-    variable === "--overlay-dark";
+    variable === "--scrim";
 
   return (
     <div
       style={{
-        background: "var(--surface-dark-alt)",
-        border: "1px solid var(--surface-border)",
+        background: "var(--canvas)",
+        border: "1px solid var(--hairline)",
         borderRadius: "var(--radius-md)",
         padding: "12px",
         minWidth: "180px",
@@ -75,13 +76,13 @@ function ColorCard({
           height: "60px",
           borderRadius: "var(--radius-sm)",
           background: `var(${variable})`,
-          border: needsBorder ? "1px solid var(--surface-border)" : "none",
+          border: needsBorder ? "1px solid var(--hairline)" : "none",
           marginBottom: "8px",
         }}
       />
       <div
         style={{
-          color: "var(--text-primary)",
+          color: "var(--ink-1)",
           fontSize: "13px",
           fontFamily: "monospace",
         }}
@@ -90,7 +91,7 @@ function ColorCard({
       </div>
       <div
         style={{
-          color: "var(--text-muted)",
+          color: "var(--ink-quiet)",
           fontSize: "11px",
           fontFamily: "monospace",
         }}
@@ -100,7 +101,7 @@ function ColorCard({
       {bgClass && (
         <div
           style={{
-            color: "var(--text-tertiary)",
+            color: "var(--ink-3)",
             fontSize: "10px",
             marginTop: "2px",
           }}
@@ -108,16 +109,12 @@ function ColorCard({
           {bgClass}
         </div>
       )}
-      {borderClass && (
-        <div style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>{borderClass}</div>
-      )}
-      {textClass && (
-        <div style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>{textClass}</div>
-      )}
+      {borderClass && <div style={{ color: "var(--ink-3)", fontSize: "10px" }}>{borderClass}</div>}
+      {textClass && <div style={{ color: "var(--ink-3)", fontSize: "10px" }}>{textClass}</div>}
       {usage && (
         <div
           style={{
-            color: "var(--text-muted)",
+            color: "var(--ink-quiet)",
             fontSize: "10px",
             marginTop: "4px",
             fontStyle: "italic",
@@ -164,11 +161,11 @@ function Section({
     >
       <h2
         style={{
-          color: "var(--text-primary)",
+          color: "var(--ink-1)",
           fontSize: "22px",
           fontWeight: 700,
           margin: "0 0 6px 0",
-          borderBottom: "2px solid var(--color-primary-border)",
+          borderBottom: "2px solid var(--edge-control)",
           paddingBottom: "10px",
         }}
       >
@@ -185,7 +182,7 @@ function SubHeading({ children }: { children: React.ReactNode }) {
   return (
     <h3
       style={{
-        color: "var(--text-secondary)",
+        color: "var(--ink-2)",
         fontSize: "16px",
         fontWeight: 600,
         margin: "20px 0 12px 0",
@@ -226,6 +223,7 @@ function SemanticRow({
   textClass,
   bgClass,
   borderClass,
+  bgTint = false,
 }: {
   label: string;
   baseVar: string;
@@ -237,7 +235,12 @@ function SemanticRow({
   textClass: string;
   bgClass: string;
   borderClass: string;
+  bgTint?: boolean;
 }) {
+  // A status plane is composed from the tone and the --status-tint knob, never typed.
+  const plane = (v: string) =>
+    `color-mix(in srgb, var(${v}) calc(var(--status-tint) * 100%), transparent)`;
+
   return (
     <div
       style={{
@@ -253,7 +256,7 @@ function SemanticRow({
           minWidth: "100px",
           display: "flex",
           alignItems: "center",
-          color: "var(--text-secondary)",
+          color: "var(--ink-2)",
           fontSize: "14px",
           fontWeight: 600,
         }}
@@ -265,8 +268,8 @@ function SemanticRow({
       <div
         style={{
           flex: 1,
-          background: "var(--surface-dark-alt)",
-          border: "1px solid var(--surface-border)",
+          background: "var(--canvas)",
+          border: "1px solid var(--hairline)",
           borderRadius: "var(--radius-md)",
           padding: "10px",
           display: "flex",
@@ -283,18 +286,18 @@ function SemanticRow({
             background: `var(${baseVar})`,
           }}
         />
-        <div style={{ color: "var(--text-muted)", fontSize: "10px", fontFamily: "monospace" }}>
+        <div style={{ color: "var(--ink-quiet)", fontSize: "10px", fontFamily: "monospace" }}>
           {baseVar}
         </div>
-        <div style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>{textClass}</div>
+        <div style={{ color: "var(--ink-3)", fontSize: "10px" }}>{textClass}</div>
       </div>
 
       {/* BG Tint */}
       <div
         style={{
           flex: 1,
-          background: "var(--surface-dark-alt)",
-          border: "1px solid var(--surface-border)",
+          background: "var(--canvas)",
+          border: "1px solid var(--hairline)",
           borderRadius: "var(--radius-md)",
           padding: "10px",
           display: "flex",
@@ -308,22 +311,22 @@ function SemanticRow({
             width: "100%",
             height: "40px",
             borderRadius: "var(--radius-sm)",
-            background: `var(${bgVar})`,
-            border: "1px solid var(--surface-border)",
+            background: bgTint ? plane(bgVar) : `var(${bgVar})`,
+            border: "1px solid var(--hairline)",
           }}
         />
-        <div style={{ color: "var(--text-muted)", fontSize: "10px", fontFamily: "monospace" }}>
+        <div style={{ color: "var(--ink-quiet)", fontSize: "10px", fontFamily: "monospace" }}>
           {bgVar}
         </div>
-        <div style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>{bgClass}</div>
+        <div style={{ color: "var(--ink-3)", fontSize: "10px" }}>{bgClass}</div>
       </div>
 
       {/* Border */}
       <div
         style={{
           flex: 1,
-          background: "var(--surface-dark-alt)",
-          border: "1px solid var(--surface-border)",
+          background: "var(--canvas)",
+          border: "1px solid var(--hairline)",
           borderRadius: "var(--radius-md)",
           padding: "10px",
           display: "flex",
@@ -337,14 +340,14 @@ function SemanticRow({
             width: "100%",
             height: "40px",
             borderRadius: "var(--radius-sm)",
-            background: "var(--surface-dark)",
+            background: "var(--card)",
             border: "2px solid " + `var(${borderVar})`,
           }}
         />
-        <div style={{ color: "var(--text-muted)", fontSize: "10px", fontFamily: "monospace" }}>
+        <div style={{ color: "var(--ink-quiet)", fontSize: "10px", fontFamily: "monospace" }}>
           {borderVar}
         </div>
-        <div style={{ color: "var(--text-tertiary)", fontSize: "10px" }}>{borderClass}</div>
+        <div style={{ color: "var(--ink-3)", fontSize: "10px" }}>{borderClass}</div>
       </div>
     </div>
   );
@@ -371,8 +374,8 @@ function SRSRow({
         display: "flex",
         alignItems: "center",
         gap: "16px",
-        background: "var(--surface-dark)",
-        border: "1px solid var(--surface-border)",
+        background: "var(--card)",
+        border: "1px solid var(--hairline)",
         borderRadius: "var(--radius-md)",
         padding: "16px",
         marginBottom: "8px",
@@ -388,17 +391,15 @@ function SRSRow({
         }}
       />
       <div>
-        <div style={{ color: "var(--text-primary)", fontSize: "18px", fontWeight: 600 }}>
-          {label}
-        </div>
-        <div style={{ color: "var(--text-muted)", fontSize: "13px", fontFamily: "monospace" }}>
+        <div style={{ color: "var(--ink-1)", fontSize: "18px", fontWeight: 600 }}>{label}</div>
+        <div style={{ color: "var(--ink-quiet)", fontSize: "13px", fontFamily: "monospace" }}>
           {colorVar} — {colorValue}
         </div>
       </div>
       <div
         style={{
           marginLeft: "auto",
-          color: "var(--text-tertiary)",
+          color: "var(--ink-3)",
           fontSize: "14px",
         }}
       >
@@ -414,8 +415,8 @@ function GradientCard({ variable, bgClass }: { variable: string; bgClass: string
   return (
     <div
       style={{
-        background: "var(--surface-dark-alt)",
-        border: "1px solid var(--surface-border)",
+        background: "var(--canvas)",
+        border: "1px solid var(--hairline)",
         borderRadius: "var(--radius-md)",
         padding: "12px",
         minWidth: "280px",
@@ -432,16 +433,14 @@ function GradientCard({ variable, bgClass }: { variable: string; bgClass: string
       />
       <div
         style={{
-          color: "var(--text-primary)",
+          color: "var(--ink-1)",
           fontSize: "13px",
           fontFamily: "monospace",
         }}
       >
         {variable}
       </div>
-      <div style={{ color: "var(--text-tertiary)", fontSize: "10px", marginTop: "2px" }}>
-        {bgClass}
-      </div>
+      <div style={{ color: "var(--ink-3)", fontSize: "10px", marginTop: "2px" }}>{bgClass}</div>
     </div>
   );
 }
@@ -450,14 +449,14 @@ function GradientCard({ variable, bgClass }: { variable: string; bgClass: string
 
 function ColorsPage() {
   const pageStyle: React.CSSProperties = {
-    background: "var(--surface-dark-alt)",
+    background: "var(--canvas)",
     minHeight: "100vh",
     padding: "40px 48px",
     fontFamily: "Inter, system-ui, sans-serif",
   };
 
   const introStyle: React.CSSProperties = {
-    color: "var(--text-muted)",
+    color: "var(--ink-quiet)",
     fontSize: "14px",
     marginBottom: "40px",
     lineHeight: 1.6,
@@ -467,7 +466,7 @@ function ColorsPage() {
     <div style={pageStyle}>
       <h1
         style={{
-          color: "var(--text-primary)",
+          color: "var(--ink-1)",
           fontSize: "28px",
           fontWeight: 800,
           margin: "0 0 4px 0",
@@ -478,8 +477,8 @@ function ColorsPage() {
       </h1>
       <p style={introStyle}>
         Amber Stone design system — every color token defined in{" "}
-        <code style={{ color: "var(--color-primary)" }}>globals.css</code>. Swatches use{" "}
-        <code style={{ color: "var(--color-primary)" }}>var(--xxx)</code> so they stay in sync with
+        <code style={{ color: "var(--accent-fill)" }}>globals.css</code>. Swatches use{" "}
+        <code style={{ color: "var(--accent-fill)" }}>var(--xxx)</code> so they stay in sync with
         the actual tokens.
       </p>
 
@@ -487,22 +486,23 @@ function ColorsPage() {
       <Section id="surface" title="1. Surface Colors">
         <ColorGrid>
           <ColorCard
-            variable="--surface-dark"
-            value="#262321"
+            variable="--card"
+            value="rgba(38,35,33,1)"
             bgClass="bg-surface-dark"
-            usage="Primary card surface"
+            usage="Raised sheet — cards, modals, grid buttons"
           />
           <ColorCard
-            variable="--surface-dark-alt"
-            value="#1c1917"
+            variable="--canvas"
+            value="rgba(28,25,23,1)"
             bgClass="bg-surface-dark-alt"
-            usage="Page background, alt cards"
+            usage="Page plane"
           />
+          {/* 1b: delete — lands in --card */}
           <ColorCard
             variable="--surface-dark-alt-2"
-            value="#2d2a27"
+            value="rgba(45,42,39,1)"
             bgClass="bg-surface-dark-alt-2"
-            usage="Modal, grid buttons"
+            usage="Held — third plane; merges into --card in 1b"
           />
           <ColorCard
             variable="--surface-hover"
@@ -511,10 +511,17 @@ function ColorsPage() {
             usage="Hover state"
           />
           <ColorCard
-            variable="--surface-border"
-            value="#3d3935"
+            variable="--hairline"
+            value="rgba(61,57,53,1)"
             borderClass="border-surface"
-            usage="Borders"
+            usage="Borders — the one boundary of planes"
+          />
+          {/* 1b: delete — lands in --hairline */}
+          <ColorCard
+            variable="--surface-border-subtle"
+            value="rgba(255,255,255,0.08)"
+            borderClass="border-surface-subtle"
+            usage="Held — card hairline; merges into --hairline in 1b"
           />
           <ColorCard variable="--surface-overlay" value="rgba(38,35,33,0.3)" usage="Overlay tint" />
         </ColorGrid>
@@ -524,7 +531,7 @@ function ColorsPage() {
       <Section id="surface-light" title="2. Surface Light (White Opacity)">
         <p
           style={{
-            color: "var(--text-muted)",
+            color: "var(--ink-quiet)",
             fontSize: "13px",
             margin: "0 0 12px 0",
           }}
@@ -533,9 +540,9 @@ function ColorsPage() {
         </p>
         <div
           style={{
-            background: "var(--surface-dark)",
+            background: "var(--card)",
             borderRadius: "var(--radius-md)",
-            border: "1px solid var(--surface-border)",
+            border: "1px solid var(--hairline)",
             padding: "24px",
           }}
         >
@@ -556,19 +563,21 @@ function ColorsPage() {
               variable="--surface-light-8"
               value="rgba(255,255,255,0.08)"
               bgClass="bg-surface-light-8"
-              usage="Light hover"
+              usage="Light hover — ramp ceiling (10 and 20 above it are held for 1b)"
             />
+            {/* 1b: delete — lands in --surface-light-8 */}
             <ColorCard
               variable="--surface-light-10"
               value="rgba(255,255,255,0.1)"
               bgClass="bg-surface-light-10"
-              usage="Input bg"
+              usage="Held — joins the 0.08 ceiling in 1b"
             />
+            {/* 1b: delete — lands in --surface-light-8 */}
             <ColorCard
               variable="--surface-light-20"
               value="rgba(255,255,255,0.2)"
               bgClass="bg-surface-light-20"
-              usage="Avatar bg"
+              usage="Held — joins the 0.08 ceiling in 1b"
             />
           </ColorGrid>
         </div>
@@ -578,46 +587,64 @@ function ColorsPage() {
       <Section id="primary" title="3. Primary Palette (Amber / Brown)">
         <ColorGrid>
           <ColorCard
-            variable="--color-primary"
-            value="#b45309"
+            variable="--accent-fill"
+            value="rgba(180,83,9,1)"
             bgClass="bg-primary"
-            usage="Amber base"
+            usage="Accent fill"
           />
-          <ColorCard variable="--color-primary-dark" value="#92400e" usage="Darker amber" />
-          <ColorCard variable="--color-primary-light" value="#d97706" usage="Lighter amber" />
           <ColorCard
-            variable="--color-primary-bg"
+            variable="--accent-fill-lighter"
+            value="rgba(217,119,6,1)"
+            usage="Hover fill"
+          />
+          {/* 1b: delete — lands in --accent-ink */}
+          <ColorCard
+            variable="--color-primary-light"
+            value="rgba(217,119,6,1)"
+            usage="Held — second accent-text tier; merges into --accent-ink in 1b (contrast fix). Today identical to --accent-fill-lighter"
+          />
+          <ColorCard
+            variable="--accent-ink"
+            value="rgba(245,158,11,1)"
+            usage="Accent text (text-safe tier)"
+          />
+          <ColorCard
+            variable="--accent-tint"
             value="rgba(180,83,9,0.18)"
             bgClass="bg-primary-bg"
-            usage="Primary bg tint"
+            usage="Accent wash — one plane, no alpha ladder"
           />
+          {/* 1b: delete — lands in --accent-tint */}
           <ColorCard
             variable="--color-primary-bg-light"
             value="rgba(180,83,9,0.08)"
             bgClass="bg-primary-bg-light"
-            usage="Lightest primary tint"
+            usage="Held — alpha ladder joins --accent-tint (0.18) in 1b"
           />
+          {/* 1b: delete — lands in --accent-tint */}
           <ColorCard
             variable="--color-primary-bg-medium"
             value="rgba(180,83,9,0.12)"
             bgClass="bg-primary-bg-medium"
-            usage="Medium primary tint"
+            usage="Held — alpha ladder joins --accent-tint (0.18) in 1b"
           />
           <ColorCard
-            variable="--color-primary-border"
+            variable="--edge-control"
             value="rgba(180,83,9,0.3)"
             borderClass="border-primary-border"
-            usage="Subtle border"
+            usage="Control edge"
           />
+          {/* 1b: delete — lands in --edge-control */}
           <ColorCard
             variable="--color-primary-border-strong"
             value="rgba(180,83,9,0.4)"
-            usage="Strong border"
+            usage="Held — alpha ladder joins --edge-control (0.3) in 1b"
           />
+          {/* 1b: delete — lands in --edge-control */}
           <ColorCard
             variable="--color-primary-border-hover"
             value="rgba(180,83,9,0.6)"
-            usage="Hover border"
+            usage="Held — hover edge joins --edge-control (0.3) in 1b"
           />
         </ColorGrid>
       </Section>
@@ -626,14 +653,14 @@ function ColorsPage() {
       <Section id="semantic" title="4. Semantic Colors">
         <p
           style={{
-            color: "var(--text-muted)",
+            color: "var(--ink-quiet)",
             fontSize: "13px",
             margin: "0 0 16px 0",
           }}
         >
-          Each row shows <strong style={{ color: "var(--text-secondary)" }}>base</strong> |{" "}
-          <strong style={{ color: "var(--text-secondary)" }}>bg tint</strong> |{" "}
-          <strong style={{ color: "var(--text-secondary)" }}>border</strong>
+          Each row shows <strong style={{ color: "var(--ink-2)" }}>base</strong> |{" "}
+          <strong style={{ color: "var(--ink-2)" }}>bg tint</strong> |{" "}
+          <strong style={{ color: "var(--ink-2)" }}>border</strong>
         </p>
 
         <SubHeading>✅ Success (Emerald)</SubHeading>
@@ -641,13 +668,14 @@ function ColorsPage() {
           label="Success"
           baseVar="--color-success"
           baseValue="#34d399"
-          bgVar="--color-success-bg"
+          bgVar="--color-success"
           bgValue="rgba(52,211,153,0.15)"
           borderVar="--color-success-border"
           borderValue="rgba(52,211,153,0.3)"
           textClass="text-success"
           bgClass="bg-success-bg"
           borderClass="N/A"
+          bgTint
         />
 
         <SubHeading>❌ Error (Warm Red)</SubHeading>
@@ -655,79 +683,53 @@ function ColorsPage() {
           label="Error"
           baseVar="--color-error"
           baseValue="#ef6b6b"
-          bgVar="--color-error-bg"
+          bgVar="--color-error"
           bgValue="rgba(239,107,107,0.15)"
-          borderVar="--color-error-border"
+          borderVar="--edge-danger"
           borderValue="rgba(239,107,107,0.3)"
           textClass="text-error"
           bgClass="bg-error-bg"
           borderClass="N/A"
+          bgTint
         />
 
         <SubHeading>⚠️ Warning (Amber/Gold)</SubHeading>
         <SemanticRow
           label="Warning"
-          baseVar="--color-warning"
+          baseVar="--color-warn"
           baseValue="#f59e0b"
-          bgVar="--color-warning-bg"
+          bgVar="--color-warn"
           bgValue="rgba(245,158,11,0.15)"
           borderVar="--color-warning-border"
           borderValue="rgba(245,158,11,0.3)"
           textClass="text-warning"
           bgClass="N/A"
           borderClass="N/A"
+          bgTint
         />
 
         <SubHeading>ℹ️ Info (Warm Amber-Yellow)</SubHeading>
         <SemanticRow
           label="Info"
-          baseVar="--color-info"
+          baseVar="--status-info"
           baseValue="#fcd34d"
-          bgVar="--color-info-bg"
+          bgVar="--status-info-bg"
           bgValue="rgba(252,211,77,0.15)"
-          borderVar="--color-info-border"
+          borderVar="--status-info-border"
           borderValue="rgba(252,211,77,0.3)"
           textClass="N/A"
           bgClass="bg-info-bg"
           borderClass="N/A"
         />
 
-        <SubHeading>🔷 Info-blue (Gold — character-level feedback)</SubHeading>
-        <SemanticRow
-          label="Info-blue"
-          baseVar="--color-info-blue"
-          baseValue="#d4a843"
-          bgVar="--color-info-blue-bg"
-          bgValue="rgba(212,168,67,0.15)"
-          borderVar="--color-info-blue-border"
-          borderValue="rgba(212,168,67,0.3)"
-          textClass="N/A"
-          bgClass="N/A"
-          borderClass="N/A"
-        />
-
-        <SubHeading>🟠 Info-purple (Amber — meaning-level feedback)</SubHeading>
-        <SemanticRow
-          label="Info-purple"
-          baseVar="--color-info-purple"
-          baseValue="#f59e0b"
-          bgVar="--color-info-purple-bg"
-          bgValue="rgba(245,158,11,0.15)"
-          borderVar="--color-info-purple-border"
-          borderValue="rgba(245,158,11,0.3)"
-          textClass="N/A"
-          bgClass="N/A"
-          borderClass="N/A"
-        />
-
         <SubHeading>🪨 Neutral (Warm Stone Grey)</SubHeading>
         <SemanticRow
           label="Neutral-grey"
-          baseVar="--color-neutral-grey"
+          baseVar="--color-category-neutral"
           baseValue="#78716c"
-          bgVar="--color-neutral-grey-bg"
+          bgVar="--color-category-neutral-bg"
           bgValue="rgba(120,113,108,0.15)"
-          borderVar="--color-neutral-grey-border"
+          borderVar="--color-category-neutral-border"
           borderValue="rgba(120,113,108,0.3)"
           textClass="N/A"
           bgClass="N/A"
@@ -783,7 +785,7 @@ function ColorsPage() {
         <SRSRow
           emoji="🟡"
           label="Good"
-          colorVar="--color-warning"
+          colorVar="--color-warn"
           colorValue="#f59e0b"
           effect="×2 interval"
         />
@@ -800,7 +802,7 @@ function ColorsPage() {
       <Section id="text" title="7. Text Colors (White Opacity Scale)">
         <p
           style={{
-            color: "var(--text-muted)",
+            color: "var(--ink-quiet)",
             fontSize: "13px",
             margin: "0 0 16px 0",
           }}
@@ -809,49 +811,49 @@ function ColorsPage() {
         </p>
         <div
           style={{
-            background: "var(--surface-dark)",
+            background: "var(--card)",
             borderRadius: "var(--radius-md)",
-            border: "1px solid var(--surface-border)",
+            border: "1px solid var(--hairline)",
             padding: "24px",
           }}
         >
           <ColorGrid>
             <ColorCard
-              variable="--text-primary"
+              variable="--ink-1"
               value="rgba(255,255,255,0.95)"
               textClass="text-primary"
               usage="Primary body text"
               textSample="The quick brown fox jumps over the lazy dog."
             />
             <ColorCard
-              variable="--text-secondary"
+              variable="--ink-2"
               value="rgba(255,255,255,0.85)"
               textClass="text-secondary"
               usage="Secondary text"
               textSample="The quick brown fox jumps over the lazy dog."
             />
             <ColorCard
-              variable="--text-tertiary"
+              variable="--ink-3"
               value="rgba(255,255,255,0.70)"
               textClass="text-tertiary"
               usage="Tertiary / labels"
               textSample="The quick brown fox jumps over the lazy dog."
             />
             <ColorCard
-              variable="--text-muted"
+              variable="--ink-quiet"
               value="rgba(255,255,255,0.50)"
               textClass="text-muted"
               usage="Muted / placeholders"
               textSample="The quick brown fox jumps over the lazy dog."
             />
             <ColorCard
-              variable="--text-subtle"
+              variable="--ink-wash-subtle"
               value="rgba(255,255,255,0.20)"
               usage="Subtle / decorative"
               textSample="The quick brown fox jumps over the lazy dog."
             />
             <ColorCard
-              variable="--text-ghost"
+              variable="--ink-wash-ghost"
               value="rgba(255,255,255,0.05)"
               usage="Ghost / invisible text"
               textSample="The quick brown fox jumps over the lazy dog."
@@ -879,24 +881,24 @@ function ColorsPage() {
       <Section id="special" title="9. Special Colors">
         <ColorGrid>
           <ColorCard variable="--color-xp" value="#fbbf24" usage="XP / achievement" />
-          <ColorCard variable="--overlay-dark" value="rgba(0,0,0,0.7)" usage="Modal backdrop" />
+          <ColorCard variable="--scrim" value="rgba(0,0,0,0.7)" usage="Modal backdrop" />
         </ColorGrid>
       </Section>
 
       {/* Footer */}
       <div
         style={{
-          borderTop: "1px solid var(--surface-border)",
+          borderTop: "1px solid var(--hairline)",
           paddingTop: "24px",
           marginTop: "48px",
-          color: "var(--text-muted)",
+          color: "var(--ink-quiet)",
           fontSize: "12px",
           textAlign: "center",
         }}
       >
         Amber Stone Design System — Generated from{" "}
-        <code style={{ color: "var(--color-primary)" }}>globals.css</code> and{" "}
-        <code style={{ color: "var(--color-primary)" }}>DESIGN.md</code>
+        <code style={{ color: "var(--accent-fill)" }}>globals.css</code> and{" "}
+        <code style={{ color: "var(--accent-fill)" }}>DESIGN.md</code>
       </div>
     </div>
   );

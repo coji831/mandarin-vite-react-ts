@@ -46,8 +46,8 @@
    + colored top creates the spinning needle effect.
    NOT a reusable utility; specific to spinner visual.
    ═══════════════════════════════════════════════ */
-.spinner--color-primary {
-  border-top-color: var(--color-primary);
+.spinner--accent-fill {
+  border-top-color: var(--accent-fill);
 }
 .spinner--color-white {
   border-top-color: white;

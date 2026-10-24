@@ -11,10 +11,10 @@
 
 .mnemonic-card {
   min-height: 0;
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
-  background: var(--surface-dark);
+  background: var(--card);
 }
 
 .mnemonic-card__header {
@@ -46,21 +46,21 @@
   line-height: var(--lh-1);
   text-align: center;
   margin-bottom: var(--space-md);
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 /* ── Pictograph Layout ───────────────────────── */
 
 .mnemonic-card__pictograph-info {
-  background: var(--color-info-bg);
-  border: 1px solid var(--color-info-border);
+  background: var(--status-info-bg);
+  border: 1px solid var(--status-info-border);
   border-radius: var(--radius-md);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
 }
 
 .mnemonic-card__pictograph-note {
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   font-style: italic;
   text-align: center;
   padding: var(--space-sm);
@@ -88,10 +88,10 @@
 }
 
 .mnemonic-card__column {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   padding: var(--space-md);
-  background: var(--surface-dark-alt);
+  background: var(--canvas);
 }
 
 .mnemonic-card__column-label {
@@ -100,11 +100,11 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: var(--space-sm);
-  color: var(--text-muted);
+  color: var(--ink-quiet);
 }
 
 .mnemonic-card__column-content {
-  color: var(--text-secondary);
+  color: var(--ink-2);
   font-size: var(--font-sm);
   line-height: var(--lh-normal);
 }
@@ -116,7 +116,7 @@
   /* horizontal 8px = --space-xs; vertical 2px is structural pill-height math (D4) */
   padding: 2px var(--space-xs);
   border-radius: var(--radius-pill);
-  background: var(--color-primary-bg);
+  background: var(--accent-tint);
   color: var(--color-primary-light);
   font-size: var(--font-xs);
   font-weight: var(--fw-500);
@@ -132,9 +132,9 @@
   flex-wrap: wrap;
   margin-bottom: var(--space-md);
   padding: var(--space-md);
-  background: var(--surface-dark-alt);
+  background: var(--canvas);
   border-radius: var(--radius-md);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
 }
 
 .mnemonic-card__compound-part {
@@ -147,7 +147,7 @@
 .mnemonic-card__compound-plus,
 .mnemonic-card__compound-arrow {
   font-size: var(--font-lg);
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   font-weight: var(--fw-600);
 }
 
@@ -156,7 +156,7 @@
 .mnemonic-card__story {
   white-space: pre-wrap;
   overflow-wrap: break-word;
-  color: var(--text-secondary);
+  color: var(--ink-2);
   font-size: var(--font-sm);
   line-height: var(--lh-normal);
   margin-top: var(--space-sm);
@@ -171,7 +171,7 @@
 
 .mnemonic-card__edited-tag {
   font-size: var(--font-xs);
-  color: var(--text-muted);
+  color: var(--ink-quiet);
   font-style: italic;
 }
 
@@ -183,7 +183,7 @@
   background: var(--surface-light-5);
   border-radius: var(--radius-md);
   font-size: var(--font-xs);
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   font-style: italic;
   display: flex;
   align-items: center;

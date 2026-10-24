@@ -10,7 +10,7 @@
   min-width: 0;
 }
 .page-stack--default {
-  gap: var(--section-rhythm);
+  gap: var(--section-rhythm-md);
 }
 .page-stack--sm {
   gap: var(--section-rhythm-sm);

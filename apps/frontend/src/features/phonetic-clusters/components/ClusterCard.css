@@ -10,7 +10,7 @@
 
 .cluster-card:hover {
   /* :hover pseudo — can't use className utility */
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
   /* :hover pseudo — paired with border-color above */
   box-shadow: var(--shadow-sm);
 }

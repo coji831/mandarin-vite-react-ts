@@ -1,5 +1,5 @@
 /**
- * Tokens used: --color-primary, --color-primary-dark, --color-primary-light, --transition-fast
+ * Tokens used: --accent-fill, --color-primary-dark, --color-primary-light, --transition-fast
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -52,7 +52,7 @@ export const Disabled: Story = {
 
 export const InText: Story = {
   render: () => (
-    <p style={{ color: "var(--text-secondary)", fontSize: "var(--font-sm)" }}>
+    <p style={{ color: "var(--ink-2)", fontSize: "var(--font-sm)" }}>
       Don&apos;t have an account? <TextLink onClick={() => {}}>Register</TextLink>
     </p>
   ),

@@ -107,7 +107,7 @@ export function CategoryBreakdown({ answers, categoryBreakdown, total }: Categor
         label="Tone identification"
         correct={toneCorrect}
         total={denominator}
-        color="var(--color-warning)"
+        color="var(--color-warn)"
       />
     </Box>
   );

@@ -9,11 +9,11 @@
 }
 
 .grammar-card:hover {
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
 }
 
 .grammar-card:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-fill);
   outline-offset: 2px;
 }
 

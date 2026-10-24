@@ -12,7 +12,7 @@
   justify-content: space-between;
   gap: var(--space-sm) var(--space-md);
   flex-shrink: 0; /* never collapse when the scrollable list wrapper flexes */
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
   padding-top: var(--space-md);
 }
 

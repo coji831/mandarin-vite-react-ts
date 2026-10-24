@@ -21,7 +21,7 @@
 
 .auth-form-input::placeholder {
   color: var(
-    --text-tertiary
+    --ink-3
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
 }
 

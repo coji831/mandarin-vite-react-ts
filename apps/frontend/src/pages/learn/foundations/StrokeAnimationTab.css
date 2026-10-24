@@ -14,7 +14,7 @@
   /* intentional: fixed 1px divider, width/height are layout-specific */
   width: 1px;
   height: 24px;
-  background: var(--surface-border);
+  background: var(--hairline);
   /* flex-shrink migrated to utility class: shrink-0 */
 }
 

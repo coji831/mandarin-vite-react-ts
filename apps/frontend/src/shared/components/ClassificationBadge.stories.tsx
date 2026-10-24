@@ -10,7 +10,7 @@
  * - Size variants (sm, md, lg)
  * - showLabel={false} variant
  *
- * Tokens used: --color-xp, --color-blue, --color-green, --color-purple, --radius-pill, --space-xs
+ * Tokens used: --color-xp, --color-category-blue, --color-category-green, --color-category-purple, --radius-pill, --space-xs
  * See: DESIGN.md
  */
 

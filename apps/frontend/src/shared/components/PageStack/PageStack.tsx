@@ -11,7 +11,7 @@ import "./PageStack.css";
 export type PageStackSize = "sm" | "default" | "lg";
 
 export type PageStackProps = {
-  /** Rhythm between sections: sm=--section-rhythm-sm, default=--section-rhythm, lg=--section-rhythm-lg */
+  /** Rhythm between sections: sm=--section-rhythm-sm, default=--section-rhythm-md, lg=--section-rhythm-lg */
   size?: PageStackSize;
   as?: ElementType;
   children?: ReactNode;

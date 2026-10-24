@@ -3,8 +3,8 @@
 /* ── Elevated Tier (has box-shadow) ── */
 
 .box-dark {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: var(--space-md);
@@ -12,9 +12,9 @@
 }
 
 .box-dark-accent {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
-  border-left: 3px solid var(--color-primary-border);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--edge-control);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: var(--space-md);
@@ -22,9 +22,9 @@
 }
 
 .box-dark-accent-primary {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
-  border-left: 3px solid var(--color-primary);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--accent-fill);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: var(--space-md);
@@ -32,8 +32,8 @@
 }
 
 .box-card {
-  background: var(--surface-dark-alt);
-  border: 1px solid var(--surface-border);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: var(--space-lg);
@@ -41,7 +41,7 @@
 }
 
 .box-card-elevated {
-  background: var(--surface-dark-alt);
+  background: var(--canvas);
   border: 1px solid var(--surface-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated-1);
@@ -60,7 +60,7 @@
 }
 
 .box-pass {
-  background: var(--surface-dark);
+  background: var(--card);
   border: 1px solid var(--color-success);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -69,7 +69,7 @@
 }
 
 .box-fail {
-  background: var(--surface-dark);
+  background: var(--card);
   border: 1px solid var(--color-error);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -80,16 +80,16 @@
 /* ── Flat Tier (no shadow) ── */
 
 .box-dark-alt {
-  background: var(--surface-dark-alt);
-  border: 1px solid var(--surface-border);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }
 
 .box-surface {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   transition: all var(--transition-fast);
@@ -105,33 +105,33 @@
 }
 
 .box-header {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   padding: var(--space-sm);
   transition: all var(--transition-fast);
 }
 
 .box-chip {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
   padding: var(--space-xs);
   transition: all var(--transition-fast);
 }
 
 .box-divider {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: 0;
   transition: all var(--transition-fast);
 }
 
 .box-dashed {
-  border: 1px dashed var(--surface-border);
+  border: 1px dashed var(--hairline);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
 .box-item {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
 }

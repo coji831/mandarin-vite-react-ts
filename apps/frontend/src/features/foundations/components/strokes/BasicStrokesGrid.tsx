@@ -32,7 +32,7 @@ export function BasicStrokesGrid({ strokes }: BasicStrokesGridProps) {
   return (
     <Box variant="dark-alt" padding="xs" className="stroke-grid flex flex-wrap">
       {strokes.map((stroke) => {
-        const accentColor = STROKE_COLORS[stroke.id] || "var(--text-primary)";
+        const accentColor = STROKE_COLORS[stroke.id] || "var(--ink-1)";
         return (
           <Box
             key={stroke.id}

@@ -15,7 +15,7 @@
 .anim-speed-slider {
   width: 60px;
   height: 4px;
-  accent-color: var(--color-primary);
+  accent-color: var(--accent-fill);
 }
 
 /* .anim-speed-slider:disabled — migrated to disabled:op-30 utility */

@@ -1,6 +1,6 @@
 /**
  * Chip Component Stories
- * Tokens used: --surface-*, --surface-border, --color-primary-*, --tone-1..5,
+ * Tokens used: --surface-*, --hairline, --color-primary-*, --tone-1..5,
  * --radius-pill, --space-*, --font-*, --text-*
  * See: DESIGN.md
  */
