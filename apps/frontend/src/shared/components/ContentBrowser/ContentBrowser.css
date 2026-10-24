@@ -4,7 +4,9 @@
 
 /* ─── Content Browser Container ─── */
 .content-browser {
-  max-width: var(--page-measure-list);
+  /* Width is PageShell's list measure (LibraryPage); this hook only stops a
+     flex child from blowing out past it. */
+  min-width: 0;
 }
 
 /* ─── Tab Bar ─── */

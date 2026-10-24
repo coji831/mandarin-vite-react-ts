@@ -36,7 +36,7 @@ export function LoginForm({ onSwitchToRegister, onSuccess }: LoginFormProps) {
   };
 
   return (
-    <form className="auth-form  p-xl flex-center " onSubmit={handleSubmit}>
+    <form className="p-xl flex-center min-w-0" onSubmit={handleSubmit}>
       <Box variant="elevated" padding="xl" className="auth-form-container w-full flex-col gap-lg">
         {/* h1: the auth card owns the page title (the page renders no PageHeader) */}
         <h1 className="text-primary font-2xl fw-600 tracking-tight text-center">Login</h1>

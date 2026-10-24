@@ -88,7 +88,7 @@
         "gutter": "default",
         "header": null
       },
-      "note": "Dry-run adoption candidate for the list archetype (registry-clean composition)."
+      "note": "ContentBrowser renders inside PageShell(list) since S5; the list max-width was removed from ContentBrowser.css so PageShell is the single measure source. Still the list-archetype exemplar (registry-clean composition)."
     },
     {
       "route": "/learn/readers",
@@ -195,7 +195,7 @@
         "gutter": "default",
         "header": null
       },
-      "note": "Golden Template candidate (detail). ReviewView hosts the canonical review session."
+      "note": "Golden Template candidate (detail). ReviewPicker and ReviewView both render inside PageShell(detail) since S5; the detail max-width was removed from ReviewView.css."
     },
     {
       "route": "/practices/quiz",
@@ -287,12 +287,12 @@
         "gutter": "default",
         "header": null
       },
-      "note": "Thin settings placeholder (Box card section); full settings shell is not yet built."
+      "note": "Thin settings placeholder (Box card section) inside PageShell(settings) since S5; full settings shell is not yet built."
     },
     {
       "route": "/profile",
       "component": "ProfilePage",
-      "archetype": "settings",
+      "archetype": "profile",
       "story": "apps/frontend/src/pages/ProfilePageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -301,11 +301,11 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "settings",
+        "measure": "profile",
         "gutter": "default",
         "header": null
       },
-      "note": "Thin settings placeholder (Box card section); full profile shell is not yet built."
+      "note": "Thin profile placeholder (Box card section) inside PageShell(profile) since S5; the entry moved from the settings archetype to profile (one identity plus its activity)."
     },
     {
       "route": "/learn/foundations",
@@ -328,7 +328,7 @@
         "gutter": "default",
         "header": null
       },
-      "note": "De-facto Learn home; overview with tabbed focal point + progress. Edge = tones deep-link."
+      "note": "De-facto Learn home; overview with tabbed focal point + progress. Edge = tones deep-link. Rendered bare (no PageShell) until S5, which wrapped it in PageShell(overview) to match this row."
     },
     {
       "route": "/learn/phonetic-clusters",

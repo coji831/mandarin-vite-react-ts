@@ -8,12 +8,16 @@
  * D1: Uses ContentBrowser with no phase gating (all content visible).
  */
 
-import { ContentBrowser } from "shared/components";
+import { ContentBrowser, PageShell } from "shared/components";
 import { createMockContentSource } from "shared/services";
 
 const libraryContentSource = createMockContentSource();
 
 export default function LibraryPage() {
   // Library shows ALL content regardless of phase
-  return <ContentBrowser contentSource={libraryContentSource} defaultTab="all" userPhase={4} />;
+  return (
+    <PageShell archetype="list">
+      <ContentBrowser contentSource={libraryContentSource} defaultTab="all" userPhase={4} />
+    </PageShell>
+  );
 }
