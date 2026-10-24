@@ -62,8 +62,6 @@
   /* Focus ring — the accent at full alpha (was the outline use of
      --color-primary-light). 1b: spine's Night Bench ring. */
   --focus-ring: rgba(216, 164, 92, 1);
-  /* 1b: 0 consumers after the Button flatten — dead; delete in slop-cleanup */
-  --color-primary-dark: rgba(146, 64, 14, 1);
 
   /* ── Status: one tone per role, one plane alpha knob, one destructive edge ──
      A status plane is COMPOSED, never typed:
@@ -159,6 +157,7 @@
   --ink-1: rgba(218, 211, 197, 1);
   --ink-2: rgba(168, 154, 129, 1);
   --ink-3: rgba(141, 128, 106, 1);
+  /* Ramp exemption (F2): --ink-quiet is contrast-solved (4.5:1 floor), deliberately outside ramp order — do not "fix" it into the ramp. */
   --ink-quiet: rgba(148, 135, 112, 1); /* 5.24:1 on --canvas, 4.94:1 on --card — meets ≥4.5:1 */
   --ink-wash-subtle: rgba(255, 255, 255, 0.2);
   --ink-wash-ghost: rgba(255, 255, 255, 0.05);
@@ -234,6 +233,10 @@
      `none` under Night Bench (ADR-011), so a composing rule that reads one
      paints a flat surface. Deletion (and the utility classes) is the
      vocabulary commit's job. */
+  /* 2026-10-24, S3: superseded — S3 was the vocabulary commit and deliberately
+     did NOT delete these (D1, design-lead-s3-ruling.md). Deletion is S10. The
+     sentence above is kept because it is what the branch recorded, not because
+     it is true. */
   /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
   --shadow-elevated-1: none;
   /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
@@ -296,14 +299,6 @@
   --fw-600: 600; /* semibold — buttons, badges, labels */
   --fw-700: 700; /* bold — display emphasis */
   --fw-800: 800; /* extrabold — hero display */
-
-  /* ===== Gradients ===== */
-
-  /* Flat by ruling (ADR-011): the gradient role survives as a name, the paint does
-     not. Both values are aliases, so the receipt's cross-check holds — the first
-     must equal --accent-fill, the second must equal --ink-1. */
-  --gradient-primary: var(--accent-fill);
-  --gradient-success: var(--ink-1);
 
   /* ===== Tone Colors (standard convention) ===== */
   --tone-1: rgba(255, 68, 68, 1);
@@ -946,7 +941,7 @@ body {
   outline: none;
 }
 .focus-ring-primary {
-  outline: 2px solid var(--accent-fill);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

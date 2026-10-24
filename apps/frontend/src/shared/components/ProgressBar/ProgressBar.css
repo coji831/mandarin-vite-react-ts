@@ -19,7 +19,7 @@
 .progress-bar__fill {
   height: 100%;
   min-width: 4px;
-  background: var(--gradient-success);
+  background: var(--ink-1);
   border-radius: var(--radius-pill);
   transition: width var(--transition-normal);
 }

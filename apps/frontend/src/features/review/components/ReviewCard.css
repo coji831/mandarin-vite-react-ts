@@ -54,7 +54,7 @@
 }
 .review-card__audio-btn:focus-visible {
   /* focus parity with rating buttons (C.2) */
-  outline: 2px solid var(--accent-fill);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .review-card__rating-btn:focus-visible {
-  outline: 2px solid var(--accent-fill); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
+  outline: 2px solid var(--focus-ring); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
   /* bundled with outline */
   outline-offset: 2px;
 }

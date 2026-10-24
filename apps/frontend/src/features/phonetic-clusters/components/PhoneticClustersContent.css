@@ -36,7 +36,7 @@
 
 .cluster-card-skeleton__line {
   height: 14px;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-sm);
 }
 

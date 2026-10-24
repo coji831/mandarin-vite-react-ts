@@ -75,7 +75,7 @@ New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1
 ## 6. A11y checklist (desktop-only)
 
 - One `<h1>` (PageHeader); sections use `<h2>`; no skipped levels.
-- `focus-visible` ring (`outline: 2px solid var(--accent-fill)` + 2px offset) on every interactive element (WCAG 2.4.11).
+- `focus-visible` ring (`outline: 2px solid var(--focus-ring)` + 2px offset) on every interactive element (WCAG 2.4.11).
 - Contrast: `--ink-1/secondary/muted` on `--card` (existing tokens pass AA).
 - Touch targets ≥ `--size-touch` (28px) on nav rows, quick tiles, CTA (SC 2.5.8).
 - No color-only states: ProgressBar paired with % text; phase status has text.
