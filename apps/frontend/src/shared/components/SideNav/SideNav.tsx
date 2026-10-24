@@ -324,7 +324,7 @@ function SideNav({
             <span aria-hidden="true">
               <Icon name={collapsed ? "chevron-right" : "chevron-left"} size={16} />
             </span>
-            <span className="side-nav__footer-label font-xs text-muted">
+            <span className="side-nav__footer-label font-xs text-secondary">
               {collapsed ? "" : "Collapse"}
             </span>
           </button>

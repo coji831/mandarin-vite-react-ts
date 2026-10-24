@@ -202,7 +202,7 @@ export const SentenceDisplay = memo(function SentenceDisplay({
 
           {/* Pinyin */}
           <div
-            className="sentence-display__pinyin font-sm text-tertiary lh-1-4"
+            className="sentence-display__pinyin font-sm text-secondary lh-1-4"
             aria-label="Pinyin"
           >
             {sentence.pinyin}

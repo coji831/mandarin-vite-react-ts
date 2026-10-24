@@ -39,12 +39,12 @@ export const PictographLayout = React.memo(function PictographLayout({
 
       {story ? (
         <div className="mnemonic-card__pictograph-info">
-          <p className="text-secondary font-sm m-0 lh-normal">{story}</p>
+          <p className="text-primary font-sm m-0 lh-normal">{story}</p>
           {isEdited && <span className="mnemonic-card__edited-tag">(edited)</span>}
         </div>
       ) : (
         <div className="mnemonic-card__pictograph-info">
-          <p className="text-tertiary font-sm m-0 lh-normal">
+          <p className="text-primary font-sm m-0 lh-normal">
             This character (&ldquo;{character}&rdquo;) is a simple pictograph— its meaning is
             directly represented by its form.
           </p>
