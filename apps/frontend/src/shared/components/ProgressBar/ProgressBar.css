@@ -32,3 +32,30 @@
   height: 100%;
   background: var(--color-warn);
 }
+
+@media (forced-colors: active) {
+  /* Forced colors discard the track, the fill and the threshold washes, so progress would
+     read as an empty row. Spine's own block re-draws the frame and the filled span in system
+     colours. One delta: this track has no border outside HCM, so box-sizing keeps the added
+     1px edge from growing the var(--space-xs) track. */
+  .progress-bar__track {
+    box-sizing: border-box;
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .progress-bar__fill {
+    background: Highlight;
+  }
+
+  .progress-bar__threshold {
+    background: CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* motion.md's ProgressBar row: the fill appears at its value with no sweep. */
+  .progress-bar__fill {
+    transition: none;
+  }
+}

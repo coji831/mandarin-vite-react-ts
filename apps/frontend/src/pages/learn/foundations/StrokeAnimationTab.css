@@ -18,6 +18,15 @@
   /* flex-shrink migrated to utility class: shrink-0 */
 }
 
+@media (forced-colors: active) {
+  /* The divider is a 1px box, not a border: forced colors replace its hairline fill with
+     Canvas and the only drawn separation between the two search controls goes with it. The
+     box is already 1px — only its colour is re-stated, so no geometry moves. */
+  .stroke-anim-search-divider {
+    background: CanvasText;
+  }
+}
+
 @media (max-width: 640px) {
   .stroke-anim-search-bar {
     /* structural: flex-col — responsive */
