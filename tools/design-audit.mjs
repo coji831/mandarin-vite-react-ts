@@ -485,7 +485,7 @@ const CHECKS = {
     name: "elevation-no-hairline",
     severity: "error",
     description:
-      "Rule uses --shadow-elevated-* without --surface-border-subtle in the same rule — elevated surfaces get the hairline (Elevation Usage Ladder)",
+      "Rule uses --shadow-elevated-* without --surface-border-subtle or --hairline in the same rule — elevated surfaces get the hairline (Elevation Usage Ladder)",
     cache: null,
     test: function (line, file) {
       if (!file.endsWith(".css")) return null;
@@ -812,7 +812,7 @@ function computeElevationNoHairline(file) {
   const findings = [];
   for (const rule of parseCssRules(content)) {
     if (!/var\(--shadow-elevated-[123]\)/.test(rule.body)) continue;
-    if (/var\(--surface-border-subtle\)/.test(rule.body)) continue;
+    if (/var\(--(?:surface-border-subtle|hairline)\)/.test(rule.body)) continue;
     findings.push({ line: rule.line, match: `${rule.selector} (elevated, no hairline)` });
   }
   return findings.length ? findings : null;

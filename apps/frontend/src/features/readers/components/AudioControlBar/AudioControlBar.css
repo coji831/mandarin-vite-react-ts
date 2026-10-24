@@ -19,7 +19,7 @@
   gap: var(--space-sm);
   padding: var(--space-xs) var(--space-sm);
   min-height: 44px;
-  background-color: var(--surface-dark-alt-2);
+  background-color: var(--card);
   border: 1px solid var(--hairline);
   /* border-radius bundled with toolbar border */
   border-radius: var(--radius-md);

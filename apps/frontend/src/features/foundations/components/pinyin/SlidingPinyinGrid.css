@@ -46,7 +46,7 @@
   z-index: var(--z-chrome);
   width: var(--grid-cell-width);
   height: var(--grid-cell-height);
-  background-color: var(--surface-dark-alt-2);
+  background-color: var(--card);
 }
 
 /* Diagonal divider between the I/F corner labels — re-expressed without

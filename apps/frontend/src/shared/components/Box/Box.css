@@ -42,7 +42,7 @@
 
 .box-card-elevated {
   background: var(--canvas);
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated-1);
   padding: var(--space-lg);
@@ -50,8 +50,8 @@
 }
 
 .box-elevated {
-  background: var(--surface-dark-alt-2);
-  border: 1px solid var(--surface-border-subtle);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
   box-shadow: var(--shadow-elevated-2);

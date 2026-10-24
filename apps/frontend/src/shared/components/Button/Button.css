@@ -39,10 +39,10 @@
 
 /* Primary - Gradient amber */
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-fill) 0%, var(--color-primary-dark) 100%);
+  background: var(--accent-fill);
   border: none;
   border-radius: var(--radius-md);
-  color: white;
+  color: var(--accent-fill-ink);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -92,7 +92,7 @@
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border-color: var(--edge-control);
   color: var(--ink-1);
 }
@@ -113,7 +113,7 @@
 }
 
 .btn-ghost-primary:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
   border-color: var(--edge-control);
   color: var(--ink-1);
 }
@@ -125,7 +125,7 @@
 
 /* Icon - Small close/X button */
 .btn-icon {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border: none;
   border-radius: var(--radius-sm);
   padding: 0;
@@ -137,7 +137,7 @@
 }
 
 .btn-icon:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
   color: var(--ink-1);
 }
 
@@ -157,7 +157,7 @@
 
 .btn-control:hover:not(:disabled) {
   background: var(--surface-hover);
-  border-color: var(--color-primary-border-strong);
+  border-color: var(--edge-control);
 }
 
 .btn-control:disabled {
@@ -167,7 +167,7 @@
 /* Control active - Active media button */
 .btn-control-active {
   background: transparent;
-  border: 1px solid var(--color-primary-border-strong);
+  border: 1px solid var(--edge-control);
   border-radius: var(--radius-sm);
   color: var(--ink-2);
   font-size: var(--font-sm);
@@ -193,7 +193,7 @@
 }
 
 .btn-circle:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
   color: var(--ink-1);
 }
 
@@ -231,7 +231,7 @@
 }
 
 .btn-primary-active:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
 }
 
 /* Tab - Content tab header (inactive) */
@@ -260,7 +260,7 @@
 }
 
 .btn-tab-active:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
 }
 
 /* Tone variants - Pinyin tone selection (border-2) */

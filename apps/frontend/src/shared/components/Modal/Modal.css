@@ -8,7 +8,7 @@
   max-height: 90vh;
   animation: modal-enter var(--transition-fast) ease-out;
   /* Precision-minimal modal surface: hairline + neutral elevation (A.2/A.3) */
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   box-shadow: var(--shadow-elevated-3);
 }
 

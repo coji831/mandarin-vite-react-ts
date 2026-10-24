@@ -28,6 +28,6 @@
 }
 
 .badge--accent {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
   color: var(--accent-ink);
 }

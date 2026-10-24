@@ -30,7 +30,7 @@
   transition: border-color var(--transition-normal);
 }
 .btn-base:hover {
-  border-color: var(--color-primary-border-hover);
+  border-color: var(--edge-control);
 }
 .btn-base:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -51,7 +51,7 @@
   line-height: var(--lh-1);
 }
 .btn-close:hover {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border-radius: var(--radius-sm);
   color: var(--ink-1);
 }
@@ -134,10 +134,12 @@
 /* ═══════════════════════════════════════════════
    Component: Alert Containers
    State feedback containers for success/error/warning/info.
+   1b: Ruling 2 — a status edge is the full tone, not a 30% alpha step;
+   --color-success-border and --color-warning-border retired here.
    ═══════════════════════════════════════════════ */
 .alert-success {
   background: color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent);
-  border: 1px solid var(--color-success-border);
+  border: 1px solid var(--color-success);
   border-radius: var(--radius-md);
 }
 .alert-error {
@@ -147,7 +149,7 @@
 }
 .alert-warning {
   background: color-mix(in srgb, var(--color-warn) calc(var(--status-tint) * 100%), transparent);
-  border: 1px solid var(--color-warning-border);
+  border: 1px solid var(--color-warn);
   border-radius: var(--radius-md);
 }
 .alert-info {
@@ -206,7 +208,7 @@
    ═══════════════════════════════════════════════ */
 .card-raised {
   background: var(--card);
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
   box-shadow: var(--shadow-elevated-2);
@@ -220,7 +222,7 @@
 .btn-icon-circle {
   width: 22px;
   height: 22px;
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   color: var(--ink-2);
   font-size: var(--font-xs);
   transition:
@@ -228,7 +230,7 @@
     color var(--transition-fast);
 }
 .btn-icon-circle:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
   color: var(--ink-1);
 }
 /* .btn-icon-circle:disabled — migrated to disabled:op-60 utility */

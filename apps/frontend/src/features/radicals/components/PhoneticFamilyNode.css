@@ -22,7 +22,7 @@
 }
 
 .phonetic-family-node__header:hover {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
   border-radius: var(--radius-md);
 }
 
@@ -51,7 +51,7 @@
 }
 
 .phonetic-family-node__member-row:hover {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
   border-radius: var(--radius-md);
 }
 

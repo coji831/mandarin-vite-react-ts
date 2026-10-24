@@ -30,7 +30,7 @@
 }
 
 .pictograph-match__question-area {
-  background: var(--surface-dark-alt-2);
+  background: var(--card);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   margin-bottom: var(--space-lg);

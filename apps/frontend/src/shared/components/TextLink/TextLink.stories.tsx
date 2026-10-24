@@ -1,5 +1,5 @@
 /**
- * Tokens used: --accent-fill, --color-primary-dark, --color-primary-light, --transition-fast
+ * Tokens used: --accent-fill, --color-primary-dark, --accent-ink, --transition-fast
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

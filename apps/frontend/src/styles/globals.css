@@ -29,69 +29,57 @@
 }
 
 :root {
-  /* ===== Amber Stone, in spine's semantic vocabulary =====
-     Step 1a of the spine-hybrid migration: NAMES ONLY. Every value below is the
-     Amber Stone value this layer carried before the rename; step 1b flips the
-     values to Night Bench (ADR-011). Retired names and where each one landed:
+  /* ===== Night Bench, in spine's semantic vocabulary =====
+     Step 1a of the spine-hybrid migration moved NAMES ONLY; step 1b flipped the
+     values to Night Bench (ADR-011). The canonical palette here is spine's
+     `themes.night-bench`; the product layer keeps its own fonts (ADR-011) and its
+     domain families (status/info, classification, XP, stroke, tone, wash ramp).
+     Retired names and where each one landed:
      context/topics/spine-mandarin/step1a-receipt.md. */
 
   /* ── Accent: fill / ink / tint / fill-lighter, plus the control edge ──
-     Five accent rows are HELD here for step 1b: each one's landing name resolves
-     to a different today-value (the alpha ladder collapses, or two unequal accent
-     tiers merge), so the collapse is paint work and belongs in 1b. */
-  --accent-fill: rgba(180, 83, 9, 1);
-  /* Accent AS TEXT (was --color-primary-lighter) — the text-safe tier.
-     WCAG 2.2 SC 1.4.3: amber-600 is only 4.13–4.47:1 on tinted/medium surfaces;
-     this amber-500 tier clears 4.5:1 on every dark surface. Never a fill. */
-  --accent-ink: rgba(245, 158, 11, 1);
-  /* 1b: --color-primary-light → --accent-ink (two unequal accent-text tiers merge; contrast fix) */
-  --color-primary-light: rgba(217, 119, 6, 1);
-  /* Accent wash. The old --color-primary-bg-light (0.08) and -bg-medium (0.12)
-     alpha steps join this plane in 1b: spine carries one accent plane, not a ladder. */
-  --accent-tint: rgba(180, 83, 9, 0.18);
-  /* 1b: --color-primary-bg-light → --accent-tint (alpha ladder collapses to 0.18) */
-  --color-primary-bg-light: rgba(180, 83, 9, 0.08);
-  /* 1b: --color-primary-bg-medium → --accent-tint (alpha ladder collapses to 0.18) */
-  --color-primary-bg-medium: rgba(180, 83, 9, 0.12);
+     Night Bench (ADR-011): one accent, two roles. Step 1b collapsed the old
+     alpha ladder — 0.08 / 0.12 / 0.18 washes and 0.3 / 0.4 / 0.6 edges. */
+  --accent-fill: rgba(216, 164, 92, 1);
+  /* Ink ON the accent fill — spine's accent.fill-ink. Dark ink for text on the
+     amber fill (8.26:1); 1b boundary amendment (design-lead-btn-ink-ruling.md). */
+  --accent-fill-ink: rgba(23, 19, 15, 1);
+  /* Accent AS TEXT — the same dusty amber as the fill, held to one tier.
+     1b: --color-primary-light → --accent-ink — two unequal accent-text tiers
+     merge, and the old amber-600 tier failed 4.5:1 as text on tinted surfaces.
+     Never a fill. */
+  --accent-ink: rgba(216, 164, 92, 1);
+  /* Accent wash — one plane, no alpha ladder.
+     1b: --color-primary-bg-light (0.08) and --color-primary-bg-medium (0.12)
+     → this plane; both retired here. */
+  --accent-tint: color-mix(in srgb, var(--accent-fill) 14%, var(--canvas));
   /* The accent lifted, for a hover fill (was --color-primary-hover). */
-  --accent-fill-lighter: rgba(217, 119, 6, 1);
-  /* Interactive-control edge. The --color-primary-border-strong / -hover alpha
-     ladder joins this edge in 1b: a hover boundary becomes a value change on the
-     control's own edge, not a separate token. */
-  --edge-control: rgba(180, 83, 9, 0.3);
-  /* 1b: --color-primary-border-strong → --edge-control (alpha ladder collapses to 0.3) */
-  --color-primary-border-strong: rgba(180, 83, 9, 0.4);
-  /* 1b: --color-primary-border-hover → --edge-control (hover edge collapses onto its resting value) */
-  --color-primary-border-hover: rgba(180, 83, 9, 0.6);
-  /* The focus ring (was the outline use of --color-primary-light). Held at the
-     old outline colour; step 1b takes spine's Night Bench ring. */
-  --focus-ring: rgba(217, 119, 6, 1);
-  /* Amber scale step. Retires at step 1b with --gradient-primary: its only
-     consumer is the Button gradient, which becomes a flat --accent-fill fill. */
+  --accent-fill-lighter: rgba(224, 176, 112, 1);
+  /* Interactive-control edge — a boundary you can find (clears 3.0, not 4.5).
+     1b: --color-primary-border-strong (0.4) and --color-primary-border-hover
+     (0.6) → this edge; a hover boundary is paint on the control, not a token. */
+  --edge-control: rgba(126, 112, 89, 1);
+  /* Focus ring — the accent at full alpha (was the outline use of
+     --color-primary-light). 1b: spine's Night Bench ring. */
+  --focus-ring: rgba(216, 164, 92, 1);
+  /* 1b: 0 consumers after the Button flatten — dead; delete in slop-cleanup */
   --color-primary-dark: rgba(146, 64, 14, 1);
 
   /* ── Status: one tone per role, one plane alpha knob, one destructive edge ──
      A status plane is COMPOSED, never typed:
-       color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent)
-     Held at the old 0.15 plane alpha so the planes paint exactly as before the
-     rename; spine's Night Bench knob is 0.12 and lands at step 1b. */
-  --status-tint: 0.15;
+       color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent) */
+  --status-tint: 0.12;
 
   /* Success */
-  --color-success: rgba(52, 211, 153, 1);
+  --color-success: rgba(147, 185, 130, 1);
 
   /* Error */
-  --color-error: rgba(239, 107, 107, 1);
-  /* Destructive edge (was --color-error-border). Held at the old 0.3 alpha;
-     step 1b takes spine's edge-danger mix over the card. */
-  --edge-danger: rgba(239, 107, 107, 0.3);
+  --color-error: rgba(224, 138, 123, 1);
+  /* Destructive edge — the error tone mixed over the card. */
+  --edge-danger: color-mix(in srgb, var(--color-error) 68%, var(--card));
 
   /* Warning verdict (was --color-warning — spine's canonical status name) */
-  --color-warn: rgba(245, 158, 11, 1);
-  /* 1b: --color-success-border → var(--color-success) (status edge takes the full tone — Ruling 2) */
-  --color-success-border: rgba(52, 211, 153, 0.3);
-  /* 1b: --color-warning-border → var(--color-warn) (status edge takes the full tone — Ruling 2) */
-  --color-warning-border: rgba(245, 158, 11, 0.3);
+  --color-warn: rgba(216, 164, 92, 1);
 
   /* ── Domain · pinyinpal status/info (GAP 2: spine declares success/error/warn
      only, so an info role lives in the product layer, values kept) ── */
@@ -140,32 +128,24 @@
 
   /* ===== Surfaces ===== */
 
-  --canvas: rgba(28, 25, 23, 1);
-  --card: rgba(38, 35, 33, 1);
-  /* 1b: --surface-dark-alt-2 → --card (three planes merge to two) */
-  --surface-dark-alt-2: rgba(45, 42, 39, 1);
+  --canvas: rgba(23, 19, 15, 1);
+  --card: rgba(30, 25, 21, 1);
   /* Translucent planes (GAP 3 — no spine equivalent: --scrim is a backdrop and
      --card-hover is an opaque mix, both different roles). */
   --surface-overlay: rgba(38, 35, 33, 0.3);
   --surface-hover: rgba(61, 57, 53, 0.5);
-  /* The one boundary — of planes, not of verdicts (that is --edge-*). */
-  --hairline: rgba(61, 57, 53, 1);
-  /* 1b: --surface-border-subtle → --hairline (the card hairline becomes the one boundary) */
-  --surface-border-subtle: rgba(255, 255, 255, 0.08);
+  /* The one boundary — of planes, not of verdicts (that is --edge-*).
+     1b: --surface-border-subtle retired here — a card edge is a hairline, not a wash. */
+  --hairline: rgba(51, 43, 35, 1);
 
-  /* Light surfaces (semi-transparent washes). The old --surface-light-10 (0.1)
-     and -20 (0.2) steps join the ramp ceiling in 1b: spine's wash ramp terminates
-     at 3 / 5 / 8. */
+  /* Light surfaces (semi-transparent washes). The wash ramp terminates at 3 / 5 / 8;
+     1b truncated it there — --surface-light-10 and --surface-light-20 retired here. */
   --surface-light-3: rgba(255, 255, 255, 0.03);
   --surface-light-5: rgba(255, 255, 255, 0.05);
   --surface-light-8: rgba(255, 255, 255, 0.08);
-  /* 1b: --surface-light-10 → --surface-light-8 (ramp truncates at 8) */
-  --surface-light-10: rgba(255, 255, 255, 0.1);
-  /* 1b: --surface-light-20 → --surface-light-8 (ramp truncates at 8) */
-  --surface-light-20: rgba(255, 255, 255, 0.2);
 
   /* Modal/overlay backdrop */
-  --scrim: rgba(0, 0, 0, 0.7);
+  --scrim: rgba(0, 0, 0, 0.65);
 
   /* ===== Text Colors ===== */
 
@@ -176,16 +156,10 @@
      Placeholder text must stay ≥4.5:1 — SC 1.4.3 explicitly covers it.
      The wash tier is a domain name (domain.pinyinpal.ink.wash-*): spine declares
      ink.1/2/3/quiet only, so the decorative tier has no spine landing spot. */
-  --ink-1: rgba(255, 255, 255, 0.95);
-  --ink-2: rgba(255, 255, 255, 0.85);
-  --ink-3: rgba(255, 255, 255, 0.7);
-  --ink-quiet: rgba(
-    255,
-    255,
-    255,
-    0.6
-  ); /* 0.6 white on --card (rgba(38,35,33,1)) ≈ 6.5:1 — meets ≥4.5:1 */
-
+  --ink-1: rgba(218, 211, 197, 1);
+  --ink-2: rgba(168, 154, 129, 1);
+  --ink-3: rgba(141, 128, 106, 1);
+  --ink-quiet: rgba(148, 135, 112, 1); /* 5.24:1 on --canvas, 4.94:1 on --card — meets ≥4.5:1 */
   --ink-wash-subtle: rgba(255, 255, 255, 0.2);
   --ink-wash-ghost: rgba(255, 255, 255, 0.05);
 
@@ -239,27 +213,33 @@
 
   /* ===== Border Radius ===== */
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-pill: 20px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
 
   /* ===== Shadows ===== */
 
-  /* 3-level elevation system — amber glow */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(245, 158, 11, 0.2);
-  --shadow-lg: 0 6px 20px rgba(245, 158, 11, 0.25);
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-sm: none;
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-md: none;
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-lg: none;
 
   /* XP gold glow — pictograph golden border emphasis */
   --shadow-xp-glow: 0 0 8px rgba(251, 191, 36, 0.3);
 
-  /* Neutral elevation family — precision-minimal. Amber `--shadow-md/lg` are
-     hover-lift/XP-only (A.3 policy); these neutral shadows are the resting
-     elevation for cards, popovers, and modals. */
-  --shadow-elevated-1: 0 1px 2px rgba(0, 0, 0, 0.3); /* resting Browse cards — crisp 1px edge */
-  --shadow-elevated-2: 0 4px 12px rgba(0, 0, 0, 0.35); /* popovers / dropdowns / box-elevated / card-raised */
-  --shadow-elevated-3: 0 12px 32px rgba(0, 0, 0, 0.45); /* modal surface / future toasts */
+  /* Neutral elevation family — the names survive the paint: every value is
+     `none` under Night Bench (ADR-011), so a composing rule that reads one
+     paints a flat surface. Deletion (and the utility classes) is the
+     vocabulary commit's job. */
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-elevated-1: none;
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-elevated-2: none;
+  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
+  --shadow-elevated-3: none;
 
   /* ===== Z-Index Ladder ===== */
 
@@ -273,9 +253,9 @@
 
   /* ===== Transitions ===== */
 
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.4s ease; /* toggle-switch knob slide — deliberately slower, visible flip affordance */
+  --transition-fast: 120ms ease-out;
+  --transition-normal: 240ms ease-out;
+  --transition-slow: 360ms ease-out; /* toggle-switch knob slide — deliberately slower, visible flip affordance */
 
   /* ===== Typography ===== */
 
@@ -319,8 +299,11 @@
 
   /* ===== Gradients ===== */
 
-  --gradient-primary: linear-gradient(135deg, rgba(180, 83, 9, 1) 0%, rgba(146, 64, 14, 1) 100%);
-  --gradient-success: linear-gradient(90deg, rgba(52, 211, 153, 1) 0%, rgba(5, 150, 105, 1) 100%);
+  /* Flat by ruling (ADR-011): the gradient role survives as a name, the paint does
+     not. Both values are aliases, so the receipt's cross-check holds — the first
+     must equal --accent-fill, the second must equal --ink-1. */
+  --gradient-primary: var(--accent-fill);
+  --gradient-success: var(--ink-1);
 
   /* ===== Tone Colors (standard convention) ===== */
   --tone-1: rgba(255, 68, 68, 1);
@@ -707,7 +690,7 @@ body {
   background: var(--accent-tint);
 }
 .bg-primary-bg-medium {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
 }
 .bg-surface-hover {
   background: var(--surface-hover);
@@ -719,7 +702,7 @@ body {
   background: var(--canvas);
 }
 .bg-surface-dark-alt-2 {
-  background: var(--surface-dark-alt-2);
+  background: var(--card);
 }
 .bg-surface-light-3 {
   background: var(--surface-light-3);
@@ -731,13 +714,13 @@ body {
   background: var(--surface-light-8);
 }
 .bg-surface-light-10 {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
 }
 .bg-surface-light-20 {
-  background: var(--surface-light-20);
+  background: var(--surface-light-8);
 }
 .bg-primary-bg-light {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
 }
 .bg-primary {
   background: var(--accent-fill);
@@ -746,7 +729,7 @@ body {
   background: var(--status-info-bg);
 }
 .bg-gradient-primary {
-  background: linear-gradient(135deg, var(--accent-fill) 0%, var(--color-primary-dark) 100%);
+  background: var(--accent-fill);
 }
 .bg-gradient-success {
   background: linear-gradient(90deg, var(--color-success) 0%, rgba(5, 150, 105, 1) 100%);
@@ -1021,16 +1004,16 @@ body {
   border-color: var(--hairline);
 }
 .border-surface-subtle {
-  border-color: var(--surface-border-subtle);
+  border-color: var(--hairline);
 }
 .border-surface-light-10 {
-  border-color: var(--surface-light-10);
+  border-color: var(--surface-light-8);
 }
 .border-warning {
   border-color: var(--color-warn);
 }
 .border-warning-border {
-  border-color: var(--color-warning-border);
+  border-color: var(--color-warn);
 }
 
 /* ═══════════════════════════════════════════════

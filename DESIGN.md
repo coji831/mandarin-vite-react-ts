@@ -142,19 +142,19 @@ tokens:
     measure-prose: "720px" # --measure-prose: long-form reading measure (≈65ch at 16px; px per unit-allowed-list)
   size:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
-  radii: ["4px", "8px", "12px", "20px"]
+  radii: ["0px", "0px", "0px", "0px"]
   shadows:
-    sm: "0 2px 8px rgba(0,0,0,0.3)"
-    md: "0 4px 12px rgba(245,158,11,0.2)"
-    lg: "0 6px 20px rgba(245,158,11,0.25)"
+    sm: "none"
+    md: "none"
+    lg: "none"
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
-    elevated-1: "0 1px 2px rgba(0,0,0,0.3)" # neutral — resting Browse cards (crisp 1px edge)
-    elevated-2: "0 4px 12px rgba(0,0,0,0.35)" # neutral — popovers / dropdowns / box-elevated / card-raised
-    elevated-3: "0 12px 32px rgba(0,0,0,0.45)" # neutral — modal surface / future toasts
+    elevated-1: "none"
+    elevated-2: "none"
+    elevated-3: "none"
   transitions:
-    fast: "0.2s ease"
-    normal: "0.3s ease"
-    slow: "0.4s ease" # toggle-switch knob slide — deliberately slower, visible flip affordance
+    fast: "120ms ease-out"
+    normal: "240ms ease-out"
+    slow: "360ms ease-out"
   z-index: # --z-* ladder — stacking order (ascending): content < chrome < popover < modal < toast
     content: 1 # base content layer
     chrome: 10 # app chrome (top bar / side nav)
@@ -195,6 +195,8 @@ tokens:
 **Last Updated:** 2026-09-10
 
 ## Changelog
+
+- **2026-10-24** — Step 1b of the spine-hybrid migration: Night Bench paint landed (ADR-011 and `context/topics/spine-mandarin/design-lead-1b-scope-ruling.md`). The three parity-covered families moved in this frontmatter only — `tokens.radii` → `0px`, the six elevation shadows → `none` (`xp-glow` survives), `tokens.transitions` → `120ms/240ms/360ms ease-out`. `tokens.colors` is untouched here; the palette rewrite is the deferred `design-md` step. Body sections still describing the Amber Stone elevation/amber-glow policy are stale until that step.
 
 - **2026-09-10** — CJK-first identity (S1′a-1, blueprint P0-1): added `tokens.typography.font-families` (`--font-latin` = Manrope, `--font-hanzi` = Noto Sans SC stack) to DESIGN.md + globals.css; base `font-family` switched from `Inter` → `var(--font-latin)` — kills the "Inter = AI default" tell. Hanzi never gets letter-spacing (`--tracking-tight` stays Latin-only).
 

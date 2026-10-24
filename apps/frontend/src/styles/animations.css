@@ -60,7 +60,7 @@
   background: linear-gradient(
     90deg,
     var(--surface-light-5) 0%,
-    var(--surface-light-10) 50%,
+    var(--surface-light-8) 50%,
     var(--surface-light-5) 100%
   );
   background-size: 200% 100%;

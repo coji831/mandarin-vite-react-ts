@@ -5,7 +5,7 @@
   flex-shrink: 0;
   padding: 0 var(--space-md);
   /* Phase A B.2 — hairline divider (structural separators keep --hairline) */
-  border-bottom: 1px solid var(--surface-border-subtle);
+  border-bottom: 1px solid var(--hairline);
   background: var(--card);
   gap: var(--space-sm);
 }

@@ -16,7 +16,7 @@
   padding: var(--space-sm);
   border: 1px solid var(--edge-control);
   border-radius: var(--radius-sm);
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
 }
 
 .grammar-hub__explanation {
@@ -74,8 +74,9 @@
 }
 
 .grammar-hub__related-link:hover {
-  border-color: var(--color-primary-border-strong);
-  background: var(--color-primary-bg-light);
+  /* utility-duplicate exemption: a hover boundary is the control's own edge; .border-primary-border cannot express hover-on-this-element (1b collapse, R4/R5) */
+  border-color: var(--edge-control);
+  background: var(--accent-tint);
 }
 
 .grammar-hub__related-link:focus-visible {

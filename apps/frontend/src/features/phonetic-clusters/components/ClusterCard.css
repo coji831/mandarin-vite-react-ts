@@ -23,5 +23,5 @@
 /* ─── Collapsible toggle header (VisFix W6a) ─────────────────────── */
 
 .cluster-card__toggle:hover {
-  background: var(--color-primary-bg-light); /* :hover pseudo — can't use className utility */
+  background: var(--accent-tint); /* :hover pseudo — can't use className utility */
 }

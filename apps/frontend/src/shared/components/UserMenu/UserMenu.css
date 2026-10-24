@@ -39,7 +39,7 @@
   right: 0;
   min-width: 220px;
   z-index: var(--z-popover);
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
   box-shadow: var(--shadow-elevated-2);

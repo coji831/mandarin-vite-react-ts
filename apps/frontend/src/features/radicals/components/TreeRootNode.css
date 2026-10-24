@@ -10,7 +10,7 @@
 
 .tree-root-node__toggle:hover {
   /* structural: text-primary-light */
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
   /* hover color is specific to this toggle */
 }
 

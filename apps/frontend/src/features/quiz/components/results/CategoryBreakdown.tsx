@@ -100,7 +100,7 @@ export function CategoryBreakdown({ answers, categoryBreakdown, total }: Categor
         label="Pinyin recognition"
         correct={pinyinCorrect}
         total={denominator}
-        color="var(--color-primary-light)"
+        color="var(--accent-ink)"
       />
 
       <CategoryBar

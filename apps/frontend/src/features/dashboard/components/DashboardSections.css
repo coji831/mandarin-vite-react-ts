@@ -23,7 +23,7 @@
   align-items: flex-start;
   /* .btn-tag is transparent — the tile is a recessed card surface */
   background: var(--canvas);
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   /* .btn-tag is a pill — the tile is a card */
   border-radius: var(--radius-lg);
   /* card padding beats the .btn-md tag padding */

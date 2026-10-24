@@ -23,7 +23,7 @@
 }
 
 .csp-ctrl-play {
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
 }
 
 @media (max-width: 640px) {
@@ -49,6 +49,6 @@
 /* Speed slider */
 .stroke-speed-slider {
   width: 60px;
-  accent-color: var(--color-primary-light);
+  accent-color: var(--accent-ink);
   cursor: pointer;
 }

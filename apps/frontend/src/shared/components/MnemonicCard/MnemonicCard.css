@@ -64,7 +64,7 @@
   font-style: italic;
   text-align: center;
   padding: var(--space-sm);
-  border-top: 1px solid var(--surface-light-10);
+  border-top: 1px solid var(--surface-light-8);
   margin-top: var(--space-md);
 }
 
@@ -117,7 +117,7 @@
   padding: 2px var(--space-xs);
   border-radius: var(--radius-pill);
   background: var(--accent-tint);
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
   font-size: var(--font-xs);
   font-weight: var(--fw-500);
 }

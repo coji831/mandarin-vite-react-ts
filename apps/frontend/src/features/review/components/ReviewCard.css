@@ -13,7 +13,7 @@
    .box-dark.review-card so it beats the shared .box-dark border regardless of
    stylesheet order. */
 .review-card.box-dark {
-  border-color: var(--surface-border-subtle);
+  border-color: var(--hairline);
 }
 
 /* review-card__side: width migrated to utility class w-full */

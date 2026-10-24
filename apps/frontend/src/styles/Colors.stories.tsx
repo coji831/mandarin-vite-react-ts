@@ -497,13 +497,6 @@ function ColorsPage() {
             bgClass="bg-surface-dark-alt"
             usage="Page plane"
           />
-          {/* 1b: delete — lands in --card */}
-          <ColorCard
-            variable="--surface-dark-alt-2"
-            value="rgba(45,42,39,1)"
-            bgClass="bg-surface-dark-alt-2"
-            usage="Held — third plane; merges into --card in 1b"
-          />
           <ColorCard
             variable="--surface-hover"
             value="rgba(61,57,53,0.5)"
@@ -515,13 +508,6 @@ function ColorsPage() {
             value="rgba(61,57,53,1)"
             borderClass="border-surface"
             usage="Borders — the one boundary of planes"
-          />
-          {/* 1b: delete — lands in --hairline */}
-          <ColorCard
-            variable="--surface-border-subtle"
-            value="rgba(255,255,255,0.08)"
-            borderClass="border-surface-subtle"
-            usage="Held — card hairline; merges into --hairline in 1b"
           />
           <ColorCard variable="--surface-overlay" value="rgba(38,35,33,0.3)" usage="Overlay tint" />
         </ColorGrid>
@@ -563,21 +549,7 @@ function ColorsPage() {
               variable="--surface-light-8"
               value="rgba(255,255,255,0.08)"
               bgClass="bg-surface-light-8"
-              usage="Light hover — ramp ceiling (10 and 20 above it are held for 1b)"
-            />
-            {/* 1b: delete — lands in --surface-light-8 */}
-            <ColorCard
-              variable="--surface-light-10"
-              value="rgba(255,255,255,0.1)"
-              bgClass="bg-surface-light-10"
-              usage="Held — joins the 0.08 ceiling in 1b"
-            />
-            {/* 1b: delete — lands in --surface-light-8 */}
-            <ColorCard
-              variable="--surface-light-20"
-              value="rgba(255,255,255,0.2)"
-              bgClass="bg-surface-light-20"
-              usage="Held — joins the 0.08 ceiling in 1b"
+              usage="Light hover — the ramp ceiling"
             />
           </ColorGrid>
         </div>
@@ -597,54 +569,18 @@ function ColorsPage() {
             value="rgba(217,119,6,1)"
             usage="Hover fill"
           />
-          {/* 1b: delete — lands in --accent-ink */}
-          <ColorCard
-            variable="--color-primary-light"
-            value="rgba(217,119,6,1)"
-            usage="Held — second accent-text tier; merges into --accent-ink in 1b (contrast fix). Today identical to --accent-fill-lighter"
-          />
-          <ColorCard
-            variable="--accent-ink"
-            value="rgba(245,158,11,1)"
-            usage="Accent text (text-safe tier)"
-          />
+          <ColorCard variable="--accent-ink" value="#d8a45c" usage="Accent text (text-safe tier)" />
           <ColorCard
             variable="--accent-tint"
             value="rgba(180,83,9,0.18)"
             bgClass="bg-primary-bg"
             usage="Accent wash — one plane, no alpha ladder"
           />
-          {/* 1b: delete — lands in --accent-tint */}
-          <ColorCard
-            variable="--color-primary-bg-light"
-            value="rgba(180,83,9,0.08)"
-            bgClass="bg-primary-bg-light"
-            usage="Held — alpha ladder joins --accent-tint (0.18) in 1b"
-          />
-          {/* 1b: delete — lands in --accent-tint */}
-          <ColorCard
-            variable="--color-primary-bg-medium"
-            value="rgba(180,83,9,0.12)"
-            bgClass="bg-primary-bg-medium"
-            usage="Held — alpha ladder joins --accent-tint (0.18) in 1b"
-          />
           <ColorCard
             variable="--edge-control"
-            value="rgba(180,83,9,0.3)"
+            value="#7e7059"
             borderClass="border-primary-border"
             usage="Control edge"
-          />
-          {/* 1b: delete — lands in --edge-control */}
-          <ColorCard
-            variable="--color-primary-border-strong"
-            value="rgba(180,83,9,0.4)"
-            usage="Held — alpha ladder joins --edge-control (0.3) in 1b"
-          />
-          {/* 1b: delete — lands in --edge-control */}
-          <ColorCard
-            variable="--color-primary-border-hover"
-            value="rgba(180,83,9,0.6)"
-            usage="Held — hover edge joins --edge-control (0.3) in 1b"
           />
         </ColorGrid>
       </Section>
@@ -670,8 +606,8 @@ function ColorsPage() {
           baseValue="#34d399"
           bgVar="--color-success"
           bgValue="rgba(52,211,153,0.15)"
-          borderVar="--color-success-border"
-          borderValue="rgba(52,211,153,0.3)"
+          borderVar="--color-success"
+          borderValue="#93b982"
           textClass="text-success"
           bgClass="bg-success-bg"
           borderClass="N/A"
@@ -700,8 +636,8 @@ function ColorsPage() {
           baseValue="#f59e0b"
           bgVar="--color-warn"
           bgValue="rgba(245,158,11,0.15)"
-          borderVar="--color-warning-border"
-          borderValue="rgba(245,158,11,0.3)"
+          borderVar="--color-warn"
+          borderValue="#d8a45c"
           textClass="text-warning"
           bgClass="N/A"
           borderClass="N/A"

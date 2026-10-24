@@ -53,13 +53,13 @@
 }
 
 .chip--surface {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border-color: var(--hairline);
   color: var(--ink-1);
 }
 
 .chip--solid {
-  background: var(--surface-light-20);
+  background: var(--surface-light-8);
   border-color: transparent;
   color: var(--ink-1);
 }
@@ -67,7 +67,7 @@
 .chip--primary {
   background: var(--accent-tint);
   border-color: var(--edge-control);
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
 }
 
 .chip--tone-1 {
@@ -102,9 +102,9 @@
 
 /* Active (selected/pressed) — applies to any variant */
 .chip--active {
-  background: var(--color-primary-bg-medium);
-  border-color: var(--color-primary-border-strong);
-  color: var(--color-primary-light);
+  background: var(--accent-tint);
+  border-color: var(--edge-control);
+  color: var(--accent-ink);
 }
 
 /* Interactive affordances — ONLY when rendered as <button> */
@@ -113,7 +113,7 @@
 }
 
 .chip--interactive:hover {
-  border-color: var(--color-primary-border-hover);
+  border-color: var(--edge-control);
 }
 
 .chip--interactive:focus-visible {
@@ -164,7 +164,7 @@
 }
 
 .chip__count {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border-radius: var(--radius-pill);
   padding: 0 var(--space-xs);
   font-size: var(--font-xs);

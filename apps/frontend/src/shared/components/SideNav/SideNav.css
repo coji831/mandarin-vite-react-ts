@@ -9,7 +9,7 @@
   /* Precision-minimal rail (Phase A B.2): muted surface + hairline divider vs
      the --canvas content area. */
   background: var(--card);
-  border-right: 1px solid var(--surface-border-subtle);
+  border-right: 1px solid var(--hairline);
   /* Component-scoped token for the icon column (24px) — shared by the
      brand/row icons and the child indent math so the 24px is not duplicated. */
   --side-nav-icon-w: 24px;
@@ -81,7 +81,7 @@
 }
 
 .side-nav__collapse-toggle:hover {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   color: var(--ink-1);
 }
 
