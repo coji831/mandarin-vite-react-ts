@@ -3,10 +3,9 @@
  *
  * The ONLY content measure+pad+surface primitive. Centers content at the
  * archetype's measure token with --page-pad gutters. The archetype prop speaks
- * PinyinPal's page vocabulary; the measure it selects is spine's generic one
- * (hub-launcher -> --page-measure-overview, browse-index -> --page-measure-list,
- * focus-task -> --page-measure-detail, utility -> --page-measure-settings,
- * auth -> --page-measure-auth). That mapping lives in PageShell.css only.
+ * spine's generic page vocabulary and maps one-to-one onto its measure token
+ * (overview -> --page-measure-overview, list -> --page-measure-list, detail ->
+ * --page-measure-detail, ...). That mapping lives in PageShell.css only.
  * Pages must compose as: AppShell/SideNav chrome -> PageShell -> (PageHeader)
  * -> PageStack -> (PageGrid). NO page-scoped layout CSS / hardcoded max-width.
  *
@@ -18,7 +17,20 @@
 import type { ElementType, ReactNode } from "react";
 import "./PageShell.css";
 
-export type PageArchetype = "hub-launcher" | "browse-index" | "focus-task" | "utility" | "auth";
+export type PageArchetype =
+  | "overview"
+  | "list"
+  | "detail"
+  | "create-edit"
+  | "settings"
+  | "auth"
+  | "search"
+  | "profile"
+  | "notifications"
+  | "reports"
+  | "empty"
+  | "not-found"
+  | "wizard";
 
 export type PageShellProps = {
   /** Archetype selects the measure token --page-measure-<archetype>. */
@@ -41,7 +53,7 @@ export type PageShellProps = {
 };
 
 export function PageShell({
-  archetype = "hub-launcher",
+  archetype = "overview",
   as: Tag = "div",
   children,
   className,

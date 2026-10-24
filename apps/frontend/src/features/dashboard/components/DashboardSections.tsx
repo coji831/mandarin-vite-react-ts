@@ -1,7 +1,7 @@
 /**
  * DashboardSections
  *
- * Phase 2+ dashboard body (hub-launcher archetype). Owns the page's section
+ * Phase 2+ dashboard body (overview archetype). Owns the page's section
  * rhythm via PageStack; the page container owns the PageShell measure.
  *
  * Order: PageHeader (eyebrow = phase, title, CTA top-right) → Current Phase

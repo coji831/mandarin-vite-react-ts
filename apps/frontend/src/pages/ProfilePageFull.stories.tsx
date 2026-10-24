@@ -5,7 +5,7 @@
  * mount), so Loading/Error/Empty API states would be unreachable. Default-only
  * is the complete set of reachable states. Full profile implementation is a
  * future follow-up (epic 25/39 shell family); this Full story reserves the
- * utility archetype contract.
+ * settings archetype contract.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ProfilePage } from "./ProfilePage";
@@ -13,7 +13,7 @@ import { ProfilePage } from "./ProfilePage";
 const meta: Meta<typeof ProfilePage> = {
   title: "Pages/Profile",
   component: ProfilePage,
-  tags: ["pages-utility"],
+  tags: ["pages-settings"],
   parameters: {
     layout: "fullscreen",
     layoutType: "app",

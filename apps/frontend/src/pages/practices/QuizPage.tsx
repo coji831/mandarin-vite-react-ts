@@ -36,7 +36,7 @@ export function QuizPage() {
 
   // Fallback — no matching strategy selected
   return (
-    <PageShell archetype="focus-task">
+    <PageShell archetype="detail">
       <PageStack size="default">
         <PageHeader title="Quiz" description="Select a quiz type from the practices page to begin.">
           <Button variant="primary" onClick={() => (window.location.href = practices_page)}>

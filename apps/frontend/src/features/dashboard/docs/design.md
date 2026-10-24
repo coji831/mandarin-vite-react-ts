@@ -1,5 +1,5 @@
 ---
-purpose: Design spec for the Dashboard demo (hub-launcher) — guest + authenticated landing
+purpose: Design spec for the Dashboard demo (overview) — guest + authenticated landing
 status: active
 last-verified: 2026-08-18
 type: design
@@ -8,7 +8,7 @@ type: design
 # Design Spec — Dashboard Demo (North Star)
 
 Source: BM-1 (demo-guest lane) + northstar report (Q4)
-archetype: hub-launcher # REQUIRED — page-archetypes §1
+archetype: overview # REQUIRED — page-archetypes §1
 provenance: source: Vercel precision-minimal — why: airy whitespace, strong type hierarchy, one restrained amber accent, 1px hairlines, shallow neutral elevation
 
 ## 1. User flow
@@ -36,11 +36,11 @@ Cards show previews only (phase name, %, next step, tile label). Detail/task liv
 
 ## 4. Component reuse map
 
-Reference archetype `hub-launcher` (page-archetypes §1); **none invented beyond `PageHeader`** (registry-disciplined):
+Reference archetype `overview` (page-archetypes §1); **none invented beyond `PageHeader`** (registry-disciplined):
 
 | Region             | Component                                                                    |
 | ------------------ | ---------------------------------------------------------------------------- |
-| Page shell         | `PageShell` archetype `hub-launcher`, `as="div"` (AppLayout owns `<main>`)   |
+| Page shell         | `PageShell` archetype `overview`, `as="div"` (AppLayout owns `<main>`)       |
 | Section rhythm     | `PageStack` (size `default`)                                                 |
 | Card home          | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)               |
 | Section head       | plain `section[aria-labelledby]` + `.dashboard-section-head` (component CSS) |
@@ -59,7 +59,7 @@ Reference archetype `hub-launcher` (page-archetypes §1); **none invented beyond
 | Header title    | `font-3xl fw-700 tracking-tight text-primary` (PageHeader)                                                                                                                                                                    |
 | Eyebrow         | `font-xs fw-500 text-muted tracking-wide` (PageHeader)                                                                                                                                                                        |
 | Header CTA      | `--gradient-primary` bg, `--radius-md`, hover-lift `--shadow-md` (amber)                                                                                                                                                      |
-| Card family     | `Box variant="card-elevated"` — the shared Elevation-Ladder card surface (`--canvas` + `--surface-border-subtle` hairline + `--shadow-elevated-1` + `--radius-lg`)                                                        |
+| Card family     | `Box variant="card-elevated"` — the shared Elevation-Ladder card surface (`--canvas` + `--surface-border-subtle` hairline + `--shadow-elevated-1` + `--radius-lg`)                                                            |
 | Quick tile      | `Button tag` + `.dashboard-tile` (same surface family); icon well = `--space-2xl` box, `--accent-tint`, `--accent-ink`; hover = amber border + shared hover-lift                                                              |
 | Section head    | `h2 font-lg fw-600 text-primary` + meta `font-sm text-muted`, baseline row; the section owns the 12px gap via `flex flex-col gap-sm` utilities (no raw margin in CSS)                                                         |
 | Section rhythm  | `PageStack default` = `--section-rhythm-md` (32px)                                                                                                                                                                            |
@@ -86,12 +86,12 @@ New tokens landed in this phase: `--surface-border-subtle`, `--shadow-elevated-1
 
 Anatomy (page-anatomy law — there is no page-scoped layout CSS any more):
 
-| Layer     | Where                                                           | Owns                                                         |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
-| Shell     | `PageShell archetype="hub-launcher" as="div"` (`DashboardPage`) | hub measure (960px), page gutters, region + `aria-busy`      |
-| Rhythm    | `PageStack size="default"` (each variant)                       | 32px between-section rhythm                                  |
-| Card home | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews)  | card columns + gutter; children wrapped in `role="listitem"` |
-| Sections  | `section[aria-labelledby]` + `.dashboard-section-head`          | h2 + optional meta on a baseline row                         |
+| Layer     | Where                                                          | Owns                                                         |
+| --------- | -------------------------------------------------------------- | ------------------------------------------------------------ |
+| Shell     | `PageShell archetype="overview" as="div"` (`DashboardPage`)    | hub measure (960px), page gutters, region + `aria-busy`      |
+| Rhythm    | `PageStack size="default"` (each variant)                      | 32px between-section rhythm                                  |
+| Card home | `PageGrid` (`columns={4}` tiles, `columns={2}` guest previews) | card columns + gutter; children wrapped in `role="listitem"` |
+| Sections  | `section[aria-labelledby]` + `.dashboard-section-head`         | h2 + optional meta on a baseline row                         |
 
 - The page has **no page-level stylesheet**: surfaces come from the shared
   `Box variant="card-elevated"` / `dashed` + `radius="lg"`, the `EmptyState`
@@ -112,7 +112,7 @@ Anatomy (page-anatomy law — there is no page-scoped layout CSS any more):
 
 ## 8. AI-codegen inputs
 
-`DESIGN.md` + `globals.css` + `component-registry.json` + `page-inventory.json` + `ui-composition` + one exemplar story (`DashboardPageFull` — precision-minimal hub-launcher exemplar). Storybook MCP is the component source of truth — nothing is invented beyond `PageHeader`.
+`DESIGN.md` + `globals.css` + `component-registry.json` + `page-inventory.json` + `ui-composition` + one exemplar story (`DashboardPageFull` — precision-minimal overview exemplar). Storybook MCP is the component source of truth — nothing is invented beyond `PageHeader`.
 
 ## 9. Acceptance
 
@@ -127,7 +127,7 @@ Anatomy (page-anatomy law — there is no page-scoped layout CSS any more):
 
 ```
 DashboardPage            — Route container (`pages/dashboard/DashboardPage.tsx`)
-  │                        PageShell(hub-launcher) + phase gate + guest/auth split
+  │                        PageShell(overview) + phase gate + guest/auth split
   ├── DashboardGuest     — Guest landing (sign-up CTA, hero card, phase previews)
   ├── DashboardWelcome   — Phase 1 welcome (dashed empty-state focal card)
   └── DashboardSections  — Authed (phase 2+)

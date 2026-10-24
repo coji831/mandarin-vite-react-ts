@@ -7,7 +7,7 @@
  * the Tones edge story deep-links `?tab=tones` (URL wins over `initialTab`)
  * and exercises the sandhi quiz path. Empty is not a declared state — the
  * foundations data hooks have no dedicated empty handler (an empty backend
- * falls through to the populated shell), matching the hub-launcher contract
+ * falls through to the populated shell), matching the overview contract
  * for this page.
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -18,7 +18,7 @@ import { quizHandlers } from "../../../mocks/handlers/quiz-handlers";
 const meta: Meta<typeof FoundationsPage> = {
   title: "Pages/Learn/Foundations/Full",
   component: FoundationsPage,
-  tags: ["pages-hub-launcher"],
+  tags: ["pages-overview"],
   parameters: {
     layout: "fullscreen",
     layoutType: "learn",

@@ -43,7 +43,7 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   const isQuestionPhase = phase === "QUESTION" || phase === "INPUT" || phase === "FEEDBACK";
 
   return (
-    <PageShell archetype="focus-task">
+    <PageShell archetype="detail">
       <PageStack size="default">
         <PageHeader
           title={strategy ? `Quiz: ${strategy.label}` : "Quiz"}

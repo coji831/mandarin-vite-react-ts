@@ -15,7 +15,21 @@ const meta: Meta<typeof PageShell> = {
   argTypes: {
     archetype: {
       control: "select",
-      options: ["hub-launcher", "browse-index", "focus-task", "utility", "auth"],
+      options: [
+        "overview",
+        "list",
+        "detail",
+        "create-edit",
+        "settings",
+        "auth",
+        "search",
+        "profile",
+        "notifications",
+        "reports",
+        "empty",
+        "not-found",
+        "wizard",
+      ],
     },
     as: { control: "text" },
   },
@@ -36,8 +50,8 @@ const Fill = () => (
 );
 
 export const Default: Story = {
-  name: "Default (hub-launcher)",
-  args: { archetype: "hub-launcher" },
+  name: "Default (overview)",
+  args: { archetype: "overview" },
   render: (args) => (
     <PageShell {...args}>
       <Fill />
@@ -50,7 +64,23 @@ export const VariantCatalog: Story = {
   parameters: { layout: "fullscreen" },
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {(["hub-launcher", "browse-index", "focus-task", "utility", "auth"] as const).map((a) => (
+      {(
+        [
+          "overview",
+          "list",
+          "detail",
+          "create-edit",
+          "settings",
+          "auth",
+          "search",
+          "profile",
+          "notifications",
+          "reports",
+          "empty",
+          "not-found",
+          "wizard",
+        ] as const
+      ).map((a) => (
         <div key={a}>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginBottom: 4 }}>{a}</div>
           <PageShell archetype={a}>

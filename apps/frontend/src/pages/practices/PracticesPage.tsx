@@ -19,7 +19,7 @@ export default function PracticesPage() {
   const { currentPhase, label, quizzes, takeQuiz, timeline } = useQuizCard();
 
   return (
-    <PageShell archetype="hub-launcher">
+    <PageShell archetype="overview">
       <PageStack size="default">
         <PageHeader title="Practices" description="Review and Quiz" />
 

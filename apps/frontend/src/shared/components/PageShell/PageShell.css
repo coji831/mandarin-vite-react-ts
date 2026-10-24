@@ -14,23 +14,47 @@
 }
 
 /* Per-archetype measure — single source of page width (never hardcode).
-   The right-hand side is spine's generic measure (its registry's page-measure
-   family); the left-hand side is the PinyinPal page vocabulary. This file is the
-   ONLY place the two meet — pages never re-map it. */
-.page-shell--hub-launcher {
+   Both sides speak spine's generic vocabulary: the class name is the archetype,
+   the token is that archetype's page-measure (spine registry's page-measure
+   family). This file is the ONLY place the two meet — pages never re-map it. */
+.page-shell--overview {
   max-width: var(--page-measure-overview);
 }
-.page-shell--browse-index {
+.page-shell--list {
   max-width: var(--page-measure-list);
 }
-.page-shell--focus-task {
+.page-shell--detail {
   max-width: var(--page-measure-detail);
 }
-.page-shell--utility {
+.page-shell--create-edit {
+  max-width: var(--page-measure-create-edit);
+}
+.page-shell--settings {
   max-width: var(--page-measure-settings);
 }
 .page-shell--auth {
   max-width: var(--page-measure-auth);
+}
+.page-shell--search {
+  max-width: var(--page-measure-search);
+}
+.page-shell--profile {
+  max-width: var(--page-measure-profile);
+}
+.page-shell--notifications {
+  max-width: var(--page-measure-notifications);
+}
+.page-shell--reports {
+  max-width: var(--page-measure-reports);
+}
+.page-shell--empty {
+  max-width: var(--page-measure-empty);
+}
+.page-shell--not-found {
+  max-width: var(--page-measure-not-found);
+}
+.page-shell--wizard {
+  max-width: var(--page-measure-wizard);
 }
 
 @media (max-width: 480px) {

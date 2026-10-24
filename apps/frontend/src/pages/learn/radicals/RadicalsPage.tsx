@@ -103,7 +103,7 @@ export function RadicalsPage() {
   };
 
   return (
-    <PageShell archetype="browse-index">
+    <PageShell archetype="list">
       <PageStack size="default">
         <PageHeader
           title={

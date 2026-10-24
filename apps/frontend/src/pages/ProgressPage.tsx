@@ -3,9 +3,9 @@
  *
  * Shows gamification stats: streaks, badges, XP, achievements. The real data
  * wiring belongs to the epic that owns this surface (gamification); this page
- * is the utility-archetype shell those surfaces will fill.
+ * is the settings-archetype shell those surfaces will fill.
  *
- * Anatomy (page-anatomy law): PageShell(utility measure) → PageStack →
+ * Anatomy (page-anatomy law): PageShell(settings measure) → PageStack →
  * PageHeader → PageGrid card home. No page-scoped layout CSS.
  */
 import { Box, Icon, PageGrid, PageHeader, PageShell, PageStack } from "shared/components";
@@ -43,7 +43,7 @@ const SECTIONS: ProgressSection[] = [
 
 function ProgressPage() {
   return (
-    <PageShell archetype="utility">
+    <PageShell archetype="settings">
       <PageStack size="default">
         <PageHeader
           title="Your Progress"

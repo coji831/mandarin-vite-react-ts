@@ -115,13 +115,20 @@ tokens:
     # drift leaders migrate to these in the S1/S2 rollout waves. NEVER hardcode a page max-width —
     # consume --page-measure-<archetype> via the PageShell primitive instead.
     page-measure: # --page-measure-<archetype>: content max-width per archetype (spine's generic
-      # archetype vocabulary; PageShell.css maps PinyinPal's page archetypes onto these names —
-      # hub-launcher -> overview, browse-index -> list, focus-task -> detail, utility -> settings)
-      overview: "960px" # hub-launcher (DashboardPage canonized exemplar)
-      list: "1200px" # browse-index (ContentBrowser / PhoneticClustersPage, dense browse)
-      detail: "620px" # focus-task (ReviewView golden template); Quiz flow ~620-700
-      settings: "1000px" # utility (ProgressPage real content shell)
+      # archetype vocabulary, closed set of 13; PageShell maps PinyinPal's pages onto these names)
+      overview: "960px" # overview (DashboardPage canonized exemplar)
+      list: "1200px" # list (ContentBrowser / PhoneticClustersPage, dense browse)
+      detail: "620px" # detail (ReviewView golden template); Quiz flow ~620-700
+      create-edit: "720px" # create-edit: a form that writes one record
+      settings: "1000px" # settings (ProgressPage real content shell)
       auth: "420px" # auth (AuthForm centered single-column)
+      search: "1000px" # search: a query and its results
+      profile: "960px" # profile: one identity plus its activity
+      notifications: "760px" # notifications: a chronological stream
+      reports: "1200px" # reports: tables and charts
+      empty: "620px" # empty: one message and one way out
+      not-found: "620px" # not-found: one message and one way back
+      wizard: "720px" # wizard: a sequence of steps
     page-pad: "24px" # --page-pad: responsive horizontal page gutter (= space-lg)
     section-rhythm: # --section-rhythm-*: vertical rhythm BETWEEN page sections (outer > item gap)
       sm: "24px" # space-lg

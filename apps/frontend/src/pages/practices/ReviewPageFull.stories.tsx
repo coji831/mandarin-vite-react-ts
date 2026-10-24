@@ -110,7 +110,7 @@ const MOCK_RADICAL_ITEMS: ReviewItem[] = [
 const meta: Meta<typeof ReviewPage> = {
   title: "Pages/Practices/Review",
   component: ReviewPage,
-  tags: ["pages-focus-task"],
+  tags: ["pages-detail"],
   parameters: {
     layout: "fullscreen",
   },

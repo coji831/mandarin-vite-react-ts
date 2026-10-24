@@ -3,7 +3,7 @@
  *
  * Main landing page for authenticated users (Wireframe Sections 8.3/8.5).
  * Thin container: fetches phase gate state, owns the page anatomy (PageShell
- * hub-launcher measure), and delegates rendering to feature components that
+ * overview measure), and delegates rendering to feature components that
  * own their own PageStack rhythm and PageGrid card homes.
  *
  * Phase variants:
@@ -73,7 +73,7 @@ function DashboardPage() {
     // placeholders / role=status live regions).
     return (
       <PageShell
-        archetype="hub-launcher"
+        archetype="overview"
         as="div"
         role="region"
         aria-busy="true"
@@ -103,7 +103,7 @@ function DashboardPage() {
   }
 
   return (
-    <PageShell archetype="hub-launcher" as="div">
+    <PageShell archetype="overview" as="div">
       {!isAuthenticated ? (
         <DashboardGuest />
       ) : currentPhase === 1 ? (

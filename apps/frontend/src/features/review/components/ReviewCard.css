@@ -9,7 +9,7 @@
 }
 
 /* Task surface (golden template C.2): the Box `dark` border is a hairline —
-   focus-task cards stay FLAT (no elevation, ADR-004). Scoped to
+   detail cards stay FLAT (no elevation, ADR-004). Scoped to
    .box-dark.review-card so it beats the shared .box-dark border regardless of
    stylesheet order. */
 .review-card.box-dark {

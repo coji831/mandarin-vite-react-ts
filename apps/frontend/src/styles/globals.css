@@ -204,17 +204,24 @@
      Consume via PageShell/PageStack/PageGrid primitives — NEVER hardcode a page
      max-width/max-height/margin in page CSS (design-audit rule page-scoped-layout-css). */
   /* Generic archetype measures — spine's vocabulary (spine registry/tokens.json
-     page-measure). PinyinPal's page archetypes map onto them in ONE place, the
-     PageShell primitive:
-       hub-launcher -> overview · browse-index -> list · focus-task -> detail
-       utility -> settings · auth -> auth
+     page-measure family). The archetype name IS the token name and IS the
+     PageShell class: overview | list | detail | create-edit | settings | auth |
+     search | profile | notifications | reports | empty | not-found | wizard.
      The values here are the theme overlay PinyinPal applies, not a second measure
      family: never invent a --page-measure-* name that spine's registry lacks. */
-  --page-measure-overview: 960px; /* hub-launcher (DashboardPage exemplar) */
-  --page-measure-list: 1200px; /* browse-index (ContentBrowser / PhoneticClusters) */
-  --page-measure-detail: 620px; /* focus-task (ReviewView golden template) */
-  --page-measure-settings: 1000px; /* utility (ProgressPage real content shell) */
-  --page-measure-auth: 420px; /* auth (AuthForm centered single-column) */
+  --page-measure-overview: 960px; /* overview — a launch surface: destinations, not content */
+  --page-measure-list: 1200px; /* list — a dense browsable index (grid + filters) */
+  --page-measure-detail: 620px; /* detail — one subject, one task */
+  --page-measure-create-edit: 720px; /* create-edit — a form that writes one record */
+  --page-measure-settings: 1000px; /* settings — multi-item configuration or readout */
+  --page-measure-auth: 420px; /* auth — a short form with no destinations */
+  --page-measure-search: 1000px; /* search — a query and its results */
+  --page-measure-profile: 960px; /* profile — one identity plus its activity */
+  --page-measure-notifications: 760px; /* notifications — a chronological stream */
+  --page-measure-reports: 1200px; /* reports — tables and charts */
+  --page-measure-empty: 620px; /* empty — one message and one way out */
+  --page-measure-not-found: 620px; /* not-found — one message and one way back */
+  --page-measure-wizard: 720px; /* wizard — a sequence of steps */
   --page-pad: 24px; /* responsive horizontal page gutter (= space-lg) */
   --section-rhythm-sm: 24px; /* space-lg — compact section stack */
   --section-rhythm-md: 32px; /* space-xl — default BETWEEN-section rhythm (outer > item gap) */

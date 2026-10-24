@@ -113,7 +113,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "result":
       return (
         <div className="review-view flex-col gap-lg w-full">
-          {/* Header — precision-minimal focus-task header (golden template C.2):
+          {/* Header — precision-minimal detail header (golden template C.2):
               h1 font-lg fw-600 text-primary; progress count is font-sm text-muted meta
               (Tier-0: 🀄 → shared Icon "book" — no Lucide mahjong tile exists). */}
           <header className="flex-between gap-lg">
