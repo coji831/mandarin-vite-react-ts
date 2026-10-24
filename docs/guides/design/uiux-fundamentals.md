@@ -19,7 +19,7 @@ tags: [uiux, fundamentals, qa, a11y, design-system]
 
 ## 1. The 12 UIUX Fundamentals (applied)
 
-Each fundamental maps to: what it teaches → concrete PinyinPal application → who enforces it (machine rule or human rubric). The repo is **~70–90% conformant**; the work is closing enforcement gaps, not re-architecture. Enforcement references: `tools/design-audit.mjs` (machine), `docs/guides/design/design-quality-rubric.md` (human), `docs/guides/design/page-archetypes.md` (archetype contract).
+Each fundamental maps to: what it teaches → concrete PinyinPal application → who enforces it (machine rule or human rubric). The repo is **~70–90% conformant**; the work is closing enforcement gaps, not re-architecture. Enforcement references: `tools/design-audit-foundation.mjs` (machine), `docs/guides/design/design-quality-rubric.md` (human), `docs/guides/design/page-archetypes.md` (archetype contract).
 
 | #   | Fundamental                                                        | Teaches                                                                                                                                                                                                                               | PinyinPal application                                                                                                                                                                                                                                                                      | Enforce                                                                                                                             |
 | --- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -82,7 +82,7 @@ flowchart TB
 
 ## 3. Consolidated AI-Slop Checklist
 
-The canonical forbiddance list — consolidated from `tools/design-audit.mjs`, DESIGN.md (Global Motion Rule, Amber Restriction, emoji rule, gradient whitelist), and `design-reasoning.md` §1/§6. Run every item on any new/edited UI (the `frontend-audit` skill automates this in Part 1B).
+The canonical forbiddance list — consolidated from `tools/design-audit-foundation.mjs`, DESIGN.md (Global Motion Rule, Amber Restriction, emoji rule, gradient whitelist), and `design-reasoning.md` §1/§6. Run every item on any new/edited UI (the `frontend-audit` skill automates this in Part 1B).
 
 | #   | Check                                                                                 | Enforcement                                                         |
 | --- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |

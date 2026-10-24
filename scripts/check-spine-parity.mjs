@@ -180,7 +180,7 @@ if (!QUIET) {
   );
   console.log(`  domain             ${String(buckets.domain.length).padStart(3)}`);
   console.log(
-    `  retired            ${String(buckets.retired.length).padStart(3)}  (of the ${retired.size}-name retire set; deleting them is step 1b)`,
+    `  retired            ${String(buckets.retired.length).padStart(3)}  (of the ${retired.size}-name retire set; ${buckets.retired.length} remain, and S10 deletes them — 0 is the target, not 6)`,
   );
   console.log(`  generic            ${String(buckets.generic.length).padStart(3)}`);
   console.log(`  deprecated         ${String(buckets.deprecated.length).padStart(3)}  (declared)`);
@@ -197,7 +197,15 @@ if (!QUIET) {
 
   if (drift.length) {
     console.log(
-      `  paint pending — canonical name, value not yet spine's (${drift.length}; step 1b closes these):`,
+      `  paint pending — canonical name, value not spine's (${drift.length} rows; step 1b is closed, none of these is its):`,
+    );
+    console.log(
+      "    20 of the rows are notation, not value — 16 hex<->rgba, plus 4 `--radius-*: 0px` vs spine's `0`" +
+        " (dimension-equal). Normalising hex<->rgba leaves 7 of 87 (F8's receipt denominator; canonical is" +
+        ` ${buckets.canonical.length} today), of which those 4 radius rows are notation only and 3 are the held`,
+    );
+    console.log(
+      "    --surface-light-3/5/8 washes — deliberately off spine (F5), which is why this banner stays.",
     );
     for (const { name, local, spine } of drift.sort((a, b) => a.name.localeCompare(b.name))) {
       console.log(`    ${name}: ${local}  ->  ${spine}`);

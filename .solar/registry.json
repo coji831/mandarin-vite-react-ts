@@ -27,6 +27,8 @@
       "format_check",
       "design_lint",
       "design_audit",
+      "design_audit_foundation",
+      "check_closure",
       "check_design_parity",
       "check_page_inventory",
       "check_module_boundaries",

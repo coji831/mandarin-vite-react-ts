@@ -40,7 +40,19 @@
     "argv": ["npm", "--silent", "run", "design-audit"],
     "kind": "check",
     "timeout": 240,
-    "describe": "tools/design-audit.mjs - the design-system compliance audit."
+    "describe": "Spine's design-audit via tools/design-audit-foundation.mjs --full: the design-system compliance audit, every rule. Floor 250/436/686 (S3, 2026-10-24)."
+  },
+  "design_audit_foundation": {
+    "argv": ["npm", "--silent", "run", "design-audit:foundation"],
+    "kind": "check",
+    "timeout": 240,
+    "describe": "Spine's design-audit, page-anatomy family only: the foundation gate that fails on a page max-width, a hand-rolled centering wrapper, or a page-defined grid."
+  },
+  "check_closure": {
+    "argv": ["npm", "--silent", "run", "check:closure"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Custom-property closure: every var(--x) resolves to a declaration, with declared/referenced/dangling/cycles counters. Dangling must be 0."
   },
   "check_registry_stories": {
     "argv": ["npm", "--silent", "run", "check:registry-stories"],
