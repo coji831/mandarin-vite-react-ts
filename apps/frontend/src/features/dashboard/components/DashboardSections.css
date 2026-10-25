@@ -28,8 +28,7 @@
   border-radius: var(--radius-lg);
   /* card padding beats the .btn-md tag padding */
   padding: var(--space-lg);
-  /* elevated-1 paired with the hairline above (Elevation Usage Ladder) */
-  box-shadow: var(--shadow-elevated-1);
+  /* 2026-10-25, S10: the elevated-1 neutral shadow retired with the elevation family */
 }
 
 /* Hover = border emphasis + the shared .hover-lift -2px lift (components.css

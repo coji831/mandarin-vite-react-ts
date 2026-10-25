@@ -6,7 +6,6 @@
   background: var(--card);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }
@@ -16,7 +15,6 @@
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--edge-control);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }
@@ -26,7 +24,6 @@
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--accent-fill);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }
@@ -35,7 +32,6 @@
   background: var(--canvas);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-lg);
   transition: all var(--transition-fast);
 }
@@ -44,7 +40,6 @@
   background: var(--canvas);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-elevated-1);
   padding: var(--space-lg);
   transition: all var(--transition-fast);
 }
@@ -53,8 +48,7 @@
   background: var(--card);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
-  box-shadow: var(--shadow-elevated-2);
+  /* 2026-10-25, S10: the elevated-2 neutral shadow retired with the elevation family */
   padding: var(--space-md);
   transition: all var(--transition-fast);
 }
@@ -63,7 +57,6 @@
   background: var(--card);
   border: 1px solid var(--color-success);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-sm);
   transition: all var(--transition-fast);
 }
@@ -72,7 +65,6 @@
   background: var(--card);
   border: 1px solid var(--color-error);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-sm);
   transition: all var(--transition-fast);
 }

@@ -219,13 +219,6 @@
 
   /* ===== Shadows ===== */
 
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-sm: none;
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-md: none;
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-lg: none;
-
   /* XP gold glow — pictograph golden border emphasis */
   --shadow-xp-glow: 0 0 8px rgba(251, 191, 36, 0.3);
 
@@ -237,12 +230,6 @@
      did NOT delete these (D1, design-lead-s3-ruling.md). Deletion is S10. The
      sentence above is kept because it is what the branch recorded, not because
      it is true. */
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-elevated-1: none;
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-elevated-2: none;
-  /* Night Bench: elevated: none — the role survives, the paint does not (ADR-011) */
-  --shadow-elevated-3: none;
 
   /* ===== Z-Index Ladder ===== */
 
@@ -736,28 +723,6 @@ body {
 }
 .bg-gradient-success {
   background: linear-gradient(90deg, var(--color-success) 0%, rgba(5, 150, 105, 1) 100%);
-}
-
-/* ═══════════════════════════════════════════════
-   Utility: Shadow
-   ═══════════════════════════════════════════════ */
-.shadow-sm {
-  box-shadow: var(--shadow-sm);
-}
-.shadow-md {
-  box-shadow: var(--shadow-md);
-}
-.shadow-lg {
-  box-shadow: var(--shadow-lg);
-}
-.shadow-elevated-1 {
-  box-shadow: var(--shadow-elevated-1);
-}
-.shadow-elevated-2 {
-  box-shadow: var(--shadow-elevated-2);
-}
-.shadow-elevated-3 {
-  box-shadow: var(--shadow-elevated-3);
 }
 
 /* ═══════════════════════════════════════════════

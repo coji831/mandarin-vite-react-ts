@@ -179,8 +179,14 @@ if (!QUIET) {
     `  override           ${String(buckets.override.length).padStart(3)}  (sanctioned theme delta)`,
   );
   console.log(`  domain             ${String(buckets.domain.length).padStart(3)}`);
+  // 2026-10-25, S10: this clause read `${n} remain, and S10 deletes them — 0 is the target, not 6`.
+  // S10 ran; the sentence now states the outcome instead of ordering it.
+  // (design-lead-s10-precondition-ruling.md § The final banner)
+  const retiredClause = buckets.retired.length
+    ? `${buckets.retired.length} remain, and S10 deletes them — 0 is the target, not ${buckets.retired.length}`
+    : "0 remain — S10 (2026-10-25) deleted the last six; the target is met";
   console.log(
-    `  retired            ${String(buckets.retired.length).padStart(3)}  (of the ${retired.size}-name retire set; ${buckets.retired.length} remain, and S10 deletes them — 0 is the target, not 6)`,
+    `  retired            ${String(buckets.retired.length).padStart(3)}  (of the ${retired.size}-name retire set; ${retiredClause})`,
   );
   console.log(`  generic            ${String(buckets.generic.length).padStart(3)}`);
   console.log(`  deprecated         ${String(buckets.deprecated.length).padStart(3)}  (declared)`);

@@ -71,7 +71,6 @@
 }
 .hover-lift:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
 }
 .hover-lift:active:not(:disabled) {
   transform: translateY(0);
@@ -85,7 +84,6 @@
 }
 .hover-lift-sm:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
 }
 
 /* Medium lift on hover */
@@ -96,7 +94,6 @@
 }
 .hover-lift-md:hover:not(:disabled) {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
 }
 
 /* Scale on hover */
@@ -191,14 +188,12 @@
   background: var(--card);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .card-interactive:hover {
   background: var(--surface-hover);
   border-color: var(--edge-control);
-  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -210,8 +205,7 @@
   background: var(--card);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
-  box-shadow: var(--shadow-elevated-2);
+  /* 2026-10-25, S10: the elevated-2 neutral shadow retired with the elevation family */
 }
 
 /* ═══════════════════════════════════════════════

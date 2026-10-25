@@ -144,13 +144,7 @@ tokens:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
   radii: ["0px", "0px", "0px", "0px"]
   shadows:
-    sm: "none"
-    md: "none"
-    lg: "none"
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
-    elevated-1: "none"
-    elevated-2: "none"
-    elevated-3: "none"
   transitions:
     fast: "120ms ease-out"
     normal: "240ms ease-out"
@@ -362,9 +356,6 @@ Rules:
 | `.mb-xl`                                                                                     | `margin-bottom: var(--space-xl)`                                                                            |
 | `.max-w-320`                                                                                 | `max-width: 320px`                                                                                          |
 | `.max-w-450`                                                                                 | `max-width: 450px`                                                                                          |
-| `.shadow-elevated-1`                                                                         | `box-shadow: var(--shadow-elevated-1)`                                                                      |
-| `.shadow-elevated-2`                                                                         | `box-shadow: var(--shadow-elevated-2)`                                                                      |
-| `.shadow-elevated-3`                                                                         | `box-shadow: var(--shadow-elevated-3)`                                                                      |
 | `.border-surface-subtle`                                                                     | `border-color: var(--surface-border-subtle)`                                                                |
 | `.tracking-tight`                                                                            | `letter-spacing: var(--tracking-tight)`                                                                     |
 | `.lh-1` / `.lh-tight` / `.lh-normal` / `.lh-1-3` / `.lh-1-4` / `.lh-relaxed` / `.lh-display` | `line-height: var(--lh-*)` ladder (ADR-009)                                                                 |

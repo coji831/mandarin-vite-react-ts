@@ -26,6 +26,8 @@
  *   1,381 output lines, S6 receipt).
  *
  * THE STANDING FLOOR (do not re-derive, do not read as a ceiling)
+ *   249/436/685 — pinned at S10 (2026-10-25: −1, the utility-duplicate on
+ *   .shadow-sm cleared with its map key, see design-lead-s10-precondition-ruling.md § 3.3)
  *   250/436/686 (S3, 2026-10-24: +3 visibility, see design-lead-s3-ruling.md § D3)
  *   That is a pinned, dated, attributed number: it rose from 247 by three rows that
  *   named pre-existing code, not by a regression. It is a ratchet floor, never a
@@ -145,7 +147,9 @@ if (FULL) {
   console.log(`   target: ${target}`);
   console.log(`   spine:  ${SPINE_ROOT}`);
   console.log(`   spine's full audit reported:${summaryLine ?? " (no summary line)"}`);
-  console.log("   floor:  250/436/686 — pinned at S3 (2026-10-24); a floor, not a budget\n");
+  console.log(
+    "   floor:  249/436/685 — pinned at S10 (2026-10-25: −1, the utility-duplicate on .shadow-sm cleared with its map key, see design-lead-s10-precondition-ruling.md § 3.3); a floor, not a budget\n",
+  );
 
   if (!summaryLine) {
     console.error("spine's design-audit produced no summary — the gate could not be trusted.\n");

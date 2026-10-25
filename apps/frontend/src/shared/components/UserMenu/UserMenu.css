@@ -41,8 +41,7 @@
   z-index: var(--z-popover);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
-  box-shadow: var(--shadow-elevated-2);
+  /* 2026-10-25, S10: the elevated-2 neutral shadow retired with the elevation family */
   padding: var(--space-xs);
   margin: 0;
   list-style: none;

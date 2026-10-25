@@ -1,1 +1,8 @@
-[]
+[
+  "--shadow-sm",
+  "--shadow-md",
+  "--shadow-lg",
+  "--shadow-elevated-1",
+  "--shadow-elevated-2",
+  "--shadow-elevated-3"
+]

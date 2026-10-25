@@ -49,8 +49,7 @@
   /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
 .review-card__audio-btn:hover {
-  /* :hover pseudo — token shadow, no motion (amber hover-lift bucket, A.3) */
-  box-shadow: var(--shadow-md);
+  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
 }
 .review-card__audio-btn:focus-visible {
   /* focus parity with rating buttons (C.2) */
@@ -81,8 +80,7 @@
 }
 
 .review-card__rating-btn:hover:not(:disabled) {
-  /* :hover pseudo — token shadow, no motion */
-  box-shadow: var(--shadow-md);
+  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
 }
 
 .review-card__rating-btn:focus-visible {
