@@ -16,7 +16,7 @@
   gap: var(--card-gutter-sm);
 }
 .page-grid--gutter-default {
-  gap: var(--card-gutter);
+  gap: var(--card-gutter-md);
 }
 .page-grid--gutter-lg {
   gap: var(--card-gutter-lg);

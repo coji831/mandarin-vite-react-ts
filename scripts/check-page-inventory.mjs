@@ -14,14 +14,14 @@
  *   {
  *     "route": "/library",                       // route string (required)
  *     "component": "LibraryPage",                // routed page component (nullable for pure redirects)
- *     "archetype": "browse-index",               // id from page-archetypes.md (nullable until assigned)
+ *     "archetype": "list",                       // id from page-archetypes.md (nullable until assigned)
  *     "story": "apps/frontend/src/pages/...Full.stories.tsx",  // repo-relative; null when none
  *     "states": ["default"],                     // subset of ALLOWED_STATES
  *     "status": "conforms" | "diverges",         // M0 snapshot semantics (see below)
  *     "composition": { "region": "RegistryComponent" },  // optional; registry names ONLY
  *     "anatomy": {                               // OPTIONAL declared target (page-anatomy law, S0a-4)
  *       "shell": "PageShell",                    //   the page-content layout primitive (law target)
- *       "measure": "hub-launcher",               //   archetype whose --page-measure-* governs the width;
+ *       "measure": "overview",                   //   archetype whose --page-measure-* governs the width;
  *                                                //   MUST equal the entry's `archetype`
  *       "gutter": "default",                     //   PageGrid gutter tier: sm | default | lg
  *       "header": "PageHeader" | null            //   header primitive (registry component) or null
@@ -85,16 +85,22 @@ const INVENTORY_PATH = path.join(ROOT, ".github", "page-inventory.json");
 const REGISTRY_PATH = path.join(ROOT, ".github", "component-registry.json");
 const PAGES_DIR = path.join(ROOT, "apps", "frontend", "src", "pages");
 
-// Archetype ids from page-archetypes.md (§0 mode/page table).
+// Archetype ids from page-archetypes.md (§0 mode/page table) — spine's closed
+// generic set (spine registry/renames.md §Page archetypes).
 const ALLOWED_ARCHETYPES = [
-  "hub-launcher",
-  "browse-index",
-  "focus-task",
-  "focus-chat",
-  "focus-timed",
-  "focus-media",
-  "utility",
+  "overview",
+  "list",
+  "detail",
+  "create-edit",
+  "settings",
   "auth",
+  "search",
+  "profile",
+  "notifications",
+  "reports",
+  "empty",
+  "not-found",
+  "wizard",
 ];
 
 // Shared with check-registry-stories.mjs.
@@ -115,14 +121,19 @@ const ALLOWED_STATES = [
 // the one whose --page-measure-<archetype> token governs the page content width
 // (PageShell). Under the law it MUST equal the entry's `archetype`.
 const ANATOMY_MEASURE_ARCHETYPES = [
-  "hub-launcher",
-  "browse-index",
-  "focus-task",
-  "focus-chat",
-  "focus-timed",
-  "focus-media",
-  "utility",
+  "overview",
+  "list",
+  "detail",
+  "create-edit",
+  "settings",
   "auth",
+  "search",
+  "profile",
+  "notifications",
+  "reports",
+  "empty",
+  "not-found",
+  "wizard",
 ];
 const ANATOMY_GUTTERS = ["sm", "default", "lg"];
 // The page-content layout primitive every route targets (chrome lives in

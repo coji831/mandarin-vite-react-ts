@@ -101,10 +101,10 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
                   {isIconName(ct.icon) ? <Icon name={ct.icon} size={24} /> : ct.icon}
                 </span>
                 <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
-                <span className="review-picker__card-desc text-muted font-sm">
+                <span className="review-picker__card-desc text-secondary font-sm">
                   {ct.description}
                 </span>
-                <span className="review-picker__card-count text-tertiary font-sm">All items</span>
+                <span className="review-picker__card-count text-secondary font-sm">All items</span>
               </Button>
             );
           })}

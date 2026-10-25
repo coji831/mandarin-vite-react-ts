@@ -2,11 +2,11 @@
   background: linear-gradient(
     90deg,
     var(--surface-light-5) 25%,
-    var(--surface-light-10) 50%,
+    var(--surface-light-8) 50%,
     var(--surface-light-5) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  animation: skeleton-shimmer var(--duration-shimmer) linear infinite;
 }
 
 /* skeleton--line/card/circle — default dimensions via co-located classes.
@@ -26,3 +26,21 @@
 
 /* skeleton--line/card/circle — border-radius migrated to radius-sm/lg/full utility classes */
 /* skeleton--custom — no default sizing, handled via className */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Shimmer replaced by the skeleton's own base wash, not by an empty box. */
+  .skeleton {
+    animation: none;
+    background: var(--surface-light-5);
+  }
+}
+
+@media (forced-colors: active) {
+  /* Forced colors erase the gradient; the plate keeps a drawn boundary instead. */
+  .skeleton {
+    forced-color-adjust: none;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-sizing: border-box;
+  }
+}

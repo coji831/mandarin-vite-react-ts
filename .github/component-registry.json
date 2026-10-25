@@ -595,7 +595,7 @@
       }
     },
     "PageHeader": {
-      "description": "Precision-minimal page header (hub-launcher). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background.",
+      "description": "Precision-minimal page header (overview). Renders the page's single <h1> with optional eyebrow, description, and a top-right CTA slot (≤1 primary Button). No border, no background.",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/PageHeader/PageHeader.stories.tsx",
@@ -618,8 +618,22 @@
       "props": {
         "archetype": {
           "type": "enum",
-          "values": ["hub-launcher", "browse-index", "focus-task", "utility", "auth"],
-          "default": "hub-launcher"
+          "values": [
+            "overview",
+            "list",
+            "detail",
+            "create-edit",
+            "settings",
+            "auth",
+            "search",
+            "profile",
+            "notifications",
+            "reports",
+            "empty",
+            "not-found",
+            "wizard"
+          ],
+          "default": "overview"
         },
         "as": { "type": "elementType", "default": "main" },
         "children": { "type": "reactNode" },

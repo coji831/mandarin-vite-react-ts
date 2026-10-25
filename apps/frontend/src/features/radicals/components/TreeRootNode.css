@@ -10,7 +10,7 @@
 
 .tree-root-node__toggle:hover {
   /* structural: text-primary-light */
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
   /* hover color is specific to this toggle */
 }
 
@@ -34,7 +34,7 @@
 .tree-root-node__branches {
   grid-template-rows: 0fr;
   /* Directional border — replaces removed global utility border-t-1 */
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
 }
 
 .tree-root-node__branches--expanded {

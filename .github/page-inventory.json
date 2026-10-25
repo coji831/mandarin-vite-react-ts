@@ -1,22 +1,27 @@
 {
   "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot. One entry per page container, sourced from the <Page>Full.stories.tsx files + router/paths.ts. A page is 'conforms' when it has a Full story, declared states, and a registry-clean composition map matching its archetype. 'diverges' surfaces the gap (missing Full story, unassigned archetype, or anatomy not yet audited against the archetype library). Enforced by scripts/check-page-inventory.mjs.",
-  "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component; composition maps may only name component-registry.json components. Archetype ids come from page-archetypes.md (hub-launcher, browse-index, focus-task, focus-chat, focus-timed, focus-media, utility, auth).",
+  "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component; composition maps may only name component-registry.json components. Archetype ids come from page-archetypes.md and spine's closed generic set (overview, list, detail, create-edit, settings, auth, search, profile, notifications, reports, empty, not-found, wizard).",
   "version": "1.0",
   "archetypes": [
-    "hub-launcher",
-    "browse-index",
-    "focus-task",
-    "focus-chat",
-    "focus-timed",
-    "focus-media",
-    "utility",
-    "auth"
+    "overview",
+    "list",
+    "detail",
+    "create-edit",
+    "settings",
+    "auth",
+    "search",
+    "profile",
+    "notifications",
+    "reports",
+    "empty",
+    "not-found",
+    "wizard"
   ],
   "pages": [
     {
       "route": "/",
       "component": "DashboardPage",
-      "archetype": "hub-launcher",
+      "archetype": "overview",
       "story": "apps/frontend/src/pages/dashboard/DashboardPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -29,16 +34,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "hub-launcher",
+        "measure": "overview",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Precision-minimal hub-launcher exemplar."
+      "note": "Precision-minimal overview exemplar."
     },
     {
       "route": "/learn",
       "component": null,
-      "archetype": "hub-launcher",
+      "archetype": "overview",
       "story": null,
       "states": [],
       "status": "diverges",
@@ -47,7 +52,7 @@
     {
       "route": "/practices",
       "component": "PracticesPage",
-      "archetype": "hub-launcher",
+      "archetype": "overview",
       "story": "apps/frontend/src/pages/practices/PracticesPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
@@ -59,16 +64,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "hub-launcher",
+        "measure": "overview",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Hub-launcher: Review + Quiz launch cards; guest variant (edge) renders ReviewPromptCard."
+      "note": "Overview: Review + Quiz launch cards; guest variant (edge) renders ReviewPromptCard."
     },
     {
       "route": "/library",
       "component": "LibraryPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/LibraryPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -79,16 +84,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": null
       },
-      "note": "Dry-run adoption candidate for the browse-index archetype (registry-clean composition)."
+      "note": "ContentBrowser renders inside PageShell(list) since S5; the list max-width was removed from ContentBrowser.css so PageShell is the single measure source. Still the list-archetype exemplar (registry-clean composition)."
     },
     {
       "route": "/learn/readers",
       "component": "ReadersPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -97,16 +102,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Dual-mode kept (library/reading) under the browse-index measure; the page-level surface wrapper is gone (PageShell + PageStack + PageHeader). Splitting reading into a focus-media archetype remains a product decision, not a layout gap."
+      "note": "Dual-mode kept (library/reading) under the list measure; the page-level surface wrapper is gone (PageShell + PageStack + PageHeader). Splitting reading into a detail archetype (the retired focus-media case) remains a product decision, not a layout gap."
     },
     {
       "route": "/learn/radicals",
       "component": "RadicalsPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -120,16 +125,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Browse-index with radical/phonetic tree views (edge); empty = no mastered radicals."
+      "note": "List with radical/phonetic tree views (edge); empty = no mastered radicals."
     },
     {
       "route": "/learn/grammar",
       "component": "GrammarPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -142,16 +147,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Browse-index pattern library; card click opens the shared LexicalHub."
+      "note": "List pattern library; card click opens the shared LexicalHub."
     },
     {
       "route": "/learn/chengyu",
       "component": "ChengyuPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -165,16 +170,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Browse-index idiom library; edge = paginated list (3 pages)."
+      "note": "List idiom library; edge = paginated list (3 pages)."
     },
     {
       "route": "/practices/review",
       "component": "ReviewPage",
-      "archetype": "focus-task",
+      "archetype": "detail",
       "story": "apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -186,16 +191,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "focus-task",
+        "measure": "detail",
         "gutter": "default",
         "header": null
       },
-      "note": "Golden Template candidate (focus-task). ReviewView hosts the canonical review session."
+      "note": "Golden Template candidate (detail). ReviewPicker and ReviewView both render inside PageShell(detail) since S5; the detail max-width was removed from ReviewView.css."
     },
     {
       "route": "/practices/quiz",
       "component": "QuizPage",
-      "archetype": "focus-task",
+      "archetype": "detail",
       "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
@@ -204,16 +209,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "focus-task",
+        "measure": "detail",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Focus-task: PageHeader (title + timer), then QuizRouter + progress. Without ?type= the same skeleton renders a Back to Practices CTA."
+      "note": "Detail: PageHeader (title + timer), then QuizRouter + progress. Without ?type= the same skeleton renders a Back to Practices CTA."
     },
     {
       "route": "/progress",
       "component": "ProgressPage",
-      "archetype": "utility",
+      "archetype": "settings",
       "story": "apps/frontend/src/pages/ProgressPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -224,11 +229,11 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "utility",
+        "measure": "settings",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Utility shell: PageShell + PageStack + PageHeader + PageGrid card home."
+      "note": "Settings shell: PageShell + PageStack + PageHeader + PageGrid card home."
     },
     {
       "route": "/auth/login",
@@ -269,7 +274,7 @@
     {
       "route": "/settings",
       "component": "SettingsPage",
-      "archetype": "utility",
+      "archetype": "settings",
       "story": "apps/frontend/src/pages/SettingsPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -278,16 +283,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "utility",
+        "measure": "settings",
         "gutter": "default",
         "header": null
       },
-      "note": "Thin utility placeholder (Box card section); full settings shell is not yet built."
+      "note": "Thin settings placeholder (Box card section) inside PageShell(settings) since S5; full settings shell is not yet built."
     },
     {
       "route": "/profile",
       "component": "ProfilePage",
-      "archetype": "utility",
+      "archetype": "profile",
       "story": "apps/frontend/src/pages/ProfilePageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -296,16 +301,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "utility",
+        "measure": "profile",
         "gutter": "default",
         "header": null
       },
-      "note": "Thin utility placeholder (Box card section); full profile shell is not yet built."
+      "note": "Thin profile placeholder (Box card section) inside PageShell(profile) since S5; the entry moved from the settings archetype to profile (one identity plus its activity)."
     },
     {
       "route": "/learn/foundations",
       "component": "FoundationsPage",
-      "archetype": "hub-launcher",
+      "archetype": "overview",
       "story": "apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx",
       "states": ["loading", "default", "error", "edge"],
       "status": "conforms",
@@ -319,16 +324,16 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "hub-launcher",
+        "measure": "overview",
         "gutter": "default",
         "header": null
       },
-      "note": "De-facto Learn home; hub-launcher with tabbed focal point + progress. Edge = tones deep-link."
+      "note": "De-facto Learn home; overview with tabbed focal point + progress. Edge = tones deep-link. Rendered bare (no PageShell) until S5, which wrapped it in PageShell(overview) to match this row."
     },
     {
       "route": "/learn/phonetic-clusters",
       "component": "PhoneticClustersPage",
-      "archetype": "browse-index",
+      "archetype": "list",
       "story": "apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -340,11 +345,11 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "browse-index",
+        "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Browse-index over phonetic cluster families (HSK filter)."
+      "note": "List over phonetic cluster families (HSK filter)."
     },
     {
       "route": "/learn/basic",

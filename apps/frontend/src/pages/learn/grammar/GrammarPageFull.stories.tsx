@@ -12,15 +12,15 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { GrammarPage } from "./GrammarPage";
 import { grammarHandlers } from "../../../mocks/handlers/grammar-handlers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { withAppLayout, withLearnLayout } from "../../../../.storybook/decorators";
 
 const meta = {
   title: "Pages/Learn/GrammarPage",
   component: GrammarPage,
-  tags: ["pages-browse-index"],
-  decorators: [withAppLayout("/learn/grammar"), withLearnLayout()],
+  tags: ["pages-list"],
   parameters: {
     layout: "fullscreen",
+    layoutType: "learn",
+    layoutPath: "/learn/grammar",
   },
 } satisfies Meta<typeof GrammarPage>;
 

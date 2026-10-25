@@ -27,6 +27,8 @@
       "format_check",
       "design_lint",
       "design_audit",
+      "design_audit_foundation",
+      "check_closure",
       "check_design_parity",
       "check_page_inventory",
       "check_module_boundaries",
@@ -89,6 +91,20 @@
     "model": "deepseek-flash",
     "write": false
   },
+  "layout-critic": {
+    "role": "Layout Critic",
+    "system": "Design critic for ONE route. Reviews the RENDERED route (never its source or a stylesheet) against ADR-011 Night Bench + its page archetype + the quality rubric, and returns per finding either a BRIEF update (the direction/archetype is wrong or silent) or a VISUAL update (the route does not deliver it). Writes exactly one report, verification-artifacts/design-review/design-review-{route}.md. Never measures, never fixes, never writes code, never runs shell; parallel-safe, one route per spawn.",
+    "tools": ["workspace"],
+    "next_edges": ["design-lead"],
+    "model": "deepseek-flash"
+  },
+  "design-lead": {
+    "role": "Design Lead",
+    "system": "Serial synthesis over the per-route design reviews: ALIGNMENT (which routes are unlike ADR-011 or their peers), FIX (what changes first, including what will NOT be fixed) and CONDENSATION (promote to the live token layer, demote to a receipt, retire). Writes exactly one file, verification-artifacts/design-review/design-lead-synthesis.md. Barred from route source and stylesheets in the synthesis pass; may read anything in the extraction pass. Never runs shell - hands the gates to a runner with the exact string each must print.",
+    "tools": ["workspace"],
+    "next_edges": ["complete"],
+    "model": "deepseek-flash"
+  },
   "default_chain": "epic",
   "chains": {
     "epic": [
@@ -100,7 +116,8 @@
       "code-reviewer"
     ],
     "docs-review": ["docs-writer", "code-reviewer"],
-    "verify": ["investigator", "code-reviewer"]
+    "verify": ["investigator", "code-reviewer"],
+    "design-review": ["layout-critic", "design-lead"]
   },
   "playbooks": {
     "research": {
@@ -120,6 +137,11 @@
       "note": "small feature; prepend uiux-designer when UI is involved"
     },
     "docs": { "kind": "role", "role": "docs-writer", "note": "docs + doc<->code truth-check" },
-    "review": { "kind": "role", "role": "code-reviewer", "note": "audit / cross-cutting review" }
+    "review": { "kind": "role", "role": "code-reviewer", "note": "audit / cross-cutting review" },
+    "design": {
+      "kind": "chain",
+      "name": "design-review",
+      "note": "R0->R3: one layout-critic per route in parallel, then serial design-lead synthesis"
+    }
   }
 }

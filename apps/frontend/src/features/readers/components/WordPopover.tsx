@@ -107,7 +107,7 @@ export function WordPopover() {
       <Box
         variant="elevated"
         padding="md"
-        className="word-popover flex-col gap-sm shadow-elevated-2 animate-fade-in border-1 border-primary-border"
+        className="word-popover flex-col gap-sm animate-fade-in border-1 border-primary-border"
         ref={popoverRef}
         tabIndex={-1}
         style={{

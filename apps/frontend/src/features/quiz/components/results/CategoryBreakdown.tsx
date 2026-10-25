@@ -100,14 +100,14 @@ export function CategoryBreakdown({ answers, categoryBreakdown, total }: Categor
         label="Pinyin recognition"
         correct={pinyinCorrect}
         total={denominator}
-        color="var(--color-primary-light)"
+        color="var(--accent-ink)"
       />
 
       <CategoryBar
         label="Tone identification"
         correct={toneCorrect}
         total={denominator}
-        color="var(--color-warning)"
+        color="var(--color-warn)"
       />
     </Box>
   );

@@ -89,15 +89,15 @@ The quiz system uses the **Strategy Pattern**:
 
 ### Colors
 
-| Token   | CSS Variable       | Usage                             |
-| ------- | ------------------ | --------------------------------- |
-| Success | `--color-success`  | Correct answer indicator          |
-| Error   | `--color-error`    | Wrong answer indicator            |
-| Primary | `--color-primary`  | Interactive elements, phase badge |
-| Warning | `--color-warning`  | Timer warning state               |
-| —       | `--text-primary`   | Question text                     |
-| —       | `--text-secondary` | Instructions, hints               |
-| —       | `--surface-dark`   | Card backgrounds                  |
+| Token   | CSS Variable      | Usage                             |
+| ------- | ----------------- | --------------------------------- |
+| Success | `--color-success` | Correct answer indicator          |
+| Error   | `--color-error`   | Wrong answer indicator            |
+| Primary | `--accent-fill`   | Interactive elements, phase badge |
+| Warning | `--color-warn`    | Timer warning state               |
+| —       | `--ink-1`         | Question text                     |
+| —       | `--ink-2`         | Instructions, hints               |
+| —       | `--card`          | Card backgrounds                  |
 
 ### Typography
 

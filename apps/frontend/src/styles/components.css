@@ -25,12 +25,12 @@
   font-size: 1em;
   font-weight: var(--fw-500);
   font-family: inherit;
-  background-color: var(--surface-dark-alt);
+  background-color: var(--canvas);
   cursor: pointer;
   transition: border-color var(--transition-normal);
 }
 .btn-base:hover {
-  border-color: var(--color-primary-border-hover);
+  border-color: var(--edge-control);
 }
 .btn-base:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -44,19 +44,19 @@
   position: absolute;
   background: transparent;
   border: none;
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   font-size: var(--font-xl);
   cursor: pointer;
   transition: all var(--transition-fast);
   line-height: var(--lh-1);
 }
 .btn-close:hover {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
   border-radius: var(--radius-sm);
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 .btn-close:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -71,7 +71,6 @@
 }
 .hover-lift:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
 }
 .hover-lift:active:not(:disabled) {
   transform: translateY(0);
@@ -85,7 +84,6 @@
 }
 .hover-lift-sm:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
 }
 
 /* Medium lift on hover */
@@ -96,7 +94,6 @@
 }
 .hover-lift-md:hover:not(:disabled) {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
 }
 
 /* Scale on hover */
@@ -113,8 +110,8 @@
    ═══════════════════════════════════════════════ */
 .input-base {
   background: var(--surface-light-5);
-  border: 1px solid var(--surface-border);
-  color: var(--text-primary);
+  border: 1px solid var(--hairline);
+  color: var(--ink-1);
   font-size: var(--font-lg);
   border-radius: var(--radius-md);
   width: 100%;
@@ -124,35 +121,37 @@
 }
 .input-base:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-bg);
+  border-color: var(--accent-fill);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 .input-base::placeholder {
-  color: var(--text-muted);
+  color: var(--ink-quiet);
 }
 
 /* ═══════════════════════════════════════════════
    Component: Alert Containers
    State feedback containers for success/error/warning/info.
+   1b: Ruling 2 — a status edge is the full tone, not a 30% alpha step;
+   --color-success-border and --color-warning-border retired here.
    ═══════════════════════════════════════════════ */
 .alert-success {
-  background: var(--color-success-bg);
-  border: 1px solid var(--color-success-border);
+  background: color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent);
+  border: 1px solid var(--color-success);
   border-radius: var(--radius-md);
 }
 .alert-error {
-  background: var(--color-error-bg);
-  border: 1px solid var(--color-error-border);
+  background: color-mix(in srgb, var(--color-error) calc(var(--status-tint) * 100%), transparent);
+  border: 1px solid var(--edge-danger);
   border-radius: var(--radius-md);
 }
 .alert-warning {
-  background: var(--color-warning-bg);
-  border: 1px solid var(--color-warning-border);
+  background: color-mix(in srgb, var(--color-warn) calc(var(--status-tint) * 100%), transparent);
+  border: 1px solid var(--color-warn);
   border-radius: var(--radius-md);
 }
 .alert-info {
-  background: var(--color-info-bg);
-  border: 1px solid var(--color-info-border);
+  background: var(--status-info-bg);
+  border: 1px solid var(--status-info-border);
   border-radius: var(--radius-md);
 }
 
@@ -166,7 +165,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay-dark);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -186,17 +185,15 @@
    Clickable card surface with hover lift effect.
    ═══════════════════════════════════════════════ */
 .card-interactive {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .card-interactive:hover {
   background: var(--surface-hover);
-  border-color: var(--color-primary-border);
-  box-shadow: var(--shadow-md);
+  border-color: var(--edge-control);
   transform: translateY(-2px);
 }
 
@@ -205,11 +202,10 @@
    Elevated container card with shadow (non-interactive).
    ═══════════════════════════════════════════════ */
 .card-raised {
-  background: var(--surface-dark);
-  border: 1px solid var(--surface-border-subtle);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
-  box-shadow: var(--shadow-elevated-2);
+  /* 2026-10-25, S10: the elevated-2 neutral shadow retired with the elevation family */
 }
 
 /* ═══════════════════════════════════════════════
@@ -220,21 +216,21 @@
 .btn-icon-circle {
   width: 22px;
   height: 22px;
-  background: var(--surface-light-10);
-  color: var(--text-secondary);
+  background: var(--surface-light-8);
+  color: var(--ink-2);
   font-size: var(--font-xs);
   transition:
     background var(--transition-fast),
     color var(--transition-fast);
 }
 .btn-icon-circle:hover:not(:disabled) {
-  background: var(--color-primary-bg-medium);
-  color: var(--text-primary);
+  background: var(--accent-tint);
+  color: var(--ink-1);
 }
 /* .btn-icon-circle:disabled — migrated to disabled:op-60 utility */
 
 .btn-icon-circle:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -252,6 +248,6 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--surface-border);
+  background: var(--hairline);
   border-radius: 3px;
 }

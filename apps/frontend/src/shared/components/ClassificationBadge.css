@@ -46,7 +46,7 @@
    label uses the neutral text tier (≥4.5:1 on every tinted badge bg) because
    the saturated tones (blue #3B82F6, purple #A78BFA) fail SC 1.4.3 as text. */
 .classification-badge > span:nth-child(2) {
-  color: var(--text-secondary);
+  color: var(--ink-2);
 }
 
 /* ── Classification colors ── */
@@ -57,19 +57,19 @@
 }
 
 .classification-badge--phono-semantic {
-  background: var(--color-blue-bg);
-  color: var(--color-blue);
-  border: 1px solid var(--color-blue-border);
+  background: var(--color-category-blue-bg);
+  color: var(--color-category-blue);
+  border: 1px solid var(--color-category-blue-border);
 }
 
 .classification-badge--compound-ideograph {
-  background: var(--color-green-bg);
-  color: var(--color-green);
-  border: 1px solid var(--color-green-border);
+  background: var(--color-category-green-bg);
+  color: var(--color-category-green);
+  border: 1px solid var(--color-category-green-border);
 }
 
 .classification-badge--ideograph {
-  background: var(--color-purple-bg);
-  color: var(--color-purple);
-  border: 1px solid var(--color-purple-border);
+  background: var(--color-category-purple-bg);
+  color: var(--color-category-purple);
+  border: 1px solid var(--color-category-purple-border);
 }

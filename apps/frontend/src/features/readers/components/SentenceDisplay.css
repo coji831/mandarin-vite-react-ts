@@ -25,7 +25,7 @@
 /* Stronger specificity (0,2,0) to override .btn-inline-text's color: inherit */
 .sentence-word.sentence-word--unknown {
   color: var(
-    --color-primary-lighter
+    --accent-ink
   ); /* double-class selector for specificity — text-accent/text-primary-light won't match .btn-inline-text's color:inherit */
 }
 
@@ -34,7 +34,7 @@
 .sentence-display--active {
   --active-border-width: 3px;
   background-color: var(--surface-light-5);
-  border-left: var(--active-border-width) solid var(--color-primary);
+  border-left: var(--active-border-width) solid var(--accent-fill);
   padding-left: calc(var(--space-sm) - var(--active-border-width));
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }

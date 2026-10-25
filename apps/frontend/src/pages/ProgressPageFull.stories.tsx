@@ -10,7 +10,7 @@ import { ProgressPage } from "./ProgressPage";
 const meta: Meta<typeof ProgressPage> = {
   title: "Pages/Progress",
   component: ProgressPage,
-  tags: ["pages-utility"],
+  tags: ["pages-settings"],
   parameters: {
     layout: "fullscreen",
     layoutType: "app",

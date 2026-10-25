@@ -13,7 +13,7 @@
 
 /* ── Input area ── */
 .ime-quiz-question__input:focus {
-  box-shadow: 0 0 0 3px var(--color-primary-bg);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
 .ime-quiz-hint-toggle {
@@ -27,7 +27,7 @@
 
 .ime-quiz-question__input::placeholder {
   color: var(
-    --text-muted
+    --ink-quiet
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
   font-size: var(--font-lg); /* ::placeholder pseudo-element */
 }

@@ -20,6 +20,7 @@ import {
   withSearchParams,
 } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
+import { PageShell, PageStack } from "shared/components";
 import { ReviewView, ReviewPicker } from "../../features/review";
 import type { ReviewSource } from "../../features/review";
 
@@ -39,25 +40,29 @@ export function ReviewPage() {
 
   if (hasBothParams) {
     return (
-      <div className="flex-col-center gap-lg p-xl">
-        <ReviewView
-          onBack={() => navigate(practices_page)}
-          presetType={presetType}
-          presetSource={presetSource}
-        />
-      </div>
+      <PageShell archetype="detail">
+        <PageStack size="default">
+          <ReviewView
+            onBack={() => navigate(practices_page)}
+            presetType={presetType}
+            presetSource={presetSource}
+          />
+        </PageStack>
+      </PageShell>
     );
   }
 
   // Show picker (with optional pre-selected type)
   return (
-    <div className="flex-col-center gap-lg p-xl">
-      <ReviewPicker
-        presetType={presetType}
-        onStart={(source: ReviewSource, type: string) =>
-          navigate(withSearchParams(practices_review, { type, filter: source }))
-        }
-      />
-    </div>
+    <PageShell archetype="detail">
+      <PageStack size="default">
+        <ReviewPicker
+          presetType={presetType}
+          onStart={(source: ReviewSource, type: string) =>
+            navigate(withSearchParams(practices_review, { type, filter: source }))
+          }
+        />
+      </PageStack>
+    </PageShell>
   );
 }

@@ -4,7 +4,7 @@
 .hub-identity {
   min-height: 0; /* flex child — required for internal layout */
   /* Chromatic demo tweak (2026-08-20): hairline card treatment — visible + reversible */
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
 }

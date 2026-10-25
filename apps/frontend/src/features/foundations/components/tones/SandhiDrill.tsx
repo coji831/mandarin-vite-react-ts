@@ -114,7 +114,7 @@ function RuleCardsIntro({ onStart }: { onStart: () => void }) {
               {rule.examples.map((ex, i) => (
                 <span key={i} className="font-xs">
                   {ex.characters} →{" "}
-                  <span className="fw-600" style={{ color: "var(--color-primary)" }}>
+                  <span className="fw-600" style={{ color: "var(--accent-fill)" }}>
                     {ex.sandhi}
                   </span>{" "}
                   <span className="op-60">({ex.dictionary})</span>

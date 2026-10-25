@@ -26,7 +26,7 @@ const SIZE_MAP: Record<SpinnerSize, string> = {
 };
 
 const COLOR_MAP: Record<SpinnerColor, string> = {
-  primary: "spinner--color-primary",
+  primary: "spinner--accent-fill",
   white: "spinner--color-white",
 };
 

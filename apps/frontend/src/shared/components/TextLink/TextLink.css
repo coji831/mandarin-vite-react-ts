@@ -3,7 +3,7 @@
 .text-link {
   background: none;
   border: none;
-  color: var(--color-primary-lighter);
+  color: var(--accent-ink);
   text-decoration: none;
   font: inherit;
   cursor: pointer;
@@ -12,7 +12,7 @@
 }
 
 .text-link:hover:not(:disabled) {
-  color: var(--color-primary-light);
+  color: var(--accent-ink);
   text-decoration: underline;
 }
 
@@ -26,6 +26,6 @@
 }
 
 .text-link:focus-visible {
-  outline: 2px solid var(--color-primary-light);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }

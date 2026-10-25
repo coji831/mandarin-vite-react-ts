@@ -1,5 +1,5 @@
 /**
- * Tokens used: --surface-card, --surface-border, --radius-md, --shadow-sm
+ * Tokens used: --surface-card, --hairline, --radius-md, --shadow-sm
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

@@ -16,7 +16,7 @@ export function PhoneticClustersPage() {
   const { clusters, isLoading, error, hskFilter, setHskFilter, retry } = usePhoneticClusters();
 
   return (
-    <PageShell archetype="browse-index">
+    <PageShell archetype="list">
       <PageStack size="default">
         <PageHeader
           title="Phonetic Clusters"

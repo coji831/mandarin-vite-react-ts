@@ -13,7 +13,7 @@ import { mswHandlers } from "../../../../.storybook/msw-handlers";
 const meta: Meta<typeof PhoneticClustersPage> = {
   title: "Pages/Learn/PhoneticClusters/Full",
   component: PhoneticClustersPage,
-  tags: ["pages-browse-index"],
+  tags: ["pages-list"],
   parameters: {
     layout: "fullscreen",
     layoutType: "learn",

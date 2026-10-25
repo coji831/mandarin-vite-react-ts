@@ -1,5 +1,5 @@
 /**
- * Tokens used: --surface-overlay, --color-primary, --shadow-lg
+ * Tokens used: --surface-overlay, --accent-fill, --shadow-lg
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

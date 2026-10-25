@@ -115,13 +115,20 @@ tokens:
     # drift leaders migrate to these in the S1/S2 rollout waves. NEVER hardcode a page max-width —
     # consume --page-measure-<archetype> via the PageShell primitive instead.
     page-measure: # --page-measure-<archetype>: content max-width per archetype (spine's generic
-      # archetype vocabulary; PageShell.css maps PinyinPal's page archetypes onto these names —
-      # hub-launcher -> overview, browse-index -> list, focus-task -> detail, utility -> settings)
-      overview: "960px" # hub-launcher (DashboardPage canonized exemplar)
-      list: "1200px" # browse-index (ContentBrowser / PhoneticClustersPage, dense browse)
-      detail: "620px" # focus-task (ReviewView golden template); Quiz flow ~620-700
-      settings: "1000px" # utility (ProgressPage real content shell)
+      # archetype vocabulary, closed set of 13; PageShell maps PinyinPal's pages onto these names)
+      overview: "960px" # overview (DashboardPage canonized exemplar)
+      list: "1200px" # list (ContentBrowser / PhoneticClustersPage, dense browse)
+      detail: "620px" # detail (ReviewView golden template); Quiz flow ~620-700
+      create-edit: "720px" # create-edit: a form that writes one record
+      settings: "1000px" # settings (ProgressPage real content shell)
       auth: "420px" # auth (AuthForm centered single-column)
+      search: "1000px" # search: a query and its results
+      profile: "960px" # profile: one identity plus its activity
+      notifications: "760px" # notifications: a chronological stream
+      reports: "1200px" # reports: tables and charts
+      empty: "620px" # empty: one message and one way out
+      not-found: "620px" # not-found: one message and one way back
+      wizard: "720px" # wizard: a sequence of steps
     page-pad: "24px" # --page-pad: responsive horizontal page gutter (= space-lg)
     section-rhythm: # --section-rhythm-*: vertical rhythm BETWEEN page sections (outer > item gap)
       sm: "24px" # space-lg
@@ -135,19 +142,13 @@ tokens:
     measure-prose: "720px" # --measure-prose: long-form reading measure (≈65ch at 16px; px per unit-allowed-list)
   size:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
-  radii: ["4px", "8px", "12px", "20px"]
+  radii: ["0px", "0px", "0px", "0px"]
   shadows:
-    sm: "0 2px 8px rgba(0,0,0,0.3)"
-    md: "0 4px 12px rgba(245,158,11,0.2)"
-    lg: "0 6px 20px rgba(245,158,11,0.25)"
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
-    elevated-1: "0 1px 2px rgba(0,0,0,0.3)" # neutral — resting Browse cards (crisp 1px edge)
-    elevated-2: "0 4px 12px rgba(0,0,0,0.35)" # neutral — popovers / dropdowns / box-elevated / card-raised
-    elevated-3: "0 12px 32px rgba(0,0,0,0.45)" # neutral — modal surface / future toasts
   transitions:
-    fast: "0.2s ease"
-    normal: "0.3s ease"
-    slow: "0.4s ease" # toggle-switch knob slide — deliberately slower, visible flip affordance
+    fast: "120ms ease-out"
+    normal: "240ms ease-out"
+    slow: "360ms ease-out"
   z-index: # --z-* ladder — stacking order (ascending): content < chrome < popover < modal < toast
     content: 1 # base content layer
     chrome: 10 # app chrome (top bar / side nav)
@@ -189,15 +190,17 @@ tokens:
 
 ## Changelog
 
+- **2026-10-24** — Step 1b of the spine-hybrid migration: Night Bench paint landed (ADR-011 and `context/topics/spine-mandarin/design-lead-1b-scope-ruling.md`). The three parity-covered families moved in this frontmatter only — `tokens.radii` → `0px`, the six elevation shadows → `none` (`xp-glow` survives), `tokens.transitions` → `120ms/240ms/360ms ease-out`. `tokens.colors` is untouched here; the palette rewrite is the deferred `design-md` step. Body sections still describing the Amber Stone elevation/amber-glow policy are stale until that step.
+
 - **2026-09-10** — CJK-first identity (S1′a-1, blueprint P0-1): added `tokens.typography.font-families` (`--font-latin` = Manrope, `--font-hanzi` = Noto Sans SC stack) to DESIGN.md + globals.css; base `font-family` switched from `Inter` → `var(--font-latin)` — kills the "Inter = AI default" tell. Hanzi never gets letter-spacing (`--tracking-tight` stays Latin-only).
 
 - **2026-09-10** — S0b-1b: added gate #14 `npm run check:design-parity` (`scripts/check-design-parity.mjs`) — asserts the DESIGN.md `tokens.*` ↔ globals.css `:root` 1:1 contract for the mechanical families (layout page-measure/rhythm/gutters/scalars, spacing, radii, size, shadows, transitions, z-index): 40 pairs, bidirectional, whitespace-normalized value equality. Colors/typography/gradients are out of scope (hex↔rgba + variant-array mapping needs a semantic comparator — tracked separately). Wired into CI (`.github/workflows/design-gates.yml`) alongside strict gate #8.
 
 - **2026-09-10** — S0b-1 restructure: moved the 40-entry `components:` catalog OUT of the YAML frontmatter into the `## Component Catalog` body section (markdown table). The frontmatter is now `name` / `description` / `tokens` only. Rationale: `@google/design.md` treats `components:` as a design-TOKEN group, not a registry catalog — the old shape produced 120 lint warnings and blocked a strict spec gate. The machine source of truth is unchanged: `.github/component-registry.json`. Gate #8 (`npm run design:lint`, `tools/design-lint.mjs`) is now STRICT (0 findings) and wired into CI via `.github/workflows/design-gates.yml`.
 
-- **2026-08-21** — Audit-rule promotion: `utility-duplicate` moved from advisory to **machine-enforced error** in `tools/design-audit.mjs` — local/feature CSS may NOT repeat a global utility class (use `className` instead); shared-component CSS is exempt, and a preceding comment documents an intentional custom override. 252 existing findings queued for later epics (see note under § Utility Classes Added).
+- **2026-08-21** — Audit-rule promotion: `utility-duplicate` moved from advisory to **machine-enforced error** in `tools/design-audit-foundation.mjs` — local/feature CSS may NOT repeat a global utility class (use `className` instead); shared-component CSS is exempt, and a preceding comment documents an intentional custom override. 252 existing findings queued for later epics (see note under § Utility Classes Added).
 
-- **2026-08-20** — Audit-rule promotion: `z-index-raw` + `elevation-no-hairline` moved from advisory to **machine-enforced errors** in `tools/design-audit.mjs`; noted in § Z-Index Ladder and § Elevation Usage Ladder & Amber Restriction.
+- **2026-08-20** — Audit-rule promotion: `z-index-raw` + `elevation-no-hairline` moved from advisory to **machine-enforced errors** in `tools/design-audit-foundation.mjs`; noted in § Z-Index Ladder and § Elevation Usage Ladder & Amber Restriction.
 
 - **2026-08-18** — Wave-3 (Icon FE + dashboard demo reconciliation): § Icon System status → **implemented** (shared `Icon` component + `lucide-react ^1.32.0` in `apps/frontend/package.json`); Typography Role Map `h1`/`h2` rows aligned to shipped usage (`h1 = font-2xl/3xl`, `4xl/5xl` reserved hero; `h2 = font-lg/xl`); Global Motion Rule now lists both documented exceptions (Radical/Phonetic Trees + Dashboard quick-tile hover-lift) and adds `--transition-slow` (0.4s — ToggleSwitch) to the motion-resources list.
 
@@ -283,7 +286,7 @@ Stacking order is a **named ladder**, never raw values:
 
 **Rule:** raw `z-index` is **forbidden** in component CSS — use the `--z-*` ladder only. Pair the ladder with stacking-context discipline (`min-width: 0` on flex/grid children, explicit `isolation` where layers meet).
 
-> **Machine-enforced (error):** `z-index-raw` in `tools/design-audit.mjs` reports any raw `z-index` literal as an **error** — the ladder is enforced by the audit, not just convention.
+> **Machine-enforced (error):** `z-index-raw` in `tools/design-audit-foundation.mjs` reports any raw `z-index` literal as an **error** — the ladder is enforced by the audit, not just convention.
 
 ## Icon System
 
@@ -338,11 +341,11 @@ Rules:
 
 **Amber-restriction rule (machine-enforced):** every **resting** amber-shadow usage is forbidden; only hover/XP states may carry the amber family. The complete redefinition list (Phase A) is recorded in `docs/guides/design/design-reasoning.md` ADR-007.
 
-> **Machine-enforced (error):** `resting-amber-shadow` in `tools/design-audit.mjs` reports the amber `--shadow-md/lg`/`--shadow-xp-glow` family in any rule that isn't a `:hover` / `.hover-lift*` / XP-completion class as an **error** — the Amber Restriction is enforced by the audit, not just policy.
+> **Machine-enforced (error):** `resting-amber-shadow` in `tools/design-audit-foundation.mjs` reports the amber `--shadow-md/lg`/`--shadow-xp-glow` family in any rule that isn't a `:hover` / `.hover-lift*` / XP-completion class as an **error** — the Amber Restriction is enforced by the audit, not just policy.
 
 **Elevation-no-hairline rule (ADR-007):** every elevated surface in the rows above (Browse cards, popovers/dropdowns, modal/toasts) **must carry `--surface-border-subtle`** — an elevation token without its hairline border is a violation. Focus-task flat surfaces (ADR-004) also carry the hairline to separate the task card from the canvas.
 
-> **Machine-enforced (error):** `elevation-no-hairline` in `tools/design-audit.mjs` reports an elevated surface without `--surface-border-subtle` in the same rule as an **error** — the hairline rule is enforced by the audit, not just convention.
+> **Machine-enforced (error):** `elevation-no-hairline` in `tools/design-audit-foundation.mjs` reports an elevated surface without `--surface-border-subtle` in the same rule as an **error** — the hairline rule is enforced by the audit, not just convention.
 
 ## Utility Classes Added
 
@@ -353,16 +356,13 @@ Rules:
 | `.mb-xl`                                                                                     | `margin-bottom: var(--space-xl)`                                                                            |
 | `.max-w-320`                                                                                 | `max-width: 320px`                                                                                          |
 | `.max-w-450`                                                                                 | `max-width: 450px`                                                                                          |
-| `.shadow-elevated-1`                                                                         | `box-shadow: var(--shadow-elevated-1)`                                                                      |
-| `.shadow-elevated-2`                                                                         | `box-shadow: var(--shadow-elevated-2)`                                                                      |
-| `.shadow-elevated-3`                                                                         | `box-shadow: var(--shadow-elevated-3)`                                                                      |
 | `.border-surface-subtle`                                                                     | `border-color: var(--surface-border-subtle)`                                                                |
 | `.tracking-tight`                                                                            | `letter-spacing: var(--tracking-tight)`                                                                     |
 | `.lh-1` / `.lh-tight` / `.lh-normal` / `.lh-1-3` / `.lh-1-4` / `.lh-relaxed` / `.lh-display` | `line-height: var(--lh-*)` ladder (ADR-009)                                                                 |
 | `.fw-400` … `.fw-800`                                                                        | `font-weight: var(--fw-*)` ladder — 400 body / 500 medium / 600 semibold / 700 display / 800 hero (ADR-009) |
 | `.font-3xl` … `.font-6xl`                                                                    | `font-size: var(--font-*)` fluid display tiers (`clamp()`) — ADR-009                                        |
 
-> **Machine-enforced (error):** `utility-duplicate` in `tools/design-audit.mjs` reports any local CSS property that repeats one of the global utility classes above as an **error** — prefer the global `className`, don't re-declare tokens in local CSS. Two sanctioned escapes: (1) **shared-component CSS** (`shared/components/`) bundles multi-property variant classes and is exempt; (2) a **custom case** may carry a preceding comment explaining why the local override is needed.
+> **Machine-enforced (error):** `utility-duplicate` in `tools/design-audit-foundation.mjs` reports any local CSS property that repeats one of the global utility classes above as an **error** — prefer the global `className`, don't re-declare tokens in local CSS. Two sanctioned escapes: (1) **shared-component CSS** (`shared/components/`) bundles multi-property variant classes and is exempt; (2) a **custom case** may carry a preceding comment explaining why the local override is needed.
 
 ---
 

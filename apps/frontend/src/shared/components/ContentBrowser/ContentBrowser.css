@@ -4,7 +4,9 @@
 
 /* ─── Content Browser Container ─── */
 .content-browser {
-  max-width: var(--page-measure-list);
+  /* Width is PageShell's list measure (LibraryPage); this hook only stops a
+     flex child from blowing out past it. */
+  min-width: 0;
 }
 
 /* ─── Tab Bar ─── */
@@ -17,8 +19,8 @@
 /* .tab-bar__tab — border-radius migrated to radius-top-md utility class */
 
 .tab-bar__tab:hover {
-  background: var(--color-primary-bg-light);
-  color: var(--text-primary);
+  background: var(--accent-tint);
+  color: var(--ink-1);
 }
 
 /* .tab-bar__tab--active — migrated to border-bottom-primary utility */
@@ -30,7 +32,7 @@
 
 .tab-bar__tab--locked:hover {
   background: transparent;
-  color: var(--text-tertiary);
+  color: var(--ink-3);
 }
 
 /* ─── Search Bar (inside the combined container) ─── */
@@ -46,7 +48,7 @@
 /* Placeholder text must stay ≥4.5:1 — SC 1.4.3 covers placeholder. Role tiers:
    primary/secondary/muted = ≥4.5:1 (body/meta/placeholder); subtle/ghost = decorative-only + large. */
 .search-bar__input::placeholder {
-  color: var(--text-muted);
+  color: var(--ink-quiet);
 }
 
 /* ─── Content Grid ─── */
@@ -62,11 +64,10 @@
 
 .content-card--unlocked:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .content-card--unlocked:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

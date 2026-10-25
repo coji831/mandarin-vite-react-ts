@@ -1,7 +1,7 @@
 /**
  * Spinner Component Stories
  * Reusable loading spinner with size (xs–lg) and color (primary/white) variants.
- * Tokens used: --color-primary, --text-on-accent / color tokens
+ * Tokens used: --accent-fill, --text-on-accent / color tokens
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

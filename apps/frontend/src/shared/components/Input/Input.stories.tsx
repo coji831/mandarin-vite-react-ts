@@ -1,5 +1,5 @@
 /**
- * Tokens used: --surface-input, --surface-border, --radius-md, --color-primary
+ * Tokens used: --surface-input, --hairline, --radius-md, --accent-fill
  * See: DESIGN.md
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";

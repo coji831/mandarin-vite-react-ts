@@ -9,11 +9,11 @@
 }
 
 .chengyu-card:hover {
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
 }
 
 .chengyu-card:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

@@ -66,13 +66,13 @@ Both pages are centered-card layouts with a clean, minimal design.
 
 ### Colors
 
-| Token   | CSS Variable       | Usage                     |
-| ------- | ------------------ | ------------------------- |
-| Primary | `--color-primary`  | Submit button             |
-| Error   | `--color-error`    | Validation/error messages |
-| —       | `--text-primary`   | Form labels               |
-| —       | `--text-secondary` | Helper text, links        |
-| —       | `--surface-dark`   | Form card background      |
+| Token   | CSS Variable    | Usage                     |
+| ------- | --------------- | ------------------------- |
+| Primary | `--accent-fill` | Submit button             |
+| Error   | `--color-error` | Validation/error messages |
+| —       | `--ink-1`       | Form labels               |
+| —       | `--ink-2`       | Helper text, links        |
+| —       | `--card`        | Form card background      |
 
 ### Spacing
 

@@ -10,9 +10,8 @@
 
 .cluster-card:hover {
   /* :hover pseudo — can't use className utility */
-  border-color: var(--color-primary-border);
-  /* :hover pseudo — paired with border-color above */
-  box-shadow: var(--shadow-sm);
+  border-color: var(--edge-control);
+  /* 2026-10-25, S10: the sm neutral shadow retired with the elevation family */
 }
 
 .cluster-card__glyph {
@@ -23,5 +22,5 @@
 /* ─── Collapsible toggle header (VisFix W6a) ─────────────────────── */
 
 .cluster-card__toggle:hover {
-  background: var(--color-primary-bg-light); /* :hover pseudo — can't use className utility */
+  background: var(--accent-tint); /* :hover pseudo — can't use className utility */
 }

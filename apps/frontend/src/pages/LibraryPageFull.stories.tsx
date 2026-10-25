@@ -12,7 +12,7 @@ import LibraryPage from "./LibraryPage";
 const meta: Meta<typeof LibraryPage> = {
   title: "Pages/Library",
   component: LibraryPage,
-  tags: ["pages-browse-index"],
+  tags: ["pages-list"],
   parameters: {
     layout: "fullscreen",
     layoutType: "app",

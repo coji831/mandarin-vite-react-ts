@@ -14,9 +14,9 @@
 
 .grammar-hub__structure {
   padding: var(--space-sm);
-  border: 1px solid var(--color-primary-border);
+  border: 1px solid var(--edge-control);
   border-radius: var(--radius-sm);
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
 }
 
 .grammar-hub__explanation {
@@ -40,45 +40,46 @@
 }
 
 .grammar-hub__segments {
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
   padding-top: var(--space-sm);
 }
 
 .grammar-hub__segment-text {
-  color: var(--text-secondary);
+  color: var(--ink-2);
 }
 
 /* Linked word/character token — clickable, opens the hub. */
 .grammar-hub__segment-token {
   padding: 0;
-  color: var(--color-primary-lighter);
+  color: var(--accent-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
 }
 
 .grammar-hub__segment-token:hover {
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .grammar-hub__segment-token:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
 .grammar-hub__related-link {
   padding: var(--space-xs) var(--space-sm);
-  border: 1px solid var(--color-primary-border);
+  border: 1px solid var(--edge-control);
   border-radius: var(--radius-pill);
   cursor: pointer;
 }
 
 .grammar-hub__related-link:hover {
-  border-color: var(--color-primary-border-strong);
-  background: var(--color-primary-bg-light);
+  /* utility-duplicate exemption: a hover boundary is the control's own edge; .border-primary-border cannot express hover-on-this-element (1b collapse, R4/R5) */
+  border-color: var(--edge-control);
+  background: var(--accent-tint);
 }
 
 .grammar-hub__related-link:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }

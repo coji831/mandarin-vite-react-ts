@@ -1,7 +1,7 @@
 ---
 purpose: Ratified re-sliced epic plan 25–40 (calibration + AI roadmap) + OI-1…OI-10 decision record
 status: ratified
-last-verified: 2026-08-21
+last-verified: 2026-10-24
 type: planning
 ---
 
@@ -9,7 +9,7 @@ type: planning
 
 **Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
-**Last Updated:** 2026-08-21
+**Last Updated:** 2026-10-24
 
 **Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D10**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
 
@@ -28,6 +28,41 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 3. **The four widest epics (26, 27, 29, 33) are structured as two gated milestones each** — each milestone is a closable horizontal/vertical slice with its own AC set, so no epic feels like a mega-epic. Each is flagged with a _recommended split_ if it grows.
 4. **UI is folded into its epic** as `UI: <what> — design spec TBD`. Backend-only epics say `UI: none` explicitly.
 5. **ACs are testable and gate-aligned** — backend → integration test / endpoint contract; frontend → component/story or e2e; close criteria reference the repo's two-tier gates (Tier 1 per-change, Tier 2 at story/epic-close).
+
+---
+
+## Design-System (Spine) Adoption Track
+
+**Status:** ADDED 2026-10-24 — formalizes how the remaining spine adoption attaches to this plan. Spine
+(`C:\CodeProjects\Personal\spine`) is the generic design-system source of truth; this repo owns only the
+theme overlay and `domain.pinyinpal` support tokens.
+
+**Current state (2026-10-21, commit `5b9f6012`):** foundation layer only — 5 `--page-measure-*` tokens plus
+pad / rhythm / gutter, `PageShell` as the single archetype→measure map (16/18 routes conform),
+`design-audit:foundation` gate, spine MCP wired. **Still open:** the Night Bench theme (ADR-011 ratified
+2026-09-12, unapplied), semantic token-name alignment, the component model (closed variants + 12 states +
+spec-first registry entries), full-scope gates in CI, and spine's review governance.
+
+**Why this section exists:** 11 of the 16 epics below carry UI, all tagged "design spec TBD" and none
+naming spine. The foundation-first principle still holds: a page conforms to the spine law BEFORE the epic
+builds on it.
+
+**Adoption mapping:**
+
+| Adoption item | Owned by |
+| --- | --- |
+| Token consolidation, semantic name alignment, Night Bench paint | **Pre-26 spine epic** (insert before Epic 26) |
+| Gate/CI repair + doc/config alignment | same pre-26 spine epic |
+| Component model (spec-first registry entries, per new surface) | **each UI-carrying epic at BR time** (26, 28, 30–33, 36, 37, 39, 40) |
+| Review governance (R0→R3 + rubric) | process epic, reused at every UI epic close |
+
+**Amends Re-Slicing Principle 4:** a UI-carrying epic's `UI:` line resolves at BR time against spine — it
+names the page **archetype** (and its `--page-measure-*`), the **components** (existing spine registry or a
+new spec-first entry), and the **states** (12-state set). "design spec TBD" means "design spec via spine
+registry — see this track", not "to be invented per epic".
+
+**Sequencing rule (spine `docs/design-process.md`):** semantic names before paint; paint before component
+migration. Never restyle a surface before its tokens are aligned to spine's names.
 
 ---
 

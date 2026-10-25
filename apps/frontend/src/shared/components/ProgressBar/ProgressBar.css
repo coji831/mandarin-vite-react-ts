@@ -3,7 +3,7 @@
  * Uses CSS variables for colors, inline styles for dynamic width.
  *
  * Geometry (shared-layer pass 2026-09-10): the blueprint's slim pill — 8px track,
- * --surface-border hairline, radius-pill, fill clipped to the radius. Every owner
+ * --hairline hairline, radius-pill, fill clipped to the radius. Every owner
  * (dashboard, foundations, sandhi drill, pictograph game, quiz, readers, review)
  * renders this one geometry; pages must NOT override it locally.
  */
@@ -11,7 +11,7 @@
 .progress-bar__track {
   position: relative;
   height: var(--space-xs);
-  background: var(--surface-border);
+  background: var(--hairline);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -19,7 +19,7 @@
 .progress-bar__fill {
   height: 100%;
   min-width: 4px;
-  background: var(--gradient-success);
+  background: var(--ink-1);
   border-radius: var(--radius-pill);
   transition: width var(--transition-normal);
 }
@@ -30,5 +30,32 @@
   top: 0;
   width: 2px;
   height: 100%;
-  background: var(--color-warning);
+  background: var(--color-warn);
+}
+
+@media (forced-colors: active) {
+  /* Forced colors discard the track, the fill and the threshold washes, so progress would
+     read as an empty row. Spine's own block re-draws the frame and the filled span in system
+     colours. One delta: this track has no border outside HCM, so box-sizing keeps the added
+     1px edge from growing the var(--space-xs) track. */
+  .progress-bar__track {
+    box-sizing: border-box;
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .progress-bar__fill {
+    background: Highlight;
+  }
+
+  .progress-bar__threshold {
+    background: CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* motion.md's ProgressBar row: the fill appears at its value with no sweep. */
+  .progress-bar__fill {
+    transition: none;
+  }
 }

@@ -83,10 +83,10 @@ export const ClusterCard = React.memo(function ClusterCard({ cluster }: ClusterC
       {/* Pronunciation Note (if present) — visible in both states */}
       {cluster.pronunciationNote && (
         <div className="cluster-card__pronunciation-note flex items-center gap-sm p-sm radius-sm bg-primary-bg-light mb-md">
-          <span className="text-accent" aria-label="Pronunciation note">
+          <span className="text-accent">
             <Icon name="audio" size={16} aria-hidden />
           </span>
-          <span className="font-sm text-tertiary font-italic">{cluster.pronunciationNote}</span>
+          <span className="font-sm text-secondary font-italic">{cluster.pronunciationNote}</span>
         </div>
       )}
 

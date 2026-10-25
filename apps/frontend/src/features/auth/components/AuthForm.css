@@ -7,21 +7,17 @@
   min-height: 60vh;
 }
 
-.auth-form {
-  max-width: var(--page-measure-auth);
-}
-
 .auth-form-label {
   display: block; /* structural: label element is block by intent */
 }
 
 .auth-form-input:focus {
-  box-shadow: 0 0 0 3px var(--color-primary-bg-light);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
 .auth-form-input::placeholder {
   color: var(
-    --text-tertiary
+    --ink-3
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
 }
 

@@ -17,7 +17,7 @@
 
 .dropdown__trigger:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-bg);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
 .dropdown__trigger-text {
@@ -49,7 +49,7 @@
 
 .dropdown__option:hover,
 .dropdown__option:focus {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
 }
 
 .dropdown__option--selected {
@@ -58,5 +58,5 @@
 
 .dropdown__option--selected:hover,
 .dropdown__option--selected:focus {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
 }

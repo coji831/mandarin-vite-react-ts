@@ -18,7 +18,6 @@ import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
 import { ChengyuPage } from "./ChengyuPage";
 import { chengyuHandlers } from "../../../mocks/handlers/chengyu-handlers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { withAppLayout, withLearnLayout } from "../../../../.storybook/decorators";
 
 const LIST_URL = `http://localhost:3001/api${ROUTE_PATTERNS.chengyuIdioms}`;
 
@@ -43,10 +42,11 @@ function makeSummary(n: number) {
 const meta = {
   title: "Pages/Learn/ChengyuPage",
   component: ChengyuPage,
-  tags: ["pages-browse-index"],
-  decorators: [withAppLayout("/learn/chengyu"), withLearnLayout()],
+  tags: ["pages-list"],
   parameters: {
     layout: "fullscreen",
+    layoutType: "learn",
+    layoutPath: "/learn/chengyu",
   },
 } satisfies Meta<typeof ChengyuPage>;
 

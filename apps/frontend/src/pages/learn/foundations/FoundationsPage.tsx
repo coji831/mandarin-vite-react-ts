@@ -15,7 +15,7 @@ import {
   FOUNDATION_SECTION_LABELS,
   type FoundationSectionId,
 } from "@mandarin/shared-constants";
-import { Tabs } from "shared/components";
+import { PageShell, Tabs } from "shared/components";
 import type { TabConfig } from "shared/components";
 import { SEARCH_PARAMS } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
@@ -81,23 +81,25 @@ export function FoundationsPage({
   };
 
   return (
-    <div className="foundations-page flex-col">
-      <Tabs
-        tabs={TABS_CONFIG}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        lockedTabs={lockedTabs}
-        getLockPhase={getLockPhase}
-        align="center"
-      >
-        {activeTab === "pinyin" && <PinyinTab />}
-        {activeTab === "tones" && <TonesTab />}
-        {activeTab === "strokes" && <StrokeReferenceTab />}
-        {activeTab === "animations" && <StrokeAnimationTab />}
-        {activeTab === "pictographs" && <PictographGallery />}
-      </Tabs>
+    <PageShell archetype="overview">
+      <div className="foundations-page flex-col">
+        <Tabs
+          tabs={TABS_CONFIG}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          lockedTabs={lockedTabs}
+          getLockPhase={getLockPhase}
+          align="center"
+        >
+          {activeTab === "pinyin" && <PinyinTab />}
+          {activeTab === "tones" && <TonesTab />}
+          {activeTab === "strokes" && <StrokeReferenceTab />}
+          {activeTab === "animations" && <StrokeAnimationTab />}
+          {activeTab === "pictographs" && <PictographGallery />}
+        </Tabs>
 
-      <FoundationsProgressBar />
-    </div>
+        <FoundationsProgressBar />
+      </div>
+    </PageShell>
   );
 }

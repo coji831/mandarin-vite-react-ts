@@ -22,7 +22,7 @@
 }
 
 .phonetic-family-node__header:hover {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
   border-radius: var(--radius-md);
 }
 
@@ -39,7 +39,7 @@
 /* ─── Member list ────────────────────────────────────────────────── */
 
 .phonetic-family-node__members {
-  border-left: 2px solid var(--surface-border);
+  border-left: 2px solid var(--hairline);
   margin-left: calc(var(--space-sm) + 2px);
 }
 
@@ -51,7 +51,7 @@
 }
 
 .phonetic-family-node__member-row:hover {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
   border-radius: var(--radius-md);
 }
 

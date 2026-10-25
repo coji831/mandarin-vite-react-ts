@@ -1,5 +1,5 @@
 /**
- * PageHeader Component — Precision-minimal page header (hub-launcher archetype)
+ * PageHeader Component — Precision-minimal page header (overview archetype)
  *
  * Renders the page's single <h1> with an optional eyebrow, description, and a
  * top-right CTA slot (holds ≤1 primary Button). No border, no background — the

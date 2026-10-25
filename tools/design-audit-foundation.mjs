@@ -1,37 +1,58 @@
 #!/usr/bin/env node
 
 /**
- * design-audit-foundation.mjs — the spine page-anatomy gate, foundation scope only.
+ * design-audit-foundation.mjs — the spine design-audit, served in two modes.
  *
  * WHY THIS EXISTS
  *   spine is the source of truth for the design system, including the page-anatomy
  *   law's rules. This script runs spine's own `design-audit` gate (never a local
- *   copy of the rules) and fails on the page-anatomy family only:
+ *   copy of the rules). It has two modes:
+ *
+ *   FOUNDATION (default) — fails on the page-anatomy family only:
  *     - missing-layout-token      hardcoded max-width in a page container
  *     - page-scoped-layout-css    hand-rolled `margin: ... auto` page wrapper
  *     - page-scoped-grid          page-defined grid-template-columns
  *   Everything else spine's audit reports (tone, elevation, inline styles, dead CSS,
  *   undefined classes) stays out of this gate: those are feature-level sweeps, and
  *   gating them here would fail every PR on pre-existing debt.
- *
  *   Scope is the foundation, per step 6 of the spine arc: tokens + page anatomy +
  *   enforcement. Per-page restyling and component-by-component migration are NOT
  *   this gate's business.
  *
+ *   FULL (`--full`) — spine's gate with NO rule filter. This is what
+ *   `npm run design-audit` runs since S6 (2026-10-24): it replaced the 1,866-line
+ *   local fork `tools/design-audit.mjs`, which was deleted only after this mode was
+ *   proven to reproduce the fork's findings byte for byte (250/436/686, identical
+ *   1,381 output lines, S6 receipt).
+ *
+ * THE STANDING FLOOR (do not re-derive, do not read as a ceiling)
+ *   249/436/685 — pinned at S10 (2026-10-25: −1, the utility-duplicate on
+ *   .shadow-sm cleared with its map key, see design-lead-s10-precondition-ruling.md § 3.3)
+ *   250/436/686 (S3, 2026-10-24: +3 visibility, see design-lead-s3-ruling.md § D3)
+ *   That is a pinned, dated, attributed number: it rose from 247 by three rows that
+ *   named pre-existing code, not by a regression. It is a ratchet floor, never a
+ *   budget — "<= 250" is not a statement this line authorises.
+ *
  * USAGE
- *   npm run design-audit:foundation
- *   node tools/design-audit-foundation.mjs [targetDir]   (default apps/frontend/src)
+ *   npm run design-audit              -> --full against apps/frontend/src
+ *   npm run design-audit:foundation   -> foundation mode (page-anatomy only)
+ *   node tools/design-audit-foundation.mjs [targetDir]          (foundation)
+ *   node tools/design-audit-foundation.mjs --full [targetDir]   (full audit)
+ *   Flags other than --full (--regenerate-baseline, --check-baseline-shrink) are
+ *   forwarded to spine's gate unchanged.
  *
  * ENVIRONMENT
  *   SPINE_ROOT   path to the spine checkout (default C:/CodeProjects/Personal/spine).
  *                spine is a local checkout, not a published package, so a CI runner
  *                without it cannot run this gate; the script says so and exits 2
  *                instead of silently passing.
+ *   SPINE_AUDIT_DEFAULT / SPINE_STYLES_DIR / SPINE_AUDIT_BASELINE are set by this
+ *   script for both modes; spine documents them in packages/gates/README.md.
  *
  * EXIT CODES
- *   0 = no page-anatomy findings
- *   1 = page-anatomy findings (the gate fails)
- *   2 = spine's gate could not be run (checkout missing / audit crashed)
+ *   foundation: 0 = no page-anatomy findings; 1 = page-anatomy findings; 2 = gate unusable
+ *   full:       spine's own exit code (1 whenever any error remains — the assertion
+ *               there is the number, not the code); 2 = gate unusable
  */
 
 import { spawnSync } from "node:child_process";
@@ -63,9 +84,15 @@ if (!fs.existsSync(SPINE_GATE)) {
   process.exit(2);
 }
 
-const target = process.argv[2] || "apps/frontend/src";
+const argv = process.argv.slice(2);
+const target = argv.find((a) => !a.startsWith("--")) || "apps/frontend/src";
+// `--full` is the only flag this wrapper consumes; everything else belongs to
+// spine's gate (--regenerate-baseline, --check-baseline-shrink).
+const FULL = argv.includes("--full");
+const spineArgs = argv.filter((a) => a !== "--full");
+if (spineArgs.length === 0) spineArgs.push(target);
 
-const run = spawnSync(process.execPath, [SPINE_GATE, target], {
+const run = spawnSync(process.execPath, [SPINE_GATE, ...spineArgs], {
   cwd: ROOT,
   encoding: "utf8",
   env: {
@@ -113,7 +140,32 @@ const summaryLine = stdout
   .split(/\r?\n/)
   .find((l) => /^\s+\d+ error\(s\), \d+ warning\(s\)/.test(l));
 
-console.log("\n🔍 Foundation audit — page-anatomy law (spine's design-audit, foundation rules only)");
+if (FULL) {
+  // No rule filter. spine's findings are reprinted verbatim so this mode stays a
+  // drop-in for the retired fork, and its exit code is spine's own.
+  console.log("\n🔍 Full audit — spine's design-audit, every rule (no filter)");
+  console.log(`   target: ${target}`);
+  console.log(`   spine:  ${SPINE_ROOT}`);
+  console.log(`   spine's full audit reported:${summaryLine ?? " (no summary line)"}`);
+  console.log(
+    "   floor:  249/436/685 — pinned at S10 (2026-10-25: −1, the utility-duplicate on .shadow-sm cleared with its map key, see design-lead-s10-precondition-ruling.md § 3.3); a floor, not a budget\n",
+  );
+
+  if (!summaryLine) {
+    console.error("spine's design-audit produced no summary — the gate could not be trusted.\n");
+    if (stderr.trim()) console.error(stderr.trim());
+    process.exit(2);
+  }
+
+  const body = stdout.trimEnd();
+  if (body) console.log(body);
+  if (stderr.trim()) process.stderr.write(stderr);
+  process.exit(run.status ?? 2);
+}
+
+console.log(
+  "\n🔍 Foundation audit — page-anatomy law (spine's design-audit, foundation rules only)",
+);
 console.log(`   target: ${target}`);
 console.log(`   spine:  ${SPINE_ROOT}`);
 console.log(`   spine's full audit reported:${summaryLine ?? " (no summary line)"}`);

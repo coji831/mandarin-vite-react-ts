@@ -107,9 +107,12 @@ shell/measure/gutter/header, verified by `check:page-inventory`).
 ## Design-system source of truth (spine)
 
 The generic design system is the **spine** repo, not this one,
-and the spine MCP (`.vscode/mcp.json` -> `spine`, stdio) serves it: `spine://tokens`,
+and the spine MCP (`.mcp.json` -> `spine`, stdio) serves it: `spine://tokens`,
 `spine://components/{name}`, `spine://rules`, plus `search_kb` / `suggest_token` /
-`suggest_component` / `audit_design` / `lint_spec`.
+`suggest_component` / `audit_design` / `lint_spec` / `validate_snippet`, and the prompts
+`design-review` / `prep-brief` / `theme-selection`. The spec-first procedures (add a component,
+add a theme, run a review) are spine's `agents/skills/` (`add-component`, `add-theme`,
+`design-review`) — reachable via the spine checkout or `search_kb`, never copied into this repo.
 
 - **Generic layer = spine.** Generic tokens, generic components, page-anatomy measures and the
   page archetype vocabulary are spine's. Read `spine://components/{name}` for a component's
@@ -127,4 +130,4 @@ and the spine MCP (`.vscode/mcp.json` -> `spine`, stdio) serves it: `spine://tok
   `--chrome-h`, `--card-gutter-*`) - never hardcoded px for page structure. DESIGN.md <->
   globals.css parity is enforced (`check:design-parity`, gate #14).
 
-**UI Codegen Protocol:** see `.github/instructions/uiux-design-protocol.instructions.md` §Storybook MCP + Context Pack — Storybook MCP is the component source of truth; never invent a component.
+**UI Codegen Protocol:** see `.github/instructions/uiux-design-protocol.instructions.md` §Spine MCP + Context Pack — the spine MCP is the component source of truth; Storybook is the preview surface; never invent a component.

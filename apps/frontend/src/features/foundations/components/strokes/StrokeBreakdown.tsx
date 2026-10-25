@@ -51,7 +51,7 @@ export const StrokeBreakdown = React.memo(function StrokeBreakdown({
               >
                 <path
                   d={path}
-                  fill="var(--text-muted)"
+                  fill="var(--ink-quiet)"
                   transform="translate(0, 112.5) scale(0.125, -0.125)"
                 />
               </svg>

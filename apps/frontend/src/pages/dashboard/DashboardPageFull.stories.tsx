@@ -16,7 +16,7 @@ import { withGuestAuth } from "../../../.storybook/decorators";
 const meta: Meta<typeof DashboardPage> = {
   title: "Pages/Dashboard",
   component: DashboardPage,
-  tags: ["pages-hub-launcher"],
+  tags: ["pages-overview"],
   decorators: [],
   parameters: {
     layout: "fullscreen",

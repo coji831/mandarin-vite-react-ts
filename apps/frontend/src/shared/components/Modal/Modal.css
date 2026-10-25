@@ -1,15 +1,14 @@
 .modal-backdrop {
   inset: 0;
-  background: var(--overlay-dark);
+  background: var(--scrim);
   z-index: var(--z-modal);
 }
 
 .modal {
   max-height: 90vh;
   animation: modal-enter var(--transition-fast) ease-out;
-  /* Precision-minimal modal surface: hairline + neutral elevation (A.2/A.3) */
-  border: 1px solid var(--surface-border-subtle);
-  box-shadow: var(--shadow-elevated-3);
+  border: 1px solid var(--hairline);
+  /* 2026-10-25, S10: the elevated-3 neutral shadow retired with the elevation family */
 }
 
 .modal--sm {
@@ -35,6 +34,6 @@
   width: 100%;
   height: 0;
   border: none;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
   margin: 0;
 }

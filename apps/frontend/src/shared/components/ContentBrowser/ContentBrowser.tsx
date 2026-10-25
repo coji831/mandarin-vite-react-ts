@@ -205,7 +205,7 @@ function ContentBrowser({
   if (error) {
     return (
       <div
-        className="content-browser mx-auto p-lg flex flex-col gap-lg text-secondary"
+        className="content-browser flex flex-col gap-lg text-secondary"
         role="alert"
       >
         <Box
@@ -225,7 +225,7 @@ function ContentBrowser({
   }
 
   return (
-    <div className="content-browser mx-auto p-lg flex flex-col gap-lg text-secondary">
+    <div className="content-browser flex flex-col gap-lg text-secondary">
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} tabs={visibleTabs} />
 
       <Box variant="dark" padding="md" className="content-browser__toolbar flex flex-wrap gap-sm">

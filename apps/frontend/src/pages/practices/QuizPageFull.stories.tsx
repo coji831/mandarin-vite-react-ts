@@ -217,7 +217,7 @@ const QUIZ_ATTEMPT_HANDLER = http.post(`${API_BASE}/quiz/attempts`, () =>
 const meta: Meta<typeof QuizSessionPage> = {
   title: "Pages/Practices/Quiz",
   component: QuizSessionPage,
-  tags: ["pages-focus-task"],
+  tags: ["pages-detail"],
   parameters: {
     layout: "fullscreen",
   },

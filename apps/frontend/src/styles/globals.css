@@ -29,76 +29,84 @@
 }
 
 :root {
-  /* ===== Amber Stone Theme ===== */
+  /* ===== Night Bench, in spine's semantic vocabulary =====
+     Step 1a of the spine-hybrid migration moved NAMES ONLY; step 1b flipped the
+     values to Night Bench (ADR-011). The canonical palette here is spine's
+     `themes.night-bench`; the product layer keeps its own fonts (ADR-011) and its
+     domain families (status/info, classification, XP, stroke, tone, wash ramp).
+     Retired names and where each one landed:
+     context/topics/spine-mandarin/step1a-receipt.md. */
 
-  /* Primary - Amber */
-  --color-primary: rgba(180, 83, 9, 1);
-  --color-primary-dark: rgba(146, 64, 14, 1);
-  --color-primary-light: rgba(217, 119, 6, 1);
-  /* Text-safe accent (WCAG 2.2 SC 1.4.3): --color-primary-light (#D97706) is only
-     4.13–4.47:1 on tinted/medium surfaces; primary-lighter (amber-500 #F59E0B)
-     clears 4.5:1 on every dark surface. Use for ACCENT TEXT — never fills. */
-  --color-primary-lighter: rgba(245, 158, 11, 1);
-  --color-primary-bg: rgba(180, 83, 9, 0.18);
-  --color-primary-bg-light: rgba(180, 83, 9, 0.08);
-  --color-primary-bg-medium: rgba(180, 83, 9, 0.12);
-  --color-primary-border: rgba(180, 83, 9, 0.3);
-  --color-primary-border-strong: rgba(180, 83, 9, 0.4);
-  --color-primary-border-hover: rgba(180, 83, 9, 0.6);
+  /* ── Accent: fill / ink / tint / fill-lighter, plus the control edge ──
+     Night Bench (ADR-011): one accent, two roles. Step 1b collapsed the old
+     alpha ladder — 0.08 / 0.12 / 0.18 washes and 0.3 / 0.4 / 0.6 edges. */
+  --accent-fill: rgba(216, 164, 92, 1);
+  /* Ink ON the accent fill — spine's accent.fill-ink. Dark ink for text on the
+     amber fill (8.26:1); 1b boundary amendment (design-lead-btn-ink-ruling.md). */
+  --accent-fill-ink: rgba(23, 19, 15, 1);
+  /* Accent AS TEXT — the same dusty amber as the fill, held to one tier.
+     1b: --color-primary-light → --accent-ink — two unequal accent-text tiers
+     merge, and the old amber-600 tier failed 4.5:1 as text on tinted surfaces.
+     Never a fill. */
+  --accent-ink: rgba(216, 164, 92, 1);
+  /* Accent wash — one plane, no alpha ladder.
+     1b: --color-primary-bg-light (0.08) and --color-primary-bg-medium (0.12)
+     → this plane; both retired here. */
+  --accent-tint: color-mix(in srgb, var(--accent-fill) 14%, var(--canvas));
+  /* The accent lifted, for a hover fill (was --color-primary-hover). */
+  --accent-fill-lighter: rgba(224, 176, 112, 1);
+  /* Interactive-control edge — a boundary you can find (clears 3.0, not 4.5).
+     1b: --color-primary-border-strong (0.4) and --color-primary-border-hover
+     (0.6) → this edge; a hover boundary is paint on the control, not a token. */
+  --edge-control: rgba(126, 112, 89, 1);
+  /* Focus ring — the accent at full alpha (was the outline use of
+     --color-primary-light). 1b: spine's Night Bench ring. */
+  --focus-ring: rgba(216, 164, 92, 1);
 
-  /* Success - Emerald */
-  --color-success: rgba(52, 211, 153, 1);
-  --color-success-bg: rgba(52, 211, 153, 0.15);
-  --color-success-border: rgba(52, 211, 153, 0.3);
+  /* ── Status: one tone per role, one plane alpha knob, one destructive edge ──
+     A status plane is COMPOSED, never typed:
+       color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent) */
+  --status-tint: 0.12;
 
-  /* Error - Warm Red */
-  --color-error: rgba(239, 107, 107, 1);
-  --color-error-bg: rgba(239, 107, 107, 0.15);
-  --color-error-border: rgba(239, 107, 107, 0.3);
+  /* Success */
+  --color-success: rgba(147, 185, 130, 1);
 
-  /* Warning - Amber/Gold */
-  --color-warning: rgba(245, 158, 11, 1);
-  --color-warning-bg: rgba(245, 158, 11, 0.15);
-  --color-warning-border: rgba(245, 158, 11, 0.3);
+  /* Error */
+  --color-error: rgba(224, 138, 123, 1);
+  /* Destructive edge — the error tone mixed over the card. */
+  --edge-danger: color-mix(in srgb, var(--color-error) 68%, var(--card));
 
-  /* Info - Warm Amber-Yellow */
-  --color-info: rgba(252, 211, 77, 1);
-  --color-info-bg: rgba(252, 211, 77, 0.15);
-  --color-info-border: rgba(252, 211, 77, 0.3);
+  /* Warning verdict (was --color-warning — spine's canonical status name) */
+  --color-warn: rgba(216, 164, 92, 1);
 
-  /* Info - Gold (for character-level feedback) */
-  --color-info-blue: rgba(212, 168, 67, 1);
-  --color-info-blue-bg: rgba(212, 168, 67, 0.15);
-  --color-info-blue-border: rgba(212, 168, 67, 0.3);
+  /* ── Domain · pinyinpal status/info (GAP 2: spine declares success/error/warn
+     only, so an info role lives in the product layer, values kept) ── */
+  --status-info: rgba(252, 211, 77, 1);
+  --status-info-bg: rgba(252, 211, 77, 0.15);
+  --status-info-border: rgba(252, 211, 77, 0.3);
 
-  /* Info - Amber (for meaning-level feedback) */
-  --color-info-purple: rgba(245, 158, 11, 1);
-  --color-info-purple-bg: rgba(245, 158, 11, 0.15);
-  --color-info-purple-border: rgba(245, 158, 11, 0.3);
+  /* ── Domain · pinyinpal classification hues (GAP 4) ──
+     Category colours, not verdicts — four categories x three declarations, the
+     same shape as domain.pinyinpal.color.xp below. Flat property names follow
+     the form @spine/tokens emits for domain tokens
+     (--color-xp <- domain.pinyinpal.color.xp). */
+  --color-category-neutral: rgba(120, 113, 108, 1);
+  --color-category-neutral-bg: rgba(120, 113, 108, 0.15);
+  --color-category-neutral-border: rgba(120, 113, 108, 0.3);
+  --color-category-blue: rgba(59, 130, 246, 1);
+  --color-category-blue-bg: rgba(59, 130, 246, 0.15);
+  --color-category-blue-border: rgba(59, 130, 246, 0.3);
+  --color-category-green: rgba(52, 211, 153, 1);
+  --color-category-green-bg: rgba(52, 211, 153, 0.15);
+  --color-category-green-border: rgba(52, 211, 153, 0.3);
+  --color-category-purple: rgba(167, 139, 250, 1);
+  --color-category-purple-bg: rgba(167, 139, 250, 0.15);
+  --color-category-purple-border: rgba(167, 139, 250, 0.3);
 
-  /* Neutral - Warm Stone Grey */
-  --color-neutral-grey: rgba(120, 113, 108, 1);
-  --color-neutral-grey-bg: rgba(120, 113, 108, 0.15);
-  --color-neutral-grey-border: rgba(120, 113, 108, 0.3);
-
-  /* XP/Achievement */
+  /* ── Domain · XP / achievement (domain.pinyinpal.color.xp*) ── */
   --color-xp: rgba(251, 191, 36, 1);
   --color-xp-bg: rgba(251, 191, 36, 0.15);
   --color-xp-border: rgba(251, 191, 36, 0.3);
-
-  /* ── Badge & accent color tokens ── */
-  --color-blue: rgba(59, 130, 246, 1);
-  --color-blue-bg: rgba(59, 130, 246, 0.15);
-  --color-blue-border: rgba(59, 130, 246, 0.3);
-  --color-green: rgba(52, 211, 153, 1);
-  --color-green-bg: rgba(52, 211, 153, 0.15);
-  --color-green-border: rgba(52, 211, 153, 0.3);
-  --color-purple: rgba(167, 139, 250, 1);
-  --color-purple-bg: rgba(167, 139, 250, 0.15);
-  --color-purple-border: rgba(167, 139, 250, 0.3);
-
-  /* Primary hover — lighter amber for link hover states */
-  --color-primary-hover: rgba(217, 119, 6, 1);
 
   /* ===== Stroke Demo Colors ===== */
 
@@ -116,49 +124,43 @@
   --tone-contour-bg: rgba(58, 58, 94, 1);
   --tone-contour-axis: rgba(26, 26, 46, 1);
 
-  /* ===== Surface Colors — Warm Slate ===== */
+  /* ===== Surfaces ===== */
 
-  /* Warm stone surfaces — like rough slate rock */
-  --surface-dark: rgba(38, 35, 33, 1);
-  --surface-dark-alt: rgba(28, 25, 23, 1);
-  --surface-dark-alt-2: rgba(45, 42, 39, 1);
+  --canvas: rgba(23, 19, 15, 1);
+  --card: rgba(30, 25, 21, 1);
+  /* Translucent planes (GAP 3 — no spine equivalent: --scrim is a backdrop and
+     --card-hover is an opaque mix, both different roles). */
   --surface-overlay: rgba(38, 35, 33, 0.3);
   --surface-hover: rgba(61, 57, 53, 0.5);
-  --surface-border: rgba(61, 57, 53, 1);
+  /* The one boundary — of planes, not of verdicts (that is --edge-*).
+     1b: --surface-border-subtle retired here — a card edge is a hairline, not a wash. */
+  --hairline: rgba(51, 43, 35, 1);
 
-  /* Hairline step below --surface-border — for elevated surfaces (cards, modal, popovers).
-     --surface-border stays for structural dividers. */
-  --surface-border-subtle: rgba(255, 255, 255, 0.08);
-
-  /* Light surfaces (for semi-transparent overlays) */
+  /* Light surfaces (semi-transparent washes). The wash ramp terminates at 3 / 5 / 8;
+     1b truncated it there — --surface-light-10 and --surface-light-20 retired here. */
   --surface-light-3: rgba(255, 255, 255, 0.03);
   --surface-light-5: rgba(255, 255, 255, 0.05);
   --surface-light-8: rgba(255, 255, 255, 0.08);
-  --surface-light-10: rgba(255, 255, 255, 0.1);
-  --surface-light-20: rgba(255, 255, 255, 0.2);
 
-  /* Modal/overlay backgrounds */
-  --overlay-dark: rgba(0, 0, 0, 0.7);
+  /* Modal/overlay backdrop */
+  --scrim: rgba(0, 0, 0, 0.65);
 
   /* ===== Text Colors ===== */
 
   /* Contrast-safe role tiers (Q4 ADR — WCAG 2.2 SC 1.4.3):
-       text-primary / text-secondary → body text, ≥4.5:1
-       text-muted                    → information-bearing meta, ≥4.5:1
-       text-subtle / text-ghost      → decorative-only + large (never placeholder text)
-     Placeholder text must stay ≥4.5:1 — SC 1.4.3 explicitly covers it. */
-  --text-primary: rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.85);
-  --text-tertiary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(
-    255,
-    255,
-    255,
-    0.6
-  ); /* 0.6 white on --surface-dark (#262321) ≈ 6.5:1 — meets ≥4.5:1 */
-
-  --text-subtle: rgba(255, 255, 255, 0.2);
-  --text-ghost: rgba(255, 255, 255, 0.05);
+       ink-1 / ink-2 / ink-3  → body text, ≥4.5:1
+       ink-quiet              → information-bearing meta, ≥4.5:1
+       ink-wash-subtle / -ghost → decorative-only + large (never placeholder text)
+     Placeholder text must stay ≥4.5:1 — SC 1.4.3 explicitly covers it.
+     The wash tier is a domain name (domain.pinyinpal.ink.wash-*): spine declares
+     ink.1/2/3/quiet only, so the decorative tier has no spine landing spot. */
+  --ink-1: rgba(218, 211, 197, 1);
+  --ink-2: rgba(168, 154, 129, 1);
+  --ink-3: rgba(141, 128, 106, 1);
+  /* Ramp exemption (F2): --ink-quiet is contrast-solved (4.5:1 floor), deliberately outside ramp order — do not "fix" it into the ramp. */
+  --ink-quiet: rgba(148, 135, 112, 1); /* 5.24:1 on --canvas, 4.94:1 on --card — meets ≥4.5:1 */
+  --ink-wash-subtle: rgba(255, 255, 255, 0.2);
+  --ink-wash-ghost: rgba(255, 255, 255, 0.05);
 
   /* ===== Spacing Scale ===== */
 
@@ -175,24 +177,31 @@
      Consume via PageShell/PageStack/PageGrid primitives — NEVER hardcode a page
      max-width/max-height/margin in page CSS (design-audit rule page-scoped-layout-css). */
   /* Generic archetype measures — spine's vocabulary (spine registry/tokens.json
-     page-measure). PinyinPal's page archetypes map onto them in ONE place, the
-     PageShell primitive:
-       hub-launcher -> overview · browse-index -> list · focus-task -> detail
-       utility -> settings · auth -> auth
+     page-measure family). The archetype name IS the token name and IS the
+     PageShell class: overview | list | detail | create-edit | settings | auth |
+     search | profile | notifications | reports | empty | not-found | wizard.
      The values here are the theme overlay PinyinPal applies, not a second measure
      family: never invent a --page-measure-* name that spine's registry lacks. */
-  --page-measure-overview: 960px; /* hub-launcher (DashboardPage exemplar) */
-  --page-measure-list: 1200px; /* browse-index (ContentBrowser / PhoneticClusters) */
-  --page-measure-detail: 620px; /* focus-task (ReviewView golden template) */
-  --page-measure-settings: 1000px; /* utility (ProgressPage real content shell) */
-  --page-measure-auth: 420px; /* auth (AuthForm centered single-column) */
+  --page-measure-overview: 960px; /* overview — a launch surface: destinations, not content */
+  --page-measure-list: 1200px; /* list — a dense browsable index (grid + filters) */
+  --page-measure-detail: 620px; /* detail — one subject, one task */
+  --page-measure-create-edit: 720px; /* create-edit — a form that writes one record */
+  --page-measure-settings: 1000px; /* settings — multi-item configuration or readout */
+  --page-measure-auth: 420px; /* auth — a short form with no destinations */
+  --page-measure-search: 1000px; /* search — a query and its results */
+  --page-measure-profile: 960px; /* profile — one identity plus its activity */
+  --page-measure-notifications: 760px; /* notifications — a chronological stream */
+  --page-measure-reports: 1200px; /* reports — tables and charts */
+  --page-measure-empty: 620px; /* empty — one message and one way out */
+  --page-measure-not-found: 620px; /* not-found — one message and one way back */
+  --page-measure-wizard: 720px; /* wizard — a sequence of steps */
   --page-pad: 24px; /* responsive horizontal page gutter (= space-lg) */
   --section-rhythm-sm: 24px; /* space-lg — compact section stack */
-  --section-rhythm: 32px; /* space-xl — default BETWEEN-section rhythm (outer > item gap) */
+  --section-rhythm-md: 32px; /* space-xl — default BETWEEN-section rhythm (outer > item gap) */
   --section-rhythm-lg: 40px; /* space-2xl — generous section stack */
   --chrome-h: 56px; /* AppTopBar height — single source of chrome height */
   --card-gutter-sm: 16px; /* PageGrid gutter, dense */
-  --card-gutter: 20px; /* PageGrid gutter, default */
+  --card-gutter-md: 20px; /* PageGrid gutter, default */
   --card-gutter-lg: 24px; /* PageGrid gutter, spacious */
   --measure-prose: 720px; /* long-form reading measure (reader paragraphs) — ≈65ch at 16px; px per unit-allowed-list */
 
@@ -203,27 +212,24 @@
 
   /* ===== Border Radius ===== */
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-pill: 20px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
 
   /* ===== Shadows ===== */
-
-  /* 3-level elevation system — amber glow */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(245, 158, 11, 0.2);
-  --shadow-lg: 0 6px 20px rgba(245, 158, 11, 0.25);
 
   /* XP gold glow — pictograph golden border emphasis */
   --shadow-xp-glow: 0 0 8px rgba(251, 191, 36, 0.3);
 
-  /* Neutral elevation family — precision-minimal. Amber `--shadow-md/lg` are
-     hover-lift/XP-only (A.3 policy); these neutral shadows are the resting
-     elevation for cards, popovers, and modals. */
-  --shadow-elevated-1: 0 1px 2px rgba(0, 0, 0, 0.3); /* resting Browse cards — crisp 1px edge */
-  --shadow-elevated-2: 0 4px 12px rgba(0, 0, 0, 0.35); /* popovers / dropdowns / box-elevated / card-raised */
-  --shadow-elevated-3: 0 12px 32px rgba(0, 0, 0, 0.45); /* modal surface / future toasts */
+  /* Neutral elevation family — the names survive the paint: every value is
+     `none` under Night Bench (ADR-011), so a composing rule that reads one
+     paints a flat surface. Deletion (and the utility classes) is the
+     vocabulary commit's job. */
+  /* 2026-10-24, S3: superseded — S3 was the vocabulary commit and deliberately
+     did NOT delete these (D1, design-lead-s3-ruling.md). Deletion is S10. The
+     sentence above is kept because it is what the branch recorded, not because
+     it is true. */
 
   /* ===== Z-Index Ladder ===== */
 
@@ -237,9 +243,17 @@
 
   /* ===== Transitions ===== */
 
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.4s ease; /* toggle-switch knob slide — deliberately slower, visible flip affordance */
+  --transition-fast: 120ms ease-out;
+  --transition-normal: 240ms ease-out;
+  --transition-slow: 360ms ease-out; /* toggle-switch knob slide — deliberately slower, visible flip affordance */
+
+  /* Duration-only twin of the transition group: the number without the easing, for an
+     `animation` where the timing function is written separately (spine: duration is the
+     number, transition is the number plus the easing). Added 2026-10-24, S4b. */
+  --duration-normal: 240ms;
+  --duration-shimmer: 1080ms;
+  --duration-spin: 800ms;
+  --duration-spin-xs: 600ms;
 
   /* ===== Typography ===== */
 
@@ -268,7 +282,6 @@
   --lh-normal: 1.5; /* body default (matches :root) */
   --lh-relaxed: 1.6; /* long-form prose */
   --lh-display: 1.08; /* display headings (Latin) */
-  --line-height-display: var(--lh-display); /* alias — display heading line-height */
   --lh-1-3: 1.3; /* legacy tier (HubIdentityCard meaning) */
   --lh-1-4: 1.4; /* legacy tier (ReviewCard full answer) */
 
@@ -281,11 +294,6 @@
   --fw-600: 600; /* semibold — buttons, badges, labels */
   --fw-700: 700; /* bold — display emphasis */
   --fw-800: 800; /* extrabold — hero display */
-
-  /* ===== Gradients ===== */
-
-  --gradient-primary: linear-gradient(135deg, rgba(180, 83, 9, 1) 0%, rgba(146, 64, 14, 1) 100%);
-  --gradient-success: linear-gradient(90deg, rgba(52, 211, 153, 1) 0%, rgba(5, 150, 105, 1) 100%);
 
   /* ===== Tone Colors (standard convention) ===== */
   --tone-1: rgba(255, 68, 68, 1);
@@ -300,8 +308,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: var(--text-secondary);
-  background-color: var(--surface-dark-alt);
+  color: var(--ink-2);
+  background-color: var(--canvas);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -352,19 +360,19 @@ body {
    Replaces inline `color: var(--text-*)` (~15× usage)
    ═══════════════════════════════════════════════ */
 .text-primary {
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 .text-secondary {
-  color: var(--text-secondary);
+  color: var(--ink-2);
 }
 .text-tertiary {
-  color: var(--text-tertiary);
+  color: var(--ink-3);
 }
 .text-muted {
-  color: var(--text-muted);
+  color: var(--ink-quiet);
 }
 .text-subtle {
-  color: var(--text-subtle);
+  color: var(--ink-wash-subtle);
 }
 .text-success {
   color: var(--color-success);
@@ -373,16 +381,16 @@ body {
   color: var(--color-error);
 }
 .text-warning {
-  color: var(--color-warning);
+  color: var(--color-warn);
 }
 .text-white {
   color: white;
 }
 .text-accent {
-  color: var(--color-primary-lighter);
+  color: var(--accent-ink);
 }
 .text-primary-light {
-  color: var(--color-primary-lighter);
+  color: var(--accent-ink);
 }
 
 /* ═══════════════════════════════════════════════
@@ -660,31 +668,31 @@ body {
   background: var(--color-error);
 }
 .bg-success-bg {
-  background: var(--color-success-bg);
+  background: color-mix(in srgb, var(--color-success) calc(var(--status-tint) * 100%), transparent);
 }
 .bg-error-bg {
-  background: var(--color-error-bg);
+  background: color-mix(in srgb, var(--color-error) calc(var(--status-tint) * 100%), transparent);
 }
 .bg-warning-bg {
-  background: var(--color-warning-bg);
+  background: color-mix(in srgb, var(--color-warn) calc(var(--status-tint) * 100%), transparent);
 }
 .bg-primary-bg {
-  background: var(--color-primary-bg);
+  background: var(--accent-tint);
 }
 .bg-primary-bg-medium {
-  background: var(--color-primary-bg-medium);
+  background: var(--accent-tint);
 }
 .bg-surface-hover {
   background: var(--surface-hover);
 }
 .bg-surface-dark {
-  background: var(--surface-dark);
+  background: var(--card);
 }
 .bg-surface-dark-alt {
-  background: var(--surface-dark-alt);
+  background: var(--canvas);
 }
 .bg-surface-dark-alt-2 {
-  background: var(--surface-dark-alt-2);
+  background: var(--card);
 }
 .bg-surface-light-3 {
   background: var(--surface-light-3);
@@ -696,47 +704,25 @@ body {
   background: var(--surface-light-8);
 }
 .bg-surface-light-10 {
-  background: var(--surface-light-10);
+  background: var(--surface-light-8);
 }
 .bg-surface-light-20 {
-  background: var(--surface-light-20);
+  background: var(--surface-light-8);
 }
 .bg-primary-bg-light {
-  background: var(--color-primary-bg-light);
+  background: var(--accent-tint);
 }
 .bg-primary {
-  background: var(--color-primary);
+  background: var(--accent-fill);
 }
 .bg-info-bg {
-  background: var(--color-info-bg);
+  background: var(--status-info-bg);
 }
 .bg-gradient-primary {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: var(--accent-fill);
 }
 .bg-gradient-success {
   background: linear-gradient(90deg, var(--color-success) 0%, rgba(5, 150, 105, 1) 100%);
-}
-
-/* ═══════════════════════════════════════════════
-   Utility: Shadow
-   ═══════════════════════════════════════════════ */
-.shadow-sm {
-  box-shadow: var(--shadow-sm);
-}
-.shadow-md {
-  box-shadow: var(--shadow-md);
-}
-.shadow-lg {
-  box-shadow: var(--shadow-lg);
-}
-.shadow-elevated-1 {
-  box-shadow: var(--shadow-elevated-1);
-}
-.shadow-elevated-2 {
-  box-shadow: var(--shadow-elevated-2);
-}
-.shadow-elevated-3 {
-  box-shadow: var(--shadow-elevated-3);
 }
 
 /* ═══════════════════════════════════════════════
@@ -928,7 +914,7 @@ body {
   outline: none;
 }
 .focus-ring-primary {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -974,28 +960,28 @@ body {
    Utility: Border Color
    ═══════════════════════════════════════════════ */
 .border-primary {
-  border-color: var(--color-primary);
+  border-color: var(--accent-fill);
 }
 .border-primary-border {
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
 }
 .border-transparent {
   border-color: transparent;
 }
 .border-surface {
-  border-color: var(--surface-border);
+  border-color: var(--hairline);
 }
 .border-surface-subtle {
-  border-color: var(--surface-border-subtle);
+  border-color: var(--hairline);
 }
 .border-surface-light-10 {
-  border-color: var(--surface-light-10);
+  border-color: var(--surface-light-8);
 }
 .border-warning {
-  border-color: var(--color-warning);
+  border-color: var(--color-warn);
 }
 .border-warning-border {
-  border-color: var(--color-warning-border);
+  border-color: var(--color-warn);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1006,16 +992,16 @@ body {
             SearchInput (focus-within:border-primary)
    ═══════════════════════════════════════════════ */
 .hover\:border-primary:hover {
-  border-color: var(--color-primary);
+  border-color: var(--accent-fill);
 }
 .hover\:border-primary-border:hover {
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
 }
 .focus\:border-primary:focus {
-  border-color: var(--color-primary);
+  border-color: var(--accent-fill);
 }
 .focus-within\:border-primary:focus-within {
-  border-color: var(--color-primary);
+  border-color: var(--accent-fill);
 }
 
 /* ═══════════════════════════════════════════════

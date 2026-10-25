@@ -28,7 +28,7 @@
   overflow: auto;
   cursor: grab;
   scrollbar-width: thin;
-  scrollbar-color: var(--surface-dark-alt) var(--surface-dark-alt);
+  scrollbar-color: var(--canvas) var(--canvas);
 }
 
 /* ─── Grid ─── */
@@ -46,7 +46,7 @@
   z-index: var(--z-chrome);
   width: var(--grid-cell-width);
   height: var(--grid-cell-height);
-  background-color: var(--surface-dark-alt-2);
+  background-color: var(--card);
 }
 
 /* Diagonal divider between the I/F corner labels — re-expressed without
@@ -60,7 +60,7 @@
   /* > sqrt(60² + 40²) ≈ 72px so the seam spans the full diagonal */
   width: 80px;
   height: 3px;
-  background-color: var(--surface-dark);
+  background-color: var(--card);
   transform: translate(-50%, -50%) rotate(33.7deg);
 }
 
@@ -135,14 +135,14 @@
 }
 
 .sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):hover {
-  outline: 1px solid var(--color-primary-bg);
+  outline: 1px solid var(--accent-tint);
   z-index: var(--z-content);
   /* structural: relative — hover outline layer */
   position: relative;
 }
 
 .sliding-pinyin-grid__cell:not(.sliding-pinyin-grid__cell--empty):focus-visible {
-  outline: 2px solid var(--color-primary-light);
+  outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
   z-index: var(--z-content);
   /* structural: relative — focus outline layer */
@@ -154,7 +154,7 @@
 }
 
 .sliding-pinyin-grid__cell--selected {
-  outline: 2px solid var(--color-primary-light);
+  outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
   z-index: var(--z-content);
 }

@@ -9,20 +9,27 @@
  * Ordering rule:
  *   - Non-page stories (shared components, features) sort before the Pages
  *     catalog, preserving their existing title-based order.
- *   - Page stories sort into the catalog by archetype (hub-launcher →
- *     browse-index → focus-* → utility → auth), then by title.
+ *   - Page stories sort into the catalog by archetype (spine's generic order:
+ *     overview → list → detail → create-edit → settings → auth → search →
+ *     profile → notifications → reports → empty → not-found → wizard), then by
+ *     title.
  */
 import type { Preview } from "@storybook/react-vite";
 
 const ARCHETYPE_ORDER = [
-  "hub-launcher",
-  "browse-index",
-  "focus-task",
-  "focus-chat",
-  "focus-timed",
-  "focus-media",
-  "utility",
+  "overview",
+  "list",
+  "detail",
+  "create-edit",
+  "settings",
   "auth",
+  "search",
+  "profile",
+  "notifications",
+  "reports",
+  "empty",
+  "not-found",
+  "wizard",
 ];
 
 /**

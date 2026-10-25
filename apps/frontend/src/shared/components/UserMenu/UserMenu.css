@@ -39,10 +39,9 @@
   right: 0;
   min-width: 220px;
   z-index: var(--z-popover);
-  border: 1px solid var(--surface-border-subtle);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  /* neutral elevation + hairline — amber shadows are hover/XP-only (A.3) */
-  box-shadow: var(--shadow-elevated-2);
+  /* 2026-10-25, S10: the elevated-2 neutral shadow retired with the elevation family */
   padding: var(--space-xs);
   margin: 0;
   list-style: none;
@@ -72,7 +71,7 @@
 .user-menu__divider {
   height: 0;
   border: none;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--hairline);
   margin: var(--space-xs) 0;
 }
 
@@ -86,6 +85,6 @@
 }
 
 .user-menu__item--logout:hover:not(:disabled) {
-  background: var(--color-error-bg);
+  background: color-mix(in srgb, var(--color-error) calc(var(--status-tint) * 100%), transparent);
   color: var(--color-error);
 }

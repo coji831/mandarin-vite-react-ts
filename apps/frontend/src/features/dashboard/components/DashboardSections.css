@@ -22,23 +22,22 @@
   /* .btn ships align-items:center; the tile stacks left-aligned */
   align-items: flex-start;
   /* .btn-tag is transparent — the tile is a recessed card surface */
-  background: var(--surface-dark-alt);
-  border: 1px solid var(--surface-border-subtle);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
   /* .btn-tag is a pill — the tile is a card */
   border-radius: var(--radius-lg);
   /* card padding beats the .btn-md tag padding */
   padding: var(--space-lg);
-  /* elevated-1 paired with the hairline above (Elevation Usage Ladder) */
-  box-shadow: var(--shadow-elevated-1);
+  /* 2026-10-25, S10: the elevated-1 neutral shadow retired with the elevation family */
 }
 
 /* Hover = border emphasis + the shared .hover-lift -2px lift (components.css
    owns transform per the Global Motion Rule). */
 .dashboard-tile.btn-tag:hover:not(:disabled) {
   /* the tile keeps its surface — the shared .btn:hover would wash it out */
-  background: var(--surface-dark-alt);
+  background: var(--canvas);
   /* amber border is the sanctioned hover affordance */
-  border-color: var(--color-primary-border);
+  border-color: var(--edge-control);
 }
 
 /* Amber icon well — flex-center / radius-md / bg-primary-bg / text-primary-light

@@ -9,7 +9,6 @@ import { useReview } from "../hooks/useReview";
 import type { ReviewSource } from "../types";
 import { useAudioItemPlayback } from "shared/hooks";
 import { isAuthFailure } from "shared/api";
-import "./ReviewView.css";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
@@ -112,8 +111,8 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "option":
     case "result":
       return (
-        <div className="review-view flex-col gap-lg w-full">
-          {/* Header — precision-minimal focus-task header (golden template C.2):
+        <div className="flex-col gap-lg w-full min-w-0">
+          {/* Header — precision-minimal detail header (golden template C.2):
               h1 font-lg fw-600 text-primary; progress count is font-sm text-muted meta
               (Tier-0: 🀄 → shared Icon "book" — no Lucide mahjong tile exists). */}
           <header className="flex-between gap-lg">

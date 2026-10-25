@@ -32,9 +32,9 @@ function PanelPlaceholder({ label }: { label: string }) {
     <div
       style={{
         padding: "var(--space-md)",
-        background: "var(--surface-dark-alt)",
+        background: "var(--canvas)",
         borderRadius: "var(--radius-md)",
-        color: "var(--text-secondary)",
+        color: "var(--ink-2)",
         minHeight: "120px",
         display: "flex",
         alignItems: "center",

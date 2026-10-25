@@ -9,11 +9,11 @@
 }
 
 /* Task surface (golden template C.2): the Box `dark` border is a hairline —
-   focus-task cards stay FLAT (no elevation, ADR-004). Scoped to
+   detail cards stay FLAT (no elevation, ADR-004). Scoped to
    .box-dark.review-card so it beats the shared .box-dark border regardless of
    stylesheet order. */
 .review-card.box-dark {
-  border-color: var(--surface-border-subtle);
+  border-color: var(--hairline);
 }
 
 /* review-card__side: width migrated to utility class w-full */
@@ -49,12 +49,11 @@
   /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
 .review-card__audio-btn:hover {
-  /* :hover pseudo — token shadow, no motion (amber hover-lift bucket, A.3) */
-  box-shadow: var(--shadow-md);
+  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
 }
 .review-card__audio-btn:focus-visible {
   /* focus parity with rating buttons (C.2) */
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -64,7 +63,7 @@
 }
 .review-card__pinyin-input::placeholder {
   color: var(
-    --text-tertiary
+    --ink-3
   ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
   font-size: var(--font-sm); /* ::placeholder pseudo-element */
   letter-spacing: normal;
@@ -81,12 +80,11 @@
 }
 
 .review-card__rating-btn:hover:not(:disabled) {
-  /* :hover pseudo — token shadow, no motion */
-  box-shadow: var(--shadow-md);
+  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
 }
 
 .review-card__rating-btn:focus-visible {
-  outline: 2px solid var(--color-primary); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
+  outline: 2px solid var(--focus-ring); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
   /* bundled with outline */
   outline-offset: 2px;
 }

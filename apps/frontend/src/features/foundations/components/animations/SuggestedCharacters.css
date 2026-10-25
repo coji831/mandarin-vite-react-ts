@@ -9,7 +9,7 @@
 }
 
 .stroke-anim-suggested-btn--active {
-  box-shadow: var(--shadow-sm);
+  /* 2026-10-25, S10: the sm neutral shadow retired with the elevation family */
 }
 
 @media (max-width: 640px) {

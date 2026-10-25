@@ -17,13 +17,13 @@
 .pictograph-gallery__title {
   margin: 0 0 var(--space-xs);
   font-size: var(--font-lg);
-  color: var(--text-primary);
+  color: var(--ink-1);
 }
 
 .pictograph-gallery__subtitle {
   margin: 0;
   font-size: var(--font-sm);
-  color: var(--text-tertiary);
+  color: var(--ink-3);
   line-height: var(--lh-normal);
 }
 
@@ -40,7 +40,7 @@
 .pictograph-gallery__empty {
   text-align: center;
   padding: var(--space-xl) var(--space-md);
-  color: var(--text-tertiary);
+  color: var(--ink-3);
 }
 
 .pictograph-gallery__empty-icon {
