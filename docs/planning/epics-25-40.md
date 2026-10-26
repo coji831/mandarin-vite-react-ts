@@ -154,6 +154,13 @@ quota; no hard walls; persistence = the only lock), and the control moves out of
 per-syllable tone measurement") and the free-tier-vs-paywall pricing question are business-model changes;
 they go through BM-1's change gate, not this plan.
 
+**Execution is epic-distributed (2026-10-26).** The surface-level rework is NOT a separate shared-shell
+program: it rides each UI-carrying epic at design-spec time. Every UI epic runs its surfaces through
+[`design-revalidation-guide.md`](../guides/design/design-revalidation-guide.md) and **reworks a surface
+from scratch when revalidation fails** — the shared mode-aware chrome shell (rail collapse + recessed top
+bar, PR #56) is the baseline each epic consumes, and the pre-26 spine epic (A0) finishes it. The
+"session = route, not modal" rule (no third mode) is part of that guide and binds every session surface.
+
 ---
 
 ## Epic 25 — Secure Guest Identity & Route Gating _(Phase A)_

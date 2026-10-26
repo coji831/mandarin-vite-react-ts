@@ -18,6 +18,11 @@ audience: agents
 
 ## How to use
 
+> **Step 0 — revalidate first (mandatory).** Before speccing, run the surface through
+> [`design-revalidation-guide.md`](design-revalidation-guide.md): confirm the existing surface passes the
+> contract (archetype / mode / chrome / no-third-mode / one-task / anatomy). If it fails, the surface is
+> **rebuilt greenfield from its business brief**, not patched from legacy code.
+
 1. **Pick the archetype** from the mode/page table in `docs/guides/design/page-archetypes.md` (§0). Name it on the required `archetype:` line.
    1.5 **Declare anatomy (page-anatomy law)** - the page's content region is PageShell (per-archetype
    `--page-measure-*`) -> PageStack -> PageGrid; NO page-scoped layout CSS, ever. Confirm the page's
@@ -56,4 +61,4 @@ anatomy: shell: PageShell | measure: <archetype> | gutter: sm|default|lg | heade
 - The `archetype:` value must match a valid id in `docs/guides/design/page-archetypes.md` (`hub-launcher`, `browse-index`, `focus-task`, `focus-chat`, `focus-timed`, `focus-media`, `utility`, `auth`) — `check:page-inventory` fails on unregistered archetypes.
 - The `provenance:` field records external borrows per the External Borrowing Protocol (`design-reasoning.md` §0): `extract → translate → register → gate`. "Patterns only" must not quietly become "copy the code" — the provenance field is the guard the reviewer reads.
 
-**See also:** `page-archetypes.md` (the library this template consumes) • `design-quality-rubric.md` (scoring companion) • `design-reasoning.md` (paradigm + token freeze + external borrowing) • `frontend-pre-delivery-checklist.instructions.md` (shipped gate artifact).
+**See also:** `page-archetypes.md` (the library this template consumes) • `design-quality-rubric.md` (scoring companion) • `design-revalidation-guide.md` (revalidate-then-rework rule) • `design-reasoning.md` (paradigm + token freeze + external borrowing) • `frontend-pre-delivery-checklist.instructions.md` (shipped gate artifact).
