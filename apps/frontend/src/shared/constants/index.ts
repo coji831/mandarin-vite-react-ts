@@ -28,5 +28,7 @@ export {
 } from "./paths";
 export { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "./learnNav";
 export type { LearnNavItem } from "./learnNav";
+export { modeForArchetype, chromeForMode, resolveArchetype, resolvePageMode } from "./pageChrome";
+export type { PageMode, RailState, TopBarState, ChromeState } from "./pageChrome";
 export { SEARCH_PARAMS, withSearchParams, buildSearchParams } from "./searchParams";
 export type { SearchParamName, SearchParamInput, BuildSearchParamsOptions } from "./searchParams";

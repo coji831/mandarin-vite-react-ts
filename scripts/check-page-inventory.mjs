@@ -15,6 +15,11 @@
  *     "route": "/library",                       // route string (required)
  *     "component": "LibraryPage",                // routed page component (nullable for pure redirects)
  *     "archetype": "list",                       // id from page-archetypes.md (nullable until assigned)
+ *     "mode": "browse",                          // browse | focus | auth — derived from archetype (mode-aware chrome)
+ *     "chrome": {                                // derived from archetype (mode-aware chrome)
+ *       "rail": "expanded",                      //   expanded | collapsed | none
+ *       "topbar": "standard"                     //   standard | recessed | none
+ *     },
  *     "story": "apps/frontend/src/pages/...Full.stories.tsx",  // repo-relative; null when none
  *     "states": ["default"],                     // subset of ALLOWED_STATES
  *     "status": "conforms" | "diverges",         // M0 snapshot semantics (see below)
@@ -139,6 +144,31 @@ const ANATOMY_GUTTERS = ["sm", "default", "lg"];
 // The page-content layout primitive every route targets (chrome lives in
 // AppLayout/LearnLayout, not page anatomy).
 const ANATOMY_SHELL = "PageShell";
+
+// Mode/chrome contract (pre-26 spine epic, mode-aware chrome). Mode derives
+// from the page's archetype (page-archetypes.md §0): detail | wizard -> focus,
+// auth -> auth (neither), everything else -> browse. Chrome follows mode:
+// focus -> rail collapsed + recessed top bar; auth -> rail none + standard top
+// bar; browse -> rail expanded + standard top bar.
+const ALLOWED_MODES = ["browse", "focus", "auth"];
+const ALLOWED_RAIL_STATES = ["expanded", "collapsed", "none"];
+const ALLOWED_TOPBAR_STATES = ["standard", "recessed", "none"];
+const FOCUS_ARCHETYPES = new Set(["detail", "wizard"]);
+
+function modeForArchetype(archetype) {
+  if (archetype == null) return null;
+  if (archetype === "auth") return "auth";
+  if (FOCUS_ARCHETYPES.has(archetype)) return "focus";
+  return "browse";
+}
+
+function chromeForArchetype(archetype) {
+  const mode = modeForArchetype(archetype);
+  if (mode == null) return null;
+  if (mode === "focus") return { rail: "collapsed", topbar: "recessed" };
+  if (mode === "auth") return { rail: "none", topbar: "standard" };
+  return { rail: "expanded", topbar: "standard" };
+}
 
 // *Page.tsx files that are internal/non-routed page helpers, not page containers.
 const EXEMPT_PAGE_COMPONENTS = new Set(["ContentPlaceholderPage", "QuizSessionPage"]);
@@ -336,6 +366,44 @@ function main() {
       }
     }
 
+    // mode + chrome (mode-aware chrome contract — derived from archetype)
+    if (page.mode != null) {
+      if (!ALLOWED_MODES.includes(page.mode)) {
+        problems.push(`mode "${page.mode}" invalid (allowed: ${ALLOWED_MODES.join(", ")})`);
+      } else if (page.archetype != null && page.mode !== modeForArchetype(page.archetype)) {
+        problems.push(
+          `mode "${page.mode}" must equal "${modeForArchetype(page.archetype)}" (derived from archetype "${page.archetype}")`,
+        );
+      }
+    }
+    if (page.chrome != null) {
+      if (typeof page.chrome !== "object" || Array.isArray(page.chrome)) {
+        problems.push("`chrome` must be an object { rail, topbar }");
+      } else {
+        if (!ALLOWED_RAIL_STATES.includes(page.chrome.rail)) {
+          problems.push(
+            `chrome.rail "${page.chrome.rail}" invalid (allowed: ${ALLOWED_RAIL_STATES.join(", ")})`,
+          );
+        }
+        if (!ALLOWED_TOPBAR_STATES.includes(page.chrome.topbar)) {
+          problems.push(
+            `chrome.topbar "${page.chrome.topbar}" invalid (allowed: ${ALLOWED_TOPBAR_STATES.join(", ")})`,
+          );
+        }
+        if (page.archetype != null) {
+          const expectedChrome = chromeForArchetype(page.archetype);
+          const mismatch =
+            page.chrome.rail !== expectedChrome.rail ||
+            page.chrome.topbar !== expectedChrome.topbar;
+          if (mismatch) {
+            problems.push(
+              `chrome ${JSON.stringify(page.chrome)} must equal ${JSON.stringify(expectedChrome)} (derived from archetype "${page.archetype}")`,
+            );
+          }
+        }
+      }
+    }
+
     // conforms → must declare archetype + component + story + >=1 state + anatomy
     if (page.status === "conforms") {
       if (page.archetype == null) problems.push("conforms page missing `archetype`");
@@ -348,6 +416,14 @@ function main() {
         problems.push(
           "conforms page missing `anatomy` (declared target required — { shell: PageShell, measure: <archetype>, gutter, header })",
         );
+      }
+      if (page.mode == null) {
+        problems.push(
+          "conforms page missing `mode` (derived from archetype — browse | focus | auth)",
+        );
+      }
+      if (page.chrome == null) {
+        problems.push("conforms page missing `chrome` (derived from archetype — { rail, topbar })");
       }
     }
 

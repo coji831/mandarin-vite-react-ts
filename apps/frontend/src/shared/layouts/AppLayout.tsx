@@ -15,7 +15,8 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-import { auth_page, practices_page, progress_page } from "../constants/paths";
+import { practices_page, progress_page } from "../constants/paths";
+import { resolvePageMode, chromeForMode } from "../constants/pageChrome";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "../constants/learnNav";
 import { AppTopBar, SideNav, Modal, type NavItem } from "shared/components";
 // NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
@@ -85,9 +86,17 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   // never all-unlocked.
   const effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? Infinity : 1);
 
+  // Mode-aware chrome (dual-mode chrome law, page-archetypes.md §0): the mode
+  // comes from the page's archetype, not per-page hacks. Focus = rail collapsed
+  // + recessed top bar; Browse = rail expanded + standard top bar; auth = no rail
+  // (the UserMenu top bar remains so auth pages are never a dead-end).
+  const mode = resolvePageMode(location.pathname);
+  const chrome = chromeForMode(mode);
+  const isFocusMode = mode === "focus";
+
   // Don't show sidebar on auth pages — both login and register render standalone
   // (previously only login was hidden, so Register showed the nav when authed).
-  const isAuthPage = location.pathname.startsWith(auth_page);
+  const isAuthPage = mode === "auth";
 
   const navItems: NavItem[] = [
     { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
@@ -115,13 +124,21 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
           location={{ pathname: location.pathname, search: location.search }}
           phaseGate={effectivePhase}
           requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
-          collapsed={collapsed}
-          onToggleCollapse={handleToggleCollapse}
+          // Focus mode forces the collapsed icon rail (dual-mode chrome law);
+          // Browse keeps the user's persisted collapse choice. The manual
+          // collapse toggle is Browse-only — Focus chrome is fixed.
+          collapsed={isFocusMode || collapsed}
+          onToggleCollapse={isFocusMode ? undefined : handleToggleCollapse}
         />
       )}
 
       <div className="app-main flex flex-col flex-1">
-        <AppTopBar user={user} isAuthenticated={isAuthenticated} logout={logout} />
+        <AppTopBar
+          user={user}
+          isAuthenticated={isAuthenticated}
+          logout={logout}
+          variant={chrome.topbar === "recessed" ? "recessed" : "standard"}
+        />
         <main className="app-content flex flex-col flex-1">
           <Outlet />
         </main>

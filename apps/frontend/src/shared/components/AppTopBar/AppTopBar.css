@@ -9,3 +9,11 @@
   background: var(--card);
   gap: var(--space-sm);
 }
+
+/* Recessed variant (Focus mode — dual-mode chrome law): the bar recedes into
+   the content canvas so the task fills the frame. Canvas background (opaque,
+   so no content bleed) + no hairline divider. */
+.app-top-bar--recessed {
+  background: var(--canvas);
+  border-bottom-color: transparent;
+}

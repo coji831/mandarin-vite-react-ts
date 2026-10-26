@@ -1,0 +1,68 @@
+/**
+ * @file shared/constants/__tests__/pageChrome.test.ts
+ * @description Unit tests for the mode/chrome derivation (dual-mode chrome law,
+ * page-archetypes.md §0). Mode derives from archetype; chrome follows mode.
+ */
+import { describe, it, expect } from "vitest";
+import { modeForArchetype, chromeForMode, resolvePageMode } from "../pageChrome";
+
+describe("modeForArchetype", () => {
+  it("maps focus archetypes (detail, wizard) to focus", () => {
+    expect(modeForArchetype("detail")).toBe("focus");
+    expect(modeForArchetype("wizard")).toBe("focus");
+  });
+
+  it("maps auth to the explicit neither mode", () => {
+    expect(modeForArchetype("auth")).toBe("auth");
+  });
+
+  it("maps every other archetype to browse", () => {
+    for (const a of ["overview", "list", "settings", "profile", "search", "reports", "empty"]) {
+      expect(modeForArchetype(a)).toBe("browse");
+    }
+  });
+
+  it("defaults null/undefined (unassigned) to browse", () => {
+    expect(modeForArchetype(null)).toBe("browse");
+    expect(modeForArchetype(undefined)).toBe("browse");
+  });
+});
+
+describe("chromeForMode", () => {
+  it("focus = collapsed rail + recessed top bar", () => {
+    expect(chromeForMode("focus")).toEqual({ rail: "collapsed", topbar: "recessed" });
+  });
+
+  it("browse = expanded rail + standard top bar", () => {
+    expect(chromeForMode("browse")).toEqual({ rail: "expanded", topbar: "standard" });
+  });
+
+  it("auth = no rail + standard top bar (UserMenu stays reachable)", () => {
+    expect(chromeForMode("auth")).toEqual({ rail: "none", topbar: "standard" });
+  });
+});
+
+describe("resolvePageMode", () => {
+  it("resolves the Browse exemplars", () => {
+    expect(resolvePageMode("/")).toBe("browse");
+    expect(resolvePageMode("/dashboard")).toBe("browse");
+    expect(resolvePageMode("/practices")).toBe("browse");
+    expect(resolvePageMode("/library")).toBe("browse");
+    expect(resolvePageMode("/learn/foundations")).toBe("browse");
+    expect(resolvePageMode("/progress")).toBe("browse");
+  });
+
+  it("resolves the Focus exemplars", () => {
+    expect(resolvePageMode("/practices/review")).toBe("focus");
+    expect(resolvePageMode("/practices/quiz")).toBe("focus");
+  });
+
+  it("resolves auth routes to auth (no rail)", () => {
+    expect(resolvePageMode("/auth/login")).toBe("auth");
+    expect(resolvePageMode("/auth/register")).toBe("auth");
+  });
+
+  it("defaults unknown routes to browse", () => {
+    expect(resolvePageMode("/does-not-exist")).toBe("browse");
+  });
+});

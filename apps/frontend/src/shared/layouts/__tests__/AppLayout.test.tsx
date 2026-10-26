@@ -127,3 +127,30 @@ describe("AppLayout composition (Story 22.4)", () => {
     expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
   });
 });
+
+describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
+  it("renders a Focus route with a forced-collapsed rail and a recessed top bar", () => {
+    const { container } = renderAppLayout("/practices/review");
+    // The rail is mounted (non-auth) but forced to the icon rail — Learn
+    // children are unmounted and the manual collapse toggle is hidden (Focus
+    // chrome is fixed, not user-toggled).
+    expect(mainNav()).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /sidebar/i })).not.toBeInTheDocument();
+    // The top bar recedes (Focus chrome).
+    expect(container.querySelector(".app-top-bar--recessed")).toBeInTheDocument();
+  });
+
+  it("renders a Browse route with the expanded rail and a standard top bar", () => {
+    const { container } = renderAppLayout("/");
+    // Browse keeps the user's collapse toggle and the standard (non-recessed) top bar.
+    expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
+  });
+
+  it("keeps auth routes rail-less (no sidebar) with the standard top bar", () => {
+    const { container } = renderAppLayout("/auth/login");
+    expect(mainNav()).not.toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
+  });
+});

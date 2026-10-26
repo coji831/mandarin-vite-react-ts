@@ -162,12 +162,14 @@ function SideNav({
 
           return item.children && item.children.length > 0 ? (
             <div key={item.path} className="side-nav__group flex flex-col">
-              {/* Group header (parent): toggle button (desktop) or static row (collapsed rail) */}
+              {/* Group header (parent): label link + chevron toggle (expanded),
+                  or a single keyboard-reachable label link to the default
+                  landing (collapsed rail — icon + tooltip only). */}
               {collapsed ? (
-                <div
-                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all border-1 border-transparent bg-transparent ${
-                    isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
-                  }`}
+                <Link
+                  to={foundationsTo}
+                  onClick={(e) => guardSamePath(e, foundationsTo, foundationsItem?.defaultParams)}
+                  aria-label={item.label}
                   aria-current={isGroupActive(item.path) ? "page" : undefined}
                   title={
                     isGroupActive(item.path)
@@ -176,6 +178,9 @@ function SideNav({
                         : item.label
                       : item.label
                   }
+                  className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all border-1 border-transparent bg-transparent ${
+                    isGroupActive(item.path) ? ACTIVE_LINK_CLASS : ""
+                  }`}
                 >
                   <span className="side-nav__icon font-md text-center shrink-0" aria-hidden="true">
                     <Icon name={item.icon} size={16} />
@@ -183,7 +188,7 @@ function SideNav({
                   <span className="side-nav__label whitespace-nowrap overflow-hidden">
                     {item.label}
                   </span>
-                </div>
+                </Link>
               ) : (
                 <div
                   className={`side-nav__group-header gap-sm radius-sm text-secondary font-sm fw-600 p-sm transition-all border-1 border-transparent bg-transparent ${
