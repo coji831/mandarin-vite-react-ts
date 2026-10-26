@@ -12,7 +12,6 @@ export {
   RadicalCard,
   RadicalGrid,
   FilterBar,
-  RadicalDetailCard,
   RadicalDetailContent,
   RadicalHub,
   ExampleCharGrid,

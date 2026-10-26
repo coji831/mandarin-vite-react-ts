@@ -22,6 +22,11 @@
       "route": "/",
       "component": "DashboardPage",
       "archetype": "overview",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/dashboard/DashboardPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -44,6 +49,11 @@
       "route": "/learn",
       "component": null,
       "archetype": "overview",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": null,
       "states": [],
       "status": "diverges",
@@ -53,6 +63,11 @@
       "route": "/practices",
       "component": "PracticesPage",
       "archetype": "overview",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/practices/PracticesPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
@@ -74,6 +89,11 @@
       "route": "/library",
       "component": "LibraryPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/LibraryPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -94,6 +114,11 @@
       "route": "/learn/readers",
       "component": "ReadersPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -112,6 +137,11 @@
       "route": "/learn/radicals",
       "component": "RadicalsPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -135,6 +165,11 @@
       "route": "/learn/grammar",
       "component": "GrammarPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -157,6 +192,11 @@
       "route": "/learn/chengyu",
       "component": "ChengyuPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
@@ -177,9 +217,40 @@
       "note": "List idiom library; edge = paginated list (3 pages)."
     },
     {
+      "route": "/learn/hub/:entityType/:entityId",
+      "component": "LexicalEntityPage",
+      "archetype": "detail",
+      "mode": "focus",
+      "chrome": {
+        "rail": "collapsed",
+        "topbar": "recessed"
+      },
+      "story": "apps/frontend/src/pages/learn/hub/LexicalEntityPageFull.stories.tsx",
+      "states": ["default", "loading", "error"],
+      "status": "conforms",
+      "composition": {
+        "shell": "PageShell",
+        "stack": "PageStack",
+        "action": "Button",
+        "notice": "Box"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "detail",
+        "gutter": "default",
+        "header": null
+      },
+      "note": "Lexical session (character/word/radical/chengyu/grammar detail) as a ROUTED detail surface — 'session = route, not modal' (design-revalidation-guide §4). Replaces the retired app-wide hub overlay; the entity body owns its heading, the page owns the Back control."
+    },
+    {
       "route": "/practices/review",
       "component": "ReviewPage",
       "archetype": "detail",
+      "mode": "focus",
+      "chrome": {
+        "rail": "collapsed",
+        "topbar": "recessed"
+      },
       "story": "apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -201,6 +272,11 @@
       "route": "/practices/quiz",
       "component": "QuizPage",
       "archetype": "detail",
+      "mode": "focus",
+      "chrome": {
+        "rail": "collapsed",
+        "topbar": "recessed"
+      },
       "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
       "states": ["loading", "default", "edge"],
       "status": "conforms",
@@ -219,6 +295,11 @@
       "route": "/progress",
       "component": "ProgressPage",
       "archetype": "settings",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/ProgressPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -239,6 +320,11 @@
       "route": "/auth/login",
       "component": "LoginPage",
       "archetype": "auth",
+      "mode": "auth",
+      "chrome": {
+        "rail": "none",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/LoginPageFull.stories.tsx",
       "states": ["default", "edge"],
       "status": "conforms",
@@ -257,6 +343,11 @@
       "route": "/auth/register",
       "component": "RegisterPage",
       "archetype": "auth",
+      "mode": "auth",
+      "chrome": {
+        "rail": "none",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/RegisterPageFull.stories.tsx",
       "states": ["default", "edge"],
       "status": "conforms",
@@ -275,6 +366,11 @@
       "route": "/settings",
       "component": "SettingsPage",
       "archetype": "settings",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/SettingsPageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -293,6 +389,11 @@
       "route": "/profile",
       "component": "ProfilePage",
       "archetype": "profile",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/ProfilePageFull.stories.tsx",
       "states": ["default"],
       "status": "conforms",
@@ -311,6 +412,11 @@
       "route": "/learn/foundations",
       "component": "FoundationsPage",
       "archetype": "overview",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx",
       "states": ["loading", "default", "error", "edge"],
       "status": "conforms",
@@ -334,6 +440,11 @@
       "route": "/learn/phonetic-clusters",
       "component": "PhoneticClustersPage",
       "archetype": "list",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
       "story": "apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
@@ -355,6 +466,8 @@
       "route": "/learn/basic",
       "component": null,
       "archetype": null,
+      "mode": null,
+      "chrome": null,
       "story": null,
       "states": [],
       "status": "diverges",

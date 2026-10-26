@@ -25,13 +25,11 @@ vi.mock("shared/store", async () => {
         const state = {
           open: vi.fn(),
           close: vi.fn(),
-          back: vi.fn(),
           currentEntity: null,
-          navigationStack: [],
         };
         return selector ? selector(state) : state;
       },
-      { getState: () => ({ open: vi.fn(), close: vi.fn(), back: vi.fn() }) },
+      { getState: () => ({ open: vi.fn(), close: vi.fn() }) },
     ),
   };
 });

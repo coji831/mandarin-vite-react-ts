@@ -8,7 +8,6 @@
 export { RadicalCard } from "./RadicalCard";
 export { RadicalGrid } from "./RadicalGrid";
 export { FilterBar } from "./FilterBar";
-export { RadicalDetailCard } from "./RadicalDetailCard";
 export { RadicalDetailContent } from "./RadicalDetailContent";
 export type { ExampleCharacter } from "./RadicalDetailContent";
 export { RadicalHub } from "./RadicalHub";

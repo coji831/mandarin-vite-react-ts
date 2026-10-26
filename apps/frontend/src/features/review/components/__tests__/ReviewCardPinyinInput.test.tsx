@@ -30,7 +30,7 @@ const defaultProps = {
 };
 
 beforeEach(() => {
-  useHubStore.setState({ isOpen: false, currentEntity: null, navigationStack: [] });
+  useHubStore.setState({ isOpen: false, currentEntity: null });
 });
 
 describe("ReviewCardPinyinInput", () => {

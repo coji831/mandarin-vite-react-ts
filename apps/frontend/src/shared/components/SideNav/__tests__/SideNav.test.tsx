@@ -113,8 +113,14 @@ describe("SideNav", () => {
 
     it("marks the collapsed group header current and titles it with the active child", () => {
       const { container } = renderSideNav({ currentPath: "/learn/grammar", collapsed: true });
-      // Collapsed rail renders the group header as a static div (not a button).
+      // Collapsed rail renders the group header as a keyboard-reachable link
+      // to the Learn default landing (Story: mode-aware chrome a11y — the
+      // icon-only rail must stay keyboard/AT reachable).
       const header = container.querySelector(".side-nav__group-header");
+      expect(header).not.toBeNull();
+      expect(header!.tagName).toBe("A");
+      expect(header).toHaveAttribute("href", "/learn/foundations");
+      expect(header).toHaveAttribute("aria-label", "Learn");
       expect(header).toHaveAttribute("aria-current", "page");
       expect(header).toHaveAttribute("title", "Learn — Grammar");
       // Children are unmounted in rail mode — the active child is only

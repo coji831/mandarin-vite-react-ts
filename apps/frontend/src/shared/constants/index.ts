@@ -17,6 +17,8 @@ export {
   learn_phonetic_clusters,
   learn_readers,
   learn_chengyu,
+  learn_lexical_hub,
+  lexical_entity_route,
   practices_page,
   practices_review,
   practices_quiz,
@@ -28,5 +30,7 @@ export {
 } from "./paths";
 export { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "./learnNav";
 export type { LearnNavItem } from "./learnNav";
+export { modeForArchetype, chromeForMode, resolveArchetype, resolvePageMode } from "./pageChrome";
+export type { PageMode, RailState, TopBarState, ChromeState } from "./pageChrome";
 export { SEARCH_PARAMS, withSearchParams, buildSearchParams } from "./searchParams";
 export type { SearchParamName, SearchParamInput, BuildSearchParamsOptions } from "./searchParams";

@@ -1,7 +1,7 @@
 /**
  * @file components/GrammarHub.stories.tsx
  * @description Storybook stories for GrammarHub — grammar pattern detail panel
- * rendered inside the shared LexicalHub dialog.
+ * rendered inside the routed LexicalHub session page.
  * Story 22.3: Grammar UI
  *
  * Self-fetches via `useGrammarDetail` against the 22.2-owned `grammarHandlers`

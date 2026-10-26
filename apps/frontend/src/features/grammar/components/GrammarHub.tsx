@@ -1,8 +1,7 @@
 /**
  * @file components/GrammarHub.tsx
- * @description Grammar pattern detail hub — rendered inside the shared LexicalHub
- * dialog (registered via `entityHubRegistry`). Always self-fetches via
- * `useGrammarDetail(entityId)`.
+ * @description Grammar pattern detail hub — rendered inside the routed LexicalHub
+ * session page (`/learn/hub/grammar/:id`), never inside a dialog.
  *
  * Shows structure, explanation, and examples (Chinese / pinyin / English).
  * - Example sentences play via `useAudioItemPlayback().play(chinese, { textIsChinese: true })`

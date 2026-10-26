@@ -42,6 +42,13 @@ A surface in an epic's scope passes revalidation only if ALL of the following ho
    (character detail, reader, quiz, review, exam, speaking drill, conversation) is a routed
    `detail`/Focus surface. Modals are only for transient actions (confirm, quota-exhausted prompt,
    quick reveal that is not itself a session). A modal hosting a session is a revalidation failure.
+   **Enforced, not merely stated:** `design-audit:foundation` runs a `session-modal` check (a
+   `<Modal>` wrapping a session surface — an entity hub from `entityHubRegistry.tsx`, the hub
+   dispatcher, or any `*Hub` / `*DetailContent` / `*Session` body) and a `session-route` check (the
+   dispatcher must not be mounted by the app shell; the hub route must be registered, declared
+   `detail` in `pageChrome.ts`, and rendered by a `PageShell archetype="detail"` page). Reference
+   implementation: `pages/learn/hub/LexicalEntityPage.tsx` at `/learn/hub/:entityType/:entityId` —
+   the lexical hub that used to be a 720px overlay.
 5. **One task, one CTA** — the surface does not spread one task across sibling tabs/pages or stack
    multiple primary actions (cognitive-load fundamental #6; immutable rule #4).
 6. **Anatomy law** — `PageShell(measure) → PageStack(rhythm) → PageGrid(gutter)`; no page-scoped
