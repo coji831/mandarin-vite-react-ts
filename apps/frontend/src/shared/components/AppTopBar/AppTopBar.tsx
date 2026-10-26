@@ -18,12 +18,21 @@ export type AppTopBarProps = {
   isAuthenticated: boolean;
   /** Logout handler from the auth context. */
   logout: () => Promise<void> | void;
+  /** Chrome variant: standard (Browse) vs recessed (Focus). */
+  variant?: "standard" | "recessed";
   className?: string;
 };
 
-export function AppTopBar({ user, isAuthenticated, logout, className = "" }: AppTopBarProps) {
+export function AppTopBar({
+  user,
+  isAuthenticated,
+  logout,
+  variant = "standard",
+  className = "",
+}: AppTopBarProps) {
+  const variantClass = variant === "recessed" ? "app-top-bar--recessed" : "";
   return (
-    <header className={`app-top-bar flex items-center ${className}`.trim()}>
+    <header className={`app-top-bar flex items-center ${variantClass} ${className}`.trim()}>
       <div className="app-top-bar__spacer flex-1" aria-hidden="true" />
       <UserMenu user={user} isAuthenticated={isAuthenticated} logout={logout} />
     </header>

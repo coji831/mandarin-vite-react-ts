@@ -609,11 +609,11 @@
       }
     },
     "PageShell": {
-      "description": "Content region primitive (page-anatomy law, A2). The ONLY measure+pad surface: centers content at the archetype's --page-measure-<archetype> token with --page-pad gutters. Pages compose as chrome -> PageShell -> (PageHeader) -> PageStack -> (PageGrid). Never hardcode a page max-width.",
+      "description": "Content region primitive (page-anatomy law, A2). The ONLY measure+pad surface: centers content at the archetype's --page-measure-<archetype> token with --page-pad gutters. Pages compose as chrome -> PageShell -> (PageHeader) -> PageStack -> (PageGrid). Never hardcode a page max-width. It also carries the one register decision (ADR-011/ADR-012): surface='paper' paints the paper reading plane + paper text tiers; every other page stays on the instrument register.",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/PageShell/PageShell.stories.tsx",
-        "states": ["default", "variant-catalog"]
+        "states": ["default", "variant-catalog", "reading-surface"]
       },
       "props": {
         "archetype": {
@@ -634,6 +634,11 @@
             "wizard"
           ],
           "default": "overview"
+        },
+        "surface": {
+          "type": "enum",
+          "values": ["instrument", "paper"],
+          "default": "instrument"
         },
         "as": { "type": "elementType", "default": "main" },
         "children": { "type": "reactNode" },

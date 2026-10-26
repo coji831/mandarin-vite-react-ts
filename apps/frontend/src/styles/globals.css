@@ -162,6 +162,36 @@
   --ink-wash-subtle: rgba(255, 255, 255, 0.2);
   --ink-wash-ghost: rgba(255, 255, 255, 0.05);
 
+  /* ===== Paper Surface — the reading surface (ADR-011, landed by ADR-012) =====
+     A separate SURFACE, not a theme and not a light mode (ADR-001 stands). The
+     night-bench register above is the data/task/wayfinding surface; this family
+     paints the long-form reading page only, selected per archetype. Nothing here
+     re-points --canvas/--ink-* — no [data-theme], no runtime switch, exactly one
+     value per name.
+     Values: the locked paper ladder measured on the 2026-09-12 options demo
+     (ADR-011 § Verification: 0 contrast failures across 60 text nodes at
+     1280/768/390). Ratios below are against --surface-paper / --surface-paper-alt.
+     These are PinyinPal domain names, not spine generics: spine owns no paper name
+     (its paper surface is the retired `themes.reading-room`), so gate #15
+     classifies the family as domain (tools/spine-token-names.json).
+
+     Roles, in order: the reading plane (aged warm paper) · the raised sheet on it
+     (1.12:1 over the plane) · grouping on paper (1.16:1 — grouping, not meaning) ·
+     the empty track (primary ink 44% into the sheet, >=3:1) · body ink
+     (12.05:1 / 13.51:1) · second tier (6.34 / 7.11) · third tier (4.57 / 5.12,
+     solved on the sheet). */
+  --surface-paper: rgba(236, 226, 205, 1);
+  --surface-paper-alt: rgba(244, 239, 227, 1);
+  --surface-paper-border: rgba(220, 207, 174, 1);
+  --surface-paper-track: color-mix(
+    in srgb,
+    var(--text-paper-primary) 44%,
+    var(--surface-paper-alt)
+  );
+  --text-paper-primary: rgba(42, 35, 27, 1);
+  --text-paper-secondary: rgba(87, 78, 66, 1);
+  --text-paper-tertiary: rgba(107, 100, 84, 1);
+
   /* ===== Spacing Scale ===== */
 
   /* px-based spacing tokens (8px grid) */
@@ -209,6 +239,8 @@
 
   /* px-based size tokens (fixed dimensions, touch targets) */
   --size-touch: 28px; /* 28px — minimum touch-target dimension (WCAG 2.5.8) */
+  --size-well: 40px; /* tile well — the glyph tile's square (spine `size.well`) */
+  --size-focal-glyph: 48px; /* the focal hanzi (the character in play) — domain; no spine name */
 
   /* ===== Border Radius ===== */
 

@@ -1,14 +1,14 @@
 ---
 purpose: The page-level contract — a finite set of named Focus-First page skeletons every page parameterizes
 status: active
-last-verified: 2026-10-24
+last-verified: 2026-10-26
 type: design
 audience: all
 ---
 
 # PinyinPal Page Archetypes — Focus-First Page Library
 
-**Last Updated:** 2026-10-24
+**Last Updated:** 2026-10-26
 **Audience:** AI Coding Agents
 **Purpose:** The page-level contract that makes cross-page consistency _structural_. A finite set of named page skeletons — every page is a parameterization of one archetype. Read this before designing any new page; the archetype _is_ the consistency contract, and the ledger (`.github/page-inventory.json`) is the living catalog.
 
@@ -46,22 +46,31 @@ Every route declares its mode as part of its page archetype — never ad hoc.
 
 ### Mode / page mapping (epics 25–40)
 
-| Page type                                | Epic(s)            | Mode                  | Archetype  | Key paradigm rules                                                                                 |
-| ---------------------------------------- | ------------------ | --------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| Learn home / dashboard                   | 26, 40             | **Browse**            | `overview` | expanded rail; value-moment CTA top; card family; one focal point/section                          |
-| Lists / browse (Library, ContentBrowser) | 26·28·32·33·40     | **Browse**            | `list`     | expanded rail; preview rows; row→Focus; density to consumer max                                    |
-| Review session                           | North Star         | **Focus**             | `detail`   | collapsed rail; completion CTA; flat cards (§4.1); fixed shell                                     |
-| Quiz                                     | 26, 28             | **Focus**             | `detail`   | same skeleton as Review (consistency by archetype)                                                 |
-| Chat / assistant                         | 30, 31             | **Focus**             | `detail` * | collapsed rail; fixed shell + inner scroll; anchored composer; live region (4.1.3); one CTA = send |
-| HSK exam                                 | 37                 | **Focus**             | `detail` * | most chrome-recessed; timer in top bar; dense scan; 2.2.1 timing                                   |
-| Speaking / ASR                           | 36                 | **Focus**             | `detail` * | full-bleed; media controls; non-color feedback (1.4.1)                                             |
-| Settings / account                       | 25/39 shell family | **Browse** (settings) | `settings` | expanded rail; standard settings anatomy; one primary per section                                  |
-| Auth                                     | 25/39 shell family | neither (exception)   | `auth`     | no rail; centered single-column; one CTA                                                           |
+| Page type                                               | Epic(s)            | Mode                  | Archetype  | Key paradigm rules                                                                                 |
+| ------------------------------------------------------- | ------------------ | --------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| Learn home / dashboard                                  | 26, 40             | **Browse**            | `overview` | expanded rail; value-moment CTA top; card family; one focal point/section                          |
+| Lists / browse (Library, ContentBrowser)                | 26·28·32·33·40     | **Browse**            | `list`     | expanded rail; preview rows; row→Focus; density to consumer max                                    |
+| Review session                                          | North Star         | **Focus**             | `detail`   | collapsed rail; completion CTA; flat cards (§4.1); fixed shell                                     |
+| Quiz                                                    | 26, 28             | **Focus**             | `detail`   | same skeleton as Review (consistency by archetype)                                                 |
+| Chat / assistant                                        | 30, 31             | **Focus**             | `detail` * | collapsed rail; fixed shell + inner scroll; anchored composer; live region (4.1.3); one CTA = send |
+| HSK exam                                                | 37                 | **Focus**             | `detail` * | most chrome-recessed; timer in top bar; dense scan; 2.2.1 timing                                   |
+| Speaking / ASR                                          | 36                 | **Focus**             | `detail` * | full-bleed; media controls; non-color feedback (1.4.1)                                             |
+| Lexical detail (character/word/radical/chengyu/grammar) | 28·32·33           | **Focus**             | `detail`   | collapsed rail; a session is a ROUTE (`/learn/hub/:entityType/:entityId`), never a modal           |
+| Settings / account                                      | 25/39 shell family | **Browse** (settings) | `settings` | expanded rail; standard settings anatomy; one primary per section                                  |
+| Auth                                                    | 25/39 shell family | neither (exception)   | `auth`     | no rail; centered single-column; one CTA                                                           |
 
 \* Chat, the HSK exam and speaking/ASR were `focus-chat` / `focus-timed` / `focus-media`; those names
 are RETIRED (spine `registry/renames.md`) and they are all `detail` with a different body. The eight
 remaining spine archetypes (`create-edit`, `search`, `profile`, `notifications`, `reports`, `empty`,
 `not-found`, `wizard`) have no PinyinPal page mapped yet — see the library below.
+
+**The paper surface is a register, not a mode, and not an archetype.** ADR-011 decision 4 makes the
+register per-archetype: the dark instrument surface carries data, wayfinding and tasks; the **paper
+surface is the long-form reading page only** (the case `focus-media` used to name). Because long-form
+reading is now `detail` with a different body, the archetype id alone cannot select the register — the
+reading page **declares** it: `PageShell surface="paper"` (ADR-012). Every other page, and all chrome,
+stays on the instrument register; a page never paints a register in its own CSS, and the declaration is
+never a theme switch (ADR-001 stands). The reading page's own content surface is a separate epic's job.
 
 ---
 
@@ -170,7 +179,7 @@ generation: "pick archetype → per-epic design spec (archetype: list) → Step 
 archetype: detail
 mode: focus
 epics: [26, 28] + North Star Review
-pages: Review session, Quiz (all modes)
+pages: Review session, Quiz (all modes), Lexical session (character/word/radical/chengyu/grammar detail)
 chrome:
   rail: collapsed (icon rail)
   top-bar: recessed
@@ -201,6 +210,12 @@ a11y:
 golden-template: ReviewView — the **North Star** every focus page is compared against
 generation: "pick archetype → per-epic design spec (archetype: detail) → Step 1 story matching the ReviewView exemplar → user preview gate → Step 2"
 ```
+
+**A `detail` page is a route, never a modal.** The lexical session
+(`/learn/hub/:entityType/:entityId`, `pages/learn/hub/LexicalEntityPage.tsx`) is the reference: the
+entity body renders inside `PageShell(detail)` under Focus chrome, so it has a URL, a history entry
+and a Back control. `design-audit:foundation` fails a `<Modal>` that hosts a session surface
+(`session-modal`) and fails a dispatcher mounted outside a routed `detail` page (`session-route`).
 
 ### 4. `settings`
 

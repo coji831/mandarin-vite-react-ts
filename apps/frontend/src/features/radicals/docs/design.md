@@ -33,22 +33,22 @@ The radicals feature has three phases/views accessible via tabs:
 
 ## Components
 
-| Component           | Source                       | Notes                                                                           |
-| ------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| `RadicalGrid`       | Custom in `components/`      | Responsive grid of cards, handles loading/error/empty states                    |
-| `RadicalCard`       | Custom in `components/`      | Glyph, pinyin, meaning, stroke count, recommended badge                         |
-| `FilterBar`         | Custom in `components/`      | Search input, stroke count dropdown, top-20 toggle, sort dropdown, reset button |
-| `Dropdown`          | `shared/components/Dropdown` | Reused for stroke count and sort selectors                                      |
-| `Phase2BrowseView`  | Custom in `components/`      | Composes FilterBar + RadicalGrid                                                |
-| `Phase3TreeView`    | Custom in `components/`      | Search bar, chip picker, tree root node, tagline                                |
-| `RadicalChipPicker` | Custom in `components/`      | Chip-style picker for mastered radicals                                         |
-| `RadicalDetailCard` | Custom in `components/`      | Full detail view for a single radical                                           |
-| `TreeRootNode`      | Custom in `components/`      | Expandable tree node with character list                                        |
-| `BranchNode`        | Custom in `components/`      | Child node in the character composition tree                                    |
-| `CharacterListNode` | Custom in `components/`      | List of example characters under a radical                                      |
-| `ExampleCharGrid`   | Custom in `components/`      | Grid of example character cells                                                 |
-| `ExampleCharCell`   | Custom in `components/`      | Individual character showing glyph, pinyin, meaning                             |
-| `Button`            | `shared/components/Button`   | Used in error states (Retry button)                                             |
+| Component              | Source                       | Notes                                                                                          |
+| ---------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `RadicalGrid`          | Custom in `components/`      | Responsive grid of cards, handles loading/error/empty states                                   |
+| `RadicalCard`          | Custom in `components/`      | Glyph, pinyin, meaning, stroke count, recommended badge                                        |
+| `FilterBar`            | Custom in `components/`      | Search input, stroke count dropdown, top-20 toggle, sort dropdown, reset button                |
+| `Dropdown`             | `shared/components/Dropdown` | Reused for stroke count and sort selectors                                                     |
+| `Phase2BrowseView`     | Custom in `components/`      | Composes FilterBar + RadicalGrid                                                               |
+| `Phase3TreeView`       | Custom in `components/`      | Search bar, chip picker, tree root node, tagline                                               |
+| `RadicalChipPicker`    | Custom in `components/`      | Chip-style picker for mastered radicals                                                        |
+| `RadicalDetailContent` | Custom in `components/`      | Full detail body for a single radical (rendered by `RadicalHub` in the routed lexical session) |
+| `TreeRootNode`         | Custom in `components/`      | Expandable tree node with character list                                                       |
+| `BranchNode`           | Custom in `components/`      | Child node in the character composition tree                                                   |
+| `CharacterListNode`    | Custom in `components/`      | List of example characters under a radical                                                     |
+| `ExampleCharGrid`      | Custom in `components/`      | Grid of example character cells                                                                |
+| `ExampleCharCell`      | Custom in `components/`      | Individual character showing glyph, pinyin, meaning                                            |
+| `Button`               | `shared/components/Button`   | Used in error states (Retry button)                                                            |
 
 ---
 
@@ -140,7 +140,7 @@ Each component handles the following states:
 
 ## Epic-21 Additions
 
-- **Story 21.11 — API-driven example characters:** `RadicalDetailCard` and `RadicalTreesTab` fetch example characters from `GET /v1/radicals/:id/characters` (`radicalsService.getRadicalCharacters()`), backed by the `CharacterRadical` + `Character` tables — no longer read from the radical JSON `hsk_characters` field (stripped from all 20 radical entries).
+- **Story 21.11 — API-driven example characters:** `RadicalDetailContent` and `RadicalTreesTab` fetch example characters from `GET /v1/radicals/:id/characters` (`radicalsService.getRadicalCharacters()`), backed by the `CharacterRadical` + `Character` tables — no longer read from the radical JSON `hsk_characters` field (stripped from all 20 radical entries).
 - **Story 21.15 — Classification badges:** `ExampleCharCell` renders a `ClassificationBadge` (🖼️/🔤/🧩/⚡) with a golden border (`--color-xp`) + etymology tooltip for pictographs; `classification`/`etymology` flow through from the API response.
 - **Story 21.19 — Phonetic tree toggle:** `RadicalTreesTab` has a dual-tree toggle (Radical ↔ Phonetic); `PhoneticTreeView`/`PhoneticFamilyNode` render phonetic families with async classification enrichment via `phoneticTreeService`.
 

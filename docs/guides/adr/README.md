@@ -1,14 +1,14 @@
 ---
-purpose: "Index of Architecture Decision Records (ADRs) — ADR-001…005 in design-reasoning.md, ADR-006 here, plus the machine decision-log catalog"
+purpose: "Index of Architecture Decision Records (ADRs) — ADR-001…005 in design-reasoning.md, ADR-006 and ADR-011/012 here, plus the machine decision-log catalog"
 status: active
-last-verified: 2026-08-18
+last-verified: 2026-10-26
 type: area-index
 audience: all
 ---
 
 # Architecture Decision Records (ADR) — Index
 
-**Last Updated:** August 18, 2026
+**Last Updated:** October 26, 2026
 
 This directory holds standalone ADR records. ADRs live in two places by design:
 
@@ -25,14 +25,16 @@ add a decision to the JSON, and its record file lives here or in `design-reasoni
 
 ## Records
 
-| Decision | Title                                                                     | Status     | Where                                                          |
-| -------- | ------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------- |
-| ADR-001  | Dark Mode Only — No Light Mode                                            | `ratified` | `design-reasoning.md`                                          |
-| ADR-002  | Fixed-Height Data Shells                                                  | `ratified` | `design-reasoning.md`                                          |
-| ADR-003  | No Decorative Animation                                                   | `ratified` | `design-reasoning.md`                                          |
-| ADR-004  | Quiz Cards Are Flat (No Shadows)                                          | `ratified` | `design-reasoning.md`                                          |
-| ADR-005  | Token Freeze — new tokens only via DESIGN.md + globals.css + design-audit | `ratified` | `design-reasoning.md`                                          |
-| ADR-006  | Data Tiering Architecture — 4 data tiers (storage/cache/dependency rules) | `proposed` | [`data-tiering-architecture.md`](data-tiering-architecture.md) |
+| Decision | Title                                                                     | Status     | Where                                                                |
+| -------- | ------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| ADR-001  | Dark Mode Only — No Light Mode                                            | `ratified` | `design-reasoning.md`                                                |
+| ADR-002  | Fixed-Height Data Shells                                                  | `ratified` | `design-reasoning.md`                                                |
+| ADR-003  | No Decorative Animation                                                   | `ratified` | `design-reasoning.md`                                                |
+| ADR-004  | Quiz Cards Are Flat (No Shadows)                                          | `ratified` | `design-reasoning.md`                                                |
+| ADR-005  | Token Freeze — new tokens only via DESIGN.md + globals.css + design-audit | `ratified` | `design-reasoning.md`                                                |
+| ADR-006  | Data Tiering Architecture — 4 data tiers (storage/cache/dependency rules) | `proposed` | [`data-tiering-architecture.md`](data-tiering-architecture.md)       |
+| ADR-011  | North Star Visual Direction — Night Bench                                 | `ratified` | [`design-direction-night-bench.md`](design-direction-night-bench.md) |
+| ADR-012  | Paper Surface Tokens (lands ADR-011 consequence 3 via ADR-005)            | `ratified` | [`paper-surface-tokens.md`](paper-surface-tokens.md)                 |
 
 ## Writing a new ADR
 

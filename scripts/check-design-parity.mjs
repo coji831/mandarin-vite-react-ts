@@ -20,7 +20,7 @@
  *   layout.card-gutter.{sm,md,lg}     -> --card-gutter-{sm,md,lg}
  *   spacing[]                         -> --space-{xs,sm,md,lg,xl,2xl}  (index map)
  *   radii[]                           -> --radius-{sm,md,lg,pill}      (index map)
- *   size.touch                        -> --size-touch
+ *   size.{touch,well,focal-glyph}    -> --size-{touch,well,focal-glyph}
  *   shadows.{sm,md,lg,xp-glow,elevated-1..3} -> --shadow-<key>
  *   transitions.{fast,normal,slow}    -> --transition-<key>
  *   z-index.{content,chrome,popover,modal,toast} -> --z-<key>
@@ -143,8 +143,17 @@ const FAMILIES = [
   },
   {
     name: "size",
-    prefixes: ["--size-touch"],
-    collect: (t) => [{ cssVar: "--size-touch", mdPath: "tokens.size.touch", value: t.size?.touch }],
+    prefixes: ["--size-"],
+    // Fixed-dimension size tokens. `touch` is spine's core primitive; `well` is
+    // spine's tile-well primitive; `focal-glyph` is the one PinyinPal domain name
+    // in the family (ADR-012). Adding a --size-* var without documenting it here
+    // fails the reverse check — the point of the family.
+    collect: (t) =>
+      ["touch", "well", "focal-glyph"].map((k) => ({
+        cssVar: `--size-${k}`,
+        mdPath: `tokens.size.${k}`,
+        value: t.size?.[k],
+      })),
   },
   {
     name: "shadows",

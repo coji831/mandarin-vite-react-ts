@@ -1,7 +1,7 @@
 /**
  * @file components/ChengyuHub.stories.tsx
  * @description Storybook stories for ChengyuHub — idiom detail panel rendered
- * inside the shared LexicalHub dialog.
+ * inside the routed LexicalHub session page.
  * Story 23.3: Chengyu UI
  *
  * Self-fetches via `useChengyuDetail` against the 23.2-owned `chengyuHandlers`

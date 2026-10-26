@@ -25,4 +25,14 @@ describe("AppTopBar", () => {
     expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Register" })).toBeInTheDocument();
   });
+
+  it("renders the standard variant by default (no recessed class)", () => {
+    const { container } = renderWithProviders(<AppTopBar {...authedProps} />);
+    expect(container.querySelector(".app-top-bar")).not.toHaveClass("app-top-bar--recessed");
+  });
+
+  it("renders the recessed variant in Focus mode", () => {
+    const { container } = renderWithProviders(<AppTopBar {...authedProps} variant="recessed" />);
+    expect(container.querySelector(".app-top-bar")).toHaveClass("app-top-bar--recessed");
+  });
 });

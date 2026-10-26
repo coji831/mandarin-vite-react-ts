@@ -1,13 +1,13 @@
 /**
  * @file components/RadicalDetailContent.tsx
  * @description Presentational body of the radical detail view — hero, etymology,
- * variant forms, example characters, and notes. Data-accepting so it can render
- * inside the shared LexicalHub (RadicalHub) or a standalone Modal
- * (RadicalDetailCard) without duplication.
+ * variant forms, example characters, and notes. Data-accepting so it renders
+ * inside the routed lexical session (RadicalHub) only — never inside an overlay
+ * (session = route, not modal: design-revalidation-guide.md §4).
  *
  * Story 19.2: Radical Detail Card
- * Story 21.x (visual wave): Body extracted from RadicalDetailCard for reuse in
- * the `radical` lexical hub — exactly one dialog at a time.
+ * Story 21.x (visual wave): Body extracted from the standalone detail card so the
+ * `radical` lexical hub reuses it without duplication.
  *
  * Layout (desktop):
  * ┌──────────┬────────────────────────────┐
@@ -27,7 +27,7 @@ import type { RadicalData } from "../types";
 import { ExampleCharGrid } from "./ExampleCharGrid";
 import { Box, Button, Skeleton } from "shared/components";
 import { radicalsService } from "../services/radicalsService";
-import "./RadicalDetailCard.css";
+import "./RadicalDetailContent.css";
 
 export interface ExampleCharacter {
   glyph: string;

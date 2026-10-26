@@ -4,10 +4,14 @@
  * Root layout for the entire application.
  *
  * Story 22.4: composes AppTopBar (account UserMenu) + SideNav (phase-gated
- * Learn group, desktop-collapsible rail) + <main> Outlet + HubModal. The
- * sidebar is hidden on /auth/* (standalone auth pages), but the TopBar +
- * UserMenu remain so auth pages are never a dead-end. Sidebar collapse state
- * is persisted via localStorage.
+ * Learn group, desktop-collapsible rail) + <main> Outlet. The sidebar is hidden
+ * on /auth/* (standalone auth pages), but the TopBar + UserMenu remain so auth
+ * pages are never a dead-end. Sidebar collapse state is persisted via
+ * localStorage.
+ *
+ * S2 (session = route, not modal): the app-wide HubModal is gone. HubRouteBridge
+ * turns an `openHub()` intent into a navigation to the routed detail surface, so
+ * the shell renders chrome + an Outlet and nothing else — no overlay.
  *
  * Phase 2 (original note): Sidebar redesign — replaces top navbar with left
  * sidebar. Uses shared SideNav component for the sidebar.
@@ -15,37 +19,21 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-import { auth_page, practices_page, progress_page } from "../constants/paths";
+import { practices_page, progress_page } from "../constants/paths";
+import { resolvePageMode, chromeForMode } from "../constants/pageChrome";
 import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "../constants/learnNav";
-import { AppTopBar, SideNav, Modal, type NavItem } from "shared/components";
-// NOTE (deliberate exception): AppLayout (shared) imports from features/auth and
-// features/lexical-hub to orchestrate the app-wide HubModal and phase gating —
-// these overlays/gates must be mounted at the app root so they work everywhere.
-// This shared → feature inversion is intentional and should NOT be refactored
-// away by future audits.
+import { AppTopBar, SideNav, type NavItem } from "shared/components";
+// NOTE (deliberate exception): AppLayout (shared) imports from features/auth to
+// run the phase-gated sign-in state app-wide. That shared → feature inversion is
+// intentional and should NOT be refactored away by future audits.
 import { useAuth } from "features/auth";
 import { usePhaseGate } from "shared/hooks";
-import { LexicalHubRouter } from "features/lexical-hub/components";
-import { useHubStore } from "shared/store";
+import { HubRouteBridge } from "shared/hub-entry";
 import "./AppLayout.css";
 
 export { AppLayout };
 
 const SIDEBAR_COLLAPSE_KEY = "mandarin:sidebar-collapsed";
-
-function HubModal() {
-  const { isOpen, currentEntity, close } = useHubStore();
-
-  return (
-    <Modal isOpen={isOpen} onClose={close} size="lg" title={currentEntity?.label ?? "Detail"}>
-      {/*
-       * LexicalHubRouter reads currentEntity from hubStore directly.
-       * No props needed — Storybook stories pass props for testing.
-       */}
-      <LexicalHubRouter />
-    </Modal>
-  );
-}
 
 function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   const { user, isAuthenticated, logout } = useAuth();
@@ -85,9 +73,17 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   // never all-unlocked.
   const effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? Infinity : 1);
 
+  // Mode-aware chrome (dual-mode chrome law, page-archetypes.md §0): the mode
+  // comes from the page's archetype, not per-page hacks. Focus = rail collapsed
+  // + recessed top bar; Browse = rail expanded + standard top bar; auth = no rail
+  // (the UserMenu top bar remains so auth pages are never a dead-end).
+  const mode = resolvePageMode(location.pathname);
+  const chrome = chromeForMode(mode);
+  const isFocusMode = mode === "focus";
+
   // Don't show sidebar on auth pages — both login and register render standalone
   // (previously only login was hidden, so Register showed the nav when authed).
-  const isAuthPage = location.pathname.startsWith(auth_page);
+  const isAuthPage = mode === "auth";
 
   const navItems: NavItem[] = [
     { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
@@ -115,18 +111,26 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
           location={{ pathname: location.pathname, search: location.search }}
           phaseGate={effectivePhase}
           requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
-          collapsed={collapsed}
-          onToggleCollapse={handleToggleCollapse}
+          // Focus mode forces the collapsed icon rail (dual-mode chrome law);
+          // Browse keeps the user's persisted collapse choice. The manual
+          // collapse toggle is Browse-only — Focus chrome is fixed.
+          collapsed={isFocusMode || collapsed}
+          onToggleCollapse={isFocusMode ? undefined : handleToggleCollapse}
         />
       )}
 
       <div className="app-main flex flex-col flex-1">
-        <AppTopBar user={user} isAuthenticated={isAuthenticated} logout={logout} />
+        <AppTopBar
+          user={user}
+          isAuthenticated={isAuthenticated}
+          logout={logout}
+          variant={chrome.topbar === "recessed" ? "recessed" : "standard"}
+        />
         <main className="app-content flex flex-col flex-1">
           <Outlet />
         </main>
       </div>
-      <HubModal />
+      <HubRouteBridge />
     </div>
   );
 }

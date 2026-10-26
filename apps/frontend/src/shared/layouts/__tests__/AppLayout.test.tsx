@@ -1,7 +1,8 @@
 /**
  * @file shared/layouts/__tests__/AppLayout.test.tsx
  * @description Tests for AppLayout (Story 22.4 composition: AppTopBar +
- * auth-free SideNav with phase-gated Learn group + Outlet + HubModal).
+ * auth-free SideNav with phase-gated Learn group + Outlet; lexical sessions are
+ * routed detail pages, so the shell mounts a navigation bridge and no overlay).
  *
  * Auth-page behavior (VisFix W5): Login AND Register must both render
  * standalone (no main nav sidebar), but the AppTopBar/UserMenu remain.
@@ -20,20 +21,14 @@ vi.mock("features/auth", () => ({
   useAuth: mockUseAuth,
 }));
 
-vi.mock("features/lexical-hub/components", () => ({
-  LexicalHubRouter: () => null,
-}));
+// The bridge only navigates (renders nothing) — stub it so the shell is isolated.
+vi.mock("shared/hub-entry", async () => {
+  const actual = await vi.importActual<typeof import("shared/hub-entry")>("shared/hub-entry");
+  return { ...actual, HubRouteBridge: () => null };
+});
 
 vi.mock("shared/hooks", () => ({
   usePhaseGate: mockUsePhaseGate,
-}));
-
-vi.mock("shared/store", () => ({
-  useHubStore: () => ({
-    isOpen: false,
-    currentEntity: null,
-    close: vi.fn(),
-  }),
 }));
 
 function renderAppLayout(initialPath: string, initialCollapsed?: boolean) {
@@ -125,5 +120,32 @@ describe("AppLayout composition (Story 22.4)", () => {
     const grammar = screen.getByRole("link", { name: /Grammar/ });
     expect(grammar).toHaveAttribute("aria-disabled");
     expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
+  });
+});
+
+describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
+  it("renders a Focus route with a forced-collapsed rail and a recessed top bar", () => {
+    const { container } = renderAppLayout("/practices/review");
+    // The rail is mounted (non-auth) but forced to the icon rail — Learn
+    // children are unmounted and the manual collapse toggle is hidden (Focus
+    // chrome is fixed, not user-toggled).
+    expect(mainNav()).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /sidebar/i })).not.toBeInTheDocument();
+    // The top bar recedes (Focus chrome).
+    expect(container.querySelector(".app-top-bar--recessed")).toBeInTheDocument();
+  });
+
+  it("renders a Browse route with the expanded rail and a standard top bar", () => {
+    const { container } = renderAppLayout("/");
+    // Browse keeps the user's collapse toggle and the standard (non-recessed) top bar.
+    expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
+  });
+
+  it("keeps auth routes rail-less (no sidebar) with the standard top bar", () => {
+    const { container } = renderAppLayout("/auth/login");
+    expect(mainNav()).not.toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
   });
 });

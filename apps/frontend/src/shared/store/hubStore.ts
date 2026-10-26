@@ -1,11 +1,15 @@
 /**
  * @file shared/store/hubStore.ts
- * @description Zustand store for LexicalHub overlay state (generalized)
+ * @description Zustand store for the lexical hub's open INTENT (generalized).
  * Story 18.5: Character Detail Hub (Phase 1 Minimal)
  * Story 21.4: Reading UI + LexicalHub Phase 1 — generalized to support any entity type
- * Story 21.4 (refactor): Simplified to single open() + back() — removed openExternal/navigateTo/pushNavigation
+ * S2 (session = route, not modal): the hub is a routed detail surface, so this
+ *   store no longer renders anything and no longer keeps a hop stack — the
+ *   ROUTER owns history (one entry per hop, browser Back walks it).
+ *   `open()` records where the learner wants to go, HubRouteBridge turns that
+ *   into a navigation, and LexicalEntityPage mirrors the route back through
+ *   `syncFromRoute()`. The URL owns which session is showing.
  *
- * Manages hub open/close, current entity, and navigation stack.
  * Each hub section fetches its own data independently via dedicated hooks/services.
  * Follows patterns from shared/store/uiStore.ts.
  */
@@ -18,62 +22,35 @@ export type HubState = {
   isOpen: boolean;
   /** null = no entity selected; EntityRef = currently viewed entity */
   currentEntity: EntityRef | null;
-  navigationStack: EntityRef[];
 
   /**
    * @internal Use openHub() from shared/hub-entry instead.
-   * Opens the hub with the given entity reference.
-   * @param resetStack - If true, clears navigation stack (external entry).
-   *                     If false, preserves history (internal navigation).
+   * Records the intent to open the hub with the given entity reference.
    */
-  open: (entityRef: EntityRef, resetStack: boolean) => void;
+  open: (entityRef: EntityRef) => void;
+
+  /**
+   * @internal Called by LexicalEntityPage — the route is the source of truth.
+   * Adopts the entity the URL names.
+   */
+  syncFromRoute: (entityRef: EntityRef | null) => void;
 
   /** Close the hub and reset all state. */
   close: () => void;
-
-  /** Pop the navigation stack and set currentEntity to the popped item. */
-  back: () => void;
 };
 
 // ─── Initial state ─────────────────────────────────────────────────
 const initialState = {
   isOpen: false,
   currentEntity: null as EntityRef | null,
-  navigationStack: [] as EntityRef[],
 };
 
-export const useHubStore = create<HubState>()((set, get) => ({
+export const useHubStore = create<HubState>()((set) => ({
   ...initialState,
 
-  open: (entityRef, resetStack) => {
-    if (resetStack) {
-      set({
-        isOpen: true,
-        currentEntity: entityRef,
-        navigationStack: [],
-      });
-    } else {
-      const current = get().currentEntity;
-      set((state) => ({
-        isOpen: true,
-        currentEntity: entityRef,
-        navigationStack: current ? [...state.navigationStack, current] : state.navigationStack,
-      }));
-    }
-  },
+  open: (entityRef) => set({ isOpen: true, currentEntity: entityRef }),
 
-  close: () =>
-    set({
-      isOpen: false,
-      currentEntity: null,
-      navigationStack: [],
-    }),
+  close: () => set({ isOpen: false, currentEntity: null }),
 
-  back: () => {
-    const state = get();
-    if (state.navigationStack.length === 0) return;
-    const stack = [...state.navigationStack];
-    const popped = stack.pop()!;
-    set({ navigationStack: stack, currentEntity: popped });
-  },
+  syncFromRoute: (entityRef) => set({ isOpen: entityRef != null, currentEntity: entityRef }),
 }));
