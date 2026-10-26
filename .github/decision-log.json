@@ -311,6 +311,13 @@
       "status": "ratified",
       "file": "docs/guides/adr/design-direction-night-bench.md",
       "date": "2026-09-12"
+    },
+    {
+      "id": "ADR-013",
+      "title": "Composition & Portals/Focus — extract a shared useFocusTrap hook instead of adopting Radix at epic 31; portals allowed only for a transient overlay that must escape an ancestor's overflow/stacking context",
+      "status": "ratified",
+      "file": "docs/guides/adr/composition-portals-focus.md",
+      "date": "2026-10-26"
     }
   ]
 }

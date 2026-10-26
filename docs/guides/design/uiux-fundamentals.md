@@ -38,8 +38,8 @@ Each fundamental maps to: what it teaches → concrete PinyinPal application →
 
 ### The two genuinely deferred items
 
-- **#10 data density** — a spec written ahead of the surface (so epic 36/37 doesn't invent dense-list patterns ad hoc). Not needed for current surfaces.
-- **#11 composition/portals** — a dependency decision (extract `useFocusTrap` vs adopt Radix at epic 31) that must be settled before the conversation panel is specced.
+- **#10 data density** — **RESOLVED (2026-10-26):** the spec is written ahead of the surface — see [`data-density-spec.md`](data-density-spec.md) (the dense row/column contract, `tabular-nums`, status-via-roles, and the `reports`/timed-scan composition). Epics 36/37 consume it at design-spec time.
+- **#11 composition/portals** — **RESOLVED (2026-10-26):** the dependency decision is settled — extract the shared [`useFocusTrap`](../../../apps/frontend/src/shared/hooks/useFocusTrap.ts) hook, do NOT adopt Radix (see [ADR-013](../adr/composition-portals-focus.md)). Epic 31 consumes the hook; portals are allowed only for a transient overlay that must escape an ancestor's overflow/stacking context.
 
 ---
 
