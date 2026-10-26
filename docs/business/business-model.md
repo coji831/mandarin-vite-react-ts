@@ -8,7 +8,7 @@ type: business
 # PinyinPal Business Model — Demo-Guest + Data-Driven Learning Road
 
 **Status:** RATIFIED — owner-approved 2026-08-14
-**Last Updated:** August 17, 2026
+**Last Updated:** October 26, 2026
 **Change policy:** RATIFIED rules change only on owner approval → new BM-<n> decision → Change Log row → Last Updated bump, all in one commit. OPEN (planning-reference) items editable with a Last Updated bump only.
 
 ## Change Log
@@ -16,6 +16,7 @@ type: business
 | Date       | Change                                                            | Decision ID | Approval           |
 | ---------- | ----------------------------------------------------------------- | ----------- | ------------------ |
 | 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road | BM-1        | Owner (2026-08-14) |
+| 2026-10-26 | Premium surface → per-syllable tone measurement; pricing direction (tone-grading = paywall anchor, 17+ day trial, demo-quota-as-trial) | BM-2        | Owner (2026-10-26) |
 
 ---
 
@@ -37,7 +38,7 @@ This document is the **RATIFIED business model** for PinyinPal, owner-approved *
 
 ## 2. Product Positioning
 
-**Owned HSK-aligned depth** (grammar/tone/characters — 2025 finalized-syllabus rebase) that casual-first Duolingo Chinese doesn't cover, with **conversation + ASR tone feedback as the premium AI surface** — exactly where the market puts the paywall (Duolingo Max, Speak, Praktika). **The demo of those premium surfaces IS the acquisition story**: guests can _feel_ tone-graded ASR, run a conversation session, and use AI generation before registering — converting at the premium surfaces.
+**Owned HSK-aligned depth** (grammar/tone/characters — 2025 finalized-syllabus rebase) that casual-first Duolingo Chinese doesn't cover, with **conversation + per-syllable tone measurement as the premium AI surface** — the one thing no rival documents (HelloChinese/SuperChinese ship pronunciation help; tone grading is the unoccupied wedge) — exactly where the market puts the paywall (Duolingo Max, Speak, Praktika). **The demo of those premium surfaces IS the acquisition story**: guests can _feel_ tone-graded ASR, run a conversation session, and use AI generation before registering — converting at the premium surfaces.
 
 - **Wedge:** "bridge casual + serious HSK," Mandarin-specific, 2025-syllabus aligned.
 - **Framing:** a **deliberate departure toward the Speak/Praktika free-trial pattern** — a _bounded demo_, not "durable free full access" (V3 not violated).
@@ -69,6 +70,13 @@ Only remaining 🔒 is **persistence** — now the _primary_ register incentive 
 **Free-for-now launch** (O1). **$9.99/mo / $79.99/yr + Pro tier = reference only, not ratified** (annual-leaning; ~$6.67/mo effective ≈ Praktika; undercuts the $84–168/yr AI-voice specialists; above the $44.99 education median, justified by the AI/voice differentiator). **No paywall at launch.**
 
 **Pricing stays OPEN** until the future costing/monetization (V10) feature — unchanged from O1/O2.
+
+**BM-2 direction (2026-10-26):** the guest demo quota *is* the trial — the tone-grading demo (3+3 tries/day)
+must demonstrate the tone-accuracy delta in the **first session** (RevenueCat 2026: 55% of trial
+cancellations happen on Day 0). When V10 lands, the **tone-grading surface's unlimited tier becomes the
+hard-paywall anchor** (the wedge is what people pay for), with a **17+ day trial** (42.5% vs 25.5%
+conversion for long vs short trials). Free-for-now launch (O1) and the $9.99/$79.99 reference figures are
+unchanged; prices stay reference-only.
 
 ---
 
@@ -174,7 +182,7 @@ Worst-case guest spend/day at the ratified quotas = **penny-scale**; cost-per-gu
 | Business open item                      | Nature                     | Why open                                                                                                      |
 | --------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | **Quota numbers final sign-off**        | Confirm                    | Defaults accepted; owner final confirm at BR time (epic-25/26/29/31/36)                                       |
-| **V10 pricing**                         | OPEN until costing feature | $9.99/$79.99 + Pro = reference only (O1); free-for-now holds                                                  |
+| **V10 pricing**                         | Direction RATIFIED (BM-2); figures still reference | tone-grading = hard-paywall anchor, 17+ day trial; $9.99/$79.99 + Pro = reference only (O1); free-for-now holds |
 | **G7 funnel measurement**               | OPEN until costing feature | Unmeasurable at launch (O3); accepted risk                                                                    |
 | **Q11 ASR test run**                    | Business-validation track  | Design + budget + vendor set LOCKED (FV4–FV6); the run itself is pending (can start in parallel)              |
 | **TTS guest surfaces**                  | Cost-side (P11 flag)       | Cache-first verification + quota mechanics for `POST /v1/tts` + passage-audio — stance LOCKED, mechanics open |
@@ -241,6 +249,7 @@ These are implementation/planning items, deliberately excluded from the ratified
 | Date       | Change                                                            | Decision ID | Approval           |
 | ---------- | ----------------------------------------------------------------- | ----------- | ------------------ |
 | 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road | BM-1        | Owner (2026-08-14) |
+| 2026-10-26 | Premium surface → per-syllable tone measurement; pricing direction (tone-grading = paywall anchor, 17+ day trial, demo-quota-as-trial) | BM-2        | Owner (2026-10-26) |
 
 ---
 
