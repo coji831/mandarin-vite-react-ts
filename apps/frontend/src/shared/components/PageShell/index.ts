@@ -1,2 +1,2 @@
 export { PageShell } from "./PageShell";
-export type { PageShellProps, PageArchetype } from "./PageShell";
+export type { PageShellProps, PageArchetype, PageSurface } from "./PageShell";

@@ -41,7 +41,7 @@ tokens:
     surface:
       dark: ["#262321", "#1C1917", "#2D2A27"]
       border: "#3D3935"
-      border-subtle: "rgba(255,255,255,0.08)" # hairline for elevated surfaces (cards, modal, popovers); --surface-border stays for structural dividers
+      border-subtle: "rgba(255,255,255,0.08)" # hairline for elevated surfaces (cards, modal, popovers); --hairline stays for structural dividers
       light:
         [
           "rgba(255,255,255,0.03)",
@@ -53,18 +53,29 @@ tokens:
       overlay: "rgba(38,35,33,0.3)"
       hover: "rgba(61,57,53,0.5)"
     text:
-      # Text role tiers (Q4 ADR): [primary, secondary, tertiary, muted, subtle, ghost]
-      #   primary/secondary = body text (≥4.5:1) · muted = information-bearing meta (≥4.5:1)
-      #   subtle/ghost = decorative-only + large (never placeholder text — SC 1.4.3 requires ≥4.5:1)
-      #   muted = 0.6 white on --surface-dark (#262321) ≈ 6.5:1 — meets ≥4.5:1
-      [
-        "rgba(255,255,255,0.95)",
-        "rgba(255,255,255,0.85)",
-        "rgba(255,255,255,0.7)",
-        "rgba(255,255,255,0.6)",
-        "rgba(255,255,255,0.2)",
-        "rgba(255,255,255,0.05)",
-      ]
+      # Text role tiers (ADR-008 / Q4), in spine's ink vocabulary (step 1a renamed
+      # them; step 1b solved the values). Ratios are against the CARD — the binding
+      # plane on a dark surface.
+      #   ink-1/2/3 = body text (>=4.5:1) · ink-quiet = information-bearing meta (>=4.5:1)
+      #   ink-wash-subtle/ghost = decorative-only + large (never placeholder text — SC 1.4.3 requires >=4.5:1)
+      ink-1: "#dad3c5" # 11.70:1 on --card (12.41:1 on --canvas) — body ink
+      ink-2: "#a89a81" # 6.31:1 on --card — second tier
+      ink-3: "#8d806a" # 4.50:1 on --card — third tier, solved on the card
+      ink-quiet: "#948770" # 5.24:1 on --canvas, 4.94:1 on --card — the quiet meta tier
+      ink-wash-subtle: "rgba(255,255,255,0.2)" # decorative-only + large
+      ink-wash-ghost: "rgba(255,255,255,0.05)" # decorative-only + large
+    # ADR-011 (landed via ADR-012): the PAPER SURFACE — a separate surface the
+    # long-form reading page selects, never a light mode (ADR-001 stands; there is
+    # no theme switch and no re-pointing of --canvas/--ink-*). Values are the
+    # locked paper ladder measured on the 2026-09-12 options demo.
+    paper:
+      surface: "#ece2cd" # --surface-paper: the reading plane (aged warm paper)
+      surface-alt: "#f4efe3" # --surface-paper-alt: the raised sheet on paper (1.12:1 over surface)
+      surface-border: "#dccfae" # --surface-paper-border: grouping on paper, NOT meaning (1.16:1)
+      surface-track: "color-mix(in srgb, var(--text-paper-primary) 44%, var(--surface-paper-alt))" # --surface-paper-track: the empty track, drawn ON the paper sheet (>=3:1)
+      text-primary: "#2a231b" # --text-paper-primary: body ink — 12.05:1 on surface, 13.51:1 on surface-alt
+      text-secondary: "#574e42" # --text-paper-secondary: second tier — 6.34:1 / 7.11:1
+      text-tertiary: "#6b6454" # --text-paper-tertiary: third tier — 4.57:1 / 5.12:1 (solved on surface-alt)
     overlay: ["rgba(0,0,0,0.7)"]
     xp:
       base: ["#FBBF24"]
@@ -142,6 +153,8 @@ tokens:
     measure-prose: "720px" # --measure-prose: long-form reading measure (≈65ch at 16px; px per unit-allowed-list)
   size:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
+    well: "40px" # --size-well: tile-well square (spine's `size.well` primitive — the glyph tile)
+    focal-glyph: "48px" # --size-focal-glyph: the focal hanzi (the character in play); PinyinPal domain name — spine has no equivalent
   radii: ["0px", "0px", "0px", "0px"]
   shadows:
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
@@ -168,7 +181,6 @@ tokens:
       lh-normal: "1.5" # body default
       lh-relaxed: "1.6" # long-form prose
       lh-display: "1.08" # display headings
-      line-height-display: "var(--lh-display)" # alias
       lh-1-3: "1.3" # legacy tier (HubIdentityCard meaning)
       lh-1-4: "1.4" # legacy tier (ReviewCard full answer)
     font-weights: # --fw-* ladder — wired into .fw-* utilities
@@ -186,9 +198,11 @@ tokens:
     success: "linear-gradient(90deg, #34D399 0%, #059669 100%)"
 ---
 
-**Last Updated:** 2026-09-10
+**Last Updated:** 2026-10-26
 
 ## Changelog
+
+- **2026-10-26** — Paper surface token family landed (ADR-011 consequence 3 via ADR-012): `tokens.colors.paper` (`--surface-paper`, `--surface-paper-alt`, `--surface-paper-border`, `--surface-paper-track`, `--text-paper-primary/-secondary/-tertiary`) and `tokens.size.well` (`40px`) / `tokens.size.focal-glyph` (`48px`) added to the frontmatter + globals.css in the same change. `PageShell` gained the `surface="paper"` register (the long-form reading page); no page consumes it yet. The `size` family of gate #14 now covers all three `--size-*` vars. Body § Color Roles + § Text-role tiers were aligned to the live ink/accent vocabulary in the same pass (names only — the rest of `tokens.colors` is still the deferred palette rewrite).
 
 - **2026-10-24** — Step 1b of the spine-hybrid migration: Night Bench paint landed (ADR-011 and `context/topics/spine-mandarin/design-lead-1b-scope-ruling.md`). The three parity-covered families moved in this frontmatter only — `tokens.radii` → `0px`, the six elevation shadows → `none` (`xp-glow` survives), `tokens.transitions` → `120ms/240ms/360ms ease-out`. `tokens.colors` is untouched here; the palette rewrite is the deferred `design-md` step. Body sections still describing the Amber Stone elevation/amber-glow policy are stale until that step.
 
@@ -219,32 +233,56 @@ tokens:
 
 PinyinPal uses a **semantic role model** (Carbon-inspired): a color is assigned a _role_ before it is assigned a value, and every role declares which surfaces it may pair with. The role taxonomy:
 
-| Role               | Tokens                                                                     | Allowed on                                           |
-| ------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **Surface**        | `--surface-dark`, `--surface-light-*`, `--surface-hover`, `--overlay-dark` | background layers                                    |
-| **Border**         | `--surface-border` (structural), `--surface-border-subtle` (hairline)      | dividers / elevated-surface edges                    |
-| **Text**           | `--text-primary/secondary/muted/subtle/ghost` (role tiers below)           | text on sanctioned surfaces                          |
-| **Brand-Accent**   | `--color-primary-*`, `--gradient-primary` (amber)                          | CTAs, active states, emphasis — sparingly            |
-| **Status**         | `--success`/`--error`/`--warning`/`--info`/`--neutral` (+ `--tone-1..5`)   | status indicators only — never decoration            |
-| **XP-Celebration** | `--xp-*` + `--shadow-xp-glow`                                              | completion/celebration only (see Global Motion Rule) |
+| Role               | Tokens                                                                                                  | Allowed on                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Surface**        | `--canvas`, `--card`, `--surface-light-3/5/8`, `--surface-hover`, `--surface-overlay`                   | background layers                                    |
+| **Paper surface**  | `--surface-paper`, `--surface-paper-alt`, `--surface-paper-border`, `--surface-paper-track`             | the long-form reading surface only (ADR-011)         |
+| **Border**         | `--hairline` (the one boundary), `--edge-control` (a boundary you can find — controls), `--edge-danger` | dividers / control edges                             |
+| **Text**           | `--ink-1/2/3`, `--ink-quiet`, `--ink-wash-subtle/ghost` (role tiers below)                              | text on sanctioned surfaces                          |
+| **Paper text**     | `--text-paper-primary/-secondary/-tertiary`                                                             | text on the paper surface only                       |
+| **Brand-Accent**   | `--accent-fill`, `--accent-ink`, `--accent-tint`, `--accent-fill-lighter`, `--accent-fill-ink` (amber)  | CTAs, active states, emphasis — sparingly            |
+| **Status**         | `--color-success`/`--color-error`/`--color-warn`/`--status-info` (+ `--tone-1..5`)                      | status indicators only — never decoration            |
+| **XP-Celebration** | `--color-xp`, `--color-xp-bg`, `--color-xp-border` + `--shadow-xp-glow`                                 | completion/celebration only (see Global Motion Rule) |
 
 ### Text-role tiers (ADR-008 / Q4)
 
-Contrast is a **token-pair** property: each text role declares a minimum contrast against `--surface-dark` (#262321), not a bare opacity.
+Contrast is a **token-pair** property: each text role declares a minimum contrast against `--card` (#1e1915 — the binding plane on a dark surface), not a bare opacity.
 
-| Tier        | Token              | Value                    | Contrast role                                                      |
-| ----------- | ------------------ | ------------------------ | ------------------------------------------------------------------ |
-| `primary`   | `--text-primary`   | `rgba(255,255,255,0.95)` | body text — **≥4.5:1**                                             |
-| `secondary` | `--text-secondary` | `rgba(255,255,255,0.85)` | body text — **≥4.5:1**                                             |
-| `muted`     | `--text-muted`     | `rgba(255,255,255,0.6)`  | information-bearing meta — **≥4.5:1** (≈6.5:1 on `--surface-dark`) |
-| `subtle`    | `--text-subtle`    | `rgba(255,255,255,0.2)`  | **decorative-only + large** — never placeholder text               |
-| `ghost`     | `--text-ghost`     | `rgba(255,255,255,0.05)` | **decorative-only + large** — never placeholder text               |
+| Tier        | Token               | Value                    | Contrast role                                                       |
+| ----------- | ------------------- | ------------------------ | ------------------------------------------------------------------- |
+| `ink-1`     | `--ink-1`           | `#dad3c5`                | body text — **≥4.5:1** (11.70:1 on `--card`)                        |
+| `ink-2`     | `--ink-2`           | `#a89a81`                | body text — **≥4.5:1** (6.31:1 on `--card`)                         |
+| `ink-3`     | `--ink-3`           | `#8d806a`                | body text — **≥4.5:1** (4.50:1 on `--card` — solved on the card)    |
+| `ink-quiet` | `--ink-quiet`       | `#948770`                | information-bearing meta — **≥4.5:1** (5.24:1 canvas / 4.94:1 card) |
+| `subtle`    | `--ink-wash-subtle` | `rgba(255,255,255,0.2)`  | **decorative-only + large** — never placeholder text                |
+| `ghost`     | `--ink-wash-ghost`  | `rgba(255,255,255,0.05)` | **decorative-only + large** — never placeholder text                |
 
 Rules:
 
-- **`primary`/`secondary`/`muted` are the only tiers for information-bearing text** (WCAG 2.2 SC 1.4.3 — small text ≥4.5:1).
-- **`subtle`/`ghost` are decorative-only** and exempt _by role_ — they must never carry meaning. **Placeholder text must use `muted` (≥4.5:1)** — SC 1.4.3 explicitly covers placeholders.
+- **`ink-1`/`ink-2`/`ink-3`/`ink-quiet` are the only tiers for information-bearing text** (WCAG 2.2 SC 1.4.3 — small text ≥4.5:1).
+- **`--ink-wash-subtle`/`--ink-wash-ghost` are decorative-only** and exempt _by role_ — they must never carry meaning. **Placeholder text must use `ink-quiet` (≥4.5:1)** — SC 1.4.3 explicitly covers placeholders.
 - **Allowed-pair discipline:** text roles pair only with sanctioned surfaces; status colors signal status, never decoration; a token's role determines its usage, not its hue.
+
+### The paper surface (ADR-011 decision 2, landed by ADR-012)
+
+The dark register is the **data, wayfinding and task** surface. The **paper surface is the long-form reading page only** — a separate surface, selected per archetype, and **not a light mode**: `--canvas`/`--ink-*` are never re-pointed, there is no theme switch and no user preference (ADR-011 consequence 1, ADR-001 stands).
+
+| Role         | Token                    | Value                    | Contrast on the paper plane / sheet       |
+| ------------ | ------------------------ | ------------------------ | ----------------------------------------- |
+| Paper plane  | `--surface-paper`        | `#ece2cd`                | —                                         |
+| Raised sheet | `--surface-paper-alt`    | `#f4efe3`                | 1.12:1 over the plane                     |
+| Grouping     | `--surface-paper-border` | `#dccfae`                | 1.16:1 — grouping, not meaning            |
+| Empty track  | `--surface-paper-track`  | ink-1 44% into the sheet | ≥3:1 (the track's own floor)              |
+| Body ink     | `--text-paper-primary`   | `#2a231b`                | **12.05:1** / 13.51:1                     |
+| Second tier  | `--text-paper-secondary` | `#574e42`                | **6.34:1** / 7.11:1                       |
+| Third tier   | `--text-paper-tertiary`  | `#6b6454`                | **4.57:1** / 5.12:1 (solved on the sheet) |
+
+Rules:
+
+- **The register reaches a page through `PageShell`**: `surface="paper"` paints the plane + the default ink from this family. Never re-declare the paper paint in a page's own CSS, and never emulate it by overriding `--canvas`/`--ink-*`.
+- **Reading only.** The paper surface is not a general-purpose light surface: a data, task or navigation surface stays on the dark register even when it sits beside a reading page (chrome included).
+- **No new accent-on-paper token exists yet.** ADR-011 consequence 4 named `--color-primary-dark` (`#92400E`) as the accent-as-text on paper, but that name was retired in step 1a (`--accent-ink` holds the dark register's amber). An accent-on-paper value therefore needs its own decision — do not improvise one inside a reading page.
+- **No type tokens.** The reading page reuses the existing type ladder (`--font-*`/`--lh-relaxed`/`--measure-prose`) — ADR-011 consequence 4.
 
 ### Saturation budget — ≤1 filled saturated element per viewport (ADR-007/010 / Q10)
 
@@ -261,14 +299,14 @@ One shared role map (consolidating the per-feature type tables in `radicals`/`re
 | h2        | `--font-lg` / `--font-xl`      | `--lh-tight`   | `--fw-600/700` | section heading (e.g. Dashboard sections `font-lg fw-600`)                                                                                                                       |
 | h3        | `--font-2xl`                   | `--lh-tight`   | `--fw-600`     | group heading                                                                                                                                                                    |
 | body      | `--font-md`                    | `--lh-normal`  | `--fw-400`     | default (matches `:root`)                                                                                                                                                        |
-| meta      | `--font-sm` / `--font-xs`      | `--lh-normal`  | `--fw-400/500` | information-bearing — `--text-muted`                                                                                                                                             |
-| micro     | `--font-xs`                    | `--lh-normal`  | `--fw-400`     | caption — `--text-subtle` (decorative-only)                                                                                                                                      |
+| meta      | `--font-sm` / `--font-xs`      | `--lh-normal`  | `--fw-400/500` | information-bearing — `--ink-quiet`                                                                                                                                              |
+| micro     | `--font-xs`                    | `--lh-normal`  | `--fw-400`     | caption — `--ink-wash-subtle` (decorative-only)                                                                                                                                  |
 | long-form | `--font-md`                    | `--lh-relaxed` | `--fw-400`     | prose passages                                                                                                                                                                   |
 
 Notes:
 
 - **Fluid display tiers** (`--font-3xl..6xl`, `clamp()`) — names are stable, values scale with the viewport (Utopia-style). `h1` uses `--font-2xl/3xl`; `4xl/5xl` are reserved for hero surfaces; body/meta/micro use the fixed `--font-xs..2xl` steps.
-- **`--lh-display` / `--line-height-display`** (1.08) are the display-heading line-height (alias). Legacy tiers `--lh-1` (1) / `--lh-1-3` (1.3) / `--lh-1-4` (1.4) are retained for existing surfaces only — not for new work.
+- **`--lh-display`** (1.08) is the display-heading line-height. Legacy tiers `--lh-1` (1) / `--lh-1-3` (1.3) / `--lh-1-4` (1.4) are retained for existing surfaces only — not for new work.
 - **`--fw-*` semantics (ADR-009):** `fw-800` = hero display · `fw-700` = display emphasis · `fw-600` = semibold (buttons, badges, labels) · `fw-500` = medium · `fw-400` = body/default.
 - **`--tracking-tight`** (−0.02em) applies to Latin display headings only — never on hanzi glyphs.
 

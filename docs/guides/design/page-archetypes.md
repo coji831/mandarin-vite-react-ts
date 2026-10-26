@@ -1,14 +1,14 @@
 ---
 purpose: The page-level contract — a finite set of named Focus-First page skeletons every page parameterizes
 status: active
-last-verified: 2026-10-24
+last-verified: 2026-10-26
 type: design
 audience: all
 ---
 
 # PinyinPal Page Archetypes — Focus-First Page Library
 
-**Last Updated:** 2026-10-24
+**Last Updated:** 2026-10-26
 **Audience:** AI Coding Agents
 **Purpose:** The page-level contract that makes cross-page consistency _structural_. A finite set of named page skeletons — every page is a parameterization of one archetype. Read this before designing any new page; the archetype _is_ the consistency contract, and the ledger (`.github/page-inventory.json`) is the living catalog.
 
@@ -62,6 +62,14 @@ Every route declares its mode as part of its page archetype — never ad hoc.
 are RETIRED (spine `registry/renames.md`) and they are all `detail` with a different body. The eight
 remaining spine archetypes (`create-edit`, `search`, `profile`, `notifications`, `reports`, `empty`,
 `not-found`, `wizard`) have no PinyinPal page mapped yet — see the library below.
+
+**The paper surface is a register, not a mode, and not an archetype.** ADR-011 decision 4 makes the
+register per-archetype: the dark instrument surface carries data, wayfinding and tasks; the **paper
+surface is the long-form reading page only** (the case `focus-media` used to name). Because long-form
+reading is now `detail` with a different body, the archetype id alone cannot select the register — the
+reading page **declares** it: `PageShell surface="paper"` (ADR-012). Every other page, and all chrome,
+stays on the instrument register; a page never paints a register in its own CSS, and the declaration is
+never a theme switch (ADR-001 stands). The reading page's own content surface is a separate epic's job.
 
 ---
 

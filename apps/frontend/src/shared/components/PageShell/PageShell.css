@@ -63,3 +63,15 @@
     padding-block: var(--space-lg) var(--space-xl);
   }
 }
+
+/* ===== The reading surface (ADR-011 decision 4, landed by ADR-012) =====
+   The dark register is the data/task/wayfinding surface and the app shell
+   already paints it, so "instrument" needs no class. The paper surface is the
+   long-form reading register: the page declares `surface="paper"` and this rule
+   paints the plane and the default ink from the paper family — never by
+   re-pointing --canvas/--ink-*, which would be a theme (ADR-011 consequence 1).
+   Content inside reads its tiers as --text-paper-primary/-secondary/-tertiary. */
+.page-shell.page-surface--paper {
+  background-color: var(--surface-paper);
+  color: var(--text-paper-primary);
+}

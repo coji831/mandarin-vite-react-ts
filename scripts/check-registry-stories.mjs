@@ -56,6 +56,8 @@ const ALLOWED_STATES = [
   "with-title",
   "with-icon",
   "with-action",
+  // ADR-012: PageShell's paper reading register (the surface prop)
+  "reading-surface",
 ];
 
 // ─── Main ────────────────────────────────────────────────────────────────────

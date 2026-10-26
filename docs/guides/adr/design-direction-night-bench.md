@@ -2,8 +2,9 @@
 purpose: "ADR-011 — the ratified North Star visual direction for PinyinPal: 'Night Bench' (dark instrument register + a light paper surface for long-form reading only), and the status of the light 'Reading Room' alternative."
 status: ratified
 date: 2026-09-12
-relates-to: "ADR-001 (Dark Mode Only) · ADR-005 (Token Freeze) · ADR-007 (North-Star Visual Identity) · ADR-009 (Fluid Display Type Scale) · ADR-010 (Vibrancy Amplification)"
+relates-to: "ADR-001 (Dark Mode Only) · ADR-005 (Token Freeze) · ADR-007 (North-Star Visual Identity) · ADR-009 (Fluid Display Type Scale) · ADR-010 (Vibrancy Amplification) · ADR-012 (Paper surface tokens — the landing)"
 evidence: "archived hub evidence: design-style-catalogue Parts 7-9 · demo dashboard-options.html"
+last-verified: 2026-10-26
 ---
 
 # ADR-011 — North Star Visual Direction: "Night Bench"
@@ -92,6 +93,32 @@ padding; and 13 em dashes in body copy.
 
 ## Open items
 
-1. Reconcile the saturated-fill cap with ADR-007/010 (consequence 5).
-2. Land the paper token family through ADR-005.
-3. Record A's status as retained, and re-open ADR-001 explicitly if light mode is ever attempted.
+1. Reconcile the saturated-fill cap with ADR-007/010 (consequence 5). **STILL OPEN (owner decision, 2026-10-26).**
+2. Land the paper token family through ADR-005. **LANDED 2026-10-26 — see ADR-012 and § Landing record below.**
+3. Record A's status as retained, and re-open ADR-001 explicitly if light mode is ever attempted. Recorded: Option A is retained,
+   not adopted (decision 5); any light-mode work must supersede ADR-001 explicitly (consequence 2).
+
+## Landing record — the paper token family (2026-10-26, ADR-012)
+
+Consequence 3's list landed through ADR-005's route, in one change: `DESIGN.md` (`tokens.colors.paper`,
+`tokens.size.well`, `tokens.size.focal-glyph`) + `apps/frontend/src/styles/globals.css` (`:root`), with
+`design:lint` and `design-audit` clean and the landing recorded in `.github/decision-log.json`.
+
+- **The nine names, exactly as this ADR states them:** `--surface-paper`, `--surface-paper-alt`,
+  `--surface-paper-border`, `--surface-paper-track`, `--text-paper-primary`, `--text-paper-secondary`,
+  `--text-paper-tertiary`, `--size-well` (40px), `--size-focal-glyph` (48px). No type token and no accent
+  token was added (consequence 4).
+- **They are PinyinPal domain names, not spine generics.** Spine owns no paper name — its paper surface is
+  `themes.reading-room`, retired as a _theme_ — so gate #15 (`check:spine-parity`) classifies the family as
+  domain in `tools/spine-token-names.json`. The family is a second **surface**, never a second token set for
+  the same surface, and it re-points nothing: no `[data-theme]`, no runtime switch (consequence 1).
+- **Values are the locked paper ladder** measured on the 2026-09-12 options demo (§ Verification above):
+  plane `#ece2cd`, sheet `#f4efe3`, hairline `#dccfae`, ink `#2a231b` / `#574e42` / `#6b6454`
+  (12.05 / 6.34 / 4.57 on the plane; 13.51 / 7.11 / 5.12 on the sheet). The retired theme's hexes are the
+  same ladder — the _mechanism_ stays retired, the measured values are what this ADR was decided on.
+- **The register reaches a page by declaration.** `focus-media` (this ADR's word for the reader) is retired
+  in spine's vocabulary — long-form reading is `detail` with a different body — so the archetype id cannot
+  select the register. The reading page declares `PageShell surface="paper"`; no page declares it yet.
+- **Still open:** item 1 above, and an accent-as-text value for paper — consequence 4 cites
+  `--color-primary-dark` (`#92400E`), a name the vocabulary commit retired (`--accent-ink` now holds the
+  dark register's amber). Choosing the paper accent ink is a new decision, not a token rename.

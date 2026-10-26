@@ -39,7 +39,7 @@ export type { NavItem, SideNavProps } from "./SideNav/SideNav";
 export { PageHeader } from "./PageHeader/PageHeader";
 export type { PageHeaderProps } from "./PageHeader/PageHeader";
 export { PageShell } from "./PageShell/PageShell";
-export type { PageShellProps, PageArchetype } from "./PageShell/PageShell";
+export type { PageShellProps, PageArchetype, PageSurface } from "./PageShell/PageShell";
 export { PageStack } from "./PageStack/PageStack";
 export type { PageStackProps, PageStackSize } from "./PageStack/PageStack";
 export { PageGrid } from "./PageGrid/PageGrid";
