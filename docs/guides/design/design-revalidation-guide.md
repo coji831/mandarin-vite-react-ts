@@ -2,6 +2,7 @@
 purpose: "Per-epic design revalidation guide — each UI epic revalidates the surfaces in its scope against the ratified contract, and reworks from scratch when revalidation fails."
 status: active
 date: 2026-10-26
+last-verified: 2026-10-26
 type: guide
 audience: agents
 ---
