@@ -1,7 +1,7 @@
 ---
 purpose: Global Simplified↔Traditional character toggle for Phase 4 learners
 status: deferred
-last-verified: 2026-08-17
+last-verified: 2026-10-26
 ---
 
 # Epic 41: Traditional Character Toggle
@@ -23,7 +23,14 @@ last-verified: 2026-08-17
 
 **Status:** Deferred — Phase-4, out of 25–40 scope, not scheduled in this plan
 
-**Last Update:** August 17, 2026
+**Last Update:** 2026-10-26
+
+> **2026 audit amendment (PO × Designer):** this epic was written before BM-1's L1/L2 decisions. On
+> pickup, **re-derive** two things against the current model: (1) the "gated to Phase 4+" wall becomes a
+> soft readiness signal (L2/L6 — no hard walls), and (2) the backend-persisted preference is reconciled
+> with "persistence = the only lock". The toggle control also moves **out of the global navigation bar
+> into a `settings`-archetype surface** (a global nav toggle is a third chrome element that Focus-First
+> does not want). See `docs/planning/epics-25-40.md` §2026 Audit Amendments, A41.
 
 ## Background
 

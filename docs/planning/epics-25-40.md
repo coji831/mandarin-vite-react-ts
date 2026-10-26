@@ -1,7 +1,7 @@
 ---
 purpose: Ratified re-sliced epic plan 25–40 (calibration + AI roadmap) + OI-1…OI-10 decision record
 status: ratified
-last-verified: 2026-10-24
+last-verified: 2026-10-26
 type: planning
 ---
 
@@ -9,7 +9,7 @@ type: planning
 
 **Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
-**Last Updated:** 2026-10-24
+**Last Updated:** 2026-10-26 (2026 PO × Designer audit amendments — see §2026 Audit Amendments)
 
 **Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D10**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
 
@@ -51,7 +51,7 @@ builds on it.
 
 | Adoption item | Owned by |
 | --- | --- |
-| Token consolidation, semantic name alignment, Night Bench paint | **Pre-26 spine epic** (insert before Epic 26) |
+| Token consolidation, semantic name alignment, Night Bench paint, **mode-aware chrome (rail collapse + recessed top bar + `mode`/`chrome` fields in `page-inventory.json`)** | **Pre-26 spine epic** (insert before Epic 26) |
 | Gate/CI repair + doc/config alignment | same pre-26 spine epic |
 | Component model (spec-first registry entries, per new surface) | **each UI-carrying epic at BR time** (26, 28, 30–33, 36, 37, 39, 40) |
 | Review governance (R0→R3 + rubric) | process epic, reused at every UI epic close |
@@ -63,6 +63,96 @@ registry — see this track", not "to be invented per epic".
 
 **Sequencing rule (spine `docs/design-process.md`):** semantic names before paint; paint before component
 migration. Never restyle a surface before its tokens are aligned to spine's names.
+
+---
+
+## 2026 Audit Amendments (PO × Designer, 2026-10-26)
+
+**Provenance:** the 2026 Product-Owner × Designer × market-data audit (working record: Resume repo
+`context/topics/pinyinpal-vision/audit-2026/`). These amend the ratified plan above at the scope level.
+They do **not** renumber epics (Re-Slicing Principle 1 holds); nothing is dropped. Each amendment is the
+scope delta to apply at that epic's BR; where an amendment conflicts with the body above, the amendment
+wins at BR time.
+
+**A0 — Insert the pre-26 spine epic (mode-aware chrome).** The Design-System track names a "pre-26 spine
+epic" for token consolidation + Night Bench paint; it must additionally own the **unimplemented half of
+the design system: mode-aware chrome** — rail collapse + recessed top bar in Focus, plus `mode` and
+`chrome` fields in `page-inventory.json` so the anatomy gate can enforce what it cannot currently even
+represent. Without it, every Focus surface fails the dual-mode chrome law (NN1) and the two canonized
+exemplars (`/practices/review`, `/practices/quiz`) ship one-mode. The chrome **build** is deferred to epic
+execution; this section names the owner and scope. (Audit: Designer cross-epic summary; PO note 9.)
+
+**A25 — Epic 25: re-bound the gate scope.** Remove the six phase-gated Learn routes from 25's boundary:
+`business-model.md` §3 ratifies "Learn = no lock" for guests and L6 makes roadmap theory "signals, not
+walls". Guest scarcity = session-local progress + demo quotas, not content walls. The guest-state region
+also moves out of `AppLayout` (persistent) into a Browse-only surface. Keep P0-1, guest identity lockstep,
+and guest cost-surface verification.
+
+**A26 — Epic 26: precondition — quiz shell chrome first.** `/practices/quiz` fails the Focus chrome law
+today (rail open, completion CTA outside a completion slot, `window.location.href` escape hatch). Fix the
+shell before multiplying its surface by four formats; otherwise 26 propagates the defect.
+
+**A27 — Epic 27-M2: HSK 3.0 confirmation + verify-at-BR.** The rebase is correctly pinned to the 2025
+syllabus (3,088 chars / 10,943 words / 300–5,400 cumulative); the audit's market check confirms HSK 3.0
+is 9 levels, released 2025-11, **worldwide launch 2026-12-13**, speaking compulsory from L3. Add to the
+BR: re-verify the per-level counts against the official syllabus PDF (the audit could not load it), and
+drop any residual "2026 revision" language — there is no further revision; "2026" refers to the 3.0
+rollout date.
+
+**A28 — Epic 28: two preconditions.** (1) Split the session picker out of `ReviewView` before the
+comprehension surface lands — Review is the canonized North Star and must not host its own picker inside
+the Focus column. (2) Scope interleaving to **confusable-similar categories only**: the interleaving
+meta-analysis cautions against it for words generally; only discrimination learning benefits.
+
+**A29 — no amendment.** The gateway/cost-governance epic is sound and is a hard dependency of 31/36.
+
+**A30 — Epic 30: Explain slot must be mode-aware.** Keep the deterministic retrieval module (reused by
+31/33). The Explain slot is an in-card Focus surface; it must collapse into the Focus chrome, not render
+as an always-on card, and definitions are L2-only (matches the 2026 learning-science evidence).
+
+**A31 — Epic 31: gate the spec on the #11 decision.** Before the conversation panel is specced, record
+the composition/portals decision (extract `useFocusTrap` vs adopt Radix at 31). The panel is the first
+compositional Focus surface and cannot be specced against a pattern that does not exist.
+
+**A32 — Epic 32: split hosts by mode.** Recommendation cards are Browse (dashboard) only; the in-review
+host is removed (it violates the one-task/one-CTA Focus law). Keep dismiss + why.
+
+**A33 — Epic 33: defer M2, constrain M1.** Keep the E.4 content lane; the Made-for-You lesson is a
+`detail` archetype with a single primary CTA (not a multi-CTA dashboard). **Defer M2 (G6 machine-token /
+agent contract)** — lowest business value in the Tier-1 critical path; re-sequence it after Q11/37.
+
+**A34 — no amendment.** Build on FSRS-6 (21 params, trainable decay) as planned.
+
+**A35 — Epic 35: defer.** ML-ops eval/fine-tuning is `UI: none` and invisible to the demo funnel; defer
+until the north-star metric exists and 34/40 have produced something to fit against.
+
+**A36 — Epic 36: defer on Q11 (tightened to tone) + pitch-contour-first.** Q11 must validate **tone
+grading**, not generic ASR (see the OI-7 caveat below). On pickup, the speaking UI must be
+**pitch-contour-first** (visual F0 overlay — the only feedback with direct tone-efficacy evidence), and it
+must consume the pre-written #10 dense-data spec rather than inventing it. Until Q11 passes, the §2
+premium-AI pair ships conversation-only.
+
+**A37 — Epic 37: name the archetypes + #10 dense spec ahead.** The exam-prep mode is `list` (part
+picker) / `detail` (timed mock) / `reports` (results); `reports` is currently an unused closed-set
+archetype. Write the #10 data-density spec before the timed-mock surface so the dense scan pattern is
+designed once, not invented per page.
+
+**A38/A39 — add the v0 north-star metric.** Define the metric in 38/39: **week-1 (D7) registered
+retention** — % of new registered users active in their second week, computable from `account_registered`
++ `ActivityEvent` (no guest telemetry required). The growth metric (demo→register) is added when guest
+telemetry unblocks. This closes the "no north-star" gap; 34/35/40 sequence against it.
+
+**A40 — Epic 40: replace, not add.** "Next for you" **replaces** the phase gate as the default sequencing
+rail; it does not sit beside it. Sequence 40 after the v0 north-star exists so its value is judgeable.
+
+**A41 — Epic 41: re-derive against BM-1.** The traditional-character toggle was written before L1/L2; its
+"gated to Phase 4+" and backend-persisted preference must be re-derived against the current model (demo
+quota; no hard walls; persistence = the only lock), and the control moves out of the global nav into a
+`settings`-archetype surface.
+
+**Held out of this doc (BM-1's own gate):** the §2 positioning reframe (premium surface = "conversation +
+per-syllable tone measurement") and the free-tier-vs-paywall pricing question are business-model changes;
+they go through BM-1's change gate, not this plan.
 
 ---
 
@@ -608,7 +698,7 @@ graph LR
 
 ### OI-7 — Q11 ASR test run — confirm parallel + de-gate record spec
 
-- **Recommendation:** **Confirm Q11 is approved to run now as a parallel research track** (decision 6 approved the run; budget ≈$3k engineering + ≤$500 cloud and the vendor set are locked, FV4/FV6). It is **off the 25–40 critical path** (parallel). **epic-36 stays blocked until the pass record exists.** The de-gating record must be a single committed artifact (e.g., `docs/knowledge-base/data/q11-asr-validation.md`) containing **all six**: (1) **per-vendor tone accuracy** on an agreed labeled isolated-syllable + word set (NOT sentence CER) for iFlytek ISE / Azure zh-CN / FunASR SenseVoice (v1 path: Azure baseline → iFlytek specialist → FunASR fallback); (2) **F0 reliability** — client YIN/WebAudio accuracy across a device/browser/mic matrix (min: desktop Chrome/Firefox/Safari + 2 mobile browsers + 2 mic types); (3) **neutral-tone + tone-sandhi** handling (轻声, 三声变调, 一/不) with documented failure modes; (4) **whisper/low-volume degradation** quantified on the labeled set (the AISHELL6 3.95→18.93% signal); (5) a **pre-registered pedagogically-safe threshold** (tone-classification accuracy floor + F0-tone agreement bound) below which the feature serves **overall-pronunciation-only** feedback, never tone grading; (6) **per-score cost** across the shortlist confirming the $0.12-hr voice cap.
+- **Recommendation:** **Confirm Q11 is approved to run now as a parallel research track** (decision 6 approved the run; budget ≈$3k engineering + ≤$500 cloud and the vendor set are locked, FV4/FV6). It is **off the 25–40 critical path** (parallel). **epic-36 stays blocked until the pass record exists.** The de-gating record must be a single committed artifact (e.g., `docs/knowledge-base/data/q11-asr-validation.md`) containing **all six**: (1) **per-vendor tone accuracy** on an agreed labeled isolated-syllable + word set (NOT sentence CER) for iFlytek ISE / Azure zh-CN / FunASR SenseVoice (v1 path: Azure baseline → iFlytek specialist → FunASR fallback) — **2026 audit caveat: Azure pronunciation assessment is fine, but its tone/prosody assessment is en-US-only, so the tone leg must use a tone-capable path (iFlytek returns tone-numbered syllables); the UI must be pitch-contour-first (visual F0 overlay), not a generic pronunciation score**; (2) **F0 reliability** — client YIN/WebAudio accuracy across a device/browser/mic matrix (min: desktop Chrome/Firefox/Safari + 2 mobile browsers + 2 mic types); (3) **neutral-tone + tone-sandhi** handling (轻声, 三声变调, 一/不) with documented failure modes; (4) **whisper/low-volume degradation** quantified on the labeled set (the AISHELL6 3.95→18.93% signal); (5) a **pre-registered pedagogically-safe threshold** (tone-classification accuracy floor + F0-tone agreement bound) below which the feature serves **overall-pronunciation-only** feedback, never tone grading; (6) **per-score cost** across the shortlist confirming the $0.12-hr voice cap.
 - **Rationale:** FV5 already sharpened the scope; the record's job is to make the gate **objective and pre-registered** (no post-hoc pass). The threshold (5) is the actual product gate — without it, "Q11 passed" is unfalsifiable.
 - **Status:** `RESOLVED — recommended`
 - **Where it lands:** parallel track (owner-side run); epic-36 BR cites the record as its de-gate; not part of 25–40 sequencing.
