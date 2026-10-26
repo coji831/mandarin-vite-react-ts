@@ -311,6 +311,13 @@
       "status": "ratified",
       "file": "docs/guides/adr/design-direction-night-bench.md",
       "date": "2026-09-12"
+    },
+    {
+      "id": "ADR-012",
+      "title": "Paper Surface Tokens — lands ADR-011 consequence 3 through ADR-005: the nine paper/size names are PinyinPal domain tokens (not spine generics), values are the locked paper ladder, and the reading page selects the register with PageShell surface=paper",
+      "status": "ratified",
+      "file": "docs/guides/adr/paper-surface-tokens.md",
+      "date": "2026-10-26"
     }
   ]
 }
