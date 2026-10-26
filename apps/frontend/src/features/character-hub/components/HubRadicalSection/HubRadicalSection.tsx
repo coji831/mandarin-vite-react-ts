@@ -68,7 +68,7 @@ export function HubRadicalSection({ character, loading: externalLoading }: HubRa
             size="sm"
             className="hub-radical-section__chip flex items-center gap-xs"
             onClick={() => {
-              // Swap to the radical in the SAME hub dialog (push onto nav stack).
+              // Swap to the radical in the SAME session page (push a hub hop).
               openHub({
                 entityType: "radical",
                 entityId: radical.id,

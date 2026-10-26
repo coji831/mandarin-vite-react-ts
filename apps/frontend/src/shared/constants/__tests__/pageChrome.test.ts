@@ -57,6 +57,12 @@ describe("resolvePageMode", () => {
     expect(resolvePageMode("/practices/quiz")).toBe("focus");
   });
 
+  it("resolves a lexical session (routed detail) to focus — session = route, not modal", () => {
+    expect(resolvePageMode("/learn/hub")).toBe("focus");
+    expect(resolvePageMode("/learn/hub/character/%E5%A5%B3")).toBe("focus");
+    expect(resolvePageMode("/learn/hub/grammar/gr_0018")).toBe("focus");
+  });
+
   it("resolves auth routes to auth (no rail)", () => {
     expect(resolvePageMode("/auth/login")).toBe("auth");
     expect(resolvePageMode("/auth/register")).toBe("auth");

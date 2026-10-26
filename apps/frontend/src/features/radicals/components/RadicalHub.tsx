@@ -1,6 +1,7 @@
 /**
  * @file components/RadicalHub.tsx
- * @description Radical detail hub — rendered inside the shared LexicalHub dialog.
+ * @description Radical detail hub — rendered inside the routed LexicalHub
+ * session page (`/learn/hub/radical/:id`), never inside a dialog.
  * Story 19.2: Radical Detail Card
  * Story 21.x (visual wave): Registers `radical` in entityHubRegistry so radical
  * detail opens in the SAME dialog as other hubs (exactly one at a time).

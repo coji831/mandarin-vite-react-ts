@@ -3,7 +3,9 @@
  * @description Tests for LexicalHubRouter component
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Story 21.7: Phase 3 — no props, reads entirely from hubStore
- * Story 21.4 (refactor): Updated for registry-based routing, uses back() + open()
+ * Story 21.4 (refactor): Updated for registry-based routing.
+ * S2 (session = route): the routed page passes `entity`; the store is only the
+ *   Storybook fallback. The Back control moved to LexicalEntityPage.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -12,14 +14,11 @@ import { LexicalHubRouter } from "../LexicalHubRouter";
 
 // ----- Mock state -----
 let mockCurrentEntity: Record<string, unknown> | null = null;
-let mockNavigationStack: Array<Record<string, unknown>> = [];
 
 const mockStoreState = () => ({
   currentEntity: mockCurrentEntity,
   close: vi.fn(),
   open: vi.fn(),
-  back: vi.fn(),
-  navigationStack: mockNavigationStack,
 });
 
 // Mock hub store
@@ -34,7 +33,6 @@ vi.mock("shared/store", async () => {
       },
       {
         getState: () => ({
-          back: vi.fn(),
           close: vi.fn(),
           open: vi.fn(),
         }),
@@ -64,7 +62,6 @@ vi.mock("../../entityHubRegistry", () => ({
 describe("LexicalHubRouter", () => {
   beforeEach(() => {
     mockCurrentEntity = null;
-    mockNavigationStack = [];
   });
 
   it("renders WordHub for word entity type", () => {
@@ -99,16 +96,10 @@ describe("LexicalHubRouter", () => {
     expect(screen.getByText("Select a character or word to view details.")).toBeInTheDocument();
   });
 
-  it("renders back button when navigation stack has entries", () => {
-    mockNavigationStack = [{ entityType: "character", entityId: "女" }];
+  it("renders the entity passed by the route, ignoring the store", () => {
     mockCurrentEntity = { entityType: "word", entityId: "好", label: "hǎo" };
-    render(<LexicalHubRouter />);
-    expect(screen.getByText("← Back")).toBeInTheDocument();
-  });
-
-  it("does not render back button when navigation stack is empty", () => {
-    mockCurrentEntity = { entityType: "word", entityId: "好", label: "hǎo" };
-    render(<LexicalHubRouter />);
-    expect(screen.queryByText("← Back")).not.toBeInTheDocument();
+    render(<LexicalHubRouter entity={{ entityType: "character", entityId: "女", label: "nǚ" }} />);
+    expect(screen.getByText("CharacterHub: 女")).toBeInTheDocument();
+    expect(screen.queryByText("WordHub: 好")).not.toBeInTheDocument();
   });
 });

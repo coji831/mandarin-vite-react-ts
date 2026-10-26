@@ -2,14 +2,15 @@
  * AppLayout stories
  *
  * Visual stories for the REAL AppLayout (AppTopBar + auth-free SideNav with
- * the phase-gated Learn group + Outlet + HubModal), rendered inside
- * MemoryRouter + Routes so nav active states work. The global preview
- * decorator provides the authenticated MockAuthProvider + a default phase-4
- * MSW handler; guest/phase variants override via decorators/parameters.
+ * the phase-gated Learn group + Outlet), rendered inside MemoryRouter + Routes
+ * so nav active states work. The global preview decorator provides the
+ * authenticated MockAuthProvider + a default phase-4 MSW handler; guest/phase
+ * variants override via decorators/parameters.
  *
  * States: authenticated (Dashboard / Learn active) · collapsed rail ·
  * phase-locked Learn group · guest · mobile.
- * The HubModal stays closed (hubStore default) so no hub content is rendered.
+ * A lexical session is a route, not an overlay (S2), so the shell renders no
+ * hub content — HubRouteBridge navigates, the detail page renders.
  */
 import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
 import type { ReactNode } from "react";
@@ -72,7 +73,7 @@ const meta: Meta<AppLayoutArgs> = {
     docs: {
       description: {
         component:
-          "Root application layout — AppTopBar (UserMenu) + SideNav (phase-gated Learn group, collapsible rail) + Outlet + HubModal.",
+          "Root application layout — AppTopBar (UserMenu) + SideNav (phase-gated Learn group, collapsible rail) + Outlet. Lexical sessions are routed detail pages, not an overlay.",
       },
     },
   },

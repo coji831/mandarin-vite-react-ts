@@ -19,10 +19,12 @@ import { server } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { AppLayout } from "../AppLayout";
 
-// The HubModal is not under test — stub it so the shell renders lean.
-vi.mock("features/lexical-hub/components", () => ({
-  LexicalHubRouter: () => null,
-}));
+// The hub-navigation bridge is not under test here — stub it so the shell
+// renders lean (it only navigates; it renders nothing).
+vi.mock("shared/hub-entry", async () => {
+  const actual = await vi.importActual<typeof import("shared/hub-entry")>("shared/hub-entry");
+  return { ...actual, HubRouteBridge: () => null };
+});
 
 const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
 

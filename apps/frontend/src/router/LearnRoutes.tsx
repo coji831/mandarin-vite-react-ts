@@ -10,10 +10,14 @@
  *
  * Story 18.1: Replaced ContentBrowser index with phase-gated route navigation.
  * ContentBrowser still works at /library for freeroam browsing.
+ * S2 (session = route, not modal): `hub/:entityType/:entityId` is the routed
+ * Focus surface that hosts a lexical detail — a learning session is a route,
+ * never an overlay (design-revalidation-guide.md §4).
  */
 import { Navigate, Route, Routes } from "react-router-dom";
-import { practices_quiz, practices_review } from "shared/constants";
+import { lexical_entity_route, practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
+import { LexicalEntityPage } from "../pages/learn/hub/LexicalEntityPage";
 import {
   FoundationsPage,
   RadicalsPage,
@@ -77,6 +81,9 @@ export function LearnRoutes() {
             </PhaseGate>
           }
         />
+        {/* Lexical session === routed detail surface (Focus). The entity bodies
+            render exactly as they did in the old overlay; the shell is a route. */}
+        <Route path={lexical_entity_route} element={<LexicalEntityPage />} />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />
         <Route path="quiz" element={<Navigate to={practices_quiz} replace />} />

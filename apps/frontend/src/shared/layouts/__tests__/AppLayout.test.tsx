@@ -1,7 +1,8 @@
 /**
  * @file shared/layouts/__tests__/AppLayout.test.tsx
  * @description Tests for AppLayout (Story 22.4 composition: AppTopBar +
- * auth-free SideNav with phase-gated Learn group + Outlet + HubModal).
+ * auth-free SideNav with phase-gated Learn group + Outlet; lexical sessions are
+ * routed detail pages, so the shell mounts a navigation bridge and no overlay).
  *
  * Auth-page behavior (VisFix W5): Login AND Register must both render
  * standalone (no main nav sidebar), but the AppTopBar/UserMenu remain.
@@ -20,20 +21,14 @@ vi.mock("features/auth", () => ({
   useAuth: mockUseAuth,
 }));
 
-vi.mock("features/lexical-hub/components", () => ({
-  LexicalHubRouter: () => null,
-}));
+// The bridge only navigates (renders nothing) — stub it so the shell is isolated.
+vi.mock("shared/hub-entry", async () => {
+  const actual = await vi.importActual<typeof import("shared/hub-entry")>("shared/hub-entry");
+  return { ...actual, HubRouteBridge: () => null };
+});
 
 vi.mock("shared/hooks", () => ({
   usePhaseGate: mockUsePhaseGate,
-}));
-
-vi.mock("shared/store", () => ({
-  useHubStore: () => ({
-    isOpen: false,
-    currentEntity: null,
-    close: vi.fn(),
-  }),
 }));
 
 function renderAppLayout(initialPath: string, initialCollapsed?: boolean) {

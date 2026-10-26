@@ -5,3 +5,5 @@
  * Story 21.4 (refactor): Removed backward-compat re-exports (CharacterHubContent, WordHub).
  */
 export { LexicalHubRouter } from "./components";
+export { entityHubRegistry } from "./entityHubRegistry";
+export type { EntityHubProps } from "./entityHubRegistry";
